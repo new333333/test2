@@ -402,6 +402,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource teamingFeed2();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/warning32.gif")
+	public ImageResource warning32();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/warn_icon16.gif")
 	public ImageResource warningIcon16();
 	

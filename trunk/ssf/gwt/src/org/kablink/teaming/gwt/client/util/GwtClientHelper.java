@@ -47,6 +47,8 @@ import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
+import org.kablink.teaming.gwt.client.widgets.MultiErrorAlertDlg;
+import org.kablink.teaming.gwt.client.widgets.MultiErrorAlertDlg.MultiErrorAlertDlgClient;
 import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
 
 import com.google.gwt.core.client.Scheduler;
@@ -78,6 +80,8 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class GwtClientHelper {
+	private static MultiErrorAlertDlg	m_meaDlg;
+	
 	// String used to recognized an '&' formatted URL vs. a '/'
 	// formatted permalink URL.
 	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
@@ -202,8 +206,12 @@ public class GwtClientHelper {
 	 * @param delay
 	 */
 	public static void deferredAlert(final String msg, int delay) {
+		// Were we given a message to display?
 		if (hasString(msg)) {
+			// Yes!  If we don't have a specific amount of time to
+			// delay...
 			if (0 >= delay) {
+				// ...simply defer the alert...
 				ScheduledCommand cmd = new ScheduledCommand() {
 					@Override
 					public void execute() {
@@ -214,6 +222,8 @@ public class GwtClientHelper {
 			}
 			
 			else {
+				// ...otherwise, delay the amount of time requested and
+				// ...then display the alert.
 				Timer timer = new Timer() {
 					@Override
 					public void run() {
@@ -238,18 +248,72 @@ public class GwtClientHelper {
 	 * @param multiErrors
 	 * @param delay
 	 */
-	public static void displayMultipleErrors(String baseError, List<String> multiErrors, int delay) {
-		StringBuffer msg = new StringBuffer(baseError);
-		for (String error:  multiErrors) {
-			msg.append("\n\t");
-			msg.append(error);
+	public static void displayMultipleErrors(final String baseError, final List<String> multiErrors, final int delay) {
+		if (null == m_meaDlg) {
+			MultiErrorAlertDlg.createAsync(new MultiErrorAlertDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+				
+				@Override
+				public void onSuccess(MultiErrorAlertDlg meaDlg) {
+					m_meaDlg = meaDlg;
+					displayMultipleErrorsAsync(baseError, multiErrors, delay);
+				}
+			});
 		}
-		deferredAlert(msg.toString(), delay);
+		
+		else {
+			displayMultipleErrorsAsync(baseError, multiErrors, delay);
+		}
+			
 	}
 	
 	public static void displayMultipleErrors(String baseError, List<String> multiErrors) {
 		// Always use the initial form of the method.
 		displayMultipleErrors(baseError, multiErrors, 0);
+	}
+
+	/*
+	 * Asynchronously displays the list of multiple error messages.
+	 */
+	private static void displayMultipleErrorsAsync(final String baseError, final List<String> multiErrors, final int delay) {
+		// Do we have anything to display?
+		if (hasString(baseError) && (null != multiErrors) && (!(multiErrors.isEmpty()))) {
+			// Yes!  If we don't have a specific amount of time to
+			// delay...
+			if (0 >= delay) {
+				// ...simply defer the alert....
+				ScheduledCommand cmd = new ScheduledCommand() {
+					@Override
+					public void execute() {
+						displayMultipleErrorsNow(baseError, multiErrors);
+					}
+				};
+				Scheduler.get().scheduleDeferred(cmd);
+			}
+			
+			else {
+				// ...otherwise, delay the amount of time requested and
+				// ...then display the alert.
+				Timer timer = new Timer() {
+					@Override
+					public void run() {
+						displayMultipleErrorsNow(baseError, multiErrors);
+					}
+				};
+				timer.schedule(delay);
+			}
+		}
+	}
+
+	/*
+	 * Synchronously displays the list of multiple error messages.
+	 */
+	private static void displayMultipleErrorsNow(String baseError, List<String> multiErrors) {
+		MultiErrorAlertDlg.initAndShow(m_meaDlg, baseError, multiErrors);
 	}
 
 	/**

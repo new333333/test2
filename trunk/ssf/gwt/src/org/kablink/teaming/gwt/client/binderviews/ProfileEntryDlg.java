@@ -317,11 +317,11 @@ public class ProfileEntryDlg extends DlgBox {
 	 * Asynchronously runs the given instance of the profile entry
 	 * dialog.
 	 */
-	private static void runDlgAsync(final ProfileEntryDlg cetDlg, final PrincipalInfo pi) {
+	private static void runDlgAsync(final ProfileEntryDlg peDlg, final PrincipalInfo pi) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				cetDlg.runDlgNow(pi);
+				peDlg.runDlgNow(pi);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -348,7 +348,7 @@ public class ProfileEntryDlg extends DlgBox {
 	 * asynchronously after it loads. 
 	 */
 	public interface ProfileEntryDlgClient {
-		void onSuccess(ProfileEntryDlg cetDlg);
+		void onSuccess(ProfileEntryDlg peDlg);
 		void onUnavailable();
 	}
 
@@ -377,8 +377,8 @@ public class ProfileEntryDlg extends DlgBox {
 				// Is this a request to create a dialog?
 				if (null != peDlgClient) {
 					// Yes!  Create it and return it via the callback.
-					ProfileEntryDlg cetDlg = new ProfileEntryDlg();
-					peDlgClient.onSuccess(cetDlg);
+					ProfileEntryDlg peDlg = new ProfileEntryDlg();
+					peDlgClient.onSuccess(peDlg);
 				}
 				
 				else {
@@ -405,7 +405,7 @@ public class ProfileEntryDlg extends DlgBox {
 	 * Initializes and shows the profile entry dialog.
 	 * 
 	 * @param peDlg
-	 * @param entryIds
+	 * @param pi
 	 */
 	public static void initAndShow(ProfileEntryDlg peDlg, PrincipalInfo pi) {
 		doAsyncOperation(null, peDlg, pi);

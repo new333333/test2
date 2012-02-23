@@ -490,6 +490,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_MicroBlogFolderView();
 	String codeSplitFailure_MilestoneFolderView();
 	String codeSplitFailure_MirroredFileFolderView();
+	String codeSplitFailure_MultiErrorAlertDlg();
 	String codeSplitFailure_PersonalWorkspacesView();
 	String codeSplitFailure_ProfileAttributeWidget();
 	String codeSplitFailure_ProfileEntryDlg();
@@ -1408,6 +1409,9 @@ public interface GwtTeamingMessages extends Messages
 	String profileEntryDlgLabelize(String label);
 	String profileEntryDlgModify();
 	String profileEntryDlgNote();
+	
+	// Strings used by the MultiErrorAlertDlg.
+	String multiErrorAlertDlgHeader();
 	
 	// Strings used in the Project Information widget
 	String dueDateLabel();
