@@ -487,7 +487,7 @@
 		<antcall target="lb-markasran-changelog-to-database-sqlserver" inheritAll="false"/>
 	</target>
 	
-	<target name="lb-markasran-changelog-3.2-to-database" depends="init-lb-settings">
+	<target name="lb-markasran-changelog-3.3-to-database" depends="init-lb-settings">
 	    <fail unless="database.type">database.type not set</fail>
 		<echo>database.type=${database.type}</echo>
 	    <fail unless="destination.jdbc.driver">destination.jdbc.driver not set</fail>
@@ -499,7 +499,7 @@
 	    <fail unless="destination.jdbc.password">destination.jdbc.password not set</fail>		
 		<echo>destination.jdbc.password=${destination.jdbc.password}</echo>
 			
-		<property name="changelog.file" value="scripts/changelog/${database.type}-changelog-3.2.xml"/>
+		<property name="changelog.file" value="scripts/changelog/${database.type}-changelog-3.3.xml"/>
 
 	    <changeLogSync
     			logLevel="${lb.log.level}"
@@ -513,28 +513,28 @@
 	    />		
 	</target>
 	
-	<target name="lb-markasran-changelog-3.2-to-database-mysql">
+	<target name="lb-markasran-changelog-3.3-to-database-mysql">
 		<!-- This setting will override the value to be subsequently read from a file -->
 		<property name="database.type" value="mysql"/>
-		<antcall target="lb-markasran-changelog-3.2-to-database"/>
+		<antcall target="lb-markasran-changelog-3.3-to-database"/>
 	</target>
 	
-	<target name="lb-markasran-changelog-3.2-to-database-oracle">
+	<target name="lb-markasran-changelog-3.3-to-database-oracle">
 		<!-- This setting will override the value to be subsequently read from a file -->
 		<property name="database.type" value="oracle"/>
-		<antcall target="lb-markasran-changelog-3.2-to-database"/>
+		<antcall target="lb-markasran-changelog-3.3-to-database"/>
 	</target>
 	
-	<target name="lb-markasran-changelog-3.2-to-database-sqlserver">
+	<target name="lb-markasran-changelog-3.3-to-database-sqlserver">
 		<!-- This setting will override the value to be subsequently read from a file -->
 		<property name="database.type" value="sqlserver"/>
-		<antcall target="lb-markasran-changelog-3.2-to-database"/>
+		<antcall target="lb-markasran-changelog-3.3-to-database"/>
 	</target>
 			
-	<target name="lb-markasran-changelog-3.2-to-database-all">
-		<antcall target="lb-markasran-changelog-3.2-to-database-mysql" inheritAll="false"/>
-		<antcall target="lb-markasran-changelog-3.2-to-database-oracle" inheritAll="false"/>
-		<antcall target="lb-markasran-changelog-3.2-to-database-sqlserver" inheritAll="false"/>
+	<target name="lb-markasran-changelog-3.3-to-database-all">
+		<antcall target="lb-markasran-changelog-3.3-to-database-mysql" inheritAll="false"/>
+		<antcall target="lb-markasran-changelog-3.3-to-database-oracle" inheritAll="false"/>
+		<antcall target="lb-markasran-changelog-3.3-to-database-sqlserver" inheritAll="false"/>
 	</target>
 
 	<target name="lb-markasran-changelog-to-sql-output" depends="init-lb-settings">
@@ -590,7 +590,7 @@
 		<antcall target="lb-markasran-changelog-to-sql-output-sqlserver" inheritAll="false"/>
 	</target>
 	
-	<target name="lb-markasran-changelog-3.2-to-sql-output" depends="init-lb-settings">
+	<target name="lb-markasran-changelog-3.3-to-sql-output" depends="init-lb-settings">
 	    <fail unless="database.type">database.type not set</fail>
 		<echo>database.type=${database.type}</echo>
 	    <fail unless="destination.jdbc.driver">destination.jdbc.driver not set</fail>
@@ -602,7 +602,7 @@
 	    <fail unless="destination.jdbc.password">destination.jdbc.password not set</fail>		
 		<echo>destination.jdbc.password=${destination.jdbc.password}</echo>
 			
-		<property name="changelog.file" value="scripts/changelog/${database.type}-changelog-3.2.xml"/>
+		<property name="changelog.file" value="scripts/changelog/${database.type}-changelog-3.3.xml"/>
 
 		<property name="output.file" value="${sql.output.temp.dir}/${database.type}-update.sql"/>
 
@@ -619,28 +619,28 @@
 	    />		
 	</target>
 	
-	<target name="lb-markasran-changelog-3.2-to-sql-output-mysql">
+	<target name="lb-markasran-changelog-3.3-to-sql-output-mysql">
 		<!-- This setting will override the value to be subsequently read from a file -->
 		<property name="database.type" value="mysql"/>
-		<antcall target="lb-markasran-changelog-3.2-to-sql-output"/>
+		<antcall target="lb-markasran-changelog-3.3-to-sql-output"/>
 	</target>
 	
-	<target name="lb-markasran-changelog-3.2-to-sql-output-oracle">
+	<target name="lb-markasran-changelog-3.3-to-sql-output-oracle">
 		<!-- This setting will override the value to be subsequently read from a file -->
 		<property name="database.type" value="oracle"/>
-		<antcall target="lb-markasran-changelog-3.2-to-sql-output"/>
+		<antcall target="lb-markasran-changelog-3.3-to-sql-output"/>
 	</target>
 	
-	<target name="lb-markasran-changelog-3.2-to-sql-output-sqlserver">
+	<target name="lb-markasran-changelog-3.3-to-sql-output-sqlserver">
 		<!-- This setting will override the value to be subsequently read from a file -->
 		<property name="database.type" value="sqlserver"/>
-		<antcall target="lb-markasran-changelog-3.2-to-sql-output"/>
+		<antcall target="lb-markasran-changelog-3.3-to-sql-output"/>
 	</target>
 			
-	<target name="lb-markasran-changelog-3.2-to-sql-output-all">
-		<antcall target="lb-markasran-changelog-3.2-to-sql-output-mysql" inheritAll="false"/>
-		<antcall target="lb-markasran-changelog-3.2-to-sql-output-oracle" inheritAll="false"/>
-		<antcall target="lb-markasran-changelog-3.2-to-sql-output-sqlserver" inheritAll="false"/>
+	<target name="lb-markasran-changelog-3.3-to-sql-output-all">
+		<antcall target="lb-markasran-changelog-3.3-to-sql-output-mysql" inheritAll="false"/>
+		<antcall target="lb-markasran-changelog-3.3-to-sql-output-oracle" inheritAll="false"/>
+		<antcall target="lb-markasran-changelog-3.3-to-sql-output-sqlserver" inheritAll="false"/>
 	</target>
 	
 	<target name="lb-export-schema-to-changelog" depends="init-lb-settings">
