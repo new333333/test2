@@ -2242,7 +2242,7 @@
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859851723-278">
-        <createIndex indexName="UQ__SS_Defin__8D04ECED1CF15040" schemaName="dbo" tableName="SS_Definitions" unique="true">
+        <createIndex indexName="name_Definition" schemaName="dbo" tableName="SS_Definitions" unique="true">
             <column name="zoneId"/>
             <column name="binderId"/>
             <column name="name"/>
@@ -2278,13 +2278,13 @@
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859851723-284">
-        <createIndex indexName="UQ__SS_Exten__985BCD892F10007B" schemaName="dbo" tableName="SS_Extensions" unique="true">
+        <createIndex indexName="name_Extensions" schemaName="dbo" tableName="SS_Extensions" unique="true">
             <column name="zoneId"/>
             <column name="name"/>
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859851723-285">
-        <createIndex indexName="UQ__SS_Folde__C844D5E035BCFE0A" schemaName="dbo" tableName="SS_FolderEntries" unique="true">
+        <createIndex indexName="entrySortKey_fEntry" schemaName="dbo" tableName="SS_FolderEntries" unique="true">
             <column name="entry_sortKey"/>
         </createIndex>
     </changeSet>
@@ -2299,7 +2299,7 @@
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859851723-288">
-        <createIndex indexName="UQ__SS_Forum__DE0410CD403A8C7D" schemaName="dbo" tableName="SS_Forums" unique="true">
+        <createIndex indexName="binderSortKey_Binder" schemaName="dbo" tableName="SS_Forums" unique="true">
             <column name="binder_sortKey"/>
         </createIndex>
     </changeSet>
@@ -2310,13 +2310,13 @@
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859851723-290">
-        <createIndex indexName="UQ__SS_Funct__985BCD894F7CD00D" schemaName="dbo" tableName="SS_Functions" unique="true">
+        <createIndex indexName="name_Functions" schemaName="dbo" tableName="SS_Functions" unique="true">
             <column name="zoneId"/>
             <column name="name"/>
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859851723-291">
-        <createIndex indexName="UQ__SS_Index__5A4B2FA65629CD9C" schemaName="dbo" tableName="SS_IndexNode" unique="true">
+        <createIndex indexName="name_IndexNode" schemaName="dbo" tableName="SS_IndexNode" unique="true">
             <column name="nodeName"/>
             <column name="indexName"/>
         </createIndex>
@@ -2354,13 +2354,13 @@
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859851723-297">
-        <createIndex indexName="UQ__SS_Princ__73577102787EE5A0" schemaName="dbo" tableName="SS_Principals" unique="true">
+        <createIndex indexName="foreignName_Principal" schemaName="dbo" tableName="SS_Principals" unique="true">
             <column name="zoneId"/>
             <column name="foreignName"/>
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859851723-298">
-        <createIndex indexName="UQ__SS_Princ__985BCD897B5B524B" schemaName="dbo" tableName="SS_Principals" unique="true">
+        <createIndex indexName="name_Principal" schemaName="dbo" tableName="SS_Principals" unique="true">
             <column name="zoneId"/>
             <column name="name"/>
         </createIndex>
@@ -2479,17 +2479,17 @@
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859851723-319">
-        <createIndex indexName="UQ__SS_ZoneI__2F75DF7844CA3770" schemaName="dbo" tableName="SS_ZoneInfo" unique="true">
+        <createIndex indexName="zoneId_ZoneInfo" schemaName="dbo" tableName="SS_ZoneInfo" unique="true">
             <column name="zoneId"/>
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859851723-320">
-        <createIndex indexName="UQ__SS_ZoneI__7B07D56D41EDCAC5" schemaName="dbo" tableName="SS_ZoneInfo" unique="true">
+        <createIndex indexName="zoneName_ZoneInfo" schemaName="dbo" tableName="SS_ZoneInfo" unique="true">
             <column name="zoneName"/>
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859851723-321">
-        <createIndex indexName="UQ__SS_ZoneI__BD3D2EA43F115E1A" schemaName="dbo" tableName="SS_ZoneInfo" unique="true">
+        <createIndex indexName="virtualHost_ZoneInfo" schemaName="dbo" tableName="SS_ZoneInfo" unique="true">
             <column name="virtualHost"/>
         </createIndex>
     </changeSet>

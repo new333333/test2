@@ -1696,36 +1696,36 @@
         <addPrimaryKey columnNames="BINDER, ENTRYDEFINITION" tableName="SS_WORKFLOWMAP"/>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-108">
-        <createIndex indexName="ZONEID" tableName="SS_DEFINITIONS" unique="true">
+        <createIndex indexName="NAME_DEFINITION" tableName="SS_DEFINITIONS" unique="true">
             <column name="ZONEID"/>
             <column name="BINDERID"/>
             <column name="NAME"/>
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-109">
-        <createIndex indexName="ZONEID" tableName="SS_EXTENSIONS" unique="true">
+        <createIndex indexName="NAME_EXTENSIONS" tableName="SS_EXTENSIONS" unique="true">
             <column name="ZONEID"/>
             <column name="NAME"/>
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-110">
-        <createIndex indexName="ENTRY_SORTKEY" tableName="SS_FOLDERENTRIES" unique="true">
+        <createIndex indexName="ENTRYSORTKEY_FENTRY" tableName="SS_FOLDERENTRIES" unique="true">
             <column name="ENTRY_SORTKEY"/>
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-111">
-        <createIndex indexName="BINDER_SORTKEY" tableName="SS_FORUMS" unique="true">
+        <createIndex indexName="BINDERSORTKEY_BINDER" tableName="SS_FORUMS" unique="true">
             <column name="BINDER_SORTKEY"/>
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-112">
-        <createIndex indexName="ZONEID" tableName="SS_FUNCTIONS" unique="true">
+        <createIndex indexName="NAME_FUNCTIONS" tableName="SS_FUNCTIONS" unique="true">
             <column name="ZONEID"/>
             <column name="NAME"/>
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-113">
-        <createIndex indexName="NODENAME" tableName="SS_INDEXNODE" unique="true">
+        <createIndex indexName="NAME_INDEXNODE" tableName="SS_INDEXNODE" unique="true">
             <column name="NODENAME"/>
             <column name="INDEXNAME"/>
         </createIndex>
@@ -1743,18 +1743,18 @@
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-116">
-        <createIndex indexName="ZONEID" tableName="SS_ZONEINFO" unique="true">
+        <createIndex indexName="ZONEID_ZONEINFO" tableName="SS_ZONEINFO" unique="true">
             <column name="ZONEID"/>
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-117">
-        <createIndex indexName="ZONENAME" tableName="SS_ZONEINFO" unique="true">
+        <createIndex indexName="ZONENAME_ZONEINFO" tableName="SS_ZONEINFO" unique="true">
             <column name="ZONENAME"/>
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-118">
         <createIndex indexName="VIRTUALHOST" tableName="SS_ZONEINFO" unique="true">
-            <column name="VIRTUALHOST"/>
+            <column name="VIRTUALHOST_ZONEINFO"/>
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-119">
