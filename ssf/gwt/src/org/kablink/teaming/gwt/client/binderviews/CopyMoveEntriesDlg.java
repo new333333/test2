@@ -59,6 +59,7 @@ import org.kablink.teaming.gwt.client.util.ProgressDlg;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
+import org.kablink.teaming.gwt.client.widgets.ProgressBar;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
@@ -94,6 +95,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 	private int							m_totalDone;				// Tracks the number of entries that have been copied/moved while the operation is in progress.
 	private List<EntryId>				m_entryIds;					// Current list of entry IDs to be copied/moved.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private ProgressBar					m_progressBar;				// Progress bar shown as part of progress handling.
 	private VibeFlowPanel				m_progressPanel;			// Panel containing the progress indicator.
 	private VibeVerticalPanel			m_vp;						// The panel holding the dialog's content.
 
@@ -207,11 +209,13 @@ public class CopyMoveEntriesDlg extends DlgBox
 		// contains more items then our threshold.)
 		boolean cmdIsChunkList = (cmd.getEntryIds() != sourceEntryIds);
 		if (cmdIsChunkList || ProgressDlg.needsChunking(sourceEntryIds.size())) {
-			// Yes!  If we're not showing the progress panel yet...
-			if (!(m_progressPanel.isVisible())) {
-				// ...show it now.
-				updateProgress(0, totalEntryCount);
+			// Yes!  If we're not showing the progress bar or panel
+			// yet...
+			if ((!(m_progressPanel.isVisible())) || (!(m_progressBar.isVisible()))) {
+				// ...show them now.
+				m_progressBar.setVisible(  true);
 				m_progressPanel.setVisible(true);
+				updateProgress(0, totalEntryCount);
 			}
 			
 			// Make sure we're using a separate list for the chunks
@@ -666,7 +670,13 @@ public class CopyMoveEntriesDlg extends DlgBox
 		}
 		fp.add(il);
 
-		// ...add a panel for displaying progress, when needed...
+		// ...add a progress bar...
+		m_progressBar = new ProgressBar(0, m_entryIds.size());
+		m_progressBar.addStyleName("vibe-cmeDlg_ProgressBar");
+		m_vp.add(m_progressBar);
+		m_progressBar.setVisible(false);
+		
+		// ...and a panel for displaying progress, when needed...
 		m_progressPanel = new VibeFlowPanel();
 		m_progressPanel.addStyleName("vibe-cmeDlg_ProgressPanel");
 		m_vp.add(m_progressPanel);
@@ -753,11 +763,14 @@ public class CopyMoveEntriesDlg extends DlgBox
 		// If we're done...
 		m_totalDone += justCompleted;
 		if (m_totalDone == totalEntryCount) {
-			// ...hide the progress panel.
+			// ...hide the progress bar and panel.
+			m_progressBar.setVisible(  false);
 			m_progressPanel.setVisible(false);
 		}
 		else {
 			// ...otherwise, set the number we've completed.
+			m_progressBar.setMaxProgress(totalEntryCount);
+			m_progressBar.setProgress(   m_totalDone    );
 			m_progressIndicator.setText(
 				(m_doCopy                                                                         ?
 					m_messages.copyEntriesDlgProgress(m_totalDone, totalEntryCount) :

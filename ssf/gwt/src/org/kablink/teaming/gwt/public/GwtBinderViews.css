@@ -331,8 +331,9 @@
 	.vibe-cmeDlg_FindLabel       {}
 	.vibe-cmeDlg_FindPanel       {padding-top: 5px;}
 	.vibe-cmeDlg_FindWidget      {margin-top: 2px; margin-bottom: 2px;}
+	.vibe-cmeDlg_ProgressBar     {margin-bottom: 5px; margin-top: 10px;}
 	.vibe-cmeDlg_ProgressLabel   {margin-left: 3px;}
-	.vibe-cmeDlg_ProgressPanel   {white-space: nowrap; font-size: 1.1em; font-weight: bold; padding-top: 10px;}
+	.vibe-cmeDlg_ProgressPanel   {white-space: nowrap; font-size: 1.1em; font-weight: bold;}
 	.vibe-cmeDlg_ProgressSpinner {}
 	.vibe-cmeDlg_RootPanel       {padding: 6px;}
 /* End:  Copy/Move entries dialog styles. */
