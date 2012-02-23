@@ -462,6 +462,84 @@ public class GwtViewHelper {
 	}
 	
 	/**
+	 * Delete user workspaces.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param userIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData deleteUserWorkspaces(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds) throws GwtTeamingException {
+		try {
+			// Allocate an error list response we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+
+			// Were we given the IDs of any users to delete?
+			Long currentUserId = GwtServerHelper.getCurrentUser().getId(); 
+			if ((null != userIds) && (!(userIds.isEmpty()))) {
+				// Yes!  Scan them.
+				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
+				for (Long userId:  userIds) {
+					// Can we resolve the user being delete?
+					User user = getResolvedUser(userId);
+					if (null != user) {
+						// Yes!  Is it the user that's logged in?
+						if (user.getId().equals(currentUserId)) {
+							// Yes!  They can't delete their own
+							// workspace.  Ignore it.
+							reply.addError(NLT.get("deleteUserWorkspaceError.self"));
+							continue;
+						}
+
+						// Is it a reserved user?
+						if (user.isReserved()) {
+							// Yes!  They can't do that.  Ignore it.
+							String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
+							reply.addError(NLT.get("deleteUserWorkspaceError.reserved", new String[]{userTitle}));
+							continue;
+						}
+					}
+					
+					try {
+						// Does this user have a workspace ID?
+						Long wsId = user.getWorkspaceId();
+						if (null != wsId) {
+							// Yes!  Delete the workspace.
+							TrashHelper.preDeleteBinder(bs, wsId);
+						}
+					}
+
+					catch (Exception e) {
+						// No!  Add an error  to the error list.
+						String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
+						String messageKey;
+						if      (e instanceof AccessControlException) messageKey = "deleteUserWorkspaceError.AccssControlException";
+						else                                          messageKey = "deleteUserWorkspaceError.OtherException";
+						reply.addError(NLT.get(messageKey, new String[]{userTitle}));
+					}
+				}
+			}
+
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing any errors we
+			// encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.deleteUserWorkspaces( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
+	/**
 	 * Disables the users.
 	 * 
 	 * @param bs
@@ -2958,6 +3036,170 @@ public class GwtViewHelper {
 			// that.
 			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
 			     m_logger.debug("GwtViewHelper.moveEntries( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
+	/**
+	 * Purge users and their workspaces.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param userIds
+	 * @param purgeMirrored
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	@SuppressWarnings("unchecked")
+	public static ErrorListRpcResponseData purgeUsers(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, boolean purgeMirrored) throws GwtTeamingException {
+		try {
+			// Allocate an error list response we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+
+			// Were we given the IDs of any users to purge?
+			Long currentUserId = GwtServerHelper.getCurrentUser().getId(); 
+			if ((null != userIds) && (!(userIds.isEmpty()))) {
+				// Yes!  Scan them.
+				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
+				for (Long userId:  userIds) {
+					// Can we resolve the user being purge?
+					User user = getResolvedUser(userId);
+					if (null != user) {
+						// Yes!  Is it the user that's logged in?
+						if (user.getId().equals(currentUserId)) {
+							// Yes!  They can't purge their own
+							// user object or workspace.  Ignore it.
+							reply.addError(NLT.get("purgeUserError.self"));
+							continue;
+						}
+
+						// Is it a reserved user?
+						if (user.isReserved()) {
+							// Yes!  They can't do that.  Ignore it.
+							String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
+							reply.addError(NLT.get("purgeUserError.reserved", new String[]{userTitle}));
+							continue;
+						}
+					}
+					
+					try {
+						// Does this user have a workspace ID?
+						Long wsId = user.getWorkspaceId();
+						if (null != wsId) {
+							// Yes!  Purge the workspace...
+							bs.getBinderModule().deleteBinder(wsId, purgeMirrored, null);
+						}
+						
+						// ...and purge the user.
+						Map options = new HashMap();
+						options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, false);
+						bs.getProfileModule().deleteEntry(userId, options);
+					}
+
+					catch (Exception e) {
+						// No!  Add an error  to the error list.
+						String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
+						String messageKey;
+						if      (e instanceof AccessControlException) messageKey = "purgeUserError.AccssControlException";
+						else                                          messageKey = "purgeUserError.OtherException";
+						reply.addError(NLT.get(messageKey, new String[]{userTitle}));
+					}
+				}
+			}
+
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing any errors we
+			// encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.purgeUsers( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
+	/**
+	 * Purge user workspaces.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param userIds
+	 * @param purgeMirrored
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData purgeUserWorkspaces(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, boolean purgeMirrored) throws GwtTeamingException {
+		try {
+			// Allocate an error list response we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+
+			// Were we given the IDs of any users to purge?
+			Long currentUserId = GwtServerHelper.getCurrentUser().getId(); 
+			if ((null != userIds) && (!(userIds.isEmpty()))) {
+				// Yes!  Scan them.
+				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
+				for (Long userId:  userIds) {
+					// Can we resolve the user being purge?
+					User user = getResolvedUser(userId);
+					if (null != user) {
+						// Yes!  Is it the user that's logged in?
+						if (user.getId().equals(currentUserId)) {
+							// Yes!  They can't purge their own
+							// workspace.  Ignore it.
+							reply.addError(NLT.get("purgeUserWorkspaceError.self"));
+							continue;
+						}
+
+						// Is it a reserved user?
+						if (user.isReserved()) {
+							// Yes!  They can't do that.  Ignore it.
+							String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
+							reply.addError(NLT.get("purgeUserWorkspaceError.reserved", new String[]{userTitle}));
+							continue;
+						}
+					}
+					
+					try {
+						// Does this user have a workspace ID?
+						Long wsId = user.getWorkspaceId();
+						if (null != wsId) {
+							// Yes!  Purge the workspace.
+							bs.getBinderModule().deleteBinder(wsId, purgeMirrored, null);
+						}
+					}
+
+					catch (Exception e) {
+						// No!  Add an error  to the error list.
+						String userTitle = GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, String.valueOf(userId), ((null == user) ? "" : user.getTitle()));
+						String messageKey;
+						if      (e instanceof AccessControlException) messageKey = "purgeUserWorkspaceError.AccssControlException";
+						else                                          messageKey = "purgeUserWorkspaceError.OtherException";
+						reply.addError(NLT.get(messageKey, new String[]{userTitle}));
+					}
+				}
+			}
+
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing any errors we
+			// encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.purgeUserWorkspaces( SOURCE EXCEPTION ):  ", e);
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}

@@ -51,7 +51,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
 
 /**
- * Implements Vibe's progress dialog.
+ * Implements a generic Vibe progress dialog.
  *  
  * @author drfoster@novell.com
  */
@@ -97,6 +97,14 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 			this,							// The dialog's EditCancledHandler.
 			null);							// Create callback data.  Unused. 
 	}
+
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public int getTotalCount() {return m_totalCount;}
+	public int getTotalDone()  {return m_totalDone; }
 
 	/*
 	 * Constructs and returns an Image with a spinner in it.
@@ -205,6 +213,18 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 		return null;
 	}
 
+	/**
+	 * Returns true if a chunk is >= our chunk size and false
+	 * otherwise.
+	 * 
+	 * @param chunkSize
+	 * 
+	 * @return
+	 */
+	public static boolean isChunkFull(int chunkSize) {
+		return (chunkSize >= CHUNK_SIZE);
+	}
+
 	/*
 	 * Asynchronously loads the find control.
 	 */
@@ -302,14 +322,14 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 	}
 
 	/**
-	 * Returns true if the number of operations requires a progress
-	 * dialog and false otherwise.
+	 * Returns true if the number of operations requires chunking
+	 * (and a progress dialog) and false otherwise.
 	 * 
 	 * @param totalCount
 	 * 
 	 * @return
 	 */
-	public boolean needProgressDialog(int totalCount) {
+	public static boolean needsChunking(int totalCount) {
 		return (totalCount > CHUNK_THRESHOLD);
 	}
 
@@ -327,28 +347,16 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 		}
 	}
 	
-	/*
-	 * Called up asynchronously update the progress indicator in the
-	 * dialog.
-	 */
-	private void updateProgressAsync(final int justCompleted) {
-		ScheduledCommand doUpdate = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				updateProgressNow(justCompleted);
-			}
-		};
-		Scheduler.get().scheduleDeferred(doUpdate);
-	}
-	
-	/*
+	/**
 	 * Called up synchronously update the progress indicator in the
 	 * dialog.
+	 * 
+	 * @param justCompleted
 	 */
-	private void updateProgressNow(int justCompleted) {
+	public void updateProgress(int justCompleted) {
 		// If we're done...
 		m_totalDone += justCompleted;
-		if (m_totalDone == m_totalCount) {
+		if (m_totalDone >= m_totalCount) {
 			// ...hide the dialog and tell the caller we're done.
 			hide();
 			ScheduledCommand doComplete = new ScheduledCommand() {
@@ -400,11 +408,7 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 			final boolean           canCancel,
 			final String            dlgCaption,
 			final String            progressString,
-			final int               totalCount,
-			
-			// updateProgress parameters.
-//			final ProgressDlg pDlg,
-			final int         justCompleted) {
+			final int               totalCount) {
 		GWT.runAsync(ProgressDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -436,12 +440,6 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 					// Yes!  Run it.
 					runDlgAsync(pDlg, pCB, canCancel, dlgCaption, progressString, totalCount);
 				}
-				
-				else {
-					// No, it's not a request to run one either!  It
-					// must be a progress update.
-					pDlg.updateProgressAsync(justCompleted);
-				}
 			}
 		});
 	}
@@ -453,7 +451,7 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 	 * @param pDlgClient
 	 */
 	public static void createAsync(ProgressDlgClient pDlgClient) {
-		doAsyncOperation(pDlgClient, null, null, false, null, null, (-1), (-1));
+		doAsyncOperation(pDlgClient, null, null, false, null, null, (-1));
 	}
 	
 	/**
@@ -467,16 +465,6 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 	 * @Param totalCount
 	 */
 	public static void initAndShow(ProgressDlg pDlg, ProgressCallback pCB, boolean canCancel, String dlgCaption, String progressString, int totalCount) {
-		doAsyncOperation(null, pDlg, pCB, canCancel, dlgCaption, progressString, totalCount, (-1));
-	}
-	
-	/**
-	 * Updates the progress indicator in the dialog.
-	 * 
-	 * @param pDlg
-	 * @param justCompleted
-	 */
-	public static void updateProgress(ProgressDlg pDlg, int justCompleted) {
-		doAsyncOperation(null, pDlg, null, false, null, null, (-1), justCompleted);
+		doAsyncOperation(null, pDlg, pCB, canCancel, dlgCaption, progressString, totalCount);
 	}
 }

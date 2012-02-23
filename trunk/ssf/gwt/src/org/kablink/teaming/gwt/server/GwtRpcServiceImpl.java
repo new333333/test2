@@ -269,6 +269,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case DELETE_USER_WORKSPACES:
+		{
+			DeleteUserWorkspacesCmd duwCmd = ((DeleteUserWorkspacesCmd) cmd);
+			ErrorListRpcResponseData responseData = GwtViewHelper.deleteUserWorkspaces( this, getRequest( ri ), duwCmd.getUserIds() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case DISABLE_USERS:
 		{
 			DisableUsersCmd duCmd = ((DisableUsersCmd) cmd);
@@ -1585,6 +1593,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			PurgeTasksCmd dtCmd = ((PurgeTasksCmd) cmd);
 			Boolean result = purgeTasks( ri, dtCmd.getTaskIds() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			return response;
+		}
+		
+		case PURGE_USERS:
+		{
+			PurgeUsersCmd puCmd = ((PurgeUsersCmd) cmd);
+			ErrorListRpcResponseData responseData = GwtViewHelper.purgeUsers( this, getRequest( ri ), puCmd.getUserIds(), puCmd.getPurgeMirrored() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case PURGE_USER_WORKSPACES:
+		{
+			PurgeUserWorkspacesCmd puwCmd = ((PurgeUserWorkspacesCmd) cmd);
+			ErrorListRpcResponseData responseData = GwtViewHelper.purgeUserWorkspaces( this, getRequest( ri ), puwCmd.getUserIds(), puwCmd.getPurgeMirrored() );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		

@@ -1452,6 +1452,7 @@ public interface GwtTeamingMessages extends Messages
 	String binderViewsConfirmPurgeUserWS();
 	String binderViewsDeleteUserWorkspacesCaption();
 	String binderViewsDeleteUserWorkspacesProgress();
+	String binderViewsPromptPurgeMirroredFolders();
 	String binderViewsPurgeUsersCaption();
 	String binderViewsPurgeUsersProgress();
 	String binderViewsPurgeUserWorkspacesCaption();

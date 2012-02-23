@@ -444,7 +444,8 @@ public class BinderViewsHelper {
 		}
 		
 		// Perform the purge.
-		DeletePurgeUsersHelper.purgeUsersAsync(userIds);
+		boolean purgeMirrored = Window.confirm(GwtTeaming.getMessages().binderViewsPromptPurgeMirroredFolders());
+		DeletePurgeUsersHelper.purgeUsersAsync(userIds, purgeMirrored);
 	}
 
 	/**
@@ -468,7 +469,8 @@ public class BinderViewsHelper {
 		}
 		
 		// Perform the purge.
-		DeletePurgeUsersHelper.purgeUserWorkspacesAsync(userIds);
+		boolean purgeMirrored = Window.confirm(GwtTeaming.getMessages().binderViewsPromptPurgeMirroredFolders());
+		DeletePurgeUsersHelper.purgeUserWorkspacesAsync(userIds, purgeMirrored);
 	}
 
 	/**

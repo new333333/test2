@@ -60,6 +60,7 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Grid;
@@ -198,17 +199,35 @@ public class GwtClientHelper {
 	 * Displays a messages in an 'deferred' alert box.
 	 * 
 	 * @param msg
+	 * @param delay
 	 */
-	public static void deferredAlert(final String msg) {
+	public static void deferredAlert(final String msg, int delay) {
 		if (hasString(msg)) {
-			ScheduledCommand cmd = new ScheduledCommand() {
-				@Override
-				public void execute() {
-					Window.alert(msg);
-				}
-			};
-			Scheduler.get().scheduleDeferred(cmd);
+			if (0 >= delay) {
+				ScheduledCommand cmd = new ScheduledCommand() {
+					@Override
+					public void execute() {
+						Window.alert(msg);
+					}
+				};
+				Scheduler.get().scheduleDeferred(cmd);
+			}
+			
+			else {
+				Timer timer = new Timer() {
+					@Override
+					public void run() {
+						Window.alert(msg);
+					}
+				};
+				timer.schedule(delay);
+			}
 		}
+	}
+	
+	public static void deferredAlert(final String msg) {
+		// Always use the initial form of the method.
+		deferredAlert(msg, 0);
 	}
 
 	/**
@@ -217,14 +236,20 @@ public class GwtClientHelper {
 	 * 
 	 * @param baseError
 	 * @param multiErrors
+	 * @param delay
 	 */
-	public static void displayMultipleErrors(String baseError, List<String> multiErrors) {
+	public static void displayMultipleErrors(String baseError, List<String> multiErrors, int delay) {
 		StringBuffer msg = new StringBuffer(baseError);
 		for (String error:  multiErrors) {
 			msg.append("\n\t");
 			msg.append(error);
 		}
-		deferredAlert(msg.toString());
+		deferredAlert(msg.toString(), delay);
+	}
+	
+	public static void displayMultipleErrors(String baseError, List<String> multiErrors) {
+		// Always use the initial form of the method.
+		displayMultipleErrors(baseError, multiErrors, 0);
 	}
 
 	/**
