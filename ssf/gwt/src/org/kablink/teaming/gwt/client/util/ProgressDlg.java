@@ -226,26 +226,6 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 	}
 
 	/*
-	 * Asynchronously loads the find control.
-	 */
-	private void loadPart1Async() {
-		ScheduledCommand doLoad = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart1Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-	
-	/*
-	 * Synchronously loads the find control.
-	 */
-	private void loadPart1Now() {
-		populateDlgAsync();
-	}
-	
-	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
@@ -318,7 +298,7 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 		m_totalCount       = totalCount;
 		
 		// ...and populate it.
-		loadPart1Async();
+		populateDlgAsync();
 	}
 
 	/**
