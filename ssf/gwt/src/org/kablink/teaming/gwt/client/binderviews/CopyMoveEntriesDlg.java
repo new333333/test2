@@ -125,9 +125,6 @@ public class CopyMoveEntriesDlg extends DlgBox
 		TeamingEvents.SEARCH_FIND_RESULTS,
 	};
 	
-	private final static int CHUNK_SIZE			= ProgressDlg.CHUNK_SIZE;		// Number of entries in a chunk that are copied/moved when sending them by chunks.
-	private final static int CHUNK_THRESHOLD	= ProgressDlg.CHUNK_THRESHOLD;	// Number of entries being copied/moved beyond which we send them across in chunks so that we can show a progress indicator.
-	
 	/*
 	 * Class constructor.
 	 * 
@@ -209,7 +206,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 		// do if we've already been sending chunks or the source list
 		// contains more items then our threshold.)
 		boolean cmdIsChunkList = (cmd.getEntryIds() != sourceEntryIds);
-		if (cmdIsChunkList || sourceEntryIds.size() > CHUNK_THRESHOLD) {
+		if (cmdIsChunkList || ProgressDlg.needsChunking(sourceEntryIds.size())) {
 			// Yes!  If we're not showing the progress panel yet...
 			if (!(m_progressPanel.isVisible())) {
 				// ...show it now.
@@ -244,7 +241,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 				}
 				
 				// Have we reached the size we chunk things at?
-				if (CHUNK_SIZE == chunkList.size()) {
+				if (ProgressDlg.isChunkFull(chunkList.size())) {
 					// Yes!  Send this chunk.  Note that this is a
 					// recursive call and will come back through this
 					// method for the next chunk.

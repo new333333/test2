@@ -42,6 +42,8 @@ import java.util.List;
  * @author drfoster@novell.com
  */
 public class PurgeUserWorkspacesCmd extends DeletePurgeUsersCmdBase {
+	private boolean m_purgeMirrored;	//
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -56,11 +58,29 @@ public class PurgeUserWorkspacesCmd extends DeletePurgeUsersCmdBase {
 	 * Constructor method.
 	 * 
 	 * @param userIds
+	 * @param purgeMirrored
 	 */
-	public PurgeUserWorkspacesCmd(final List<Long> userIds) {
-		// Initialize the super class.
+	public PurgeUserWorkspacesCmd(final List<Long> userIds, final boolean purgeMirrored) {
+		// Initialize the super class...
 		super(userIds);
+		
+		// ...and store the parameters.
+		setPurgeMirrored(purgeMirrored);
 	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public boolean getPurgeMirrored() {return m_purgeMirrored;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setPurgeMirrored(boolean purgeMirrored) {m_purgeMirrored = purgeMirrored;}
 	
 	/**
 	 * Returns the command's enumeration value.

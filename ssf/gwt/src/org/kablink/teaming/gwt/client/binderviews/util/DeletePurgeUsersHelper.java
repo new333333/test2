@@ -64,13 +64,16 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class DeletePurgeUsersHelper {
 	private boolean					m_operationCanceled;	// Set true if the operation gets canceled.
-	private List<String>			m_collectedErrors;		// Collects errors that occur while processing the operation on the users. 
+	private DeletePurgeUsersCmdBase	m_dpuCmd;				// The delete/purge users command to perform.
+	private int						m_totalUserCount;		// Count of items in m_sourceUserIds.
+	private List<Long>				m_sourceUserIds;		// The user IDs being operated on.
+	private List<String>			m_collectedErrors;		// Collects errors that occur while processing an operation on the list of users. 
 	private Map<StringIds, String>	m_strMap;				// Initialized with a map of the strings used to run the operation.
 	
-	// The following is used to manage the strings displayed by a
-	// delete/purge operations.  A map is loaded with the appropriate
-	// strings from the resource bundle for each ID for each operation
-	// performed.
+	// The following are used to manage the strings displayed by a
+	// delete/purge operation.  A map is loaded with the appropriate
+	// strings from the resource bundle for each of these IDs for each
+	// operation performed.
 	private enum StringIds{
 		ERROR_OP_FAILURE,
 		ERROR_RPC_FAILURE,
@@ -81,29 +84,22 @@ public class DeletePurgeUsersHelper {
 	/*
 	 * Constructor method.
 	 * 
-	 * Private to inhibits the class from being instantiated from
-	 * outside it.
+	 * Private to inhibit the class from being instantiated from
+	 * outside of it.
 	 */
-	private DeletePurgeUsersHelper(Map<StringIds, String> strMap) {
+	private DeletePurgeUsersHelper(List<Long> sourceUserIds, Map<StringIds, String> strMap, DeletePurgeUsersCmdBase dpuCmd) {
 		// Initialize the super class...
 		super();
 		
 		// ...store the parameters...
-		m_strMap = strMap;
+		m_strMap         = strMap;
+		m_sourceUserIds  = sourceUserIds;
+		m_totalUserCount = m_sourceUserIds.size();
+		m_dpuCmd         = dpuCmd;
 		
 		// ...and initialize everything else.
 		m_collectedErrors = new ArrayList<String>();
 	}
-
-	/*
-	 * Get'er methods.
-	 */
-	private boolean isOperationCanceled() {return m_operationCanceled;}
-	
-	/*
-	 * Set'er methods.
-	 */
-	private void setOperationCanceled(boolean operationCanceled) {m_operationCanceled = operationCanceled;}
 
 	/**
 	 * Asynchronously deletes the user's workspaces.
@@ -127,20 +123,20 @@ public class DeletePurgeUsersHelper {
 				strMap.put(StringIds.PROGRESS_CAPTION,  GwtTeaming.getMessages().binderViewsDeleteUserWorkspacesCaption() );
 				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsDeleteUserWorkspacesProgress());
 
-				final DeleteUserWorkspacesCmd	deleteCmd       = new DeleteUserWorkspacesCmd(sourceUserIds);
-				final DeletePurgeUsersHelper	dpuHelper       = new DeletePurgeUsersHelper(strMap);
-				final int						totalUserCount  = sourceUserIds.size();
+				// ...create the helper...
+				final DeletePurgeUsersHelper dpuHelper = new DeletePurgeUsersHelper(
+					sourceUserIds,
+					strMap,
+					new DeleteUserWorkspacesCmd(
+						sourceUserIds));
 				
-				if (pDlg.needProgressDialog(totalUserCount)) {
+				// ...and perform the delete...
+				if (ProgressDlg.needsChunking(dpuHelper.m_totalUserCount)) {
+					// ...chunking as necessary.
 					ProgressDlg.initAndShow(pDlg, new ProgressCallback() {
 						@Override
 						public void dialogReady() {
-							// ...and perform the delete.
-							dpuHelper.dpuOpAsync(
-								pDlg,				// Progress dialog to use.
-								deleteCmd,			// Command for the operation.
-								totalUserCount,		// Total number of users being operated on.
-								sourceUserIds);		// Initial list of user IDs.
+							dpuHelper.dpuOpAsync(pDlg);
 						}
 						
 						@Override
@@ -148,28 +144,24 @@ public class DeletePurgeUsersHelper {
 							// Simply mark the global indicating we've
 							// been canceled.  The operation will stop
 							// on the next chunk.
-							dpuHelper.setOperationCanceled(true);
+							dpuHelper.m_operationCanceled = true;
 						}
 
 						@Override
 						public void operationComplete() {
-							// Nothing to do.  We managing completion
-							// via how we handle the items in the list.
+							// Nothing to do.  We manage completion via
+							// how we handle the items in the list.
 						}
 					},
 					true,	// true -> Operation can be canceled.
 					strMap.get(StringIds.PROGRESS_CAPTION),
 					strMap.get(StringIds.PROGRESS_MESSAGE),
-					totalUserCount);
+					dpuHelper.m_totalUserCount);
 				}
 				
 				else {
-					// ...and perform the delete.
-					dpuHelper.dpuOpAsync(
-						null,				// null -> No progress dialog required.
-						deleteCmd,			// Command for the operation.
-						totalUserCount,		// Total number of users being operated on.
-						sourceUserIds);		// Initial list of user IDs.
+					// ...without chunking.
+					dpuHelper.dpuOpAsync(null);
 				}
 			}
 		});
@@ -178,13 +170,9 @@ public class DeletePurgeUsersHelper {
 	/*
 	 * Asynchronously performs an operation on a collection of users.
 	 */
-	private void dpuOpAsync(
-			final ProgressDlg				pDlg,
-			final DeletePurgeUsersCmdBase	cmd,
-			final int						totalUserCount,
-			final List<Long>				sourceUserIds) {
+	private void dpuOpAsync(final ProgressDlg pDlg) {
 		// If the user canceled the operation... 
-		if (isOperationCanceled()) {
+		if (m_operationCanceled) {
 			// bail.
 			return;
 		}
@@ -192,82 +180,102 @@ public class DeletePurgeUsersHelper {
 		ScheduledCommand doOp = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				dpuOpNow(
-					pDlg,
-					cmd,
-					totalUserCount,
-					sourceUserIds);
+				dpuOpNow(pDlg);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doOp);
+	}
+
+	/*
+	 * Asynchronously completes the operation sequence.
+	 */
+	private void dpuOpCompleteAsync() {
+		ScheduledCommand doOpDone = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				dpuOpCompleteNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doOpDone);
+	}
+	
+	/*
+	 * Synchronously completes the operation sequence.
+	 */
+	private void dpuOpCompleteNow() {
+		// Did we collect any errors during the process?
+		int totalErrorCount = m_collectedErrors.size();
+		if (0 < totalErrorCount) {
+			// Yes!  Tell the user about the problem(s).
+			GwtClientHelper.displayMultipleErrors(
+				m_strMap.get(StringIds.ERROR_OP_FAILURE),
+				m_collectedErrors,
+				500);	// Delay to allow a progress dialog time to reflect any final updates.
+		}
+		
+		// If anything was done...
+		if (totalErrorCount != m_totalUserCount) {
+			// ...force the content to refresh just in case its got
+			// ...something displayed that depends on it.
+			FullUIReloadEvent.fireOne();
+		}
 	}
 	
 	/*
 	 * Synchronously performs an operation on a collection of users.
 	 */
-	private void dpuOpNow(
-			final ProgressDlg				pDlg,
-			final DeletePurgeUsersCmdBase	cmd,
-			final int						totalUserCount,
-			final List<Long>				sourceUserIds) {
+	private void dpuOpNow(final ProgressDlg pDlg) {
 		// If the user canceled the operation... 
-		if (isOperationCanceled()) {
+		if (m_operationCanceled) {
 			// bail.
 			return;
 		}
 		
 		// Do we need to process things in chunks?
-		boolean cmdIsChunkList = (cmd.getUserIds() != sourceUserIds);
-		if (cmdIsChunkList || ((null != pDlg) && pDlg.needProgressDialog(totalUserCount))) {
+		boolean cmdIsChunkList = (m_dpuCmd.getUserIds() != m_sourceUserIds);
+		if (cmdIsChunkList || ((null != pDlg) && ProgressDlg.needsChunking(m_totalUserCount))) {
 			// Yes!  Make sure we're using a separate list for the
 			// chunks vs. the source list that we're operating on.
 			List<Long> chunkList;
 			if (cmdIsChunkList) {
-				chunkList = cmd.getUserIds();
+				chunkList = m_dpuCmd.getUserIds();
 				chunkList.clear();
 			}
 			else {
 				chunkList = new ArrayList<Long>();
-				cmd.setUserIds(chunkList);
+				m_dpuCmd.setUserIds(chunkList);
 			}
 			
 			// Scan the user IDs to be operated on...
-			while (!(isOperationCanceled())) {
+			while (!m_operationCanceled) {
 				// ...moving each user ID from the source list into
 				// ...the chunk list.
-				chunkList.add(sourceUserIds.get(0));
-				sourceUserIds.remove(0);
+				chunkList.add(m_sourceUserIds.get(0));
+				m_sourceUserIds.remove(0);
 				
 				// Was that the user to be operated on?
-				if (sourceUserIds.isEmpty()) {
+				if (m_sourceUserIds.isEmpty()) {
 					// Yes!  Break out of the loop and let the chunk
 					// get handled as if we weren't sending by chunks.
 					break;
 				}
 				
 				// Have we reached the size we chunk things at?
-				if (ProgressDlg.CHUNK_SIZE == chunkList.size()) {
+				if (ProgressDlg.isChunkFull(chunkList.size())) {
 					// Yes!  Send this chunk.  Note that this is a
 					// recursive call and will come back through this
 					// method for the next chunk.
-					dpuOpImpl(
-						null,				// null -> No busy spinner.
-						pDlg,				//
-						cmd,				//
-						totalUserCount,		//
-						chunkList,			//
-						true);				// true -> More remaining.
-					
+					dpuOpImpl(null, pDlg, true);
 					return;
 				}
 			}
 		}
 
 		// Do we have any users to be operated on?
-		if ((!(isOperationCanceled())) && (!(cmd.getUserIds().isEmpty()))) {
+		if ((!m_operationCanceled) && (!(m_dpuCmd.getUserIds().isEmpty()))) {
 			// Yes!  If we're doing things without using chunks...
 			SpinnerPopup busy;
-			if (cmd.getUserIds() == sourceUserIds) {
+			if (m_dpuCmd.getUserIds() == m_sourceUserIds) {
 				// ...create a busy spinner for the operation...
 				busy = new SpinnerPopup();
 				busy.center();
@@ -277,27 +285,15 @@ public class DeletePurgeUsersHelper {
 			}
 
 			// ...and perform the final step of the operation.
-			dpuOpImpl(
-				busy,				//
-				pDlg,				//
-				cmd,				//
-				totalUserCount,		//
-				sourceUserIds,		//
-				false);				// false -> No more remaining.
+			dpuOpImpl(busy, pDlg, false);
 		}
 	}
 
 	/*
 	 * Performs an operation on a collection of users.
 	 */
-	private void dpuOpImpl(
-			final SpinnerPopup				busy,
-			final ProgressDlg				pDlg,
-			final DeletePurgeUsersCmdBase	cmd,
-			final int						totalUserCount,
-			final List<Long>				sourceUserIds,
-			final boolean					moreRemaining) {
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+	private void dpuOpImpl(final SpinnerPopup busy, final ProgressDlg pDlg, final boolean moreRemaining) {
+		GwtClientHelper.executeCommand(m_dpuCmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				// Hide any busy/progress dialogs...
@@ -305,7 +301,7 @@ public class DeletePurgeUsersHelper {
 				if (null != pDlg) pDlg.hide();
 
 				// ...mark the operation as having been canceled...
-				setOperationCanceled(true);
+				m_operationCanceled = true;
 
 				// ...and tell the user about the RPC failure.
 				GwtClientHelper.handleGwtRPCFailure(
@@ -317,7 +313,7 @@ public class DeletePurgeUsersHelper {
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
 				if ((null != busy) && (!moreRemaining)) busy.hide();
-				if  (null != pDlg)                      ProgressDlg.updateProgress(pDlg, sourceUserIds.size());
+				if  (null != pDlg)                      pDlg.updateProgress(m_dpuCmd.getUserIds().size());
 				
 				// Did everything we ask get done?
 				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
@@ -334,31 +330,17 @@ public class DeletePurgeUsersHelper {
 				// Did we just do a part of what we need to do?
 				if (moreRemaining) {
 					// Yes!  Request that the next chunk be sent.
-					dpuOpAsync(
-						pDlg,
-						cmd,
-						totalUserCount,
-						sourceUserIds);
+					dpuOpAsync(pDlg);
 				}
 				
 				else {
 					// No, we didn't just do part of it, but everything
-					// remaining!  Did we collect any errors during the
-					// process?
-					int totalErrorCount = m_collectedErrors.size();
-					if (0 < totalErrorCount) {
-						// Yes!  Tell the user about the problem(s).
-						GwtClientHelper.displayMultipleErrors(
-							m_strMap.get(StringIds.ERROR_OP_FAILURE),
-							m_collectedErrors);
+					// remaining!  Hide the progress dialog and wrap
+					// things up.
+					if (null != pDlg) {
+						pDlg.hide();
 					}
-					
-					// If anything was done...
-					if (totalErrorCount != totalUserCount) {
-						// ...force the content to refresh just in case its
-						// ...got something displayed that depends on it.
-						FullUIReloadEvent.fireOne();
-					}
+					dpuOpCompleteAsync();
 				}
 			}
 		});
@@ -369,7 +351,7 @@ public class DeletePurgeUsersHelper {
 	 * 
 	 * @param sourceUserIds
 	 */
-	public static void purgeUsersAsync(final List<Long> sourceUserIds) {
+	public static void purgeUsersAsync(final List<Long> sourceUserIds, final boolean purgeMirrored) {
 		ProgressDlg.createAsync(new ProgressDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -386,20 +368,21 @@ public class DeletePurgeUsersHelper {
 				strMap.put(StringIds.PROGRESS_CAPTION,  GwtTeaming.getMessages().binderViewsPurgeUsersCaption() );
 				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsPurgeUsersProgress());
 
-				final PurgeUsersCmd				purgeCmd        = new PurgeUsersCmd(sourceUserIds);
-				final DeletePurgeUsersHelper	dpuHelper       = new DeletePurgeUsersHelper(strMap);
-				final int						totalUserCount  = sourceUserIds.size();
+				// ...create the helper...
+				final DeletePurgeUsersHelper dpuHelper = new DeletePurgeUsersHelper(
+					sourceUserIds,
+					strMap,
+					new PurgeUsersCmd(
+						sourceUserIds,
+						purgeMirrored));
 				
-				if (pDlg.needProgressDialog(totalUserCount)) {
+				// ...and perform the purge...
+				if (ProgressDlg.needsChunking(dpuHelper.m_totalUserCount)) {
+					// ...chunking as necessary.
 					ProgressDlg.initAndShow(pDlg, new ProgressCallback() {
 						@Override
 						public void dialogReady() {
-							// ...and perform the purge.
-							dpuHelper.dpuOpAsync(
-								pDlg,				// Progress dialog to use.
-								purgeCmd,			// Command for the operation.
-								totalUserCount,		// Total number of users being operated on.
-								sourceUserIds);		// Initial list of user IDs.
+							dpuHelper.dpuOpAsync(pDlg);
 						}
 						
 						@Override
@@ -407,28 +390,24 @@ public class DeletePurgeUsersHelper {
 							// Simply mark the global indicating we've
 							// been canceled.  The operation will stop
 							// on the next chunk.
-							dpuHelper.setOperationCanceled(true);
+							dpuHelper.m_operationCanceled = true;
 						}
 
 						@Override
 						public void operationComplete() {
-							// Nothing to do.  We managing completion
-							// via how we handle the items in the list.
+							// Nothing to do.  We manage completion via
+							// how we handle the items in the list.
 						}
 					},
 					true,	// true -> Operation can be canceled.
 					strMap.get(StringIds.PROGRESS_CAPTION),
 					strMap.get(StringIds.PROGRESS_MESSAGE),
-					totalUserCount);
+					dpuHelper.m_totalUserCount);
 				}
 				
 				else {
-					// ...and perform the purge.
-					dpuHelper.dpuOpAsync(
-						null,				// null -> No progress dialog required.
-						purgeCmd,			// Command for the operation.
-						totalUserCount,		// Total number of users being operated on.
-						sourceUserIds);		// Initial list of user IDs.
+					// ...without chunking.
+					dpuHelper.dpuOpAsync(null);
 				}
 			}
 		});
@@ -439,7 +418,7 @@ public class DeletePurgeUsersHelper {
 	 * 
 	 * @param sourceUserIds
 	 */
-	public static void purgeUserWorkspacesAsync(final List<Long> sourceUserIds) {
+	public static void purgeUserWorkspacesAsync(final List<Long> sourceUserIds, final boolean purgeMirrored) {
 		ProgressDlg.createAsync(new ProgressDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -456,20 +435,21 @@ public class DeletePurgeUsersHelper {
 				strMap.put(StringIds.PROGRESS_CAPTION,  GwtTeaming.getMessages().binderViewsPurgeUserWorkspacesCaption() );
 				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsPurgeUserWorkspacesProgress());
 
-				final PurgeUserWorkspacesCmd	purgeCmd        = new PurgeUserWorkspacesCmd(sourceUserIds);
-				final DeletePurgeUsersHelper	dpuHelper       = new DeletePurgeUsersHelper(strMap);
-				final int						totalUserCount  = sourceUserIds.size();
+				// ...create the helper...
+				final DeletePurgeUsersHelper dpuHelper = new DeletePurgeUsersHelper(
+					sourceUserIds,
+					strMap,
+					new PurgeUserWorkspacesCmd(
+						sourceUserIds,
+						purgeMirrored));
 				
-				if (pDlg.needProgressDialog(totalUserCount)) {
+				// ...and perform the purge...
+				if (ProgressDlg.needsChunking(dpuHelper.m_totalUserCount)) {
+					// ...chunking as necessary.
 					ProgressDlg.initAndShow(pDlg, new ProgressCallback() {
 						@Override
 						public void dialogReady() {
-							// ...and perform the purge.
-							dpuHelper.dpuOpAsync(
-								pDlg,				// Progress dialog to use.
-								purgeCmd,			// Command for the operation.
-								totalUserCount,		// Total number of users being operated on.
-								sourceUserIds);		// Initial list of user IDs.
+							dpuHelper.dpuOpAsync(pDlg);
 						}
 						
 						@Override
@@ -477,28 +457,24 @@ public class DeletePurgeUsersHelper {
 							// Simply mark the global indicating we've
 							// been canceled.  The operation will stop
 							// on the next chunk.
-							dpuHelper.setOperationCanceled(true);
+							dpuHelper.m_operationCanceled = true;
 						}
 
 						@Override
 						public void operationComplete() {
-							// Nothing to do.  We managing completion
-							// via how we handle the items in the list.
+							// Nothing to do.  We manage completion via
+							// how we handle the items in the list.
 						}
 					},
 					true,	// true -> Operation can be canceled.
 					strMap.get(StringIds.PROGRESS_CAPTION),
 					strMap.get(StringIds.PROGRESS_MESSAGE),
-					totalUserCount);
+					dpuHelper.m_totalUserCount);
 				}
 				
 				else {
-					// ...and perform the purge.
-					dpuHelper.dpuOpAsync(
-						null,				// null -> No progress dialog required.
-						purgeCmd,			// Command for the operation.
-						totalUserCount,		// Total number of users being operated on.
-						sourceUserIds);		// Initial list of user IDs.
+					// ...without chunking.
+					dpuHelper.dpuOpAsync(null);
 				}
 			}
 		});
