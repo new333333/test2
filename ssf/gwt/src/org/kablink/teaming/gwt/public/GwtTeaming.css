@@ -3583,11 +3583,31 @@ td.datePickerMonth {
 /* End:  Milestone statistics graph styles. */
 
 /* Start:  Progress dialog styles. */
+	.vibe-progressDlg_ProgressBar     {margin-bottom: 5px;}
 	.vibe-progressDlg_ProgressLabel   {margin-left: 3px;}
 	.vibe-progressDlg_ProgressPanel   {white-space: nowrap; font-size: 1.1em; font-weight: bold; padding-top: 10px;}
 	.vibe-progressDlg_ProgressSpinner {}
 	.vibe-progressDlg_RootPanel       {padding: 6px;}
 /* End:  Progress entries dialog styles. */
+
+/* Start:  Progress bar styles. */
+	.gwt-ProgressBar-shell {
+		border: 2px solid #faf9f7;
+		border-right: 2px solid #848280;
+		border-bottom: 2px solid #848280;
+		background-color: #AAAAAA;
+		height: 14pt;
+		width: 98%;
+	}
+	.gwt-ProgressBar-shell .gwt-ProgressBar-bar {
+		background-color: #67A7E3;
+	}
+	.gwt-ProgressBar-shell .gwt-ProgressBar-text {
+		padding: 0px;
+		margin: 0px;
+		color: white;
+	}
+/* End:  Progress bar styles. */
 
 /* Start:  Multi-error alert dialog styles. */
 	.vibe-multiErrorAlertDlg-baseError {padding-bottom:  10px; font-size: 1.2em;}
