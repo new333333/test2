@@ -43,8 +43,8 @@
 
 	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
 %>
-<c:set var="mWidth" value="100%" />
-<c:set var="mHeight" value="100%" />
+<c:set var="mWidth" value="" />
+<c:set var="mHeight" value="" />
 <c:set var="mOverflow" value="hidden" />
 <c:if test="${!empty mashup_attributes['width']}">
   <c:set var="mWidth" value="${mashup_attributes['width']}" />
@@ -71,7 +71,8 @@
       %>
     </c:if>
     <div>
-    <img style="width: ${mWidth}; height: ${mHeight};" src="<ssf:url 
+    <img style="<c:if test="${!empty mWidth}"> width: ${mWidth}; </c:if> <c:if test="${!empty mHeight}"> height: ${mHeight}; </c:if>" 
+    	src="<ssf:url 
 		    webPath="viewFile"
 		    folderId="${ssBinder.id}"
 		    entityType="${ssBinder.entityType}" >
