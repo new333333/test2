@@ -37,6 +37,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.ProgressBar;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
@@ -62,6 +63,7 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 	private InlineLabel			m_progressIndicator;	// Label containing the 'x of y' progress indicator.
 	private int					m_totalCount;			// Tracks the total number of steps that need to be performed while.
 	private int					m_totalDone;			// Tracks the number of steps that have been performed while the operation is in progress.
+	private ProgressBar			m_pb;					//
 	private ProgressCallback	m_progressCallback;		// Interface used to interact with the caller of this dialog.
 	private String				m_progressString;		//
 	private VibeVerticalPanel	m_vp;					// The panel holding the dialog's content.
@@ -245,6 +247,11 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 		// Clear anything already in the dialog (from a previous
 		// usage, ...)
 		m_vp.clear();
+		
+		// ...add a progress bar...
+		m_pb = new ProgressBar(0, m_totalCount, 0);
+		m_pb.addStyleName("vibe-progressDlg_ProgressBar");
+		m_vp.add(m_pb);
 
 		// ...add a panel for displaying progress, when needed...
 		VibeFlowPanel progressPanel = new VibeFlowPanel();
@@ -350,6 +357,7 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 		
 		else {
 			// ...otherwise, set the number we've completed.
+			m_pb.setProgress(m_totalDone);
 			m_progressIndicator.setText(
 				GwtClientHelper.patchMessage(
 					m_progressString,
