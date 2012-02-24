@@ -238,6 +238,8 @@ public interface GwtTeamingMessages extends Messages
 	String unknownFileUploadError( String error);
 	String vibeInsideLandingPage();
 	String close();
+	String yes();
+	String no();
 	
 	// Strings used with the Utility Element widget in the landing page editor.
 	String utilityElementHint();
@@ -459,6 +461,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ChangeEntryTypesDlg();
 	String codeSplitFailure_ChildBindersWidget();
 	String codeSplitFailure_ClipboardDlg();
+	String codeSplitFailure_ConfirmDlg();
 	String codeSplitFailure_ContentControl();
 	String codeSplitFailure_CopyMoveEntriesDlg();
 	String codeSplitFailure_DescriptionPanel();
@@ -1409,6 +1412,9 @@ public interface GwtTeamingMessages extends Messages
 	String profileEntryDlgLabelize(String label);
 	String profileEntryDlgModify();
 	String profileEntryDlgNote();
+	
+	// Strings used by the ConfirmDlg.
+	String confirmDlgHeader();
 	
 	// Strings used by the MultiErrorAlertDlg.
 	String multiErrorAlertDlgHeader();

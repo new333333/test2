@@ -85,6 +85,7 @@ public abstract class DlgBox extends PopupPanel
 		Close,
 		Ok,
 		OkCancel,
+		YesNo,
 	}
 	
 	/**
@@ -268,19 +269,21 @@ public abstract class DlgBox extends PopupPanel
 			
 		case Ok:
 		case OkCancel:
+		case YesNo:
 			if ( m_okBtn == null )
 			{
-				m_okBtn = new Button( GwtTeaming.getMessages().ok() );
+				m_okBtn = new Button( (DlgButtonMode.YesNo == m_dlgBtnMode) ? GwtTeaming.getMessages().yes() : GwtTeaming.getMessages().ok() );
 				m_okBtn.addClickHandler( this );
 				m_okBtn.addStyleName( "teamingButton" );
 				m_footerPanel.add( m_okBtn );
 			}
 			m_okBtn.setVisible( true );
 			
-			if (DlgButtonMode.OkCancel == m_dlgBtnMode) {
+			if ((DlgButtonMode.OkCancel == m_dlgBtnMode) || (DlgButtonMode.YesNo == m_dlgBtnMode)) {
+				String cancelTxt = ((DlgButtonMode.YesNo == m_dlgBtnMode) ? GwtTeaming.getMessages().no() : GwtTeaming.getMessages().cancel());
 				if ( m_cancelBtn == null )
 				{
-					m_cancelBtn = new Button( GwtTeaming.getMessages().cancel() );
+					m_cancelBtn = new Button( cancelTxt );
 
 					m_cancelBtn.addClickHandler( this );
 					m_cancelBtn.addStyleName( "teamingButton" );
@@ -290,7 +293,7 @@ public abstract class DlgBox extends PopupPanel
 				{
 					// m_cancelBtn is used for both Cancel and Close.  Make sure the button
 					// says Cancel.
-					m_cancelBtn.setText( GwtTeaming.getMessages().cancel() );
+					m_cancelBtn.setText( cancelTxt );
 				}
 			}
 			else

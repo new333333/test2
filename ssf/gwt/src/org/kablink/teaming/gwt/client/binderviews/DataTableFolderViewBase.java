@@ -114,8 +114,11 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.CheckboxCell;
@@ -146,7 +149,6 @@ import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -1331,28 +1333,56 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	private void onDeleteSelectedEntriesNow() {
 		// Are there any entries to selected to delete?  
-		List<Long> selectedIds = getSelectedEntryIds();
+		final List<Long> selectedIds = getSelectedEntryIds();
 		if (!(selectedIds.isEmpty())) {
 			// Yes!  Is the user sure they want to delete them?
-			if (Window.confirm(m_messages.vibeDataTable_Confirm_Delete())) {
-				// Yes!  Delete them from the folder.
-				DeleteFolderEntriesCmd cmd = new DeleteFolderEntriesCmd(getFolderInfo().getBinderIdAsLong(), selectedIds);
-				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						GwtClientHelper.handleGwtRPCFailure(
-							caught,
-							GwtTeaming.getMessages().rpcFailure_DeleteFolderEntries());
-					}
-	
-					@Override
-					public void onSuccess(VibeRpcResponse result) {
-						// Reset the view to redisplay things with the entries
-						// deleted.
-						resetViewAsync();
-					}
-				});
-			}
+			ConfirmDlg.createAsync(new ConfirmDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(ConfirmDlg cDlg) {
+					ConfirmDlg.initAndShow(
+						cDlg,
+						new ConfirmCallback() {
+							@Override
+							public void dialogReady() {
+								// Ignored.  We don't really care when the
+								// dialog is ready.
+							}
+
+							@Override
+							public void accepted() {
+								// Yes!  Delete them from the folder.
+								DeleteFolderEntriesCmd cmd = new DeleteFolderEntriesCmd(getFolderInfo().getBinderIdAsLong(), selectedIds);
+								GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+									@Override
+									public void onFailure(Throwable caught) {
+										GwtClientHelper.handleGwtRPCFailure(
+											caught,
+											GwtTeaming.getMessages().rpcFailure_DeleteFolderEntries());
+									}
+					
+									@Override
+									public void onSuccess(VibeRpcResponse result) {
+										// Reset the view to redisplay things with the entries
+										// deleted.
+										resetViewAsync();
+									}
+								});
+							}
+
+							@Override
+							public void rejected() {
+								// No, they're not sure!
+							}
+						},
+						m_messages.vibeDataTable_Confirm_Delete());
+				}
+			});
 		}
 	}
 	
@@ -1618,28 +1648,56 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	private void onPurgeSelectedEntriesNow() {
 		// Are there any entries selected to purge?
-		List<Long> selectedIds = getSelectedEntryIds();
+		final List<Long> selectedIds = getSelectedEntryIds();
 		if (!(selectedIds.isEmpty())) {
 			// Yes!  Is the user sure they want to purge them?
-			if (Window.confirm(m_messages.vibeDataTable_Confirm_Purge())) {
-				// Yes!  Purge them from the folder.
-				PurgeFolderEntriesCmd cmd = new PurgeFolderEntriesCmd(getFolderInfo().getBinderIdAsLong(), selectedIds);
-				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-					@Override
-					public void onFailure(Throwable caught) {
-						GwtClientHelper.handleGwtRPCFailure(
-							caught,
-							GwtTeaming.getMessages().rpcFailure_PurgeFolderEntries());
-					}
-	
-					@Override
-					public void onSuccess(VibeRpcResponse result) {
-						// Reset the view to redisplay things with the entries
-						// purged.
-						resetViewAsync();
-					}
-				});
-			}
+			ConfirmDlg.createAsync(new ConfirmDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(ConfirmDlg cDlg) {
+					ConfirmDlg.initAndShow(
+						cDlg,
+						new ConfirmCallback() {
+							@Override
+							public void dialogReady() {
+								// Ignored.  We don't really care when the
+								// dialog is ready.
+							}
+
+							@Override
+							public void accepted() {
+								// Yes!  Purge them from the folder.
+								PurgeFolderEntriesCmd cmd = new PurgeFolderEntriesCmd(getFolderInfo().getBinderIdAsLong(), selectedIds);
+								GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+									@Override
+									public void onFailure(Throwable caught) {
+										GwtClientHelper.handleGwtRPCFailure(
+											caught,
+											GwtTeaming.getMessages().rpcFailure_PurgeFolderEntries());
+									}
+					
+									@Override
+									public void onSuccess(VibeRpcResponse result) {
+										// Reset the view to redisplay things with the entries
+										// purged.
+										resetViewAsync();
+									}
+								});
+							}
+
+							@Override
+							public void rejected() {
+								// No, they're not sure!
+							}
+						},
+						m_messages.vibeDataTable_Confirm_Purge());
+				}
+			});
 		}
 	}
 	
@@ -2191,7 +2249,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * those classes that extend this that provide guest book services.
 	 */
 	public void signGuestbook() {
-		Window.alert(m_messages.vibeDataTable_GuestbookInternalErrorOverrideMissing());
+		GwtClientHelper.deferredAlert(m_messages.vibeDataTable_GuestbookInternalErrorOverrideMissing());
 	}
 	
 	/**
@@ -2201,7 +2259,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * those classes that extend this that provide trash handling.
 	 */
 	public void trashPurgeAll() {
-		Window.alert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashPurgeAll()"));
+		GwtClientHelper.deferredAlert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashPurgeAll()"));
 	}
 	
 	/**
@@ -2211,7 +2269,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * those classes that extend this that provide trash handling.
 	 */
 	public void trashPurgeSelectedEntries() {
-		Window.alert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashPurgeSelectedEntries()"));
+		GwtClientHelper.deferredAlert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashPurgeSelectedEntries()"));
 	}
 	
 	/**
@@ -2221,7 +2279,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * those classes that extend this that provide trash handling.
 	 */
 	public void trashRestoreAll() {
-		Window.alert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashRestoreAll()"));
+		GwtClientHelper.deferredAlert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashRestoreAll()"));
 	}
 	
 	/**
@@ -2231,7 +2289,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * those classes that extend this that provide trash handling.
 	 */
 	public void trashRestoreSelectedEntries() {
-		Window.alert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashRestoreSelectedEntries()"));
+		GwtClientHelper.deferredAlert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashRestoreSelectedEntries()"));
 	}
 	
 	/*

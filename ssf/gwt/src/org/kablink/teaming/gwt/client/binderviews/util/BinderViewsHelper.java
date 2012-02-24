@@ -53,12 +53,15 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.CheckBox;
 
 /**
  * Helper methods for binder views.
@@ -187,13 +190,38 @@ public class BinderViewsHelper {
 		
 		// Is the user sure they want to delete the selected user
 		// workspaces?
-		if (!(Window.confirm(GwtTeaming.getMessages().binderViewsConfirmDeleteUserWS()))) {
-			// No!  Bail.
-			return;
-		}
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
 
-		// Perform the delete.
-		DeletePurgeUsersHelper.deleteUserWorkspacesAsync(userIds);
+						@Override
+						public void accepted() {
+							// Yes, they're sure!  Perform the delete.
+							DeletePurgeUsersHelper.deleteUserWorkspacesAsync(userIds);
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					GwtTeaming.getMessages().binderViewsConfirmDeleteUserWS());
+			}
+		});
 	}
 	
 	/**
@@ -435,17 +463,43 @@ public class BinderViewsHelper {
 			// ...bail.
 			return;
 		}
-		
+
 		// Is the user sure they want to the selected user workspaces
 		// and user objects?
-		if (!(Window.confirm(GwtTeaming.getMessages().binderViewsConfirmPurgeUsers()))) {
-			// No!  Bail.
-			return;
-		}
-		
-		// Perform the purge.
-		boolean purgeMirrored = Window.confirm(GwtTeaming.getMessages().binderViewsPromptPurgeMirroredFolders());
-		DeletePurgeUsersHelper.purgeUsersAsync(userIds, purgeMirrored);
+		final CheckBox cb = new CheckBox(GwtTeaming.getMessages().binderViewsPromptPurgeMirroredFolders());
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes, they're sure!  Perform the purge.
+							DeletePurgeUsersHelper.purgeUsersAsync(userIds, cb.getValue());
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					GwtTeaming.getMessages().binderViewsConfirmPurgeUsers(),
+					cb);
+			}
+		});
 	}
 
 	/**
@@ -463,14 +517,40 @@ public class BinderViewsHelper {
 		
 		// Is the user sure they want to purge the selected user
 		// workspaces?
-		if (!(Window.confirm(GwtTeaming.getMessages().binderViewsConfirmPurgeUserWS()))) {
-			// No!  Bail.
-			return;
-		}
-		
-		// Perform the purge.
-		boolean purgeMirrored = Window.confirm(GwtTeaming.getMessages().binderViewsPromptPurgeMirroredFolders());
-		DeletePurgeUsersHelper.purgeUserWorkspacesAsync(userIds, purgeMirrored);
+		final CheckBox cb = new CheckBox(GwtTeaming.getMessages().binderViewsPromptPurgeMirroredFolders());
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes, they're sure!  Perform the purge.
+							DeletePurgeUsersHelper.purgeUserWorkspacesAsync(userIds, cb.getValue());
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					GwtTeaming.getMessages().binderViewsConfirmPurgeUserWS(),
+					cb);
+			}
+		});
 	}
 
 	/**

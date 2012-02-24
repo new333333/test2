@@ -131,26 +131,6 @@ public class MultiErrorAlertDlg extends DlgBox {
 	}
 
 	/*
-	 * Asynchronously loads the entry types the user can select from.
-	 */
-	private void loadPart1Async() {
-		ScheduledCommand doLoad = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart1Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-	
-	/*
-	 * Synchronously loads the entry types the user can select from.
-	 */
-	private void loadPart1Now() {
-		populateDlgAsync();
-	}
-	
-	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
@@ -234,7 +214,7 @@ public class MultiErrorAlertDlg extends DlgBox {
 		m_baseError = baseError;
 		m_errors    = errors;
 		
-		loadPart1Async();
+		populateDlgAsync();
 	}
 
 	/**
@@ -321,6 +301,8 @@ public class MultiErrorAlertDlg extends DlgBox {
 	 * Initializes and shows the multi-error alert dialog.
 	 * 
 	 * @param meaDlg
+	 * @param baseError
+	 * @param errors
 	 */
 	public static void initAndShow(MultiErrorAlertDlg meaDlg, String baseError, List<String> errors) {
 		doAsyncOperation(null, meaDlg, baseError, errors);
