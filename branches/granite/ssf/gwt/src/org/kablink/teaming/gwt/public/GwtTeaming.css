@@ -3518,3 +3518,40 @@ td.datePickerMonth {
 }
 
 /* End of styles used with an object list table */
+
+
+/* The following styles are used with the group management dialogs. */
+
+.groupManagementBtn
+{
+    border-radius: 15px 15px 15px 15px;
+    color: #666666 !important;
+	cursor: pointer;
+    font-size: 11px;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-decoration: none;
+}
+
+.groupManagementBtn:hover
+{
+	background: url(images/blends/teal_slice.png) repeat-x;
+	background-position:center;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.groupManagementMenuPanel
+{
+    background-color: #CCCCCC;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    display: block;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 1.25em;
+    padding: 3px 3px 3px 12px;
+    position: relative;
+    white-space: nowrap;
+}
+	
+/* End of styles used with the group management dialogs */

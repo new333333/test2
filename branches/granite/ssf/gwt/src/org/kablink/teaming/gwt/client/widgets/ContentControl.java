@@ -141,6 +141,23 @@ public class ContentControl extends Composite
 			frameElement.getContentDocument().getBody().setInnerHTML( html );
 		}
 	}
+	
+	/**
+	 * 
+	 */
+	public void empty()
+	{
+		FrameElement frameElement;
+		
+		frameElement = getContentFrame();
+		if ( null != frameElement )
+		{
+			String html;
+			
+			html = "<body><div/></body>";
+			frameElement.getContentDocument().getBody().setInnerHTML( html );
+		}
+	}
 
 	/*
 	 * Returns the FrameElement encompassing this ContentControl.

@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
 import org.kablink.teaming.gwt.client.event.PreLogoutEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -95,6 +96,7 @@ public class AdminControl extends Composite
 	// Event handlers implemented by this class.
 		AdministrationExitEvent.Handler,
 		InvokeConfigureFileSyncAppDlgEvent.Handler,
+		InvokeManageGroupsDlgEvent.Handler,
 		PreLogoutEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
@@ -102,6 +104,7 @@ public class AdminControl extends Composite
 	private AdminActionsTreeControl m_adminActionsTreeControl = null;
 	private ContentControl m_contentControl = null;
 	private ConfigureFileSyncAppDlg m_configureFileSyncAppDlg = null;
+	private ManageGroupsDlg m_manageGroupsDlg = null;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -110,6 +113,7 @@ public class AdminControl extends Composite
 		// Administration events.
 		TeamingEvents.ADMINISTRATION_EXIT,
 		TeamingEvents.INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,
+		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
 		
 		// Login/out events.
 		TeamingEvents.PRE_LOGOUT,
@@ -592,6 +596,8 @@ public class AdminControl extends Composite
 	 */
 	private void adminActionSelected( GwtAdminAction adminAction )
 	{
+		m_contentControl.empty();
+		
 		// Are we dealing with the "Site Branding" action?
 		if ( adminAction.getActionType() == AdminAction.SITE_BRANDING )
 		{
@@ -611,6 +617,11 @@ public class AdminControl extends Composite
 		{
 			// Fire the event to invoke the "Configure File Sync" dialog.
 			InvokeConfigureFileSyncAppDlgEvent.fireOne();
+		}
+		else if ( adminAction.getActionType() == AdminAction.MANAGE_GROUPS && false )
+		{
+			// Fire the event to invoke the "Manage Groups" dialog.
+			InvokeManageGroupsDlgEvent.fireOne();
 		}
 		else
 		{
@@ -1060,6 +1071,41 @@ public class AdminControl extends Composite
 			cmd = new GetFileSyncAppConfigurationCmd();
 			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
 		}
+	}
+	
+
+	/**
+	 * Handles InvokeManageGroupsDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeManageGroupsDlgEvent.Handler.onInvokeManageGroupsDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeManageGroupsDlg( InvokeManageGroupsDlgEvent event )
+	{
+		int x;
+		int y;
+		
+		// Get the position of the content control.
+		x = m_contentControl.getAbsoluteLeft();
+		y = m_contentControl.getAbsoluteTop();
+		
+		// Have we already created a "Manage Groups" dialog?
+		if ( m_manageGroupsDlg == null )
+		{
+			int width;
+			int height;
+			
+			// No, create one.
+			height = (m_contentControl.getOffsetHeight() * 7) / 10;
+			width = (m_contentControl.getOffsetWidth() * 8) / 10;
+			m_manageGroupsDlg = new ManageGroupsDlg( false, true, x, y, width, height );
+		}
+		
+		m_manageGroupsDlg.init();
+		m_manageGroupsDlg.setPopupPosition( x, y );
+		m_manageGroupsDlg.show();
 	}
 	
 

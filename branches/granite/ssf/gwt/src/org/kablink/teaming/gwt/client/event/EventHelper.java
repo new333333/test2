@@ -92,6 +92,7 @@ public class EventHelper {
 		case GOTO_MY_WORKSPACE:                 reply = new GotoMyWorkspaceEvent();              break;
 		case INVOKE_HELP:                       reply = new InvokeHelpEvent();                   break;
 		case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:reply = new InvokeConfigureFileSyncAppDlgEvent();break;
+		case INVOKE_MANAGE_GROUPS_DLG:			reply = new InvokeManageGroupsDlgEvent();		 break;
 		case LOGIN:                             reply = new LoginEvent();                        break;
 		case PRE_LOGOUT:                        reply = new PreLogoutEvent();                    break;
 		case MASTHEAD_HIDE:                     reply = new MastheadHideEvent();                 break;
@@ -359,6 +360,15 @@ public class EventHelper {
 				{
 					handlerNotDefined = false;
 					registrationHandler = InvokeConfigureFileSyncAppDlgEvent.registerEvent( eventBus, ((InvokeConfigureFileSyncAppDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case INVOKE_MANAGE_GROUPS_DLG:
+				// An InvokeManageGroupsDlgEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof InvokeManageGroupsDlgEvent.Handler)
+				{
+					handlerNotDefined = false;
+					registrationHandler = InvokeManageGroupsDlgEvent.registerEvent( eventBus, ((InvokeManageGroupsDlgEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -928,6 +938,7 @@ public class EventHelper {
 			
 			case INVOKE_HELP:                       hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                   break;
 			case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:hasHandler = (eventHandler instanceof InvokeConfigureFileSyncAppDlgEvent.Handler);break;
+			case INVOKE_MANAGE_GROUPS_DLG:			hasHandler = (eventHandler instanceof InvokeManageGroupsDlgEvent.Handler);		  break;
 			case INVOKE_REPLY:                      hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                  break;
 			case INVOKE_SHARE:                      hasHandler = (eventHandler instanceof InvokeShareEvent.Handler);                  break;
 			case INVOKE_SIMPLE_PROFILE:             hasHandler = (eventHandler instanceof InvokeSimpleProfileEvent.Handler);          break;
