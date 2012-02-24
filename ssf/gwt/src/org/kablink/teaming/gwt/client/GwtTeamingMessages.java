@@ -290,6 +290,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CanModifyBinder();
 	String rpcFailure_CheckForActivityStreamChanges();
 	String rpcFailure_CollapseSubtasks();
+	String rpcFailure_DeleteGroups();
 	String rpcFailure_DeleteTasks();
 	String rpcFailure_EntryDoesNotExist();
 	String rpcFailure_ExpandBucket();
@@ -1083,8 +1084,10 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used in the Manage Groups dialog
 	String manageGroupsDlgAddGroupLabel();
+	String manageGroupsDlgConfirmDelete( String groupNames );
 	String manageGroupsDlgDeleteGroupLabel();
 	String manageGroupsDlgHeader();
+	String manageGroupsDlgNameCol();
 	String manageGroupsDlgTitleCol();
 	
 }// end GwtTeamingMessages

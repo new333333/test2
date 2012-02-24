@@ -219,6 +219,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case DELETE_GROUPS:
+		{
+			Boolean result;
+			DeleteGroupsCmd dgCmd;
+			
+			dgCmd = (DeleteGroupsCmd) cmd;
+			result = GwtServerHelper.deleteGroups( this, dgCmd.getListOfGroupsToDelete() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
 		case DELETE_TASKS:
 		{
 			DeleteTasksCmd dtCmd = ((DeleteTasksCmd) cmd);
