@@ -51,6 +51,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 
 import com.google.gwt.core.client.GWT;
@@ -58,8 +61,8 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.cellview.client.AbstractCellTable;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.CheckBox;
 
 /**
  * Trash view.
@@ -170,7 +173,7 @@ public class TrashView extends DataTableFolderViewBase {
 			
 			@Override
 			public void onFailure(Throwable reason) {
-				Window.alert(m_messages.codeSplitFailure_TrashView());
+				GwtClientHelper.deferredAlert(m_messages.codeSplitFailure_TrashView());
 				vClient.onUnavailable();
 			}
 		});
@@ -286,49 +289,75 @@ public class TrashView extends DataTableFolderViewBase {
 	@Override
 	public void trashPurgeAll() {
 		// Is the user sure they want to purge everything?
-		String confirm = m_messages.vibeDataTable_TrashConfirmPurgeAll();
+		final StringBuffer confirm = new StringBuffer(m_messages.vibeDataTable_TrashConfirmPurgeAll());
 		if (areEntriesSelected()) {
 			// If they have anything selected, we need to ensure they
 			// meant to do a purge all and not simply a purge of what
 			// they've selected.
-			confirm += "\n\n";
-			confirm += m_messages.vibeDataTable_TrashConfirmPurgeAllWithSelections();
+			confirm.append("  ");
+			confirm.append(m_messages.vibeDataTable_TrashConfirmPurgeAllWithSelections());
 		}
-		if (!(Window.confirm(confirm))) {
-			// No!  Bail.
-			return;
-		}
-		
-	    // If there are any binders being purged...
-		final boolean purgeBinders = areBindersInDataTable();
-	    boolean purgeMirroredSources = purgeBinders;
-	    if (purgeMirroredSources) {
-	    	// ...ask the user about purging mirrored sources.
-			purgeMirroredSources = Window.confirm(m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders());
-	    }
 
-		// Perform the purge.
-	    showBusySpinner();
-		Long binderId = getFolderInfo().getBinderIdAsLong();
-		GwtClientHelper.executeCommand(new TrashPurgeAllCmd(binderId, purgeMirroredSources), new AsyncCallback<VibeRpcResponse>() {
+    	// If we need to, add a checkbox about purging mirrored sources.
+		final CheckBox cb;
+		final boolean purgeBinders = areBindersInDataTable();
+	    if (purgeBinders)
+		     cb = new CheckBox(m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders());
+	    else cb = null;
+		
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
 			@Override
-			public void onFailure(Throwable t) {
-			    hideBusySpinner();
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_TrashPurgeAll());
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
 			}
 			
 			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Display any messages we get back from the server.
-			    hideBusySpinner();
-				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
-				String messages = responseData.getStringValue();
-				if (GwtClientHelper.hasString(messages)) {
-					GwtClientHelper.deferredAlert(messages);
-				}
-				reloadUIAsync(purgeBinders);
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Perform the purge.
+						    showBusySpinner();
+							Long binderId = getFolderInfo().getBinderIdAsLong();
+							GwtClientHelper.executeCommand(new TrashPurgeAllCmd(binderId, ((null == cb) ? false : cb.getValue())), new AsyncCallback<VibeRpcResponse>() {
+								@Override
+								public void onFailure(Throwable t) {
+								    hideBusySpinner();
+									GwtClientHelper.handleGwtRPCFailure(
+										t,
+										m_messages.rpcFailure_TrashPurgeAll());
+								}
+								
+								@Override
+								public void onSuccess(VibeRpcResponse response) {
+									// Display any messages we get back from the server.
+								    hideBusySpinner();
+									StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+									String messages = responseData.getStringValue();
+									if (GwtClientHelper.hasString(messages)) {
+										GwtClientHelper.deferredAlert(messages);
+									}
+									reloadUIAsync(purgeBinders);
+								}
+							});
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					confirm.toString(),
+					cb);
 			}
 		});
 	}
@@ -341,43 +370,67 @@ public class TrashView extends DataTableFolderViewBase {
 	 */
 	@Override
 	public void trashPurgeSelectedEntries() {
-		// Is the user sure they want to purge the selected items?
-		if (!(Window.confirm(m_messages.vibeDataTable_TrashConfirmPurge()))) {
-			// No!  Bail.
-			return;
-		}
+    	// If we need to, add a checkbox about purging mirrored sources.
+		final CheckBox cb;
+		final boolean purgeBinders = areBindersInDataTable();
+	    if (purgeBinders)
+		     cb = new CheckBox(m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders());
+	    else cb = null;
 		
-	    // If there are any binders being purged...
-		final boolean purgeBinders = areBindersSelectedInDataTable();
-		boolean purgeMirroredSources = purgeBinders;
-		if (purgeMirroredSources) {
-	    	// ...ask the user about purging mirrored sources.
-			purgeMirroredSources = Window.confirm(m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders());
-		}
-		
-		// Perform the purge.
-	    showBusySpinner();
-		List<String> trashSelectionData = buildTrashSelectionList();
-		Long binderId = getFolderInfo().getBinderIdAsLong();
-		GwtClientHelper.executeCommand(new TrashPurgeSelectedEntriesCmd(binderId, purgeMirroredSources, trashSelectionData), new AsyncCallback<VibeRpcResponse>() {
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
 			@Override
-			public void onFailure(Throwable t) {
-			    hideBusySpinner();
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_TrashPurgeSelectedEntries());
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
 			}
 			
 			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Display any messages we get back from the server.
-			    hideBusySpinner();
-				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
-				String messages = responseData.getStringValue();
-				if (GwtClientHelper.hasString(messages)) {
-					GwtClientHelper.deferredAlert(messages);
-				}
-				reloadUIAsync(purgeBinders);
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Perform the purge.
+						    showBusySpinner();
+							List<String> trashSelectionData = buildTrashSelectionList();
+							Long binderId = getFolderInfo().getBinderIdAsLong();
+							GwtClientHelper.executeCommand(new TrashPurgeSelectedEntriesCmd(binderId, ((null == cb) ? false : cb.getValue()), trashSelectionData), new AsyncCallback<VibeRpcResponse>() {
+								@Override
+								public void onFailure(Throwable t) {
+								    hideBusySpinner();
+									GwtClientHelper.handleGwtRPCFailure(
+										t,
+										m_messages.rpcFailure_TrashPurgeSelectedEntries());
+								}
+								
+								@Override
+								public void onSuccess(VibeRpcResponse response) {
+									// Display any messages we get back from the server.
+								    hideBusySpinner();
+									StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+									String messages = responseData.getStringValue();
+									if (GwtClientHelper.hasString(messages)) {
+										GwtClientHelper.deferredAlert(messages);
+									}
+									reloadUIAsync(purgeBinders);
+								}
+							});
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					m_messages.vibeDataTable_TrashConfirmPurge(),
+					cb);
 			}
 		});
 	}
@@ -394,12 +447,50 @@ public class TrashView extends DataTableFolderViewBase {
 		if (areEntriesSelected()) {
 			// ...make sure they know that we'll restore everything and
 			// ...not just what they selected.
-			if (!(Window.confirm(m_messages.vibeDataTable_TrashConfirmRestoreAllWithSelections()))) {
-				return;
-			}
+			ConfirmDlg.createAsync(new ConfirmDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(ConfirmDlg cDlg) {
+					ConfirmDlg.initAndShow(
+						cDlg,
+						new ConfirmCallback() {
+							@Override
+							public void dialogReady() {
+								// Ignored.  We don't really care when the
+								// dialog is ready.
+							}
+	
+							@Override
+							public void accepted() {
+								// Perform the restore.
+								trashRestoreAllImpl();
+							}
+	
+							@Override
+							public void rejected() {
+								// No, they're not sure!
+							}
+						},
+						m_messages.vibeDataTable_TrashConfirmRestoreAllWithSelections());
+				}
+			});
 		}
-
-		// Perform the restore.
+		
+		else {
+			// ...otherwise, just perform the restore.
+			trashRestoreAllImpl();
+		}
+	}
+	
+	/*
+	 * Restores all the entries in the trash. 
+	 */
+	private void trashRestoreAllImpl() {
 	    showBusySpinner();
 		final boolean restoreBinders = areBindersInDataTable();
 		Long binderId = getFolderInfo().getBinderIdAsLong();

@@ -34,8 +34,10 @@ package org.kablink.teaming.gwt.client.util;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ProgressBar;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -45,7 +47,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -56,7 +57,6 @@ import com.google.gwt.user.client.ui.Panel;
  *  
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
 public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 	private boolean				m_canCancel;			// true -> The operation can be canceled.  false -> It can't be.
 	private boolean				m_dialogReady;			//
@@ -171,22 +171,50 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 		}
 		
 		// Does the user really want to cancel the operation?
-		if (Window.confirm(GwtTeaming.getMessages().progressDlgConfirmCancel())) {
-			// Yes!  Tell the caller...
-			ScheduledCommand doCancel = new ScheduledCommand() {
-				@Override
-				public void execute() {
-					m_progressCallback.operationCanceled();
-				}
-			};
-			Scheduler.get().scheduleDeferred(doCancel);
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
 			
-			// ...and return true to close the dialog.
-			return true;
-		}
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes!  Tell the caller...
+							ScheduledCommand doCancel = new ScheduledCommand() {
+								@Override
+								public void execute() {
+									m_progressCallback.operationCanceled();
+								}
+							};
+							Scheduler.get().scheduleDeferred(doCancel);
+							
+							// ...and close the dialog.
+							hide();
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					GwtTeaming.getMessages().progressDlgConfirmCancel());
+			}
+		});
 		
-		// Return false to leave the dialog open since the user doesn't
-		// want to cancel the operation.
+		// Return false to leave the dialog open.  We'll close it if
+		// they confirm the cancellation above.
 		return false;
 	}
 
@@ -400,7 +428,7 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 		GWT.runAsync(ProgressDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_ProgressDlg());
+				GwtClientHelper.deferredAlert(GwtTeaming.getMessages().codeSplitFailure_ProgressDlg());
 				if (null != pDlgClient) {
 					pDlgClient.onUnavailable();
 				}
