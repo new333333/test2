@@ -422,6 +422,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 		
 		// ...and start the operation.
 		m_totalDone = 0;
+		setOkEnabled(false);
 		copyMoveEntriesAsync(
 			cmd,
 			targetFolder,

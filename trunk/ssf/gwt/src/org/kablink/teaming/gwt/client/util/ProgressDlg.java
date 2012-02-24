@@ -68,8 +68,8 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 	private String				m_progressString;		//
 	private VibeVerticalPanel	m_vp;					// The panel holding the dialog's content.
 
-	public final static int CHUNK_SIZE		=  5;	// Number of operation in a chunk that are performed when doing them by chunks.
-	public final static int CHUNK_THRESHOLD	= 20;	// Number of operations beyond which we send them across in chunks so that we can show a progress indicator.
+	public final static int CHUNK_SIZE		= 2;	// Number of operation in a chunk that are performed when doing them by chunks.
+	public final static int CHUNK_THRESHOLD	= 5;	// Number of operations beyond which we send them across in chunks so that we can show a progress indicator.
 
 	/**
 	 * Interface used by the dialog to inform the caller about what's

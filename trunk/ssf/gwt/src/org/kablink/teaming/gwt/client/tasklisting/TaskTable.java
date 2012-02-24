@@ -107,6 +107,9 @@ import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItemHelper;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -127,7 +130,6 @@ import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -1493,7 +1495,7 @@ public class TaskTable extends Composite
 		case TASK_SET_STATUS:        handleTaskSetStatus(     task, optionValue); break;
 			
 		default:
-			Window.alert(m_messages.taskInternalError_UnexpectedEvent(event.toString()));
+			GwtClientHelper.deferredAlert(m_messages.taskInternalError_UnexpectedEvent(event.toString()));
 			break;
 		}
 	}
@@ -1710,7 +1712,7 @@ public class TaskTable extends Composite
 	 */
 	private void handleTaskDelete() {
 		// If nothing the user can delete is checked...
-		List<TaskListItem> tasksChecked = getTasksChecked();
+		final List<TaskListItem> tasksChecked = getTasksChecked();
 		int c = ((null == tasksChecked) ? 0 : tasksChecked.size());
 		for (int i = (c - 1); i >= 0; i -= 1) {
 			TaskListItem task = tasksChecked.get(i);
@@ -1722,27 +1724,52 @@ public class TaskTable extends Composite
 			// ...there's nothing to delete.
 			return;
 		}
-
+		
 		// Is the user sure they want to perform the delete?
-		if (!(Window.confirm(m_messages.taskConfirmDelete()))) {
-			// No!  Bail.
-			return;
-		}
-
-		// Delete the selected tasks.
-		final List<TaskId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
-		DeleteTasksCmd cmd = new DeleteTasksCmd(taskIds);
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
 			@Override
-			public void onFailure(Throwable caught) {
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					GwtTeaming.getMessages().rpcFailure_DeleteTasks());
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
 			}
-
+			
 			@Override
-			public void onSuccess(VibeRpcResponse result) {
-				handleTaskPostRemoveAsync(taskIds);
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes!  Delete the selected tasks.
+							final List<TaskId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
+							DeleteTasksCmd cmd = new DeleteTasksCmd(taskIds);
+							GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+								@Override
+								public void onFailure(Throwable caught) {
+									GwtClientHelper.handleGwtRPCFailure(
+										caught,
+										GwtTeaming.getMessages().rpcFailure_DeleteTasks());
+								}
+
+								@Override
+								public void onSuccess(VibeRpcResponse result) {
+									handleTaskPostRemoveAsync(taskIds);
+								}
+							});
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					m_messages.taskConfirmDelete());
 			}
 		});
 	}
@@ -2225,7 +2252,7 @@ public class TaskTable extends Composite
 	 */
 	private void handleTaskPurge() {
 		// If nothing the user can purge is checked...
-		List<TaskListItem> tasksChecked = getTasksChecked();
+		final List<TaskListItem> tasksChecked = getTasksChecked();
 		int c = ((null == tasksChecked) ? 0 : tasksChecked.size());
 		for (int i = (c - 1); i >= 0; i -= 1) {
 			TaskListItem task = tasksChecked.get(i);
@@ -2239,25 +2266,50 @@ public class TaskTable extends Composite
 		}
 
 		// Is the user sure they want to perform the purge?
-		if (!(Window.confirm(m_messages.taskConfirmPurge()))) {
-			// No!  Bail.
-			return;
-		}
-
-		// Purge the selected tasks.
-		final List<TaskId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
-		PurgeTasksCmd cmd = new PurgeTasksCmd(taskIds);
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
 			@Override
-			public void onFailure(Throwable caught) {
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					GwtTeaming.getMessages().rpcFailure_PurgeTasks());
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
 			}
-
+			
 			@Override
-			public void onSuccess(VibeRpcResponse result) {
-				handleTaskPostRemoveAsync(taskIds);
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes!  Purge the selected tasks.
+							final List<TaskId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
+							PurgeTasksCmd cmd = new PurgeTasksCmd(taskIds);
+							GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+								@Override
+								public void onFailure(Throwable caught) {
+									GwtClientHelper.handleGwtRPCFailure(
+										caught,
+										GwtTeaming.getMessages().rpcFailure_PurgeTasks());
+								}
+
+								@Override
+								public void onSuccess(VibeRpcResponse result) {
+									handleTaskPostRemoveAsync(taskIds);
+								}
+							});
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					m_messages.taskConfirmPurge());
 			}
 		});
 	}
@@ -4006,7 +4058,7 @@ public class TaskTable extends Composite
 		boolean byRights  = (!(m_taskBundle.getCanModifyTaskLinkage()));
 		boolean bySort    = ((Column.ORDER != m_sortColumn) || (!m_sortAscending));
 		boolean byVirtual = (!(m_taskBundle.getIsFromFolder()));
-		// Window.alert("f:" + byFilter + ", r:" + byRights + ", s:" + bySort + ", v:" + byVirtual);
+		// GwtClientHelper.deferredAlert("f:" + byFilter + ", r:" + byRights + ", s:" + bySort + ", v:" + byVirtual);
 		return (bySort || byVirtual || byFilter || byRights);
 	}
 	
