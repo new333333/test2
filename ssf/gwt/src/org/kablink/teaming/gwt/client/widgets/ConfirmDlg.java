@@ -60,6 +60,14 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	private String					m_confirmationMsg;		// Base message confirmation is being requested for.
 	private VibeVerticalPanel		m_vp;					// The panel holding the dialog's content.
 	private Widget					m_additionalWidgets;	// Any additional widgets that the caller wants confirmation on.
+	
+	// The following controls whether we use a simple Window.confirm()
+	// by default if we don't have any additional widgets to include.
+	//		true  -> We do.
+	//		false -> We always use our custom dialog.
+	// Note that this can be overridden by explicitly specifying a
+	// choice when calling ConfirmDlg.initAndShow().
+	private final static boolean USE_SIMPLE_CONFIRM_WHEN_POSSIBLE	= false;
 
 	/**
 	 * Interface used by the dialog to inform the caller about what's
@@ -189,26 +197,6 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	}
 
 	/*
-	 * Asynchronously loads the entry types the user can select from.
-	 */
-	private void loadPart1Async() {
-		ScheduledCommand doLoad = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart1Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-	
-	/*
-	 * Synchronously loads the entry types the user can select from.
-	 */
-	private void loadPart1Now() {
-		populateDlgAsync();
-	}
-	
-	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
@@ -251,11 +239,11 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	 * Asynchronously runs the given instance of the confirmation
 	 * dialog.
 	 */
-	private static void runDlgAsync(final ConfirmDlg cDlg, final ConfirmCallback cCB, final String confirmationMsg, final Widget additionalWidgets) {
+	private static void runDlgAsync(final ConfirmDlg cDlg, final ConfirmCallback cCB, final String confirmationMsg, final Widget additionalWidgets, final boolean useSimpleConfirmWhenPossible) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				cDlg.runDlgNow(cCB, confirmationMsg, additionalWidgets);
+				cDlg.runDlgNow(cCB, confirmationMsg, additionalWidgets, useSimpleConfirmWhenPossible);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -265,13 +253,27 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	 * Synchronously runs the given instance of the confirmation
 	 * dialog.
 	 */
-	private void runDlgNow(ConfirmCallback cCB, String confirmationMsg, Widget additionalWidgets) {
-		// Store the parameter and populate the dialog.
+	private void runDlgNow(ConfirmCallback cCB, String confirmationMsg, Widget additionalWidgets, boolean useSimpleConfirmWhenPossible) {
+		// Store the parameters.
 		m_confirmCallback   = cCB;
 		m_confirmationMsg   = confirmationMsg;
 		m_additionalWidgets = additionalWidgets;
+
+		// If there are no additional widgets, are we supposed to use
+		// a simple Window.confirm()?
+		if (useSimpleConfirmWhenPossible && (null == additionalWidgets)) {
+			// Yes!  Use it.
+			m_confirmCallback.dialogReady();
+			if (Window.confirm(confirmationMsg))
+			     m_confirmCallback.accepted();
+			else m_confirmCallback.rejected();
+		}
 		
-		loadPart1Async();
+		else {
+			// No, we can't use a simply Window.confirm().  Populate
+			// and run the dialog.
+			populateDlgAsync();
+		}
 	}
 
 	/**
@@ -315,7 +317,8 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 			final ConfirmDlg		cDlg,
 			final ConfirmCallback	cCB,
 			final String			confirmationMsg,
-			final Widget			additionalWidgets) {
+			final Widget			additionalWidgets,
+			final boolean			useSimpleConfirmWhenPossible) {
 		GWT.runAsync(ConfirmDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -338,7 +341,7 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(cDlg, cCB, confirmationMsg, additionalWidgets);
+					runDlgAsync(cDlg, cCB, confirmationMsg, additionalWidgets, useSimpleConfirmWhenPossible);
 				}
 			}
 		});
@@ -351,7 +354,7 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	 * @param cDlgClient
 	 */
 	public static void createAsync(ConfirmDlgClient cDlgClient) {
-		doAsyncOperation(cDlgClient, null, null, null, null);
+		doAsyncOperation(cDlgClient, null, null, null, null, false);
 	}
 	
 	/**
@@ -361,13 +364,24 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	 * @param cCB
 	 * @param confirmationMsg
 	 * @param additionalWidgets
+	 * @param useSimpleConfirmWhenPossible
 	 */
+	public static void initAndShow(ConfirmDlg cDlg, ConfirmCallback cCB, String confirmationMsg, Widget additionalWidgets, boolean useSimpleConfirmWhenPossible) {
+		doAsyncOperation(null, cDlg, cCB, confirmationMsg, additionalWidgets, useSimpleConfirmWhenPossible);
+	}
+	
 	public static void initAndShow(ConfirmDlg cDlg, ConfirmCallback cCB, String confirmationMsg, Widget additionalWidgets) {
-		doAsyncOperation(null, cDlg, cCB, confirmationMsg, additionalWidgets);
+		// Always use the initial form of the method.
+		initAndShow(cDlg, cCB, confirmationMsg, additionalWidgets, USE_SIMPLE_CONFIRM_WHEN_POSSIBLE);
 	}
 	
 	public static void initAndShow(ConfirmDlg cDlg, ConfirmCallback cCB, String confirmationMsg) {
 		// Always use the initial form of the method.
-		initAndShow(cDlg, cCB, confirmationMsg, null);
+		initAndShow(cDlg, cCB, confirmationMsg, null, USE_SIMPLE_CONFIRM_WHEN_POSSIBLE);
+	}
+	
+	public static void initAndShow(ConfirmDlg cDlg, ConfirmCallback cCB, String confirmationMsg, boolean useSimpleConfirmWhenPossible) {
+		// Always use the initial form of the method.
+		initAndShow(cDlg, cCB, confirmationMsg, null, useSimpleConfirmWhenPossible);
 	}
 }
