@@ -3213,8 +3213,8 @@
 	<item name="entryFormButtons" caption="__form_buttons" category="entryLayout" display="form">
 		<properties>
 		    <property name="alignment" caption="__alignment" type="selectbox" default="left">
-				<option name="left" caption="__left" />
-				<option name="right" caption="__right" />
+				<option name="left" caption="__colalignLeft" />
+				<option name="right" caption="__colalignRight" />
 			    <help>ihelp.designers.form_button_alignment</help>
 		    </property>
 		</properties>
