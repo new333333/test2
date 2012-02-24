@@ -265,7 +265,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	}
 	public long getFsaMaxFileSize() {
 		if(fsaMaxFileSize == null)
-			return SPropsUtil.getLong("fsa.max.file.size", 10485760L);
+			return SPropsUtil.getLong("fsa.max.file.size", 1073741824L);
 		else
 			return fsaMaxFileSize;
 	}
