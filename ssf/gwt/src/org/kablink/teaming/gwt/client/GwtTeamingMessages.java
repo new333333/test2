@@ -299,6 +299,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetActivityStreamsTree();
 	String rpcFailure_GetAddMeetingUrl();
 	String rpcFailure_GetAdminActions();
+	String rpcFailure_GetAllGroups();
 	String rpcFailure_GetLandingPageData();
 	String rpcFailure_GetListOfAttachments();
 	String rpcFailure_GetBinderInfo();
@@ -1079,4 +1080,11 @@ public interface GwtTeamingMessages extends Messages
 	String fileSyncAppOff();
 	String fileSyncAppOn();
 	String fileSyncAppOnOffLabel();
+	
+	// Strings used in the Manage Groups dialog
+	String manageGroupsDlgAddGroupLabel();
+	String manageGroupsDlgDeleteGroupLabel();
+	String manageGroupsDlgHeader();
+	String manageGroupsDlgTitleCol();
+	
 }// end GwtTeamingMessages

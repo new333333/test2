@@ -182,6 +182,7 @@ import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.Tabs.TabEntry;
 import org.kablink.util.PropertyNotFoundException;
+import org.kablink.util.search.Constants;
 
 
 /**
@@ -1870,6 +1871,81 @@ public class GwtServerHelper {
 		
 		return adminCategories;
 	}// end getAdminActions()
+	
+	
+	/**
+	 * Return a list of all the groups in Vibe
+	 */
+	public static List<GroupInfo> getAllGroups( AllModulesInjected ami ) throws GwtTeamingException
+	{
+		ArrayList<GroupInfo> reply;
+		
+		reply = new ArrayList<GroupInfo>();
+		
+		try
+		{
+			Map options;
+			Map searchResults;
+			List groups;
+			
+			options = new HashMap();
+			options.put( ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD );
+			options.put( ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE );
+			options.put( ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1 );
+			
+			// Exclude allUsers from the search
+			{
+				Document searchFilter;
+				Element rootElement;
+				Element field;
+		    	Element child;
+	
+				searchFilter = DocumentHelper.createDocument();
+				rootElement = searchFilter.addElement( Constants.NOT_ELEMENT );
+				field = rootElement.addElement( Constants.FIELD_ELEMENT );
+		    	field.addAttribute( Constants.FIELD_NAME_ATTRIBUTE, Constants.GROUPNAME_FIELD );
+		    	child = field.addElement( Constants.FIELD_TERMS_ELEMENT );
+		    	child.setText( "allUsers" );
+		    	options.put( ObjectKeys.SEARCH_FILTER_AND, searchFilter );
+			}
+	
+			// Get the list of all the groups.
+			searchResults = ami.getProfileModule().getGroups( options );
+	
+			groups = (List) searchResults.get( ObjectKeys.SEARCH_ENTRIES );
+			
+			if ( groups != null )
+			{
+				int i;
+				
+				for (i = 0; i < groups.size(); ++i)
+				{
+					HashMap nextMap;
+					GroupInfo grpInfo;
+					Long id;
+					
+					if ( groups.get( i ) instanceof HashMap )
+					{
+						nextMap = (HashMap) groups.get( i );
+					
+						grpInfo = new GroupInfo();
+						id = Long.valueOf( (String) nextMap.get( "_docId" ) );
+						grpInfo.setId( id );
+						grpInfo.setTitle( (String) nextMap.get( "title" ) );
+						grpInfo.setName( (String) nextMap.get( "_groupName" ) );
+						
+						reply.add( grpInfo );
+					}
+				}
+			}
+		}
+		catch ( Exception ex )
+		{
+			throw GwtServerHelper.getGwtTeamingException( ex );
+		} 
+		
+		return reply;
+	}
 	
 	
 	/**
@@ -3693,6 +3769,7 @@ public class GwtServerHelper {
 		case GET_ACTIVITY_STREAM_PARAMS:
 		case GET_ADD_MEETING_URL:
 		case GET_ADMIN_ACTIONS:
+		case GET_ALL_GROUPS:
 		case GET_BINDER_BRANDING:
 		case GET_BINDER_INFO:
 		case GET_BINDER_PERMALINK:

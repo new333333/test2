@@ -76,6 +76,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_HELP,						// Invokes the Vibe OnPrem online help.
 	INVOKE_REPLY,						// Invoke the 'reply to entry' UI.
 	INVOKE_SHARE,						// Invoke the 'share this entry' UI.
+	INVOKE_MANAGE_GROUPS_DLG,			// Invoke the "Manage groups" dialog.
 	INVOKE_SIMPLE_PROFILE,				// Invokes the simple profile dialog.
 	INVOKE_SUBSCRIBE,					// Invoke the 'subscribe to this entry' UI.
 	INVOKE_TAG,							// Invoke the 'tag this entry' UI.

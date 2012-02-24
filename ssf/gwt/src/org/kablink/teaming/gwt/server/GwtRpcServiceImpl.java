@@ -329,6 +329,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_ALL_GROUPS:
+		{
+			List<GroupInfo> result;
+			GetGroupsRpcResponseData responseData;
+			
+			result = GwtServerHelper.getAllGroups( this );
+			responseData = new GetGroupsRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_BINDER_BRANDING:
 		{
 			GwtBrandingData brandingData;
