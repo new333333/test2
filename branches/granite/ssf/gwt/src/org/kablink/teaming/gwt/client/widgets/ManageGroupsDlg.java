@@ -32,13 +32,16 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.VibeCellTableResources;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteGroupsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAllGroupsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -62,7 +65,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment.HorizontalAlignmentConstant;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -82,6 +84,7 @@ public class ManageGroupsDlg extends DlgBox
     private MultiSelectionModel<GroupInfo> m_selectionModel;
 	private ListDataProvider<GroupInfo> m_dataProvider;
 	private SimplePager m_pager;
+	private List<GroupInfo> m_listOfGroups;
     private int m_width;
     private int m_height;
 	
@@ -109,12 +112,8 @@ public class ManageGroupsDlg extends DlgBox
 	 */
 	private void addGroups( List<GroupInfo> listOfGroups )
 	{
-		if ( listOfGroups == null )
-		{
-			m_groupsTable.setRowCount( 0 );
-			return;
-		}
-	
+		m_listOfGroups = listOfGroups;
+		
 		if ( m_dataProvider == null )
 		{
 			m_dataProvider = new ListDataProvider<GroupInfo>( listOfGroups );
@@ -126,7 +125,13 @@ public class ManageGroupsDlg extends DlgBox
 			m_dataProvider.refresh();
 		}
 		
+		// Clear all selections.
+		m_selectionModel.clear();
+		
+		// Go to the first page
 		m_pager.firstPage();
+		
+		// Tell the table how many groups we have.
 		m_groupsTable.setRowCount( listOfGroups.size(), true );
 	}
 
@@ -135,10 +140,12 @@ public class ManageGroupsDlg extends DlgBox
 	 */
 	public Panel createContent( Object props )
 	{
-		GwtTeamingMessages messages;
+		final GwtTeamingMessages messages;
 		VerticalPanel mainPanel = null;
 		TextColumn<GroupInfo> titleCol;
+		TextColumn<GroupInfo> nameCol;
 		FlowPanel menuPanel;
+		CellTable.Resources cellTableResources;
 		
 		messages = GwtTeaming.getMessages();
 		
@@ -197,7 +204,9 @@ public class ManageGroupsDlg extends DlgBox
 			menuPanel.add( label );
 		}
 		
-		m_groupsTable = new CellTable<GroupInfo>();
+		// Create the CellTable that will display the list of groups.
+		cellTableResources = GWT.create( VibeCellTableResources.class );
+		m_groupsTable = new CellTable<GroupInfo>( 15, cellTableResources );
 		m_groupsTable.getElement().getStyle().setWidth( m_width, Unit.PX );
 		m_groupsTable.getElement().getStyle().setHeight( m_height, Unit.PX );
 		
@@ -230,24 +239,33 @@ public class ManageGroupsDlg extends DlgBox
 			@Override
 			public String getValue( GroupInfo groupInfo )
 			{
-				String name;
 				String title;
-				String value;
 				
 				title = groupInfo.getTitle();
-				if ( title == null )
-					value = "";
-				else
-					value = title;
+				if ( title == null || title.length() == 0 )
+					title = messages.noTitle();
 				
-				name = groupInfo.getName();
-				if ( name != null )
-					value += " (" + name + ")";
-				
-				return value;
+				return title;
 			}
 		};
 		m_groupsTable.addColumn( titleCol, messages.manageGroupsDlgTitleCol() );
+		
+		// Add the "Name" column
+		nameCol = new TextColumn<GroupInfo>()
+		{
+			@Override
+			public String getValue( GroupInfo groupInfo )
+			{
+				String name;
+				
+				name = groupInfo.getName();
+				if ( name == null )
+					name = "";
+				
+				return name;
+			}
+		};
+		m_groupsTable.addColumn( nameCol, messages.manageGroupsDlgNameCol() );
 		
 		// Create a pager
 		{
@@ -273,21 +291,104 @@ public class ManageGroupsDlg extends DlgBox
 	private void deleteSelectedGroups()
 	{
 		Set<GroupInfo> selectedGroups;
+		Iterator<GroupInfo> groupIterator;
+		String grpNames;
+		ArrayList<GroupInfo> listOfGroupsToDelete;
+		
+		listOfGroupsToDelete = new ArrayList<GroupInfo>();
+		
+		grpNames = "";
 		
 		selectedGroups = getSelectedGroups();
 		if ( selectedGroups != null )
 		{
-			Iterator<GroupInfo> groupIterator;
-
+			// Get a list of all the selected group names
 			groupIterator = selectedGroups.iterator();
 			while ( groupIterator.hasNext() )
 			{
 				GroupInfo nextGroup;
 				
 				nextGroup = groupIterator.next();
-				Window.alert( "selected group title: " + nextGroup.getTitle() );
+				listOfGroupsToDelete.add( nextGroup );
+				
+				grpNames += "\t" + nextGroup.getTitle() + "\n";
 			}
 		}
+		
+		// Do we have any groups to delete?
+		if ( listOfGroupsToDelete.size() > 0 )
+		{
+			String msg;
+			
+			// Yes, ask the user if they want to delete the selected groups?
+			msg = GwtTeaming.getMessages().manageGroupsDlgConfirmDelete( grpNames );
+			if ( Window.confirm( msg ) )
+			{
+				deleteGroupsFromServer( listOfGroupsToDelete );
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void deleteGroupsFromServer( final ArrayList<GroupInfo> listOfGroupsToDelete )
+	{
+		if ( listOfGroupsToDelete != null && listOfGroupsToDelete.size() > 0 )
+		{
+			DeleteGroupsCmd cmd;
+			AsyncCallback<VibeRpcResponse> rpcCallback = null;
+	
+			// Create the callback that will be used when we issue an ajax call to delete the groups.
+			rpcCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_DeleteGroups() );
+				}
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				public void onSuccess( final VibeRpcResponse response )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						/**
+						 * 
+						 */
+						public void execute()
+						{
+							// Spin through the list of groups we just deleted and remove
+							// them from the table.
+							for (GroupInfo nextGroup : listOfGroupsToDelete )
+							{
+								m_listOfGroups.remove( nextGroup );
+							}
+							
+							// Clear all selections.
+							m_selectionModel.clear();
+							
+							// Update the table to reflect the fact that we deleted a group.
+							m_dataProvider.refresh();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+	
+			// Issue an ajax request to get delete the list of groups.
+			cmd = new DeleteGroupsCmd( listOfGroupsToDelete );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		}		
 	}
 	
 	/**

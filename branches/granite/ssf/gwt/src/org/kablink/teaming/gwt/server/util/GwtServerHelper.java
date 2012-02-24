@@ -1008,6 +1008,42 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * 
+	 */
+	public static Boolean deleteGroups( AllModulesInjected ami, ArrayList<GroupInfo> listOfGroups ) throws GwtTeamingException
+	{
+		if ( listOfGroups != null && listOfGroups.size() > 0 )
+		{
+	   		List<Long> grpIds;
+	   		
+	   		grpIds = new ArrayList<Long>();
+	   		for (GroupInfo nextGroup : listOfGroups)
+	   		{
+	   			grpIds.add( nextGroup.getId() );
+	   		}
+
+       		// Remove each group's quota (by setting it to 0) before deleting it
+			// This will fix up all of the user quotas that may have been influenced by this group
+	   		ami.getProfileModule().setGroupDiskQuotas( grpIds, new Long( 0L ) );
+	       		
+			// Delete each groups
+	   		for (Long nextGroupId : grpIds)
+	   		{
+	   			try
+	   			{
+	   				ami.getProfileModule().deleteEntry( nextGroupId, null );
+	   			}
+	   			catch ( Exception ex )
+	   			{
+	   				throw GwtServerHelper.getGwtTeamingException( ex );
+	   			} 
+	   		}
+		}
+		
+		return Boolean.TRUE;
+	}
+	
+	/**
 	 * Returns a TreeInfo containing the display information for the
 	 * Binder hierarchy referred to by a List<Long> of Binder IDs
 	 * (i.e., a bucket list.)
@@ -3760,6 +3796,7 @@ public class GwtServerHelper {
 		case ADD_FAVORITE:
 		case CAN_MODIFY_BINDER:
 		case COLLAPSE_SUBTASKS:
+		case DELETE_GROUPS:
 		case DELETE_TASKS:
 		case EXECUTE_SEARCH:
 		case EXPAND_HORIZONTAL_BUCKET:
