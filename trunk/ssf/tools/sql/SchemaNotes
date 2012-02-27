@@ -130,3 +130,7 @@ Version 31:
   alter table SS_ZoneConfig add column fsaEnabled bit;
   alter table SS_ZoneConfig add column fsaSynchInterval integer; 
   alter table SS_ZoneConfig add column fsaAutoUpdateUrl varchar(255);
+  
+Version 32:
+  alter table SS_Principals add column dynamic bit;
+  alter table SS_Principals add column ldapQuery longtext;
