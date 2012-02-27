@@ -1219,7 +1219,7 @@ public class GwtServerHelper {
 			for (EntryId entryId:  entryIds) {
 				try {
 					// ...deleting each entry...
-					TrashHelper.preDeleteEntry(bs, entryId.getBinderId(), entryId.getBinderId());
+					TrashHelper.preDeleteEntry(bs, entryId.getBinderId(), entryId.getEntryId());
 				}
 
 				catch (Exception e) {
