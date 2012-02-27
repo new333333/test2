@@ -372,7 +372,7 @@ public class BrowserSniffer {
 		if (req == null) {
 			return false;
 		}
-		if (is_iphone(req)) return true;
+		if (is_iphone(req) || is_ipad(req)) return true;
 		if (is_blackberry(req)) return true;
 		if (is_droid(req)) return true;
 		if (is_otherMobile(req, userAgents)) return true;
@@ -416,6 +416,27 @@ public class BrowserSniffer {
 		agent = agent.toLowerCase();
 
 		if (agent.indexOf("iphone") != -1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public static boolean is_ipad(HttpServletRequest req) {
+		if (req == null) {
+			return false;
+		}
+
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
+
+		if (agent == null) {
+			return false;
+		}
+
+		agent = agent.toLowerCase();
+
+		if (agent.indexOf("ipad") != -1) {
 			return true;
 		}
 		else {
@@ -469,11 +490,11 @@ public class BrowserSniffer {
 		if (req == null) {
 			return false;
 		}
-		String pattern = "(?:ipad|xoom|playbook|tablet|kindle|sch-i800)";
-		if (userAgentRegexp != null && !userAgentRegexp.equals("")) {
-			pattern = userAgentRegexp;
+		if (userAgentRegexp == null || userAgentRegexp.equals("")) {
+			//If there is no regexp defined for finding tablets, then this cannot be a tablet.
+			return false;
 		}
-		Pattern p = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+		Pattern p = Pattern.compile(userAgentRegexp, Pattern.CASE_INSENSITIVE);
 
 		String agent = req.getHeader(HttpHeaders.USER_AGENT);
 
