@@ -95,12 +95,10 @@ import org.kablink.teaming.gwt.client.event.TrashPurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TrashRestoreAllEvent;
 import org.kablink.teaming.gwt.client.event.TrashRestoreSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.rpc.shared.DeleteFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderRowsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.PurgeFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
@@ -114,11 +112,8 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
-import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
-import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
-import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.CheckboxCell;
@@ -1317,72 +1312,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
-			// Yes!  Asynchronously delete the selected entries.
-			ScheduledCommand doDelete = new ScheduledCommand() {
-				@Override
-				public void execute() {
-					onDeleteSelectedEntriesNow();
-				}
-			};
-			Scheduler.get().scheduleDeferred(doDelete);
-		}
-	}
-	
-	/*
-	 * Synchronously deletes the selected entries.
-	 */
-	private void onDeleteSelectedEntriesNow() {
-		// Are there any entries to selected to delete?  
-		final List<Long> selectedIds = getSelectedEntryIds();
-		if (!(selectedIds.isEmpty())) {
-			// Yes!  Is the user sure they want to delete them?
-			ConfirmDlg.createAsync(new ConfirmDlgClient() {
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess(ConfirmDlg cDlg) {
-					ConfirmDlg.initAndShow(
-						cDlg,
-						new ConfirmCallback() {
-							@Override
-							public void dialogReady() {
-								// Ignored.  We don't really care when the
-								// dialog is ready.
-							}
-
-							@Override
-							public void accepted() {
-								// Yes!  Delete them from the folder.
-								DeleteFolderEntriesCmd cmd = new DeleteFolderEntriesCmd(getFolderInfo().getBinderIdAsLong(), selectedIds);
-								GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-									@Override
-									public void onFailure(Throwable caught) {
-										GwtClientHelper.handleGwtRPCFailure(
-											caught,
-											GwtTeaming.getMessages().rpcFailure_DeleteFolderEntries());
-									}
-					
-									@Override
-									public void onSuccess(VibeRpcResponse result) {
-										// Reset the view to redisplay things with the entries
-										// deleted.
-										resetViewAsync();
-									}
-								});
-							}
-
-							@Override
-							public void rejected() {
-								// No, they're not sure!
-							}
-						},
-						m_messages.vibeDataTable_Confirm_Delete());
-				}
-			});
+			// Yes!  Delete the selected entries.
+			BinderViewsHelper.deleteFolderEntries(eventFolderId, getSelectedEntryIds());
 		}
 	}
 	
@@ -1632,72 +1563,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
-			// Yes!  Asynchronously purge the selected entries.
-			ScheduledCommand doPurge = new ScheduledCommand() {
-				@Override
-				public void execute() {
-					onPurgeSelectedEntriesNow();
-				}
-			};
-			Scheduler.get().scheduleDeferred(doPurge);
-		}
-	}
-	
-	/*
-	 * Synchronously purges the selected entries.
-	 */
-	private void onPurgeSelectedEntriesNow() {
-		// Are there any entries selected to purge?
-		final List<Long> selectedIds = getSelectedEntryIds();
-		if (!(selectedIds.isEmpty())) {
-			// Yes!  Is the user sure they want to purge them?
-			ConfirmDlg.createAsync(new ConfirmDlgClient() {
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess(ConfirmDlg cDlg) {
-					ConfirmDlg.initAndShow(
-						cDlg,
-						new ConfirmCallback() {
-							@Override
-							public void dialogReady() {
-								// Ignored.  We don't really care when the
-								// dialog is ready.
-							}
-
-							@Override
-							public void accepted() {
-								// Yes!  Purge them from the folder.
-								PurgeFolderEntriesCmd cmd = new PurgeFolderEntriesCmd(getFolderInfo().getBinderIdAsLong(), selectedIds);
-								GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-									@Override
-									public void onFailure(Throwable caught) {
-										GwtClientHelper.handleGwtRPCFailure(
-											caught,
-											GwtTeaming.getMessages().rpcFailure_PurgeFolderEntries());
-									}
-					
-									@Override
-									public void onSuccess(VibeRpcResponse result) {
-										// Reset the view to redisplay things with the entries
-										// purged.
-										resetViewAsync();
-									}
-								});
-							}
-
-							@Override
-							public void rejected() {
-								// No, they're not sure!
-							}
-						},
-						m_messages.vibeDataTable_Confirm_Purge());
-				}
-			});
+			// Yes!  Purge the selected entries.
+			BinderViewsHelper.purgeFolderEntries(eventFolderId, getSelectedEntryIds());
 		}
 	}
 	

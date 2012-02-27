@@ -176,6 +176,55 @@ public class BinderViewsHelper {
 	}
 
 	/**
+	 * Deletes the folder entries based on a folder ID and List<Long>
+	 * of their entry IDs.
+	 *
+	 * @param entryId
+	 * @param entryIds
+	 */
+	public static void deleteFolderEntries(final Long folderId, final List<Long> entryIds) {
+		// If we weren't given any entry IDs to be deleted...
+		if ((null == entryIds) || entryIds.isEmpty()) {
+			// ...bail.
+			return;
+		}
+		
+		// Is the user sure they want to delete the folder entries?
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes, they're sure!  Perform the delete.
+							DeletePurgeEntriesHelper.deleteSelectedEntriesAsync(folderId, entryIds);
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					GwtTeaming.getMessages().binderViewsConfirmDeleteEntries());
+			}
+		});
+	}
+	
+	/**
 	 * Deletes the user workspaces based on a List<Long> of their user
 	 * IDs.
 	 *
@@ -452,6 +501,54 @@ public class BinderViewsHelper {
 	}
 	
 	/**
+	 * Purges the folder entries based on a folder ID and List<Long> of
+	 * the entry IDs.
+	 *
+	 * @param entryIds
+	 */
+	public static void purgeFolderEntries(final Long folderId, final List<Long> entryIds) {
+		// If we weren't given any entry IDs to be purged...
+		if ((null == entryIds) || entryIds.isEmpty()) {
+			// ...bail.
+			return;
+		}
+		
+		// Is the user sure they want to purge the folder entries?
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes, they're sure!  Perform the purge.
+							DeletePurgeEntriesHelper.purgeSelectedEntriesAsync(folderId, entryIds);
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					GwtTeaming.getMessages().binderViewsConfirmPurgeEntries());
+			}
+		});
+	}
+
+	/**
 	 * Purges the user workspaces and user objects based on a
 	 * List<Long> of their user IDs.
 	 *
@@ -568,7 +665,6 @@ public class BinderViewsHelper {
 		}
 
 		// Generate the URL to launch the JSP code to do sharing...
-		// http://10.0.1.202:8080/ssf/a/do?p_name=ss_forum&p_action=0&operation=share_this_binder&binderId=18822&action=__ajax_relevance&entryId=9323&vibe_url=1
 		StringBuffer url = new StringBuffer(GwtClientHelper.getRequestInfo().getBaseVibeUrl());
 		url.append("&operation=share_this_binder");
 		url.append("&action=__ajax_relevance");

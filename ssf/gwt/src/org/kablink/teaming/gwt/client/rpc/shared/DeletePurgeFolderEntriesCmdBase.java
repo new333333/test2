@@ -33,22 +33,26 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class holds all of the information necessary to execute the
- * 'delete folder' command.
+ * Base class that holds all of the information necessary to execute
+ * a 'delete/purge of folder entries' commands.
  * 
  * @author drfoster@novell.com
  */
-public class DeleteFolderEntriesCmd extends DeletePurgeFolderEntriesCmdBase {
+public abstract class DeletePurgeFolderEntriesCmdBase extends VibeRpcCmd {
+	private List<Long>	m_entryIds;	//
+	private Long		m_folderId;	//
+	
 	/**
 	 * Class constructor.
 	 * 
 	 * For GWT serialization, must have a zero parameter
 	 * constructor.
 	 */
-	public DeleteFolderEntriesCmd() {
+	public DeletePurgeFolderEntriesCmdBase() {
 		super();		
 	}
 
@@ -58,8 +62,11 @@ public class DeleteFolderEntriesCmd extends DeletePurgeFolderEntriesCmdBase {
 	 * @param folderId
 	 * @param entryIds
 	 */
-	public DeleteFolderEntriesCmd(Long folderId, List<Long> entryIds) {
-		super(folderId, entryIds);
+	public DeletePurgeFolderEntriesCmdBase(Long folderId, List<Long> entryIds) {
+		this();
+		
+		setFolderId(folderId);
+		setEntryIds(entryIds);
 	}
 	
 	/**
@@ -68,19 +75,42 @@ public class DeleteFolderEntriesCmd extends DeletePurgeFolderEntriesCmdBase {
 	 * @param folderId
 	 * @param entryId
 	 */
-	public DeleteFolderEntriesCmd(Long folderId, Long entryId) {
-		super(folderId, entryId);
+	public DeletePurgeFolderEntriesCmdBase(Long folderId, Long entryId) {
+		this(folderId, getLLFromL(entryId));
 	}
 
+	/*
+	 * Returns a List<Long> that contains the specified Long.
+	 */
+	private static List<Long> getLLFromL(Long l) {
+		List<Long> reply = new ArrayList<Long>();
+		reply.add(l);
+		return reply;
+	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public List<Long> getEntryIds() {return m_entryIds;}	
+	public Long       getFolderId() {return m_folderId;}
+
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setEntryIds(List<Long> entryIds) {m_entryIds = entryIds;}
+	public void setFolderId(Long       folderId) {m_folderId = folderId;}
+	
 	/**
 	 * Returns the command's enumeration value.
 	 * 
-	 * Implements DeletePurgeUsersCmdBase.getCmdType()
+	 * Implements VibeRpcCmd.getCmdType()
 	 * 
 	 * @return
 	 */
 	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.DELETE_FOLDER_ENTRIES.ordinal();
-	}
+	public abstract int getCmdType();
 }

@@ -157,6 +157,7 @@ import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.ClipboardUser;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
@@ -1209,24 +1210,32 @@ public class GwtServerHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static Boolean deleteFolderEntries(AllModulesInjected bs, HttpServletRequest request, Long binderId, List<Long> entryIds) throws GwtTeamingException {
+	public static ErrorListRpcResponseData deleteFolderEntries(AllModulesInjected bs, HttpServletRequest request, Long binderId, List<Long> entryIds) throws GwtTeamingException {
 		try {
-			// Before we delete any of them... 
-			FolderModule fm = bs.getFolderModule();
+			// Allocate an error list response we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+
+			// Scan the entry IDs...
 			for (Long entryId:  entryIds) {
-				// ...make sure we can delete all of them.
-				fm.checkAccess(fm.getEntry(binderId, entryId), FolderOperation.preDeleteEntry);
+				try {
+					// ...deleting each entry...
+					TrashHelper.preDeleteEntry(bs, binderId, entryId);
+				}
+
+				catch (Exception e) {
+					// ...tracking any that we couldn't delete.
+					String entryTitle = getEntryTitle(bs, binderId, entryId);
+					String messageKey;
+					if      (e instanceof AccessControlException) messageKey = "deleteEntryError.AccssControlException";
+					else                                          messageKey = "deleteEntryError.OtherException";
+					reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
+				}
 			}
 
-			// If we get here, we have rights to delete all the entries
-			// that we were given.  Scan them...
-			for (Long entryId:  entryIds) {
-				// ...deleting each.
-				TrashHelper.preDeleteEntry(bs, binderId, entryId);
-			}
-
-			// If we get here, the deletes were successful.
-			return Boolean.TRUE;
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing any errors we
+			// encountered.  Return it.
+			return reply;
 		}
 		
 		catch (Exception ex) {
@@ -3214,6 +3223,28 @@ public class GwtServerHelper {
 		return new EmailAddressInfo(userEMA, userHasWS, userWSInTrash);
 	}
 	
+	/**
+	 * Returns a string that can be used as an entry's title in an
+	 * error message.
+	 * 
+	 * @param bs
+	 * @param folderId
+	 * @param entryId
+	 * 
+	 * @return
+	 */
+	public static String getEntryTitle(AllModulesInjected bs, Long folderId, Long entryId) {
+		String reply;
+		try {
+			FolderEntry fe = bs.getFolderModule().getEntry(folderId, entryId);
+			reply = fe.getTitle();
+		}
+		catch (Exception e) {
+			reply = String.valueOf(entryId);
+		}
+		return reply;
+	}
+
 	/**
 	 * Return a GwtFileSyncAppConfiguration object that holds the File Sync App configuration data
 	 * 
@@ -5818,24 +5849,33 @@ public class GwtServerHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static Boolean purgeFolderEntries(AllModulesInjected bs, HttpServletRequest request, Long binderId, List<Long> entryIds) throws GwtTeamingException {
+	public static ErrorListRpcResponseData purgeFolderEntries(AllModulesInjected bs, HttpServletRequest request, Long binderId, List<Long> entryIds) throws GwtTeamingException {
 		try {
-			// Before we purge any of them... 
+			// Allocate an error list response we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+
+			// Scan the entry IDs...
 			FolderModule fm = bs.getFolderModule();
 			for (Long entryId:  entryIds) {
-				// ...make sure we can purge all of them.
-				fm.checkAccess(fm.getEntry(binderId, entryId), FolderOperation.deleteEntry);
-			}
-
-			// If we get here, we have rights to purge all the entries
-			// that we were given.  Scan them...
-			for (Long entryId:  entryIds) {
-				// ...deleting each.
-				fm.deleteEntry(binderId, entryId);
+				try {
+					// ...purging each entry...
+					fm.deleteEntry(binderId, entryId);
+				}
+				
+				catch (Exception e) {
+					// ...tracking any that we couldn't purge.
+					String entryTitle = getEntryTitle(bs, binderId, entryId);
+					String messageKey;
+					if      (e instanceof AccessControlException) messageKey = "purgeEntryError.AccssControlException";
+					else                                          messageKey = "purgeEntryError.OtherException";
+					reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
+				}
 			}
 			
-			// If we get here, the purges were successful.
-			return Boolean.TRUE;
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing any errors we
+			// encountered.  Return it.
+			return reply;
 		}
 		
 		catch (Exception ex) {
