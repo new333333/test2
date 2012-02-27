@@ -441,14 +441,12 @@ public class GwtMenuHelper {
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
 				url.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
 				url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-				String[] nltArgs = new String[] {NLT.getDef(def.getTitle())};
-				String title = NLT.get("toolbar.new_with_arg", nltArgs);
 				
 				ToolbarItem addTBI = new ToolbarItem("1_add");
-				markTBITitleRes( addTBI, title);
-				markTBIHighlight(addTBI       );
-				markTBIPopup(    addTBI       );
-				markTBIUrl(      addTBI, url  );
+				markTBITitle(    addTBI, "toolbar.new");
+				markTBIHighlight(addTBI               );
+				markTBIPopup(    addTBI               );
+				markTBIUrl(      addTBI, url          );
 				entryToolbar.addNestedItem(addTBI);
 			}
 		}
@@ -662,10 +660,10 @@ public class GwtMenuHelper {
 				url.setParameter(WebKeys.URL_BINDER_ID, ws.getId().toString());
 				url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
 				ToolbarItem addUserTBI = new ToolbarItem("1_add");
-				markTBITitle(    addUserTBI, NLT.get("toolbar.new_with_arg", new String[] {NLT.getDef(def.getTitle())}));
-				markTBIPopup(    addUserTBI                                                                            );
-				markTBIHighlight(addUserTBI                                                                            );
-				markTBIUrl(      addUserTBI, url                                                                       );
+				markTBITitle(    addUserTBI, "toolbar.new");
+				markTBIPopup(    addUserTBI               );
+				markTBIHighlight(addUserTBI               );
+				markTBIUrl(      addUserTBI, url          );
 				entryToolbar.addNestedItem(addUserTBI);
 			}
 		}
