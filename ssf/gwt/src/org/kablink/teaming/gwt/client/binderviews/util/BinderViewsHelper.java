@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.binderviews.ChangeEntryTypesDlg;
 import org.kablink.teaming.gwt.client.binderviews.ChangeEntryTypesDlg.ChangeEntryTypesDlgClient;
 import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg;
 import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg.CopyMoveEntriesDlgClient;
+import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg;
 import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg.EmailNotificationDlgClient;
@@ -179,10 +180,9 @@ public class BinderViewsHelper {
 	 * Deletes the folder entries based on a folder ID and List<Long>
 	 * of their entry IDs.
 	 *
-	 * @param entryId
 	 * @param entryIds
 	 */
-	public static void deleteFolderEntries(final Long folderId, final List<Long> entryIds) {
+	public static void deleteFolderEntries(final List<EntryId> entryIds, final DeletePurgeEntriesCallback dpeCallback) {
 		// If we weren't given any entry IDs to be deleted...
 		if ((null == entryIds) || entryIds.isEmpty()) {
 			// ...bail.
@@ -211,7 +211,9 @@ public class BinderViewsHelper {
 						@Override
 						public void accepted() {
 							// Yes, they're sure!  Perform the delete.
-							DeletePurgeEntriesHelper.deleteSelectedEntriesAsync(folderId, entryIds);
+							DeletePurgeEntriesHelper.deleteSelectedEntriesAsync(
+								entryIds,
+								dpeCallback);
 						}
 
 						@Override
@@ -506,7 +508,7 @@ public class BinderViewsHelper {
 	 *
 	 * @param entryIds
 	 */
-	public static void purgeFolderEntries(final Long folderId, final List<Long> entryIds) {
+	public static void purgeFolderEntries(final List<EntryId> entryIds, final DeletePurgeEntriesCallback dpeCallback) {
 		// If we weren't given any entry IDs to be purged...
 		if ((null == entryIds) || entryIds.isEmpty()) {
 			// ...bail.
@@ -535,7 +537,9 @@ public class BinderViewsHelper {
 						@Override
 						public void accepted() {
 							// Yes, they're sure!  Perform the purge.
-							DeletePurgeEntriesHelper.purgeSelectedEntriesAsync(folderId, entryIds);
+							DeletePurgeEntriesHelper.purgeSelectedEntriesAsync(
+								entryIds,
+								dpeCallback);
 						}
 
 						@Override
