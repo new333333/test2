@@ -1086,8 +1086,21 @@ public interface GwtTeamingMessages extends Messages
 	String manageGroupsDlgAddGroupLabel();
 	String manageGroupsDlgConfirmDelete( String groupNames );
 	String manageGroupsDlgDeleteGroupLabel();
+	String manageGroupsDlgEditGroupLabel();
 	String manageGroupsDlgHeader();
 	String manageGroupsDlgNameCol();
+	String manageGroupsDlgSelectGroupToDelete();
+	String manageGroupsDlgSelect1GroupToEdit();
 	String manageGroupsDlgTitleCol();
+	
+	// Strings used in the Modify Group dialog
+	String addGroupDlgHeader();
+	String modifyGroupDlgEditGroupMembershipLabel();
+	String modifyGroupDlgDescriptionLabel();
+	String modifyGroupDlgDynamicLabel();
+	String modifyGroupDlgHeader( String groupTitle );
+	String modifyGroupDlgNameLabel();
+	String modifyGroupDlgStaticLabel();
+	String modifyGroupDlgTitleLabel();
 	
 }// end GwtTeamingMessages

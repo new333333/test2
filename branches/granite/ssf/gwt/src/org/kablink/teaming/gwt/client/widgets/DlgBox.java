@@ -71,6 +71,7 @@ public abstract class DlgBox extends PopupPanel
 	private FlowPanel m_errorPanel;
 	private Panel m_contentPanel;
 	private FlowPanel m_footerPanel;
+	private Label m_headerLabel;
     	
 	protected static int m_numDlgsVisible = 0;	// Number of dialogs that are currently visible.
 	
@@ -257,13 +258,12 @@ public abstract class DlgBox extends PopupPanel
 	public Panel createHeader( String caption )
 	{
 		FlowPanel	flowPanel;
-		Label		label;
 		
 		flowPanel = new FlowPanel();
 		flowPanel.setStyleName( "teamingDlgBoxHeader" );
 
-		label = new Label( caption );
-		flowPanel.add( label );
+		m_headerLabel = new Label( caption );
+		flowPanel.add( m_headerLabel );
 		
 		// Add a help link to the header if needed.
 		m_helpData = getHelpData();
@@ -451,6 +451,14 @@ public abstract class DlgBox extends PopupPanel
 				hide();
 		}
 	}// end onClick()
+
+	/**
+	 * Set the text used in the header.
+	 */
+	public void setHeaderText( String text )
+	{
+		m_headerLabel.setText( text );
+	}
 	
 	/**
 	 * Show this dialog.
