@@ -14,7 +14,7 @@ ss_functionoperation operationName
 ss_functionconditions encodedSpec title description_text 
 ss_libraryentries name
 ss_postings emailAddress
-ss_principals name foreignName description_text title normalTitle firstName lastName middleName organization zonName postUrl status skypeId twitterId
+ss_principals name foreignName description_text title normalTitle firstName lastName middleName organization zonName postUrl status skypeId twitterId ldapQuery
 ss_tags name
 ss_workflowresponses response
 ss_workflowstates state threadName

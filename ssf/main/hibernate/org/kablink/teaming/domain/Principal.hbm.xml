@@ -92,6 +92,8 @@
 	        <key column="groupId"/>
 	        <many-to-many fetch="join" class="org.kablink.teaming.domain.UserPrincipal" column="userId"/>
 	      </bag>
+	      <property name="dynamic" access="field"/>
+	      <property name="ldapQuery" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
 	    </subclass>
 	    <subclass name="org.kablink.teaming.domain.User" node="User" discriminator-value="user" dynamic-update="true">
 	      <property name="displayStyle" length="16"/>
