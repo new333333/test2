@@ -27,6 +27,22 @@
  * are trademarks of SiteScape, Inc.
  *#
 #if ($ssVisitor.isHtml())  
+  #if (!${ssVisitor.NotifyDef.getVariable('folderPathShown')} || ${ssVisitor.NotifyDef.getVariable('folderPathShown')} != 'true')
+    <div style="#ss_eFolderLink()">
+      <span>${ssVisitor.getNLT("notify.forum.label")}&nbsp;</span>
+	  <span>
+	      #if ($ssVisitor.Entity.ParentBinder.ParentBinder)
+		    <a href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder.ParentBinder)"
+		      title="$esc.html(${ssVisitor.Entity.ParentBinder.ParentBinder.PathName})"
+		    >$esc.html(${ssVisitor.Entity.ParentBinder.ParentBinder.Title})</a>
+		    / 
+		  #end
+		  <a href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder)"
+		    title="$esc.html(${ssVisitor.Entity.ParentBinder.PathName})"
+		  >$esc.html(${ssVisitor.Entity.ParentBinder.Title})</a>
+	  </span>
+    </div>
+  #end
 
   <div style="#ss_eTitle()">
     #if ($ssVisitor.getDocNumber())
