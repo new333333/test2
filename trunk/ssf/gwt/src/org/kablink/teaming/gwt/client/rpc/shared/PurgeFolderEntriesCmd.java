@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,9 +33,7 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * This class holds all of the information necessary to execute the
@@ -43,10 +41,7 @@ import java.util.List;
  * 
  * @author drfoster@novell.com
  */
-public class PurgeFolderEntriesCmd extends VibeRpcCmd {
-	private List<Long>	m_entryIds;	//
-	private Long		m_binderId;	//
-	
+public class PurgeFolderEntriesCmd extends DeletePurgeFolderEntriesCmdBase {
 	/**
 	 * Class constructor.
 	 * 
@@ -60,47 +55,27 @@ public class PurgeFolderEntriesCmd extends VibeRpcCmd {
 	/**
 	 * Class constructor.
 	 * 
-	 * @param binderId
+	 * @param folderId
 	 * @param entryIds
 	 */
-	public PurgeFolderEntriesCmd(Long binderId, List<Long> entryIds) {
-		this();
-		
-		m_binderId = binderId;
-		m_entryIds = entryIds;
+	public PurgeFolderEntriesCmd(Long folderId, List<Long> entryIds) {
+		super(folderId, entryIds);
 	}
 	
 	/**
 	 * Class constructor.
 	 * 
-	 * @param binderId
+	 * @param folderId
 	 * @param entryId
 	 */
-	public PurgeFolderEntriesCmd(Long binderId, Long entryId) {
-		this(binderId, getLLFromL(entryId));
+	public PurgeFolderEntriesCmd(Long folderId, Long entryId) {
+		super(folderId, entryId);
 	}
 
-	/*
-	 * Returns a List<Long> that contains the specified Long.
-	 */
-	private static List<Long> getLLFromL(Long l) {
-		List<Long> reply = new ArrayList<Long>();
-		reply.add(l);
-		return reply;
-	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public List<Long> getEntryIds() {return m_entryIds;}	
-	public Long       getBinderId() {return m_binderId;}	
-	
 	/**
 	 * Returns the command's enumeration value.
 	 * 
-	 * Implements VibeRpcCmd.getCmdType()
+	 * Implements DeletePurgeFolderEntriesCmdBase.getCmdType()
 	 * 
 	 * @return
 	 */

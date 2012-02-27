@@ -383,7 +383,7 @@ public class GwtViewHelper {
 					}
 					catch (Exception e) {
 						// No!  Add an error  to the error list.
-						String entryTitle = getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
+						String entryTitle = GwtServerHelper.getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
 						String messageKey;
 						if (e instanceof AccessControlException) messageKey = "changeEntryTypeError.AccssControlException";
 						else                                     messageKey = "changeEntryTypeError.OtherException";
@@ -436,7 +436,7 @@ public class GwtViewHelper {
 
 					catch (Exception e) {
 						// No!  Add an error  to the error list.
-						String entryTitle = getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
+						String entryTitle = GwtServerHelper.getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
 						String messageKey;
 						if (e instanceof AccessControlException) messageKey = "copyEntryError.AccssControlException";
 						else                                     messageKey = "copyEntryError.OtherException";
@@ -1336,22 +1336,6 @@ public class GwtViewHelper {
 		if (MiscUtil.hasString(reply)) {
 			reply = MarkupUtil.markupStringReplacement(null, null, httpReq, null, entryMap, reply, WebKeys.MARKUP_VIEW, false);
 			reply = MarkupUtil.markupSectionsReplacement(reply);
-		}
-		return reply;
-	}
-
-	/*
-	 * Returns a string that can be used as an entry's title in an
-	 * error message.
-	 */
-	private static String getEntryTitle(AllModulesInjected bs, Long folderId, Long entryId) {
-		String reply;
-		try {
-			FolderEntry fe = bs.getFolderModule().getEntry(folderId, entryId);
-			reply = fe.getTitle();
-		}
-		catch (Exception e) {
-			reply = String.valueOf(entryId);
 		}
 		return reply;
 	}
@@ -2974,7 +2958,7 @@ public class GwtViewHelper {
 
 					catch (Exception e) {
 						// No!  Add an error  to the error list.
-						String entryTitle = getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
+						String entryTitle = GwtServerHelper.getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
 						String messageKey;
 						if      (e instanceof AccessControlException)           messageKey = "lockEntryError.AccssControlException";
 						else if (e instanceof ReservedByAnotherUserException)   messageKey = "lockEntryError.ReservedByAnotherUserException";
@@ -3029,7 +3013,7 @@ public class GwtViewHelper {
 
 					catch (Exception e) {
 						// No!  Add an error  to the error list.
-						String entryTitle = getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
+						String entryTitle = GwtServerHelper.getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
 						String messageKey;
 						if (e instanceof AccessControlException) messageKey = "moveEntryError.AccssControlException";
 						else                                     messageKey = "moveEntryError.OtherException";
@@ -3245,7 +3229,7 @@ public class GwtViewHelper {
 
 					catch (Exception e) {
 						// No!  Add an error  to the error list.
-						String entryTitle = getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
+						String entryTitle = GwtServerHelper.getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
 						String messageKey;
 						if      (e instanceof AccessControlException)         messageKey = "unlockEntryError.AccssControlException";
 						else if (e instanceof ReservedByAnotherUserException) messageKey = "unlockEntryError.ReservedByAnotherUserException";

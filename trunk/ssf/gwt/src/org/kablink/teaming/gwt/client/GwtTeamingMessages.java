@@ -1297,8 +1297,6 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_StarGray();
 	String vibeDataTable_Alt_UnpinEntry();
 	String vibeDataTable_Alt_View();
-	String vibeDataTable_Confirm_Delete();
-	String vibeDataTable_Confirm_Purge();
 	String vibeDataTable_Download();
 	String vibeDataTable_Error_MirroredDriverNotConfigured();
 	String vibeDataTable_Empty();
@@ -1382,6 +1380,10 @@ public interface GwtTeamingMessages extends Messages
 	String moveEntriesDlgSelectDestination();
 	String moveEntriesDlgWarningNoSelection();
 
+	// Strings used by the operations against selected entries.
+	String deleteFolderEntriesError();
+	String purgeFolderEntriesError();
+	
 	// Strings used by the operations against selected users.
 	String enableUsersError();
 	String deleteUserWorkspacesError();
@@ -1457,12 +1459,18 @@ public interface GwtTeamingMessages extends Messages
 	String myTasksHeader();	
 	
 	// Strings used in the 'Binder View Helper' APIs.
+	String binderViewsConfirmDeleteEntries();
 	String binderViewsConfirmDeleteUserWS();
+	String binderViewsConfirmPurgeEntries();
 	String binderViewsConfirmPurgeUsers();
 	String binderViewsConfirmPurgeUserWS();
+	String binderViewsDeleteFolderEntriesCaption();
+	String binderViewsDeleteFolderEntriesProgress();
 	String binderViewsDeleteUserWorkspacesCaption();
 	String binderViewsDeleteUserWorkspacesProgress();
 	String binderViewsPromptPurgeMirroredFolders();
+	String binderViewsPurgeFolderEntriesCaption();
+	String binderViewsPurgeFolderEntriesProgress();
 	String binderViewsPurgeUsersCaption();
 	String binderViewsPurgeUsersProgress();
 	String binderViewsPurgeUserWorkspacesCaption();

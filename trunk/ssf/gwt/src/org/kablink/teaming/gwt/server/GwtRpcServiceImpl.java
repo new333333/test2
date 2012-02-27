@@ -256,8 +256,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case DELETE_FOLDER_ENTRIES:
 		{
 			DeleteFolderEntriesCmd dfeCmd = ((DeleteFolderEntriesCmd) cmd);
-			Boolean result = GwtServerHelper.deleteFolderEntries( this, getRequest( ri ), dfeCmd.getBinderId(), dfeCmd.getEntryIds() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			ErrorListRpcResponseData responseData = GwtServerHelper.deleteFolderEntries( this, getRequest( ri ), dfeCmd.getFolderId(), dfeCmd.getEntryIds() );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
@@ -1583,8 +1583,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case PURGE_FOLDER_ENTRIES:
 		{
 			PurgeFolderEntriesCmd pfeCmd = ((PurgeFolderEntriesCmd) cmd);
-			Boolean result = GwtServerHelper.purgeFolderEntries( this, getRequest( ri ), pfeCmd.getBinderId(), pfeCmd.getEntryIds() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			ErrorListRpcResponseData responseData = GwtServerHelper.purgeFolderEntries( this, getRequest( ri ), pfeCmd.getFolderId(), pfeCmd.getEntryIds() );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
