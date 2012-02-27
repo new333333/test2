@@ -87,6 +87,7 @@ function ss_saveDestinationBinderId(id) {
 <ssf:find formName="ss_move_form" 
     formElement="binderId" 
     type="places"
+    foldersOnly="true"
     width="180px" 
     singleItem="true"
     clickRoutine="ss_saveDestinationBinderId"
