@@ -1740,8 +1740,21 @@ public class GwtViewHelper {
 				sortDescend = (("true").equalsIgnoreCase(sortDescendS));
 			}
 			else {
-				sortBy      = (folderInfo.isBinderProfilesRootWS() ? Constants.SORT_TITLE_FIELD : Constants.SORTNUMBER_FIELD);
-				sortDescend = true;
+				sortDescend = false;
+				if (folderInfo.isBinderProfilesRootWS()) {
+					sortBy = Constants.SORT_TITLE_FIELD;
+				}
+				else {
+					switch (folderInfo.getFolderType()) {
+					case FILE:
+					case MILESTONE:
+					case MINIBLOG:
+					case SURVEY:     sortBy = Constants.SORT_TITLE_FIELD;                     break;
+					case TASK:       sortBy = Constants.SORT_ORDER_FIELD;                     break;
+					case GUESTBOOK:  sortBy = Constants.CREATOR_TITLE_FIELD;                  break;
+					default:         sortBy = Constants.SORTNUMBER_FIELD; sortDescend = true; break;
+					}
+				}
 			}
 
 			// How many entries per page should the folder display?
