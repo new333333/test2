@@ -36,6 +36,8 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.util.EntryId;
+
 /**
  * Base class that holds all of the information necessary to execute
  * a 'delete/purge of folder entries' commands.
@@ -43,8 +45,7 @@ import java.util.List;
  * @author drfoster@novell.com
  */
 public abstract class DeletePurgeFolderEntriesCmdBase extends VibeRpcCmd {
-	private List<Long>	m_entryIds;	//
-	private Long		m_folderId;	//
+	private List<EntryId>	m_entryIds;	//
 	
 	/**
 	 * Class constructor.
@@ -59,31 +60,28 @@ public abstract class DeletePurgeFolderEntriesCmdBase extends VibeRpcCmd {
 	/**
 	 * Class constructor.
 	 * 
-	 * @param folderId
 	 * @param entryIds
 	 */
-	public DeletePurgeFolderEntriesCmdBase(Long folderId, List<Long> entryIds) {
+	public DeletePurgeFolderEntriesCmdBase(List<EntryId> entryIds) {
 		this();
 		
-		setFolderId(folderId);
 		setEntryIds(entryIds);
 	}
 	
 	/**
 	 * Class constructor.
 	 * 
-	 * @param folderId
 	 * @param entryId
 	 */
-	public DeletePurgeFolderEntriesCmdBase(Long folderId, Long entryId) {
-		this(folderId, getLLFromL(entryId));
+	public DeletePurgeFolderEntriesCmdBase(EntryId entryId) {
+		this(getEIdListFromEId(entryId));
 	}
 
 	/*
-	 * Returns a List<Long> that contains the specified Long.
+	 * Returns a List<EntryId> that contains the specified EntryId.
 	 */
-	private static List<Long> getLLFromL(Long l) {
-		List<Long> reply = new ArrayList<Long>();
+	private static List<EntryId> getEIdListFromEId(EntryId l) {
+		List<EntryId> reply = new ArrayList<EntryId>();
 		reply.add(l);
 		return reply;
 	}
@@ -93,16 +91,14 @@ public abstract class DeletePurgeFolderEntriesCmdBase extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public List<Long> getEntryIds() {return m_entryIds;}	
-	public Long       getFolderId() {return m_folderId;}
+	public List<EntryId> getEntryIds() {return m_entryIds;}	
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setEntryIds(List<Long> entryIds) {m_entryIds = entryIds;}
-	public void setFolderId(Long       folderId) {m_folderId = folderId;}
+	public void setEntryIds(List<EntryId> entryIds) {m_entryIds = entryIds;}
 	
 	/**
 	 * Returns the command's enumeration value.

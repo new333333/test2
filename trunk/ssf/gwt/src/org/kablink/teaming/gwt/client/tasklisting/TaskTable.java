@@ -101,7 +101,6 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskDate;
-import org.kablink.teaming.gwt.client.util.TaskId;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
@@ -1747,7 +1746,7 @@ public class TaskTable extends Composite
 						@Override
 						public void accepted() {
 							// Yes!  Delete the selected tasks.
-							final List<TaskId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
+							final List<EntryId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
 							DeleteTasksCmd cmd = new DeleteTasksCmd(taskIds);
 							GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 								@Override
@@ -1779,9 +1778,9 @@ public class TaskTable extends Composite
 	 */
 	private void handleTaskExpander(final TaskListItem task) {
 		// Extract the IDs we need to perform the expand/collapse.
-		TaskId taskId   = task.getTask().getTaskId();
-		Long   binderId = taskId.getBinderId();
-		Long   entryId  = taskId.getEntryId();
+		EntryId taskId   = task.getTask().getTaskId();
+		Long    binderId = taskId.getBinderId();
+		Long    entryId  = taskId.getEntryId();
 
 		// Are we collapsing the subtasks?
 		if (task.getExpandSubtasks()) {
@@ -2181,9 +2180,9 @@ public class TaskTable extends Composite
 		final Long binderId;
 		final Long entryId;
 		if ((null != taskList) && (1 == taskList.size())) {
-		    TaskId taskId = taskList.get(0).getTask().getTaskId();
-		    binderId      = taskId.getBinderId();
-		    entryId       = taskId.getEntryId();
+			EntryId taskId = taskList.get(0).getTask().getTaskId();
+		    binderId       = taskId.getBinderId();
+		    entryId        = taskId.getEntryId();
 		}
 		else {
 			binderId = m_taskBundle.getBinderId();
@@ -2202,7 +2201,7 @@ public class TaskTable extends Composite
 	 * Does what's necessary after a task is deleted or purged to put
 	 * the change into affect.
 	 */
-	private void handleTaskPostRemoveAsync(final List<TaskId> taskIds) {
+	private void handleTaskPostRemoveAsync(final List<EntryId> taskIds) {
 		ScheduledCommand postRemover = new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -2212,9 +2211,9 @@ public class TaskTable extends Composite
 		Scheduler.get().scheduleDeferred(postRemover);
 	}
 	
-	private void handleTaskPostRemoveNow(List<TaskId> taskIds) {
+	private void handleTaskPostRemoveNow(List<EntryId> taskIds) {
 		// Scan the tasks that were removed...
-		for (TaskId taskId:  taskIds) {
+		for (EntryId taskId:  taskIds) {
 			// ...scan the task's subtasks...
 			List<TaskListItem> taskList = TaskListItemHelper.findTaskList(m_taskBundle, taskId.getEntryId());
 			TaskListItem       task     = TaskListItemHelper.findTask(    taskList,     taskId.getEntryId());
@@ -2287,7 +2286,7 @@ public class TaskTable extends Composite
 						@Override
 						public void accepted() {
 							// Yes!  Purge the selected tasks.
-							final List<TaskId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
+							final List<EntryId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
 							PurgeTasksCmd cmd = new PurgeTasksCmd(taskIds);
 							GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 								@Override
@@ -2563,9 +2562,9 @@ public class TaskTable extends Composite
 		}
 
 		// Collect the TaskId's of the affected tasks.
-		TaskInfo           ti              = task.getTask();
-		final TaskId       taskId          = ti.getTaskId();
-		final List<TaskId> affectedTaskIds = new ArrayList<TaskId>();
+		TaskInfo            ti              = task.getTask();
+		final EntryId       taskId          = ti.getTaskId();
+		final List<EntryId> affectedTaskIds = new ArrayList<EntryId>();
 		for (TaskListItem affectedTask:  affectedTasks) {
 			affectedTaskIds.add(affectedTask.getTask().getTaskId());
 		}
@@ -3407,7 +3406,7 @@ public class TaskTable extends Composite
 			
 			// Yes, we have a location string for this task!  If the
 			// task is from the folder that we're displaying...
-			TaskId tid = ti.getTaskId();
+			EntryId tid = ti.getTaskId();
 			InlineLabel locationLabel = new InlineLabel(location);
 			Widget locationWidget;
 			if (tid.getBinderId().equals(m_taskBundle.getBinderId())) {

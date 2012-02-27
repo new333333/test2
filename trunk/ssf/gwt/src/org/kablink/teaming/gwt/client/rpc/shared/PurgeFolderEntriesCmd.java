@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.util.EntryId;
+
 /**
  * This class holds all of the information necessary to execute the
  * 'delete folder' command.
@@ -55,21 +57,19 @@ public class PurgeFolderEntriesCmd extends DeletePurgeFolderEntriesCmdBase {
 	/**
 	 * Class constructor.
 	 * 
-	 * @param folderId
 	 * @param entryIds
 	 */
-	public PurgeFolderEntriesCmd(Long folderId, List<Long> entryIds) {
-		super(folderId, entryIds);
+	public PurgeFolderEntriesCmd(List<EntryId> entryIds) {
+		super(entryIds);
 	}
 	
 	/**
 	 * Class constructor.
 	 * 
-	 * @param folderId
 	 * @param entryId
 	 */
-	public PurgeFolderEntriesCmd(Long folderId, Long entryId) {
-		super(folderId, entryId);
+	public PurgeFolderEntriesCmd(EntryId entryId) {
+		super(entryId);
 	}
 
 	/**
