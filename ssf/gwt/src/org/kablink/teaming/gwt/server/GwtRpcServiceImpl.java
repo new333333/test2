@@ -1029,6 +1029,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case MODIFY_GROUP:
+		{
+			ModifyGroupCmd mgCmd;
+			
+			mgCmd = (ModifyGroupCmd) cmd;
+			GwtServerHelper.modifyGroup( this, mgCmd.getId(), mgCmd.getTitle(), mgCmd.getDesc(), mgCmd.getMembership() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( Boolean.TRUE ) );
+			
+			return response;
+		}
+		
 		case PERSIST_ACTIVITY_STREAM_SELECTION:
 		{
 			ActivityStreamInfo asi;

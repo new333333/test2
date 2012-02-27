@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,32 +30,58 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.mainmenu;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+package org.kablink.teaming.gwt.client.rpc.shared;
+
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.GwtTeamingItem;
+
 
 
 /**
- * Class used to communicate group information between the client
- * (i.e., the MainMenuControl) and the server (i.e.,
- * GwtRpcServiceImpl.getMyGroups().)
+ * This class holds all of the information necessary to execute the "modify group" command.
  * 
- * @author drfoster@novell.com
+ * @author jwootton
  *
  */
-public class GroupInfo implements IsSerializable {
-	private Long m_id;			// The group's id.
-	private String m_title;			// The group's title.
-	private String m_name;		// The group's name
-	private String m_desc;		// The group's description
+public class ModifyGroupCmd extends VibeRpcCmd
+{
+	private Long m_id;
+	private String m_title;
+	private String m_desc;
+	private List<GwtTeamingItem> m_membership;
 	
 	/**
-	 * Constructor method.
-	 * 
-	 * No parameters as per GWT serialization requirements.
+	 * For GWT serialization, must have a zero param contructor
 	 */
-	public GroupInfo() {
-		// Nothing to do.
+	public ModifyGroupCmd()
+	{
+		super();
+	}
+	
+	/**
+	 * 
+	 */
+	public ModifyGroupCmd( Long id, String title, String desc, List<GwtTeamingItem> membership )
+	{
+		m_id = id;
+		m_title = title;
+		m_desc = desc;
+		m_membership = membership;
+	}
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType()
+	{
+		return VibeRpcCmdType.MODIFY_GROUP.ordinal();
 	}
 
 	/**
@@ -64,6 +90,30 @@ public class GroupInfo implements IsSerializable {
 	public String getDesc()
 	{
 		return m_desc;
+	}
+
+	/**
+	 * 
+	 */
+	public Long getId()
+	{
+		return m_id;
+	}
+	
+	/**
+	 * 
+	 */
+	public List<GwtTeamingItem> getMembership()
+	{
+		return m_membership;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getTitle()
+	{
+		return m_title;
 	}
 	
 	/**
@@ -75,54 +125,10 @@ public class GroupInfo implements IsSerializable {
 	}
 	
 	/**
-	 * Returns the group's id.
-	 * 
-	 * @return
-	 */
-	public Long getId() {
-		return m_id;
-	}
-
-	/**
-	 * Stores the id to the group.
-	 *  
-	 * @param id
-	 */
-	public void setId(Long id) {
-		m_id = id;
-	}
-	
-	/**
 	 * 
 	 */
-	public String getName()
+	public void setTitle( String title )
 	{
-		return m_name;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setName( String name )
-	{
-		m_name = name;
-	}
-	
-	/**
-	 * Returns the group's title.
-	 * 
-	 * @return
-	 */
-	public String getTitle() {
-		return m_title;
-	}
-
-	/**
-	 * Stores the title to the group.
-	 *  
-	 * @param title
-	 */
-	public void setTitle(String title) {
 		m_title = title;
 	}
 }

@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.VibeCellTableResources;
@@ -85,6 +86,7 @@ public class ManageGroupsDlg extends DlgBox
 	private ListDataProvider<GroupInfo> m_dataProvider;
 	private SimplePager m_pager;
 	private List<GroupInfo> m_listOfGroups;
+	private ModifyGroupDlg m_modifyGroupDlg;
     private int m_width;
     private int m_height;
 	
@@ -159,6 +161,7 @@ public class ManageGroupsDlg extends DlgBox
 			menuPanel = new FlowPanel();
 			menuPanel.addStyleName( "groupManagementMenuPanel" );
 			
+			// Add an "Add" button.
 			label = new InlineLabel( messages.manageGroupsDlgAddGroupLabel() );
 			label.addStyleName( "groupManagementBtn" );
 			label.addClickHandler( new ClickHandler()
@@ -181,6 +184,30 @@ public class ManageGroupsDlg extends DlgBox
 			} );
 			menuPanel.add( label );
 			
+			// Add an "Edit" button
+			label = new InlineLabel( messages.manageGroupsDlgEditGroupLabel() );
+			label.addStyleName( "groupManagementBtn" );
+			label.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							invokeEditGroupDlg();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			menuPanel.add( label );
+			
+			// Add a "Delete" button.
 			label = new InlineLabel( messages.manageGroupsDlgDeleteGroupLabel() );
 			label.addStyleName( "groupManagementBtn" );
 			label.addClickHandler( new ClickHandler()
@@ -326,6 +353,10 @@ public class ManageGroupsDlg extends DlgBox
 			{
 				deleteGroupsFromServer( listOfGroupsToDelete );
 			}
+		}
+		else
+		{
+			Window.alert( GwtTeaming.getMessages().manageGroupsDlgSelectGroupToDelete() );
 		}
 	}
 	
@@ -485,6 +516,80 @@ public class ManageGroupsDlg extends DlgBox
 	 */
 	private void invokeAddGroupDlg()
 	{
-		Window.alert( "Not yet implemented." );
+		invokeModifyGroupDlg( null );
+	}
+	
+	/**
+	 * Invoke the "Edit Group" dialog for the selected group.
+	 */
+	private void invokeEditGroupDlg()
+	{
+		Set<GroupInfo> selectedGroups;
+		
+		selectedGroups = getSelectedGroups();
+		if ( selectedGroups != null )
+		{
+			int numSelectedGroups;
+			
+			// Get the number of selected groups.
+			numSelectedGroups = selectedGroups.size();
+			
+			// Is there just one group selected?
+			if ( numSelectedGroups == 1 )
+			{
+				Iterator<GroupInfo> groupIterator;
+				
+				// Yes
+				groupIterator = selectedGroups.iterator();
+				if ( groupIterator.hasNext() )
+				{
+					GroupInfo nextGroup;
+					
+					nextGroup = groupIterator.next();
+
+					invokeModifyGroupDlg( nextGroup );
+				}
+			}
+			else if ( numSelectedGroups == 0 || numSelectedGroups > 1 )
+			{
+				Window.alert( GwtTeaming.getMessages().manageGroupsDlgSelect1GroupToEdit() );
+			}
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void invokeModifyGroupDlg( GroupInfo groupInfo )
+	{
+		int x;
+		int y;
+		
+		// Get the position of this dialog.
+		x = getAbsoluteLeft() + 50;
+		y = getAbsoluteTop() + 50;
+		
+		if ( m_modifyGroupDlg == null )
+		{
+			EditSuccessfulHandler editSuccessfulHandler;
+			
+			// Create a handler that will be called when the user presses Ok in the
+			// ModifyGroupDlg.
+			editSuccessfulHandler = new EditSuccessfulHandler()
+			{
+				@Override
+				public boolean editSuccessful( Object obj )
+				{
+					// Update the table to reflect the fact that a group was modified.
+					m_dataProvider.refresh();
+					return true;
+				}
+			};
+			m_modifyGroupDlg = new ModifyGroupDlg( false, true, editSuccessfulHandler, null, x, y );
+		}
+		
+		m_modifyGroupDlg.init( groupInfo );
+		m_modifyGroupDlg.setPopupPosition( x, y );
+		m_modifyGroupDlg.show();
 	}
 }

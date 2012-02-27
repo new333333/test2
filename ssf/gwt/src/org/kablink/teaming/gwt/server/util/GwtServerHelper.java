@@ -118,6 +118,7 @@ import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ModifyGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserStatusCmd;
@@ -1962,6 +1963,8 @@ public class GwtServerHelper {
 					
 					if ( groups.get( i ) instanceof HashMap )
 					{
+						Object value;
+						
 						nextMap = (HashMap) groups.get( i );
 					
 						grpInfo = new GroupInfo();
@@ -1969,6 +1972,10 @@ public class GwtServerHelper {
 						grpInfo.setId( id );
 						grpInfo.setTitle( (String) nextMap.get( "title" ) );
 						grpInfo.setName( (String) nextMap.get( "_groupName" ) );
+						
+						value = nextMap.get( "_desc" );
+						if ( value != null && value instanceof String )
+							grpInfo.setDesc( (String) value );
 						
 						reply.add( grpInfo );
 					}
@@ -3721,6 +3728,137 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Modify the given group
+	 */
+	public static void modifyGroup( AllModulesInjected ami, Long groupId, String title, String desc, List<GwtTeamingItem> membership ) throws GwtTeamingException
+	{
+		Principal group;
+
+		group = ami.getProfileModule().getEntry( groupId );
+		if ( group!= null && group instanceof Group )
+		{
+			if ( membership != null )
+			{
+				SortedSet<Principal> principals;
+				Map<Long,Principal> changes;
+				List<Principal> currentMembers;
+				Set<Long> membershipIds;
+
+				// Capture the current membership of the group before it gets modified
+				changes = new HashMap<Long,Principal>();
+				currentMembers = new ArrayList<Principal>( ((Group)group).getMembers() );
+				
+				membershipIds = new HashSet<Long>();
+
+				// Get a list of all the membership ids.
+				for (GwtTeamingItem nextMember : membership)
+				{
+					Long id;
+
+					id = null;
+					if ( nextMember instanceof GwtUser )
+						id = Long.valueOf( ((GwtUser) nextMember).getUserId() );
+					else if ( nextMember instanceof GwtGroup )
+						id = Long.valueOf( ((GwtGroup) nextMember).getId() );
+								
+					if ( id != null )
+						membershipIds.add( id );
+				}
+
+				// Modify the group.
+				{
+					Map updates;
+
+					principals = ami.getProfileModule().getPrincipals( membershipIds );
+					
+					updates = new HashMap();
+					updates.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
+					updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
+					updates.put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals );
+					
+					try
+					{
+						ami.getProfileModule().modifyEntry( groupId, new MapInputData( updates ) );
+					}
+		   			catch ( Exception ex )
+		   			{
+		   				throw GwtServerHelper.getGwtTeamingException( ex );
+		   			} 
+				}
+				
+				// Update disk quotas and file size limits.
+				{
+			   		List<Long> gIdList;
+
+			   		gIdList = new ArrayList<Long>();
+			   		gIdList.add( groupId );
+			   		ami.getProfileModule().setGroupDiskQuotas( gIdList, ((Group)group).getDiskQuota() );
+			   		ami.getProfileModule().setGroupFileSizeLimits( gIdList, ((Group)group).getFileSizeLimit() );
+				}
+				
+				// Now deal with everyone who was affected
+				{
+					ProfileDao profileDao;
+
+					profileDao = (ProfileDao) SpringContextUtil.getBean( "profileDao" );
+					
+					for (Principal p : currentMembers)
+					{
+						if ( !principals.contains( p ) )
+							changes.put( p.getId(), p );
+					}
+					
+					for (Principal p : principals)
+					{
+						if ( !currentMembers.contains( p ) )
+							changes.put( p.getId(), p );
+					}
+					
+					// After changing the group membership, re-index any user that was added or deleted
+					{
+						List<Principal> users;
+						List<Principal> groups;
+						List<Long> gIds;
+						Set<Principal> groupUsers;
+						Set<Long> groupUserIds;
+
+						users = new ArrayList<Principal>();
+						groups = new ArrayList<Principal>();
+						gIds = new ArrayList<Long>();
+						for (Map.Entry<Long,Principal> me : changes.entrySet())
+						{
+							if ( me.getValue() instanceof User )
+								users.add( me.getValue() );
+							
+							if ( me.getValue() instanceof Group )
+							{
+								groups.add( me.getValue() );
+								gIds.add( ((Group)me.getValue()).getId() );
+							}
+						}
+
+						// Re-index the list of users and all binders "owned" by them
+						// reindex the profile entry for each user
+						groupUsers = new HashSet<Principal>();
+						groupUserIds = new HashSet<Long>();
+						groupUserIds.addAll( profileDao.explodeGroups( gIds, RequestContextHolder.getRequestContext().getZoneId() ) );
+						groupUsers.addAll( ami.getProfileModule().getPrincipals( groupUserIds ) );
+						groupUsers.addAll( users );
+						for (Principal user : groupUsers)
+						{
+							ami.getProfileModule().indexEntry( user );
+						}
+						
+						// set up a background job that will reindex all of the binders owned by all of these users.				
+						//Re-index all "personal" binders owned by this user (i.e., binders under the profiles binder)
+						ami.getProfileModule().reindexPersonalUserOwnedBinders( groupUsers );
+					}
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Runs the XSS checker on the GWT RPC commands that require
 	 * checking.
 	 * 
@@ -3745,7 +3883,23 @@ public class GwtServerHelper {
 			}
 			break;
 		}
+		
+		case MODIFY_GROUP:
+		{
+			ModifyGroupCmd mgCmd;
+			String value;
 			
+			mgCmd = (ModifyGroupCmd) cmd;
+			value = mgCmd.getDesc();
+			if ( MiscUtil.hasString( value ) )
+				mgCmd.setDesc( StringCheckUtil.check( value ) );
+			
+			value = mgCmd.getTitle();
+			if ( MiscUtil.hasString( value ) )
+				mgCmd.setTitle( StringCheckUtil.check( value ) );
+			
+			break;
+		}
 			
 		case SAVE_BRANDING:
 		{
