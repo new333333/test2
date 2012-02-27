@@ -105,6 +105,7 @@ function ss_submitMoveBinderForm() {
 <ssf:find formName="delete_entries_form" 
     formElement="binderId" 
     type="places"
+    foldersOnly="true"
     width="180px" 
     singleItem="true"
     clickRoutine="ss_saveDestinationBinderId"
