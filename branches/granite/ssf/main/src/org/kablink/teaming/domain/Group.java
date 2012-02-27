@@ -55,6 +55,9 @@ import org.kablink.util.Validator;
 public class Group extends UserPrincipal implements GroupPrincipal {
     private List members;  //initialized by hibernate access=field  
     
+    private Boolean dynamic = Boolean.FALSE; //initialized by hibernate access=field
+    private String ldapQuery;
+    
 	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.group;
 	}
@@ -101,5 +104,22 @@ public class Group extends UserPrincipal implements GroupPrincipal {
     	members.remove(member);
     	member.getMemberOf().remove(this);
     }
+    
+	public boolean isDynamic() {
+		if(dynamic != null)
+			return dynamic.booleanValue();
+		else
+			return false; // static by default
+	}
+	public void setDynamic(boolean dynamic) {
+		this.dynamic = Boolean.valueOf(dynamic);
+	}
+	
+	public String getLdapQuery() {
+		return ldapQuery;
+	}
+	public void setLdapQuery(String ldapQuery) {
+		this.ldapQuery = ldapQuery;
+	}
  
 }
