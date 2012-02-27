@@ -122,6 +122,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
+import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.MilestoneStats;
@@ -1203,28 +1204,27 @@ public class GwtServerHelper {
 	 *
 	 * @param bs
 	 * @param request
-	 * @param binderId
 	 * @param entryIds
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData deleteFolderEntries(AllModulesInjected bs, HttpServletRequest request, Long binderId, List<Long> entryIds) throws GwtTeamingException {
+	public static ErrorListRpcResponseData deleteFolderEntries(AllModulesInjected bs, HttpServletRequest request, List<EntryId> entryIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// Scan the entry IDs...
-			for (Long entryId:  entryIds) {
+			for (EntryId entryId:  entryIds) {
 				try {
 					// ...deleting each entry...
-					TrashHelper.preDeleteEntry(bs, binderId, entryId);
+					TrashHelper.preDeleteEntry(bs, entryId.getBinderId(), entryId.getBinderId());
 				}
 
 				catch (Exception e) {
 					// ...tracking any that we couldn't delete.
-					String entryTitle = getEntryTitle(bs, binderId, entryId);
+					String entryTitle = getEntryTitle(bs, entryId);
 					String messageKey;
 					if      (e instanceof AccessControlException) messageKey = "deleteEntryError.AccssControlException";
 					else                                          messageKey = "deleteEntryError.OtherException";
@@ -3243,6 +3243,11 @@ public class GwtServerHelper {
 			reply = String.valueOf(entryId);
 		}
 		return reply;
+	}
+	
+	public static String getEntryTitle(AllModulesInjected bs, EntryId entryId) {
+		// Always use the initial form of the method.
+		return getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
 	}
 
 	/**
@@ -5842,29 +5847,28 @@ public class GwtServerHelper {
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param binderId
 	 * @param entryIds
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData purgeFolderEntries(AllModulesInjected bs, HttpServletRequest request, Long binderId, List<Long> entryIds) throws GwtTeamingException {
+	public static ErrorListRpcResponseData purgeFolderEntries(AllModulesInjected bs, HttpServletRequest request, List<EntryId> entryIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// Scan the entry IDs...
 			FolderModule fm = bs.getFolderModule();
-			for (Long entryId:  entryIds) {
+			for (EntryId entryId:  entryIds) {
 				try {
 					// ...purging each entry...
-					fm.deleteEntry(binderId, entryId);
+					fm.deleteEntry(entryId.getBinderId(), entryId.getEntryId());
 				}
 				
 				catch (Exception e) {
 					// ...tracking any that we couldn't purge.
-					String entryTitle = getEntryTitle(bs, binderId, entryId);
+					String entryTitle = getEntryTitle(bs, entryId);
 					String messageKey;
 					if      (e instanceof AccessControlException) messageKey = "purgeEntryError.AccssControlException";
 					else                                          messageKey = "purgeEntryError.OtherException";

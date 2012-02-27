@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.DeleteFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PurgeFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ProgressDlg;
 import org.kablink.teaming.gwt.client.util.ProgressDlg.ProgressCallback;
@@ -64,7 +65,7 @@ public class DeletePurgeEntriesHelper {
 	private boolean							m_operationCanceled;	// Set true if the operation gets canceled.
 	private DeletePurgeFolderEntriesCmdBase	m_dpfeCmd;				// The delete/purge folder entries command to perform.
 	private int								m_totalEntryCount;		// Count of items in m_sourceEntryIds.
-	private List<Long>						m_sourceEntryIds;		// The entry IDs being operated on.
+	private List<EntryId>						m_sourceEntryIds;		// The entry IDs being operated on.
 	private List<String>					m_collectedErrors;		// Collects errors that occur while processing an operation on the list of entries.
 	private Map<StringIds, String>			m_strMap;				// Initialized with a map of the strings used to run the operation.
 	
@@ -79,13 +80,22 @@ public class DeletePurgeEntriesHelper {
 		PROGRESS_MESSAGE,
 	}
 	
+	/**
+	 * Interface used by the helper to inform the caller about what
+	 * happened. 
+	 */
+	public interface DeletePurgeCallback {
+		public void operationCanceled();
+		public void operationComplete();
+	}
+	
 	/*
 	 * Constructor method.
 	 * 
 	 * Private to inhibit the class from being instantiated from
 	 * outside of it.
 	 */
-	private DeletePurgeEntriesHelper(List<Long> sourceEntryIds, Map<StringIds, String> strMap, DeletePurgeFolderEntriesCmdBase dpfeCmd) {
+	private DeletePurgeEntriesHelper(List<EntryId> sourceEntryIds, Map<StringIds, String> strMap, DeletePurgeFolderEntriesCmdBase dpfeCmd) {
 		// Initialize the super class...
 		super();
 		
@@ -99,13 +109,25 @@ public class DeletePurgeEntriesHelper {
 		m_collectedErrors = new ArrayList<String>();
 	}
 
+	/*
+	 * Convert a folder ID and List<Long> of entry IDs into a
+	 * List<EntryId>'s.
+	 */
+	private static List<EntryId> buildEIdListFromLL(Long folderId, List<Long> entryIds) {
+		List<EntryId> reply = new ArrayList<EntryId>();
+		for (Long entryId:  entryIds) {
+			reply.add(new EntryId(folderId, entryId));
+		}
+		return reply;
+	}
+
 	/**
 	 * Asynchronously deletes the selected entries.
 	 * 
 	 * @param folderId
 	 * @param sourceEntryIds
 	 */
-	public static void deleteSelectedEntriesAsync(final Long folderId, final List<Long> sourceEntryIds) {
+	public static void deleteSelectedEntriesAsync(final Long folderId, final List<Long> srcEntryIds) {
 		ProgressDlg.createAsync(new ProgressDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -123,46 +145,14 @@ public class DeletePurgeEntriesHelper {
 				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsDeleteFolderEntriesProgress());
 
 				// ...create the helper...
-				final DeletePurgeEntriesHelper dpuHelper = new DeletePurgeEntriesHelper(
+				List<EntryId> sourceEntryIds = buildEIdListFromLL(folderId, srcEntryIds);
+				DeletePurgeEntriesHelper dpeHelper = new DeletePurgeEntriesHelper(
 					sourceEntryIds,
 					strMap,
-					new DeleteFolderEntriesCmd(
-						folderId,
-						sourceEntryIds));
+					new DeleteFolderEntriesCmd(sourceEntryIds));
 				
-				// ...and perform the delete...
-				if (ProgressDlg.needsChunking(dpuHelper.m_totalEntryCount)) {
-					// ...chunking as necessary.
-					ProgressDlg.initAndShow(pDlg, new ProgressCallback() {
-						@Override
-						public void dialogReady() {
-							dpuHelper.dpuOpAsync(pDlg);
-						}
-						
-						@Override
-						public void operationCanceled() {
-							// Simply mark the global indicating we've
-							// been canceled.  The operation will stop
-							// on the next chunk.
-							dpuHelper.m_operationCanceled = true;
-						}
-
-						@Override
-						public void operationComplete() {
-							// Nothing to do.  We manage completion via
-							// how we handle the items in the list.
-						}
-					},
-					true,	// true -> Operation can be canceled.
-					strMap.get(StringIds.PROGRESS_CAPTION),
-					strMap.get(StringIds.PROGRESS_MESSAGE),
-					dpuHelper.m_totalEntryCount);
-				}
-				
-				else {
-					// ...without chunking.
-					dpuHelper.dpuOpAsync(null);
-				}
+				// ...and perform the delete.
+				dpeHelper.runOpNow(pDlg);
 			}
 		});
 	}
@@ -170,7 +160,7 @@ public class DeletePurgeEntriesHelper {
 	/*
 	 * Asynchronously performs an operation on a collection of entries.
 	 */
-	private void dpuOpAsync(final ProgressDlg pDlg) {
+	private void dpeOpAsync(final ProgressDlg pDlg) {
 		// If the user canceled the operation... 
 		if (m_operationCanceled) {
 			// bail.
@@ -180,7 +170,7 @@ public class DeletePurgeEntriesHelper {
 		ScheduledCommand doOp = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				dpuOpNow(pDlg);
+				dpeOpNow(pDlg);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doOp);
@@ -189,11 +179,11 @@ public class DeletePurgeEntriesHelper {
 	/*
 	 * Asynchronously completes the operation sequence.
 	 */
-	private void dpuOpCompleteAsync() {
+	private void dpeOpCompleteAsync() {
 		ScheduledCommand doOpDone = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				dpuOpCompleteNow();
+				dpeOpCompleteNow();
 			}
 		};
 		Scheduler.get().scheduleDeferred(doOpDone);
@@ -202,7 +192,7 @@ public class DeletePurgeEntriesHelper {
 	/*
 	 * Synchronously completes the operation sequence.
 	 */
-	private void dpuOpCompleteNow() {
+	private void dpeOpCompleteNow() {
 		// Did we collect any errors during the process?
 		int totalErrorCount = m_collectedErrors.size();
 		if (0 < totalErrorCount) {
@@ -224,7 +214,7 @@ public class DeletePurgeEntriesHelper {
 	/*
 	 * Synchronously performs an operation on a collection of entries.
 	 */
-	private void dpuOpNow(final ProgressDlg pDlg) {
+	private void dpeOpNow(final ProgressDlg pDlg) {
 		// If the user canceled the operation... 
 		if (m_operationCanceled) {
 			// bail.
@@ -236,13 +226,13 @@ public class DeletePurgeEntriesHelper {
 		if (cmdIsChunkList || ((null != pDlg) && ProgressDlg.needsChunking(m_totalEntryCount))) {
 			// Yes!  Make sure we're using a separate list for the
 			// chunks vs. the source list that we're operating on.
-			List<Long> chunkList;
+			List<EntryId> chunkList;
 			if (cmdIsChunkList) {
 				chunkList = m_dpfeCmd.getEntryIds();
 				chunkList.clear();
 			}
 			else {
-				chunkList = new ArrayList<Long>();
+				chunkList = new ArrayList<EntryId>();
 				m_dpfeCmd.setEntryIds(chunkList);
 			}
 			
@@ -265,7 +255,7 @@ public class DeletePurgeEntriesHelper {
 					// Yes!  Send this chunk.  Note that this is a
 					// recursive call and will come back through this
 					// method for the next chunk.
-					dpuOpImpl(null, pDlg, true);
+					dpeOpImpl(null, pDlg, true);
 					return;
 				}
 			}
@@ -285,14 +275,14 @@ public class DeletePurgeEntriesHelper {
 			}
 
 			// ...and perform the final step of the operation.
-			dpuOpImpl(busy, pDlg, false);
+			dpeOpImpl(busy, pDlg, false);
 		}
 	}
 
 	/*
 	 * Performs an operation on a collection of entries.
 	 */
-	private void dpuOpImpl(final SpinnerPopup busy, final ProgressDlg pDlg, final boolean moreRemaining) {
+	private void dpeOpImpl(final SpinnerPopup busy, final ProgressDlg pDlg, final boolean moreRemaining) {
 		GwtClientHelper.executeCommand(m_dpfeCmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -330,7 +320,7 @@ public class DeletePurgeEntriesHelper {
 				// Did we just do a part of what we need to do?
 				if (moreRemaining) {
 					// Yes!  Request that the next chunk be sent.
-					dpuOpAsync(pDlg);
+					dpeOpAsync(pDlg);
 				}
 				
 				else {
@@ -340,7 +330,7 @@ public class DeletePurgeEntriesHelper {
 					if (null != pDlg) {
 						pDlg.hide();
 					}
-					dpuOpCompleteAsync();
+					dpeOpCompleteAsync();
 				}
 			}
 		});
@@ -352,7 +342,7 @@ public class DeletePurgeEntriesHelper {
 	 * @param folderId
 	 * @param sourceEntryIds
 	 */
-	public static void purgeSelectedEntriesAsync(final Long folderId, final List<Long> sourceEntryIds) {
+	public static void purgeSelectedEntriesAsync(final Long folderId, final List<Long> srcEntryIds) {
 		ProgressDlg.createAsync(new ProgressDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -370,47 +360,54 @@ public class DeletePurgeEntriesHelper {
 				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsPurgeFolderEntriesProgress());
 
 				// ...create the helper...
-				final DeletePurgeEntriesHelper dpuHelper = new DeletePurgeEntriesHelper(
+				List<EntryId> sourceEntryIds = buildEIdListFromLL(folderId, srcEntryIds);
+				DeletePurgeEntriesHelper dpeHelper = new DeletePurgeEntriesHelper(
 					sourceEntryIds,
 					strMap,
-					new PurgeFolderEntriesCmd(
-						folderId,
-						sourceEntryIds));
+					new PurgeFolderEntriesCmd(sourceEntryIds));
 				
 				// ...and perform the purge...
-				if (ProgressDlg.needsChunking(dpuHelper.m_totalEntryCount)) {
-					// ...chunking as necessary.
-					ProgressDlg.initAndShow(pDlg, new ProgressCallback() {
-						@Override
-						public void dialogReady() {
-							dpuHelper.dpuOpAsync(pDlg);
-						}
-						
-						@Override
-						public void operationCanceled() {
-							// Simply mark the global indicating we've
-							// been canceled.  The operation will stop
-							// on the next chunk.
-							dpuHelper.m_operationCanceled = true;
-						}
-
-						@Override
-						public void operationComplete() {
-							// Nothing to do.  We manage completion via
-							// how we handle the items in the list.
-						}
-					},
-					true,	// true -> Operation can be canceled.
-					strMap.get(StringIds.PROGRESS_CAPTION),
-					strMap.get(StringIds.PROGRESS_MESSAGE),
-					dpuHelper.m_totalEntryCount);
-				}
-				
-				else {
-					// ...without chunking.
-					dpuHelper.dpuOpAsync(null);
-				}
+				dpeHelper.runOpNow(pDlg);
 			}
 		});
+	}
+	
+	/*
+	 * Runs the delete/purge operation via the progress dialog.
+	 */
+	private void runOpNow(final ProgressDlg pDlg) {
+		// Perform the operation...
+		if (ProgressDlg.needsChunking(m_totalEntryCount)) {
+			// ...chunking as necessary.
+			ProgressDlg.initAndShow(pDlg, new ProgressCallback() {
+				@Override
+				public void dialogReady() {
+					dpeOpAsync(pDlg);
+				}
+				
+				@Override
+				public void operationCanceled() {
+					// Simply mark the global indicating we've
+					// been canceled.  The operation will stop
+					// on the next chunk.
+					m_operationCanceled = true;
+				}
+
+				@Override
+				public void operationComplete() {
+					// Nothing to do.  We manage completion via
+					// how we handle the items in the list.
+				}
+			},
+			true,	// true -> Operation can be canceled.
+			m_strMap.get(StringIds.PROGRESS_CAPTION),
+			m_strMap.get(StringIds.PROGRESS_MESSAGE),
+			m_totalEntryCount);
+		}
+		
+		else {
+			// ...without chunking.
+			dpeOpAsync(null);
+		}
 	}
 }

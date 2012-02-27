@@ -82,9 +82,9 @@ import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TaskDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
+import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskDate;
-import org.kablink.teaming.gwt.client.util.TaskId;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskStats;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
@@ -728,11 +728,11 @@ public class GwtTaskHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static Boolean deleteTasks(HttpServletRequest request, AllModulesInjected bs, List<TaskId> taskIds) throws GwtTeamingException {
+	public static Boolean deleteTasks(HttpServletRequest request, AllModulesInjected bs, List<EntryId> taskIds) throws GwtTeamingException {
 		try {
 			// Before we delete any of them... 
 			FolderModule fm = bs.getFolderModule();
-			for (TaskId taskId:  taskIds) {
+			for (EntryId taskId:  taskIds) {
 				// ...make sure we can delete all of them.
 				fm.checkAccess(
 					fm.getEntry(
@@ -744,7 +744,7 @@ public class GwtTaskHelper {
 			// If we get here, we have rights to delete all the tasks
 			// that we were given.  Scan them...
 			List<Long> binderIds = new ArrayList<Long>();  
-			for (TaskId taskId:  taskIds) {
+			for (EntryId taskId:  taskIds) {
 				// ...deleting each.
 				Long binderId = taskId.getBinderId();
 				MiscUtil.addLongToListLongIfUnique(binderIds, binderId);
@@ -1259,10 +1259,10 @@ public class GwtTaskHelper {
 			seenMap = ami.getProfileModule().getUserSeenMap( null );
 			for (Map taskEntry:  taskEntriesList)
 			{			
-				TaskInfo ti;
+				EntryId taskId;
 				String title;
 				String desc;
-				TaskId taskId;
+				TaskInfo ti;
 				
 				ti = new TaskInfo();
 
@@ -1287,7 +1287,7 @@ public class GwtTaskHelper {
 				desc = getStringFromMap( taskEntry, Constants.DESC_FIELD );
 				ti.setDesc( desc );
 				
-				taskId = new TaskId();
+				taskId = new EntryId();
 				taskId.setBinderId( getLongFromMap( taskEntry, Constants.BINDER_ID_FIELD ) );
 				taskId.setEntryId( getLongFromMap( taskEntry, Constants.DOCID_FIELD ) );
 				ti.setTaskId( taskId );
@@ -1858,11 +1858,11 @@ public class GwtTaskHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static Boolean purgeTasks(HttpServletRequest request, AllModulesInjected bs, List<TaskId> taskIds) throws GwtTeamingException {
+	public static Boolean purgeTasks(HttpServletRequest request, AllModulesInjected bs, List<EntryId> taskIds) throws GwtTeamingException {
 		try {
 			// Before we purge any of them... 
 			FolderModule fm = bs.getFolderModule();
-			for (TaskId taskId:  taskIds) {
+			for (EntryId taskId:  taskIds) {
 				// ...make sure we can purge all of them.
 				fm.checkAccess(
 					fm.getEntry(
@@ -1874,7 +1874,7 @@ public class GwtTaskHelper {
 			// If we get here, we have rights to purge all the tasks
 			// that we were given.  Scan them...
 			List<Long> binderIds = new ArrayList<Long>();  
-			for (TaskId taskId:  taskIds) {
+			for (EntryId taskId:  taskIds) {
 				// ...deleting each.
 				Long binderId = taskId.getBinderId();
 				MiscUtil.addLongToListLongIfUnique(binderIds, binderId);
@@ -2063,7 +2063,7 @@ public class GwtTaskHelper {
 			String desc = getStringFromMap( taskEntry, Constants.DESC_FIELD );
 			ti.setDesc( desc );
 			
-			TaskId taskId = new TaskId();
+			EntryId taskId = new EntryId();
 			taskId.setBinderId(getLongFromMap(taskEntry, Constants.BINDER_ID_FIELD));
 			taskId.setEntryId( getLongFromMap(taskEntry, Constants.DOCID_FIELD    ));
 			ti.setTaskId(taskId);
@@ -2128,7 +2128,7 @@ public class GwtTaskHelper {
 	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-	public static String saveTaskCompleted(AllModulesInjected bs, List<TaskId> taskIds, String completed) throws GwtTeamingException {
+	public static String saveTaskCompleted(AllModulesInjected bs, List<EntryId> taskIds, String completed) throws GwtTeamingException {
 		// Are we marking the tasks completed?
 		boolean nowCompleted = (TaskInfo.COMPLETED_100.equals(completed));
 				
@@ -2136,7 +2136,7 @@ public class GwtTaskHelper {
 		FolderModule  fm      = bs.getFolderModule();
 		ProfileModule pm      = bs.getProfileModule();
 		SeenMap       seenMap = pm.getUserSeenMap(null);
-		for (TaskId taskId:  taskIds) {
+		for (EntryId taskId:  taskIds) {
 			Long binderId = taskId.getBinderId();
 			Long entryId  = taskId.getEntryId();
 			try {
@@ -2208,7 +2208,7 @@ public class GwtTaskHelper {
 	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-	public static TaskEvent saveTaskDueDate(AllModulesInjected bs, TaskId taskId, TaskEvent taskEvent) throws GwtTeamingException {
+	public static TaskEvent saveTaskDueDate(AllModulesInjected bs, EntryId taskId, TaskEvent taskEvent) throws GwtTeamingException {
 		TaskEvent reply = null;
 		try {
 			// - - - - - - - - - - - - - //
@@ -2416,7 +2416,7 @@ public class GwtTaskHelper {
 	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-	public static String saveTaskStatus(AllModulesInjected bs, List<TaskId> taskIds, String status) throws GwtTeamingException {
+	public static String saveTaskStatus(AllModulesInjected bs, List<EntryId> taskIds, String status) throws GwtTeamingException {
 		// Are we marking the tasks completed?
 		boolean nowCompleted = (TaskInfo.STATUS_COMPLETED.equals(status));
 		
@@ -2424,7 +2424,7 @@ public class GwtTaskHelper {
 		FolderModule  fm      = bs.getFolderModule();
 		ProfileModule pm      = bs.getProfileModule();
 		SeenMap       seenMap = pm.getUserSeenMap(null);
-		for (TaskId taskId:  taskIds) {
+		for (EntryId taskId:  taskIds) {
 			Long binderId = taskId.getBinderId();
 			Long entryId  = taskId.getEntryId();
 			try {
