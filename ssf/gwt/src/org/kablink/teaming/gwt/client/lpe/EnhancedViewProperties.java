@@ -54,7 +54,24 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class EnhancedViewProperties
 	implements PropertiesObj
 {
+	// This enum defines the different possible displays an enhanced view can display
+	public enum EnhancedViewType
+	{
+		DISPLAY_CALENDAR,
+		DISPLAY_ENTRY,
+		DISPLAY_LIST_OF_RECENT_ENTRIES,
+		DISPLAY_RECENT_ENTRIES,
+		DISPLAY_SORTED_LIST_RECENT_ENTRIES,
+		DISPLAY_SORTED_LIST_FILES,
+		DISPLAY_SURVEY,
+		DISPLAY_TASK_FOLDER,
+		DISPLAY_MY_CALENDAR_EVENTS,
+		DISPLAY_MY_TASKS,
+		UNKNOWN
+	}
+
 	private String	 m_jspName;
+	private EnhancedViewType m_viewType;
 
 	// The following data members are relevant when the enhanced view requires a folder to be selected.
 	private boolean m_showTitle;
@@ -86,6 +103,7 @@ public class EnhancedViewProperties
 	public EnhancedViewProperties()
 	{
 		m_jspName = null;
+		m_viewType = EnhancedViewType.UNKNOWN;
 		m_showTitle = false;
 		m_folderId = null;
 		m_folderName = null;
@@ -428,6 +446,14 @@ public class EnhancedViewProperties
 	
 	
 	/**
+	 * 
+	 */
+	public EnhancedViewType getViewType()
+	{
+		return m_viewType;
+	}
+	
+	/**
 	 * Return the zone uuid
 	 */
 	public String getZoneUUID()
@@ -513,6 +539,32 @@ public class EnhancedViewProperties
 	public void setJspName( String name )
 	{
 		m_jspName = name;
+
+		if ( m_jspName != null )
+		{
+			if ( m_jspName.equalsIgnoreCase( "landing_page_entry.jsp" ) )
+				m_viewType = EnhancedViewType.DISPLAY_ENTRY;
+			else if ( m_jspName.equalsIgnoreCase( "landing_page_folder.jsp" ) )
+				m_viewType = EnhancedViewType.DISPLAY_RECENT_ENTRIES;
+			else if ( m_jspName.equalsIgnoreCase( "landing_page_folder_list.jsp" ) )
+				m_viewType = EnhancedViewType.DISPLAY_LIST_OF_RECENT_ENTRIES;
+			else if ( m_jspName.equalsIgnoreCase( "landing_page_folder_list_sorted.jsp" ) )
+				m_viewType = EnhancedViewType.DISPLAY_SORTED_LIST_RECENT_ENTRIES;
+			else if ( m_jspName.equalsIgnoreCase( "landing_page_folder_list_sorted_files.jsp" ) )
+				m_viewType = EnhancedViewType.DISPLAY_SORTED_LIST_FILES;
+			else if ( m_jspName.equalsIgnoreCase( "landing_page_calendar.jsp" ) )
+				m_viewType = EnhancedViewType.DISPLAY_CALENDAR;
+			else if ( m_jspName.equalsIgnoreCase( "landing_page_task_folder.jsp" ) )
+				m_viewType = EnhancedViewType.DISPLAY_TASK_FOLDER;
+			else if ( m_jspName.equalsIgnoreCase( "landing_page_survey.jsp" ) )
+				m_viewType = EnhancedViewType.DISPLAY_SURVEY;
+			else if ( m_jspName.equalsIgnoreCase( "landing_page_my_calendar_events.jsp" ) )
+				m_viewType = EnhancedViewType.DISPLAY_MY_CALENDAR_EVENTS;
+			else if ( m_jspName.equalsIgnoreCase( "landing_page_my_tasks.jsp" ) )
+				m_viewType = EnhancedViewType.DISPLAY_MY_TASKS;
+			else
+				m_viewType = EnhancedViewType.UNKNOWN;
+		}
 	}
 
 

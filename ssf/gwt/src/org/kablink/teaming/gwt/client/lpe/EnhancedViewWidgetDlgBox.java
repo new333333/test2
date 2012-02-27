@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
+import org.kablink.teaming.gwt.client.lpe.EnhancedViewProperties.EnhancedViewType;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -101,6 +102,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	private FlowPanel m_folderFindPanel;
 	private FindCtrl m_folderFindCtrl = null;
 	private CheckBox m_showFolderTitleCkBox = null;
+	private Label m_numEntriesToShowLabel = null;
 	private TextBox m_numEntriesToShowTxtBox = null;
 	private InlineLabel m_currentFolderNameLabel = null;
 	private Button m_folderEditBtn;
@@ -424,7 +426,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		FlexTable table;
 		FlowPanel panel;
 		InlineLabel inlineLabel;
-		Label label;
 		
 		mainPanel = new VerticalPanel();
 		mainPanel.setVisible( false );
@@ -559,8 +560,8 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		// Add controls for "Number of entries to show"
 		table = new FlexTable();
 		table.setCellSpacing( 8 );
-		label = new Label( GwtTeaming.getMessages().numEntriesToShow() );
-		table.setWidget( 0, 0, label );
+		m_numEntriesToShowLabel = new Label( GwtTeaming.getMessages().numEntriesToShow() );
+		table.setWidget( 0, 0, m_numEntriesToShowLabel );
 		m_numEntriesToShowTxtBox = new TextBox();
 		m_numEntriesToShowTxtBox.addKeyPressHandler( this );
 		m_numEntriesToShowTxtBox.setVisibleLength( 2 );
@@ -611,6 +612,20 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				
 				// Show/hide the "Show title" checkbox.
 				m_showFolderTitleCkBox.setVisible( evInfo.getTitleOptional() );
+
+				// Is the selected view, "calendar"?
+				if ( evInfo.getViewType() == EnhancedViewType.DISPLAY_CALENDAR )
+				{
+					// Yes, hide the "number of entries to show" controls.
+					m_numEntriesToShowLabel.setVisible( false );
+					m_numEntriesToShowTxtBox.setVisible( false );
+				}
+				else
+				{
+					// No, show the "number of entries to show" controls.
+					m_numEntriesToShowLabel.setVisible( true );
+					m_numEntriesToShowTxtBox.setVisible( true );
+				}
 			}
 			
 			// Does the selected view require the user to select an entry?
