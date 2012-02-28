@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="vibe-root" basedir="." default="war">
+<project name="webdav" basedir="." default="war">
 	<import file="../build-common.xml" />
 	<import file="../deploy-support.xml" />
 		
