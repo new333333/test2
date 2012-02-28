@@ -1154,6 +1154,8 @@
             <column name="trusted" type="TINYINT"/>
             <column name="maxIdleTime" type="INT"/>
             <column name="sameAddrPolicy" type="TINYINT"/>
+            <column name="dynamic" type="TINYINT"/>
+            <column name="ldapQuery" type="NVARCHAR"/>
         </createTable>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859851723-59">

@@ -1154,6 +1154,8 @@
             <column name="TRUSTED" type="NUMBER(1,0)"/>
             <column name="MAXIDLETIME" type="NUMBER(10,0)"/>
             <column name="SAMEADDRPOLICY" type="NUMBER(1,0)"/>
+            <column name="DYNAMIC" type="NUMBER(1,0)"/>
+            <column name="LDAPQUERY" type="CLOB"/>
         </createTable>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-59">

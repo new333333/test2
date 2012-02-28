@@ -1154,6 +1154,8 @@
             <column name="trusted" type="BIT"/>
             <column name="maxIdleTime" type="INT"/>
             <column name="sameAddrPolicy" type="BIT"/>
+            <column name="dynamic" type="BIT"/>
+            <column name="ldapQuery" type="LONGTEXT"/>
         </createTable>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-59">
