@@ -562,6 +562,7 @@ public class TaskListing extends Composite implements TaskProvider {
 			// No, this TaskListing is not embedded in a JSP page!  It
 			// must be embedded in a task folder view.  Attach the
 			// TaskFilter appropriately.
+			m_taskFilter.addStyleName("gwtTaskFilter_filter");
 			VibeFlowPanel taskFilterRoot = m_taskFolderView.getGwtTaskFilter();
 			taskFilterRoot.add(m_taskFilter);
 		}

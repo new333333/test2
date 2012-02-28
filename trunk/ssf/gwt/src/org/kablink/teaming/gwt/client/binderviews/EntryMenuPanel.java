@@ -71,6 +71,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -82,6 +83,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RequiresResize;
@@ -96,7 +98,11 @@ public class EntryMenuPanel extends ToolPanelBase {
 	private BinderInfo			m_binderInfo;				//
 	private boolean				m_includeColumnResizer;		//
 	private List<ToolbarItem>	m_toolbarIems;				//
-	private VibeFlowPanel		m_fp;						// The panel holding the AccessoryPanel's contents.
+	private VibeFlexTable		m_grid;						//
+	private VibeFlowPanel		m_configPanel;				//
+	private VibeFlowPanel		m_filterOptionsPanel;		//
+	private VibeFlowPanel		m_filtersPanel;				//
+	private VibeFlowPanel		m_quickFilterPanel;			//
 	private VibeMenuBar			m_entryMenu;				//
 	private VibeMenuItem		m_addFilesMenu;				//
 	private VibeMenuItem		m_deleteMenu;				//
@@ -121,17 +127,48 @@ public class EntryMenuPanel extends ToolPanelBase {
 		m_binderInfo           = binderInfo;
 		m_includeColumnResizer = includeColumnResizer;
 
-		// ...construct and initialize the panel...
-		m_fp = new VibeFlowPanel();
-		m_fp.addStyleName("vibe-binderViewTools vibe-entryMenuPanel");
-		m_entryMenu = new VibeMenuBar("vibe-entryMenuBar");
-		m_fp.add(m_entryMenu);
-		initWidget(m_fp);
+		// ...construct and initialize the panels...
+		m_grid = new VibeFlexTable();
+		m_grid.addStyleName("vibe-binderViewTools vibe-entryMenu-grid");
+		m_grid.setWidth("100%");
+		m_grid.setCellPadding(0);
+		m_grid.setCellSpacing(0);
+		constructMenuPanels();
+		initWidget(m_grid);
 		
 		// ...and load the menu.
 		loadPart1Async();
 	}
 
+	/*
+	 * Constructs the panels used by the entry menu.
+	 */
+	private void constructMenuPanels() {
+		m_entryMenu = new VibeMenuBar("vibe-entryMenuBar");
+		m_grid.setWidget(0, 0, m_entryMenu);
+
+		VibeFlowPanel rightPanel = new VibeFlowPanel();
+		rightPanel.addStyleName("vibe-entryMenu-rightPanel");
+		m_grid.setWidget(0, 1, rightPanel);
+		m_grid.getFlexCellFormatter().setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_RIGHT);
+		
+		m_filtersPanel = new VibeFlowPanel();
+		m_filtersPanel.addStyleName("vibe-entryMenu-filtersPanel");
+		rightPanel.add(m_filtersPanel);
+		
+		m_quickFilterPanel = new VibeFlowPanel();
+		m_quickFilterPanel.addStyleName("vibe-entryMenu-quickFiltersPanel");
+		rightPanel.add(m_quickFilterPanel);
+		
+		m_filterOptionsPanel = new VibeFlowPanel();
+		m_filterOptionsPanel.addStyleName("vibe-entryMenu-filterOptionsPanel");
+		rightPanel.add(m_filterOptionsPanel);
+		
+		m_configPanel = new VibeFlowPanel();
+		m_configPanel.addStyleName("vibe-entryMenu-configPanel");
+		rightPanel.add(m_configPanel);
+	}
+	
 	/**
 	 * Loads the EntryMenuPanel split point and returns an instance
 	 * of it via the callback.
@@ -160,22 +197,15 @@ public class EntryMenuPanel extends ToolPanelBase {
 	}
 
 	/**
-	 * Returns the add files menu item, if displayed on the menu.
+	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public VibeMenuItem getAddFilesMenuItem() {
-		return m_addFilesMenu;
-	}
-	
-	/**
-	 * Returns the flow panel that contains the menu.
-	 * 
-	 * @return
-	 */
-	public VibeFlowPanel getFlowPanel() {
-		return m_fp;
-	}
+	public VibeFlowPanel getConfigPanel()        {return m_configPanel;       }
+	public VibeFlowPanel getFilterOptionsPanel() {return m_filterOptionsPanel;}
+	public VibeFlowPanel getFiltersPanel()       {return m_filtersPanel;      }
+	public VibeFlowPanel getQuickFilterPanel()   {return m_quickFilterPanel;  }
+	public VibeMenuItem  getAddFilesMenuItem()   {return m_addFilesMenu;      }
 	
 	/*
 	 * Asynchronously construct's the contents of the entry menu panel.
@@ -423,9 +453,8 @@ public class EntryMenuPanel extends ToolPanelBase {
 	@Override
 	public void resetPanel() {
 		// Reset the widgets...
-		m_fp.clear();
-		m_entryMenu = new VibeMenuBar("vibe-entryMenuBar");
-		m_fp.add(m_entryMenu);
+		m_grid.clear();
+		constructMenuPanels();
 
 		// ...and reload the menu.
 		loadPart1Async();

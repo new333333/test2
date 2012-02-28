@@ -120,7 +120,7 @@ public class TaskFolderView extends FolderViewBase
 		m_gwtTaskFilter = new VibeFlowPanel();
 		m_gwtTaskFilter.getElement().setId("gwtTaskFilter");
 		m_gwtTaskFilter.addStyleName("vibe-taskFolderFilterPanel");
-		getEntryMenuPanel().getFlowPanel().add(m_gwtTaskFilter);
+		getEntryMenuPanel().getQuickFilterPanel().add(m_gwtTaskFilter);
 		
 		// ...and construct everything else.
 		loadPart1Async();

@@ -46,10 +46,11 @@
 		-moz-border-radius: 15px;
 		-webkit-border-radius: 15px;
 		cursor: pointer !important;
+		white-space: nowrap;
 	}
 	
-	.vibe-entryMenuPopup     {}
-	.vibe-entryMenuPopupItem {}
+	.vibe-entryMenuPopup     {white-space: nowrap;}
+	.vibe-entryMenuPopupItem {white-space: nowrap;}
 /* End:  Entry menu styles. */
 
 /* Start:  Main menu styles. */

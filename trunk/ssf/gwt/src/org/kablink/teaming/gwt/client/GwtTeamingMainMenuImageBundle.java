@@ -57,6 +57,10 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	public ImageResource closeXMouseOver();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/config_options_btn.png")
+	public ImageResource configOptions();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/help3.gif")
 	public ImageResource help();
 
