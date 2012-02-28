@@ -45,12 +45,12 @@
 	/* ...End:  Description panel styles. */
 	
 	/* ...Start:  Entry menu panel styles. */
-		.vibe-entryMenuPanel
-		{
-			padding: 0px !important;
-			background-color: #ededed;
-			position: relative; 
-		}
+		.vibe-entryMenu-configPanel        {display: inline;}
+		.vibe-entryMenu-filterOptionsPanel {display: inline;}
+		.vibe-entryMenu-filtersPanel       {display: inline;}
+		.vibe-entryMenu-grid               {padding: 0px !important; background-color: #ededed; display: table; table-layout: fixed;}
+		.vibe-entryMenu-quickFiltersPanel  {display: inline;}
+		.vibe-entryMenu-rightPanel         {display: inline; padding-right: 5px;}
 	/* ...End:  Entry menu panel styles. */
 	
 	/* ...Start:  Filter panel styles. */
@@ -202,10 +202,7 @@
 		{
 			padding: 0 0 0 5px;
 			border-left: none;
-			display: block;
-			position: absolute;
-			right: 5px;
-			top: 5px;
+			display: inline;
 			height: 19px;
 			white-space: nowrap;
 			background-color: #fff;

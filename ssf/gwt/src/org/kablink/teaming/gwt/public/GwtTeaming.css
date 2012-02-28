@@ -2829,6 +2829,10 @@ top:100px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
+.gwtTaskFilter_filter
+{
+	display: inline;
+}
 .gwtTaskFilter_input
 {
 	font-size: 11px !important;
