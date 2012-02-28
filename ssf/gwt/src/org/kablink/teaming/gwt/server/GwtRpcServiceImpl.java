@@ -264,8 +264,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case DELETE_TASKS:
 		{
 			DeleteTasksCmd dtCmd = ((DeleteTasksCmd) cmd);
-			Boolean result = deleteTasks( ri, dtCmd.getEntryIds() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			ErrorListRpcResponseData responseData = deleteTasks( ri, dtCmd.getEntryIds() );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
@@ -1591,8 +1591,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case PURGE_TASKS:
 		{
 			PurgeTasksCmd dtCmd = ((PurgeTasksCmd) cmd);
-			Boolean result = purgeTasks( ri, dtCmd.getEntryIds() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			ErrorListRpcResponseData responseData = purgeTasks( ri, dtCmd.getEntryIds() );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
@@ -2143,7 +2143,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Deletes the specified tasks.
 	 */
-	private Boolean deleteTasks( HttpRequestInfo ri, List<EntryId> taskIds ) throws GwtTeamingException {
+	private ErrorListRpcResponseData deleteTasks( HttpRequestInfo ri, List<EntryId> taskIds ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.deleteTasks()");
 		try {
 			return GwtTaskHelper.deleteTasks( getRequest( ri ), this, taskIds );
@@ -2251,7 +2251,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Purges the specified tasks.
 	 */
-	private Boolean purgeTasks( HttpRequestInfo ri, List<EntryId> taskIds ) throws GwtTeamingException {
+	private ErrorListRpcResponseData purgeTasks( HttpRequestInfo ri, List<EntryId> taskIds ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.purgeTasks()");
 		try {
 			return GwtTaskHelper.purgeTasks( getRequest( ri ), this, taskIds );

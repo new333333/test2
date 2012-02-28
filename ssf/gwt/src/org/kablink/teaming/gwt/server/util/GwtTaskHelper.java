@@ -80,6 +80,7 @@ import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TaskDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.EntryId;
@@ -102,6 +103,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.search.SearchUtils;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -728,30 +730,30 @@ public class GwtTaskHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static Boolean deleteTasks(HttpServletRequest request, AllModulesInjected bs, List<EntryId> taskIds) throws GwtTeamingException {
+	public static ErrorListRpcResponseData deleteTasks(HttpServletRequest request, AllModulesInjected bs, List<EntryId> taskIds) throws GwtTeamingException {
 		try {
-			// Before we delete any of them... 
-			FolderModule fm = bs.getFolderModule();
-			for (EntryId taskId:  taskIds) {
-				// ...make sure we can delete all of them.
-				fm.checkAccess(
-					fm.getEntry(
-						taskId.getBinderId(),
-						taskId.getEntryId()),
-						FolderOperation.preDeleteEntry);
-			}
+			// Allocate an error list response we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// If we get here, we have rights to delete all the tasks
 			// that we were given.  Scan them...
 			List<Long> binderIds = new ArrayList<Long>();  
 			for (EntryId taskId:  taskIds) {
-				// ...deleting each.
+				// ...deleting each...
 				Long binderId = taskId.getBinderId();
 				MiscUtil.addLongToListLongIfUnique(binderIds, binderId);
-				TrashHelper.preDeleteEntry(
-					bs,
-					binderId,
-					taskId.getEntryId());
+				try {
+					TrashHelper.preDeleteEntry(bs, taskId.getBinderId(), taskId.getEntryId());
+				}
+
+				catch (Exception e) {
+					// ...tracking any that we couldn't delete.
+					String entryTitle = GwtServerHelper.getEntryTitle(bs, taskId);
+					String messageKey;
+					if      (e instanceof AccessControlException) messageKey = "deleteEntryError.AccssControlException";
+					else                                          messageKey = "deleteEntryError.OtherException";
+					reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
+				}
 			}
 
 			// Scan the IDs of binders that we're deleting from...
@@ -765,8 +767,10 @@ public class GwtTaskHelper {
 					null);	// null -> Update the calculated dates for all the tasks in the binder.
 			}
 
-			// If we get here, the deletes were successful.
-			return Boolean.TRUE;
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing any errors we
+			// encountered.  Return it.
+			return reply;
 		}
 		
 		catch (Exception ex) {
@@ -1858,29 +1862,33 @@ public class GwtTaskHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static Boolean purgeTasks(HttpServletRequest request, AllModulesInjected bs, List<EntryId> taskIds) throws GwtTeamingException {
+	public static ErrorListRpcResponseData purgeTasks(HttpServletRequest request, AllModulesInjected bs, List<EntryId> taskIds) throws GwtTeamingException {
 		try {
-			// Before we purge any of them... 
-			FolderModule fm = bs.getFolderModule();
-			for (EntryId taskId:  taskIds) {
-				// ...make sure we can purge all of them.
-				fm.checkAccess(
-					fm.getEntry(
-						taskId.getBinderId(),
-						taskId.getEntryId()),
-						FolderOperation.deleteEntry);
-			}
+			// Allocate an error list response we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// If we get here, we have rights to purge all the tasks
 			// that we were given.  Scan them...
-			List<Long> binderIds = new ArrayList<Long>();  
+			List<Long> binderIds = new ArrayList<Long>();
+			FolderModule fm = bs.getFolderModule();
 			for (EntryId taskId:  taskIds) {
-				// ...deleting each.
+				// ...purging each...
 				Long binderId = taskId.getBinderId();
 				MiscUtil.addLongToListLongIfUnique(binderIds, binderId);
-				fm.deleteEntry(
-					binderId,
-					taskId.getEntryId());
+				try {
+					fm.deleteEntry(
+						binderId,
+						taskId.getEntryId());
+				}
+				
+				catch (Exception e) {
+					// ...tracking any that we couldn't purge.
+					String entryTitle = GwtServerHelper.getEntryTitle(bs, taskId);
+					String messageKey;
+					if      (e instanceof AccessControlException) messageKey = "purgeEntryError.AccssControlException";
+					else                                          messageKey = "purgeEntryError.OtherException";
+					reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
+				}
 			}
 			
 			// Scan the IDs of binders that we're purging from...
@@ -1894,8 +1902,10 @@ public class GwtTaskHelper {
 					null);	// null -> Update the calculated dates for all the tasks in the binder.
 			}
 
-			// If we get here, the purges were successful.
-			return Boolean.TRUE;
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing any errors we
+			// encountered.  Return it.
+			return reply;
 		}
 		
 		catch (Exception ex) {

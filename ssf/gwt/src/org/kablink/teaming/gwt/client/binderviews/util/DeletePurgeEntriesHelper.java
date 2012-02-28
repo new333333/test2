@@ -41,8 +41,10 @@ import java.util.Map;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.rpc.shared.DeletePurgeFolderEntriesCmdBase;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteFolderEntriesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteTasksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PurgeFolderEntriesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.PurgeTasksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntryId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -56,13 +58,13 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
- * Helper methods for deleting and/or purging folder entries.
+ * Helper methods for deleting and/or purging entries and tasks.
  *
  * @author drfoster@novell.com
  */
 public class DeletePurgeEntriesHelper {
 	private boolean							m_operationCanceled;	// Set true if the operation gets canceled.
-	private DeletePurgeEntriesCallback		m_dpeCallback;			//
+	private DeletePurgeEntriesCallback		m_dpeCallback;			// Callback interface used to inform callers about what happens.
 	private DeletePurgeFolderEntriesCmdBase	m_dpeCmd;				// The delete/purge folder entries command to perform.
 	private int								m_totalEntryCount;		// Count of items in m_sourceEntryIds.
 	private List<EntryId>					m_sourceEntryIds;		// The entry IDs being operated on.
@@ -87,6 +89,7 @@ public class DeletePurgeEntriesHelper {
 	public interface DeletePurgeEntriesCallback {
 		public void operationCanceled();
 		public void operationComplete();
+		public void operationFailed();
 	}
 	
 	/*
@@ -138,6 +141,42 @@ public class DeletePurgeEntriesHelper {
 					sourceEntryIds,
 					strMap,
 					new DeleteFolderEntriesCmd(sourceEntryIds),
+					dpeCallback);
+				
+				// ...and perform the delete.
+				dpeHelper.runOpNow(pDlg);
+			}
+		});
+	}
+	
+	/**
+	 * Asynchronously deletes the selected tasks.
+	 * 
+	 * @param sourceTaskIds
+	 * @param dpeCallback
+	 */
+	public static void deleteSelectedTasksAsync(final List<EntryId> sourceTaskIds, final DeletePurgeEntriesCallback dpeCallback) {
+		ProgressDlg.createAsync(new ProgressDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(final ProgressDlg pDlg) {
+				// Load the strings...
+				Map<StringIds, String> strMap = new HashMap<StringIds, String>();
+				strMap.put(StringIds.ERROR_OP_FAILURE,  GwtTeaming.getMessages().deleteTasksError()              );
+				strMap.put(StringIds.ERROR_RPC_FAILURE, GwtTeaming.getMessages().rpcFailure_DeleteTasks()        );
+				strMap.put(StringIds.PROGRESS_CAPTION,  GwtTeaming.getMessages().binderViewsDeleteTasksCaption() );
+				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsDeleteTasksProgress());
+
+				// ...create the helper...
+				DeletePurgeEntriesHelper dpeHelper = new DeletePurgeEntriesHelper(
+					sourceTaskIds,
+					strMap,
+					new DeleteTasksCmd(sourceTaskIds),
 					dpeCallback);
 				
 				// ...and perform the delete.
@@ -278,7 +317,7 @@ public class DeletePurgeEntriesHelper {
 
 				// ...mark the operation as having been canceled...
 				m_operationCanceled = true;
-				m_dpeCallback.operationCanceled();
+				m_dpeCallback.operationFailed();
 
 				// ...and tell the user about the RPC failure.
 				GwtClientHelper.handleGwtRPCFailure(
@@ -351,6 +390,42 @@ public class DeletePurgeEntriesHelper {
 					sourceEntryIds,
 					strMap,
 					new PurgeFolderEntriesCmd(sourceEntryIds),
+					dpeCallback);
+				
+				// ...and perform the purge...
+				dpeHelper.runOpNow(pDlg);
+			}
+		});
+	}
+	
+	/**
+	 * Asynchronously purges the selected tasks.
+	 * 
+	 * @param sourceTaskIds
+	 * @param dpeCallback
+	 */
+	public static void purgeSelectedTasksAsync(final List<EntryId> sourceTaskIds, final DeletePurgeEntriesCallback dpeCallback) {
+		ProgressDlg.createAsync(new ProgressDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(final ProgressDlg pDlg) {
+				// Load the strings...
+				Map<StringIds, String> strMap = new HashMap<StringIds, String>();
+				strMap.put(StringIds.ERROR_OP_FAILURE,  GwtTeaming.getMessages().purgeTasksError()              );
+				strMap.put(StringIds.ERROR_RPC_FAILURE, GwtTeaming.getMessages().rpcFailure_PurgeTasks()        );
+				strMap.put(StringIds.PROGRESS_CAPTION,  GwtTeaming.getMessages().binderViewsPurgeTasksCaption() );
+				strMap.put(StringIds.PROGRESS_MESSAGE,  GwtTeaming.getMessages().binderViewsPurgeTasksProgress());
+
+				// ...create the helper...
+				DeletePurgeEntriesHelper dpeHelper = new DeletePurgeEntriesHelper(
+					sourceTaskIds,
+					strMap,
+					new PurgeTasksCmd(sourceTaskIds),
 					dpeCallback);
 				
 				// ...and perform the purge...
