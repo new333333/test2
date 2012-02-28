@@ -1382,7 +1382,9 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used by the operations against selected entries.
 	String deleteFolderEntriesError();
+	String deleteTasksError();
 	String purgeFolderEntriesError();
+	String purgeTasksError();
 	
 	// Strings used by the operations against selected users.
 	String enableUsersError();
@@ -1466,11 +1468,15 @@ public interface GwtTeamingMessages extends Messages
 	String binderViewsConfirmPurgeUserWS();
 	String binderViewsDeleteFolderEntriesCaption();
 	String binderViewsDeleteFolderEntriesProgress();
+	String binderViewsDeleteTasksCaption();
+	String binderViewsDeleteTasksProgress();
 	String binderViewsDeleteUserWorkspacesCaption();
 	String binderViewsDeleteUserWorkspacesProgress();
 	String binderViewsPromptPurgeMirroredFolders();
 	String binderViewsPurgeFolderEntriesCaption();
 	String binderViewsPurgeFolderEntriesProgress();
+	String binderViewsPurgeTasksCaption();
+	String binderViewsPurgeTasksProgress();
 	String binderViewsPurgeUsersCaption();
 	String binderViewsPurgeUsersProgress();
 	String binderViewsPurgeUserWorkspacesCaption();

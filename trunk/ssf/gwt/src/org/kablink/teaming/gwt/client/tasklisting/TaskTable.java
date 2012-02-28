@@ -30,6 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.tasklisting;
 
 import java.util.ArrayList;
@@ -39,6 +40,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
+import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper;
+import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
@@ -67,14 +70,12 @@ import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.rpc.shared.AssignmentInfoListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CollapseSubtasksCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.DeleteTasksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ExpandSubtasksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupAssigneeMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTaskBundleCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTeamAssigneeMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.PurgeTasksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskCompletedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskDueDateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveTaskLinkageCmd;
@@ -1747,18 +1748,22 @@ public class TaskTable extends Composite
 						public void accepted() {
 							// Yes!  Delete the selected tasks.
 							final List<EntryId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
-							DeleteTasksCmd cmd = new DeleteTasksCmd(taskIds);
-							GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+							DeletePurgeEntriesHelper.deleteSelectedTasksAsync(taskIds, new DeletePurgeEntriesCallback() {
 								@Override
-								public void onFailure(Throwable caught) {
-									GwtClientHelper.handleGwtRPCFailure(
-										caught,
-										GwtTeaming.getMessages().rpcFailure_DeleteTasks());
+								public void operationCanceled() {
+									handleTaskPostRemoveAsync(taskIds);
 								}
 
 								@Override
-								public void onSuccess(VibeRpcResponse result) {
+								public void operationComplete() {
 									handleTaskPostRemoveAsync(taskIds);
+								}
+								
+								@Override
+								public void operationFailed() {
+									// Nothing to do.  The delete call
+									// will have told the user about
+									// the failure.
 								}
 							});
 						}
@@ -2287,18 +2292,22 @@ public class TaskTable extends Composite
 						public void accepted() {
 							// Yes!  Purge the selected tasks.
 							final List<EntryId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
-							PurgeTasksCmd cmd = new PurgeTasksCmd(taskIds);
-							GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+							DeletePurgeEntriesHelper.purgeSelectedTasksAsync(taskIds, new DeletePurgeEntriesCallback() {
 								@Override
-								public void onFailure(Throwable caught) {
-									GwtClientHelper.handleGwtRPCFailure(
-										caught,
-										GwtTeaming.getMessages().rpcFailure_PurgeTasks());
+								public void operationCanceled() {
+									handleTaskPostRemoveAsync(taskIds);
 								}
 
 								@Override
-								public void onSuccess(VibeRpcResponse result) {
+								public void operationComplete() {
 									handleTaskPostRemoveAsync(taskIds);
+								}
+								
+								@Override
+								public void operationFailed() {
+									// Nothing to do.  The purge call
+									// will have told the user about
+									// the failure.
 								}
 							});
 						}

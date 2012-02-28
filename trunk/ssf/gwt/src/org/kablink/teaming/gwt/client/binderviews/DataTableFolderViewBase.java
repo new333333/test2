@@ -856,14 +856,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Returns a List<Long> of the IDs of the selected rows from the
-	 * table.
+	 * Returns a List<EntryIs> of the entry IDs of the selected rows
+	 * from the table.
 	 * 
 	 * @return
 	 */
-	public List<Long> getSelectedEntryIds() {
-		// Are there any visible rows in the table?
-		List<Long>      reply = new ArrayList<Long>();
+	public List<EntryId> getSelectedEntryIds() {
+		// Are there any selected rows in the table?
+		List<EntryId>   reply = new ArrayList<EntryId>();
 		List<FolderRow> rows  = m_dataTable.getVisibleItems();
 		if (null != rows) {
 			// Yes!  Scan them
@@ -872,9 +872,30 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Is this row selected?
 				if (fsm.isSelected(row)) {
 					// Yes!  Add its entry ID to the List<Long>.
-					reply.add(row.getEntryId().getEntryId());
+					reply.add(row.getEntryId());
 				}
 			}
+		}
+		
+		// If we get here, reply refers to List<EntryId> of the entry
+		// IDs of the selected rows from the data table.  Return it.
+		return reply;
+	}
+	
+	/**
+	 * Returns a List<Long> of the IDs of the selected rows from the
+	 * table.
+	 * 
+	 * @return
+	 */
+	public List<Long> getSelectedEntryIdsAsLongs() {
+		// Scan the List<EntryId>'s from the selected rows in the
+		// table...
+		List<Long>    reply    = new ArrayList<Long>();
+		List<EntryId> entryIds = getSelectedEntryIds();
+		for (EntryId entryId:  entryIds) {
+			// ...adding each the List<Long> we'll return.
+			reply.add(entryId.getEntryId());
 		}
 		
 		// If we get here, reply refers to List<Long> of the entry IDs
@@ -1238,7 +1259,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Yes!  Invoke the change.
 			BinderViewsHelper.changeEntryTypes(
 				getFolderType(),
-				EntryId.buildEntryIdListFromLongs(eventFolderId, getSelectedEntryIds()));
+				getSelectedEntryIds());
 		}
 	}
 	
@@ -1284,7 +1305,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Yes!  Invoke the copy.
 			BinderViewsHelper.copyEntries(
 				getFolderType(),
-				EntryId.buildEntryIdListFromLongs(eventFolderId, getSelectedEntryIds()));
+				getSelectedEntryIds());
 		}
 	}
 	
@@ -1303,7 +1324,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Yes!  Delete the selected entries and reset the view to
 			// redisplay things with the entries deleted.
 			BinderViewsHelper.deleteFolderEntries(
-					EntryId.buildEntryIdListFromLongs(eventFolderId, getSelectedEntryIds()),
+					getSelectedEntryIds(),
 					new DeletePurgeEntriesCallback() {
 				@Override
 				public void operationCanceled() {
@@ -1313,6 +1334,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				@Override
 				public void operationComplete() {
 					resetViewAsync();
+				}
+				
+				@Override
+				public void operationFailed() {
+					// Nothing to do.  The delete call will have told
+					// the user about the failure.
 				}
 			});
 		}
@@ -1331,7 +1358,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventWorkspaceId = event.getWorkspaceId();
 		if (eventWorkspaceId.equals(getFolderId())) {
 			// Yes!  Invoke the delete.
-			BinderViewsHelper.deleteUserWorkspaces(getSelectedEntryIds());
+			BinderViewsHelper.deleteUserWorkspaces(getSelectedEntryIdsAsLongs());
 		}
 	}
 	
@@ -1361,7 +1388,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventWorkspaceId = event.getWorkspaceId();
 		if (eventWorkspaceId.equals(getFolderId())) {
 			// Yes!  Invoke the disable.
-			BinderViewsHelper.disableUsers(getSelectedEntryIds());
+			BinderViewsHelper.disableUsers(getSelectedEntryIdsAsLongs());
 		}
 	}
 	
@@ -1378,7 +1405,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventWorkspaceId = event.getWorkspaceId();
 		if (eventWorkspaceId.equals(getFolderId())) {
 			// Yes!  Invoke the enable.
-			BinderViewsHelper.enableUsers(getSelectedEntryIds());
+			BinderViewsHelper.enableUsers(getSelectedEntryIdsAsLongs());
 		}
 	}
 	
@@ -1512,7 +1539,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Yes!  Invoke the lock.
 			BinderViewsHelper.lockEntries(
 				getFolderType(),
-				EntryId.buildEntryIdListFromLongs(eventFolderId, getSelectedEntryIds()));
+				getSelectedEntryIds());
 		}
 	}
 	
@@ -1529,7 +1556,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the mark entries read.
-			BinderViewsHelper.markEntriesRead(getSelectedEntryIds());
+			BinderViewsHelper.markEntriesRead(getSelectedEntryIdsAsLongs());
 		}
 	}
 	
@@ -1548,7 +1575,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Yes!  Invoke the move.
 			BinderViewsHelper.moveEntries(
 				getFolderType(),
-				EntryId.buildEntryIdListFromLongs(eventFolderId, getSelectedEntryIds()));
+				getSelectedEntryIds());
 		}
 	}
 	
@@ -1567,7 +1594,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Yes!  Purge the selected entries and reset the view to
 			// redisplay things with the entries purged.
 			BinderViewsHelper.purgeFolderEntries(
-					EntryId.buildEntryIdListFromLongs(eventFolderId, getSelectedEntryIds()),
+					getSelectedEntryIds(),
 					new DeletePurgeEntriesCallback() {
 				@Override
 				public void operationCanceled() {
@@ -1577,6 +1604,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				@Override
 				public void operationComplete() {
 					resetViewAsync();
+				}
+				
+				@Override
+				public void operationFailed() {
+					// Nothing to do.  The purge call will have told the
+					// user about the failure.
 				}
 			});
 		}
@@ -1595,7 +1628,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventWorkspaceId = event.getWorkspaceId();
 		if (eventWorkspaceId.equals(getFolderId())) {
 			// Yes!  Invoke the purge.
-			BinderViewsHelper.purgeUsers(getSelectedEntryIds());
+			BinderViewsHelper.purgeUsers(getSelectedEntryIdsAsLongs());
 		}
 	}
 	
@@ -1612,7 +1645,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventWorkspaceId = event.getWorkspaceId();
 		if (eventWorkspaceId.equals(getFolderId())) {
 			// Yes!  Invoke the purge.
-			BinderViewsHelper.purgeUserWorkspaces(getSelectedEntryIds());
+			BinderViewsHelper.purgeUserWorkspaces(getSelectedEntryIdsAsLongs());
 		}
 	}
 	
@@ -1691,7 +1724,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Yes!  Invoke the share.
 			BinderViewsHelper.shareEntries(
 				getFolderType(),
-				EntryId.buildEntryIdListFromLongs(eventFolderId, getSelectedEntryIds()));
+				getSelectedEntryIds());
 		}
 	}
 	
@@ -1710,7 +1743,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Yes!  Invoke the subscribe to.
 			BinderViewsHelper.subscribeToEntries(
 				getFolderType(),
-				EntryId.buildEntryIdListFromLongs(eventFolderId, getSelectedEntryIds()));
+				getSelectedEntryIds());
 		}
 	}
 	
@@ -1826,7 +1859,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Yes!  Invoke the unlock.
 			BinderViewsHelper.unlockEntries(
 				getFolderType(),
-				EntryId.buildEntryIdListFromLongs(eventFolderId, getSelectedEntryIds()));
+				getSelectedEntryIds());
 		}
 	}
 	
