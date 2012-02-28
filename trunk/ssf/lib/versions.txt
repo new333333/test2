@@ -93,7 +93,7 @@ Liquibase Oracle Extensions 1.2.0
 Log4j 1.2.15 (from spring distribution)
 Lucene 3.4.0
 Lucene analyzers 3.4.0 (previous Lucene snowball library is removed because it is contained in this new library)
-Milton 1.6.8
+Milton 1.7.0
 MINA (Apache) mina-core.jar 1.1.6
 MINA (Apache) mina-filter-ssl.jar 1.1.6
 MINA (Apache) mina-integration-jmx.jar 1.1.3
