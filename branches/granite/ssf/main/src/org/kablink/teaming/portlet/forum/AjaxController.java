@@ -3334,9 +3334,15 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		String binderIdText = PortletRequestUtils.getStringParameter(request, "binderId", "");
 		model.put("binderId", binderIdText);
+		String originalBinderIdText = PortletRequestUtils.getStringParameter(request, "originalBinderId", binderIdText);
+		model.put("originalBinderId", originalBinderIdText);
 		if (!binderIdText.equals("")) {
 			Binder binder = getBinderModule().getBinder(Long.valueOf(binderIdText));
 			model.put(WebKeys.BINDER, binder);
+		}
+		if (!originalBinderIdText.equals("")) {
+			Binder originalBinder = getBinderModule().getBinder(Long.valueOf(originalBinderIdText));
+			model.put(WebKeys.ORIGINAL_BINDER, originalBinder);
 		}
 
 		return new ModelAndView("binder/wikilink_ajax_return", model);
