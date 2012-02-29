@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.cell.client.CheckboxCell;
+import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Unit;
@@ -146,7 +147,8 @@ public class ManageGroupsDlg extends DlgBox
 	{
 		final GwtTeamingMessages messages;
 		VerticalPanel mainPanel = null;
-		TextColumn<GroupInfo> titleCol;
+		AnchorCell cell;
+		Column<GroupInfo,String> titleCol;
 		TextColumn<GroupInfo> nameCol;
 		FlowPanel menuPanel;
 		CellTable.Resources cellTableResources;
@@ -179,29 +181,6 @@ public class ManageGroupsDlg extends DlgBox
 						public void execute()
 						{
 							invokeAddGroupDlg();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			} );
-			menuPanel.add( label );
-			
-			// Add an "Edit" button
-			label = new InlineLabel( messages.manageGroupsDlgEditGroupLabel() );
-			label.addStyleName( "groupManagementBtn" );
-			label.addClickHandler( new ClickHandler()
-			{
-				@Override
-				public void onClick( ClickEvent event )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							invokeEditGroupDlg();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -262,23 +241,36 @@ public class ManageGroupsDlg extends DlgBox
 		    m_groupsTable.setColumnWidth( ckboxColumn, 20, Unit.PX );			
 		}
 		
-		// Add the "Title" column
-		titleCol = new TextColumn<GroupInfo>()
+		// Add the "Title" column.  The user can click on the text in this column
+		// to edit the group.
 		{
-			@Override
-			public String getValue( GroupInfo groupInfo )
+			cell = new AnchorCell();
+			titleCol = new Column<GroupInfo, String>( cell )
 			{
-				String title;
-				
-				title = groupInfo.getTitle();
-				if ( title == null || title.length() == 0 )
-					title = messages.noTitle();
-				
-				return title;
-			}
-		};
-		m_groupsTable.addColumn( titleCol, messages.manageGroupsDlgTitleCol() );
+				@Override
+				public String getValue( GroupInfo groupInfo )
+				{
+					String title;
+					
+					title = groupInfo.getTitle();
+					if ( title == null || title.length() == 0 )
+						title = messages.noTitle();
+					
+					return title;
+				}
+			};
 		
+			titleCol.setFieldUpdater( new FieldUpdater<GroupInfo, String>()
+			{
+				@Override
+				public void update( int index, GroupInfo groupInfo, String value )
+				{
+				    invokeModifyGroupDlg( groupInfo );
+				}
+			} );
+			m_groupsTable.addColumn( titleCol, messages.manageGroupsDlgTitleCol() );
+		}
+		  
 		// Add the "Name" column
 		nameCol = new TextColumn<GroupInfo>()
 		{
@@ -521,44 +513,6 @@ public class ManageGroupsDlg extends DlgBox
 		invokeModifyGroupDlg( null );
 	}
 	
-	/**
-	 * Invoke the "Edit Group" dialog for the selected group.
-	 */
-	private void invokeEditGroupDlg()
-	{
-		Set<GroupInfo> selectedGroups;
-		
-		selectedGroups = getSelectedGroups();
-		if ( selectedGroups != null )
-		{
-			int numSelectedGroups;
-			
-			// Get the number of selected groups.
-			numSelectedGroups = selectedGroups.size();
-			
-			// Is there just one group selected?
-			if ( numSelectedGroups == 1 )
-			{
-				Iterator<GroupInfo> groupIterator;
-				
-				// Yes
-				groupIterator = selectedGroups.iterator();
-				if ( groupIterator.hasNext() )
-				{
-					GroupInfo nextGroup;
-					
-					nextGroup = groupIterator.next();
-
-					invokeModifyGroupDlg( nextGroup );
-				}
-			}
-			else if ( numSelectedGroups == 0 || numSelectedGroups > 1 )
-			{
-				Window.alert( GwtTeaming.getMessages().manageGroupsDlgSelect1GroupToEdit() );
-			}
-		}
-	}
-
 	/**
 	 * 
 	 */
