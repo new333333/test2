@@ -34,7 +34,6 @@
 package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.i18n.client.Messages;
-import com.google.gwt.safehtml.shared.SafeHtml;
 
 
 /**
@@ -290,6 +289,8 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CanModifyBinder();
 	String rpcFailure_CheckForActivityStreamChanges();
 	String rpcFailure_CollapseSubtasks();
+	String rpcFailure_CreateGroup();
+	String rpcFailure_CreateGroupAlreadyExists();
 	String rpcFailure_DeleteGroups();
 	String rpcFailure_DeleteTasks();
 	String rpcFailure_EntryDoesNotExist();
@@ -315,6 +316,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetFolderEntry();
 	String rpcFailure_GetGeneric();
 	String rpcFailure_GetGroupMembership();
+	String rpcFailure_GetGroupMembershipType();
 	String rpcFailure_GwtGroups();
 	String rpcFailure_GetGwtUIInfo();
 	String rpcFailure_GetImUrl();
@@ -352,6 +354,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_IsAllUsersGroup();
 	String rpcFailure_IsPersonTracked();
 	String rpcFailure_markupStringReplacement();
+	String rpcFailure_ModifyGroup();
 	String rpcFailure_PersistActivityStreamSelection();
 	String rpcFailure_PersistExpansionState();
 	String rpcFailure_PurgeTasks();
@@ -1100,6 +1103,8 @@ public interface GwtTeamingMessages extends Messages
 	String modifyGroupDlgDynamicLabel();
 	String modifyGroupDlgHeader( String groupTitle );
 	String modifyGroupDlgNameLabel();
+	String modifyGroupDlgNameRequired();
+	String modifyGroupDlgNameTooLong();
 	String modifyGroupDlgStaticLabel();
 	String modifyGroupDlgTitleLabel();
 	

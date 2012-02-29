@@ -40,14 +40,14 @@ import org.kablink.teaming.gwt.client.GwtTeamingItem;
 
 
 /**
- * This class holds all of the information necessary to execute the "modify group" command.
+ * This class holds all of the information necessary to execute the "create group" command.
  * 
  * @author jwootton
  *
  */
-public class ModifyGroupCmd extends VibeRpcCmd
+public class CreateGroupCmd extends VibeRpcCmd
 {
-	private Long m_id;
+	private String m_name;
 	private String m_title;
 	private String m_desc;
 	private boolean m_isMembershipDynamic;
@@ -56,7 +56,7 @@ public class ModifyGroupCmd extends VibeRpcCmd
 	/**
 	 * For GWT serialization, must have a zero param contructor
 	 */
-	public ModifyGroupCmd()
+	public CreateGroupCmd()
 	{
 		super();
 	}
@@ -64,9 +64,9 @@ public class ModifyGroupCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public ModifyGroupCmd( Long id, String title, String desc, boolean isMembershipDynamic, List<GwtTeamingItem> membership )
+	public CreateGroupCmd( String name, String title, String desc, boolean isMembershipDynamic, List<GwtTeamingItem> membership )
 	{
-		m_id = id;
+		m_name = name;
 		m_title = title;
 		m_desc = desc;
 		m_isMembershipDynamic = isMembershipDynamic;
@@ -83,7 +83,7 @@ public class ModifyGroupCmd extends VibeRpcCmd
 	@Override
 	public int getCmdType()
 	{
-		return VibeRpcCmdType.MODIFY_GROUP.ordinal();
+		return VibeRpcCmdType.CREATE_GROUP.ordinal();
 	}
 
 	/**
@@ -94,14 +94,6 @@ public class ModifyGroupCmd extends VibeRpcCmd
 		return m_desc;
 	}
 
-	/**
-	 * 
-	 */
-	public Long getId()
-	{
-		return m_id;
-	}
-	
 	/**
 	 * 
 	 */
@@ -116,6 +108,14 @@ public class ModifyGroupCmd extends VibeRpcCmd
 	public List<GwtTeamingItem> getMembership()
 	{
 		return m_membership;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getName()
+	{
+		return m_name;
 	}
 	
 	/**
@@ -140,6 +140,14 @@ public class ModifyGroupCmd extends VibeRpcCmd
 	public void setIsMembershipDynamic( boolean isMembershipDynamic )
 	{
 		m_isMembershipDynamic = isMembershipDynamic;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setName( String name )
+	{
+		m_name = name;
 	}
 	
 	/**

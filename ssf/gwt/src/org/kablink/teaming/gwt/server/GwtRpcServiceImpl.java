@@ -49,6 +49,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.domain.FileAttachment;
@@ -216,6 +217,33 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			CollapseSubtasksCmd csCmd = ((CollapseSubtasksCmd) cmd);
 			Boolean result = collapseSubtasks( ri, csCmd.getBinderId(), csCmd.getEntryId() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			return response;
+		}
+		
+		case CREATE_GROUP:
+		{
+			CreateGroupCmd cgCmd;
+			GroupInfo groupInfo;
+			Group group;
+			
+			cgCmd = (CreateGroupCmd) cmd;
+			group = GwtServerHelper.createGroup( this, cgCmd.getName(), cgCmd.getTitle(), cgCmd.getDesc(), cgCmd.getIsMembershipDynamic(), cgCmd.getMembership() );
+			groupInfo = new GroupInfo();
+			if ( group != null )
+			{
+				Description desc;
+				
+				groupInfo.setId( group.getId() );
+				groupInfo.setName( group.getName() );
+				groupInfo.setTitle( group.getTitle() );
+				groupInfo.setIsMembershipDynamic( group.isDynamic() );
+
+				desc = group.getDescription();
+				if ( desc != null )
+					groupInfo.setDesc( desc.getText() );
+			}
+			response = new VibeRpcResponse( groupInfo );
+			
 			return response;
 		}
 		
@@ -548,6 +576,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			String groupId = ((GetGroupMembershipCmd) cmd).getGroupId();
 			List<GwtTeamingItem> members = getGroupMembership( ri, groupId );
 			GetGroupMembershipRpcResponseData responseData = new GetGroupMembershipRpcResponseData( members );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_GROUP_MEMBERSHIP_TYPE:
+		{
+			GetGroupMembershipTypeCmd ggmtCmd;
+			BooleanRpcResponseData responseData;
+			Boolean result;
+			
+			ggmtCmd = (GetGroupMembershipTypeCmd) cmd;
+			result = GwtServerHelper.isGroupMembershipDynamic( this, ggmtCmd.getGroupId() );
+			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1034,7 +1075,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ModifyGroupCmd mgCmd;
 			
 			mgCmd = (ModifyGroupCmd) cmd;
-			GwtServerHelper.modifyGroup( this, mgCmd.getId(), mgCmd.getTitle(), mgCmd.getDesc(), mgCmd.getMembership() );
+			GwtServerHelper.modifyGroup( this, mgCmd.getId(), mgCmd.getTitle(), mgCmd.getDesc(), mgCmd.getIsMembershipDynamic(), mgCmd.getMembership() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( Boolean.TRUE ) );
 			
 			return response;

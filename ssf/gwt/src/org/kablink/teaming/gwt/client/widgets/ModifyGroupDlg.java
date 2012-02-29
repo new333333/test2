@@ -41,8 +41,11 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.CreateGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipTypeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -225,6 +228,50 @@ public class ModifyGroupDlg extends DlgBox
 	}
 	
 	/**
+	 * Issue an rpc request to create a group.  If the rpc request is successful
+	 * close this dialog.
+	 */
+	private void createGroupAndClose()
+	{
+		CreateGroupCmd cmd;
+		AsyncCallback<VibeRpcResponse> rpcCallback;
+		
+		// Yes
+		rpcCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable caught )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_CreateGroup(),
+					getGroupName() );
+				
+				m_nameTxtBox.setFocus( true );
+			}
+
+			@Override
+			public void onSuccess( VibeRpcResponse result )
+			{
+				if ( m_editSuccessfulHandler != null )
+				{
+					GroupInfo groupInfo;
+					
+					groupInfo = (GroupInfo) result.getResponseData();
+					m_editSuccessfulHandler.editSuccessful( groupInfo );
+				}
+				
+				// Close this dialog.
+				hide();
+			}						
+		};
+		
+		// Issue an rpc request to create the group.
+		cmd = new CreateGroupCmd( getGroupName(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership );
+		GwtClientHelper.executeCommand( cmd, rpcCallback );
+	}
+
+	/**
 	 * This gets called when the user presses ok.  If we are editing an existing group
 	 * we will issue an rpc request to save the group and then call m_editSuccessfulHandler.
 	 * If we are creating a new group we will issue an rpc request to create the new group
@@ -236,11 +283,24 @@ public class ModifyGroupDlg extends DlgBox
 		// Are we editing an existing group?
 		if ( m_groupInfo != null )
 		{
+			// Yes, issue an rpc request to modify the group.  If the rpc request is
+			// successful, close this dialog.
 			modifyGroupAndClose();
 		}
 		else
 		{
 			// No, we are creating a new group.
+			
+			// Is the name entered by the user valid?
+			if ( isNameValid() == false )
+			{
+				m_nameTxtBox.setFocus( true );
+				return false;
+			}
+			
+			// Issue an rpc request to create the group.  If the rpc request is successful,
+			// close this dialog.
+			createGroupAndClose();
 		}
 		
 		// Returning false will prevent the dialog from closing.  We will close the dialog
@@ -329,6 +389,62 @@ public class ModifyGroupDlg extends DlgBox
 	}
 	
 	/**
+	 * Return whether membership is dynamic.
+	 */
+	private boolean getIsMembershipDynamic()
+	{
+		return m_dynamicRb.getValue();
+	}
+	
+	/**
+	 * Issue an ajax request to get the membership type (static or dynamic) for the group
+	 * we are working with.
+	 */
+	private void getMembershipType()
+	{
+		if ( m_groupInfo != null )
+		{
+			GetGroupMembershipTypeCmd cmd;
+			AsyncCallback<VibeRpcResponse> rpcCallback;
+			
+			rpcCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				@Override
+				public void onFailure( Throwable caught )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_GetGroupMembershipType() );
+				}
+	
+				@Override
+				public void onSuccess( VibeRpcResponse result )
+				{
+					BooleanRpcResponseData responseData;
+					
+					responseData = ((BooleanRpcResponseData) result.getResponseData());
+					m_groupInfo.setIsMembershipDynamic( responseData.getBooleanValue() );
+
+					// Set the appropriate radio buttons.
+					if ( m_groupInfo.getIsMembershipDynamic() )
+					{
+						m_staticRb.setValue( false );
+						m_dynamicRb.setValue( true );
+					}
+					else
+					{
+						m_staticRb.setValue( true );
+						m_dynamicRb.setValue( false );
+					}
+				}						
+			};
+			
+			cmd = new GetGroupMembershipTypeCmd( m_groupInfo.getId() );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		}
+	}
+	
+	/**
 	 * 
 	 */
 	public void init( GroupInfo groupInfo )
@@ -345,7 +461,8 @@ public class ModifyGroupDlg extends DlgBox
 		if ( m_groupInfo != null )
 		{
 			// Yes
-			// Schedule an ajax request to get the group membership
+			// Schedule an ajax request to get the group membership and to get the
+			// membership type (dynamic or static).
 			{
 				Scheduler.ScheduledCommand cmd;
 				
@@ -353,6 +470,7 @@ public class ModifyGroupDlg extends DlgBox
 				{
 					public void execute()
 					{
+						getMembershipType();
 						getGroupMembership();
 					}
 				};
@@ -368,7 +486,6 @@ public class ModifyGroupDlg extends DlgBox
 			
 			m_titleTxtBox.setText( groupInfo.getTitle() );
 			m_descTextArea.setText( groupInfo.getDesc() );
-			m_staticRb.setValue( true );
 		}
 		else
 		{
@@ -381,6 +498,7 @@ public class ModifyGroupDlg extends DlgBox
 			
 			// Default the membership to "static"
 			m_staticRb.setValue( true );
+			m_dynamicRb.setValue( false );
 		}
 	}
 	
@@ -390,6 +508,29 @@ public class ModifyGroupDlg extends DlgBox
 	public void invokeEditGroupMembershipDlg()
 	{
 		Window.alert( "Not yet implemented" );
+	}
+	
+	/**
+	 * Is the name entered by the user valid?
+	 */
+	private boolean isNameValid()
+	{
+		String value;
+		
+		value = m_nameTxtBox.getValue();
+		if ( value == null || value.length() == 0 )
+		{
+			Window.alert( GwtTeaming.getMessages().modifyGroupDlgNameRequired() );
+			return false;
+		}
+		
+		if ( value.length() > 128 )
+		{
+			Window.alert( GwtTeaming.getMessages().modifyGroupDlgNameTooLong() );
+			return false;
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -409,7 +550,7 @@ public class ModifyGroupDlg extends DlgBox
 			{
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
-					GwtTeaming.getMessages().rpcFailure_GetGroupMembership() );
+					GwtTeaming.getMessages().rpcFailure_ModifyGroup() );
 			}
 
 			@Override
@@ -429,7 +570,7 @@ public class ModifyGroupDlg extends DlgBox
 		};
 		
 		// Issue an rpc request to update the group.
-		cmd = new ModifyGroupCmd( m_groupInfo.getId(), getGroupTitle(), getGroupDesc(), m_groupMembership );
+		cmd = new ModifyGroupCmd( m_groupInfo.getId(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 }
