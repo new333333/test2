@@ -87,6 +87,8 @@ public class ManageGroupsDlg extends DlgBox
 	private SimplePager m_pager;
 	private List<GroupInfo> m_listOfGroups;
 	private ModifyGroupDlg m_modifyGroupDlg;
+	private EditSuccessfulHandler m_editSuccessfulHandler;
+	private GroupInfo m_groupBeingEdited;
     private int m_width;
     private int m_height;
 	
@@ -569,26 +571,58 @@ public class ManageGroupsDlg extends DlgBox
 		x = getAbsoluteLeft() + 50;
 		y = getAbsoluteTop() + 50;
 		
+		// Remember the group we are working with.
+		m_groupBeingEdited = groupInfo;
+		
 		if ( m_modifyGroupDlg == null )
 		{
-			EditSuccessfulHandler editSuccessfulHandler;
-			
 			// Create a handler that will be called when the user presses Ok in the
 			// ModifyGroupDlg.
-			editSuccessfulHandler = new EditSuccessfulHandler()
+			if ( m_editSuccessfulHandler == null )
 			{
-				@Override
-				public boolean editSuccessful( Object obj )
+				m_editSuccessfulHandler = new EditSuccessfulHandler()
 				{
-					// Update the table to reflect the fact that a group was modified.
-					m_dataProvider.refresh();
-					return true;
-				}
-			};
-			m_modifyGroupDlg = new ModifyGroupDlg( false, true, editSuccessfulHandler, null, x, y );
+					@Override
+					public boolean editSuccessful( Object obj )
+					{
+						// Were we editing a group?
+						if ( m_groupBeingEdited != null )
+						{
+							// Yes
+							// The groupInfo object that was passed to us was passed to the
+							// ModifyGroupDlg.  That dialog would have updated the object
+							// with whatever the user entered.
+							// Update the table to reflect the fact that a group was modified.
+							m_dataProvider.refresh();
+						}
+						else
+						{
+							GroupInfo newGroup;
+							
+							// No, we are doing an add.
+							// Get the newly created group.
+							newGroup = (GroupInfo) obj;
+							
+							// Add the group as the first group in the list.
+							m_listOfGroups.add( 0, newGroup );
+							
+							// Update the table to reflect the new group we just created.
+							m_dataProvider.refresh();
+							
+							// Go to the first page.
+							m_pager.firstPage();
+							
+							// Select the newly created group.
+							m_selectionModel.setSelected( newGroup, true );
+						}
+						return true;
+					}
+				};
+			}
+			m_modifyGroupDlg = new ModifyGroupDlg( false, true, m_editSuccessfulHandler, null, x, y );
 		}
 		
-		m_modifyGroupDlg.init( groupInfo );
+		m_modifyGroupDlg.init( m_groupBeingEdited );
 		m_modifyGroupDlg.setPopupPosition( x, y );
 		m_modifyGroupDlg.show();
 	}

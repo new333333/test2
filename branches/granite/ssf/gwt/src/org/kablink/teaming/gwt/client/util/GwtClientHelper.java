@@ -291,6 +291,11 @@ public class GwtClientHelper {
 					GwtTeaming.getMainPage().handleSessionExpired();
 					break;
 					
+				case GROUP_ALREADY_EXISTS:
+					displayAlert = true;
+					cause = patchMessage( messages.rpcFailure_CreateGroupAlreadyExists(), patches );
+					break;
+					
 				default:
 					cause = patchMessage(messages.rpcFailure_UnknownException(), patches);
 					break;

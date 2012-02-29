@@ -509,6 +509,8 @@ public interface ObjectKeys {
     public static final String FIELD_ENTITY_MODIFY_PRINCIPAL="modification.principal";
     public static final String FIELD_ENTITY_DELETED="deleted";
 
+    public static final String FIELD_GROUP_DYNAMIC = "dynamic";
+
     public static final String FIELD_FILE_ID="_fileID";
     
     public static final String FIELD_APPLICATION_POST_URL="postUrl";

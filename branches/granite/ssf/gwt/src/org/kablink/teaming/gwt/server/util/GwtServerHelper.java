@@ -57,6 +57,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
+import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.HttpSessionContext;
 import org.kablink.teaming.context.request.RequestContext;
@@ -117,6 +118,7 @@ import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.CreateGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
@@ -977,6 +979,69 @@ public class GwtServerHelper {
 		
 		// If we get here the user does not have rights to modify the binder.
 		return Boolean.FALSE;
+	}
+	
+	/**
+	 * Create a group from the given information
+	 * @throws WriteEntryDataException 
+	 * @throws WriteFilesException 
+	 * @throws AccessControlException 
+	 */
+	public static Group createGroup( AllModulesInjected ami, String name, String title, String desc, boolean isMembershipDynamic, List<GwtTeamingItem> membership ) throws GwtTeamingException
+	{
+		MapInputData inputData;
+		HashMap<String, Object> inputMap;
+		HashMap<String, Object> fileMap;
+		Group newGroup = null;
+
+		// Create an empty file map.
+		fileMap = new HashMap<String, Object>();
+		
+		inputMap = new HashMap<String, Object>();
+		inputMap.put( ObjectKeys.FIELD_PRINCIPAL_NAME, name );
+		inputMap.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
+		inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
+		inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_NONE ) );  
+		inputMap.put( ObjectKeys.FIELD_GROUP_DYNAMIC, isMembershipDynamic );
+		
+		// Get a list of all the membership ids
+		if ( membership != null )
+		{
+			HashSet<Long> membershipIds;
+			SortedSet<Principal> principals;
+
+			membershipIds = new HashSet<Long>();
+
+			for (GwtTeamingItem nextMember : membership)
+			{
+				Long id;
+
+				id = null;
+				if ( nextMember instanceof GwtUser )
+					id = Long.valueOf( ((GwtUser) nextMember).getUserId() );
+				else if ( nextMember instanceof GwtGroup )
+					id = Long.valueOf( ((GwtGroup) nextMember).getId() );
+							
+				if ( id != null )
+					membershipIds.add( id );
+			}
+
+			principals = ami.getProfileModule().getPrincipals( membershipIds );
+			inputMap.put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals );
+		}
+		
+		inputData = new MapInputData( inputMap );
+
+		try
+		{
+			newGroup = ami.getProfileModule().addGroup( null, inputData, fileMap, null );
+		}
+		catch( Exception ex)
+		{
+			throw GwtServerHelper.getGwtTeamingException( ex );
+		}
+		
+		return newGroup;
 	}
 	
 	/**
@@ -2757,6 +2822,10 @@ public class GwtServerHelper {
 				{
 					exType = ExceptionType.EXTENSION_DEFINITION_IN_USE;
 				}
+				else if ( ex instanceof GroupExistsException )
+				{
+					exType = ExceptionType.GROUP_ALREADY_EXISTS;
+				}
 				else                                                          exType = ExceptionType.UNKNOWN;
 				
 				reply.setExceptionType(exType);
@@ -3618,6 +3687,25 @@ public class GwtServerHelper {
 		return reply;
 	}
 	
+	/**
+	 * Return true if the given group's membership is dynamic.
+	 */
+	public static Boolean isGroupMembershipDynamic( AllModulesInjected ami, Long groupId )
+	{
+		Principal principal;
+		
+		principal = ami.getProfileModule().getEntry( groupId );
+		if ( principal != null && principal instanceof Group )
+		{
+			Group group;
+			
+			group = (Group) principal;
+			return group.isDynamic();
+		}
+
+		return Boolean.FALSE;
+	}
+	
 	/*
 	 * Returns true if a Long is in a List<Long> and false otherwise.
 	 */
@@ -3730,7 +3818,7 @@ public class GwtServerHelper {
 	/**
 	 * Modify the given group
 	 */
-	public static void modifyGroup( AllModulesInjected ami, Long groupId, String title, String desc, List<GwtTeamingItem> membership ) throws GwtTeamingException
+	public static void modifyGroup( AllModulesInjected ami, Long groupId, String title, String desc, boolean isMembershipDynamic, List<GwtTeamingItem> membership ) throws GwtTeamingException
 	{
 		Principal group;
 
@@ -3774,6 +3862,8 @@ public class GwtServerHelper {
 					updates = new HashMap();
 					updates.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
 					updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
+					updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_NONE ) );  
+					updates.put( ObjectKeys.FIELD_GROUP_DYNAMIC, isMembershipDynamic );
 					updates.put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals );
 					
 					try
@@ -3874,6 +3964,27 @@ public class GwtServerHelper {
 		VibeRpcCmdType cmdEnum = VibeRpcCmdType.getEnum( cmd.getCmdType() );
 		switch (cmdEnum) {
 		// The following commands require XSS checks.
+		case CREATE_GROUP:
+		{
+			CreateGroupCmd cgCmd;
+			String value;
+			
+			cgCmd = (CreateGroupCmd) cmd;
+			value = cgCmd.getName();
+			if ( MiscUtil.hasString( value ) )
+				cgCmd.setName( StringCheckUtil.check( value ) );
+			
+			value = cgCmd.getDesc();
+			if ( MiscUtil.hasString( value ) )
+				cgCmd.setDesc( StringCheckUtil.check( value ) );
+			
+			value = cgCmd.getTitle();
+			if ( MiscUtil.hasString( value ) )
+				cgCmd.setTitle( StringCheckUtil.check( value ) );
+			
+			break;
+		}
+			
 		case MARKUP_STRING_REPLACEMENT:
 		{
 			MarkupStringReplacementCmd msrCmd = ((MarkupStringReplacementCmd) cmd);
@@ -3979,6 +4090,7 @@ public class GwtServerHelper {
 		case GET_FOLDER:
 		case GET_GROUP_ASSIGNEE_MEMBERSHIP:
 		case GET_GROUP_MEMBERSHIP:
+		case GET_GROUP_MEMBERSHIP_TYPE:
 		case GET_GROUPS:
 		case GET_HORIZONTAL_NODE:
 		case GET_HORIZONTAL_TREE:
