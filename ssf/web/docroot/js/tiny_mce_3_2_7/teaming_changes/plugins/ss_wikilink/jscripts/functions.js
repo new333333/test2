@@ -11,11 +11,8 @@ function ss_editingICElink() {
 	return true;
 }
 
-function ss_insertICElink(binderId, title, currentBinderId) {
+function ss_insertICElink(originalBinderId, title, currentBinderId) {
 	//currentBinderId = 'xxx'
-	alert("binderId=" + binderId + ", pageName="+title+", originalBinderId="+currentBinderId+"//")
-	if (typeof title == "undefined") title = "";
-	if (typeof currentBinderId == "undefined") currentBinderId = "";
 	var link = "";
 	var inst = tinyMCEPopup.editor;
 	//if (inst.wikilinkNode != null) inst.wikilinkNode.parentNode.removeChild(inst.wikilinkNode);
@@ -33,29 +30,26 @@ function ss_insertICElink(binderId, title, currentBinderId) {
 	elm = tinyMCE.getParentElement(elm, "a");
 
 	tinyMCEPopup.execCommand("mceBeginUndoLevel");
-	alert("linkText="+linkText+"//")
 
 	// Create new anchor elements
 	if (elm == null || elm == '') {
-		if (title == "" && (binderId == "" || binderId == currentBinderId)) {
+		if (title == "" && (originalBinderId == "" || originalBinderId == currentBinderId)) {
 		    if (linkText != "") {
 				link = '[[' + linkText + ']]';
 			}
-		} else if ((linkText != "") && (title != "") && (binderId == "" || binderId == currentBinderId)) {
-			link = '[[' + linkText + ']]';
-		} else if ((linkText == "") && (title != "") && (binderId == "" || binderId == currentBinderId)) {
+		} else if ((linkText == "") && (title != "") && (originalBinderId == "" || originalBinderId == currentBinderId)) {
 			link = '[[' + title + ']]';
 		} else {
-		    if (binderId == "") { binderId == currentBinderId };
+		    if (originalBinderId == "") { originalBinderId == currentBinderId };
 		    if (linkText == "") { linkText = title; pad = " "; }
 		    if (title != "") { linkText = title; }
-			link = '<a href="#" class="ss_icecore_link" rel="binderId=' + binderId + ' title=' + ss_prenormalizeText(title) + '">' + linkText + '</a>' + pad;
+			link = '<a href="#" class="ss_icecore_link" rel="binderId=' + currentBinderId + ' title=' + ss_prenormalizeText(title) + '">' + linkText + '</a>' + pad;
 		}
 		if (link != "") {
 			tinyMCE.execCommand('mceInsertContent', false, link);
 		}
 	} else {
-		setAttrib(elm, "rel", 'binderId=' + binderId + ' title=' + title);
+		setAttrib(elm, "rel", 'binderId=' + currentBinderId + ' title=' + title);
 		setAttrib(elm, "class", "ss_icecore_link");
 		if (inst.wikilinkNode != null) inst.wikilinkNode.innerHTML = linkText;
 	}
@@ -68,9 +62,8 @@ function ss_insertICElink(binderId, title, currentBinderId) {
 
 function ss_insertICElinkFromForm(currentBinderId) {
 	var originalBinderId = dojo.byId("originalBinderId").value;
-	var binderId = dojo.byId("binderId").value;
 	var pageName = dojo.byId("pageName").value;
-	ss_insertICElink(binderId, pageName, originalBinderId);
+	ss_insertICElink(originalBinderId, pageName, currentBinderId);
 }
 
 function ss_cancelICElinkEdit() {
@@ -94,11 +87,14 @@ function ss_close_popup_folder() {
     dojo.style("folder_popup", "display", "none");
 }
 
-function ss_loadLinkBinderId(binderId, type, listObj, name) {
+function ss_loadLinkBinderId(binderId, listObj, name) {
 	dojo.byId("binderId").value = binderId;
+	var originalBinderId = dojo.byId("originalBinderId").value;
+	if (originalBinderId == '' || originalBinderId == 'undefined') originalBinderId = binderId;
 	dojo.byId("searchTitleFolder").value = name;
 	var url = ss_wikiLinkUrl;
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ssOriginalBinderIdPlaceHolder", originalBinderId);
 	self.location.href = url;
 	return false;
 	
