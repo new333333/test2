@@ -173,6 +173,9 @@ img { -ms-interpolation-mode: bicubic; }
 .ss_style ol li {
     list-style-position: outside;
     list-style-type: decimal;
+ <c:if test="<%= isIE %>">
+    list-style-position: inside;
+ </c:if>
 }
 
 /* LINKS */
