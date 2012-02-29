@@ -39,6 +39,9 @@
 <%@ include file="/WEB-INF/jsp/mobile/navigation.jsp" %>
 
 <div style="position:relative; background-color: #353838;" class="content">
+<div class="masthead-username">
+  <span>${ssUser.title}</span>
+</div>
 <table class="mobile-main" style="background-color: transparent; "  cellpadding="0" cellspacing="3">
   	<tr>
 		<td class="main-cell">
