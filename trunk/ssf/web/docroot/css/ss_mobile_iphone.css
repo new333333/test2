@@ -238,6 +238,12 @@ span.pad-left20 select {
 	white-space:nowrap;
 	}
 
+.masthead-username {
+	text-align: center; 
+	background-color: #484848; 
+	color: #fff; padding:10px; 
+	font-size: 1.2em;
+    }
 .masthead-title {
 	position:relative;
 	top:-7px;
