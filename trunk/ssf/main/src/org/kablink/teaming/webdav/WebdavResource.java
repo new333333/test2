@@ -98,13 +98,21 @@ public abstract class WebdavResource implements Resource {
 		return null;
 	}
 
-	protected String getDirectoryListing(List<? extends Resource> list) {
+	protected String getDirectoryListing(String name, List<? extends Resource> list) {
 		if(factory.isAllowDirectoryBrowsing()) {
+			/*
 			List<String> childNames = new ArrayList<String>(list.size());
 			for(Resource child:list)
 				childNames.add(child.getName());
 			Binding binding = new Binding();
+			binding.setVariable("parent", name);
 			binding.setVariable("children", childNames);
+			*/
+			
+			Binding binding = new Binding();
+			binding.setVariable("parent", this);
+			binding.setVariable("children", list);
+			
 			try {
 				getGroovyScriptService().execute("webdav_dir_list.groovy", binding);
 			} catch (ResourceException e) {
