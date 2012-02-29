@@ -55,6 +55,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -169,6 +170,10 @@ public class NotifyVisitor {
 		} else {
 			return Utils.getUserName(p);
 		}
+	}
+	public boolean isAvatarShown() {
+		boolean result = SPropsUtil.getBoolean("email.showAvatarInHeader", Boolean.FALSE);
+		return result;
 	}
 	public String getUserThumbnailInlineImage(Principal p) {
 		ConvertedFileModule convertedFileModule = (ConvertedFileModule) SpringContextUtil.getBean("convertedFileModule");
