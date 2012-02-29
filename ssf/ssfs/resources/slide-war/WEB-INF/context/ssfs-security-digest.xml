@@ -42,13 +42,16 @@
 	     value from the current security context. That is, the system doesn't end up re-authenticating
 	     the same user repeatedly for each and every request. The user's credential is checked only
 	     at the session boundary. 
+	     
 	     Unfortunately, the digest authentication loses this efficiency. Apparently the digest 
 	     authentication requires the server to re-authenticate the user if/when the user credential
 	     is present even when each request is accompanied by a still-valid session. There are two
-	     problems with thisecurity:
+	     problems with this:
+	     
 	     1) Because the authentication code is invoked for every request, it is difficult for the system
 	     to discern the login or session boundary. It acts more like a stateless web services requests
-	     than webdav requests. 
+	     than webdav requests.
+	      
 	     2) The repeated authentication results in inefficiency in the system. To alleviate this problem,
 	     we substitute a null authentication provider for the real one so as to avoid executing the
 	     regular authentication pipeline (which may involve additional interactions with the LDAP source 
