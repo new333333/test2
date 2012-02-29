@@ -128,7 +128,7 @@ public class DavResource extends WebdavResource implements PropFindableResource,
 	public void sendContent(OutputStream out, Range range,
 			Map<String, String> params, String contentType) throws IOException,
 			NotAuthorizedException, BadRequestException, NotFoundException {
-		String content = getDirectoryListing(getChildren());
+		String content = getDirectoryListing(getName(), getChildren());
 		out.write(content.getBytes("UTF-8"));
 	}
 
