@@ -328,11 +328,15 @@ public class ManageGroupsDlg extends DlgBox
 			while ( groupIterator.hasNext() )
 			{
 				GroupInfo nextGroup;
+				String text;
 				
 				nextGroup = groupIterator.next();
 				listOfGroupsToDelete.add( nextGroup );
 				
-				grpNames += "\t" + nextGroup.getTitle() + "\n";
+				text = nextGroup.getTitle();
+				if ( text == null || text.length() == 0 )
+					text = nextGroup.getName();
+				grpNames += "\t" + text + "\n";
 			}
 		}
 		
@@ -404,6 +408,9 @@ public class ManageGroupsDlg extends DlgBox
 							
 							// Update the table to reflect the fact that we deleted a group.
 							m_dataProvider.refresh();
+
+							// Tell the table how many groups we have.
+							m_groupsTable.setRowCount( m_listOfGroups.size(), true );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );

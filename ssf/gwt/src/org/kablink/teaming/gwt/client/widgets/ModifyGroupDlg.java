@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
@@ -85,7 +86,8 @@ public class ModifyGroupDlg extends DlgBox
 	private TextArea m_descTextArea;
 	private RadioButton m_staticRb;
 	private RadioButton m_dynamicRb;
-	EditSuccessfulHandler m_editSuccessfulHandler;
+	private EditSuccessfulHandler m_editSuccessfulHandler;
+	private ModifyStaticMembershipDlg m_membershipDlg;
 	
 	/**
 	 * 
@@ -450,7 +452,7 @@ public class ModifyGroupDlg extends DlgBox
 	public void init( GroupInfo groupInfo )
 	{
 		m_groupInfo = groupInfo;
-		m_groupMembership = null;
+		m_groupMembership = new ArrayList<GwtTeamingItem>();
 		
 		// Clear existing data in the controls.
 		m_nameTxtBox.setText( "" );
@@ -507,7 +509,45 @@ public class ModifyGroupDlg extends DlgBox
 	 */
 	public void invokeEditGroupMembershipDlg()
 	{
-		Window.alert( "Not yet implemented" );
+		// Is the group membership dynamic?
+		if ( getIsMembershipDynamic() == false )
+		{
+			int x;
+			int y;
+			
+			// No
+			// Get the position of this dialog.
+			x = getAbsoluteLeft() + 50;
+			y = getAbsoluteTop() + 50;
+			
+			if ( m_membershipDlg == null )
+			{
+				EditSuccessfulHandler handler;
+				
+				// Create a handler that will be called when the user presses Ok in the
+				// ModifyStaticMembershipDlg.
+				handler = new EditSuccessfulHandler()
+				{
+					@SuppressWarnings("unchecked")
+					@Override
+					public boolean editSuccessful( Object obj )
+					{
+						m_groupMembership = (List<GwtTeamingItem>) obj;
+						return true;
+					}
+				};
+				m_membershipDlg = new ModifyStaticMembershipDlg( false, true, handler, null, x, y );
+			}
+			
+			m_membershipDlg.init( getGroupName(), m_groupMembership );
+			m_membershipDlg.setPopupPosition( x, y );
+			m_membershipDlg.show();
+		}
+		else
+		{
+			// Yes
+			Window.alert( "Not yet implemented" );
+		}
 	}
 	
 	/**
