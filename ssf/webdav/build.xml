@@ -36,4 +36,5 @@
         </antcall>
 	</target>
 
+	<target name="build-and-deploy" depends="build,deploy"/>
 </project>
