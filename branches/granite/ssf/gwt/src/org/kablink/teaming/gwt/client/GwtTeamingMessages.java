@@ -1107,5 +1107,14 @@ public interface GwtTeamingMessages extends Messages
 	String modifyGroupDlgNameTooLong();
 	String modifyGroupDlgStaticLabel();
 	String modifyGroupDlgTitleLabel();
+
+	// Strings used in the Modify static membership dialog
+	String modifyStaticMembershipDlgDeleteLabel();
+	String modifyStaticMembershipDlgGroupTab();
+	String modifyStaticMembershipDlgHeader( String groupTitle );
+	String modifyStaticMembershipDlgNameCol();
+	String modifyStaticMembershipDlgSelectGroupToRemove();
+	String modifyStaticMembershipDlgSelectUserToRemove();
+	String modifyStaticMembershipDlgUserTab();
 	
 }// end GwtTeamingMessages

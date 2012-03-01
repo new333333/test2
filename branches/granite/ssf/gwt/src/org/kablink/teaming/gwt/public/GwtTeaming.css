@@ -3541,7 +3541,7 @@ td.datePickerMonth {
 	-webkit-border-radius: 5px;
 }
 
-.groupManagementMenuPanel
+.groupManagementMenuPanel, .modifyStaticMembershipMenuPanel
 {
     background-color: #CCCCCC;
     border-top-left-radius: 5px;
@@ -3555,3 +3555,67 @@ td.datePickerMonth {
 }
 	
 /* End of styles used with the group management dialogs */
+
+
+
+/* The following styles are used with TabPanels */
+.vibe-tabPanel .gwt-TabBarFirst
+{
+	display: none;
+}
+ 
+.vibe-tabPanel .gwt-TabPanelBottom
+{
+	border-color: none;
+	border-style: none;
+	border-width: 3px 2px 2px;
+	overflow: hidden;
+	padding: 6px;
+	background-color: #EDEDED;
+	border-radius: 0px 3px 3px 3px;
+	-moz-border-radius: 0px 3px 3px 3px;
+}
+ 
+.vibt-tabPanel .gwt-TabBarItem-wrapper
+{
+	padding-bottom: 3px;
+}
+ 
+.vibe-tabPanel .gwt-TabBar .gwt-TabBarItem
+{
+	background: none repeat scroll 0 0 #949494;
+	color: white;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	font-weight: normal;
+	padding: 3px 10px;
+	margin-right: 6px;
+	margin-left: 0px;
+}
+ 
+.vibe-tabPanel .gwt-TabBar .gwt-TabBarItem:hover
+{
+	background-color: #81B2BD;
+	color: white;
+}
+ 
+.vibe-tabPanel .gwt-TabBar .gwt-TabBarItem-selected,.vibe-tabPanel .gwt-TabBar .gwt-TabBarItem-selected:hover
+{
+	background: none repeat scroll 0 0 #EDEDED;
+	background: -webkit-gradient(linear, 0% 100%, 0% 0, from(#EDEDED), to(#f6f6f6) );
+	background: -moz-linear-gradient(center top, #FAFAFA, #EDEDED) repeat scroll 0 0 transparent;
+	cursor: default;
+	padding: 3px 10px;
+	color: black;
+	font-weight: bold;
+	border-radius: 3px 3px 0px 0px;
+	-moz-border-radius: 3px 3px 0px 0px;
+	border-bottom: 3px solid #EDEDED;
+}
+ 
+.vibe-tabPanel .gwt-TabBarItem-wrapper-selected
+{
+	padding-bottom: 0px;
+}
+
+/* End of styles used with TabPanels */
