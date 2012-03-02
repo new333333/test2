@@ -34,6 +34,8 @@ package org.kablink.teaming.gwt.client.widgets;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -41,12 +43,19 @@ import java.util.Set;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtGroup;
+import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.VibeCellTableResources;
+import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.core.client.GWT;
@@ -61,13 +70,17 @@ import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
@@ -79,7 +92,72 @@ import com.google.gwt.view.client.MultiSelectionModel;
  *
  */
 public class ModifyStaticMembershipDlg extends DlgBox
+	implements SearchFindResultsEvent.Handler
 {
+	/**
+	 * Inner class used to compare two groups
+	 */
+	public static class GroupComparator implements Comparator<GwtGroup>
+	{
+		/**
+		 * Class constructor.
+		 */
+		public GroupComparator()
+		{
+		}
+
+		/**
+		 * Compares two GwtGroup's by their name.
+		 * 
+		 * Implements the Comparator.compare() method.
+		 */
+		@Override
+		public int compare( GwtGroup group1, GwtGroup group2 )
+		{
+			int reply;
+			String name1;
+			String name2;
+
+			name1 = getGroupDisplayName( group1 );
+			name2 = getGroupDisplayName( group2 );
+			reply = GwtClientHelper.safeSColatedCompare( name1, name2 );
+			
+			return reply;
+		}
+	}
+	
+	/**
+	 * Inner class used to compare two users
+	 */
+	public static class UserComparator implements Comparator<GwtUser>
+	{
+		/**
+		 * Class constructor.
+		 */
+		public UserComparator()
+		{
+		}
+
+		/**
+		 * Compares two GwtUsers's by their name.
+		 * 
+		 * Implements the Comparator.compare() method.
+		 */
+		@Override
+		public int compare( GwtUser user1, GwtUser user2 )
+		{
+			int reply;
+			String name1;
+			String name2;
+
+			name1 = getUserDisplayName( user1 );
+			name2 = getUserDisplayName( user2 );
+			reply = GwtClientHelper.safeSColatedCompare( name1, name2 );
+			
+			return reply;
+		}
+	}
+	
 	private TabPanel m_tabPanel;
 	private CellTable<GwtUser> m_userTable;
 	private CellTable<GwtGroup> m_groupTable;
@@ -91,6 +169,17 @@ public class ModifyStaticMembershipDlg extends DlgBox
 	private SimplePager m_groupPager;
 	private ArrayList<GwtUser> m_listOfUsers;
 	private ArrayList<GwtGroup> m_listOfGroups;
+	private FindCtrl m_findUserCtrl;
+	private FindCtrl m_findGroupCtrl;
+	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[]
+	{
+		// Search events.
+		TeamingEvents.SEARCH_FIND_RESULTS,
+	};
 	
 	/**
 	 * 
@@ -105,8 +194,47 @@ public class ModifyStaticMembershipDlg extends DlgBox
 	{
 		super( autoHide, modal, xPos, yPos );
 
+		// Register the events to be handled by this class.
+		EventHelper.registerEventHandlers( GwtTeaming.getEventBus(), m_registeredEvents, this );
+		
 		// Create the header, content and footer of this dialog box.
 		createAllDlgContent( "", editSuccessfulHandler, editCanceledHandler, null ); 
+	}
+	
+	/**
+	 * Add the given group to the list of groups
+	 */
+	private void addGroup( GwtGroup group )
+	{
+		// Add the group as the first group in the list.
+		m_listOfGroups.add( 0, group );
+		
+		// Update the table to reflect the new group we just created.
+		m_groupDataProvider.refresh();
+		
+		// Go to the first page.
+		m_groupPager.firstPage();
+		
+		// Select the newly created group.
+		m_groupSelectionModel.setSelected( group, true );
+	}
+	
+	/**
+	 * Add the given user to the list of users.
+	 */
+	private void addUser( GwtUser user )
+	{
+		// Add the user as the first user in the list.
+		m_listOfUsers.add( 0, user );
+		
+		// Update the table to reflect the new user we just created.
+		m_userDataProvider.refresh();
+		
+		// Go to the first page.
+		m_userPager.firstPage();
+		
+		// Select the newly created user.
+		m_userSelectionModel.setSelected( user, true );
 	}
 
 	/**
@@ -164,6 +292,40 @@ public class ModifyStaticMembershipDlg extends DlgBox
 		messages = GwtTeaming.getMessages();
 		
 		mainPanel = new VerticalPanel();
+		
+		// Add a find control for groups
+		{
+			HTMLTable.RowFormatter rowFormatter;
+			final FlexTable table = new FlexTable();
+
+			rowFormatter = table.getRowFormatter();
+			rowFormatter.setVerticalAlign( 0, HasVerticalAlignment.ALIGN_MIDDLE );
+			
+			table.getElement().getStyle().setMarginBottom( 8, Unit.PX );
+			mainPanel.add( table );
+			
+			table.setText( 0, 0, messages.modifyStaticMembershipDlgGroupLabel() );
+			
+			FindCtrl.createAsync(
+					this,
+					GwtSearchCriteria.SearchType.GROUP,
+					new FindCtrlClient()
+			{				
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( FindCtrl findCtrl )
+				{
+					m_findGroupCtrl = findCtrl;
+					m_findGroupCtrl.setSearchType( SearchType.GROUP );
+					table.setWidget( 0, 1, m_findGroupCtrl );
+				}
+			} );
+		}
 		
 		// Create a menu
 		{
@@ -230,13 +392,11 @@ public class ModifyStaticMembershipDlg extends DlgBox
 			@Override
 			public String getValue( GwtGroup group )
 			{
-				String value;
+				String name;
 				
-				value = group.getTitle();
-				if ( value == null || value.length() == 0 )
-					value = group.getName();
+				name = getGroupDisplayName( group );
 				
-				return value;
+				return name;
 			}
 		};
 		m_groupTable.addColumn( nameCol, messages.modifyStaticMembershipDlgNameCol() );
@@ -272,6 +432,40 @@ public class ModifyStaticMembershipDlg extends DlgBox
 		messages = GwtTeaming.getMessages();
 		
 		mainPanel = new VerticalPanel();
+		
+		// Add a find control for users
+		{
+			HTMLTable.RowFormatter rowFormatter;
+			final FlexTable table = new FlexTable();
+
+			rowFormatter = table.getRowFormatter();
+			rowFormatter.setVerticalAlign( 0, HasVerticalAlignment.ALIGN_MIDDLE );
+			
+			table.getElement().getStyle().setMarginBottom( 8, Unit.PX );
+			mainPanel.add( table );
+			
+			table.setText( 0, 0, messages.modifyStaticMembershipDlgUserLabel() );
+			
+			FindCtrl.createAsync(
+					this,
+					GwtSearchCriteria.SearchType.USER,
+					new FindCtrlClient()
+			{				
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( FindCtrl findCtrl )
+				{
+					m_findUserCtrl = findCtrl;
+					m_findUserCtrl.setSearchType( SearchType.USER );
+					table.setWidget( 0, 1, m_findUserCtrl );
+				}
+			} );
+		}
 		
 		// Create a menu
 		{
@@ -339,10 +533,8 @@ public class ModifyStaticMembershipDlg extends DlgBox
 			public String getValue( GwtUser user )
 			{
 				String name;
-				
-				name = user.getTitle();
-				if ( name == null || name.length() == 0 )
-					name = user.getName();
+			
+				name = getUserDisplayName( user );
 				
 				return name;
 			}
@@ -472,7 +664,35 @@ public class ModifyStaticMembershipDlg extends DlgBox
 	 */
 	public FocusWidget getFocusWidget()
 	{
-		return null;
+		return m_findUserCtrl.getFocusWidget();
+	}
+	
+	/**
+	 * Get the display name for the given group
+	 */
+	private static String getGroupDisplayName( GwtGroup group )
+	{
+		String name;
+		
+		name = group.getTitle();
+		if ( name == null || name.length() == 0 )
+			name = group.getName();
+		
+		return name;
+	}
+	
+	/**
+	 * Get the display name for the given user
+	 */
+	private static String getUserDisplayName( GwtUser user )
+	{
+		String name;
+		
+		name = user.getTitle();
+		if ( name == null || name.length() == 0 )
+			name = user.getName();
+		
+		return name;
 	}
 	
 	/**
@@ -483,6 +703,9 @@ public class ModifyStaticMembershipDlg extends DlgBox
 		// Update the dialog header.
 		setHeaderText( GwtTeaming.getMessages().modifyStaticMembershipDlgHeader( groupName ) );
 		
+		m_findUserCtrl.setInitialSearchString( "" );
+		m_findGroupCtrl.setInitialSearchString( "" );
+
 		if ( m_listOfUsers == null )
 			m_listOfUsers = new ArrayList<GwtUser>();
 		else
@@ -503,6 +726,12 @@ public class ModifyStaticMembershipDlg extends DlgBox
 				else if ( nextMember instanceof GwtGroup )
 					m_listOfGroups.add( (GwtGroup) nextMember );
 			}
+			
+			// Sort the list of users
+			Collections.sort( m_listOfUsers, new UserComparator() );
+			
+			// Sort the list of groups
+			Collections.sort( m_listOfGroups, new GroupComparator() );
 		}
 
 		// Initialize the user CellTable information
@@ -553,5 +782,121 @@ public class ModifyStaticMembershipDlg extends DlgBox
 	
 		// Select the "Users" tab
 		m_tabPanel.selectTab( 0 );
+	}
+
+	/**
+	 * See if the given group in already in the group.
+	 */
+	private boolean isGroupInGroup( GwtGroup group )
+	{
+		String grpId;
+		
+		grpId = group.getId();
+		if ( m_listOfGroups != null && grpId != null )
+		{
+			for (GwtGroup nextGroup : m_listOfGroups)
+			{
+				String nxtGrpId;
+				
+				nxtGrpId = nextGroup.getId();
+				if ( grpId.equalsIgnoreCase( nxtGrpId ) )
+					return true;
+			}
+		}
+
+		// If we get here we did not find the group.
+		return false;
+	}
+	
+	/**
+	 * See if the given user in already in the group.
+	 */
+	private boolean isUserInGroup( GwtUser user )
+	{
+		String userId;
+		
+		userId = user.getUserId();
+		if ( m_listOfUsers != null && userId != null )
+		{
+			for (GwtUser nextUser : m_listOfUsers)
+			{
+				String nextUserId;
+				
+				nextUserId = nextUser.getUserId();
+				if ( userId.equalsIgnoreCase( nextUserId ) )
+					return true;
+			}
+		}
+
+		// If we get here we did not find the user.
+		return false;
+	}
+	
+	/**
+	 * Handles SearchFindResultsEvent's received by this class.
+	 * 
+	 * Implements the SearchFindResultsEvent.Handler.onSearchFindResults() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSearchFindResults( SearchFindResultsEvent event )
+	{
+		// If the find results aren't for this share this dialog...
+		if ( !((Widget) event.getSource()).equals( this ) )
+		{
+			// ...ignore the event.
+			return;
+		}
+		
+		// Are we dealing with a User?
+		GwtTeamingItem selectedObj = event.getSearchResults();
+		if ( selectedObj instanceof GwtUser )
+		{
+			GwtUser user;
+		
+			// Yes
+			user = (GwtUser) selectedObj;
+
+			// Is this user already in our list?
+			if ( isUserInGroup( user ) == false )
+			{
+				// No, add the user to the list of users.
+				addUser( user );
+			}
+			
+			// Hide the search-results widget.
+			m_findUserCtrl.hideSearchResults();
+			
+			// Clear the text from the find control.
+			m_findUserCtrl.clearText();
+			
+			// Give the find control the focus
+			m_findUserCtrl.getFocusWidget().setFocus( true );
+		}
+		// Are we dealing with a group?
+		else if ( selectedObj instanceof GwtGroup )
+		{
+			GwtGroup group;
+			
+			// Yes
+			group = (GwtGroup) selectedObj;
+
+			// Is this group already in our list?
+			if ( isGroupInGroup( group ) == false )
+			{
+				// No, add the group to the list of groups.
+				addGroup( group );
+			}
+			
+			// Hide the search-results widget.
+			m_findGroupCtrl.hideSearchResults();
+			
+			// Clear the text from the find control.
+			m_findGroupCtrl.clearText();
+			
+			// Give the find control the focus.
+			m_findGroupCtrl.getFocusWidget().setFocus( true );
+		}
 	}
 }
