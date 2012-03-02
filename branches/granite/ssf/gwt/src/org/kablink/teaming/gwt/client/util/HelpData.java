@@ -198,27 +198,27 @@ public class HelpData
 		if ( GwtMainPage.m_requestInfo.isNovellTeaming() )
 		{
 			// Yes
-			url += "/vibe32";
+			url += "/vibe33";
 		}
 		else
-			url += "/kablinkvibe32";
+			url += "/kablinkvibe33";
 		
 		if ( m_guideName != null && m_guideName.length() > 0 )
 		{
 			if ( m_guideName.equalsIgnoreCase( USER_GUIDE ) )
 			{
 				// Get the url to the user guide.
-				guideComponent = "/vibe32_user/data/";
+				guideComponent = "/vibe33_user/data/";
 			}
 			else if ( m_guideName.equalsIgnoreCase( ADV_USER_GUIDE ) )
 			{
 				// Get the url to the advanced user guide.
-				guideComponent = "/vibe32_useradv/data/";
+				guideComponent = "/vibe33_useradv/data/";
 			}
 			else if ( m_guideName.equalsIgnoreCase( ADMIN_GUIDE ) )
 			{
 				// Get the url to the administration guide.
-				guideComponent = "/vibe32_admin/data/";
+				guideComponent = "/vibe33_admin/data/";
 			}
 			else
 				guideComponent = null;
