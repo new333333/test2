@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -72,7 +72,6 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private ToolbarItem m_brandingTBI;				// The branding                  toolbar item, if found.
 	private ToolbarItem m_calendarImportTBI;		// The calendar import           toolbar item, if found.
 	private ToolbarItem m_commonActionsTBI;			// The common actions            toolbar item, if found.
-	private ToolbarItem m_configureColumnsTBI;		// The configure columns         toolbar item, if found.
 	private ToolbarItem m_emailContributorsTBI;		// The email contributors        toolbar item, if found.
 	private ToolbarItem m_emailNotificationTBI;		// The email notification        toolbar item, if found.
 	private ToolbarItem m_folderViewsTBI;			// The folder views              toolbar item, if found.
@@ -366,7 +365,6 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			
 			else if (tbName.equalsIgnoreCase("ssGwtMiscToolbar")) {
 				m_brandingTBI          = tbi.getNestedToolbarItem("branding");
-				m_configureColumnsTBI  = tbi.getNestedToolbarItem("configureColumns");
 				m_emailContributorsTBI = tbi.getNestedToolbarItem("sendEmail");
 				m_shareThisTBI         = tbi.getNestedToolbarItem("share");
 				m_trackBinderTBI       = tbi.getNestedToolbarItem("track");
@@ -377,8 +375,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		// Return true if we found any of the manage menu items and
 		// false otherwise.
 		boolean reply =
-			((null != m_configureColumnsTBI)                                                 ||
-			 (null != m_brandingTBI)                                                         ||
+			((null != m_brandingTBI)                                                         ||
 			 (null != m_emailContributorsTBI)                                                ||
 			 (null != m_emailNotificationTBI)                                                ||
 			 (null != m_shareThisTBI)                                                        ||
@@ -400,8 +397,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private void showFolderOptions(final ToolbarItem folderViewsTBI, final ToolbarItem calendarImportTBI) {
 		// If there aren't any folder options...
 		if ((!(hasNestedItems(folderViewsTBI, 2))) &&
-			(!(hasNestedItems(calendarImportTBI))) &&
-			(null == m_configureColumnsTBI)) {
+			(!(hasNestedItems(calendarImportTBI)))) {
 			// ...bail.
 			return;
 		}
@@ -431,7 +427,6 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				getRelativeX(),
 				getRelativeY(),
 				m_currentBinder.getBinderId(),
-				m_configureColumnsTBI,
 				((null == calendarImportTBI) ? null : calendarImportTBI.getNestedItemsList()),
 				((null == folderViewsTBI)    ? null : folderViewsTBI.getNestedItemsList()),
 			new FolderOptionsDlgClient() {					
