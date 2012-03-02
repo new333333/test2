@@ -37,9 +37,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 
-import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
-import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchScope;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
@@ -85,18 +83,8 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class FindCtrl extends Composite
-	implements ClickHandler, Event.NativePreviewHandler, KeyUpHandler,
-	// Event handlers implemented by this class.
-		SearchFindResultsEvent.Handler
+	implements ClickHandler, Event.NativePreviewHandler, KeyUpHandler
 {
-	// The following defines the TeamingEvents that are handled by
-	// this class.  See EventHelper.registerEventHandlers() for how
-	// this array is used.
-	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
-		// Search events.
-		TeamingEvents.SEARCH_FIND_RESULTS,
-	};
-	
 	/**
 	 * This widget is used to hold an item from a search result.
 	 */
@@ -413,6 +401,9 @@ public class FindCtrl extends Composite
 				tmp = (SearchResultItemWidget) clickEvent.getSource();
 				selectedItem = tmp.getTeamingItem();
 				
+				// Update the text box with name of the selected item.
+				updateTextBoxWithSelectedItem( selectedItem );
+				
 				GwtTeaming.fireEvent( new SearchFindResultsEvent( m_containerWidget, selectedItem ) );
 			}
 		}// end onClick()
@@ -475,12 +466,6 @@ public class FindCtrl extends Composite
 		int visibleLength )
 	{
 		m_containerWidget = containerWidget;
-		
-		// Register the events to be handled by this class.
-		EventHelper.registerEventHandlers(
-			GwtTeaming.getEventBus(),
-			m_registeredEvents,
-			this);
 		
 		++m_count;
 		
@@ -1048,35 +1033,6 @@ public class FindCtrl extends Composite
 	}// end initFindCtrl_Finish()
 
 	/**
-	 * Handles SearchFindResultsEvent's received by this class.
-	 * 
-	 * Implements the SearchFindResultsEvent.Handler.onSearchFindResults() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onSearchFindResults( SearchFindResultsEvent event )
-	{
-		String name;
-		GwtTeamingItem selectedItem = event.getSearchResults();
-		
-		// Get the name of the selected item.
-		name = selectedItem.getShortDisplayName();
-		
-		// Put the name of the selected item in the text box.
-		m_txtBox.setText( name );
-
-		// 20110630 (DRF):
-		//    Back in the pre-event days, we were handling a
-		//    SELECTION_CHANGED action and then triggering another.
-		//    Based on the switch to events, everybody that's
-		//    interested in the event now listens for it and can
-		//    process the results independently.  Hence, we don't need
-		//    to send this along again.  Right?
-		// GwtTeaming.fireEvent( new SearchFindResultsEvent( m_containerWidget, selectedItem ) );
-	}// end onSearchFindResults()
-
-	/**
 	 * Loads the FindCtrl split point and returns an instance of it
 	 * via the callback.
 	 *
@@ -1157,4 +1113,18 @@ public class FindCtrl extends Composite
 	{
 		prefetch( null );
 	}// end prefetch()
+	
+	/**
+	 * Update the text box with the name of the selected item.
+	 */
+	private void updateTextBoxWithSelectedItem( GwtTeamingItem selectedItem )
+	{
+		String name;
+
+		// Get the name of the selected item.
+		name = selectedItem.getShortDisplayName();
+		
+		// Put the name of the selected item in the text box.
+		m_txtBox.setText( name );
+	}
 }// end FindCtrl
