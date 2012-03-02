@@ -729,27 +729,27 @@ public final class MiscUtil
 		if ( ReleaseInfo.isLicenseRequiredEdition())
 		{
 			// Yes
-			url += "/vibe32";
+			url += "/vibe33";
 		}
 		else
-			url += "/kablinkvibe32";
+			url += "/kablinkvibe33";
 		
 		if ( guideName != null && guideName.length() > 0 )
 		{
 			if ( guideName.equalsIgnoreCase( USER_GUIDE ) )
 			{
 				// Get the url to the user guide.
-				guideComponent = "/vibe32_user/data/";
+				guideComponent = "/vibe33_user/data/";
 			}
 			else if ( guideName.equalsIgnoreCase( ADV_USER_GUIDE ) )
 			{
 				// Get the url to the advanced user guide.
-				guideComponent = "/vibe32_useradv/data/";
+				guideComponent = "/vibe33_useradv/data/";
 			}
 			else if ( guideName.equalsIgnoreCase( ADMIN_GUIDE ) )
 			{
 				// Get the url to the administration guide.
-				guideComponent = "/vibe32_admin/data/";
+				guideComponent = "/vibe33_admin/data/";
 			}
 			else
 				guideComponent = null;
