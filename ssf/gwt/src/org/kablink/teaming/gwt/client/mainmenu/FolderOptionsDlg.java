@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,7 +34,6 @@ package org.kablink.teaming.gwt.client.mainmenu;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -70,7 +69,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *  
  * @author drfoster@novell.com
  */
-public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
+public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler {
 	private final static String IDBASE				= "folderOption_";	// Base ID for rows in the folder options Grid.
 	private final static String IDTAIL_RADIO		= "_rb";			// Used for constructing the ID of a row's radio button.
 	private final static String OPTION_HEADER_ID	= "optionHeader";
@@ -82,7 +81,6 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 	private List<ToolbarItem> m_calendarImportList;	// List of calendar import toolbar items.
 	private List<ToolbarItem> m_folderViewsList;	// List of folder view     toolbar items.
 	private String m_binderId;						// The ID of the binder the folder options dialog is running against.
-	private ToolbarItem m_configureColumnsTBI;		// A configure columns toolbar item, if configuring columns is applicable in the given context.
 
 	/*
 	 * Inner class that wraps labels displayed in the dialog's content.
@@ -101,16 +99,15 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private FolderOptionsDlg(boolean autoHide, boolean modal, int left, int top, String binderId, ToolbarItem configureColumnsTBI, List<ToolbarItem> calendarImportsList, List<ToolbarItem> folderViewsList) {
+	private FolderOptionsDlg(boolean autoHide, boolean modal, int left, int top, String binderId, List<ToolbarItem> calendarImportsList, List<ToolbarItem> folderViewsList) {
 		// Initialize the superclass...
 		super(autoHide, modal, left, top);
 
 		// ...initialize everything else...
-		m_messages            = GwtTeaming.getMessages();
-		m_binderId            = binderId;
-		m_configureColumnsTBI = configureColumnsTBI;
-		m_calendarImportList  = calendarImportsList; m_calendarImportListCount = ((null == m_calendarImportList) ? 0 : m_calendarImportList.size());
-		m_folderViewsList     = folderViewsList;     m_folderViewsListCount    = ((null == m_folderViewsList)    ? 0 : m_folderViewsList.size());
+		m_messages           = GwtTeaming.getMessages();
+		m_binderId           = binderId;
+		m_calendarImportList = calendarImportsList; m_calendarImportListCount = ((null == m_calendarImportList) ? 0 : m_calendarImportList.size());
+		m_folderViewsList    = folderViewsList;     m_folderViewsListCount    = ((null == m_folderViewsList)    ? 0 : m_folderViewsList.size());
 		if (1 == m_folderViewsListCount) {
 			// We ignore the folder view options if there is only one
 			// to select from.
@@ -121,9 +118,9 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 		// ...create the dialog's content...
 		createAllDlgContent(
 			m_messages.mainMenuFolderOptionsDlgHeader(),
-			this,	// The dialog's EditSuccessfulHandler.
-			this,	// The dialog's EditCanceledHandler.
-			null);	// Data passed via global data members.
+			this,						// The dialog's EditSuccessfulHandler.
+			getSimpleCanceledHandler(),	// The dialog's EditCanceledHandler.
+			null);						// Data passed via global data members.
 
 		// ...and check the default folder view, if there's one to be
 		// ...checked.
@@ -160,11 +157,14 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 			// view defined?
 			cmd = new GetDefaultFolderDefinitionIdCmd( m_binderId );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
 						m_messages.rpcFailure_GetFolderDefinitionId());
 				}
+				
+				@Override
 				public void onSuccess(VibeRpcResponse response) {
 					String folderDefId = null;
 						
@@ -213,7 +213,7 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 		VerticalPanel vp = new VerticalPanel();
 
 		// Are there any folder options to display in the dialog?
-		if (0 < (m_folderViewsListCount + m_calendarImportListCount) || (null != m_configureColumnsTBI)) {
+		if (0 < (m_folderViewsListCount + m_calendarImportListCount)) {
 			// Yes!  Create a grid to contain them... 
 			m_folderOptionsGrid = new Grid(0, 2);
 			m_folderOptionsGrid.addStyleName("folderOptionsDlg_Grid");
@@ -228,12 +228,6 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 				}
 			}
 			
-			// ...render the configure columns into the panel...
-			if (null != m_configureColumnsTBI) {
-				addHeaderRow(m_folderOptionsGrid, m_folderOptionsGrid.getRowCount(), m_messages.mainMenuFolderOptionsDlgConfigure());
-				renderRow(m_folderOptionsGrid, m_folderOptionsGrid.getRowCount(), m_configureColumnsTBI, false);
-			}
-
 			// ...render the calendar import options into the panel...
 			if (0 < m_calendarImportListCount) {
 				String viewType = GwtClientHelper.jsGetViewType();
@@ -263,21 +257,6 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 	
 	
 	/**
-	 * This method gets called when user user presses the Cancel push
-	 * button.
-	 * 
-	 * Implements the EditCanceledHandler.editCanceled() interface
-	 * method.
-	 * 
-	 * @return
-	 */
-	public boolean editCanceled() {
-		// Simply return true to allow the dialog to close.
-		return true;
-	}
-
-	
-	/**
 	 * This method gets called when user user presses the OK push
 	 * button.
 	 * 
@@ -288,6 +267,7 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 	 * 
 	 * @return
 	 */
+	@Override
 	public boolean editSuccessful(Object callbackData) {
 		// If we have a folder option selected, put it into effect.
 		ToolbarItem tbi = ((ToolbarItem) callbackData);
@@ -387,14 +367,6 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 			}
 		}
 		
-		// If we get here, we didn't find the folder option as a
-		// calendar option either!  Is it the configure columns toolbar
-		// item?
-		if ((null != m_configureColumnsTBI) && m_configureColumnsTBI.getName().equals(foId)) {
-			// Yes!  Return it.
-			return m_configureColumnsTBI;			
-		}
-		
 		// If we get here, we couldn't find a ToolbarItem with the
 		// requested ID.  Return null.
 		return null;
@@ -475,7 +447,6 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 	 * @param left
 	 * @param top
 	 * @param binderId
-	 * @param configureColumnsTBI
 	 * @param calendarImportsList
 	 * @param folderViewsList
 	 * @param dlgClient
@@ -486,7 +457,6 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 			final int left,
 			final int top,
 			final String binderId,
-			final ToolbarItem configureColumnsTBI,
 			final List<ToolbarItem> calendarImportsList,
 			final List<ToolbarItem> folderViewsList,
 			final FolderOptionsDlgClient dlgClient) {
@@ -499,7 +469,6 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 					left,
 					top,
 					binderId,
-					configureColumnsTBI,
 					calendarImportsList,
 					folderViewsList);
 				

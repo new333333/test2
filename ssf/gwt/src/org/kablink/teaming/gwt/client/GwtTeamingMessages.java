@@ -1288,7 +1288,6 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used by various widgets of the Vibe Data table.
 	String vibeDataTable_Alt_CollapseDescription();
-	String vibeDataTable_Alt_ColumnResizer();
 	String vibeDataTable_Alt_ExpandDescription();
 	String vibeDataTable_Alt_Unread();
 	String vibeDataTable_Alt_PinEntry();
@@ -1297,6 +1296,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_StarGray();
 	String vibeDataTable_Alt_UnpinEntry();
 	String vibeDataTable_Alt_View();
+	String vibeDataTable_ColumnResizer();
 	String vibeDataTable_Download();
 	String vibeDataTable_Error_MirroredDriverNotConfigured();
 	String vibeDataTable_Empty();

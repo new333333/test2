@@ -65,7 +65,7 @@ import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -78,7 +78,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -97,6 +96,7 @@ import com.google.gwt.user.client.ui.RequiresResize;
 public class EntryMenuPanel extends ToolPanelBase {
 	private BinderInfo			m_binderInfo;				//
 	private boolean				m_includeColumnResizer;		//
+	private List<ToolbarItem>	m_configureToolbarItems;	//
 	private List<ToolbarItem>	m_toolbarIems;				//
 	private VibeFlexTable		m_grid;						//
 	private VibeFlowPanel		m_configPanel;				//
@@ -239,8 +239,17 @@ public class EntryMenuPanel extends ToolPanelBase {
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
 				// Store the toolbar items and continue loading.
-				GetToolbarItemsRpcResponseData responseData = ((GetToolbarItemsRpcResponseData) response.getResponseData());
+				GetFolderToolbarItemsRpcResponseData responseData = ((GetFolderToolbarItemsRpcResponseData) response.getResponseData());
 				m_toolbarIems = responseData.getToolbarItems();
+				
+				m_configureToolbarItems = responseData.getConfigureToolbarItems();
+				if (m_includeColumnResizer) {
+					ToolbarItem rcTBI = new ToolbarItem("resizeColumns");
+					rcTBI.setTitle(m_messages.vibeDataTable_ColumnResizer());
+					rcTBI.setTeamingEvent(TeamingEvents.INVOKE_COLUMN_RESIZER);
+					m_configureToolbarItems.add(rcTBI);
+				}
+				
 				loadPart2Async();
 			}
 		});
@@ -263,17 +272,6 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * Synchronously construct's the contents of the entry menu panel.
 	 */
 	private void loadPart2Now() {
-		// Are we supposed include a column sizing button?
-		if(m_includeColumnResizer) {
-			// Yes!  Render it.
-			renderImageMenuItem(
-				m_entryMenu,
-				m_images.sizingArrows(),
-				m_messages.vibeDataTable_Alt_ColumnResizer(),
-				new InvokeColumnResizerEvent(
-					m_binderInfo.getBinderIdAsLong()));
-		}
-		
 		// Do we have an entry toolbar?
 		ToolbarItem entryTBI = ToolbarItem.getNestedToolbarItem(m_toolbarIems, "ssEntryToolbar");
 		if (null != entryTBI) {
@@ -293,30 +291,40 @@ public class EntryMenuPanel extends ToolPanelBase {
 		}
 		setEntriesSelected(false);
 		
+		// Do we have any configure toolbar items?
+		if (!(m_configureToolbarItems.isEmpty())) {
+			// Yes!  Create the configure menu bar...
+			VibeFlowPanel fp = new VibeFlowPanel();
+			Image configureImg = new Image(m_images.configOptions());
+			configureImg.addStyleName("vibe-configureMenuImg");
+			configureImg.getElement().setAttribute("align", "absmiddle");
+			fp.add(configureImg);
+			VibeMenuBar  configureMenu         = new VibeMenuBar(      "vibe-configureMenuBar vibe-entryMenuBar");
+			VibeMenuBar  configureDropdownMenu = new VibeMenuBar(true, "vibe-configureMenuBarDropDown"          );
+			VibeMenuItem configureItem         = new VibeMenuItem(fp.getElement().getInnerHTML(), true, configureDropdownMenu, "vibe-configureMenuBarItem");
+			configureMenu.addItem(configureItem);
+			m_configPanel.add(configureMenu);
+			
+			// ...scan the configure toolbar items...
+			for (ToolbarItem configureTBI:  m_configureToolbarItems) {
+				// ...adding each to the configure menu.
+				if (configureTBI.hasNestedToolbarItems()) {
+					renderStructuredTBI(configureDropdownMenu, configureTBI);
+				}
+				else if (configureTBI.isSeparator()) {
+					configureDropdownMenu.addSeparator();
+				}
+				else {
+					renderSimpleTBI(configureDropdownMenu, configureTBI);
+				}
+			}
+		}
+		
 		// Finally, tell who's using this tool panel that it's ready to
 		// go.
 		toolPanelReady();
 	}
 
-	/*
-	 * Renders a menu item containing an image that simply fires an
-	 * event when triggered.
-	 */
-	private void renderImageMenuItem(VibeMenuBar menuBar, ImageResource imgRes, String imgAlt, final VibeEventBase<?> event) {
-		FlowPanel fp = new FlowPanel();
-		Image img = new Image(imgRes);
-		img.setTitle(imgAlt);
-		fp.add(img);
-		VibeMenuItem menuItem = new VibeMenuItem(fp.getElement().getInnerHTML(), true, new Command() {
-			@Override
-			public void execute() {
-				GwtTeaming.fireEvent(event);
-			}
-		});
-		menuItem.addStyleName((menuBar == m_entryMenu) ? "vibe-entryMenuBarItem" : "vibe-entryMenuPopupItem");
-		menuBar.addItem(menuItem);
-	}
-	
 	/*
 	 * Renders any simple (i.e., URL or event based) toolbar item.
 	 */
@@ -354,6 +362,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 					case DELETE_SELECTED_USER_WORKSPACES:     event = new DeleteSelectedUserWorkspacesEvent(  folderId   ); break;
 					case DISABLE_SELECTED_USERS:              event = new DisableSelectedUsersEvent(          folderId   ); break;
 					case ENABLE_SELECTED_USERS:               event = new EnableSelectedUsersEvent(           folderId   ); break;
+					case INVOKE_COLUMN_RESIZER:               event = new InvokeColumnResizerEvent(           folderId   ); break;
 					case INVOKE_DROPBOX:                      event = new InvokeDropBoxEvent(                 folderId   ); break;
 					case INVOKE_SIGN_GUESTBOOK:               event = new InvokeSignGuestbookEvent(           folderId   ); break;
 					case LOCK_SELECTED_ENTRIES:               event = new LockSelectedEntriesEvent(           folderId   ); break;

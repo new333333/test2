@@ -838,13 +838,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_FOLDER_TOOLBAR_ITEMS:
 		{
-			GetFolderToolbarItemsCmd gftiCmd;
-			List<ToolbarItem> result;
-			GetToolbarItemsRpcResponseData responseData;
-			
-			gftiCmd = ((GetFolderToolbarItemsCmd) cmd);
-		    result = GwtMenuHelper.getFolderToolbarItems( this, getRequest( ri ), gftiCmd.getFolderInfo() );
-			responseData = new GetToolbarItemsRpcResponseData( result );
+			GetFolderToolbarItemsCmd gftiCmd = ((GetFolderToolbarItemsCmd) cmd);
+			GetFolderToolbarItemsRpcResponseData responseData = GwtMenuHelper.getFolderToolbarItems( this, getRequest( ri ), gftiCmd.getFolderInfo() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

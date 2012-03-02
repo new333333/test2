@@ -67,6 +67,7 @@ import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem.NameValuePair;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -198,7 +199,6 @@ public class GwtMenuHelper {
 				// Yes!  Add the various binder based
 				// ToolbarItem's.
 				miscTBI.addNestedItem( constructClipboardItem()                 );
-				miscTBI.addNestedItem( constructConfigureColumsItem(     binder));
 				miscTBI.addNestedItem( constructSendEmailToItem(request, binder));
 				miscTBI.addNestedItem( constructShareBinderItem(request, binder));
 				miscTBI.addNestedItem( constructMobileUiItem(   request, binder));
@@ -301,26 +301,6 @@ public class GwtMenuHelper {
 		return cbTBI;
 	}
 
-	/*
-	 * Constructs a ToolbarItem to run the configure columns dialog.
-	 */
-	private static ToolbarItem constructConfigureColumsItem(Binder binder) {
-		// Can the user configure columns on this binder?
-		String viewType = DefinitionUtils.getViewType(binder);
-		if (MiscUtil.hasString(viewType)) {
-			if (viewType.equalsIgnoreCase("folder") ||
-					viewType.equalsIgnoreCase("table") ||
-					viewType.equalsIgnoreCase("file")) {
-				// Yes!  Create a configure columns ToolbarItem.
-				ToolbarItem ccTBI = new ToolbarItem(CONFIGURE_COLUMNS);
-				markTBITitle(ccTBI, "misc.configureColumns"               );
-				markTBIEvent(ccTBI, TeamingEvents.INVOKE_CONFIGURE_COLUMNS);
-				return ccTBI;
-			}
-		}
-		return null;
-	}
-	
 	/*
 	 * Constructs a ToolbarItem to run the branding editor on a binder.
 	 */
@@ -508,6 +488,26 @@ public class GwtMenuHelper {
 				}
 			}
 		}
+	}
+	
+	/*
+	 * Constructs a ToolbarItem to run the configure columns dialog.
+	 */
+	private static ToolbarItem constructEntryConfigureColumsItem(Binder binder) {
+		// Can the user configure columns on this binder?
+		String viewType = DefinitionUtils.getViewType(binder);
+		if (MiscUtil.hasString(viewType)) {
+			if (viewType.equalsIgnoreCase("folder") ||
+					viewType.equalsIgnoreCase("table") ||
+					viewType.equalsIgnoreCase("file")) {
+				// Yes!  Create a configure columns ToolbarItem.
+				ToolbarItem ccTBI = new ToolbarItem(CONFIGURE_COLUMNS);
+				markTBITitle(ccTBI, "misc.configureColumns"               );
+				markTBIEvent(ccTBI, TeamingEvents.INVOKE_CONFIGURE_COLUMNS);
+				return ccTBI;
+			}
+		}
+		return null;
 	}
 	
 	/*
@@ -1717,8 +1717,9 @@ public class GwtMenuHelper {
 	}
 	
 	/**
-	 * Returns a List<ToolbarItem> of the ToolbarItem's for a folder
-	 * given the current user's rights to that folder.
+	 * Returns a GetFolderToolbarItemsRpcResponseData containing the
+	 * ToolbarItem's for a folder given the current user's rights to
+	 * that folder.
 	 *
 	 * @param bs
 	 * @param request
@@ -1726,14 +1727,16 @@ public class GwtMenuHelper {
 	 * 
 	 * @return
 	 */
-	public static List<ToolbarItem> getFolderToolbarItems(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) {
+	public static GetFolderToolbarItemsRpcResponseData getFolderToolbarItems(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) {
 		SimpleProfiler.start("GwtMenuHelper.getFolderToolbarItems()");
 		try {
 			// Allocate a List<ToolbarItem> to hold the ToolbarItem's
 			// that we'll return...
-			List<ToolbarItem> reply = new ArrayList<ToolbarItem>();
+			List<ToolbarItem> configureToolbarItems = new ArrayList<ToolbarItem>();
+			List<ToolbarItem> toolbarItems          = new ArrayList<ToolbarItem>();
+			GetFolderToolbarItemsRpcResponseData reply = new GetFolderToolbarItemsRpcResponseData(toolbarItems, configureToolbarItems);
 			ToolbarItem entryToolbar = new ToolbarItem(WebKeys.ENTRY_TOOLBAR);
-			reply.add(entryToolbar);
+			toolbarItems.add(entryToolbar);
 			
 			// Access the binder/folder.
 			Long folderId = folderInfo.getBinderIdAsLong();
@@ -1812,11 +1815,20 @@ public class GwtMenuHelper {
 					constructEntryMoreItems(entryToolbar, bs, request, folderId, viewType, folder);
 				}
 			}
+			
+			// If the binder supports column configuration...
+			ToolbarItem configureColumns = constructEntryConfigureColumsItem(binder);
+			if (null != configureColumns) {
+				// ...add the toolbar item to the configure list.
+				configureToolbarItems.add(configureColumns);
+			}
 
-			// If we get here, reply refers to the List<ToolbarItem>
-			// for the folder toolbar.  Return it.
+			// If we get here, reply refers to the
+			// GetFolderToolbarItemsRpcResponseData containing the
+			// ToolbarItem's for the folder.  Return it.
 			m_logger.debug("GwtMenuHelper.getFolderToolbarItems():");
-			dumpToolbarItems(reply, "...");
+			dumpToolbarItems(configureToolbarItems, "...");
+			dumpToolbarItems(toolbarItems,          "...");
 			return reply;
 		}
 		
