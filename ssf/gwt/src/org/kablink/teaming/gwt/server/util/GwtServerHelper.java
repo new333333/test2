@@ -2784,6 +2784,27 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return the groups ldap query
+	 */
+	public static String getGroupLdapQuery( AllModulesInjected ami, Long groupId )
+	{
+		Principal principal;
+		String ldapQuery;
+		
+		ldapQuery = "";
+		principal = ami.getProfileModule().getEntry( groupId );
+		if ( principal != null && principal instanceof Group )
+		{
+			Group group;
+			
+			group = (Group) principal;
+			ldapQuery = group.getLdapQuery();
+		}
+
+		return ldapQuery;
+	}
+	
+	/**
 	 * Returns a GwtTeamingException from a generic Exception.
 	 * 
 	 * Note:  The mappings between an instance of an exception and the
@@ -3818,27 +3839,34 @@ public class GwtServerHelper {
 	/**
 	 * Modify the given group
 	 */
-	public static void modifyGroup( AllModulesInjected ami, Long groupId, String title, String desc, boolean isMembershipDynamic, List<GwtTeamingItem> membership ) throws GwtTeamingException
+	public static void modifyGroup( AllModulesInjected ami, Long groupId, String title, String desc, boolean isMembershipDynamic, List<GwtTeamingItem> membership, String ldapQuery ) throws GwtTeamingException
 	{
 		Principal group;
 
 		group = ami.getProfileModule().getEntry( groupId );
 		if ( group!= null && group instanceof Group )
 		{
-			if ( membership != null )
+			Map<Long,Principal> changes;
+			List<Principal> currentMembers;
+			Set<Long> membershipIds;
+			SortedSet<Principal> principals;
+
+			changes = new HashMap<Long,Principal>();
+			membershipIds = new HashSet<Long>();
+			
+			// Capture the current membership of the group before it gets modified
+			currentMembers = new ArrayList<Principal>( ((Group)group).getMembers() );
+			
+			// Is the group membership dynamic?
+			if ( isMembershipDynamic )
 			{
-				SortedSet<Principal> principals;
-				Map<Long,Principal> changes;
-				List<Principal> currentMembers;
-				Set<Long> membershipIds;
-
-				// Capture the current membership of the group before it gets modified
-				changes = new HashMap<Long,Principal>();
-				currentMembers = new ArrayList<Principal>( ((Group)group).getMembers() );
-				
-				membershipIds = new HashSet<Long>();
-
-				// Get a list of all the membership ids.
+				// Yes
+				// Execute the ldap query.
+			}
+			else
+			{
+				// No
+				// Get a list of all the new membership ids.
 				for (GwtTeamingItem nextMember : membership)
 				{
 					Long id;
@@ -3852,97 +3880,98 @@ public class GwtServerHelper {
 					if ( id != null )
 						membershipIds.add( id );
 				}
+			}
 
-				// Modify the group.
+			// Modify the group.
+			{
+				Map updates;
+
+				principals = ami.getProfileModule().getPrincipals( membershipIds );
+			
+				updates = new HashMap();
+				updates.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
+				updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
+				updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_NONE ) );  
+				updates.put( ObjectKeys.FIELD_GROUP_DYNAMIC, isMembershipDynamic );
+				updates.put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals );
+				updates.put( ObjectKeys.FIELD_GROUP_LDAP_QUERY, ldapQuery );
+				
+				try
 				{
-					Map updates;
+					ami.getProfileModule().modifyEntry( groupId, new MapInputData( updates ) );
+				}
+	   			catch ( Exception ex )
+	   			{
+	   				throw GwtServerHelper.getGwtTeamingException( ex );
+	   			} 
+			}
+			
+			// Update disk quotas and file size limits.
+			{
+		   		List<Long> gIdList;
 
-					principals = ami.getProfileModule().getPrincipals( membershipIds );
-					
-					updates = new HashMap();
-					updates.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
-					updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
-					updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_NONE ) );  
-					updates.put( ObjectKeys.FIELD_GROUP_DYNAMIC, isMembershipDynamic );
-					updates.put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals );
-					
-					try
-					{
-						ami.getProfileModule().modifyEntry( groupId, new MapInputData( updates ) );
-					}
-		   			catch ( Exception ex )
-		   			{
-		   				throw GwtServerHelper.getGwtTeamingException( ex );
-		   			} 
+		   		gIdList = new ArrayList<Long>();
+		   		gIdList.add( groupId );
+		   		ami.getProfileModule().setGroupDiskQuotas( gIdList, ((Group)group).getDiskQuota() );
+		   		ami.getProfileModule().setGroupFileSizeLimits( gIdList, ((Group)group).getFileSizeLimit() );
+			}
+			
+			// Now deal with everyone who was affected
+			{
+				ProfileDao profileDao;
+
+				profileDao = (ProfileDao) SpringContextUtil.getBean( "profileDao" );
+				
+				for (Principal p : currentMembers)
+				{
+					if ( !principals.contains( p ) )
+						changes.put( p.getId(), p );
 				}
 				
-				// Update disk quotas and file size limits.
+				for (Principal p : principals)
 				{
-			   		List<Long> gIdList;
-
-			   		gIdList = new ArrayList<Long>();
-			   		gIdList.add( groupId );
-			   		ami.getProfileModule().setGroupDiskQuotas( gIdList, ((Group)group).getDiskQuota() );
-			   		ami.getProfileModule().setGroupFileSizeLimits( gIdList, ((Group)group).getFileSizeLimit() );
+					if ( !currentMembers.contains( p ) )
+						changes.put( p.getId(), p );
 				}
 				
-				// Now deal with everyone who was affected
+				// After changing the group membership, re-index any user that was added or deleted
 				{
-					ProfileDao profileDao;
+					List<Principal> users;
+					List<Principal> groups;
+					List<Long> gIds;
+					Set<Principal> groupUsers;
+					Set<Long> groupUserIds;
 
-					profileDao = (ProfileDao) SpringContextUtil.getBean( "profileDao" );
-					
-					for (Principal p : currentMembers)
+					users = new ArrayList<Principal>();
+					groups = new ArrayList<Principal>();
+					gIds = new ArrayList<Long>();
+					for (Map.Entry<Long,Principal> me : changes.entrySet())
 					{
-						if ( !principals.contains( p ) )
-							changes.put( p.getId(), p );
-					}
-					
-					for (Principal p : principals)
-					{
-						if ( !currentMembers.contains( p ) )
-							changes.put( p.getId(), p );
-					}
-					
-					// After changing the group membership, re-index any user that was added or deleted
-					{
-						List<Principal> users;
-						List<Principal> groups;
-						List<Long> gIds;
-						Set<Principal> groupUsers;
-						Set<Long> groupUserIds;
-
-						users = new ArrayList<Principal>();
-						groups = new ArrayList<Principal>();
-						gIds = new ArrayList<Long>();
-						for (Map.Entry<Long,Principal> me : changes.entrySet())
-						{
-							if ( me.getValue() instanceof User )
-								users.add( me.getValue() );
-							
-							if ( me.getValue() instanceof Group )
-							{
-								groups.add( me.getValue() );
-								gIds.add( ((Group)me.getValue()).getId() );
-							}
-						}
-
-						// Re-index the list of users and all binders "owned" by them
-						// reindex the profile entry for each user
-						groupUsers = new HashSet<Principal>();
-						groupUserIds = new HashSet<Long>();
-						groupUserIds.addAll( profileDao.explodeGroups( gIds, RequestContextHolder.getRequestContext().getZoneId() ) );
-						groupUsers.addAll( ami.getProfileModule().getPrincipals( groupUserIds ) );
-						groupUsers.addAll( users );
-						for (Principal user : groupUsers)
-						{
-							ami.getProfileModule().indexEntry( user );
-						}
+						if ( me.getValue() instanceof User )
+							users.add( me.getValue() );
 						
-						// set up a background job that will reindex all of the binders owned by all of these users.				
-						//Re-index all "personal" binders owned by this user (i.e., binders under the profiles binder)
-						ami.getProfileModule().reindexPersonalUserOwnedBinders( groupUsers );
+						if ( me.getValue() instanceof Group )
+						{
+							groups.add( me.getValue() );
+							gIds.add( ((Group)me.getValue()).getId() );
+						}
 					}
+
+					// Re-index the list of users and all binders "owned" by them
+					// reindex the profile entry for each user
+					groupUsers = new HashSet<Principal>();
+					groupUserIds = new HashSet<Long>();
+					groupUserIds.addAll( profileDao.explodeGroups( gIds, RequestContextHolder.getRequestContext().getZoneId() ) );
+					groupUsers.addAll( ami.getProfileModule().getPrincipals( groupUserIds ) );
+					groupUsers.addAll( users );
+					for (Principal user : groupUsers)
+					{
+						ami.getProfileModule().indexEntry( user );
+					}
+					
+					// set up a background job that will reindex all of the binders owned by all of these users.				
+					//Re-index all "personal" binders owned by this user (i.e., binders under the profiles binder)
+					ami.getProfileModule().reindexPersonalUserOwnedBinders( groupUsers );
 				}
 			}
 		}
@@ -4089,6 +4118,7 @@ public class GwtServerHelper {
 		case GET_FILE_SYNC_APP_CONFIGURATION:
 		case GET_FOLDER:
 		case GET_GROUP_ASSIGNEE_MEMBERSHIP:
+		case GET_GROUP_LDAP_QUERY:
 		case GET_GROUP_MEMBERSHIP:
 		case GET_GROUP_MEMBERSHIP_TYPE:
 		case GET_GROUPS:

@@ -33,31 +33,22 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.List;
-
-import org.kablink.teaming.gwt.client.GwtTeamingItem;
-
 
 
 /**
- * This class holds all of the information necessary to execute the "modify group" command.
+ * This class holds all of the information necessary to execute the "get group ldap filter" command.
  * 
  * @author jwootton
  *
  */
-public class ModifyGroupCmd extends VibeRpcCmd
+public class GetGroupLdapQueryCmd extends VibeRpcCmd
 {
-	private Long m_id;
-	private String m_title;
-	private String m_desc;
-	private boolean m_isMembershipDynamic;
-	private List<GwtTeamingItem> m_membership;
-	private String m_ldapQuery;
+	private Long m_groupId;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
 	 */
-	public ModifyGroupCmd()
+	public GetGroupLdapQueryCmd()
 	{
 		super();
 	}
@@ -65,14 +56,9 @@ public class ModifyGroupCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public ModifyGroupCmd( Long id, String title, String desc, boolean isMembershipDynamic, List<GwtTeamingItem> membership, String ldapQuery )
+	public GetGroupLdapQueryCmd( Long groupId )
 	{
-		m_id = id;
-		m_title = title;
-		m_desc = desc;
-		m_isMembershipDynamic = isMembershipDynamic;
-		m_membership = membership;
-		m_ldapQuery = ldapQuery;
+		m_groupId = groupId;
 	}
 	
 	/**
@@ -85,78 +71,14 @@ public class ModifyGroupCmd extends VibeRpcCmd
 	@Override
 	public int getCmdType()
 	{
-		return VibeRpcCmdType.MODIFY_GROUP.ordinal();
-	}
-
-	/**
-	 * 
-	 */
-	public String getDesc()
-	{
-		return m_desc;
-	}
-
-	/**
-	 * 
-	 */
-	public Long getId()
-	{
-		return m_id;
+		return VibeRpcCmdType.GET_GROUP_LDAP_QUERY.ordinal();
 	}
 	
 	/**
 	 * 
 	 */
-	public boolean getIsMembershipDynamic()
+	public Long getGroupId()
 	{
-		return m_isMembershipDynamic;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getLdapQuery()
-	{
-		return m_ldapQuery;
-	}
-	
-	/**
-	 * 
-	 */
-	public List<GwtTeamingItem> getMembership()
-	{
-		return m_membership;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getTitle()
-	{
-		return m_title;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setDesc( String desc )
-	{
-		m_desc = desc;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setIsMembershipDynamic( boolean isMembershipDynamic )
-	{
-		m_isMembershipDynamic = isMembershipDynamic;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setTitle( String title )
-	{
-		m_title = title;
+		return m_groupId;
 	}
 }

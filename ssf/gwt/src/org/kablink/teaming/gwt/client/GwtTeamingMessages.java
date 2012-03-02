@@ -315,6 +315,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetFolderDefinitionId();
 	String rpcFailure_GetFolderEntry();
 	String rpcFailure_GetGeneric();
+	String rpcFailure_GetGroupLdapQuery();
 	String rpcFailure_GetGroupMembership();
 	String rpcFailure_GetGroupMembershipType();
 	String rpcFailure_GwtGroups();

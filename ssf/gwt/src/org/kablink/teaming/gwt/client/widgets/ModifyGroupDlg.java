@@ -44,10 +44,12 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateGroupCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetGroupLdapQueryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipTypeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyGroupCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -88,6 +90,7 @@ public class ModifyGroupDlg extends DlgBox
 	private RadioButton m_dynamicRb;
 	private EditSuccessfulHandler m_editSuccessfulHandler;
 	private ModifyStaticMembershipDlg m_membershipDlg;
+	private String m_ldapQuery;
 	
 	/**
 	 * 
@@ -399,6 +402,41 @@ public class ModifyGroupDlg extends DlgBox
 	}
 	
 	/**
+	 * Issue an ajax request to get the ldap query of the group we are working with.
+	 */
+	private void getLdapQuery()
+	{
+		if ( m_groupInfo != null )
+		{
+			GetGroupLdapQueryCmd cmd;
+			AsyncCallback<VibeRpcResponse> rpcCallback;
+			
+			rpcCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				@Override
+				public void onFailure( Throwable caught )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_GetGroupLdapQuery() );
+				}
+	
+				@Override
+				public void onSuccess( VibeRpcResponse result )
+				{
+					StringRpcResponseData responseData;
+					
+					responseData = ((StringRpcResponseData) result.getResponseData());
+					m_ldapQuery = responseData.getStringValue();
+				}						
+			};
+			
+			cmd = new GetGroupLdapQueryCmd( m_groupInfo.getId() );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		}
+	}
+	
+	/**
 	 * Issue an ajax request to get the membership type (static or dynamic) for the group
 	 * we are working with.
 	 */
@@ -427,16 +465,46 @@ public class ModifyGroupDlg extends DlgBox
 					responseData = ((BooleanRpcResponseData) result.getResponseData());
 					m_groupInfo.setIsMembershipDynamic( responseData.getBooleanValue() );
 
-					// Set the appropriate radio buttons.
+					// Is the membership dynamic?
 					if ( m_groupInfo.getIsMembershipDynamic() )
 					{
+						// Yes
 						m_staticRb.setValue( false );
 						m_dynamicRb.setValue( true );
+						
+						// Schedule an ajax request to get the ldap query
+						{
+							Scheduler.ScheduledCommand cmd;
+							
+							cmd = new Scheduler.ScheduledCommand()
+							{
+								public void execute()
+								{
+									getLdapQuery();
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
 					}
 					else
 					{
+						// No
 						m_staticRb.setValue( true );
 						m_dynamicRb.setValue( false );
+						
+						// Schedule an ajax request to get the group membership
+						{
+							Scheduler.ScheduledCommand cmd;
+							
+							cmd = new Scheduler.ScheduledCommand()
+							{
+								public void execute()
+								{
+									getGroupMembership();
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
 					}
 				}						
 			};
@@ -463,8 +531,7 @@ public class ModifyGroupDlg extends DlgBox
 		if ( m_groupInfo != null )
 		{
 			// Yes
-			// Schedule an ajax request to get the group membership and to get the
-			// membership type (dynamic or static).
+			// Schedule an ajax request to get the membership type (dynamic or static).
 			{
 				Scheduler.ScheduledCommand cmd;
 				
@@ -473,7 +540,6 @@ public class ModifyGroupDlg extends DlgBox
 					public void execute()
 					{
 						getMembershipType();
-						getGroupMembership();
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
@@ -610,7 +676,7 @@ public class ModifyGroupDlg extends DlgBox
 		};
 		
 		// Issue an rpc request to update the group.
-		cmd = new ModifyGroupCmd( m_groupInfo.getId(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership );
+		cmd = new ModifyGroupCmd( m_groupInfo.getId(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership, m_ldapQuery );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 }
