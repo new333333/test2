@@ -509,8 +509,6 @@ public interface ObjectKeys {
     public static final String FIELD_ENTITY_MODIFY_PRINCIPAL="modification.principal";
     public static final String FIELD_ENTITY_DELETED="deleted";
 
-    public static final String FIELD_GROUP_DYNAMIC = "dynamic";
-
     public static final String FIELD_FILE_ID="_fileID";
     
     public static final String FIELD_APPLICATION_POST_URL="postUrl";
@@ -554,6 +552,8 @@ public interface ObjectKeys {
     public static final String FIELD_PRINCIPAL_NAME="name";
     public static final String FIELD_PRINCIPAL_TYPE="type";
     public static final String FIELD_PRINCIPAL_DISABLED="disabled";
+    public static final String FIELD_GROUP_DYNAMIC = "dynamic";
+    public static final String FIELD_GROUP_LDAP_QUERY = "ldapQuery";
     public static final String FIELD_GROUP_PRINCIPAL_MEMBERS="members";
     public static final String FIELD_PRINCIPAL_THEME="theme";
     public static final String TASK_FIELD_ASSIGNMENT="assignment";

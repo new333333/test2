@@ -571,6 +571,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_GROUP_LDAP_QUERY:
+		{
+			GetGroupLdapQueryCmd gglqCmd;
+			StringRpcResponseData responseData;
+			String ldapQuery;
+			
+			gglqCmd = (GetGroupLdapQueryCmd) cmd;
+			ldapQuery = GwtServerHelper.getGroupLdapQuery( this, gglqCmd.getGroupId() );
+			responseData = new StringRpcResponseData( ldapQuery );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_GROUP_MEMBERSHIP:
 		{
 			String groupId = ((GetGroupMembershipCmd) cmd).getGroupId();
@@ -1075,7 +1088,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ModifyGroupCmd mgCmd;
 			
 			mgCmd = (ModifyGroupCmd) cmd;
-			GwtServerHelper.modifyGroup( this, mgCmd.getId(), mgCmd.getTitle(), mgCmd.getDesc(), mgCmd.getIsMembershipDynamic(), mgCmd.getMembership() );
+			GwtServerHelper.modifyGroup( this, mgCmd.getId(), mgCmd.getTitle(), mgCmd.getDesc(), mgCmd.getIsMembershipDynamic(), mgCmd.getMembership(), mgCmd.getLdapQuery() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( Boolean.TRUE ) );
 			
 			return response;
