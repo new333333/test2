@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 
 
@@ -52,6 +53,7 @@ public class CreateGroupCmd extends VibeRpcCmd
 	private String m_desc;
 	private boolean m_isMembershipDynamic;
 	private List<GwtTeamingItem> m_membership;
+	private GwtDynamicGroupMembershipCriteria m_membershipCriteria;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
@@ -64,13 +66,14 @@ public class CreateGroupCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public CreateGroupCmd( String name, String title, String desc, boolean isMembershipDynamic, List<GwtTeamingItem> membership )
+	public CreateGroupCmd( String name, String title, String desc, boolean isMembershipDynamic, List<GwtTeamingItem> membership, GwtDynamicGroupMembershipCriteria membershipCriteria )
 	{
 		m_name = name;
 		m_title = title;
 		m_desc = desc;
 		m_isMembershipDynamic = isMembershipDynamic;
 		m_membership = membership;
+		m_membershipCriteria = membershipCriteria;
 	}
 	
 	/**
@@ -108,6 +111,14 @@ public class CreateGroupCmd extends VibeRpcCmd
 	public List<GwtTeamingItem> getMembership()
 	{
 		return m_membership;
+	}
+	
+	/**
+	 * 
+	 */
+	public GwtDynamicGroupMembershipCriteria getMembershipCriteria()
+	{
+		return m_membershipCriteria;
 	}
 	
 	/**

@@ -1119,5 +1119,12 @@ public interface GwtTeamingMessages extends Messages
 	String modifyStaticMembershipDlgSelectUserToRemove();
 	String modifyStaticMembershipDlgUserLabel();
 	String modifyStaticMembershipDlgUserTab();
+
+	// Strings used in the Modify dynamic membership dialog
+	String modifyDynamicMembershipDlgBaseDnLabel();
+	String modifyDynamicMembershipDlgHeader();
+	String modifyDynamicMembershipDlgLdapFilterLabel();
+	String modifyDynamicMembershipDlgSearchSubtreeLabel();
+	String modifyDynamicMembershipDlgUpdateLabel();
 	
 }// end GwtTeamingMessages

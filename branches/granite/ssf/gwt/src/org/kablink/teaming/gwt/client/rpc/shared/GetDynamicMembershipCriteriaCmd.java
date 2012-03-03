@@ -36,19 +36,19 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 
 /**
- * This class holds all of the information necessary to execute the "get group ldap filter" command.
+ * This class holds all of the information necessary to execute the "get dynamic membership criteria" command.
  * 
  * @author jwootton
  *
  */
-public class GetGroupLdapQueryCmd extends VibeRpcCmd
+public class GetDynamicMembershipCriteriaCmd extends VibeRpcCmd
 {
 	private Long m_groupId;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
 	 */
-	public GetGroupLdapQueryCmd()
+	public GetDynamicMembershipCriteriaCmd()
 	{
 		super();
 	}
@@ -56,7 +56,7 @@ public class GetGroupLdapQueryCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public GetGroupLdapQueryCmd( Long groupId )
+	public GetDynamicMembershipCriteriaCmd( Long groupId )
 	{
 		m_groupId = groupId;
 	}
@@ -71,7 +71,7 @@ public class GetGroupLdapQueryCmd extends VibeRpcCmd
 	@Override
 	public int getCmdType()
 	{
-		return VibeRpcCmdType.GET_GROUP_LDAP_QUERY.ordinal();
+		return VibeRpcCmdType.GET_DYNAMIC_MEMBERSHIP_CRITERIA.ordinal();
 	}
 	
 	/**

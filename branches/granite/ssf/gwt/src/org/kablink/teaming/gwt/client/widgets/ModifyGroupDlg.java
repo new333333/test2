@@ -38,18 +38,18 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateGroupCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetGroupLdapQueryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDynamicMembershipCriteriaCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipTypeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyGroupCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -89,8 +89,9 @@ public class ModifyGroupDlg extends DlgBox
 	private RadioButton m_staticRb;
 	private RadioButton m_dynamicRb;
 	private EditSuccessfulHandler m_editSuccessfulHandler;
-	private ModifyStaticMembershipDlg m_membershipDlg;
-	private String m_ldapQuery;
+	private ModifyStaticMembershipDlg m_staticMembershipDlg;
+	private ModifyDynamicMembershipDlg m_dynamicMembershipDlg;
+	private GwtDynamicGroupMembershipCriteria m_dynamicMembershipCriteria;
 	
 	/**
 	 * 
@@ -272,7 +273,7 @@ public class ModifyGroupDlg extends DlgBox
 		};
 		
 		// Issue an rpc request to create the group.
-		cmd = new CreateGroupCmd( getGroupName(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership );
+		cmd = new CreateGroupCmd( getGroupName(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership, m_dynamicMembershipCriteria );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 
@@ -322,6 +323,38 @@ public class ModifyGroupDlg extends DlgBox
 		return Boolean.TRUE;
 	}
 	
+	
+	/**
+	 * Issue an ajax request to get the ldap query of the group we are working with.
+	 */
+	private void getDynamicMembershipCriteria()
+	{
+		if ( m_groupInfo != null )
+		{
+			GetDynamicMembershipCriteriaCmd cmd;
+			AsyncCallback<VibeRpcResponse> rpcCallback;
+			
+			rpcCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				@Override
+				public void onFailure( Throwable caught )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_GetGroupLdapQuery() );
+				}
+	
+				@Override
+				public void onSuccess( VibeRpcResponse result )
+				{
+					m_dynamicMembershipCriteria = ((GwtDynamicGroupMembershipCriteria) result.getResponseData());
+				}						
+			};
+			
+			cmd = new GetDynamicMembershipCriteriaCmd( m_groupInfo.getId() );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		}
+	}
 	
 	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
@@ -402,41 +435,6 @@ public class ModifyGroupDlg extends DlgBox
 	}
 	
 	/**
-	 * Issue an ajax request to get the ldap query of the group we are working with.
-	 */
-	private void getLdapQuery()
-	{
-		if ( m_groupInfo != null )
-		{
-			GetGroupLdapQueryCmd cmd;
-			AsyncCallback<VibeRpcResponse> rpcCallback;
-			
-			rpcCallback = new AsyncCallback<VibeRpcResponse>()
-			{
-				@Override
-				public void onFailure( Throwable caught )
-				{
-					GwtClientHelper.handleGwtRPCFailure(
-						caught,
-						GwtTeaming.getMessages().rpcFailure_GetGroupLdapQuery() );
-				}
-	
-				@Override
-				public void onSuccess( VibeRpcResponse result )
-				{
-					StringRpcResponseData responseData;
-					
-					responseData = ((StringRpcResponseData) result.getResponseData());
-					m_ldapQuery = responseData.getStringValue();
-				}						
-			};
-			
-			cmd = new GetGroupLdapQueryCmd( m_groupInfo.getId() );
-			GwtClientHelper.executeCommand( cmd, rpcCallback );
-		}
-	}
-	
-	/**
 	 * Issue an ajax request to get the membership type (static or dynamic) for the group
 	 * we are working with.
 	 */
@@ -472,7 +470,7 @@ public class ModifyGroupDlg extends DlgBox
 						m_staticRb.setValue( false );
 						m_dynamicRb.setValue( true );
 						
-						// Schedule an ajax request to get the ldap query
+						// Schedule an ajax request to get the membership criteria
 						{
 							Scheduler.ScheduledCommand cmd;
 							
@@ -480,7 +478,7 @@ public class ModifyGroupDlg extends DlgBox
 							{
 								public void execute()
 								{
-									getLdapQuery();
+									getDynamicMembershipCriteria();
 								}
 							};
 							Scheduler.get().scheduleDeferred( cmd );
@@ -521,6 +519,7 @@ public class ModifyGroupDlg extends DlgBox
 	{
 		m_groupInfo = groupInfo;
 		m_groupMembership = new ArrayList<GwtTeamingItem>();
+		m_dynamicMembershipCriteria = new GwtDynamicGroupMembershipCriteria();
 		
 		// Clear existing data in the controls.
 		m_nameTxtBox.setText( "" );
@@ -586,7 +585,7 @@ public class ModifyGroupDlg extends DlgBox
 			x = getAbsoluteLeft() + 50;
 			y = getAbsoluteTop() + 50;
 			
-			if ( m_membershipDlg == null )
+			if ( m_staticMembershipDlg == null )
 			{
 				EditSuccessfulHandler handler;
 				
@@ -602,17 +601,46 @@ public class ModifyGroupDlg extends DlgBox
 						return true;
 					}
 				};
-				m_membershipDlg = new ModifyStaticMembershipDlg( false, true, handler, null, x, y );
+				m_staticMembershipDlg = new ModifyStaticMembershipDlg( false, true, handler, null, x, y );
 			}
 			
-			m_membershipDlg.init( getGroupName(), m_groupMembership );
-			m_membershipDlg.setPopupPosition( x, y );
-			m_membershipDlg.show();
+			m_staticMembershipDlg.init( getGroupName(), m_groupMembership );
+			m_staticMembershipDlg.setPopupPosition( x, y );
+			m_staticMembershipDlg.show();
 		}
 		else
 		{
+			int x;
+			int y;
+			
 			// Yes
-			Window.alert( "Not yet implemented" );
+			x = getAbsoluteLeft() + 50;
+			y = getAbsoluteTop() + 50;
+			
+			if ( m_dynamicMembershipDlg == null )
+			{
+				EditSuccessfulHandler handler;
+				
+				// Create a handler that will be called when the user presses ok in the
+				// Modify dynamic membership dialog.
+				handler = new EditSuccessfulHandler()
+				{
+					@Override
+					public boolean editSuccessful( Object obj )
+					{
+						if ( obj instanceof GwtDynamicGroupMembershipCriteria )
+							m_dynamicMembershipCriteria = (GwtDynamicGroupMembershipCriteria) obj;
+						
+						return true;
+					}
+				};
+				
+				m_dynamicMembershipDlg = new ModifyDynamicMembershipDlg( false, true, handler, null, x, y );
+			}
+			
+			m_dynamicMembershipDlg.init( m_dynamicMembershipCriteria, 122 );
+			m_dynamicMembershipDlg.setPopupPosition( x, y );
+			m_dynamicMembershipDlg.show();
 		}
 	}
 	
@@ -676,7 +704,7 @@ public class ModifyGroupDlg extends DlgBox
 		};
 		
 		// Issue an rpc request to update the group.
-		cmd = new ModifyGroupCmd( m_groupInfo.getId(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership, m_ldapQuery );
+		cmd = new ModifyGroupCmd( m_groupInfo.getId(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership, m_dynamicMembershipCriteria );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 }
