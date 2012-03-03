@@ -87,6 +87,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
+import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
@@ -987,12 +988,20 @@ public class GwtServerHelper {
 	 * @throws WriteFilesException 
 	 * @throws AccessControlException 
 	 */
-	public static Group createGroup( AllModulesInjected ami, String name, String title, String desc, boolean isMembershipDynamic, List<GwtTeamingItem> membership ) throws GwtTeamingException
+	public static Group createGroup(
+								AllModulesInjected ami,
+								String name,
+								String title,
+								String desc,
+								boolean isMembershipDynamic,
+								List<GwtTeamingItem> membership,
+								GwtDynamicGroupMembershipCriteria membershipCriteria ) throws GwtTeamingException
 	{
 		MapInputData inputData;
 		HashMap<String, Object> inputMap;
 		HashMap<String, Object> fileMap;
 		Group newGroup = null;
+		String ldapQuery = null;
 
 		// Create an empty file map.
 		fileMap = new HashMap<String, Object>();
@@ -1003,33 +1012,46 @@ public class GwtServerHelper {
 		inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
 		inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_NONE ) );  
 		inputMap.put( ObjectKeys.FIELD_GROUP_DYNAMIC, isMembershipDynamic );
-		
-		// Get a list of all the membership ids
-		if ( membership != null )
+	
+		// Is group membership dynamic?
+		if ( isMembershipDynamic == false )
 		{
-			HashSet<Long> membershipIds;
-			SortedSet<Principal> principals;
-
-			membershipIds = new HashSet<Long>();
-
-			for (GwtTeamingItem nextMember : membership)
+			// No
+			// Get a list of all the membership ids
+			if ( membership != null )
 			{
-				Long id;
-
-				id = null;
-				if ( nextMember instanceof GwtUser )
-					id = Long.valueOf( ((GwtUser) nextMember).getUserId() );
-				else if ( nextMember instanceof GwtGroup )
-					id = Long.valueOf( ((GwtGroup) nextMember).getId() );
-							
-				if ( id != null )
-					membershipIds.add( id );
+				HashSet<Long> membershipIds;
+				SortedSet<Principal> principals;
+	
+				membershipIds = new HashSet<Long>();
+	
+				for (GwtTeamingItem nextMember : membership)
+				{
+					Long id;
+	
+					id = null;
+					if ( nextMember instanceof GwtUser )
+						id = Long.valueOf( ((GwtUser) nextMember).getUserId() );
+					else if ( nextMember instanceof GwtGroup )
+						id = Long.valueOf( ((GwtGroup) nextMember).getId() );
+								
+					if ( id != null )
+						membershipIds.add( id );
+				}
+	
+				principals = ami.getProfileModule().getPrincipals( membershipIds );
+				inputMap.put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals );
 			}
-
-			principals = ami.getProfileModule().getPrincipals( membershipIds );
-			inputMap.put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals );
+		}
+		else
+		{
+			// Yes
+			if ( membershipCriteria != null )
+				ldapQuery = membershipCriteria.getAsXml();
 		}
 		
+		inputMap.put( ObjectKeys.FIELD_GROUP_LDAP_QUERY, ldapQuery );
+
 		inputData = new MapInputData( inputMap );
 
 		try
@@ -2786,22 +2808,93 @@ public class GwtServerHelper {
 	/**
 	 * Return the groups ldap query
 	 */
-	public static String getGroupLdapQuery( AllModulesInjected ami, Long groupId )
+	public static GwtDynamicGroupMembershipCriteria getDynamicMembershipCriteria( AllModulesInjected ami, Long groupId )
 	{
 		Principal principal;
-		String ldapQuery;
+		GwtDynamicGroupMembershipCriteria membershipCriteria;
 		
-		ldapQuery = "";
+		membershipCriteria = new GwtDynamicGroupMembershipCriteria();
+		
 		principal = ami.getProfileModule().getEntry( groupId );
 		if ( principal != null && principal instanceof Group )
 		{
 			Group group;
-			
+			String ldapQueryXml;
+
+			// Get the xml that defines the membership criteria
 			group = (Group) principal;
-			ldapQuery = group.getLdapQuery();
+			ldapQueryXml = group.getLdapQuery();
+
+			if ( ldapQueryXml != null && ldapQueryXml.length() > 0 )
+			{
+				try
+	    		{
+	    			Document doc;
+	    			Node node;
+	    			Node searchNode;
+	    			Node attrNode;
+	    			String value;
+					
+					// Parse the xml string into an xml document.
+					doc = DocumentHelper.parseText( ldapQueryXml );
+	    			
+	    			// Get the root element.
+	    			node = doc.getRootElement();
+	    			
+	    			// Get the "updateMembershipDuringLdapSync" attribute value.
+	    			attrNode = node.selectSingleNode( "@updateMembershipDuringLdapSync" );
+	    			if ( attrNode != null )
+	    			{
+	        			value = attrNode.getText();
+	        			if ( value != null && value.equalsIgnoreCase( "true" ) )
+	        				membershipCriteria.setUpdateDuringLdapSync( true );
+	        			else
+	        				membershipCriteria.setUpdateDuringLdapSync( false );
+	    			}
+	    			
+	    			// Get the <search ...> element.
+	    			searchNode = node.selectSingleNode( "search" );
+	    			if ( searchNode != null )
+	    			{
+    					Node baseDnNode;
+    					Node filterNode;
+    					
+	    				// Get the "searchSubtree" attribute.
+	    				attrNode = searchNode.selectSingleNode( "@searchSubtree" );
+	    				if ( attrNode != null )
+	    				{
+	    					value = attrNode.getText();
+	    					if ( value != null && value.equalsIgnoreCase( "true" ) )
+	    						membershipCriteria.setSearchSubtree( true );
+	    					else
+	    						membershipCriteria.setSearchSubtree( false );
+	    				}
+	    				
+	    				// Get the <baseDn> element.
+	    				baseDnNode = searchNode.selectSingleNode( "baseDn" );
+	    				if ( baseDnNode != null )
+	    				{
+	    					value = baseDnNode.getText();
+	    					membershipCriteria.setBaseDn( value );
+	    				}
+	    				
+	    				// Get the <filter> element.
+	    				filterNode = searchNode.selectSingleNode( "filter" );
+	    				if ( filterNode != null )
+	    				{
+	    					value = filterNode.getText();
+	    					membershipCriteria.setLdapFilter( value );
+	    				}
+	    			}
+	    		}
+	    		catch(Exception e)
+	    		{
+	    			m_logger.warn( "Unable to parse dynamic group membership criteria" + ldapQueryXml );
+	    		}
+			}
 		}
 
-		return ldapQuery;
+		return membershipCriteria;
 	}
 	
 	/**
@@ -3839,7 +3932,7 @@ public class GwtServerHelper {
 	/**
 	 * Modify the given group
 	 */
-	public static void modifyGroup( AllModulesInjected ami, Long groupId, String title, String desc, boolean isMembershipDynamic, List<GwtTeamingItem> membership, String ldapQuery ) throws GwtTeamingException
+	public static void modifyGroup( AllModulesInjected ami, Long groupId, String title, String desc, boolean isMembershipDynamic, List<GwtTeamingItem> membership, GwtDynamicGroupMembershipCriteria membershipCriteria ) throws GwtTeamingException
 	{
 		Principal group;
 
@@ -3850,6 +3943,7 @@ public class GwtServerHelper {
 			List<Principal> currentMembers;
 			Set<Long> membershipIds;
 			SortedSet<Principal> principals;
+			String ldapQuery;
 
 			changes = new HashMap<Long,Principal>();
 			membershipIds = new HashSet<Long>();
@@ -3862,10 +3956,13 @@ public class GwtServerHelper {
 			{
 				// Yes
 				// Execute the ldap query.
+				ldapQuery = membershipCriteria.getAsXml();
 			}
 			else
 			{
 				// No
+				ldapQuery = null;
+				
 				// Get a list of all the new membership ids.
 				for (GwtTeamingItem nextMember : membership)
 				{
@@ -4118,7 +4215,7 @@ public class GwtServerHelper {
 		case GET_FILE_SYNC_APP_CONFIGURATION:
 		case GET_FOLDER:
 		case GET_GROUP_ASSIGNEE_MEMBERSHIP:
-		case GET_GROUP_LDAP_QUERY:
+		case GET_DYNAMIC_MEMBERSHIP_CRITERIA:
 		case GET_GROUP_MEMBERSHIP:
 		case GET_GROUP_MEMBERSHIP_TYPE:
 		case GET_GROUPS:

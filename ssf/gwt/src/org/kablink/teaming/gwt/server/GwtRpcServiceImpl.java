@@ -66,6 +66,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
+import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
@@ -227,7 +228,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			Group group;
 			
 			cgCmd = (CreateGroupCmd) cmd;
-			group = GwtServerHelper.createGroup( this, cgCmd.getName(), cgCmd.getTitle(), cgCmd.getDesc(), cgCmd.getIsMembershipDynamic(), cgCmd.getMembership() );
+			group = GwtServerHelper.createGroup( this, cgCmd.getName(), cgCmd.getTitle(), cgCmd.getDesc(), cgCmd.getIsMembershipDynamic(), cgCmd.getMembership(), cgCmd.getMembershipCriteria() );
 			groupInfo = new GroupInfo();
 			if ( group != null )
 			{
@@ -472,6 +473,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_DYNAMIC_MEMBERSHIP_CRITERIA:
+		{
+			GetDynamicMembershipCriteriaCmd gglqCmd;
+			GwtDynamicGroupMembershipCriteria membershipCriteria;
+			
+			gglqCmd = (GetDynamicMembershipCriteriaCmd) cmd;
+			membershipCriteria = GwtServerHelper.getDynamicMembershipCriteria( this, gglqCmd.getGroupId() );
+			response = new VibeRpcResponse( membershipCriteria );
+			return response;
+		}
+		
 		case GET_ENTRY:
 		{
 			GetEntryCmd geCmd;
@@ -567,19 +579,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetGroupAssigneeMembershipCmd ggamCmd = ((GetGroupAssigneeMembershipCmd) cmd);
 			List<AssignmentInfo> results = getGroupAssigneeMembership( ri, ggamCmd.getGroupId() );
 			AssignmentInfoListRpcResponseData responseData = new AssignmentInfoListRpcResponseData( results );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case GET_GROUP_LDAP_QUERY:
-		{
-			GetGroupLdapQueryCmd gglqCmd;
-			StringRpcResponseData responseData;
-			String ldapQuery;
-			
-			gglqCmd = (GetGroupLdapQueryCmd) cmd;
-			ldapQuery = GwtServerHelper.getGroupLdapQuery( this, gglqCmd.getGroupId() );
-			responseData = new StringRpcResponseData( ldapQuery );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1088,7 +1087,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ModifyGroupCmd mgCmd;
 			
 			mgCmd = (ModifyGroupCmd) cmd;
-			GwtServerHelper.modifyGroup( this, mgCmd.getId(), mgCmd.getTitle(), mgCmd.getDesc(), mgCmd.getIsMembershipDynamic(), mgCmd.getMembership(), mgCmd.getLdapQuery() );
+			GwtServerHelper.modifyGroup( this, mgCmd.getId(), mgCmd.getTitle(), mgCmd.getDesc(), mgCmd.getIsMembershipDynamic(), mgCmd.getMembership(), mgCmd.getMembershipCriteria() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( Boolean.TRUE ) );
 			
 			return response;
