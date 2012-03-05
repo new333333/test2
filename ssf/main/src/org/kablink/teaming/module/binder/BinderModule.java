@@ -54,6 +54,7 @@ import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
@@ -763,4 +764,15 @@ public interface BinderModule {
 	
 	public void setFileVersionStatus(DefinableEntity entity, FileAttachment fa, int status);
 
+	/**
+	 * Returns a map of titles of the sub-binders contained in the specified binder 
+	 * to its <code>BinderIndexData</code> objects encapsulating more detailed information
+	 * about sub-binders obtained from the Lucene index.
+	 * It is important for the efficiency reason that the requested data be obtainable
+	 * entirely from the Lucene index without querying the database.
+	 * 
+	 * @param binderId
+	 * @return
+	 */
+	public Map<String,BinderIndexData> getChildrenBinderDataFromIndex(Long binderId);
 }

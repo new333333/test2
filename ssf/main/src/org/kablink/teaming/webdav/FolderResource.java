@@ -33,17 +33,34 @@
 
 package org.kablink.teaming.webdav;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.security.AccessControlException;
 
+import com.bradmcevoy.http.Auth;
+import com.bradmcevoy.http.CollectionResource;
+import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.PropFindableResource;
+import com.bradmcevoy.http.Range;
+import com.bradmcevoy.http.Resource;
+import com.bradmcevoy.http.exceptions.BadRequestException;
+import com.bradmcevoy.http.exceptions.NotAuthorizedException;
+import com.bradmcevoy.http.exceptions.NotFoundException;
 
 /**
  * @author jong
  *
  */
-public class FolderResource extends WebdavResource implements PropFindableResource {
+public class FolderResource extends WebdavCollectionResource implements PropFindableResource, CollectionResource, GetableResource {
 
 	private Folder folder;
 	
@@ -83,4 +100,49 @@ public class FolderResource extends WebdavResource implements PropFindableResour
 	public Date getCreateDate() {
 		return folder.getCreation().getDate();
 	}
+	
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.CollectionResource#child(java.lang.String)
+	 */
+	@Override
+	public Resource child(String childName) throws NotAuthorizedException,
+			BadRequestException {
+		try {
+			Binder child = getBinderModule().getBinderByPathName(folder.getPathName() + "/" + childName);
+			return makeResourceFromBinder(child);
+		}
+		catch(AccessControlException e) { //$$$$$
+			// The specified child physically exists, but the user has no read access to it.
+			// In this case, we treat it as if the child didn't exist in the first place
+			// as opposed to throwing an error.
+			return null;
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.CollectionResource#getChildren()
+	 */
+	@Override
+	public List<? extends Resource> getChildren()
+			throws NotAuthorizedException, BadRequestException {
+		// A folder can have other folders as children. It can also have files as children only if it is a library folder.
+		Set<Folder> childrenFolders = getFolderModule().getSubfolders(folder);
+		
+		Set<FileAttachment> childrenFiles = null;
+		if(folder.isLibrary()) {
+			FileAttachment f;
+		}
+		
+		
+		Set<Binder> childrenBinders = getWorkspaceModule().getWorkspaceTree(folder.getId());
+		List<Resource> childrenResources = new ArrayList<Resource>(childrenBinders.size());
+		Resource resource;
+		for(Binder binder:childrenBinders) {
+			resource = makeResourceFromBinder(binder);
+			if(resource != null)
+				childrenResources.add(resource);
+		}
+		return childrenResources;
+	}
+
 }

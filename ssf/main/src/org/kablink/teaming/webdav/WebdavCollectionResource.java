@@ -30,24 +30,20 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.webdav;
+
+import groovy.lang.Binding;
+import groovy.util.ResourceException;
+import groovy.util.ScriptException;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.NLT;
 
 import com.bradmcevoy.http.CollectionResource;
-import com.bradmcevoy.http.GetableResource;
-import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Range;
 import com.bradmcevoy.http.Resource;
 import com.bradmcevoy.http.exceptions.BadRequestException;
@@ -58,81 +54,67 @@ import com.bradmcevoy.http.exceptions.NotFoundException;
  * @author jong
  *
  */
-public class WorkspaceResource extends WebdavCollectionResource implements PropFindableResource, CollectionResource, GetableResource {
+public abstract class WebdavCollectionResource extends WebdavResource implements CollectionResource {
 
-	private Workspace ws;
-	
-	public WorkspaceResource(WebdavResourceFactory factory, Workspace ws) {
+	protected WebdavCollectionResource(WebdavResourceFactory factory) {
 		super(factory);
-		this.ws = ws;
 	}
 
 	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getUniqueId()
+	 * @see com.bradmcevoy.http.GetableResource#getContentType(java.lang.String)
 	 */
 	@Override
-	public String getUniqueId() {
-		return ws.getEntityIdentifier().toString();
+	public String getContentType(String accepts) {
+		return CONTENT_TYPE_TEXT_HTML_UTF8;
 	}
 
 	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getName()
+	 * @see com.bradmcevoy.http.GetableResource#getContentLength()
 	 */
 	@Override
-	public String getName() {
-		return ws.getTitle();
+	public Long getContentLength() {
+		return null;
 	}
 
 	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getModifiedDate()
+	 * @see com.bradmcevoy.http.GetableResource#sendContent(java.io.OutputStream, com.bradmcevoy.http.Range, java.util.Map, java.lang.String)
 	 */
 	@Override
-	public Date getModifiedDate() {
-		return ws.getModification().getDate();
+	public void sendContent(OutputStream out, Range range,
+			Map<String, String> params, String contentType) throws IOException,
+			NotAuthorizedException, BadRequestException, NotFoundException {
+		String content = getDirectoryListing(getName(), getChildren());
+		out.write(content.getBytes("UTF-8"));
 	}
 
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.PropFindableResource#getCreateDate()
-	 */
-	@Override
-	public Date getCreateDate() {
-		return ws.getCreation().getDate();
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.CollectionResource#child(java.lang.String)
-	 */
-	@Override
-	public Resource child(String childName) throws NotAuthorizedException,
-			BadRequestException {
-		try {
-			Binder child = getBinderModule().getBinderByPathName(ws.getPathName() + "/" + childName);
-			return makeResourceFromBinder(child);
+	protected String getDirectoryListing(String name, List<? extends Resource> list) {
+		if(factory.isAllowDirectoryBrowsing()) {
+			/*
+			List<String> childNames = new ArrayList<String>(list.size());
+			for(Resource child:list)
+				childNames.add(child.getName());
+			Binding binding = new Binding();
+			binding.setVariable("parent", name);
+			binding.setVariable("children", childNames);
+			*/
+			
+			Binding binding = new Binding();
+			binding.setVariable("parent", this);
+			binding.setVariable("children", list);
+			
+			try {
+				getGroovyScriptService().execute("webdav_dir_list.groovy", binding);
+			} catch (ResourceException e) {
+				return e.toString();
+			} catch (ScriptException e) {
+				return e.toString();
+			}
+			Object output = binding.getVariable("output");
+			return output.toString();
 		}
-		catch(AccessControlException e) {
-			// The specified child physically exists, but the user has no read access to it.
-			// In this case, we treat it as if the child didn't exist in the first place
-			// as opposed to throwing an error.
-			return null;
+		else {
+			return NLT.get("wd.dir.browsing.disabled");
 		}
 	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.CollectionResource#getChildren()
-	 */
-	@Override
-	public List<? extends Resource> getChildren()
-			throws NotAuthorizedException, BadRequestException {
-		// A workspace can have other workspaces and/or folders as children
-		Set<Binder> childrenBinders = getWorkspaceModule().getWorkspaceTree(ws.getId());
-		List<Resource> childrenResources = new ArrayList<Resource>(childrenBinders.size());
-		Resource resource;
-		for(Binder binder:childrenBinders) {
-			resource = makeResourceFromBinder(binder);
-			if(resource != null)
-				childrenResources.add(resource);
-		}
-		return childrenResources;
-	}
-
+	
 }

@@ -100,9 +100,11 @@ import org.kablink.teaming.domain.FileAttachment.FileStatus;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.util.TagObject;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
+import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -152,6 +154,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.kablink.util.search.Restrictions.between;
+import static org.kablink.util.search.Restrictions.conjunction;
 import static org.kablink.util.search.Restrictions.eq;
 import static org.kablink.util.search.Restrictions.in;
 
@@ -2936,5 +2939,52 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 
+	public Map<String,BinderIndexData> getChildrenBinderDataFromIndex(Long binderId) {
+    	Criteria crit = new Criteria()
+    	    .add(conjunction()	
+    			.add(eq(Constants.BINDERS_PARENT_ID_FIELD, binderId.toString()))
+   				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_BINDER))
+     		);
 
+		QueryBuilder qb = new QueryBuilder(true);
+    	org.dom4j.Document qTree = crit.toQuery();
+		SearchObject so = qb.buildQuery(qTree);   	
+   	
+    	Query soQuery = so.getLuceneQuery();
+    	    	
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Query is: " + qTree.asXML());
+    		logger.debug("Query is: " + soQuery.toString());
+    	}
+    	
+    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
+        
+    	Hits hits = null;
+        try {
+	        hits = luceneSession.search(soQuery, null, 0, Integer.MAX_VALUE);
+        }
+        finally {
+            luceneSession.close();
+        }
+    	
+        Map<String,BinderIndexData> result = new HashMap<String,BinderIndexData>();
+        int count = hits.length();
+        org.apache.lucene.document.Document doc;
+        String title;
+        for(int i = 0; i < count; i++) {
+        	doc = hits.doc(i);
+        	title = doc.get(Constants.TITLE_FIELD);
+        	if(title != null) {
+        		try {
+	        		result.put(title, new BinderIndexData(doc));
+        		}
+        		catch(Exception ignore) {
+        			// skip to next doc
+        			logger.warn("Skipping file '" + title + "' due to error in index data: " + ignore.toString());
+        		}
+        	}
+        }
+        
+        return result;
+	}
 }

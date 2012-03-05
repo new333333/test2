@@ -32,13 +32,19 @@
  */
 package org.kablink.teaming.webdav;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import groovy.lang.Binding;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.groovy.GroovyScriptService;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.file.FileModule;
@@ -48,15 +54,20 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SpringContextUtil;
 
 import com.bradmcevoy.http.Auth;
+import com.bradmcevoy.http.GetableResource;
+import com.bradmcevoy.http.Range;
 import com.bradmcevoy.http.Request;
 import com.bradmcevoy.http.Resource;
 import com.bradmcevoy.http.Request.Method;
+import com.bradmcevoy.http.exceptions.BadRequestException;
+import com.bradmcevoy.http.exceptions.NotAuthorizedException;
+import com.bradmcevoy.http.exceptions.NotFoundException;
 
 /**
  * @author jong
  *
  */
-public abstract class WebdavResource implements Resource {
+public abstract class WebdavResource implements Resource, GetableResource {
 	
 	protected static final String CONTENT_TYPE_TEXT_HTML_UTF8 = "text/html; charset=utf-8";
 	
@@ -98,33 +109,31 @@ public abstract class WebdavResource implements Resource {
 		return null;
 	}
 
-	protected String getDirectoryListing(String name, List<? extends Resource> list) {
-		if(factory.isAllowDirectoryBrowsing()) {
-			/*
-			List<String> childNames = new ArrayList<String>(list.size());
-			for(Resource child:list)
-				childNames.add(child.getName());
-			Binding binding = new Binding();
-			binding.setVariable("parent", name);
-			binding.setVariable("children", childNames);
-			*/
-			
-			Binding binding = new Binding();
-			binding.setVariable("parent", this);
-			binding.setVariable("children", list);
-			
-			try {
-				getGroovyScriptService().execute("webdav_dir_list.groovy", binding);
-			} catch (ResourceException e) {
-				return e.toString();
-			} catch (ScriptException e) {
-				return e.toString();
-			}
-			Object output = binding.getVariable("output");
-			return output.toString();
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.GetableResource#getMaxAgeSeconds(com.bradmcevoy.http.Auth)
+	 */
+	@Override
+	public Long getMaxAgeSeconds(Auth auth) {
+		return factory.getMaxAgeSecondsRoot();
+	}
+
+	protected Resource makeResourceFromBinder(Binder binder) {
+		if(binder instanceof Workspace) {
+			Workspace w = (Workspace) binder;
+			if(w.isDeleted() || w.isPreDeleted())
+				return null;
+			else 
+				return new WorkspaceResource(factory, w);
+		}
+		else if(binder instanceof Folder) {
+			Folder f = (Folder) binder;
+			if(f.isDeleted() || f.isPreDeleted())
+				return null;
+			else 
+				return new FolderResource(factory, f);
 		}
 		else {
-			return NLT.get("wd.dir.browsing.disabled");
+			return null;
 		}
 	}
 	
