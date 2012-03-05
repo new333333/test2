@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -50,6 +51,8 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.Locale;
+
+import javax.mail.internet.InternetAddress;
 
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -118,6 +121,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Html;
 import org.kablink.util.StringUtil;
@@ -2373,14 +2377,41 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					entryData.put(nameValue, v);
 				}
 			}
+		} else if (itemName.equals("profileEmailAddress") || 
+				itemName.equals("profileMobileEmailAddress") ||
+				itemName.equals("profileTxtEmailAddress") ||
+				itemName.equals("profileBccEmailAddress")) {
+			if (inputData.exists(nameValue)) {
+				//Check if this is a valid email address
+				String addr = (String)inputData.getSingleValue(nameValue);
+				if (!"".equals(addr)) {
+					try {
+						InternetAddress ia = new InternetAddress(addr);
+						ia.validate();
+					} catch(Exception e) {
+						//This is an invalid address
+						addr = NLT.get("email.badEmailAddress");
+					}
+				}
+				entryData.put(nameValue, StringCheckUtil.check(addr));
+			}
+
 		} else if (itemName.equals("email_list") && inputData.exists(nameValue)) {
 			String val = inputData.getSingleValue(nameValue);
 			if (val != null) {
 				String[] ids = val.split("[\\s,]");
-				Set<String> v = new HashSet();
+				LinkedHashSet<String> v = new LinkedHashSet();
 				for (int i = 0; i < ids.length; i++) {
-					if (!ids[i].trim().equals("")) {
-						v.add(ids[i].trim());
+					String addr = ids[i].trim();
+					if (!"".equals(addr)) {
+						try {
+							InternetAddress ia = new InternetAddress(addr);
+							ia.validate();
+						} catch(Exception e) {
+							//This is an invalid address
+							addr = NLT.get("email.badEmailAddress");
+						}
+						v.add(addr);
 					}
 				}
 				if (!inputData.isFieldsOnly() || fieldModificationAllowed) {
