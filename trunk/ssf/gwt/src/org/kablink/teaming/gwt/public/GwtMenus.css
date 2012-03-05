@@ -18,7 +18,7 @@
 	.vibe-configureMenuBar         {}
 	.vibe-configureMenuBarDropDown {}
 	.vibe-configureMenuBarItem     {}
-	.vibe-configureMenuImg         {}
+	.vibe-configureMenuImg         {padding-top: 1px;}
 	
 	.vibe-entryMenuBar {padding: 3px;}
 	.vibe-menuDisabled {color: silver !important;}
@@ -251,8 +251,8 @@
 			color-stop(1, #C8E4E9));
 		-moz-border-radius: 15px;
 		-webkit-border-radius: 15px;
-		}
-		
+	}
+
 	/* End: GWT Vertical Menu styles*/
 
 
