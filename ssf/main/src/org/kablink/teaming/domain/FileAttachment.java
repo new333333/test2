@@ -518,7 +518,7 @@ public class FileAttachment extends Attachment {
     	}
     }
     public String toString() {
-    	return new StringBuffer().append("[").append(fileItem.toString()).append(":").append(getId()).append("]").toString(); 
+    	return fileItem.toString();
     }
 	public Element addChangeLog(Element parent) {
 		return addChangeLog(parent, true);
