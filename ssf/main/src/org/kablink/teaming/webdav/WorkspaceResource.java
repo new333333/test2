@@ -43,6 +43,7 @@ import java.util.Set;
 
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.security.AccessControlException;
 
 import com.bradmcevoy.http.CollectionResource;
@@ -59,7 +60,7 @@ import com.bradmcevoy.http.exceptions.NotFoundException;
  *
  */
 public class WorkspaceResource extends WebdavCollectionResource implements PropFindableResource, CollectionResource, GetableResource {
-
+	
 	private Workspace ws;
 	
 	public WorkspaceResource(WebdavResourceFactory factory, Workspace ws) {
@@ -67,6 +68,10 @@ public class WorkspaceResource extends WebdavCollectionResource implements PropF
 		this.ws = ws;
 	}
 
+	public WorkspaceResource(WebdavResourceFactory factory, BinderIndexData bid) {//$$$$$
+		super(factory);
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.Resource#getUniqueId()
 	 */
@@ -124,11 +129,11 @@ public class WorkspaceResource extends WebdavCollectionResource implements PropF
 	public List<? extends Resource> getChildren()
 			throws NotAuthorizedException, BadRequestException {
 		// A workspace can have other workspaces and/or folders as children
-		Set<Binder> childrenBinders = getWorkspaceModule().getWorkspaceTree(ws.getId());
-		List<Resource> childrenResources = new ArrayList<Resource>(childrenBinders.size());
+		Map<String,BinderIndexData> childrenMap = getBinderModule().getChildrenBinderDataFromIndex(ws.getId());
+		List<Resource> childrenResources = new ArrayList<Resource>(childrenMap.size());
 		Resource resource;
-		for(Binder binder:childrenBinders) {
-			resource = makeResourceFromBinder(binder);
+		for(BinderIndexData bid:childrenMap.values()) {
+			resource = makeResourceFromBinder(bid);
 			if(resource != null)
 				childrenResources.add(resource);
 		}

@@ -44,6 +44,7 @@ import java.util.Set;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.security.AccessControlException;
 
 import com.bradmcevoy.http.Auth;
@@ -67,6 +68,10 @@ public class FolderResource extends WebdavCollectionResource implements PropFind
 	public FolderResource(WebdavResourceFactory factory, Folder folder) {
 		super(factory);
 		this.folder = folder;
+	}
+
+	public FolderResource(WebdavResourceFactory factory, BinderIndexData bid) { //$$$$
+		super(factory);
 	}
 
 	/* (non-Javadoc)

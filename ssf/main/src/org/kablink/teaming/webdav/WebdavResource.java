@@ -43,9 +43,11 @@ import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.groovy.GroovyScriptService;
+import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -131,6 +133,18 @@ public abstract class WebdavResource implements Resource, GetableResource {
 				return null;
 			else 
 				return new FolderResource(factory, f);
+		}
+		else {
+			return null;
+		}
+	}
+	
+	protected Resource makeResourceFromBinder(BinderIndexData binder) {
+		if(EntityType.workspace == binder.getEntityType()) {
+			return new WorkspaceResource(factory, binder);
+		}
+		else if(EntityType.folder == binder.getEntityType()) {
+			return new FolderResource(factory, binder);
 		}
 		else {
 			return null;
