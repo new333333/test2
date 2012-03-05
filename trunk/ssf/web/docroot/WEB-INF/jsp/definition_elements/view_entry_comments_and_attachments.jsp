@@ -212,7 +212,7 @@ ss_createOnLoadObj("commentsAndAttachmentsRegion${ss_divCounter}", function() {
     style="text-align:center;font-weight:bold;display:block;width:100%;"><img src="<html:rootPath/>images/pics/busyanim32b.gif"/></div>
   <iframe id="viewEntryHistory${ss_tabDivCount}Iframe" name="viewEntryHistory${ss_tabDivCount}Iframe" 
     onLoad="ss_resizeEntryHistoryIframe('viewEntryHistory${ss_tabDivCount}Iframe', 'viewEntryHistory${ss_tabDivCount}loading')" 
-    src="<html:rootPath/>js/forum/null.html" class="wg-tab-iframe" >xxx</iframe>
+    src="<html:rootPath/>js/forum/null.html" class="wg-tab-iframe" >x</iframe>
 </div>
 <script type="text/javascript">
 ss_createOnLayoutChangeObj('ss_resizeEntryHistoryIframe${ss_divCounter}',
