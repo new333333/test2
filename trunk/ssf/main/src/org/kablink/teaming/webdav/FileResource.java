@@ -51,6 +51,7 @@ import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.file.FileIndexData;
 
 import com.bradmcevoy.common.ContentTypeUtils;
+import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Range;
 import com.bradmcevoy.http.exceptions.BadRequestException;
@@ -64,7 +65,7 @@ import com.bradmcevoy.io.WritingException;
  * @author jong
  *
  */
-public class FileResource extends WebdavResource implements PropFindableResource {
+public class FileResource extends WebdavResource implements PropFindableResource, GetableResource {
 
 	private static final Log logger = LogFactory.getLog(FileResource.class);
 	
