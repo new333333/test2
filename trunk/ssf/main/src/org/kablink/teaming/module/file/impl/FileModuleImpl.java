@@ -389,7 +389,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 					(fAtt.getRepositoryName(),  fAtt.getFileItem().getName(), 
 							FilesErrors.Problem.OTHER_PROBLEM, e));
 			//make sure any updates that happened get recored
-			triggerUpdateTransaction();
+			triggerUpdateTransaction(null);
 		}
 				
 		String faPath = FilePathUtil.getFileAttachmentDirPath(binder, entry, fAtt);
@@ -693,7 +693,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		reservable = (Reservable) entity;
     		reservation = reservable.getReservation();
     	}
-    	
+    	List newObjs = new ArrayList();
     	if(reservation == null || reservation.getPrincipal().equals(user)) {
     		// This is one of the following three conditions:
     		// 1) The entity is not reservable
@@ -722,7 +722,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     				// must test for expired lock here. 
     				if(isLockExpired(lock)) { // The lock has expired
     					// Commit any pending changes associated with the expired lock
-    					commitPendingChanges(binder, entity, fa, lock); 
+    					commitPendingChanges(binder, entity, fa, lock, newObjs); 
     					// Set the new lock.
     					fa.setFileLock(new FileLock(lockId, lockSubject, 
     							user, expirationDate, lockOwnerInfo));
@@ -738,7 +738,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		throw new ReservedByAnotherUserException(reservable);
     	}
     	
-    	triggerUpdateTransaction();
+    	triggerUpdateTransaction(newObjs);
 	}
 
     public void unlock(Binder binder, DefinableEntity entity, FileAttachment fa,
@@ -752,13 +752,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		if(lock != null && lock.getOwner().equals(user) && lock.getId().equals(lockId)) {
 			// The file is locked by the calling user and the lock id matches.
 			
+			List newObjs = new ArrayList();
+			
 			// Commit any pending changes associated with the lock. In this 
 			// case, we don't care if the lock is effective or expired.
-			commitPendingChanges(binder, entity, fa, lock);
+			commitPendingChanges(binder, entity, fa, lock, newObjs);
 			
 			fa.setFileLock(null); // Clear the lock
 			
-			triggerUpdateTransaction();
+			triggerUpdateTransaction(newObjs);
 		}
     }
 
@@ -769,8 +771,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		if(lock != null ) { // lock exists
 			// Commit any pending changes associated with the lock. In this 
 			// case, we don't care if the lock is effective or expired.
+			List newObjs = new ArrayList();
+			
 			try {
-				commitPendingChanges(binder, entity, fa, lock);
+				commitPendingChanges(binder, entity, fa, lock, newObjs);
 			}
 			catch(Exception e) {
 				// Do not let any error in committing the pending changes to fail "forcible" unlocking of the file. 
@@ -779,7 +783,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			
 			fa.setFileLock(null); // Clear the lock
 			
-			triggerUpdateTransaction();
+			triggerUpdateTransaction(newObjs);
 		}
     }
 
@@ -1293,9 +1297,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 
 	
-	private void triggerUpdateTransaction() {
+	private void triggerUpdateTransaction(final List newObjs) {
         getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {  
+        	public Object doInTransaction(TransactionStatus status) {
+        		if(newObjs != null) {
+        			for(Object newObj:newObjs)
+        				getCoreDao().save(newObj);
+        		}
                 return null;
         	}
         });	
@@ -1336,7 +1344,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		// new version) before deletion. Not ideal, but it works. 
 		try {
 			//closeLock(binder, entry, fAtt, false);
-			closeLock(binder, entry, fAtt, true);
+			closeLock(binder, entry, fAtt, true, null);
 		}
 		catch(Exception e) {
 			logger.error("Error canceling lock on file " + relativeFilePath, e);
@@ -1643,10 +1651,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         		} 
            		//add file name so not null
             	if (Validator.isNull(entry.getTitle())) entry.setTitle(fAtt.getFileItem().getName());
-        		ChangeLog changes;
+        		ChangeLog changes = null;
             	if (isNew)
             		changes = new ChangeLog(entry, ChangeLog.FILEADD);
-            	else
+            	else if(versionCreated)
             		changes = new ChangeLog(entry, ChangeLog.FILEMODIFY);
             	
             	if(versionCreated) {
@@ -1654,8 +1662,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
             		incrementDiskSpaceUsed(fAtt);
             	}
             	
-            	ChangeLogUtils.buildLog(changes, fAtt);
-        		getCoreDao().save(changes);
+            	if(changes != null) {
+	            	ChangeLogUtils.buildLog(changes, fAtt);
+	        		getCoreDao().save(changes);
+            	}
         		
                  return null;
         	}
@@ -1914,13 +1924,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
     	// Before checking the lock, we must make sure that the lock state is
     	// up-to-date.
-    	if(closeExpiredLock(session, binder, entry, fAtt, true)) {
+    	List newObjs = new ArrayList();
+    	if(closeExpiredLock(session, binder, entry, fAtt, true, newObjs) || newObjs.size() > 0) {
     		// Handling of expired lock resulted in some changes to the metadata. 
     		// We want to commit this changes separately from the main work that this
     		// method is being invoked to perform, since they are two completely separate
     		// works and we do not want the outcome of the main work to affect 
     		// the durability of the changes incurred inside closeExpiredLock().
-    		triggerUpdateTransaction();
+    		triggerUpdateTransaction(newObjs);
     	}
     	
     	// Now that lock state is current, we can test it for the user.
@@ -2393,7 +2404,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	
     private boolean closeLock(Binder binder, DefinableEntity entity, 
-    		FileAttachment fa, boolean commit) throws RepositoryServiceException,
+    		FileAttachment fa, boolean commit, List newObjs) throws RepositoryServiceException,
     		UncheckedIOException {
     	boolean metadataDirty = false;
     	
@@ -2403,7 +2414,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			if (commit) { 
 				// Commit pending changes if any. We don't care whether the 
 				// lock is currently effective or expired.
-				commitPendingChanges(binder, entity, fa, lock);
+				commitPendingChanges(binder, entity, fa, lock, newObjs);
 			} 
 			else { // Discard pending changes if any
 				RepositoryUtil.uncheckout(fa.getRepositoryName(), 
@@ -2421,19 +2432,20 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     private void closeExpiredLocksTransactional(Binder binder, DefinableEntity entity,
     		boolean commit) throws RepositoryServiceException,
     		UncheckedIOException {
-    	if(closeExpiredLocks(binder, entity, commit))
-    		triggerUpdateTransaction();   	
+    	List newObjs = new ArrayList();
+    	if(closeExpiredLocks(binder, entity, commit, newObjs) || newObjs.size() > 0)
+    		triggerUpdateTransaction(newObjs);   	
     }
     		
     private boolean closeExpiredLocks(Binder binder, DefinableEntity entity,
-    		boolean commit) throws RepositoryServiceException,
+    		boolean commit, List newObjs) throws RepositoryServiceException,
     		UncheckedIOException {
     	boolean metadataDirty = false; 
     	
 		// Iterate over file attachments and close each expired lock.
 		Collection<FileAttachment> fAtts = entity.getFileAttachments();
     	for(FileAttachment fa :fAtts) {
-			if(closeExpiredLock(binder, entity, fa, commit))
+			if(closeExpiredLock(binder, entity, fa, commit, newObjs))
 				metadataDirty = true;
 		}
 
@@ -2449,12 +2461,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     }*/
     
     private boolean closeExpiredLock(Binder binder, DefinableEntity entity, 
-    		FileAttachment fa, boolean commit) throws RepositoryServiceException,
+    		FileAttachment fa, boolean commit, List newObjs) throws RepositoryServiceException,
     		UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, fa.getRepositoryName());
 
 		try {
-			return closeExpiredLock(session, binder, entity, fa, commit);
+			return closeExpiredLock(session, binder, entity, fa, commit, newObjs);
 		}
 		finally {
 			session.close();
@@ -2463,7 +2475,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     
     private boolean closeExpiredLock(RepositorySession session,
     		Binder binder, DefinableEntity entity, FileAttachment fa, 
-    		boolean commit) throws RepositoryServiceException, UncheckedIOException {
+    		boolean commit, List newObjs) throws RepositoryServiceException, UncheckedIOException {
     	boolean metadataDirty = false;
     	
     	FileAttachment.FileLock lock = fa.getFileLock();
@@ -2471,7 +2483,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	if(lock != null) {
         	if(isLockExpired(lock)) { // Lock expired
 				if(commit) { // Commit pending changes if any
-					commitPendingChanges(session, binder, entity, fa, lock); 
+					commitPendingChanges(session, binder, entity, fa, lock, newObjs); 
 				}
 				else {	// Discard pending changes if any
 					session.uncheckout(binder, entity, fa.getFileItem().getName());
@@ -2487,13 +2499,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     }
     
     private boolean commitPendingChanges(Binder binder, DefinableEntity entity,
-    		FileAttachment fa, FileAttachment.FileLock lock)
+    		FileAttachment fa, FileAttachment.FileLock lock, List newObjs)
     	throws RepositoryServiceException, UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, fa.getRepositoryName());
 
 		try {
 			return commitPendingChanges(session, binder, entity, fa,
-					lock);
+					lock, newObjs);
 		}
 		finally {
 			session.close();
@@ -2502,7 +2514,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     
     private boolean commitPendingChanges(RepositorySession session,
     		Binder binder, DefinableEntity entity, FileAttachment fa, 
-    		FileAttachment.FileLock lock)
+    		FileAttachment.FileLock lock, List newObjs)
     	throws RepositoryServiceException, UncheckedIOException {
     	String relativeFilePath = fa.getFileItem().getName();
 		
@@ -2597,7 +2609,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 						updateFileAttachment(fa, lock.getOwner(), versionName, contentLength, null, null, null);
 						metadataDirty = true;
 		            	// add the size of the file to the users disk usage
-		            	incrementDiskSpaceUsed(fa);								
+		            	incrementDiskSpaceUsed(fa);		
+		            	ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
+		            	ChangeLogUtils.buildLog(changes, fa);
+		            	newObjs.add(changes);
 					}
 				}  
 			}
