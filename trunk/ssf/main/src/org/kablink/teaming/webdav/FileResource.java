@@ -75,7 +75,8 @@ public class FileResource extends WebdavResource implements PropFindableResource
 	private Date createdDate; // creation date
 	private Date modifiedDate; // last modification date
 	
-	private FileAttachment fa; // lazy resolved for efficiency, may be null
+	// lazy resolved for efficiency, so may be null initially
+	private FileAttachment fa; 
 	
 	protected FileResource(WebdavResourceFactory factory, String name, String id, Date createdDate, Date modifiedDate) {
 		super(factory);
