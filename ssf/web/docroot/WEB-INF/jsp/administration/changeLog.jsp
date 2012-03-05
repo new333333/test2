@@ -139,7 +139,7 @@ function ss_saveChangeLogEntryId(id) {
 					action="__ajax_request" 
 					actionUrl="true" >
 					<ssf:param name="operation" value="get_change_log_entry_form" />
-					</ssf:url>">xxx</iframe>
+					</ssf:url>">x</iframe>
 				</div>
 			  </td>
 			  <td valign="top">
@@ -194,7 +194,7 @@ function ss_saveChangeLogEntryId(id) {
 <iframe class="roundcornerSM margintop2" id="${ssNamespace}_display" name="${ssNamespace}_display" style="width:100%; height:350px; border: 1px solid #cccccc;
     display:block; position:relative;" title="<ssf:nlt tag="administration.view_change_log"/>"
     src="<html:rootPath/>js/forum/null.html" 
-    >xxx</iframe>
+    >x</iframe>
 <script type="text/javascript">
 var rn = Math.round(Math.random()*999999);
 
