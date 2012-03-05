@@ -90,6 +90,6 @@
 <span class="ss_labelAbove"><%= caption %><%= required %></span>
 <textarea name="<%= elementName %>" wrap="virtual" ${ss_fieldModifyInputAttribute}
   style="<%= height %> <%= width %>"
-><c:forEach var="selection" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}">${selection}
+><c:forEach var="selection" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}">${selection}<%= "\n" %>
 </c:forEach></textarea>
 </div>

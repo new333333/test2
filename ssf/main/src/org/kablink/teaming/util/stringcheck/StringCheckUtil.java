@@ -34,6 +34,7 @@ package org.kablink.teaming.util.stringcheck;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -83,6 +84,15 @@ public class StringCheckUtil implements InitializingBean {
 		return getInstance().checkAll(input, checkOnly);
 	}
 	
+	public static LinkedHashSet<String> check(LinkedHashSet<String> stringSet) throws StringCheckException {
+		if (stringSet == null ) return stringSet;
+		LinkedHashSet<String> result = new LinkedHashSet<String>();
+		for (String s : stringSet) {
+			result.add(getInstance().checkAll(s, false));
+		}
+		return result;
+	}
+
 	public static Set<String> check(Set<String> stringSet) throws StringCheckException {
 		if (stringSet == null ) return stringSet;
 		Set<String> result = new HashSet<String>();
