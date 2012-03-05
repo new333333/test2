@@ -102,7 +102,7 @@ public class FileItem  {
      * @return
      */
     public long getLengthKB() {
-        return (this.length + 999)/1000;
+        return (this.length + 1023)/1024;
     }
     public boolean equals(Object obj) {
    	 
