@@ -114,7 +114,9 @@ public class JavaMailSenderImpl extends
 		validate(transport);
 
 		try {
-			transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
+			if (mimeMessage.getAllRecipients() != null) {
+				transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
+			}
 		}
 		catch (MailException ex) {
 			throw ex;
