@@ -45,11 +45,11 @@
 	/* ...End:  Description panel styles. */
 	
 	/* ...Start:  Entry menu panel styles. */
-		.vibe-entryMenu-configPanel        {display: inline;}
-		.vibe-entryMenu-filterOptionsPanel {display: inline;}
-		.vibe-entryMenu-filtersPanel       {display: inline;}
+		.vibe-entryMenu-configPanel        {display: inline-block;}
+		.vibe-entryMenu-filterOptionsPanel {display: inline-block;}
+		.vibe-entryMenu-filtersPanel       {display: inline-block;}
 		.vibe-entryMenu-grid               {padding: 0px !important; background-color: #ededed; display: table; table-layout: fixed;}
-		.vibe-entryMenu-quickFiltersPanel  {display: inline;}
+		.vibe-entryMenu-quickFiltersPanel  {display: inline-block;}
 		.vibe-entryMenu-rightPanel         {display: inline; padding-right: 5px;}
 	/* ...End:  Entry menu panel styles. */
 	

@@ -295,8 +295,11 @@ public class EntryMenuPanel extends ToolPanelBase {
 		if (!(m_configureToolbarItems.isEmpty())) {
 			// Yes!  Create the configure menu bar...
 			VibeFlowPanel fp = new VibeFlowPanel();
-			Image configureImg = new Image(m_images.configOptions());
+			Image configureImg = new Image();
 			configureImg.addStyleName("vibe-configureMenuImg");
+			configureImg.setUrl(m_images.configOptions().getSafeUri());
+			configureImg.setWidth( "14px");
+			configureImg.setHeight("14px");
 			configureImg.getElement().setAttribute("align", "absmiddle");
 			fp.add(configureImg);
 			VibeMenuBar  configureMenu         = new VibeMenuBar(      "vibe-configureMenuBar vibe-entryMenuBar");
