@@ -80,6 +80,12 @@
 <%
 	ss_mashupTableDepth = ss_mashupTableDepth - 1;
 	request.setAttribute("ss_mashupTableDepth", ss_mashupTableDepth);
+	if (ss_mashupTableDepth > 0) {
+		%>
+		<c:set var="ss_mashupRowStarted" value="true" scope="request"/>
+		<c:set var="ss_mashupColStarted" value="true" scope="request"/>
+		<%		
+	}
 %>
 <% if (ss_mashupListDepth > 0) { %>
 </li>
