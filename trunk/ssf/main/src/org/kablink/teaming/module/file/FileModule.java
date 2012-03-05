@@ -457,12 +457,15 @@ public interface FileModule {
 
 	/**
 	 * Returns a map of names of the files contained in the specified binder
-	 * to its enclosing entry ids.
+	 * to its <code>FileIndexData</code> objects encapsulating more detailed information
+	 * about files obtained from the Lucene index. 
+	 * It is important for the efficiency reason that the requested data be obtainable
+	 * entirely from the Lucene index without querying the database.
 	 * 
 	 * @param binder
 	 * @return
 	 */
-	public Map<String,Long> getChildrenFileNames(Binder binder);
+	public Map<String,FileIndexData> getChildrenFileDataFromIndex(Binder binder);
 	
 	/**
 	 * Get a file attachment from the fileId.

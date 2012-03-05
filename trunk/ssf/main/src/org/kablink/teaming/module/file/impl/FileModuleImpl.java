@@ -103,6 +103,7 @@ import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.ContentFilter;
 import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.module.file.DeleteVersionException;
+import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.FilterException;
@@ -1215,7 +1216,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		FileUtils.setFileVersionAging(entity);
 	}
 
-	public Map<String,Long> getChildrenFileNames(Binder binder) {
+	public Map<String,FileIndexData> getChildrenFileDataFromIndex(Binder binder) {
 		// look for the specific binder id
     	// look only for attachments
     	Criteria crit = new Criteria()
@@ -1246,20 +1247,21 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
             luceneSession.close();
         }
     	
-        Map<String,Long> result = new HashMap<String,Long>();
+        Map<String,FileIndexData> result = new HashMap<String,FileIndexData>();
         int count = hits.length();
         org.apache.lucene.document.Document doc;
         String fileName;
-        Long entryId;
         for(int i = 0; i < count; i++) {
         	doc = hits.doc(i);
         	fileName = doc.get(Constants.FILENAME_FIELD);
         	if(fileName != null) {
         		try {
-	        		entryId = Long.valueOf(doc.get(Constants.DOCID_FIELD));
-	        		result.put(fileName, entryId);
+	        		result.put(fileName, new FileIndexData(doc));
         		}
-        		catch(Exception ignore) {}
+        		catch(Exception ignore) {
+        			// skip to next doc
+        			logger.warn("Skipping file '" + fileName + "' due to error in index data: " + ignore.toString());
+        		}
         	}
         }
         

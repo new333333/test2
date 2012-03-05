@@ -33,10 +33,6 @@
 
 package org.kablink.teaming.webdav;
 
-import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -46,7 +42,6 @@ import java.util.Map;
 
 import org.kablink.teaming.util.ReleaseInfo;
 
-import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.PropFindableResource;
@@ -60,7 +55,7 @@ import com.bradmcevoy.http.exceptions.NotFoundException;
  * @author jong
  *
  */
-public class RootResource extends WebdavResource implements PropFindableResource, CollectionResource, GetableResource {
+public class RootResource extends WebdavCollectionResource implements PropFindableResource, CollectionResource, GetableResource {
 
 	private static final String ID = "root";
 	
@@ -119,41 +114,6 @@ public class RootResource extends WebdavResource implements PropFindableResource
 		List<Resource> list = new ArrayList<Resource>();
 		list.add(new DavResource(factory));
 		return list;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.GetableResource#sendContent(java.io.OutputStream, com.bradmcevoy.http.Range, java.util.Map, java.lang.String)
-	 */
-	@Override
-	public void sendContent(OutputStream out, Range range,
-			Map<String, String> params, String contentType) throws IOException,
-			NotAuthorizedException, BadRequestException, NotFoundException {
-		String content = getDirectoryListing(getName(), getChildren());
-		out.write(content.getBytes("UTF-8"));
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.GetableResource#getMaxAgeSeconds(com.bradmcevoy.http.Auth)
-	 */
-	@Override
-	public Long getMaxAgeSeconds(Auth auth) {
-		return factory.getMaxAgeSecondsRoot();
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.GetableResource#getContentType(java.lang.String)
-	 */
-	@Override
-	public String getContentType(String accepts) {
-		return CONTENT_TYPE_TEXT_HTML_UTF8;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.GetableResource#getContentLength()
-	 */
-	@Override
-	public Long getContentLength() {
-		return null;
 	}
 
 }
