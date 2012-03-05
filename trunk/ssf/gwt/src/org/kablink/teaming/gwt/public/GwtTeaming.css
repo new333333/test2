@@ -2833,23 +2833,6 @@ top:100px;
 {
 	display: inline;
 }
-.gwtTaskFilter_input
-{
-	font-size: 11px !important;
-	width: 130px;
-	border: none !important;
-	background-color: transparent !important;
-	padding: 1px 0 !important;
-	vertical-align: middle;
-}
-.gwtTaskFilter_inputBlur
-{
-	color: graytext;
-}
-.gwtTaskFilter_inputFocus
-{
-	color: #353838 !important;
-}
 .gwtTaskFilter_toolbar
 {
 	position: relative;

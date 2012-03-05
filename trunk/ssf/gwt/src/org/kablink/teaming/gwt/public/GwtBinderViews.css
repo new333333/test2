@@ -67,6 +67,12 @@
 		.vibe-filtersPanel                 {padding-left: 10px; font-size: 11px !important;}
 	/* ...End:  Filter panel styles. */
 	
+	/* Start:  Quick filter styles. */
+		.vibe-quickFilter_input      {font-size: 11px !important; width: 130px; border: none !important; background-color: transparent !important; padding: 1px 0 !important; vertical-align: middle;}
+		.vibe-quickFilter_inputBlur  {color: graytext;}
+		.vibe-quickFilter_inputFocus {color: #353838 !important;}
+	/* Start:  Quick filter styles. */
+
 	/* ...Start:  Footer panel styles. */
 		.vibe-footerPanel                       {padding-top: 5px !important;}
 		.vibe-footerAnchor                      {cursor: pointer; color: #666;}

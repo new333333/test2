@@ -1129,8 +1129,6 @@ public interface GwtTeamingMessages extends Messages
 	// The following are used for task folder listing.
 	String taskAltDateCalculated();
 	String taskAltDelete();
-	String taskAltFilterOff();
-	String taskAltFilterOn();
 	String taskAltHierarchyDisabled();
 	String taskAltLocationGotoThisFolder();
 	String taskAltLocationIsThisFolder();
@@ -1484,4 +1482,9 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used by the 'Progress' dialog.
 	String progressDlgConfirmCancel();
+
+	// Strings used by the 'Quick Filter' composite.
+	String quickFilterAltOff();
+	String quickFilterAltOn();
+	String quickFilter_empty();
 }// end GwtTeamingMessages

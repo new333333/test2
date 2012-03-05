@@ -757,6 +757,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case QUICK_FILTER:
+				// A QuickFilterEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof QuickFilterEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = QuickFilterEvent.registerEvent(eventBus, ((QuickFilterEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case SEARCH_ADVANCED:
 				// A SearchAdvancedEvent!  Can the event handler we
 				// were given handle that?
@@ -1123,15 +1132,6 @@ public class EventHelper {
 				if (eventHandler instanceof TaskPurgeEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = TaskPurgeEvent.registerEvent(eventBus, ((TaskPurgeEvent.Handler) eventHandler));
-				}
-				break;
-			
-			case TASK_QUICK_FILTER:
-				// A TaskQuickFilterEvent!  Can the event handler we
-				// were given handle that?
-				if (eventHandler instanceof TaskQuickFilterEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = TaskQuickFilterEvent.registerEvent(eventBus, ((TaskQuickFilterEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -1509,6 +1509,8 @@ public class EventHelper {
 			case MARK_ENTRY_READ:                   	hasHandler = (eventHandler instanceof MarkEntryReadEvent.Handler);                 break;
 			case MARK_ENTRY_UNREAD:                 	hasHandler = (eventHandler instanceof MarkEntryUnreadEvent.Handler);               break;
 			
+			case QUICK_FILTER:                 	        hasHandler = (eventHandler instanceof QuickFilterEvent.Handler);                   break;
+			
 			case SEARCH_ADVANCED:						hasHandler = (eventHandler instanceof SearchAdvancedEvent.Handler);                break;
 			case SEARCH_FIND_RESULTS:               	hasHandler = (eventHandler instanceof SearchFindResultsEvent.Handler);             break;
 			case SEARCH_RECENT_PLACE:               	hasHandler = (eventHandler instanceof SearchRecentPlaceEvent.Handler);             break;
@@ -1552,7 +1554,6 @@ public class EventHelper {
 			case TASK_NEW_TASK:                     	hasHandler = (eventHandler instanceof TaskNewTaskEvent.Handler);                   break;
 			case TASK_PICK_DATE:                    	hasHandler = (eventHandler instanceof TaskPickDateEvent.Handler);                  break;
 			case TASK_PURGE:                        	hasHandler = (eventHandler instanceof TaskPurgeEvent.Handler);                     break;
-			case TASK_QUICK_FILTER:                 	hasHandler = (eventHandler instanceof TaskQuickFilterEvent.Handler);               break;
 			case TASK_SET_PERCENT_DONE:             	hasHandler = (eventHandler instanceof TaskSetPercentDoneEvent.Handler);            break;
 			case TASK_SET_PRIORITY:                 	hasHandler = (eventHandler instanceof TaskSetPriorityEvent.Handler);               break;
 			case TASK_SET_STATUS:                   	hasHandler = (eventHandler instanceof TaskSetStatusEvent.Handler);                 break;

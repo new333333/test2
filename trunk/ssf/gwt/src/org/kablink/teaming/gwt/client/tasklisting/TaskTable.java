@@ -51,6 +51,7 @@ import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TaskDeleteEvent;
@@ -60,7 +61,6 @@ import org.kablink.teaming.gwt.client.event.TaskMoveLeftEvent;
 import org.kablink.teaming.gwt.client.event.TaskMoveRightEvent;
 import org.kablink.teaming.gwt.client.event.TaskMoveUpEvent;
 import org.kablink.teaming.gwt.client.event.TaskPurgeEvent;
-import org.kablink.teaming.gwt.client.event.TaskQuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -164,6 +164,7 @@ public class TaskTable extends Composite
 		MarkReadSelectedEntriesEvent.Handler,
 		MoveSelectedEntriesEvent.Handler,
 		PurgeSelectedEntriesEvent.Handler,
+		QuickFilterEvent.Handler,
 		ShareSelectedEntriesEvent.Handler,
 		SubscribeSelectedEntriesEvent.Handler,
 		TaskDeleteEvent.Handler,
@@ -173,7 +174,6 @@ public class TaskTable extends Composite
 		TaskMoveRightEvent.Handler,
 		TaskMoveUpEvent.Handler,
 		TaskPurgeEvent.Handler,
-		TaskQuickFilterEvent.Handler,
 		UnlockSelectedEntriesEvent.Handler
 {
 	private boolean						m_sortAscending;			//
@@ -248,6 +248,7 @@ public class TaskTable extends Composite
 		TeamingEvents.MARK_READ_SELECTED_ENTRIES,
 		TeamingEvents.MOVE_SELECTED_ENTRIES,
 		TeamingEvents.PURGE_SELECTED_ENTRIES,
+		TeamingEvents.QUICK_FILTER,
 		TeamingEvents.SHARE_SELECTED_ENTRIES,
 		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
 		TeamingEvents.TASK_DELETE,
@@ -257,7 +258,6 @@ public class TaskTable extends Composite
 		TeamingEvents.TASK_MOVE_RIGHT,
 		TeamingEvents.TASK_MOVE_UP,
 		TeamingEvents.TASK_PURGE,
-		TeamingEvents.TASK_QUICK_FILTER,
 		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
 	};
 	
@@ -2921,6 +2921,18 @@ public class TaskTable extends Composite
 	}
 	
 	/**
+	 * Handles QuickFilterEvent's received by this class.
+	 * 
+	 * Implements the QuickFilterEvent.Handler.onQuickFilter() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onQuickFilter(QuickFilterEvent event) {
+		handleTaskQuickFilter(event.getQuickFilter());
+	}
+
+	/**
 	 * Handles ShareSelectedEntriesEvent's received by this class.
 	 * 
 	 * Implements the ShareSelectedEntriesEvent.Handler.onShareSelectedEntries() method.
@@ -3040,18 +3052,6 @@ public class TaskTable extends Composite
 	@Override
 	public void onTaskPurge(TaskPurgeEvent event) {
 		handleTaskPurge();
-	}
-
-	/**
-	 * Handles TaskQuickFilterEvent's received by this class.
-	 * 
-	 * Implements the TaskQuickFilterEvent.Handler.onTaskQuickFilter() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onTaskQuickFilter(TaskQuickFilterEvent event) {
-		handleTaskQuickFilter(event.getQuickFilter());
 	}
 
 	/**

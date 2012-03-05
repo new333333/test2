@@ -113,6 +113,8 @@ public enum TeamingEvents implements IsSerializable {
 	MENU_HIDE,							// Hides the main menu
 	MENU_SHOW,							// Shows the main menu
 	
+	QUICK_FILTER,						// Creates or Clears a Quick Filter on the Folder.
+	
 	SEARCH_ADVANCED,					// Runs the advanced Search in the content area.
 	SEARCH_FIND_RESULTS,				// Fired when the FindCtrl is returning its results.
 	SEARCH_RECENT_PLACE,				// Executes a recent place search.
@@ -156,7 +158,6 @@ public enum TeamingEvents implements IsSerializable {
 	TASK_NEW_TASK,						// Creates a New Task Relative to an Existing One.
 	TASK_PICK_DATE,						// Run the date picker with the given ID.
 	TASK_PURGE,							// Delete and Immediately Purge the Selected Tasks.
-	TASK_QUICK_FILTER,					// Creates or Clears a Quick Filter on the Task Folder.
 	TASK_SET_PERCENT_DONE,				// Sets a Task's Percentage Done.
 	TASK_SET_PRIORITY,					// Sets a Task's Priority.
 	TASK_SET_STATUS,					// Sets a Task's Status.
