@@ -70,16 +70,22 @@ div.ss_mashup_list_content {
   -moz-border-radius: 6px;
   -webkit-border-radius: 6px;
   }
-div.ss_mashup_list_content ul {
+div.ss_mashup_list_content_border {
+  background-color:#ededed; 
+  padding: 8px;
+  -moz-border-radius: 6px;
+  -webkit-border-radius: 6px;
+  border:1px solid #CCCCCC; 
+}
+div.ss_mashup_list_content ul, div.ss_mashup_list_content_border ul {
   padding:4px 0px 0px 16px;
   margin:0px;
   }
-div.ss_mashup_list_content ul li {
+div.ss_mashup_list_content ul li, div.ss_mashup_list_content_border ul li {
   list-style-type: disc;
   list-style-image: none;
   list-style-position: outside;
   }
-
 
   
   
