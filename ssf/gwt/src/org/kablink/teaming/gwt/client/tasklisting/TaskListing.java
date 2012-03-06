@@ -56,7 +56,6 @@ import org.kablink.teaming.gwt.client.util.EventWrapper;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
-import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -97,7 +96,6 @@ public class TaskListing extends Composite implements TaskProvider {
 	private InlineLabel		m_pleaseWaitLabel;			//
 	private Long			m_binderId;					// The ID of the binder containing the tasks to be listed.
 	private Long			m_taskChangeId;				// Empty or the ID of an added or modified task.
-	private QuickFilter		m_taskFilter;				//
 	private String			m_adaptedUrl;				//
 	private String			m_filterType;				// The current filtering in affect, if any.
 	private String			m_mode;						// The current mode being displayed (PHYSICAL vs. VITRUAL.)
@@ -365,22 +363,11 @@ public class TaskListing extends Composite implements TaskProvider {
 	 * Adds the task filter widgets to the task filter DIV.
 	 */
 	private void populateTaskFilterDIV() {
-		// Create a QuickFilter widget.
-		m_taskFilter = new QuickFilter();
-		
 		// Is this TaskListing embedded in a JSP page?
 		if (isEmbeddedInJSP()) {
-			// Yes!  Attach the TaskFilter appropriately.
+			// Yes!  Attach a QuickFilter.
 			RootPanel taskFilterRoot = RootPanel.get("gwtTaskFilter");		
-			taskFilterRoot.add(m_taskFilter);
-		}
-		else {
-			// No, this TaskListing is not embedded in a JSP page!  It
-			// must be embedded in a task folder view.  Attach the
-			// TaskFilter appropriately.
-			m_taskFilter.addStyleName("gwtTaskFilter_filter");
-			VibeFlowPanel taskFilterRoot = m_taskFolderView.getGwtTaskFilter();
-			taskFilterRoot.add(m_taskFilter);
+			taskFilterRoot.add(new QuickFilter(m_binderId));
 		}
 	}
 	

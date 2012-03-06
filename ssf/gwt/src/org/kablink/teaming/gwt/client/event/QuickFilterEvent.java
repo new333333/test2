@@ -45,7 +45,8 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 public class QuickFilterEvent extends VibeEventBase<QuickFilterEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
     
-	private String m_quickFilter;
+	private Long	m_folderId;		//
+	private String	m_quickFilter;	//
 
 	/**
 	 * Handler interface for this event.
@@ -56,12 +57,25 @@ public class QuickFilterEvent extends VibeEventBase<QuickFilterEvent.Handler> {
 	
 	/**
 	 * Constructor methods.
-	 * 
+	 */
+	public QuickFilterEvent() {
+		// Initialize the super class.
+		super();
+	}
+	
+	/**
+	 * Constructor methods.
+	 *
+	 * @param folderId
 	 * @param searchTabId
 	 */
-	public QuickFilterEvent(String quickFilter) {
-		super();
-		m_quickFilter = quickFilter;
+	public QuickFilterEvent(Long folderId, String quickFilter) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameters.
+		setFolderId(   folderId   );
+		setQuickFilter(quickFilter);
 	}
 	
 	/**
@@ -69,7 +83,16 @@ public class QuickFilterEvent extends VibeEventBase<QuickFilterEvent.Handler> {
 	 * 
 	 * @return
 	 */
+	public Long   getFolderId()    {return m_folderId;   }
 	public String getQuickFilter() {return m_quickFilter;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setFolderId(   Long   folderId)    {m_folderId    = folderId;   }
+	public void setQuickFilter(String quickFilter) {m_quickFilter = quickFilter;}
 
 	/**
 	 * Dispatches this event when one is triggered.

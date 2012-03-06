@@ -88,6 +88,7 @@ import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedUserWorkspacesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedUsersEvent;
+import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -179,6 +180,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		PurgeSelectedEntriesEvent.Handler,
 		PurgeSelectedUserWorkspacesEvent.Handler,
 		PurgeSelectedUsersEvent.Handler,
+		QuickFilterEvent.Handler,
 		ShareSelectedEntriesEvent.Handler,
 		SubscribeSelectedEntriesEvent.Handler,
 		TrashPurgeAllEvent.Handler,
@@ -198,6 +200,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private Map<String, ColumnWidth>	m_columnWidths;				// Map of column names -> Current ColumnWidth objects.
 	private SizeColumnsDlg				m_sizeColumnsDlg;			//
 	private String						m_folderStyles;				// Specific style(s) for the for the folders that extend this.
+	private String						m_quickFilter;				// Any quick filter that's in active.
 	private VibeDataGrid<FolderRow>		m_dataTable;				// The actual data table holding the view's information.
 	
 	protected GwtTeamingDataTableImageBundle m_images;	//
@@ -234,6 +237,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.PURGE_SELECTED_ENTRIES,
 		TeamingEvents.PURGE_SELECTED_USER_WORKSPACES,
 		TeamingEvents.PURGE_SELECTED_USERS,
+		TeamingEvents.QUICK_FILTER,
 		TeamingEvents.SHARE_SELECTED_ENTRIES,
 		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
 		TeamingEvents.TRASH_PURGE_ALL,
@@ -279,7 +283,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						getFolderInfo(),
 						m_folderColumnsList,
 						range.getStart(),
-						rowsRequested),
+						rowsRequested,
+						m_quickFilter),
 					new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
@@ -1709,6 +1714,26 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		dg.setHeight(dataTableHeight + "px");
 	}
 
+	
+	/**
+	 * Handles QuickFilterEvent's received by this class.
+	 * 
+	 * Implements the QuickFilterEvent.Handler.onQuickFilter() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onQuickFilter(QuickFilterEvent event) {
+		// If the event is targeted to the folder we're viewing...
+		if (event.getFolderId().equals(getFolderInfo().getBinderIdAsLong())) {
+			// ...handle it.
+			m_quickFilter = event.getQuickFilter();
+//!			...this needs to be implemented...
+GwtClientHelper.deferredAlert("onQuickFilter( '" + event.getQuickFilter() + "' ):  ...this needs to be implemented...");
+			resetViewAsync();
+		}
+	}
+
 	/**
 	 * Handles ShareSelectedEntriesEvent's received by this class.
 	 * 
@@ -2001,7 +2026,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * @param columnWidths
 	 */
 	protected void postProcessRowData(final List<FolderRow> folderRows, final List<FolderColumn> folderColumns) {
-		// By default, there post processing required.
+		// By default, there is no post processing required.
 	}
 
 	/*

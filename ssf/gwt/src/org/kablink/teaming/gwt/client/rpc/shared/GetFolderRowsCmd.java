@@ -49,6 +49,7 @@ public class GetFolderRowsCmd extends VibeRpcCmd {
 	private int					m_length;			//
 	private int					m_start;			//
 	private List<FolderColumn>	m_folderColumns;	//
+	private String				m_quickFilter;		//
 	
 	/**
 	 * Constructor method.
@@ -67,8 +68,9 @@ public class GetFolderRowsCmd extends VibeRpcCmd {
 	 * @param folderColumns
 	 * @param start
 	 * @param length
+	 * @param quickFilter
 	 */
-	public GetFolderRowsCmd(BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length) {
+	public GetFolderRowsCmd(BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length, String quickFilter) {
 		// Initialize this object...
 		this();
 
@@ -77,6 +79,12 @@ public class GetFolderRowsCmd extends VibeRpcCmd {
 		setFolderColumns(folderColumns);
 		setStart(        start        );
 		setLength(       length       );
+		setQuickFilter(  quickFilter  );
+	}
+	
+	public GetFolderRowsCmd(BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length) {
+		// Always use the alternate form of the constructor.
+		this(folderInfo, folderColumns, start, length, null);
 	}
 	
 	/**
@@ -88,6 +96,7 @@ public class GetFolderRowsCmd extends VibeRpcCmd {
 	public int                getLength()        {return m_length;       }
 	public int                getStart()         {return m_start;        }
 	public List<FolderColumn> getFolderColumns() {return m_folderColumns;}
+	public String             getQuickFilter()   {return m_quickFilter;  }
 	
 	/**
 	 * Set'er methods.
@@ -98,6 +107,7 @@ public class GetFolderRowsCmd extends VibeRpcCmd {
 	public void setLength(       int                length)        {m_length        = length;       }
 	public void setStart(        int                start)         {m_start         = start;        }
 	public void setFolderColumns(List<FolderColumn> folderColumns) {m_folderColumns = folderColumns;}
+	public void setQuickFilter(  String             quickFilter)   {m_quickFilter   = quickFilter;  }
 	
 	/**
 	 * Returns the command's enumeration value.

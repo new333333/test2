@@ -157,11 +157,11 @@ public class EntryMenuPanel extends ToolPanelBase {
 		rightPanel.add(m_filtersPanel);
 		
 		m_quickFilterPanel = new VibeFlowPanel();
-		m_quickFilterPanel.addStyleName("vibe-entryMenu-quickFiltersPanel");
+		m_quickFilterPanel.addStyleName("vibe-entryMenu-quickFilters-panel");
 		rightPanel.add(m_quickFilterPanel);
 		
 		m_filterOptionsPanel = new VibeFlowPanel();
-		m_filterOptionsPanel.addStyleName("vibe-entryMenu-filterOptionsPanel");
+		m_filterOptionsPanel.addStyleName("vibe-entryMenu-filterOptions-panel");
 		rightPanel.add(m_filterOptionsPanel);
 		
 		m_configPanel = new VibeFlowPanel();
@@ -298,8 +298,6 @@ public class EntryMenuPanel extends ToolPanelBase {
 			Image configureImg = new Image();
 			configureImg.addStyleName("vibe-configureMenuImg");
 			configureImg.setUrl(m_images.configOptions().getSafeUri());
-			configureImg.setWidth( "14px");
-			configureImg.setHeight("14px");
 			configureImg.getElement().setAttribute("align", "absmiddle");
 			fp.add(configureImg);
 			VibeMenuBar  configureMenu         = new VibeMenuBar(      "vibe-configureMenuBar vibe-entryMenuBar");
@@ -321,6 +319,18 @@ public class EntryMenuPanel extends ToolPanelBase {
 					renderSimpleTBI(configureDropdownMenu, configureTBI);
 				}
 			}
+		}
+		
+		// If the folder supports quick filtering...
+		if (supportsQuickFilter()) {
+			// ...add a quick filter widget...
+			QuickFilter qf = new QuickFilter(m_binderInfo.getBinderIdAsLong());
+			qf.addStyleName("vibe-entryMenu-quickFilters-filter");
+			m_quickFilterPanel.add(qf);
+		}
+		else {
+			// ...otherwise, hide the panel.
+			m_quickFilterPanel.setVisible(false);
 		}
 		
 		// Finally, tell who's using this tool panel that it's ready to
@@ -548,5 +558,28 @@ public class EntryMenuPanel extends ToolPanelBase {
 			     m_trashRestoreSelectedMenu.removeStyleName("vibe-menuDisabled");
 			else m_trashRestoreSelectedMenu.addStyleName(   "vibe-menuDisabled");
 		}
+	}
+	
+	/*
+	 * Returns true if the binder this menu is running against supports
+	 * quick filtering and false otherwise.
+	 */
+	private boolean supportsQuickFilter() {
+		boolean reply = false;
+		switch (m_binderInfo.getBinderType()) {
+		case FOLDER:
+			switch (m_binderInfo.getFolderType()) {
+			case DISCUSSION:
+			case FILE:
+			case GUESTBOOK:
+			case MINIBLOG:
+			case MIRROREDFILE:
+			case SURVEY:
+			case TASK:
+				reply = true;
+				break;
+			}
+		}
+		return reply;
 	}
 }
