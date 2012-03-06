@@ -56,6 +56,8 @@ import com.bradmcevoy.http.exceptions.NotFoundException;
  */
 public abstract class WebdavCollectionResource extends WebdavResource implements CollectionResource {
 
+	protected static final String CONTENT_TYPE_TEXT_HTML_UTF8 = "text/html; charset=utf-8";
+	
 	protected WebdavCollectionResource(WebdavResourceFactory factory) {
 		super(factory);
 	}

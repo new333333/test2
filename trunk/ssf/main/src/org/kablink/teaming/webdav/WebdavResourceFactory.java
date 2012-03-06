@@ -35,10 +35,16 @@ package org.kablink.teaming.webdav;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 
 import com.bradmcevoy.common.Path;
 import com.bradmcevoy.http.Resource;
@@ -55,8 +61,8 @@ public class WebdavResourceFactory implements ResourceFactory {
 	private boolean inited = false;
 	
 	private boolean allowDirectoryBrowsing = true;
-	private long maxAgeSecondsRoot = 31536000;
-	private long maxAgeSecondsDav = 86400;
+	private long maxAgeSecondsRoot = 86400;
+	private long maxAgeSecondsDav = 3600;
 	private long maxAgeSecondsWorkspace = 10;
 	private long maxAgeSecondsFolder = 10;
 	private long maxAgeSecondsFile = 10;
@@ -135,17 +141,55 @@ public class WebdavResourceFactory implements ResourceFactory {
 	}
 
 	protected Object resolvePath(Path path) {
-		return null; // $$$
+		Path vibePath = path.getStripFirst(); // Skip "/dav" element
+		String vibePathStr = vibePath.toPath(); // This is effective data path in Vibe
+		
+		try {
+			// Step 1 - Check if this path represents a binder. This also involves ACL checking on the binder.
+			Binder binder = getBinderModule().getBinderByPathName(vibePathStr);
+			if(binder != null)
+				return binder;
+			
+			// Step 2 - Check if this path represents a file. This also involves ACL checking on the enclosing entry.
+			if(vibePath.getLength() == 1)
+				return null; // The first element in path can not represent a file, since a file can not exist without a container.
+			String leafName = vibePath.getName();
+			String internalPath = vibePathStr.substring(0, vibePathStr.lastIndexOf('/'));
+			Binder parentBinder = getBinderModule().getBinderByPathName(internalPath); // This performs ACL checking
+			if(parentBinder == null)
+				return null; // Matching parent binder doesn't exist
+			if(!(parentBinder instanceof Folder) || !parentBinder.isLibrary())
+				return null; // The parent binder is not a folder or a library folder.
+			// See if there is an entry within the parent folder that has the file as a attachment. This also performs ACL checking on the entry if exists.
+			FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName((Folder)parentBinder, leafName);
+			if(entry == null)
+				return null; // No such entry found
+			return entry.getFileAttachment(leafName);
+		}
+		catch(AccessControlException e) {
+			return null; // Don't throw an exception. Treat this as identical to non-existing resource
+		}
+
 	}
 	
 	protected void init() {
 		allowDirectoryBrowsing = SPropsUtil.getBoolean("wd.allow.directory.browsing", true);
-		maxAgeSecondsRoot = SPropsUtil.getLong("wd.max.age.seconds.root", 31536000);
-		maxAgeSecondsDav = SPropsUtil.getLong("wd.max.age.seconds.root", 86400);
+		maxAgeSecondsRoot = SPropsUtil.getLong("wd.max.age.seconds.root", 86400);
+		maxAgeSecondsDav = SPropsUtil.getLong("wd.max.age.seconds.root", 3600);
 		maxAgeSecondsWorkspace = SPropsUtil.getLong("wd.max.age.seconds.root", 10);
 		maxAgeSecondsFolder = SPropsUtil.getLong("wd.max.age.seconds.root", 10);
 		maxAgeSecondsFile = SPropsUtil.getLong("wd.max.age.seconds.root", 10);
 		
 		inited = true;
 	}
+	
+	protected BinderModule getBinderModule () {
+		return (BinderModule) SpringContextUtil.getBean("binderModule");
+	}
+	
+	protected FolderModule getFolderModule () {
+		return (FolderModule) SpringContextUtil.getBean("folderModule");
+	}
+
+
 }

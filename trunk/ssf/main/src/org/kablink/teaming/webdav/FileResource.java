@@ -78,7 +78,7 @@ public class FileResource extends WebdavResource implements PropFindableResource
 	// lazy resolved for efficiency, so may be null initially
 	private FileAttachment fa; 
 	
-	protected FileResource(WebdavResourceFactory factory, String name, String id, Date createdDate, Date modifiedDate) {
+	private FileResource(WebdavResourceFactory factory, String name, String id, Date createdDate, Date modifiedDate) {
 		super(factory);
 		this.name = name;
 		this.id = id;
@@ -134,7 +134,12 @@ public class FileResource extends WebdavResource implements PropFindableResource
 	public void sendContent(OutputStream out, Range range,
 			Map<String, String> params, String contentType) throws IOException,
 			NotAuthorizedException, BadRequestException, NotFoundException {
-		resolveFileAttachment();
+		try {
+			resolveFileAttachment();
+		}
+		catch(NoFileByTheIdException e) {
+			throw new NotFoundException(e.getLocalizedMessage());
+		}
 		
 		DefinableEntity owningEntity = fa.getOwner().getEntity();
 		InputStream in = getFileModule().readFile(owningEntity.getParentBinder(), owningEntity, fa);
@@ -181,17 +186,24 @@ public class FileResource extends WebdavResource implements PropFindableResource
 		return null;
 	}
 	
-	private void resolveFileAttachment() throws NoFileByTheIdException {
+	private FileAttachment resolveFileAttachment() throws NoFileByTheIdException {
 		if(fa == null) {
-			fa = getFileModule().getFileAttachmentById(id);
+			// Load it directly from DAO without further access check, since access check
+			// was already performed at the time this instance was created. Resource object
+			// is created only after the system determines by looking up the database or
+			// Lucene index that the user making request has read access to the resource.
+			//fa = getFileModule().getFileAttachmentById(id);
+			fa = (FileAttachment) getCoreDao().load(FileAttachment.class, id);
 			if(fa == null)
 				throw new NoFileByTheIdException(id);
 			else if(fa instanceof VersionAttachment)
-				throw new NoFileByTheIdException(id, "The specified file ID represents a file version rather than a file");
+				throw new NoFileByTheIdException(id, "The specified file id represents a file version rather than a file");
 		}
+		return fa;
 	}
 	
 	private String toString(FileAttachment fa) {
     	return new StringBuffer().append("[").append(fa.getFileItem().getName()).append(":").append(fa.getId()).append("]").toString(); 
 	}
+	
 }

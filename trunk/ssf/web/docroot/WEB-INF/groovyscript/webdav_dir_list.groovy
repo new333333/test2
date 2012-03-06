@@ -6,7 +6,8 @@ bd.html{
 	}
 	body{
 		children.each {
-			a(href:it.getName(), it.getName())
+			a(href: parent.getName() + "/" + it.getName(), it.getName())
+			br()
 		}
 	}
 }
