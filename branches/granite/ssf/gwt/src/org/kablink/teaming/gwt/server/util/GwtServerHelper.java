@@ -1002,9 +1002,13 @@ public class GwtServerHelper {
 		HashMap<String, Object> fileMap;
 		Group newGroup = null;
 		String ldapQuery = null;
+		HashSet<Long> membershipIds;
+		SortedSet<Principal> principals;
 
 		// Create an empty file map.
 		fileMap = new HashMap<String, Object>();
+		
+		membershipIds = new HashSet<Long>();
 		
 		inputMap = new HashMap<String, Object>();
 		inputMap.put( ObjectKeys.FIELD_PRINCIPAL_NAME, name );
@@ -1020,11 +1024,6 @@ public class GwtServerHelper {
 			// Get a list of all the membership ids
 			if ( membership != null )
 			{
-				HashSet<Long> membershipIds;
-				SortedSet<Principal> principals;
-	
-				membershipIds = new HashSet<Long>();
-	
 				for (GwtTeamingItem nextMember : membership)
 				{
 					Long id;
@@ -1038,18 +1037,34 @@ public class GwtServerHelper {
 					if ( id != null )
 						membershipIds.add( id );
 				}
-	
-				principals = ami.getProfileModule().getPrincipals( membershipIds );
-				inputMap.put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals );
 			}
 		}
 		else
 		{
 			// Yes
 			if ( membershipCriteria != null )
+			{
+				// Execute the ldap query and get the list of members from the results.
+				try
+				{
+					membershipIds = ami.getLdapModule().getDynamicGroupMembers(
+																		membershipCriteria.getBaseDn(),
+																		membershipCriteria.getLdapFilterWithoutCRLF(),
+																		membershipCriteria.getSearchSubtree() );
+				}
+				catch (Exception ex)
+				{
+					//!!! What to do.
+					membershipIds = new HashSet<Long>();
+				}
+
 				ldapQuery = membershipCriteria.getAsXml();
+			}
 		}
 		
+		principals = ami.getProfileModule().getPrincipals( membershipIds );
+		inputMap.put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals );
+
 		inputMap.put( ObjectKeys.FIELD_GROUP_LDAP_QUERY, ldapQuery );
 
 		inputData = new MapInputData( inputMap );
@@ -3433,6 +3448,56 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return the number of members in the given group
+	 */
+	@SuppressWarnings("unchecked")
+	public static int getNumberOfMembers( AllModulesInjected ami, Long groupIdL ) throws GwtTeamingException
+	{
+		int count = 0;
+		
+		try
+		{
+			Principal group;
+
+			// Get the group object.
+			group = ami.getProfileModule().getEntry( groupIdL );
+			if ( group != null && group instanceof Group )
+			{
+				Iterator<Principal> itMembers;
+				List<Long> membership;
+				List<Principal> memberList;
+				
+				// Get the members of the group.
+				memberList = ((Group) group).getMembers();
+				
+				// Get a list of the ids of all the members of this group.
+				membership = new ArrayList<Long>();
+				itMembers = memberList.iterator();
+				while (itMembers.hasNext())
+				{
+					Principal member;
+					
+					member = (Principal) itMembers.next();
+					membership.add( member.getId() );
+				}
+				
+				// Get all the memembers of the group.  We call ResolveIDs.getPrincipals()
+				// because it handles deleted users and users the logged-in user has
+				// rights to see.
+				memberList = ResolveIds.getPrincipals( membership );
+				
+				count = memberList.size();
+			}
+		}
+		catch (Exception ex)
+		{
+			throw GwtServerHelper.getGwtTeamingException( ex );
+		}
+		
+		return count;
+	}
+
+	/**
 	 * Return subscription data for the given entry id.
 	 */
 	public static SubscriptionData getSubscriptionData( AllModulesInjected bs, String entryId )
@@ -3955,7 +4020,26 @@ public class GwtServerHelper {
 			if ( isMembershipDynamic )
 			{
 				// Yes
-				// Execute the ldap query.
+				
+				if ( membershipCriteria != null )
+				{
+					// Execute the ldap query and get the list of members from the results.
+					try
+					{
+						membershipIds = ami.getLdapModule().getDynamicGroupMembers(
+																			membershipCriteria.getBaseDn(),
+																			membershipCriteria.getLdapFilterWithoutCRLF(),
+																			membershipCriteria.getSearchSubtree() );
+					}
+					catch (Exception ex)
+					{
+						//!!! What to do.
+						membershipIds = new HashSet<Long>();
+					}
+				}
+				else
+					membershipIds = new HashSet<Long>();
+				
 				ldapQuery = membershipCriteria.getAsXml();
 			}
 			else
@@ -4227,6 +4311,7 @@ public class GwtServerHelper {
 		case GET_MICRO_BLOG_URL:
 		case GET_MODIFY_BINDER_URL:
 		case GET_MY_TEAMS:
+		case GET_NUMBER_OF_MEMBERS:
 		case GET_PERSONAL_PREFERENCES:
 		case GET_PRESENCE_INFO:
 		case GET_PROFILE_AVATARS:
@@ -4283,6 +4368,7 @@ public class GwtServerHelper {
 		case SAVE_WHATS_NEW_SETTINGS:
 		case SET_SEEN:
 		case SET_UNSEEN:
+		case TEST_GROUP_MEMBERSHIP_LDAP_QUERY:
 		case TRACK_BINDER:
 		case UPDATE_BINDER_TAGS:
 		case UPDATE_CALCULATED_DATES:
@@ -4745,6 +4831,42 @@ public class GwtServerHelper {
 		return results;
 	}
 
+	/**
+	 * Execute the given ldap query and return the number of users/groups it found.
+	 */
+	public static Integer testGroupMembershipCriteria(
+												AllModulesInjected ami,
+												GwtDynamicGroupMembershipCriteria membershipCriteria ) throws GwtTeamingException
+	{
+		LdapModule ldapModule;
+		Integer count = null;
+		
+		ldapModule = ami.getLdapModule();
+		
+		// Is the guid attribute configured the the ldap configuration?
+		if ( ldapModule.isGuidConfigured() )
+		{
+			// Yes
+			try
+			{
+				count = ldapModule.testGroupMembershipCriteria(
+															membershipCriteria.getBaseDn(),
+															membershipCriteria.getLdapFilterWithoutCRLF(),
+															membershipCriteria.getSearchSubtree() );
+			}
+			catch (Exception ex)
+			{
+				throw GwtServerHelper.getGwtTeamingException( ex );
+			}
+		}
+		else
+		{
+			// No, throw an exception
+		}
+		
+		return count;
+	}
+	
 	/**
 	 * Update the tags for the given binder.
 	 */

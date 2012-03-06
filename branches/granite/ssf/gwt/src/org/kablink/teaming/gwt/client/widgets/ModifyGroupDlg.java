@@ -49,6 +49,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetDynamicMembershipCriteriaCmd
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipTypeCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetNumberOfMembersCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.IntegerRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -92,6 +94,7 @@ public class ModifyGroupDlg extends DlgBox
 	private ModifyStaticMembershipDlg m_staticMembershipDlg;
 	private ModifyDynamicMembershipDlg m_dynamicMembershipDlg;
 	private GwtDynamicGroupMembershipCriteria m_dynamicMembershipCriteria;
+	private int m_numDynamicMembers;
 	
 	/**
 	 * 
@@ -479,6 +482,7 @@ public class ModifyGroupDlg extends DlgBox
 								public void execute()
 								{
 									getDynamicMembershipCriteria();
+									getNumberOfMembers();
 								}
 							};
 							Scheduler.get().scheduleDeferred( cmd );
@@ -513,6 +517,41 @@ public class ModifyGroupDlg extends DlgBox
 	}
 	
 	/**
+	 * Issue an ajax request to get the number of members in this group.
+	 */
+	private void getNumberOfMembers()
+	{
+		if ( m_groupInfo != null )
+		{
+			GetNumberOfMembersCmd cmd;
+			AsyncCallback<VibeRpcResponse> rpcCallback;
+			
+			rpcCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				@Override
+				public void onFailure( Throwable caught )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_NumberOfMembers() );
+				}
+	
+				@Override
+				public void onSuccess( VibeRpcResponse result )
+				{
+					IntegerRpcResponseData responseData;
+					
+					responseData = (IntegerRpcResponseData) result.getResponseData();
+					m_numDynamicMembers = responseData.getIntegerValue();
+				}						
+			};
+			
+			cmd = new GetNumberOfMembersCmd( m_groupInfo.getId() );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		}
+	}
+	
+	/**
 	 * 
 	 */
 	public void init( GroupInfo groupInfo )
@@ -520,6 +559,7 @@ public class ModifyGroupDlg extends DlgBox
 		m_groupInfo = groupInfo;
 		m_groupMembership = new ArrayList<GwtTeamingItem>();
 		m_dynamicMembershipCriteria = new GwtDynamicGroupMembershipCriteria();
+		m_numDynamicMembers = 0;
 		
 		// Clear existing data in the controls.
 		m_nameTxtBox.setText( "" );
@@ -638,7 +678,7 @@ public class ModifyGroupDlg extends DlgBox
 				m_dynamicMembershipDlg = new ModifyDynamicMembershipDlg( false, true, handler, null, x, y );
 			}
 			
-			m_dynamicMembershipDlg.init( m_dynamicMembershipCriteria, 122 );
+			m_dynamicMembershipDlg.init( m_dynamicMembershipCriteria, m_numDynamicMembers );
 			m_dynamicMembershipDlg.setPopupPosition( x, y );
 			m_dynamicMembershipDlg.show();
 		}

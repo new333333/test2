@@ -323,6 +323,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetImUrl();
 	String rpcFailure_GetLocale();
 	String rpcFailure_GetMyTeams();
+	String rpcFailure_NumberOfMembers();
 	String rpcFailure_GetPersonalPreferences();
 	String rpcFailure_GetPresenceInfo();
 	String rpcFailure_GetProfileAvatars();
@@ -1122,9 +1123,12 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the Modify dynamic membership dialog
 	String modifyDynamicMembershipDlgBaseDnLabel();
+	String modifyDynamicMembershipDlgCurrentMembershipLabel( int count );
 	String modifyDynamicMembershipDlgHeader();
 	String modifyDynamicMembershipDlgLdapFilterLabel();
 	String modifyDynamicMembershipDlgSearchSubtreeLabel();
+	String modifyDynamicMembershipDlgTestQueryLabel();
+	String modifyDynamicMembershipDlgTestQueryResults( int count );
 	String modifyDynamicMembershipDlgUpdateLabel();
 	
 }// end GwtTeamingMessages
