@@ -556,6 +556,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			ProfileIndexUtils.addPersonFlag(indexDoc, user);
 		} else if(entry instanceof Group) {
 	        ProfileIndexUtils.addName(indexDoc, (Group)entry, false);	
+	        ProfileIndexUtils.addDynamic(indexDoc, (Group)entry, false);	
 		} else if(entry instanceof Application) {
 	        ProfileIndexUtils.addName(indexDoc, (Application)entry, false);	
 		} else if(entry instanceof ApplicationGroup) {
