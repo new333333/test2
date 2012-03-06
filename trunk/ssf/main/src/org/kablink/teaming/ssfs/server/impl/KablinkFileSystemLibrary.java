@@ -977,7 +977,7 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 	}
 	
 	private Set<String> getLibraryFolderChildrenFileNames(Folder libraryFolder) {
-		return bs.getFileModule().getChildrenFileDataFromIndex(libraryFolder).keySet();
+		return bs.getFileModule().getChildrenFileDataFromIndex(libraryFolder.getId()).keySet();
 	}
 		
 	private void removeResource(Map uri, Map objMap) throws NoAccessException {

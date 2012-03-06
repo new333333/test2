@@ -142,11 +142,11 @@ public class FileResource extends WebdavResource implements PropFindableResource
 		try {
 			if (range != null) {
 				if(logger.isDebugEnabled())
-					logger.debug("sendContent: ranged content: " + fa.toString());
+					logger.debug("sendContent: ranged content: " + toString(fa));
 				PartialGetHelper.writeRange(in, range, out);
 			} else {
 				if(logger.isDebugEnabled())
-					logger.debug("sendContent: send whole file " + fa.toString());
+					logger.debug("sendContent: send whole file " + toString(fa));
 				IOUtils.copy(in, out);				
 			}
 			out.flush();
@@ -189,5 +189,9 @@ public class FileResource extends WebdavResource implements PropFindableResource
 			else if(fa instanceof VersionAttachment)
 				throw new NoFileByTheIdException(id, "The specified file ID represents a file version rather than a file");
 		}
+	}
+	
+	private String toString(FileAttachment fa) {
+    	return new StringBuffer().append("[").append(fa.getFileItem().getName()).append(":").append(fa.getId()).append("]").toString(); 
 	}
 }

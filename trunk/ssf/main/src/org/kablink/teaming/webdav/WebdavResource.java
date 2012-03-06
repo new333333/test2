@@ -42,13 +42,16 @@ import groovy.lang.Binding;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 
+import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.groovy.GroovyScriptService;
 import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
@@ -120,6 +123,9 @@ public abstract class WebdavResource implements Resource, GetableResource {
 	}
 
 	protected Resource makeResourceFromBinder(Binder binder) {
+		if(binder == null)
+			return null;
+		
 		if(binder instanceof Workspace) {
 			Workspace w = (Workspace) binder;
 			if(w.isDeleted() || w.isPreDeleted())
@@ -140,15 +146,33 @@ public abstract class WebdavResource implements Resource, GetableResource {
 	}
 	
 	protected Resource makeResourceFromBinder(BinderIndexData binder) {
-		if(EntityType.workspace == binder.getEntityType()) {
+		if(binder == null)
+			return null;
+		
+		EntityType entityType = binder.getEntityType();
+		if(EntityType.workspace == entityType) {
 			return new WorkspaceResource(factory, binder);
 		}
-		else if(EntityType.folder == binder.getEntityType()) {
+		else if(EntityType.folder == entityType) {
 			return new FolderResource(factory, binder);
 		}
 		else {
 			return null;
 		}
+	}
+	
+	protected Resource makeResourceFromFile(FileAttachment fa) {
+		if(fa == null)
+			return null;
+		else
+			return new FileResource(factory, fa);
+	}
+	
+	protected Resource makeResourceFromFile(FileIndexData file) {
+		if(file == null)
+			return null;
+		else
+			return new FileResource(factory, file);
 	}
 	
 	protected WorkspaceModule getWorkspaceModule () {
@@ -170,4 +194,9 @@ public abstract class WebdavResource implements Resource, GetableResource {
 	protected GroovyScriptService getGroovyScriptService() {
 		return (GroovyScriptService) SpringContextUtil.getBean("groovyScriptService");
 	}
+	
+	protected FolderDao getFolderDao() {
+		return (FolderDao) SpringContextUtil.getBean("folderDao");
+	}
+
 }
