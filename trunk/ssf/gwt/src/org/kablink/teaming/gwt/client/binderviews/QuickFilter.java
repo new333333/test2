@@ -67,6 +67,7 @@ public class QuickFilter extends ResizeComposite {
 	private boolean			m_quickFilterEmpty = true;	//
 	private boolean			m_quickFilterOff   = true;	//
 	private Image			m_quickFilterImage;			// <IMG> for the filter.  Changes based on whether a filter is active or not.
+	private Long			m_folderId;					//
 	private TextBox			m_quickFilterInput;			// The <INPUT> for entering a filter.
 	private VibeFlowPanel	m_quickFilterDIV;			// <DIV> containing the filter widgets.
 	
@@ -76,10 +77,14 @@ public class QuickFilter extends ResizeComposite {
 	/**
 	 * Class constructor.
 	 */
-	public QuickFilter() {
+	public QuickFilter(Long folderId) {
+		// Initialize the super class...
 		super();
+
+		// ...store the parameters...
+		m_folderId = folderId;
 		
-		// Create the filter <IMG>...
+		// ...create the filter <IMG>...
 		m_quickFilterImage = new Image(m_images.filterOff());
 		m_quickFilterImage.setTitle(m_messages.quickFilterAltOff());
 		m_quickFilterImage.setStyleName("cursorPointer");
@@ -181,7 +186,7 @@ public class QuickFilter extends ResizeComposite {
 	 * Synchronously sets/clears a filter.
 	 */
 	private void filterListNow(String filter) {
-		GwtTeaming.fireEvent(new QuickFilterEvent(filter));
+		GwtTeaming.fireEvent(new QuickFilterEvent(m_folderId, filter));
 	}
 
 	/*

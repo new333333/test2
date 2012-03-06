@@ -17,7 +17,7 @@
 /* Start:  Entry menu styles. */
 	.vibe-configureMenuBar         {}
 	.vibe-configureMenuBarDropDown {}
-	.vibe-configureMenuBarItem     {}
+	.vibe-configureMenuBarItem     {border: 0 !important;}
 	.vibe-configureMenuImg         {padding-top: 1px;}
 	
 	.vibe-entryMenuBar {padding: 3px;}

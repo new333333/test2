@@ -45,12 +45,14 @@
 	/* ...End:  Description panel styles. */
 	
 	/* ...Start:  Entry menu panel styles. */
-		.vibe-entryMenu-configPanel        {display: inline-block;}
-		.vibe-entryMenu-filterOptionsPanel {display: inline-block;}
-		.vibe-entryMenu-filtersPanel       {display: inline-block;}
-		.vibe-entryMenu-grid               {padding: 0px !important; background-color: #ededed; display: table; table-layout: fixed;}
-		.vibe-entryMenu-quickFiltersPanel  {display: inline-block;}
-		.vibe-entryMenu-rightPanel         {display: inline; padding-right: 5px;}
+		.vibe-entryMenu-configPanel         {display: inline-block; vertical-align: top;}
+		.vibe-entryMenu-filterOptions-panel {display: inline-block; vertical-align: top;}
+		.vibe-entryMenu-filtersPanel        {display: inline-block; vertical-align: top;}
+		.vibe-entryMenu-grid                {padding: 0px !important; background-color: #ededed; display: table; table-layout: fixed;}
+		.vibe-entryMenu-quickFilters-filter {display: inline-block;}
+		.vibe-entryMenu-quickFilters-panel  {display: inline-block; vertical-align: top; padding: 0 0 0 5px; margin-top: 3px; border-left: none; height: 19px; white-space: nowrap; background-color: #fff; border: 1px solid #b8b8b8; -moz-border-radius: 15px; -webkit-border-radius: 15px;}
+
+		.vibe-entryMenu-rightPanel          {display: inline; padding-right: 5px;}
 	/* ...End:  Entry menu panel styles. */
 	
 	/* ...Start:  Filter panel styles. */
@@ -204,18 +206,6 @@
 	/* ...End:  Survey folder view styles. */
 
 	/* ...Start:  Task folder view styles. */
-		.vibe-taskFolderFilterPanel
-		{
-			padding: 0 0 0 5px;
-			border-left: none;
-			display: inline;
-			height: 19px;
-			white-space: nowrap;
-			background-color: #fff;
-			border: 1px solid #b8b8b8;
-			-moz-border-radius: 15px;
-			-webkit-border-radius: 15px;
-		}
 		.vibe-taskFolderFlowPanel     {}
 		.vibe-taskFolderVerticalPanel {}
 		.vibe-taskFolderView          {}

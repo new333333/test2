@@ -52,7 +52,6 @@ import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing.TaskListingClient;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -76,7 +75,6 @@ public class TaskFolderView extends FolderViewBase
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private TaskDisplayDataRpcResponseData	m_taskDisplayData;			// The task display data read from the server.
 	private TaskListing						m_taskListing;				// The TaskList composite.
-	private VibeFlowPanel					m_gwtTaskFilter;			// The <DIV> that will hold the task filter widget(s). 
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -106,7 +104,6 @@ public class TaskFolderView extends FolderViewBase
 	 * @return
 	 */
 	public TaskDisplayDataRpcResponseData getTaskDisplayData() {return m_taskDisplayData;}
-	public VibeFlowPanel                  getGwtTaskFilter()   {return m_gwtTaskFilter;  }
 	
 	/**
 	 * Called to construct the view.
@@ -115,14 +112,6 @@ public class TaskFolderView extends FolderViewBase
 	 */
 	@Override
 	public void constructView() {
-		// Create a DIV for the TaskListing to create task filter
-		// widgets in...
-		m_gwtTaskFilter = new VibeFlowPanel();
-		m_gwtTaskFilter.getElement().setId("gwtTaskFilter");
-		m_gwtTaskFilter.addStyleName("vibe-taskFolderFilterPanel");
-		getEntryMenuPanel().getQuickFilterPanel().add(m_gwtTaskFilter);
-		
-		// ...and construct everything else.
 		loadPart1Async();
 	}
 

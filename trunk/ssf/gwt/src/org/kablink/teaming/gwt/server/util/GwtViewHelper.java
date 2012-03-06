@@ -192,6 +192,24 @@ public class GwtViewHelper {
 	}
 
 	/*
+	 * Adds a quick filter to the search filter in the options map.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void addQuickFilterToSearch(AllModulesInjected bs, BinderInfo binderInfo, Binder binder, Map options, String quickFilter) {
+		// If we weren't given a quick filter to add...
+		if (!(MiscUtil.hasString(quickFilter))) {
+			// ...there's nothing to do.  Bail.
+			return;
+		}
+		
+		
+		@SuppressWarnings("unused")
+		Document searchFilter = ((Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER));
+		
+//!		...this needs to be implemented...
+	}
+	
+	/*
 	 * Extracts the ID's of the entry contributors and adds them to the
 	 * contributor ID's list if they're not already there. 
 	 */
@@ -1774,11 +1792,12 @@ public class GwtViewHelper {
 	 * @param folderColumns
 	 * @param start
 	 * @param length
+	 * @param quickFilter
 	 * 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length) throws GwtTeamingException {
+	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length, String quickFilter) throws GwtTeamingException {
 		try {
 			// Access the binder/folder.
 			Long   folderId = folderInfo.getBinderIdAsLong();
@@ -1826,6 +1845,7 @@ public class GwtViewHelper {
 			if (isFolder)
 			     options = getFolderSearchFilter(bs, folder, userFolderProperties, null);
 			else options = new HashMap();
+			addQuickFilterToSearch(bs, folderInfo, binder, options, quickFilter);
 			options.put(ObjectKeys.SEARCH_OFFSET,   start );
 			options.put(ObjectKeys.SEARCH_MAX_HITS, length);
 

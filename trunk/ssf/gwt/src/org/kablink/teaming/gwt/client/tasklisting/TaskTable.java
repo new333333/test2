@@ -2929,7 +2929,11 @@ public class TaskTable extends Composite
 	 */
 	@Override
 	public void onQuickFilter(QuickFilterEvent event) {
-		handleTaskQuickFilter(event.getQuickFilter());
+		// If the event is targeted to the task folder we're viewing...
+		if (event.getFolderId().equals(m_taskBundle.getBinderId())) {
+			// ...handle it.
+			handleTaskQuickFilter(event.getQuickFilter());
+		}
 	}
 
 	/**
