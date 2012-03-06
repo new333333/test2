@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetDynamicMembershipCriteriaCmd
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipTypeCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetIsDynamicGroupMembershipAllowedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNumberOfMembersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.IntegerRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyGroupCmd;
@@ -95,6 +96,7 @@ public class ModifyGroupDlg extends DlgBox
 	private ModifyDynamicMembershipDlg m_dynamicMembershipDlg;
 	private GwtDynamicGroupMembershipCriteria m_dynamicMembershipCriteria;
 	private int m_numDynamicMembers;
+	private boolean m_dynamicMembershipAllowed;
 	
 	/**
 	 * 
@@ -560,6 +562,10 @@ public class ModifyGroupDlg extends DlgBox
 		m_groupMembership = new ArrayList<GwtTeamingItem>();
 		m_dynamicMembershipCriteria = new GwtDynamicGroupMembershipCriteria();
 		m_numDynamicMembers = 0;
+		m_dynamicMembershipAllowed = true;
+		
+		// Issue an rpc request to see if dynamic group membership is allowed.
+		isDynamicGroupMembershipAllowed();
 		
 		// Clear existing data in the controls.
 		m_nameTxtBox.setText( "" );
@@ -654,6 +660,13 @@ public class ModifyGroupDlg extends DlgBox
 			int y;
 			
 			// Yes
+			// Is dynamic group membership allowed?
+			if ( m_dynamicMembershipAllowed == false )
+			{
+				// No, warn the user and let them proceed.
+				Window.alert( GwtTeaming.getMessages().modifyGroupDlgDynamicGroupMembershipNotAllowed() );
+			}
+
 			x = getAbsoluteLeft() + 50;
 			y = getAbsoluteTop() + 50;
 			
@@ -682,6 +695,40 @@ public class ModifyGroupDlg extends DlgBox
 			m_dynamicMembershipDlg.setPopupPosition( x, y );
 			m_dynamicMembershipDlg.show();
 		}
+	}
+	
+	/**
+	 * Issue an rpc request to see if dynamic group membership is allowed.
+	 */
+	private void isDynamicGroupMembershipAllowed()
+	{
+		GetIsDynamicGroupMembershipAllowedCmd cmd;
+		AsyncCallback<VibeRpcResponse> rpcCallback;
+		
+		// Yes
+		rpcCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable caught )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_GetIsDynamicGroupMembershipAllowed() );
+			}
+
+			@Override
+			public void onSuccess( VibeRpcResponse result )
+			{
+				BooleanRpcResponseData responseData;
+				
+				responseData = (BooleanRpcResponseData) result.getResponseData();
+				m_dynamicMembershipAllowed = responseData.getBooleanValue();
+			}						
+		};
+		
+		// Issue an rpc request to see if dynamic group membership is allowed.
+		cmd = new GetIsDynamicGroupMembershipAllowedCmd();
+		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 	
 	/**

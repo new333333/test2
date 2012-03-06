@@ -3867,6 +3867,15 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return whether dynamic group membership is allowed.  It is allowed if the ldap
+	 * configuration has a value set for "LDAP attribute that uniquely identifies a user or group"
+	 */
+	public static boolean isDynamicGroupMembershipAllowed( AllModulesInjected ami )
+	{
+		return ami.getLdapModule().isGuidConfigured();
+	}
+	
+	/**
 	 * Return true if the given group's membership is dynamic.
 	 */
 	public static Boolean isGroupMembershipDynamic( AllModulesInjected ami, Long groupId )
@@ -4306,6 +4315,7 @@ public class GwtServerHelper {
 		case GET_HORIZONTAL_NODE:
 		case GET_HORIZONTAL_TREE:
 		case GET_IM_URL:
+		case GET_IS_DYNAMIC_GROUP_MEMBERSHIP_ALLOWED:
 		case GET_LOGGED_IN_USER_PERMALINK:
 		case GET_LOGIN_INFO:
 		case GET_MICRO_BLOG_URL:
@@ -4861,7 +4871,12 @@ public class GwtServerHelper {
 		}
 		else
 		{
+			GwtTeamingException ex;
+			
 			// No, throw an exception
+			ex = GwtServerHelper.getGwtTeamingException();
+			ex.setExceptionType( ExceptionType.LDAP_GUID_NOT_CONFIGURED );
+			throw ex;
 		}
 		
 		return count;

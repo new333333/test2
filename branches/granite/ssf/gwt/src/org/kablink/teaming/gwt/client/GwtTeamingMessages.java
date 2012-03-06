@@ -321,6 +321,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GwtGroups();
 	String rpcFailure_GetGwtUIInfo();
 	String rpcFailure_GetImUrl();
+	String rpcFailure_GetIsDynamicGroupMembershipAllowed();
 	String rpcFailure_GetLocale();
 	String rpcFailure_GetMyTeams();
 	String rpcFailure_NumberOfMembers();
@@ -355,6 +356,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetViewFolderEntryUrl();
 	String rpcFailure_IsAllUsersGroup();
 	String rpcFailure_IsPersonTracked();
+	String rpcFailure_LdapGuidNotConfigured();
 	String rpcFailure_markupStringReplacement();
 	String rpcFailure_ModifyGroup();
 	String rpcFailure_PersistActivityStreamSelection();
@@ -383,6 +385,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SetStatus();
 	String rpcFailure_SetUnseen();
 	String rpcFailure_ShareEntry();
+	String rpcFailure_TestGroupMembershipCriteria();
 	String rpcFailure_TrackingBinder();
 	String rpcFailure_TrackingPerson();
 	String rpcFailure_UnknownCause();
@@ -1103,6 +1106,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyGroupDlgEditGroupMembershipLabel();
 	String modifyGroupDlgDescriptionLabel();
 	String modifyGroupDlgDynamicLabel();
+	String modifyGroupDlgDynamicGroupMembershipNotAllowed();
 	String modifyGroupDlgHeader( String groupTitle );
 	String modifyGroupDlgNameLabel();
 	String modifyGroupDlgNameRequired();

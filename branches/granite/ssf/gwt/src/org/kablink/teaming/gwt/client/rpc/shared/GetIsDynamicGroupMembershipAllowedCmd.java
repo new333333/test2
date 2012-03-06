@@ -31,64 +31,37 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-import com.google.gwt.user.client.rpc.SerializationException;
+
 
 /**
- * This can be used for all GWT Teaming exceptions.
+ * This class holds all of the information necessary to execute the
+ * "is dynamic group membership allowed" command.
+ * 
  * @author jwootton
  *
  */
-public class GwtTeamingException extends SerializationException
-	implements IsSerializable
+public class GetIsDynamicGroupMembershipAllowedCmd extends VibeRpcCmd
 {
 	/**
-	 * This class defines all the possible types of exceptions that GwtTeamingException knows about.
-	 * @author jwootton
-	 *
+	 * For GWT serialization, must have a zero param contructor
 	 */
-	public enum ExceptionType implements IsSerializable
+	public GetIsDynamicGroupMembershipAllowedCmd()
 	{
-		ACCESS_CONTROL_EXCEPTION,
-		EXTENSION_DEFINITION_IN_USE,
-		FAVORITES_LIMIT_EXCEEDED,
-		GROUP_ALREADY_EXISTS,
-		LDAP_GUID_NOT_CONFIGURED,
-		NO_BINDER_BY_THE_ID_EXCEPTION,
-		NO_FOLDER_ENTRY_BY_THE_ID_EXCEPTION,
-		USER_NOT_LOGGED_IN,
-		UNKNOWN;
-	}// end ExceptionType
-	
-
-	private static final long serialVersionUID = -5972316795230937529L;
-	private ExceptionType m_type = ExceptionType.UNKNOWN;
+		super();
+	}
 	
 	/**
+	 * Returns the command's enumeration value.
 	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
 	 */
-	public GwtTeamingException()
+	@Override
+	public int getCmdType()
 	{
-		m_type = ExceptionType.UNKNOWN;
-	}// end GwtTeamingException()
-	
-	/**
-	 * Return the type of exception we are dealing with.
-	 */
-	public ExceptionType getExceptionType()
-	{
-		return m_type;
-	}// end getExceptionType()
-
-	
-	/**
-	 * Set the type of exception we are dealing with.
-	 */
-	public void setExceptionType( ExceptionType type)
-	{
-		m_type = type;
-	}// end setExceptionType()
-	
-}// end GwtTeamingException
+		return VibeRpcCmdType.GET_IS_DYNAMIC_GROUP_MEMBERSHIP_ALLOWED.ordinal();
+	}
+}

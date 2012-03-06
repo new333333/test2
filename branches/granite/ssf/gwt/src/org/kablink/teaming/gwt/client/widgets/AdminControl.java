@@ -618,7 +618,7 @@ public class AdminControl extends Composite
 			// Fire the event to invoke the "Configure File Sync" dialog.
 			InvokeConfigureFileSyncAppDlgEvent.fireOne();
 		}
-		else if ( adminAction.getActionType() == AdminAction.MANAGE_GROUPS && Window.confirm( "show new ui" ) )
+		else if ( adminAction.getActionType() == AdminAction.MANAGE_GROUPS )
 		{
 			// Fire the event to invoke the "Manage Groups" dialog.
 			InvokeManageGroupsDlgEvent.fireOne();

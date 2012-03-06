@@ -264,6 +264,7 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 		// Get the membership criteria entered by the user.
 		membershipCriteria = (GwtDynamicGroupMembershipCriteria) getDataFromDlg();
 		
+		// Issue an rpc request to test the membership criteria
 		{
 			TestGroupMembershipCriteriaCmd cmd;
 			AsyncCallback<VibeRpcResponse> rpcCallback;
@@ -275,7 +276,7 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 				{
 					GwtClientHelper.handleGwtRPCFailure(
 						caught,
-						GwtTeaming.getMessages().rpcFailure_GetGroupLdapQuery() );
+						GwtTeaming.getMessages().rpcFailure_TestGroupMembershipCriteria() );
 				}
 	
 				@Override
