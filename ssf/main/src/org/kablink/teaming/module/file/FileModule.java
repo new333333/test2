@@ -462,10 +462,10 @@ public interface FileModule {
 	 * It is important for the efficiency reason that the requested data be obtainable
 	 * entirely from the Lucene index without querying the database.
 	 * 
-	 * @param binder
+	 * @param binderId
 	 * @return
 	 */
-	public Map<String,FileIndexData> getChildrenFileDataFromIndex(Binder binder);
+	public Map<String,FileIndexData> getChildrenFileDataFromIndex(Long binderId);
 	
 	/**
 	 * Get a file attachment from the fileId.

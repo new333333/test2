@@ -33,15 +33,13 @@
 
 package org.kablink.teaming.webdav;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.security.AccessControlException;
@@ -49,61 +47,28 @@ import org.kablink.teaming.security.AccessControlException;
 import com.bradmcevoy.http.CollectionResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.PropFindableResource;
-import com.bradmcevoy.http.Range;
 import com.bradmcevoy.http.Resource;
 import com.bradmcevoy.http.exceptions.BadRequestException;
 import com.bradmcevoy.http.exceptions.NotAuthorizedException;
-import com.bradmcevoy.http.exceptions.NotFoundException;
 
 /**
  * @author jong
  *
  */
-public class WorkspaceResource extends WebdavCollectionResource implements PropFindableResource, CollectionResource, GetableResource {
+public class WorkspaceResource extends BinderResource  implements PropFindableResource, CollectionResource, GetableResource {
 	
+	// lazy resolved for efficiency, so may be null initially
 	private Workspace ws;
 	
 	public WorkspaceResource(WebdavResourceFactory factory, Workspace ws) {
-		super(factory);
-		this.ws = ws;
+		super(factory, ws);
+		this.ws = ws; // already resolved
 	}
 
-	public WorkspaceResource(WebdavResourceFactory factory, BinderIndexData bid) {//$$$$$
-		super(factory);
+	public WorkspaceResource(WebdavResourceFactory factory, BinderIndexData bid) {
+		super(factory, bid);
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getUniqueId()
-	 */
-	@Override
-	public String getUniqueId() {
-		return ws.getEntityIdentifier().toString();
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getName()
-	 */
-	@Override
-	public String getName() {
-		return ws.getTitle();
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getModifiedDate()
-	 */
-	@Override
-	public Date getModifiedDate() {
-		return ws.getModification().getDate();
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.PropFindableResource#getCreateDate()
-	 */
-	@Override
-	public Date getCreateDate() {
-		return ws.getCreation().getDate();
-	}
-
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.CollectionResource#child(java.lang.String)
 	 */
@@ -111,7 +76,7 @@ public class WorkspaceResource extends WebdavCollectionResource implements PropF
 	public Resource child(String childName) throws NotAuthorizedException,
 			BadRequestException {
 		try {
-			Binder child = getBinderModule().getBinderByPathName(ws.getPathName() + "/" + childName);
+			Binder child = getBinderModule().getBinderByPathName(path + "/" + childName);
 			return makeResourceFromBinder(child);
 		}
 		catch(AccessControlException e) {
@@ -129,7 +94,7 @@ public class WorkspaceResource extends WebdavCollectionResource implements PropF
 	public List<? extends Resource> getChildren()
 			throws NotAuthorizedException, BadRequestException {
 		// A workspace can have other workspaces and/or folders as children
-		Map<String,BinderIndexData> childrenMap = getBinderModule().getChildrenBinderDataFromIndex(ws.getId());
+		Map<String,BinderIndexData> childrenMap = getBinderModule().getChildrenBinderDataFromIndex(entityIdentifier.getEntityId());
 		List<Resource> childrenResources = new ArrayList<Resource>(childrenMap.size());
 		Resource resource;
 		for(BinderIndexData bid:childrenMap.values()) {

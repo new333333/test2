@@ -37,14 +37,19 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.module.binder.BinderIndexData;
+import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.security.AccessControlException;
 
 import com.bradmcevoy.http.Auth;
@@ -61,49 +66,17 @@ import com.bradmcevoy.http.exceptions.NotFoundException;
  * @author jong
  *
  */
-public class FolderResource extends WebdavCollectionResource implements PropFindableResource, CollectionResource, GetableResource {
-
+public class FolderResource extends BinderResource implements PropFindableResource, CollectionResource, GetableResource {
+	
+	// lazy resolved for efficiency, so may be null initially
 	private Folder folder;
 	
 	public FolderResource(WebdavResourceFactory factory, Folder folder) {
-		super(factory);
-		this.folder = folder;
+		super(factory, folder);
 	}
 
-	public FolderResource(WebdavResourceFactory factory, BinderIndexData bid) { //$$$$
-		super(factory);
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getUniqueId()
-	 */
-	@Override
-	public String getUniqueId() {
-		return folder.getEntityIdentifier().toString();
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getName()
-	 */
-	@Override
-	public String getName() {
-		return folder.getTitle();
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.Resource#getModifiedDate()
-	 */
-	@Override
-	public Date getModifiedDate() {
-		return folder.getModification().getDate();
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.PropFindableResource#getCreateDate()
-	 */
-	@Override
-	public Date getCreateDate() {
-		return folder.getCreation().getDate();
+	public FolderResource(WebdavResourceFactory factory, BinderIndexData bid) {
+		super(factory, bid);
 	}
 	
 	/* (non-Javadoc)
@@ -112,16 +85,12 @@ public class FolderResource extends WebdavCollectionResource implements PropFind
 	@Override
 	public Resource child(String childName) throws NotAuthorizedException,
 			BadRequestException {
-		try {
-			Binder child = getBinderModule().getBinderByPathName(folder.getPathName() + "/" + childName);
-			return makeResourceFromBinder(child);
-		}
-		catch(AccessControlException e) { //$$$$$
-			// The specified child physically exists, but the user has no read access to it.
-			// In this case, we treat it as if the child didn't exist in the first place
-			// as opposed to throwing an error.
-			return null;
-		}
+		resolveFolder();
+		
+		Resource child = childFolder(childName);
+		if(child == null)
+			child = childFile(childName);
+		return child;
 	}
 
 	/* (non-Javadoc)
@@ -131,23 +100,56 @@ public class FolderResource extends WebdavCollectionResource implements PropFind
 	public List<? extends Resource> getChildren()
 			throws NotAuthorizedException, BadRequestException {
 		// A folder can have other folders as children. It can also have files as children only if it is a library folder.
-		Set<Folder> childrenFolders = getFolderModule().getSubfolders(folder);
+		Map<String,BinderIndexData> binderMap = getBinderModule().getChildrenBinderDataFromIndex(entityIdentifier.getEntityId());
 		
-		Set<FileAttachment> childrenFiles = null;
-		if(folder.isLibrary()) {
-			FileAttachment f;
-		}
+		Map<String,FileIndexData> fileMap = null;
+		if(library) 
+			fileMap = getFileModule().getChildrenFileDataFromIndex(entityIdentifier.getEntityId());
+		else
+			fileMap = new HashMap<String,FileIndexData>();
 		
-		
-		Set<Binder> childrenBinders = getWorkspaceModule().getWorkspaceTree(folder.getId());
-		List<Resource> childrenResources = new ArrayList<Resource>(childrenBinders.size());
+		List<Resource> childrenResources = new ArrayList<Resource>(binderMap.size());
 		Resource resource;
-		for(Binder binder:childrenBinders) {
-			resource = makeResourceFromBinder(binder);
+		for(BinderIndexData bid:binderMap.values()) {
+			resource = makeResourceFromBinder(bid);
 			if(resource != null)
 				childrenResources.add(resource);
 		}
+		
+		for(FileIndexData fid:fileMap.values()) {
+			resource = makeResourceFromFile(fid);
+			if(resource != null)
+				childrenResources.add(resource);
+		}
+		
 		return childrenResources;
 	}
 
+	private Resource childFolder(String childName) {
+		// Try fetching the child as a sub-folder
+		try {
+			Binder child = getBinderModule().getBinderByPathName(path + "/" + childName);
+			return makeResourceFromBinder(child);
+		} catch (AccessControlException e) {
+			// The specified child physically exists, but the user has no read access to it. 
+			// In this case, we treat it as if the child didn't exist in the first place
+			// as opposed to throwing an error.
+			return null;
+		}
+	}
+
+	private Resource childFile(String childName) {
+		FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, childName);
+		if(entry != null)
+			return makeResourceFromFile(entry.getFileAttachment(childName));
+		else
+			return null;
+	}
+	
+	private void resolveFolder() {
+		if(folder == null) {
+			// We can go directly to DAO layer because the access check has already been done for this folder higher up.
+	        folder = getFolderDao().loadFolder(entityIdentifier.getEntityId(), RequestContextHolder.getRequestContext().getZoneId());
+		}
+	}
 }

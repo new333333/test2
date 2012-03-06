@@ -1216,12 +1216,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		FileUtils.setFileVersionAging(entity);
 	}
 
-	public Map<String,FileIndexData> getChildrenFileDataFromIndex(Binder binder) {
+	public Map<String,FileIndexData> getChildrenFileDataFromIndex(Long binderId) {
 		// look for the specific binder id
     	// look only for attachments
     	Criteria crit = new Criteria()
     	    .add(conjunction()	
-    			.add(eq(Constants.BINDER_ID_FIELD, binder.getId().toString()))
+    			.add(eq(Constants.BINDER_ID_FIELD, binderId.toString()))
    				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_ATTACHMENT))
      		);
 		// We use search engine to get the list of file names in the specified folder.
