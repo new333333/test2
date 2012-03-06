@@ -40,6 +40,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.util.Validator;
+import org.kablink.util.search.Constants;
 
 import static org.kablink.util.search.Constants.*;
 /**
@@ -84,5 +85,10 @@ public class ProfileIndexUtils {
     public static void addPersonFlag(Document doc, User user) {
         Field docNumField = new Field(PERSONFLAG_FIELD, String.valueOf(user.isPerson()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         doc.add(docNumField);
+    }
+    
+    public static void addDynamic(Document doc, Group group, boolean fieldsOnly) {
+    	Field dynamicField = new Field(IS_GROUP_DYNAMIC_FIELD, (group.isDynamic() ? Constants.TRUE : Constants.FALSE), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+    	doc.add(dynamicField);
     }
 }
