@@ -33,34 +33,27 @@
 
 package org.kablink.teaming.webdav;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.security.AccessControlException;
 
-import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.PropFindableResource;
-import com.bradmcevoy.http.Range;
 import com.bradmcevoy.http.Resource;
 import com.bradmcevoy.http.exceptions.BadRequestException;
 import com.bradmcevoy.http.exceptions.NotAuthorizedException;
-import com.bradmcevoy.http.exceptions.NotFoundException;
 
 /**
  * @author jong
@@ -100,11 +93,11 @@ public class FolderResource extends BinderResource implements PropFindableResour
 	public List<? extends Resource> getChildren()
 			throws NotAuthorizedException, BadRequestException {
 		// A folder can have other folders as children. It can also have files as children only if it is a library folder.
-		Map<String,BinderIndexData> binderMap = getBinderModule().getChildrenBinderDataFromIndex(entityIdentifier.getEntityId());
+		Map<String,BinderIndexData> binderMap = getBinderModule().getChildrenBinderDataFromIndex(id);
 		
 		Map<String,FileIndexData> fileMap = null;
 		if(library) 
-			fileMap = getFileModule().getChildrenFileDataFromIndex(entityIdentifier.getEntityId());
+			fileMap = getFileModule().getChildrenFileDataFromIndex(id);
 		else
 			fileMap = new HashMap<String,FileIndexData>();
 		
@@ -146,10 +139,32 @@ public class FolderResource extends BinderResource implements PropFindableResour
 			return null;
 	}
 	
-	private void resolveFolder() {
+	private Folder resolveFolder() throws NoFolderByTheIdException {
 		if(folder == null) {
-			// We can go directly to DAO layer because the access check has already been done for this folder higher up.
-	        folder = getFolderDao().loadFolder(entityIdentifier.getEntityId(), RequestContextHolder.getRequestContext().getZoneId());
+			// Load it directly from DAO without further access check, since access check
+			// was already performed at the time this instance was created. Resource object
+			// is created only after the system determines by looking up the database or
+			// Lucene index that the user making request has read access to the resource.
+			//folder = getFolderModule().getFolder(entityIdentifier.getEntityId());
+	        folder = getFolderDao().loadFolder(id, RequestContextHolder.getRequestContext().getZoneId());
+	        if(folder == null || folder.isDeleted() || folder.isPreDeleted())
+	        	throw new NoFolderByTheIdException(id);
 		}
+		return folder;
 	}
+	
+	private Resource makeResourceFromFile(FileAttachment fa) {
+		if(fa == null)
+			return null;
+		else
+			return new FileResource(factory, fa);
+	}
+	
+	private Resource makeResourceFromFile(FileIndexData file) {
+		if(file == null)
+			return null;
+		else
+			return new FileResource(factory, file);
+	}
+	
 }

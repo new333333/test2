@@ -34,12 +34,12 @@
 package org.kablink.teaming.webdav;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.NoWorkspaceByTheIdException;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.security.AccessControlException;
@@ -94,7 +94,7 @@ public class WorkspaceResource extends BinderResource  implements PropFindableRe
 	public List<? extends Resource> getChildren()
 			throws NotAuthorizedException, BadRequestException {
 		// A workspace can have other workspaces and/or folders as children
-		Map<String,BinderIndexData> childrenMap = getBinderModule().getChildrenBinderDataFromIndex(entityIdentifier.getEntityId());
+		Map<String,BinderIndexData> childrenMap = getBinderModule().getChildrenBinderDataFromIndex(id);
 		List<Resource> childrenResources = new ArrayList<Resource>(childrenMap.size());
 		Resource resource;
 		for(BinderIndexData bid:childrenMap.values()) {
@@ -105,4 +105,18 @@ public class WorkspaceResource extends BinderResource  implements PropFindableRe
 		return childrenResources;
 	}
 
+	private Workspace resolveWorkspace() throws NoWorkspaceByTheIdException {
+		if(ws == null) {
+			// Load it directly from DAO without further access check, since access check
+			// was already performed at the time this instance was created. Resource object
+			// is created only after the system determines by looking up the database or
+			// Lucene index that the user making request has read access to the resource.
+			//ws = getWorkspaceModule().getWorkspace(entityIdentifier.getEntityId());
+			ws = (Workspace) getCoreDao().loadBinder(id,  RequestContextHolder.getRequestContext().getZoneId());
+	        if(ws == null || ws.isDeleted() || ws.isPreDeleted())
+	        	throw new NoWorkspaceByTheIdException(id);
+		}
+		return ws;
+	}
+	
 }

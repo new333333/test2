@@ -38,11 +38,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderIndexData;
 
 import com.bradmcevoy.http.CollectionResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.PropFindableResource;
+import com.bradmcevoy.http.Resource;
 
 /**
  * @author jong
@@ -53,17 +57,22 @@ public abstract class BinderResource extends WebdavCollectionResource  implement
 	private static final Log logger = LogFactory.getLog(BinderResource.class);
 	
 	// Required properties
-	protected EntityIdentifier entityIdentifier;
+	protected Long id;
+	protected EntityType entityType;
 	protected String title;
 	protected String path;
 	protected Date createdDate;
 	protected Date modifiedDate;
 	protected boolean library;
 	protected boolean mirrored;
-	
+
+	private EntityIdentifier entityIdentifier;
+
 	private BinderResource(WebdavResourceFactory factory, EntityIdentifier entityIdentifier, String title, String path, Date createdDate, Date modifiedDate,
 			boolean library, boolean mirrored) {
 		super(factory);
+		this.id = entityIdentifier.getEntityId();
+		this.entityType = entityIdentifier.getEntityType();
 		this.entityIdentifier = entityIdentifier;
 		this.title = title;
 		this.path = path;
@@ -126,4 +135,47 @@ public abstract class BinderResource extends WebdavCollectionResource  implement
 	public Date getCreateDate() {
 		return createdDate;
 	}
+	
+	protected Resource makeResourceFromBinder(Binder binder) {
+		if(binder == null)
+			return null;
+		
+		if(binder instanceof Workspace) {
+			Workspace w = (Workspace) binder;
+			if(w.isDeleted() || w.isPreDeleted())
+				return null;
+			else 
+				return new WorkspaceResource(factory, w);
+		}
+		else if(binder instanceof Folder) {
+			Folder f = (Folder) binder;
+			if(f.isDeleted() || f.isPreDeleted())
+				return null;
+			else 
+				return new FolderResource(factory, f);
+		}
+		else {
+			return null;
+		}
+	}
+	
+	protected Resource makeResourceFromBinder(BinderIndexData binder) {
+		if(binder == null)
+			return null;
+		
+		EntityType entityType = binder.getEntityType();
+		if(EntityType.workspace == entityType) {
+			return new WorkspaceResource(factory, binder);
+		}
+		else if(EntityType.profiles == entityType) {
+			return new WorkspaceResource(factory, binder);
+		}
+		else if(EntityType.folder == entityType) {
+			return new FolderResource(factory, binder);
+		}
+		else {
+			return null;
+		}
+	}
+	
 }
