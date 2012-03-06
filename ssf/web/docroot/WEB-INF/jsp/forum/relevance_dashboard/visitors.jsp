@@ -65,6 +65,7 @@
 	</div>
 
 	<c:forEach var="user" items="${ss_visitors}">
+	  <c:if test="${user.id != ssUser.id }">
 		<div id="ss_col3_para" >
 		  <span><ssf:showUser user="${user}" titleStyle="ss_link_1" /></span>
 		  <c:if test="${!empty user.status}">
@@ -74,6 +75,7 @@
 			<div id="ss_im_status">${user.status}</div>
 		  </c:if>
 		</div><!-- end of para -->
+	  </c:if>
 	</c:forEach>
 
 	  <c:if test="${empty ss_visitors && ss_pageNumber > '0'}">
