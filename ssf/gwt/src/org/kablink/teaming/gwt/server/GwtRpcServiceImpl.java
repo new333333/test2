@@ -701,6 +701,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_NUMBER_OF_MEMBERS:
+		{
+			GetNumberOfMembersCmd gnmCmd;
+			IntegerRpcResponseData responseData;
+			int numMembers;
+			
+			gnmCmd = (GetNumberOfMembersCmd) cmd;
+			numMembers = GwtServerHelper.getNumberOfMembers( this, gnmCmd.getGroupId() );
+			responseData = new IntegerRpcResponseData( numMembers );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_PERSONAL_PREFERENCES:
 		{
 			GwtPersonalPreferences prefs;
@@ -1367,6 +1380,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GwtShareEntryResults results = shareEntry(
 					ri, seCmd.getEntryId(), seCmd.getComment(), seCmd.getPrincipalIds(), seCmd.getTeamIds() );
 			ShareEntryResultsRpcResponseData responseData = new ShareEntryResultsRpcResponseData( results );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case TEST_GROUP_MEMBERSHIP_LDAP_QUERY:
+		{
+			TestGroupMembershipCriteriaCmd tgmlqCmd;
+			Integer count;
+			IntegerRpcResponseData responseData;
+			
+			// Execute the ldap query and see how many users/groups are found
+			tgmlqCmd = (TestGroupMembershipCriteriaCmd) cmd;
+			count = GwtServerHelper.testGroupMembershipCriteria( this, tgmlqCmd.getMembershipCriteria() );
+			responseData = new IntegerRpcResponseData( count );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

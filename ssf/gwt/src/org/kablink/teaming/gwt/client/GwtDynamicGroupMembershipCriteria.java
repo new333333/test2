@@ -146,6 +146,23 @@ public class GwtDynamicGroupMembershipCriteria
 	/**
 	 * 
 	 */
+	public String getLdapFilterWithoutCRLF()
+	{
+		String filter;
+		
+		filter = null;
+		if ( m_ldapFilter != null && m_ldapFilter.length() > 0 )
+		{
+			filter = m_ldapFilter.replaceAll( "\r", "" );
+			filter = filter.replaceAll( "\n", "" );
+		}
+		
+		return filter;
+	}
+	
+	/**
+	 * 
+	 */
 	public boolean getSearchSubtree()
 	{
 		return m_searchSubtree;

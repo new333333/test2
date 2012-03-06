@@ -216,6 +216,145 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	protected void checkAccess(LdapOperation operation) {
 		getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
 	}
+
+	/**
+	 * Execute the given ldap query.  For each user found by the query, if the user already exists
+	 * in Vibe then add them to the list.
+	 * @author jwootton
+	 */
+	public HashSet<Long> getDynamicGroupMembers( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException
+	{
+		HashSet<Long> listOfMembers;
+		
+		listOfMembers = new HashSet<Long>();
+		
+		// Does the membership criteria have a filter?
+		if ( filter != null && filter.length() > 0 )
+		{
+			List<LdapConnectionConfig> ldapConnectionConfigs;
+			Workspace zone;
+			Long zoneId;
+			ProfileModule profileModule;
+
+			// Yes
+			profileModule = getProfileModule();
+			
+			zone = RequestContextHolder.getRequestContext().getZone();
+			zoneId = zone.getId();
+
+			// Get the list of ldap configurations.
+			ldapConnectionConfigs = getCoreDao().loadLdapConnectionConfigs( zoneId );
+			
+			// Go through each ldap configuration
+			for( LdapConnectionConfig nextLdapConfig : ldapConnectionConfigs )
+			{
+				String ldapGuidAttribute;
+				
+				// Does this ldap configuration have the ldap guid defined?
+				ldapGuidAttribute = nextLdapConfig.getLdapGuidAttribute();
+				if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
+				{
+			   		LdapContext ldapContext;
+			   		NamingException namingEx;
+
+					// Yes
+			   		namingEx = null;
+			   		ldapContext = null;
+			  		try
+			  		{
+						String[] userAttributeNames = {};
+						int scope;
+						SearchControls searchControls;
+						NamingEnumeration searchCtx;
+
+						// Get an ldap context for the given ldap configuration
+						ldapContext = getUserContext( zoneId, nextLdapConfig );
+						
+						if ( searchSubtree )
+							scope = SearchControls.SUBTREE_SCOPE;
+						else
+							scope = SearchControls.ONELEVEL_SCOPE;
+						
+						searchControls = new SearchControls( scope, 0, 0, userAttributeNames, false, false );
+
+						// Execute the ldap search using the membership criteria
+						searchCtx = ldapContext.search( baseDn, filter, searchControls );
+						
+						// Go through the list of users/groups found by the search.  If the
+						// user/group already exists in Vibe then add them to the list we
+						// will return.
+						while ( searchCtx.hasMore() )
+						{
+							Binding binding;
+							Attributes lAttrs = null;
+							String[] ldapAttributesToRead = { ldapGuidAttribute };
+							String guid;
+							User user;
+
+							// Get the next user/group in the list.
+							binding = (Binding)searchCtx.next();
+
+							// Read the guid for this user/group from the ldap directory.
+							lAttrs = ldapContext.getAttributes( binding.getNameInNamespace(), ldapAttributesToRead );
+							guid = getLdapGuid( lAttrs, ldapGuidAttribute );
+
+							// Does this user exist in Vibe.
+							try
+							{
+								user = profileModule.findUserByLdapGuid( guid );
+								if ( user != null )
+								{
+									// Yes, add them to the membership list.
+									listOfMembers.add( user.getId() );
+								}
+							}
+							catch ( NoUserByTheNameException ex )
+							{
+								// Nothing to do
+							}
+						}
+					}
+			  		catch (NamingException ex)
+			  		{
+			  			namingEx = ex;
+			  		}
+			  		finally
+			  		{
+						if ( ldapContext != null )
+						{
+							try
+							{
+								// Close the ldap context.
+								ldapContext.close();
+							}
+							catch (NamingException ex)
+					  		{
+								namingEx = ex;
+					  		}
+						}
+					}
+			  		
+			  		// Did we encounter a problem?
+			  		if ( namingEx != null )
+			  		{
+			  			LdapSyncException	ldapSyncEx;
+
+			  			// Yes
+			  			logError( NLT.get( "errorcode.ldap.context" ), namingEx );
+			  			
+			  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
+			  			// the LdapConnectionConfig object that was being used when the error happened.
+			  			ldapSyncEx = new LdapSyncException( nextLdapConfig, namingEx );
+			  			throw ldapSyncEx;
+			  		}
+				}
+			}
+		}
+
+		return listOfMembers;
+	}
+
+	
 	protected String getLdapProperty(String zoneName, String name) {
 		String val = SZoneConfig.getString(zoneName, "ldapConfiguration/property[@name='" + name + "']");
 		if (Validator.isNull(val)) {
@@ -297,6 +436,39 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     	
     	zones.put(zoneName, zone);
     	return zone;
+    }
+    
+    /**
+     * Has the user specified a value for "LDAP attribute that uniquely identifies a user or group"?
+     */
+    public boolean isGuidConfigured()
+    {
+    	boolean isConfigured;
+		List<LdapConnectionConfig> ldapConnectionConfigs;
+		Workspace zone;
+		Long zoneId;
+
+    	isConfigured = false;
+    	
+		zone = RequestContextHolder.getRequestContext().getZone();
+		zoneId = zone.getId();
+
+		// Get the list of ldap configurations.
+		ldapConnectionConfigs = getCoreDao().loadLdapConnectionConfigs( zoneId );
+		
+		// Go through each ldap configuration
+		for( LdapConnectionConfig nextLdapConfig : ldapConnectionConfigs )
+		{
+			String ldapGuidAttribute;
+			
+			// Get the name of the ldap attribute that holds the guid.
+			ldapGuidAttribute = nextLdapConfig.getLdapGuidAttribute();
+			
+			if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
+				isConfigured = true;
+		}
+    	
+    	return isConfigured;
     }
     
     /**
@@ -1062,6 +1234,111 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			m_zoneSyncInProgressMap.put( zone.getId(), Boolean.FALSE );
 		}
+	}
+	
+	/**
+	 * Execute the given ldap query and return how many users/groups were found
+	 * @author jwootton
+	 */
+	public Integer testGroupMembershipCriteria( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException
+	{
+		int count = 0;
+		
+		// Does the membership criteria have a filter?
+		if ( filter != null && filter.length() > 0 )
+		{
+			List<LdapConnectionConfig> ldapConnectionConfigs;
+			Workspace zone;
+			Long zoneId;
+
+			// Yes
+			zone = RequestContextHolder.getRequestContext().getZone();
+			zoneId = zone.getId();
+
+			// Get the list of ldap configurations.
+			ldapConnectionConfigs = getCoreDao().loadLdapConnectionConfigs( zoneId );
+			
+			// Go through each ldap configuration
+			for( LdapConnectionConfig nextLdapConfig : ldapConnectionConfigs )
+			{
+				String ldapGuidAttribute;
+				
+				// Does this ldap configuration have the ldap guid defined?
+				ldapGuidAttribute = nextLdapConfig.getLdapGuidAttribute();
+				if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
+				{
+			   		LdapContext ldapContext;
+			   		NamingException namingEx;
+
+					// Yes
+			   		namingEx = null;
+			   		ldapContext = null;
+			  		try
+			  		{
+						String[] userAttributeNames = {};
+						int scope;
+						SearchControls searchControls;
+						NamingEnumeration ctxSearch;
+
+						// Get an ldap context for the given ldap configuration
+						ldapContext = getUserContext( zoneId, nextLdapConfig );
+						
+						if ( searchSubtree )
+							scope = SearchControls.SUBTREE_SCOPE;
+						else
+							scope = SearchControls.ONELEVEL_SCOPE;
+						
+						searchControls = new SearchControls( scope, 0, 0, userAttributeNames, false, false );
+
+						// Execute the ldap search using the membership criteria
+						ctxSearch = ldapContext.search( baseDn, filter, searchControls );
+						
+						// Count the number of users/groups the search found
+						while ( ctxSearch.hasMore() )
+						{
+							ctxSearch.next();
+
+							++count;
+						}
+					}
+			  		catch (NamingException ex)
+			  		{
+			  			namingEx = ex;
+			  		}
+			  		finally
+			  		{
+						if ( ldapContext != null )
+						{
+							try
+							{
+								// Close the ldap context.
+								ldapContext.close();
+							}
+							catch (NamingException ex)
+					  		{
+								namingEx = ex;
+					  		}
+						}
+					}
+			  		
+			  		// Did we encounter a problem?
+			  		if ( namingEx != null )
+			  		{
+			  			LdapSyncException	ldapSyncEx;
+
+			  			// Yes
+			  			logError( NLT.get( "errorcode.ldap.context" ), namingEx );
+			  			
+			  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
+			  			// the LdapConnectionConfig object that was being used when the error happened.
+			  			ldapSyncEx = new LdapSyncException( nextLdapConfig, namingEx );
+			  			throw ldapSyncEx;
+			  		}
+				}
+			}
+		}
+
+		return new Integer( count );
 	}
 
 	

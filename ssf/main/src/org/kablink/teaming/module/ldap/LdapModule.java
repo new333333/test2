@@ -33,11 +33,10 @@
 
 package org.kablink.teaming.module.ldap;
 
-import java.util.List;
+import java.util.HashSet;
 
 import javax.naming.NamingException;
 
-import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 
@@ -53,7 +52,12 @@ public interface LdapModule {
 	}
 	public boolean testAccess(LdapOperation operation);
 
+	public HashSet<Long> getDynamicGroupMembers( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException;
+	
 	public LdapSchedule getLdapSchedule();
+	
+	public boolean isGuidConfigured();
+	
 	public void setLdapSchedule(LdapSchedule schedule);
 
     public String readLdapGuidFromDirectory( String userName, Long zoneId );
@@ -63,4 +67,6 @@ public interface LdapModule {
 	public void syncUser( String teamingUserName, String ldapUserName ) throws NoUserByTheNameException,NamingException;
 	
 	public void syncUser(Long userId) throws NoUserByTheNameException,NamingException;
+	
+	public Integer testGroupMembershipCriteria( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException;
 }

@@ -38,20 +38,27 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDynamicMembershipCriteriaCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.IntegerRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.TestGroupMembershipCriteriaCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
@@ -68,6 +75,7 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 	private TextArea m_filterTextArea;
 	private CheckBox m_searchSubtreeCB;
 	private CheckBox m_updateCB;
+	private Label m_currentMembershipLabel;
 	
 	/**
 	 * 
@@ -110,6 +118,15 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 		cellFormatter = table.getFlexCellFormatter();
 		
 		nextRow = 0;
+		
+		// Add a label that will be used to display the current membership information.
+		{
+			m_currentMembershipLabel = new Label( "" );
+			m_currentMembershipLabel.getElement().getStyle().setMarginBottom( 8, Unit.PX );
+			table.setWidget( nextRow, 0, m_currentMembershipLabel );
+			cellFormatter.setColSpan( nextRow, 0, 2 );
+			++nextRow;
+		}
 		
 		// Create the controls for "Base DN"
 		{
@@ -156,6 +173,56 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 			++nextRow;
 		}
 		
+		// Add a spacer
+		{
+			Label spacer;
+			
+			spacer = new Label();
+			spacer.getElement().getStyle().setMarginBottom( 6, Unit.PX );
+			table.setWidget( nextRow, 0, spacer );
+			++nextRow;
+		}
+		
+		// Add a "Test ldap query" button
+		{
+			Button btn;
+			ClickHandler clickHandler;
+			
+			btn = new Button( messages.modifyDynamicMembershipDlgTestQueryLabel() );
+			btn.addStyleName( "teamingButton" );
+			table.setWidget( nextRow, 0, btn );
+			cellFormatter.setColSpan( nextRow, 0, 2 );
+			
+			clickHandler = new ClickHandler()
+			{
+				/**
+				 * 
+				 */
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						/**
+						 * 
+						 */
+						public void execute()
+						{
+							// Invoke the "Execute LDAP Query" dialog.  This dialog will
+							// execute the ldap query and tell the user how many users/grops
+							// were found.
+							invokeExecuteLdapQueryDlg();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+				
+			};
+			btn.addClickHandler( clickHandler );
+
+			++nextRow;
+		}
 		mainPanel.add( table );
 
 		return mainPanel;
@@ -187,6 +254,48 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 	
 	
 	/**
+	 * Invoke the "Execute ldap query" dialog.  This dialog will execute the ldap query
+	 * entered by the user and will tell the user how many users/groups were found
+	 */
+	private void invokeExecuteLdapQueryDlg()
+	{
+		GwtDynamicGroupMembershipCriteria membershipCriteria;
+		
+		// Get the membership criteria entered by the user.
+		membershipCriteria = (GwtDynamicGroupMembershipCriteria) getDataFromDlg();
+		
+		{
+			TestGroupMembershipCriteriaCmd cmd;
+			AsyncCallback<VibeRpcResponse> rpcCallback;
+			
+			rpcCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				@Override
+				public void onFailure( Throwable caught )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_GetGroupLdapQuery() );
+				}
+	
+				@Override
+				public void onSuccess( VibeRpcResponse result )
+				{
+					IntegerRpcResponseData responseData;
+					Integer count;
+					
+					responseData = (IntegerRpcResponseData) result.getResponseData();
+					count = responseData.getIntegerValue();
+					Window.alert( GwtTeaming.getMessages().modifyDynamicMembershipDlgTestQueryResults( count ) );
+				}						
+			};
+			
+			cmd = new TestGroupMembershipCriteriaCmd( membershipCriteria );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		}
+	}
+	
+	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
 	public FocusWidget getFocusWidget()
@@ -212,6 +321,9 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 			
 			// Update the "Update group membership during scheduled ldap synchronization" checkbox.
 			m_updateCB.setValue( membershipCriteria.getUpdateDuringLdapSync() );
+			
+			// Update the "current membership: xxx user/groups"
+			m_currentMembershipLabel.setText( GwtTeaming.getMessages().modifyDynamicMembershipDlgCurrentMembershipLabel( currentMembershipCnt ) );
 		}
 	}
 }
