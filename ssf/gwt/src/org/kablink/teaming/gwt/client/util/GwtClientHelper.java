@@ -281,6 +281,11 @@ public class GwtClientHelper {
 					displayAlert = true;
 					break;
 					
+				case LDAP_GUID_NOT_CONFIGURED:
+					displayAlert = true;
+					cause = messages.rpcFailure_LdapGuidNotConfigured();
+					break;
+					
 				case NO_BINDER_BY_THE_ID_EXCEPTION:
 					displayAlert = true;
 					cause = patchMessage(messages.rpcFailure_FolderDoesNotExist(), patches);

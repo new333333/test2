@@ -655,6 +655,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_IS_DYNAMIC_GROUP_MEMBERSHIP_ALLOWED:
+		{
+			boolean isAllowed;
+			BooleanRpcResponseData responseData;
+			
+			isAllowed = GwtServerHelper.isDynamicGroupMembershipAllowed( this );
+			responseData = new BooleanRpcResponseData( isAllowed );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_LOGIN_INFO:
 		{
 			GwtLoginInfo loginInfo;
