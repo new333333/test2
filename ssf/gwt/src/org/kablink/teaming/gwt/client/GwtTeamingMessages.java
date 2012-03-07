@@ -1134,5 +1134,8 @@ public interface GwtTeamingMessages extends Messages
 	String modifyDynamicMembershipDlgTestQueryLabel();
 	String modifyDynamicMembershipDlgTestQueryResults( int count );
 	String modifyDynamicMembershipDlgUpdateLabel();
+
+	// Strings used in the "Edit graphic properties" dialog
+	String editGraphicPropertiesDlgSetImageSize();
 	
 }// end GwtTeamingMessages
