@@ -92,7 +92,7 @@ public class WebdavResourceFactory implements ResourceFactory {
 			else {
 				Object obj = resolvePath(p);
 				if(obj instanceof FileAttachment) {
-					return new FileResource(this, (FileAttachment)obj);
+					return new FileResource(this, path, (FileAttachment)obj);
 				}
 				else if(obj instanceof Folder) {
 					return new FolderResource(this, (Folder)obj);
