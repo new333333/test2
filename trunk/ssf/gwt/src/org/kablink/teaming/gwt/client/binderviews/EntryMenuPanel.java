@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.event.DeleteSelectedUserWorkspacesEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
@@ -64,10 +65,14 @@ import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
+import org.kablink.teaming.gwt.client.rpc.shared.BinderFiltersRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderFiltersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -94,23 +99,24 @@ import com.google.gwt.user.client.ui.RequiresResize;
  * @author drfoster@novell.com
  */
 public class EntryMenuPanel extends ToolPanelBase {
-	private BinderInfo			m_binderInfo;				//
-	private boolean				m_includeColumnResizer;		//
-	private List<ToolbarItem>	m_configureToolbarItems;	//
-	private List<ToolbarItem>	m_toolbarIems;				//
-	private VibeFlexTable		m_grid;						//
-	private VibeFlowPanel		m_configPanel;				//
-	private VibeFlowPanel		m_filterOptionsPanel;		//
-	private VibeFlowPanel		m_filtersPanel;				//
-	private VibeFlowPanel		m_quickFilterPanel;			//
-	private VibeMenuBar			m_entryMenu;				//
-	private VibeMenuItem		m_addFilesMenu;				//
-	private VibeMenuItem		m_deleteMenu;				//
-	private VibeMenuItem		m_moreMenu;					//
-	private VibeMenuItem		m_trashPurgeAllMenu;		//
-	private VibeMenuItem		m_trashPurgeSelectedMenu;	//
-	private VibeMenuItem		m_trashRestoreAllMenu;		//
-	private VibeMenuItem		m_trashRestoreSelectedMenu;	//
+	private BinderFiltersRpcResponseData	m_binderFilters;			//
+	private BinderInfo						m_binderInfo;				//
+	private boolean							m_includeColumnResizer;		//
+	private List<ToolbarItem>				m_configureToolbarItems;	//
+	private List<ToolbarItem>				m_toolbarIems;				//
+	private VibeFlexTable					m_grid;						//
+	private VibeFlowPanel					m_configPanel;				//
+	private VibeFlowPanel					m_filterOptionsPanel;		//
+	private VibeFlowPanel					m_filtersPanel;				//
+	private VibeFlowPanel					m_quickFilterPanel;			//
+	private VibeMenuBar						m_entryMenu;				//
+	private VibeMenuItem					m_addFilesMenu;				//
+	private VibeMenuItem					m_deleteMenu;				//
+	private VibeMenuItem					m_moreMenu;					//
+	private VibeMenuItem					m_trashPurgeAllMenu;		//
+	private VibeMenuItem					m_trashPurgeSelectedMenu;	//
+	private VibeMenuItem					m_trashRestoreAllMenu;		//
+	private VibeMenuItem					m_trashRestoreSelectedMenu;	//
 	
 	/*
 	 * Constructor method.
@@ -190,7 +196,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 			
 			@Override
 			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_EntryMenuPanel());
+				Window.alert(m_messages.codeSplitFailure_EntryMenuPanel());
 				tpClient.onUnavailable();
 			}
 		});
@@ -272,6 +278,50 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * Synchronously construct's the contents of the entry menu panel.
 	 */
 	private void loadPart2Now() {
+		if (BinderType.FOLDER == m_binderInfo.getBinderType()) {
+			final Long binderId = m_binderInfo.getBinderIdAsLong();
+			GwtClientHelper.executeCommand(
+					new GetBinderFiltersCmd(binderId),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_GetBinderFilters(),
+						binderId);
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Store the filter information and continue loading.
+					m_binderFilters = ((BinderFiltersRpcResponseData) response.getResponseData());
+					loadPart3Async();
+				}
+			});
+		}
+		
+		else {
+			loadPart3Async();
+		}
+	}
+	
+	/*
+	 * Asynchronously construct's the contents of the entry menu panel.
+	 */
+	private void loadPart3Async() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart3Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously construct's the contents of the entry menu panel.
+	 */
+	private void loadPart3Now() {
 		// Do we have an entry toolbar?
 		ToolbarItem entryTBI = ToolbarItem.getNestedToolbarItem(m_toolbarIems, "ssEntryToolbar");
 		if (null != entryTBI) {
@@ -291,36 +341,179 @@ public class EntryMenuPanel extends ToolPanelBase {
 		}
 		setEntriesSelected(false);
 		
-		// Do we have any configure toolbar items?
-		if (!(m_configureToolbarItems.isEmpty())) {
-			// Yes!  Create the configure menu bar...
-			VibeFlowPanel fp = new VibeFlowPanel();
-			Image configureImg = new Image();
-			configureImg.addStyleName("vibe-configureMenuImg");
-			configureImg.setUrl(m_images.configOptions().getSafeUri());
-			configureImg.getElement().setAttribute("align", "absmiddle");
-			fp.add(configureImg);
-			VibeMenuBar  configureMenu         = new VibeMenuBar(      "vibe-configureMenuBar vibe-entryMenuBar");
-			VibeMenuBar  configureDropdownMenu = new VibeMenuBar(true, "vibe-configureMenuBarDropDown"          );
-			VibeMenuItem configureItem         = new VibeMenuItem(fp.getElement().getInnerHTML(), true, configureDropdownMenu, "vibe-configureMenuBarItem");
-			configureMenu.addItem(configureItem);
-			m_configPanel.add(configureMenu);
-			
-			// ...scan the configure toolbar items...
-			for (ToolbarItem configureTBI:  m_configureToolbarItems) {
-				// ...adding each to the configure menu.
-				if (configureTBI.hasNestedToolbarItems()) {
-					renderStructuredTBI(configureDropdownMenu, configureTBI);
+		// Render the various right end capabilities applicable to the
+		// current binder.
+		renderConfigureTBI();
+		renderQuickFilter();
+		renderDefinedFiltering();
+		
+		// Finally, tell who's using this tool panel that it's ready to
+		// go.
+		toolPanelReady();
+	}
+
+	/*
+	 * Renders any configure toolbar items applicable to the current
+	 * binder.
+	 */
+	private void renderConfigureTBI() {
+		// If we don't have any configure toolbar items...
+		if (m_configureToolbarItems.isEmpty()) {
+			// ...there's nothing to render.  Bail.
+			return;
+		}
+		
+		// Create the configure menu bar...
+		VibeFlowPanel fp = new VibeFlowPanel();
+		Image configureImg = new Image(m_images.configOptions());
+		configureImg.addStyleName("vibe-configureMenuImg");
+		configureImg.getElement().setAttribute("align", "absmiddle");
+		fp.add(configureImg);
+		VibeMenuBar  configureMenu         = new VibeMenuBar(      "vibe-configureMenuBar vibe-entryMenuBar");
+		VibeMenuBar  configureDropdownMenu = new VibeMenuBar(true, "vibe-configureMenuBarDropDown"          );
+		VibeMenuItem configureItem         = new VibeMenuItem(fp.getElement().getInnerHTML(), true, configureDropdownMenu, "vibe-configureMenuBarItem");
+		configureMenu.addItem(configureItem);
+		m_configPanel.add(configureMenu);
+		
+		// ...scan the configure toolbar items...
+		for (ToolbarItem configureTBI:  m_configureToolbarItems) {
+			// ...adding each to the configure menu.
+			if (configureTBI.hasNestedToolbarItems()) {
+				renderStructuredTBI(configureDropdownMenu, configureTBI);
+			}
+			else if (configureTBI.isSeparator()) {
+				configureDropdownMenu.addSeparator();
+			}
+			else {
+				renderSimpleTBI(configureDropdownMenu, configureTBI);
+			}
+		}
+	}
+
+	/*
+	 * Renders any defined filter capabilities applicable to the
+	 * current binder.
+	 */
+	private void renderDefinedFiltering() {
+		// If we don't have any binder filter information...
+		if (null == m_binderFilters) {
+			// ...there's nothing to render.  Bail.
+			return;
+		}
+
+		// If there aren't any filters defined and the user can't
+		// define any...
+		final List<BinderFilter> filtersList   = m_binderFilters.getBinderFilters(); int filtersCount = ((null == filtersList) ? 0 : filtersList.size());
+		final String             filterEditUrl = m_binderFilters.getFilterEditUrl(); boolean hasFilterEditUrl = GwtClientHelper.hasString(filterEditUrl);
+		if ((0 == filtersCount) && (!hasFilterEditUrl)) {
+			// ...there's nothing to render.  Bail.
+			return;
+		}
+		
+		String  currentFilter    = m_binderFilters.getCurrentFilter();
+		boolean hasCurrentFilter = GwtClientHelper.hasString(currentFilter);
+		final String filtersOffUrl;
+		boolean hasFiltersOffUrl;
+		if (hasCurrentFilter) {
+			filtersOffUrl    = m_binderFilters.getFiltersOffUrl();
+			hasFiltersOffUrl = GwtClientHelper.hasString(filtersOffUrl);
+		}
+		else {
+			filtersOffUrl    = null;
+			hasFiltersOffUrl = false;
+		}
+		
+		// Create the filter options menu bar...
+		VibeFlowPanel fp = new VibeFlowPanel();
+		Image filterImg = new Image(m_images.menuButton());
+		filterImg.addStyleName("vibe-filterMenuImg");
+		filterImg.getElement().setAttribute("align", "absmiddle");
+		fp.add(filterImg);
+		VibeMenuBar  filterMenu         = new VibeMenuBar(      "vibe-filterMenuBar vibe-entryMenuBar");
+		VibeMenuBar  filterDropdownMenu = new VibeMenuBar(true, "vibe-filterMenuBarDropDown"          );
+		VibeMenuItem filterItem         = new VibeMenuItem(fp.getElement().getInnerHTML(), true, filterDropdownMenu, "vibe-filterMenuBarItem");
+		filterMenu.addItem(filterItem);
+		m_filterOptionsPanel.add(filterMenu);
+		
+		// If we have an edit filters URL...
+		if (hasFilterEditUrl) {
+			// ...add a menu item for it.
+			VibeMenuItem mi = new VibeMenuItem(m_messages.vibeEntryMenu_ManageFilters(), new Command() {
+				@Override
+				public void execute() {
+					GwtTeaming.fireEvent(new GotoContentUrlEvent(filterEditUrl));
 				}
-				else if (configureTBI.isSeparator()) {
-					configureDropdownMenu.addSeparator();
+			});
+			filterDropdownMenu.addItem(mi);
+			if ((!hasFiltersOffUrl) && (0 < filtersCount)) {
+				filterDropdownMenu.addSeparator();
+			}
+		}
+
+		// If we have a filters off URL...
+		if (hasFiltersOffUrl) {
+			// ...add a menu item for it.
+			VibeMenuItem mi = new VibeMenuItem(m_messages.vibeEntryMenu_ClearFilters(), new Command() {
+				@Override
+				public void execute() {
+					GwtTeaming.fireEvent(new GotoContentUrlEvent(filtersOffUrl));
+				}
+			});
+			filterDropdownMenu.addItem(mi);
+			if (0 < filtersCount) {
+				filterDropdownMenu.addSeparator();
+			}
+		}
+
+		// If we have any defined filters...
+		if (0 < filtersCount) {
+			// ...scan them...
+			for (final BinderFilter bf:  filtersList) {
+				// ...and add a menu item for each.
+				String fName = bf.getFilterName();
+				String menuText;
+				if (hasCurrentFilter) {
+					boolean isCurrent = fName.equalsIgnoreCase(currentFilter);
+					VibeFlowPanel html = new VibeFlowPanel();
+					Image checkImg;
+					if (isCurrent) {
+						checkImg = new Image(m_images.check12());
+						checkImg.addStyleName("vibe-filterMenuBarCheck");
+						checkImg.getElement().setAttribute("align", "absmiddle");
+					}
+					else {
+						checkImg = new Image(m_images.spacer1px());
+						checkImg.addStyleName("vibe-filterMenuBarCheck");
+						checkImg.setWidth("12px");
+					}
+					html.add(checkImg);
+					html.add(new InlineLabel(fName));
+					menuText = html.getElement().getInnerHTML();
 				}
 				else {
-					renderSimpleTBI(configureDropdownMenu, configureTBI);
+					menuText = fName;
 				}
+				VibeMenuItem mi = new VibeMenuItem(menuText, hasCurrentFilter, new Command() {
+					@Override
+					public void execute() {
+						GwtTeaming.fireEvent(new GotoContentUrlEvent(bf.getFilterUrl()));
+					}
+				});
+				filterDropdownMenu.addItem(mi);
 			}
 		}
 		
+//!		...this needs to be implemented...
+		// ...the last thing is displaying the selected filter(s) to
+		// ...left of the quick menu.
+		
+	}
+	
+	/*
+	 * Renders any quick filter capabilities applicable to the current
+	 * binder.
+	 */
+	private void renderQuickFilter() {
 		// If the folder supports quick filtering...
 		if (supportsQuickFilter()) {
 			// ...add a quick filter widget...
@@ -328,16 +521,13 @@ public class EntryMenuPanel extends ToolPanelBase {
 			qf.addStyleName("vibe-entryMenu-quickFilters-filter");
 			m_quickFilterPanel.add(qf);
 		}
+		
 		else {
 			// ...otherwise, hide the panel.
 			m_quickFilterPanel.setVisible(false);
 		}
-		
-		// Finally, tell who's using this tool panel that it's ready to
-		// go.
-		toolPanelReady();
 	}
-
+	
 	/*
 	 * Renders any simple (i.e., URL or event based) toolbar item.
 	 */
@@ -393,7 +583,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 					case TRASH_RESTORE_SELECTED_ENTRIES:      event = new TrashRestoreSelectedEntriesEvent(   folderId   ); break;
 			        			        					
 					case UNDEFINED:
-						Window.alert(GwtTeaming.getMessages().eventHandling_NoEntryMenuHandler(simpleEvent.name()));
+						Window.alert(m_messages.eventHandling_NoEntryMenuHandler(simpleEvent.name()));
 						event = null;
 					}
 					

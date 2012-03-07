@@ -1274,6 +1274,10 @@ public interface GwtTeamingMessages extends Messages
 	String vibeBinderFooter_WebDAVUrl();
 	String vibeBinderFooter_WebDAVUrlHint();
 	
+	// Strings used by the entry menu bar in the various binder views.
+	String vibeEntryMenu_ClearFilters();
+	String vibeEntryMenu_ManageFilters();
+		
 	// Strings used in the Folder Columns dialog
 	String folderColumnsDlgHeader();
 	String folderColumnsDlgFolderColumn();
