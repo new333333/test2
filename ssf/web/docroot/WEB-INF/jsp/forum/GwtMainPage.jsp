@@ -366,7 +366,7 @@
 		</table>
 
 		<div class="teamingDlgBoxFooter" id="loginDlgFooterId" style="margin: 0px !important;">
-			<button type="submit" class="gwt-Button teamingButton" id="loginOkBtn" >okxxx</button>
+			<button type="submit" class="gwt-Button teamingButton" id="loginOkBtn" ></button>
 			<button type="button" class="gwt-Button teamingButton" style="" id="loginCancelBtn"></button>
 		</div>
 
