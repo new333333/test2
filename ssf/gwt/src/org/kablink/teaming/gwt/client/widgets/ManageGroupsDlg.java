@@ -37,10 +37,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.VibeCellTableResources;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.GroupCreatedEvent;
+import org.kablink.teaming.gwt.client.event.GroupModifiedEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteGroupsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAllGroupsCmd;
@@ -81,6 +84,9 @@ import com.google.gwt.view.client.MultiSelectionModel;
  *
  */
 public class ManageGroupsDlg extends DlgBox
+	implements
+		GroupCreatedEvent.Handler,
+		GroupModifiedEvent.Handler
 {
 	private CellTable<GroupInfo> m_groupsTable;
     private MultiSelectionModel<GroupInfo> m_selectionModel;
@@ -88,10 +94,18 @@ public class ManageGroupsDlg extends DlgBox
 	private SimplePager m_pager;
 	private List<GroupInfo> m_listOfGroups;
 	private ModifyGroupDlg m_modifyGroupDlg;
-	private EditSuccessfulHandler m_editSuccessfulHandler;
 	private GroupInfo m_groupBeingEdited;
     private int m_width;
     private int m_height;
+	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] 
+	{
+		TeamingEvents.GROUP_CREATED,
+		TeamingEvents.GROUP_MODIFIED
+	};
 	
 	/**
 	 * 
@@ -106,6 +120,12 @@ public class ManageGroupsDlg extends DlgBox
 	{
 		super( autoHide, modal, xPos, yPos, DlgButtonMode.Close );
 		
+		// Register the events to be handled by this class.
+		EventHelper.registerEventHandlers(
+									GwtTeaming.getEventBus(),
+									m_registeredEvents,
+									this );
+
 		// Create the header, content and footer of this dialog box.
 		m_width = width;
 		m_height = height;
@@ -537,54 +557,48 @@ public class ManageGroupsDlg extends DlgBox
 		
 		if ( m_modifyGroupDlg == null )
 		{
-			// Create a handler that will be called when the user presses Ok in the
-			// ModifyGroupDlg.
-			if ( m_editSuccessfulHandler == null )
-			{
-				m_editSuccessfulHandler = new EditSuccessfulHandler()
-				{
-					@Override
-					public boolean editSuccessful( Object obj )
-					{
-						// Were we editing a group?
-						if ( m_groupBeingEdited != null )
-						{
-							// Yes
-							// The groupInfo object that was passed to us was passed to the
-							// ModifyGroupDlg.  That dialog would have updated the object
-							// with whatever the user entered.
-							// Update the table to reflect the fact that a group was modified.
-							m_dataProvider.refresh();
-						}
-						else
-						{
-							GroupInfo newGroup;
-							
-							// No, we are doing an add.
-							// Get the newly created group.
-							newGroup = (GroupInfo) obj;
-							
-							// Add the group as the first group in the list.
-							m_listOfGroups.add( 0, newGroup );
-							
-							// Update the table to reflect the new group we just created.
-							m_dataProvider.refresh();
-							
-							// Go to the first page.
-							m_pager.firstPage();
-							
-							// Select the newly created group.
-							m_selectionModel.setSelected( newGroup, true );
-						}
-						return true;
-					}
-				};
-			}
-			m_modifyGroupDlg = new ModifyGroupDlg( false, true, m_editSuccessfulHandler, null, x, y );
+			m_modifyGroupDlg = new ModifyGroupDlg( false, true, x, y );
 		}
 		
 		m_modifyGroupDlg.init( m_groupBeingEdited );
 		m_modifyGroupDlg.setPopupPosition( x, y );
 		m_modifyGroupDlg.show();
+	}
+
+	/**
+	 * Handles the GroupCreatedEvent received by this class
+	 */
+	@Override
+	public void onGroupCreated( GroupCreatedEvent event )
+	{
+		GroupInfo newGroup;
+
+		// Get the newly created group.
+		newGroup = event.getGroupInfo();
+		
+		// Add the group as the first group in the list.
+		m_listOfGroups.add( 0, newGroup );
+		
+		// Update the table to reflect the new group we just created.
+		m_dataProvider.refresh();
+		
+		// Go to the first page.
+		m_pager.firstPage();
+		
+		// Select the newly created group.
+		m_selectionModel.setSelected( newGroup, true );
+	}
+	
+	/**
+	 * Handles the GroupModifiedEvent received by this class
+	 */
+	@Override
+	public void onGroupModified( GroupModifiedEvent event )
+	{
+		// The groupInfo object that was passed to us was passed to the
+		// ModifyGroupDlg.  That dialog would have updated the object
+		// with whatever the user entered.
+		// Update the table to reflect the fact that a group was modified.
+		m_dataProvider.refresh();
 	}
 }

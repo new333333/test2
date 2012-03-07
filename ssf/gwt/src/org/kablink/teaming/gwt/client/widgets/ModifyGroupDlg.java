@@ -36,12 +36,13 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.GroupCreatedEvent;
+import org.kablink.teaming.gwt.client.event.GroupModifiedEvent;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateGroupCmd;
@@ -91,7 +92,6 @@ public class ModifyGroupDlg extends DlgBox
 	private TextArea m_descTextArea;
 	private RadioButton m_staticRb;
 	private RadioButton m_dynamicRb;
-	private EditSuccessfulHandler m_editSuccessfulHandler;
 	private ModifyStaticMembershipDlg m_staticMembershipDlg;
 	private ModifyDynamicMembershipDlg m_dynamicMembershipDlg;
 	private GwtDynamicGroupMembershipCriteria m_dynamicMembershipCriteria;
@@ -104,18 +104,13 @@ public class ModifyGroupDlg extends DlgBox
 	public ModifyGroupDlg(
 		boolean autoHide,
 		boolean modal,
-		EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
-		EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
 		int xPos,
 		int yPos )
 	{
 		super( autoHide, modal, xPos, yPos );
 
-		// Remember the callback we should call when the user presses ok
-		m_editSuccessfulHandler = editSuccessfulHandler;
-		
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( "", this, editCanceledHandler, null ); 
+		createAllDlgContent( "", this, null, null ); 
 	}
 
 	/**
@@ -253,6 +248,9 @@ public class ModifyGroupDlg extends DlgBox
 			@Override
 			public void onFailure( Throwable caught )
 			{
+				// Show this dialog
+				show();
+				
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
 					GwtTeaming.getMessages().rpcFailure_CreateGroup(),
@@ -264,22 +262,23 @@ public class ModifyGroupDlg extends DlgBox
 			@Override
 			public void onSuccess( VibeRpcResponse result )
 			{
-				if ( m_editSuccessfulHandler != null )
-				{
-					GroupInfo groupInfo;
-					
-					groupInfo = (GroupInfo) result.getResponseData();
-					m_editSuccessfulHandler.editSuccessful( groupInfo );
-				}
+				GroupCreatedEvent event;
+				GroupInfo groupInfo;
 				
-				// Close this dialog.
-				hide();
+				groupInfo = (GroupInfo) result.getResponseData();
+				
+				// Fire an event that lets everyone know a group was created.
+				event = new GroupCreatedEvent( groupInfo );
+				GwtTeaming.fireEvent( event );
 			}						
 		};
 		
 		// Issue an rpc request to create the group.
 		cmd = new CreateGroupCmd( getGroupName(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership, m_dynamicMembershipCriteria );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
+		
+		// Close this dialog.
+		hide();
 	}
 
 	/**
@@ -769,6 +768,8 @@ public class ModifyGroupDlg extends DlgBox
 			@Override
 			public void onFailure( Throwable caught )
 			{
+				show();
+				
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
 					GwtTeaming.getMessages().rpcFailure_ModifyGroup() );
@@ -777,21 +778,24 @@ public class ModifyGroupDlg extends DlgBox
 			@Override
 			public void onSuccess( VibeRpcResponse result )
 			{
+				GroupModifiedEvent event;
+				
 				// Update the GroupInfo object that was passed to us with the new
 				// group info entered by the user.
 				m_groupInfo.setTitle( getGroupTitle() );
 				m_groupInfo.setDesc( getGroupDesc() );
 				
-				if ( m_editSuccessfulHandler != null )
-					m_editSuccessfulHandler.editSuccessful( m_groupInfo );
-				
-				// Close this dialog.
-				hide();
+				// Fire an event that lets everyone know this group was modified.
+				event = new GroupModifiedEvent( m_groupInfo );
+				GwtTeaming.fireEvent( event );
 			}						
 		};
 		
 		// Issue an rpc request to update the group.
 		cmd = new ModifyGroupCmd( m_groupInfo.getId(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership, m_dynamicMembershipCriteria );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
+
+		// Close this dialog.
+		hide();
 	}
 }
