@@ -205,6 +205,8 @@ public class FilterController extends AbstractBinderController {
 			globalSearchFilters = new HashMap();
 		}
 		model.put(WebKeys.FILTER_SEARCH_FILTERS_GLOBAL, globalSearchFilters);
+		model.put(WebKeys.FILTER_SEARCH_SHOW_GLOBAL_FILTER_CHECKBOX, 
+				getBinderModule().testAccess(binder, BinderOperation.modifyBinder));
 		
 		Workspace ws = getWorkspaceModule().getTopWorkspace();
 		Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);

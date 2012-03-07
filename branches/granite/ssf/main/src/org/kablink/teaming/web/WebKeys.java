@@ -946,6 +946,7 @@ public class WebKeys {
     public static final String FILTER_SEARCH_FILTERS="ss_searchFilters";
     public static final String FILTER_SEARCH_FILTERS_GLOBAL="ss_searchFiltersGlobal";
     public static final String FILTER_SEARCH_FILTER_IS_GLOBAL="ss_searchFilterIsGlobal";
+    public static final String FILTER_SEARCH_SHOW_GLOBAL_FILTER_CHECKBOX="ss_searchFilterShowGlobalCheckbox";
     public static final String FILTER_SELECTED_FILTER_NAME="ss_selectedFilter";
     public static final String FILTER_TYPE="ss_filterType";
     public static final String FILTER_VALUE_TYPE="ss_filterValueType";
