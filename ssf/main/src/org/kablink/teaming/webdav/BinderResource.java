@@ -138,7 +138,10 @@ public abstract class BinderResource extends WebdavCollectionResource  implement
 
 	@Override
 	public String getWebdavPath() {
-		return new StringBuilder(DavResource.WEBDAV_PATH).append("/").append(path).toString();
+		StringBuilder sb = new StringBuilder(DavResource.WEBDAV_PATH);
+		if(!path.startsWith("/"))
+			sb.append("/");
+		return sb.append(path).toString();
 	}
 
 	protected Resource makeResourceFromBinder(Binder binder) {
