@@ -44,6 +44,8 @@ import java.util.Map;
 import org.kablink.teaming.util.NLT;
 
 import com.bradmcevoy.http.CollectionResource;
+import com.bradmcevoy.http.GetableResource;
+import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Range;
 import com.bradmcevoy.http.Resource;
 import com.bradmcevoy.http.exceptions.BadRequestException;
@@ -54,7 +56,7 @@ import com.bradmcevoy.http.exceptions.NotFoundException;
  * @author jong
  *
  */
-public abstract class WebdavCollectionResource extends WebdavResource implements CollectionResource {
+public abstract class WebdavCollectionResource extends WebdavResource implements PropFindableResource, GetableResource, CollectionResource {
 
 	protected static final String CONTENT_TYPE_TEXT_HTML_UTF8 = "text/html; charset=utf-8";
 	

@@ -52,7 +52,7 @@ import com.bradmcevoy.http.Resource;
  * @author jong
  *
  */
-public abstract class BinderResource extends WebdavCollectionResource  implements PropFindableResource, CollectionResource, GetableResource {
+public abstract class BinderResource extends WebdavCollectionResource  implements PropFindableResource, GetableResource, CollectionResource {
 
 	private static final Log logger = LogFactory.getLog(BinderResource.class);
 	

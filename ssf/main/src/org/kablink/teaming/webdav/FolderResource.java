@@ -59,7 +59,7 @@ import com.bradmcevoy.http.exceptions.NotAuthorizedException;
  * @author jong
  *
  */
-public class FolderResource extends BinderResource implements PropFindableResource, CollectionResource, GetableResource {
+public class FolderResource extends BinderResource implements PropFindableResource, GetableResource, CollectionResource {
 	
 	// lazy resolved for efficiency, so may be null initially
 	private Folder folder;

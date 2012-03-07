@@ -49,7 +49,7 @@ import com.bradmcevoy.http.Resource;
  * @author jong
  *
  */
-public class DavResource extends WebdavCollectionResource implements PropFindableResource, CollectionResource, GetableResource {
+public class DavResource extends WebdavCollectionResource implements PropFindableResource, GetableResource, CollectionResource {
 
 	static final String ID = "dav";
 	static final String WEBDAV_PATH = "/dav";
