@@ -52,6 +52,7 @@ import com.bradmcevoy.http.Resource;
 public class DavResource extends WebdavCollectionResource implements PropFindableResource, CollectionResource, GetableResource {
 
 	static final String ID = "dav";
+	static final String WEBDAV_PATH = "/dav";
 	
 	public DavResource(WebdavResourceFactory factory) {
 		super(factory);
@@ -111,6 +112,14 @@ public class DavResource extends WebdavCollectionResource implements PropFindabl
 		List<Resource> list = new ArrayList<Resource>();
 		list.add(new WorkspaceResource(factory, topWS));
 		return list;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.webdav.WebdavResource#getWebdavPath()
+	 */
+	@Override
+	public String getWebdavPath() {
+		return WEBDAV_PATH;
 	}
 
 }

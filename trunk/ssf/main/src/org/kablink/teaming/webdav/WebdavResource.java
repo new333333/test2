@@ -59,6 +59,8 @@ public abstract class WebdavResource implements Resource, GetableResource {
 		this.factory = factory;
 	}
 	
+	public abstract String getWebdavPath();
+	
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.Resource#authenticate(java.lang.String, java.lang.String)
 	 */

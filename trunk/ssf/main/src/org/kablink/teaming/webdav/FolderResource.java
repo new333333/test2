@@ -157,14 +157,14 @@ public class FolderResource extends BinderResource implements PropFindableResour
 		if(fa == null)
 			return null;
 		else
-			return new FileResource(factory, fa);
+			return new FileResource(factory, getWebdavPath() + "/" + fa.getFileItem().getName(), fa);
 	}
 	
 	private Resource makeResourceFromFile(FileIndexData file) {
 		if(file == null)
 			return null;
 		else
-			return new FileResource(factory, file);
+			return new FileResource(factory, getWebdavPath() + "/" + file.getName(), file);
 	}
 	
 }

@@ -75,24 +75,27 @@ public class FileResource extends WebdavResource implements PropFindableResource
 	private Date createdDate; // creation date
 	private Date modifiedDate; // last modification date
 	
+	private String webdavPath;
+	
 	// lazy resolved for efficiency, so may be null initially
 	private FileAttachment fa; 
 	
-	private FileResource(WebdavResourceFactory factory, String name, String id, Date createdDate, Date modifiedDate) {
+	private FileResource(WebdavResourceFactory factory, String webdavPath, String name, String id, Date createdDate, Date modifiedDate) {
 		super(factory);
+		this.webdavPath = webdavPath;
 		this.name = name;
 		this.id = id;
 		this.createdDate = createdDate;
 		this.modifiedDate = modifiedDate;
 	}
 	
-	public FileResource(WebdavResourceFactory factory, FileAttachment fa) {
-		this(factory, fa.getFileItem().getName(), fa.getId(), fa.getCreation().getDate(), fa.getModification().getDate());
+	public FileResource(WebdavResourceFactory factory, String webdavPath, FileAttachment fa) {
+		this(factory, webdavPath, fa.getFileItem().getName(), fa.getId(), fa.getCreation().getDate(), fa.getModification().getDate());
 		this.fa = fa; // already resolved
 	}
 
-	public FileResource(WebdavResourceFactory factory, FileIndexData fid) {
-		this(factory, fid.getName(), fid.getId(),  fid.getCreatedDate(), fid.getModifiedDate());
+	public FileResource(WebdavResourceFactory factory, String webdavPath, FileIndexData fid) {
+		this(factory, webdavPath, fid.getName(), fid.getId(),  fid.getCreatedDate(), fid.getModifiedDate());
 	}
 
 	/* (non-Javadoc)
@@ -186,6 +189,10 @@ public class FileResource extends WebdavResource implements PropFindableResource
 		return null;
 	}
 	
+	public String getWebdavPath() {
+		return webdavPath;
+	}
+	
 	private FileAttachment resolveFileAttachment() throws NoFileByTheIdException {
 		if(fa == null) {
 			// Load it directly from DAO without further access check, since access check
@@ -203,7 +210,7 @@ public class FileResource extends WebdavResource implements PropFindableResource
 	}
 	
 	private String toString(FileAttachment fa) {
-    	return new StringBuffer().append("[").append(fa.getFileItem().getName()).append(":").append(fa.getId()).append("]").toString(); 
+    	return new StringBuilder().append("[").append(fa.getFileItem().getName()).append(":").append(fa.getId()).append("]").toString(); 
 	}
 	
 }

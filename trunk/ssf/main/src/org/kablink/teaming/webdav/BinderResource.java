@@ -135,7 +135,12 @@ public abstract class BinderResource extends WebdavCollectionResource  implement
 	public Date getCreateDate() {
 		return createdDate;
 	}
-	
+
+	@Override
+	public String getWebdavPath() {
+		return new StringBuilder(DavResource.WEBDAV_PATH).append("/").append(path).toString();
+	}
+
 	protected Resource makeResourceFromBinder(Binder binder) {
 		if(binder == null)
 			return null;

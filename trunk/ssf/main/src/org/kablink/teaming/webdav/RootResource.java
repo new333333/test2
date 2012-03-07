@@ -109,4 +109,12 @@ public class RootResource extends WebdavCollectionResource implements PropFindab
 		return list;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.webdav.WebdavResource#getWebdavPath()
+	 */
+	@Override
+	public String getWebdavPath() {
+		return "/";
+	}
+
 }
