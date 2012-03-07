@@ -6,7 +6,7 @@ bd.html{
 	}
 	body{
 		children.each {
-			a(href: parent.getName() + "/" + it.getName(), it.getName())
+			a(href: it.getWebdavPath(), it.getName())
 			br()
 		}
 	}
