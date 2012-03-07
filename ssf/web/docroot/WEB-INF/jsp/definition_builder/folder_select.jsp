@@ -51,7 +51,7 @@
 				  <ssf:param name="binderId" value="${ssBinderId}" />
 				  <ssf:param name="propertyId" value="propertyId_${propertyId}" />
 			    </ssf:url>"
-			    title="<ssf:nlt tag="definition.selectDestinationFolder"/>">x</iframe> 
+			    title="<ssf:nlt tag="definition.selectDestinationFolder"/>">Novell Vibe</iframe> 
 		</td>
 	</tr>
   </tbody>
