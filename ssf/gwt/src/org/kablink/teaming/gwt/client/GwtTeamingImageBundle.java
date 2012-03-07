@@ -274,6 +274,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource menu();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/menu_but.png")
+	public ImageResource menuButton();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/move10.png")
 	public ImageResource move10();
 
