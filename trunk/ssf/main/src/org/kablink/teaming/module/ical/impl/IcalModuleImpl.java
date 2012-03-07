@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -150,6 +150,12 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	private static final String TASK_HASDURATION_DAYS   = "X-VIBE-HASDURATION-DAYS";
 	private static final String TASK_HASSPECIFIED_END   = "X-VIBE-HASSPECIFIED-END";
 	private static final String TASK_HASSPECIFIED_START = "X-VIBE-HASSPECIFIED-START";
+	
+	// The following is used in a VTODO or VEVENT to mark it as
+	// containing an 'All Day' event.  In addition to a lack of time
+	// zone, this will be recognized as an indication that the event
+	// is an 'All Day' event.
+	private static final String ALL_DAY_EVENT	= "X-GWALLDAYEVENT";
 	
 	// When generating a UID for an event, the follow is used to split
 	// the UID value from the iCal from the RECURRENCE-ID.  Vibe uses
@@ -1523,6 +1529,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	 * @throws IOException
 	 * @throws ParserException
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public void parseEvents(Reader icalData, EventHandler handler)
 		throws IOException, ParserException
@@ -1548,7 +1555,8 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 					((RRule) eventComponent.getProperty("RRULE")),
 					eventComponent.getRecurrenceId(),
 					eventComponent.getUid(),
-					timeZones);
+					timeZones,
+					isAllDaysEvent(eventComponent));
 				
 				String description = null;
 				if(eventComponent.getDescription() != null) {
@@ -1576,7 +1584,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 				
 				event = parseEvent(todoComponent.getStartDate(), null, todoComponent.getDue(), 
 						todoComponent.getDuration(), (RRule) todoComponent.getProperty("RRULE"),
-						todoComponent.getRecurrenceId(), todoComponent.getUid(), timeZones);
+						todoComponent.getRecurrenceId(), todoComponent.getUid(), timeZones, isAllDaysEvent(todoComponent));
 				
 				parseVibeSpecificStuff(event, todoComponent);
 	
@@ -1758,7 +1766,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	 * Parse VEVENT or VTODO.
 	 */
 	private Event parseEvent(DtStart start, DtEnd end, Due due, Duration duration, RRule recurrence,
-			RecurrenceId recurrenceId, Uid uid, Map<String, TimeZone> timeZones) {	
+			RecurrenceId recurrenceId, Uid uid, Map<String, TimeZone> timeZones, boolean xAllDay) {	
 		if (start == null && end == null && due == null && duration == null && uid == null) {
 			return null;
 		}
@@ -1784,7 +1792,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			event.setDtStart(startCal);
 		}
 		
-		if (isAllDaysEvent(start)) {
+		if (xAllDay || isAllDaysEvent(start)) {
 			event.allDaysEvent();
 		} else {
 			Parameter tzId = start.getParameter(Parameter.TZID);
@@ -1867,6 +1875,18 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		return event;
 	}
 
+	private boolean isAllDaysEvent(CalendarComponent component) {
+		boolean xAllDay = false;
+		XProperty xAllDayProp = ((XProperty) component.getProperties().getProperty(ALL_DAY_EVENT));
+		if (null != xAllDayProp) {
+			String sAllDayProp = xAllDayProp.getValue();
+			if (MiscUtil.hasString(sAllDayProp)) {
+				xAllDay = sAllDayProp.equalsIgnoreCase("true");
+			}
+		}
+		return xAllDay;
+	}
+	
 	private boolean isAllDaysEvent(DtStart start) {
 		return start != null && !((start.getParameter(Parameter.TZID) != null) || 
 				(start.getParameter(Parameter.TZID) == null && 
@@ -1921,17 +1941,20 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	 * @throws IOException
 	 * @throws ParserException
 	 */
+	@Override
 	public List<Event> parseEvents(Reader icalData)
 		throws IOException, ParserException
 	{
 		final List<Event> events = new LinkedList<Event>();
 		
 		EventHandler myHandler = new EventHandler() {
+			@Override
 			public void handleEvent(Event e, String description, String summary, String location, List<Attendee> attendees)
 			{
 				events.add(e);
 			}
 
+			@Override
 			public void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location, List<Attendee> attendees) {
 				events.add(event);
 			}
@@ -1953,15 +1976,18 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	 * @throws IOException
 	 * @throws ParserException
 	 */
+	@Override
 	public AttendedEntries parseToEntries (final Long folderId, InputStream icalFile) throws IOException, ParserException
 	{
 		Folder folder = (Folder)folderModule.getFolder(folderId);
 		return parseToEntries(folder, null, icalFile);
 	}
+	@Override
 	@SuppressWarnings("unchecked")
 	public AttendedEntries parseToEntries (final Folder folder, Definition def, InputStream icalFile) throws IOException, ParserException {
 		return parseToEntries(folder, def, icalFile, new HashMap());
 	}
+	@Override
 	@SuppressWarnings("unchecked")
 	public AttendedEntries parseToEntries (final Folder folder, Definition def, InputStream icalFile, final Map baseInputData) throws IOException, ParserException {
 
@@ -1977,7 +2003,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		}
 
 		EventHandler entryCreator = new EventHandler() {
-			
+			@Override
 			public void handleEvent(Event event, String description, String summary, String location, List<Attendee> attendees) {
 				Map<String, Object> formData = new HashMap<String, Object>();
 
@@ -2008,6 +2034,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 				addOrModifyEntry(event, new MapInputData(formData));
 			}
 
+			@Override
 			public void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location, List<Attendee> attendees) {
 				Map<String, Object> formData = new HashMap<String, Object>();
 
@@ -2148,6 +2175,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		return null;
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public Calendar generate(DefinableEntity entry,
 			Collection events, String defaultTimeZoneId) {
@@ -2156,6 +2184,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		return calendar;
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public Calendar generate(String calendarName,  List folderEntries, String defaultTimeZoneId) {
 		Calendar calendar = createICalendar(calendarName);
@@ -2359,7 +2388,8 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			end = new Date(new org.joda.time.DateTime(end).plusDays(1).toDate());
 			vToDo = new VToDo(start, end, entry.getTitle());
 			vToDo.getProperties().getProperty(Property.DTSTART).getParameters().add(Value.DATE);
-			vToDo.getProperties().getProperty(Property.DUE    ).getParameters().add(Value.DATE);			
+			vToDo.getProperties().getProperty(Property.DUE    ).getParameters().add(Value.DATE);
+			setComponentAllDays(vToDo);
 		}
 		
 		setComponentDescription(vToDo, entry.getDescription().getText());
@@ -2669,6 +2699,8 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			} else {
 				vEvent.getProperties().add(Transp.OPAQUE);
 			}
+			
+			setComponentAllDays(vEvent);
 		}
 
 		if (entry.getDescription() != null) {
@@ -2881,9 +2913,16 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		}
 	}
 
+	private void setComponentAllDays(CalendarComponent component) {
+		component.getProperties().add(
+			new XProperty(
+				ALL_DAY_EVENT,
+				String.valueOf(Boolean.TRUE).toUpperCase()));					
+	}
+	
 	private void setComponentDescription(CalendarComponent component,
 			String descr) {
-		//grwise was ignore mail without a description
+		// GroupWise was ignore mail without a description
 		if (Validator.isNotNull(descr))
 			component.getProperties().add(new Description(Html.stripHtml(descr)));
 	}
