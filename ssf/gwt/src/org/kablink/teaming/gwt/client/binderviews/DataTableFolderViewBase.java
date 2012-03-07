@@ -1724,13 +1724,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	@Override
 	public void onQuickFilter(QuickFilterEvent event) {
-		// If the event is targeted to the folder we're viewing...
+		// Is the event is targeted to the folder we're viewing?
 		if (event.getFolderId().equals(getFolderInfo().getBinderIdAsLong())) {
-			// ...handle it.
+			// Yes!  Track the current quick filter and force the data
+			// table to refresh with it.
 			m_quickFilter = event.getQuickFilter();
-//!			...this needs to be implemented...
-GwtClientHelper.deferredAlert("onQuickFilter( '" + event.getQuickFilter() + "' ):  ...this needs to be implemented...");
-			resetViewAsync();
+			resetDataTableAsync();
 		}
 	}
 
@@ -2051,6 +2050,17 @@ GwtClientHelper.deferredAlert("onQuickFilter( '" + event.getQuickFilter() + "' )
 		}
 	}
 
+	/*
+	 * Asynchronously resets the the content of the data table.
+	 * 
+	 * This is different from resetViewAsync() in that only the data
+	 * table is reset and not the tool panels, ...
+	 */
+	private void resetDataTableAsync() {
+		getFlowPanel().clear();
+		populateViewAsync();
+	}
+	
 	/*
 	 * Asynchronously resets the view.
 	 */

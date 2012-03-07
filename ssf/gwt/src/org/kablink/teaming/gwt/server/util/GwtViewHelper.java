@@ -59,9 +59,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.document.Document;
 
+import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -130,6 +131,7 @@ import org.kablink.teaming.portletadapter.portlet.RenderResponseImpl;
 import org.kablink.teaming.portletadapter.support.AdaptedPortlets;
 import org.kablink.teaming.portletadapter.support.KeyNames;
 import org.kablink.teaming.portletadapter.support.PortletInfo;
+import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper;
@@ -141,6 +143,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DashboardHelper;
@@ -197,16 +200,36 @@ public class GwtViewHelper {
 	@SuppressWarnings("unchecked")
 	private static void addQuickFilterToSearch(AllModulesInjected bs, BinderInfo binderInfo, Binder binder, Map options, String quickFilter) {
 		// If we weren't given a quick filter to add...
-		if (!(MiscUtil.hasString(quickFilter))) {
+	    quickFilter = ((null == quickFilter) ? "" : quickFilter.trim());
+		if (0 == quickFilter.length()) {
 			// ...there's nothing to do.  Bail.
 			return;
 		}
-		
-		
-		@SuppressWarnings("unused")
-		Document searchFilter = ((Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER));
-		
-//!		...this needs to be implemented...
+
+		// Create a SearchFilter from whatever filter is already in
+		// affect...
+		SearchFilter sf;
+		Document sfDoc = ((Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER));
+		if (null == sfDoc)
+		     sf = new SearchFilter();
+		else sf = new SearchFilter(sfDoc);
+
+		// ...store its XML Document in the options Map...
+		sfDoc = sf.getFilter();
+		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, sfDoc);
+
+		// ...add in the quick filter...
+		if (!(quickFilter.endsWith("*"))) {
+			quickFilter += "*";
+		}
+		sf.addTextFilter(quickFilter);
+
+		// ...and if we logging debug messages...
+		if (m_logger.isDebugEnabled()) {
+			// ...dump the search filter XML.
+			m_logger.debug("GwtViewHelper.addQuickFilterToSearch( '" + quickFilter + "'):  Search Filter:");
+			m_logger.debug("\n" + getXmlString(sfDoc));
+		}
 	}
 	
 	/*
@@ -1642,7 +1665,7 @@ public class GwtViewHelper {
 				Map<String,Definition> entryDefs = DefinitionHelper.getEntryDefsAsMap(((Folder) bs.getBinderModule().getBinder(folderId)));
 				for (Definition def :  entryDefs.values()) {
 					@SuppressWarnings("unused")
-					org.dom4j.Document defDoc = def.getDefinition();
+					Document defDoc = def.getDefinition();
 					Map<String,Map> elementData = bs.getDefinitionModule().getEntryDefinitionElements(def.getId());
 					for (Map.Entry me : elementData.entrySet()) {
 						String eleName = (String)me.getKey();
@@ -2532,7 +2555,7 @@ public class GwtViewHelper {
 
 			// Scan the pinned entries.
 			FolderModule fm = bs.getFolderModule();
-			List<Document> pinnedFolderEntriesList = new ArrayList<Document>();
+			List<org.apache.lucene.document.Document> pinnedFolderEntriesList = new ArrayList<org.apache.lucene.document.Document>();
 			SortedSet<FolderEntry> pinnedFolderEntriesSet = fm.getEntries(peSet);
 			for (FolderEntry entry:  pinnedFolderEntriesSet) {
 				// Is this entry still viable in this folder?
@@ -2541,7 +2564,7 @@ public class GwtViewHelper {
 					pinnedEntryIds.add(entry.getId());
 
 					// ...and indexDoc.
-					Document indexDoc = fm.buildIndexDocumentFromEntry(entry.getParentBinder(), entry, null);
+					org.apache.lucene.document.Document indexDoc = fm.buildIndexDocumentFromEntry(entry.getParentBinder(), entry, null);
 					pinnedFolderEntriesList.add(indexDoc);
 				}
 			}
@@ -2883,7 +2906,22 @@ public class GwtViewHelper {
 		url.setParameter(WebKeys.URL_ENTRY_ID,         String.valueOf(userId)                                          );
 		return url.toString();
 	}
-	
+
+	/*
+	 * Returns a formatted XML document for displaying somewhere.
+	 */
+    private static String getXmlString(Document document) {
+    	String xmlString;
+    	try {
+    		OutputFormat format = OutputFormat.createPrettyPrint();
+			format.setSuppressDeclaration(true);
+    		xmlString = XmlFileUtil.writeString(document, format);
+    	} catch (Exception ex) {
+    		xmlString = document.asXML();
+    	}
+    	return xmlString;
+    }
+    
 	/*
 	 * Initializes a ViewInfo based on a binder ID.
 	 * 
