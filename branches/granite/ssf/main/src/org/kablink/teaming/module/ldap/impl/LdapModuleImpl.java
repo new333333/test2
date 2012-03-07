@@ -62,7 +62,10 @@ import javax.naming.ldap.LdapContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.hibernate.SessionFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -107,6 +110,7 @@ import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
+import org.kablink.util.search.Constants;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -379,6 +383,69 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	public void setLdapSchedule(LdapSchedule schedule) {
 		checkAccess(LdapOperation.manageLdap);
 		getSyncObject().setScheduleInfo(schedule.getScheduleInfo());
+	}
+	
+	/**
+	 * Return a list of all the dynamic groups.
+	 */
+	public ArrayList<Long> getListOfDynamicGroups()
+	{
+		ArrayList<Long> listOfGroupIds;
+		
+		listOfGroupIds = new ArrayList<Long>();
+		
+		try
+		{
+			Map options;
+			Map searchResults;
+			List groups = null;
+			
+			options = new HashMap();
+			options.put( ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD );
+			options.put( ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE );
+			options.put( ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1 );
+			
+			// Get the list of all the groups.
+			searchResults = getProfileModule().getGroups( options );
+	
+			groups = (List) searchResults.get( ObjectKeys.SEARCH_ENTRIES );
+
+			if ( groups != null )
+			{
+				int i;
+				
+				for (i = 0; i < groups.size(); ++i)
+				{
+					HashMap nextMap;
+					
+					if ( groups.get( i ) instanceof HashMap )
+					{
+						String value;
+						
+						nextMap = (HashMap) groups.get( i );
+					
+						// Is this group dynamic?
+						value = (String) nextMap.get( "_isGroupDynamic" );
+						if ( value != null && value.equalsIgnoreCase( "true" ) )
+						{
+							Long id;
+
+							// Yes
+							// Get the group id
+							id = Long.valueOf( (String) nextMap.get( "_docId" ) );
+							if ( id != null )
+								listOfGroupIds.add( id );
+						}
+					}
+				}
+			}
+		}
+		catch ( Exception ex )
+		{
+			// Nothing to do
+		}
+		
+		return listOfGroupIds;
 	}
 
 	/**
@@ -1229,6 +1296,26 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 			}
 	   		groupCoordinator.deleteObsoleteGroups();
+
+	   		// Find all groups that have dynamic membership and update the membership
+	   		// of those groups that are supposed to be updated during the ldap sync process
+	   		{
+	   			ArrayList<Long> listOfDynamicGroups;
+	   			
+				logger.info( "Looking for dynamic groups to update... " );
+
+				listOfDynamicGroups = getListOfDynamicGroups();
+	   			
+	   			// Do we have any dynamic groups?
+	   			if ( listOfDynamicGroups != null && listOfDynamicGroups.size() > 0 )
+	   			{
+	   				// Yes
+	   				for ( Long nextGroupId : listOfDynamicGroups )
+	   				{
+	   					updateDynamicGroupMembership( nextGroupId, groupCoordinator.getLdapSyncResults() );
+	   				}
+	   			}
+	   		}
 		}// end try
 		finally
 		{
@@ -1339,6 +1426,130 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 
 		return new Integer( count );
+	}
+	
+	/**
+	 * 
+	 */
+	private void updateDynamicGroupMembership( Long groupId, LdapSyncResults ldapSyncResults )
+	{
+		Principal principal;
+		
+		principal = getProfileModule().getEntry( groupId );
+		if ( principal != null && principal instanceof Group )
+		{
+			Group group;
+			String ldapQueryXml;
+			String baseDn = null;
+			String ldapFilter = null;
+			boolean searchSubtree = false;
+			boolean updateMembership = false;
+			
+			group = (Group) principal;
+			ldapQueryXml = group.getLdapQuery();
+
+			if ( ldapQueryXml != null && ldapQueryXml.length() > 0 )
+			{
+				try
+	    		{
+	    			Document doc;
+	    			Node node;
+	    			Node attrNode;
+	    			String value;
+					
+					// Parse the xml string into an xml document.
+					doc = DocumentHelper.parseText( ldapQueryXml );
+	    			
+	    			// Get the root element.
+	    			node = doc.getRootElement();
+	    			
+	    			// Get the "updateMembershipDuringLdapSync" attribute value.
+	    			attrNode = node.selectSingleNode( "@updateMembershipDuringLdapSync" );
+	    			if ( attrNode != null )
+	    			{
+	        			value = attrNode.getText();
+	        			if ( value != null && value.equalsIgnoreCase( "true" ) )
+	        				updateMembership = true;
+	    			}
+
+	    			if ( updateMembership )
+	    			{
+		    			Node searchNode;
+
+		    			// Get the <search ...> element.
+		    			searchNode = node.selectSingleNode( "search" );
+		    			if ( searchNode != null )
+		    			{
+	    					Node baseDnNode;
+	    					Node filterNode;
+	    					
+		    				// Get the "searchSubtree" attribute.
+		    				attrNode = searchNode.selectSingleNode( "@searchSubtree" );
+		    				if ( attrNode != null )
+		    				{
+		    					value = attrNode.getText();
+		    					if ( value != null && value.equalsIgnoreCase( "true" ) )
+		    						searchSubtree = true;
+		    					else
+		    						searchSubtree = false;
+		    				}
+		    				
+		    				// Get the <baseDn> element.
+		    				baseDnNode = searchNode.selectSingleNode( "baseDn" );
+		    				if ( baseDnNode != null )
+		    				{
+		    					baseDn = baseDnNode.getText();
+		    				}
+		    				
+		    				// Get the <filter> element.
+		    				filterNode = searchNode.selectSingleNode( "filter" );
+		    				if ( filterNode != null )
+		    				{
+		    					ldapFilter = filterNode.getText();
+		    				}
+		    			}
+	    			}
+	    		}
+	    		catch(Exception e)
+	    		{
+	    			// Nothing to do
+	    		}
+			}
+			
+			// Should we update the dynamic group membership of this group?
+			if ( updateMembership )
+			{
+				HashSet<Long> groupMemberIds;
+				
+				// Yes
+				try
+				{
+					ArrayList<Membership> newMembers;
+					PartialLdapSyncResults syncResults = null;
+					
+					// Get a list of the dynamic group members.
+					groupMemberIds = getDynamicGroupMembers( baseDn, ldapFilter, searchSubtree );
+					
+					newMembers = new ArrayList<Membership>();
+					for (Long userId : groupMemberIds)
+					{
+						newMembers.add( new Membership( groupId, userId ) );
+					}
+					
+					if ( ldapSyncResults != null )
+					{
+						syncResults = ldapSyncResults.getModifiedGroups();
+					}
+					
+					logger.info( "About to update dynamic group: " + group.getName() );
+					updateMembership( groupId, newMembers, syncResults );
+				}
+				catch ( LdapSyncException e )
+				{
+					
+				}
+			}
+		}
 	}
 
 	
@@ -1957,6 +2168,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					notInLdap.put((Long)row[PRINCIPAL_ID], ssName);
 				}
 			}
+		}
+		
+		/**
+		 * 
+		 */
+		public LdapSyncResults getLdapSyncResults()
+		{
+			return m_ldapSyncResults;
 		}
 		
 		public void setAttributes(Map groupAttributes)
