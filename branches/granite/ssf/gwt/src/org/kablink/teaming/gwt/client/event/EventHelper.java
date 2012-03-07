@@ -345,6 +345,26 @@ public class EventHelper {
 				}
 				break;
 				
+			case GROUP_CREATED:
+				// A GroupCreatedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof GroupCreatedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = GroupCreatedEvent.registerEvent(
+																	eventBus,
+																	((GroupCreatedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
+			case GROUP_MODIFIED:
+				// A GroupModifiedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof GroupModifiedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = GroupModifiedEvent.registerEvent( eventBus, ((GroupModifiedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
 			case INVOKE_HELP:
 				// An InvokeHelpEvent!  Can the event handler we were
 				// given handle that?
@@ -935,7 +955,10 @@ public class EventHelper {
 			case GOTO_CONTENT_URL:                  hasHandler = (eventHandler instanceof GotoContentUrlEvent.Handler);               break;
 			case GOTO_MY_WORKSPACE:                 hasHandler = (eventHandler instanceof GotoMyWorkspaceEvent.Handler);              break;
 			case GOTO_PERMALINK_URL:                hasHandler = (eventHandler instanceof GotoPermalinkUrlEvent.Handler);             break;
-			
+
+			case GROUP_CREATED:                		hasHandler = (eventHandler instanceof GroupCreatedEvent.Handler);             	  break;
+			case GROUP_MODIFIED:                	hasHandler = (eventHandler instanceof GroupModifiedEvent.Handler);             	  break;
+
 			case INVOKE_HELP:                       hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                   break;
 			case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:hasHandler = (eventHandler instanceof InvokeConfigureFileSyncAppDlgEvent.Handler);break;
 			case INVOKE_MANAGE_GROUPS_DLG:			hasHandler = (eventHandler instanceof InvokeManageGroupsDlgEvent.Handler);		  break;
