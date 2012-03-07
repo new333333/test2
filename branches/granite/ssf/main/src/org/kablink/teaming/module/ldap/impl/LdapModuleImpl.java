@@ -104,6 +104,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.CollectionUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
@@ -1526,14 +1527,31 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					ArrayList<Membership> newMembers;
 					PartialLdapSyncResults syncResults = null;
+					int count;
+					int maxCount;
 					
+					logger.info( "\tEvaluating dynamic group membership for group: " + group.getName() );
+
 					// Get a list of the dynamic group members.
 					groupMemberIds = getDynamicGroupMembers( baseDn, ldapFilter, searchSubtree );
 					
 					newMembers = new ArrayList<Membership>();
+					count = 0;
+					
+					// Get the maximum number of users that can be in a group.
+					maxCount = SPropsUtil.getInt( "dynamic.group.membership.limit", 50000 ); 					
+					
 					for (Long userId : groupMemberIds)
 					{
+						logger.info( "\t\tAdding user: " + String.valueOf( userId ) );
 						newMembers.add( new Membership( groupId, userId ) );
+						++count;
+						
+						if ( count >= maxCount )
+						{
+							logger.info( "\t\t!!! Maximum number of dynamic users is a group has been reached.  " + String.valueOf( maxCount ) + " users" );
+							break;
+						}
 					}
 					
 					if ( ldapSyncResults != null )
@@ -1541,7 +1559,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						syncResults = ldapSyncResults.getModifiedGroups();
 					}
 					
-					logger.info( "About to update dynamic group: " + group.getName() );
+					logger.info( "\t\tAbout to update dynamic group: " + group.getName() );
 					updateMembership( groupId, newMembers, syncResults );
 				}
 				catch ( LdapSyncException e )
