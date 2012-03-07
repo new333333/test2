@@ -48,7 +48,7 @@ import com.bradmcevoy.http.Resource;
  * @author jong
  *
  */
-public class RootResource extends WebdavCollectionResource implements PropFindableResource, CollectionResource, GetableResource {
+public class RootResource extends WebdavCollectionResource implements PropFindableResource, GetableResource, CollectionResource {
 
 	private static final String ID = "root";
 	

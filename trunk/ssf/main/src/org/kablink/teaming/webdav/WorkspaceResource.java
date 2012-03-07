@@ -55,7 +55,7 @@ import com.bradmcevoy.http.exceptions.NotAuthorizedException;
  * @author jong
  *
  */
-public class WorkspaceResource extends BinderResource  implements PropFindableResource, CollectionResource, GetableResource {
+public class WorkspaceResource extends BinderResource  implements PropFindableResource, GetableResource, CollectionResource {
 	
 	// lazy resolved for efficiency, so may be null initially
 	private Workspace ws;

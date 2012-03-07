@@ -51,10 +51,12 @@ import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.file.FileIndexData;
 
 import com.bradmcevoy.common.ContentTypeUtils;
+import com.bradmcevoy.http.DeletableResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Range;
 import com.bradmcevoy.http.exceptions.BadRequestException;
+import com.bradmcevoy.http.exceptions.ConflictException;
 import com.bradmcevoy.http.exceptions.NotAuthorizedException;
 import com.bradmcevoy.http.exceptions.NotFoundException;
 import com.bradmcevoy.http.http11.PartialGetHelper;
@@ -65,7 +67,7 @@ import com.bradmcevoy.io.WritingException;
  * @author jong
  *
  */
-public class FileResource extends WebdavResource implements PropFindableResource, GetableResource {
+public class FileResource extends WebdavResource implements PropFindableResource, GetableResource, DeletableResource {
 
 	private static final Log logger = LogFactory.getLog(FileResource.class);
 	
@@ -211,6 +213,15 @@ public class FileResource extends WebdavResource implements PropFindableResource
 	
 	private String toString(FileAttachment fa) {
     	return new StringBuilder().append("[").append(fa.getFileItem().getName()).append(":").append(fa.getId()).append("]").toString(); 
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.DeletableResource#delete()
+	 */
+	@Override
+	public void delete() throws NotAuthorizedException, ConflictException,
+			BadRequestException {
+		//$$$
 	}
 	
 }

@@ -43,6 +43,7 @@ import org.kablink.teaming.util.SpringContextUtil;
 
 import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.GetableResource;
+import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Request;
 import com.bradmcevoy.http.Resource;
 import com.bradmcevoy.http.Request.Method;
@@ -51,7 +52,7 @@ import com.bradmcevoy.http.Request.Method;
  * @author jong
  *
  */
-public abstract class WebdavResource implements Resource, GetableResource {
+public abstract class WebdavResource implements Resource, PropFindableResource, GetableResource {
 	
 	protected WebdavResourceFactory factory;
 	
