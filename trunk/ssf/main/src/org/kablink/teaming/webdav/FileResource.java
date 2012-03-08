@@ -264,11 +264,15 @@ public class FileResource extends WebdavResource implements PropFindableResource
 		DefinableEntity owningEntity = fa.getOwner().getEntity();
 		try {
 			if(owningEntity.getEntityType() == EntityType.folderEntry) {
+				if(logger.isDebugEnabled())
+					logger.debug("delete: deleting file " + toString() + " + owned by " + owningEntity.getEntityIdentifier().toString());
 				FolderUtils.deleteFileInFolderEntry((FolderEntry) owningEntity, fa);
 			}
 			else if(owningEntity.getEntityType() == EntityType.folder) {
 				List deletes = new ArrayList();
 				deletes.add(fa.getId());
+				if(logger.isDebugEnabled())
+					logger.debug("delete: deleting file " + toString() + " + owned by " + owningEntity.getEntityIdentifier().toString());
 				getBinderModule().modifyBinder(owningEntity.getId(), new EmptyInputData(), null, deletes, null);
 			}
 			else {
@@ -322,12 +326,6 @@ public class FileResource extends WebdavResource implements PropFindableResource
 	 */
 	@Override
 	public LockToken getCurrentLock() {
-		if (factory.getLockManager() != null) {
-			return factory.getLockManager().getCurrentToken(this);
-		} else {
-			logger.warn("getCurrentLock called, but no lock manager: file: " + webdavPath);
-			return null;
-		}
-
+		return factory.getLockManager().getCurrentToken(this); // $$$$
 	}
 }
