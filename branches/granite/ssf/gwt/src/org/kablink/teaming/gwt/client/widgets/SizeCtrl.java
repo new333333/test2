@@ -58,7 +58,6 @@ public class SizeCtrl extends Composite
 	private TextBox m_widthCtrl = null;
 	private TextBox m_heightCtrl = null;
 	private ListBox m_widthUnitListBox = null;
-	private ListBox m_heightUnitListBox = null;
 	private CheckBox m_overflowCheckbox = null;
 
 	/**
@@ -102,17 +101,9 @@ public class SizeCtrl extends Composite
 			m_heightCtrl.addKeyPressHandler( this );
 			m_heightCtrl.setVisibleLength( 3 );
 			sizeTable.setWidget( 1, 1, m_heightCtrl );
-
-			// Create a listbox that holds the possible units for the height
-			{
-				m_heightUnitListBox = new ListBox( false );
-				m_heightUnitListBox.setVisibleItemCount( 1 );
-				
-				m_heightUnitListBox.addItem( GwtTeaming.getMessages().percent(), "%" );
-				m_heightUnitListBox.addItem( GwtTeaming.getMessages().pxLabel(), "px" );
-				
-				sizeTable.setWidget( 1, 2, m_heightUnitListBox );
-			}
+			
+			// Height can only be specified in pixels.  Add "px" after the text box.
+			sizeTable.setText( 1, 2, GwtTeaming.getMessages().pxLabel() );
 		}
 		
 		// Add the "Show scroll bars when necessary"
@@ -132,7 +123,7 @@ public class SizeCtrl extends Composite
 	 */
 	public int getHeight()
 	{
-		int height = 0;
+		int height = -1;
 		String txt;
 		
 		// Yes
@@ -142,6 +133,8 @@ public class SizeCtrl extends Composite
 			try
 			{
 				height = Integer.parseInt( txt );
+				if ( height == 0 )
+					height = -1;
 			}
 			catch ( NumberFormatException nfEx )
 			{
@@ -157,23 +150,8 @@ public class SizeCtrl extends Composite
 	 */
 	public Style.Unit getHeightUnits()
 	{
-		Style.Unit unit = Style.Unit.PCT;
-		int selectedIndex;
-		String value;
-		
-		// Yes
-		// Get the selected index from the listbox that holds the list of units.
-		selectedIndex = m_heightUnitListBox.getSelectedIndex();
-		if ( selectedIndex < 0 )
-			selectedIndex = 0;
-		
-		value = m_heightUnitListBox.getValue( selectedIndex );
-		if ( value != null && value.equalsIgnoreCase( "%" ) )
-			unit = Style.Unit.PCT;
-		else
-			unit = Style.Unit.PX;
-		
-		return unit;
+		// Height must always be specified in pixels
+		return Style.Unit.PX;
 	}
 	
 	/**
@@ -192,7 +170,7 @@ public class SizeCtrl extends Composite
 	 */
 	public int getWidth()
 	{
-		int width = 0;
+		int width = -1;
 		String txt;
 		
 		// Yes
@@ -202,6 +180,8 @@ public class SizeCtrl extends Composite
 			try
 			{
 				width = Integer.parseInt( txt );
+				if ( width == 0 )
+					width = -1;
 			}
 			catch ( NumberFormatException nfEx )
 			{
@@ -264,28 +244,12 @@ public class SizeCtrl extends Composite
 	 */
 	private void initHeightControls( int height, Style.Unit heightUnits )
 	{
-		int i;
-		String unitValue;
-		
-		m_heightCtrl.setText( String.valueOf( height ) );
-		
-		if ( heightUnits == Style.Unit.PCT )
-			unitValue = "%";
+		if ( height > 0 )
+			m_heightCtrl.setText( String.valueOf( height ) );
 		else
-			unitValue = "px";
+			m_heightCtrl.setText( "" );
 
-		// Select the appropriate unit in the listbox.
-		for (i = 0; i < m_heightUnitListBox.getItemCount(); ++i)
-		{
-			String nextUnit;
-			
-			nextUnit = m_heightUnitListBox.getValue( i );
-			if ( nextUnit != null && nextUnit.equalsIgnoreCase( unitValue ) )
-			{
-				m_heightUnitListBox.setSelectedIndex( i );
-				break;
-			}
-		}
+		// Ignore the heightUnits param.  Height must always be specified in pixels.
 	}
 
 	/**
@@ -296,7 +260,10 @@ public class SizeCtrl extends Composite
 		int i;
 		String unitValue;
 		
-		m_widthCtrl.setText( String.valueOf( width ) );
+		if ( width > 0 )
+			m_widthCtrl.setText( String.valueOf( width ) );
+		else
+			m_widthCtrl.setText( "" );
 
 		if ( widthUnits == Style.Unit.PCT )
 			unitValue = "%";
