@@ -196,10 +196,14 @@ public class FolderResource extends BinderResource implements PropFindableResour
 		try {
 			if(entry != null) {
 				// An entry containing a file with this name exists.
+				if(logger.isDebugEnabled())
+					logger.debug("createNew: updating existing file '" + newName + "' + owned by " + entry.getEntityIdentifier().toString() + " in folder " + id);
 				FolderUtils.modifyLibraryEntry(entry, newName, inputStream, null, true);
 			}
 			else {
 				// We need to create a new entry
+				if(logger.isDebugEnabled())
+					logger.debug("createNew: creating new file '" + newName + "' + in folder " + id);
 				FolderUtils.createLibraryEntry(folder, newName, inputStream, null, true);
 			}
 		}

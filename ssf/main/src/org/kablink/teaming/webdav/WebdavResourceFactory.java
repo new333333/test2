@@ -60,7 +60,7 @@ public class WebdavResourceFactory implements ResourceFactory {
 
 	private static final Log logger = LogFactory.getLog(WebdavResourceFactory.class);
 	
-	private boolean inited = false;
+	private volatile boolean inited = false;
 	
 	private boolean allowDirectoryBrowsing = true;
 	private long maxAgeSecondsRoot = 86400;
@@ -145,6 +145,10 @@ public class WebdavResourceFactory implements ResourceFactory {
 		return maxAgeSecondsFile;
 	}
 
+	public LockManager getLockManager() {
+		return lockManager;
+	}
+
 	protected Object resolvePath(Path path) {
 		Path vibePath = path.getStripFirst(); // Skip "/dav" element
 		String vibePathStr = vibePath.toPath(); // This is effective data path in Vibe
@@ -177,13 +181,23 @@ public class WebdavResourceFactory implements ResourceFactory {
 
 	}
 	
-	protected void init() {
+	protected synchronized void init() {
+		if(inited)
+			return;
+		
 		allowDirectoryBrowsing = SPropsUtil.getBoolean("wd.allow.directory.browsing", true);
 		maxAgeSecondsRoot = SPropsUtil.getLong("wd.max.age.seconds.root", 86400);
 		maxAgeSecondsDav = SPropsUtil.getLong("wd.max.age.seconds.root", 3600);
 		maxAgeSecondsWorkspace = SPropsUtil.getLong("wd.max.age.seconds.root", 10);
 		maxAgeSecondsFolder = SPropsUtil.getLong("wd.max.age.seconds.root", 10);
 		maxAgeSecondsFile = SPropsUtil.getLong("wd.max.age.seconds.root", 10);
+		
+		logger.info("allowDirectoryBrowsing:" + allowDirectoryBrowsing + 
+				" maxAgeSecondsRoot:" + maxAgeSecondsRoot +
+				" maxAgeSecondsDav:" + maxAgeSecondsDav +
+				" maxAgeSecondsWorkspace:" + maxAgeSecondsWorkspace +
+				" maxAgeSecondsFolder:" + maxAgeSecondsFolder +
+				" maxAgeSecondsFile:" + maxAgeSecondsFile);
 		
 		inited = true;
 	}
@@ -196,7 +210,4 @@ public class WebdavResourceFactory implements ResourceFactory {
 		return (FolderModule) SpringContextUtil.getBean("folderModule");
 	}
 
-	LockManager getLockManager() {
-		return lockManager;
-	}
 }
