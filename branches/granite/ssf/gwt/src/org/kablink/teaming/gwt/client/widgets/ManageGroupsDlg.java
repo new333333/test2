@@ -442,6 +442,24 @@ public class ManageGroupsDlg extends DlgBox
 			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}		
 	}
+
+	/**
+	 * Find the given group in our list of groups.
+	 */
+	private GroupInfo findGroupById( Long id )
+	{
+		if ( m_listOfGroups != null )
+		{
+			for (GroupInfo nextGroup : m_listOfGroups)
+			{
+				if ( nextGroup.getId() == id )
+					return nextGroup;
+			}
+		}
+		
+		// If we get here we did not find the group.
+		return null;
+	}
 	
 	/**
 	 * Issue an ajax request to get a list of all the groups.
@@ -595,10 +613,28 @@ public class ManageGroupsDlg extends DlgBox
 	@Override
 	public void onGroupModified( GroupModifiedEvent event )
 	{
-		// The groupInfo object that was passed to us was passed to the
-		// ModifyGroupDlg.  That dialog would have updated the object
-		// with whatever the user entered.
-		// Update the table to reflect the fact that a group was modified.
-		m_dataProvider.refresh();
+		GroupInfo modifiedGroup;
+		
+		// Get the GroupInfo passed in the event.
+		modifiedGroup = event.getGroupInfo();
+		
+		if ( modifiedGroup != null )
+		{
+			GroupInfo groupInfo;
+			
+			// Find this group in our list of groups.
+			groupInfo = findGroupById( modifiedGroup.getId() );
+			
+			if ( groupInfo != null )
+			{
+				// Update the group with the title and description from the group that
+				// was passed in the event.
+				groupInfo.setTitle( modifiedGroup.getTitle() );
+				groupInfo.setDesc( modifiedGroup.getDesc() );
+				
+				// Update the table to reflect the fact that a group was modified.
+				m_dataProvider.refresh();
+			}
+		}
 	}
 }
