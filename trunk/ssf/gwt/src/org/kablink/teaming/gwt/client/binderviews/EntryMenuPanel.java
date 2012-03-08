@@ -379,6 +379,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 		VibeMenuBar  configureMenu         = new VibeMenuBar(      "vibe-configureMenuBar vibe-entryMenuBar");
 		VibeMenuBar  configureDropdownMenu = new VibeMenuBar(true, "vibe-configureMenuBarDropDown"          );
 		VibeMenuItem configureItem         = new VibeMenuItem(fp.getElement().getInnerHTML(), true, configureDropdownMenu, "vibe-configureMenuBarItem");
+		configureItem.setTitle(m_messages.vibeEntryMenu_Alt_ListOptions());
 		configureMenu.addItem(configureItem);
 		m_configPanel.add(configureMenu);
 		
@@ -419,6 +420,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 			Image deleteImg = new Image(m_images.delete());
 			deleteImg.addStyleName("vibe-filterMenuSavedImg");
 			deleteImg.getElement().setAttribute("align", "absmiddle");
+			deleteImg.setTitle(m_messages.vibeEntryMenu_Alt_ClearFilter());
 			a.getElement().appendChild(deleteImg.getElement());
 			perFilterPanel.add(a);
 			
@@ -474,6 +476,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 		VibeMenuBar  filterMenu         = new VibeMenuBar(      "vibe-filterMenuBar vibe-entryMenuBar");
 		VibeMenuBar  filterDropdownMenu = new VibeMenuBar(true, "vibe-filterMenuBarDropDown"          );
 		VibeMenuItem filterItem         = new VibeMenuItem(fp.getElement().getInnerHTML(), true, filterDropdownMenu, "vibe-filterMenuBarItem");
+		filterItem.setTitle(m_messages.vibeEntryMenu_Alt_FilterOptions());
 		filterMenu.addItem(filterItem);
 		m_filterOptionsPanel.add(filterMenu);
 		
