@@ -65,10 +65,10 @@ public class ListProperties
 		m_title = null;
 
 		// Default the width and height to 100%
-		m_width = 100;
+		m_width = -1;
 		m_widthUnits = Style.Unit.PCT;
-		m_height = 100;
-		m_heightUnits = Style.Unit.PCT;
+		m_height = -1;
+		m_heightUnits = Style.Unit.PX;
 		
 		m_overflow = Style.Overflow.HIDDEN;
 
@@ -112,19 +112,27 @@ public class ListProperties
 		if ( m_title != null )
 			str += ConfigData.encodeConfigData( m_title );
 
-		// Add the width
-		str += ",width=" + String.valueOf( m_width );
-		if ( m_widthUnits == Style.Unit.PCT )
-			str += "%";
-		else
-			str += "px";
-
-		// Add the height
-		str += ",height=" + String.valueOf( m_height );
-		if ( m_heightUnits == Style.Unit.PCT )
-			str += "%";
-		else
-			str += "px";
+		// Has a width been set?
+		if ( m_width > 0 )
+		{
+			// Yes, Add the width
+			str += ",width=" + String.valueOf( m_width );
+			if ( m_widthUnits == Style.Unit.PCT )
+				str += "%";
+			else
+				str += "px";
+		}
+		
+		// Has a height been set?
+		if ( m_height > 0 )
+		{
+			// Yes, Add the height
+			str += ",height=" + String.valueOf( m_height );
+			if ( m_heightUnits == Style.Unit.PCT )
+				str += "%";
+			else
+				str += "px";
+		}
 		
 		// Add overflow
 		str += ",overflow=";
@@ -219,7 +227,8 @@ public class ListProperties
 	 */
 	public void setHeightUnits( Style.Unit units )
 	{
-		m_heightUnits = units;
+		// Ignore this.  The height is always in px
+		m_heightUnits = Style.Unit.PX;
 	}
 	
 	/**

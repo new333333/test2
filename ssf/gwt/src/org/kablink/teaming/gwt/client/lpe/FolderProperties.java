@@ -87,10 +87,10 @@ public class FolderProperties
 		m_viewFolderUrl = null;
 		
 		// Default the width and height to 100%
-		m_width = 100;
+		m_width = -1;
 		m_widthUnits = Style.Unit.PCT;
-		m_height = 100;
-		m_heightUnits = Style.Unit.PCT;
+		m_height = -1;
+		m_heightUnits = Style.Unit.PX;
 		m_overflow = Style.Overflow.HIDDEN;
 
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
@@ -197,20 +197,28 @@ public class FolderProperties
 
 		str += "entriesToShow=" + String.valueOf( m_numEntriesToBeShown );
 
-		// Add the width
-		str += ",width=" + String.valueOf( m_width );
-		if ( m_widthUnits == Style.Unit.PCT )
-			str += "%";
-		else
-			str += "px";
+		// Has a width been set?
+		if ( m_width > 0 )
+		{
+			// Yes, Add the width
+			str += ",width=" + String.valueOf( m_width );
+			if ( m_widthUnits == Style.Unit.PCT )
+				str += "%";
+			else
+				str += "px";
+		}
 
-		// Add the height
-		str += ",height=" + String.valueOf( m_height );
-		if ( m_heightUnits == Style.Unit.PCT )
-			str += "%";
-		else
-			str += "px";
-
+		// Has a height been set?
+		if ( m_height > 0 )
+		{
+			// Yes, Add the height
+			str += ",height=" + String.valueOf( m_height );
+			if ( m_heightUnits == Style.Unit.PCT )
+				str += "%";
+			else
+				str += "px";
+		}
+		
 		// Add overflow
 		str += ",overflow=";
 		if ( m_overflow == Style.Overflow.AUTO )
@@ -412,7 +420,8 @@ public class FolderProperties
 	 */
 	public void setHeightUnits( Style.Unit units )
 	{
-		m_heightUnits = units;
+		// Ignore this.  The height is always in px
+		m_heightUnits = Style.Unit.PX;
 	}
 	
 	/**
