@@ -36,7 +36,9 @@ package org.kablink.teaming.webdav;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.activation.MimetypesFileTypeMap;
@@ -45,14 +47,24 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoFileByTheIdException;
+import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileIndexData;
+import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.shared.EmptyInputData;
+import org.kablink.teaming.module.shared.FolderUtils;
+import org.kablink.teaming.security.AccessControlException;
 
 import com.bradmcevoy.common.ContentTypeUtils;
 import com.bradmcevoy.http.DeletableResource;
+import com.bradmcevoy.http.FileItem;
 import com.bradmcevoy.http.GetableResource;
+import com.bradmcevoy.http.PostableResource;
 import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Range;
 import com.bradmcevoy.http.exceptions.BadRequestException;
@@ -67,7 +79,7 @@ import com.bradmcevoy.io.WritingException;
  * @author jong
  *
  */
-public class FileResource extends WebdavResource implements PropFindableResource, GetableResource, DeletableResource {
+public class FileResource extends WebdavResource implements PropFindableResource, GetableResource, DeletableResource, PostableResource {
 
 	private static final Log logger = LogFactory.getLog(FileResource.class);
 	
@@ -221,7 +233,51 @@ public class FileResource extends WebdavResource implements PropFindableResource
 	@Override
 	public void delete() throws NotAuthorizedException, ConflictException,
 			BadRequestException {
-		//$$$
+		try {
+			resolveFileAttachment();
+		}
+		catch(NoFileByTheIdException e) {
+			// The file doesn't exist. Nothing to delete.
+			return;
+		}
+		
+		DefinableEntity owningEntity = fa.getOwner().getEntity();
+		try {
+			if(owningEntity.getEntityType() == EntityType.folderEntry) {
+				FolderUtils.deleteFileInFolderEntry((FolderEntry) owningEntity, fa);
+			}
+			else if(owningEntity.getEntityType() == EntityType.folder) {
+				List deletes = new ArrayList();
+				deletes.add(fa.getId());
+				getBinderModule().modifyBinder(owningEntity.getId(), new EmptyInputData(), null, deletes, null);
+			}
+			else {
+				// Our WebDAV service exposes only files stored in a folder, which is
+				// attached either to an entry in the folder or to the folder itself.
+				// Therefore, this can not and should not occur.
+				throw new BadRequestException(this, "Can not delete file '" + id + "' because it is owned by an entity of type '" + owningEntity.getEntityType() + "'");
+			}
+		}
+		catch (AccessControlException e) {
+			throw new NotAuthorizedException(this);
+		} catch (ReservedByAnotherUserException e) {
+			throw new ConflictException(this, e.getLocalizedMessage());
+		} catch (WriteFilesException e) {
+			throw new RuntimeException(e.getLocalizedMessage());
+		} catch (WriteEntryDataException e) {
+			throw new RuntimeException(e.getLocalizedMessage());
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.PostableResource#processForm(java.util.Map, java.util.Map)
+	 */
+	@Override
+	public String processForm(Map<String, String> parameters,
+			Map<String, FileItem> files) throws BadRequestException,
+			NotAuthorizedException, ConflictException {
+		//$$$$$
+		return null;
 	}
 	
 }
