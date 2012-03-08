@@ -49,6 +49,8 @@ import org.kablink.teaming.util.SpringContextUtil;
 import com.bradmcevoy.common.Path;
 import com.bradmcevoy.http.Resource;
 import com.bradmcevoy.http.ResourceFactory;
+import com.ettrema.http.fs.LockManager;
+import com.ettrema.http.fs.SimpleLockManager;
 
 /**
  * @author jong
@@ -56,7 +58,7 @@ import com.bradmcevoy.http.ResourceFactory;
  */
 public class WebdavResourceFactory implements ResourceFactory {
 
-	private Log log = LogFactory.getLog(getClass());
+	private static final Log logger = LogFactory.getLog(WebdavResourceFactory.class);
 	
 	private boolean inited = false;
 	
@@ -67,7 +69,10 @@ public class WebdavResourceFactory implements ResourceFactory {
 	private long maxAgeSecondsFolder = 10;
 	private long maxAgeSecondsFile = 10;
 	
+	private LockManager lockManager;
+	
 	public WebdavResourceFactory() {
+		this.lockManager = new SimpleLockManager();
 	}
 
 	/* (non-Javadoc)
@@ -75,7 +80,7 @@ public class WebdavResourceFactory implements ResourceFactory {
 	 */
 	@Override
 	public Resource getResource(String host, String path) {
-		log.debug("getResource: " + path);
+		logger.debug("getResource: " + path);
 		
 		if(!inited)
 			init();
@@ -191,5 +196,7 @@ public class WebdavResourceFactory implements ResourceFactory {
 		return (FolderModule) SpringContextUtil.getBean("folderModule");
 	}
 
-
+	LockManager getLockManager() {
+		return lockManager;
+	}
 }

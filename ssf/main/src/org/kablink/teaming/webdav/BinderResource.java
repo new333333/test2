@@ -54,8 +54,6 @@ import com.bradmcevoy.http.Resource;
  */
 public abstract class BinderResource extends WebdavCollectionResource  implements PropFindableResource, GetableResource, CollectionResource {
 
-	private static final Log logger = LogFactory.getLog(BinderResource.class);
-	
 	// Required properties
 	protected Long id;
 	protected EntityType entityType;

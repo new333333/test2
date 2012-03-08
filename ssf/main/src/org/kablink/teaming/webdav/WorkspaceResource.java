@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.NoWorkspaceByTheIdException;
@@ -57,6 +59,8 @@ import com.bradmcevoy.http.exceptions.NotAuthorizedException;
  */
 public class WorkspaceResource extends BinderResource  implements PropFindableResource, GetableResource, CollectionResource {
 	
+	private static final Log logger = LogFactory.getLog(WorkspaceResource.class);
+
 	// lazy resolved for efficiency, so may be null initially
 	private Workspace ws;
 	

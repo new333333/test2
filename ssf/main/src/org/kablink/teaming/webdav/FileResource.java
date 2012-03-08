@@ -67,23 +67,29 @@ import com.bradmcevoy.common.ContentTypeUtils;
 import com.bradmcevoy.http.DeletableResource;
 import com.bradmcevoy.http.FileItem;
 import com.bradmcevoy.http.GetableResource;
+import com.bradmcevoy.http.LockInfo;
+import com.bradmcevoy.http.LockResult;
+import com.bradmcevoy.http.LockTimeout;
+import com.bradmcevoy.http.LockToken;
+import com.bradmcevoy.http.LockableResource;
 import com.bradmcevoy.http.PostableResource;
 import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Range;
 import com.bradmcevoy.http.exceptions.BadRequestException;
 import com.bradmcevoy.http.exceptions.ConflictException;
+import com.bradmcevoy.http.exceptions.LockedException;
 import com.bradmcevoy.http.exceptions.NotAuthorizedException;
 import com.bradmcevoy.http.exceptions.NotFoundException;
+import com.bradmcevoy.http.exceptions.PreConditionFailedException;
 import com.bradmcevoy.http.http11.PartialGetHelper;
 import com.bradmcevoy.io.ReadingException;
 import com.bradmcevoy.io.WritingException;
-import com.liferay.portal.webdav.WebDAVException;
 
 /**
  * @author jong
  *
  */
-public class FileResource extends WebdavResource implements PropFindableResource, GetableResource, DeletableResource, PostableResource {
+public class FileResource extends WebdavResource implements PropFindableResource, GetableResource, DeletableResource, LockableResource {
 
 	private static final Log logger = LogFactory.getLog(FileResource.class);
 	
@@ -168,11 +174,11 @@ public class FileResource extends WebdavResource implements PropFindableResource
 		try {
 			if (range != null) {
 				if(logger.isDebugEnabled())
-					logger.debug("sendContent: ranged content: " + toString(fa));
+					logger.debug("sendContent: ranged content for file " + toString());
 				PartialGetHelper.writeRange(in, range, out);
 			} else {
 				if(logger.isDebugEnabled())
-					logger.debug("sendContent: send whole file " + toString(fa));
+					logger.debug("sendContent: send whole file " + toString());
 				IOUtils.copy(in, out);				
 			}
 			out.flush();
@@ -235,8 +241,8 @@ public class FileResource extends WebdavResource implements PropFindableResource
 		return fa;
 	}
 	
-	private String toString(FileAttachment fa) {
-    	return new StringBuilder().append("[").append(fa.getFileItem().getName()).append(":").append(fa.getId()).append("]").toString(); 
+	public String toString() {
+    	return new StringBuilder().append("[").append(name).append(":").append(id).append("]").toString(); 
 	}
 
 	/* (non-Javadoc)
@@ -250,6 +256,8 @@ public class FileResource extends WebdavResource implements PropFindableResource
 		}
 		catch(NoFileByTheIdException e) {
 			// The file doesn't exist. Nothing to delete.
+			if(logger.isDebugEnabled())
+				logger.debug("delete: file " + toString() + " does not exist. nothing to delete.");
 			return;
 		}
 		
@@ -282,55 +290,44 @@ public class FileResource extends WebdavResource implements PropFindableResource
 	}
 
 	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.PostableResource#processForm(java.util.Map, java.util.Map)
+	 * @see com.bradmcevoy.http.LockableResource#lock(com.bradmcevoy.http.LockTimeout, com.bradmcevoy.http.LockInfo)
 	 */
 	@Override
-	public String processForm(Map<String, String> parameters,
-			Map<String, FileItem> files) throws BadRequestException,
-			NotAuthorizedException, ConflictException {
-		if(files == null)
-			return null;
-		
-		try {
-			resolveFileAttachment();
-		}
-		catch(NoFileByTheIdException e) {
-			throw new WebdavException(e.getLocalizedMessage());
-		}
-
-		Collection<FileItem> fileItems = files.values();
-		for(FileItem fileItem:fileItems) {
-			updateFile(fileItem);
-		}
-		return null;
+	public LockResult lock(LockTimeout timeout, LockInfo lockInfo)
+			throws NotAuthorizedException, PreConditionFailedException,
+			LockedException {
+		return factory.getLockManager().lock(timeout, lockInfo, this); // $$$
 	}
-	
-	private void updateFile(FileItem fileItem) throws BadRequestException,
-	NotAuthorizedException, ConflictException {
-		DefinableEntity owningEntity = fa.getOwner().getEntity();
 
-		try {
-			if(owningEntity.getEntityType() == EntityType.folderEntry) {
-				FileUtils.modifyFolderEntryWithFile((FolderEntry) owningEntity, null, name, fileItem.getInputStream(), null);
-			}
-			else if(owningEntity.getEntityType() == EntityType.folder) {
-				FileUtils.modifyBinderWithFile((Binder) owningEntity, null, name, fileItem.getInputStream());
-			}
-			else {
-				// Our WebDAV service exposes only files stored in a folder, which is
-				// attached either to an entry in the folder or to the folder itself.
-				// Therefore, this can not and should not occur.
-				throw new BadRequestException(this, "Can not update file '" + id + "' because it is owned by an entity of type '" + owningEntity.getEntityType() + "'");
-			}
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.LockableResource#refreshLock(java.lang.String)
+	 */
+	@Override
+	public LockResult refreshLock(String token) throws NotAuthorizedException,
+			PreConditionFailedException {
+		return factory.getLockManager().refresh(token, this); // $$$
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.LockableResource#unlock(java.lang.String)
+	 */
+	@Override
+	public void unlock(String tokenId) throws NotAuthorizedException,
+			PreConditionFailedException {
+		factory.getLockManager().unlock(tokenId, this); // $$$$
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.LockableResource#getCurrentLock()
+	 */
+	@Override
+	public LockToken getCurrentLock() {
+		if (factory.getLockManager() != null) {
+			return factory.getLockManager().getCurrentToken(this);
+		} else {
+			logger.warn("getCurrentLock called, but no lock manager: file: " + webdavPath);
+			return null;
 		}
-		catch (AccessControlException e) {
-			throw new NotAuthorizedException(this);
-		} catch (ReservedByAnotherUserException e) {
-			throw new ConflictException(this, e.getLocalizedMessage());
-		} catch (WriteFilesException e) {
-			throw new WebdavException(e.getLocalizedMessage());
-		} catch (WriteEntryDataException e) {
-			throw new WebdavException(e.getLocalizedMessage());
-		}
+
 	}
 }

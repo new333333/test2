@@ -33,33 +33,45 @@
 
 package org.kablink.teaming.webdav;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
+import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.module.binder.BinderIndexData;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileIndexData;
+import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.security.AccessControlException;
 
 import com.bradmcevoy.http.CollectionResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.PropFindableResource;
+import com.bradmcevoy.http.PutableResource;
 import com.bradmcevoy.http.Resource;
 import com.bradmcevoy.http.exceptions.BadRequestException;
+import com.bradmcevoy.http.exceptions.ConflictException;
 import com.bradmcevoy.http.exceptions.NotAuthorizedException;
 
 /**
  * @author jong
  *
  */
-public class FolderResource extends BinderResource implements PropFindableResource, GetableResource, CollectionResource {
+public class FolderResource extends BinderResource implements PropFindableResource, GetableResource, CollectionResource, PutableResource {
+	
+	private static final Log logger = LogFactory.getLog(FolderResource.class);
 	
 	// lazy resolved for efficiency, so may be null initially
 	private Folder folder;
@@ -165,6 +177,43 @@ public class FolderResource extends BinderResource implements PropFindableResour
 			return null;
 		else
 			return new FileResource(factory, getWebdavPath() + "/" + file.getName(), file);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.PutableResource#createNew(java.lang.String, java.io.InputStream, java.lang.Long, java.lang.String)
+	 */
+	@Override
+	public Resource createNew(String newName, InputStream inputStream,
+			Long length, String contentType) throws IOException,
+			ConflictException, NotAuthorizedException, BadRequestException {
+		resolveFolder();
+		
+		if(!folder.isLibrary())
+			throw new BadRequestException(this, "This folder is not a library folder");
+		
+		FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, newName);
+		
+		try {
+			if(entry != null) {
+				// An entry containing a file with this name exists.
+				FolderUtils.modifyLibraryEntry(entry, newName, inputStream, null, true);
+			}
+			else {
+				// We need to create a new entry
+				FolderUtils.createLibraryEntry(folder, newName, inputStream, null, true);
+			}
+		}
+		catch (AccessControlException e) {
+			throw new NotAuthorizedException(this);
+		} catch (ReservedByAnotherUserException e) {
+			throw new ConflictException(this, e.getLocalizedMessage());
+		} catch (WriteFilesException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		} catch (WriteEntryDataException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		}
+		
+		return childFile(newName);
 	}
 	
 }
