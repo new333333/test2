@@ -380,6 +380,26 @@ public class ModifyGroupDlg extends DlgBox
 	}
 	
 	/**
+	 * Create a GroupInfo object that holds the id of the group being edited, the group's
+	 * new title and description.
+	 */
+	private GroupInfo getGroupInfo()
+	{
+		GroupInfo groupInfo = null;
+		
+		if ( m_groupInfo != null )
+		{
+			groupInfo = new GroupInfo();
+
+			groupInfo.setId( m_groupInfo.getId() );
+			groupInfo.setTitle( getGroupTitle() );
+			groupInfo.setDesc( getGroupDesc() );
+		}
+		
+		return groupInfo;
+	}
+	
+	/**
 	 * Issue an ajax request to get the membership of the group we are working with.
 	 */
 	private void getGroupMembership()
@@ -759,10 +779,13 @@ public class ModifyGroupDlg extends DlgBox
 	 */
 	private void modifyGroupAndClose()
 	{
+		final GroupInfo newGroupInfo;
 		ModifyGroupCmd cmd;
 		AsyncCallback<VibeRpcResponse> rpcCallback;
+
+		// Create a GroupInfo object that holds the new title and description
+		newGroupInfo = getGroupInfo();
 		
-		// Yes
 		rpcCallback = new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
@@ -780,13 +803,8 @@ public class ModifyGroupDlg extends DlgBox
 			{
 				GroupModifiedEvent event;
 				
-				// Update the GroupInfo object that was passed to us with the new
-				// group info entered by the user.
-				m_groupInfo.setTitle( getGroupTitle() );
-				m_groupInfo.setDesc( getGroupDesc() );
-				
 				// Fire an event that lets everyone know this group was modified.
-				event = new GroupModifiedEvent( m_groupInfo );
+				event = new GroupModifiedEvent( newGroupInfo );
 				GwtTeaming.fireEvent( event );
 			}						
 		};
