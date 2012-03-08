@@ -87,6 +87,15 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	private VibeFlowPanel						m_flowPanel;			// The flow panel used to hold the view specific content of the view.
 	private VibeVerticalPanel					m_verticalPanel;		// The vertical panel that holds all components of the view, both common and view specific.
 
+	// Control whether a FilterPanel can ever be instantiated.  true
+	// and they can and false and they can't.
+	//
+	// Note:  The FilterPanel implements what amounts to same filter
+	//    handling as was done in the old JSP code.  Filters are now
+	//    integrated in the entry menu so that filter panel is no
+	//    loner needed.
+	private final static boolean SHOW_LEGACY_FILTERS	= false;
+	
 	// The following define the indexes into a VibeVerticalPanel of the
 	// various panels that make up a folder view.
 	public final static int BREADCRUMB_PANEL_INDEX		= 0;
@@ -442,9 +451,10 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * 
 	 * Loads the FilterPanel.
 	 */
+	@SuppressWarnings("unused")
 	private void loadPart4Async() {
 		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.FILTER))) {
+		if ((!SHOW_LEGACY_FILTERS) || (!(includePanel(FolderPanels.FILTER)))) {
 			// ...we don't show the filter.
 			insertToolPanelPlaceholder(FILTER_PANEL_INDEX);
 			loadPart5Async();

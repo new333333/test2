@@ -18,13 +18,37 @@
 	.vibe-configureMenuBar         {padding-left: 0px !important; padding-right: 0px !important;}
 	.vibe-configureMenuBarDropDown {}
 	.vibe-configureMenuBarItem     {border: 0 !important; padding-left: 0px !important; padding-right: 0px !important; margin-right: 6px !important;}
-	.vibe-configureMenuImg         {padding-top: 1px;}
+	.vibe-configureMenuImg         {padding-top: 1px; cursor: pointer;}
 	
 	.vibe-filterMenuBar         {padding-left: 0px !important; padding-right: 0px !important;}
 	.vibe-filterMenuBarCheck    {margin-right: 2px;}
 	.vibe-filterMenuBarDropDown {}
 	.vibe-filterMenuBarItem     {border: 0 !important; padding-left: 0px !important; padding-right: 0px !important;}
-	.vibe-filterMenuImg         {padding-top: 1px;}
+	.vibe-filterMenuImg         {padding-top: 1px; cursor: pointer;}
+	.vibe-filterMenuSavedAnchor {}
+	.vibe-filterMenuSavedImg    {margin-left: 4px; cursor: pointer;}	
+	.vibe-filterMenuSavedLabel  {}
+	.vibe-filterMenuSavedPanel  {
+		display: inline-block;
+		font-size: .9em;
+		color: #135c8f;
+		padding: 0px 4px;
+		border: 1px solid #ccc;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		background-image: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background-image: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background-image: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background-image: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background-image: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);	
+		background-image: -webkit-gradient(
+			linear,
+			left bottom,
+			left top,
+			color-stop(0.47, #A8D4DD),
+			color-stop(0.53, #D5EDF1),
+			color-stop(1, #C8E4E9));
+	}
 	
 	.vibe-entryMenuBar {padding: 3px;}
 	.vibe-menuDisabled {color: silver !important;}

@@ -72,7 +72,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsRpcRespons
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -83,9 +82,12 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
@@ -278,7 +280,9 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * Synchronously construct's the contents of the entry menu panel.
 	 */
 	private void loadPart2Now() {
-		if (BinderType.FOLDER == m_binderInfo.getBinderType()) {
+		// Are we working with a non-trash folder?
+		if (m_binderInfo.isBinderFolder() && (!(m_binderInfo.isBinderTrash()))) {
+			// Yes!  Get the filter information for the binder.
 			final Long binderId = m_binderInfo.getBinderIdAsLong();
 			GwtClientHelper.executeCommand(
 					new GetBinderFiltersCmd(binderId),
@@ -301,6 +305,9 @@ public class EntryMenuPanel extends ToolPanelBase {
 		}
 		
 		else {
+			// No, we either working with a workspace or trash folder!
+			// No filtering.  Simply proceed with the next stop of
+			// loading.
 			loadPart3Async();
 		}
 	}
@@ -391,6 +398,41 @@ public class EntryMenuPanel extends ToolPanelBase {
 	}
 
 	/*
+	 * Renders a current filter into the filters panel.
+	 */
+	private void renderCurrentFilter(String filterName, final String filtersOffUrl) {
+		// Create a panel for the filter...
+		VibeFlowPanel perFilterPanel = new VibeFlowPanel();
+		perFilterPanel.addStyleName("vibe-filterMenuSavedPanel");
+		m_filtersPanel.add(perFilterPanel);
+
+		// ...create a label for the filter...
+		InlineLabel il = new InlineLabel(filterName);
+		il.addStyleName("vibe-filterMenuSavedLabel");
+		perFilterPanel.add(il);
+
+		// ...if we have the URL to remove it...
+		if (GwtClientHelper.hasString(filtersOffUrl)) {
+			// ...create an Anchor for it...
+			final Anchor a = new Anchor();
+			a.addStyleName("vibe-filterMenuSavedAnchor");
+			Image deleteImg = new Image(m_images.delete());
+			deleteImg.addStyleName("vibe-filterMenuSavedImg");
+			deleteImg.getElement().setAttribute("align", "absmiddle");
+			a.getElement().appendChild(deleteImg.getElement());
+			perFilterPanel.add(a);
+			
+			// ...and add a click handlers to the anchor.
+			a.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					GwtTeaming.fireEvent(new GotoContentUrlEvent(filtersOffUrl));
+				}
+			});
+		}
+	}
+	
+	/*
 	 * Renders any defined filter capabilities applicable to the
 	 * current binder.
 	 */
@@ -472,8 +514,9 @@ public class EntryMenuPanel extends ToolPanelBase {
 				// ...and add a menu item for each.
 				String fName = bf.getFilterName();
 				String menuText;
+				boolean isCurrent = false;
 				if (hasCurrentFilter) {
-					boolean isCurrent = fName.equalsIgnoreCase(currentFilter);
+					isCurrent = fName.equalsIgnoreCase(currentFilter);
 					VibeFlowPanel html = new VibeFlowPanel();
 					Image checkImg;
 					if (isCurrent) {
@@ -500,13 +543,14 @@ public class EntryMenuPanel extends ToolPanelBase {
 					}
 				});
 				filterDropdownMenu.addItem(mi);
+				
+				// If this is a current filter...
+				if (isCurrent) {
+					// ...add it to the filters panel.
+					renderCurrentFilter(bf.getFilterName(), filtersOffUrl);
+				}
 			}
 		}
-		
-//!		...this needs to be implemented...
-		// ...the last thing is displaying the selected filter(s) to
-		// ...left of the quick menu.
-		
 	}
 	
 	/*
