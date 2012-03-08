@@ -423,6 +423,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_SEARCH_FILTERS_V1 = "searchFilters";//obsolete
     public static final String USER_PROPERTY_SEARCH_FILTERS = "searchFilterMap";
     public static final String USER_PROPERTY_USER_FILTER = "userFilter";
+    public static final String USER_PROPERTY_USER_FILTERS = "userFilters";
     public static final String USER_PROPERTY_USER_FILTER_GLOBAL = "global";
     public static final String USER_PROPERTY_USER_FILTER_PERSONAL = "personal";
     public static final String USER_PROPERTY_USER_FILTER_SCOPE = "userFilterScope";
