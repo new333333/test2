@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,7 @@ import javax.activation.MimetypesFileTypeMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment;
@@ -57,6 +59,7 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.EmptyInputData;
+import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.security.AccessControlException;
 
@@ -74,6 +77,7 @@ import com.bradmcevoy.http.exceptions.NotFoundException;
 import com.bradmcevoy.http.http11.PartialGetHelper;
 import com.bradmcevoy.io.ReadingException;
 import com.bradmcevoy.io.WritingException;
+import com.liferay.portal.webdav.WebDAVException;
 
 /**
  * @author jong
@@ -188,8 +192,16 @@ public class FileResource extends WebdavResource implements PropFindableResource
 	public String getContentType(String accepts) {
 		//return new MimetypesFileTypeMap().getContentType(name);
 		
+		//$$$$$ TODO TBD
+		long begin = System.nanoTime();
+		
 		String mime = ContentTypeUtils.findContentTypes(name);
 		String s = ContentTypeUtils.findAcceptableContentType(mime, accepts);
+		
+		long end = System.nanoTime();
+		
+		System.out.println("***** Getting content type took " + (end-begin)/1000000.0 + "milliseconds");
+		
 		if(logger.isTraceEnabled())
 			logger.trace("getContentType: preferred: " + accepts + " mime: " + mime + " selected: " + s);
 		return s;
@@ -263,9 +275,9 @@ public class FileResource extends WebdavResource implements PropFindableResource
 		} catch (ReservedByAnotherUserException e) {
 			throw new ConflictException(this, e.getLocalizedMessage());
 		} catch (WriteFilesException e) {
-			throw new RuntimeException(e.getLocalizedMessage());
+			throw new WebdavException(e.getLocalizedMessage());
 		} catch (WriteEntryDataException e) {
-			throw new RuntimeException(e.getLocalizedMessage());
+			throw new WebdavException(e.getLocalizedMessage());
 		}
 	}
 
@@ -276,8 +288,49 @@ public class FileResource extends WebdavResource implements PropFindableResource
 	public String processForm(Map<String, String> parameters,
 			Map<String, FileItem> files) throws BadRequestException,
 			NotAuthorizedException, ConflictException {
-		//$$$$$
+		if(files == null)
+			return null;
+		
+		try {
+			resolveFileAttachment();
+		}
+		catch(NoFileByTheIdException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		}
+
+		Collection<FileItem> fileItems = files.values();
+		for(FileItem fileItem:fileItems) {
+			updateFile(fileItem);
+		}
 		return null;
 	}
 	
+	private void updateFile(FileItem fileItem) throws BadRequestException,
+	NotAuthorizedException, ConflictException {
+		DefinableEntity owningEntity = fa.getOwner().getEntity();
+
+		try {
+			if(owningEntity.getEntityType() == EntityType.folderEntry) {
+				FileUtils.modifyFolderEntryWithFile((FolderEntry) owningEntity, null, name, fileItem.getInputStream(), null);
+			}
+			else if(owningEntity.getEntityType() == EntityType.folder) {
+				FileUtils.modifyBinderWithFile((Binder) owningEntity, null, name, fileItem.getInputStream());
+			}
+			else {
+				// Our WebDAV service exposes only files stored in a folder, which is
+				// attached either to an entry in the folder or to the folder itself.
+				// Therefore, this can not and should not occur.
+				throw new BadRequestException(this, "Can not update file '" + id + "' because it is owned by an entity of type '" + owningEntity.getEntityType() + "'");
+			}
+		}
+		catch (AccessControlException e) {
+			throw new NotAuthorizedException(this);
+		} catch (ReservedByAnotherUserException e) {
+			throw new ConflictException(this, e.getLocalizedMessage());
+		} catch (WriteFilesException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		} catch (WriteEntryDataException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		}
+	}
 }
