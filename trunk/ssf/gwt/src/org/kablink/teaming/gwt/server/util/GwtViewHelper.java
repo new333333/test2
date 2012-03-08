@@ -1164,7 +1164,7 @@ public class GwtViewHelper {
 				// Yes!  Add them to the sort map.
 				Set<String> keySet = searchFilters.keySet();
 				for (Iterator<String> ksIT = keySet.iterator(); ksIT.hasNext(); ) {
-					filterMap.put(ksIT.next(), "global");
+					filterMap.put(ksIT.next(), ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL);
 				}
 			}
 			
@@ -1175,7 +1175,7 @@ public class GwtViewHelper {
 				// Yes!  Add them to the sort map.
 				Set<String> keySet = searchFilters.keySet();
 				for (Iterator<String> ksIT = keySet.iterator(); ksIT.hasNext(); ) {
-					filterMap.put(ksIT.next(), "personal");
+					filterMap.put(ksIT.next(), ObjectKeys.USER_PROPERTY_USER_FILTER_PERSONAL);
 				}
 			}
 
@@ -1197,14 +1197,30 @@ public class GwtViewHelper {
 				Set<String> keySet = filterMap.keySet();
 				for (Iterator<String> ksIT = keySet.iterator(); ksIT.hasNext(); ) {
 					// ...and add a BinderFilter for each to the list.
-					String key = ksIT.next();
+					String filterName  = ksIT.next();
+					String filterScope = filterMap.get(filterName);
 					url = new AdaptedPortletURL(request, "ss_forum", true);
 					url.setParameter(WebKeys.ACTION,            viewAction               );
 					url.setParameter(WebKeys.URL_BINDER_ID,     binder.getId().toString());
 					url.setParameter(WebKeys.URL_OPERATION,     WebKeys.URL_SELECT_FILTER);
-					url.setParameter(WebKeys.URL_OPERATION2,    filterMap.get(key)       );
-					url.setParameter(WebKeys.URL_SELECT_FILTER, key                      );
-					ffList.add(new BinderFilter(key, url.toString()));
+					url.setParameter(WebKeys.URL_OPERATION2,    filterScope              );
+					url.setParameter(WebKeys.URL_SELECT_FILTER, filterName               );
+					String filterAddUrl = url.toString();
+					
+					url = new AdaptedPortletURL(request, "ss_forum", true);
+					url.setParameter(WebKeys.ACTION,           viewAction               );
+					url.setParameter(WebKeys.URL_BINDER_ID,    binder.getId().toString());
+					url.setParameter(WebKeys.URL_OPERATION,    WebKeys.URL_CLEAR_FILTER );
+					url.setParameter(WebKeys.URL_OPERATION2,   filterScope              );
+					url.setParameter(WebKeys.URL_CLEAR_FILTER, filterName               );
+					String filterClearUrl = url.toString();
+					
+					ffList.add(
+						new BinderFilter(
+							filterName,
+							filterScope,
+							filterAddUrl,
+							filterClearUrl));
 				}
 			}
 			
@@ -1214,8 +1230,22 @@ public class GwtViewHelper {
 			
 			// Store the current filter, if any, that the user
 			// currently has selected on this binder.
-			String currentFilter = ((String) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER));
-			reply.setCurrentFilter((null == currentFilter) ? "" : MiscUtil.replace(currentFilter, "+", " "));
+			List<String> currentFilters = ((List<String>) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTERS));
+			if (null == currentFilters) {
+				currentFilters = new ArrayList<String>();
+			}
+			String filterName = ((String) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER));
+			if (MiscUtil.hasString(filterName)) {
+				String filterScope = ((String) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE));
+				if (!(MiscUtil.hasString(filterScope))) {
+					filterScope = ObjectKeys.USER_PROPERTY_USER_FILTER_PERSONAL;
+				}
+				String filterSpec = BinderFilter.buildFilterSpec(filterName, filterScope);
+				if (!(currentFilters.contains(filterSpec))) {
+					currentFilters.add(filterSpec);
+				}
+			}
+			reply.setCurrentFilters(currentFilters);
 
 			// Store a URL to turn off filtering on the binder.
 			url = new AdaptedPortletURL(request, "ss_forum", true);
@@ -2766,6 +2796,7 @@ public class GwtViewHelper {
 	 * 
 	 * @throws GwtTeamingException 
 	 */
+	@SuppressWarnings("unchecked")
 	public static ViewInfo getViewInfo(AllModulesInjected bs, HttpServletRequest request, String url) throws GwtTeamingException {
 		// Trace the URL we're working with.
 		m_logger.debug("GwtViewHelper.getViewInfo():  " + url);
@@ -2846,18 +2877,59 @@ public class GwtViewHelper {
 				}
 			}
 			
-			// Does it contain a filter selection?
+			// Does it contain a filter operation?
 			String op = getQueryParameterString(nvMap, WebKeys.URL_OPERATION);
 			if (MiscUtil.hasString(op) && op.equals(WebKeys.URL_SELECT_FILTER)) {
-				// Yes!  Apply the selection.
+				// Yes, a filter selection!  Apply the selection.
 				String filterName = getQueryParameterString(nvMap, WebKeys.URL_SELECT_FILTER);
 				ProfileModule pm = bs.getProfileModule();
 				Long userId = GwtServerHelper.getCurrentUser().getId();
-				pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER, filterName);
 				String op2 = getQueryParameterString(nvMap, WebKeys.URL_OPERATION2);
-				if (MiscUtil.hasString(op2) && op2.equals("global"))
-				     pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE, ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL  );
-				else pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE, ObjectKeys.USER_PROPERTY_USER_FILTER_PERSONAL);
+				String filterScope;
+				if (MiscUtil.hasString(op2) && op2.equals(ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL))
+				     filterScope = ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL;
+				else filterScope = ObjectKeys.USER_PROPERTY_USER_FILTER_PERSONAL;
+				pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER,       filterName );
+				pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE, filterScope);
+
+				UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUser().getId(), binderId);
+				List<String> currentFilters = ((List<String>) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTERS));
+				if (null == currentFilters) {
+					currentFilters = new ArrayList<String>();
+				}
+				if (MiscUtil.hasString(filterName)) {
+					String filterSpec = BinderFilter.buildFilterSpec(filterName, filterScope);
+					if (!(currentFilters.contains(filterSpec))) {
+						currentFilters.add(filterSpec);
+					}
+				}
+				else {
+					currentFilters.clear();
+				}
+				pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTERS, currentFilters);
+			}
+			
+			if (MiscUtil.hasString(op) && op.equals(WebKeys.URL_CLEAR_FILTER)) {
+				// Yes, a filter clear!  Apply the selection.
+				ProfileModule pm = bs.getProfileModule();
+				Long userId = GwtServerHelper.getCurrentUser().getId();
+				String op2 = getQueryParameterString(nvMap, WebKeys.URL_OPERATION2);
+				String filterScope;
+				if (MiscUtil.hasString(op2) && op2.equals(ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL))
+				     filterScope = ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL;
+				else filterScope = ObjectKeys.USER_PROPERTY_USER_FILTER_PERSONAL;
+				pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER,       ""         );
+				pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE, filterScope);
+
+				String filterName = getQueryParameterString(nvMap, WebKeys.URL_CLEAR_FILTER);
+				String filterSpec = BinderFilter.buildFilterSpec(filterName, filterScope);
+				UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUser().getId(), binderId);
+				List<String> currentFilters = ((List<String>) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTERS));
+				if (null == currentFilters) {
+					currentFilters = new ArrayList<String>();
+				}
+				currentFilters.remove(filterSpec);
+				pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTERS, currentFilters);
 			}
 		}
 

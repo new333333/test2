@@ -218,6 +218,7 @@ public class WebKeys {
     public static final String URL_PAGE_NUMBER="pageNumber";
     public static final String URL_SEARCH_QUERY_NAME="ss_queryName";
     public static final String URL_SEARCH_SCOPE="scope";
+    public static final String URL_CLEAR_FILTER="clear_filter";
     public static final String URL_SELECT_FILTER="select_filter";
     public static final String URL_PAGE="page";
     public static final String URL_PAGE_SIZE="pageSize";

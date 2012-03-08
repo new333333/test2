@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -70,7 +71,7 @@ import com.google.gwt.user.client.ui.RequiresResize;
  */
 public class FilterPanel extends ToolPanelBase {
 	private List<BinderFilter>	m_binderFilters;	//
-	private String				m_currentFilter;	//
+	private List<String>		m_currentFilters;	//
 	private String				m_filterEditUrl;	//
 	private String				m_filtersOffUrl;	//
 	private VibeFlowPanel		m_fp;				// The panel holding the FilterPanel's contents.
@@ -152,10 +153,13 @@ public class FilterPanel extends ToolPanelBase {
 			public void onSuccess(VibeRpcResponse response) {
 				// Store the filter information and continue loading.
 				BinderFiltersRpcResponseData responseData = ((BinderFiltersRpcResponseData) response.getResponseData());
-				m_binderFilters = responseData.getBinderFilters();
-				m_currentFilter = responseData.getCurrentFilter();
-				m_filterEditUrl = responseData.getFilterEditUrl();
-				m_filtersOffUrl = responseData.getFiltersOffUrl();
+				m_binderFilters  = responseData.getBinderFilters();
+				m_filterEditUrl  = responseData.getFilterEditUrl();
+				m_filtersOffUrl  = responseData.getFiltersOffUrl();
+				m_currentFilters = responseData.getCurrentFilters();
+				if (null == m_currentFilters) {
+					m_currentFilters = new ArrayList<String>();
+				}
 				loadPart2Async();
 			}
 		});
@@ -209,7 +213,7 @@ public class FilterPanel extends ToolPanelBase {
 				m_messages.vibeBinderFilter_None(),
 				m_filtersOffUrl,
 				"vibe-filterAnchorLabel",
-				(!(GwtClientHelper.hasString(m_currentFilter))));
+				m_currentFilters.isEmpty());
 		}
 		
 		// ...scan the filters defined on the binder...
@@ -219,9 +223,9 @@ public class FilterPanel extends ToolPanelBase {
 			renderFilterLink(
 				filtersPanel,
 				filterName,
-				bf.getFilterUrl(),
+				bf.getFilterAddUrl(),
 				"vibe-filterAnchorLabel",
-				filterName.equalsIgnoreCase(m_currentFilter));
+				m_currentFilters.contains(bf.getFilterSpec()));
 		}
 
 		// ...add a panel to hold the link to edit the filters...

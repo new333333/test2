@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -46,7 +46,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class BinderFiltersRpcResponseData implements IsSerializable, VibeRpcResponseData {
 	private List<BinderFilter>	m_binderFiltersList;	//
-	private String				m_currentFilter;		//
+	private List<String>		m_currentFilters;		//
 	private String				m_filterEditUrl;		//
 	private String				m_filtersOffUrl;		//
 	
@@ -74,19 +74,19 @@ public class BinderFiltersRpcResponseData implements IsSerializable, VibeRpcResp
 	 * 
 	 * @return
 	 */
-	public List<BinderFilter> getBinderFilters() {return m_binderFiltersList;}
-	public String             getCurrentFilter() {return m_currentFilter;    }
-	public String             getFilterEditUrl() {return m_filterEditUrl;    }
-	public String             getFiltersOffUrl() {return m_filtersOffUrl;    }
+	public List<BinderFilter> getBinderFilters()  {return m_binderFiltersList;}
+	public List<String>       getCurrentFilters() {return m_currentFilters;   }
+	public String             getFilterEditUrl()  {return m_filterEditUrl;    }
+	public String             getFiltersOffUrl()  {return m_filtersOffUrl;    }
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param BinderFiltersList
-	 * @param currentFilter
+	 * @param currentFilters
 	 */
-	public void setBinderFilters(List<BinderFilter> binderFiltersList) {m_binderFiltersList = binderFiltersList;}
-	public void setCurrentFilter(String             currentFilter)     {m_currentFilter     = currentFilter;    }
-	public void setFilterEditUrl(String             filterEditUrl)     {m_filterEditUrl     = filterEditUrl;    }
-	public void setFiltersOffUrl(String             filtersOffUrl)     {m_filtersOffUrl     = filtersOffUrl;    }
+	public void setBinderFilters( List<BinderFilter> binderFiltersList) {m_binderFiltersList = binderFiltersList;}
+	public void setCurrentFilters(List<String>       currentFilters)    {m_currentFilters    = currentFilters;   }
+	public void setFilterEditUrl( String             filterEditUrl)     {m_filterEditUrl     = filterEditUrl;    }
+	public void setFiltersOffUrl( String             filtersOffUrl)     {m_filtersOffUrl     = filtersOffUrl;    }
 }

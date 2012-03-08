@@ -1279,7 +1279,9 @@ public interface GwtTeamingMessages extends Messages
 	String vibeEntryMenu_Alt_FilterOptions();
 	String vibeEntryMenu_Alt_ListOptions();
 	String vibeEntryMenu_ClearFilters();
+	String vibeEntryMenu_GlobalizeFilter(String filterName);
 	String vibeEntryMenu_ManageFilters();
+	String vibeEntryMenu_PersonalizeFilter(String filterName);
 		
 	// Strings used in the Folder Columns dialog
 	String folderColumnsDlgHeader();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,8 +44,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class BinderFilter implements IsSerializable, VibeRpcResponseData {
-	private String	m_filterName;	//
-	private String	m_filterUrl;	//
+	private String	m_filterName;		//
+	private String	m_filterScope;		//
+	private String	m_filterAddUrl;		//
+	private String	m_filterClearUrl;	//
 	
 	/**
 	 * Constructor method.
@@ -61,15 +63,19 @@ public class BinderFilter implements IsSerializable, VibeRpcResponseData {
 	 * Constructor method.
 	 * 
 	 * @param filterName
-	 * @param filterUrl
+	 * @param filterScope
+	 * @param filterAddUrl
+	 * @param filterClearUrl
 	 */
-	public BinderFilter(String filterName, String filterUrl) {
+	public BinderFilter(String filterName, String filterScope, String filterAddUrl, String filterClearUrl) {
 		// Initialize the object...
 		this();
 		
 		// ...and store the parameters.
-		setFilterName(filterName);
-		setFilterUrl( filterUrl );
+		setFilterName(    filterName    );
+		setFilterScope(   filterScope   );
+		setFilterAddUrl(  filterAddUrl  );
+		setFilterClearUrl(filterClearUrl);
 	}
 	
 	/**
@@ -77,14 +83,70 @@ public class BinderFilter implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @return
 	 */
-	public String getFilterName() {return m_filterName;}
-	public String getFilterUrl()  {return m_filterUrl; }
+	public boolean isGlobal()          {return m_filterScope.equals("global");                    }
+	public boolean isPersonal()        {return (!(isGlobal()));                                   }
+	public String  getFilterName()     {return m_filterName;                                      }
+	public String  getFilterScope()    {return m_filterScope;                                     }
+	public String  getFilterSpec()     {return buildFilterSpec(getFilterName(), getFilterScope());}
+	public String  getFilterAddUrl()   {return m_filterAddUrl;                                    }
+	public String  getFilterClearUrl() {return m_filterClearUrl;                                  }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFilterName(String filterName) {m_filterName = filterName;}
-	public void setFilterUrl( String filterUrl ) {m_filterUrl  = filterUrl; }
+	public void setFilterName(    String filterName    ) {m_filterName     = filterName;    }
+	public void setFilterScope(   String filterScope   ) {m_filterScope    = filterScope;   }
+	public void setFilterAddUrl(  String filterAddUrl  ) {m_filterAddUrl   = filterAddUrl;  }
+	public void setFilterClearUrl(String filterClearUrl) {m_filterClearUrl = filterClearUrl;}
+
+	/**
+	 * Constructs a string used as a filter specification that combines
+	 * for the filter's name and scope.
+	 * 
+	 * @param filterName
+	 * @param filterScope
+	 * 
+	 * @return
+	 */
+	public static String buildFilterSpec(String filterName, String filterScope) {
+		return (filterScope + ":" + filterName);
+	}
+
+	/**
+	 * Given a filter specification, returns the name component.
+	 * 
+	 * @param filterSpec
+	 * 
+	 * @return
+	 */
+	public static String getFilterNameFromSpec(String filterSpec) {
+		String reply = null;
+		if (null != filterSpec) {
+			int cPos = filterSpec.indexOf(':');
+			if (0 < cPos) {
+				reply = filterSpec.substring(cPos + 1);
+			}
+		}
+		return reply;
+	}
+	
+	/**
+	 * Given a filter specification, returns the scope component.
+	 * 
+	 * @param filterSpec
+	 * 
+	 * @return
+	 */
+	public static String getFilterScopeFromSpec(String filterSpec) {
+		String reply = null;
+		if (null != filterSpec) {
+			int cPos = filterSpec.indexOf(':');
+			if (0 < cPos) {
+				reply = filterSpec.substring(0, cPos);
+			}
+		}
+		return reply;
+	}
 }
