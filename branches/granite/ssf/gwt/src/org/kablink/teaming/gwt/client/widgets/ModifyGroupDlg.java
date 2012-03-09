@@ -42,7 +42,9 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.GroupCreatedEvent;
+import org.kablink.teaming.gwt.client.event.GroupCreationFailedEvent;
 import org.kablink.teaming.gwt.client.event.GroupCreationStartedEvent;
+import org.kablink.teaming.gwt.client.event.GroupModificationFailedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModificationStartedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModifiedEvent;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
@@ -249,15 +251,19 @@ public class ModifyGroupDlg extends DlgBox
 			@Override
 			public void onFailure( Throwable caught )
 			{
-				// Show this dialog
-				show();
+				GroupCreationFailedEvent event;
+				GroupInfo newGroupInfo;
 				
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					GwtTeaming.getMessages().rpcFailure_CreateGroup(),
-					getGroupName() );
+				// Create a GroupInfo object that will represent the group we are going to create.
+				newGroupInfo = new GroupInfo();
+				newGroupInfo.setId( Long.valueOf( -1 ) );
+				newGroupInfo.setName( getGroupName() );
+				newGroupInfo.setTitle( getGroupTitle() );
+				newGroupInfo.setDesc( getGroupDesc() );
 				
-				m_nameTxtBox.setFocus( true );
+				// Fire an event that lets everyone know the group creation failed.
+				event = new GroupCreationFailedEvent( newGroupInfo, caught );
+				GwtTeaming.fireEvent( event );
 			}
 
 			@Override
@@ -274,6 +280,9 @@ public class ModifyGroupDlg extends DlgBox
 			}						
 		};
 		
+		// Close this dialog.
+		hide();
+
 		// Fire an event that indicates we have started the process of creating a group
 		{
 			GroupCreationStartedEvent event;
@@ -293,9 +302,6 @@ public class ModifyGroupDlg extends DlgBox
 		// Issue an rpc request to create the group.
 		cmd = new CreateGroupCmd( getGroupName(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership, m_dynamicMembershipCriteria );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
-		
-		// Close this dialog.
-		hide();
 	}
 
 	/**
@@ -808,11 +814,11 @@ public class ModifyGroupDlg extends DlgBox
 			@Override
 			public void onFailure( Throwable caught )
 			{
-				show();
+				GroupModificationFailedEvent event;
 				
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					GwtTeaming.getMessages().rpcFailure_ModifyGroup() );
+				// Fire an event that lets everyone know the group modification failed.
+				event = new GroupModificationFailedEvent( newGroupInfo, caught );
+				GwtTeaming.fireEvent( event );
 			}
 
 			@Override
@@ -826,6 +832,9 @@ public class ModifyGroupDlg extends DlgBox
 			}						
 		};
 		
+		// Close this dialog.
+		hide();
+
 		// Fire an event that indicates we have started the group modification
 		{
 			GroupModificationStartedEvent event;
@@ -837,8 +846,5 @@ public class ModifyGroupDlg extends DlgBox
 		// Issue an rpc request to update the group.
 		cmd = new ModifyGroupCmd( m_groupInfo.getId(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership, m_dynamicMembershipCriteria );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
-
-		// Close this dialog.
-		hide();
 	}
 }
