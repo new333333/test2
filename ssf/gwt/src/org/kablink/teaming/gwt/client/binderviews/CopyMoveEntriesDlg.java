@@ -687,7 +687,10 @@ public class CopyMoveEntriesDlg extends DlgBox
 		m_progressIndicator.addStyleName("vibe-cmeDlg_ProgressLabel");
 		m_progressPanel.add(m_progressIndicator);
 
-		// ...and finally, show the dialog.
+		// ...and finally, make sure the buttons are enabled and show
+		// ...the dialog.
+		setCancelEnabled(true);
+		setOkEnabled(    true);
 		show(true);
 	}
 	

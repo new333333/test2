@@ -842,6 +842,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 			case DISCUSSION:
 			case FILE:
 			case GUESTBOOK:
+			case MILESTONE:
 			case MINIBLOG:
 			case MIRROREDFILE:
 			case SURVEY:
