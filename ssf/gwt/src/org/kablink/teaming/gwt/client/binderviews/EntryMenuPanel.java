@@ -401,7 +401,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 	/*
 	 * Renders a current filter into the filters panel.
 	 */
-	private void renderCurrentFilter(String filterName, final String filtersOffUrl, boolean lastCurrentFilter) {
+	private void renderCurrentFilter(String filterName, boolean isGlobal, final String filtersOffUrl, boolean lastCurrentFilter) {
 		// Create a panel for the filter...
 		VibeFlowPanel perFilterPanel = new VibeFlowPanel();
 		perFilterPanel.addStyleName("vibe-filterMenuSavedPanel");
@@ -413,6 +413,9 @@ public class EntryMenuPanel extends ToolPanelBase {
 		// ...create a label for the filter...
 		InlineLabel il = new InlineLabel(filterName);
 		il.addStyleName("vibe-filterMenuSavedLabel");
+		if (isGlobal)
+		     il.setTitle(m_messages.vibeEntryMenu_Alt_GlobalFilter());
+		else il.setTitle(m_messages.vibeEntryMenu_Alt_PersonalFilter());
 		perFilterPanel.add(il);
 
 		// ...if we have the URL to remove it...
@@ -435,6 +438,23 @@ public class EntryMenuPanel extends ToolPanelBase {
 				}
 			});
 		}
+	}
+
+	/*
+	 * Renders a defined filter as a VibeMenuItem.
+	 */
+	private VibeMenuItem renderDefinedFilter(String menuText, boolean isHtml, final BinderFilter bf, final boolean isCurrentFilter) {
+		VibeMenuItem reply = new VibeMenuItem(menuText, isHtml, new Command() {
+			@Override
+			public void execute() {
+				GwtTeaming.fireEvent(
+					new GotoContentUrlEvent(
+						(isCurrentFilter           ?	// If the filter is active...
+							bf.getFilterClearUrl() :	// ...the link clears it...
+							bf.getFilterAddUrl())));	// ...otherwise, it activates it.
+			}
+		});
+		return reply;
 	}
 	
 	/*
@@ -521,7 +541,8 @@ public class EntryMenuPanel extends ToolPanelBase {
 			for (final BinderFilter bf:  filtersList) {
 				// ...and add a menu item for each.
 				String fName = bf.getFilterName();
-				if (bf.isGlobal())
+				boolean isGlobal = bf.isGlobal();
+				if (isGlobal)
 				     fName = m_messages.vibeEntryMenu_GlobalizeFilter(  fName);
 				else fName = m_messages.vibeEntryMenu_PersonalizeFilter(fName);
 				String menuText;
@@ -547,13 +568,12 @@ public class EntryMenuPanel extends ToolPanelBase {
 				else {
 					menuText = fName;
 				}
-				VibeMenuItem mi = new VibeMenuItem(menuText, hasCurrentFilter, new Command() {
-					@Override
-					public void execute() {
-						GwtTeaming.fireEvent(new GotoContentUrlEvent(bf.getFilterAddUrl()));
-					}
-				});
-				filterDropdownMenu.addItem(mi);
+				filterDropdownMenu.addItem(
+					renderDefinedFilter(
+						menuText,
+						hasCurrentFilter,
+						bf,
+						isCurrent));
 				
 				// If this is a current filter...
 				if (isCurrent) {
@@ -561,6 +581,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 					currentsShown += 1;
 					renderCurrentFilter(
 						fName,
+						isGlobal,
 						bf.getFilterClearUrl(),
 						(currentsShown == currentFiltersCount));	// true -> Last current.  false -> Not the last one.
 				}

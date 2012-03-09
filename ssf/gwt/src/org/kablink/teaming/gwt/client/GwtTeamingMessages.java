@@ -1276,8 +1276,10 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used by the entry menu bar in the various binder views.
 	String vibeEntryMenu_Alt_ClearFilter();
+	String vibeEntryMenu_Alt_GlobalFilter();
 	String vibeEntryMenu_Alt_FilterOptions();
 	String vibeEntryMenu_Alt_ListOptions();
+	String vibeEntryMenu_Alt_PersonalFilter();
 	String vibeEntryMenu_ClearFilters();
 	String vibeEntryMenu_GlobalizeFilter(String filterName);
 	String vibeEntryMenu_ManageFilters();
