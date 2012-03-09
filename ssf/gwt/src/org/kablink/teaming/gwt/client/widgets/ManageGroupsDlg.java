@@ -42,7 +42,9 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.VibeCellTableResources;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GroupCreatedEvent;
+import org.kablink.teaming.gwt.client.event.GroupCreationFailedEvent;
 import org.kablink.teaming.gwt.client.event.GroupCreationStartedEvent;
+import org.kablink.teaming.gwt.client.event.GroupModificationFailedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModificationStartedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModifiedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -88,7 +90,9 @@ import com.google.gwt.view.client.MultiSelectionModel;
 public class ManageGroupsDlg extends DlgBox
 	implements
 		GroupCreatedEvent.Handler,
+		GroupCreationFailedEvent.Handler,
 		GroupCreationStartedEvent.Handler,
+		GroupModificationFailedEvent.Handler,
 		GroupModificationStartedEvent.Handler,
 		GroupModifiedEvent.Handler
 {
@@ -107,7 +111,9 @@ public class ManageGroupsDlg extends DlgBox
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] 
 	{
 		TeamingEvents.GROUP_CREATED,
+		TeamingEvents.GROUP_CREATION_FAILED,
 		TeamingEvents.GROUP_CREATION_STARTED,
+		TeamingEvents.GROUP_MODIFICATION_FAILED,
 		TeamingEvents.GROUP_MODIFICATION_STARTED,
 		TeamingEvents.GROUP_MODIFIED
 	};
@@ -498,11 +504,36 @@ public class ManageGroupsDlg extends DlgBox
 				/**
 				 * 
 				 */
-				public void onFailure( Throwable t )
+				public void onFailure( final Throwable t )
 				{
-					GwtClientHelper.handleGwtRPCFailure(
-						t,
-						GwtTeaming.getMessages().rpcFailure_DeleteGroups() );
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							GwtClientHelper.handleGwtRPCFailure(
+									t,
+									GwtTeaming.getMessages().rpcFailure_DeleteGroups() );
+
+							// Spin through the list of groups that were to be deleted
+							// are set their status to ready.  We don't know which
+							// groups actually got deleted.
+							for (GroupInfo nextGroup : listOfGroupsToDeleteFinal)
+							{
+								GroupInfoPlus nextGroupPlus;
+								
+								nextGroupPlus = findGroupById( nextGroup.getId() );
+								if ( nextGroupPlus != null )
+									nextGroupPlus.setStatus( GroupModificationStatus.READY );
+							}
+							
+							// Update the table to reflect the fact that we deleted a group.
+							m_dataProvider.refresh();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 		
 				/**
@@ -573,9 +604,9 @@ public class ManageGroupsDlg extends DlgBox
 	}
 	
 	/**
-	 * Find the given group in our list of groups.
+	 * Find the given group by name in our list of groups.
 	 */
-	private GroupInfoPlus findGroupByName( String name )
+	private GroupInfoPlus findNewGroupByName( String name )
 	{
 		if ( m_listOfGroups != null && name != null )
 		{
@@ -585,7 +616,14 @@ public class ManageGroupsDlg extends DlgBox
 				
 				groupInfo = nextGroup.getGroupInfo();
 				if ( name.equalsIgnoreCase( groupInfo.getName() ) )
-					return nextGroup;
+				{
+					Long id;
+					
+					// We are looking for a group that doesn't existing the db yet.
+					id = groupInfo.getId();
+					if ( id != null && id == -1 )
+						return nextGroup;
+				}
 			}
 		}
 		
@@ -728,7 +766,7 @@ public class ManageGroupsDlg extends DlgBox
 			GroupInfoPlus groupInfoPlus;
 			
 			// Find this group in our list of groups.
-			groupInfoPlus = findGroupByName( createdGroupInfo.getName() );
+			groupInfoPlus = findNewGroupByName( createdGroupInfo.getName() );
 			
 			if ( groupInfoPlus != null )
 			{
@@ -747,6 +785,44 @@ public class ManageGroupsDlg extends DlgBox
 				
 				// Update the table to reflect the fact that a group was modified.
 				m_dataProvider.refresh();
+			}
+		}
+	}
+	
+	/**
+	 * Handles the GroupCreationFailedEvent received by this class.
+	 */
+	@Override
+	public void onGroupCreationFailed( GroupCreationFailedEvent event )
+	{
+		GroupInfo groupInfo;
+		
+		// Get the group we failed on
+		groupInfo = event.getGroupInfo();
+		
+		if ( groupInfo != null )
+		{
+			GroupInfoPlus groupInfoPlus;
+			
+			// Tell the user about the error
+			GwtClientHelper.handleGwtRPCFailure(
+											event.getException(),
+											GwtTeaming.getMessages().rpcFailure_CreateGroup(),
+											groupInfo.getName() );
+			
+			// Find this group in our list of groups.
+			groupInfoPlus = findNewGroupByName( groupInfo.getName() );
+			
+			if ( groupInfoPlus != null )
+			{
+				// Remove the group from the list.
+				m_listOfGroups.remove( groupInfoPlus );
+			
+				// Update the table to reflect the fact that we deleted a group.
+				m_dataProvider.refresh();
+
+				// Tell the table how many groups we have.
+				m_groupsTable.setRowCount( m_listOfGroups.size(), true );
 			}
 		}
 	}
@@ -784,6 +860,42 @@ public class ManageGroupsDlg extends DlgBox
 		}
 	}
 	
+	/**
+	 * Handles the GroupModificationFailedEvent received by this class
+	 */
+	@Override
+	public void onGroupModificationFailed( GroupModificationFailedEvent event )
+	{
+		GroupInfo groupInfo;
+		
+		// Get the GroupInfo passed in the event.
+		groupInfo = event.getGroupInfo();
+		
+		if ( groupInfo != null )
+		{
+			GroupInfoPlus groupInfoPlus;
+			Long id;
+			
+			// Tell the user about the error
+			GwtClientHelper.handleGwtRPCFailure(
+										event.getException(),
+										GwtTeaming.getMessages().rpcFailure_ModifyGroup() );
+			
+			// Find this group in our list of groups.
+			id = groupInfo.getId();
+			groupInfoPlus = findGroupById( id );
+			
+			if ( groupInfoPlus != null )
+			{
+				// Set the group's modification state to ready
+				groupInfoPlus.setStatus( GroupModificationStatus.READY );
+
+				// Update the table to reflect the fact that this group is being modified.
+				m_dataProvider.refresh();
+			}
+		}
+	}
+
 	/**
 	 * Handles the GroupModificationStartedEvent received by this class
 	 */

@@ -367,6 +367,28 @@ public class EventHelper {
 				}
 				break;
 				
+			case GROUP_CREATION_FAILED:
+				// A GroupCreationFailedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof GroupCreationFailedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = GroupCreationFailedEvent.registerEvent(
+																			eventBus,
+																			((GroupCreationFailedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
+			case GROUP_MODIFICATION_FAILED:
+				// A GroupModificationFailedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof GroupModificationFailedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = GroupModificationFailedEvent.registerEvent(
+																			eventBus,
+																			((GroupModificationFailedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
 			case GROUP_MODIFICATION_STARTED:
 				// A GroupModificationStartedEvent  Can the event handler we  were given handle that?
 				if ( eventHandler instanceof GroupModificationStartedEvent.Handler )
@@ -979,7 +1001,9 @@ public class EventHelper {
 			case GOTO_PERMALINK_URL:                hasHandler = (eventHandler instanceof GotoPermalinkUrlEvent.Handler);             break;
 
 			case GROUP_CREATED:                		hasHandler = (eventHandler instanceof GroupCreatedEvent.Handler);             	  break;
+			case GROUP_CREATION_FAILED:       		hasHandler = (eventHandler instanceof GroupCreationFailedEvent.Handler);     	  break;
 			case GROUP_CREATION_STARTED:       		hasHandler = (eventHandler instanceof GroupCreationStartedEvent.Handler);     	  break;
+			case GROUP_MODIFICATION_FAILED:       	hasHandler = (eventHandler instanceof GroupModificationFailedEvent.Handler);      break;
 			case GROUP_MODIFICATION_STARTED:       	hasHandler = (eventHandler instanceof GroupModificationStartedEvent.Handler);     break;
 			case GROUP_MODIFIED:                	hasHandler = (eventHandler instanceof GroupModifiedEvent.Handler);             	  break;
 
