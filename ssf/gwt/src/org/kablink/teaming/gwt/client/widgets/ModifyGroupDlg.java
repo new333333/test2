@@ -42,6 +42,8 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.GroupCreatedEvent;
+import org.kablink.teaming.gwt.client.event.GroupCreationStartedEvent;
+import org.kablink.teaming.gwt.client.event.GroupModificationStartedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModifiedEvent;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
@@ -242,7 +244,6 @@ public class ModifyGroupDlg extends DlgBox
 		CreateGroupCmd cmd;
 		AsyncCallback<VibeRpcResponse> rpcCallback;
 		
-		// Yes
 		rpcCallback = new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
@@ -272,6 +273,22 @@ public class ModifyGroupDlg extends DlgBox
 				GwtTeaming.fireEvent( event );
 			}						
 		};
+		
+		// Fire an event that indicates we have started the process of creating a group
+		{
+			GroupCreationStartedEvent event;
+			GroupInfo newGroupInfo;
+			
+			// Create a GroupInfo object that will represent the group we are going to create.
+			newGroupInfo = new GroupInfo();
+			newGroupInfo.setId( Long.valueOf( -1 ) );
+			newGroupInfo.setName( getGroupName() );
+			newGroupInfo.setTitle( getGroupTitle() );
+			newGroupInfo.setDesc( getGroupDesc() );
+			
+			event = new GroupCreationStartedEvent( newGroupInfo );
+			GwtTeaming.fireEvent( event );
+		}
 		
 		// Issue an rpc request to create the group.
 		cmd = new CreateGroupCmd( getGroupName(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership, m_dynamicMembershipCriteria );
@@ -808,6 +825,14 @@ public class ModifyGroupDlg extends DlgBox
 				GwtTeaming.fireEvent( event );
 			}						
 		};
+		
+		// Fire an event that indicates we have started the group modification
+		{
+			GroupModificationStartedEvent event;
+			
+			event = new GroupModificationStartedEvent( newGroupInfo );
+			GwtTeaming.fireEvent( event );
+		}
 		
 		// Issue an rpc request to update the group.
 		cmd = new ModifyGroupCmd( m_groupInfo.getId(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership, m_dynamicMembershipCriteria );

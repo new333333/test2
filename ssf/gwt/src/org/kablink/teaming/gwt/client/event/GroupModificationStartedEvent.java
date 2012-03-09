@@ -39,13 +39,14 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The GroupModifiedEvent is used to signal that a group has been modified.
+ * The GroupModificationStartedEvent is used to signal that the process of
+ * modifying a group has started.
  * 
  * @author jwootton@novell.com
  */
-public class GroupModifiedEvent extends VibeEventBase<GroupModifiedEvent.Handler>
+public class GroupModificationStartedEvent extends VibeEventBase<GroupModificationStartedEvent.Handler>
 {
-	private GroupInfo m_groupInfo;	// Information about the group that was modified
+	private GroupInfo m_groupInfo;	// Information about the group that is being modified
 	
     public static Type<Handler> TYPE = new Type<Handler>();
     
@@ -54,13 +55,13 @@ public class GroupModifiedEvent extends VibeEventBase<GroupModifiedEvent.Handler
 	 */
 	public interface Handler extends EventHandler
 	{
-		void onGroupModified( GroupModifiedEvent event );
+		void onGroupModificationStarted( GroupModificationStartedEvent event );
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public GroupModifiedEvent( GroupInfo groupInfo )
+	public GroupModificationStartedEvent( GroupInfo groupInfo )
 	{
 		super();
 		
@@ -77,7 +78,7 @@ public class GroupModifiedEvent extends VibeEventBase<GroupModifiedEvent.Handler
     @Override
     protected void dispatch( Handler handler )
     {
-        handler.onGroupModified( this );
+        handler.onGroupModificationStarted( this );
     }
 	
 	/**
@@ -104,11 +105,11 @@ public class GroupModifiedEvent extends VibeEventBase<GroupModifiedEvent.Handler
 	@Override
 	public TeamingEvents getEventEnum()
 	{
-		return TeamingEvents.GROUP_MODIFIED;
+		return TeamingEvents.GROUP_MODIFICATION_STARTED;
 	}
 
 	/**
-	 * Return the information about the group that was modified.
+	 * Return the information about the group that is being modified.
 	 */
 	public GroupInfo getGroupInfo()
 	{

@@ -73,6 +73,8 @@ public enum TeamingEvents implements IsSerializable {
 	GOTO_PERMALINK_URL,					// Changes the current context to a permalink URL.
 	
 	GROUP_CREATED,						// Notification that a group was created.
+	GROUP_CREATION_STARTED,				// Notification that the process of creating a group has started.
+	GROUP_MODIFICATION_STARTED,			// Notification that the process of modifying a group has started.
 	GROUP_MODIFIED,						// Notification that a group was modified.
 
 	INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,	// Invokes the Configure File Sync App dialog.

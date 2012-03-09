@@ -3553,7 +3553,27 @@ td.datePickerMonth {
     position: relative;
     white-space: nowrap;
 }
-	
+
+.groupTitlePanel
+{
+	vertical-align: middle;
+}
+
+.groupTitle
+{
+	color: #135C8F;
+	cursor: pointer;
+	padding-right: 10px;
+}
+
+.groupStatus
+{
+	color: red;
+	font-family: Arial,sans-serif;
+	font-size: 10px;
+	font-style: italic;
+}
+
 /* End of styles used with the group management dialogs */
 
 
