@@ -1146,12 +1146,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 		case GET_RECENT_PLACES:
 		{
-			GetRecentPlacesRpcResponseData responseData;
-			List<RecentPlaceInfo> result;
-			if (GwtUIHelper.isGraniteGwtEnabled())
-			     result = GwtMenuHelper.getRecentPlaces(            this, getRequest( ri ), ((GetRecentPlacesCmd) cmd).getBinderId() );
-			else result = GwtServerHelper.getRecentPlacesFromCache( this, getRequest( ri )                                           );
-			responseData = new GetRecentPlacesRpcResponseData( result );
+			List<RecentPlaceInfo> result = GwtMenuHelper.getRecentPlaces( this, getRequest( ri ), ((GetRecentPlacesCmd) cmd).getBinderId() );
+			GetRecentPlacesRpcResponseData responseData = new GetRecentPlacesRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1338,26 +1334,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_TOOLBAR_ITEMS:
 		{
-			GetToolbarItemsCmd gtiCmd;
 			List<ToolbarItem> result;
-			GetToolbarItemsRpcResponseData responseData;
-			
-			gtiCmd = ((GetToolbarItemsCmd) cmd);
+			GetToolbarItemsCmd gtiCmd = ((GetToolbarItemsCmd) cmd);
 			if (GwtUIHelper.isGraniteGwtEnabled())
 			     result = GwtMenuHelper.getToolbarItems( this,    getRequest( ri ), gtiCmd.getBinderId() );
 			else result =               getToolbarItemsFromCache( getRequest( ri ), gtiCmd.getBinderId() );
-			responseData = new GetToolbarItemsRpcResponseData( result );
+			GetToolbarItemsRpcResponseData responseData = new GetToolbarItemsRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
 		case GET_TOP_RANKED:
 		{
-			List<TopRankedInfo> result;
-			GetTopRankedRpcResponseData responseData;
-			
-			result = getTopRanked( ri );
-			responseData = new GetTopRankedRpcResponseData( result );
+			List<TopRankedInfo> result = GwtServerHelper.getTopRankedFromCache( this, getRequest( ri ));
+			GetTopRankedRpcResponseData responseData = new GetTopRankedRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1842,11 +1832,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case SAVE_SEARCH:
 		{
-			SaveSearchCmd ssCmd;
-			SavedSearchInfo result;
-			
-			ssCmd = (SaveSearchCmd) cmd;
-			result = saveSearch( ri, ssCmd.getSearchTabId(), ssCmd.getSavedSearchInfo() );
+			SaveSearchCmd ssCmd = ((SaveSearchCmd) cmd);
+			SavedSearchInfo result = GwtServerHelper.saveSearch( this, getRequest( ri ), ssCmd.getSearchTabId(), ssCmd.getSavedSearchInfo() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -5117,19 +5104,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getToolbarItemsFromCache()
 
 	/**
-	 * Returns a List<TopRankedInfo> of the top ranked items from the
-	 * most recent search.
-	 * 
-	 * @param ri
-	 * 
-	 * @return
-	 */
-	private List<TopRankedInfo> getTopRanked( HttpRequestInfo ri )
-	{
-		return GwtServerHelper.getTopRanked( getRequest( ri ), this );
-	}
-
-	/**
 	 * Removes a search based on its SavedSearchInfo.
 	 * 
 	 * @param ri
@@ -5140,20 +5114,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	private Boolean removeSavedSearch( HttpRequestInfo ri, SavedSearchInfo ssi ) {
 		return GwtServerHelper.removeSavedSearch( this, ssi );
 	}// end removeSavedSearch()
-	
-	/**
-	 * Saves a search based on its tab ID and SavedSearchInfo.
-	 * 
-	 * @param ri
-	 * @param searchTabId
-	 * @param ssi
-	 * 
-	 * @return
-	 */
-	private SavedSearchInfo saveSearch( HttpRequestInfo ri, String searchTabId, SavedSearchInfo ssi ) {
-		return GwtServerHelper.saveSearch( this, searchTabId, ssi );
-	}// end saveSearch()
-	
+
 	
 	/*
 	 * Save the given subscription data for the given entry id.

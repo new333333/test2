@@ -96,7 +96,6 @@ public class GwtUIHelper {
 	
 	// The key into the session cache to store the GWT UI tab and
 	// toolbar beans.
-	public final static String CACHED_TABS_KEY				= "gwt-ui-tabs";
 	public final static String CACHED_TOOLBARS_KEY			= "gwt-ui-toolbars";
 	public final static String CACHED_TOP_RANKED_PEOPLE_KEY	= "gwt-ui-topRankedPeople";
 	public final static String CACHED_TOP_RANKED_PLACES_KEY	= "gwt-ui-topRankedPlaces";
@@ -576,53 +575,51 @@ public class GwtUIHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static void cacheToolbarBeansImpl(HttpServletRequest hRequest, Map model) {
-		/// If the Granite GWT extensions are enabled...
-		if (isGraniteGwtEnabled()) {
-			// ...we don't cache the toolbar beans.  Bail.
-			return;
-		}
-		
 		// If we don't have an HttpServletRequest...
 		if (null == hRequest) {
-			// ...bail.
+			// ...we can't cache anything.  Bail.
 			return;
 		}
 
 		// Clear any previous stuff we may have cached.
 		HttpSession hSession = WebHelper.getRequiredSession(hRequest);
-		hSession.removeAttribute(CACHED_TABS_KEY);
 		hSession.removeAttribute(CACHED_TOOLBARS_KEY);
 		hSession.removeAttribute(CACHED_TOP_RANKED_PEOPLE_KEY);
 		hSession.removeAttribute(CACHED_TOP_RANKED_PLACES_KEY);
 
 		// If we're not in GWT UI mode...
 		if (!(isGwtUIActive(hRequest))) {
-			// ...bail.
+			// ...we don't cache anything.  Bail.
 			return;
 		}
 
 		// If we don't have a model or the model data is empty...
 		if ((null == model) || (0 == model.size())) {
-			// ...bail.
+			// ...we can't cache anything.  Bail.
 			return;
 		}
 
-		// Scan the names of toolbars we need to cache.
-		HashMap<String, Map> tbHM = new HashMap<String, Map>();
-		for (int i = 0; i < CACHED_TOOLBARS.length; i += 1) {
-			// Does a toolbar by this name exist?
-			String tbName = CACHED_TOOLBARS[i];
-			Map tb = ((Map) model.get(tbName));
-			if ((null != tb) && (!(tb.isEmpty()))) {
-				// Yes! Add it to the HashMap.
-				fixupAdaptedPortletURLs(tb);
-				tbHM.put(tbName, tb);
+		/// Are the Granite GWT extensions enabled?
+		if (!(isGraniteGwtEnabled())) {
+			// No!  We need to cache the toolbars.  Scan the names of
+			// those we need to cache...
+			HashMap<String, Map> tbHM = new HashMap<String, Map>();
+			for (int i = 0; i < CACHED_TOOLBARS.length; i += 1) {
+				// Does a toolbar by this name exist?
+				String tbName = CACHED_TOOLBARS[i];
+				Map tb = ((Map) model.get(tbName));
+				if ((null != tb) && (!(tb.isEmpty()))) {
+					// Yes! Add it to the HashMap.
+					fixupAdaptedPortletURLs(tb);
+					tbHM.put(tbName, tb);
+				}
 			}
+			
+			// ...and cache them in the session.
+			hSession.setAttribute(CACHED_TOOLBARS_KEY, new GwtUISessionData(tbHM));
 		}
 
-		// Finally, store the stuff we cache in the session cache.
-		hSession.setAttribute(CACHED_TABS_KEY,              new GwtUISessionData(model.get(WebKeys.TABS)));
-		hSession.setAttribute(CACHED_TOOLBARS_KEY,          new GwtUISessionData(tbHM));
+		// Finally, cache the other stuff we store in the session.
 		hSession.setAttribute(CACHED_TOP_RANKED_PEOPLE_KEY, new GwtUISessionData(model.get(WebKeys.FOLDER_ENTRYPEOPLE)));
 		hSession.setAttribute(CACHED_TOP_RANKED_PLACES_KEY, new GwtUISessionData(model.get(WebKeys.FOLDER_ENTRYPLACES)));
 	}

@@ -152,7 +152,6 @@ import org.kablink.teaming.gwt.client.lpe.ConfigData;
 import org.kablink.teaming.gwt.client.lpe.LandingPageProperties;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
-import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
@@ -240,7 +239,6 @@ import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
-import org.kablink.teaming.web.util.Tabs.TabEntry;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper.Counter;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
 import org.kablink.util.search.Constants;
@@ -1708,69 +1706,6 @@ public class GwtServerHelper {
 		return reply;
 	}
 
-	/**
-	 * Fills a List<RecentPlaceInfo> with the recent places information
-	 * stored in a Tabs object.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param tabs
-	 * @param rpiList
-	 */
-	public static void fillRecentPlacesFromTabs(AllModulesInjected bs, HttpServletRequest request, Tabs tabs, List<RecentPlaceInfo> rpiList) {
-		// Scan the tabs...
-		int count = 0;
-		List tabList = tabs.getTabList();
-		int maxTitle = SPropsUtil.getInt("history.max.title",   30);
-		int maxItems = SPropsUtil.getInt("recent-places-depth", 10);
-		for (Iterator tabIT = tabList.iterator(); tabIT.hasNext(); ) {
-			// ...creating a RecentPlaceInfo object for each...
-			TabEntry tab = ((TabEntry) tabIT.next());
-			RecentPlaceInfo rpi = new RecentPlaceInfo();
-			String title = ((String) tab.getData().get("title"));
-			if (title.length() > maxTitle) {
-				title = (title.substring(0, maxTitle) + "...");
-			}
-			rpi.setTitle(title);
-			rpi.setId(String.valueOf(tab.getTabId()));
-			rpi.setType(tab.getType());
-			switch (rpi.getTypeEnum()) {
-			case BINDER:
-				// If the tab's binder is no longer accessible...
-				Long binderId = tab.getBinderId();
-				Binder binder = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
-				if ((null == binder) || GwtUIHelper.isBinderPreDeleted(binder)) {
-					// ...skip it.
-					continue;
-				}
-				rpi.setBinderId(String.valueOf(binderId));
-				rpi.setEntityPath(((String) tab.getData().get("path")));
-				rpi.setEntryId(String.valueOf(tab.getEntryId()));
-				rpi.setPermalink(PermaLinkUtil.getPermalink(request, binder));
-				
-				break;
-				
-			case SEARCH:
-				rpi.setSearchQuery(tab.getQuery());
-				rpi.setSearchQuick(((Boolean) tab.getData().get("quickSearch")));
-				
-				break;
-
-			default:
-				continue;
-			}
-			
-			// ...adding it to the list of them...
-			rpiList.add(rpi);
-			
-			// ...and stopping when we hit our maximum.
-			count += 1;
-			if (maxItems == count) {
-				break;
-			}
-		}
-	}
-	
 	/**
 	 * Return the URL needed to invoke the start/schedule meeting dialog.
 	 *
@@ -4435,44 +4370,6 @@ public class GwtServerHelper {
 		}
 	}
 	
-	
-	/**
-	 * Returns information about the recent places the current user has
-	 * visited that has been stored by the controllers in the session
-	 * cache.
-	 *
-	 * @param bs
-	 * @param request
-	 * 
-	 * @return
-	 */
-	public static List<RecentPlaceInfo> getRecentPlacesFromCache(AllModulesInjected bs, HttpServletRequest request) {
-		// Allocate an ArrayList to return the recent places in.
-		List<RecentPlaceInfo> rpiList = new ArrayList<RecentPlaceInfo>();
-		
-		// If we can't access the HttpSession...
-		HttpSession hSession = getCurrentHttpSession();
-		if (null == hSession) {
-			// ...we can't access the cached tabs to build the recent
-			// ...places list from.  Bail.
-			m_logger.debug("GwtServerHelper.getRecentPlaces( 'Could not access the current HttpSession' )");
-			return rpiList;
-		}
-
-		// If we can't access the cached tabs... 
-		GwtUISessionData tabsObj = ((GwtUISessionData) hSession.getAttribute(GwtUIHelper.CACHED_TABS_KEY));
-		Tabs tabs = ((Tabs) tabsObj.getData());
-		if (null == tabs) {
-			// ...we can't build any recent place items.  Bail.
-			m_logger.debug("GwtServerHelper.getRecentPlaces( 'Could not access any cached tabs' )");
-			return rpiList;
-		}
-
-		// Fill the List<RecentPlaceInfo> from the Tabs and return it.
-		fillRecentPlacesFromTabs(bs, request, tabs, rpiList);
-		return rpiList;
-	}
-	
 	/**
 	 * Returns information about the saved searches the current user
 	 * as defined.
@@ -5130,11 +5027,13 @@ public class GwtServerHelper {
 	/**
 	 * Returns a List<TopRankedInfo> of the top ranked items from the
 	 * most recent search.
+	 *
+	 * @param bs,
+	 * @param request
 	 * 
 	 * @return
 	 */
-	public static List<TopRankedInfo> getTopRanked(HttpServletRequest request, AllModulesInjected bs)
-	{
+	public static List<TopRankedInfo> getTopRankedFromCache(AllModulesInjected bs, HttpServletRequest request) {
 		// Allocate an ArrayList to return the top ranked items in.
 		ArrayList<TopRankedInfo> triList = new ArrayList<TopRankedInfo>();
 		
@@ -6186,32 +6085,16 @@ public class GwtServerHelper {
 	 * Saves a search based on its tab ID and SavedSearchInfo.
 	 *
 	 * @param bs
+	 * @param request
 	 * @param searchTabId
 	 * @param ssi
 	 * 
 	 * @return
 	 */
-	public static SavedSearchInfo saveSearch(AllModulesInjected bs, String searchTabId, SavedSearchInfo ssi) {
-		// If we can't access the HttpSession...
-		HttpSession hSession = getCurrentHttpSession();
-		if (null == hSession) {
-			// ...we can't access the cached tabs to save the search
-			// ...with.  Bail.
-			m_logger.debug("GwtServerHelper.save( 'Could not access the current HttpSession' )");
-			return null;
-		}
-
-		// If we can't access the cached tabs... 
-		GwtUISessionData tabsObj = ((GwtUISessionData) hSession.getAttribute(GwtUIHelper.CACHED_TABS_KEY));
-		Tabs tabs = ((Tabs) tabsObj.getData());
-		if (null == tabs) {
-			// ...we can't save the search.  Bail.
-			m_logger.debug("GwtServerHelper.saveSearch( 'Could not access any cached tabs' )");
-			return null;
-		}
-		
+	public static SavedSearchInfo saveSearch(AllModulesInjected bs, HttpServletRequest request, String searchTabId, SavedSearchInfo ssi) {
 		// If we can't find the tab to save...
 		Integer tabId = Integer.parseInt(searchTabId);
+		Tabs tabs = Tabs.getTabs(request);
 		Tabs.TabEntry tab = tabs.findTab(Tabs.SEARCH, tabId);
 		if (null == tab) {
 			// ...we can't save anything.  Bail.
