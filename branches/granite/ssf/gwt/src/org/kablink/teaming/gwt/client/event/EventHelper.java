@@ -356,6 +356,28 @@ public class EventHelper {
 				}
 				break;
 				
+			case GROUP_CREATION_STARTED:
+				// A GroupCreationStartedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof GroupCreationStartedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = GroupCreationStartedEvent.registerEvent(
+																			eventBus,
+																			((GroupCreationStartedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
+			case GROUP_MODIFICATION_STARTED:
+				// A GroupModificationStartedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof GroupModificationStartedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = GroupModificationStartedEvent.registerEvent(
+																			eventBus,
+																			((GroupModificationStartedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
 			case GROUP_MODIFIED:
 				// A GroupModifiedEvent  Can the event handler we  were given handle that?
 				if ( eventHandler instanceof GroupModifiedEvent.Handler )
@@ -957,6 +979,8 @@ public class EventHelper {
 			case GOTO_PERMALINK_URL:                hasHandler = (eventHandler instanceof GotoPermalinkUrlEvent.Handler);             break;
 
 			case GROUP_CREATED:                		hasHandler = (eventHandler instanceof GroupCreatedEvent.Handler);             	  break;
+			case GROUP_CREATION_STARTED:       		hasHandler = (eventHandler instanceof GroupCreationStartedEvent.Handler);     	  break;
+			case GROUP_MODIFICATION_STARTED:       	hasHandler = (eventHandler instanceof GroupModificationStartedEvent.Handler);     break;
 			case GROUP_MODIFIED:                	hasHandler = (eventHandler instanceof GroupModifiedEvent.Handler);             	  break;
 
 			case INVOKE_HELP:                       hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                   break;

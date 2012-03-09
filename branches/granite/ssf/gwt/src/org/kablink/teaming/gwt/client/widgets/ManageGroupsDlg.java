@@ -42,6 +42,8 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.VibeCellTableResources;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GroupCreatedEvent;
+import org.kablink.teaming.gwt.client.event.GroupCreationStartedEvent;
+import org.kablink.teaming.gwt.client.event.GroupModificationStartedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModifiedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
@@ -86,15 +88,16 @@ import com.google.gwt.view.client.MultiSelectionModel;
 public class ManageGroupsDlg extends DlgBox
 	implements
 		GroupCreatedEvent.Handler,
+		GroupCreationStartedEvent.Handler,
+		GroupModificationStartedEvent.Handler,
 		GroupModifiedEvent.Handler
 {
-	private CellTable<GroupInfo> m_groupsTable;
-    private MultiSelectionModel<GroupInfo> m_selectionModel;
-	private ListDataProvider<GroupInfo> m_dataProvider;
+	private CellTable<GroupInfoPlus> m_groupsTable;
+    private MultiSelectionModel<GroupInfoPlus> m_selectionModel;
+	private ListDataProvider<GroupInfoPlus> m_dataProvider;
 	private SimplePager m_pager;
-	private List<GroupInfo> m_listOfGroups;
+	private List<GroupInfoPlus> m_listOfGroups;
 	private ModifyGroupDlg m_modifyGroupDlg;
-	private GroupInfo m_groupBeingEdited;
     private int m_width;
     private int m_height;
 	
@@ -104,8 +107,64 @@ public class ManageGroupsDlg extends DlgBox
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] 
 	{
 		TeamingEvents.GROUP_CREATED,
+		TeamingEvents.GROUP_CREATION_STARTED,
+		TeamingEvents.GROUP_MODIFICATION_STARTED,
 		TeamingEvents.GROUP_MODIFIED
 	};
+	
+	/**
+	 * The different statuses of a group 
+	 */
+	public enum GroupModificationStatus
+	{
+		GROUP_CREATION_IN_PROGRESS,
+		GROUP_DELETION_IN_PROGRESS,
+		GROUP_MODIFICATION_IN_PROGRESS,
+		READY
+	}
+
+	/**
+	 * This class holds information about a group and the current status of a group.
+	 * For example, is group modification in process, is group creation in process.
+	 */
+	public class GroupInfoPlus
+	{
+		private GroupInfo m_groupInfo;
+		private GroupModificationStatus m_status;
+		
+		/**
+		 * 
+		 */
+		public GroupInfoPlus( GroupInfo groupInfo, GroupModificationStatus status )
+		{
+			m_groupInfo = groupInfo;
+			m_status = status;
+		}
+		
+		/**
+		 * 
+		 */
+		public GroupInfo getGroupInfo()
+		{
+			return m_groupInfo;
+		}
+		
+		/**
+		 * 
+		 */
+		public GroupModificationStatus getStatus()
+		{
+			return m_status;
+		}
+		
+		/**
+		 * 
+		 */
+		public void setStatus( GroupModificationStatus status )
+		{
+			m_status = status;
+		}
+	}
 	
 	/**
 	 * 
@@ -137,16 +196,25 @@ public class ManageGroupsDlg extends DlgBox
 	 */
 	private void addGroups( List<GroupInfo> listOfGroups )
 	{
-		m_listOfGroups = listOfGroups;
+		m_listOfGroups = new ArrayList<GroupInfoPlus>();
+		
+		// Create a GroupInfoPlus object for every group
+		for (GroupInfo nextGroup : listOfGroups )
+		{
+			GroupInfoPlus groupInfoPlus;
+			
+			groupInfoPlus = new GroupInfoPlus( nextGroup, GroupModificationStatus.READY );
+			m_listOfGroups.add( groupInfoPlus );
+		}
 		
 		if ( m_dataProvider == null )
 		{
-			m_dataProvider = new ListDataProvider<GroupInfo>( listOfGroups );
+			m_dataProvider = new ListDataProvider<GroupInfoPlus>( m_listOfGroups );
 			m_dataProvider.addDataDisplay( m_groupsTable );
 		}
 		else
 		{
-			m_dataProvider.setList( listOfGroups );
+			m_dataProvider.setList( m_listOfGroups );
 			m_dataProvider.refresh();
 		}
 		
@@ -157,7 +225,7 @@ public class ManageGroupsDlg extends DlgBox
 		m_pager.firstPage();
 		
 		// Tell the table how many groups we have.
-		m_groupsTable.setRowCount( listOfGroups.size(), true );
+		m_groupsTable.setRowCount( m_listOfGroups.size(), true );
 	}
 
 	/**
@@ -167,9 +235,9 @@ public class ManageGroupsDlg extends DlgBox
 	{
 		final GwtTeamingMessages messages;
 		VerticalPanel mainPanel = null;
-		AnchorCell cell;
-		Column<GroupInfo,String> titleCol;
-		TextColumn<GroupInfo> nameCol;
+		GroupTitleCell cell;
+		Column<GroupInfoPlus,GroupInfoPlus> titleCol;
+		TextColumn<GroupInfoPlus> nameCol;
 		FlowPanel menuPanel;
 		CellTable.Resources cellTableResources;
 		
@@ -234,27 +302,27 @@ public class ManageGroupsDlg extends DlgBox
 		
 		// Create the CellTable that will display the list of groups.
 		cellTableResources = GWT.create( VibeCellTableResources.class );
-		m_groupsTable = new CellTable<GroupInfo>( 15, cellTableResources );
+		m_groupsTable = new CellTable<GroupInfoPlus>( 15, cellTableResources );
 		m_groupsTable.getElement().getStyle().setWidth( m_width, Unit.PX );
 		m_groupsTable.getElement().getStyle().setHeight( m_height, Unit.PX );
 		
 	    // Add a selection model so we can select groups.
-	    m_selectionModel = new MultiSelectionModel<GroupInfo>();
-	    m_groupsTable.setSelectionModel( m_selectionModel, DefaultSelectionEventManager.<GroupInfo> createCheckboxManager() );
+	    m_selectionModel = new MultiSelectionModel<GroupInfoPlus>();
+	    m_groupsTable.setSelectionModel( m_selectionModel, DefaultSelectionEventManager.<GroupInfoPlus> createCheckboxManager() );
 
 		// Add a checkbox in the first column
 		{
-			Column<GroupInfo, Boolean> ckboxColumn;
+			Column<GroupInfoPlus, Boolean> ckboxColumn;
 			CheckboxCell ckboxCell;
 			
             ckboxCell = new CheckboxCell( true, false );
-		    ckboxColumn = new Column<GroupInfo, Boolean>( ckboxCell )
+		    ckboxColumn = new Column<GroupInfoPlus, Boolean>( ckboxCell )
             {
             	@Override
-		        public Boolean getValue( GroupInfo groupInfo )
+		        public Boolean getValue( GroupInfoPlus groupInfoPlus )
 		        {
             		// Get the value from the selection model.
-		            return m_selectionModel.isSelected( groupInfo );
+		            return m_selectionModel.isSelected( groupInfoPlus );
 		        }
 		    };
 	        m_groupsTable.addColumn( ckboxColumn, SafeHtmlUtils.fromSafeConstant( "<br/>" ) );
@@ -264,40 +332,42 @@ public class ManageGroupsDlg extends DlgBox
 		// Add the "Title" column.  The user can click on the text in this column
 		// to edit the group.
 		{
-			cell = new AnchorCell();
-			titleCol = new Column<GroupInfo, String>( cell )
+			cell = new GroupTitleCell();
+			titleCol = new Column<GroupInfoPlus, GroupInfoPlus>( cell )
 			{
 				@Override
-				public String getValue( GroupInfo groupInfo )
+				public GroupInfoPlus getValue( GroupInfoPlus groupInfoPlus )
 				{
-					String title;
-					
-					title = groupInfo.getTitle();
-					if ( title == null || title.length() == 0 )
-						title = messages.noTitle();
-					
-					return title;
+					return groupInfoPlus;
 				}
 			};
 		
-			titleCol.setFieldUpdater( new FieldUpdater<GroupInfo, String>()
+			titleCol.setFieldUpdater( new FieldUpdater<GroupInfoPlus, GroupInfoPlus>()
 			{
 				@Override
-				public void update( int index, GroupInfo groupInfo, String value )
+				public void update( int index, GroupInfoPlus groupInfoPlus, GroupInfoPlus value )
 				{
-				    invokeModifyGroupDlg( groupInfo );
+					// Is this group in the process of being deleted, modified or created?
+					if ( groupInfoPlus.getStatus() == GroupModificationStatus.READY )
+					{
+						// No, let the user edit the group.
+						invokeModifyGroupDlg( groupInfoPlus.getGroupInfo() );
+					}
 				}
 			} );
 			m_groupsTable.addColumn( titleCol, messages.manageGroupsDlgTitleCol() );
 		}
 		  
 		// Add the "Name" column
-		nameCol = new TextColumn<GroupInfo>()
+		nameCol = new TextColumn<GroupInfoPlus>()
 		{
 			@Override
-			public String getValue( GroupInfo groupInfo )
+			public String getValue( GroupInfoPlus groupInfoPlus )
 			{
+				GroupInfo groupInfo;
 				String name;
+				
+				groupInfo = groupInfoPlus.getGroupInfo();
 				
 				name = groupInfo.getName();
 				if ( name == null )
@@ -331,12 +401,10 @@ public class ManageGroupsDlg extends DlgBox
 	 */
 	private void deleteSelectedGroups()
 	{
-		Set<GroupInfo> selectedGroups;
-		Iterator<GroupInfo> groupIterator;
+		Set<GroupInfoPlus> selectedGroups;
+		Iterator<GroupInfoPlus> groupIterator;
 		String grpNames;
-		ArrayList<GroupInfo> listOfGroupsToDelete;
-		
-		listOfGroupsToDelete = new ArrayList<GroupInfo>();
+		int count = 0;
 		
 		grpNames = "";
 		
@@ -347,21 +415,29 @@ public class ManageGroupsDlg extends DlgBox
 			groupIterator = selectedGroups.iterator();
 			while ( groupIterator.hasNext() )
 			{
-				GroupInfo nextGroup;
-				String text;
+				GroupInfoPlus nextGroup;
 				
 				nextGroup = groupIterator.next();
-				listOfGroupsToDelete.add( nextGroup );
 				
-				text = nextGroup.getTitle();
-				if ( text == null || text.length() == 0 )
-					text = nextGroup.getName();
-				grpNames += "\t" + text + "\n";
+				if ( nextGroup.getStatus() == GroupModificationStatus.READY )
+				{
+					GroupInfo groupInfo;
+					String text;
+
+					groupInfo = nextGroup.getGroupInfo();
+					
+					text = groupInfo.getTitle();
+					if ( text == null || text.length() == 0 )
+						text = groupInfo.getName();
+					grpNames += "\t" + text + "\n";
+					
+					++count;
+				}
 			}
 		}
 		
 		// Do we have any groups to delete?
-		if ( listOfGroupsToDelete.size() > 0 )
+		if ( count > 0 )
 		{
 			String msg;
 			
@@ -369,7 +445,7 @@ public class ManageGroupsDlg extends DlgBox
 			msg = GwtTeaming.getMessages().manageGroupsDlgConfirmDelete( grpNames );
 			if ( Window.confirm( msg ) )
 			{
-				deleteGroupsFromServer( listOfGroupsToDelete );
+				deleteGroupsFromServer( selectedGroups );
 			}
 		}
 		else
@@ -381,9 +457,37 @@ public class ManageGroupsDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private void deleteGroupsFromServer( final ArrayList<GroupInfo> listOfGroupsToDelete )
+	private void deleteGroupsFromServer( Set<GroupInfoPlus> selectedGroups )
 	{
-		if ( listOfGroupsToDelete != null && listOfGroupsToDelete.size() > 0 )
+		ArrayList<GroupInfo> listOfGroupsToDelete;
+		final ArrayList<GroupInfo> listOfGroupsToDeleteFinal;
+		Iterator<GroupInfoPlus> groupIterator;
+		
+		listOfGroupsToDelete = new ArrayList<GroupInfo>();
+		
+		// Get a list of GroupInfo objects
+		groupIterator = selectedGroups.iterator();
+		while ( groupIterator.hasNext() )
+		{
+			GroupInfoPlus nextGroup;
+			
+			nextGroup = groupIterator.next();
+			if ( nextGroup.getStatus() == GroupModificationStatus.READY )
+			{
+				GroupInfo groupInfo;
+
+				groupInfo = nextGroup.getGroupInfo();
+				
+				// Add this group to the list of groups to be deleted.
+				listOfGroupsToDelete.add( groupInfo );
+				
+				// Update the status of this group.
+				nextGroup.setStatus( GroupModificationStatus.GROUP_DELETION_IN_PROGRESS );
+			}
+		}
+
+		listOfGroupsToDeleteFinal = listOfGroupsToDelete;
+		if ( listOfGroupsToDeleteFinal != null && listOfGroupsToDeleteFinal.size() > 0 )
 		{
 			DeleteGroupsCmd cmd;
 			AsyncCallback<VibeRpcResponse> rpcCallback = null;
@@ -418,13 +522,14 @@ public class ManageGroupsDlg extends DlgBox
 						{
 							// Spin through the list of groups we just deleted and remove
 							// them from the table.
-							for (GroupInfo nextGroup : listOfGroupsToDelete )
+							for (GroupInfo nextGroup : listOfGroupsToDeleteFinal)
 							{
-								m_listOfGroups.remove( nextGroup );
+								GroupInfoPlus nextGroupPlus;
+								
+								nextGroupPlus = findGroupById( nextGroup.getId() );
+								if ( nextGroupPlus != null )
+									m_listOfGroups.remove( nextGroupPlus );
 							}
-							
-							// Clear all selections.
-							m_selectionModel.clear();
 							
 							// Update the table to reflect the fact that we deleted a group.
 							m_dataProvider.refresh();
@@ -436,9 +541,12 @@ public class ManageGroupsDlg extends DlgBox
 					Scheduler.get().scheduleDeferred( cmd );
 				}
 			};
-	
+
+			// Update the table to reflect the fact group deletion is in progress
+			m_dataProvider.refresh();
+
 			// Issue an ajax request to get delete the list of groups.
-			cmd = new DeleteGroupsCmd( listOfGroupsToDelete );
+			cmd = new DeleteGroupsCmd( listOfGroupsToDeleteFinal );
 			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}		
 	}
@@ -446,13 +554,37 @@ public class ManageGroupsDlg extends DlgBox
 	/**
 	 * Find the given group in our list of groups.
 	 */
-	private GroupInfo findGroupById( Long id )
+	private GroupInfoPlus findGroupById( Long id )
 	{
-		if ( m_listOfGroups != null )
+		if ( m_listOfGroups != null && id != null )
 		{
-			for (GroupInfo nextGroup : m_listOfGroups)
+			for (GroupInfoPlus nextGroup : m_listOfGroups)
 			{
-				if ( nextGroup.getId() == id )
+				GroupInfo groupInfo;
+				
+				groupInfo = nextGroup.getGroupInfo();
+				if ( groupInfo.getId() == id )
+					return nextGroup;
+			}
+		}
+		
+		// If we get here we did not find the group.
+		return null;
+	}
+	
+	/**
+	 * Find the given group in our list of groups.
+	 */
+	private GroupInfoPlus findGroupByName( String name )
+	{
+		if ( m_listOfGroups != null && name != null )
+		{
+			for (GroupInfoPlus nextGroup : m_listOfGroups)
+			{
+				GroupInfo groupInfo;
+				
+				groupInfo = nextGroup.getGroupInfo();
+				if ( name.equalsIgnoreCase( groupInfo.getName() ) )
 					return nextGroup;
 			}
 		}
@@ -536,7 +668,7 @@ public class ManageGroupsDlg extends DlgBox
 	/**
 	 * Return a list of selected groups.
 	 */
-	public Set<GroupInfo> getSelectedGroups()
+	public Set<GroupInfoPlus> getSelectedGroups()
 	{
 		return m_selectionModel.getSelectedSet();
 	}
@@ -570,15 +702,12 @@ public class ManageGroupsDlg extends DlgBox
 		x = getAbsoluteLeft() + 50;
 		y = getAbsoluteTop() + 50;
 		
-		// Remember the group we are working with.
-		m_groupBeingEdited = groupInfo;
-		
 		if ( m_modifyGroupDlg == null )
 		{
 			m_modifyGroupDlg = new ModifyGroupDlg( false, true, x, y );
 		}
 		
-		m_modifyGroupDlg.init( m_groupBeingEdited );
+		m_modifyGroupDlg.init( groupInfo );
 		m_modifyGroupDlg.setPopupPosition( x, y );
 		m_modifyGroupDlg.show();
 	}
@@ -589,24 +718,103 @@ public class ManageGroupsDlg extends DlgBox
 	@Override
 	public void onGroupCreated( GroupCreatedEvent event )
 	{
-		GroupInfo newGroup;
+		GroupInfo createdGroupInfo;
 
 		// Get the newly created group.
-		newGroup = event.getGroupInfo();
+		createdGroupInfo = event.getGroupInfo();
 		
-		// Add the group as the first group in the list.
-		m_listOfGroups.add( 0, newGroup );
-		
-		// Update the table to reflect the new group we just created.
-		m_dataProvider.refresh();
-		
-		// Go to the first page.
-		m_pager.firstPage();
-		
-		// Select the newly created group.
-		m_selectionModel.setSelected( newGroup, true );
+		if ( createdGroupInfo != null )
+		{
+			GroupInfoPlus groupInfoPlus;
+			
+			// Find this group in our list of groups.
+			groupInfoPlus = findGroupByName( createdGroupInfo.getName() );
+			
+			if ( groupInfoPlus != null )
+			{
+				GroupInfo groupInfo;
+				
+				groupInfo = groupInfoPlus.getGroupInfo();
+				
+				// Update the group with the title and description from the group that
+				// was passed in the event.
+				groupInfo.setId( createdGroupInfo.getId() );
+				groupInfo.setTitle( createdGroupInfo.getTitle() );
+				groupInfo.setDesc( createdGroupInfo.getDesc() );
+				
+				// Update the status of the group.
+				groupInfoPlus.setStatus( GroupModificationStatus.READY );
+				
+				// Update the table to reflect the fact that a group was modified.
+				m_dataProvider.refresh();
+			}
+		}
 	}
 	
+	/**
+	 * Handles the GroupCreationStartedEvent received by this class
+	 */
+	public void onGroupCreationStarted( GroupCreationStartedEvent event )
+	{
+		GroupInfo groupInfo;
+		
+		// Get the GroupInfo passed in the event.
+		groupInfo = event.getGroupInfo();
+		
+		if ( groupInfo != null )
+		{
+			GroupInfoPlus newGroupInfoPlus;
+			
+			newGroupInfoPlus = new GroupInfoPlus( groupInfo, GroupModificationStatus.GROUP_CREATION_IN_PROGRESS );
+			
+			// Add the group as the first group in the list.
+			m_listOfGroups.add( 0, newGroupInfoPlus );
+			
+			// Update the table to reflect the new group we just created.
+			m_dataProvider.refresh();
+			
+			// Go to the first page.
+			m_pager.firstPage();
+			
+			// Select the newly created group.
+			m_selectionModel.setSelected( newGroupInfoPlus, true );
+
+			// Tell the table how many groups we have.
+			m_groupsTable.setRowCount( m_listOfGroups.size(), true );
+		}
+	}
+	
+	/**
+	 * Handles the GroupModificationStartedEvent received by this class
+	 */
+	@Override
+	public void onGroupModificationStarted( GroupModificationStartedEvent event )
+	{
+		GroupInfo groupInfo;
+		
+		// Get the GroupInfo passed in the event.
+		groupInfo = event.getGroupInfo();
+		
+		if ( groupInfo != null )
+		{
+			GroupInfoPlus groupInfoPlus;
+			Long id;
+			
+			// Find this group in our list of groups.
+			id = groupInfo.getId();
+			groupInfoPlus = findGroupById( id );
+			
+			if ( groupInfoPlus != null )
+			{
+				// Set the group's modification state to modification in progress
+				groupInfoPlus.setStatus( GroupModificationStatus.GROUP_MODIFICATION_IN_PROGRESS );
+
+				// Update the table to reflect the fact that this group is being modified.
+				m_dataProvider.refresh();
+			}
+		}
+	}
+
 	/**
 	 * Handles the GroupModifiedEvent received by this class
 	 */
@@ -620,17 +828,24 @@ public class ManageGroupsDlg extends DlgBox
 		
 		if ( modifiedGroup != null )
 		{
-			GroupInfo groupInfo;
+			GroupInfoPlus groupInfoPlus;
 			
 			// Find this group in our list of groups.
-			groupInfo = findGroupById( modifiedGroup.getId() );
+			groupInfoPlus = findGroupById( modifiedGroup.getId() );
 			
-			if ( groupInfo != null )
+			if ( groupInfoPlus != null )
 			{
+				GroupInfo groupInfo;
+				
+				groupInfo = groupInfoPlus.getGroupInfo();
+				
 				// Update the group with the title and description from the group that
 				// was passed in the event.
 				groupInfo.setTitle( modifiedGroup.getTitle() );
 				groupInfo.setDesc( modifiedGroup.getDesc() );
+				
+				// Update the status of the group.
+				groupInfoPlus.setStatus( GroupModificationStatus.READY );
 				
 				// Update the table to reflect the fact that a group was modified.
 				m_dataProvider.refresh();
