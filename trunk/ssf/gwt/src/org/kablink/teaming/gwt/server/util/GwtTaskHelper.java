@@ -2022,7 +2022,7 @@ public class GwtTaskHelper {
 				if (null == searchFilter) {
 					User user = GwtServerHelper.getCurrentUser();
 					UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binder.getId());
-					options.put(ObjectKeys.SEARCH_SEARCH_FILTER, BinderHelper.getSearchFilter(bs, binder, userFolderProperties, true));
+					GwtServerHelper.addSearchFiltersToOptions(bs, binder, userFolderProperties, true, options);
 				}
 			}
 	

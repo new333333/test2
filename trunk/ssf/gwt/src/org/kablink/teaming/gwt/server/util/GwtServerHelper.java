@@ -118,6 +118,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
+import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.BinderType;
@@ -207,6 +208,7 @@ import org.kablink.teaming.presence.PresenceInfo;
 import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.SearchUtils;
+import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.task.TaskHelper.FilterType;
@@ -739,6 +741,91 @@ public class GwtServerHelper {
 		inputData = new MapInputData( inputMap );
 
     	return folderModule.addReply( binderIdL, entryIdL, replyDefId, inputData, fileMap, null );
+	}
+
+	/**
+	 * Adds the user's search filters as a single Document to an
+	 * options Map.
+	 * 
+	 * @param bs
+	 * @param binder
+	 * @param userFolderProperties
+	 * @param unescapeName
+	 * @param options
+	 */
+	public static void addSearchFiltersToOptions(AllModulesInjected bs, Binder binder, UserProperties userFolderProperties, boolean unescapeName, Map options) {
+		// Convert any existing V1 filters.
+		BinderHelper.convertV1Filters(bs, userFolderProperties);
+
+		// Does the user have any filters selected on this folder?
+		List<String> currentFilters = getCurrentUserFilters(userFolderProperties);
+		if (!(currentFilters.isEmpty())) {
+			// Yes!  Get the personal and global filters from the
+			// binder properties.
+			Map personalFilters = ((Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS));
+			Map globalFilters   = ((Map) binder.getProperty(              ObjectKeys.BINDER_PROPERTY_FILTERS)     );
+
+			// Scan the user's filters...
+			SearchFilter searchFilter = new SearchFilter(true);
+			for (String filterSpec: currentFilters) {
+				// ...extracting the name...
+				String filterName  = BinderFilter.getFilterNameFromSpec( filterSpec);
+				if (unescapeName) {
+					filterName = MiscUtil.replace(filterName, "+", " ");
+				}
+				
+				// ...scope...
+				String  filterScope = BinderFilter.getFilterScopeFromSpec(filterSpec);
+				boolean isGlobal    = filterScope.equals(ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL);
+				
+				// ...and filter XML for each.
+				String searchFilterXml;
+				if (isGlobal)
+				     searchFilterXml = ((String) globalFilters.get(  filterName));
+				else searchFilterXml = ((String) personalFilters.get(filterName));
+
+				// Do we have XML for this filter?
+				if (MiscUtil.hasString(searchFilterXml)) {
+					Document searchFilterDoc;
+					try {
+						// Yes!  Parse it and append it to the search
+						// filter.
+						searchFilterDoc = DocumentHelper.parseText(searchFilterXml);
+						searchFilter.appendFilter(searchFilterDoc);
+					}
+					
+					catch (Exception ignore) {
+						// Log the exception...
+						m_logger.debug("GwtServerHelperHelper.addSearchFiltersToOptions(Exception:  '" + MiscUtil.exToString(ignore) + "')");
+						
+						// ...get rid of the bogus filter.
+						if (isGlobal) {
+							globalFilters.remove(  searchFilterXml);
+							bs.getBinderModule().setProperty(
+								binder.getId(),
+								ObjectKeys.BINDER_PROPERTY_FILTERS,
+								globalFilters);
+						}
+						
+						else {
+							personalFilters.remove(searchFilterXml);
+							bs.getProfileModule().setUserProperty(
+								userFolderProperties.getId().getPrincipalId(),
+								userFolderProperties.getId().getBinderId(),
+								ObjectKeys.USER_PROPERTY_SEARCH_FILTERS,
+								personalFilters);
+						}
+					}
+				}
+			}
+
+			// If we get here, searchFilter contains the combined
+			// filters that the user has selected.  Stuff the Document
+			// into the options Map.
+			options.put(
+				ObjectKeys.SEARCH_SEARCH_FILTER,
+				searchFilter.getFilter());
+		}
 	}
 	
 	/*
@@ -3204,6 +3291,33 @@ public class GwtServerHelper {
 			reply = ((HttpSessionContext) sc).getHttpSession();
 		}
 		return reply;
+	}
+
+	/**
+	 * Returns a List<String> of the user's current filters from their
+	 * properties on a folder.
+	 * 
+	 * @param userFolderProperties
+	 * 
+	 * @return
+	 */
+	public static List<String> getCurrentUserFilters(UserProperties userFolderProperties) {
+		List<String> currentFilters = ((List<String>) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTERS));
+		if (null == currentFilters) {
+			currentFilters = new ArrayList<String>();
+		}
+		String filterName = ((String) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER));
+		if (MiscUtil.hasString(filterName)) {
+			String filterScope = ((String) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE));
+			if (!(MiscUtil.hasString(filterScope))) {
+				filterScope = ObjectKeys.USER_PROPERTY_USER_FILTER_PERSONAL;
+			}
+			String filterSpec = BinderFilter.buildFilterSpec(filterName, filterScope);
+			if (!(currentFilters.contains(filterSpec))) {
+				currentFilters.add(filterSpec);
+			}
+		}
+		return currentFilters;
 	}
 
 	/**

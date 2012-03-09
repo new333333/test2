@@ -211,7 +211,7 @@ public class GwtViewHelper {
 		SearchFilter sf;
 		Document sfDoc = ((Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER));
 		if (null == sfDoc)
-		     sf = new SearchFilter();
+		     sf = new SearchFilter(true);
 		else sf = new SearchFilter(sfDoc);
 
 		// ...store its XML Document in the options Map...
@@ -1228,24 +1228,9 @@ public class GwtViewHelper {
 			// BinderFiltersRpcResponseData.
 			BinderFiltersRpcResponseData reply = new BinderFiltersRpcResponseData(ffList);
 			
-			// Store the current filter, if any, that the user
+			// Store the current filters, if any, that the user
 			// currently has selected on this binder.
-			List<String> currentFilters = ((List<String>) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTERS));
-			if (null == currentFilters) {
-				currentFilters = new ArrayList<String>();
-			}
-			String filterName = ((String) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER));
-			if (MiscUtil.hasString(filterName)) {
-				String filterScope = ((String) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE));
-				if (!(MiscUtil.hasString(filterScope))) {
-					filterScope = ObjectKeys.USER_PROPERTY_USER_FILTER_PERSONAL;
-				}
-				String filterSpec = BinderFilter.buildFilterSpec(filterName, filterScope);
-				if (!(currentFilters.contains(filterSpec))) {
-					currentFilters.add(filterSpec);
-				}
-			}
-			reply.setCurrentFilters(currentFilters);
+			reply.setCurrentFilters(GwtServerHelper.getCurrentUserFilters(userBinderProperties));
 
 			// Store a URL to turn off filtering on the binder.
 			url = new AdaptedPortletURL(request, "ss_forum", true);
@@ -2392,7 +2377,7 @@ public class GwtViewHelper {
 	@SuppressWarnings("unchecked")
 	private static Map getFolderSearchFilter(AllModulesInjected bs, Binder binder, UserProperties userFolderProperties, String searchTitle) {
 		Map result = new HashMap();
-		result.put(ObjectKeys.SEARCH_SEARCH_FILTER, BinderHelper.getSearchFilter(bs, binder, userFolderProperties));
+		GwtServerHelper.addSearchFiltersToOptions(bs, binder, userFolderProperties, true, result);
 		if (MiscUtil.hasString(searchTitle)) {
 			result.put(ObjectKeys.SEARCH_TITLE, searchTitle);
 		}
