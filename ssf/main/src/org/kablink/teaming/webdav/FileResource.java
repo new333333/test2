@@ -198,15 +198,8 @@ public class FileResource extends WebdavResource implements PropFindableResource
 	public String getContentType(String accepts) {
 		//return new MimetypesFileTypeMap().getContentType(name);
 		
-		//$$$$$ TODO TBD
-		long begin = System.nanoTime();
-		
 		String mime = ContentTypeUtils.findContentTypes(name);
 		String s = ContentTypeUtils.findAcceptableContentType(mime, accepts);
-		
-		long end = System.nanoTime();
-		
-		System.out.println("***** Getting content type took " + (end-begin)/1000000.0 + "milliseconds");
 		
 		if(logger.isTraceEnabled())
 			logger.trace("getContentType: preferred: " + accepts + " mime: " + mime + " selected: " + s);

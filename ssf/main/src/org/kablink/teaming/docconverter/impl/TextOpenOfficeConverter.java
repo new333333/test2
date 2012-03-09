@@ -93,7 +93,7 @@ public class TextOpenOfficeConverter
 	}
 	
 	public void afterPropertiesSet() throws Exception {
-		
+		super.afterPropertiesSet();
 	}	
 	
 	public void destroy() throws Exception 

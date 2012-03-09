@@ -64,6 +64,7 @@ import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileCopyUtils;
 import org.xml.sax.SAXException;
@@ -71,7 +72,7 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
 
-public abstract class TextConverter extends Converter<String> implements EntityResolver
+public abstract class TextConverter extends Converter<String> implements EntityResolver, InitializingBean
 {
 	protected String _nullTransform = "";
 	protected String excludedExtensions = "";
@@ -79,6 +80,12 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 		   TEXT_FILE_SUFFIX = ".txt";
 
 	private String[] m_additionalExclusions = null;
+	
+	private File nullTransformFile = null;
+	
+	public void afterPropertiesSet() throws Exception {
+		nullTransformFile = new ClassPathResource(_nullTransform).getFile();
+	}
 	
 	public String convert(Binder binder, DefinableEntity entry, FileAttachment fa)
 		throws IOException
@@ -220,15 +227,7 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 	 * @return Returns the nullTransform file.
 	 */
 	protected File getNullTransformFile() {
-		try {
-			//load singleton with our config file
-			return new ClassPathResource(_nullTransform).getFile();
-		}
-        catch (Exception e) {
-        	Log logger = LogFactory.getLog(getClass());
-        	logger.error("DocConverter, transform file error: " + e.getLocalizedMessage());
-        }
-		return null;
+		return nullTransformFile;
 	}
 	
 	protected void createConvertedFileWithDefaultContent(File convertedFile) throws IOException {
