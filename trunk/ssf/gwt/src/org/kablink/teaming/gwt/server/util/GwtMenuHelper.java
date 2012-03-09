@@ -37,6 +37,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -97,6 +98,7 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.GwtUIHelper.TrackInfo;
+import org.kablink.teaming.web.util.Tabs.TabEntry;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.search.Constants;
 
@@ -1676,6 +1678,65 @@ public class GwtMenuHelper {
 	}
 
 	/*
+	 * Fills a List<RecentPlaceInfo> with the recent places information
+	 * stored in a Tabs object.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void fillRecentPlacesFromTabs(AllModulesInjected bs, HttpServletRequest request, Tabs tabs, List<RecentPlaceInfo> rpiList) {
+		// Scan the tabs...
+		int count = 0;
+		List tabList = tabs.getTabList();
+		int maxTitle = SPropsUtil.getInt("history.max.title",   30);
+		int maxItems = SPropsUtil.getInt("recent-places-depth", 10);
+		for (Iterator tabIT = tabList.iterator(); tabIT.hasNext(); ) {
+			// ...creating a RecentPlaceInfo object for each...
+			TabEntry tab = ((TabEntry) tabIT.next());
+			RecentPlaceInfo rpi = new RecentPlaceInfo();
+			String title = ((String) tab.getData().get("title"));
+			if (title.length() > maxTitle) {
+				title = (title.substring(0, maxTitle) + "...");
+			}
+			rpi.setTitle(title);
+			rpi.setId(String.valueOf(tab.getTabId()));
+			rpi.setType(tab.getType());
+			switch (rpi.getTypeEnum()) {
+			case BINDER:
+				// If the tab's binder is no longer accessible...
+				Long binderId = tab.getBinderId();
+				Binder binder = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
+				if ((null == binder) || GwtUIHelper.isBinderPreDeleted(binder)) {
+					// ...skip it.
+					continue;
+				}
+				rpi.setBinderId(String.valueOf(binderId));
+				rpi.setEntityPath(((String) tab.getData().get("path")));
+				rpi.setEntryId(String.valueOf(tab.getEntryId()));
+				rpi.setPermalink(PermaLinkUtil.getPermalink(request, binder));
+				
+				break;
+				
+			case SEARCH:
+				rpi.setSearchQuery(tab.getQuery());
+				rpi.setSearchQuick(((Boolean) tab.getData().get("quickSearch")));
+				
+				break;
+
+			default:
+				continue;
+			}
+			
+			// ...adding it to the list of them...
+			rpiList.add(rpi);
+			
+			// ...and stopping when we hit our maximum.
+			count += 1;
+			if (maxItems == count) {
+				break;
+			}
+		}
+	}
+	
+	/*
 	 * Returns true if a folder (including its view type) supports
 	 * delete and purge operations and false otherwise.
 	 */
@@ -1920,7 +1981,7 @@ public class GwtMenuHelper {
 		if (null != binder) {
 			// ...use them to fill List<RecentPlaceInfo>... 
 			Tabs.TabEntry tab = tabs.findTab(binder, false);
-			GwtServerHelper.fillRecentPlacesFromTabs(bs, request, tab.getTabs(), reply);
+			fillRecentPlacesFromTabs(bs, request, tab.getTabs(), reply);
 		}
 		
 		// ...and return the List<RecentPlaceInfo>.
