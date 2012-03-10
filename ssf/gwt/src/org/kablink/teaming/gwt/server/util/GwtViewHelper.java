@@ -205,24 +205,30 @@ public class GwtViewHelper {
 			// ...there's nothing to do.  Bail.
 			return;
 		}
+		
+		// If the quick filter doesn't end with an '*'...
+		if (!(quickFilter.endsWith("*"))) {
+			// ...add one.
+			quickFilter += "*";
+		}
 
 		// Create a SearchFilter from whatever filter is already in
 		// affect...
-		SearchFilter sf;
+		SearchFilter sf = new SearchFilter(true);
 		Document sfDoc = ((Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER));
-		if (null == sfDoc)
-		     sf = new SearchFilter(true);
-		else sf = new SearchFilter(sfDoc);
-
-		// ...store its XML Document in the options Map...
-		sfDoc = sf.getFilter();
-		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, sfDoc);
+		if (null != sfDoc) {
+			sf.appendFilter(sfDoc);
+		}
 
 		// ...add in the quick filter...
-		if (!(quickFilter.endsWith("*"))) {
-			quickFilter += "*";
-		}
-		sf.addTextFilter(quickFilter);
+		SearchFilter sfQF = new SearchFilter(true);
+    	sfQF.newCurrentFilterTermsBlock(true);
+    	sfQF.addTextFilter(quickFilter);
+    	sf.appendFilter(sfQF.getFilter());
+
+		// ...store the new filter's XML Document in the options Map...
+		sfDoc = sf.getFilter();
+		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, sfDoc);
 
 		// ...and if we logging debug messages...
 		if (m_logger.isDebugEnabled()) {
