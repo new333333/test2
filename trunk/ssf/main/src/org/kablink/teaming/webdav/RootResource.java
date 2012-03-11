@@ -39,6 +39,7 @@ import java.util.List;
 
 import org.kablink.teaming.util.ReleaseInfo;
 
+import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.PropFindableResource;
@@ -86,6 +87,14 @@ public class RootResource extends WebdavCollectionResource implements PropFindab
 	@Override
 	public Date getCreateDate() {
 		return ReleaseInfo.getBuildDate(); // This is as good as any other random date
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.GetableResource#getMaxAgeSeconds(com.bradmcevoy.http.Auth)
+	 */
+	@Override
+	public Long getMaxAgeSeconds(Auth auth) {
+		return factory.getMaxAgeSecondsRoot();
 	}
 
 	/* (non-Javadoc)

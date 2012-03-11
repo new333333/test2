@@ -64,6 +64,7 @@ import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.security.AccessControlException;
 
 import com.bradmcevoy.common.ContentTypeUtils;
+import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.DeletableResource;
 import com.bradmcevoy.http.FileItem;
 import com.bradmcevoy.http.GetableResource;
@@ -152,6 +153,14 @@ public class FileResource extends WebdavResource implements PropFindableResource
 	@Override
 	public Date getCreateDate() {
 		return createdDate;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.GetableResource#getMaxAgeSeconds(com.bradmcevoy.http.Auth)
+	 */
+	@Override
+	public Long getMaxAgeSeconds(Auth auth) {
+		return factory.getMaxAgeSecondsFile();
 	}
 
 	/* (non-Javadoc)

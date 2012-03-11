@@ -56,6 +56,7 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.security.AccessControlException;
 
+import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.PropFindableResource;
@@ -84,6 +85,14 @@ public class FolderResource extends BinderResource implements PropFindableResour
 		super(factory, bid);
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.GetableResource#getMaxAgeSeconds(com.bradmcevoy.http.Auth)
+	 */
+	@Override
+	public Long getMaxAgeSeconds(Auth auth) {
+		return factory.getMaxAgeSecondsFolder();
+	}
+
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.CollectionResource#child(java.lang.String)
 	 */

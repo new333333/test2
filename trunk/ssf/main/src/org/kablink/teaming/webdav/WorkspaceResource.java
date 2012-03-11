@@ -46,6 +46,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.security.AccessControlException;
 
+import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.PropFindableResource;
@@ -73,6 +74,14 @@ public class WorkspaceResource extends BinderResource  implements PropFindableRe
 		super(factory, bid);
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.GetableResource#getMaxAgeSeconds(com.bradmcevoy.http.Auth)
+	 */
+	@Override
+	public Long getMaxAgeSeconds(Auth auth) {
+		return factory.getMaxAgeSecondsWorkspace();
+	}
+
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.CollectionResource#child(java.lang.String)
 	 */

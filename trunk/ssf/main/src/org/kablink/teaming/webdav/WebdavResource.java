@@ -52,7 +52,7 @@ import com.bradmcevoy.http.Request.Method;
  * @author jong
  *
  */
-public abstract class WebdavResource implements Resource, PropFindableResource, GetableResource {
+public abstract class WebdavResource implements Resource, PropFindableResource {
 	
 	protected WebdavResourceFactory factory;
 	
@@ -92,14 +92,6 @@ public abstract class WebdavResource implements Resource, PropFindableResource, 
 	@Override
 	public String checkRedirect(Request request) {
 		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.GetableResource#getMaxAgeSeconds(com.bradmcevoy.http.Auth)
-	 */
-	@Override
-	public Long getMaxAgeSeconds(Auth auth) {
-		return factory.getMaxAgeSecondsRoot();
 	}
 
 	protected WorkspaceModule getWorkspaceModule () {
