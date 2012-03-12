@@ -57,6 +57,7 @@ public class WebKeys {
 	public static final String CALENDAR_GRID_TYPE = "ssGridType";
 	public static final String CALENDAR_GRID_SIZE = "ssGridSize";
 	public static final String CALENDAR_STICKY_ID = "calendarStickyId";
+	public static final String CALENDAR_EVENT_TYPE = "ss_calendarEventType";
 	public static final String CALENDAR_MODE_TYPE = "calendarModeType";
 	public static final String CALENDAR_FREE_BUSY_INFO = "ssCalendarFreeBusyInfo";
 	public static final String TASK_FILTER_TYPE = "ssTaskFilterType";

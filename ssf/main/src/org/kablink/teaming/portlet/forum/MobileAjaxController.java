@@ -848,6 +848,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 	private ModelAndView ajaxMobileShowFolder(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser(); 
 		Map model = new HashMap();
 		//Setup the actions menu list
 		List actions = new ArrayList();
@@ -875,8 +876,16 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 		UserProperties userProperties = (UserProperties)model.get(WebKeys.USER_PROPERTIES_OBJ);
 		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
+
+		//If this is a calendar, look for a new event type setting
+		String eventType = PortletRequestUtils.getStringParameter(request, "eventType", "");
+		if (!"".equals(eventType)) {
+			EventsViewHelper.setCalendarDisplayEventType(this, user.getId(), binderId, eventType);
+		}
+		eventType = EventsViewHelper.getCalendarDisplayEventType(bs, user.getId(), binderId);
+		model.put(WebKeys.CALENDAR_EVENT_TYPE, eventType);
+
 		Map options = new HashMap();		
-		Map folderEntries = null;
 		
 		if (binder== null) {
 			return ajaxMobileFrontPage(this, request, response);
@@ -913,21 +922,25 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
       	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf(pageSize));
       	options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(pageStart));
 
+      	List entryList = new ArrayList();
       	if (family.equals(Constants.FAMILY_FIELD_CALENDAR)) {
-      		folderEntries = ListFolderHelper.findCalendarEvents(bs, request, response, binder, model);
+      		entryList = ListFolderHelper.findCalendarEvents(bs, request, response, binder, model);
+      		model.put(WebKeys.FOLDER_ENTRIES, entryList);
       	} else {
-      		folderEntries = getFolderModule().getEntries(binderId, options);
+      		Map folderEntries = getFolderModule().getEntries(binderId, options);
+	      	model.put(WebKeys.SEARCH_TOTAL_HITS, folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+			if (folderEntries != null) {
+				entryList = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+			}
+			model.put(WebKeys.FOLDER_ENTRIES, entryList);
       	}
+  		Integer entryCount = entryList.size();
       	
-      	model.put(WebKeys.SEARCH_TOTAL_HITS, folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-		if (folderEntries != null) {
-			model.put(WebKeys.FOLDER_ENTRIES, (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
-		}
 		
       	if (pageNumber.intValue() > 0) prevPage = String.valueOf(pageNumber - 1);
-      	if (((List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES)).size() == pageSize && 
-      			((Integer)folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue() > ((pageNumber.intValue() + 1) * pageSize)) 
+      	if (entryCount == pageSize && entryCount > ((pageNumber.intValue() + 1) * pageSize)) {
       		nextPage = String.valueOf(pageNumber + 1);
+      	}
 		model.put(WebKeys.PAGE_NUMBER, pageNumber.toString());
 		model.put(WebKeys.NEXT_PAGE, nextPage);
 		model.put(WebKeys.PREV_PAGE, prevPage);
@@ -995,7 +1008,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 
 		Map<String, Map> cacheEntryDef = new HashMap();
-    	List items = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+    	List items = entryList;
     	if (items != null) {
 	    	Iterator it = items.iterator();
 	    	while (it.hasNext()) {
