@@ -49,6 +49,7 @@ import org.kablink.teaming.util.SpringContextUtil;
 import com.bradmcevoy.common.Path;
 import com.bradmcevoy.http.Resource;
 import com.bradmcevoy.http.ResourceFactory;
+import com.bradmcevoy.http.SecurityManager;
 import com.ettrema.http.fs.LockManager;
 import com.ettrema.http.fs.SimpleLockManager;
 
@@ -70,9 +71,11 @@ public class WebdavResourceFactory implements ResourceFactory {
 	private long maxAgeSecondsFile = 10;
 	
 	private LockManager lockManager;
+	private SecurityManager securityManager;
 	
 	public WebdavResourceFactory() {
 		this.lockManager = new SimpleLockManager();
+		this.securityManager = new WebdavSecurityManager();
 	}
 
 	/* (non-Javadoc)
@@ -149,6 +152,10 @@ public class WebdavResourceFactory implements ResourceFactory {
 		return lockManager;
 	}
 
+	public SecurityManager getSecurityManager() {
+		return securityManager;
+	}
+	
 	protected Object resolvePath(Path path) {
 		Path vibePath = path.getStripFirst(); // Skip "/dav" element
 		String vibePathStr = vibePath.toPath(); // This is effective data path in Vibe

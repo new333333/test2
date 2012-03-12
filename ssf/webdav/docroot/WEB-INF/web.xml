@@ -2,6 +2,8 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
   <display-name>Vibe WebDAV Service based on Milton</display-name>
                  
+<!-- Uncomment the following block to use Spring Security instead of Milton for authentication. -->
+<!--
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>/WEB-INF/context/webdav-security.xml</param-value>
@@ -34,6 +36,7 @@
 		<filter-name>requestContextAndSessionSetup</filter-name>
 		<url-pattern>/dav/*</url-pattern>
 	</filter-mapping>
+-->
     
     <servlet>
         <servlet-name>milton</servlet-name>
@@ -50,16 +53,17 @@ will default to basic and digest authentication.
 
         <init-param>
             <param-name>authentication.handler.classes</param-name>
-            <!-- <param-value>com.bradmcevoy.http.http11.auth.BasicAuthHandler</param-value>-->
-            <param-value></param-value>
+            <param-value>com.bradmcevoy.http.http11.auth.BasicAuthHandler</param-value>
         </init-param>
   
 <!-- Uncomment the following filter to enable request and response logging to your user.home-->
-
+<!--
         <init-param>
             <param-name>filter_0</param-name>
             <param-value>com.bradmcevoy.http.DebugFilter</param-value>
         </init-param>
+-->
+        
 		<load-on-startup>0</load-on-startup>
     </servlet>
     

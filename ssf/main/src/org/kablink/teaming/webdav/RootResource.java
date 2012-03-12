@@ -43,6 +43,8 @@ import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.PropFindableResource;
+import com.bradmcevoy.http.Request;
+import com.bradmcevoy.http.Request.Method;
 import com.bradmcevoy.http.Resource;
 
 /**
@@ -97,6 +99,30 @@ public class RootResource extends WebdavCollectionResource implements PropFindab
 		return factory.getMaxAgeSecondsRoot();
 	}
 
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.Resource#authenticate(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public Object authenticate(String user, String password) {
+		return "";
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.Resource#authorise(com.bradmcevoy.http.Request, com.bradmcevoy.http.Request.Method, com.bradmcevoy.http.Auth)
+	 */
+	@Override
+	public boolean authorise(Request request, Method method, Auth auth) {
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.Resource#getRealm()
+	 */
+	@Override
+	public String getRealm() {
+		return null;
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.CollectionResource#child(java.lang.String)
 	 */
