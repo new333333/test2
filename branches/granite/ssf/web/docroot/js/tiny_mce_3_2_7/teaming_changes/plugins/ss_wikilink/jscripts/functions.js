@@ -104,7 +104,6 @@ function ss_loadLinkBinderId(binderId, listObj, name) {
 }
 
 function ss_loadLinkEntryId(entryId, listObj, name) {
-	alert(name)
 	dojo.byId("pageName").value = name;
 	dojo.byId("searchTitle").value = name;
 	ss_close_popup_page();
