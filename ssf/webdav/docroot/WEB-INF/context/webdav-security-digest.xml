@@ -8,6 +8,10 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
 
+    <!-- ============================== Common beans ============================ -->
+
+    <import resource="webdav-security-common.xml"/>
+
     <!-- ============================== Digest authentication ============================ -->
 
 	<bean id="digestProcessingFilter"
@@ -19,7 +23,7 @@
 	
 	<bean id="digestProcessingFilterEntryPoint"
 		class="org.springframework.security.ui.digestauth.DigestProcessingFilterEntryPoint">
-		<property name="realmName" value="Teaming"/>
+		<property name="realmName" value="Vibe"/>
 		<property name="key" value="U2l0ZVNjYXBl"/>
 	</bean>
 

@@ -30,61 +30,38 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.webdav.spring.security;
 
-package org.kablink.teaming.webdav;
+import javax.servlet.http.HttpServletRequest;
 
-import com.bradmcevoy.http.Auth;
-import com.bradmcevoy.http.Request;
-import com.bradmcevoy.http.Request.Method;
-import com.bradmcevoy.http.Resource;
-import com.bradmcevoy.http.SecurityManager;
-import com.bradmcevoy.http.http11.auth.DigestResponse;
+import org.springframework.security.providers.anonymous.AnonymousProcessingFilter;
+import org.springframework.security.ui.FilterChainOrder;
 
 /**
  * @author jong
  *
  */
-public class WebdavSecurityManager implements SecurityManager {
+public class OptionsProcessingFilter extends AnonymousProcessingFilter {
 
+	private static final String OPTIONS_METHOD = "OPTIONS";
+	
 	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.SecurityManager#authenticate(com.bradmcevoy.http.http11.auth.DigestResponse)
+	 * @see org.springframework.core.Ordered#getOrder()
 	 */
 	@Override
-	public Object authenticate(DigestResponse digestRequest) {
-		return "";
+	public int getOrder() {
+		// This filter must be placed not only before regular processing filters such as
+		// Basic auth and form-based auth filters but also BEFORE any pre-authentication
+		// filter so that the authorization decision about OPTIONS method can be made
+		// before ANY type of user identity information is taken into consideration.
+		// The anonymous filter this implementation is based on comes way later in the
+		// filter pipeline (even after form-based and Basic authentications), so it's
+		// crucial to override this method.
+		return FilterChainOrder.PRE_AUTH_FILTER-1;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.SecurityManager#authenticate(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public Object authenticate(String user, String password) {
-		return "";
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.SecurityManager#authorise(com.bradmcevoy.http.Request, com.bradmcevoy.http.Request.Method, com.bradmcevoy.http.Auth, com.bradmcevoy.http.Resource)
-	 */
-	@Override
-	public boolean authorise(Request request, Method method, Auth auth,
-			Resource resource) {
-		return true;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.SecurityManager#getRealm(java.lang.String)
-	 */
-	@Override
-	public String getRealm(String host) {
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.SecurityManager#isDigestAllowed()
-	 */
-	@Override
-	public boolean isDigestAllowed() {
-		return false;
-	}
+    protected boolean applyAnonymousForThisRequest(HttpServletRequest request) {
+        return request.getMethod().equalsIgnoreCase(OPTIONS_METHOD);
+    }
 
 }
