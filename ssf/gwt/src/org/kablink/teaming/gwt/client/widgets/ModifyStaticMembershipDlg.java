@@ -217,6 +217,9 @@ public class ModifyStaticMembershipDlg extends DlgBox
 		
 		// Select the newly created group.
 		m_groupSelectionModel.setSelected( group, true );
+		
+		// Tell the table how many groups we have
+		m_groupTable.setRowCount( m_listOfGroups.size(), true );
 	}
 	
 	/**
@@ -235,6 +238,9 @@ public class ModifyStaticMembershipDlg extends DlgBox
 		
 		// Select the newly created user.
 		m_userSelectionModel.setSelected( user, true );
+		
+		// Tell the table how many users we have
+		m_userTable.setRowCount( m_listOfUsers.size(), true );
 	}
 
 	/**
