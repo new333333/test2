@@ -1498,4 +1498,8 @@ public interface GwtTeamingMessages extends Messages
 	String quickFilterAltOff();
 	String quickFilterAltOn();
 	String quickFilter_empty();
+
+	// Strings used in the "Edit graphic properties" dialog
+	String editGraphicPropertiesDlgSetImageSize();
+	
 }// end GwtTeamingMessages

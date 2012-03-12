@@ -107,22 +107,15 @@ public class GraphicWidget extends VibeWidget
 			
 			style = m_img.getElement().getStyle();
 			
-			// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
 			width = m_properties.getWidth();
 			unit = m_properties.getWidthUnits();
-			if ( width != 100 || unit != Unit.PCT )
+			if ( width > 0 )
 				style.setWidth( width, unit );
 			
-			// Set the width of the entire widget
-			GwtClientHelper.setWidth( width, unit, mainPanel );
-			
-			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
 			height = m_properties.getHeight();
 			unit = m_properties.getHeightUnits();
-			if ( height != 100 || unit != Unit.PCT )
+			if ( height > 0 )
 				style.setHeight( height, unit );
-			
-			style.setOverflow( Overflow.AUTO );
 		}
 
 
