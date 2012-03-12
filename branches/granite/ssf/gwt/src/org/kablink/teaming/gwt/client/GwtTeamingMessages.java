@@ -1135,6 +1135,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyDynamicMembershipDlgHeader();
 	String modifyDynamicMembershipDlgLdapFilterLabel();
 	String modifyDynamicMembershipDlgSearchSubtreeLabel();
+	String modifyDynamicMembershipDlgTestQueryInProgressLabel();
 	String modifyDynamicMembershipDlgTestQueryLabel();
 	String modifyDynamicMembershipDlgTestQueryResults( int count );
 	String modifyDynamicMembershipDlgUpdateLabel();
