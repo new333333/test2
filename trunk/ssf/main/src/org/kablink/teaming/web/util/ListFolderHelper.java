@@ -37,6 +37,7 @@ import static org.kablink.util.search.Restrictions.in;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -62,6 +63,7 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -550,16 +552,20 @@ public class ListFolderHelper {
 		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 	}
 
-	public static Map findCalendarEvents(AllModulesInjected bs, RenderRequest request, 
+	//Return the list of calendar events to show
+	public static List findCalendarEvents(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Binder binder, Map model) throws PortletRequestBindingException {
 		Map folderEntries = new HashMap();
 		Long binderId = binder.getId();
+		List binderIds = Arrays.asList(String.valueOf(binderId));
 		
 		int year = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_YEAR, -1);
 		int month = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_MONTH, -1);
 		int dayOfMonth = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_DAY_OF_MONTH, -1);
 		
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+		String calendarStickyId = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_STICKY_ID, null);
+		String calendarModeType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_MODE_TYPE, "");
 		
 		Date currentDate = EventsViewHelper.getCalendarCurrentDate(portletSession);
 		currentDate = EventsViewHelper.getDate(year, month, dayOfMonth, currentDate);
@@ -568,6 +574,8 @@ public class ListFolderHelper {
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
 		UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
+		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
+		TimeZone timeZone = user.getTimeZone();
 		
 		Grid oldGrid = EventsViewHelper.getCalendarGrid(portletSession, userProperties, binderId.toString());
 		String gridType = "";
@@ -578,16 +586,15 @@ public class ListFolderHelper {
 		}
 		gridType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_GRID_TYPE, gridType);
 		gridSize = PortletRequestUtils.getIntParameter(request, WebKeys.CALENDAR_GRID_SIZE, gridSize);
-		Map grids = EventsViewHelper.setCalendarGrid(portletSession, userProperties, binderId.toString(), gridType, gridSize);
-		model.put(WebKeys.CALENDAR_GRID_TYPE, ((EventsViewHelper.Grid)grids.get(binderId.toString())).type);
-		model.put(WebKeys.CALENDAR_GRID_SIZE, ((EventsViewHelper.Grid)grids.get(binderId.toString())).size);
 		
-		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
-		TimeZone timeZone = user.getTimeZone();
+		Map grids = EventsViewHelper.setCalendarGrid(portletSession, userProperties, calendarStickyId, gridType, gridSize);
+
+		model.put(WebKeys.CALENDAR_GRID_TYPE, ((EventsViewHelper.Grid)grids.get(calendarStickyId)).type);
+		model.put(WebKeys.CALENDAR_GRID_SIZE, ((EventsViewHelper.Grid)grids.get(calendarStickyId)).size);
 		
 		Calendar calCurrentDate = new GregorianCalendar(timeZone);
 		calCurrentDate.setTime(currentDate);
-
+		
 		Calendar nextDate = new GregorianCalendar(timeZone);
 		nextDate.setTime(currentDate);
 
@@ -598,9 +605,14 @@ public class ListFolderHelper {
 		Calendar calEndDateRange = new GregorianCalendar(timeZone);
    		calStartDateRange.setTime(currentDate);
    		calEndDateRange.setTime(currentDate);
-		
-   		String strSessGridType = null;
-   		Integer sessGridSize = null;
+
+       	model.put(WebKeys.CALENDAR_PREV_DATE, prevDate);
+       	model.put(WebKeys.CALENDAR_NEXT_DATE, nextDate);
+       	model.put(WebKeys.CALENDAR_CURR_DATE, calCurrentDate);
+       	model.put(WebKeys.CALENDAR_RANGE_END_DATE, calEndDateRange);
+
+   		String strSessGridType = gridType;
+   		Integer sessGridSize = gridSize;
    		EventsViewHelper.Grid grid = EventsViewHelper.getCalendarGrid(portletSession, userProperties, binderId.toString());
    		if (grid != null) {
    			strSessGridType = grid.type;
@@ -609,10 +621,11 @@ public class ListFolderHelper {
        	String strSessGridSize = "";
        	if (sessGridSize != null) strSessGridSize = sessGridSize.toString(); 
       	
-       	AbstractIntervalView intervalView = null;
+		Integer weekFirstDay = (Integer)userProperties.getProperty(ObjectKeys.USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK);
+		weekFirstDay = weekFirstDay!=null?weekFirstDay:CalendarHelper.getFirstDayOfWeek();
+		
+       	AbstractIntervalView intervalView = new OneMonthView(currentDate, weekFirstDay);;
        	if (EventsViewHelper.GRID_MONTH.equals(strSessGridType)) {
-			Integer weekFirstDay = (Integer)userProperties.getProperty(ObjectKeys.USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK);
-			weekFirstDay = weekFirstDay!=null?weekFirstDay:CalendarHelper.getFirstDayOfWeek();
 			
        		intervalView = new OneMonthView(currentDate, weekFirstDay);
        		
@@ -637,33 +650,147 @@ public class ListFolderHelper {
        	
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 		Map options = getSearchFilter(bs, request, binder, userFolderProperties);
+		
 		options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
-       	// options.put(ObjectKeys.SEARCH_EVENT_DAYS, getExtViewDayDates(calStartDateRange, calEndDateRange));
+		options.put( ObjectKeys.SEARCH_SORT_DESCEND, new Boolean( false ) );
+		
 		List intervals = new ArrayList(1);
 		intervals.add(intervalView.getVisibleIntervalRaw());
        	options.put(ObjectKeys.SEARCH_EVENT_DAYS, intervals);
        	
-       	if (1 == 0) {
-       		options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, formatter.format(calStartDateRange.getTime()));
-	       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, formatter.format(calEndDateRange.getTime()));
-	
-	       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, formatter.format(calStartDateRange.getTime()));
-	       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, formatter.format(calEndDateRange.getTime()));
-       	}
+		if (!calendarModeType.equals(ObjectKeys.CALENDAR_MODE_TYPE_MY_EVENTS)) {
+			//See if there is a filter turned on for this folder. But don't do it for the MyEvents display
+			options.putAll(ListFolderHelper.getSearchFilter(bs, request, binder, userFolderProperties));
+		}
+		Document baseFilter = ((Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER));
+		boolean filtered = (null != baseFilter); 
+		if (filtered) {
+			Element preDeletedOnlyTerm = (Element)baseFilter.getRootElement().selectSingleNode("//filterTerms/filterTerm[@preDeletedOnly='true']");
+			if (preDeletedOnlyTerm != null) {
+				options.put(ObjectKeys.SEARCH_PRE_DELETED, Boolean.TRUE);
+			}
+		}				
+		
+		// Are we searching for events in a folder or workspace?
+       	List entries = new ArrayList();;
+		if (binder instanceof Folder || binder instanceof Workspace) {
+			// Yes!  Are we searching for physical events using
+			// a filter?
+			boolean virtual;
+			String eventsType = EventsViewHelper.getCalendarDisplayEventType(bs, user.getId(), binderId);
+			virtual = ((null != eventsType) && "virtual".equals(eventsType));
+			if ((!virtual) && filtered) {
+				// Yes!  Simply perform the search using that
+				// filter.
+				folderEntries = bs.getBinderModule().executeSearchQuery(baseFilter, options);
+				entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+			
+			} else {
+				// No, the search is either for virtual event
+				// or not using a filter!  Is it a search for
+				// physical events?
+				if (!virtual) {
+					// Yes!  Is it really?  We'll consider it
+					// a search for virtual event if there
+					// aren't any binders to search through.
+					int binderCount = ((null == binderIds) ? 0 : binderIds.size());
+					switch (binderCount) {
+					case 0:
+						virtual = true;
+						break;
+						
+					case 1:
+						Object binderO = binderIds.get(0);
+						if ((null != binderO) && (binderO instanceof String)) {
+							virtual = ("none".equalsIgnoreCase((String)binderO));
+						}
+						break;
+					}
+				}
 
-  		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.EVENT_DATES_FIELD);
-  		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
+				// Is it a search for virtual events using a
+				// defined filter?
+				if (virtual && filtered) {
+					// Yes!  Instead of searching the current
+					// binder, which the filter should have
+					// been setup for, we need to search the
+					// entire tree.  Adjust the filter
+					// accordingly.
+					Element foldersListFilterTerm = (Element)baseFilter.getRootElement().selectSingleNode("//filterTerms/filterTerm[@filterType='foldersList']");
+					Element filterFolderId = (Element)baseFilter.getRootElement().selectSingleNode("//filterTerms/filterTerm[@filterType='foldersList']/filterFolderId");
+					if ((null != foldersListFilterTerm) && (null != filterFolderId)) {
+						foldersListFilterTerm.addAttribute("filterType", "ancestriesList");
+						filterFolderId.setText(String.valueOf(bs.getWorkspaceModule().getTopWorkspace().getId()));
+					}
+				}
 
-       	model.put(WebKeys.CALENDAR_PREV_DATE, prevDate);
-       	model.put(WebKeys.CALENDAR_NEXT_DATE, nextDate);
-       	model.put(WebKeys.CALENDAR_CURR_DATE, calCurrentDate);
-       	model.put(WebKeys.CALENDAR_RANGE_END_DATE, calEndDateRange);
-       	
-		if (binder instanceof Folder) {
-			folderEntries = bs.getFolderModule().getEntries(binderId, options);
+				// Search for the events that are calendar
+				// entries.
+				ModeType modeType = (virtual ? ModeType.VIRTUAL : ModeType.PHYSICAL); 
+				if (calendarModeType.equals(ObjectKeys.CALENDAR_MODE_TYPE_MY_EVENTS)) {
+					//This is a request for calendar events for the current user
+					modeType = ModeType.MY_EVENTS;
+				}
+				Document searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.CALENDAR);
+				folderEntries = bs.getBinderModule().executeSearchQuery(searchFilter, options);
+				entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+				
+				// Are we searching for virtual events?
+				if (virtual) {
+					// Yes!  Search for the events that are
+					// task entries...
+					AbstractIntervalView calendarViewRangeDates = new OneMonthView(currentDate, weekFirstDay);
+					List taskIntervals = new ArrayList(1);
+					taskIntervals.add(calendarViewRangeDates.getVisibleIntervalRaw());
+			       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, taskIntervals);
+			       	
+					searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.TASK);
+					folderEntries = bs.getBinderModule().executeSearchQuery(searchFilter, options);
+					List taskEntries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+					int tasks = ((null == taskEntries) ? 0 : taskEntries.size());
+					if (0 < tasks) {
+						// ...and add them to the calendar sorted by end date
+						// ...events we found above.
+						Map<Integer, List> taskEntriesByDay = new HashMap<Integer, List>();
+						for (int i = 0; i < tasks; i += 1) {
+							Map taskEntry = (Map)taskEntries.get(i);
+							String event0 = (String)taskEntry.get("_event0");
+							if (event0 != null) {
+								Date startDate = (Date)taskEntry.get(event0+"#LogicalStartDate");
+								Date endDate = (Date)taskEntry.get(event0+"#LogicalEndDate");
+								if (endDate != null) {
+									startDate = endDate;
+								}
+								if (startDate != null) {
+									Calendar cal = new GregorianCalendar();
+									cal.setTime(startDate);
+									Integer monthDay = cal.get(Calendar.DAY_OF_MONTH);
+									if (!taskEntriesByDay.containsKey(monthDay)) {
+										taskEntriesByDay.put(monthDay, new ArrayList());
+									}
+									List dayEntries = taskEntriesByDay.get(monthDay);
+									dayEntries.add(taskEntry);
+								}
+							}
+						}
+						for (int i=1; i <= 31; i++) {
+							if (taskEntriesByDay.containsKey(Integer.valueOf(i))) {
+								List dayEntries = taskEntriesByDay.get(Integer.valueOf(i));
+								for (Object te : dayEntries) {
+									entries.add(te);
+								}
+							}
+						}
+					}
+				}
+			}
+			
+		} else {
+			// A template.
+			entries = new ArrayList();
 		}
 		
-		return folderEntries;
+		return entries;
 	}
 	
 	public static void setDatesForGridDayView(Calendar calStartDateRange, Calendar calEndDateRange, 
@@ -794,9 +921,6 @@ public class ListFolderHelper {
 					folderEntries = TaskHelper.findTaskEntries(bs, req, (Binder) folder, model, options);
 					model.put(WebKeys.TASK_CAN_MODIFY_LINKAGE, new Boolean(TaskHelper.canModifyTaskLinkage(req, bs, ((Binder) folder))));
 					GwtUIHelper.setCommonRequestInfoData(req, bs, model);
-				} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && accessible_simple_ui &&
-						ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
-					folderEntries = findCalendarEvents(bs, req, response, (Binder) folder, model);
 				} else {
 					folderEntries = bs.getFolderModule().getEntries(folderId, options);
 				}

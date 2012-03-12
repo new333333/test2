@@ -3346,6 +3346,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		if (!binderIdText.equals("")) {
 			Binder binder = getBinderModule().getBinder(Long.valueOf(binderIdText));
 			model.put(WebKeys.BINDER, binder);
+			model.put(WebKeys.ORIGINAL_BINDER, binder);
 		}
 		if (!originalBinderIdText.equals("")) {
 			Binder originalBinder = getBinderModule().getBinder(Long.valueOf(originalBinderIdText));
