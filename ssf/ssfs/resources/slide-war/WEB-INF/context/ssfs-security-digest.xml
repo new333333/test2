@@ -19,7 +19,7 @@
 	
 	<bean id="digestProcessingFilterEntryPoint"
 		class="org.springframework.security.ui.digestauth.DigestProcessingFilterEntryPoint">
-		<property name="realmName" value="Teaming"/>
+		<property name="realmName" value="Vibe"/>
 		<property name="key" value="U2l0ZVNjYXBl"/>
 	</bean>
 
