@@ -39,7 +39,6 @@ import org.kablink.teaming.gwt.client.lpe.GraphicProperties;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.Image;
 
