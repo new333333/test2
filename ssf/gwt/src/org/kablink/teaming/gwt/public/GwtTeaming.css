@@ -3574,6 +3574,12 @@ td.datePickerMonth {
 	font-style: italic;
 }
 
+.testLdapQueryInProgress
+{
+	color: red;
+	font-style: italic;
+}
+
 /* End of styles used with the group management dialogs */
 
 

@@ -49,6 +49,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -56,6 +57,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -76,6 +78,7 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 	private CheckBox m_searchSubtreeCB;
 	private CheckBox m_updateCB;
 	private Label m_currentMembershipLabel;
+	private FlowPanel m_inProgressPanel;
 	
 	/**
 	 * 
@@ -191,7 +194,7 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 			btn = new Button( messages.modifyDynamicMembershipDlgTestQueryLabel() );
 			btn.addStyleName( "teamingButton" );
 			table.setWidget( nextRow, 0, btn );
-			cellFormatter.setColSpan( nextRow, 0, 2 );
+			//!!!cellFormatter.setColSpan( nextRow, 0, 2 );
 			
 			clickHandler = new ClickHandler()
 			{
@@ -220,6 +223,27 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 				
 			};
 			btn.addClickHandler( clickHandler );
+			
+			// Add a panel that will display a "Executing ldap query..." message
+			{
+				ImageResource imgResource;
+				Image img;
+				InlineLabel label;
+				
+				m_inProgressPanel = new FlowPanel();
+				m_inProgressPanel.addStyleName( "testLdapQueryInProgress" );
+				m_inProgressPanel.setVisible( false );
+
+				imgResource = GwtTeaming.getImageBundle().spinner16();
+				img = new Image( imgResource );
+				img.getElement().setAttribute( "align", "absmiddle" );
+				m_inProgressPanel.add( img );
+
+				label = new InlineLabel( GwtTeaming.getMessages().modifyDynamicMembershipDlgTestQueryInProgressLabel() );
+				m_inProgressPanel.add( label );
+				
+				table.setWidget( nextRow, 1, m_inProgressPanel );
+			}
 
 			++nextRow;
 		}
@@ -269,25 +293,44 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 			TestGroupMembershipCriteriaCmd cmd;
 			AsyncCallback<VibeRpcResponse> rpcCallback;
 			
+			// Make the "Executing ldap query..." visible
+			m_inProgressPanel.setVisible( true );
+			
 			rpcCallback = new AsyncCallback<VibeRpcResponse>()
 			{
 				@Override
 				public void onFailure( Throwable caught )
 				{
-					GwtClientHelper.handleGwtRPCFailure(
-						caught,
-						GwtTeaming.getMessages().rpcFailure_TestGroupMembershipCriteria() );
+					// Is this dialog still visible?
+					if ( isVisible() )
+					{
+						// Yes, tell the user about the error
+						GwtClientHelper.handleGwtRPCFailure(
+							caught,
+							GwtTeaming.getMessages().rpcFailure_TestGroupMembershipCriteria() );
+
+						// Hide the "Executing ldap query..." visible
+						m_inProgressPanel.setVisible( false );
+					}
 				}
 	
 				@Override
 				public void onSuccess( VibeRpcResponse result )
 				{
-					IntegerRpcResponseData responseData;
-					Integer count;
-					
-					responseData = (IntegerRpcResponseData) result.getResponseData();
-					count = responseData.getIntegerValue();
-					Window.alert( GwtTeaming.getMessages().modifyDynamicMembershipDlgTestQueryResults( count ) );
+					// Is this dialog still visible?
+					if ( isVisible() )
+					{
+						IntegerRpcResponseData responseData;
+						Integer count;
+						
+						// Yes, tell the user the results.
+						responseData = (IntegerRpcResponseData) result.getResponseData();
+						count = responseData.getIntegerValue();
+						Window.alert( GwtTeaming.getMessages().modifyDynamicMembershipDlgTestQueryResults( count ) );
+
+						// Hide the "Executing ldap query..." visible
+						m_inProgressPanel.setVisible( false );
+					}
 				}						
 			};
 			
