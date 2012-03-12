@@ -37,15 +37,22 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
-import org.kablink.teaming.gwt.client.widgets.SizeCtrl;
 
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
@@ -54,10 +61,14 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class GraphicWidgetDlgBox extends DlgBox
+	implements KeyPressHandler
 {
 	private CheckBox m_showBorderCkBox = null;
 	private ListBox m_graphicListBox = null;
-	private SizeCtrl m_sizeCtrl = null;
+	private CheckBox m_setImgSizeCkBox = null;
+	private TextBox m_widthCtrl = null;
+	private TextBox m_heightCtrl = null;
+	private ListBox m_widthUnitListBox = null;
 	
 	/**
 	 * 
@@ -139,10 +150,54 @@ public class GraphicWidgetDlgBox extends DlgBox
 		
 		mainPanel.add( table );
 		
-		// Add the size control
-		m_sizeCtrl = new SizeCtrl();
-		m_sizeCtrl.hideOverflowCheckbox();
-		mainPanel.add( m_sizeCtrl );
+		// Add controls for stretching the width/height of the image
+		{
+			FlowPanel panel;
+			FlexTable sizeTable;
+			
+			m_setImgSizeCkBox = new CheckBox( GwtTeaming.getMessages().editGraphicPropertiesDlgSetImageSize() );
+			m_setImgSizeCkBox.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					danceDlg();
+				}
+			} );
+			table.setWidget( 2, 0, m_setImgSizeCkBox );
+			
+			// Add a panel to hold the text box and combobox
+			panel = new FlowPanel();
+			panel.addStyleName( "marginleft2" );
+			
+			sizeTable = new FlexTable();
+			sizeTable.setText( 0, 0, GwtTeaming.getMessages().widthLabel() );
+			m_widthCtrl = new TextBox();
+			m_widthCtrl.addKeyPressHandler( this );
+			m_widthCtrl.setVisibleLength( 3 );
+			sizeTable.setWidget( 0, 1, m_widthCtrl );
+
+			// Create a listbox that holds the possible units for the width
+			{
+				m_widthUnitListBox = new ListBox( false );
+				m_widthUnitListBox.setVisibleItemCount( 1 );
+				
+				m_widthUnitListBox.addItem( GwtTeaming.getMessages().percent(), "%" );
+				m_widthUnitListBox.addItem( GwtTeaming.getMessages().pxLabel(), "px" );
+				
+				sizeTable.setWidget( 0, 2, m_widthUnitListBox );
+			}
+			
+			sizeTable.setText( 1, 0, GwtTeaming.getMessages().heightLabel() );
+			m_heightCtrl = new TextBox();
+			m_heightCtrl.addKeyPressHandler( this );
+			m_heightCtrl.setVisibleLength( 3 );
+			sizeTable.setWidget( 1, 1, m_heightCtrl );
+			sizeTable.setText( 1, 2, GwtTeaming.getMessages().pxLabel() );
+
+			panel.add( sizeTable );
+			table.setWidget( 3, 0, panel );
+		}
 
 		// Add a checkbox for "Show border"
 		table = new FlexTable();
@@ -157,6 +212,21 @@ public class GraphicWidgetDlgBox extends DlgBox
 		return mainPanel;
 	}// end createContent()
 	
+	
+	/**
+	 * Dance the controls in this dialog that deal with width and height.
+	 */
+	private void danceDlg()
+	{
+		boolean enabled;
+		
+		// Enable/disable the width and height controls depending on whether "set image size" is checked.
+		enabled = m_setImgSizeCkBox.getValue();
+		
+		m_widthCtrl.setEnabled( enabled );
+		m_widthUnitListBox.setEnabled( enabled );
+		m_heightCtrl.setEnabled( enabled );
+	}
 	
 	/**
 	 * Get the data from the controls in the dialog box and store the data in the properties obj.
@@ -184,27 +254,14 @@ public class GraphicWidgetDlgBox extends DlgBox
 			// Get the width
 			width = getWidth();
 			units = getWidthUnits();
-			if ( width == 0 )
-			{
-				// Default to 100%
-				width = 100;
-				units = Style.Unit.PCT;
-			}
 			properties.setWidth( width );
 			properties.setWidthUnits( units );
 			
 			// Get the height
 			height = getHeight();
-			units = getHeightUnits();
-			if ( height == 0 )
-			{
-				// Default to 100%
-				height = 100;
-				units = Style.Unit.PCT;
-			}
 
 			properties.setHeight( height );
-			properties.setHeightUnits( units );
+			properties.setHeightUnits( Unit.PX );
 			properties.setOverflow( getOverflow() );
 		}
 
@@ -277,24 +334,41 @@ public class GraphicWidgetDlgBox extends DlgBox
 	 */
 	private int getHeight()
 	{
-		return m_sizeCtrl.getHeight();
+		int height;
+		
+		height = -1;
+		
+		// Is the "set image size" checkbox checked?
+		if ( m_setImgSizeCkBox.getValue() == true )
+		{
+			String txt;
+			
+			// Yes
+			txt = m_heightCtrl.getText();
+			if ( txt != null && txt.length() > 0 )
+			{
+				try
+				{
+					height = Integer.parseInt( txt );
+					if ( height == 0 )
+						height = -1;
+				}
+				catch ( NumberFormatException nfEx )
+				{
+					// This should never happen.  The data should be validated before we get to this point.
+				}
+			}
+		}
+		
+		return height;
 	}
 	
-	/**
-	 * 
-	 */
-	private Style.Unit getHeightUnits()
-	{
-		return m_sizeCtrl.getHeightUnits();
-	}
-	
-
 	/**
 	 * 
 	 */
 	private Style.Overflow getOverflow()
 	{
-		return m_sizeCtrl.getOverflow();
+		return Style.Overflow.AUTO;
 	}
 
 	/**
@@ -311,7 +385,33 @@ public class GraphicWidgetDlgBox extends DlgBox
 	 */
 	private int getWidth()
 	{
-		return m_sizeCtrl.getWidth();
+		int width;
+		
+		width = -1;
+		
+		// Is the "stretch width" checkbox checked?
+		if ( m_setImgSizeCkBox.getValue() == true )
+		{
+			String txt;
+			
+			// Yes
+			txt = m_widthCtrl.getText();
+			if ( txt != null && txt.length() > 0 )
+			{
+				try
+				{
+					width = Integer.parseInt( txt );
+					if ( width == 0 )
+						width = -1;
+				}
+				catch ( NumberFormatException nfEx )
+				{
+					// This should never happen.  The data should be validated before we get to this point.
+				}
+			}
+		}
+		
+		return width;
 	}
 	
 	/**
@@ -319,7 +419,23 @@ public class GraphicWidgetDlgBox extends DlgBox
 	 */
 	private Style.Unit getWidthUnits()
 	{
-		return m_sizeCtrl.getWidthUnits();
+		Style.Unit unit = Style.Unit.PCT;
+		int selectedIndex;
+		String value;
+		
+		// Yes
+		// Get the selected index from the listbox that holds the list of units.
+		selectedIndex = m_widthUnitListBox.getSelectedIndex();
+		if ( selectedIndex < 0 )
+			selectedIndex = 0;
+		
+		value = m_widthUnitListBox.getValue( selectedIndex );
+		if ( value != null && value.equalsIgnoreCase( "%" ) )
+			unit = Style.Unit.PCT;
+		else
+			unit = Style.Unit.PX;
+		
+		return unit;
 	}
 	
 
@@ -357,9 +473,86 @@ public class GraphicWidgetDlgBox extends DlgBox
 		
 		m_showBorderCkBox.setValue( properties.getShowBorderValue() );
 
-		// Initialize the size control.
-		m_sizeCtrl.init( properties.getWidth(), properties.getWidthUnits(), properties.getHeight(), properties.getHeightUnits(), properties.getOverflow() );
+		// Initialize the controls dealing with width and height
+		{
+			Style.Unit widthUnits;
+			String unitValue;
+			int width;
+			int height;
+			
+			height = properties.getHeight();
+			width = properties.getWidth();
+			widthUnits = properties.getWidthUnits();
+			
+			if ( width > 0 || height > 0 )
+			{
+				m_setImgSizeCkBox.setValue( true );
+				
+				if ( width > 0 )
+					m_widthCtrl.setText( String.valueOf( width ) );
+				
+				if ( height > 0 )
+					m_heightCtrl.setText( String.valueOf( height ) );
+			}
+			else
+			{
+				m_setImgSizeCkBox.setValue( false );
+				m_widthCtrl.setText( "" );
+				m_heightCtrl.setText( "" );
+			}
+
+			if ( widthUnits == Style.Unit.PCT )
+				unitValue = "%";
+			else
+				unitValue = "px";
+
+			// Select the appropriate unit in the listbox.
+			for (i = 0; i < m_widthUnitListBox.getItemCount(); ++i)
+			{
+				String nextUnit;
+				
+				nextUnit = m_widthUnitListBox.getValue( i );
+				if ( nextUnit != null && nextUnit.equalsIgnoreCase( unitValue ) )
+				{
+					m_widthUnitListBox.setSelectedIndex( i );
+					break;
+				}
+			}
+		}
+		
+		// Dance the controls on the dialog.
+		danceDlg();
 
 	}// end init()
 
+	/**
+	 * This method gets called when the user types in the "width" or "height" text box.
+	 * We only allow the user to enter numbers.
+	 */
+	@Override
+	public void onKeyPress( KeyPressEvent event )
+	{
+        int keyCode;
+
+        // Get the key the user pressed
+        keyCode = event.getNativeEvent().getKeyCode();
+        
+        if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
+            && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
+            && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
+            && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN))
+        {
+        	TextBox txtBox;
+        	Object source;
+        	
+        	// Make sure we are dealing with a text box.
+        	source = event.getSource();
+        	if ( source instanceof TextBox )
+        	{
+        		// Suppress the current keyboard event.
+        		txtBox = (TextBox) source;
+        		txtBox.cancelKey();
+        	}
+        }
+	}
 }// end GraphicWidgetDlgBox
