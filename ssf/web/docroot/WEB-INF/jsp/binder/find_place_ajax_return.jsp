@@ -75,7 +75,6 @@ function ss_saveFolderId(id, type, clickObj) {
     clickRoutine="ss_saveFolderId"
     accessibilityText="entry.Folder"
     /> 
-<input type="hidden" name="searchTitle"/>
 </form>
 </body>
 </html>

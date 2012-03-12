@@ -19,9 +19,16 @@ function ss_insertICElink(originalBinderId, title, currentBinderId) {
 	elm = inst.selection.getNode();
     var linkText = inst.selection.getSelectedText();
     if (linkText == null || linkText == "") {
-    	linkText = document.getElementById('searchTitle').value;
-    	if (linkText == null || linkText == '') linkText = document.getElementById('pageName').value;
-    	if (linkText == null || linkText == '') linkText = document.getElementById('searchTitleFolder').value;
+    	var linkTextObj = document.getElementById('searchTitle');
+    	if (linkTextObj != null) linkText = linkTextObj.value;
+    	if (linkText == null || linkText == '') {
+    		linkTextObj = document.getElementById('pageName');
+    		if (linkTextObj != null) linkText = linkTextObj.value;
+    	}
+    	if (linkText == null || linkText == '') {
+    		linkTextObj = document.getElementById('searchTitleFolder');
+    		if (linkTextObj != null) linkText = linkTextObj.value;
+    	}
     }
     var pad = "";
     if (linkText.charAt(linkText.length - 1) == " ") { pad = " "; }
@@ -33,21 +40,11 @@ function ss_insertICElink(originalBinderId, title, currentBinderId) {
 
 	// Create new anchor elements
 	if (elm == null || elm == '') {
-		if (title == "" && (originalBinderId == "" || originalBinderId == currentBinderId)) {
-		    if (linkText != "") {
-				link = '[[' + linkText + ']]';
-			}
-		} else if ((linkText == "") && (title != "") && (originalBinderId == "" || originalBinderId == currentBinderId)) {
-			link = '[[' + title + ']]';
-		} else {
-		    if (originalBinderId == "") { originalBinderId == currentBinderId };
-		    if (linkText == "") { linkText = title; pad = " "; }
-		    if (title != "") { linkText = title; }
-			link = '<a href="#" class="ss_icecore_link" rel="binderId=' + currentBinderId + ' title=' + ss_prenormalizeText(title) + '">' + linkText + '</a>' + pad;
-		}
-		if (link != "") {
-			tinyMCE.execCommand('mceInsertContent', false, link);
-		}
+	    if (originalBinderId == "") { originalBinderId == currentBinderId };
+	    if (linkText == "") { linkText = title; pad = " "; }
+	    if (title != "") { linkText = title; }
+		link = '<a href="#" class="ss_icecore_link" rel="binderId=' + currentBinderId + ' title=' + ss_prenormalizeText(title) + '">' + linkText + '</a>' + pad;
+		tinyMCE.execCommand('mceInsertContent', false, link);
 	} else {
 		setAttrib(elm, "rel", 'binderId=' + currentBinderId + ' title=' + title);
 		setAttrib(elm, "class", "ss_icecore_link");
@@ -107,6 +104,7 @@ function ss_loadLinkBinderId(binderId, listObj, name) {
 }
 
 function ss_loadLinkEntryId(entryId, listObj, name) {
+	alert(name)
 	dojo.byId("pageName").value = name;
 	dojo.byId("searchTitle").value = name;
 	ss_close_popup_page();
