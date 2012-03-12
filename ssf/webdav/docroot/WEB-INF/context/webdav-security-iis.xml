@@ -29,7 +29,7 @@
 
 	<bean id="authenticationProvider" class="org.kablink.teaming.asmodule.spring.security.providers.AuthenticationModuleBridge"/>
 	
-    <security:http session-fixation-protection="newSession" realm="Vibe">
+    <security:http session-fixation-protection="newSession" realm="Vibe" create-session="never">
         <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
         <security:http-basic/>
     </security:http>
