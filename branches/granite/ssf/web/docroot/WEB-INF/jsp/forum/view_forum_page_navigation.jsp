@@ -99,7 +99,6 @@ function ss_clickGoToEntry_${renderResponse.namespace}(id) {
 								showFolderTitles="false"
 							    singleItem="true"
 							    clickRoutine="ss_clickGoToEntry_${renderResponse.namespace}"/> 
-						       <input type="hidden" name="searchTitle"/>
 							</c:if>
 							<c:if test="${ssBinder.entityType == 'profiles'}">
 							  <ssf:find type="user"

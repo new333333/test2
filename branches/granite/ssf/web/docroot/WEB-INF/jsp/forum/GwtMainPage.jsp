@@ -161,6 +161,7 @@
 		var ss_wikiLinkUrl = "<ssf:url adapter="true" actionUrl="true" portletName="ss_forum" action="__ajax_request">
 			  					<ssf:param name="operation" value="wikilink_form" />
 			  					<ssf:param name="binderId" value="${wikiLinkBinderId}" />
+			  					<ssf:param name="originalBinderId" value="${wikiLinkBinderId}" />
 		    				   </ssf:url>";
 
 		// ss_youTubeUrl and ss_invalidYouTubeUrl are used with the tinyMCE editor plugin that lets you add a youtube video.

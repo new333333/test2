@@ -23,7 +23,7 @@
 			ed.addCommand('mce_ssWikiLink', function() {
 				if (ed != null && typeof ed.wikilinkNode != "undefined" && 
 						ed.wikilinkNode != null && typeof ed.wikilinkNode.rel != "undefined") {
-					var p = new RegExp("binderId=([0-9])*", "i");
+					var p = new RegExp("binderId=([0-9])*");
 					var binderIds = ed.wikilinkNode.rel.match(p);
 					if (binderIds != null) {
 						var id = binderIds[0].substr(9);
