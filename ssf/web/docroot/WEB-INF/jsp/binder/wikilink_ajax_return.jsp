@@ -78,7 +78,6 @@ var ss_wikiLinkUrl = "<ssf:url
 <ssf:nlt tag="wiki.link.differentfolder"/>
 <br/>
  <ssf:find formName="ss_findLinkForm" 
-    formElement="searchTitleFolder" 
     type="places"
     width="350px" 
     binderId="${ssBinder.id}"
@@ -99,7 +98,6 @@ var ss_wikiLinkUrl = "<ssf:url
 <div align="right" ><a href="javascript:;" onclick="ss_close_popup_page();"><img border="0" src="<html:imagesPath/>pics/popup_close_box.gif" alt="x" title=""/></a></div>
 <ssf:nlt tag="wiki.link.findpage"/>:
  <ssf:find formName="ss_findLinkForm"
-    formElement="searchTitle" 
     type="entries"
     width="350px" 
     binderId="${ssBinder.id}"
