@@ -288,11 +288,13 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 		// Get the membership criteria entered by the user.
 		membershipCriteria = (GwtDynamicGroupMembershipCriteria) getDataFromDlg();
 		
-		// Issue an rpc request to test the membership criteria
+		// Is there an outstanding rpc request to test the group membership criteria?
+		if ( m_inProgressPanel.isVisible() == false )
 		{
 			TestGroupMembershipCriteriaCmd cmd;
 			AsyncCallback<VibeRpcResponse> rpcCallback;
 			
+			// No
 			// Make the "Executing ldap query..." visible
 			m_inProgressPanel.setVisible( true );
 			
@@ -334,6 +336,7 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 				}						
 			};
 			
+			// Issue an rpc request to test the membership criteria
 			cmd = new TestGroupMembershipCriteriaCmd( membershipCriteria );
 			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}
