@@ -42,18 +42,16 @@ import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.util.SpringContextUtil;
 
 import com.bradmcevoy.http.Auth;
-import com.bradmcevoy.http.DigestResource;
 import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Request;
 import com.bradmcevoy.http.Resource;
 import com.bradmcevoy.http.Request.Method;
-import com.bradmcevoy.http.http11.auth.DigestResponse;
 
 /**
  * @author jong
  *
  */
-public abstract class WebdavResource implements Resource, PropFindableResource, DigestResource {
+public abstract class WebdavResource implements Resource, PropFindableResource {
 	
 	protected WebdavResourceFactory factory;
 	
@@ -85,16 +83,6 @@ public abstract class WebdavResource implements Resource, PropFindableResource, 
 	@Override
 	public String getRealm() {
 		return factory.getSecurityManager().getRealm(null);
-	}
-
-	@Override
-    public Object authenticate(DigestResponse digestRequest) {
-		return factory.getSecurityManager().authenticate(digestRequest);
-	}
-
-	@Override
-    public boolean isDigestAllowed() {
-		return factory.getSecurityManager().isDigestAllowed();
 	}
 
 	/* (non-Javadoc)
