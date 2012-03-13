@@ -4,7 +4,7 @@
 	<import file="../build-common.xml" />
 	<import file="../deploy-support.xml" />
 		
-	<property name="root.war.name" value="webdav" />
+	<property name="root.war.name" value="ROOT" />
 	<property name="root.war.file" value="${root.war.name}.war" />
 	<property name="temp.dir" value="temp" />
 	

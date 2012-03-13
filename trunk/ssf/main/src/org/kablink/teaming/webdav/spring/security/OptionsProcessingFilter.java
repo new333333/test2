@@ -35,7 +35,6 @@ package org.kablink.teaming.webdav.spring.security;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.providers.anonymous.AnonymousProcessingFilter;
-import org.springframework.security.ui.FilterChainOrder;
 
 /**
  * @author jong
@@ -45,21 +44,6 @@ public class OptionsProcessingFilter extends AnonymousProcessingFilter {
 
 	private static final String OPTIONS_METHOD = "OPTIONS";
 	
-	/* (non-Javadoc)
-	 * @see org.springframework.core.Ordered#getOrder()
-	 */
-	@Override
-	public int getOrder() {
-		// This filter must be placed not only before regular processing filters such as
-		// Basic auth and form-based auth filters but also BEFORE any pre-authentication
-		// filter so that the authorization decision about OPTIONS method can be made
-		// before ANY type of user identity information is taken into consideration.
-		// The anonymous filter this implementation is based on comes way later in the
-		// filter pipeline (even after form-based and Basic authentications), so it's
-		// crucial to override this method.
-		return FilterChainOrder.PRE_AUTH_FILTER-1;
-	}
-
     protected boolean applyAnonymousForThisRequest(HttpServletRequest request) {
         return request.getMethod().equalsIgnoreCase(OPTIONS_METHOD);
     }

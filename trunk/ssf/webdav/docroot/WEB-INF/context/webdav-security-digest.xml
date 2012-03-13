@@ -70,7 +70,7 @@
 	<bean id="authenticationProvider" class="org.kablink.teaming.asmodule.spring.security.providers.DummyAuthenticationProvider"/>
 	
     <security:http session-fixation-protection="newSession" entry-point-ref="digestProcessingFilterEntryPoint" create-session="never">
-        <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
+        <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY,ROLE_ANONYMOUS" />
     </security:http>
 	
 </beans>

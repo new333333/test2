@@ -60,34 +60,43 @@ public class RequestContextAndSessionSetupFilter implements Filter {
 
 	private Log logger = LogFactory.getLog(getClass());
 	
+	private static final String OPTIONS_METHOD = "OPTIONS";
+
 	public void doFilter(ServletRequest request, ServletResponse response, 
 			FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
 		
-		// Check authentication
-		checkAuthentication(req);
-
-		// Set up request context
-		setupRequestContext(req);
-		
-		try {
-			// Set up Hibernate session
-			setupHibernateSession(req);
+		// Check if HTTP OPTIONS method
+		if(isHttpOptionsMethod(req)) {
+			// There is no need to setup anything. Just proceed.
+			chain.doFilter(request, response);
+		}
+		else { // Something other than HTTP OPTIONS method. 
+			// Check authentication
+			checkAuthentication(req);
+	
+			// Set up request context
+			setupRequestContext(req);
 			
 			try {
-				// Resolve request context
-				resolveRequestContext(req);
-		
-				chain.doFilter(request, response);
+				// Set up Hibernate session
+				setupHibernateSession(req);
+				
+				try {
+					// Resolve request context
+					resolveRequestContext(req);
+			
+					chain.doFilter(request, response);
+				}
+				finally {
+					// Tear down Hibernate session
+					teardownHibernateSession(req);				
+				}
 			}
 			finally {
-				// Tear down Hibernate session
-				teardownHibernateSession(req);				
+				// Clear request context
+				clearRequestContext(req);			
 			}
-		}
-		finally {
-			// Clear request context
-			clearRequestContext(req);			
 		}
 	}
 
@@ -129,6 +138,10 @@ public class RequestContextAndSessionSetupFilter implements Filter {
 			logger.warn("We've got an active Hibernate session for request " + request.getPathInfo());
 		else 
 			SessionUtil.sessionStartup();
+	}
+	
+	private boolean isHttpOptionsMethod(HttpServletRequest request) {
+        return request.getMethod().equalsIgnoreCase(OPTIONS_METHOD);
 	}
 	
 	private void teardownHibernateSession(HttpServletRequest request) {

@@ -11,6 +11,7 @@
     <!-- ============================== For HTTP OPTIONS processing =========================== -->
 
     <bean id="optionsProcessingFilter" class="org.kablink.teaming.webdav.spring.security.OptionsProcessingFilter">
+        <security:custom-filter position="ANONYMOUS_FILTER"/>
         <property name="key" value="notUsed"/>
         <property name="userAttribute" value="guest,ROLE_ANONYMOUS"/>
     </bean>
