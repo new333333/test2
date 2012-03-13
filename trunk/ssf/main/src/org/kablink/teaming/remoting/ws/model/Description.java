@@ -34,8 +34,13 @@ package org.kablink.teaming.remoting.ws.model;
 
 import java.io.Serializable;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class Description implements Serializable {
 
+	private static final Log logger = LogFactory.getLog(Description.class);
+	
 	private String text;
 	private int format=1;//html default
 	
@@ -56,7 +61,26 @@ public class Description implements Serializable {
 		return text;
 	}
 	public void setText(String text) {
-		this.text = text;
+		if(text != null) {
+			// Bug 752014: Filter out xml-unsafe characters before handing this object to Axis SOAP engine for serialization.
+			StringBuilder sb = new StringBuilder();
+			int length = text.length();
+			char character;
+			for(int i = 0; i < length; i++) {
+				character = text.charAt(i);
+				if(character <  0x20) {
+					// discard this character
+					logger.info("The char '" + Integer.toHexString(character) + "' after '" + text.substring(0, i) + "' is not a valid XML character safe for SOAP. Discarding it.");
+				}
+				else {
+					sb.append(character);
+				}
+			}
+			this.text = sb.toString();
+		}
+		else {
+			this.text = null;
+		}
 	}
 	public String toString() {
 		return getText();
