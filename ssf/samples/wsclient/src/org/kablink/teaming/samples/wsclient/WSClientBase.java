@@ -543,6 +543,7 @@ public abstract class WSClientBase {
 	void printFolderEntry(FolderEntry entry) {
 		printDefinableEntity(entry);
 		System.out.println("Reserved by: " + entry.getReservedBy());
+		System.out.println("Description: " + entry.getDescription().getText());
 	}
 	
 	void printDefinableEntity(DefinableEntity entity) {
