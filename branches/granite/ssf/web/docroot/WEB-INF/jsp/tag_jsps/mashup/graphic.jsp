@@ -71,7 +71,9 @@
       %>
     </c:if>
     <div>
-    <img style="<c:if test="${!empty mWidth}"> width: ${mWidth}; </c:if> <c:if test="${!empty mHeight}"> height: ${mHeight}; </c:if>" 
+    <img 
+    	style="<c:if test="${!empty mWidth}"> width: ${mWidth}; </c:if> <c:if test="${!empty mHeight}"> height: ${mHeight}; </c:if>
+    	<c:if test="${mashup_attributes['showBorder'] == '1'}"> border: 2px solid #ccc !important; </c:if> " 
     	src="<ssf:url 
 		    webPath="viewFile"
 		    folderId="${ssBinder.id}"
@@ -79,7 +81,6 @@
 	    	<ssf:param name="fileId" value="${mashup_attributes['graphic']}"/>
 	    	<ssf:param name="fileTitle" value="${graphicFileTitle}"/>
 	    	</ssf:url>" alt="${mashup_attributes['title']}"
-        <c:if test="${mashup_attributes['showBorder'] == '1'}"> style="border: 2px solid #ccc !important;" </c:if>
 	>
 	</div>
   </c:if>

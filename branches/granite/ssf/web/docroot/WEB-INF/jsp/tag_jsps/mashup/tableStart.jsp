@@ -58,6 +58,6 @@
 <c:set var="ss_mashupColStarted" value="false" scope="request"/>
 <table class="ss_mashup"
   <c:if test="${!empty mashup_attributes['showBorder'] || ssConfigJspStyle == 'form'}">border="1"</c:if>
-  width="100%">
+>
 <c:set var="ss_mashupRowStarted" value="false" scope="request"/>
 <c:set var="ss_mashupColStarted" value="false" scope="request"/>
