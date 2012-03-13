@@ -60,14 +60,16 @@
     	graphicFileTitle = org.kablink.util.Http.encodeURL(graphicFileTitle);
       %>
     </c:if>
-    <img src="<ssf:url 
+    <img 
+    	style="<c:if test="${!empty mWidth}"> width: ${mWidth}; </c:if> <c:if test="${!empty mHeight}"> height: ${mHeight}; </c:if>
+    	<c:if test="${mashup_attributes['showBorder'] == '1'}"> border: 2px solid #ccc !important; </c:if> " 
+    	src="<ssf:url 
 		    webPath="viewFile"
 		    folderId="${ssBinder.id}"
 		    entityType="${ssBinder.entityType}" >
 	    	<ssf:param name="fileId" value="${mashup_attributes['graphic']}"/>
 	    	<ssf:param name="fileTitle" value="${graphicFileTitle}"/>
 	    	</ssf:url>" alt="${mashup_attributes['title']}"
-        <c:if test="${mashup_attributes['showBorder'] == '1'}"> style="border: 2px solid #ccc !important;" </c:if>
 	>
   </c:if>
  </div>
