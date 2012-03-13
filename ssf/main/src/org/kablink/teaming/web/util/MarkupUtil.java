@@ -1426,29 +1426,31 @@ public class MarkupUtil {
 			m1 = sectionPattern.matcher(body);
 
 			//Calculate the number text for this section
-			if (lastSectionDepth != sectionDepth) {
-				if (sectionDepth > lastSectionDepth) {
-					//Starting a new section in a deeper level; Start it (and all between) at 1
-					for (int i = lastSectionDepth + 1; i <= maxDepthFound; i++) {
-						sectionNumbering.put(Integer.valueOf(i), 1);
-					}
-					sectionNumbering.put(Integer.valueOf(sectionDepth), 1);
-					//Reset the levels below this one to 0 to indicate there is nothing there yet
-					for (int i = sectionDepth + 1; i <= maxDepthFound; i++) {
-						sectionNumbering.put(Integer.valueOf(i), 0);
-					}
-				} else if (sectionDepth < lastSectionDepth) {
-					//We are going back up a level or more; increment the new level and reset the lower levels
-					sectionNumbering.put(Integer.valueOf(sectionDepth), sectionNumbering.get(Integer.valueOf(sectionDepth)) + 1);
-					for (int i = sectionDepth + 1; i <= maxDepthFound; i++) {
-						sectionNumbering.put(Integer.valueOf(i), 0);
-					}
-				} else {
-					//We are at the same level. Increment this level number
-					sectionNumbering.put(Integer.valueOf(sectionDepth), sectionNumbering.get(Integer.valueOf(sectionDepth)) + 1);
+			if (sectionDepth > lastSectionDepth) {
+				//Starting a new section in a deeper level; Start it (and all between) at 1 
+				for (int i = lastSectionDepth + 1; i <= maxDepthFound; i++) {
+					sectionNumbering.put(Integer.valueOf(i), 1);
 				}
-				lastSectionDepth = sectionDepth;
+				sectionNumbering.put(Integer.valueOf(sectionDepth), 1);
+				//Reset the levels below this one to 0 to indicate there is nothing there yet
+				for (int i = sectionDepth + 1; i <= maxDepthFound; i++) {
+					sectionNumbering.put(Integer.valueOf(i), 0);
+				}
+			} else if (sectionDepth < lastSectionDepth) {
+				//We are going back up a level or more; increment the new level and reset the lower levels
+				sectionNumbering.put(Integer.valueOf(sectionDepth), sectionNumbering.get(Integer.valueOf(sectionDepth)) + 1);
+				for (int i = sectionDepth + 1; i <= maxDepthFound; i++) {
+					sectionNumbering.put(Integer.valueOf(i), 0);
+				}
+			} else {
+				//We are at the same level. Increment this level number
+				sectionNumbering.put(Integer.valueOf(sectionDepth), sectionNumbering.get(Integer.valueOf(sectionDepth)) + 1);
+				for (int i = sectionDepth + 1; i <= maxDepthFound; i++) {
+					sectionNumbering.put(Integer.valueOf(i), 0);
+				}
 			}
+			lastSectionDepth = sectionDepth;
+			
 			//Build the number text for this section
 			String numberText = "";
 			for (int i = 1; i <= maxDepthFound; i++) {
