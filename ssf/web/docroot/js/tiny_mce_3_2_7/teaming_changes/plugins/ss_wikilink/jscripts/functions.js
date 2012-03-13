@@ -46,7 +46,7 @@ function ss_insertICElink(originalBinderId, title, currentBinderId) {
 		link = '<a href="#" class="ss_icecore_link" rel="binderId=' + currentBinderId + ' title=' + ss_prenormalizeText(title) + '">' + linkText + '</a>' + pad;
 		tinyMCE.execCommand('mceInsertContent', false, link);
 	} else {
-		setAttrib(elm, "rel", 'binderId=' + currentBinderId + ' title=' + title);
+		setAttrib(elm, "rel", 'binderId=' + currentBinderId + ' title=' + ss_prenormalizeText(title));
 		setAttrib(elm, "class", "ss_icecore_link");
 		if (inst.wikilinkNode != null) inst.wikilinkNode.innerHTML = linkText;
 	}
