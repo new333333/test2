@@ -223,7 +223,7 @@ public class ListFolderController extends  SAbstractController {
 			String deleteOperation = PortletRequestUtils.getStringParameter(request, "delete_operation", "delete");
 			if (!deleteEntriesList.equals("")) {
 				String[] entryIds = deleteEntriesList.split(",");
-				for (int i=0; i < entryIds.length; i++) {
+				for (int i = entryIds.length-1; i >= 0; i--) {
 					Long delId = null;
 					try {
 						delId = Long.valueOf(entryIds[i]);
