@@ -62,70 +62,82 @@ public class RequestContextAndSessionSetupFilter implements Filter {
 	
 	private static final String OPTIONS_METHOD = "OPTIONS";
 
-	public void doFilter(ServletRequest request, ServletResponse response, 
-			FilterChain chain) throws IOException, ServletException {
-		HttpServletRequest req = (HttpServletRequest) request;
-		
-		// Check if HTTP OPTIONS method
-		if(isHttpOptionsMethod(req)) {
-			// There is no need to setup anything. Just proceed.
-			chain.doFilter(request, response);
-		}
-		else { // Something other than HTTP OPTIONS method. 
-			// Check authentication
-			checkAuthentication(req);
-	
-			// Set up request context
-			setupRequestContext(req);
-			
-			try {
-				// Set up Hibernate session
-				setupHibernateSession(req);
-				
-				try {
-					// Resolve request context
-					resolveRequestContext(req);
-			
-					chain.doFilter(request, response);
-				}
-				finally {
-					// Tear down Hibernate session
-					teardownHibernateSession(req);				
-				}
-			}
-			finally {
-				// Clear request context
-				clearRequestContext(req);			
-			}
-		}
-	}
-
 	public void init(FilterConfig filterConfig) throws ServletException {
 	}
 
 	public void destroy() {
 	}
 
+	public void doFilter(ServletRequest request, ServletResponse response, 
+			FilterChain chain) throws IOException, ServletException {
+		HttpServletRequest req = (HttpServletRequest) request;
+		
+		// Check if HTTP OPTIONS method
+		if(isHttpOptionsMethod(req)) {
+			if(req.getUserPrincipal() == null) {
+				// The client is not authenticated. This is allowed for OPTIONS method. 
+				// Execute the request in the context of admin user in this case. This
+				// should be safe since OPTIONS method can not do any harm to the system.
+				doSetupAndExecute(request, response, chain, "admin");
+			}
+			else {
+				// The client is authenticated. Proceed as normal.
+				doSetupAndExecute(request, response, chain, req.getUserPrincipal().getName());
+			}
+		}
+		else { // Something other than HTTP OPTIONS method. 
+			// The client must have been authenticated.
+			if(req.getUserPrincipal() == null)
+				throw new ServletException("Unauthorized access");
+	
+			// Execute the request in the context of the authenticated user.
+			doSetupAndExecute(request, response, chain, req.getUserPrincipal().getName());
+		}
+	}
+
+	private void doSetupAndExecute(ServletRequest request, ServletResponse response, FilterChain chain, String contextUserName) throws IOException, ServletException {
+		// Set up request context
+		setupRequestContext(contextUserName);
+		
+		try {
+			// Set up Hibernate session
+			setupHibernateSession((HttpServletRequest) request);
+			
+			try {
+				// Resolve request context
+				resolveRequestContext();
+		
+				chain.doFilter(request, response);
+			}
+			finally {
+				// Tear down Hibernate session
+				teardownHibernateSession();				
+			}
+		}
+		finally {
+			// Clear request context
+			clearRequestContext();			
+		}
+	}
+	
 	private void checkAuthentication(HttpServletRequest request) throws ServletException {
 		if(request.getUserPrincipal() == null)
 			throw new ServletException("Unauthorized access");
 	}
 	
-	private void setupRequestContext(HttpServletRequest request) {
+	private void setupRequestContext(String userName) {
 		RequestContextHolder.clear();
 		
         Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
-
-        String userName = request.getUserPrincipal().getName();
 		
 		RequestContextUtil.setThreadContext(zoneId, WindowsUtil.getSamaccountname(userName));
 	}
 
-	private void resolveRequestContext(HttpServletRequest request) {
+	private void resolveRequestContext() {
 		RequestContextHolder.getRequestContext().resolve();
 	}
 	
-	private void clearRequestContext(HttpServletRequest request) {
+	private void clearRequestContext() {
 		RequestContextHolder.clear();
 	}
 	
@@ -144,7 +156,7 @@ public class RequestContextAndSessionSetupFilter implements Filter {
         return request.getMethod().equalsIgnoreCase(OPTIONS_METHOD);
 	}
 	
-	private void teardownHibernateSession(HttpServletRequest request) {
+	private void teardownHibernateSession() {
 		SessionUtil.sessionStop();
 	}
 	

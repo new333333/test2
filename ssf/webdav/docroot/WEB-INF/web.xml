@@ -31,8 +31,18 @@
 	</filter-mapping>
     
     <filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/eip/*</url-pattern>
+	</filter-mapping>
+    
+    <filter-mapping>
 		<filter-name>requestContextAndSessionSetup</filter-name>
 		<url-pattern>/dav/*</url-pattern>
+	</filter-mapping>
+    
+    <filter-mapping>
+		<filter-name>requestContextAndSessionSetup</filter-name>
+		<url-pattern>/eip/*</url-pattern>
 	</filter-mapping>
     
     <servlet>
@@ -54,12 +64,16 @@ will default to basic and digest authentication.
             <param-value></param-value>
         </init-param>
   
-<!-- Uncomment the following filter to enable request and response logging to your user.home-->
-
+<!-- 
+Uncomment the following filter to enable request and response logging to your user.home
+-->
+<!--
         <init-param>
             <param-name>filter_0</param-name>
             <param-value>com.bradmcevoy.http.DebugFilter</param-value>
         </init-param>
+-->
+
 		<load-on-startup>0</load-on-startup>
     </servlet>
     
@@ -68,10 +82,16 @@ will default to basic and digest authentication.
         <url-pattern>/*</url-pattern>
     </servlet-mapping>    
     
+<!--  
+Uncommenting the following will have no effect because the default webdav authentication
+provider is configured to not create sessions at all.
+-->
+<!--
     <session-config>
         <session-timeout>
             30
         </session-timeout>
     </session-config>
+-->
 
 </web-app>
