@@ -309,8 +309,20 @@ public class ManageGroupsDlg extends DlgBox
 		// Create the CellTable that will display the list of groups.
 		cellTableResources = GWT.create( VibeCellTableResources.class );
 		m_groupsTable = new CellTable<GroupInfoPlus>( 15, cellTableResources );
-		m_groupsTable.getElement().getStyle().setWidth( m_width, Unit.PX );
-		m_groupsTable.getElement().getStyle().setHeight( m_height, Unit.PX );
+		m_groupsTable.setWidth( String.valueOf( m_width ) + "px" );
+		
+		// Set the widget that will be displayed when there are no groups
+		{
+			FlowPanel flowPanel;
+			InlineLabel noGroupsLabel;
+			
+			flowPanel = new FlowPanel();
+			flowPanel.addStyleName( "noObjectsFound" );
+			noGroupsLabel = new InlineLabel( GwtTeaming.getMessages().manageGroupsDlgNoGroupsLabel() );
+			flowPanel.add( noGroupsLabel );
+			
+			m_groupsTable.setEmptyTableWidget( flowPanel );
+		}
 		
 	    // Add a selection model so we can select groups.
 	    m_selectionModel = new MultiSelectionModel<GroupInfoPlus>();

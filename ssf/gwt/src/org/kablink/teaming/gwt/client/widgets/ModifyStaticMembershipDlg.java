@@ -369,6 +369,19 @@ public class ModifyStaticMembershipDlg extends DlgBox
 		m_groupTable = new CellTable<GwtGroup>( 10, cellTableResources );
 		m_groupTable.setWidth( "100%" );
 		
+		// Set the widget that will be displayed when there are no groups
+		{
+			FlowPanel flowPanel;
+			InlineLabel noGroupsLabel;
+			
+			flowPanel = new FlowPanel();
+			flowPanel.addStyleName( "noObjectsFound" );
+			noGroupsLabel = new InlineLabel( GwtTeaming.getMessages().modifyStaticMembershipDlgNoGroupsLabel() );
+			flowPanel.add( noGroupsLabel );
+			
+			m_groupTable.setEmptyTableWidget( flowPanel );
+		}
+		
 	    // Add a selection model so we can select groups.
 	    m_groupSelectionModel = new MultiSelectionModel<GwtGroup>();
 	    m_groupTable.setSelectionModel( m_groupSelectionModel, DefaultSelectionEventManager.<GwtGroup> createCheckboxManager() );
@@ -508,6 +521,19 @@ public class ModifyStaticMembershipDlg extends DlgBox
 		cellTableResources = GWT.create( VibeCellTableResources.class );
 		m_userTable = new CellTable<GwtUser>( 10, cellTableResources );
 		m_userTable.setWidth( "100%" );
+		
+		// Set the widget that will be displayed when there are no groups
+		{
+			FlowPanel flowPanel;
+			InlineLabel noGroupsLabel;
+			
+			flowPanel = new FlowPanel();
+			flowPanel.addStyleName( "noObjectsFound" );
+			noGroupsLabel = new InlineLabel( GwtTeaming.getMessages().modifyStaticMembershipDlgNoUsersLabel() );
+			flowPanel.add( noGroupsLabel );
+			
+			m_userTable.setEmptyTableWidget( flowPanel );
+		}
 		
 	    // Add a selection model so we can select users.
 	    m_userSelectionModel = new MultiSelectionModel<GwtUser>();

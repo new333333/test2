@@ -3580,6 +3580,13 @@ td.datePickerMonth {
 	font-style: italic;
 }
 
+.noObjectsFound
+{
+	text-align: left;
+	padding: 15px 10px;
+	background: white;
+}
+
 /* End of styles used with the group management dialogs */
 
 
