@@ -1047,10 +1047,40 @@ public class GwtServerHelper {
 				// Execute the ldap query and get the list of members from the results.
 				try
 				{
-					membershipIds = ami.getLdapModule().getDynamicGroupMembers(
+					int maxCount;
+					HashSet<Long> potentialMemberIds;
+					
+					potentialMemberIds = ami.getLdapModule().getDynamicGroupMembers(
 																		membershipCriteria.getBaseDn(),
 																		membershipCriteria.getLdapFilterWithoutCRLF(),
 																		membershipCriteria.getSearchSubtree() );
+
+					// Get the maximum number of users that can be in a group.
+					maxCount = SPropsUtil.getInt( "dynamic.group.membership.limit", 50000 ); 					
+					
+					// Is the number of potential members greater than the max number of group members?
+					if ( potentialMemberIds.size() > maxCount )
+					{
+						int count;
+
+						// Yes, only take the max number of users.
+						count = 0;
+						for (Long userId : potentialMemberIds)
+						{
+							membershipIds.add( userId );
+							++count;
+							
+							if ( count >= maxCount )
+							{
+								break;
+							}
+						}
+					}
+					else
+					{
+						// No
+						membershipIds = potentialMemberIds;
+					}
 				}
 				catch (Exception ex)
 				{
