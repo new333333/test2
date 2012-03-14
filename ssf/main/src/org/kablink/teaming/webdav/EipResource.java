@@ -32,25 +32,17 @@
  */
 package org.kablink.teaming.webdav;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
-import java.util.List;
 
 import org.kablink.teaming.util.ReleaseInfo;
 
 import com.bradmcevoy.http.PropFindableResource;
-import com.bradmcevoy.http.PutableResource;
-import com.bradmcevoy.http.Resource;
-import com.bradmcevoy.http.exceptions.BadRequestException;
-import com.bradmcevoy.http.exceptions.ConflictException;
-import com.bradmcevoy.http.exceptions.NotAuthorizedException;
 
 /**
  * @author jong
  *
  */
-public class EipResource extends WebdavResource implements PropFindableResource, PutableResource {
+public class EipResource extends WebdavResource implements PropFindableResource {
 
 	static final String ID = "eip";
 	static final String WEBDAV_PATH = "/eip";
@@ -98,37 +90,5 @@ public class EipResource extends WebdavResource implements PropFindableResource,
 	public String getWebdavPath() {
 		return WEBDAV_PATH;
 	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.CollectionResource#child(java.lang.String)
-	 */
-	@Override
-	public Resource child(String childName) throws NotAuthorizedException,
-			BadRequestException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.CollectionResource#getChildren()
-	 */
-	@Override
-	public List<? extends Resource> getChildren()
-			throws NotAuthorizedException, BadRequestException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.PutableResource#createNew(java.lang.String, java.io.InputStream, java.lang.Long, java.lang.String)
-	 */
-	@Override
-	public Resource createNew(String newName, InputStream inputStream,
-			Long length, String contentType) throws IOException,
-			ConflictException, NotAuthorizedException, BadRequestException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 
 }

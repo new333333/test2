@@ -39,6 +39,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.domain.FileAttachment;
 
 import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.DeletableResource;
@@ -60,17 +61,14 @@ import com.bradmcevoy.http.exceptions.PreConditionFailedException;
  * @author jong
  *
  */
-public class EipFileResource extends WebdavResource implements PropFindableResource, GetableResource, LockableResource {
+public class EipFileNameResource extends WebdavResource implements PropFindableResource, GetableResource, LockableResource {
 
-	/**
-	 * @param factory
-	 */
-	protected EipFileResource(WebdavResourceFactory factory) {
+	private FileAttachment fa;
+	
+	public EipFileNameResource(WebdavResourceFactory factory, FileAttachment fa) {
 		super(factory);
-		// TODO Auto-generated constructor stub
+		this.fa = fa;
 	}
-
-	private static final Log logger = LogFactory.getLog(EipFileResource.class);
 
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.Resource#getUniqueId()
