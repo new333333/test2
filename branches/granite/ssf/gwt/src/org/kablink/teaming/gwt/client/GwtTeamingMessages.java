@@ -1100,6 +1100,7 @@ public interface GwtTeamingMessages extends Messages
 	String manageGroupsDlgHeader();
 	String manageGroupsDlgModifyingGroup();
 	String manageGroupsDlgNameCol();
+	String manageGroupsDlgNoGroupsLabel();
 	String manageGroupsDlgSelectGroupToDelete();
 	String manageGroupsDlgSelect1GroupToEdit();
 	String manageGroupsDlgTitleCol();
@@ -1124,6 +1125,8 @@ public interface GwtTeamingMessages extends Messages
 	String modifyStaticMembershipDlgGroupTab();
 	String modifyStaticMembershipDlgHeader( String groupTitle );
 	String modifyStaticMembershipDlgNameCol();
+	String modifyStaticMembershipDlgNoGroupsLabel();
+	String modifyStaticMembershipDlgNoUsersLabel();
 	String modifyStaticMembershipDlgSelectGroupToRemove();
 	String modifyStaticMembershipDlgSelectUserToRemove();
 	String modifyStaticMembershipDlgUserLabel();
