@@ -40,9 +40,9 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.webdav.util.WebdavUtils;
 
 import com.bradmcevoy.http.Auth;
-import com.bradmcevoy.http.DeletableResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.LockInfo;
 import com.bradmcevoy.http.LockResult;
@@ -63,6 +63,8 @@ import com.bradmcevoy.http.exceptions.PreConditionFailedException;
  */
 public class EipFileNameResource extends WebdavResource implements PropFindableResource, GetableResource, LockableResource {
 
+	private static final Log logger = LogFactory.getLog(EipFileNameResource.class);
+	
 	private FileAttachment fa;
 	
 	public EipFileNameResource(WebdavResourceFactory factory, FileAttachment fa) {
@@ -75,8 +77,7 @@ public class EipFileNameResource extends WebdavResource implements PropFindableR
 	 */
 	@Override
 	public String getUniqueId() {
-		// TODO Auto-generated method stub
-		return null;
+		return "efn:" + fa.getId();
 	}
 
 	/* (non-Javadoc)
@@ -84,8 +85,7 @@ public class EipFileNameResource extends WebdavResource implements PropFindableR
 	 */
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return fa.getFileItem().getName();
 	}
 
 	/* (non-Javadoc)
@@ -93,8 +93,7 @@ public class EipFileNameResource extends WebdavResource implements PropFindableR
 	 */
 	@Override
 	public Date getModifiedDate() {
-		// TODO Auto-generated method stub
-		return null;
+		return fa.getModification().getDate();
 	}
 
 	/* (non-Javadoc)
@@ -104,8 +103,7 @@ public class EipFileNameResource extends WebdavResource implements PropFindableR
 	public LockResult lock(LockTimeout timeout, LockInfo lockInfo)
 			throws NotAuthorizedException, PreConditionFailedException,
 			LockedException {
-		// TODO Auto-generated method stub
-		return null;
+		return factory.getLockManager().lock(timeout, lockInfo, this);
 	}
 
 	/* (non-Javadoc)
@@ -114,8 +112,7 @@ public class EipFileNameResource extends WebdavResource implements PropFindableR
 	@Override
 	public LockResult refreshLock(String token) throws NotAuthorizedException,
 			PreConditionFailedException {
-		// TODO Auto-generated method stub
-		return null;
+		return factory.getLockManager().refresh(token, this);
 	}
 
 	/* (non-Javadoc)
@@ -124,8 +121,7 @@ public class EipFileNameResource extends WebdavResource implements PropFindableR
 	@Override
 	public void unlock(String tokenId) throws NotAuthorizedException,
 			PreConditionFailedException {
-		// TODO Auto-generated method stub
-		
+		factory.getLockManager().unlock(tokenId, this);
 	}
 
 	/* (non-Javadoc)
@@ -133,8 +129,7 @@ public class EipFileNameResource extends WebdavResource implements PropFindableR
 	 */
 	@Override
 	public LockToken getCurrentLock() {
-		// TODO Auto-generated method stub
-		return null;
+		return factory.getLockManager().getCurrentToken(this);
 	}
 
 	/* (non-Javadoc)
@@ -144,8 +139,7 @@ public class EipFileNameResource extends WebdavResource implements PropFindableR
 	public void sendContent(OutputStream out, Range range,
 			Map<String, String> params, String contentType) throws IOException,
 			NotAuthorizedException, BadRequestException, NotFoundException {
-		// TODO Auto-generated method stub
-		
+		WebdavUtils.sendFileContent(out, range, fa, logger);
 	}
 
 	/* (non-Javadoc)
@@ -153,8 +147,7 @@ public class EipFileNameResource extends WebdavResource implements PropFindableR
 	 */
 	@Override
 	public Long getMaxAgeSeconds(Auth auth) {
-		// TODO Auto-generated method stub
-		return null;
+		return factory.getMaxAgeSecondsEipFile();
 	}
 
 	/* (non-Javadoc)
@@ -162,8 +155,7 @@ public class EipFileNameResource extends WebdavResource implements PropFindableR
 	 */
 	@Override
 	public String getContentType(String accepts) {
-		// TODO Auto-generated method stub
-		return null;
+		return WebdavUtils.getFileContentType(accepts, fa.getFileItem().getName(), logger);
 	}
 
 	/* (non-Javadoc)
@@ -171,7 +163,11 @@ public class EipFileNameResource extends WebdavResource implements PropFindableR
 	 */
 	@Override
 	public Long getContentLength() {
-		// TODO Auto-generated method stub
+		// Return null to play safe. This way, we let WebDAV interaction to compute
+		// the file length based on the content being transmitted as opposed to 
+		// relying on the meta data we provide. This is to avoid the unlikely
+		// (but possible) situation where the length information is out-of-sync with
+		// the content for whatever reason (e.g. Lucene index is out-of-sync, etc.).
 		return null;
 	}
 
@@ -180,8 +176,7 @@ public class EipFileNameResource extends WebdavResource implements PropFindableR
 	 */
 	@Override
 	public Date getCreateDate() {
-		// TODO Auto-generated method stub
-		return null;
+		return fa.getCreation().getDate();
 	}
 
 	/* (non-Javadoc)
@@ -189,8 +184,7 @@ public class EipFileNameResource extends WebdavResource implements PropFindableR
 	 */
 	@Override
 	public String getWebdavPath() {
-		// TODO Auto-generated method stub
-		return null;
+		return EipResource.WEBDAV_PATH + "/" + fa.getId() + "/" + fa.getFileItem().getName();
 	}
 	
 }

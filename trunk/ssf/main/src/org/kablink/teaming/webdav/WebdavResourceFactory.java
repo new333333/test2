@@ -41,8 +41,10 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 
@@ -51,7 +53,6 @@ import com.bradmcevoy.http.Resource;
 import com.bradmcevoy.http.ResourceFactory;
 import com.bradmcevoy.http.SecurityManager;
 import com.ettrema.http.fs.LockManager;
-import com.ettrema.http.fs.SimpleLockManager;
 
 /**
  * @author jong
@@ -61,6 +62,9 @@ public class WebdavResourceFactory implements ResourceFactory {
 
 	private static final Log logger = LogFactory.getLog(WebdavResourceFactory.class);
 	
+	private static final String DEFAULT_LOCK_MANAGER_CLASS_NAME = "org.kablink.teaming.webdav.WebdavLockManager";
+	private static final String DEFAULT_SECURITY_MANAGER_CLASS_NAME = "org.kablink.teaming.webdav.WebdavSecurityManager";
+	
 	private volatile boolean inited = false;
 	
 	private boolean allowDirectoryBrowsing = true;
@@ -69,14 +73,12 @@ public class WebdavResourceFactory implements ResourceFactory {
 	private long maxAgeSecondsWorkspace = 10;
 	private long maxAgeSecondsFolder = 10;
 	private long maxAgeSecondsFile = 10;
+	private long maxAgeSecondsEipFile = 0;
 	
 	private LockManager lockManager;
 	private SecurityManager securityManager;
 	
-	public WebdavResourceFactory() {
-		this.lockManager = new SimpleLockManager();
-		this.securityManager = new WebdavSecurityManager();
-	}
+	public WebdavResourceFactory() {}
 
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.ResourceFactory#getResource(java.lang.String, java.lang.String)
@@ -113,6 +115,25 @@ public class WebdavResourceFactory implements ResourceFactory {
 				}
 			}
 		}
+		else if(p.getFirst().equals("eip")) {
+			String[] parts = p.getParts();
+			if(parts.length == 1) {
+				return new EipResource(this);
+			}
+			else if(parts.length == 2 || parts.length == 3) {
+				String fileId = parts[1];
+				FileAttachment fa = getFileModule().getFileAttachmentById(fileId);
+				if(fa == null)
+					return null; // No such file exists
+				if(parts.length == 2)
+					return new EipFileIdResource(this, fa);
+				else
+					return new EipFileNameResource(this, fa);
+			}
+			else {
+				return null; // invalid URL
+			}
+		}
 		else {
 			return null;
 		}
@@ -125,34 +146,56 @@ public class WebdavResourceFactory implements ResourceFactory {
 	 * @return
 	 */
 	public boolean isAllowDirectoryBrowsing() {
+		if(!inited)
+			init();
 		return allowDirectoryBrowsing;
 	}
 
 	public long getMaxAgeSecondsRoot() {
+		if(!inited)
+			init();
 		return maxAgeSecondsRoot;
 	}
 
 	public long getMaxAgeSecondsDav() {
+		if(!inited)
+			init();
 		return maxAgeSecondsDav;
 	}
 
 	public long getMaxAgeSecondsWorkspace() {
+		if(!inited)
+			init();
 		return maxAgeSecondsWorkspace;
 	}
 
 	public long getMaxAgeSecondsFolder() {
+		if(!inited)
+			init();
 		return maxAgeSecondsFolder;
 	}
 
 	public long getMaxAgeSecondsFile() {
+		if(!inited)
+			init();
 		return maxAgeSecondsFile;
 	}
 
+	public long getMaxAgeSecondsEipFile() {
+		if(!inited)
+			init();
+		return maxAgeSecondsEipFile;
+	}
+
 	public LockManager getLockManager() {
+		if(!inited)
+			init();
 		return lockManager;
 	}
 
 	public SecurityManager getSecurityManager() {
+		if(!inited)
+			init();
 		return securityManager;
 	}
 	
@@ -189,22 +232,33 @@ public class WebdavResourceFactory implements ResourceFactory {
 	}
 	
 	protected synchronized void init() {
+		// Initialize object state here rather than in the constructor, because SPropsUtil bean which 
+		// is loaded by the primary Spring context is not yet initialized at the time this object is
+		// instantiated.
 		if(inited)
 			return;
 		
+		String lockManagerClassName = SPropsUtil.getString("wd.lock.manager.class", DEFAULT_LOCK_MANAGER_CLASS_NAME);
+		this.lockManager = (LockManager) ReflectHelper.getInstance(lockManagerClassName);
+		
+		String securityManagerClassName = SPropsUtil.getString("wd.security.manager.class", DEFAULT_SECURITY_MANAGER_CLASS_NAME);
+		this.securityManager = (SecurityManager) ReflectHelper.getInstance(securityManagerClassName);
+
 		allowDirectoryBrowsing = SPropsUtil.getBoolean("wd.allow.directory.browsing", true);
 		maxAgeSecondsRoot = SPropsUtil.getLong("wd.max.age.seconds.root", 86400);
-		maxAgeSecondsDav = SPropsUtil.getLong("wd.max.age.seconds.root", 3600);
-		maxAgeSecondsWorkspace = SPropsUtil.getLong("wd.max.age.seconds.root", 10);
-		maxAgeSecondsFolder = SPropsUtil.getLong("wd.max.age.seconds.root", 10);
-		maxAgeSecondsFile = SPropsUtil.getLong("wd.max.age.seconds.root", 10);
+		maxAgeSecondsDav = SPropsUtil.getLong("wd.max.age.seconds.dav", 3600);
+		maxAgeSecondsWorkspace = SPropsUtil.getLong("wd.max.age.seconds.workspace", 10);
+		maxAgeSecondsFolder = SPropsUtil.getLong("wd.max.age.seconds.folder", 10);
+		maxAgeSecondsFile = SPropsUtil.getLong("wd.max.age.seconds.file", 10);
+		maxAgeSecondsEipFile = SPropsUtil.getLong("wd.max.age.seconds.eip.file", 0);
 		
 		logger.info("allowDirectoryBrowsing:" + allowDirectoryBrowsing + 
 				" maxAgeSecondsRoot:" + maxAgeSecondsRoot +
 				" maxAgeSecondsDav:" + maxAgeSecondsDav +
 				" maxAgeSecondsWorkspace:" + maxAgeSecondsWorkspace +
 				" maxAgeSecondsFolder:" + maxAgeSecondsFolder +
-				" maxAgeSecondsFile:" + maxAgeSecondsFile);
+				" maxAgeSecondsFile:" + maxAgeSecondsFile +
+				" maxAgeSecondsEipFile:" + maxAgeSecondsEipFile);
 		
 		inited = true;
 	}
@@ -215,6 +269,10 @@ public class WebdavResourceFactory implements ResourceFactory {
 	
 	protected FolderModule getFolderModule () {
 		return (FolderModule) SpringContextUtil.getBean("folderModule");
+	}
+
+	protected FileModule getFileModule () {
+		return (FileModule) SpringContextUtil.getBean("fileModule");
 	}
 
 }
