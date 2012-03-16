@@ -120,11 +120,6 @@ public class RequestContextAndSessionSetupFilter implements Filter {
 		}
 	}
 	
-	private void checkAuthentication(HttpServletRequest request) throws ServletException {
-		if(request.getUserPrincipal() == null)
-			throw new ServletException("Unauthorized access");
-	}
-	
 	private void setupRequestContext(String userName) {
 		RequestContextHolder.clear();
 		
