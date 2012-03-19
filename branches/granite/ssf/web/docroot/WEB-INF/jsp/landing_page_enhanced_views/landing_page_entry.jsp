@@ -118,8 +118,22 @@
   
 	  
     <div class="ss_mashup_entry_content">
-      <ssf:markup entity="${mashupEntry}">${mashupEntry.description.text}</ssf:markup>
-      <div class="ss_clear"></div>
+	  <c:set var="textFormat" value=""/>
+	  <c:if test="${!empty mashupEntry.description.format}">
+		  <c:set var="textFormat" value="${mashupEntry.description.format}"/>
+	  </c:if>
+	  <ssf:editable entity="${mashupEntry}" element="description">
+		<c:if test="${textFormat == '2'}">
+		  <ssf:textFormat formatAction="textToHtml">${mashupEntry.description.text}</ssf:textFormat>
+		</c:if>
+		<c:if test="${textFormat != '2'}">
+		  <div>
+			<ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" 
+			>${mashupEntry.description.text}</ssf:markup>
+		  </div>
+		</c:if>
+		<div class="ss_clear"></div>
+	  </ssf:editable>
     </div>
 
     <c:forEach var="reply" items="${mashupEntryReplies['folderEntryDescendants']}" varStatus="status2">
