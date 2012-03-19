@@ -1139,11 +1139,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		//		va.getFileItem().getName());
 		
 		if (entity instanceof FolderEntry) {
-			getFolderModule().checkAccess((FolderEntry)entity, FolderOperation.modifyEntry);
+			getFolderModule().checkAccess((FolderEntry)entity, FolderOperation.deleteEntry);
 		} else if (entity instanceof Principal) {
-			getProfileModule().checkAccess((Principal)entity, ProfileOperation.modifyEntry);
+			getProfileModule().checkAccess((Principal)entity, ProfileOperation.deleteEntry);
 		} else {
-			getBinderModule().checkAccess(binder, BinderOperation.modifyBinder);
+			getBinderModule().checkAccess(binder, BinderOperation.deleteBinder);
 		}
 		
 		// Check if the version is the only one remaining for the file. 
