@@ -139,6 +139,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
@@ -1320,7 +1321,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         if (options != null) ctx.putAll(options);
     	copyBinder_setCtx(source, destination, ctx);
      	final Binder binder = copyBinder_create(source, ctx);
-     	makeBinderTitleUniqueInParent(binder, destination);		//Make sure there is no other binder with the same name in the parent.
+		//Make sure there is no other binder with the same name in the parent.
+     	String newTitle = BinderHelper.getUniqueBinderTitleInParent(binder.getTitle(), destination);
+    	if (!newTitle.equals(binder.getTitle())) {
+    		//There was a conflict, so update the title and the normalized title
+    		binder.setTitle(newTitle);
+    	}
      	copyBinder_adjustForMirroredFolder(binder, destination);
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
@@ -1439,36 +1445,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	indexBinder(binder, false, false, null); 
     }
     
-    //Make sure binder title is unique
-    //If it is not unique, then change it to be unique by adding "(n)" to the name
-    protected void makeBinderTitleUniqueInParent(Binder binder, Binder parent) {
-    	List<Binder> subBinders = parent.getBinders();
-    	Set<String> binderTitles = new HashSet<String>();
-    	for (Binder b : subBinders) {
-    		binderTitles.add(b.getTitle().toLowerCase());
-    	}
-    	String title = binder.getTitle();
-    	int maxTries = 100;
-    	Pattern p = Pattern.compile("(^.*\\()([0-9]+)\\)$");
-    	while (binderTitles.contains(title.toLowerCase())) {
-    		//There is another binder with this title. Try the next title higher
-    		Matcher m = p.matcher(title);
-    		if (m.find()) {
-    			String t1 = m.group(1);
-    			String n = m.group(2);
-    			Integer n2 = Integer.valueOf(n) + 1;
-    			title = t1 + String.valueOf(n2) + ")";		//Rebuild the title with the (number) incremented
-    		} else {
-    			title = title + "(2)";
-    		}
-    		if (--maxTries <= 0) break;
-    	}
-    	if (!title.equals(binder.getTitle())) {
-    		//There was a conflict, so update the title and the normalized title
-    		binder.setTitle(title);
-    	}
-    }
-
     //********************************************************************************************************
     public Map getBinders(Binder binder, Map searchOptions) {
         //search engine will only return binder you have access to

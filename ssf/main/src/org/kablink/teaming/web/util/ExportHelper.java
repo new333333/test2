@@ -1650,6 +1650,7 @@ public class ExportHelper {
 			StatusTicket statusTicket, Map<String, Principal> nameCache) {
 
 		final Binder topBinder = loadBinder(topBinderId);
+		final Binder parentBinder = loadBinder(parentId);
 
 		final Document doc = getDocument(inputDataAsXML, nameCache);
 		final Map<String, Definition> fDefIdMap = new HashMap<String, Definition>(definitionIdMap);
@@ -1657,9 +1658,24 @@ public class ExportHelper {
 		try {
 			if(logger.isDebugEnabled())
 				logger.debug("Adding binder to parent " + parentId + " with definition " + def.getId());
-			Long newBinderId = binderModule.addBinder(new Long(parentId),
+			//Make sure there is no other binder with the same name in the destination binder.
+			String title = doc.getRootElement().attributeValue("title", "");
+			if (!title.equals("")) {
+		     	String newTitle = BinderHelper.getUniqueBinderTitleInParent(title, parentBinder);
+		    	if (!newTitle.equals(title)) {
+		    		//There was a conflict, so update the title to the unique one
+		    		doc.getRootElement().addAttribute("title", newTitle);
+		    		Element titleAttrEle = (Element)doc.getRootElement().selectSingleNode("./attribute[@name='title']");
+		    		if (titleAttrEle != null) {
+		    			titleAttrEle.setText(newTitle);
+		    		}
+		    	}
+			}
+
+			Binder newBinder = binderModule.addBinder(new Long(parentId),
 					def.getId(), new DomInputData(doc, iCalModule),
-					new HashMap(), null).getId().longValue();
+					new HashMap(), null);
+			Long newBinderId = newBinder.getId().longValue();
 			binderIdMap.put(binderId, newBinderId);
 			final Binder binder = loadBinder(newBinderId);
 			String libraryFolder = doc.getRootElement().attributeValue("libraryFolder", "");

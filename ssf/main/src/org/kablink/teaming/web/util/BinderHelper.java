@@ -4763,4 +4763,31 @@ public class BinderHelper {
 		return (ProfileModule) SpringContextUtil.getBean("profileModule");
 	}
 	
+    //Make sure binder title is unique
+    //If title is not unique in the parent binder, then change it to be unique by adding "(n)" to the name
+    public static String getUniqueBinderTitleInParent(String title, Binder parent) {
+    	List<Binder> subBinders = parent.getBinders();
+    	Set<String> binderTitles = new HashSet<String>();
+    	for (Binder b : subBinders) {
+    		binderTitles.add(b.getTitle().toLowerCase());
+    	}
+    	int maxTries = 100;
+    	Pattern p = Pattern.compile("(^.*\\()([0-9]+)\\)$", Pattern.CASE_INSENSITIVE);
+    	while (binderTitles.contains(title.toLowerCase())) {
+    		//There is another binder with this title. Try the next title higher
+    		Matcher m = p.matcher(title);
+    		if (m.find()) {
+    			String t1 = m.group(1);
+    			String n = m.group(2);
+    			Integer n2 = Integer.valueOf(n) + 1;
+    			title = t1 + String.valueOf(n2) + ")";		//Rebuild the title with the (number) incremented
+    		} else {
+    			title = title + "(2)";
+    		}
+    		if (--maxTries <= 0) break;
+    	}
+    	return title;
+    }
+
+
 }
