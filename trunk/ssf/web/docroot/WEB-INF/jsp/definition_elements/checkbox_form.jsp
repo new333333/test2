@@ -51,7 +51,7 @@
   <input type="hidden" name="${property_name}" id="hidden_${property_name}" value="off"/> 
 </c:if>
 <c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
-  <c:set var="cb_checked" value="checked"/>
+  <c:set var="cb_checked" value=" checked "/>
   <input type="hidden" name="${property_name}" id="hidden_${property_name}" value="on"/> 
 </c:if>
 <c:set var="required" value=""/>
@@ -68,7 +68,7 @@
   	  <input type="hidden" name="${property_name_per_user}" id="hidden_${property_name_per_user}" value="off"/> 
 	</c:if>
 	<c:if test="${ssDefinitionEntry.customAttributes[property_name_per_user].value}" >
-  	  <c:set var="cb_checked_per_user" value="checked"/>
+  	  <c:set var="cb_checked_per_user" value=" checked "/>
   	  <input type="hidden" name="${property_name_per_user}" id="hidden_${property_name_per_user}" value="on"/> 
 	</c:if>
     <div class="ss_perUserFormElement">
