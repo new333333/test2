@@ -71,6 +71,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
+import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtAttachment;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
@@ -250,6 +251,44 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			CopyEntriesCmd ceCmd = ((CopyEntriesCmd) cmd);
 			ErrorListRpcResponseData responseData = GwtViewHelper.copyEntries( this, getRequest( ri ), ceCmd.getTargetFolderId(), ceCmd.getEntryIds() );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case CREATE_GROUP:
+		{
+			CreateGroupCmd cgCmd;
+			GroupInfo groupInfo;
+			Group group;
+			
+			cgCmd = (CreateGroupCmd) cmd;
+			group = GwtServerHelper.createGroup( this, cgCmd.getName(), cgCmd.getTitle(), cgCmd.getDesc(), cgCmd.getIsMembershipDynamic(), cgCmd.getMembership(), cgCmd.getMembershipCriteria() );
+			groupInfo = new GroupInfo();
+			if ( group != null )
+			{
+				Description desc;
+				
+				groupInfo.setId( group.getId() );
+				groupInfo.setName( group.getName() );
+				groupInfo.setTitle( group.getTitle() );
+				groupInfo.setIsMembershipDynamic( group.isDynamic() );
+
+				desc = group.getDescription();
+				if ( desc != null )
+					groupInfo.setDesc( desc.getText() );
+			}
+			response = new VibeRpcResponse( groupInfo );
+			
+			return response;
+		}
+		
+		case DELETE_GROUPS:
+		{
+			Boolean result;
+			DeleteGroupsCmd dgCmd;
+			
+			dgCmd = (DeleteGroupsCmd) cmd;
+			result = GwtServerHelper.deleteGroups( this, dgCmd.getListOfGroupsToDelete() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
 		
@@ -462,6 +501,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_ALL_GROUPS:
+		{
+			List<GroupInfo> result;
+			GetGroupsRpcResponseData responseData;
+			
+			result = GwtServerHelper.getAllGroups( this );
+			responseData = new GetGroupsRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_BINDER_BRANDING:
 		{
 			GwtBrandingData brandingData;
@@ -654,6 +704,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			String result = getDownloadFileUrl( ri, gdfuCmd.getBinderId(), gdfuCmd.getEntryId() );
 			StringRpcResponseData responseData = new StringRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_DYNAMIC_MEMBERSHIP_CRITERIA:
+		{
+			GetDynamicMembershipCriteriaCmd gglqCmd;
+			GwtDynamicGroupMembershipCriteria membershipCriteria;
+			
+			gglqCmd = (GetDynamicMembershipCriteriaCmd) cmd;
+			membershipCriteria = GwtServerHelper.getDynamicMembershipCriteria( this, gglqCmd.getGroupId() );
+			response = new VibeRpcResponse( membershipCriteria );
 			return response;
 		}
 		
@@ -876,6 +937,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_GROUP_MEMBERSHIP_TYPE:
+		{
+			GetGroupMembershipTypeCmd ggmtCmd;
+			BooleanRpcResponseData responseData;
+			Boolean result;
+			
+			ggmtCmd = (GetGroupMembershipTypeCmd) cmd;
+			result = GwtServerHelper.isGroupMembershipDynamic( this, ggmtCmd.getGroupId() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_GROUPS:
 		{
 			GetGroupsCmd ggCmd;
@@ -941,6 +1015,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			gilppCmd = (GetInheritedLandingPagePropertiesCmd) cmd;
 			lpProperties = GwtServerHelper.getInheritedLandingPageProperties( this, gilppCmd.getBinderId(), getRequest( ri ) );
 			response = new VibeRpcResponse( lpProperties );
+			return response;
+		}
+		
+		case GET_IS_DYNAMIC_GROUP_MEMBERSHIP_ALLOWED:
+		{
+			boolean isAllowed;
+			BooleanRpcResponseData responseData;
+			
+			isAllowed = GwtServerHelper.isDynamicGroupMembershipAllowed( this );
+			responseData = new BooleanRpcResponseData( isAllowed );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
@@ -1054,6 +1139,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			result = getMyTeams( ri );
 			responseData = new GetMyTeamsRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_NUMBER_OF_MEMBERS:
+		{
+			GetNumberOfMembersCmd gnmCmd;
+			IntegerRpcResponseData responseData;
+			int numMembers;
+			
+			gnmCmd = (GetNumberOfMembersCmd) cmd;
+			numMembers = GwtServerHelper.getNumberOfMembers( this, gnmCmd.getGroupId() );
+			responseData = new IntegerRpcResponseData( numMembers );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1511,6 +1609,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case MODIFY_GROUP:
+		{
+			ModifyGroupCmd mgCmd;
+			
+			mgCmd = (ModifyGroupCmd) cmd;
+			GwtServerHelper.modifyGroup( this, mgCmd.getId(), mgCmd.getTitle(), mgCmd.getDesc(), mgCmd.getIsMembershipDynamic(), mgCmd.getMembership(), mgCmd.getMembershipCriteria() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( Boolean.TRUE ) );
+			
+			return response;
+		}
+		
 		case MOVE_ENTRIES:
 		{
 			MoveEntriesCmd meCmd = ((MoveEntriesCmd) cmd);
@@ -1895,6 +2004,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GwtShareEntryResults results = shareEntry(
 					ri, seCmd.getEntryId(), seCmd.getComment(), seCmd.getPrincipalIds(), seCmd.getTeamIds() );
 			ShareEntryResultsRpcResponseData responseData = new ShareEntryResultsRpcResponseData( results );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case TEST_GROUP_MEMBERSHIP_LDAP_QUERY:
+		{
+			TestGroupMembershipCriteriaCmd tgmlqCmd;
+			Integer count;
+			IntegerRpcResponseData responseData;
+			
+			// Execute the ldap query and see how many users/groups are found
+			tgmlqCmd = (TestGroupMembershipCriteriaCmd) cmd;
+			count = GwtServerHelper.testGroupMembershipCriteria( this, tgmlqCmd.getMembershipCriteria() );
+			responseData = new IntegerRpcResponseData( count );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

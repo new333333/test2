@@ -3608,3 +3608,139 @@ td.datePickerMonth {
 	.vibe-confirmDlg-confirmationTxtWithAdditional {padding-bottom: 10px;}
 	.vibe-confirmDlg-rootPanel                     {padding: 8px;}
 /* End:  Conformation dialog styles. */
+
+
+
+
+/* The following styles are used with the group management dialogs. */
+
+.groupManagementBtn
+{
+    border-radius: 15px 15px 15px 15px;
+    color: #666666 !important;
+	cursor: pointer;
+    font-size: 11px;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-decoration: none;
+}
+
+.groupManagementBtn:hover
+{
+	background: url(images/blends/teal_slice.png) repeat-x;
+	background-position:center;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.groupManagementMenuPanel, .modifyStaticMembershipMenuPanel
+{
+    background-color: #CCCCCC;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    display: block;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 1.25em;
+    padding: 3px 3px 3px 12px;
+    position: relative;
+    white-space: nowrap;
+}
+
+.groupTitlePanel
+{
+	vertical-align: middle;
+}
+
+.groupTitle
+{
+	color: #135C8F;
+	cursor: pointer;
+	padding-right: 10px;
+}
+
+.groupStatus
+{
+	color: red;
+	font-family: Arial,sans-serif;
+	font-size: 10px;
+	font-style: italic;
+}
+
+.testLdapQueryInProgress
+{
+	color: red;
+	font-style: italic;
+}
+
+.noObjectsFound
+{
+	text-align: left;
+	padding: 15px 10px;
+	background: white;
+}
+
+/* End of styles used with the group management dialogs */
+
+
+
+/* The following styles are used with TabPanels */
+.vibe-tabPanel .gwt-TabBarFirst
+{
+	display: none;
+}
+ 
+.vibe-tabPanel .gwt-TabPanelBottom
+{
+	border-color: none;
+	border-style: none;
+	border-width: 3px 2px 2px;
+	overflow: hidden;
+	padding: 6px;
+	background-color: #EDEDED;
+	border-radius: 0px 3px 3px 3px;
+	-moz-border-radius: 0px 3px 3px 3px;
+}
+ 
+.vibt-tabPanel .gwt-TabBarItem-wrapper
+{
+	padding-bottom: 3px;
+}
+ 
+.vibe-tabPanel .gwt-TabBar .gwt-TabBarItem
+{
+	background: none repeat scroll 0 0 #949494;
+	color: white;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	font-weight: normal;
+	padding: 3px 10px;
+	margin-right: 6px;
+	margin-left: 0px;
+}
+ 
+.vibe-tabPanel .gwt-TabBar .gwt-TabBarItem:hover
+{
+	background-color: #81B2BD;
+	color: white;
+}
+ 
+.vibe-tabPanel .gwt-TabBar .gwt-TabBarItem-selected,.vibe-tabPanel .gwt-TabBar .gwt-TabBarItem-selected:hover
+{
+	background: none repeat scroll 0 0 #EDEDED;
+	background: -webkit-gradient(linear, 0% 100%, 0% 0, from(#EDEDED), to(#f6f6f6) );
+	background: -moz-linear-gradient(center top, #FAFAFA, #EDEDED) repeat scroll 0 0 transparent;
+	cursor: default;
+	padding: 3px 10px;
+	color: black;
+	font-weight: bold;
+	border-radius: 3px 3px 0px 0px;
+	-moz-border-radius: 3px 3px 0px 0px;
+	border-bottom: 3px solid #EDEDED;
+}
+ 
+.vibe-tabPanel .gwt-TabBarItem-wrapper-selected
+{
+	padding-bottom: 0px;
+}
+
+/* End of styles used with TabPanels */

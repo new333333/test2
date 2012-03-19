@@ -457,6 +457,16 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
         		}
 	   			entryData.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, members);
         	}
+
+        	if ( inputData.exists( ObjectKeys.FIELD_GROUP_DYNAMIC ) && !entryData.containsKey( ObjectKeys.FIELD_GROUP_DYNAMIC ) )
+        	{
+        		entryData.put( ObjectKeys.FIELD_GROUP_DYNAMIC, inputData.getSingleObject( ObjectKeys.FIELD_GROUP_DYNAMIC ) );
+        	}
+
+        	if ( inputData.exists( ObjectKeys.FIELD_GROUP_LDAP_QUERY ) && !entryData.containsKey( ObjectKeys.FIELD_GROUP_LDAP_QUERY ) )
+        	{
+        		entryData.put( ObjectKeys.FIELD_GROUP_LDAP_QUERY, inputData.getSingleValue( ObjectKeys.FIELD_GROUP_LDAP_QUERY ) );
+        	}
     	} 
     	
    		if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_THEME) && !entryData.containsKey(ObjectKeys.FIELD_PRINCIPAL_THEME)) {

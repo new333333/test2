@@ -62,7 +62,10 @@ import javax.naming.ldap.LdapContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.hibernate.SessionFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -101,12 +104,14 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.CollectionUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
+import org.kablink.util.search.Constants;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -216,6 +221,146 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	protected void checkAccess(LdapOperation operation) {
 		getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
 	}
+
+
+	/**
+	 * Execute the given ldap query.  For each user found by the query, if the user already exists
+	 * in Vibe then add them to the list.
+	 * @author jwootton
+	 */
+	public HashSet<Long> getDynamicGroupMembers( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException
+	{
+		HashSet<Long> listOfMembers;
+		
+		listOfMembers = new HashSet<Long>();
+		
+		// Does the membership criteria have a filter?
+		if ( filter != null && filter.length() > 0 )
+		{
+			List<LdapConnectionConfig> ldapConnectionConfigs;
+			Workspace zone;
+			Long zoneId;
+			ProfileModule profileModule;
+
+			// Yes
+			profileModule = getProfileModule();
+			
+			zone = RequestContextHolder.getRequestContext().getZone();
+			zoneId = zone.getId();
+
+			// Get the list of ldap configurations.
+			ldapConnectionConfigs = getCoreDao().loadLdapConnectionConfigs( zoneId );
+			
+			// Go through each ldap configuration
+			for( LdapConnectionConfig nextLdapConfig : ldapConnectionConfigs )
+			{
+				String ldapGuidAttribute;
+				
+				// Does this ldap configuration have the ldap guid defined?
+				ldapGuidAttribute = nextLdapConfig.getLdapGuidAttribute();
+				if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
+				{
+			   		LdapContext ldapContext;
+			   		NamingException namingEx;
+
+					// Yes
+			   		namingEx = null;
+			   		ldapContext = null;
+			  		try
+			  		{
+						String[] userAttributeNames = {};
+						int scope;
+						SearchControls searchControls;
+						NamingEnumeration searchCtx;
+
+						// Get an ldap context for the given ldap configuration
+						ldapContext = getUserContext( zoneId, nextLdapConfig );
+						
+						if ( searchSubtree )
+							scope = SearchControls.SUBTREE_SCOPE;
+						else
+							scope = SearchControls.ONELEVEL_SCOPE;
+						
+						searchControls = new SearchControls( scope, 0, 0, userAttributeNames, false, false );
+
+						// Execute the ldap search using the membership criteria
+						searchCtx = ldapContext.search( baseDn, filter, searchControls );
+						
+						// Go through the list of users/groups found by the search.  If the
+						// user/group already exists in Vibe then add them to the list we
+						// will return.
+						while ( searchCtx.hasMore() )
+						{
+							Binding binding;
+							Attributes lAttrs = null;
+							String[] ldapAttributesToRead = { ldapGuidAttribute };
+							String guid;
+							User user;
+
+							// Get the next user/group in the list.
+							binding = (Binding)searchCtx.next();
+
+							// Read the guid for this user/group from the ldap directory.
+							lAttrs = ldapContext.getAttributes( binding.getNameInNamespace(), ldapAttributesToRead );
+							guid = getLdapGuid( lAttrs, ldapGuidAttribute );
+
+							// Does this user exist in Vibe.
+							try
+							{
+								user = profileModule.findUserByLdapGuid( guid );
+								if ( user != null )
+								{
+									// Yes, add them to the membership list.
+									listOfMembers.add( user.getId() );
+								}
+							}
+							catch ( NoUserByTheNameException ex )
+							{
+								// Nothing to do
+							}
+						}
+					}
+			  		catch (NamingException ex)
+			  		{
+			  			namingEx = ex;
+			  		}
+			  		finally
+			  		{
+						if ( ldapContext != null )
+						{
+							try
+							{
+								// Close the ldap context.
+								ldapContext.close();
+							}
+							catch (NamingException ex)
+					  		{
+								namingEx = ex;
+					  		}
+						}
+					}
+			  		
+			  		// Did we encounter a problem?
+			  		if ( namingEx != null )
+			  		{
+			  			LdapSyncException	ldapSyncEx;
+
+			  			// Yes
+			  			logError( NLT.get( "errorcode.ldap.context" ), namingEx );
+			  			
+			  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
+			  			// the LdapConnectionConfig object that was being used when the error happened.
+			  			ldapSyncEx = new LdapSyncException( nextLdapConfig, namingEx );
+			  			throw ldapSyncEx;
+			  		}
+				}
+			}
+		}
+
+		return listOfMembers;
+	}
+
+	
 	protected String getLdapProperty(String zoneName, String name) {
 		String val = SZoneConfig.getString(zoneName, "ldapConfiguration/property[@name='" + name + "']");
 		if (Validator.isNull(val)) {
@@ -240,6 +385,70 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	public void setLdapSchedule(LdapSchedule schedule) {
 		checkAccess(LdapOperation.manageLdap);
 		getSyncObject().setScheduleInfo(schedule.getScheduleInfo());
+	}
+
+	
+	/**
+	 * Return a list of all the dynamic groups.
+	 */
+	public ArrayList<Long> getListOfDynamicGroups()
+	{
+		ArrayList<Long> listOfGroupIds;
+		
+		listOfGroupIds = new ArrayList<Long>();
+		
+		try
+		{
+			Map options;
+			Map searchResults;
+			List groups = null;
+			
+			options = new HashMap();
+			options.put( ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD );
+			options.put( ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE );
+			options.put( ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1 );
+			
+			// Get the list of all the groups.
+			searchResults = getProfileModule().getGroups( options );
+	
+			groups = (List) searchResults.get( ObjectKeys.SEARCH_ENTRIES );
+
+			if ( groups != null )
+			{
+				int i;
+				
+				for (i = 0; i < groups.size(); ++i)
+				{
+					HashMap nextMap;
+					
+					if ( groups.get( i ) instanceof HashMap )
+					{
+						String value;
+						
+						nextMap = (HashMap) groups.get( i );
+					
+						// Is this group dynamic?
+						value = (String) nextMap.get( "_isGroupDynamic" );
+						if ( value != null && value.equalsIgnoreCase( "true" ) )
+						{
+							Long id;
+
+							// Yes
+							// Get the group id
+							id = Long.valueOf( (String) nextMap.get( "_docId" ) );
+							if ( id != null )
+								listOfGroupIds.add( id );
+						}
+					}
+				}
+			}
+		}
+		catch ( Exception ex )
+		{
+			// Nothing to do
+		}
+		
+		return listOfGroupIds;
 	}
 
 	/**
@@ -297,6 +506,39 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     	
     	zones.put(zoneName, zone);
     	return zone;
+    }
+    
+    /**
+     * Has the user specified a value for "LDAP attribute that uniquely identifies a user or group"?
+     */
+    public boolean isGuidConfigured()
+    {
+    	boolean isConfigured;
+		List<LdapConnectionConfig> ldapConnectionConfigs;
+		Workspace zone;
+		Long zoneId;
+
+    	isConfigured = false;
+    	
+		zone = RequestContextHolder.getRequestContext().getZone();
+		zoneId = zone.getId();
+
+		// Get the list of ldap configurations.
+		ldapConnectionConfigs = getCoreDao().loadLdapConnectionConfigs( zoneId );
+		
+		// Go through each ldap configuration
+		for( LdapConnectionConfig nextLdapConfig : ldapConnectionConfigs )
+		{
+			String ldapGuidAttribute;
+			
+			// Get the name of the ldap attribute that holds the guid.
+			ldapGuidAttribute = nextLdapConfig.getLdapGuidAttribute();
+			
+			if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
+				isConfigured = true;
+		}
+    	
+    	return isConfigured;
     }
     
     /**
@@ -1061,6 +1303,26 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 			}
 	   		groupCoordinator.deleteObsoleteGroups();
+
+	   		// Find all groups that have dynamic membership and update the membership
+	   		// of those groups that are supposed to be updated during the ldap sync process
+	   		{
+	   			ArrayList<Long> listOfDynamicGroups;
+	   			
+				logger.info( "Looking for dynamic groups to update... " );
+
+				listOfDynamicGroups = getListOfDynamicGroups();
+	   			
+	   			// Do we have any dynamic groups?
+	   			if ( listOfDynamicGroups != null && listOfDynamicGroups.size() > 0 )
+	   			{
+	   				// Yes
+	   				for ( Long nextGroupId : listOfDynamicGroups )
+	   				{
+	   					updateDynamicGroupMembership( nextGroupId, groupCoordinator.getLdapSyncResults() );
+	   				}
+	   			}
+	   		}
 		}// end try
 		finally
 		{
@@ -1068,6 +1330,253 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 	}
 
+	
+	/**
+	 * Execute the given ldap query and return how many users/groups were found
+	 * @author jwootton
+	 */
+	public Integer testGroupMembershipCriteria( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException
+	{
+		int count = 0;
+		
+		// Does the membership criteria have a filter?
+		if ( filter != null && filter.length() > 0 )
+		{
+			List<LdapConnectionConfig> ldapConnectionConfigs;
+			Workspace zone;
+			Long zoneId;
+
+			// Yes
+			zone = RequestContextHolder.getRequestContext().getZone();
+			zoneId = zone.getId();
+
+			// Get the list of ldap configurations.
+			ldapConnectionConfigs = getCoreDao().loadLdapConnectionConfigs( zoneId );
+			
+			// Go through each ldap configuration
+			for( LdapConnectionConfig nextLdapConfig : ldapConnectionConfigs )
+			{
+				String ldapGuidAttribute;
+				
+				// Does this ldap configuration have the ldap guid defined?
+				ldapGuidAttribute = nextLdapConfig.getLdapGuidAttribute();
+				if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
+				{
+			   		LdapContext ldapContext;
+			   		NamingException namingEx;
+
+					// Yes
+			   		namingEx = null;
+			   		ldapContext = null;
+			  		try
+			  		{
+						String[] userAttributeNames = {};
+						int scope;
+						SearchControls searchControls;
+						NamingEnumeration ctxSearch;
+
+						// Get an ldap context for the given ldap configuration
+						ldapContext = getUserContext( zoneId, nextLdapConfig );
+						
+						if ( searchSubtree )
+							scope = SearchControls.SUBTREE_SCOPE;
+						else
+							scope = SearchControls.ONELEVEL_SCOPE;
+						
+						searchControls = new SearchControls( scope, 0, 0, userAttributeNames, false, false );
+
+						// Execute the ldap search using the membership criteria
+						ctxSearch = ldapContext.search( baseDn, filter, searchControls );
+						
+						// Count the number of users/groups the search found
+						while ( ctxSearch.hasMore() )
+						{
+							ctxSearch.next();
+
+							++count;
+						}
+					}
+			  		catch (NamingException ex)
+			  		{
+			  			namingEx = ex;
+			  		}
+			  		finally
+			  		{
+						if ( ldapContext != null )
+						{
+							try
+							{
+								// Close the ldap context.
+								ldapContext.close();
+							}
+							catch (NamingException ex)
+					  		{
+								namingEx = ex;
+					  		}
+						}
+					}
+			  		
+			  		// Did we encounter a problem?
+			  		if ( namingEx != null )
+			  		{
+			  			LdapSyncException	ldapSyncEx;
+
+			  			// Yes
+			  			logError( NLT.get( "errorcode.ldap.context" ), namingEx );
+			  			
+			  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
+			  			// the LdapConnectionConfig object that was being used when the error happened.
+			  			ldapSyncEx = new LdapSyncException( nextLdapConfig, namingEx );
+			  			throw ldapSyncEx;
+			  		}
+				}
+			}
+		}
+
+		return new Integer( count );
+	}
+	
+	/**
+	 * 
+	 */
+	private void updateDynamicGroupMembership( Long groupId, LdapSyncResults ldapSyncResults )
+	{
+		Principal principal;
+		
+		principal = getProfileModule().getEntry( groupId );
+		if ( principal != null && principal instanceof Group )
+		{
+			Group group;
+			String ldapQueryXml;
+			String baseDn = null;
+			String ldapFilter = null;
+			boolean searchSubtree = false;
+			boolean updateMembership = false;
+			
+			group = (Group) principal;
+			ldapQueryXml = group.getLdapQuery();
+
+			if ( ldapQueryXml != null && ldapQueryXml.length() > 0 )
+			{
+				try
+	    		{
+	    			Document doc;
+	    			Node node;
+	    			Node attrNode;
+	    			String value;
+					
+					// Parse the xml string into an xml document.
+					doc = DocumentHelper.parseText( ldapQueryXml );
+	    			
+	    			// Get the root element.
+	    			node = doc.getRootElement();
+	    			
+	    			// Get the "updateMembershipDuringLdapSync" attribute value.
+	    			attrNode = node.selectSingleNode( "@updateMembershipDuringLdapSync" );
+	    			if ( attrNode != null )
+	    			{
+	        			value = attrNode.getText();
+	        			if ( value != null && value.equalsIgnoreCase( "true" ) )
+	        				updateMembership = true;
+	    			}
+
+	    			if ( updateMembership )
+	    			{
+		    			Node searchNode;
+
+		    			// Get the <search ...> element.
+		    			searchNode = node.selectSingleNode( "search" );
+		    			if ( searchNode != null )
+		    			{
+	    					Node baseDnNode;
+	    					Node filterNode;
+	    					
+		    				// Get the "searchSubtree" attribute.
+		    				attrNode = searchNode.selectSingleNode( "@searchSubtree" );
+		    				if ( attrNode != null )
+		    				{
+		    					value = attrNode.getText();
+		    					if ( value != null && value.equalsIgnoreCase( "true" ) )
+		    						searchSubtree = true;
+		    					else
+		    						searchSubtree = false;
+		    				}
+		    				
+		    				// Get the <baseDn> element.
+		    				baseDnNode = searchNode.selectSingleNode( "baseDn" );
+		    				if ( baseDnNode != null )
+		    				{
+		    					baseDn = baseDnNode.getText();
+		    				}
+		    				
+		    				// Get the <filter> element.
+		    				filterNode = searchNode.selectSingleNode( "filter" );
+		    				if ( filterNode != null )
+		    				{
+		    					ldapFilter = filterNode.getText();
+		    				}
+		    			}
+	    			}
+	    		}
+	    		catch(Exception e)
+	    		{
+	    			// Nothing to do
+	    		}
+			}
+			
+			// Should we update the dynamic group membership of this group?
+			if ( updateMembership )
+			{
+				HashSet<Long> groupMemberIds;
+				
+				// Yes
+				try
+				{
+					ArrayList<Membership> newMembers;
+					PartialLdapSyncResults syncResults = null;
+					int count;
+					int maxCount;
+					
+					logger.info( "\tEvaluating dynamic group membership for group: " + group.getName() );
+
+					// Get a list of the dynamic group members.
+					groupMemberIds = getDynamicGroupMembers( baseDn, ldapFilter, searchSubtree );
+					
+					newMembers = new ArrayList<Membership>();
+					count = 0;
+					
+					// Get the maximum number of users that can be in a group.
+					maxCount = SPropsUtil.getInt( "dynamic.group.membership.limit", 50000 ); 					
+					
+					for (Long userId : groupMemberIds)
+					{
+						logger.info( "\t\tAdding user: " + String.valueOf( userId ) );
+						newMembers.add( new Membership( groupId, userId ) );
+						++count;
+						
+						if ( count >= maxCount )
+						{
+							logger.info( "\t\t!!! Maximum number of dynamic users is a group has been reached.  " + String.valueOf( maxCount ) + " users" );
+							break;
+						}
+					}
+					
+					if ( ldapSyncResults != null )
+					{
+						syncResults = ldapSyncResults.getModifiedGroups();
+					}
+					
+					logger.info( "\t\tAbout to update dynamic group: " + group.getName() );
+					updateMembership( groupId, newMembers, syncResults );
+				}
+				catch ( LdapSyncException e )
+				{
+					
+				}
+			}
+		}
+	}
+	
 	
 	class UserCoordinator
 	{
@@ -1684,6 +2193,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					notInLdap.put((Long)row[PRINCIPAL_ID], ssName);
 				}
 			}
+		}
+		
+		/**
+		 * 
+		 */
+		public LdapSyncResults getLdapSyncResults()
+		{
+			return m_ldapSyncResults;
 		}
 		
 		public void setAttributes(Map groupAttributes)

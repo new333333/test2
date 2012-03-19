@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -43,9 +45,14 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  *
  */
-public class GroupInfo implements IsSerializable {
+public class GroupInfo
+	implements IsSerializable, VibeRpcResponseData
+{
 	private Long m_id;			// The group's id.
 	private String m_title;			// The group's title.
+	private String m_name;		// The group's name
+	private String m_desc;		// The group's description
+	private boolean m_isMembershipDynamic;	// Is the group's membership dynamic
 	
 	/**
 	 * Constructor method.
@@ -54,8 +61,25 @@ public class GroupInfo implements IsSerializable {
 	 */
 	public GroupInfo() {
 		// Nothing to do.
+		m_isMembershipDynamic = false;
 	}
 
+	/**
+	 * 
+	 */
+	public String getDesc()
+	{
+		return m_desc;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setDesc( String desc )
+	{
+		m_desc = desc;
+	}
+	
 	/**
 	 * Returns the group's id.
 	 * 
@@ -73,6 +97,23 @@ public class GroupInfo implements IsSerializable {
 	public void setId(Long id) {
 		m_id = id;
 	}
+
+	/**
+	 * 
+	 */
+	public String getName()
+	{
+		return m_name;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setName( String name )
+	{
+		m_name = name;
+	}
+	
 	/**
 	 * Returns the group's title.
 	 * 
@@ -89,5 +130,22 @@ public class GroupInfo implements IsSerializable {
 	 */
 	public void setTitle(String title) {
 		m_title = title;
+	}
+
+	
+	/**
+	 * Return the flag that tells us whether the group membership is dynamic 
+	 */
+	public boolean getIsMembershipDynamic()
+	{
+		return m_isMembershipDynamic;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setIsMembershipDynamic( boolean dynamic )
+	{
+		m_isMembershipDynamic = dynamic;
 	}
 }

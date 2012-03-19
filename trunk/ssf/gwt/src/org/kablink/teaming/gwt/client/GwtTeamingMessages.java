@@ -297,7 +297,10 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CheckForActivityStreamChanges();
 	String rpcFailure_CollapseSubtasks();
 	String rpcFailure_CopyEntries();
+	String rpcFailure_CreateGroup();
+	String rpcFailure_CreateGroupAlreadyExists();
 	String rpcFailure_DeleteFolderEntries();
+	String rpcFailure_DeleteGroups();
 	String rpcFailure_DeleteUserWorkspaces();
 	String rpcFailure_DeleteTasks();
 	String rpcFailure_DisableUsers();
@@ -312,6 +315,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetActivityStreamsTree();
 	String rpcFailure_GetAddMeetingUrl();
 	String rpcFailure_GetAdminActions();
+	String rpcFailure_GetAllGroups();
 	String rpcFailure_GetBinderDescription();
 	String rpcFailure_GetBinderFilters();
 	String rpcFailure_GetBinderOwnerAvatarUrl();
@@ -346,15 +350,19 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetFolderDefinitionId();
 	String rpcFailure_GetFolderEntry();
 	String rpcFailure_GetGeneric();
+	String rpcFailure_GetGroupLdapQuery();
+	String rpcFailure_GetGroupMembershipType();
 	String rpcFailure_GetGroupMembership();
 	String rpcFailure_GwtGroups();
 	String rpcFailure_GetGwtUIInfo();
 	String rpcFailure_GetHelpUrl();
 	String rpcFailure_GetImUrl();
 	String rpcFailure_GetInheritedLandingPageProperties();
+	String rpcFailure_GetIsDynamicGroupMembershipAllowed();
 	String rpcFailure_GetListOfChildBinders();
 	String rpcFailure_GetLocale();
 	String rpcFailure_GetMyTeams();
+	String rpcFailure_NumberOfMembers();
 	String rpcFailure_GetPersonalPreferences();
 	String rpcFailure_GetPresenceInfo();
 	String rpcFailure_GetProfileAvatars();
@@ -394,8 +402,10 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_ImportIcalByUrl();
 	String rpcFailure_IsAllUsersGroup();
 	String rpcFailure_IsPersonTracked();
+	String rpcFailure_LdapGuidNotConfigured();
 	String rpcFailure_LockEntries();
 	String rpcFailure_markupStringReplacement();
+	String rpcFailure_ModifyGroup();
 	String rpcFailure_MoveEntries();
 	String rpcFailure_PersistActivityStreamSelection();
 	String rpcFailure_PersistExpansionState();
@@ -434,6 +444,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SetStatus();
 	String rpcFailure_SetUnseen();
 	String rpcFailure_ShareEntry();
+	String rpcFailure_TestGroupMembershipCriteria();
 	String rpcFailure_TrackingBinder();
 	String rpcFailure_TrackingPerson();
 	String rpcFailure_TrashPurgeAll();
@@ -1501,5 +1512,59 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the "Edit graphic properties" dialog
 	String editGraphicPropertiesDlgSetImageSize();
+
 	
+	// Strings used in the Manage Groups dialog
+	String manageGroupsDlgAddGroupLabel();
+	String manageGroupsDlgConfirmDelete( String groupNames );
+	String manageGroupsDlgCreatingGroup();
+	String manageGroupsDlgDeleteGroupLabel();
+	String manageGroupsDlgDeletingGroup();
+	String manageGroupsDlgEditGroupLabel();
+	String manageGroupsDlgHeader();
+	String manageGroupsDlgModifyingGroup();
+	String manageGroupsDlgNameCol();
+	String manageGroupsDlgNoGroupsLabel();
+	String manageGroupsDlgSelectGroupToDelete();
+	String manageGroupsDlgSelect1GroupToEdit();
+	String manageGroupsDlgTitleCol();
+	String manageGroupsDlgUnknownStatus();
+	
+	// Strings used in the Modify Group dialog
+	String addGroupDlgHeader();
+	String modifyGroupDlgEditGroupMembershipLabel();
+	String modifyGroupDlgDescriptionLabel();
+	String modifyGroupDlgDynamicLabel();
+	String modifyGroupDlgDynamicGroupMembershipNotAllowed();
+	String modifyGroupDlgHeader( String groupTitle );
+	String modifyGroupDlgNameLabel();
+	String modifyGroupDlgNameRequired();
+	String modifyGroupDlgNameTooLong();
+	String modifyGroupDlgStaticLabel();
+	String modifyGroupDlgTitleLabel();
+
+	// Strings used in the Modify static membership dialog
+	String modifyStaticMembershipDlgDeleteLabel();
+	String modifyStaticMembershipDlgGroupLabel();
+	String modifyStaticMembershipDlgGroupTab();
+	String modifyStaticMembershipDlgHeader( String groupTitle );
+	String modifyStaticMembershipDlgNameCol();
+	String modifyStaticMembershipDlgNoGroupsLabel();
+	String modifyStaticMembershipDlgNoUsersLabel();
+	String modifyStaticMembershipDlgSelectGroupToRemove();
+	String modifyStaticMembershipDlgSelectUserToRemove();
+	String modifyStaticMembershipDlgUserLabel();
+	String modifyStaticMembershipDlgUserTab();
+
+	// Strings used in the Modify dynamic membership dialog
+	String modifyDynamicMembershipDlgBaseDnLabel();
+	String modifyDynamicMembershipDlgCurrentMembershipLabel( int count );
+	String modifyDynamicMembershipDlgHeader();
+	String modifyDynamicMembershipDlgLdapFilterLabel();
+	String modifyDynamicMembershipDlgSearchSubtreeLabel();
+	String modifyDynamicMembershipDlgTestQueryInProgressLabel();
+	String modifyDynamicMembershipDlgTestQueryLabel();
+	String modifyDynamicMembershipDlgTestQueryResults( int count );
+	String modifyDynamicMembershipDlgUpdateLabel();
+
 }// end GwtTeamingMessages
