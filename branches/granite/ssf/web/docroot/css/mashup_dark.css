@@ -7,6 +7,16 @@ table.ss_mashup {
   padding: 0px;
   background: #E3E3E3;
   text-align:left !important;
+  empty-cells: show;
+  border-collapse: collapse;
+}
+table.ss_mashup_border {
+  border-top:1px solid #D2D5D1;	
+  border-left:1px solid #D2D5D1;	
+}
+table.ss_mashup_border td {
+  border-right:1px solid #D2D5D1;	
+  border-bottom:1px solid #D2D5D1;	
 }
 
 .ss_mashup_canvas_view {
