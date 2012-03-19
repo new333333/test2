@@ -82,7 +82,7 @@ function ss_selectFileVersions(formName, cbObj) {
 	    name="operation" value="deleteMultipleVersions"/></ssf:url>"
 >
 <c:if test="${!ss_pseudoEntity}">
-<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
+<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['deleteEntry']}">
 <div align="right">
 	<ul class="ss_nobullet">
 	  <li style="float:right; padding:0px 20px 6px 0px;">
@@ -102,7 +102,7 @@ function ss_selectFileVersions(formName, cbObj) {
 <tr class="ss_tab_table_columnhead">
   <th>
    <c:if test="${!ss_pseudoEntity}">
-   <c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
+   <c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['deleteEntry']}">
     <input type="checkbox" onClick="ss_selectFileVersions('ss_deleteFilesForm', this);"
     title="<ssf:nlt tag='file.command.deleteVersionsSelectAll'/>" />
    </c:if>
