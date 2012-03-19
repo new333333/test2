@@ -68,12 +68,12 @@
 		<br>
 		<c:set var="cb_checked" value=""/>
 		<c:if test="${ssDefinitionEntry.library}" >
-			<c:set var="cb_checked" value="checked"/>
+			<c:set var="cb_checked" value=" checked "/>
 		</c:if>
 
 		<div style="display:block">
 			<input type="checkbox" name="ss_library"
-				<c:if test="${ssDefinitionEntry.mirrored}">disabled</c:if>
+				<c:if test="${ssDefinitionEntry.mirrored}"> disabled </c:if>
 				<c:out value="${cb_checked}"/>
 				onClick="if (document.${formName}.ss_library.checked) document.${formName}.library.value='true'; else document.${formName}.library.value='false';">
 			&nbsp;
@@ -85,7 +85,7 @@
 
 		<c:set var="cb_checked" value=""/>
 		<c:if test="${ssDefinitionEntry.uniqueTitles}" >
-			<c:set var="cb_checked" value="checked"/>
+			<c:set var="cb_checked" value=" checked "/>
 		</c:if>
 		<div style="display:block">
 			<input type="checkbox" name="ss_unique" <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_unique.checked) document.${formName}.uniqueTitles.value='true'; else document.${formName}.uniqueTitles.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isUniqueTitles"/></span></input>
