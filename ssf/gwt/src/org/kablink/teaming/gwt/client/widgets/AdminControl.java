@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
 import org.kablink.teaming.gwt.client.event.PreLogoutEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -95,13 +96,19 @@ public class AdminControl extends TeamingPopupPanel
 	implements 
 	// Event handlers implemented by this class.
 		InvokeConfigureFileSyncAppDlgEvent.Handler,
+		InvokeManageGroupsDlgEvent.Handler,
 		PreLogoutEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
 {
 	private AdminActionsTreeControl m_adminActionsTreeControl = null;
 	private ContentControl m_contentControl = null;
+	private int m_contentControlX;
+	private int m_contentControlY;
+	private int m_contentControlWidth;
+	private int m_contentControlHeight;
 	private ConfigureFileSyncAppDlg m_configureFileSyncAppDlg = null;
+	private ManageGroupsDlg m_manageGroupsDlg = null;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -109,6 +116,7 @@ public class AdminControl extends TeamingPopupPanel
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Administration events.
 		TeamingEvents.INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,
+		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
 		
 		// Login/out events.
 		TeamingEvents.PRE_LOGOUT,
@@ -599,6 +607,8 @@ public class AdminControl extends TeamingPopupPanel
 	 */
 	private void adminActionSelected( GwtAdminAction adminAction )
 	{
+		m_contentControl.empty();
+
 		// Are we dealing with the "Site Branding" action?
 		if ( adminAction.getActionType() == AdminAction.SITE_BRANDING )
 		{
@@ -607,8 +617,8 @@ public class AdminControl extends TeamingPopupPanel
 			int y;
 
 			// Position the Edit Branding dialog at the top, left corner of the content control.
-			x = m_contentControl.getAbsoluteLeft();
-			y = m_contentControl.getAbsoluteTop();
+			x = m_contentControlX;
+			y = m_contentControlY;
 			
 			// Yes, inform all registered action handlers that the user wants to edit the site branding.
 			esbEvent = new EditSiteBrandingEvent( x, y );
@@ -618,6 +628,11 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Fire the event to invoke the "Configure File Sync" dialog.
 			InvokeConfigureFileSyncAppDlgEvent.fireOne();
+		}
+		else if ( adminAction.getActionType() == AdminAction.MANAGE_GROUPS )
+		{
+			// Fire the event to invoke the "Manage Groups" dialog.
+			InvokeManageGroupsDlgEvent.fireOne();
 		}
 		else
 		{
@@ -830,9 +845,14 @@ public class AdminControl extends TeamingPopupPanel
 			
 			height = clientHeight - m_adminActionsTreeControl.getAbsoluteTop() - 20;
 		}
-		
+
+		m_contentControlX = x;
+		m_contentControlY = m_adminActionsTreeControl.getAbsoluteTop();
+
 		// Set the width and height of the content control.
-		m_contentControl.setDimensions( width, height + GwtConstants.PANEL_PADDING );
+		m_contentControlWidth = width;
+		m_contentControlHeight = height + GwtConstants.PANEL_PADDING;
+		m_contentControl.setDimensions( m_contentControlWidth, m_contentControlHeight );
 
 		// Set the left position of the content control.
 		style = m_contentControl.getElement().getStyle();
@@ -1035,8 +1055,8 @@ public class AdminControl extends TeamingPopupPanel
 				};
 				
 				// Get the position of the content control.
-				x = m_contentControl.getAbsoluteLeft();
-				y = m_contentControl.getAbsoluteTop();
+				x = m_contentControlX;
+				y = m_contentControlY;
 				
 				// Have we already created a "Configure File Sync App" dialog?
 				if ( m_configureFileSyncAppDlg == null )
@@ -1064,6 +1084,40 @@ public class AdminControl extends TeamingPopupPanel
 	}
 	
 
+	/**
+	 * Handles InvokeManageGroupsDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeManageGroupsDlgEvent.Handler.onInvokeManageGroupsDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeManageGroupsDlg( InvokeManageGroupsDlgEvent event )
+	{
+		int x;
+		int y;
+		
+		// Get the position of the content control.
+		x = m_contentControlX;
+		y = m_contentControlY;
+		
+		// Have we already created a "Manage Groups" dialog?
+		if ( m_manageGroupsDlg == null )
+		{
+			int width;
+			int height;
+			
+			// No, create one.
+			height = (m_contentControlHeight * 7) / 10;
+			width = (m_contentControlWidth * 8) / 10;
+			m_manageGroupsDlg = new ManageGroupsDlg( false, true, x, y, width, height );
+		}
+		
+		m_manageGroupsDlg.init();
+		m_manageGroupsDlg.setPopupPosition( x, y );
+		m_manageGroupsDlg.show();
+	}
+	
 	/**
 	 * Handles PreLogoutEvent's received by this class.
 	 * 

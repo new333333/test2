@@ -77,6 +77,13 @@ public enum TeamingEvents implements IsSerializable {
 	GOTO_PERMALINK_URL,					// Changes the current context to a permalink URL.
 	GOTO_URL,							// Changes the content to the given url.
 
+	GROUP_CREATED,						// Notification that a group was created.
+	GROUP_CREATION_FAILED,				// Notification that a group creation failed.
+	GROUP_CREATION_STARTED,				// Notification that the process of creating a group has started.
+	GROUP_MODIFICATION_FAILED,			// Notification that the process of modifying a group has failed.
+	GROUP_MODIFICATION_STARTED,			// Notification that the process of modifying a group has started.
+	GROUP_MODIFIED,						// Notification that a group was modified.
+
 	INVOKE_ABOUT,						// Invokes the About dialog.
 	INVOKE_CLIPBOARD,					// Invokes the Clipboard dialog.
 	INVOKE_COLUMN_RESIZER,				// Invokes the column resizing dialog.
@@ -87,6 +94,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_HELP,						// Invokes the Vibe OnPrem online help.
 	INVOKE_IMPORT_ICAL_FILE,			// Invokes the dialog to import an iCal by uploading  a file.
 	INVOKE_IMPORT_ICAL_URL,				// Invokes the dialog to import an iCal by specifying a URL.
+	INVOKE_MANAGE_GROUPS_DLG,			// Invoke the "Manage groups" dialog.
 	INVOKE_REPLY,						// Invokes the 'reply to entry' UI.
 	INVOKE_SEND_EMAIL_TO_TEAM,			// Invokes the Send Email To Team dialog.
 	INVOKE_SHARE,						// Invokes the 'share this entry' UI.

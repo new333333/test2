@@ -96,6 +96,7 @@ public class EventHelper {
 		case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	reply = new InvokeConfigureFileSyncAppDlgEvent(); break;
 		case INVOKE_EMAIL_NOTIFICATION:         	reply = new InvokeEmailNotificationEvent();       break;
 		case INVOKE_HELP:                       	reply = new InvokeHelpEvent();                    break;
+		case INVOKE_MANAGE_GROUPS_DLG:				reply = new InvokeManageGroupsDlgEvent();		  break;
 		case LOGIN:                             	reply = new LoginEvent();                         break;
 		case PRE_LOGOUT:                        	reply = new PreLogoutEvent();                     break;
 		case PREVIEW_LANDING_PAGE:					reply = new PreviewLandingPageEvent();			  break;
@@ -442,6 +443,70 @@ public class EventHelper {
 				}
 				break;
 				
+			case GROUP_CREATED:
+				// A GroupCreatedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof GroupCreatedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = GroupCreatedEvent.registerEvent(
+																	eventBus,
+																	((GroupCreatedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
+			case GROUP_CREATION_STARTED:
+				// A GroupCreationStartedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof GroupCreationStartedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = GroupCreationStartedEvent.registerEvent(
+																			eventBus,
+																			((GroupCreationStartedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
+			case GROUP_CREATION_FAILED:
+				// A GroupCreationFailedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof GroupCreationFailedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = GroupCreationFailedEvent.registerEvent(
+																			eventBus,
+																			((GroupCreationFailedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
+			case GROUP_MODIFICATION_FAILED:
+				// A GroupModificationFailedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof GroupModificationFailedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = GroupModificationFailedEvent.registerEvent(
+																			eventBus,
+																			((GroupModificationFailedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
+			case GROUP_MODIFICATION_STARTED:
+				// A GroupModificationStartedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof GroupModificationStartedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = GroupModificationStartedEvent.registerEvent(
+																			eventBus,
+																			((GroupModificationStartedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
+			case GROUP_MODIFIED:
+				// A GroupModifiedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof GroupModifiedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = GroupModifiedEvent.registerEvent( eventBus, ((GroupModifiedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
 			case INVOKE_ABOUT:
 				// An InvokeAboutEvent!  Can the event handler we were
 				// given handle that?
@@ -532,6 +597,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case INVOKE_MANAGE_GROUPS_DLG:
+				// An InvokeManageGroupsDlgEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof InvokeManageGroupsDlgEvent.Handler)
+				{
+					handlerNotDefined = false;
+					registrationHandler = InvokeManageGroupsDlgEvent.registerEvent( eventBus, ((InvokeManageGroupsDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case INVOKE_REPLY:
 				// An InvokeReplyEvent!  Can the event handler we were
 				// given handle that?
@@ -1479,6 +1553,13 @@ public class EventHelper {
 			case GOTO_PERMALINK_URL:                	hasHandler = (eventHandler instanceof GotoPermalinkUrlEvent.Handler);              break;
 			case GOTO_URL:                  			hasHandler = (eventHandler instanceof GotoUrlEvent.Handler);                	   break;
 						
+			case GROUP_CREATED:                			hasHandler = (eventHandler instanceof GroupCreatedEvent.Handler);             	   break;
+			case GROUP_CREATION_FAILED:       			hasHandler = (eventHandler instanceof GroupCreationFailedEvent.Handler);     	   break;
+			case GROUP_CREATION_STARTED:       			hasHandler = (eventHandler instanceof GroupCreationStartedEvent.Handler);     	   break;
+			case GROUP_MODIFICATION_FAILED:       		hasHandler = (eventHandler instanceof GroupModificationFailedEvent.Handler);       break;
+			case GROUP_MODIFICATION_STARTED:       		hasHandler = (eventHandler instanceof GroupModificationStartedEvent.Handler);      break;
+			case GROUP_MODIFIED:                		hasHandler = (eventHandler instanceof GroupModifiedEvent.Handler);             	   break;
+
 			case INVOKE_ABOUT:							hasHandler = (eventHandler instanceof InvokeAboutEvent.Handler);                   break;
 			case INVOKE_CLIPBOARD:						hasHandler = (eventHandler instanceof InvokeClipboardEvent.Handler);               break;
 			case INVOKE_COLUMN_RESIZER:				    hasHandler = (eventHandler instanceof InvokeColumnResizerEvent.Handler);           break;
@@ -1489,6 +1570,7 @@ public class EventHelper {
 			case INVOKE_HELP:                       	hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                    break;
 			case INVOKE_IMPORT_ICAL_FILE:           	hasHandler = (eventHandler instanceof InvokeImportIcalFileEvent.Handler);          break;
 			case INVOKE_IMPORT_ICAL_URL:            	hasHandler = (eventHandler instanceof InvokeImportIcalUrlEvent.Handler);           break;
+			case INVOKE_MANAGE_GROUPS_DLG:				hasHandler = (eventHandler instanceof InvokeManageGroupsDlgEvent.Handler);		   break;
 			case INVOKE_REPLY:                      	hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                   break;
 			case INVOKE_SEND_EMAIL_TO_TEAM:             hasHandler = (eventHandler instanceof InvokeSendEmailToTeamEvent.Handler);         break;
 			case INVOKE_SHARE:                      	hasHandler = (eventHandler instanceof InvokeShareEvent.Handler);                   break;
