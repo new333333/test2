@@ -13200,7 +13200,7 @@ var tinyMCE = window.tinyMCE = tinymce.EditorManager;
 		if (tinymce.isOpera)
 			return this.getDoc().execCommand('InsertHorizontalRule', false, '');
 
-		this.selection.setContent('<hr />');
+		this.selection.setContent('<div><hr /></div>');
 	});
 })(tinymce);
 (function() {
