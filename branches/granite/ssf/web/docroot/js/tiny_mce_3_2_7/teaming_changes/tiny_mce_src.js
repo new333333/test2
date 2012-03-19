@@ -13200,7 +13200,8 @@ var tinyMCE = window.tinyMCE = tinymce.EditorManager;
 		if (tinymce.isOpera)
 			return this.getDoc().execCommand('InsertHorizontalRule', false, '');
 
-		this.selection.setContent('<hr />');
+		//Enclose the <hr> in a div so jtidy won't delete it
+		this.selection.setContent('<div><hr /></div>');
 	});
 })(tinymce);
 (function() {
