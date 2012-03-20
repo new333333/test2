@@ -169,6 +169,7 @@ public class AdminControl extends TeamingPopupPanel
 		/**
 		 * 
 		 */
+		@Override
 		public void onClick( ClickEvent event )
 		{
 			// Tell the AdminControl that an action was selected.
@@ -178,6 +179,7 @@ public class AdminControl extends TeamingPopupPanel
 		/**
 		 * 
 		 */
+		@Override
 		public void onMouseOver( MouseOverEvent event )
 		{
 			m_actionName.addStyleName( "adminActionControlMouseOver" );
@@ -187,6 +189,7 @@ public class AdminControl extends TeamingPopupPanel
 		/**
 		 * 
 		 */
+		@Override
 		public void onMouseOut( MouseOutEvent event )
 		{
 			m_actionName.removeStyleName( "adminActionControlMouseOver" );
@@ -314,6 +317,7 @@ public class AdminControl extends TeamingPopupPanel
 		/**
 		 * This method gets called when the user clicks on the "expand" or "collapse" image.
 		 */
+		@Override
 		public void onClick( ClickEvent event )
 		{
 			if ( event.getSource() == m_expandedImg )
@@ -404,6 +408,7 @@ public class AdminControl extends TeamingPopupPanel
 						img.addStyleName( "margin-right-5" );
 					img.addClickHandler( new ClickHandler()
 					{
+						@Override
 						public void onClick( ClickEvent event  )
 						{
 							Scheduler.ScheduledCommand cmd;
@@ -413,6 +418,7 @@ public class AdminControl extends TeamingPopupPanel
 								/**
 								 * 
 								 */
+								@Override
 								public void execute()
 								{
 									// Issue an ajax request to get the upgrade information from the server.
@@ -438,6 +444,7 @@ public class AdminControl extends TeamingPopupPanel
 				/**
 				 * 
 				 */
+				@Override
 				public void onFailure( Throwable t )
 				{
 					GwtClientHelper.handleGwtRPCFailure(
@@ -450,6 +457,7 @@ public class AdminControl extends TeamingPopupPanel
 				 * 
 				 * @param result
 				 */
+				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
 					ArrayList<GwtAdminCategory> adminCategories;
@@ -471,6 +479,7 @@ public class AdminControl extends TeamingPopupPanel
 				/**
 				 * 
 				 */
+				@Override
 				public void onFailure( Throwable t )
 				{
 					GwtClientHelper.handleGwtRPCFailure(
@@ -482,6 +491,7 @@ public class AdminControl extends TeamingPopupPanel
 				 * 
 				 * @param result
 				 */
+				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
 					int x;
@@ -503,6 +513,7 @@ public class AdminControl extends TeamingPopupPanel
 
 				cmd = new Scheduler.ScheduledCommand()
 				{
+					@Override
 					public void execute()
 					{
 						getAdminActionsFromServer();
@@ -616,6 +627,8 @@ public class AdminControl extends TeamingPopupPanel
 			int x;
 			int y;
 
+			hideContentPanel();
+			
 			// Position the Edit Branding dialog at the top, left corner of the content control.
 			x = m_contentControlX;
 			y = m_contentControlY;
@@ -626,11 +639,15 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_FILE_SYNC_APP )
 		{
+			hideContentPanel();
+
 			// Fire the event to invoke the "Configure File Sync" dialog.
 			InvokeConfigureFileSyncAppDlgEvent.fireOne();
 		}
 		else if ( adminAction.getActionType() == AdminAction.MANAGE_GROUPS )
 		{
+			hideContentPanel();
+
 			// Fire the event to invoke the "Manage Groups" dialog.
 			InvokeManageGroupsDlgEvent.fireOne();
 		}
@@ -652,6 +669,7 @@ public class AdminControl extends TeamingPopupPanel
 				
 				cmd = new Scheduler.ScheduledCommand()
 				{
+					@Override
 					public void execute()
 					{
 						// Show an position the content control.
@@ -696,6 +714,7 @@ public class AdminControl extends TeamingPopupPanel
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -707,6 +726,7 @@ public class AdminControl extends TeamingPopupPanel
 			 * 
 			 * @param result
 			 */
+			@Override
 			public void onSuccess( final VibeRpcResponse response )
 			{
 				Scheduler.ScheduledCommand cmd;
@@ -716,6 +736,7 @@ public class AdminControl extends TeamingPopupPanel
 					/**
 					 * 
 					 */
+					@Override
 					public void execute()
 					{
 						GwtUpgradeInfo upgradeInfo;
@@ -802,6 +823,7 @@ public class AdminControl extends TeamingPopupPanel
 	
 			cmd = new Scheduler.ScheduledCommand()
 			{
+				@Override
 				public void execute()
 				{
 					// ...update the page's layout.
@@ -922,6 +944,7 @@ public class AdminControl extends TeamingPopupPanel
 			// Set the position of the content control.
 			cmd = new Scheduler.ScheduledCommand()
 			{
+				@Override
 				public void execute()
 				{
 					Scheduler.ScheduledCommand cmd2;
@@ -930,6 +953,7 @@ public class AdminControl extends TeamingPopupPanel
 					
 					cmd2 = new Scheduler.ScheduledCommand()
 					{
+						@Override
 						public void execute()
 						{
 							showRelativeTo( target );
@@ -944,6 +968,7 @@ public class AdminControl extends TeamingPopupPanel
 			// Issue an ajax request to get the upgrade information from the server.
 			cmd = new Scheduler.ScheduledCommand()
 			{
+				@Override
 				public void execute()
 				{
 	            	// Get the upgrade info from the server.  If there are upgrade tasks that
@@ -984,6 +1009,7 @@ public class AdminControl extends TeamingPopupPanel
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -994,6 +1020,7 @@ public class AdminControl extends TeamingPopupPanel
 			/**
 			 * We successfully retrieved the File Sync App configuration.  Now invoke the "Configure File Sync App" dialog.
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				int x;
@@ -1010,6 +1037,7 @@ public class AdminControl extends TeamingPopupPanel
 					/**
 					 * This method gets called when user user presses ok in the "Configure File Sync App" dialog.
 					 */
+					@Override
 					public boolean editSuccessful( Object obj )
 					{
 						AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
@@ -1023,6 +1051,7 @@ public class AdminControl extends TeamingPopupPanel
 							/**
 							 * 
 							 */
+							@Override
 							public void onFailure( Throwable t )
 							{
 								GwtClientHelper.handleGwtRPCFailure(
@@ -1034,6 +1063,7 @@ public class AdminControl extends TeamingPopupPanel
 							 * 
 							 * @param result
 							 */
+							@Override
 							public void onSuccess( VibeRpcResponse response )
 							{
 								// Nothing to do.
