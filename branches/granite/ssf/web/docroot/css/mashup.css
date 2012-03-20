@@ -6,6 +6,7 @@
 table.ss_mashup {
   padding: 0px;
   text-align:left !important;
+  width: 100%;
 }
 table.ss_mashup {
   empty-cells: show;

@@ -9,6 +9,7 @@ table.ss_mashup {
   text-align:left !important;
   empty-cells: show;
   border-collapse: collapse;
+  width: 100%;
 }
 table.ss_mashup_border {
   border-top:1px solid #D2D5D1;	
