@@ -598,6 +598,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		if ( evInfo != null )
 		{
 			String desc;
+			EnhancedViewType viewType;
 			
 			// Show the description of the view
 			desc = evInfo.getDesc();
@@ -636,6 +637,19 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 
 				// Show/hide the "Show title" checkbox.
 				m_showEntryTitleCkBox.setVisible( evInfo.getTitleOptional() );
+			}
+			
+			// Is the "Display calendar" or the "Display my calendar events" option selected?
+			viewType = evInfo.getViewType();
+			if ( viewType == EnhancedViewType.DISPLAY_CALENDAR || viewType == EnhancedViewType.DISPLAY_MY_CALENDAR_EVENTS )
+			{
+				// Yes, hide the height controls.
+				m_sizeCtrl.hideHeightControls();
+			}
+			else
+			{
+				// No, show the height controls.
+				m_sizeCtrl.showHeightControls();
 			}
 		}
 	}
