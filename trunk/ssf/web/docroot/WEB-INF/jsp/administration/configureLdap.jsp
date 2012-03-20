@@ -1268,6 +1268,13 @@ ssPage = {
 	 * This function gets called when the user clicks on the "Add a new ldap connection" button.
 	 */
 	addConnection : function() {
+		var msg;
+		
+		// Tell the user that adding an ldap connection is intended to add a new ldap directory
+		// as a source of users.  It is not intended to be a fallback or failover server.
+		msg = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.connection.add.warning"/></ssf:escapeJavaScript>';
+		alert( msg );
+
 		var $pane = ssPage.createConnection("", "uid", ssPage.defaultUserMappings, [], [], "", "", "" );
 		return false;
 	},
