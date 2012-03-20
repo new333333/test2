@@ -43,6 +43,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -57,6 +58,8 @@ public class SizeCtrl extends Composite
 {
 	private TextBox m_widthCtrl = null;
 	private TextBox m_heightCtrl = null;
+	private InlineLabel m_heightLabel = null;
+	private InlineLabel m_heightPxLabel = null;
 	private ListBox m_widthUnitListBox = null;
 	private CheckBox m_overflowCheckbox = null;
 
@@ -96,14 +99,17 @@ public class SizeCtrl extends Composite
 		
 		// Add the label and controls for the height
 		{
-			sizeTable.setText( 1, 0, GwtTeaming.getMessages().heightLabel() );
+			m_heightLabel = new InlineLabel( GwtTeaming.getMessages().heightLabel() );
+			sizeTable.setWidget( 1, 0, m_heightLabel );
+			
 			m_heightCtrl = new TextBox();
 			m_heightCtrl.addKeyPressHandler( this );
 			m_heightCtrl.setVisibleLength( 3 );
 			sizeTable.setWidget( 1, 1, m_heightCtrl );
 			
 			// Height can only be specified in pixels.  Add "px" after the text box.
-			sizeTable.setText( 1, 2, GwtTeaming.getMessages().pxLabel() );
+			m_heightPxLabel = new InlineLabel( GwtTeaming.getMessages().pxLabel() );
+			sizeTable.setWidget( 1, 2, m_heightPxLabel );
 		}
 		
 		// Add the "Show scroll bars when necessary"
@@ -124,21 +130,25 @@ public class SizeCtrl extends Composite
 	public int getHeight()
 	{
 		int height = -1;
-		String txt;
 		
-		// Yes
-		txt = m_heightCtrl.getText();
-		if ( txt != null && txt.length() > 0 )
+		// Is the height control visible?
+		if ( m_heightCtrl.isVisible() )
 		{
-			try
+			String txt;
+
+			txt = m_heightCtrl.getText();
+			if ( txt != null && txt.length() > 0 )
 			{
-				height = Integer.parseInt( txt );
-				if ( height == 0 )
-					height = -1;
-			}
-			catch ( NumberFormatException nfEx )
-			{
-				// This should never happen.  The data should be validated before we get to this point.
+				try
+				{
+					height = Integer.parseInt( txt );
+					if ( height == 0 )
+						height = -1;
+				}
+				catch ( NumberFormatException nfEx )
+				{
+					// This should never happen.  The data should be validated before we get to this point.
+				}
 			}
 		}
 		
@@ -214,6 +224,16 @@ public class SizeCtrl extends Composite
 			unit = Style.Unit.PX;
 		
 		return unit;
+	}
+	
+	/**
+	 * 
+	 */
+	public void hideHeightControls()
+	{
+		m_heightLabel.setVisible( false );
+		m_heightCtrl.setVisible( false );
+		m_heightPxLabel.setVisible( false );
 	}
 	
 	/**
@@ -312,5 +332,15 @@ public class SizeCtrl extends Composite
         		txtBox.cancelKey();
         	}
         }
+	}
+
+	/**
+	 * 
+	 */
+	public void showHeightControls()
+	{
+		m_heightLabel.setVisible( true );
+		m_heightCtrl.setVisible( true );
+		m_heightPxLabel.setVisible( true );
 	}
 }
