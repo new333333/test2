@@ -743,25 +743,43 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 
     public void unlock(Binder binder, DefinableEntity entity, FileAttachment fa,
-    		String lockId) throws UncheckedIOException, RepositoryServiceException {
+    		String lockId) throws LockedByAnotherUserException, LockIdMismatchException,
+    		UncheckedIOException, RepositoryServiceException {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		
     	//closeExpiredLocksTransactional(binder, entity, true);
     	
 		FileAttachment.FileLock lock = fa.getFileLock();
 
-		if(lock != null && lock.getOwner().equals(user) && lock.getId().equals(lockId)) {
-			// The file is locked by the calling user and the lock id matches.
-			
-			List newObjs = new ArrayList();
-			
-			// Commit any pending changes associated with the lock. In this 
-			// case, we don't care if the lock is effective or expired.
-			commitPendingChanges(binder, entity, fa, lock, newObjs);
-			
-			fa.setFileLock(null); // Clear the lock
-			
-			triggerUpdateTransaction(newObjs);
+		if(lock != null) {
+			if(lock.getOwner().equals(user)) {
+				// The file is locked by the calling user.
+				if(lock.getId().equals(lockId)) {
+					// The lock id matches.
+					List newObjs = new ArrayList();
+					
+					// Commit any pending changes associated with the lock. In this 
+					// case, we don't care if the lock is effective or expired.
+					commitPendingChanges(binder, entity, fa, lock, newObjs);
+					
+					fa.setFileLock(null); // Clear the lock
+					
+					triggerUpdateTransaction(newObjs);
+				}
+				else {
+					// The lock id doesn't match.
+					throw new LockIdMismatchException();
+				}
+			}
+			else {
+				// The lock is owned by someone else.
+				throw new LockedByAnotherUserException(entity, fa, lock.getOwner());
+			}
+		}
+		else {
+			// The file isn't locked by anyone. Noop.
+			logger.debug("not locked");
+			return;
 		}
     }
 
@@ -789,7 +807,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     }
 
 
-	public void RefreshLocks(Binder binder, DefinableEntity entity) 
+	public void bringLocksUptodate(Binder binder, DefinableEntity entity) 
 		throws RepositoryServiceException, UncheckedIOException {
 		closeExpiredLocksTransactional(binder, entity, true);
 	}

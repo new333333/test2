@@ -257,7 +257,8 @@ public interface FileModule {
      * @throws RepositoryServiceException Any other internal or unexpected error	
      */
     public void unlock(Binder binder, DefinableEntity entity, FileAttachment fa,
-    		String lockId) throws UncheckedIOException, RepositoryServiceException;
+    		String lockId) throws LockedByAnotherUserException, LockIdMismatchException,
+    		UncheckedIOException, RepositoryServiceException;
     
     /**
      * Forcefully unlocks the file and commits pending changes associated
@@ -307,7 +308,7 @@ public interface FileModule {
      * time this method returns all expired locks are gone and all remaining
      * locks are effective. 
      */
-    public void RefreshLocks(Binder binder, DefinableEntity entity) 
+    public void bringLocksUptodate(Binder binder, DefinableEntity entity) 
 	throws RepositoryServiceException, UncheckedIOException;
     
 	
