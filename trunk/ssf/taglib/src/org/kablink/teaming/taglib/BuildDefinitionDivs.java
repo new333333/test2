@@ -595,7 +595,11 @@ public class BuildDefinitionDivs extends TagSupport {
 		String caption = NLT.getDef(DefinitionUtils.getPropertyValue(item, "caption"));
 		if (Validator.isNull(caption)) {
 			caption = DefinitionUtils.getPropertyValue(item, "name");
-		} 
+		} else {
+			if (name.equals("entryDataItem")) {
+				caption += " (" + DefinitionUtils.getPropertyValue(item, "name") + ")";
+			}
+		}
 		sb.append(caption.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
 		sb.append("</a>");
 		addOptionHelp(item, sb, hb);
