@@ -1215,7 +1215,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     		// by another user. 
     		
     		// Make sure that the file lock states are current before examining them.
-    		getFileModule().RefreshLocks(folder, entry);
+    		getFileModule().bringLocksUptodate(folder, entry);
     		
     		// Now that lock states are up-to-date, we can examine them.
     		

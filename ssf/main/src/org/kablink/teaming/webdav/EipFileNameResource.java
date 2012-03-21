@@ -61,7 +61,7 @@ import com.bradmcevoy.http.exceptions.PreConditionFailedException;
  * @author jong
  *
  */
-public class EipFileNameResource extends WebdavResource implements PropFindableResource, GetableResource, LockableResource {
+public class EipFileNameResource extends WebdavResource implements FileAttachmentResource, PropFindableResource, GetableResource, LockableResource {
 
 	private static final Log logger = LogFactory.getLog(EipFileNameResource.class);
 	
@@ -185,6 +185,14 @@ public class EipFileNameResource extends WebdavResource implements PropFindableR
 	@Override
 	public String getWebdavPath() {
 		return EipResource.WEBDAV_PATH + "/" + fa.getId() + "/" + fa.getFileItem().getName();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.webdav.FileAttachmentResource#getFileAttachment()
+	 */
+	@Override
+	public FileAttachment getFileAttachment() {
+		return fa;
 	}
 	
 }

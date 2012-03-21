@@ -78,7 +78,7 @@ import com.bradmcevoy.http.exceptions.PreConditionFailedException;
  * @author jong
  *
  */
-public class FileResource extends WebdavResource implements PropFindableResource, GetableResource, DeletableResource, LockableResource {
+public class FileResource extends WebdavResource implements FileAttachmentResource, PropFindableResource, GetableResource, DeletableResource, LockableResource {
 
 	private static final Log logger = LogFactory.getLog(FileResource.class);
 	
@@ -295,5 +295,13 @@ public class FileResource extends WebdavResource implements PropFindableResource
 	@Override
 	public LockToken getCurrentLock() {
 		return factory.getLockManager().getCurrentToken(this);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.webdav.FileAttachmentResource#getFileAttachment()
+	 */
+	@Override
+	public FileAttachment getFileAttachment() {
+		return resolveFileAttachment();
 	}
 }
