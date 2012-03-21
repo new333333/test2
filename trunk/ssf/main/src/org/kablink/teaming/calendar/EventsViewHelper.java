@@ -44,7 +44,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
+import java.util.TreeSet;
 
 import javax.portlet.PortletSession;
 import javax.portlet.RenderResponse;
@@ -170,6 +172,7 @@ public class EventsViewHelper {
 		
 		Map calendarViewBean = new HashMap();
 		calendarViewBean.put("events", events);
+		calendarViewBean.put("eventBinderIds", getEventBinderIds(events));
 		
 		result.put(WebKeys.CALENDAR_VIEWBEAN, calendarViewBean);
 		
@@ -199,12 +202,22 @@ public class EventsViewHelper {
 		calendarViewBean.put("monthInfo", intervalView.getCurrentDateMonthInfo());
 		calendarViewBean.put("today", new Date());
 		calendarViewBean.put("events", events);
+		calendarViewBean.put("eventBinderIds", getEventBinderIds(events));
 		calendarViewBean.put("eventType", eventType);
 		calendarViewBean.put("dayViewType", dayViewType);
 		
 		result.put(WebKeys.CALENDAR_VIEWBEAN, calendarViewBean);
 		
 		return result;
+	}
+	
+	public static Set getEventBinderIds(List<Map> events) {
+		Set<String> eventBinderIds = new TreeSet<String>();
+		for (Map e : events) {
+			Map entry = (Map) e.get("entry");
+			eventBinderIds.add((String)entry.get("_binderId"));
+		}
+		return eventBinderIds;
 	}
 	
 	public static Map<Map, List<Event>> getEvents(List searchResults, AbstractIntervalView intervalView) {
