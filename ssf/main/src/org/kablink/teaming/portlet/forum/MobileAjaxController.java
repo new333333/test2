@@ -163,7 +163,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 
 		User user = RequestContextHolder.getRequestContext().getUser();
-		if (WebHelper.isUserLoggedIn(request)) {
+		if (WebHelper.isUserLoggedIn(request) && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 		
 			//The user is logged in
 			if (op.equals(WebKeys.OPERATION_MOBILE_ADD_ENTRY)) {
@@ -202,7 +202,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 
 		User user = RequestContextHolder.getRequestContext().getUser();
-		if (!WebHelper.isUserLoggedIn(request)) {
+		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			if (op.equals(WebKeys.OPERATION_VIEW_TEAMING_LIVE)) {
 				return ajaxMobileLogin(this, request, response, "ss_forum", WebKeys.OPERATION_VIEW_TEAMING_LIVE);
 			} else if (op.equals(WebKeys.OPERATION_TEAMING_LIVE_CHECK_FOR_ACTIVITY)) {
@@ -294,7 +294,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			return ajaxMobileShowFollowing(this, request, response);
 		}
 		
-		if (!WebHelper.isUserLoggedIn(request)) {
+		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			return ajaxMobileLogin(this, request, response, "ss_mobile", WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
 		} else {
 			//There is no operation specified. See if this should go to the default home page
