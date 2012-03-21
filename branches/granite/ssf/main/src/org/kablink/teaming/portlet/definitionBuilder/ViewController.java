@@ -352,12 +352,15 @@ public class ViewController extends SAbstractController {
 			String name = NLT.getDef(sourceEle.attributeValue("name"));
 			String caption = NLT.getDef(sourceEle.attributeValue("caption"));
 			if (properties != null) {
+				Element nameProp = (Element) properties.selectSingleNode("property[@name='name']");
 				Element captionProp = (Element) properties.selectSingleNode("property[@name='caption']");
 				if (captionProp != null) {
 					if (!captionProp.attributeValue("value", "").equals("")) {
+						if (name.equals("entryDataItem") && nameProp != null) {
+							caption += " [" +  nameProp.attributeValue("value", "") + "]";
+						}
 						caption += " - " + NLT.getDef(captionProp.attributeValue("value", ""));
 					} else {
-						Element nameProp = (Element) properties.selectSingleNode("property[@name='name']");
 						if (nameProp != null) {
 							if (!nameProp.attributeValue("value", "").equals("")) {
 								caption += " - " + nameProp.attributeValue("value", "");
