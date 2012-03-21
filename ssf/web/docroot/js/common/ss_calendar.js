@@ -399,12 +399,23 @@ function ss_calendarEngine(
 		if (calendarId == defaultCalendarId) {
 			calendarStyle = "ss_calendar_defaultCalendar";
 		} else {
-			calendarStyle = "ss_calendar_calendar" + (calendarId % that.NUMBER_OF_DEFINED_CALENDAR_STYLES);
+			calendarStyle = "ss_calendar_calendar" + getCalendarEventColorNumber(calendarId);
 		}
 		if (onCalendarStyleChoose) {
 			onCalendarStyleChoose(calendarId, calendarStyle);
 		}
 		return calendarStyle;
+	}
+	
+	function getCalendarEventColorNumber(calendarId) {
+		var colorNum = calendarId % that.NUMBER_OF_DEFINED_CALENDAR_STYLES;
+		for (var i = 0; i < ss_cal_Events.eventBinderIds.length; i++) {
+			if (ss_cal_Events.eventBinderIds[i] == calendarId) {
+				colorNum = i % that.NUMBER_OF_DEFINED_CALENDAR_STYLES;
+				break;
+			}
+		}
+		return colorNum;
 	}
 	
 	function fullWithZeros(c) {
@@ -449,6 +460,9 @@ function ss_calendarEngine(
 		}
 		if (eventsData.events) {
 			ss_cal_Events.addEvents(eventsData.events);
+		}
+		if (eventsData.eventBinderIds) {
+			ss_cal_Events.addEventBinderIds(eventsData.eventBinderIds);
 		}
 		if (eventsData.gridSize) {
 			ss_cal_Grid.setGridSize(eventsData.gridSize);
@@ -1337,6 +1351,7 @@ function ss_calendarEngine(
 	    
 	    eventData: {},
 	    eventIdsByEntryId: {},
+	    eventBinderIds: [],
 	    
 	    collisions: {"event": {}, "creation": {}, "activity": {}, "virtual": {}},
 	    collisionI: {},
@@ -1386,6 +1401,16 @@ function ss_calendarEngine(
 			this.reorderEvent();
 	    },
 		
+	    addEventBinderIds: function(newEventBinderIds) {
+	        for (var i = 0; i < newEventBinderIds.length; i++) {
+	            var nebi = newEventBinderIds[i];
+	            // already loaded?
+	            if (!this.eventBinderIds[nebi.binderId]) {
+	            	this.eventBinderIds.push(nebi.binderId);
+	            }
+	        }
+	    },
+		
 	    removeAllEvents: function() {
 			this.eventsType = 0;
 			
@@ -1393,6 +1418,7 @@ function ss_calendarEngine(
 		    
 		    this.eventData =  {};
 		    this.eventIdsByEntryId = {};
+		    this.eventBinderIds = [];
 		    
 		    this.collisions =  {"event": {}, "creation": {}, "activity": {}, "virtual": {}};
 		    this.collisionI =  {};
