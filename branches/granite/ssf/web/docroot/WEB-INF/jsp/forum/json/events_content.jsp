@@ -111,5 +111,10 @@
 		  	--%>eventType: "<ssf:escapeJavaScript value="${evim.eventType}"/>", <%--
                         --%>entityType: "<ssf:escapeJavaScript value="${evim.entry._entityType}"/>", <%--
 			--%>viewOnClick: "ss_loadEntry(this, '${evim.entry._docId}', '${evim.entry._binderId}', '${evim.entry._entityType}', '${ss_namespace}'<c:if test="${ssDashboardRequest}">, 'yes'</c:if>);"}<c:if test="${!status.last}">,</c:if><%--
+	--%></c:forEach>], <%--
+--%>eventBinderIds: [<%--
+  --%><c:forEach var="bid" items="${ssCalendarViewBean.eventBinderIds}" varStatus="status"><%--
+    --%>{<%--
+		  	--%>binderId: "${bid}"}<c:if test="${!status.last}">,</c:if><%--
 	--%></c:forEach>]<%--
 --%>}
