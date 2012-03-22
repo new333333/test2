@@ -252,7 +252,9 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
     	getFolderModule().deleteEntryWorkflow(null, entryId, definitionId);
     }
 	public void folder_modifyWorkflowState(String accessToken, long entryId, long stateId, String toState) {
-		getFolderModule().modifyWorkflowState(null, entryId, stateId, toState);
+		if (getFolderModule().checkIfManualTransitionAllowed(null, entryId, stateId, toState)) {
+			getFolderModule().modifyWorkflowState(null, entryId, stateId, toState);
+		}
 	}
 	@SuppressWarnings("unchecked")
 	public void folder_setWorkflowResponse(String accessToken, long entryId, long stateId, String question, String response) {
