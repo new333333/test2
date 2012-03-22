@@ -836,29 +836,7 @@ var ss_topDivMarginOffset = 32;
 var ss_origianalTopDivSize = 0;
 var ss_origianalWindowSize = 0;
 function ss_resizeTopDiv(namespace) {
-	if (ss_origianalWindowSize == 0) ss_origianalWindowSize = parseInt(ss_getWindowWidth());
-	var divObj = document.getElementById('ss_pseudoPortalDiv'+namespace);
-	if (divObj != null) {
-		if (ss_origianalTopDivSize == parseInt(divObj.style.width) && 
-			ss_origianalWindowSize == parseInt(ss_getWindowWidth())) return;
-		if (ss_entryViewStyle == "popup" || ss_entryViewStyle == "inline") return;
-		if (divObj.style.width && typeof document.body.scrollWidth != "undefined" && 
-				document.body.scrollWidth > ss_topDivMarginOffset) {
-			if (Math.abs(parseInt(document.body.scrollWidth) - ss_origianalTopDivSize) > ss_topDivMarginOffset ||
-					parseInt(ss_getWindowWidth()) != ss_origianalWindowSize) {
-				divObj.style.width = parseInt(ss_getWindowWidth()) - ss_topDivMarginOffset + "px";
-				setTimeout('document.getElementById("ss_pseudoPortalDiv'+namespace+'").style.width = parseInt(document.body.scrollWidth) - ss_topDivMarginOffset + "px";',100);
-			}
-		} else {
-			if (typeof document.body.scrollWidth != "undefined" && document.body.scrollWidth > ss_topDivMarginOffset) {
-				divObj.style.width = parseInt(document.body.scrollWidth) - ss_topDivMarginOffset + "px";
-			}
-		}
-		if (typeof document.body.scrollWidth != "undefined" && document.body.scrollWidth > ss_topDivMarginOffset) {
-			ss_origianalTopDivSize = parseInt(document.body.scrollWidth) - ss_topDivMarginOffset;
-		}
-		ss_origianalWindowSize = parseInt(ss_getWindowWidth());
-	}
+	//This routine is no longer needed in the GWT UI
 }
 
 // Functions to save the user status
