@@ -31,7 +31,7 @@
 			<fileset dir="${app.server.dir}/shared/lib/ext" includes="*.jar" />
 		</delete>
 		<delete failonerror="false">
-			<fileset dir="${app.server.common.lib.dir}" includes="*.jar" />
+			<fileset dir="${app.server.common.lib.dir}" includes="*.*" />
 		</delete>		
 		<delete failonerror="false">
 			<fileset dir="${app.server.shared.lib.dir}" includes="*.jar" />
@@ -171,6 +171,9 @@
 		<copy file="${project.dir}/lib/activation.jar" todir="${tomcat.common.lib.ext}" />
 		<copy file="${project.dir}/lib/mail.jar" todir="${tomcat.common.lib.ext}" />
 
+		<copy todir="${tomcat.common.lib.ext}" >
+			<fileset dir="${project.dir}/classes" includes="*.*" />
+		</copy>
 	</target>
 		
 	<target name="deploy-standalone-jboss-tomcat" depends="init-standalone, clean-app-server">		
