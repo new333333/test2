@@ -1625,9 +1625,9 @@ body, table td, select
 }
 .breadCrumb_ContentNode_AnchorTail
 {
-	font-size: 1.3em !important;
-	margin-top: 10px !important;
-	margin-left: 3px !important;
+	font-size: 1.6em !important;
+	margin-top: 2px !important;
+	margin-left: 0px !important;
 }
 .breadCrumb_TrashLabel
 {
@@ -1636,6 +1636,24 @@ body, table td, select
 	margin-top: 0px;
 	margin-right: 8px;
 }
+
+/* Styles for the breadcrumbs on a binder view page */
+.breadCrumb_BrowserBinder .breadCrumb_ContentNode_ExpanderImg
+{
+	cursor: pointer;
+	margin-top: 0px;
+	margin-right: 0px;
+	width: 0px !important;
+}
+
+.breadCrumb_BrowserBinder .breadCrumb_ContentNode_Anchor
+{
+	margin-top: 0px;
+	margin-right: 5px;
+	padding-right: 20px;
+	background-image: url(images/breadspace.gif);
+	background-repeat:no-repeat;
+	background-position: right;
 
 /* Styles for the search options. */
 .searchOptions
