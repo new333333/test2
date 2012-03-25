@@ -125,10 +125,15 @@ public class WebdavResourceFactory implements ResourceFactory {
 				FileAttachment fa = getFileModule().getFileAttachmentById(fileId);
 				if(fa == null)
 					return null; // No such file exists
-				if(parts.length == 2)
+				if(parts.length == 2) {
 					return new EipFileIdResource(this, fa);
-				else
-					return new EipFileNameResource(this, fa);
+				}
+				else {
+					if(fa.getFileItem().getName().equalsIgnoreCase(parts[2])) // should this check be case sensitive?
+						return new EipFileNameResource(this, fa);
+					else
+						return null; // invalid URL
+				}
 			}
 			else {
 				return null; // invalid URL

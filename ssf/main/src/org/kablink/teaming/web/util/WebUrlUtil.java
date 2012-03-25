@@ -126,7 +126,8 @@ public class WebUrlUtil {
 						UrlType.ssfs,
 						!SPropsUtil.getBoolean("webdav.url.port.optional",true));
 		
-		String ctx = SPropsUtil.getString(SPropsUtil.SSFS_CTX, "/ssfs");
+		//String ctx = SPropsUtil.getString(SPropsUtil.SSFS_CTX, "/ssfs");
+		String ctx = SPropsUtil.getString(SPropsUtil.SSFS_CTX, "");
 		
 		sb.append(ctx).append("/");
 		
@@ -141,7 +142,8 @@ public class WebUrlUtil {
 						UrlType.ssfs,
 						!SPropsUtil.getBoolean("webdav.url.port.optional",true));
 		
-		String ctx = SPropsUtil.getString(SPropsUtil.SSFS_CTX, "/ssfs");
+		//String ctx = SPropsUtil.getString(SPropsUtil.SSFS_CTX, "/ssfs");
+		String ctx = SPropsUtil.getString(SPropsUtil.SSFS_CTX, "");
 		
 		sb.append(ctx).append("/");
 		
