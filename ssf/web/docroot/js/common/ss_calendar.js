@@ -190,7 +190,7 @@ function ss_calendarEngine(
 		lang: window.dojo&&dojo.locale?dojo.locale:"en"
 	};
 	
-	this.NUMBER_OF_DEFINED_CALENDAR_STYLES = 5;
+	this.NUMBER_OF_DEFINED_CALENDAR_STYLES = 11;
 	
 	this.templateHTML = null;
 					
