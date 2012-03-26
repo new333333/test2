@@ -3325,16 +3325,16 @@ a.ss_calendarButton:hover img {
 	background-color: #e8a9e8;
 }
 .ss_calendar_calendar2 {
+	border-color: #d67f51;
+	background-color: #fcac80;
+}
+.ss_calendar_calendar3 {
 	border-color: #79baad;
 	background-color: #abeee1;
 }
-.ss_calendar_calendar3 {
+.ss_calendar_calendar4 {
 	border-color: #e6b920;
 	background-color: #fbe390;
-}
-.ss_calendar_calendar4 {
-	border-color: #72bfe8;
-	background-color: #b6e2f9;
 }
 .ss_calendar_calendar5 {
 	border-color: #a6c48d;
@@ -3345,21 +3345,22 @@ a.ss_calendarButton:hover img {
 	background-color: #cedbf9;
 }
 .ss_calendar_calendar7 {
-	border-color: #cfb17e;
-	background-color: #e8d1a9;
-}
-.ss_calendar_calendar8 {
-	border-color: #d67f51;
-	background-color: #fcac80;
-}
-.ss_calendar_calendar9 {
 	border-color: #eb8792;
 	background-color: #fbc3c9;
 }
-.ss_calendar_calendar10 {
+.ss_calendar_calendar8 {
 	border-color: #cad747;
 	background-color: #f3f9b6;
 }
+.ss_calendar_calendar9 {
+	border-color: #cfb17e;
+	background-color: #e8d1a9;
+}
+.ss_calendar_calendar10 {
+	border-color: #72bfe8;
+	background-color: #b6e2f9;
+}
+
 .ss_calendar_more_box {
 	position: absolute;
 	z-index: 2003;
