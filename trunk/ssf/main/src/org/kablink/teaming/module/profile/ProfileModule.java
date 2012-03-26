@@ -752,8 +752,8 @@ public interface ProfileModule {
      * <p> 
      * The username element will be <code>null</code> if the specified user
      * is not found in the system. The password element will be <code>null</code>
-     * if the user's password is stored using asymmetric (i.e., irreversible)
-     * encryption algorithm.
+     * if the user has no password or the user's password is stored using 
+     * asymmetric (i.e., irreversible) encryption algorithm.
      * 
      * @param username
      * @return

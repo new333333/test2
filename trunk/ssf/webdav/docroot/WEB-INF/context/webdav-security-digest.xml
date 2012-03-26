@@ -28,7 +28,7 @@
 	</bean>
 
 	<bean id="digestUserDetailsService" 
-		class="org.kablink.teaming.asmodule.spring.security.userdetails.DigestUserDetailsService">
+		class="org.kablink.teaming.asmodule.spring.security.userdetails.DecryptedPasswordUserDetailsService">
 	</bean>
 
 	<bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
