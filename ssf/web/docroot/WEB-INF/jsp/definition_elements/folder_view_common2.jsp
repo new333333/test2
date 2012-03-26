@@ -1262,8 +1262,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	ss_accessControlMap[ssBinder.id]['moveEntries'])}">
  <div>
   <form method="post" name="delete_entries_form" >
-  <input type="hidden" name="deleteEntriesBtn"
-    value="deleteEntriesBtn" />
+  <input type="hidden" name="deleteEntriesMenuBtn"
+    value="deleteEntriesMenuBtn" />
   <input type="hidden" name="delete_entries_list"/>
   <input type="hidden" name="delete_operation"/>
   <input type="hidden" name="destination_folder_id"/>
