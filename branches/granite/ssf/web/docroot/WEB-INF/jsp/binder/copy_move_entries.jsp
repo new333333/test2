@@ -47,11 +47,13 @@
 <c:set var="wsTreeName" value="${renderResponse.namespace}_wsTree"/>
 <script type="text/javascript">
 function ${wsTreeName}_showId(forum, obj, action) {
+	var formObj = document.getElementById("delete_entries_form");
+	formObj.destinationFolderId.value = "";
 	return ss_checkTree(obj, "ss_tree_radio${wsTreeName}destination_folder_id" + forum)
 }
 function ss_saveDestinationBinderId(id) {
 	var formObj = document.getElementById("delete_entries_form");
-	formObj.idChoices.value = "destination_" + id
+	formObj.destinationFolderId.value = id;
 }
 function ss_submitMoveBinderForm() {
 	var formObj = document.getElementById("delete_entries_form");
@@ -116,11 +118,11 @@ function ss_submitMoveBinderForm() {
 
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" 
   onClick="ss_startSpinner();setTimeout('ss_submitMoveBinderForm();', 500);return false;">
-<input type="button" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
-  onClick="ss_cancelButtonCloseWindow();return false;">
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 <input type="hidden" name="deleteEntriesBtn" value="deleteEntriesBtn" />
 <input type="hidden" name="delete_entries_list" value="${delete_entries_list}" />
 <input type="hidden" name="delete_operation" value="${ssOperation}"/>
+<input type="hidden" name="destinationFolderId" value=""/>
 
 </form>
 </ssf:form>
