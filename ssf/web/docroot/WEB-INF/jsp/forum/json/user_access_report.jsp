@@ -90,7 +90,7 @@
 <c:if test="${empty userAccessReport}">
 	<% // No %>
 {
-	status : -1,
+	status : 1,
 	errDesc : null,
 	reportData : []
 }
