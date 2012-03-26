@@ -172,7 +172,6 @@ function handleResponseToGetAccessReport( responseData )
 	
 	// Remove any previous access data from the page.
 	removeAccessReportDataFromPage();
-	
 	if ( responseData.status == 1 )
 	{
 		// If we get here then things worked.
@@ -185,9 +184,9 @@ function handleResponseToGetAccessReport( responseData )
 			// Yes
 			// Show the table that holds the list of objects the user has access to.
 			div = document.getElementById( 'accessReportDiv1' );
-			div.style.display = '';
+			div.style.display = 'block';
 			div = document.getElementById( 'accessReportDiv2' );
-			div.style.display = '';
+			div.style.display = 'block';
 			// responseData.reportData is an array of objects.  Each object holds information about
 			// the object the user has access to.
 			for (i = 0; i < responseData.reportData.length; ++i)
@@ -216,6 +215,11 @@ function handleResponseToGetAccessReport( responseData )
 			var msg;
 
 			alert( responseData.errDesc );
+		}
+		else
+		{
+			// We should never get here.
+			alert( 'Unknown access report status: ' + responseData.status );
 		}
 	}
 	else
