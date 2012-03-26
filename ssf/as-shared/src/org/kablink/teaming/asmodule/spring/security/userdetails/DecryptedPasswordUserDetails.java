@@ -35,13 +35,13 @@ package org.kablink.teaming.asmodule.spring.security.userdetails;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.userdetails.UserDetails;
 
-public class DigestUserDetails implements UserDetails {
+public class DecryptedPasswordUserDetails implements UserDetails {
 
 	String username;
 	String password;
 	GrantedAuthority[] authorities = new GrantedAuthority[0];
 
-	public DigestUserDetails(String username, String password) {
+	public DecryptedPasswordUserDetails(String username, String password) {
 		this.username = username;
 		this.password = password;
 	}

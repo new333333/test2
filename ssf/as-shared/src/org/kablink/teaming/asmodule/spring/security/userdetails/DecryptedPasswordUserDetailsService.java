@@ -38,7 +38,7 @@ import org.springframework.security.userdetails.UserDetails;
 import org.springframework.security.userdetails.UserDetailsService;
 import org.springframework.security.userdetails.UsernameNotFoundException;
 
-public class DigestUserDetailsService implements UserDetailsService {
+public class DecryptedPasswordUserDetailsService implements UserDetailsService {
 
 	private static final String SERVICE_BEAN_NAME = "profileModule";
 	
@@ -54,7 +54,7 @@ public class DigestUserDetailsService implements UserDetailsService {
 					new Object[] {username});
 			if(val[0] == null)
 				throw new UsernameNotFoundException("User not found: " + username, username);
-			return new DigestUserDetails(username, val[1]);
+			return new DecryptedPasswordUserDetails(username, val[1]);
 		} catch (Exception e) {
 			throw new UsernameNotFoundException(username, e);
 		}
