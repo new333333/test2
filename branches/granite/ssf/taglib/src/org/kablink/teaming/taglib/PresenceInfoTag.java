@@ -108,9 +108,12 @@ public class PresenceInfoTag extends BodyTagSupport {
 
 			PresenceManager presenceService = (PresenceManager)SpringContextUtil.getBean("presenceService");
 			String userID = "";
-			CustomAttribute attr = user1.getCustomAttribute("presenceID");
-			if (attr != null) {
-				userID = (String)attr.getValue();
+			CustomAttribute attr = null;
+			if (user1 != null) {
+				attr = user1.getCustomAttribute("presenceID");
+				if (attr != null) {
+					userID = (String)attr.getValue();
+				}
 			}
 
 			User userAsking = RequestContextHolder.getRequestContext().getUser();
