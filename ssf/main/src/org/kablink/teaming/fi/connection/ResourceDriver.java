@@ -80,6 +80,13 @@ public interface ResourceDriver {
 	public String getTitle();
 
 	/**
+	 * Return title and mode as a single string.
+	 * 
+	 * @return
+	 */
+	public String getTitleAndMode();
+
+	/**
 	 * Return the ID of the zone in which this driver belongs and is configured.
 	 * 
 	 * @return
