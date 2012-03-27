@@ -1654,6 +1654,7 @@ body, table td, select
 	background-image: url(images/breadspace.gif);
 	background-repeat:no-repeat;
 	background-position: right;
+}
 
 /* Styles for the search options. */
 .searchOptions
