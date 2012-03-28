@@ -458,7 +458,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	        			// This is not used for authentication or synchronization but merely to log the authenticator.
 		     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate2" );
 	        			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
-	        					(String) result.getName(), (String) result.getCredentials(),
+	        					loginName, (String) result.getCredentials(),
 	        					false, false, true, 
 	        					(Map) result.getPrincipal(), getAuthenticator());			
 		     			SimpleProfiler.stop( "4-AuthenticationManagerUtil.authenticate2" );
