@@ -48,7 +48,8 @@ public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
            	Field field = new Field(getSearchFieldName(dataElemName), strToIndex, getFieldStore(), getFieldIndex());
            	// Handle optional sort field
 			Field sortField = null;
-			if(!getSearchFieldName(dataElemName).equals(getSortFieldName(dataElemName))) {
+			if(getSortFieldName(dataElemName) != null && 
+					!getSearchFieldName(dataElemName).equals(getSortFieldName(dataElemName))) {
 				// This data element requires a separate sort field.
 				sortField = new Field(getSortFieldName(dataElemName), strToIndex.toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 			}
