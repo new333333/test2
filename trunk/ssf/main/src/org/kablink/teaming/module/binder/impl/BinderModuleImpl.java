@@ -2887,7 +2887,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	public void deleteFileVersion(Binder binder, DefinableEntity entity, FileAttachment fileAtt) {
-		checkModifyFileAccess(entity);
+		checkDeleteFileAccess(entity);
 		FilesErrors errors = new FilesErrors();
 		//Delete this version
 		if (fileAtt instanceof VersionAttachment) {
@@ -2934,6 +2934,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			getProfileModule().checkAccess((Principal)entity, ProfileOperation.modifyEntry);
 		} else if (entity instanceof Binder) {
 			checkAccess((Binder)entity, BinderOperation.modifyBinder);
+		} else {
+			throw new AccessControlException();
+		}
+	}
+
+	protected void checkDeleteFileAccess(DefinableEntity entity) {
+		if (entity instanceof FolderEntry) {
+			getFolderModule().checkAccess((FolderEntry)entity, FolderOperation.deleteEntry);
+		} else if (entity instanceof Principal) {
+			getProfileModule().checkAccess((Principal)entity, ProfileOperation.deleteEntry);
+		} else if (entity instanceof Binder) {
+			checkAccess((Binder)entity, BinderOperation.deleteBinder);
 		} else {
 			throw new AccessControlException();
 		}
