@@ -47,6 +47,7 @@ import javax.portlet.RenderResponse;
 import org.kablink.teaming.NameMissingException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
@@ -68,6 +69,7 @@ public class ExtensionsController extends  SAbstractController {
 		if (WebHelper.isMethodPost(request)) {
 			Map fileMap=null;
 			if (request instanceof MultipartFileSupport) {
+				getAdminModule().checkAccess(AdminOperation.manageExtensions);
 				
 				//ZoneConfig zoneConfig = getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
 				//String zoneName = zoneConfig.;
@@ -114,6 +116,7 @@ public class ExtensionsController extends  SAbstractController {
 
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		getAdminModule().checkAccess(AdminOperation.manageExtensions);
 		
 		Map model = new HashMap();
 		
