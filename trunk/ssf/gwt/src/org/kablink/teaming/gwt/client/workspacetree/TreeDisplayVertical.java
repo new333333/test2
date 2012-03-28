@@ -1263,7 +1263,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		if (null != binderImg) {
 			String binderIconName = ti.getBinderIconName();
 			if (GwtClientHelper.hasString(binderIconName)) {
-				binderImg.setUrl(getImagesPath() + binderIconName);
+				if (binderIconName.startsWith("/")) {
+					//The imagesPath operation always ends in "/", so don't allow two slashes 
+					binderImg.setUrl(getImagesPath() + binderIconName.substring(1));
+				} else {
+					binderImg.setUrl(getImagesPath() + binderIconName);
+				}
 			}
 			else {
 				ImageResource binderImgRes = ti.getBinderImage();
