@@ -102,7 +102,14 @@
 	} else if (itemType.equals("entryIcon")) {
         %>
         <c:if test="${!empty ssDefinitionEntry.iconName}">
-        <img border="0" src="<html:imagesPath/>${ssDefinitionEntry.iconName}" <ssf:alt/> />
+			<c:set var="entryIconName" value="${ssDefinitionEntry.iconName}"/>
+			<jsp:useBean id="entryIconName" type="java.lang.String" />
+			<%
+				if (entryIconName != null && entryIconName.startsWith("/")) {
+					entryIconName = entryIconName.substring(1);
+				}
+			%>
+        	<img border="0" src="<html:imagesPath/><%=  entryIconName %>" <ssf:alt/> />
         </c:if>
         <%
 	} else {

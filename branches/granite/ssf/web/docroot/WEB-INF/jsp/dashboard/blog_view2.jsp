@@ -69,8 +69,15 @@
 		        <img border="0" src="<html:imagesPath/>icons/folder.gif" <ssf:alt/> />
 		      </c:if>
 		      <c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}">
+				<c:set var="binderIconName" value="${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}"/>
+				<jsp:useBean id="binderIconName" type="java.lang.String" />
+				<%
+					if (binderIconName != null && binderIconName.startsWith("/")) {
+						binderIconName = binderIconName.substring(1);
+					}
+				%>
 		        <img border="0" <ssf:alt/>
-		          src="<html:imagesPath/>${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}" />
+		          src="<html:imagesPath/><%=  binderIconName %>" />
 		      </c:if>
 		  </ssf:param>
 
