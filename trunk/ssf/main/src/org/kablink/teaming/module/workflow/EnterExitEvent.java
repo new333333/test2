@@ -764,15 +764,17 @@ public class EnterExitEvent extends AbstractActionHandler {
 		if (users == null || users.isEmpty()) return null;
 		ArrayList addrs = new ArrayList();
 		for (User u: users)  {
-			String email = u.getEmailAddress();
-			try	{
-				if (!Validator.isNull(email)) {
-					InternetAddress ia = new InternetAddress(email);
-					ia.validate();
-					addrs.add(ia);
+			if (u.isActive()) {
+				String email = u.getEmailAddress();
+				try	{
+					if (!Validator.isNull(email)) {
+						InternetAddress ia = new InternetAddress(email);
+						ia.validate();
+						addrs.add(ia);
+					}
+				} catch (AddressException ae) {
+					logger.error("Skipping email notifications for " + Utils.getUserTitle(u) + " Bad email address");
 				}
-			} catch (AddressException ae) {
-				logger.error("Skipping email notifications for " + Utils.getUserTitle(u) + " Bad email address");
 			}
 		} 
 		return addrs;
