@@ -38,8 +38,15 @@
 	<div class="entry-caption"><c:out value="${property_caption}" /></div>
 	<c:forEach var="selection" items="<%= org.kablink.teaming.util.ResolveIds.getBinderTitlesAndIcons(places_entry.getCustomAttribute(property_name)) %>" >
 		<div class="entry-element">
+			<c:set var="selectionIconName" value="${selection.value.iconName}"/>
+			<jsp:useBean id="selectionIconName" type="java.lang.String" />
+			<%
+				if (selectionIconName != null && selectionIconName.startsWith("/")) {
+					selectionIconName = selectionIconName.substring(1);
+				}
+			%>
 		    <img border="0" <ssf:alt/>
-		          src="<html:imagesPath/>${selection.value.iconName}" />
+		          src="<html:imagesPath/><%=  selectionIconName %>" />
 	          <c:if test="${!selection.value.deleted}">
 				<a       
 		          <ssf:ifadapter>
