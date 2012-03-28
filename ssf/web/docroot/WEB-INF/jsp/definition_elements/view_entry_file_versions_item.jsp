@@ -256,7 +256,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 			<tr class="${ss_attachedFileRowClass}">
 			    <td style="padding-left: 8px; padding-right: 3px">
 			     <c:if test="${!ss_pseudoEntity}">
-			     <c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
+			     <c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['deleteEntry']}">
 			      <input type="checkbox" name="delete_version_${fileVersion.id}"/>
 			     </c:if>
 			     </c:if>
