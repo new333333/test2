@@ -76,6 +76,7 @@ import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.extension.ExtensionDeployer;
 import org.kablink.teaming.extension.ZoneClassManager;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
@@ -184,6 +185,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
    		}
 	}
 	public void deploy() {
+		getAdminModule().checkAccess(AdminOperation.manageExtensions);
 		String sharedExtensionDir = SPropsUtil.getDirPath("data.extension.root.dir") + "extensions" + File.separator + Utils.getZoneKey() ;
 		File sharedDir = new File(sharedExtensionDir);		
 		if (!sharedDir.exists()) sharedDir.mkdirs();
@@ -297,6 +299,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 	}
 	
 	public void deploy(File extension, boolean full, String deployedDate) throws IOException {
+		getAdminModule().checkAccess(AdminOperation.manageExtensions);
 		String zoneKey = Utils.getZoneKey();
 		logger.info("Deploying new extension from " + extension.getPath());
 		SAXReader reader = new SAXReader(false);
@@ -657,6 +660,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 	
 	//1. Move Extension to removal dir
 	public boolean removeExtension(ExtensionInfo ext) {
+		getAdminModule().checkAccess(AdminOperation.manageExtensions);
 		
 		logger.info("Removing Extension from the filesystem");
 		
