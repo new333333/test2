@@ -111,6 +111,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.*;
+import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
@@ -930,9 +931,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_GROUP_MEMBERSHIP:
 		{
-			String groupId = ((GetGroupMembershipCmd) cmd).getGroupId();
-			List<GwtTeamingItem> members = getGroupMembership( ri, groupId );
+			GetGroupMembershipCmd ggmCmd;
+			int totalNumberOfMembers;
+			ArrayList<GwtTeamingItem> members;
+			
+			ggmCmd = (GetGroupMembershipCmd) cmd;
+			String groupId = ggmCmd.getGroupId();
+			members = new ArrayList<GwtTeamingItem>();
+			totalNumberOfMembers = getGroupMembership(
+												ri,
+												members,
+												groupId,
+												ggmCmd.getOffset(),
+												ggmCmd.getNumResults(),
+												ggmCmd.getFilter() );
 			GetGroupMembershipRpcResponseData responseData = new GetGroupMembershipRpcResponseData( members );
+			responseData.setTotalNumberOfMembers( totalNumberOfMembers );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -5678,9 +5692,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Return the membership of the given group.
 	 */
-	private ArrayList<GwtTeamingItem> getGroupMembership( HttpRequestInfo ri, String groupId ) throws GwtTeamingException
+	private int getGroupMembership(
+			HttpRequestInfo ri,
+			ArrayList<GwtTeamingItem> retList,
+			String groupId,
+			int offset,
+			int numResults,
+			MembershipFilter filter ) throws GwtTeamingException
 	{
-		return GwtServerHelper.getGroupMembership( this, groupId );
+		return GwtServerHelper.getGroupMembership( this, retList, groupId, offset, numResults, filter );
 	}
 	
 	

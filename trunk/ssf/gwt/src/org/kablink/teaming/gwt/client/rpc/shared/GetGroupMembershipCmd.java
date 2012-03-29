@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 
 /**
  * This class holds all of the information necessary to execute the
@@ -42,6 +44,21 @@ package org.kablink.teaming.gwt.client.rpc.shared;
  */
 public class GetGroupMembershipCmd extends VibeRpcCmd {
 	private String m_groupId;
+	private int m_offset;
+	private int m_numResults;	// Number of results to return
+	private MembershipFilter m_filter;
+	
+	/**
+	 * This defines what we want returned when we get the list of group members.
+	 * 
+	 * @author jwootton
+	 */
+	public enum MembershipFilter implements IsSerializable
+	{
+		RETRIEVE_ALL_MEMBERS,
+		RETRIEVE_GROUPS_ONLY,
+		RETRIEVE_USERS_ONLY
+	}
 	
 	/**
 	 * Class constructor.
@@ -50,7 +67,12 @@ public class GetGroupMembershipCmd extends VibeRpcCmd {
 	 * constructor.
 	 */
 	public GetGroupMembershipCmd() {
-		super();		
+		super();
+		
+		m_groupId = null;
+		m_offset = 0;
+		m_numResults = Integer.MAX_VALUE - 1;
+		m_filter = MembershipFilter.RETRIEVE_ALL_MEMBERS;
 	}
 
 	/**
@@ -62,6 +84,9 @@ public class GetGroupMembershipCmd extends VibeRpcCmd {
 		this();
 		
 		m_groupId = groupId;
+		m_offset = 0;
+		m_numResults = Integer.MAX_VALUE - 1;
+		m_filter = MembershipFilter.RETRIEVE_ALL_MEMBERS;
 	}
 	
 	/**
@@ -81,5 +106,53 @@ public class GetGroupMembershipCmd extends VibeRpcCmd {
 	@Override
 	public int getCmdType() {
 		return VibeRpcCmdType.GET_GROUP_MEMBERSHIP.ordinal();
+	}
+	
+	/**
+	 * 
+	 */
+	public MembershipFilter getFilter()
+	{
+		return m_filter;
+	}
+	
+	/**
+	 * 
+	 */
+	public int getNumResults()
+	{
+		return m_numResults;
+	}
+	
+	/**
+	 * 
+	 */
+	public int getOffset()
+	{
+		return m_offset;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setFilter( MembershipFilter filter )
+	{
+		m_filter = filter;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setNumResults( int numResults )
+	{
+		m_numResults = numResults;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setOffset( int offset )
+	{
+		m_offset = offset;
 	}
 }

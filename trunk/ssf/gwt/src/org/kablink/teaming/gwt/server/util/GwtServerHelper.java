@@ -162,6 +162,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.ClipboardUser;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
@@ -367,6 +368,50 @@ public class GwtServerHelper {
 		private void setBinderId(   Long       binderId)   {m_binderId    = binderId;  }
 	}
 	   
+	/**
+	 * Inner class used to compare two Principal object.
+	 */
+	public static class PrincipalComparator implements Comparator<Principal> 
+	{
+		private boolean m_ascending;
+		
+		/**
+		 * Class constructor.
+		 * 
+		 * @param ascending
+		 */
+		public PrincipalComparator( boolean ascending ) 
+		{
+			m_ascending = ascending;
+		}
+
+		/**
+		 * Compares two Principal objects by their title
+		 * 
+		 * Implements the Comparator.compare() method.
+		 * 
+		 * @return
+		 */
+		@Override
+		public int compare( Principal principal1, Principal principal2 ) 
+		{
+			int reply;
+			String title1;
+			String title2;
+
+			title1 = principal1.getTitle();
+			title2 = principal2.getTitle();
+			if ( m_ascending )
+				reply = MiscUtil.safeSColatedCompare( title1, title2 );
+			else
+				reply = MiscUtil.safeSColatedCompare( title2, title1 );
+
+			// If we get here, reply contains the appropriate value for
+			// the compare.  Return it.
+			return reply;
+		}
+	}
+
 	/*
 	 * Inner class used compare two GwtAdminAction objects.
 	 */
@@ -3990,17 +4035,24 @@ public class GwtServerHelper {
 	 * Return the membership of the given group.
 	 */
 	@SuppressWarnings("unchecked")
-	public static ArrayList<GwtTeamingItem> getGroupMembership( AllModulesInjected ami, String groupId ) throws GwtTeamingException
+	public static int getGroupMembership(
+			AllModulesInjected ami,
+			ArrayList<GwtTeamingItem> retList,
+			String groupId,
+			int offset,
+			int numResults,
+			MembershipFilter filter ) throws GwtTeamingException
 	{
-		ArrayList<GwtTeamingItem> retList;
-
+		int totalNumberOfMembers = 0;
+		
+		if ( retList == null )
+			return 0;
+		
 		try
 		{
 			Long groupIdL;
 			Principal group;
 
-			retList = new ArrayList<GwtTeamingItem>();
-	
 			// Get the group object.
 			groupIdL = Long.valueOf(groupId);
 			group = ami.getProfileModule().getEntry(groupIdL);
@@ -4009,6 +4061,7 @@ public class GwtServerHelper {
 				Iterator<Principal> itMembers;
 				List<Long> membership;
 				List<Principal> memberList;
+				int i;
 				
 				// Get the members of the group.
 				memberList = ((Group) group).getMembers();
@@ -4028,42 +4081,52 @@ public class GwtServerHelper {
 				// because it handles deleted users and users the logged-in user has
 				// rights to see.
 				memberList = ResolveIds.getPrincipals( membership );
+				
+				// Sort the list of users/groups
+				Collections.sort( memberList, new PrincipalComparator( true ) );
+				
+				totalNumberOfMembers = memberList.size();
 
 				// For each member of the group create a GwtUser or GwtGroup object.
-				itMembers = memberList.iterator();
-				while ( itMembers.hasNext() )
+				for (i = offset; i < memberList.size() && retList.size() < numResults; ++i)
 				{
 					Principal member;
 	
-					member = (Principal) itMembers.next();
+					member = (Principal) memberList.get( i );
 					if (member instanceof Group)
 					{
-						Group nextGroup;
-						GwtGroup gwtGroup;
-						
-						nextGroup = (Group) member;
-						
-						gwtGroup = new GwtGroup();
-						gwtGroup.setId( nextGroup.getId().toString() );
-						gwtGroup.setName( nextGroup.getName() );
-						gwtGroup.setTitle( nextGroup.getTitle() );
-						
-						retList.add( gwtGroup );
+						if ( filter == MembershipFilter.RETRIEVE_ALL_MEMBERS || filter == MembershipFilter.RETRIEVE_GROUPS_ONLY )
+						{
+							Group nextGroup;
+							GwtGroup gwtGroup;
+							
+							nextGroup = (Group) member;
+							
+							gwtGroup = new GwtGroup();
+							gwtGroup.setId( nextGroup.getId().toString() );
+							gwtGroup.setName( nextGroup.getName() );
+							gwtGroup.setTitle( nextGroup.getTitle() );
+							
+							retList.add( gwtGroup );
+						}
 					}
 					else if (member instanceof User)
 					{
-						User user;
-						GwtUser gwtUser;
-						
-						user = (User) member;
-	
-						gwtUser = new GwtUser();
-						gwtUser.setUserId( user.getId() );
-						gwtUser.setName( user.getName() );
-						gwtUser.setTitle( Utils.getUserTitle( user ) );
-						gwtUser.setWorkspaceTitle( user.getWSTitle() );
-	
-						retList.add( gwtUser );
+						if ( filter == MembershipFilter.RETRIEVE_ALL_MEMBERS || filter == MembershipFilter.RETRIEVE_USERS_ONLY )
+						{
+							User user;
+							GwtUser gwtUser;
+							
+							user = (User) member;
+		
+							gwtUser = new GwtUser();
+							gwtUser.setUserId( user.getId() );
+							gwtUser.setName( user.getName() );
+							gwtUser.setTitle( Utils.getUserTitle( user ) );
+							gwtUser.setWorkspaceTitle( user.getWSTitle() );
+		
+							retList.add( gwtUser );
+						}
 					}
 				}
 			}
@@ -4073,7 +4136,7 @@ public class GwtServerHelper {
 			throw GwtServerHelper.getGwtTeamingException( ex );
 		}
 		
-		return retList;
+		return totalNumberOfMembers;
 	}
 
 	/**
@@ -4622,30 +4685,12 @@ public class GwtServerHelper {
 			group = ami.getProfileModule().getEntry( groupIdL );
 			if ( group != null && group instanceof Group )
 			{
-				Iterator<Principal> itMembers;
-				List<Long> membership;
 				List<Principal> memberList;
 				
 				// Get the members of the group.
 				memberList = ((Group) group).getMembers();
-				
-				// Get a list of the ids of all the members of this group.
-				membership = new ArrayList<Long>();
-				itMembers = memberList.iterator();
-				while (itMembers.hasNext())
-				{
-					Principal member;
-					
-					member = (Principal) itMembers.next();
-					membership.add( member.getId() );
-				}
-				
-				// Get all the memembers of the group.  We call ResolveIDs.getPrincipals()
-				// because it handles deleted users and users the logged-in user has
-				// rights to see.
-				memberList = ResolveIds.getPrincipals( membership );
-				
-				count = memberList.size();
+				if ( memberList != null )
+					count = memberList.size();
 			}
 		}
 		catch (Exception ex)
