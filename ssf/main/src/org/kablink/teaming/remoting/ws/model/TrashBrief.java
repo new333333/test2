@@ -178,12 +178,12 @@ public class TrashBrief implements Serializable {
 		Timestamp modification;
 		if (null != preDeletedBy) {
 			Principal p = bs.getProfileModule().getEntry(preDeletedBy);
-			creation = new Timestamp(p.getTitle(), new Date(preDeletedWhen));
-			modification = new Timestamp(p.getTitle(), new Date(preDeletedWhen));
+			creation = new Timestamp(p.getTitle(), p.getId(), new Date(preDeletedWhen));
+			modification = new Timestamp(p.getTitle(), p.getId(), new Date(preDeletedWhen));
 		}
 		else {
-			creation = new Timestamp("", new Date(0));
-			modification = new Timestamp("", new Date(0));
+			creation = new Timestamp("", null, new Date(0));
+			modification = new Timestamp("", null, new Date(0));
 		}
 		Integer definitionType = binder.getDefinitionType();
 		String permaLink = PermaLinkUtil.getPermalink(binder);
@@ -256,6 +256,6 @@ public class TrashBrief implements Serializable {
 	 * Constructs a Timestamp from a HistoryStamp.
 	 */
 	private static Timestamp getTimestampFromHistory(HistoryStamp hs) {
-		return new Timestamp(Utils.redactUserPrincipalIfNecessary(hs.getPrincipal()).getName(), hs.getDate());
+		return new Timestamp(Utils.redactUserPrincipalIfNecessary(hs.getPrincipal()).getName(), hs.getPrincipal().getId(), hs.getDate());
 	}
 }

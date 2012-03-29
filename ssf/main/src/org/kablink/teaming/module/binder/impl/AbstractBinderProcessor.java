@@ -2581,11 +2581,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		User user;
 		if (options != null && options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE)) {
 			Calendar date = (Calendar)options.get(ObjectKeys.INPUT_OPTION_CREATION_DATE);
+			Long id = (Long)options.get(ObjectKeys.INPUT_OPTION_CREATION_ID);
 			String name = (String)options.get(ObjectKeys.INPUT_OPTION_CREATION_NAME);
-			if (Validator.isNull(name)) {
-				user = RequestContextHolder.getRequestContext().getUser();
-			} else {
-				user = getProfileDao().findUserByName(name, RequestContextHolder.getRequestContext().getZoneName());
+			if(id != null) { // id specified
+				user = getProfileDao().loadUser(id, RequestContextHolder.getRequestContext().getZoneId());
+			}
+			else if(Validator.isNotNull(name)) { // name specified
+				user = getProfileDao().findUserByName(name, RequestContextHolder.getRequestContext().getZoneId());				
+			}
+			else { // neither id nor name specified
+				user = RequestContextHolder.getRequestContext().getUser();				
 			}
 			entity.setCreation(new HistoryStamp(user, date.getTime()));
 		} else {
@@ -2597,11 +2602,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		if (options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE))) return;
 		if (options != null && options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)) {
 			Calendar date = (Calendar)options.get(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE);
+			Long id = (Long)options.get(ObjectKeys.INPUT_OPTION_MODIFICATION_ID);
 			String name = (String)options.get(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME);
-			if (Validator.isNull(name)) {
-				user = RequestContextHolder.getRequestContext().getUser();
-			} else {
-				user = getProfileDao().findUserByName(name, RequestContextHolder.getRequestContext().getZoneName());
+			if(id != null) { // id specified
+				user = getProfileDao().loadUser(id,  RequestContextHolder.getRequestContext().getZoneId());
+			}
+			else if(Validator.isNotNull(name)) { // name specified
+				user = getProfileDao().findUserByName(name, RequestContextHolder.getRequestContext().getZoneId());				
+			}
+			else { // neither id nor name specified
+				user = RequestContextHolder.getRequestContext().getUser();				
 			}
 			entity.setModification(new HistoryStamp(user, date.getTime()));
 		} else if (fallback != null) {
