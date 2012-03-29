@@ -549,8 +549,12 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			UserPrincipal creator = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) search.get(Constants.CREATORID_FIELD)));
 			UserPrincipal modifier = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) search.get(Constants.MODIFICATIONID_FIELD)));
 			
-			creation = new Timestamp(((creator != null)? creator.getName() : (String) search.get(Constants.CREATOR_NAME_FIELD)),(Date) search.get(Constants.CREATION_DATE_FIELD));
-			modification = new Timestamp(((modifier != null)? modifier.getName() : (String) search.get(Constants.MODIFICATION_NAME_FIELD)),(Date) search.get(Constants.MODIFICATION_DATE_FIELD));
+			creation = new Timestamp(((creator != null)? creator.getName() : (String) search.get(Constants.CREATOR_NAME_FIELD)),
+					Long.valueOf((String)search.get(Constants.CREATORID_FIELD)),
+					(Date) search.get(Constants.CREATION_DATE_FIELD));
+			modification = new Timestamp(((modifier != null)? modifier.getName() : (String) search.get(Constants.MODIFICATION_NAME_FIELD)),
+					Long.valueOf((String)search.get(Constants.MODIFICATIONID_FIELD)),
+					(Date) search.get(Constants.MODIFICATION_DATE_FIELD));
 			createdWithDefinitionId = (String) search.get(Constants.CREATED_WITH_DEFINITION_FIELD);
 			defaultViewDefinitionId = (String) search.get(Constants.COMMAND_DEFINITION_FIELD);
 			family = (String) search.get(Constants.FAMILY_FIELD);
