@@ -39,15 +39,17 @@ import java.util.Date;
 public class Timestamp implements Serializable {
 
 	private String principal;
+	private Long principalId;
 	private Calendar date;
 	
 	public Timestamp() {
 	}
 	
-	public Timestamp(String principal, Date date) {
+	public Timestamp(String principal, Long principalId, Date date) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		setPrincipal(principal);
+		setPrincipalId(principalId);
 		setDate(cal);
 	}
 	public Calendar getDate() {
@@ -61,6 +63,12 @@ public class Timestamp implements Serializable {
 	}
 	public void setPrincipal(String principal) {
 		this.principal = principal;
+	}
+	public Long getPrincipalId() {
+		return principalId;
+	}
+	public void setPrincipalId(Long principalId) {
+		this.principalId = principalId;
 	}
 	
 }

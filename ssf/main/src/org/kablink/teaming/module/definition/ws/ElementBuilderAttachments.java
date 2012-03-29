@@ -63,8 +63,12 @@ public class ElementBuilderAttachments extends AbstractElementBuilder {
 				if(attachments != null) {
 					FileLock fl = att.getFileLock();
 					attachments.add(new Attachment(att.getId(), att.getFileItem().getName(),
-							new Timestamp(Utils.redactUserPrincipalIfNecessary(att.getCreation().getPrincipal()).getName(), att.getCreation().getDate()),
-							new Timestamp(Utils.redactUserPrincipalIfNecessary(att.getModification().getPrincipal()).getName(), att.getModification().getDate()),
+							new Timestamp(Utils.redactUserPrincipalIfNecessary(att.getCreation().getPrincipal()).getName(), 
+									att.getCreation().getPrincipal().getId(),
+									att.getCreation().getDate()),
+							new Timestamp(Utils.redactUserPrincipalIfNecessary(att.getModification().getPrincipal()).getName(), 
+									att.getModification().getPrincipal().getId(),
+									att.getModification().getDate()),
 							att.getFileItem().getLength(), webUrl, att.getHighestVersionNumber(), att.getMajorVersion().intValue(), att.getMinorVersion().intValue(), 
 							att.getFileItem().getDescription().getText(), att.getFileStatus().intValue(),
 							(fl != null && fl.getOwner() != null)? fl.getOwner().getId():null, (fl!= null)? fl.getExpirationDate():null));

@@ -587,11 +587,15 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 						// Used to import entries into system.  Preserved when used with SKIP_NOTIFY_ON_ENTER
 						User user;
 						Calendar date = (Calendar)options.get(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE);
+						Long modId = (Long)options.get(ObjectKeys.INPUT_OPTION_MODIFICATION_ID);
 						String name = (String)options.get(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME);
-						if (Validator.isNull(name)) {
+						if(modId != null) {
+							user = getProfileDao().loadUser(modId, RequestContextHolder.getRequestContext().getZoneId());
+						}
+						else if (Validator.isNull(name)) {
 							user = RequestContextHolder.getRequestContext().getUser();
 						} else {
-							user = getProfileDao().findUserByName(name, RequestContextHolder.getRequestContext().getZoneName());
+							user = getProfileDao().findUserByName(name, RequestContextHolder.getRequestContext().getZoneId());
 						}
 						entry.setWorkflowChange(new HistoryStamp(user, date.getTime()));
 						ws.setWorkflowChange(new HistoryStamp(user, date.getTime()));

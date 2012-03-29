@@ -612,7 +612,7 @@ public class TeamingServiceClientWithStub {
 		testEntry.setParentBinderId(new Long(251));
 	    Calendar cal = Calendar.getInstance();
 	    cal.setTimeInMillis(cal.getTimeInMillis() - 100000000);
-	    Timestamp ts = new Timestamp(cal,"user1");
+	    Timestamp ts = new Timestamp(cal,"user1", null);
 	    testEntry.setCreation(ts);
 		long testEntryId = stub.folder_addEntry(null, testEntry, null);
 		System.out.println("Successfully created a discussion entry with ID = " + testEntryId);

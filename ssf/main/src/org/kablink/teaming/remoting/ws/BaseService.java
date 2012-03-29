@@ -79,6 +79,7 @@ import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.definition.ws.ElementBuilder;
 import org.kablink.teaming.module.definition.ws.ElementBuilderUtil;
+import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.remoting.ws.model.BinderBrief;
 import org.kablink.teaming.remoting.ws.model.FileVersions;
 import org.kablink.teaming.remoting.ws.model.FolderEntryBrief;
@@ -332,12 +333,12 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 					if (response.getResponseDate() != null) {
 						if (response.getResponderId() != null) {
 							try {
-								wrModel.setResponder(new Timestamp(getProfileModule().getEntry(response.getResponderId()).getName(), response.getResponseDate()));								
+								wrModel.setResponder(new Timestamp(getProfileModule().getEntry(response.getResponderId()).getName(), response.getResponderId(), response.getResponseDate()));								
 							} catch (Exception ex) {
-								wrModel.setResponder(new Timestamp("", response.getResponseDate()));								
+								wrModel.setResponder(new Timestamp("", response.getResponderId(), response.getResponseDate()));								
 							}
 						} else {
-							wrModel.setResponder(new Timestamp("", response.getResponseDate()));
+							wrModel.setResponder(new Timestamp("", null, response.getResponseDate()));
 						}
 					}
 				}
@@ -503,7 +504,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	}
 	
 	protected org.kablink.teaming.remoting.ws.model.Timestamp toTimestampModel(HistoryStamp hs) {
-		return new Timestamp(Utils.redactUserPrincipalIfNecessary(hs.getPrincipal()).getName(), hs.getDate());
+		return new Timestamp(Utils.redactUserPrincipalIfNecessary(hs.getPrincipal()).getName(), hs.getPrincipal().getId(), hs.getDate());
 	}
 	
 	protected void fillDefinableEntityModelDefinable(final org.kablink.teaming.remoting.ws.model.DefinableEntity entityModel, final DefinableEntity entity) {
@@ -621,8 +622,12 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		UserPrincipal creator = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) entry.get(Constants.CREATORID_FIELD)));
 		UserPrincipal modifier = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) entry.get(Constants.MODIFICATIONID_FIELD)));
 		
-		entryBrief.setCreation(new Timestamp(((creator != null)? creator.getName() : (String) entry.get(Constants.CREATOR_NAME_FIELD)),(Date) entry.get(Constants.CREATION_DATE_FIELD)));
-		entryBrief.setModification(new Timestamp(((modifier != null)? modifier.getName() : (String) entry.get(Constants.MODIFICATION_NAME_FIELD)),(Date) entry.get(Constants.MODIFICATION_DATE_FIELD)));
+		entryBrief.setCreation(new Timestamp(((creator != null)? creator.getName() : (String) entry.get(Constants.CREATOR_NAME_FIELD)),
+				Long.valueOf((String)entry.get(Constants.CREATORID_FIELD)),
+				(Date) entry.get(Constants.CREATION_DATE_FIELD)));
+		entryBrief.setModification(new Timestamp(((modifier != null)? modifier.getName() : (String) entry.get(Constants.MODIFICATION_NAME_FIELD)),
+				Long.valueOf((String)entry.get(Constants.MODIFICATIONID_FIELD)),
+				(Date) entry.get(Constants.MODIFICATION_DATE_FIELD)));
 		String reservedByStr = (String) entry.get(Constants.RESERVEDBY_ID_FIELD);
 		if(Validator.isNotNull(reservedByStr))
 			entryBrief.setReservedBy(Long.valueOf(reservedByStr));
@@ -710,8 +715,12 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 					vatt.getVersionNumber(),
 					vatt.getMajorVersion(),
 					vatt.getMinorVersion(),
-					new Timestamp(Utils.redactUserPrincipalIfNecessary(vatt.getCreation().getPrincipal()).getName(), vatt.getCreation().getDate()),
-					new Timestamp(Utils.redactUserPrincipalIfNecessary(vatt.getModification().getPrincipal()).getName(), vatt.getModification().getDate()),
+					new Timestamp(Utils.redactUserPrincipalIfNecessary(vatt.getCreation().getPrincipal()).getName(), 
+							vatt.getCreation().getPrincipal().getId(),
+							vatt.getCreation().getDate()),
+					new Timestamp(Utils.redactUserPrincipalIfNecessary(vatt.getModification().getPrincipal()).getName(), 
+							vatt.getModification().getPrincipal().getId(),
+							vatt.getModification().getDate()),
 					vatt.getFileItem().getLength(),
 					WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, vatt),
 					vatt.getFileItem().getDescription().getText(), 
@@ -754,7 +763,15 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		return (FileAttachment) att;
 	}
 	
-	protected VersionAttachment getVersionAttachment(DefinableEntity entry, String fileVersionId) {
+	protected byte[] getFileVersionAsByteArray(Binder binder, DefinableEntity entity, String fileVersionId) {
+		VersionAttachment va = getVersionAttachment(entity, fileVersionId);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		getFileModule().readFile(binder, entity, va, baos);
+		return baos.toByteArray();
+	}
+	
+	protected VersionAttachment getVersionAttachment(DefinableEntity entry, String fileVersionId) 
+	throws NoFileVersionByTheIdException {
 		VersionAttachment fileVer;
 		for (Attachment attachment : entry.getAttachments()) {
 			if (attachment instanceof FileAttachment) {
@@ -764,13 +781,6 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 			}
 		}
 		throw new NoFileVersionByTheIdException(fileVersionId);
-	}
-	
-	protected byte[] getFileVersionAsByteArray(Binder binder, DefinableEntity entity, String fileVersionId) {
-		VersionAttachment va = getVersionAttachment(entity, fileVersionId);
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		getFileModule().readFile(binder, entity, va, baos);
-		return baos.toByteArray();
 	}
 	
 	/*
@@ -792,6 +802,8 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		if(creation != null) {
 			if(creation.getPrincipal() != null)
 				options.put(ObjectKeys.INPUT_OPTION_CREATION_NAME, creation.getPrincipal());
+			if(creation.getPrincipalId() != null)
+				options.put(ObjectKeys.INPUT_OPTION_CREATION_ID, creation.getPrincipalId());
 			if(creation.getDate() != null)
 				options.put(ObjectKeys.INPUT_OPTION_CREATION_DATE, creation.getDate());
 		}
@@ -799,6 +811,8 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		if(modification != null) {
 			if(modification.getPrincipal() != null)
 				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, modification.getPrincipal());
+			if(modification.getPrincipalId() != null)
+				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_ID, modification.getPrincipalId());
 			if(modification.getDate() != null)
 				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modification.getDate());
 		}
