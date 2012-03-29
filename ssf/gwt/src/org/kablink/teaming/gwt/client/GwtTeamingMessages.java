@@ -1567,4 +1567,9 @@ public interface GwtTeamingMessages extends Messages
 	String modifyDynamicMembershipDlgTestQueryResults( int count );
 	String modifyDynamicMembershipDlgUpdateLabel();
 
+	// Strings used in the Show dynamic membership dialog
+	String showDynamicMembershipDlgGroupTab();
+	String showDynamicMembershipDlgHeader();
+	String showDynamicMembershipDlgUserTab();
+
 }// end GwtTeamingMessages

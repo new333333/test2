@@ -690,6 +690,9 @@ public class ModifyGroupDlg extends DlgBox
 			// Default the membership to "static"
 			m_staticRb.setValue( true );
 			m_dynamicRb.setValue( false );
+			
+			// Enable the "Edit group membership" button
+			enableEditMembershipButton();
 		}
 	}
 	
@@ -769,7 +772,7 @@ public class ModifyGroupDlg extends DlgBox
 				m_dynamicMembershipDlg = new ModifyDynamicMembershipDlg( false, true, handler, null, x, y );
 			}
 			
-			m_dynamicMembershipDlg.init( m_dynamicMembershipCriteria, m_numDynamicMembers );
+			m_dynamicMembershipDlg.init( m_dynamicMembershipCriteria, m_numDynamicMembers, m_groupInfo.getId() );
 			m_dynamicMembershipDlg.setPopupPosition( x, y );
 			m_dynamicMembershipDlg.show();
 		}
