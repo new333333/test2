@@ -127,7 +127,7 @@
 			</c:if>
 			<c:if test="${textFormat != '2'}">
 			  <div>
-				<ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" 
+				<ssf:markup entity="${mashupEntry}" leaveSectionsUnchanged="true" 
 				>${mashupEntry.description.text}</ssf:markup>
 			  </div>
 			</c:if>
