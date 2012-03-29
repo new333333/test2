@@ -552,6 +552,12 @@ public abstract class WSClientBase {
 			System.out.println("Entity ID: " + entity.getId());
 			System.out.println("Entity title: " + entity.getTitle());
 			System.out.println("Entity family: " + entity.getFamily());
+			System.out.println("Entity creation principal name: "  + entity.getCreation().getPrincipal());
+			System.out.println("Entity creation principal id: "  + entity.getCreation().getPrincipalId());
+			System.out.println("Entity creation date: "  + entity.getCreation().getDate().getTime().toString());
+			System.out.println("Entity modification principal name: "  + entity.getModification().getPrincipal());
+			System.out.println("Entity modification principal id: "  + entity.getModification().getPrincipalId());
+			System.out.println("Entity modification date: "  + entity.getModification().getDate().getTime().toString());
 			AttachmentsField aField = entity.getAttachmentsField();
 			if(aField != null) {
 				System.out.println("Attachments name: " + aField.getName());
@@ -713,6 +719,11 @@ public abstract class WSClientBase {
 	void printFolderEntryBrief(FolderEntryBrief feb) {
 		System.out.println();
 		System.out.println("ID: " + feb.getId());
+		System.out.println("Creation principal name: " + feb.getCreation().getPrincipal());
+		System.out.println("Creation principal id: " + feb.getCreation().getPrincipalId());
+		System.out.println("Creation date: " + feb.getCreation().getDate().getTime().toString());
+		System.out.println("Modification principal name: " + feb.getModification().getPrincipal());
+		System.out.println("Modification principal id: " + feb.getModification().getPrincipalId());
 		System.out.println("Modification date: " + feb.getModification().getDate().getTime().toString());
 		System.out.println("Definition ID: " + feb.getDefinitionId());
 		System.out.println("Doc Level: " + feb.getDocLevel());
