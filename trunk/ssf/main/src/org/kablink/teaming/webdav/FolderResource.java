@@ -77,12 +77,12 @@ public class FolderResource extends BinderResource implements PropFindableResour
 	// lazy resolved for efficiency, so may be null initially
 	private Folder folder;
 	
-	public FolderResource(WebdavResourceFactory factory, Folder folder) {
-		super(factory, folder);
+	public FolderResource(WebdavResourceFactory factory, String webdavPath, Folder folder) {
+		super(factory, webdavPath, folder);
 	}
 
-	public FolderResource(WebdavResourceFactory factory, BinderIndexData bid) {
-		super(factory, bid);
+	public FolderResource(WebdavResourceFactory factory, String webdavPath, BinderIndexData bid) {
+		super(factory, webdavPath, bid);
 	}
 	
 	/* (non-Javadoc)

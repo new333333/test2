@@ -65,13 +65,13 @@ public class WorkspaceResource extends BinderResource  implements PropFindableRe
 	// lazy resolved for efficiency, so may be null initially
 	private Workspace ws;
 	
-	public WorkspaceResource(WebdavResourceFactory factory, Workspace ws) {
-		super(factory, ws);
+	public WorkspaceResource(WebdavResourceFactory factory, String webdavPath, Workspace ws) {
+		super(factory, webdavPath, ws);
 		this.ws = ws; // already resolved
 	}
 
-	public WorkspaceResource(WebdavResourceFactory factory, BinderIndexData bid) {
-		super(factory, bid);
+	public WorkspaceResource(WebdavResourceFactory factory, String webdavPath, BinderIndexData bid) {
+		super(factory, webdavPath, bid);
 	}
 	
 	/* (non-Javadoc)

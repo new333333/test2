@@ -97,7 +97,7 @@ public class DavResource extends WebdavCollectionResource implements PropFindabl
 	 */
 	@Override
 	public Long getMaxAgeSeconds(Auth auth) {
-		return factory.getMaxAgeSecondsDav();
+		return factory.getMaxAgeSecondsStatic();
 	}
 
 	/* (non-Javadoc)
@@ -107,7 +107,7 @@ public class DavResource extends WebdavCollectionResource implements PropFindabl
 	public Resource child(String childName) {
 		Workspace topWS = getWorkspaceModule().getTopWorkspace();
 		if(topWS.getTitle().equals(childName))
-			return new WorkspaceResource(factory, topWS);
+			return new WorkspaceResource(factory, getWebdavPath() + "/" + topWS.getTitle(), topWS);
 		else
 			return null;
 	}
@@ -119,7 +119,7 @@ public class DavResource extends WebdavCollectionResource implements PropFindabl
 	public List<? extends Resource> getChildren() {
 		Workspace topWS = getWorkspaceModule().getTopWorkspace();
 		List<Resource> list = new ArrayList<Resource>();
-		list.add(new WorkspaceResource(factory, topWS));
+		list.add(new WorkspaceResource(factory, getWebdavPath() + "/" + topWS.getTitle(), topWS));
 		return list;
 	}
 

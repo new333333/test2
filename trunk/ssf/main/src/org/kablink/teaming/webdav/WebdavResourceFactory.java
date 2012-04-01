@@ -35,10 +35,14 @@ package org.kablink.teaming.webdav;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.file.FileModule;
@@ -68,8 +72,7 @@ public class WebdavResourceFactory implements ResourceFactory {
 	private volatile boolean inited = false;
 	
 	private boolean allowDirectoryBrowsing = true;
-	private long maxAgeSecondsRoot = 86400;
-	private long maxAgeSecondsDav = 3600;
+	private long maxAgeSecondsStatic = 3600;
 	private long maxAgeSecondsWorkspace = 10;
 	private long maxAgeSecondsFolder = 10;
 	private long maxAgeSecondsFile = 10;
@@ -100,22 +103,22 @@ public class WebdavResourceFactory implements ResourceFactory {
 				return new DavResource(this);
 			}
 			else {
-				Object obj = resolvePath(p);
+				Object obj = resolvePath(p.getStripFirst());
 				if(obj instanceof FileAttachment) {
 					return new FileResource(this, path, (FileAttachment)obj);
 				}
 				else if(obj instanceof Folder) {
-					return new FolderResource(this, (Folder)obj);
+					return new FolderResource(this, path, (Folder)obj);
 				}
 				else if(obj instanceof Workspace) {
-					return new WorkspaceResource(this, (Workspace)obj);
+					return new WorkspaceResource(this, path, (Workspace)obj);
 				}
 				else {
 					return null;
 				}
 			}
 		}
-		else if(p.getFirst().equals("wde")) {
+		else if(p.getFirst().equals("wde")) { // edit-in-place
 			String[] parts = p.getParts();
 			if(parts.length == 1) {
 				return new EipResource(this);
@@ -139,6 +142,41 @@ public class WebdavResourceFactory implements ResourceFactory {
 				return null; // invalid URL
 			}
 		}
+		else if(p.getFirst().equals("wda")) { // alias
+			if(p.getLength() == 1) {
+				return new AliasResource(this);
+			}
+			else {
+				p = p.getStripFirst(); // remove "/wda"
+				String simpleName = p.getFirst();
+				SimpleName sn = getCoreDao().loadSimpleNameByEmailAddress(simpleName, RequestContextHolder.getRequestContext().getZoneId());
+				if(sn == null)
+					return null; // the simple path is not recognized
+				Binder binder;
+				try {
+					binder = getCoreDao().loadBinder(sn.getBinderId(), RequestContextHolder.getRequestContext().getZoneId());
+				}
+				catch(NoBinderByTheIdException e) {
+					logger.error("Can not load binder associated with simple name '" + simpleName + "'", e); // This shouldn't occur.
+					return null;
+				}
+				Path vibePathForAliasedBinder = Path.path(binder.getPathName());
+				Path vibeFullPath = vibePathForAliasedBinder.add(p.getStripFirst());
+				Object obj = resolvePath(vibeFullPath);
+				if(obj instanceof FileAttachment) {
+					return new FileResource(this, path, (FileAttachment)obj);
+				}
+				else if(obj instanceof Folder) {
+					return new FolderResource(this, path, (Folder)obj);
+				}
+				else if(obj instanceof Workspace) {
+					return new WorkspaceResource(this, path, (Workspace)obj);
+				}
+				else {
+					return null;
+				}
+			}
+		}
 		else {
 			return null;
 		}
@@ -156,16 +194,10 @@ public class WebdavResourceFactory implements ResourceFactory {
 		return allowDirectoryBrowsing;
 	}
 
-	public long getMaxAgeSecondsRoot() {
+	public long getMaxAgeSecondsStatic() {
 		if(!inited)
 			init();
-		return maxAgeSecondsRoot;
-	}
-
-	public long getMaxAgeSecondsDav() {
-		if(!inited)
-			init();
-		return maxAgeSecondsDav;
+		return maxAgeSecondsStatic;
 	}
 
 	public long getMaxAgeSecondsWorkspace() {
@@ -204,8 +236,7 @@ public class WebdavResourceFactory implements ResourceFactory {
 		return securityManager;
 	}
 	
-	protected Object resolvePath(Path path) {
-		Path vibePath = path.getStripFirst(); // Skip "/wd" element
+	protected Object resolvePath(Path vibePath) {
 		String vibePathStr = vibePath.toPath(); // This is effective data path in Vibe
 		
 		try {
@@ -250,16 +281,14 @@ public class WebdavResourceFactory implements ResourceFactory {
 		this.securityManager = (SecurityManager) ReflectHelper.getInstance(securityManagerClassName);
 
 		allowDirectoryBrowsing = SPropsUtil.getBoolean("wd.allow.directory.browsing", true);
-		maxAgeSecondsRoot = SPropsUtil.getLong("wd.max.age.seconds.root", 86400);
-		maxAgeSecondsDav = SPropsUtil.getLong("wd.max.age.seconds.dav", 3600);
+		maxAgeSecondsStatic = SPropsUtil.getLong("wd.max.age.seconds.static", 3600);
 		maxAgeSecondsWorkspace = SPropsUtil.getLong("wd.max.age.seconds.workspace", 10);
 		maxAgeSecondsFolder = SPropsUtil.getLong("wd.max.age.seconds.folder", 10);
 		maxAgeSecondsFile = SPropsUtil.getLong("wd.max.age.seconds.file", 10);
 		maxAgeSecondsEipFile = SPropsUtil.getLong("wd.max.age.seconds.eip.file", 0);
 		
 		logger.info("allowDirectoryBrowsing:" + allowDirectoryBrowsing + 
-				" maxAgeSecondsRoot:" + maxAgeSecondsRoot +
-				" maxAgeSecondsDav:" + maxAgeSecondsDav +
+				" maxAgeSecondsStatic:" + maxAgeSecondsStatic +
 				" maxAgeSecondsWorkspace:" + maxAgeSecondsWorkspace +
 				" maxAgeSecondsFolder:" + maxAgeSecondsFolder +
 				" maxAgeSecondsFile:" + maxAgeSecondsFile +
@@ -280,4 +309,7 @@ public class WebdavResourceFactory implements ResourceFactory {
 		return (FileModule) SpringContextUtil.getBean("fileModule");
 	}
 
+	protected CoreDao getCoreDao() {
+		return (CoreDao) SpringContextUtil.getBean("coreDao");
+	}
 }
