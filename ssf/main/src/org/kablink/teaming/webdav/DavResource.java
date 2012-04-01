@@ -52,8 +52,8 @@ import com.bradmcevoy.http.Resource;
  */
 public class DavResource extends WebdavCollectionResource implements PropFindableResource, GetableResource, CollectionResource {
 
-	static final String ID = "dav";
-	static final String WEBDAV_PATH = "/dav";
+	static final String ID = "wd";
+	static final String WEBDAV_PATH = "/wd";
 	
 	public DavResource(WebdavResourceFactory factory) {
 		super(factory);
