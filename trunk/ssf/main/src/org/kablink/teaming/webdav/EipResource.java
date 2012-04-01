@@ -44,8 +44,8 @@ import com.bradmcevoy.http.PropFindableResource;
  */
 public class EipResource extends WebdavResource implements PropFindableResource {
 
-	static final String ID = "eip";
-	static final String WEBDAV_PATH = "/eip";
+	static final String ID = "wde";
+	static final String WEBDAV_PATH = "/wde";
 
 	public EipResource(WebdavResourceFactory factory) {
 		super(factory);
