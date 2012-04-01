@@ -96,7 +96,7 @@ public class RootResource extends WebdavCollectionResource implements PropFindab
 	 */
 	@Override
 	public Long getMaxAgeSeconds(Auth auth) {
-		return factory.getMaxAgeSecondsRoot();
+		return factory.getMaxAgeSecondsStatic();
 	}
 
 	/* (non-Javadoc)

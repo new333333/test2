@@ -63,12 +63,14 @@ public abstract class BinderResource extends WebdavCollectionResource  implement
 	protected Date modifiedDate;
 	protected boolean library;
 	protected boolean mirrored;
+	protected String webdavPath;
 
 	private EntityIdentifier entityIdentifier;
 
-	private BinderResource(WebdavResourceFactory factory, EntityIdentifier entityIdentifier, String title, String path, Date createdDate, Date modifiedDate,
+	private BinderResource(WebdavResourceFactory factory, String webdavPath, EntityIdentifier entityIdentifier, String title, String path, Date createdDate, Date modifiedDate,
 			boolean library, boolean mirrored) {
 		super(factory);
+		this.webdavPath = webdavPath;
 		this.id = entityIdentifier.getEntityId();
 		this.entityType = entityIdentifier.getEntityType();
 		this.entityIdentifier = entityIdentifier;
@@ -80,8 +82,9 @@ public abstract class BinderResource extends WebdavCollectionResource  implement
 		this.mirrored = mirrored;
 	}
 	
-	public BinderResource(WebdavResourceFactory factory, Binder binder) {
+	public BinderResource(WebdavResourceFactory factory, String webdavPath, Binder binder) {
 		this(factory,
+				webdavPath,
 				binder.getEntityIdentifier(),
 				binder.getTitle(),
 				binder.getPathName(),
@@ -91,8 +94,9 @@ public abstract class BinderResource extends WebdavCollectionResource  implement
 				binder.isMirrored());
 	}
 	
-	public BinderResource(WebdavResourceFactory factory, BinderIndexData bid) {
+	public BinderResource(WebdavResourceFactory factory, String webdavPath, BinderIndexData bid) {
 		this(factory,
+				webdavPath,
 				new EntityIdentifier(bid.getId(), bid.getEntityType()),
 				bid.getTitle(),
 				bid.getPath(),
@@ -136,10 +140,13 @@ public abstract class BinderResource extends WebdavCollectionResource  implement
 
 	@Override
 	public String getWebdavPath() {
+		/*
 		StringBuilder sb = new StringBuilder(DavResource.WEBDAV_PATH);
 		if(!path.startsWith("/"))
 			sb.append("/");
 		return sb.append(path).toString();
+		*/
+		return webdavPath;
 	}
 
 	protected Resource makeResourceFromBinder(Binder binder) {
@@ -151,14 +158,14 @@ public abstract class BinderResource extends WebdavCollectionResource  implement
 			if(w.isDeleted() || w.isPreDeleted())
 				return null;
 			else 
-				return new WorkspaceResource(factory, w);
+				return new WorkspaceResource(factory, getChildWebdavPath(binder.getTitle()), w);
 		}
 		else if(binder instanceof Folder) {
 			Folder f = (Folder) binder;
 			if(f.isDeleted() || f.isPreDeleted())
 				return null;
 			else 
-				return new FolderResource(factory, f);
+				return new FolderResource(factory, getChildWebdavPath(binder.getTitle()), f);
 		}
 		else {
 			return null;
@@ -171,17 +178,23 @@ public abstract class BinderResource extends WebdavCollectionResource  implement
 		
 		EntityType entityType = binder.getEntityType();
 		if(EntityType.workspace == entityType) {
-			return new WorkspaceResource(factory, binder);
+			return new WorkspaceResource(factory, getChildWebdavPath(binder.getTitle()), binder);
 		}
 		else if(EntityType.profiles == entityType) {
-			return new WorkspaceResource(factory, binder);
+			return new WorkspaceResource(factory, getChildWebdavPath(binder.getTitle()), binder);
 		}
 		else if(EntityType.folder == entityType) {
-			return new FolderResource(factory, binder);
+			return new FolderResource(factory, getChildWebdavPath(binder.getTitle()), binder);
 		}
 		else {
 			return null;
 		}
 	}
 	
+	private String getChildWebdavPath(String childName) {
+		if(webdavPath.endsWith("/"))
+			return webdavPath + childName;
+		else
+			return webdavPath + "/" + childName;
+	}
 }
