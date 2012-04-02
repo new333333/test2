@@ -1158,6 +1158,7 @@ public class GwtServerHelper {
        		// Remove each group's quota (by setting it to 0) before deleting it
 			// This will fix up all of the user quotas that may have been influenced by this group
 	   		ami.getProfileModule().setGroupDiskQuotas( grpIds, new Long( 0L ) );
+	   		ami.getProfileModule().setGroupFileSizeLimits( grpIds, null );
 	       		
 			// Delete each groups
 	   		for (Long nextGroupId : grpIds)

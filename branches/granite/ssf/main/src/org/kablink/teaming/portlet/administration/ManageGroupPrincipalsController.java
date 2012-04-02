@@ -169,11 +169,12 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 
 		} else if (formData.containsKey("deleteBtn") && WebHelper.isMethodPost(request)) {
 			Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
-       		//Remove the group's quota (by setting it to 0) before deleting it
+       		//Remove the group's quota (by setting it to 0) and the file size limit before deleting it
 			//  This will fix up all of the user quotas that may have been influenced by this group
        		List gIds = new ArrayList();
        		gIds.add(groupId);
        		getProfileModule().setGroupDiskQuotas(gIds, new Long(0L));
+       		getProfileModule().setGroupFileSizeLimits(gIds, null);
 	       		
 			//Now, delete the group
        		getProfileModule().deleteEntry(groupId, null);
