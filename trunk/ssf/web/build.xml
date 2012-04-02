@@ -156,6 +156,8 @@
 		<copy todir="temp/${web.static.path}/themes" overwrite="true">
 			<fileset dir="${web.dir}/themes" />
 		</copy>
+		
+		<copy todir="temp/html" overwrite="true" file="${web.dir}/images/pics/mast_head_novell_graphic.png"/>
 
 		<war
 			basedir="temp"
