@@ -149,11 +149,13 @@ public class WebdavResourceFactory implements ResourceFactory {
 			else {
 				p = p.getStripFirst(); // remove "/wda"
 				String simpleName = p.getFirst();
-				SimpleName sn = getCoreDao().loadSimpleNameByEmailAddress(simpleName, RequestContextHolder.getRequestContext().getZoneId());
+				SimpleName sn = getBinderModule().getSimpleNameByEmailAddress(simpleName);
 				if(sn == null)
 					return null; // the simple path is not recognized
 				Binder binder;
 				try {
+					// We don't need access check on this binder. The call to resolvePath() below will do
+					// the check on the actual leaf resource the client is trying to access.
 					binder = getCoreDao().loadBinder(sn.getBinderId(), RequestContextHolder.getRequestContext().getZoneId());
 				}
 				catch(NoBinderByTheIdException e) {
