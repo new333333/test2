@@ -55,7 +55,7 @@
     
     <filter-mapping>
 		<filter-name>springSecurityFilterChain</filter-name>
-		<url-pattern>/wds/*</url-pattern>
+		<url-pattern>/wda/*</url-pattern>
 	</filter-mapping>
     
     <filter-mapping>
@@ -70,7 +70,7 @@
     
     <filter-mapping>
 		<filter-name>requestContextAndSessionSetup</filter-name>
-		<url-pattern>/wds/*</url-pattern>
+		<url-pattern>/wda/*</url-pattern>
 	</filter-mapping>
     
     <servlet>
