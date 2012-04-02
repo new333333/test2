@@ -654,8 +654,9 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
      	}
 	}
    
-   //RW transaction
-	public void setUserGroupDiskQuotas(Collection<Long> userIds, Group group) {
+	//RW transaction
+	//Called when adding users to a group
+    public void setUserGroupDiskQuotas(Collection<Long> userIds, Group group) {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		Long newDiskQuota = group.getDiskQuota();
 		List userList = getProfileDao().loadUserPrincipals(userIds, zoneId, false);
@@ -674,7 +675,35 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			}
 		}
 	}
-   public void setGroupDiskQuotas(Collection<Long> groupIds, long newQuotaMegabytes) {
+   
+	//Called when deleting users from a group
+    public void deleteUserGroupDiskQuotas(Collection<Long> userIds, Group group) {
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		Long newDiskQuota = group.getDiskQuota();
+		List userList = getProfileDao().loadUserPrincipals(userIds, zoneId, false);
+		Iterator itUsers = userList.iterator();
+		while (itUsers.hasNext()) {
+			Principal p = (Principal) itUsers.next();
+			if (p.getEntityType().equals(EntityIdentifier.EntityType.user)) {
+				User user = (User)p;
+				//See if this group's file size limit is bigger than what the user already has
+				Long currentUserMaxGroupDiskQuota = user.getMaxGroupsQuota();
+				
+				//If the new value is less than or equal to what the user had, we must recalculate the quota
+				if (currentUserMaxGroupDiskQuota <= newDiskQuota) {
+					Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(user.getId(), zoneId);
+					List<Group> groups = getProfileDao().loadGroups(userGroupIds, zoneId);
+					Long maxGroupQuota = 0L;
+					for (Group g : groups) {
+						if (g.getDiskQuota() > maxGroupQuota) maxGroupQuota = g.getDiskQuota();
+					}
+					user.setMaxGroupsQuota(maxGroupQuota);
+				}
+			}
+		}
+	}
+    
+    public void setGroupDiskQuotas(Collection<Long> groupIds, long newQuotaMegabytes) {
 		// iterate through the members of a group - set each members max group quota to the 
 	    // maximum value of all the groups they're a member of.
 	   Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -731,7 +760,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
    
 	//RW transaction
-	public void setUserGroupFileSizeLimits(Collection<Long> userIds, Group group) {
+	//Called when adding users to a group
+    public void setUserGroupFileSizeLimits(Collection<Long> userIds, Group group) {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		Long newFileSizeLimit = group.getFileSizeLimit();	//can be null
 		List userList = getProfileDao().loadUserPrincipals(userIds, zoneId, false);
@@ -748,6 +778,41 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 						(currentUserMaxGroupFileSizeLimit == null || 
 						currentUserMaxGroupFileSizeLimit < newFileSizeLimit)) {
 					user.setMaxGroupsFileSizeLimit(newFileSizeLimit);
+				}
+			}
+		}
+	}
+	
+	//Called when removing users from a group
+	public void deleteUserGroupFileSizeLimits(Collection<Long> userIds, Group group) {
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		Long newFileSizeLimit = group.getFileSizeLimit();	//can be null
+		List userList = getProfileDao().loadUserPrincipals(userIds, zoneId, false);
+		Iterator itUsers = userList.iterator();
+		while (itUsers.hasNext()) {
+			Principal p = (Principal) itUsers.next();
+			if (p.getEntityType().equals(EntityIdentifier.EntityType.user)) {
+				User user = (User)p;
+				//See if this group's file size limit is bigger than what the user already has
+				Long currentUserMaxGroupFileSizeLimit = user.getMaxGroupsFileSizeLimit();	//Can be null
+				
+				//If the new value is the same as (or greater than) what the user had, 
+				//  then we must recalculate the limit
+				if (newFileSizeLimit != null && currentUserMaxGroupFileSizeLimit != null && 
+						newFileSizeLimit >= currentUserMaxGroupFileSizeLimit) {
+					Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(user.getId(), zoneId);
+					List<Group> groups = getProfileDao().loadGroups(userGroupIds, zoneId);
+					Long maxGroupFileSizeLimit = 0L;
+					for (Group g : groups) {
+						if (g.getFileSizeLimit() == null) {
+							//One of the groups has no limit, so we are done
+							maxGroupFileSizeLimit = null;
+							break;
+						} else if (g.getFileSizeLimit() > maxGroupFileSizeLimit) {
+							maxGroupFileSizeLimit = g.getFileSizeLimit();
+						}
+					}
+					user.setMaxGroupsFileSizeLimit(maxGroupFileSizeLimit);
 				}
 			}
 		}
