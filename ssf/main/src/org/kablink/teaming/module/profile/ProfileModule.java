@@ -550,6 +550,8 @@ public interface ProfileModule {
 	 * @param megabytes
      */
     public void setGroupDiskQuotas(Collection<Long> groupIds, long megabytes);
+    public void setUserGroupDiskQuotas(Collection<Long> userIds, Group group);
+    public void deleteUserGroupDiskQuotas(Collection<Long> userIds, Group group);
     
     /**
      * Set the fileSizeLimit value for a set of users (in megabytes)
@@ -563,6 +565,8 @@ public interface ProfileModule {
 	 * @param megabytes
      */
     public void setGroupFileSizeLimits(Collection<Long> groupIds, Long fileSizeLimit);
+    public void setUserGroupFileSizeLimits(Collection<Long> userIds, Group group);
+    public void deleteUserGroupFileSizeLimits(Collection<Long> userIds, Group group);
     
     /**
      * Reset the diskspace usage value for all users
