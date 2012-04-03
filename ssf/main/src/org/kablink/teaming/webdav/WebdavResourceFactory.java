@@ -98,7 +98,7 @@ public class WebdavResourceFactory implements ResourceFactory {
 		if(p.isRoot()) {
 			return new RootResource(this);
 		}
-		else if(p.getFirst().equals("wd")) {
+		else if(p.getFirst().equals("dav")) {
 			if(p.getLength() == 1) {
 				return new DavResource(this);
 			}
@@ -118,7 +118,7 @@ public class WebdavResourceFactory implements ResourceFactory {
 				}
 			}
 		}
-		else if(p.getFirst().equals("wde")) { // edit-in-place
+		else if(p.getFirst().equals("dave")) { // edit-in-place
 			String[] parts = p.getParts();
 			if(parts.length == 1) {
 				return new EipResource(this);
@@ -142,12 +142,12 @@ public class WebdavResourceFactory implements ResourceFactory {
 				return null; // invalid URL
 			}
 		}
-		else if(p.getFirst().equals("wda")) { // alias
+		else if(p.getFirst().equals("davs")) { // user-defined simple name
 			if(p.getLength() == 1) {
 				return new AliasResource(this);
 			}
 			else {
-				p = p.getStripFirst(); // remove "/wda"
+				p = p.getStripFirst(); // remove "/davs"
 				String simpleName = p.getFirst();
 				SimpleName sn = getBinderModule().getSimpleNameByEmailAddress(simpleName);
 				if(sn == null)

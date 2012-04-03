@@ -176,7 +176,7 @@ public class SsfsUtil {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
 		
 		if(isHudsonWebdavEnabled()) {
-			return sb.append("wd").
+			return sb.append("dav").
 					append(binder.getPathName()).toString();
 		}
 		else {
@@ -189,7 +189,7 @@ public class SsfsUtil {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
 		
 		if(isHudsonWebdavEnabled()) {
-			return sb.append("wd").
+			return sb.append("dav").
 					append(binderPath).toString();
 		}
 		else {
@@ -202,7 +202,7 @@ public class SsfsUtil {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
 		
 		if(isHudsonWebdavEnabled()) {
-			return sb.append("wd").
+			return sb.append("dav").
 					append(binder.getPathName()).toString();
 		}
 		else {
@@ -224,7 +224,7 @@ public class SsfsUtil {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
 		
 		if(isHudsonWebdavEnabled()) {
-			return sb.append("wde/");
+			return sb.append("dave/");
 		}
 		else {
 			return sb.append("files/internal/"). // follow Slide's convention
@@ -240,7 +240,7 @@ public class SsfsUtil {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
 		
 		if(isHudsonWebdavEnabled()) {
-			return sb.append("wde/");
+			return sb.append("dave/");
 		}
 		else {
 			return sb.append("files/internal/"). // follow Slide's convention
