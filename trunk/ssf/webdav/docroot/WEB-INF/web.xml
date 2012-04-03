@@ -45,32 +45,32 @@
 
     <filter-mapping>
 		<filter-name>springSecurityFilterChain</filter-name>
-		<url-pattern>/wd/*</url-pattern>
+		<url-pattern>/dav/*</url-pattern>
 	</filter-mapping>
     
     <filter-mapping>
 		<filter-name>springSecurityFilterChain</filter-name>
-		<url-pattern>/wde/*</url-pattern>
+		<url-pattern>/dave/*</url-pattern>
 	</filter-mapping>
     
     <filter-mapping>
 		<filter-name>springSecurityFilterChain</filter-name>
-		<url-pattern>/wda/*</url-pattern>
+		<url-pattern>/davs/*</url-pattern>
 	</filter-mapping>
     
     <filter-mapping>
 		<filter-name>requestContextAndSessionSetup</filter-name>
-		<url-pattern>/wd/*</url-pattern>
+		<url-pattern>/dav/*</url-pattern>
 	</filter-mapping>
     
     <filter-mapping>
 		<filter-name>requestContextAndSessionSetup</filter-name>
-		<url-pattern>/wde/*</url-pattern>
+		<url-pattern>/dave/*</url-pattern>
 	</filter-mapping>
     
     <filter-mapping>
 		<filter-name>requestContextAndSessionSetup</filter-name>
-		<url-pattern>/wda/*</url-pattern>
+		<url-pattern>/davs/*</url-pattern>
 	</filter-mapping>
     
     <servlet>
