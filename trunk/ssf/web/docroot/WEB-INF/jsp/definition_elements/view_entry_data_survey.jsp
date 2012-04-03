@@ -79,7 +79,7 @@
 <jsp:useBean id="ssEntry" type="org.kablink.teaming.domain.FolderEntry" scope="request"/>
 
 <c:set var="alreadyVotedByGuest" value="false" />
-<c:if test="${ssUser.shared}">
+<c:if test="${ssUser.shared && !surveyModel.allowMultipleGuestVotes}">
 	<%
 	String cookieName = "Vote-" + ssBinder.getId() + "-" + ssEntry.getId();
 	String cookieValue = null;
@@ -99,7 +99,6 @@
 	</c:if>
 </c:if>
 
-
 <form class="ss_surveyForm" id="ssSurveyForm_${property_name}${ss_surveyFormCounter}" method="post"
   action="<ssf:url adapter="true" portletName="ss_forum"    
 	actionUrl="true"
@@ -110,7 +109,9 @@
 	<input type="hidden" name="attributeName" value="${property_name}" />
 	<c:set var="hasAnyQuestion" value="${fn:length(surveyModel.questions) > 0}" />
 
-	<c:set var="showSurveyForm" value="${!overdue && !surveyModel.alreadyVotedCurrentUser &&!alreadyVotedByGuest && hasRightsToVote && !(operationViewResults || operationViewDetails)}" />
+	<c:set var="showSurveyForm" value="${!overdue && 
+			((ssUser.shared && surveyModel.allowMultipleGuestVotes) || !surveyModel.alreadyVotedCurrentUser) && 
+			!alreadyVotedByGuest && hasRightsToVote && !(operationViewResults || operationViewDetails)}" />
 	<c:set var="showSurveyModifyForm" value="${operationChangeVote && !overdue && surveyModel.alreadyVotedCurrentUser && !alreadyVotedByGuest && surveyModel.allowedToChangeVote && hasRightsToVote}" />	
 						
 	<c:set var="showResults" value="${((!overdue && !surveyModel.alreadyVotedCurrentUser && !hasRightsToVote && (surveyModel.allowedToViewBeforeDueDateCurrentUser || isModerator)) ||

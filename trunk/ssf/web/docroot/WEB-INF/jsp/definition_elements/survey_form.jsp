@@ -93,7 +93,14 @@
 	</div>
 
 	<div class="margintop3 marginleft1 ss_padleft5">
-		<input type="checkbox" name="allowChange" id="${ss_namespace}_${property_name}_allowChange"/> <label for="${ss_namespace}_${property_name}_allowChange"><ssf:nlt tag="survey.modify.label"/>
+		<input type="checkbox" name="allowChange" id="${ss_namespace}_${property_name}_allowChange"/> 
+		<label for="${ss_namespace}_${property_name}_allowChange"><ssf:nlt tag="survey.modify.label"/></label>
+	</div>
+
+	<div class="margintop3 marginleft1 ss_padleft5">
+		<input type="checkbox" name="allowMultipleGuestVotes" 
+		  id="${ss_namespace}_${property_name}_allowMultipleGuestVotes"/> 
+		<label for="${ss_namespace}_${property_name}_allowMultipleGuestVotes"><ssf:nlt tag="survey.multipleGuestVotes.label"/></label>
 	</div>
 
 	

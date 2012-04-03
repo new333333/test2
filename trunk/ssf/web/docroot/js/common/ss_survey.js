@@ -339,6 +339,9 @@ if (!window.ssSurvey) {
 			}	
 			
 			var allowObj = dojo.byId(prefix + "_allowChange");		
+			var allowMultipleGuestVotesObj = dojo.byId(prefix + "_allowMultipleGuestVotes");		
+			alert(allowMultipleGuestVotesObj)
+			alert(allowMultipleGuestVotesObj.checked)
 			var inputObj = document.getElementById(inputId);
 			if (inputObj) {
 				inputObj.value = dojo.toJson(
@@ -347,7 +350,8 @@ if (!window.ssSurvey) {
 							'viewBeforeDueTime' : viewBeforeDueTime,
 							'viewAfterDueTime' : viewAfterDueTime,
 							'viewDetails' : viewDetails,
-							'allowChange' : allowObj && allowObj.checked
+							'allowChange' : allowObj && allowObj.checked,
+							'allowMultipleGuestVotes' : allowMultipleGuestVotesObj && allowMultipleGuestVotesObj.checked
 						}
 				);
 			}
@@ -385,6 +389,11 @@ if (!window.ssSurvey) {
 			rights = dojo.byId(prefix + "_allowChange");		
 			if (rights) {
 				rights.checked = currentSurvey.allowChange;
+			}
+			
+			rights = dojo.byId(prefix + "_allowMultipleGuestVotes");		
+			if (rights) {
+				rights.checked = currentSurvey.allowMultipleGuestVotes;
 			}
 		}		
 		
