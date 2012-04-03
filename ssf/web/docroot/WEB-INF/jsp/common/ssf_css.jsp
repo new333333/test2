@@ -510,7 +510,6 @@ div.ss_entryContent a:hover {
 	font-family: ${ss_style_title_font_family};
   	font-size: 13px;
   	padding: 5px;
-    border-top: 1px solid #C4C4C4;
 	-moz-border-radius-bottomleft: 5px;
 	-moz-border-radius-bottomright: 5px;
 	-webkit-border-bottom-left-radius: 5px;
