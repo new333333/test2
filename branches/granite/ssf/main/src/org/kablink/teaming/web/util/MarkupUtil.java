@@ -603,18 +603,25 @@ public class MarkupUtil {
 										result = eventToString(sd, ed, allDayEvent);
 									}
 								} else if ("user_list".equals(dataType)) {
-									SearchFieldResult values = (SearchFieldResult) searchResults.get(dataName);
-									Set<String> userIdStrings = values.getValueSet();
-									List<Long> userIdList = new ArrayList<Long>();
-									for (String uId : userIdStrings) {
-										userIdList.add(Long.valueOf(uId));
-									}
-									ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
-									List<Principal> users = profileDao.loadPrincipals(userIdList, zoneId, false);
+									Object vObj = searchResults.get(dataName);
 									StringBuffer sb = new StringBuffer();
-									for (Principal p : users) {
-										if (sb.length() > 0) sb.append(", ");
-										sb.append(p.getTitle());
+									if (vObj != null) {
+										String[] values = vObj.toString().split(",");
+										List<Long> userIdList = new ArrayList<Long>();
+										for (int i = 0; i < values.length; i++) {
+											String id = values[i].trim();
+											if (!id.equals("")) {
+												try {
+													userIdList.add(Long.valueOf(Long.valueOf(id)));
+												} catch(Exception e) {}
+											}
+										}
+										ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+										List<Principal> users = profileDao.loadPrincipals(userIdList, zoneId, false);
+										for (Principal p : users) {
+											if (sb.length() > 0) sb.append(", ");
+											sb.append(p.getTitle());
+										}
 									}
 									result = sb.toString();
 								} else {
