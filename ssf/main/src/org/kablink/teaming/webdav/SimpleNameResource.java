@@ -6,12 +6,12 @@ import org.kablink.teaming.util.ReleaseInfo;
 
 import com.bradmcevoy.http.PropFindableResource;
 
-public class AliasResource extends WebdavResource implements PropFindableResource {
+public class SimpleNameResource extends WebdavResource implements PropFindableResource {
 
 	static final String ID = "davs";
 	static final String WEBDAV_PATH = "/davs";
 
-	public AliasResource(WebdavResourceFactory factory) {
+	public SimpleNameResource(WebdavResourceFactory factory) {
 		super(factory);
 	}
 
