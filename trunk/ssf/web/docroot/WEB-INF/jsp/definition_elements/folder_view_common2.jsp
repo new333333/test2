@@ -81,18 +81,18 @@ function ss_showDeleteButtons() {
     if (delBtn != null) {
     	if (deleteList == "") {
         	//There are no entries selected, gray out the buttons
-    		delBtn.parentNode.style.backgroundColor = "#cecece !important;"
+    		delBtn.parentNode.className = "ss_toolbarDeleteBtnDisabled";
     	} else {
-    		delBtn.parentNode.style.backgroundColor = "#949494 !important;"
+    		delBtn.parentNode.className = "ss_toolbarDeleteBtn";
     	}
     }
     var purgeBtn = document.getElementById('ss_toolbarPurgeBtn');
     if (purgeBtn != null) {
     	if (deleteList == "") {
         	//There are no entries selected, gray out the buttons
-    		purgeBtn.parentNode.style.backgroundColor = "#cecece !important;"
+    		purgeBtn.parentNode.className = "ss_toolbarDeleteBtnDisabled";
     	} else {
-    		purgeBtn.parentNode.style.backgroundColor = "#949494 !important;"
+    		purgeBtn.parentNode.className = "ss_toolbarDeleteBtn";
     	}
     }
 }
