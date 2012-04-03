@@ -144,7 +144,7 @@ public class WebdavResourceFactory implements ResourceFactory {
 		}
 		else if(p.getFirst().equals("davs")) { // user-defined simple name
 			if(p.getLength() == 1) {
-				return new AliasResource(this);
+				return new SimpleNameResource(this);
 			}
 			else {
 				p = p.getStripFirst(); // remove "/davs"
@@ -162,8 +162,8 @@ public class WebdavResourceFactory implements ResourceFactory {
 					logger.error("Can not load binder associated with simple name '" + simpleName + "'", e); // This shouldn't occur.
 					return null;
 				}
-				Path vibePathForAliasedBinder = Path.path(binder.getPathName());
-				Path vibeFullPath = vibePathForAliasedBinder.add(p.getStripFirst());
+				Path vibePathForSimpleNamedBinder = Path.path(binder.getPathName());
+				Path vibeFullPath = vibePathForSimpleNamedBinder.add(p.getStripFirst());
 				Object obj = resolvePath(vibeFullPath);
 				if(obj instanceof FileAttachment) {
 					return new FileResource(this, path, (FileAttachment)obj);
