@@ -59,6 +59,7 @@ import org.apache.lucene.document.DateTools;
 import org.dom4j.Element;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.domain.CommaSeparatedValue;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
@@ -77,7 +78,9 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.search.BasicIndexUtils;
+import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.util.FileUploadItem;
+import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -507,6 +510,7 @@ public class MarkupUtil {
 				Definition def = null;
 				if (defId != null) def = definitionModule.getDefinition(defId);
 				User user = RequestContextHolder.getRequestContext().getUser();
+				Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 				String result = "";
 				String[] functionArgs = functionText.trim().split("\\|");
 				if (functionArgs.length >= 1) {
@@ -598,6 +602,21 @@ public class MarkupUtil {
 										ed.setTime(endDate);
 										result = eventToString(sd, ed, allDayEvent);
 									}
+								} else if ("user_list".equals(dataType)) {
+									SearchFieldResult values = (SearchFieldResult) searchResults.get(dataName);
+									Set<String> userIdStrings = values.getValueSet();
+									List<Long> userIdList = new ArrayList<Long>();
+									for (String uId : userIdStrings) {
+										userIdList.add(Long.valueOf(uId));
+									}
+									ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+									List<Principal> users = profileDao.loadPrincipals(userIdList, zoneId, false);
+									StringBuffer sb = new StringBuffer();
+									for (Principal p : users) {
+										if (sb.length() > 0) sb.append(", ");
+										sb.append(p.getTitle());
+									}
+									result = sb.toString();
 								} else {
 									result = (String)searchResults.get(dataName);
 								}
@@ -812,6 +831,7 @@ public class MarkupUtil {
 			public String getVibeFunctionResult(String functionText) {
 				Definition def = definitionModule.getDefinition(entity.getEntryDefId());
 				User user = RequestContextHolder.getRequestContext().getUser();
+				Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 				String result = "";
 				String[] functionArgs = functionText.trim().split("\\|");
 				if (functionArgs.length >= 1) {
@@ -882,6 +902,20 @@ public class MarkupUtil {
 										}
 										result = result + DefinitionHelper.getCaptionsFromValues(def, dataName, v);
 									}
+								} else if ("user_list".equals(dataType)) {
+									Set<String> userIdStrings = dataItem.getValueSet();
+									List<Long> userIdList = new ArrayList<Long>();
+									for (String uId : userIdStrings) {
+										userIdList.add(Long.valueOf(uId));
+									}
+									ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+									List<Principal> users = profileDao.loadPrincipals(userIdList, zoneId, false);
+									StringBuffer sb = new StringBuffer();
+									for (Principal p : users) {
+										if (sb.length() > 0) sb.append(", ");
+										sb.append(p.getTitle());
+									}
+									result = sb.toString();
 								} else {
 									result = dataItem.getValue().toString();
 								}
@@ -1181,7 +1215,7 @@ public class MarkupUtil {
 			}
 		    	
 	    	//Replace vibe parser functions markup {{vibe: xxx | yyy| zzz}} with the desired text
-			if (type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_VIEW_TEXT)) {
+			if (type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_VIEW_TEXT) || type.equals(WebKeys.MARKUP_EMAIL)) {
 				//Only do this when viewing the entry. Leave the markup in for forms and export.
 				matcher = vibeFunctionPattern.matcher(outputBuf.toString());
 				if (matcher.find()) {
