@@ -655,6 +655,11 @@ public class MarkupUtil {
 							String url = getFileUrlByName(fileName);
 							result = getFileHTML(functionArgs, url, type);
 						}
+					} else if (vibeFunction.equals("translate")) {
+						if (functionArgs.length >= 2) {
+							String tag =  functionArgs[1].trim();
+							result = NLT.getDef(tag);
+						}
 					}
 				}
 				if (result == null) result = "";
@@ -950,6 +955,11 @@ public class MarkupUtil {
 							String fileName =  new String(functionArgs[1].replaceAll("^[\\s\\u00A0]*", "").replaceAll("[\\s\\u00A0]*$", ""));
 							String url = getFileUrlByName(fileName);
 							result = getFileHTML(functionArgs, url, type);
+						}
+					} else if (vibeFunction.equals("translate")) {
+						if (functionArgs.length >= 2) {
+							String tag =  functionArgs[1].trim();
+							result = NLT.getDef(tag);
 						}
 					}
 				}
