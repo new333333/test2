@@ -50,16 +50,19 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
+import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.DatedMultipartFile;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -69,6 +72,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class FolderUtils {
 
 	private static final Map<String,Object> ITEM_NAMES;
+	
+	private static final String LIBRARY_FOLDER_DEFAULT_TEMPLATE_NAME = "_folder_library";
 	
 	static {
 		ITEM_NAMES = new HashMap<String,Object>();
@@ -142,6 +147,10 @@ public class FolderUtils {
 	/**
 	 * Create a mirrored folder.
 	 * 
+	 * This method expects the parent binder to be a mirrored folder as well. Otherwise, this throws an error.
+	 * Also, by definition, a mirrored folder is supposed to be a library folder, and therefore, it is
+	 * implicit that the newly created folder is a library folder.
+	 * 
 	 * @param parentBinder
 	 * @param folderName
 	 * @param resourceDriverName
@@ -155,7 +164,10 @@ public class FolderUtils {
 	public static Binder createMirroredFolder(Binder parentBinder, String folderName, 
 			String resourceDriverName, String resourcePath, boolean synchToSource)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
-		Definition def = getFolderDefinition(parentBinder);
+		if(EntityType.folder != parentBinder.getEntityType() || !parentBinder.isMirrored())
+			throw new IllegalArgumentException("The parent binder '" + parentBinder.getId() + "' is not a mirrored folder");
+		
+		Definition def = parentBinder.getEntryDef();
 		if(def == null)
 			throw new ConfigurationException("errorcode.no.folder.definition", (Object[])null);
 		
@@ -170,8 +182,13 @@ public class FolderUtils {
 		data.put(ObjectKeys.PI_SYNCH_TO_SOURCE, Boolean.toString(synchToSource));
 		Map params = new HashMap();
 		params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
-		return getBinderModule().addBinder(parentBinder.getId(), def.getId(), 
+		Binder binder = getBinderModule().addBinder(parentBinder.getId(), def.getId(), 
 					new MapInputData(data), null, params);
+		
+		// Inherit configuration.
+		inheritAll(binder.getId());
+		
+		return binder;
 	}
 	
 	/**
@@ -187,30 +204,85 @@ public class FolderUtils {
 	 */
 	public static Binder createLibraryFolder(Binder parentBinder, String folderName)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
+		Binder binder;
 		if((EntityType.folder == parentBinder.getEntityType()) && parentBinder.isMirrored()) {
-			return createMirroredFolder(parentBinder, folderName, parentBinder.getResourceDriverName(), null, true);
+			binder = createMirroredFolder(parentBinder, folderName, parentBinder.getResourceDriverName(), null, true);
 		}
-		else {
-			return createNonMirroredFolder(parentBinder, folderName);
+		else { 
+			binder = createNonMirroredLibraryFolder(parentBinder, folderName);
 		}
+		
+		
+		if(parentBinder.getEntityType() == EntityType.folder) {
+			getBinderModule().setDefinitionsInherited(binder.getId(), true);
+		}
+		return binder;
 	}
 	
-	private static Binder createNonMirroredFolder(Binder parentBinder, String folderName)
+	/**
+	 * Creates a non-mirrored library folder.
+	 * 
+	 *  The parent binder could be any binder, as long as it is not a mirrored folder.
+	 * 
+	 * @param parentBinder
+	 * @param folderName
+	 * @return
+	 * @throws ConfigurationException
+	 * @throws AccessControlException
+	 * @throws WriteFilesException
+	 * @throws WriteEntryDataException
+	 */
+	private static Binder createNonMirroredLibraryFolder(Binder parentBinder, String folderName)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
-		Definition def = getFolderDefinition(parentBinder);
-		if(def == null)
-			throw new ConfigurationException("errorcode.no.folder.definition", (Object[])null);
+		if(parentBinder.isMirrored())
+			throw new IllegalArgumentException("Parent binder '" + parentBinder.getId() + "' is a mirrored one");
 		
-		Map data = new HashMap(); // Input data
-		// Title field, not name, is used as the name of the folder. Weird...
-		data.put(ObjectKeys.FIELD_ENTITY_TITLE, folderName); 
-		//data.put("description", "This folder was created through WebDAV");
-		data.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.TRUE.toString());
-		Map params = new HashMap();
-		params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
-
-		return getBinderModule().addBinder(parentBinder.getId(), def.getId(), 
-					new MapInputData(data), null, params);
+		Definition def = null;
+		
+		if(EntityType.folder == parentBinder.getEntityType()) {
+			if(parentBinder.isLibrary()) {
+				// The parent binder is a library folder such as file folder or photo album.
+				// In this case, we want the child folder to be of the same type as the parent.
+				def = parentBinder.getEntryDef();		
+				if(def == null)
+					throw new ConfigurationException("errorcode.no.folder.definition", (Object[])null);
+			}
+			else {
+				// The parent binder is not a library folder. We can't inherit the type of the parent
+				// binder in this case. We will create a file folder with default configuration.
+			}
+		}
+		else { // workspace
+			// The parent binder is a workspace. We can't inherit the type of the parent binder
+			// in this case. We will create a file folder with default configuration.
+		}
+		
+		if(def != null) {
+			Map data = new HashMap(); // Input data
+			// Title field, not name, is used as the name of the folder. Weird...
+			data.put(ObjectKeys.FIELD_ENTITY_TITLE, folderName); 
+			//data.put("description", "This folder was created through WebDAV");
+			data.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.TRUE.toString());
+			Map params = new HashMap();
+			params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
+	
+			Binder binder = getBinderModule().addBinder(parentBinder.getId(), def.getId(), 
+						new MapInputData(data), null, params);
+			
+			// Inherit configuration.
+			inheritAll(binder.getId());
+			
+			return binder;
+		}
+		else {
+			String templateName = SPropsUtil.getString("library.folder.default.template.name", LIBRARY_FOLDER_DEFAULT_TEMPLATE_NAME);
+			
+			TemplateBinder template = getTemplateModule().getTemplateByName(templateName);
+			
+			Binder binder = getTemplateModule().addBinder(template.getId(), parentBinder.getId(), folderName, "");
+			
+			return binder;
+		}
 	}
 	
 	public static void deleteMirroredFolder(Folder folder, boolean deleteMirroredSource)
@@ -500,6 +572,7 @@ public class FolderUtils {
 		return null;
 	}
 	
+	/*
 	private static Definition getFolderDefinition(Binder parentBinder) {
 		if(parentBinder instanceof Folder) {
 			// If the parent binder in which to create a new library folder
@@ -513,6 +586,7 @@ public class FolderUtils {
 			return getZoneWideDefaultFolderDefinition();
 		}
 	}
+	*/
 	
 	private static Definition getZoneWideDefaultFolderDefinition() {
 		List<Definition> defs = getDefinitionModule().getDefinitions(null, Boolean.FALSE, Definition.FOLDER_ENTRY);
@@ -553,6 +627,13 @@ public class FolderUtils {
 		}
 
 	}
+	
+	public static void inheritAll(Long folderId) {
+		getBinderModule().setDefinitionsInherited(folderId, true);
+		getBinderModule().setBinderVersionsInherited(folderId, true);
+		getBinderModule().setBinderFileEncryptionInherited(folderId, true);
+		getBinderModule().setTeamMembershipInherited(folderId, true);
+	}
 
 	private static FolderModule getFolderModule() {
 		return (FolderModule) SpringContextUtil.getBean("folderModule");
@@ -565,5 +646,8 @@ public class FolderUtils {
 	}
 	private static BinderModule getBinderModule() {
 		return (BinderModule) SpringContextUtil.getBean("binderModule");
+	}
+	private static TemplateModule getTemplateModule() {
+		return (TemplateModule) SpringContextUtil.getBean("templateModule");
 	}
 }

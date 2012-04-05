@@ -71,12 +71,19 @@ public class WebdavResourceFactory implements ResourceFactory {
 	
 	private volatile boolean inited = false;
 	
+	private static final Long DEFAULT_MAX_AGE_SECONDS_STATIC = 3600L;
+	private static final Long DEFAULT_MAX_AGE_SECONDS_WORKSPACE = 20L;
+	private static final Long DEFAULT_MAX_AGE_SECONDS_FOLDER = 10L;
+	private static final Long DEFAULT_MAX_AGE_SECONDS_FILE = 10L;
+	private static final Long DEFAULT_MAX_AGE_SECONDS_EIP_FILE = null;
+	
 	private boolean allowDirectoryBrowsing = true;
-	private long maxAgeSecondsStatic = 3600;
-	private long maxAgeSecondsWorkspace = 10;
-	private long maxAgeSecondsFolder = 10;
-	private long maxAgeSecondsFile = 10;
-	private long maxAgeSecondsEipFile = 0;
+	
+	private Long maxAgeSecondsStatic = DEFAULT_MAX_AGE_SECONDS_STATIC;
+	private Long maxAgeSecondsWorkspace = DEFAULT_MAX_AGE_SECONDS_WORKSPACE;
+	private Long maxAgeSecondsFolder = DEFAULT_MAX_AGE_SECONDS_FOLDER;
+	private Long maxAgeSecondsFile = DEFAULT_MAX_AGE_SECONDS_FILE;
+	private Long maxAgeSecondsEipFile = DEFAULT_MAX_AGE_SECONDS_EIP_FILE;
 	
 	private LockManager lockManager;
 	private SecurityManager securityManager;
@@ -196,31 +203,31 @@ public class WebdavResourceFactory implements ResourceFactory {
 		return allowDirectoryBrowsing;
 	}
 
-	public long getMaxAgeSecondsStatic() {
+	public Long getMaxAgeSecondsStatic() {
 		if(!inited)
 			init();
 		return maxAgeSecondsStatic;
 	}
 
-	public long getMaxAgeSecondsWorkspace() {
+	public Long getMaxAgeSecondsWorkspace() {
 		if(!inited)
 			init();
 		return maxAgeSecondsWorkspace;
 	}
 
-	public long getMaxAgeSecondsFolder() {
+	public Long getMaxAgeSecondsFolder() {
 		if(!inited)
 			init();
 		return maxAgeSecondsFolder;
 	}
 
-	public long getMaxAgeSecondsFile() {
+	public Long getMaxAgeSecondsFile() {
 		if(!inited)
 			init();
 		return maxAgeSecondsFile;
 	}
 
-	public long getMaxAgeSecondsEipFile() {
+	public Long getMaxAgeSecondsEipFile() {
 		if(!inited)
 			init();
 		return maxAgeSecondsEipFile;
@@ -283,11 +290,12 @@ public class WebdavResourceFactory implements ResourceFactory {
 		this.securityManager = (SecurityManager) ReflectHelper.getInstance(securityManagerClassName);
 
 		allowDirectoryBrowsing = SPropsUtil.getBoolean("wd.allow.directory.browsing", true);
-		maxAgeSecondsStatic = SPropsUtil.getLong("wd.max.age.seconds.static", 3600);
-		maxAgeSecondsWorkspace = SPropsUtil.getLong("wd.max.age.seconds.workspace", 10);
-		maxAgeSecondsFolder = SPropsUtil.getLong("wd.max.age.seconds.folder", 10);
-		maxAgeSecondsFile = SPropsUtil.getLong("wd.max.age.seconds.file", 10);
-		maxAgeSecondsEipFile = SPropsUtil.getLong("wd.max.age.seconds.eip.file", 0);
+		
+		maxAgeSecondsStatic = SPropsUtil.getLongObject("wd.max.age.seconds.static", DEFAULT_MAX_AGE_SECONDS_STATIC);
+		maxAgeSecondsWorkspace = SPropsUtil.getLongObject("wd.max.age.seconds.workspace", DEFAULT_MAX_AGE_SECONDS_WORKSPACE);
+		maxAgeSecondsFolder = SPropsUtil.getLongObject("wd.max.age.seconds.folder", DEFAULT_MAX_AGE_SECONDS_FOLDER);
+		maxAgeSecondsFile = SPropsUtil.getLongObject("wd.max.age.seconds.file", DEFAULT_MAX_AGE_SECONDS_FILE);
+		maxAgeSecondsEipFile = SPropsUtil.getLongObject("wd.max.age.seconds.eip.file", DEFAULT_MAX_AGE_SECONDS_EIP_FILE);
 		
 		logger.info("allowDirectoryBrowsing:" + allowDirectoryBrowsing + 
 				" maxAgeSecondsStatic:" + maxAgeSecondsStatic +

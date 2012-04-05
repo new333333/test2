@@ -42,6 +42,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FileAttachment;
@@ -49,19 +50,25 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.web.util.TrashHelper;
 
 import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
 import com.bradmcevoy.http.GetableResource;
+import com.bradmcevoy.http.MakeCollectionableResource;
 import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.PutableResource;
+import com.bradmcevoy.http.Request;
 import com.bradmcevoy.http.Resource;
+import com.bradmcevoy.http.Request.Method;
 import com.bradmcevoy.http.exceptions.BadRequestException;
 import com.bradmcevoy.http.exceptions.ConflictException;
 import com.bradmcevoy.http.exceptions.NotAuthorizedException;
@@ -70,9 +77,13 @@ import com.bradmcevoy.http.exceptions.NotAuthorizedException;
  * @author jong
  *
  */
-public class FolderResource extends BinderResource implements PropFindableResource, GetableResource, CollectionResource, PutableResource {
+public class FolderResource extends BinderResource implements PropFindableResource, GetableResource, CollectionResource, PutableResource, MakeCollectionableResource {
 	
 	private static final Log logger = LogFactory.getLog(FolderResource.class);
+	
+	private static final boolean FOLDER_DELETION_ALLOW_DEFAULT = true;
+	private static final boolean FOLDER_DELETION_PURGE_IMMEDIATELY = false;
+	private static final boolean FOLDER_DELETION_REMOVE_SOURCE_CONTENTS_FOR_MIRRORED_FOLDER = false;
 	
 	// lazy resolved for efficiency, so may be null initially
 	private Folder folder;
@@ -139,6 +150,104 @@ public class FolderResource extends BinderResource implements PropFindableResour
 		return childrenResources;
 	}
 
+	@Override
+    public CollectionResource createCollection(String newName) throws NotAuthorizedException, ConflictException, BadRequestException {
+		// When you create a brand new binder through WebDAV, it will always be of file folder type. 
+		// It can never be a workspace or folder of non-file type, except when created indirectly via copy/move functions.
+		Folder parentFolder = resolveFolder();
+		
+		try {
+			Binder folder = FolderUtils.createLibraryFolder(parentFolder, newName);
+			
+			return new FolderResource(factory, getWebdavPath() + "/" + newName, (Folder) folder);
+		} catch (ConfigurationException e) {
+			throw e;
+		} catch (AccessControlException e) {
+			throw new NotAuthorizedException(this);
+		} catch (WriteFilesException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		} catch (WriteEntryDataException e) {
+			throw new WebdavException(e.getLocalizedMessage());			
+		}
+
+	}
+
+	@Override
+	public boolean authorise(Request request, Method method, Auth auth) {
+		if(Method.DELETE == method) {
+			boolean allowFolderDeletion = SPropsUtil.getBoolean("wd.folder.deletion.allow", FOLDER_DELETION_ALLOW_DEFAULT);
+			if(allowFolderDeletion) 
+				return super.authorise(request, method, auth); // system permits folder deletion, do regular checking
+			else
+				return false; // system doesn't permit folder deletion for anyone on any folder
+		}
+		else {
+			return super.authorise(request, method, auth);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.PutableResource#createNew(java.lang.String, java.io.InputStream, java.lang.Long, java.lang.String)
+	 */
+	@Override
+	public Resource createNew(String newName, InputStream inputStream,
+			Long length, String contentType) throws IOException,
+			ConflictException, NotAuthorizedException, BadRequestException {
+		resolveFolder();
+		
+		if(!folder.isLibrary())
+			throw new BadRequestException(this, "This folder is not a library folder");
+		
+		FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, newName);
+		
+		try {
+			if(entry != null) {
+				// An entry containing a file with this name exists.
+				if(logger.isDebugEnabled())
+					logger.debug("createNew: updating existing file '" + newName + "' + owned by " + entry.getEntityIdentifier().toString() + " in folder " + id);
+				FolderUtils.modifyLibraryEntry(entry, newName, inputStream, null, true);
+			}
+			else {
+				// We need to create a new entry
+				if(logger.isDebugEnabled())
+					logger.debug("createNew: creating new file '" + newName + "' + in folder " + id);
+				FolderUtils.createLibraryEntry(folder, newName, inputStream, null, true);
+			}
+		}
+		catch (AccessControlException e) {
+			throw new NotAuthorizedException(this);
+		} catch (ReservedByAnotherUserException e) {
+			throw new ConflictException(this, e.getLocalizedMessage());
+		} catch (WriteFilesException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		} catch (WriteEntryDataException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		}
+		
+		return childFile(newName);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.DeletableResource#delete()
+	 */
+	@Override
+	public void delete() throws NotAuthorizedException, ConflictException,
+			BadRequestException {
+		Folder folder = resolveFolder();
+		boolean purgeImmediately = SPropsUtil.getBoolean("wd.folder.deletion.purge.immediately", FOLDER_DELETION_PURGE_IMMEDIATELY);
+		if(folder.isMirrored() || purgeImmediately) {
+			boolean deleteSourceForMirroredFolder = SPropsUtil.getBoolean("wd.folder.deletion.remove.source.contents.for.mirrored.folder", FOLDER_DELETION_REMOVE_SOURCE_CONTENTS_FOR_MIRRORED_FOLDER);
+			getBinderModule().deleteBinder(id, deleteSourceForMirroredFolder, null);
+		}
+		else {
+			try {
+				TrashHelper.preDeleteBinder(this, id);
+			} catch (Exception e) {
+				throw new WebdavException(e);
+			}
+		}
+	}
+	
 	private Resource childFolder(String childName) {
 		// Try fetching the child as a sub-folder
 		try {
@@ -188,45 +297,4 @@ public class FolderResource extends BinderResource implements PropFindableResour
 			return new FileResource(factory, getWebdavPath() + "/" + file.getName(), file);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.bradmcevoy.http.PutableResource#createNew(java.lang.String, java.io.InputStream, java.lang.Long, java.lang.String)
-	 */
-	@Override
-	public Resource createNew(String newName, InputStream inputStream,
-			Long length, String contentType) throws IOException,
-			ConflictException, NotAuthorizedException, BadRequestException {
-		resolveFolder();
-		
-		if(!folder.isLibrary())
-			throw new BadRequestException(this, "This folder is not a library folder");
-		
-		FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, newName);
-		
-		try {
-			if(entry != null) {
-				// An entry containing a file with this name exists.
-				if(logger.isDebugEnabled())
-					logger.debug("createNew: updating existing file '" + newName + "' + owned by " + entry.getEntityIdentifier().toString() + " in folder " + id);
-				FolderUtils.modifyLibraryEntry(entry, newName, inputStream, null, true);
-			}
-			else {
-				// We need to create a new entry
-				if(logger.isDebugEnabled())
-					logger.debug("createNew: creating new file '" + newName + "' + in folder " + id);
-				FolderUtils.createLibraryEntry(folder, newName, inputStream, null, true);
-			}
-		}
-		catch (AccessControlException e) {
-			throw new NotAuthorizedException(this);
-		} catch (ReservedByAnotherUserException e) {
-			throw new ConflictException(this, e.getLocalizedMessage());
-		} catch (WriteFilesException e) {
-			throw new WebdavException(e.getLocalizedMessage());
-		} catch (WriteEntryDataException e) {
-			throw new WebdavException(e.getLocalizedMessage());
-		}
-		
-		return childFile(newName);
-	}
-	
 }

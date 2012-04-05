@@ -34,8 +34,6 @@ package org.kablink.teaming.webdav;
 
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
@@ -44,7 +42,9 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderIndexData;
 
 import com.bradmcevoy.http.CollectionResource;
+import com.bradmcevoy.http.DeletableResource;
 import com.bradmcevoy.http.GetableResource;
+import com.bradmcevoy.http.MakeCollectionableResource;
 import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Resource;
 
@@ -52,7 +52,7 @@ import com.bradmcevoy.http.Resource;
  * @author jong
  *
  */
-public abstract class BinderResource extends WebdavCollectionResource  implements PropFindableResource, GetableResource, CollectionResource {
+public abstract class BinderResource extends WebdavCollectionResource  implements PropFindableResource, GetableResource, CollectionResource, MakeCollectionableResource, DeletableResource {
 
 	// Required properties
 	protected Long id;
