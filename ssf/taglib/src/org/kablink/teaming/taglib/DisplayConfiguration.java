@@ -416,6 +416,13 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 									pageContext.getOut().print(", error=" + e.toString() + " -->\n");
 									pageContext.getOut().print("<!-- end " + jsp.substring(jsp.lastIndexOf('/')+1) + " -->\n");
 								}
+								
+								//Clear the values set
+								itPropertyValuesMap = propertyValuesMap.entrySet().iterator();
+								while (itPropertyValuesMap.hasNext()) {
+									Map.Entry entry = (Map.Entry)itPropertyValuesMap.next();
+									req.setAttribute((String)entry.getKey(), null);
+								}
 
 								//Restore the saved properties
 								for (Element property:itemDefinitionProperties) {
