@@ -110,6 +110,23 @@ public class PropsUtil {
 			return Integer.parseInt(val);		
 	}
 	
+	public static Integer getIntObject(String key) throws PropertyNotFoundException {
+		String val = getRequired(key);
+		
+		if(val != null)
+			return Integer.valueOf(val);
+		else
+			return null;
+	}
+	
+	public static Integer getIntObject(String key, Integer defValue) {
+		String val = get(key);
+		if(val == null)
+			return defValue;
+		else
+			return Integer.valueOf(val);		
+	}
+	
 	public static long getLong(String key) throws PropertyNotFoundException {
 		String val = getRequired(key);
 		
@@ -122,6 +139,22 @@ public class PropsUtil {
 			return defValue;
 		else
 			return Long.parseLong(val);		
+	}
+	
+	public static Long getLongObject(String key) throws PropertyNotFoundException {
+		String val = getRequired(key);
+		if(val != null)
+			return Long.valueOf(val);
+		else
+			return null;
+	}
+	
+	public static Long getLongObject(String key, Long defValue) {
+		String val = get(key);
+		if(val == null)
+			return defValue;
+		else
+			return Long.valueOf(val);		
 	}
 	
 	public static String getDirPath(String key) throws PropertyNotFoundException {

@@ -39,6 +39,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
+import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.SpringContextUtil;
 
 import com.bradmcevoy.http.Auth;
@@ -51,7 +52,7 @@ import com.bradmcevoy.http.Request.Method;
  * @author jong
  *
  */
-public abstract class WebdavResource implements Resource, PropFindableResource {
+public abstract class WebdavResource extends AbstractAllModulesInjected implements Resource, PropFindableResource {
 	
 	protected WebdavResourceFactory factory;
 	
@@ -93,22 +94,6 @@ public abstract class WebdavResource implements Resource, PropFindableResource {
 		return null;
 	}
 
-	protected WorkspaceModule getWorkspaceModule () {
-		return (WorkspaceModule) SpringContextUtil.getBean("workspaceModule");
-	}
-
-	protected FolderModule getFolderModule () {
-		return (FolderModule) SpringContextUtil.getBean("folderModule");
-	}
-
-	protected BinderModule getBinderModule () {
-		return (BinderModule) SpringContextUtil.getBean("binderModule");
-	}
-
-	protected FileModule getFileModule () {
-		return (FileModule) SpringContextUtil.getBean("fileModule");
-	}
-	
 	protected GroovyScriptService getGroovyScriptService() {
 		return (GroovyScriptService) SpringContextUtil.getBean("groovyScriptService");
 	}

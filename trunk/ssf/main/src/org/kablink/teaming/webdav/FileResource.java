@@ -58,6 +58,8 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.webdav.util.WebdavUtils;
 
 import com.bradmcevoy.http.Auth;
+import com.bradmcevoy.http.CollectionResource;
+import com.bradmcevoy.http.CopyableResource;
 import com.bradmcevoy.http.DeletableResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.LockInfo;
@@ -78,7 +80,7 @@ import com.bradmcevoy.http.exceptions.PreConditionFailedException;
  * @author jong
  *
  */
-public class FileResource extends WebdavResource implements FileAttachmentResource, PropFindableResource, GetableResource, DeletableResource, LockableResource {
+public class FileResource extends WebdavResource implements FileAttachmentResource, PropFindableResource, GetableResource, DeletableResource, LockableResource, CopyableResource {
 
 	private static final Log logger = LogFactory.getLog(FileResource.class);
 	
@@ -303,5 +305,24 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 	@Override
 	public FileAttachment getFileAttachment() {
 		return resolveFileAttachment();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.CopyableResource#copyTo(com.bradmcevoy.http.CollectionResource, java.lang.String)
+	 */
+	@Override
+	public void copyTo(CollectionResource toCollection, String name)
+			throws NotAuthorizedException, BadRequestException,
+			ConflictException {
+		if(toCollection instanceof FolderResource) {
+			// TODO $$$$$
+			throw new BadRequestException(this);
+		}
+		else if(toCollection instanceof WorkspaceResource) {
+			throw new BadRequestException(this, "It is not allowed to copy a file into a workspace. Must be a folder resource.");
+		}
+		else {
+			throw new BadRequestException(this, "Destination is an unknown type '" + toCollection.getClass().getName() + "'. Must be a folder resource.");
+		}
 	}
 }

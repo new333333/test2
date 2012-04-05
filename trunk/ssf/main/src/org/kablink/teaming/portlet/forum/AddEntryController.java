@@ -325,7 +325,6 @@ public class AddEntryController extends SAbstractController {
 			        	    			throw ex;
 			        	    		}
 			        	    		lngFolderIdToUse = lngFolderToUse.getId();
-			        	    		this.getBinderModule().setDefinitionsInherited(lngFolderIdToUse, true);
 			        	    	}
 	        	    		}
 	        	    	}
