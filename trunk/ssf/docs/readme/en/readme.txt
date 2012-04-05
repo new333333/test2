@@ -1,15 +1,15 @@
-﻿Kablink Vibe 3.2
+﻿Kablink Vibe 3.3
 
 1.0  Getting Started
 
      Complete system requirements and detailed software installation instructions
-     are provided for the Kablink Vibe administrator in the "Vibe 3.2
+     are provided for the Kablink Vibe administrator in the "Vibe 3.3
      Installation Guide." Vibe site setup as well as ongoing site administration
-     and maintenance instructions are available in the "Vibe 3.2 Administration
+     and maintenance instructions are available in the "Vibe 3.3 Administration
      Guide."
 
      After your Vibe site is set up, Vibe users can obtain instructions in the
-     "Vibe 3.2 User Guide" and the "Vibe 3.2 Advanced User Guide".
+     "Vibe 3.3 User Guide" and the "Vibe 3.3 Advanced User Guide".
 
      You can display the Vibe online help when you log in to your Vibe site.
 
@@ -17,16 +17,16 @@
 2.0  Known Issues
 
      For an up-to-date list of known issues for this release, see the full
-     Kablink Vibe 3.2 product Readme located on the Kablink Vibe 3.2
-     Documentation Web site (http://www.novell.com/documentation/kablinkvibe32).
+     Kablink Vibe 3.3 product Readme located on the Kablink Vibe 3.3
+     Documentation Web site (http://www.novell.com/documentation/kablinkvibe33).
 
 
 3.0  Documentation
 
-     All Kablink Vibe 3.2 documentation is available at the Kablink Vibe 3.2
-     Documentation Web site (http://www.novell.com/documentation/kablinkvibe32):
+     All Kablink Vibe 3.3 documentation is available at the Kablink Vibe 3.3
+     Documentation Web site (http://www.novell.com/documentation/kablinkvibe33):
 
-     -  Full Vibe 3.2 product Readme
+     -  Full Vibe 3.3 product Readme
 
      -  "Installation Guide"
 
@@ -89,7 +89,7 @@
      exporting Novell software. Novell assumes no responsibility for your failure
      to obtain any necessary export approvals.
 
-     Copyright © 2008-2011 Novell, Inc. All rights reserved. No part of this
+     Copyright © 2008-2012 Novell, Inc. All rights reserved. No part of this
      publication may be reproduced, photocopied, stored on a retrieval system, or
      transmitted without the express written consent of the publisher.
 
