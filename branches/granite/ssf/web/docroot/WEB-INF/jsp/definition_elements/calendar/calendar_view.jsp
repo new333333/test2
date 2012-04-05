@@ -93,7 +93,9 @@ var ss_showingFolder = false;
 </ssf:ifaccessible>
 
 <ssf:ifnotaccessible>
+<c:if test="${empty ssEntryIdToBeShown}">
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_content.jsp" %>
+</c:if>
 </ssf:ifnotaccessible>
 
 <c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>
