@@ -40,7 +40,7 @@ package org.kablink.teaming.security.authentication;
  * @author jwootton
  *
  */
-public class UserMismatchException extends org.springframework.security.AuthenticationException
+public class UserMismatchException extends org.springframework.security.core.AuthenticationException
 {
 	/**
 	 * 

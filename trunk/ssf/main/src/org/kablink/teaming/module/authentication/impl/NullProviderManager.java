@@ -38,10 +38,9 @@ import java.util.Properties;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
-import org.springframework.security.Authentication;
-import org.springframework.security.AuthenticationException;
-import org.springframework.security.concurrent.ConcurrentSessionController;
-import org.springframework.security.providers.ProviderManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.authentication.ProviderManager;
 
 public class NullProviderManager extends ProviderManager {
 	public void afterPropertiesSet() throws Exception {
@@ -54,10 +53,6 @@ public class NullProviderManager extends ProviderManager {
 		return new LinkedList();
 	}
 
-	public ConcurrentSessionController getSessionController() {
-		return null;
-	}
-
 	public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
 	}
 
@@ -65,9 +60,6 @@ public class NullProviderManager extends ProviderManager {
 	}
 
 	public void setProviders(List providers) {
-	}
-
-	public void setSessionController(ConcurrentSessionController sessionController) {
 	}
 
 	public void setAdditionalExceptionMappings(Properties additionalExceptionMappings) {

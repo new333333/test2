@@ -32,16 +32,24 @@
  */
 package org.kablink.teaming.asmodule.spring.security.config;
 
-import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
-import org.springframework.security.Authentication;
-import org.springframework.security.AuthenticationException;
-import org.springframework.security.config.NamespaceAuthenticationManager;
+import java.util.List;
 
-public class TeamingAuthenticationManager extends NamespaceAuthenticationManager {
+import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+
+//public class TeamingAuthenticationManager extends NamespaceAuthenticationManager {
+public class TeamingAuthenticationManager extends ProviderManager {
 
 	protected String authenticator = "unknown";
 	protected String enableKey = null;
 	
+    public TeamingAuthenticationManager(List<AuthenticationProvider> providers) {
+    	super(providers);
+    }
+
 	public void setAuthenticator(String authenticator) {
 		this.authenticator = authenticator;
 	}
@@ -50,10 +58,11 @@ public class TeamingAuthenticationManager extends NamespaceAuthenticationManager
 		this.enableKey = enableKey;
 	}
 	
-	public Authentication doAuthentication(Authentication authentication) throws AuthenticationException {
+	@Override
+	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		AuthenticationContextHolder.setAuthenticationContext(authenticator, enableKey);
 		try {
-			return super.doAuthentication(authentication);
+			return super.authenticate(authentication);
 		}
 		finally {
 			AuthenticationContextHolder.clear();

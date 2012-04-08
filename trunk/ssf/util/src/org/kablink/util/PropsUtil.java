@@ -121,7 +121,7 @@ public class PropsUtil {
 	
 	public static Integer getIntObject(String key, Integer defValue) {
 		String val = get(key);
-		if(val == null)
+		if(val == null || val.equals(""))
 			return defValue;
 		else
 			return Integer.valueOf(val);		
@@ -151,7 +151,7 @@ public class PropsUtil {
 	
 	public static Long getLongObject(String key, Long defValue) {
 		String val = get(key);
-		if(val == null)
+		if(val == null || val.equals(""))
 			return defValue;
 		else
 			return Long.valueOf(val);		

@@ -32,10 +32,13 @@
  */
 package org.kablink.teaming.asmodule.spring.security.providers;
 
-import org.springframework.security.Authentication;
-import org.springframework.security.AuthenticationException;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.providers.AuthenticationProvider;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.authentication.AuthenticationProvider;
 
 public class DummyAuthenticationProvider implements AuthenticationProvider {
 
@@ -59,14 +62,14 @@ public class DummyAuthenticationProvider implements AuthenticationProvider {
 		
 		private Authentication authentication; // original input
 		
-		private GrantedAuthority[] grantedAuthorities;
+		private Collection<? extends GrantedAuthority> grantedAuthorities;
 		
 		public DummyAuthentication(Authentication authentication) {
 			this.authentication = authentication;
 
 			grantedAuthorities = authentication.getAuthorities();
 			if(grantedAuthorities == null)
-				grantedAuthorities = new GrantedAuthority[] {};
+				grantedAuthorities = new ArrayList<GrantedAuthority>();
 		}
 
 		public boolean equals(Object another) {
@@ -81,7 +84,7 @@ public class DummyAuthenticationProvider implements AuthenticationProvider {
 			return authentication.hashCode();
 		}
 
-		public GrantedAuthority[] getAuthorities() {
+		public Collection<? extends GrantedAuthority> getAuthorities() {
 			return grantedAuthorities;
 		}
 

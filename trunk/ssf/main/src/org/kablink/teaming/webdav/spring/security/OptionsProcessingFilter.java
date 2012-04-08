@@ -34,16 +34,21 @@ package org.kablink.teaming.webdav.spring.security;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.security.providers.anonymous.AnonymousProcessingFilter;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
 /**
  * @author jong
  *
  */
-public class OptionsProcessingFilter extends AnonymousProcessingFilter {
+public class OptionsProcessingFilter extends AnonymousAuthenticationFilter {
 
 	private static final String OPTIONS_METHOD = "OPTIONS";
 	
+	public OptionsProcessingFilter() {
+		super();
+	}
+	
+	@Override
     protected boolean applyAnonymousForThisRequest(HttpServletRequest request) {
         return request.getMethod().equalsIgnoreCase(OPTIONS_METHOD);
     }

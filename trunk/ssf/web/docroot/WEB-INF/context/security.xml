@@ -6,7 +6,7 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
-    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
     <!-- ========== Defines base beans that are common between different authentication mechanisms ========== -->
 
@@ -18,11 +18,11 @@
 	</bean>-->
 	
 	<bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
-		<property name="providerBeanNames">
-			<list>
-				<value>authenticationModule</value>
-			</list>
-		</property>
+		<constructor-arg>
+		    <list>
+		        <ref bean="authenticationModule"/>
+		    </list>
+		</constructor-arg>
 		<property name="authenticator"><value>web</value></property>
 	</bean>
 	    
@@ -41,5 +41,18 @@
 			</bean>
 		</property>
 	</bean>
+
+    <security:http pattern="/ws/**" security="none" />
+    <security:http pattern="/rss/**" security="none" />
+    <security:http pattern="/atom/**" security="none" />
+    <security:http pattern="/ical/**" security="none" />
+    <security:http pattern="/static/**" security="none" />
+    <security:http pattern="/ext/**" security="none" />
+    <security:http pattern="/help/**" security="none" />
+    <security:http pattern="/help_doc/**" security="none" />
+    <security:http pattern="/validate/**" security="none" />        
+    <security:http pattern="/redirect/**" security="none" />
+    <security:http pattern="/bitbucket/**" security="none" />
+    <security:http pattern="/html/**" security="none" />      
 
 </beans>

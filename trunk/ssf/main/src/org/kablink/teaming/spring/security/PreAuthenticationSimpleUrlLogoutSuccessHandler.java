@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,33 +30,51 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.spring.security;
 
 import java.io.IOException;
 
-import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.kablink.teaming.util.SPropsUtil;
-import org.springframework.security.Authentication;
-import org.springframework.security.providers.preauth.PreAuthenticatedAuthenticationToken;
-import org.springframework.security.ui.logout.LogoutHandler;
-import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.util.StringUtils;
 
-public class PreAuthenticationLogoutFilter extends org.springframework.security.ui.logout.LogoutFilter {
+/**
+ * This class overrides the behavior of <code>SimpleUrlLogoutSuccessHandler</code> class so that
+ * the user is re-directed to an appropriate place depending on whether the user logged off from
+ * a pre-authenticated session or a regular session.
+ * 
+ * @author jong
+ *
+ */
+public class PreAuthenticationSimpleUrlLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
 
 	private String preAuthenticationLogoutSuccessUrl = "/bitbucket";
-    private LogoutHandler[] handlers;
-	private boolean allowLogoutViaGet;
-	
-	public PreAuthenticationLogoutFilter(String logoutSuccessUrl, LogoutHandler[] handlers) {
-		super(logoutSuccessUrl, handlers);
-		this.handlers = handlers;
-		allowLogoutViaGet = SPropsUtil.getBoolean("allow.logout.via.get", false);
-	}
+
+	@Override
+    protected void handle(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+            throws IOException, ServletException {
+        String targetUrl;
+
+		if(authentication instanceof PreAuthenticatedAuthenticationToken) {
+			targetUrl = determinePreAuthenticationTargetUrl(request, response);
+		}
+		else {
+			targetUrl = determineTargetUrl(request, response);
+		}
+
+        if (response.isCommitted()) {
+            logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);
+            return;
+        }
+
+        getRedirectStrategy().sendRedirect(request, response, targetUrl);
+    }
 
 	public String getPreAuthenticationLogoutSuccessUrl() {
 		return preAuthenticationLogoutSuccessUrl;
@@ -67,63 +85,6 @@ public class PreAuthenticationLogoutFilter extends org.springframework.security.
 		this.preAuthenticationLogoutSuccessUrl = preAuthenticationLogoutSuccessUrl;
 	}
 
-    public void doFilterHttp(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException,
-    ServletException {
-        if (requiresLogout(request, response)) {
-        	// We've got logout request.
-        	if("GET".equalsIgnoreCase(request.getMethod())) { // GET method
-        		if(allowLogoutViaGet) {
-        			// Allow logout via GET.
-        			dodoFilterHttp(request, response, chain);
-        		}
-        		else {
-        			// Don't allow logout via GET. Simply return without rendering anything new.
-        			return;
-        		}
-        	}
-        	else { // non-GET, probably POST
-        		dodoFilterHttp(request, response, chain);
-        	}
-        }
-        else { // It's not logout request.
-        	chain.doFilter(request, response);
-        }
-    }
-
-    public void dodoFilterHttp(HttpServletRequest request,
-			HttpServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
-
-		if (requiresLogout(request, response)) {
-			Authentication auth = SecurityContextHolder.getContext()
-					.getAuthentication();
-
-			if (logger.isDebugEnabled()) {
-				logger.debug("Logging out user '" + auth
-						+ "' and redirecting to logout page");
-			}
-
-			for (int i = 0; i < handlers.length; i++) {
-				handlers[i].logout(request, response, auth);
-			} 
-
-			String targetUrl;
-			
-			if(auth instanceof PreAuthenticatedAuthenticationToken) {
-				targetUrl = determinePreAuthenticationTargetUrl(request, response);
-			}
-			else {
-				targetUrl = determineTargetUrl(request, response);
-			}
-
-			sendRedirect(request, response, targetUrl);
-
-			return;
-		}
-
-		chain.doFilter(request, response);
-	}
-	
     protected String determinePreAuthenticationTargetUrl(HttpServletRequest request, HttpServletResponse response) {
         String targetUrl = request.getParameter("logoutSuccessUrl");
 

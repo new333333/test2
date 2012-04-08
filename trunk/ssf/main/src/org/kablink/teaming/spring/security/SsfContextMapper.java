@@ -32,23 +32,19 @@
  */
 package org.kablink.teaming.spring.security;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Node;
-import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.module.zone.ZoneModule;
-import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
-import org.kablink.teaming.util.SZoneConfig;
-import org.springframework.security.userdetails.ldap.UserDetailsContextMapper;
-import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.DirContextAdapter;
-import org.springframework.security.GrantedAuthority;
+import org.springframework.security.core.GrantedAuthority;
 
 
 public class SsfContextMapper  implements UserDetailsContextMapper {
@@ -74,9 +70,9 @@ public class SsfContextMapper  implements UserDetailsContextMapper {
 	public void setZoneModule(ZoneModule zoneModule) { this.zoneModule = zoneModule; }
 
 	public UserDetails mapUserFromContext(DirContextOperations ctx, String username,
-											GrantedAuthority[] authority)
+			Collection<? extends GrantedAuthority> authorities)
 	{
-		SsfUserDetails details =new SsfUserDetails(ctx, attributeMap, username, authority); 
+		SsfUserDetails details =new SsfUserDetails(ctx, attributeMap, username, authorities); 
 		return details;
 	}
 	
@@ -92,9 +88,9 @@ public class SsfContextMapper  implements UserDetailsContextMapper {
 	public static class SsfUserDetails extends HashMap<String,String> implements UserDetails
 	{
 		String username;
-		GrantedAuthority[] authorities;
+		Collection<? extends GrantedAuthority> authorities;
 		
-		public SsfUserDetails(DirContextOperations ctx, Map<String,String> mapping, String username, GrantedAuthority[] authorities)
+		public SsfUserDetails(DirContextOperations ctx, Map<String,String> mapping, String username, Collection<? extends GrantedAuthority> authorities)
 		{
 			this.username = username;
 			this.authorities = authorities;
@@ -109,10 +105,10 @@ public class SsfContextMapper  implements UserDetailsContextMapper {
 		public SsfUserDetails(String username)
 		{
 			this.username = username;
-			this.authorities = new GrantedAuthority[0];
+			this.authorities = new ArrayList<GrantedAuthority>();
 		}
 
-		public GrantedAuthority[] 	getAuthorities() {
+		public Collection<? extends GrantedAuthority> 	getAuthorities() {
 			 	return authorities;
 		}
 		public String getPassword()

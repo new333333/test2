@@ -71,18 +71,18 @@ import org.kablink.teaming.module.authentication.UserIdNotActiveException;
 import org.kablink.teaming.module.authentication.UserIdNotUniqueException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.security.Authentication;
-import org.springframework.security.AuthenticationException;
-import org.springframework.security.AuthenticationServiceException;
-import org.springframework.security.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
-import org.springframework.security.providers.AuthenticationProvider;
-import org.springframework.security.providers.ProviderManager;
-import org.springframework.security.providers.ldap.LdapAuthenticationProvider;
-import org.springframework.security.providers.ldap.authenticator.BindAuthenticator;
-import org.springframework.security.providers.preauth.PreAuthenticatedAuthenticationToken;
-import org.springframework.security.userdetails.UsernameNotFoundException;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
+import org.springframework.security.ldap.authentication.BindAuthenticator;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		implements AuthenticationProvider, InitializingBean {
@@ -323,7 +323,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	
 	/**
 	 * Performs authentication with the same contract as {@link
-	 * org.springframework.security.AuthenticationManager#authenticate(Authentication)}.
+	 * org.springframework.security.core.AuthenticationManager#authenticate(Authentication)}.
 	 * Delegates the authentication to the AuthenticationManager configured for
 	 * the zone to which the request was directed.
 	 * 

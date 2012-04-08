@@ -35,9 +35,8 @@ package org.kablink.teaming.asmodule.spring.security.preauth;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.security.ui.FilterChainOrder;
-import org.springframework.security.ui.preauth.AbstractPreAuthenticatedProcessingFilter;
-import org.springframework.security.ui.preauth.PreAuthenticatedCredentialsNotFoundException;
+import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException;
 import org.springframework.util.Assert;
 
 public class RequestCookiePreAuthenticatedProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
@@ -53,7 +52,7 @@ public class RequestCookiePreAuthenticatedProcessingFilter extends AbstractPreAu
 	protected String noCredentialsCookie = EMPTY; // This default reaction returns an empty string.
 	protected String noCredentials = EMPTY; // This default reaction returns an empty string.
 
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
     	super.afterPropertiesSet();
         Assert.notNull(principalRequestCookie, "An principalRequestCookie must be set");
         if(!noPrincipalCookie.equals(THROW) && !noPrincipalCookie.equals(NULL) && !noPrincipalCookie.equals(EMPTY))
@@ -92,10 +91,6 @@ public class RequestCookiePreAuthenticatedProcessingFilter extends AbstractPreAu
 		this.noCredentials = noCredentials;
 	}
 
-	public int getOrder() {
-		return FilterChainOrder.PRE_AUTH_FILTER;
-	}
-	
 	/**
 	 * Read and returns the header named by <tt>principalRequestCookie</tt> from the request.
 	 * 
