@@ -32,7 +32,7 @@
  */
 package org.kablink.teaming.spring.security;
 
-import org.springframework.security.Authentication;
+import org.springframework.security.core.Authentication;
 
 public interface SynchNotifiableAuthentication extends Authentication {
 	public void synchDone();

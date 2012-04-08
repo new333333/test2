@@ -36,21 +36,21 @@ import java.io.IOException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
-import org.springframework.security.ui.SpringSecurityFilter;
+import org.springframework.web.filter.GenericFilterBean;
 
 
-public class ZoneGrabbingFilter extends SpringSecurityFilter {
+public class ZoneGrabbingFilter extends GenericFilterBean {
 	public ZoneGrabbingFilter() {
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	protected void doFilterHttp(HttpServletRequest request,
-			HttpServletResponse response, FilterChain chain) throws IOException,
+	public void doFilter(ServletRequest request,
+			ServletResponse response, FilterChain chain) throws IOException,
 			ServletException {
 		ZoneContextHolder.setServerName(request.getServerName());
 		ZoneContextHolder.setServerPort(request.getServerPort());
@@ -59,7 +59,4 @@ public class ZoneGrabbingFilter extends SpringSecurityFilter {
 		chain.doFilter(request, response);
 	}
 
-	public int getOrder() {
-		return 0;
-	}
 }

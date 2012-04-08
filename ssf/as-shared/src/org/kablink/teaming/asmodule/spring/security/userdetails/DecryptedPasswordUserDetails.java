@@ -32,21 +32,26 @@
  */
 package org.kablink.teaming.asmodule.spring.security.userdetails;
 
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.userdetails.UserDetails;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public class DecryptedPasswordUserDetails implements UserDetails {
 
+	private static final long serialVersionUID = 1L;
+	
 	String username;
 	String password;
-	GrantedAuthority[] authorities = new GrantedAuthority[0];
+	Collection<? extends GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 
 	public DecryptedPasswordUserDetails(String username, String password) {
 		this.username = username;
 		this.password = password;
 	}
 	
-	public GrantedAuthority[] getAuthorities() {
+	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return authorities; 
 	}
 

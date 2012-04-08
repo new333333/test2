@@ -32,17 +32,19 @@
  */
 package org.kablink.teaming.spring.security.ldap;
 
-import org.springframework.security.Authentication;
-import org.springframework.security.AuthenticationException;
-import org.springframework.security.AuthenticationServiceException;
-import org.springframework.security.BadCredentialsException;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.ldap.LdapAuthoritiesPopulator;
-import org.springframework.security.providers.ldap.LdapAuthenticationProvider;
-import org.springframework.security.providers.ldap.LdapAuthenticator;
-import org.springframework.security.providers.preauth.PreAuthenticatedAuthenticationToken;
-import org.springframework.security.userdetails.UserDetails;
-import org.springframework.security.userdetails.ldap.UserDetailsContextMapper;
+import java.util.Collection;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
+import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
+import org.springframework.security.ldap.authentication.LdapAuthenticator;
+import org.springframework.security.web .authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.ldap.userdetails.UserDetailsContextMapper;
 import org.springframework.ldap.NamingException;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.util.Assert;
@@ -78,7 +80,7 @@ public class PreAuthenticatedLdapAuthenticationProvider extends LdapAuthenticati
         try {
             DirContextOperations userData = this.authenticator.authenticate(authentication);
 
-            GrantedAuthority[] extraAuthorities = loadUserAuthorities(userData, accountname, null);
+            Collection<? extends GrantedAuthority> extraAuthorities = loadUserAuthorities(userData, accountname, null);
 
             UserDetails user = userDetailsContextMapper.mapUserFromContext(userData, accountname, extraAuthorities);
 

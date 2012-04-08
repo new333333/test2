@@ -60,8 +60,8 @@ import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
-import org.springframework.security.AuthenticationException;
-import org.springframework.security.ui.AbstractProcessingFilter;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.web.portlet.ModelAndView;
 
 /**
@@ -114,10 +114,10 @@ public class LoginController  extends SAbstractControllerRetry {
 			model.put(WebKeys.URL, url);
 		}
         HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
-    	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+    	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
     	if(ex != null) {
     		model.put(WebKeys.LOGIN_ERROR, ex.getMessage());
-    		session.removeAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+    		session.removeAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
     	}
 
     	// Is self registration permitted?

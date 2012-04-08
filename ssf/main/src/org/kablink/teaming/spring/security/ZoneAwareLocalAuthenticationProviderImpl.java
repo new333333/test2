@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.spring.security;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 import org.kablink.teaming.domain.User;
@@ -39,13 +41,13 @@ import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
-import org.springframework.security.Authentication;
-import org.springframework.security.AuthenticationException;
-import org.springframework.security.BadCredentialsException;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
-import org.springframework.security.userdetails.UserDetails;
-import org.springframework.security.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalAuthenticationProvider {
 	
@@ -83,18 +85,18 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 
 	protected Authentication outputAuthentication(Authentication authentication, User user, Object extraInfo) {
 		UserDetails details = new SsfContextMapper.SsfUserDetails(user.getName());
-		UsernamePasswordAuthenticationToken result = newUsernamePasswordAuthenticationToken(user, extraInfo, details, authentication.getCredentials(), new GrantedAuthority[0]);
+		UsernamePasswordAuthenticationToken result = newUsernamePasswordAuthenticationToken(user, extraInfo, details, authentication.getCredentials(), new ArrayList<GrantedAuthority>());
 		result.setDetails(details);
 		return result;	
 	}
 	
 	protected UsernamePasswordAuthenticationToken newUsernamePasswordAuthenticationToken
-	(User user, Object extraInfo, Object principal, Object credentials, GrantedAuthority[] authorities) {
+	(User user, Object extraInfo, Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities) {
 		return new SynchNotifiableAuthenticationImpl(principal, credentials, authorities);
 	}
 	
 	public static class SynchNotifiableAuthenticationImpl extends UsernamePasswordAuthenticationToken implements SynchNotifiableAuthentication {
-	    public SynchNotifiableAuthenticationImpl(Object principal, Object credentials, GrantedAuthority[] authorities) {
+	    public SynchNotifiableAuthenticationImpl(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities) {
 	    	super(principal, credentials, authorities);
 	    }
 		public void synchDone() {}
