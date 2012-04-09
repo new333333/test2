@@ -81,6 +81,10 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource help();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/move_down.gif")
+	public ImageResource moveDown();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/DataTable/pin_orange.png")
 	public ImageResource orangePin();
 	

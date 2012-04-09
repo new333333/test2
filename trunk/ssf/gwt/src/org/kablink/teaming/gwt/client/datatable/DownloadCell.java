@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -47,6 +47,8 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
@@ -108,9 +110,19 @@ public class DownloadCell extends AbstractCell<Long> {
     @Override
     public void onBrowserEvent(Context context, Element parent, Long entryId, NativeEvent event, ValueUpdater<Long> valueUpdater) {
     	// Which of our download widgets is being operated on? 
-		Element eventTarget = Element.as(event.getEventTarget());
-		String wt = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
-		boolean isLabel = ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_ENTRY_DOWNLOAD_LABEL ));
+		Element et = Element.as(event.getEventTarget());
+		String  wt = et.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
+		boolean isLabel = ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_ENTRY_DOWNLOAD_LABEL));
+		Element es;
+		if (isLabel) {
+			es = et;
+		}
+		else {
+			Element ep = et.getParentElement();
+			wt = ep.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
+			isLabel = ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_ENTRY_DOWNLOAD_LABEL));
+			es = (isLabel ? ep : null);
+		}
 
 		// What type of event are we processing?
     	String eventType = event.getType();
@@ -124,19 +136,19 @@ public class DownloadCell extends AbstractCell<Long> {
     		// A click!  Is it the label being clicked?
     		if (isLabel) {
     			// Yes!  Strip off any over style.
-    			eventTarget.removeClassName("vibe-dataTableLink-hover");
-    			invokeFileDownload(entryId, eventTarget);
+    			es.removeClassName("vibe-dataTableLink-hover");
+    			invokeFileDownload(entryId, et);
     		}
     	}
     	
     	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOVER.equals(eventType)) {
     		// A mouse over!  Add the hover style.
-			eventTarget.addClassName("vibe-dataTableLink-hover");
+    		es.addClassName("vibe-dataTableLink-hover");
     	}
     	
     	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOUT.equals(eventType)) {
     		// A mouse out!  Remove the hover style.
-			eventTarget.removeClassName("vibe-dataTableLink-hover");
+    		es.removeClassName("vibe-dataTableLink-hover");
     	}
     }
     
@@ -174,12 +186,17 @@ public class DownloadCell extends AbstractCell<Long> {
 
 		// Create the download link...
 		VibeFlowPanel fp = new VibeFlowPanel();
-		InlineLabel downloadLabel = new InlineLabel(GwtTeaming.getMessages().vibeDataTable_Download());
-		downloadLabel.addStyleName("vibe-dataTableEntry-download");
-		Element elE = downloadLabel.getElement(); 
+		Anchor downloadAnchor = new Anchor();
+		Image downloadImage = new Image(GwtTeaming.getDataTableImageBundle().moveDown());
+		downloadImage.getElement().setAttribute("align", "absmiddle");
+		Element elA = downloadAnchor.getElement();
+		elA.appendChild(downloadImage.getElement());
+		elA.appendChild(new InlineLabel(GwtTeaming.getMessages().vibeDataTable_Download()).getElement());
+		downloadAnchor.addStyleName("vibe-dataTableEntry-download");
+		Element elE = downloadAnchor.getElement(); 
 		elE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_ENTRY_DOWNLOAD_LABEL);
 		elE.setId(VibeDataTableConstants.CELL_WIDGET_ENTRY_DOWNLOAD_LABEL + "_" + entryId);
-		fp.add(downloadLabel);
+		fp.add(downloadAnchor);
 		
 		// ...and render that into the cell.
 		SafeHtml rendered = SafeHtmlUtils.fromTrustedString(fp.getElement().getInnerHTML());
