@@ -68,7 +68,8 @@ ${exception.class}<br/>
 <%= message.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;") %>
 </p>
 
-<c:if test="${!empty ssUser && ssUser.super}">
+<jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
+<c:if test="<%= ssUser != null && ssUser instanceof org.kablink.teaming.domain.User && ssUser.isSuper() %>">
 	<input type="button" id="ss_show" value="<ssf:nlt tag="button.showDetails"/>" 
 	  onclick="document.getElementById('ss_details').style.display='block'; document.getElementById('ss_hide').style.display='inline'; this.style.display='none'"/>
 	<input type="button" id="ss_hide" value="<ssf:nlt tag="button.hideDetails"/>" 
