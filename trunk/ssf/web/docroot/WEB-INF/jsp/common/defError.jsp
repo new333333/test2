@@ -56,6 +56,7 @@
 	</c:if>
 </ssf:ifnotadapter>
 
+<c:if test="${!empty exception}" >
 <p>
 ${exception.class}<br/>
 <%
@@ -81,6 +82,7 @@ ${exception.class}<br/>
 	<jsp:useBean id="stackTrace" type="String" />
 	<%= org.kablink.teaming.util.stringcheck.StringCheckUtil.check(stackTrace) %>
 	</div>
+</c:if>
 </c:if>
 
 <ssf:ifnotadapter>
