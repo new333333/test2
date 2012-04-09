@@ -40,7 +40,6 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
-import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.authentication.LdapAuthenticator;
 import org.springframework.security.web .authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
