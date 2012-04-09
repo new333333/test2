@@ -45,7 +45,6 @@ import java.util.SortedSet;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -94,7 +93,6 @@ import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
-import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
 import org.kablink.teaming.gwt.client.lpe.LandingPageProperties;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
@@ -174,7 +172,6 @@ import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.FavoritesLimitExceededException;
 import org.kablink.teaming.web.util.GwtUIHelper;
-import org.kablink.teaming.web.util.GwtUISessionData;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -1446,11 +1443,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_TOOLBAR_ITEMS:
 		{
-			List<ToolbarItem> result;
 			GetToolbarItemsCmd gtiCmd = ((GetToolbarItemsCmd) cmd);
-			if (GwtUIHelper.isGraniteGwtEnabled())
-			     result = GwtMenuHelper.getToolbarItems( this,    getRequest( ri ), gtiCmd.getBinderId() );
-			else result =               getToolbarItemsFromCache( getRequest( ri ), gtiCmd.getBinderId() );
+			List<ToolbarItem> result = GwtMenuHelper.getToolbarItems( this, getRequest( ri ), gtiCmd.getBinderId() );
 			GetToolbarItemsRpcResponseData responseData = new GetToolbarItemsRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -5189,58 +5183,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	
 	/**
-	 * Returns a List<ToolbarItem> of the ToolbarItem's
-	 * applicable for the given context.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	private static List<ToolbarItem> getToolbarItemsFromCache( HttpServletRequest request, String binderId )
-	{
-		/// If the Granite GWT extensions are enabled...
-		if (GwtUIHelper.isGraniteGwtEnabled()) {
-			// ...something's wrong as this should never be called in
-			// ...that scenario.
-			m_logger.warn("GwtRpcServiceImpl.getToolbarItemsFromCache( *Internal Error* ):  Should never be called when the Granite GWT extensions are enabled.");
-		}
-		
-		// Construct a List<ToolbarItem> to hold the toolbar items.
-		List<ToolbarItem> tmiList = new ArrayList<ToolbarItem>();
-
-		// If we can't access the cached toolbar beans... 
-		HttpSession hSession = request.getSession();
-		GwtUISessionData tabsObj = ((GwtUISessionData) hSession.getAttribute(GwtUIHelper.CACHED_TOOLBARS_KEY));
-		Map<String, Map> tbMaps = ((null == tabsObj) ? null : ((Map<String, Map>) tabsObj.getData()));
-		if (null == tbMaps) {
-			// ...we can't build any toolbar items.  Bail.
-			m_logger.debug("GwtRpcServiceImpl.getToolbarItemsFromCache( 'Could not access any cached toolbars' )");
-			return tmiList;
-		}
-		
-		// Scan the toolbars...
-		m_logger.debug("GwtRpcServiceImpl.getToolbarItemsFromCache():");
-		Set<String> tbKeySet = tbMaps.keySet();
-		for (Iterator<String> tbKeyIT = tbKeySet.iterator(); tbKeyIT.hasNext(); )
-		{
-			// ...constructing a ToolbarItem for each.
-			String tbKey = tbKeyIT.next();
-			tmiList.add(
-				buildToolbarItemFromToolbarCache(
-					"...",
-					tbKey,
-					tbMaps.get( tbKey ) ) );
-		}
-
-		// If we get here, tmiList refers to the
-		// List<ToolbarItem>'s to construct the GWT UI based toolbar
-		// from.  Return it.
-		return tmiList;
-	}// end getToolbarItemsFromCache()
-
-	/**
 	 * Removes a search based on its SavedSearchInfo.
 	 * 
 	 * @param ri
@@ -5367,99 +5309,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return BinderHelper.isPersonTracked( this, Long.parseLong( binderId ) );
 	}//end isPersonTracked()
 	
-	/*
-	 * Constructs a ToolbarItem based on a toolbar.
-	 */
-	@SuppressWarnings("unchecked")
-	private static ToolbarItem buildToolbarItemFromToolbarCache( String traceStart, String tbKey, Map tbMap )
-	{
-		// Log the name of the toolbar that we're building a toolbar
-		// item for...
-		m_logger.debug(traceStart + ":toolbar=" + tbKey);
-
-		// ...and create its toolbar item.
-		ToolbarItem toolbarItem = new ToolbarItem(tbKey);
-
-		// Scan the items in this toolbar's map.
-		Set kSet = tbMap.keySet();
-		for (Iterator kIT = kSet.iterator(); kIT.hasNext(); ) {
-			// Is this item a nested map?
-			String k = ((String) kIT.next());
-			Object o = tbMap.get(k);
-			if (o instanceof Map) {
-				// Yes!  Is it a map of qualifiers?
-				if (k.equalsIgnoreCase("qualifiers")) {
-					// Yes!  Add them to the current toolbar.
-					Map m = ((Map) o);
-					Set qSet = m.keySet();
-					for (Iterator qIT = qSet.iterator(); qIT.hasNext(); ) {
-						String name  = ((String) qIT.next());
-						Object value = m.get(name);
-						String sValue;
-						if      (value instanceof Boolean) sValue = String.valueOf((Boolean) value);
-						else if (value instanceof String)  sValue = ((String) value);
-						else                               sValue = null;
-						if (null == sValue) {
-							m_logger.debug(traceStart + "...:name:<unknown>:IGNORED QUALIFIER=" + name + ":" + ((null == value) ? "null" : value.getClass()));
-						}
-						else {
-							if (name.equalsIgnoreCase(GwtUIHelper.GWTUI_TEAMING_EVENT)) {
-								m_logger.debug(traceStart + "...:name:value:TEAMING_EVENT=" + name + ":" + sValue);
-								TeamingEvents te = TeamingEvents.valueOf(sValue);
-								toolbarItem.setTeamingEvent(te);
-							}
-							else {
-								m_logger.debug(traceStart + "...:name:value:QUALIFIER=" + name + ":" + sValue);
-								toolbarItem.addQualifier(name, sValue);
-							}
-						}
-					}
-				}
-				else {
-					// No, it's not a map of qualifiers!  Construct a
-					// nested toolbar item for it.
-					toolbarItem.addNestedItem(buildToolbarItemFromToolbarCache((traceStart + "..."), k, ((Map) o)));
-				}
-			}
-			
-			// No, the item isn't a nested map!  Is it a string?
-			else if (o instanceof String) {
-				// Yes!  Handle the values we know about...
-				String s = ((String) o);
-				if (k.equalsIgnoreCase("title")) {
-					m_logger.debug(traceStart + "...:key:string:TITLE=" + k + ":" + s);
-					toolbarItem.setTitle(s);
-				}
-				else if (k.equalsIgnoreCase("url") || k.endsWith(GwtUIHelper.URLFIXUP_PATCH)) {
-					m_logger.debug(traceStart + "...:key:string:URL=" + k + ":" + s);
-					toolbarItem.setUrl(  s);
-				}
-				else {
-					// ...and ignore the rest.
-					m_logger.debug(traceStart + "...:key:string:IGNORED=" + k + ":" + s);
-				}
-			}
-
-			// No, the item isn't a string either!  Is it an adapted
-			// portlet URL?
-			else if (o instanceof AdaptedPortletURL) {
-				// Yes!  Then we ignore it as it will have been handled
-				// as a string above.  (See the URLFIXUP_PATCH
-				// reference above.)
-			}
-			
-			else {
-				// No, the item isn't an adapted portlet URL either!
-				// We don't know how to handle it!
-				m_logger.debug(traceStart + "...:key:<unknown>:IGNORED=" + k + ":" + ((null == o) ? "null" : o.getClass()));
-			}
-		}
-
-		// If we get here, toolbarItem refers to the ToolbarItem for
-		// this toolbar.  Return it.
-		return toolbarItem;
-	}// end buildToolbarItemFromToolbarCache()
-
 	/*
 	 * Get the subscription data for the given entry id.
 	 */

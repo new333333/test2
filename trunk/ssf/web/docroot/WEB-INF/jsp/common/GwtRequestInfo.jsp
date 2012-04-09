@@ -42,7 +42,6 @@
 		currentUserWorkspaceId:				'${ssUser.workspaceId}',
 		debugUI:							'${vibeUIDebug}',
 		debugLP:							'${vibeLPDebug}',
-		graniteGwtEnabled:					'${vibeGraniteGWTEnabled}',
 		deleteUserUrl:						'${ss_deleteEntryAdapter}',
 		errMsg:								'<ssf:escapeJavaScript>${errMsg}</ssf:escapeJavaScript>',
 		forceSidebarReload:					'false',
