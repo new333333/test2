@@ -966,6 +966,7 @@ public interface GwtTeamingMessages extends Messages
 	String profileSavedSearches();
 	String profileTeams();
 	String profileGroups();
+	String profileInsufficientViewProfileRights();
 	String profileFollowing();
 	String profileAboutMe();
 	String profileDataQuota();

@@ -65,6 +65,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.client.GwtUser;
@@ -908,17 +909,35 @@ public class GwtProfileHelper {
 		for(String trackedId: trackedIds) {
 				Principal principal = bs.getProfileModule().getEntry(Long.parseLong(trackedId));
 				if ((null != principal) && (!(principal.isDeleted()))) {
+					Binder binder;
+					
+					binder = null;
+					
 					principal = Utils.fixProxy(principal);
-					Binder binder = bs.getBinderModule().getBinder( principal.getWorkspaceId() );
+					
+					try
+					{
+						binder = bs.getBinderModule().getBinder( principal.getWorkspaceId() );
+					}
+					catch( AccessControlException ex )
+					{
+						// Nothing to do.  It means that the user doesn't have rights to see the
+						// personal workspace of the person they are following.  We will still
+						// list the person as being followed.
+					}
 					
 					// Yes!  Construct a GwtUser object for it.
 					user = new GwtUser();
 					user.setUserId( principal.getId() );
-					user.setWorkspaceId( binder.getId() );
 					user.setName( principal.getName() );
 					user.setTitle( Utils.getUserTitle(principal) );
-					user.setWorkspaceTitle( binder.getTitle() );
-					user.setViewWorkspaceUrl( PermaLinkUtil.getPermalink( request, binder ) );
+					
+					if ( binder != null )
+					{
+						user.setWorkspaceId( binder.getId() );
+						user.setWorkspaceTitle( binder.getTitle() );
+						user.setViewWorkspaceUrl( PermaLinkUtil.getPermalink( request, binder ) );
+					}
 					
 					stats.addTrackedUser(user);
 				}
