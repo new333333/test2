@@ -172,5 +172,9 @@
 	<classpathentry exported="true" kind="lib" path="lib/milton-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/milton-servlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/groovy-all.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-config.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-ldap.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-openid.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-web.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
