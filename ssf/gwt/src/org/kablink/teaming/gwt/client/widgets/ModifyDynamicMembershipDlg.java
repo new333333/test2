@@ -345,6 +345,12 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 			
 			// Update the "current membership: xxx user/groups"
 			m_currentMembershipBtn.setText( GwtTeaming.getMessages().modifyDynamicMembershipDlgCurrentMembershipLabel( currentMembershipCnt ) );
+			
+			// If there aren't any members currently disable the "Current membership" button.
+			if ( currentMembershipCnt > 0 )
+				m_currentMembershipBtn.setEnabled( true );
+			else
+				m_currentMembershipBtn.setEnabled( false );
 		}
 	}
 

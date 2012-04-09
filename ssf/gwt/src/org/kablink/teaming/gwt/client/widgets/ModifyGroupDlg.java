@@ -739,6 +739,7 @@ public class ModifyGroupDlg extends DlgBox
 		{
 			int x;
 			int y;
+			Long groupId;
 			
 			// Yes
 			// Is dynamic group membership allowed?
@@ -772,7 +773,11 @@ public class ModifyGroupDlg extends DlgBox
 				m_dynamicMembershipDlg = new ModifyDynamicMembershipDlg( false, true, handler, null, x, y );
 			}
 			
-			m_dynamicMembershipDlg.init( m_dynamicMembershipCriteria, m_numDynamicMembers, m_groupInfo.getId() );
+			groupId = null;
+			if ( m_groupInfo != null )
+				groupId = m_groupInfo.getId();
+			
+			m_dynamicMembershipDlg.init( m_dynamicMembershipCriteria, m_numDynamicMembers, groupId );
 			m_dynamicMembershipDlg.setPopupPosition( x, y );
 			m_dynamicMembershipDlg.show();
 		}
