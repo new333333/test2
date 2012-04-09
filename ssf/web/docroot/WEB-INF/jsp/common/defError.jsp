@@ -56,6 +56,7 @@
 	</c:if>
 </ssf:ifnotadapter>
 
+<c:if test="${!empty exception}" >
 <p>
 ${exception.class}<br/>
 <%
@@ -82,7 +83,7 @@ ${exception.class}<br/>
 	<%= org.kablink.teaming.util.stringcheck.StringCheckUtil.check(stackTrace) %>
 	</div>
 </c:if>
-
+</c:if>
 <ssf:ifnotadapter>
 	<c:if test="${!empty ssUser.workspaceId}">
 		<p style="text-align:center;"><a href="<ssf:url action="view_ws_listing"
