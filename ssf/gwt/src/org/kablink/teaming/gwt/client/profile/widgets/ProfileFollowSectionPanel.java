@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.profile.widgets;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
@@ -42,6 +43,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Label;
 
 
@@ -127,6 +129,11 @@ public class ProfileFollowSectionPanel extends ProfileSectionPanel {
 			if(GwtClientHelper.hasString(url)) {
 				url = GwtClientHelper.appendUrlParam( url, "operation", "showProfile" );
 				GwtClientHelper.jsLoadUrlInCurrentWindow(url);
+			}
+			else
+			{
+				// Tell the user they don't have the rights to see this person's profile
+				Window.alert( GwtTeaming.getMessages().profileInsufficientViewProfileRights() );
 			}
 
 //			if(GwtClientHelper.hasString(trackedUser.getUserId())) {
