@@ -465,6 +465,10 @@ public class ViewPermalinkController  extends SAbstractController {
 				}
 	 		} else {
 	 			Long workspaceId = getProfileModule().getEntryWorkspaceId(Long.valueOf(entryId));
+	 			if (WebHelper.isGuestLoggedIn(request) && workspaceId != null) {
+	 				//If this user not logged in, make sure the workspace is going to be visible
+	 				entity = getBinderModule().getBinder(workspaceId);		//This will throw an access control exception
+	 			}
 	 			if (workspaceId == null) {
 					if (isMobile) {
 						url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MOBILE_AJAX);
