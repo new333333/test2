@@ -34,10 +34,8 @@ package org.kablink.teaming.web.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
@@ -94,22 +92,10 @@ public class GwtUIHelper {
 	// formatted permalink URL.
 	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
 	
-	// The key into the session cache to store the GWT UI tab and
-	// toolbar beans.
-	public final static String CACHED_TOOLBARS_KEY			= "gwt-ui-toolbars";
+	// The keys into the session cache to store the GWT UI top ranked
+	// people and places beans.
 	public final static String CACHED_TOP_RANKED_PEOPLE_KEY	= "gwt-ui-topRankedPeople";
 	public final static String CACHED_TOP_RANKED_PLACES_KEY	= "gwt-ui-topRankedPlaces";
-	
-	// The names of the toolbar beans stored in the session cache for
-	// the GWT UI.
-	private final static String[] CACHED_TOOLBARS = new String[] {
-		WebKeys.CALENDAR_IMPORT_TOOLBAR,
-		WebKeys.EMAIL_SUBSCRIPTION_TOOLBAR,
-		WebKeys.FOLDER_TOOLBAR,
-		WebKeys.FOLDER_VIEWS_TOOLBAR,
-		WebKeys.GWT_MISC_TOOLBAR,
-		WebKeys.WHATS_NEW_TOOLBAR,
-	};
 	
 	// Values used to communicate the Vibe product that's running.
 	//
@@ -583,7 +569,6 @@ public class GwtUIHelper {
 
 		// Clear any previous stuff we may have cached.
 		HttpSession hSession = WebHelper.getRequiredSession(hRequest);
-		hSession.removeAttribute(CACHED_TOOLBARS_KEY);
 		hSession.removeAttribute(CACHED_TOP_RANKED_PEOPLE_KEY);
 		hSession.removeAttribute(CACHED_TOP_RANKED_PLACES_KEY);
 
@@ -599,56 +584,9 @@ public class GwtUIHelper {
 			return;
 		}
 
-		/// Are the Granite GWT extensions enabled?
-		if (!(isGraniteGwtEnabled())) {
-			// No!  We need to cache the toolbars.  Scan the names of
-			// those we need to cache...
-			HashMap<String, Map> tbHM = new HashMap<String, Map>();
-			for (int i = 0; i < CACHED_TOOLBARS.length; i += 1) {
-				// Does a toolbar by this name exist?
-				String tbName = CACHED_TOOLBARS[i];
-				Map tb = ((Map) model.get(tbName));
-				if ((null != tb) && (!(tb.isEmpty()))) {
-					// Yes! Add it to the HashMap.
-					fixupAdaptedPortletURLs(tb);
-					tbHM.put(tbName, tb);
-				}
-			}
-			
-			// ...and cache them in the session.
-			hSession.setAttribute(CACHED_TOOLBARS_KEY, new GwtUISessionData(tbHM));
-		}
-
 		// Finally, cache the other stuff we store in the session.
 		hSession.setAttribute(CACHED_TOP_RANKED_PEOPLE_KEY, new GwtUISessionData(model.get(WebKeys.FOLDER_ENTRYPEOPLE)));
 		hSession.setAttribute(CACHED_TOP_RANKED_PLACES_KEY, new GwtUISessionData(model.get(WebKeys.FOLDER_ENTRYPLACES)));
-	}
-
-	/*
-	 * Walks the toolbar map and stores the URL from any
-	 * AdaptedPortletURL in its string form.
-	 * 
-	 * We do this because when the GWT UI code accesses the toolbars,
-	 * it cannot process the AdaptedPortletURL as a string as an NPE 
-	 * is generated when we try to convert it. 
-	 */
-	@SuppressWarnings("unchecked")
-	private static void fixupAdaptedPortletURLs(Map tbMap) {
-		Set tbKeySet = tbMap.keySet();
-		for (Iterator tbKeyIT = tbKeySet.iterator(); tbKeyIT.hasNext(); ) {
-			Object tbKeyO = tbKeyIT.next();
-			if (tbKeyO instanceof String) {
-				String tbKey = ((String) tbKeyO);
-				Object tbO = tbMap.get(tbKey);
-				if (tbO instanceof AdaptedPortletURL) {
-					String url = ((AdaptedPortletURL) tbO).toString();
-					tbMap.put(tbKey + URLFIXUP_PATCH, url);
-				}
-				else if (tbO instanceof Map) {
-					fixupAdaptedPortletURLs((Map) tbO);
-				}
-			}
-		}
 	}
 
 	/**
@@ -1016,16 +954,6 @@ public class GwtUIHelper {
 	}
 
 	/**
-	 * Returns true if the Granite GWT extensions are enabled and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isGraniteGwtEnabled() {
-		return SPropsUtil.getBoolean("granite.gwt.enabled", false);
-	}
-	
-	/**
 	 * Returns true if the GWT UI should be active and false otherwise.
 	 * 
 	 * @param pRequest
@@ -1312,10 +1240,6 @@ public class GwtUIHelper {
 		
 		// Put out the flag indicating whether the landing page is in debug mode.
 		model.put( WebKeys.VIBE_LP_DEBUG, isVibeDebugLP() );
-		
-		// Put out the flag indicating whether the new GWT UI features
-		// for Granite should be enabled.
-		model.put(WebKeys.VIBE_GRANITE_GWT_ENABLED, isGraniteGwtEnabled());
 		
 		// Put out the flag indicating which product we're running as.
 		// Note that we do this first as it has the side affect of

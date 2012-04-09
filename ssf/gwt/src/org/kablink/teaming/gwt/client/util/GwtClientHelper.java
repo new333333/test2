@@ -598,17 +598,6 @@ public class GwtClientHelper {
 	}
 	
 	/**
-	 * Return whether the Granite GWT enhancements should enabled or
-	 * not.
-	 * 
-	 * @return
-	 */
-	public boolean isGraniteGwtEnabled() {
-		RequestInfo ri = getRequestInfo();
-		return ((null == ri) ? false : ri.isGraniteGwtEnabled());
-	}
-	
-	/**
 	 * Returns true if a URL is a permalink URL and false otherwise.
 	 * 
 	 * @param url

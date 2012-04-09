@@ -4035,7 +4035,6 @@ public class GwtServerHelper {
 	/**
 	 * Return the membership of the given group.
 	 */
-	@SuppressWarnings("unchecked")
 	public static int getGroupMembership(
 			AllModulesInjected ami,
 			ArrayList<GwtTeamingItem> retList,
@@ -4673,7 +4672,6 @@ public class GwtServerHelper {
 	/**
 	 * Return the number of members in the given group
 	 */
-	@SuppressWarnings("unchecked")
 	public static int getNumberOfMembers( AllModulesInjected ami, Long groupIdL ) throws GwtTeamingException
 	{
 		int count = 0;

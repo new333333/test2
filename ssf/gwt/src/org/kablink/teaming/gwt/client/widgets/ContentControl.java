@@ -147,7 +147,6 @@ public class ContentControl extends Composite
 	private boolean m_isAdminContent;
 	private boolean m_isDebugUI;
 	private boolean m_isDebugLP;
-	private boolean m_isGraniteGwtEnabled;
 	private GwtMainPage m_mainPage;
 	private NamedFrame m_frame;
 	
@@ -201,9 +200,8 @@ public class ContentControl extends Composite
 
 		// Extract some commonly used flags from the RequestInfo.
 		RequestInfo ri = GwtClientHelper.getRequestInfo();
-		m_isDebugUI           = ri.isDebugUI();
+		m_isDebugUI = ri.isDebugUI();
 		m_isDebugLP = ri.isDebugLP();
-		m_isGraniteGwtEnabled = ri.isGraniteGwtEnabled();
 
 		// Is this other than the admin control's content panel?
 		m_isAdminContent = ( name.equals( "adminContentControl" ));
@@ -510,17 +508,20 @@ public class ContentControl extends Composite
 	}// end setViewAsync()
 
 	/*
-	 * If the Granite GWT UI is enabled, sets the view based on the
-	 * URL.  Otherwise, simply loads the URL in the content frame the
-	 * way it has always been done.
+	 * Sets the view based on the URL.
 	 */
 	private void setViewFromUrl( final String url )
 	{
-		// Are we running the Granite GWT extensions?
-		if ( m_isGraniteGwtEnabled && (!m_isAdminContent) )
-		{			
-			// Yes!  Use the URL to get a ViewInfo for the new
-			// context.
+		// Are we running the admin console?
+		if ( m_isAdminContent )
+		{
+			// Yes!  Simply activate the URL.
+			setUrl( url );
+		}
+		else
+		{
+			// No, we aren't running the admin console!  Use the URL to
+			// get a ViewInfo for the new context.
 			GetViewInfoCmd cmd = new GetViewInfoCmd( url );
 			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>()
 			{
@@ -542,16 +543,6 @@ public class ContentControl extends Composite
 					setViewAsync( vi, url );
 				}//end onSuccess()
 			});
-		}
-			
-		else
-		{
-			// No, we aren't running the Granite GWT extensions!
-			// Put the change into affect the old way via the URL.
-			if (!m_isAdminContent) {
-				pushContentHistoryUrl(url);
-			}
-			setUrl( url );
 		}
 	}// end setViewFromUrl()
 	
