@@ -5998,6 +5998,7 @@ public class GwtServerHelper {
 			
 			// Capture the current membership of the group before it gets modified
 			currentMembers = new ArrayList<Principal>( group.getMembers() );
+			m_logger.debug( "GwtServerHelper.modifyGroup(), number of members in current group membership: " + String.valueOf( currentMembers.size() ) );
 			
 			// Is the group membership dynamic?
 			if ( isMembershipDynamic )
@@ -6087,6 +6088,8 @@ public class GwtServerHelper {
 				Map updates;
 
 				principals = ami.getProfileModule().getPrincipals( membershipIds );
+
+				m_logger.debug( "GwtServerHelper.modifyGroup(), number of members in new group membership: " + String.valueOf( principals.size() ) );
 			
 				updates = new HashMap();
 				updates.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
@@ -6131,20 +6134,42 @@ public class GwtServerHelper {
 				{
 					for (Principal p : currentMembers)
 					{
-						if ( !principals.contains( p ) )
+						Long oldMemberId;
+						boolean found;
+
+						// See if the old member is in the list of new members
+						oldMemberId = p.getId();
+						found = false;
+						for (Principal newMember : principals)
 						{
-							if ( (p instanceof UserPrincipal) || (p instanceof User) )
-								usersRemovedFromGroup.add( p.getId() );
-							else if ( (p instanceof GroupPrincipal) || (p instanceof Group) )
-								groupsRemovedFromGroup.add( p.getId() );
+							Long newMemberId;
 							
-							changes.put( p.getId(), p );
+							newMemberId = newMember.getId();
+							if ( oldMemberId != null && oldMemberId.equals( newMemberId ) )
+							{
+								found = true;
+								break;
+							}
+						}
+						
+						// This principal used to be a member of the group.  Is he still a member?
+						if ( found == false )
+						{
+							// No
+							if ( (p instanceof UserPrincipal) || (p instanceof User) )
+								usersRemovedFromGroup.add( oldMemberId );
+							else if ( (p instanceof GroupPrincipal) || (p instanceof Group) )
+								groupsRemovedFromGroup.add( oldMemberId );
+							
+							changes.put( oldMemberId, p );
 						}
 					}
 				}
 				finally
 				{
 					gsp.end();
+					m_logger.debug( "GwtServerHelper.modifyGroup(), number of users removed from group: " + String.valueOf( usersRemovedFromGroup.size() ) );
+					m_logger.debug( "GwtServerHelper.modifyGroup(), number of groups removed from group: " + String.valueOf( groupsRemovedFromGroup.size() ) );
 				}
 				
 				// Get a list of the users and groups that were added to the group.
@@ -6153,22 +6178,46 @@ public class GwtServerHelper {
 				{
 					for (Principal p : principals)
 					{
-						if ( !currentMembers.contains( p ) )
+						Long newMemberId;
+						boolean found;
+						
+						// See if the new member was already a member of the group.
+						newMemberId = p.getId();
+						found = false;
+						for (Principal oldMember : currentMembers)
 						{
-							if ( (p instanceof UserPrincipal) || (p instanceof User) )
-								usersAddedToGroup.add( p.getId() );
-							else if ( (p instanceof GroupPrincipal) || (p instanceof Group) )
-								groupsAddedToGroup.add( p.getId() );
+							Long oldMemberId;
 							
-							changes.put( p.getId(), p );
+							oldMemberId = oldMember.getId();
+							if ( newMemberId != null && newMemberId.equals( oldMemberId ) )
+							{
+								found = true;
+								break;
+							}
+						}
+						
+						// Was this principal already a member of the group?
+						if ( found == false )
+						{
+							// No
+							if ( (p instanceof UserPrincipal) || (p instanceof User) )
+								usersAddedToGroup.add( newMemberId );
+							else if ( (p instanceof GroupPrincipal) || (p instanceof Group) )
+								groupsAddedToGroup.add( newMemberId );
+							
+							changes.put( newMemberId, p );
 						}
 					}
 				}
 				finally
 				{
 					gsp.end();
+					m_logger.debug( "GwtServerHelper.modifyGroup(), number of users added to group: " + String.valueOf( usersAddedToGroup.size() ) );
+					m_logger.debug( "GwtServerHelper.modifyGroup(), number of groups added to group: " + String.valueOf( groupsAddedToGroup.size() ) );
 				}
-				
+
+				m_logger.debug( "GwtServerHelper.modifyGroup(), number of changes to the group: " + String.valueOf( changes.size() ) );
+
 				// Update the disk quotas for users that were added to the group.
 				gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - setUserGroupDiskQuotas()." );
 				try
