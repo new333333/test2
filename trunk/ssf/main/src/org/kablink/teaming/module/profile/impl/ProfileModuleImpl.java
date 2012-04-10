@@ -1004,6 +1004,19 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         return processor.indexEntry(entry);
 	}
 
+	/**
+	 * Index all of the entries found in the given Collection
+	 * @param entries
+	 */
+	@Override
+	public IndexErrors indexEntries( Collection<Principal> entries )
+	{
+        ProfileCoreProcessor processor;
+
+        processor = loadProcessor( getProfileBinder() );
+        
+        return processor.indexEntries( entries );
+	}
 
     //NO transaction
     public void modifyEntry(Long id, InputDataAccessor inputData) 
