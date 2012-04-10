@@ -268,6 +268,7 @@ tinyMCEPopup.onInit.add(function() {
 });
 
 function renderCharMapHTML() {
+	var s = tinymce.EditorManager.settings;
 	var charsPerRow = 20, tdWidth=20, tdHeight=20, i;
 	var html = '<table border="0" cellspacing="1" cellpadding="0" width="' + (tdWidth*charsPerRow) + '"><tr height="' + tdHeight + '">';
 	var cols=-1;
@@ -277,7 +278,19 @@ function renderCharMapHTML() {
 			cols++;
 			html += ''
 				+ '<td class="charmap">'
-				+ '<a onmouseover="previewChar(\'' + charmap[i][1].substring(1,charmap[i][1].length) + '\',\'' + charmap[i][0].substring(1,charmap[i][0].length) + '\',\'' + charmap[i][3] + '\');" onfocus="previewChar(\'' + charmap[i][1].substring(1,charmap[i][1].length) + '\',\'' + charmap[i][0].substring(1,charmap[i][0].length) + '\',\'' + charmap[i][3] + '\');" href="javascript:void(0)" onclick="insertChar(\'' + charmap[i][1].substring(2,charmap[i][1].length-1) + '\');" onclick="return false;" onmousedown="return false;" title="' + charmap[i][3] + '">'
+				+ '<a onmouseover="previewChar(\'' 
+				+ charmap[i][1].substring(1,charmap[i][1].length) + '\',\'' 
+				+ charmap[i][0].substring(1,charmap[i][0].length) + '\',\'' 
+				+ charmap[i][3] + '\');" onfocus="previewChar(\'' 
+				+ charmap[i][1].substring(1,charmap[i][1].length) + '\',\'' 
+				+ charmap[i][0].substring(1,charmap[i][0].length) + '\',\'' 
+				+ charmap[i][3] + '\');" href="javascript:void(0)" onclick="insertChar(\'' 
+				+ charmap[i][1].substring(2,charmap[i][1].length-1) + '\');" onclick="return false;" onmousedown="return false;" ';
+			if (s.language == 'en') {
+				//Only show the English help if language is English
+				html += ' title="' + charmap[i][3] + '"';
+			}
+			html += '>'
 				+ charmap[i][1]
 				+ '</a></td>';
 			if ((cols+1) % charsPerRow == 0)
