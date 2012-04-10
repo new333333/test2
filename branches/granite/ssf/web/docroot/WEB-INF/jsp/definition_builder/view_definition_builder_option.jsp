@@ -54,7 +54,8 @@
 			<div class="ss_titlebold designer_dialog_title"><ssf:nlt tag="definition.delete"/></span><span><c:out value="${data.selectedItemTitle}" escapeXml="true"/></div>
 	  </c:when>	  
 	  <c:when test="${data['option'] == 'view_definition_options'}">
-			<div class="ss_titlebold designer_dialog_title"><c:out value="${data.selectedItemTitle}" escapeXml="true"/></div>
+			<div class="ss_titlebold designer_dialog_title" title="${data.selectedItemTitle}"
+			><c:out value="${data.selectedItemTitle}" escapeXml="true"/></div>
 			
 		<table><tbody>
 		<tr><td><a href="javascript: ;" onClick="return modifyDefinition();"><ssf:nlt tag="definition.modifyProperties"/></a></td></tr>
