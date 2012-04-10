@@ -39,21 +39,22 @@
 package org.kablink.teaming.dao.util;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 import org.hibernate.Query;
 import org.hibernate.ScrollableResults;
 import org.hibernate.HibernateException;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 
 /**
- * @author janet
  * Wrapper object to abstract the hibernate query object.
  * 
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class SFQuery implements Iterator {
     private Query query;
     private ScrollableResults scroll = null;
+    // Indicates whether there is more item available that has NOT been read by the caller yet.
+    // The implementation uses look-ahead strategy in order to keep this variable meaningful.
     private boolean more = true;
     
     public SFQuery(Query query) {
@@ -63,25 +64,18 @@ public class SFQuery implements Iterator {
     /* (non-Javadoc)
      * @see java.util.Iterator#remove()
      */
+    @Override
     public void remove() {
-        // TODO Auto-generated method stub
-
     }
 
     /* (non-Javadoc)
      * @see java.util.Iterator#hasNext()
      */
+    @Override
     public boolean hasNext()  {
-        // TODO Auto-generated method stub
         try {
-            if (scroll == null) {
-                scroll = query.scroll();
-                return scroll.first();
-            }            
-            //haven't choosen yet
-            if (scroll.isFirst()) return true;
-            return more;
-            
+        	initScroll();
+        	return more;
         } catch (HibernateException ex) {
             throw SessionFactoryUtils.convertHibernateAccessException(ex);
         }
@@ -91,30 +85,46 @@ public class SFQuery implements Iterator {
     /* (non-Javadoc)
      * @see java.util.Iterator#next()
      */
+    @Override
     public Object next() {
         try {
-            if (scroll == null) {
-                scroll = query.scroll();
-                scroll.first();
-            }
-            Object result = scroll.get();
-            more = scroll.next();
-            return result;
+        	initScroll();
+        	if(more) {
+        		Object result = scroll.get();
+        		more = scroll.next();
+        		return result;
+        	}
+        	else {
+        		throw new NoSuchElementException();
+        	}
         } catch (HibernateException ex) {
             throw SessionFactoryUtils.convertHibernateAccessException(ex);
         }
     }
+    
     /*
      * Close out the scrollable results to release the resources
      */
     public void close() {
         try {
-            if (scroll != null) {scroll.close();};
+            if (scroll != null)
+            	scroll.close();
         } catch (HibernateException ex) {
         } finally {
             scroll=null;            
         }
     }
 
+    private void initScroll() {
+    	if(scroll == null) {
+    		scroll = query.scroll();
+    		if(scroll.first()) {
+    			more = true;
+    		}
+    		else {
+    			more = false;
+    		}
+    	}
+    }
 }
 
