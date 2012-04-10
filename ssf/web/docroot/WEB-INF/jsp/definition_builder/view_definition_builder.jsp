@@ -649,7 +649,7 @@ function ss_saveUserGroupResults(s) {
 				onSubmit="setSubmitData(this)" style="display:inline;" >
 			<ssf:box>
 			  <ssf:param name="box_id" value="displaydivbox" />
-			  <ssf:param name="box_width" value="300" />
+			  <ssf:param name="box_width" value="350" />
 			  <ssf:param name="box_show_close_icon" value="true" />
 			  <ssf:param name="box_show_close_routine" value="hideDisplayDiv()" />
 			  <ssf:param name="box_color" value="${ss_form_gray_color}" />
