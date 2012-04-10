@@ -530,4 +530,7 @@ fieldset a:hover {
 	position: absolute;
 	top: 7px;
 	padding-right: 15px;
+	width: 220px;
+	overflow: hidden;
+	white-space: nowrap;
 	}
