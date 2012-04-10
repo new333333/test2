@@ -400,6 +400,13 @@ public interface ProfileModule {
      * @param entry
      */
 	public IndexErrors indexEntry(Principal entry);
+	
+	/**
+	 * Index all of the entries found in the given Collection
+	 * @param entries
+	 */
+	public IndexErrors indexEntries( Collection<Principal> entries );
+	
 	/**
 	 * Modify existing principal
 	 * @param entryId

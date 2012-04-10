@@ -6126,31 +6126,47 @@ public class GwtServerHelper {
 				changes = new HashMap<Long,Principal>();
 
 				// Get a list of the users and groups that were removed from the group.
-				for (Principal p : currentMembers)
+				gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - create list of users removed from the group." );
+				try
 				{
-					if ( !principals.contains( p ) )
+					for (Principal p : currentMembers)
 					{
-						if ( (p instanceof UserPrincipal) || (p instanceof User) )
-							usersRemovedFromGroup.add( p.getId() );
-						else if ( (p instanceof GroupPrincipal) || (p instanceof Group) )
-							groupsRemovedFromGroup.add( p.getId() );
-						
-						changes.put( p.getId(), p );
+						if ( !principals.contains( p ) )
+						{
+							if ( (p instanceof UserPrincipal) || (p instanceof User) )
+								usersRemovedFromGroup.add( p.getId() );
+							else if ( (p instanceof GroupPrincipal) || (p instanceof Group) )
+								groupsRemovedFromGroup.add( p.getId() );
+							
+							changes.put( p.getId(), p );
+						}
 					}
+				}
+				finally
+				{
+					gsp.end();
 				}
 				
 				// Get a list of the users and groups that were added to the group.
-				for (Principal p : principals)
+				gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - create list of users added to the group." );
+				try
 				{
-					if ( !currentMembers.contains( p ) )
+					for (Principal p : principals)
 					{
-						if ( (p instanceof UserPrincipal) || (p instanceof User) )
-							usersAddedToGroup.add( p.getId() );
-						else if ( (p instanceof GroupPrincipal) || (p instanceof Group) )
-							groupsAddedToGroup.add( p.getId() );
-						
-						changes.put( p.getId(), p );
+						if ( !currentMembers.contains( p ) )
+						{
+							if ( (p instanceof UserPrincipal) || (p instanceof User) )
+								usersAddedToGroup.add( p.getId() );
+							else if ( (p instanceof GroupPrincipal) || (p instanceof Group) )
+								groupsAddedToGroup.add( p.getId() );
+							
+							changes.put( p.getId(), p );
+						}
 					}
+				}
+				finally
+				{
+					gsp.end();
 				}
 				
 				// Update the disk quotas for users that were added to the group.
@@ -6236,22 +6252,39 @@ public class GwtServerHelper {
 	
 					// Re-index the list of users and all binders "owned" by them
 					// reindex the profile entry for each user
-					gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - call indexEntry() for all users" );
-					try
 					{
 						groupUsers = new HashSet<Principal>();
 						groupUserIds = new HashSet<Long>();
-						groupUserIds.addAll( profileDao.explodeGroups( gIds, RequestContextHolder.getRequestContext().getZoneId() ) );
-						groupUsers.addAll( ami.getProfileModule().getPrincipals( groupUserIds ) );
-						groupUsers.addAll( users );
-						for (Principal user : groupUsers)
+						gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - call profileDao.explodeGroups()" );
+						try
 						{
-							ami.getProfileModule().indexEntry( user );
+							groupUserIds.addAll( profileDao.explodeGroups( gIds, RequestContextHolder.getRequestContext().getZoneId() ) );
 						}
-					}
-					finally
-					{
-						gsp.end();
+						finally
+						{
+							gsp.end();
+						}
+						
+						gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - call getPrincipals()" );
+						try
+						{
+							groupUsers.addAll( ami.getProfileModule().getPrincipals( groupUserIds ) );
+							groupUsers.addAll( users );
+						}
+						finally
+						{
+							gsp.end();
+						}
+						
+						gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - call indexEntries()" );
+						try
+						{
+							ami.getProfileModule().indexEntries( groupUsers );
+						}
+						finally
+						{
+							gsp.end();
+						}
 					}
 					
 					// set up a background job that will reindex all of the binders owned by all of these users.				
