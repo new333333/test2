@@ -1111,6 +1111,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	}
 	
 	//Change entry def type
+    //inside write transaction    
 	public void changeEntryType(Long entryId, String newDefId) {
 		FolderEntry entry = loadEntry(null, entryId);
 		if (entry == null) return;

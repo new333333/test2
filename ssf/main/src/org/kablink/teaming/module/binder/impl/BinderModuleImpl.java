@@ -1212,18 +1212,24 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	//Change entry types
-	public void changeEntryTypes(Long binderId, String oldDefId, String newDefId) {
+	// no transaction
+	public void changeEntryTypes(Long binderId, String oldDefId, final String newDefId) {
 		Binder binder = loadBinder(binderId);
 		if (!(binder instanceof Folder)) return;
-		Folder folder = (Folder)binder;
+		final Folder folder = (Folder)binder;
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		checkAccess(binder, BinderOperation.manageConfiguration);
-		List<Long> entryIds = getFolderDao().getFolderEntriesByType(zoneId, folder, oldDefId);
+		final List<Long> entryIds = getFolderDao().getFolderEntriesByType(zoneId, folder, oldDefId);
 		if (!entryIds.isEmpty()) {
-			getFolderDao().setFolderEntryType(folder, entryIds, newDefId);
+			getTransactionTemplate().execute(
+					new TransactionCallback() {
+						public Object doInTransaction(TransactionStatus status) {
+							getFolderDao().setFolderEntryType(folder, entryIds, newDefId);
+							return null;
+						}
+					});
 			BinderProcessor processor = loadBinderProcessor(binder);
 			processor.indexBinder(binder, true);
-
 		}
 	}
 

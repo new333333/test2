@@ -705,6 +705,7 @@
 				<prop key="reserveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="unreserveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="changeEntryType">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 	</bean>
@@ -749,7 +750,7 @@
 				<property name="runAsyncManager"><ref bean="runAsyncManager"/></property>
 			</bean>
 		</property>
-		<!-- addBinder, modifyBinder, setTeamMembers, setTeamMembershipInherited, deleteBinder, copyBinder, setBinderFileAgingDates 
+		<!-- addBinder, modifyBinder, setTeamMembers, setTeamMembershipInherited, deleteBinder, copyBinder, setBinderFileAgingDates, changeEntryTypes 
 		     provide transaction semantics at a finer granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>
