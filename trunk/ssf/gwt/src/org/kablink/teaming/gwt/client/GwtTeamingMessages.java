@@ -1560,6 +1560,7 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the Modify dynamic membership dialog
 	String modifyDynamicMembershipDlgBaseDnLabel();
 	String modifyDynamicMembershipDlgCurrentMembershipLabel( int count );
+	String modifyDynamicMembershipDlgCurrentMembershipCalculatingLabel();
 	String modifyDynamicMembershipDlgHeader();
 	String modifyDynamicMembershipDlgLdapFilterLabel();
 	String modifyDynamicMembershipDlgSearchSubtreeLabel();
