@@ -44,17 +44,17 @@
 
 	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
 %>
-<c:set var="mWidth" value="100%" />
-<c:set var="mHeight" value="100%" />
-<c:set var="mOverflow" value="hidden" />
+<c:set var="mWidth" value="" />
+<c:set var="mHeight" value="" />
+<c:set var="mOverflow" value="" />
 <c:if test="${!empty mashup_attributes['width']}">
-  <c:set var="mWidth" value="${mashup_attributes['width']}" />
+  <c:set var="mWidth" >width="${mashup_attributes['width']}"</c:set>
 </c:if>
 <c:if test="${!empty mashup_attributes['height']}">
-  <c:set var="mHeight" value="${mashup_attributes['height']}" />
+  <c:set var="mHeight" >height="${mashup_attributes['height']}"</c:set>
 </c:if>
 <c:if test="${!empty mashup_attributes['overflow']}">
-  <c:set var="mOverflow" value="${mashup_attributes['overflow']}" />
+  <c:set var="mOverflow" >overflow: ${mashup_attributes['overflow']};</c:set>
 </c:if>
 <% if (ss_mashupListDepth > 0) { %>
 	<li>
@@ -83,11 +83,11 @@
 		
 		<iframe src="${url}" 
 				frameborder="${frameBorder}"
-				height="${mHeight}"
+				${mHeight}
 				name="${name}"
 				id="lpIFrame"
 				${scrolling}
-				width="${mWidth}">
+				${mWidth}>
 		</iframe>
 </c:if>
 
