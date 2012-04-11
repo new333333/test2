@@ -4697,6 +4697,8 @@ public class GwtServerHelper {
 			throw GwtServerHelper.getGwtTeamingException( ex );
 		}
 		
+		m_logger.debug( "number of users in the group: " + String.valueOf( count ) );
+		
 		return count;
 	}
 

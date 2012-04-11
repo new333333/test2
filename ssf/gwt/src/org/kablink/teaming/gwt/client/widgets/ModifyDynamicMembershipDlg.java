@@ -325,7 +325,7 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void init( GwtDynamicGroupMembershipCriteria membershipCriteria, int currentMembershipCnt, Long groupId )
+	public void init( GwtDynamicGroupMembershipCriteria membershipCriteria, Integer currentMembershipCnt, Long groupId )
 	{
 		m_groupId = groupId;
 		
@@ -344,10 +344,11 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 			m_updateCB.setValue( membershipCriteria.getUpdateDuringLdapSync() );
 			
 			// Update the "current membership: xxx user/groups"
-			m_currentMembershipBtn.setText( GwtTeaming.getMessages().modifyDynamicMembershipDlgCurrentMembershipLabel( currentMembershipCnt ) );
+			setCurrentMembershipCount( currentMembershipCnt );
 			
-			// If there aren't any members currently disable the "Current membership" button.
-			if ( currentMembershipCnt > 0 )
+			// If we are dealing with an existing group, enable the "Current membership" button.
+			// Otherwise, disable it.
+			if ( m_groupId != null )
 				m_currentMembershipBtn.setEnabled( true );
 			else
 				m_currentMembershipBtn.setEnabled( false );
@@ -440,5 +441,23 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 		m_dynamicMembershipDlg.init( "", m_groupId );
 		m_dynamicMembershipDlg.setPopupPosition( x, y );
 		m_dynamicMembershipDlg.show();
+	}
+
+	/**
+	 * 
+	 */
+	public void setCurrentMembershipCount( Integer count )
+	{
+		// Do we have a count?
+		if ( count != null )
+		{
+			// Yes
+			m_currentMembershipBtn.setText( GwtTeaming.getMessages().modifyDynamicMembershipDlgCurrentMembershipLabel( count ) );
+		}
+		else
+		{
+			// No, update the label to say "Calculating..."
+			m_currentMembershipBtn.setText( GwtTeaming.getMessages().modifyDynamicMembershipDlgCurrentMembershipCalculatingLabel() );
+		}
 	}
 }

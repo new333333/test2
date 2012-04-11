@@ -96,11 +96,10 @@ public class ModifyGroupDlg extends DlgBox
 	private TextArea m_descTextArea;
 	private RadioButton m_staticRb;
 	private RadioButton m_dynamicRb;
-	private Button m_editMembershipBtn;
 	private ModifyStaticMembershipDlg m_staticMembershipDlg;
 	private ModifyDynamicMembershipDlg m_dynamicMembershipDlg;
 	private GwtDynamicGroupMembershipCriteria m_dynamicMembershipCriteria;
-	private int m_numDynamicMembers;
+	private Integer m_numDynamicMembers;
 	private boolean m_dynamicMembershipAllowed;
 	
 	/**
@@ -184,6 +183,7 @@ public class ModifyGroupDlg extends DlgBox
 			FlexTable table2;
 			FlexCellFormatter cellFormatter2;
 			ClickHandler clickHandler;
+			Button editMembershipBtn;
 
 			table2 = new FlexTable();
 			cellFormatter2 = table2.getFlexCellFormatter();
@@ -195,10 +195,10 @@ public class ModifyGroupDlg extends DlgBox
 			table2.setWidget( 1, 0, m_dynamicRb );
 			
 			// Add "Edit group membership" button
-			m_editMembershipBtn = new Button( messages.modifyGroupDlgEditGroupMembershipLabel() );
-			m_editMembershipBtn.addStyleName( "teamingButton" );
-			m_editMembershipBtn.getElement().getStyle().setMarginLeft( 10, Unit.PX );
-			table2.setWidget( 0, 1, m_editMembershipBtn );
+			editMembershipBtn = new Button( messages.modifyGroupDlgEditGroupMembershipLabel() );
+			editMembershipBtn.addStyleName( "teamingButton" );
+			editMembershipBtn.getElement().getStyle().setMarginLeft( 10, Unit.PX );
+			table2.setWidget( 0, 1, editMembershipBtn );
 			cellFormatter2.setRowSpan( 0, 1, 2 );
 			
 			clickHandler = new ClickHandler()
@@ -227,7 +227,7 @@ public class ModifyGroupDlg extends DlgBox
 				}
 				
 			};
-			m_editMembershipBtn.addClickHandler( clickHandler );
+			editMembershipBtn.addClickHandler( clickHandler );
 			
 			table.setWidget( nextRow, 0, table2 );
 			cellFormatter.setColSpan( nextRow, 0, 2 );
@@ -308,15 +308,6 @@ public class ModifyGroupDlg extends DlgBox
 	}
 
 	/**
-	 * Disable the "edit group membership" button.  We will wait to enable this button until
-	 * we have all the information we need.
-	 */
-	private void disableEditMembershipButton()
-	{
-		m_editMembershipBtn.setEnabled( false );
-	}
-
-	/**
 	 * This gets called when the user presses ok.  If we are editing an existing group
 	 * we will issue an rpc request to save the group and then call m_editSuccessfulHandler.
 	 * If we are creating a new group we will issue an rpc request to create the new group
@@ -354,21 +345,12 @@ public class ModifyGroupDlg extends DlgBox
 	}
 	
 	/**
-	 * Enable the "edit group membership" button.  We will wait to enable this button until
-	 * we have all the information we need.
-	 */
-	private void enableEditMembershipButton()
-	{
-		m_editMembershipBtn.setEnabled( true );
-	}
-
-	/**
 	 * Get the data from the controls in the dialog box.
 	 */
 	@Override
 	public Object getDataFromDlg()
 	{
-		// Return something.  Doesn't matter what since we only have a close button.
+		// Return something.  Doesn't matter what because editSuccessful() does the work.
 		return Boolean.TRUE;
 	}
 	
@@ -397,6 +379,9 @@ public class ModifyGroupDlg extends DlgBox
 				public void onSuccess( VibeRpcResponse result )
 				{
 					m_dynamicMembershipCriteria = ((GwtDynamicGroupMembershipCriteria) result.getResponseData());
+					
+					// Enable the ok button
+					setOkEnabled( true );
 				}						
 			};
 			
@@ -473,8 +458,8 @@ public class ModifyGroupDlg extends DlgBox
 					responseData = ((GetGroupMembershipRpcResponseData) result.getResponseData());
 					m_groupMembership = responseData.getMembers();
 					
-					// Enable the "edit group membership" button.
-					enableEditMembershipButton();
+					// Enable the ok button
+					setOkEnabled( true );
 				}						
 			};
 			
@@ -614,10 +599,12 @@ public class ModifyGroupDlg extends DlgBox
 					IntegerRpcResponseData responseData;
 					
 					responseData = (IntegerRpcResponseData) result.getResponseData();
-					m_numDynamicMembers = responseData.getIntegerValue();
+					m_numDynamicMembers = new Integer( responseData.getIntegerValue() );
 					
-					// Enable the "edit group membership" button.
-					enableEditMembershipButton();
+					// If the "Edit dynamic membership" dialog is visible, update its
+					// current membership number.
+					if ( m_dynamicMembershipDlg != null && m_dynamicMembershipDlg.isVisible() )
+						m_dynamicMembershipDlg.setCurrentMembershipCount( m_numDynamicMembers );
 				}						
 			};
 			
@@ -634,12 +621,7 @@ public class ModifyGroupDlg extends DlgBox
 		m_groupInfo = groupInfo;
 		m_groupMembership = new ArrayList<GwtTeamingItem>();
 		m_dynamicMembershipCriteria = new GwtDynamicGroupMembershipCriteria();
-		m_numDynamicMembers = 0;
 		m_dynamicMembershipAllowed = true;
-		
-		// Disable the "edit group membership" button.  We will enable it once we have more
-		// information about this group.
-		disableEditMembershipButton();
 		
 		// Issue an rpc request to see if dynamic group membership is allowed.
 		isDynamicGroupMembershipAllowed();
@@ -653,6 +635,9 @@ public class ModifyGroupDlg extends DlgBox
 		if ( m_groupInfo != null )
 		{
 			// Yes
+			// Disable the ok button until we have all the data we need.
+			setOkEnabled( false );
+			
 			// Schedule an ajax request to get the membership type (dynamic or static).
 			{
 				Scheduler.ScheduledCommand cmd;
@@ -667,6 +652,8 @@ public class ModifyGroupDlg extends DlgBox
 				};
 				Scheduler.get().scheduleDeferred( cmd );
 			}
+
+			m_numDynamicMembers = null;
 			
 			// Update the dialog's header to say "Edit Group"
 			setCaption( GwtTeaming.getMessages().modifyGroupDlgHeader( m_groupInfo.getTitle() ) );
@@ -680,6 +667,12 @@ public class ModifyGroupDlg extends DlgBox
 		}
 		else
 		{
+			// No
+			// Enable the ok button
+			setOkEnabled( true );
+			
+			m_numDynamicMembers = new Integer( 0 );
+
 			// Update the dialog's header to say "Add Group"
 			setCaption( GwtTeaming.getMessages().addGroupDlgHeader() );
 			
@@ -690,9 +683,6 @@ public class ModifyGroupDlg extends DlgBox
 			// Default the membership to "static"
 			m_staticRb.setValue( true );
 			m_dynamicRb.setValue( false );
-			
-			// Enable the "Edit group membership" button
-			enableEditMembershipButton();
 		}
 	}
 	
