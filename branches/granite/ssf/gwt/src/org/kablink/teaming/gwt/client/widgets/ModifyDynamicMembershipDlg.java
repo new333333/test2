@@ -353,7 +353,7 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void init( GwtDynamicGroupMembershipCriteria membershipCriteria, int currentMembershipCnt )
+	public void init( GwtDynamicGroupMembershipCriteria membershipCriteria, Integer currentMembershipCnt )
 	{
 		if ( membershipCriteria != null )
 		{
@@ -370,7 +370,25 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 			m_updateCB.setValue( membershipCriteria.getUpdateDuringLdapSync() );
 			
 			// Update the "current membership: xxx user/groups"
-			m_currentMembershipLabel.setText( GwtTeaming.getMessages().modifyDynamicMembershipDlgCurrentMembershipLabel( currentMembershipCnt ) );
+			setCurrentMembershipCount( currentMembershipCnt );
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCurrentMembershipCount( Integer count )
+	{
+		// Do we have a count?
+		if ( count != null )
+		{
+			// Yes
+			m_currentMembershipLabel.setText( GwtTeaming.getMessages().modifyDynamicMembershipDlgCurrentMembershipLabel( count ) );
+		}
+		else
+		{
+			// No, update the label to say "Calculating..."
+			m_currentMembershipLabel.setText( GwtTeaming.getMessages().modifyDynamicMembershipDlgCurrentMembershipCalculatingLabel() );
 		}
 	}
 }

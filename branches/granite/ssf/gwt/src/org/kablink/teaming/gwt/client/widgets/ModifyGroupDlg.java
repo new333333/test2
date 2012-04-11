@@ -99,7 +99,7 @@ public class ModifyGroupDlg extends DlgBox
 	private ModifyStaticMembershipDlg m_staticMembershipDlg;
 	private ModifyDynamicMembershipDlg m_dynamicMembershipDlg;
 	private GwtDynamicGroupMembershipCriteria m_dynamicMembershipCriteria;
-	private int m_numDynamicMembers;
+	private Integer m_numDynamicMembers;
 	private boolean m_dynamicMembershipAllowed;
 	
 	/**
@@ -586,7 +586,12 @@ public class ModifyGroupDlg extends DlgBox
 					IntegerRpcResponseData responseData;
 					
 					responseData = (IntegerRpcResponseData) result.getResponseData();
-					m_numDynamicMembers = responseData.getIntegerValue();
+					m_numDynamicMembers = new Integer( responseData.getIntegerValue() );
+					
+					// If the "Edit dynamic membership" dialog is visible, update its
+					// current membership number.
+					if ( m_dynamicMembershipDlg != null && m_dynamicMembershipDlg.isVisible() )
+						m_dynamicMembershipDlg.setCurrentMembershipCount( m_numDynamicMembers );
 				}						
 			};
 			
@@ -603,7 +608,6 @@ public class ModifyGroupDlg extends DlgBox
 		m_groupInfo = groupInfo;
 		m_groupMembership = new ArrayList<GwtTeamingItem>();
 		m_dynamicMembershipCriteria = new GwtDynamicGroupMembershipCriteria();
-		m_numDynamicMembers = 0;
 		m_dynamicMembershipAllowed = true;
 		
 		// Issue an rpc request to see if dynamic group membership is allowed.
@@ -632,6 +636,8 @@ public class ModifyGroupDlg extends DlgBox
 				Scheduler.get().scheduleDeferred( cmd );
 			}
 			
+			m_numDynamicMembers = null;
+			
 			// Update the dialog's header to say "Edit Group"
 			setHeaderText( GwtTeaming.getMessages().modifyGroupDlgHeader( m_groupInfo.getTitle() ) );
 			
@@ -644,6 +650,8 @@ public class ModifyGroupDlg extends DlgBox
 		}
 		else
 		{
+			m_numDynamicMembers = new Integer( 0 );
+			
 			// Update the dialog's header to say "Add Group"
 			setHeaderText( GwtTeaming.getMessages().addGroupDlgHeader() );
 			
