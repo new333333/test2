@@ -72,6 +72,7 @@ public class DescriptionHtmlCell extends AbstractCell<DescriptionHtml> {
 			// ...bail.  Cell widgets can pass null to cells if the
 			// ...underlying data contains a null, or if the data
 			// ...arrives out of order.
+			GwtClientHelper.renderEmptyHtml(sb);
 			return;
 		}
 

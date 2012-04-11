@@ -32,73 +32,53 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
-import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
-import com.google.gwt.cell.client.AbstractCell;
-import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.cell.client.AbstractSafeHtmlCell;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.text.shared.SafeHtmlRenderer;
+import com.google.gwt.text.shared.SimpleSafeHtmlRenderer;
 
 /**
- * Data table cell that represents a rating for an entry.
+ * A {@link Cell} used to render text.
  * 
  * @author drfoster@novell.com
  */
-public class RatingCell extends AbstractCell<Integer> {
-	private GwtTeamingDataTableImageBundle	m_images;	//
-	private GwtTeamingMessages				m_messages;	//
-	
+public class VibeTextCell extends AbstractSafeHtmlCell<String> {
+
 	/**
-	 * Constructor method.
+	 * Constructs a VibeTextCell that uses a
+	 * {@link SimpleSafeHtmlRenderer} to render its text.
 	 */
-	public RatingCell() {
-		// Simply initialize the data members.
-		m_images   = GwtTeaming.getDataTableImageBundle();
-		m_messages = GwtTeaming.getMessages();
+	public VibeTextCell() {
+		super(SimpleSafeHtmlRenderer.getInstance());
 	}
 
 	/**
-	 * Called to render an instance of this cell.
+	 * Constructs a VibeTextCell that uses the provided
+	 * {@link SafeHtmlRenderer} to render its text.
+	 * 
+	 * @param renderer	A {@link SafeHtmlRenderer SafeHtmlRenderer<String>}
+	 *					instance.
+	 */
+	public VibeTextCell(SafeHtmlRenderer<String> renderer) {
+		super(renderer);
+	}
+
+	/**
+	 * Renders the text in this cell.
 	 * 
 	 * @param context
-	 * @param rating
+	 * @param value
 	 * @param sb
-	 * 
-	 * Overrides AbstractCell.render()
 	 */
 	@Override
-	public void render(Context context, Integer rating, SafeHtmlBuilder sb) {
-		// If we weren't given a rating...
-		if (null == rating) {
-			// ...bail.  Cell widgets can pass null to cells if the
-			// ...underlying data contains a null, or if the data
-			// ...arrives out of order.
+	public void render(Context context, SafeHtml value, SafeHtmlBuilder sb) {
+		if ((null == value) || (!(GwtClientHelper.hasString(value.asString())))) {
 			GwtClientHelper.renderEmptyHtml(sb);
 			return;
 		}
-
-		// Create the stars...
-		VibeFlowPanel fp = new VibeFlowPanel();
-		ImageResource starRes = m_images.goldStar();;
-		String        starAlt = m_messages.vibeDataTable_Alt_StarGold();
-		for (int i = 0; i < 5; i += 1) {
-			if (i == rating) {
-				starRes = m_images.grayStar();
-				starAlt = m_messages.vibeDataTable_Alt_StarGray();
-			}
-			Image starImg = new Image(starRes);
-			starImg.setTitle(starAlt);
-			fp.add(starImg);
-		}
-		
-		// ...and render that into the cell.
-		SafeHtml rendered = SafeHtmlUtils.fromTrustedString(fp.getElement().getInnerHTML());
-		sb.append(rendered);
+		sb.append(value);
 	}
 }

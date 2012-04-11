@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
 import org.kablink.teaming.gwt.client.util.TaskStats;
 import org.kablink.teaming.gwt.client.widgets.TaskStatusGraph;
@@ -223,6 +224,7 @@ public class TaskFolderCell extends AbstractCell<List<TaskFolderInfo>> {
 			// ...bail.  Cell widgets can pass null to cells if the
 			// ...underlying data contains a null, or if the data
 			// ...arrives out of order.
+			GwtClientHelper.renderEmptyHtml(sb);
 			return;
 		}
 
