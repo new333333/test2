@@ -171,10 +171,10 @@ public class EnterExitEvent extends AbstractActionHandler {
 					items  = WorkflowProcessUtils.getOnEntry(ws.getDefinition(), state);
 				} else {
 					isEnter = false;
+					//Cancel timers associated with this state.  onElapsedTime timer is now part of "onDataValue"
+					executionContext.getJbpmContext().getSchedulerSession().cancelTimersByName("onDataValue", token);
 					items  = WorkflowProcessUtils.getOnExit(ws.getDefinition(), state);				
 				}
-				//Cancel timers associated with this state.  onElapsedTime timer is now part of "onDataValue"
-				executionContext.getJbpmContext().getSchedulerSession().cancelTimersByName("onDataValue", token);
 				
 				for (int i=0; i<items.size(); ++i) {
 					Element item = (Element)items.get(i);
