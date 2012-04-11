@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -169,6 +170,7 @@ public class EmailAddressCell extends AbstractCell<EmailAddressInfo> {
 			// ...bail.  Cell widgets can pass null to cells if the
 			// ...underlying data contains a null, or if the data
 			// ...arrives out of order.
+			GwtClientHelper.renderEmptyHtml(sb);
 			return;
 		}
 

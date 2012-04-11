@@ -62,6 +62,8 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -935,6 +937,15 @@ public class GwtClientHelper {
 				child = e.getFirstChild();
 			}
 		}
+	}
+
+	/**
+	 * Renders a non-breaking space as HTML.
+	 * 
+	 * @param sb
+	 */
+	public static void renderEmptyHtml(SafeHtmlBuilder sb) {
+		sb.append(SafeHtmlUtils.fromTrustedString("&nbsp;"));
 	}
 	
 	/**

@@ -34,8 +34,6 @@ package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 
-import com.google.gwt.cell.client.TextCell;
-
 /**
  * A column that displays a simple String value.
  *
@@ -48,6 +46,6 @@ public abstract class StringColumn<T> extends VibeColumn<T, String> {
    * Constructor method.
    */
   public StringColumn(FolderColumn fc) {
-	  super(fc, new TextCell());
+	  super(fc, new VibeTextCell());
   }
 }
