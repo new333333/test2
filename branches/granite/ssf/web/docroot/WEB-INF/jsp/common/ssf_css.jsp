@@ -4565,13 +4565,12 @@ div.ss_content_outer table.ss_tasks_list {
 }
 
 table.ss_tasks_list {
-	margin:6px 0px 4px 8px;
+	margin:6px 4px 4px 4px;
 	padding: 0px;
 	border-top: 1px solid #D2D5D1;
 	border-left: 1px solid #D2D5D1;
 	border-right: 1px solid #D2D5D1;
 	border-spacing: 0px;
-	width: 99%;
 	empty-cells: show;
 	border-collapse: collapse;
 }

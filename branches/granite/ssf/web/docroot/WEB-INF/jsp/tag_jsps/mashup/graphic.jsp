@@ -45,15 +45,15 @@
 %>
 <c:set var="mWidth" value="" />
 <c:set var="mHeight" value="" />
-<c:set var="mOverflow" value="hidden" />
+<c:set var="mOverflow" value="" />
 <c:if test="${!empty mashup_attributes['width']}">
-  <c:set var="mWidth" value="${mashup_attributes['width']}" />
+  <c:set var="mWidth" >width: ${mashup_attributes['width']};</c:set>
 </c:if>
 <c:if test="${!empty mashup_attributes['height']}">
-  <c:set var="mHeight" value="${mashup_attributes['height']}" />
+  <c:set var="mHeight" >height: ${mashup_attributes['height']};</c:set>
 </c:if>
 <c:if test="${!empty mashup_attributes['overflow']}">
-  <c:set var="mOverflow" value="${mashup_attributes['overflow']}" />
+  <c:set var="mOverflow" >overflow: ${mashup_attributes['overflow']};</c:set>
 </c:if>
 
 <% if (ss_mashupListDepth > 0) { %>
@@ -72,7 +72,7 @@
     </c:if>
     <div>
     <img 
-    	style="<c:if test="${!empty mWidth}"> width: ${mWidth}; </c:if> <c:if test="${!empty mHeight}"> height: ${mHeight}; </c:if>
+    	style="${mWidth} ${mHeight}
     	<c:if test="${mashup_attributes['showBorder'] == '1'}"> border: 2px solid #ccc !important; </c:if> " 
     	src="<ssf:url 
 		    webPath="viewFile"
