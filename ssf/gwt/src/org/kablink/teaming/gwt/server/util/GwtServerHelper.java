@@ -1103,7 +1103,23 @@ public class GwtServerHelper {
 
 		try
 		{
+			// Create the new group
 			newGroup = ami.getProfileModule().addGroup( null, inputData, fileMap, null );
+			
+			// Reindex all the members of this group.
+			if ( principals != null )
+			{
+				Map<Long, Principal> principalsToIndex;
+				
+				// Create a list of the members of the group.
+				principalsToIndex = new HashMap<Long,Principal>();
+				for (Principal principal : principals)
+				{
+					principalsToIndex.put( principal.getId(), principal );
+				}
+				
+				GwtServerHelper.reIndexPrincipals( ami.getProfileModule(), principalsToIndex );
+			}
 		}
 		catch( Exception ex)
 		{
@@ -4324,91 +4340,7 @@ public class GwtServerHelper {
 				}
 
 				// After changing the group membership, re-index any user that was added or deleted
-				{
-					List<Principal> users;
-					List<Principal> groups;
-					List<Long> gIds;
-					Set<Principal> groupUsers;
-					Set<Long> groupUserIds;
-					ProfileDao profileDao;
-				
-					gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - get list of users added/deleted from group" );
-					try
-					{
-						profileDao = (ProfileDao) SpringContextUtil.getBean( "profileDao" );
-		
-						users = new ArrayList<Principal>();
-						groups = new ArrayList<Principal>();
-						gIds = new ArrayList<Long>();
-						for (Map.Entry<Long,Principal> me : changes.entrySet())
-						{
-							Principal nextPrincipal;
-							
-							nextPrincipal = me.getValue();
-							if ( (nextPrincipal instanceof User) || (nextPrincipal instanceof UserPrincipal) )
-								users.add( nextPrincipal );
-							
-							if ( (nextPrincipal instanceof Group) || (nextPrincipal instanceof GroupPrincipal) )
-							{
-								groups.add( nextPrincipal );
-								gIds.add( nextPrincipal.getId() );
-							}
-						}
-					}
-					finally
-					{
-						gsp.end();
-					}
-	
-					// Re-index the list of users and all binders "owned" by them
-					// reindex the profile entry for each user
-					{
-						groupUsers = new HashSet<Principal>();
-						groupUserIds = new HashSet<Long>();
-						gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - call profileDao.explodeGroups()" );
-						try
-						{
-							groupUserIds.addAll( profileDao.explodeGroups( gIds, RequestContextHolder.getRequestContext().getZoneId() ) );
-						}
-						finally
-						{
-							gsp.end();
-						}
-						
-						gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - call getPrincipals()" );
-						try
-						{
-							groupUsers.addAll( ami.getProfileModule().getPrincipals( groupUserIds ) );
-							groupUsers.addAll( users );
-						}
-						finally
-						{
-							gsp.end();
-						}
-						
-						gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - call indexEntries()" );
-						try
-						{
-							ami.getProfileModule().indexEntries( groupUsers );
-						}
-						finally
-						{
-							gsp.end();
-						}
-					}
-					
-					// set up a background job that will reindex all of the binders owned by all of these users.				
-					//Re-index all "personal" binders owned by this user (i.e., binders under the profiles binder)
-					gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - call reindexPersonalUserOwnedBinders()" );
-					try
-					{
-						ami.getProfileModule().reindexPersonalUserOwnedBinders( groupUsers );
-					}
-					finally
-					{
-						gsp.end();
-					}
-				}
+				GwtServerHelper.reIndexPrincipals( ami.getProfileModule(), changes );
 			}
 		}
 	}
@@ -4714,6 +4646,102 @@ public class GwtServerHelper {
 			setExpandedBindersList(bs, usersExpandedBindersList);
 		}
 	}
+	
+	/**
+	 * Do a reindex on all the principals in the given list
+	 */
+	public static void reIndexPrincipals( ProfileModule profileModule, Map<Long,Principal> principalsToIndex )
+	{
+		List<Principal> users;
+		List<Principal> groups;
+		List<Long> gIds;
+		Set<Principal> groupUsers;
+		Set<Long> groupUserIds;
+		ProfileDao profileDao;
+		GwtServerProfiler gsp;
+
+		if ( principalsToIndex != null && profileModule != null )
+		{
+			m_logger.debug( "GwtServerHelper.reIndexPrincipals() - principalsToIndex.size(): " + String.valueOf( principalsToIndex.size() ) );
+			gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.reIndexPrincipals() - get list of users" );
+			try
+			{
+				profileDao = (ProfileDao) SpringContextUtil.getBean( "profileDao" );
+	
+				users = new ArrayList<Principal>();
+				groups = new ArrayList<Principal>();
+				gIds = new ArrayList<Long>();
+				for (Map.Entry<Long,Principal> me : principalsToIndex.entrySet())
+				{
+					Principal nextPrincipal;
+					
+					nextPrincipal = me.getValue();
+					if ( (nextPrincipal instanceof User) || (nextPrincipal instanceof UserPrincipal) )
+						users.add( nextPrincipal );
+					
+					if ( (nextPrincipal instanceof Group) || (nextPrincipal instanceof GroupPrincipal) )
+					{
+						groups.add( nextPrincipal );
+						gIds.add( nextPrincipal.getId() );
+					}
+				}
+			}
+			finally
+			{
+				gsp.end();
+			}
+	
+			// Re-index the list of users and all binders "owned" by them
+			// reindex the profile entry for each user
+			{
+				groupUsers = new HashSet<Principal>();
+				groupUserIds = new HashSet<Long>();
+				gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.reIndexPrincipals() - call profileDao.explodeGroups()" );
+				try
+				{
+					groupUserIds.addAll( profileDao.explodeGroups( gIds, RequestContextHolder.getRequestContext().getZoneId() ) );
+				}
+				finally
+				{
+					gsp.end();
+				}
+				
+				gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.reIndexPrincipals() - call getPrincipals()" );
+				try
+				{
+					groupUsers.addAll( profileModule.getPrincipals( groupUserIds ) );
+					groupUsers.addAll( users );
+				}
+				finally
+				{
+					gsp.end();
+				}
+				
+				gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.reIndexPrincipals() - call indexEntries() size: " + String.valueOf( groupUsers.size() ) );
+				try
+				{
+					profileModule.indexEntries( groupUsers );
+				}
+				finally
+				{
+					gsp.end();
+				}
+			}
+			
+			// set up a background job that will reindex all of the binders owned by all of these users.				
+			//Re-index all "personal" binders owned by this user (i.e., binders under the profiles binder)
+			gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.reIndexPrincipals() - call reindexPersonalUserOwnedBinders() size: " + String.valueOf( groupUsers.size() ) );
+			try
+			{
+				profileModule.reindexPersonalUserOwnedBinders( groupUsers );
+			}
+			finally
+			{
+				gsp.end();
+			}
+		}
+	}
+
 	
 	/**
 	 * Removes a search based on its SavedSearchInfo.
