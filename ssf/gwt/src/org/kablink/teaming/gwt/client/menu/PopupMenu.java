@@ -106,6 +106,26 @@ public class PopupMenu extends TeamingPopupPanel
 
 		return menuItem;
 	}
+
+	/**
+	 * 
+	 */
+	public void addMenuItem( VibeMenuItem menuItem )
+	{
+		final Command cmd = menuItem.getCommand();
+		menuItem.setCommand( new Command ()
+		{
+			@Override
+			public void execute()
+			{
+				// Close this menu.
+				hide();
+				
+				Scheduler.get().scheduleDeferred( cmd );
+			}// end execute()
+		} );
+		m_menu.addItem( menuItem );
+	}
 	
 	/**
 	 * 

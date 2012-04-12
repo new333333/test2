@@ -15,12 +15,12 @@
 /* End:  Generic binder view tools styles. */
 
 /* Start:  Entry menu styles. */
-	.vibe-configureMenuBar         {padding-left: 0px !important; padding-right: 0px !important;}
+	.vibe-configureMenuBar         {padding-right: 0px !important;}
 	.vibe-configureMenuBarDropDown {}
 	.vibe-configureMenuBarItem     {border: 0 !important; padding-left: 0px !important; padding-right: 0px !important; margin-right: 6px !important;}
 	.vibe-configureMenuImg         {padding-top: 1px; cursor: pointer;}
 	
-	.vibe-filterMenuBar         {padding-left: 0px !important; padding-right: 0px !important;}
+	.vibe-filterMenuBar         {padding-right: 0px !important;}
 	.vibe-filterMenuBarCheck    {margin-right: 2px;}
 	.vibe-filterMenuBarDropDown {}
 	.vibe-filterMenuBarItem     {border: 0 !important; padding-left: 0px !important; padding-right: 0px !important;}
@@ -29,7 +29,6 @@
 	.vibe-filterMenuSavedImg    {margin-left: 4px; cursor: pointer;}	
 	.vibe-filterMenuSavedLabel  {}
 	.vibe-filterMenuSavedPanel  {
-		display: inline-block;
 		font-size: .9em;
 		color: #135c8f;
 		padding: 0px 4px;
@@ -49,7 +48,7 @@
 			color-stop(0.53, #D5EDF1),
 			color-stop(1, #C8E4E9));
 	}
-	
+
 	.vibe-entryMenuBar {padding: 3px;}
 	.vibe-menuDisabled {color: silver !important;}
 	.vibe-menuDisabled:hover  {
