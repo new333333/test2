@@ -485,7 +485,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		//See if the entry definition type has an associated workflow
     		if (entry.getEntryDefId() != null) {
     			Definition wfDef = (Definition)workflowAssociations.get(entry.getEntryDefId());
-    			if (wfDef != null)	getWorkflowModule().addEntryWorkflow((WorkflowSupport)entry, entry.getEntityIdentifier(), wfDef, null);
+    			if (wfDef != null)	{
+    				getWorkflowModule().addEntryWorkflow((WorkflowSupport)entry, entry.getEntityIdentifier(), wfDef, null);
+    				WorkflowSupport wEntry = (WorkflowSupport) entry;
+    				Set<WorkflowState> stateList = wEntry.getWorkflowStates();
+    				for (WorkflowState ws : stateList) {
+	    				WorkflowProcessUtils.processChangeLog(ws.getState(), ChangeLog.STARTWORKFLOW, wEntry);
+    				}
+    			}
     		}
     	}
     }

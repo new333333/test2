@@ -72,27 +72,37 @@
 				<th><ssf:nlt tag="entry.state"/></th>
 			</tr>
 			
+			<c:set var="lastLogVersion" value="0"/>
 			<c:forEach var="change" items="${ss_changeLogList}">
 			  <c:set var="changeLog" value="${change.changeLog}"/>
 			  <jsp:useBean id="changeLog" type="org.kablink.teaming.domain.ChangeLog" />
 			  <tr class="ss_tab_table_row">
 				<td>
-				  ${changeLog.version}&nbsp
+				  <c:if test="${changeLog.version != lastLogVersion}">
+				    ${changeLog.version}
+				  </c:if>
+				  &nbsp
 				</td>
 				
 				<td class="ss_table_data_TD" valign="top">
-				 <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-      				value="${changeLog.operationDate}"  type="both" 
-	  				timeStyle="short" dateStyle="short" />&nbsp
+				  <c:if test="${changeLog.version != lastLogVersion}">
+				    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+      				  value="${changeLog.operationDate}"  type="both" 
+	  				  timeStyle="short" dateStyle="short" />
+	  			  </c:if>
+	  			  &nbsp
 				</td>
 				
 				<td>
-				  <%
-				  	String fullName = changeLog.getUserName();
-				  	java.util.List ps = ResolveIds.getPrincipals(changeLog.getUserId().toString(), false);
-				  	if (!ps.isEmpty()) fullName = ((Principal)ps.get(0)).getTitle();
-				  %>
-				  <%= fullName %> (${changeLog.userName})&nbsp
+				  <c:if test="${changeLog.version != lastLogVersion}">
+				    <%
+				  	  String fullName = changeLog.getUserName();
+				  	  java.util.List ps = ResolveIds.getPrincipals(changeLog.getUserId().toString(), false);
+				  	  if (!ps.isEmpty()) fullName = ((Principal)ps.get(0)).getTitle();
+				    %>
+				    <%= fullName %> (${changeLog.userName})
+				  </c:if>
+				  &nbsp
 				</td>
 				
 				<td>
@@ -161,6 +171,7 @@
 				  </c:forEach>
 				</td>
 			  </tr>
+			  <c:set var="lastLogVersion" value="${changeLog.version}"/>
 			</c:forEach>
     	</table> 
 	 <br />
@@ -169,7 +180,6 @@
 	 	<input type="button" name="Button" value="<ssf:nlt tag="button.close"/>" 
 	 	onClick="ss_cancelButtonCloseWindow();return false;"/>
 	 </div>	 
-</body>
 </form>
 </ssf:form>
 
