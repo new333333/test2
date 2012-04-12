@@ -33,6 +33,8 @@
 package org.kablink.teaming.webdav;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -40,11 +42,17 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderIndexData;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.security.AccessControlException;
 
 import com.bradmcevoy.http.CollectionResource;
+import com.bradmcevoy.http.CopyableResource;
 import com.bradmcevoy.http.DeletableResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.MakeCollectionableResource;
+import com.bradmcevoy.http.MoveableResource;
 import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Resource;
 
@@ -52,7 +60,8 @@ import com.bradmcevoy.http.Resource;
  * @author jong
  *
  */
-public abstract class BinderResource extends WebdavCollectionResource  implements PropFindableResource, GetableResource, CollectionResource, MakeCollectionableResource, DeletableResource {
+public abstract class BinderResource extends WebdavCollectionResource  
+implements PropFindableResource, GetableResource, CollectionResource, MakeCollectionableResource, DeletableResource, CopyableResource, MoveableResource {
 
 	// Required properties
 	protected Long id;
@@ -149,6 +158,10 @@ public abstract class BinderResource extends WebdavCollectionResource  implement
 		return webdavPath;
 	}
 
+	public EntityIdentifier getEntityIdentifier() {
+		return entityIdentifier;
+	}
+	
 	protected Resource makeResourceFromBinder(Binder binder) {
 		if(binder == null)
 			return null;
@@ -188,6 +201,16 @@ public abstract class BinderResource extends WebdavCollectionResource  implement
 		}
 		else {
 			return null;
+		}
+	}
+	
+	protected void renameBinder(Binder binder, String newTitle) 
+			throws AccessControlException, WriteFilesException, WriteEntryDataException {
+		// Do this only if the new title is actually different from the current value.
+		if(binder != null && !newTitle.equals(binder.getTitle())) {
+			Map data = new HashMap();
+			data.put("title", newTitle);
+			getBinderModule().modifyBinder(binder.getId(), new MapInputData(data), null, null, null);
 		}
 	}
 	

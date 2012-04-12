@@ -34,9 +34,11 @@
 package org.kablink.teaming.webdav;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +47,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoFileByTheIdException;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
@@ -67,6 +70,7 @@ import com.bradmcevoy.http.LockResult;
 import com.bradmcevoy.http.LockTimeout;
 import com.bradmcevoy.http.LockToken;
 import com.bradmcevoy.http.LockableResource;
+import com.bradmcevoy.http.MoveableResource;
 import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Range;
 import com.bradmcevoy.http.exceptions.BadRequestException;
@@ -80,23 +84,21 @@ import com.bradmcevoy.http.exceptions.PreConditionFailedException;
  * @author jong
  *
  */
-public class FileResource extends WebdavResource implements FileAttachmentResource, PropFindableResource, GetableResource, DeletableResource, LockableResource, CopyableResource {
+public class FileResource extends WebdavResource implements FileAttachmentResource, PropFindableResource, GetableResource, DeletableResource, LockableResource, CopyableResource, MoveableResource {
 
 	private static final Log logger = LogFactory.getLog(FileResource.class);
 	
 	// The following properties are required
+	private String webdavPath; // full webdav path leading to this resource
 	private String name; // file name
 	private String id; // file database id
 	private Date createdDate; // creation date
 	private Date modifiedDate; // last modification date
 	
-	private String webdavPath;
-	
 	// lazy resolved for efficiency, so may be null initially
 	private FileAttachment fa; 
 	
-	private FileResource(WebdavResourceFactory factory, String webdavPath, String name, String id, Date createdDate, Date modifiedDate) {
-		super(factory);
+	private void init(String webdavPath, String name, String id, Date createdDate, Date modifiedDate) {
 		this.webdavPath = webdavPath;
 		this.name = name;
 		this.id = id;
@@ -104,13 +106,23 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 		this.modifiedDate = modifiedDate;
 	}
 	
-	public FileResource(WebdavResourceFactory factory, String webdavPath, FileAttachment fa) {
-		this(factory, webdavPath, fa.getFileItem().getName(), fa.getId(), fa.getCreation().getDate(), fa.getModification().getDate());
+	private void init(String webdavPath, FileAttachment fa) {
+		init(webdavPath, fa.getFileItem().getName(), fa.getId(), fa.getCreation().getDate(), fa.getModification().getDate());		
 		this.fa = fa; // already resolved
+	}
+	
+	private void init(String webdavPath, FileIndexData fid) {
+		init(webdavPath, fid.getName(), fid.getId(),  fid.getCreatedDate(), fid.getModifiedDate());
+	}
+	
+	public FileResource(WebdavResourceFactory factory, String webdavPath, FileAttachment fa) {
+		super(factory);
+		init(webdavPath, fa);
 	}
 
 	public FileResource(WebdavResourceFactory factory, String webdavPath, FileIndexData fid) {
-		this(factory, webdavPath, fid.getName(), fid.getId(),  fid.getCreatedDate(), fid.getModifiedDate());
+		super(factory);
+		init(webdavPath, fid);
 	}
 
 	/* (non-Javadoc)
@@ -315,14 +327,166 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 			throws NotAuthorizedException, BadRequestException,
 			ConflictException {
 		if(toCollection instanceof FolderResource) {
-			// TODO $$$$$
-			throw new BadRequestException(this);
+			FileAttachment fa = getFileAttachment();
+			DefinableEntity owningEntity = fa.getOwner().getEntity();
+			if(EntityType.folderEntry == owningEntity.getEntityType()) {
+				FolderEntry entry = (FolderEntry) owningEntity;
+				String sourceFileName = fa.getFileItem().getName();
+				Long toFolderId = ((FolderResource)toCollection).getEntityIdentifier().getEntityId();
+				if(entry.getParentFolder().getId().equals(toFolderId)) {
+					// The file is being copied within the same parent folder. 
+					if(sourceFileName.equals(name)) {
+						// The target name is the same as the source name. This can not be allowed when copying within the same folder.
+						throw new BadRequestException(this, "Can not copy file '" + id + "' to the same name within the same folder");  
+					}
+					else { 
+						// Make sure that the current folder doesn't already contain a file with the new name.
+						if(getFolderModule().getLibraryFolderEntryByFileName(entry.getParentFolder(), name) == null) {
+							// Copy it in the current folder by creating a new entry using FolderResource.
+							InputStream is = getFileModule().readFile(entry.getParentBinder(), entry, fa);
+							try {
+								((FolderResource)toCollection).createNewWithModDate(name, is, fa.getModification().getDate());
+							} catch (IOException e) {
+								throw new WebdavException(e);
+							}
+							finally {
+								try {
+									is.close();
+								} catch (IOException ignore) {}
+							}							
+						}
+						else {
+							throw new BadRequestException(this, "Can not copy file '" + id + "' because there is already a file with the same name in this folder");
+						}						
+					}
+				}
+				else { // The file is being copied to another folder.
+					Folder destFolder = ((FolderResource)toCollection).getFolder();
+					// Make sure that the destination is a mirrored folder.
+					if(destFolder.isLibrary()) {
+						// Make sure that the destination folder doesn't already contain a file with the new name.
+						if(getFolderModule().getLibraryFolderEntryByFileName(destFolder, name) == null) {
+							// Copy the file/entry
+							FolderEntry destEntry = getFolderModule().copyEntry(entry.getParentBinder().getId(), entry.getId(), toFolderId, null);
+							if(!sourceFileName.equals(name)) {
+								// The source and destination have different names. We need to rename the destination.
+								FileAttachment destFa = destEntry.getFileAttachment(sourceFileName);
+								renameFile(destEntry, destFa, name);
+							}
+						}
+						else {
+							throw new BadRequestException(this, "Can not copy file '" + id + "' into the folder '" + toFolderId + "' because there is already a file with the same name in the destination folder");
+						}
+					}
+					else {
+						// The destination folder is not a library folder. 
+						throw new BadRequestException(this, "Can not copy file '" + id + "' because the destination folder '" + destFolder.getId() + "' is not a library folder");						
+					}
+
+						
+				}
+			}
+			else {
+				// We allow copy operation only on those files attached to entries.
+				// This is because file copy operation indirectly involves entry creation or modification.
+				throw new BadRequestException(this, "Can not copy file '" + id + "' because it is owned by an entity of type '" + owningEntity.getEntityType() + "'");
+			}
 		}
 		else if(toCollection instanceof WorkspaceResource) {
-			throw new BadRequestException(this, "It is not allowed to copy a file into a workspace. Must be a folder resource.");
+			throw new BadRequestException(this, "It is not allowed to copy a file into a workspace.");
 		}
 		else {
 			throw new BadRequestException(this, "Destination is an unknown type '" + toCollection.getClass().getName() + "'. Must be a folder resource.");
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.MoveableResource#moveTo(com.bradmcevoy.http.CollectionResource, java.lang.String)
+	 */
+	@Override
+	public void moveTo(CollectionResource rDest, String name)
+			throws ConflictException, NotAuthorizedException,
+			BadRequestException {
+		if(rDest instanceof FolderResource) {
+			FolderResource destFolderResource = (FolderResource) rDest;
+			FileAttachment fa = getFileAttachment();
+			DefinableEntity owningEntity = fa.getOwner().getEntity();
+			if(EntityType.folderEntry == owningEntity.getEntityType()) {
+				FolderEntry entry = (FolderEntry) owningEntity;
+				Long destFolderId = destFolderResource.getEntityIdentifier().getEntityId();
+				if(entry.getParentFolder().getId().equals(destFolderId)) {
+					// The file is being moved within the same parent folder. 
+					if(fa.getFileItem().getName().equals(name)) {
+						// The target name is the same as the source name. Well, this means renaming to the same name.
+						return; // nothing more to do  
+					}
+					else { // Rename it in the current folder.
+						// Make sure that the folder doesn't already contain a file with the new name.
+						if(getFolderModule().getLibraryFolderEntryByFileName(entry.getParentFolder(), name) == null) {
+							// Rename the file
+							renameFile(entry, fa, name);
+						}
+						else {
+							throw new BadRequestException(this, "Can not rename file '" + id + "' because there is already a file with the same name in this folder");
+						}
+					}
+				}
+				else { // The file is being moved to another folder.
+					Folder destFolder = destFolderResource.getFolder();
+					// Make sure that the destination is a mirrored folder.
+					if(destFolder.isLibrary()) {
+						// Make sure that the destination folder doesn't already contain a file with the new name.
+						if(getFolderModule().getLibraryFolderEntryByFileName(destFolder, name) == null) {
+							// Move the file/entry
+							getFolderModule().moveEntry(entry.getParentBinder().getId(), entry.getId(), destFolderId, null);
+							if(!fa.getFileItem().getName().equals(name)) {
+								// The source and destination have different names. We need to rename the destination.
+								renameFile(entry, fa, name);
+							}
+							// Finally, we need to adjust the state of this FileResource to properly reflect the post-operation state.
+							// Reload file attachment object just in case.
+							init(destFolderResource.getWebdavPath() + "/" + name, getFileModule().getFileAttachmentById(id));
+						}
+						else {
+							throw new BadRequestException(this, "Can not move file '" + id + "' into the folder '" + destFolderId + "' because there is already a file with the same name in the destination folder");
+						}
+					}
+					else {
+						// The destination folder is not a library folder. 
+						throw new BadRequestException(this, "Can not move file '" + id + "' because the destination folder '" + destFolder.getId() + "' is not a library folder");
+					}
+				}
+			}
+			else {
+				// We allow move operation only on those files attached to entries.
+				// Moving other files is ill-defined.
+				throw new BadRequestException(this, "Can not move file '" + id + "' because it is owned by an entity of type '" + owningEntity.getEntityType() + "'");
+			}
+		}
+		else if(rDest instanceof WorkspaceResource) {
+			throw new BadRequestException(this, "It is not allowed to move a file into a workspace.");
+		}
+		else {
+			throw new BadRequestException(this, "Destination is an unknown type '" + rDest.getClass().getName() + "'. Must be a folder resource.");
+		}
+	}
+	
+	private void renameFile(FolderEntry entry, FileAttachment fa, String newName) throws NotAuthorizedException, ConflictException {
+		Map<FileAttachment,String> renamesTo = new HashMap<FileAttachment,String>();
+		renamesTo.put(fa, newName);
+		
+		try {
+			getFolderModule().modifyEntry(entry.getParentBinder().getId(), 
+					entry.getId(), new EmptyInputData(), null, null, renamesTo, null);
+		}
+		catch (AccessControlException e) {
+			throw new NotAuthorizedException(this);
+		} catch (ReservedByAnotherUserException e) {
+			throw new ConflictException(this, e.getLocalizedMessage());
+		} catch (WriteFilesException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		} catch (WriteEntryDataException e) {
+			throw new WebdavException(e.getLocalizedMessage());
 		}
 	}
 }
