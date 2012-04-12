@@ -36,6 +36,7 @@ package org.kablink.teaming.webdav;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -62,8 +64,11 @@ import org.kablink.teaming.web.util.TrashHelper;
 
 import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
+import com.bradmcevoy.http.CopyableResource;
+import com.bradmcevoy.http.DeletableResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.MakeCollectionableResource;
+import com.bradmcevoy.http.MoveableResource;
 import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.PutableResource;
 import com.bradmcevoy.http.Request;
@@ -77,14 +82,17 @@ import com.bradmcevoy.http.exceptions.NotAuthorizedException;
  * @author jong
  *
  */
-public class FolderResource extends BinderResource implements PropFindableResource, GetableResource, CollectionResource, PutableResource, MakeCollectionableResource {
+public class FolderResource extends BinderResource 
+implements PropFindableResource, GetableResource, CollectionResource, PutableResource, MakeCollectionableResource, DeletableResource, CopyableResource, MoveableResource {
 	
 	private static final Log logger = LogFactory.getLog(FolderResource.class);
 	
 	private static final boolean FOLDER_DELETION_ALLOW_DEFAULT = true;
 	private static final boolean FOLDER_DELETION_PURGE_IMMEDIATELY = false;
 	private static final boolean FOLDER_DELETION_REMOVE_SOURCE_CONTENTS_FOR_MIRRORED_FOLDER = false;
-	
+	private static final boolean FOLDER_COPY_ALLOW_DEFAULT = true;
+	private static final boolean FOLDER_MOVE_ALLOW_DEFAULT = true;
+
 	// lazy resolved for efficiency, so may be null initially
 	private Folder folder;
 	
@@ -181,6 +189,20 @@ public class FolderResource extends BinderResource implements PropFindableResour
 			else
 				return false; // system doesn't permit folder deletion for anyone on any folder
 		}
+		else if(Method.COPY == method) {
+			boolean allowFolderCopy = SPropsUtil.getBoolean("wd.folder.copy.allow", FOLDER_COPY_ALLOW_DEFAULT);
+			if(allowFolderCopy) 
+				return super.authorise(request, method, auth); // system permits folder copy, do regular checking
+			else
+				return false; // system doesn't permit folder copy for anyone on any folder			
+		}
+		else if(Method.MOVE == method) {
+			boolean allowFolderMove = SPropsUtil.getBoolean("wd.folder.move.allow", FOLDER_MOVE_ALLOW_DEFAULT);
+			if(allowFolderMove) 
+				return super.authorise(request, method, auth); // system permits folder move, do regular checking
+			else
+				return false; // system doesn't permit folder move for anyone on any folder			
+		}
 		else {
 			return super.authorise(request, method, auth);
 		}
@@ -192,6 +214,11 @@ public class FolderResource extends BinderResource implements PropFindableResour
 	@Override
 	public Resource createNew(String newName, InputStream inputStream,
 			Long length, String contentType) throws IOException,
+			ConflictException, NotAuthorizedException, BadRequestException {
+		return createNewWithModDate(newName, inputStream, null);
+	}
+	
+	public Resource createNewWithModDate(String newName, InputStream inputStream, Date modDate) throws IOException,
 			ConflictException, NotAuthorizedException, BadRequestException {
 		resolveFolder();
 		
@@ -205,13 +232,13 @@ public class FolderResource extends BinderResource implements PropFindableResour
 				// An entry containing a file with this name exists.
 				if(logger.isDebugEnabled())
 					logger.debug("createNew: updating existing file '" + newName + "' + owned by " + entry.getEntityIdentifier().toString() + " in folder " + id);
-				FolderUtils.modifyLibraryEntry(entry, newName, inputStream, null, true);
+				FolderUtils.modifyLibraryEntry(entry, newName, inputStream, modDate, true);
 			}
 			else {
 				// We need to create a new entry
 				if(logger.isDebugEnabled())
 					logger.debug("createNew: creating new file '" + newName + "' + in folder " + id);
-				FolderUtils.createLibraryEntry(folder, newName, inputStream, null, true);
+				FolderUtils.createLibraryEntry(folder, newName, inputStream, modDate, true);
 			}
 		}
 		catch (AccessControlException e) {
@@ -246,6 +273,91 @@ public class FolderResource extends BinderResource implements PropFindableResour
 				throw new WebdavException(e);
 			}
 		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.CopyableResource#copyTo(com.bradmcevoy.http.CollectionResource, java.lang.String)
+	 */
+	@Override
+	public void copyTo(CollectionResource toCollection, String name)
+			throws NotAuthorizedException, BadRequestException,
+			ConflictException {
+		try {
+			Binder newBinder = null;
+			if(toCollection instanceof FolderResource) { // Copy a folder into another folder
+				newBinder = getBinderModule().copyBinder(id, ((FolderResource) toCollection).getEntityIdentifier().getEntityId(), true, null);
+			}
+			else if(toCollection instanceof WorkspaceResource) { // Copy a folder into a workspace
+				EntityIdentifier toCollectionEntityIdentifier = ((WorkspaceResource)toCollection).getEntityIdentifier();
+				if(EntityType.profiles == toCollectionEntityIdentifier.getEntityType()) {
+					throw new BadRequestException(this, "Can not copy a folder into the profiles binder");
+				}
+				else {
+					newBinder = getBinderModule().copyBinder(id, toCollectionEntityIdentifier.getEntityId(), true, null);
+				}
+			}
+			else {
+				throw new BadRequestException(this, "Destination is an unknown type '" + toCollection.getClass().getName() + "'. Must be a binder resource.");
+			}
+			
+			// We may need to adjust the name.
+			renameBinder(newBinder, name);
+		}
+		catch(AccessControlException e) {
+			throw new NotAuthorizedException(this);
+		} catch (WriteFilesException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		} catch (WriteEntryDataException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.MoveableResource#moveTo(com.bradmcevoy.http.CollectionResource, java.lang.String)
+	 */
+	@Override
+	public void moveTo(CollectionResource rDest, String name)
+			throws ConflictException, NotAuthorizedException,
+			BadRequestException {
+		try {
+			Folder folder = resolveFolder();
+			if(rDest instanceof BinderResource) {
+				EntityIdentifier destBinderIdentifier = ((BinderResource) rDest).getEntityIdentifier();
+				if(folder.getParentBinder() != null && folder.getParentBinder().getId().equals(destBinderIdentifier.getEntityId())) {
+					// This is mere renaming of this folder.
+					renameBinder(folder, name);
+				}
+				else { // This is a move
+					if(rDest instanceof FolderResource) { // Move a folder into another folder
+						getBinderModule().moveBinder(id, destBinderIdentifier.getEntityId(), null);
+					}
+					else { // Move a folder into a workspace
+						if(EntityType.profiles == destBinderIdentifier.getEntityType()) {
+							throw new BadRequestException(this, "Can not copy a folder into the profiles binder");
+						}
+						else {
+							getBinderModule().moveBinder(id, destBinderIdentifier.getEntityId(), null);
+						}
+					}
+					// We may need to adjust the name.
+					renameBinder(folder, name);
+				}
+			}
+			else {
+				throw new BadRequestException(this, "Destination is an unknown type '" + rDest.getClass().getName() + "'. Must be a binder resource.");				
+			}
+		}
+		catch(AccessControlException e) {
+			throw new NotAuthorizedException(this);
+		} catch (WriteFilesException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		} catch (WriteEntryDataException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		}
+	}
+
+	public Folder getFolder() {
+		return resolveFolder();
 	}
 	
 	private Resource childFolder(String childName) {

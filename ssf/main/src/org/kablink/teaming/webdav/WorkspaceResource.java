@@ -42,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoWorkspaceByTheIdException;
 import org.kablink.teaming.domain.Workspace;
@@ -56,8 +57,11 @@ import org.kablink.teaming.web.util.TrashHelper;
 
 import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
+import com.bradmcevoy.http.CopyableResource;
+import com.bradmcevoy.http.DeletableResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.MakeCollectionableResource;
+import com.bradmcevoy.http.MoveableResource;
 import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Request;
 import com.bradmcevoy.http.Resource;
@@ -70,12 +74,15 @@ import com.bradmcevoy.http.exceptions.NotAuthorizedException;
  * @author jong
  *
  */
-public class WorkspaceResource extends BinderResource  implements PropFindableResource, GetableResource, CollectionResource, MakeCollectionableResource {
+public class WorkspaceResource extends BinderResource  
+implements PropFindableResource, GetableResource, CollectionResource, MakeCollectionableResource, DeletableResource, CopyableResource, MoveableResource {
 	
 	private static final Log logger = LogFactory.getLog(WorkspaceResource.class);
 	
 	private static final boolean WORKSPACE_DELETION_ALLOW_DEFAULT = false;
 	private static final boolean WORKSPACE_DELETION_PURGE_IMMEDIATELY = false;
+	private static final boolean WORKSPACE_COPY_ALLOW_DEFAULT = false;
+	private static final boolean WORKSPACE_MOVE_ALLOW_DEFAULT = false;
 
 	// lazy resolved for efficiency, so may be null initially
 	private Workspace ws;
@@ -165,6 +172,20 @@ public class WorkspaceResource extends BinderResource  implements PropFindableRe
 			else
 				return false; // system doesn't permit workspace deletion for anyone on any workspace
 		}
+		else if(Method.COPY == method) {
+			boolean allowWorkspaceCopy = SPropsUtil.getBoolean("wd.workspace.copy.allow", WORKSPACE_COPY_ALLOW_DEFAULT);
+			if(allowWorkspaceCopy) 
+				return super.authorise(request, method, auth); // system permits workspace copy, do regular checking
+			else
+				return false; // system doesn't permit workspace copy for anyone on any workspace			
+		}
+		else if(Method.MOVE == method) {
+			boolean allowWorkspaceMove = SPropsUtil.getBoolean("wd.workspace.move.allow", WORKSPACE_MOVE_ALLOW_DEFAULT);
+			if(allowWorkspaceMove) 
+				return super.authorise(request, method, auth); // system permits workspace move, do regular checking
+			else
+				return false; // system doesn't permit workspace move for anyone on any folder			
+		}
 		else {
 			return super.authorise(request, method, auth);
 		}
@@ -189,6 +210,86 @@ public class WorkspaceResource extends BinderResource  implements PropFindableRe
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.CopyableResource#copyTo(com.bradmcevoy.http.CollectionResource, java.lang.String)
+	 */
+	@Override
+	public void copyTo(CollectionResource toCollection, String name)
+			throws NotAuthorizedException, BadRequestException,
+			ConflictException {
+		try {
+			if(toCollection instanceof FolderResource) {
+				throw new BadRequestException(this, "Can not copy a workspace into a folder");
+			}
+			else if(toCollection instanceof WorkspaceResource) {
+				EntityIdentifier toCollectionEntityIdentifier = ((WorkspaceResource)toCollection).getEntityIdentifier();
+				if(EntityType.profiles == toCollectionEntityIdentifier.getEntityType()) {
+					throw new BadRequestException(this, "Can not copy a workspace into the profiles binder");
+				}
+				else {
+					Binder newBinder = getBinderModule().copyBinder(id, toCollectionEntityIdentifier.getEntityId(), true, null);
+					// WE may need to adjust the name.
+					renameBinder(newBinder, name);
+				}
+			}
+			else {
+				throw new BadRequestException(this, "Destination is an unknown type '" + toCollection.getClass().getName() + "'. Must be a workspace resource.");
+			}
+		}
+		catch(AccessControlException e) {
+			throw new NotAuthorizedException(this);
+		} catch (WriteFilesException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		} catch (WriteEntryDataException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.MoveableResource#moveTo(com.bradmcevoy.http.CollectionResource, java.lang.String)
+	 */
+	@Override
+	public void moveTo(CollectionResource rDest, String name)
+			throws ConflictException, NotAuthorizedException,
+			BadRequestException {
+		try {
+			Workspace workspace = resolveWorkspace();
+			if(rDest instanceof BinderResource) {
+				EntityIdentifier destBinderIdentifier = ((BinderResource) rDest).getEntityIdentifier();
+				if(workspace.getParentBinder() != null && workspace.getParentBinder().getId().equals(destBinderIdentifier.getEntityId())) {
+					// This is mere renaming of this workspace.
+					renameBinder(workspace, name);
+				}
+				else { // This is a move
+					if(rDest instanceof FolderResource) { 
+						// Moving a workspace into a folder is not allowed.
+						throw new BadRequestException(this, "Can not move a workspace into a folder");
+					}
+					else { // Move a workspace into another workspace
+						if(EntityType.profiles == destBinderIdentifier.getEntityType()) {
+							throw new BadRequestException(this, "Can not move a workspace into the profiles binder");
+						}
+						else {
+							getBinderModule().moveBinder(id, destBinderIdentifier.getEntityId(), null);
+							// We may need to adjust the name.
+							renameBinder(workspace, name);
+						}
+					}
+				}
+			}
+			else {
+				throw new BadRequestException(this, "Destination is an unknown type '" + rDest.getClass().getName() + "'. Must be a workspace resource.");				
+			}
+		}
+		catch(AccessControlException e) {
+			throw new NotAuthorizedException(this);
+		} catch (WriteFilesException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		} catch (WriteEntryDataException e) {
+			throw new WebdavException(e.getLocalizedMessage());
+		}
+	}
+	
 	private Workspace resolveWorkspace() throws NoWorkspaceByTheIdException {
 		if(ws == null) {
 			// Load it directly from DAO without further access check, since access check
@@ -202,5 +303,5 @@ public class WorkspaceResource extends BinderResource  implements PropFindableRe
 		}
 		return ws;
 	}
-	
+
 }
