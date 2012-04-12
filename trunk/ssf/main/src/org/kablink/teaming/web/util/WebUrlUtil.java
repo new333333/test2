@@ -178,6 +178,10 @@ public class WebUrlUtil {
 		return sb.toString();
 	}
 	
+	public static String getSimpleWebdavRootURL(PortletRequest req) {
+		return getSSFSContextRootURL(req) + "davs/";
+	}
+	
 	/**
 	 * Returns URL up to the SSF portlet adapter root. The returned URL ends
 	 * with a "/" character (e.g. http://abc.com:8080/ssf/a/).
