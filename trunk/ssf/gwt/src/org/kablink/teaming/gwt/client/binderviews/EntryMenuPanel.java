@@ -65,6 +65,7 @@ import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
+import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderFiltersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderFiltersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsCmd;
@@ -104,6 +105,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 	private BinderFiltersRpcResponseData	m_binderFilters;			//
 	private BinderInfo						m_binderInfo;				//
 	private boolean							m_includeColumnResizer;		//
+	private boolean							m_isIE;						//
 	private List<ToolbarItem>				m_configureToolbarItems;	//
 	private List<ToolbarItem>				m_toolbarIems;				//
 	private VibeFlexTable					m_grid;						//
@@ -135,6 +137,9 @@ public class EntryMenuPanel extends ToolPanelBase {
 		m_binderInfo           = binderInfo;
 		m_includeColumnResizer = includeColumnResizer;
 
+		// ...initialize any other data members...
+		m_isIE = GwtClientHelper.jsIsIE();
+		
 		// ...construct and initialize the panels...
 		m_grid = new VibeFlexTable();
 		m_grid.addStyleName("vibe-binderViewTools vibe-entryMenu-grid");
@@ -157,23 +162,28 @@ public class EntryMenuPanel extends ToolPanelBase {
 
 		VibeFlowPanel rightPanel = new VibeFlowPanel();
 		rightPanel.addStyleName("vibe-entryMenu-rightPanel");
+		rightPanel.addStyleName(m_isIE ? "displayInline" : "displayInlineBlock");
 		m_grid.setWidget(0, 1, rightPanel);
 		m_grid.getFlexCellFormatter().setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_RIGHT);
 		
 		m_filtersPanel = new VibeFlowPanel();
 		m_filtersPanel.addStyleName("vibe-entryMenu-filtersPanel");
+		m_filtersPanel.addStyleName(m_isIE ? "displayInline" : "displayInlineBlock");
 		rightPanel.add(m_filtersPanel);
 		
 		m_quickFilterPanel = new VibeFlowPanel();
 		m_quickFilterPanel.addStyleName("vibe-entryMenu-quickFilters-panel");
+		m_quickFilterPanel.addStyleName(m_isIE ? "displayInline" : "displayInlineBlock");
 		rightPanel.add(m_quickFilterPanel);
 		
 		m_filterOptionsPanel = new VibeFlowPanel();
 		m_filterOptionsPanel.addStyleName("vibe-entryMenu-filterOptions-panel");
+		m_filterOptionsPanel.addStyleName(m_isIE ? "displayInline" : "displayInlineBlock");
 		rightPanel.add(m_filterOptionsPanel);
 		
 		m_configPanel = new VibeFlowPanel();
 		m_configPanel.addStyleName("vibe-entryMenu-configPanel");
+		m_configPanel.addStyleName(m_isIE ? "displayInline" : "displayInlineBlock");
 		rightPanel.add(m_configPanel);
 	}
 	
@@ -336,13 +346,13 @@ public class EntryMenuPanel extends ToolPanelBase {
 			for (ToolbarItem perEntryTBI:  entryTBI.getNestedItemsList()) {
 				// ...rendering each of them.
 				if (perEntryTBI.hasNestedToolbarItems()) {
-					renderStructuredTBI(m_entryMenu, perEntryTBI);
+					renderStructuredTBI(m_entryMenu, null, perEntryTBI);
 				}
 				else if (perEntryTBI.isSeparator()) {
 					m_entryMenu.addSeparator();
 				}
 				else {
-					renderSimpleTBI(m_entryMenu, perEntryTBI);
+					renderSimpleTBI(m_entryMenu, null, perEntryTBI);
 				}
 			}
 		}
@@ -372,28 +382,36 @@ public class EntryMenuPanel extends ToolPanelBase {
 		
 		// Create the configure menu bar...
 		VibeFlowPanel fp = new VibeFlowPanel();
+		fp.addStyleName("vibe-configureMenuBar vibe-entryMenuBar");
+		fp.addStyleName(m_isIE ? "displayInline" : "displayInlineBlock");
+		final Anchor a = new Anchor();
+		a.setTitle(m_messages.vibeEntryMenu_Alt_ListOptions());
 		Image configureImg = new Image(m_images.configOptions());
 		configureImg.addStyleName("vibe-configureMenuImg");
 		configureImg.getElement().setAttribute("align", "absmiddle");
-		fp.add(configureImg);
-		VibeMenuBar  configureMenu         = new VibeMenuBar(      "vibe-configureMenuBar vibe-entryMenuBar");
-		VibeMenuBar  configureDropdownMenu = new VibeMenuBar(true, "vibe-configureMenuBarDropDown"          );
-		VibeMenuItem configureItem         = new VibeMenuItem(fp.getElement().getInnerHTML(), true, configureDropdownMenu, "vibe-configureMenuBarItem");
-		configureItem.setTitle(m_messages.vibeEntryMenu_Alt_ListOptions());
-		configureMenu.addItem(configureItem);
-		m_configPanel.add(configureMenu);
+		a.getElement().appendChild(configureImg.getElement());
+		final PopupMenu configureDropdownMenu = new PopupMenu(true, false, false);
+		configureDropdownMenu.addStyleName("vibe-configureMenuBarDropDown");
+		a.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				configureDropdownMenu.showRelativeToTarget(a);
+			}
+		});
+		fp.add(a);
+		m_configPanel.add(fp);
 		
 		// ...scan the configure toolbar items...
 		for (ToolbarItem configureTBI:  m_configureToolbarItems) {
 			// ...adding each to the configure menu.
 			if (configureTBI.hasNestedToolbarItems()) {
-				renderStructuredTBI(configureDropdownMenu, configureTBI);
+				renderStructuredTBI(null, configureDropdownMenu, configureTBI);
 			}
 			else if (configureTBI.isSeparator()) {
 				configureDropdownMenu.addSeparator();
 			}
 			else {
-				renderSimpleTBI(configureDropdownMenu, configureTBI);
+				renderSimpleTBI(null, configureDropdownMenu, configureTBI);
 			}
 		}
 	}
@@ -405,6 +423,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 		// Create a panel for the filter...
 		VibeFlowPanel perFilterPanel = new VibeFlowPanel();
 		perFilterPanel.addStyleName("vibe-filterMenuSavedPanel");
+		perFilterPanel.addStyleName(m_isIE ? "displayInline" : "displayInlineBlock");
 		if (!lastCurrentFilter) {
 			perFilterPanel.addStyleName("marginright3px");
 		}
@@ -493,16 +512,24 @@ public class EntryMenuPanel extends ToolPanelBase {
 		
 		// Create the filter options menu bar...
 		VibeFlowPanel fp = new VibeFlowPanel();
+		fp.addStyleName("vibe-filterMenuBar vibe-entryMenuBar");
+		fp.addStyleName(m_isIE ? "displayInline" : "displayInlineBlock");
+		final Anchor a = new Anchor();
+		a.setTitle(m_messages.vibeEntryMenu_Alt_FilterOptions());
 		Image filterImg = new Image(m_images.menuButton());
 		filterImg.addStyleName("vibe-filterMenuImg");
 		filterImg.getElement().setAttribute("align", "absmiddle");
-		fp.add(filterImg);
-		VibeMenuBar  filterMenu         = new VibeMenuBar(      "vibe-filterMenuBar vibe-entryMenuBar");
-		VibeMenuBar  filterDropdownMenu = new VibeMenuBar(true, "vibe-filterMenuBarDropDown"          );
-		VibeMenuItem filterItem         = new VibeMenuItem(fp.getElement().getInnerHTML(), true, filterDropdownMenu, "vibe-filterMenuBarItem");
-		filterItem.setTitle(m_messages.vibeEntryMenu_Alt_FilterOptions());
-		filterMenu.addItem(filterItem);
-		m_filterOptionsPanel.add(filterMenu);
+		a.getElement().appendChild(filterImg.getElement());
+		final PopupMenu filterDropdownMenu = new PopupMenu(true, false, false);
+		filterDropdownMenu.addStyleName("vibe-filterMenuBarDropDown");
+		a.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				filterDropdownMenu.showRelativeToTarget(a);
+			}
+		});
+		fp.add(a);
+		m_filterOptionsPanel.add(fp);
 		
 		// If we have an edit filters URL...
 		if (hasFilterEditUrl) {
@@ -513,7 +540,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 					GwtTeaming.fireEvent(new GotoContentUrlEvent(filterEditUrl));
 				}
 			});
-			filterDropdownMenu.addItem(mi);
+			filterDropdownMenu.addMenuItem(mi);
 			if ((!hasFiltersOffUrl) && (0 < filtersCount)) {
 				filterDropdownMenu.addSeparator();
 			}
@@ -528,7 +555,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 					GwtTeaming.fireEvent(new GotoContentUrlEvent(filtersOffUrl));
 				}
 			});
-			filterDropdownMenu.addItem(mi);
+			filterDropdownMenu.addMenuItem(mi);
 			if (0 < filtersCount) {
 				filterDropdownMenu.addSeparator();
 			}
@@ -568,7 +595,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 				else {
 					menuText = fName;
 				}
-				filterDropdownMenu.addItem(
+				filterDropdownMenu.addMenuItem(
 					renderDefinedFilter(
 						menuText,
 						hasCurrentFilter,
@@ -599,6 +626,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 			// ...add a quick filter widget...
 			QuickFilter qf = new QuickFilter(m_binderInfo.getBinderIdAsLong());
 			qf.addStyleName("vibe-entryMenu-quickFilters-filter");
+			qf.addStyleName(m_isIE ? "displayInline" : "displayInlineBlock");
 			m_quickFilterPanel.add(qf);
 		}
 		
@@ -611,7 +639,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 	/*
 	 * Renders any simple (i.e., URL or event based) toolbar item.
 	 */
-	private void renderSimpleTBI(VibeMenuBar menuBar, final ToolbarItem simpleTBI) {
+	private void renderSimpleTBI(VibeMenuBar menuBar, PopupMenu popupMenu, final ToolbarItem simpleTBI) {
 		VibeMenuItem menuItem = new VibeMenuItem(simpleTBI.getTitle(), new Command() {
 			@Override
 			public void execute() {
@@ -682,7 +710,9 @@ public class EntryMenuPanel extends ToolPanelBase {
 		case TRASH_RESTORE_SELECTED_ENTRIES:  m_trashRestoreSelectedMenu = menuItem; break;
 		}
 		menuItem.addStyleName((menuBar == m_entryMenu) ? "vibe-entryMenuBarItem" : "vibe-entryMenuPopupItem");
-		menuBar.addItem(menuItem);
+		if (null != menuBar)
+		     menuBar.addItem(      menuItem);
+		else popupMenu.addMenuItem(menuItem);
 	}
 
 	/*
@@ -696,7 +726,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 
 		Image dropDownImg = new Image(enabled ? GwtTeaming.getMainMenuImageBundle().menuArrow() : GwtTeaming.getMainMenuImageBundle().menuArrowGray());
 		dropDownImg.addStyleName("vibe-mainMenuBar_BoxDropDownImg");
-		if (!(GwtClientHelper.jsIsIE())) {
+		if (!m_isIE) {
 			dropDownImg.addStyleName("vibe-mainMenuBar_BoxDropDownImgNonIE");
 		}
 		htmlPanel.add(dropDownImg);
@@ -707,14 +737,16 @@ public class EntryMenuPanel extends ToolPanelBase {
 	/*
 	 * Renders any toolbar item that contains nested toolbar items.
 	 */
-	private void renderStructuredTBI(VibeMenuBar menuBar, ToolbarItem structuredTBI) {
+	private void renderStructuredTBI(VibeMenuBar menuBar, PopupMenu popupMenu, ToolbarItem structuredTBI) {
 		// Create a drop down menu for the structured toolbar item...
 		VibeMenuBar	structuredMenuBar = new VibeMenuBar(true);	// true -> Vertical drop down menu.
 		structuredMenuBar.addStyleName("vibe-entryMenuPopup");
 		VibeMenuItem structuredMenuItem = new VibeMenuItem(structuredTBI.getTitle(), structuredMenuBar);
 		structuredMenuItem.addStyleName("vibe-entryMenuBarItem");
 		structuredMenuItem.setHTML(renderStructuredItemHTML(structuredTBI.getTitle(), true));
-		menuBar.addItem(structuredMenuItem);
+		if (null != menuBar)
+		     menuBar.addItem(      structuredMenuItem);
+		else popupMenu.addMenuItem(structuredMenuItem);
 		
 		String structuredName = structuredTBI.getName();
 		if (GwtClientHelper.hasString(structuredName) && structuredName.equals("1_more")) {
@@ -725,13 +757,13 @@ public class EntryMenuPanel extends ToolPanelBase {
 		for (ToolbarItem nestedTBI:  structuredTBI.getNestedItemsList()) {
 			// ...rendering each of them.
 			if (nestedTBI.hasNestedToolbarItems()) {
-				renderStructuredTBI(structuredMenuBar, nestedTBI);
+				renderStructuredTBI(structuredMenuBar, popupMenu, nestedTBI);
 			}
 			else if (nestedTBI.isSeparator()) {
 				structuredMenuBar.addSeparator();
 			}
 			else {
-				renderSimpleTBI(structuredMenuBar, nestedTBI);
+				renderSimpleTBI(structuredMenuBar, null, nestedTBI);
 			}
 		}
 	}
