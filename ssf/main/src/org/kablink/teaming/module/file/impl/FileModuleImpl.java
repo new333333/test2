@@ -1000,29 +1000,30 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			Binder destBinder, DefinableEntity destEntity)
 	throws UncheckedIOException, RepositoryServiceException {
     	Collection<FileAttachment> atts = entity.getFileAttachments();
+    	//Decrement and increment the various quota counts
+		Long totalFileSizes = 0L;
+    	for (FileAttachment att : atts) {
+    		Set<VersionAttachment> fileVersions = att.getFileVersions();
+    		for (VersionAttachment fv : fileVersions) {
+    			//Count the file sizes for all versions in the entry
+    			totalFileSizes += fv.getFileItem().getLength();
+    		}
+    	}
+    	if (!binder.isMirrored()) {
+    		getBinderModule().decrementDiskSpaceUsed(binder, totalFileSizes);
+    	}
+    	if (!destBinder.isMirrored()) {
+    		getBinderModule().incrementDiskSpaceUsed(destBinder, totalFileSizes);
+    	}
+
     	//first register file names, so if one fails, files are not copied
     	for(FileAttachment fa :atts) {    			
-        	//Decrement and increment the various quota counts
-    		Long totalFileSizes = 0L;
-        	for (FileAttachment att : atts) {
-        		Set<VersionAttachment> fileVersions = att.getFileVersions();
-        		for (VersionAttachment fv : fileVersions) {
-        			//Count the file sizes for all versions in the entry
-        			totalFileSizes += fv.getFileItem().getLength();
-        		}
-        	}
-        	if (!binder.isMirrored()) {
-        		getBinderModule().decrementDiskSpaceUsed(binder, totalFileSizes);
-        	}
-        	if (!destBinder.isMirrored()) {
-        		getBinderModule().incrementDiskSpaceUsed(destBinder, totalFileSizes);
-        	}
-
    			if (binder.isLibrary() && !binder.equals(entity))
    				getCoreDao().unRegisterFileName(binder, fa.getFileItem().getName());
     		if (destBinder.isLibrary() && !destBinder.equals(destEntity))
     			getCoreDao().registerFileName(destBinder, destEntity, fa.getFileItem().getName());
-    		}
+    	}
+    	
 		// Rename the file in the repository
        	for(FileAttachment fa :atts) {   
        		if(!ObjectKeys.FI_ADAPTER.equals(fa.getRepositoryName())) { // regular repository
