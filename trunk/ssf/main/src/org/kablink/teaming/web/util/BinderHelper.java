@@ -2233,6 +2233,10 @@ public class BinderHelper {
 	}
 	public static List BuildChangeLogBeans(AllModulesInjected bs, DefinableEntity entity, 
 			List changeLogs, Map<Long,FolderEntry> folderEntries, Long version) {
+		return BuildChangeLogBeans(bs, entity, changeLogs, folderEntries, null, false);
+	}
+	public static List BuildChangeLogBeans(AllModulesInjected bs, DefinableEntity entity, 
+			List changeLogs, Map<Long,FolderEntry> folderEntries, Long version, boolean showAll) {
 		List changeList = new ArrayList();
 		if (changeLogs == null) return changeList;
 
@@ -2246,7 +2250,7 @@ public class BinderHelper {
 			changeMap.put("operation", root.attributeValue("operation", ""));
 			if (version != null && version.equals(log.getVersion()) || 
 					version == null) {
-				if (!folderEntries.containsKey(logVersion)) changeList.add(changeMap);
+				if (!folderEntries.containsKey(logVersion) || showAll) changeList.add(changeMap);
 				
 				//Build a pseudo entry object
 				FolderEntry fe = getEntryVersion(bs, entity, doc, folderEntries);
