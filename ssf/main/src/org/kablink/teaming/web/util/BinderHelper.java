@@ -1721,6 +1721,7 @@ public class BinderHelper {
 		String[] s = SPropsUtil.getStringArray("simpleUrl.globalKeywords", ",");
 		model.put(WebKeys.SIMPLE_URL_GLOBAL_KEYWORDS, s);
 		model.put(WebKeys.SIMPLE_URL_PREFIX, WebUrlUtil.getSimpleURLContextRootURL(request));
+		model.put(WebKeys.SIMPLE_WEBDAV_PREFIX, WebUrlUtil.getSimpleWebdavRootURL(request));
 		List<SimpleName> simpleNames = bs.getBinderModule().getSimpleNames(binder.getId());
 		model.put(WebKeys.SIMPLE_URL_NAMES, simpleNames);
 		model.put(WebKeys.SIMPLE_URL_CHANGE_ACCESS, 

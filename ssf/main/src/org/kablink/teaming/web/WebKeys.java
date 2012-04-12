@@ -1415,6 +1415,7 @@ public class WebKeys {
     public static final String SIMPLE_URL_CHANGE_ACCESS="ssSimpleUrlChangeAccess";
     public static final String SIMPLE_URL_NAMES="ssSimpleUrlNames";
     public static final String SIMPLE_URL_PREFIX="ssSimpleUrlPrefix";
+    public static final String SIMPLE_WEBDAV_PREFIX="ssSimpleWebdavPrefix";
     public static final String STAND_ALONE="ssStandAlone";
     public static final String TOOLBAR="ss_toolbar";
     public static final String TOOLBAR_MENU_SELECTED="selected"; 

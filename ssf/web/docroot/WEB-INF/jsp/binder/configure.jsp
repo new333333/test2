@@ -162,7 +162,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 		</c:if>
 		<c:if test="${!empty ssSimpleUrlNames}">
 		  <c:forEach var="name" items="${ssSimpleUrlNames}">
-			<input type="checkbox" name="delete_${name.name}"/><span style="padding-left:6px; letter-spacing: 1px;">${ssSimpleUrlPrefix}${name.name}</span><br/>
+			<input type="checkbox" name="delete_${name.name}"/><span style="padding-left:6px; letter-spacing: 1px;">${ssSimpleUrlPrefix}${name.name} (${ssSimpleWebdavPrefix}${name.emailAddress})</span><br/>
 		  </c:forEach>
 		<div class="margintop2 marginbottom3">
 			<input type="submit" class="ss_submit" name="deleteUrlBtn" 
