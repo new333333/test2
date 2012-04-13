@@ -151,11 +151,9 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler {
 	private void checkDefaultFolderView() {
 		// Did we display any folder view options in the dialog?
 		if (0 < m_folderViewsListCount) {
-			GetDefaultFolderDefinitionIdCmd cmd;
-			
 			// Yes!  Does the folder we're working on have a default
 			// view defined?
-			cmd = new GetDefaultFolderDefinitionIdCmd( m_binderId );
+			GetDefaultFolderDefinitionIdCmd cmd = new GetDefaultFolderDefinitionIdCmd( m_binderId );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
@@ -166,14 +164,13 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler {
 				
 				@Override
 				public void onSuccess(VibeRpcResponse response) {
-					String folderDefId = null;
-						
-					if ( response.getResponseData() != null )
-					{
-						StringRpcResponseData responseData;
-						
-						responseData = (StringRpcResponseData) response.getResponseData();
+					String folderDefId;
+					if (null != response.getResponseData()) {
+						StringRpcResponseData responseData = (StringRpcResponseData) response.getResponseData();
 						folderDefId = responseData.getStringValue();
+					}
+					else {
+						folderDefId = null;
 					}
 					
 					if (GwtClientHelper.hasString(folderDefId)) {

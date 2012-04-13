@@ -249,8 +249,8 @@ public class GwtMenuHelper {
 		ToolbarItem reply = new ToolbarItem(tbKey);
 
 		// Are we looking at a calendar or task folder that we can add entries to?
-		boolean isCalendar =                   BinderHelper.isBinderCalendar(folder);
-		boolean isTask     = ((!isCalendar) && BinderHelper.isBinderTask(    folder));
+		boolean isCalendar =                   BinderHelper.isBinderCalendar(bs, folder);
+		boolean isTask     = ((!isCalendar) && BinderHelper.isBinderTask(    bs, folder));
 		if ((isCalendar || isTask) && bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {
 			// Yes!  Generate the required structure for the menu.
 			ToolbarItem calTBI  = new ToolbarItem(CALENDAR  );

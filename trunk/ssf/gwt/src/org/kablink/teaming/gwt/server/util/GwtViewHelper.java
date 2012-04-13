@@ -2829,8 +2829,25 @@ public class GwtViewHelper {
 		}
 		
 		else if (action.equals(WebKeys.ACTION_VIEW_WS_LISTING) || action.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING)) {
-			// A view workspace or folder listing!  Setup a binder view
-			// based on the binder ID.
+			// A view workspace or folder listing!  Are we view a
+			// folder while changing its view?
+			boolean       viewFolderListing = action.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			String        op                = getQueryParameterString(nvMap, WebKeys.URL_OPERATION);
+			boolean       hasOp             = MiscUtil.hasString(op);
+			ProfileModule pm                = bs.getProfileModule();
+			Long          userId            = GwtServerHelper.getCurrentUser().getId();
+			if (viewFolderListing && hasOp && op.equals(WebKeys.OPERATION_SET_DISPLAY_DEFINITION)) {
+				// Yes!  Do we have both the view definition and binder
+				// ID's?
+				String defId    = getQueryParameterString(nvMap, WebKeys.URL_VALUE    );
+				Long   binderId = getQueryParameterLong(  nvMap, WebKeys.URL_BINDER_ID);
+				if (MiscUtil.hasString(defId) && (null != binderId)) {
+					// Yes!  Put the view into affect.
+					pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION, defId);
+				}
+			}
+			
+			// Setup a binder view based on the binder ID.
 			if (!(initVIFromBinderId(request, bs, nvMap, WebKeys.URL_BINDER_ID, vi, true))) {
 				m_logger.debug("GwtViewHelper.getViewInfo():  4:Could not determine a view.");
 				return null;
@@ -2838,7 +2855,7 @@ public class GwtViewHelper {
 
 			// Is this a view folder listing?
 			Long binderId = vi.getBinderInfo().getBinderIdAsLong();
-			if (action.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING)) {
+			if (viewFolderListing) {
 				// Yes!  Does it also contain changes to the folder
 				// sorting?
 				String sortBy       = getQueryParameterString(nvMap, WebKeys.FOLDER_SORT_BY);		
@@ -2855,7 +2872,6 @@ public class GwtViewHelper {
 				
 				// If the request contain changes to the task
 				// filtering...
-				Long userId = GwtServerHelper.getCurrentUser().getId();
 				String taskFilterType = getQueryParameterString(nvMap, WebKeys.TASK_FILTER_TYPE);
 				if (MiscUtil.hasString(taskFilterType)) {
 					// ...put them into effect.
@@ -2869,12 +2885,9 @@ public class GwtViewHelper {
 			}
 			
 			// Does it contain a filter operation?
-			String op = getQueryParameterString(nvMap, WebKeys.URL_OPERATION);
-			if (MiscUtil.hasString(op) && op.equals(WebKeys.URL_SELECT_FILTER)) {
+			if (hasOp && op.equals(WebKeys.URL_SELECT_FILTER)) {
 				// Yes, a filter selection!  Apply the selection.
 				String filterName = getQueryParameterString(nvMap, WebKeys.URL_SELECT_FILTER);
-				ProfileModule pm = bs.getProfileModule();
-				Long userId = GwtServerHelper.getCurrentUser().getId();
 				String op2 = getQueryParameterString(nvMap, WebKeys.URL_OPERATION2);
 				String filterScope;
 				if (MiscUtil.hasString(op2) && op2.equals(ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL))
@@ -2902,8 +2915,6 @@ public class GwtViewHelper {
 			
 			if (MiscUtil.hasString(op) && op.equals(WebKeys.URL_CLEAR_FILTER)) {
 				// Yes, a filter clear!  Apply the selection.
-				ProfileModule pm = bs.getProfileModule();
-				Long userId = GwtServerHelper.getCurrentUser().getId();
 				String op2 = getQueryParameterString(nvMap, WebKeys.URL_OPERATION2);
 				String filterScope;
 				if (MiscUtil.hasString(op2) && op2.equals(ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL))

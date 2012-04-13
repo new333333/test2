@@ -232,7 +232,6 @@ import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.Clipboard;
-import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.FavoritesLimitExceededException;
 import org.kablink.teaming.web.util.GwtUIHelper;
@@ -3268,13 +3267,13 @@ public class GwtServerHelper {
 	public static BinderInfo getBinderInfo(HttpServletRequest request, AllModulesInjected bs, Binder binder) {
 		// Allocate a BinderInfo and store the core binder information.
 		BinderInfo reply = new BinderInfo();
-		                                    reply.setBinderId(     binder.getId()             );
-		                                    reply.setBinderTitle(  binder.getTitle()          );
-		                                    reply.setIsLibrary(    binder.isLibrary()         );
-		                                    reply.setEntityType(   getBinderEntityType(binder));
-		                                    reply.setBinderType(   getBinderType(      binder));
-		if      (reply.isBinderFolder())    reply.setFolderType(   getFolderType(      binder));
-		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(getWorkspaceType(   binder));
+		                                    reply.setBinderId(     binder.getId()                                 );
+		                                    reply.setBinderTitle(  binder.getTitle()                              );
+		                                    reply.setIsLibrary(    binder.isLibrary()                             );
+		                                    reply.setEntityType(   getBinderEntityType(                   binder ));
+		                                    reply.setBinderType(   getBinderType(                         binder ));
+		if      (reply.isBinderFolder())    reply.setFolderType(   getFolderTypeFromViewDef(bs, ((Folder) binder)));
+		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(getWorkspaceType(                      binder ));
 
 		// If this is a mirrored file...
 		if (FolderType.MIRROREDFILE.equals(reply.getFolderType())) {
@@ -3887,23 +3886,17 @@ public class GwtServerHelper {
 	/**
 	 * Returns the ID of the default view definition of a folder.
 	 * 
+	 * @param bs
+	 * @param binderIdS
+	 * 
 	 * @return
 	 */
 	public static String getDefaultFolderDefinitionId(AllModulesInjected bs, String binderIdS) {
-		// Does the user have a default definition selected for this
-		// binder?
-		Long binderId = Long.valueOf(binderIdS);
-		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(getCurrentUser().getId(), binderId);
-		String userSelectedDefinition = ((String) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
+		// Read the folder's default definition...
+		Definition def = BinderHelper.getFolderDefinitionFromView(bs, Long.parseLong(binderIdS));
 
-		// If we can find the default definition for this binder...
-		HashMap model = new HashMap();
-		Binder binder = bs.getBinderModule().getBinder(binderId);
-		DefinitionHelper.getDefinitions(binder, model, userSelectedDefinition);		
-		Definition def = ((Definition) model.get(WebKeys.DEFAULT_FOLDER_DEFINITION));
-
-		// ...return it's ID or if we can't find it, return an empty
-		// ...string.
+		// ...and return it's ID or if we can't find it, return an
+		// ...empty string.
 		String reply = ((null == def) ? "" : def.getId());
 		m_logger.debug("GwtServerHelper.getDefaultFolderDefinitionId( binderId:  '" + binderIdS + "' ):  '" + reply);
 		return reply;
@@ -3948,73 +3941,93 @@ public class GwtServerHelper {
 	 * Returns the FolderType of a folder.
 	 *
 	 * @param bs
-	 * @param folderId
+	 * @param binder
 	 * 
 	 * @return
 	 */
-	public static FolderType getFolderType(AllModulesInjected bs, String folderId) {
-		return getFolderType(bs.getBinderModule().getBinder(Long.parseLong(folderId)));
-	}
-	
-	public static FolderType getFolderType(Binder binder) {
-		// Is the binder a folder?
+	public static FolderType getFolderType(AllModulesInjected bs, Binder binder) {
 		FolderType reply;
-		if (binder instanceof Folder) {
-			// Yes!  Can we find a family name in its default view?
-			String family = BinderHelper.getBinderDefaultFamilyName(binder);
-			reply = FolderType.OTHER;
-			if (MiscUtil.hasString(family)) {
-				// Yes!  Classify the folder based on it.
-				family = family.toLowerCase();
-				if      (family.equals("blog"))       reply = FolderType.BLOG;
-				else if (family.equals("calendar"))   reply = FolderType.CALENDAR;
-				else if (family.equals("discussion")) reply = FolderType.DISCUSSION;
-				else if (family.equals("file" ))      reply = FolderType.FILE;
-				else if (family.equals("guestbook"))  reply = FolderType.GUESTBOOK;
-				else if (family.equals("milestone"))  reply = FolderType.MILESTONE;
-				else if (family.equals("miniblog"))   reply = FolderType.MINIBLOG;
-				else if (family.equals("photo"))      reply = FolderType.PHOTOALBUM;
-				else if (family.equals("task"))       reply = FolderType.TASK;
-				else if (family.equals("survey"))     reply = FolderType.SURVEY;
-				else if (family.equals("wiki"))       reply = FolderType.WIKI;
-			}
-
-			// For certain folder types, we need to special case the
-			// classification for one reason or another.  Is this one
-			// of them?
-			String view = BinderHelper.getBinderDefaultViewName(binder);
-			switch (reply) {
-			case OTHER:
-				// We need to special case guest book folders
-				// because its definition does not contain a family
-				// name.
-				if (MiscUtil.hasString(view) && view.equals(VIEW_FOLDER_GUESTBOOK)) {
-					reply = FolderType.GUESTBOOK;
-				}				
-				else {
-					m_logger.debug("GwtServerHelper.getFolderType( 'Could not determine folder type' ):  " + binder.getPathName());
-				}				
-				break;
-			
-			case FILE:
-				// We need to special case files because both a
-				// normal file folder and a mirrored file
-				// folder use 'file' for their family name.
-				if (MiscUtil.hasString(view) && view.equals(VIEW_FOLDER_MIRRORED_FILE)) {
-					reply = FolderType.MIRROREDFILE;
-				}				
-				break;
-			}
-		}
-		
-		else {
-			// No, the binder isn't a folder!
-			reply = FolderType.NOT_A_FOLDER;
-		}
+		if (binder instanceof Folder)
+			 reply = getFolderTypeFromViewDef(bs, ((Folder) binder));
+		else reply = FolderType.NOT_A_FOLDER;
 
 		// If we get here, reply refers to the type of folder the
 		// binder is.  Return it.
 		return reply;
+	}
+	
+	public static FolderType getFolderType(AllModulesInjected bs, String binderId) {
+		// Always use the initial form of the method.
+		return getFolderType(bs, bs.getBinderModule().getBinder(Long.parseLong(binderId)));
+	}
+
+	/*
+	 * Returns the FolderType of a folder based on the family from its
+	 * definition.
+	 */
+	private static FolderType getFolderTypeFromDefFamily(Folder folder, String defFamily) {
+		// Do we have the family from the folder's definition?
+		FolderType reply = FolderType.OTHER;
+		if (MiscUtil.hasString(defFamily)) {
+			// Yes!  Classify the folder based on it.
+			defFamily = defFamily.toLowerCase();
+			if      (defFamily.equals("blog"))       reply = FolderType.BLOG;
+			else if (defFamily.equals("calendar"))   reply = FolderType.CALENDAR;
+			else if (defFamily.equals("discussion")) reply = FolderType.DISCUSSION;
+			else if (defFamily.equals("file" ))      reply = FolderType.FILE;
+			else if (defFamily.equals("guestbook"))  reply = FolderType.GUESTBOOK;
+			else if (defFamily.equals("milestone"))  reply = FolderType.MILESTONE;
+			else if (defFamily.equals("miniblog"))   reply = FolderType.MINIBLOG;
+			else if (defFamily.equals("photo"))      reply = FolderType.PHOTOALBUM;
+			else if (defFamily.equals("task"))       reply = FolderType.TASK;
+			else if (defFamily.equals("survey"))     reply = FolderType.SURVEY;
+			else if (defFamily.equals("wiki"))       reply = FolderType.WIKI;
+		}
+
+		// For certain folder types, we need to special case the
+		// classification for one reason or another.  Is this one
+		// of them?
+		String view = BinderHelper.getBinderDefaultViewName(folder);
+		switch (reply) {
+		case OTHER:
+			// We need to special case guest book folders
+			// because its definition does not contain a family
+			// name.
+			if (MiscUtil.hasString(view) && view.equals(VIEW_FOLDER_GUESTBOOK)) {
+				reply = FolderType.GUESTBOOK;
+			}				
+			else {
+				m_logger.debug("GwtServerHelper.getFolderTypeFromDefFamily( 'Could not determine folder type' ):  " + folder.getPathName());
+			}				
+			break;
+		
+		case FILE:
+			// We need to special case files because both a
+			// normal file folder and a mirrored file
+			// folder use 'file' for their family name.
+			if (MiscUtil.hasString(view) && view.equals(VIEW_FOLDER_MIRRORED_FILE)) {
+				reply = FolderType.MIRROREDFILE;
+			}				
+			break;
+		}
+		return reply;
+	}
+	
+	/*
+	 * Returns the FolderType of a folder based on its current view.
+	 */
+	private static FolderType getFolderTypeFromViewDef(AllModulesInjected bs, Folder folder) {
+		// Does the user have a view definition selected for this
+		// folder?
+		Definition def = BinderHelper.getFolderDefinitionFromView(bs, folder.getId());
+		if (null == def) {
+			// No!  Just use it's default view.
+			def = folder.getDefaultViewDef();
+		}
+
+		// Return the FolderType from view definition.
+		String defFamily = BinderHelper.getFamilyNameFromDef(def);
+		return getFolderTypeFromDefFamily(folder, defFamily);
 	}
 	
 	/**

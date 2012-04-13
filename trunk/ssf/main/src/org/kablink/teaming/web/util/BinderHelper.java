@@ -1574,45 +1574,57 @@ public class BinderHelper {
 	}
 
 	/**
-	 * Determines whether a binder is a calendar.
-	 * 
+	 * Determines whether a binder is being viewed as a calendar.
+	 *
+	 * @param bs
 	 * @param binder
 	 * 
 	 * @return
 	 */
-	static public boolean isBinderCalendar(Binder binder) {
+	static public boolean isBinderCalendar(AllModulesInjected bs, Binder binder) {
+		// Is the binder a folder?
 		boolean isCalendar = (EntityIdentifier.EntityType.folder == binder.getEntityType());
 		if (isCalendar) {
-			String dFamily = "";
-			Element familyProperty = ((Element) binder.getDefaultViewDef().getDefinition().getRootElement().selectSingleNode("//properties/property[@name='family']"));
-			if (familyProperty != null) {
-				dFamily = familyProperty.attributeValue("value", "");
-				if (null != dFamily) {
-					isCalendar = dFamily.equalsIgnoreCase("calendar");
-				}
+			// Yes!  Does the user have a view definition selected for
+			// it?
+			Definition def = getFolderDefinitionFromView(bs, binder.getId());
+			if (null == def) {
+				// No!  Just use it's default view.
+				def = binder.getDefaultViewDef();
 			}
+			
+			// Use the family from the definition to determine if the
+			// folder is a calendar.
+			String dFamily = getFamilyNameFromDef(def);
+			isCalendar = (MiscUtil.hasString(dFamily) && dFamily.equalsIgnoreCase("calendar"));
 		}
 		return isCalendar;
 	}
 	
 	/**
-	 * Determines whether a binder is a task.
+	 * Determines whether a binder is being viewed as a task folder.
 	 * 
+	 * @param bs
 	 * @param binder
 	 * 
 	 * @return
 	 */
-	static public boolean isBinderTask(Binder binder) {
+	static public boolean isBinderTask(AllModulesInjected bs, Binder binder) {
+		// Is the binder a folder?
 		boolean isTask = (EntityIdentifier.EntityType.folder == binder.getEntityType());
 		if (isTask) {
-			String dFamily = "";
-			Element familyProperty = ((Element) binder.getDefaultViewDef().getDefinition().getRootElement().selectSingleNode("//properties/property[@name='family']"));
-			if (familyProperty != null) {
-				dFamily = familyProperty.attributeValue("value", "");
-				if (null != dFamily) {
-					isTask = dFamily.equalsIgnoreCase("task");
-				}
+			// Yes!  Does the user have a view definition selected for
+			// it?
+			Definition def = getFolderDefinitionFromView(bs, binder.getId());
+			if (null == def) {
+				// No!  Just use it's default view.
+				def = binder.getDefaultViewDef();
 			}
+			
+			// Use the family from the definition to determine if the
+			// folder is a task folder.
+			String dFamily = getFamilyNameFromDef(def);
+			isTask = (MiscUtil.hasString(dFamily) && dFamily.equalsIgnoreCase("task"));
 		}
 		return isTask;
 	}
@@ -4730,15 +4742,10 @@ public class BinderHelper {
 	 * @return
 	 */
 	public static String getBinderDefaultFamilyName(Binder binder) {
-		Definition def        = ((null == binder)     ? null : binder.getDefaultViewDef());
-		Document   defDoc     = ((null == def)        ? null : def.getDefinition());
-		Element    defDocRoot = ((null == defDoc)     ? null : defDoc.getRootElement());
-		Element    family     = ((null == defDocRoot) ? null : ((Element) defDocRoot.selectSingleNode("//properties/property[@name='family']")));
-		String     reply      = ((null == family)     ? null : family.attributeValue("value", ""));
-		
-		return reply;
+		Definition def = ((null == binder) ? null : binder.getDefaultViewDef());
+		return getFamilyNameFromDef(def);
 	}
-		
+	
 	/**
 	 * Returns the name of the default view associated with a binder.
 	 * 
@@ -4754,22 +4761,78 @@ public class BinderHelper {
 		
 		return reply;
 	}	
-	
-	private static NewableFileSupport getNewableFileSupport() {
-		return (NewableFileSupport) SpringContextUtil.getBean("newableFileSupport");
-	}
-	private static FolderModule getFolderModule() {
-		return (FolderModule) SpringContextUtil.getBean("folderModule");
-	}
+
+	/*
+	 */
 	private static BinderModule getBinderModule() {
-		return (BinderModule) SpringContextUtil.getBean("binderModule");
-	}
-	private static ProfileModule getProfileModule() {
-		return (ProfileModule) SpringContextUtil.getBean("profileModule");
+		return ((BinderModule) SpringContextUtil.getBean("binderModule"));
 	}
 	
-    //Make sure binder title is unique
-    //If title is not unique in the parent binder, then change it to be unique by adding "(n)" to the name
+	/**
+	 * Returns the family name from a Definition.
+	 * 
+	 * @param def
+	 * 
+	 * @return
+	 */
+	public static String getFamilyNameFromDef(Definition def) {
+		Document   defDoc     = ((null == def)        ? null : def.getDefinition());
+		Element    defDocRoot = ((null == defDoc)     ? null : defDoc.getRootElement());
+		Element    family     = ((null == defDocRoot) ? null : ((Element) defDocRoot.selectSingleNode("//properties/property[@name='family']")));
+		String     reply      = ((null == family)     ? null : family.attributeValue("value", ""));
+		
+		return reply;
+	}
+		
+	/**
+	 * Returns the definition from a folder's view.
+	 * 
+	 * @param bs
+	 * @param folderId
+	 */
+	public static Definition getFolderDefinitionFromView(AllModulesInjected bs, Long folderId) {
+		// Does the user have a default definition selected for this
+		// binder?
+		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(RequestContextHolder.getRequestContext().getUser().getId(), folderId);
+		String userSelectedDefinition = ((String) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
+
+		// If we can find the default definition for this binder,
+		// return it.
+		HashMap model = new HashMap();
+		Binder binder = bs.getBinderModule().getBinder(folderId);
+		DefinitionHelper.getDefinitions(binder, model, userSelectedDefinition);		
+		return ((Definition) model.get(WebKeys.DEFAULT_FOLDER_DEFINITION));
+	}
+	
+	/*
+	 */
+	private static FolderModule getFolderModule() {
+		return ((FolderModule) SpringContextUtil.getBean("folderModule"));
+	}
+	
+	/*
+	 */
+	private static NewableFileSupport getNewableFileSupport() {
+		return ((NewableFileSupport) SpringContextUtil.getBean("newableFileSupport"));
+	}
+	
+	/*
+	 */
+	private static ProfileModule getProfileModule() {
+		return ((ProfileModule) SpringContextUtil.getBean("profileModule"));
+	}
+	
+	/**
+	 * Make sure binder title is unique.
+	 * 
+	 * If title is not unique in the parent binder, then change it to
+	 * be unique by adding '(n)' to the name.
+	 * 
+	 * @param title
+	 * @param parent
+	 * 
+	 * @return
+	 */
     public static String getUniqueBinderTitleInParent(String title, Binder parent) {
     	List<Binder> subBinders = parent.getBinders();
     	Set<String> binderTitles = new HashSet<String>();
@@ -4793,6 +4856,4 @@ public class BinderHelper {
     	}
     	return title;
     }
-
-
 }
