@@ -75,6 +75,7 @@ import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.Membership;
@@ -83,6 +84,7 @@ import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.jobs.LdapSynchronization;
@@ -107,6 +109,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.GetterUtil;
@@ -1229,7 +1232,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		   		LdapContext ctx=null;
 		  		try {
 					ctx = getUserContext(zone.getId(), config);
-					logger.info("InitialContext: " + ctx.getNameInNamespace());
+					logger.info( "ldap url used to search for users: " + config.getUrl() );
 					
 					syncUsers(zone, ctx, config, userCoordinator);
 				}
@@ -1262,14 +1265,16 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 				}
 			}
+			logger.info( "Finished syncUsers()" );
 			Map dnUsers = userCoordinator.wrapUp();
+			logger.info( "Finished userCoordinator.wrapUp()" );
 	
 	   		GroupCoordinator groupCoordinator = new GroupCoordinator(zone, dnUsers, info.isGroupSync(), info.isGroupRegister(), info.isGroupDelete(), syncResults );
 	   		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId())) {
 		   		LdapContext ctx=null;
 		  		try {
 					ctx = getGroupContext(zone.getId(), config);
-					logger.info("InitialContext: " + ctx.getNameInNamespace());
+					logger.info( "ldap url used to search for groups: " + config.getUrl() );
 					syncGroups(zone, ctx, config, groupCoordinator, info.isMembershipSync());
 				}
 		  		catch (NamingException namingEx)
@@ -1302,7 +1307,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 								
 				}
 			}
+	   		logger.info( "Finished syncGroups()" );
 	   		groupCoordinator.deleteObsoleteGroups();
+	   		logger.info( "Finished groupCoordinator.deleteObsoleteGroups()" );
 
 	   		// Find all groups that have dynamic membership and update the membership
 	   		// of those groups that are supposed to be updated during the ldap sync process
@@ -1322,6 +1329,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   					updateDynamicGroupMembership( nextGroupId, groupCoordinator.getLdapSyncResults() );
 	   				}
 	   			}
+	   			
+	   			logger.info( "Finished looking for dynamic groups." );
 	   		}
 		}// end try
 		finally
@@ -1717,7 +1726,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			boolean foundLocalUser = false;
 			
 			if (logger.isDebugEnabled())
-				logger.debug("Retrieved user: '" + dn + "'");
+				logger.debug("Recording user: '" + dn + "'");
 
 			// Do we have the name of the ldap attribute that holds the guid?
 			if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
@@ -2023,7 +2032,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		String ssName;
 		String [] sample = new String[0];
 		String[] attributesToRead;
-	 
+
+		logger.info( "Starting to sync users, syncUsers()" );
+
 		// Get the mapping of ldap attributes to Teaming field names
 		Map userAttributes = config.getMappings();
 
@@ -2047,6 +2058,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
 				SearchControls sch = new SearchControls(scope, 0, 0, (String [])la.toArray(sample), false, false);
 	
+				logger.info( "Searching for users in base dn: " + searchInfo.getBaseDn() );
+				
 				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), sch);
 				while (ctxSearch.hasMore()) {
 					String	userName;
@@ -2235,7 +2248,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			Object[] row = null;
 			
 			if (logger.isDebugEnabled())
-				logger.debug("Retrieved group: '" + dn + "'");
+				logger.debug("Recording group: '" + dn + "'");
 			
 			// Do we have the name of the ldap attribute that holds the guid?
 			if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
@@ -2440,6 +2453,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		String [] sample = new String[0];
 		//ldap dn => forum info
 
+		logger.info( "Starting to sync groups, syncGroups()" );
+
 		for(LdapConnectionConfig.SearchInfo searchInfo : config.getGroupSearches()) {
 			if(Validator.isNotNull(searchInfo.getFilterWithoutCRLF())) {
 				String ldapGuidAttribute;
@@ -2447,6 +2462,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				String[] attributeNames;
 				List memberAttributes;
 				int i;
+				
+				logger.info( "Searching for groups in base dn: " + searchInfo.getBaseDn() );
 				
 				// Get the name of the ldap attribute we will use to get a guid from the ldap directory.
 				ldapGuidAttribute = config.getLdapGuidAttribute();
@@ -3039,25 +3056,143 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
         	sessionFactory.getCache().evictCollection("org.kablink.teaming.domain.Group.members", groupId);
         }
 		
-		// Add this group to the list of sync results if the group membership changed.
-		if ( syncResults != null && (newM.size() > 0 || remM.size() > 0) )
+		ProfileModule profileMod;
+		Object tmp;
+		Group group = null;
+		
+		// Get the Group object from the group id.
+		profileMod = getProfileModule();
+		tmp = (Object) profileMod.getEntry( groupId );
+		if ( tmp instanceof Group )
 		{
-			ProfileModule	profileMod;
-			Object			tmp;
-			
-			// Get the Group object from the group id.
-			profileMod = getProfileModule();
-			tmp = (Object) profileMod.getEntry( groupId );
-			if ( tmp instanceof Group )
-			{
-				Group	group;
-				String	groupName;
-				
-				group = (Group) tmp; 
-				groupName = group.getName();
-				syncResults.addResult( groupName + " (" + group.getForeignName() + ")" );
-			}
+			group = (Group) tmp; 
 		}
+
+		// Add this group to the list of sync results if the group membership changed.
+		if ( syncResults != null && (newM.size() > 0 || remM.size() > 0) && group != null )
+		{
+			String	groupName;
+			
+			groupName = group.getName();
+			syncResults.addResult( groupName + " (" + group.getForeignName() + ")" );
+		}
+
+		// Get a list of all the principals that were added or removed from the group.
+		if ( (newM != null && newM.isEmpty() == false) || (remM != null && remM.isEmpty() == false) )  
+        {
+			Map<Long, Principal> principalsToIndex;
+			ArrayList<Long> usersRemovedFromGroup;
+			ArrayList<Long> groupsRemovedFromGroup;
+			ArrayList<Long> usersAddedToGroup;
+			ArrayList<Long> groupsAddedToGroup;
+			
+			// Create a list of the principals that need to be reindexed.
+			principalsToIndex = new HashMap<Long,Principal>();
+			
+			usersRemovedFromGroup = new ArrayList<Long>();
+			groupsRemovedFromGroup = new ArrayList<Long>();
+			usersAddedToGroup = new ArrayList<Long>();
+			groupsAddedToGroup = new ArrayList<Long>();
+
+			// Add the principals that were added to the group.
+			if ( newM != null && newM.isEmpty() == false )
+			{
+				Iterator iter;
+				
+				iter = newM.iterator();
+				while ( iter.hasNext() )
+				{
+					Membership nextMembership;
+					Long principalId;
+					
+					nextMembership = (Membership) iter.next();
+					principalId = nextMembership.getUserId();
+					
+			    	if ( logger.isDebugEnabled() )
+					{
+						Long nextGroupId;
+						Long nextUserId;
+						
+						nextGroupId = nextMembership.getGroupId();
+						nextUserId = nextMembership.getUserId();
+						logger.debug( "In updateMemberhsip(), next principal added to group, nextGroupId: " + String.valueOf( nextGroupId ) + "  nextUserId: " + String.valueOf( nextUserId ) );
+					}
+
+					if ( principalId != null )
+					{
+						Principal nextPrincipal;
+
+						// Add this principal to the list of principals to be re-indexed.
+						nextPrincipal = getProfileModule().getEntry( principalId );
+						principalsToIndex.put( principalId, nextPrincipal );
+						
+						// Keep track of the principals that were added to this group.
+						if ( (nextPrincipal instanceof UserPrincipal) || (nextPrincipal instanceof User) )
+							usersAddedToGroup.add( principalId );
+						else if ( (nextPrincipal instanceof GroupPrincipal) || (nextPrincipal instanceof Group) )
+							groupsAddedToGroup.add( principalId );
+					}
+				}
+			}
+
+			// Add the principals that were removed from the group.
+			if ( remM != null && remM.isEmpty() == false )
+			{
+				Iterator iter;
+				
+				iter = remM.iterator();
+				while ( iter.hasNext() )
+				{
+					Membership nextMembership;
+					Long principalId;
+					
+					nextMembership = (Membership) iter.next();
+					principalId = nextMembership.getUserId();
+					
+			    	if ( logger.isDebugEnabled() )
+					{
+						Long nextGroupId;
+						Long nextUserId;
+						
+						nextGroupId = nextMembership.getGroupId();
+						nextUserId = nextMembership.getUserId();
+						logger.debug( "In updateMemberhsip() next principal removed from group, nextGroupId: " + String.valueOf( nextGroupId ) + "  nextUserId: " + String.valueOf( nextUserId ) );
+					}
+
+					if ( principalId != null )
+					{
+						Principal nextPrincipal;
+
+						// Add this principal to the list of principals to be re-indexed.
+						nextPrincipal = getProfileModule().getEntry( principalId );
+						principalsToIndex.put( principalId, nextPrincipal );
+						
+						// Keep track of the principals that were removed from this group.
+						if ( (nextPrincipal instanceof UserPrincipal) || (nextPrincipal instanceof User) )
+							usersRemovedFromGroup.add( principalId );
+						else if ( (nextPrincipal instanceof GroupPrincipal) || (nextPrincipal instanceof Group) )
+							groupsRemovedFromGroup.add( principalId );
+					}
+				}
+			}
+			
+			// Update the disk quotas and file size limits for users and groups that were
+			// added or removed from the group.
+			if ( group != null )
+			{
+				Utils.updateDiskQuotasAndFileSizeLimits(
+						getProfileModule(),
+						group,
+						usersAddedToGroup,
+						usersRemovedFromGroup,
+						groupsAddedToGroup,
+						groupsRemovedFromGroup );
+			}
+
+			// Do we have anything to reindex?
+			if ( principalsToIndex.size() > 0 )
+				Utils.reIndexPrincipals( getProfileModule(), principalsToIndex );
+        }
     }
     /**
      * Create users.  
