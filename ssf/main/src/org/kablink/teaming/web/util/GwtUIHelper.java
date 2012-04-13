@@ -819,7 +819,7 @@ public class GwtUIHelper {
 		// What do we know about this binder?
 		Long binderId = binder.getId();
 		boolean binderIsWorkspace     = (binder instanceof Workspace);
-		boolean binderIsCalendar      = BinderHelper.isBinderCalendar(binder);
+		boolean binderIsCalendar      = BinderHelper.isBinderCalendar(bs,  binder);
 		boolean binderIsUserWorkspace = BinderHelper.isBinderUserWorkspace(binder);
 		boolean binderTracked         = BinderHelper.isBinderTracked(bs, binderId);
 		boolean personTracked         = BinderHelper.isPersonTracked(bs, binderId);

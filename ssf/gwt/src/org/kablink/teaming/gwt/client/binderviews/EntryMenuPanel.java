@@ -395,7 +395,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 		a.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				configureDropdownMenu.showRelativeToTarget(a);
+				configureDropdownMenu.showRelativeToTarget(m_configPanel);
 			}
 		});
 		fp.add(a);
@@ -525,7 +525,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 		a.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				filterDropdownMenu.showRelativeToTarget(a);
+				filterDropdownMenu.showRelativeToTarget(m_filterOptionsPanel);
 			}
 		});
 		fp.add(a);
