@@ -102,8 +102,8 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 		this.webdavPath = webdavPath;
 		this.name = name;
 		this.id = id;
-		this.createdDate = createdDate;
-		this.modifiedDate = modifiedDate;
+		this.createdDate = getMiltonSafeDate(createdDate);
+		this.modifiedDate = getMiltonSafeDate(modifiedDate);
 	}
 	
 	private void init(String webdavPath, FileAttachment fa) {

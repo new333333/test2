@@ -92,7 +92,7 @@ public class EipFileIdResource extends WebdavResource implements PropFindableRes
 	 */
 	@Override
 	public Date getModifiedDate() {
-		return fa.getModification().getDate();
+		return getMiltonSafeDate(fa.getModification().getDate());
 	}
 
 	/* (non-Javadoc)
@@ -167,7 +167,7 @@ public class EipFileIdResource extends WebdavResource implements PropFindableRes
 	 */
 	@Override
 	public Date getCreateDate() {
-		return fa.getCreation().getDate();
+		return getMiltonSafeDate(fa.getCreation().getDate());
 	}
 
 	/* (non-Javadoc)
