@@ -113,12 +113,16 @@ public class ReleaseInfo {
 		if(buildDate.length() == 0)
 			return null;
 		
-		SimpleDateFormat formatter =  new SimpleDateFormat("MMMM dd, yyyy");
+		// The build date is stored in the properties file as a string in one particular format,
+		// which may or may not be understood by the default locale of the OS on which this server
+		// is executing (e.g. Japanese/Chinese Windows Server). To avoid parse failure, we specify 
+		// US locale explicitly to instruct the system how the string should be parsed.
+		SimpleDateFormat formatter =  new SimpleDateFormat("MMMM dd, yyyy", Locale.US);
 		
 		try {
 			return formatter.parse(buildDate);
 		} catch (ParseException e) {
-			return null;
+			return null; // This shouldn't happen
 		}
 	}
 	
