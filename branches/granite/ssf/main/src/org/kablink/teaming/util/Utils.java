@@ -35,11 +35,13 @@ package org.kablink.teaming.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -49,13 +51,14 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -63,6 +66,7 @@ import org.kablink.util.Validator;
 
 
 public class Utils {
+	private static Log m_logger = LogFactory.getLog( Utils.class );
 	
 	//Return the account name of the super user (e.g., "admin")
 	public static String getAdminName() {
@@ -360,5 +364,174 @@ public class Utils {
 	//Routine to get the maximum number of allowable search results (maxHits)
 	public static int getSearchDefaultMaxHits() {
 		return SPropsUtil.getInt("search.maxNumberOfRequestedResults", ObjectKeys.SEARCH_MAX_HITS_LIMIT);
+	}
+
+	/**
+	 * Do a reindex on all the principals in the given list
+	 */
+	public static void reIndexPrincipals( ProfileModule profileModule, Map<Long,Principal> principalsToIndex )
+	{
+		List<Principal> users;
+		List<Principal> groups;
+		List<Long> gIds;
+		Set<Principal> groupUsers;
+		Set<Long> groupUserIds;
+		ProfileDao profileDao;
+
+		if ( principalsToIndex != null && profileModule != null )
+		{
+			m_logger.debug( "Utils.reIndexPrincipals() - principalsToIndex.size(): " + String.valueOf( principalsToIndex.size() ) );
+			SimpleProfiler.start( "Utils.reIndexPrincipals() - get list of users" );
+			try
+			{
+				profileDao = (ProfileDao) SpringContextUtil.getBean( "profileDao" );
+	
+				users = new ArrayList<Principal>();
+				groups = new ArrayList<Principal>();
+				gIds = new ArrayList<Long>();
+				for (Map.Entry<Long,Principal> me : principalsToIndex.entrySet())
+				{
+					Principal nextPrincipal;
+					
+					nextPrincipal = me.getValue();
+					if ( (nextPrincipal instanceof User) || (nextPrincipal instanceof UserPrincipal) )
+						users.add( nextPrincipal );
+					
+					if ( (nextPrincipal instanceof Group) || (nextPrincipal instanceof GroupPrincipal) )
+					{
+						groups.add( nextPrincipal );
+						gIds.add( nextPrincipal.getId() );
+					}
+				}
+			}
+			finally
+			{
+				SimpleProfiler.stop( "Utils.reIndexPrincipals() - get list of users" );
+			}
+	
+			// Re-index the list of users and all binders "owned" by them
+			// reindex the profile entry for each user
+			{
+				String tmp;
+				
+				groupUsers = new HashSet<Principal>();
+				groupUserIds = new HashSet<Long>();
+
+				SimpleProfiler.start( "Utils.reIndexPrincipals() - call profileDao.explodeGroups()" );
+				try
+				{
+					groupUserIds.addAll( profileDao.explodeGroups( gIds, RequestContextHolder.getRequestContext().getZoneId() ) );
+				}
+				finally
+				{
+					SimpleProfiler.stop( "Utils.reIndexPrincipals() - call profileDao.explodeGroups()" );
+				}
+				
+				SimpleProfiler.start( "Utils.reIndexPrincipals() - call getPrincipals()" );
+				try
+				{
+					groupUsers.addAll( profileModule.getPrincipals( groupUserIds ) );
+					groupUsers.addAll( users );
+				}
+				finally
+				{
+					SimpleProfiler.stop( "Utils.reIndexPrincipals() - call getPrincipals()" );
+				}
+				
+				tmp = "Utils.reIndexPrincipals() - call indexEntries() size: " + String.valueOf( groupUsers.size() );
+				SimpleProfiler.start( tmp );
+				try
+				{
+					profileModule.indexEntries( groupUsers );
+				}
+				finally
+				{
+					SimpleProfiler.stop( tmp );
+				}
+			}
+			
+			// set up a background job that will reindex all of the binders owned by all of these users.				
+			//Re-index all "personal" binders owned by this user (i.e., binders under the profiles binder)
+			String tmp = "Utils.reIndexPrincipals() - call reindexPersonalUserOwnedBinders() size: " + String.valueOf( groupUsers.size() );
+			SimpleProfiler.start( tmp );
+			try
+			{
+				profileModule.reindexPersonalUserOwnedBinders( groupUsers );
+			}
+			finally
+			{
+				SimpleProfiler.stop( tmp );
+			}
+		}
+	}
+
+	
+	/**
+	 * Update the disk quotas and file size limits for the users/groups that have
+	 * been added/removed from the given group.
+	 * 
+	 * @param profileModule
+	 * @param group
+	 * @param usersAddedToGroup
+	 * @param usersRemovedFromGroup
+	 * @param groupsAddedToGroup
+	 * @param groupsRemovedFromGroup
+	 */
+	public static void updateDiskQuotasAndFileSizeLimits(
+			ProfileModule profileModule,
+			Group group,
+			ArrayList<Long> usersAddedToGroup,
+			ArrayList<Long> usersRemovedFromGroup,
+			ArrayList<Long> groupsAddedToGroup,
+			ArrayList<Long> groupsRemovedFromGroup )
+	{
+		if ( group == null )
+			return;
+		
+		m_logger.debug( "Utils.updateDiskQuotasAndFileSizeLimits(), group: " + group.getTitle() );
+		
+		// Update the disk quotas for users that were added to the group.
+		SimpleProfiler.start( "Utils.updateDiskQuotasAndFileSizeLimits() - setUserGroupDiskQuotas()." );
+		try
+		{
+			profileModule.setUserGroupDiskQuotas( usersAddedToGroup, group );
+		}
+		finally
+		{
+			SimpleProfiler.stop( "Utils.updateDiskQuotasAndFileSizeLimits() - setUserGroupDiskQuotas()." );
+		}
+		
+		// Update the disk quotas for users that were removed from the group.
+		SimpleProfiler.start( "Utils.updateDiskQuotasAndFileSizeLimits() - deleteUserGroupDiskQuotas()." );
+		try
+		{
+			profileModule.deleteUserGroupDiskQuotas( usersRemovedFromGroup, group );
+		}
+		finally
+		{
+			SimpleProfiler.stop( "Utils.updateDiskQuotasAndFileSizeLimits() - deleteUserGroupDiskQuotas()." );
+		}
+		
+		// Update the file size limits for users that were added to the group.
+		SimpleProfiler.start( "Utils.updateDiskQuotasAndFileSizeLimits() - setUserGroupFileSizeLimits()." );
+		try
+		{
+			profileModule.setUserGroupFileSizeLimits( usersAddedToGroup, group );
+		}
+		finally
+		{
+			SimpleProfiler.stop( "Utils.updateDiskQuotasAndFileSizeLimits() - setUserGroupFileSizeLimits()." );
+		}
+		
+		// Update the file size limits for users that were removed from the group.
+		SimpleProfiler.start( "Utils.updateDiskQuotasAndFileSizeLimits() - deleteUserGroupFileSizeLimits()." );
+		try
+		{
+			profileModule.deleteUserGroupFileSizeLimits( usersRemovedFromGroup, group );
+		}
+		finally
+		{
+			SimpleProfiler.stop( "Utils.updateDiskQuotasAndFileSizeLimits() - deleteUserGroupFileSizeLimits()." );
+		}
 	}
 }
