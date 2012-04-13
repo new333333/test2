@@ -85,8 +85,8 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 		this.entityIdentifier = entityIdentifier;
 		this.title = title;
 		this.path = path;
-		this.createdDate = createdDate;
-		this.modifiedDate = modifiedDate;
+		this.createdDate = getMiltonSafeDate(createdDate);
+		this.modifiedDate = getMiltonSafeDate(modifiedDate);
 		this.library = library;
 		this.mirrored = mirrored;
 	}

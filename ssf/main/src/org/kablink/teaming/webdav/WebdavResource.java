@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.webdav;
 
+import java.util.Date;
+
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.groovy.GroovyScriptService;
@@ -94,6 +96,18 @@ public abstract class WebdavResource extends AbstractAllModulesInjected implemen
 		return null;
 	}
 
+	public java.util.Date getMiltonSafeDate(java.util.Date date) {
+		// IMPORTANT: Milton fails to serialize these derived date types in SQL package. 
+		// We need plain java.util.Date. Specifically, with java.util.Date value, Milton
+		// produces correct GMT string representation for date value (eg. Fri Apr 13 00:00:00 GMT 2012). 
+		// However, with java.sql.Date or java.sql.Timestamp, it creates one without time zone 
+		// (e.g. 2012-01-12 13:41:00.83) which causes WebDAV client to fail on Windows 7.
+		if((date instanceof java.sql.Date) || (date instanceof java.sql.Timestamp))
+			return new Date(date.getTime());
+		else
+			return date;
+	}
+	
 	protected GroovyScriptService getGroovyScriptService() {
 		return (GroovyScriptService) SpringContextUtil.getBean("groovyScriptService");
 	}

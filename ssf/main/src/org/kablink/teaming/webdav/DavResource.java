@@ -89,7 +89,7 @@ public class DavResource extends WebdavCollectionResource implements PropFindabl
 	 */
 	@Override
 	public Date getCreateDate() {
-		return ReleaseInfo.getBuildDate(); // This is as good as any other random date
+		return getMiltonSafeDate(ReleaseInfo.getBuildDate()); // This is as good as any other random date
 	}
 
 	/* (non-Javadoc)
