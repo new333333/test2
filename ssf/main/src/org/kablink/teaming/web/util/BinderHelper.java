@@ -110,6 +110,7 @@ import org.kablink.teaming.domain.SSBlobSerializable;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.TemplateBinder;
+import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
@@ -4826,34 +4827,44 @@ public class BinderHelper {
 	 * Make sure binder title is unique.
 	 * 
 	 * If title is not unique in the parent binder, then change it to
-	 * be unique by adding '(n)' to the name.
+	 * be unique by adding '(n)' to the name. However, if caller specified <code>requiredTitle</code>,
+	 * then it must be possible to use this specified value as the title. Otherwise, it is an error.
 	 * 
 	 * @param title
 	 * @param parent
 	 * 
 	 * @return
 	 */
-    public static String getUniqueBinderTitleInParent(String title, Binder parent) {
+    public static String getUniqueBinderTitleInParent(String title, Binder parent, String requiredTitle) throws TitleException {
     	List<Binder> subBinders = parent.getBinders();
     	Set<String> binderTitles = new HashSet<String>();
     	for (Binder b : subBinders) {
     		binderTitles.add(b.getTitle().toLowerCase());
     	}
-    	int maxTries = 100;
-    	Pattern p = Pattern.compile("(^.*\\()([0-9]+)\\)$", Pattern.CASE_INSENSITIVE);
-    	while (binderTitles.contains(title.toLowerCase())) {
-    		//There is another binder with this title. Try the next title higher
-    		Matcher m = p.matcher(title);
-    		if (m.find()) {
-    			String t1 = m.group(1);
-    			String n = m.group(2);
-    			Integer n2 = Integer.valueOf(n) + 1;
-    			title = t1 + String.valueOf(n2) + ")";		//Rebuild the title with the (number) incremented
-    		} else {
-    			title = title + "(2)";
-    		}
-    		if (--maxTries <= 0) break;
+    	if(Validator.isNotNull(requiredTitle)) {
+    		// required title specified
+    		if(binderTitles.contains(requiredTitle.toLowerCase()))
+    			throw new TitleException(requiredTitle); // the title is already used
+    		else
+    			return requiredTitle; // the title is available
     	}
-    	return title;
+    	else {
+	    	int maxTries = 100;
+	    	Pattern p = Pattern.compile("(^.*\\()([0-9]+)\\)$", Pattern.CASE_INSENSITIVE);
+	    	while (binderTitles.contains(title.toLowerCase())) {
+	    		//There is another binder with this title. Try the next title higher
+	    		Matcher m = p.matcher(title);
+	    		if (m.find()) {
+	    			String t1 = m.group(1);
+	    			String n = m.group(2);
+	    			Integer n2 = Integer.valueOf(n) + 1;
+	    			title = t1 + String.valueOf(n2) + ")";		//Rebuild the title with the (number) incremented
+	    		} else {
+	    			title = title + "(2)";
+	    		}
+	    		if (--maxTries <= 0) break;
+	    	}
+	    	return title;
+    	}
     }
 }

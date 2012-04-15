@@ -1237,7 +1237,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   	//Only need to update this on top level of binder tree.  Children relative to the same binder
 		//remove title from old parent
     	getCoreDao().updateFileName(source.getParentBinder(), source, source.getTitle(), null);
-		if (source.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(source.getParentBinder(), source, source.getNormalTitle(), null);		
+		if (source.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(source.getParentBinder(), source, source.getNormalTitle(), null);
+		// Let's check if the caller also wants to change the title of the binder while moving it.
+		String newTitle = (ctx==null)?null:(String)ctx.get(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE);
+		if(Validator.isNotNull(newTitle))
+			source.setTitle(newTitle);
 		source.move(destination);
     	//now add name to new parent 
 		if (destination.isUniqueTitles()) getCoreDao().updateTitle(destination, source, null, source.getNormalTitle());   	
@@ -1320,9 +1324,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         final Map ctx = new HashMap();
         if (options != null) ctx.putAll(options);
     	copyBinder_setCtx(source, destination, ctx);
-     	final Binder binder = copyBinder_create(source, ctx);
 		//Make sure there is no other binder with the same name in the parent.
-     	String newTitle = BinderHelper.getUniqueBinderTitleInParent(binder.getTitle(), destination);
+     	String newTitle = BinderHelper.getUniqueBinderTitleInParent(source.getTitle(), destination, (options==null)?null:(String)options.get(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE));
+     	final Binder binder = copyBinder_create(source, ctx);
     	if (!newTitle.equals(binder.getTitle())) {
     		//There was a conflict, so update the title and the normalized title
     		binder.setTitle(newTitle);

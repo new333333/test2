@@ -44,6 +44,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -284,8 +285,10 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 			ConflictException {
 		try {
 			Binder newBinder = null;
+			HashMap options = new HashMap();
+			options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, name);
 			if(toCollection instanceof FolderResource) { // Copy a folder into another folder
-				newBinder = getBinderModule().copyBinder(id, ((FolderResource) toCollection).getEntityIdentifier().getEntityId(), true, null);
+				newBinder = getBinderModule().copyBinder(id, ((FolderResource) toCollection).getEntityIdentifier().getEntityId(), true, options);
 			}
 			else if(toCollection instanceof WorkspaceResource) { // Copy a folder into a workspace
 				EntityIdentifier toCollectionEntityIdentifier = ((WorkspaceResource)toCollection).getEntityIdentifier();
@@ -293,22 +296,15 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 					throw new BadRequestException(this, "Can not copy a folder into the profiles binder");
 				}
 				else {
-					newBinder = getBinderModule().copyBinder(id, toCollectionEntityIdentifier.getEntityId(), true, null);
+					newBinder = getBinderModule().copyBinder(id, toCollectionEntityIdentifier.getEntityId(), true, options);
 				}
 			}
 			else {
 				throw new BadRequestException(this, "Destination is an unknown type '" + toCollection.getClass().getName() + "'. Must be a binder resource.");
 			}
-			
-			// We may need to adjust the name.
-			renameBinder(newBinder, name);
 		}
 		catch(AccessControlException e) {
 			throw new NotAuthorizedException(this);
-		} catch (WriteFilesException e) {
-			throw new WebdavException(e.getLocalizedMessage());
-		} catch (WriteEntryDataException e) {
-			throw new WebdavException(e.getLocalizedMessage());
 		}
 	}
 
@@ -320,27 +316,27 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 			throws ConflictException, NotAuthorizedException,
 			BadRequestException {
 		try {
-			Folder folder = resolveFolder();
 			if(rDest instanceof BinderResource) {
+				Folder folder = resolveFolder();
 				EntityIdentifier destBinderIdentifier = ((BinderResource) rDest).getEntityIdentifier();
 				if(folder.getParentBinder() != null && folder.getParentBinder().getId().equals(destBinderIdentifier.getEntityId())) {
 					// This is mere renaming of this folder.
 					renameBinder(folder, name);
 				}
 				else { // This is a move
+					HashMap options = new HashMap();
+					options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, name);
 					if(rDest instanceof FolderResource) { // Move a folder into another folder
-						getBinderModule().moveBinder(id, destBinderIdentifier.getEntityId(), null);
+						getBinderModule().moveBinder(id, destBinderIdentifier.getEntityId(), options);
 					}
 					else { // Move a folder into a workspace
 						if(EntityType.profiles == destBinderIdentifier.getEntityType()) {
 							throw new BadRequestException(this, "Can not copy a folder into the profiles binder");
 						}
 						else {
-							getBinderModule().moveBinder(id, destBinderIdentifier.getEntityId(), null);
+							getBinderModule().moveBinder(id, destBinderIdentifier.getEntityId(), options);
 						}
 					}
-					// We may need to adjust the name.
-					renameBinder(folder, name);
 				}
 			}
 			else {
