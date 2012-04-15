@@ -34,12 +34,14 @@
 package org.kablink.teaming.webdav;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -227,9 +229,9 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 					throw new BadRequestException(this, "Can not copy a workspace into the profiles binder");
 				}
 				else {
-					Binder newBinder = getBinderModule().copyBinder(id, toCollectionEntityIdentifier.getEntityId(), true, null);
-					// WE may need to adjust the name.
-					renameBinder(newBinder, name);
+					HashMap options = new HashMap();
+					options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, name);
+					Binder newBinder = getBinderModule().copyBinder(id, toCollectionEntityIdentifier.getEntityId(), true, options);
 				}
 			}
 			else {
@@ -238,10 +240,6 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 		}
 		catch(AccessControlException e) {
 			throw new NotAuthorizedException(this);
-		} catch (WriteFilesException e) {
-			throw new WebdavException(e.getLocalizedMessage());
-		} catch (WriteEntryDataException e) {
-			throw new WebdavException(e.getLocalizedMessage());
 		}
 	}
 
@@ -253,32 +251,30 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 			throws ConflictException, NotAuthorizedException,
 			BadRequestException {
 		try {
-			Workspace workspace = resolveWorkspace();
-			if(rDest instanceof BinderResource) {
-				EntityIdentifier destBinderIdentifier = ((BinderResource) rDest).getEntityIdentifier();
-				if(workspace.getParentBinder() != null && workspace.getParentBinder().getId().equals(destBinderIdentifier.getEntityId())) {
+			if(rDest instanceof WorkspaceResource) {
+				Workspace workspace = resolveWorkspace();
+				EntityIdentifier destWorkspaceIdentifier = ((WorkspaceResource) rDest).getEntityIdentifier();
+				if(workspace.getParentBinder() != null && workspace.getParentBinder().getId().equals(destWorkspaceIdentifier.getEntityId())) {
 					// This is mere renaming of this workspace.
 					renameBinder(workspace, name);
 				}
 				else { // This is a move
-					if(rDest instanceof FolderResource) { 
-						// Moving a workspace into a folder is not allowed.
-						throw new BadRequestException(this, "Can not move a workspace into a folder");
+					if(EntityType.profiles == destWorkspaceIdentifier.getEntityType()) {
+						throw new BadRequestException(this, "Can not move a workspace into the profiles binder");
 					}
-					else { // Move a workspace into another workspace
-						if(EntityType.profiles == destBinderIdentifier.getEntityType()) {
-							throw new BadRequestException(this, "Can not move a workspace into the profiles binder");
-						}
-						else {
-							getBinderModule().moveBinder(id, destBinderIdentifier.getEntityId(), null);
-							// We may need to adjust the name.
-							renameBinder(workspace, name);
-						}
+					else {
+						HashMap options = new HashMap();
+						options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, name);
+						getBinderModule().moveBinder(id, destWorkspaceIdentifier.getEntityId(), options);
 					}
-				}
+				}				
+			}
+			else if(rDest instanceof FolderResource) {
+				// Moving a workspace into a folder is not allowed.
+				throw new BadRequestException(this, "Can not move a workspace into a folder");
 			}
 			else {
-				throw new BadRequestException(this, "Destination is an unknown type '" + rDest.getClass().getName() + "'. Must be a workspace resource.");				
+				throw new BadRequestException(this, "Destination is an unknown type '" + rDest.getClass().getName() + "'. Must be a workspace resource.");								
 			}
 		}
 		catch(AccessControlException e) {

@@ -1661,7 +1661,7 @@ public class ExportHelper {
 			//Make sure there is no other binder with the same name in the destination binder.
 			String title = doc.getRootElement().attributeValue("title", "");
 			if (!title.equals("")) {
-		     	String newTitle = BinderHelper.getUniqueBinderTitleInParent(title, parentBinder);
+		     	String newTitle = BinderHelper.getUniqueBinderTitleInParent(title, parentBinder, null);
 		    	if (!newTitle.equals(title)) {
 		    		//There was a conflict, so update the title to the unique one
 		    		doc.getRootElement().addAttribute("title", newTitle);
