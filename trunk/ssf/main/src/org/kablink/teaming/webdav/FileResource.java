@@ -342,18 +342,8 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 					else { 
 						// Make sure that the current folder doesn't already contain a file with the new name.
 						if(getFolderModule().getLibraryFolderEntryByFileName(entry.getParentFolder(), name) == null) {
-							// Copy it in the current folder by creating a new entry using FolderResource.
-							InputStream is = getFileModule().readFile(entry.getParentBinder(), entry, fa);
-							try {
-								((FolderResource)toCollection).createNewWithModDate(name, is, fa.getModification().getDate());
-							} catch (IOException e) {
-								throw new WebdavException(e);
-							}
-							finally {
-								try {
-									is.close();
-								} catch (IOException ignore) {}
-							}							
+							// Copy the file in the current folder by creating a new entry with it.
+							copyFileToNewEntry(entry, fa, (FolderResource)toCollection);
 						}
 						else {
 							throw new BadRequestException(this, "Can not copy file '" + id + "' because there is already a file with the same name in this folder");
@@ -488,5 +478,25 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 		} catch (WriteEntryDataException e) {
 			throw new WebdavException(e.getLocalizedMessage());
 		}
+	}
+	
+	/*
+	 * Copy the file by creating a new entry in the folder represented by <code>destFolderResource</code>
+	 * and attaching to it.
+	 */
+	private void copyFileToNewEntry(FolderEntry entry, FileAttachment fa, FolderResource destFolderResource) 
+			throws ConflictException, NotAuthorizedException, BadRequestException, WebdavException {
+		// Copy it iby creating a new entry using FolderResource.
+		InputStream is = getFileModule().readFile(entry.getParentBinder(), entry, fa);
+		try {
+			((FolderResource)destFolderResource).createNewWithModDate(name, is, fa.getModification().getDate());
+		} catch (IOException e) {
+			throw new WebdavException(e);
+		}
+		finally {
+			try {
+				is.close();
+			} catch (IOException ignore) {}
+		}							
 	}
 }
