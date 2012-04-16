@@ -216,10 +216,12 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 	public Resource createNew(String newName, InputStream inputStream,
 			Long length, String contentType) throws IOException,
 			ConflictException, NotAuthorizedException, BadRequestException {
-		return createNewWithModDate(newName, inputStream, null);
+		FolderEntry entry = createNewWithModDate(newName, inputStream, null);
+		
+		return makeResourceFromFile(entry.getFileAttachment(newName));
 	}
 	
-	public Resource createNewWithModDate(String newName, InputStream inputStream, Date modDate) throws IOException,
+	public FolderEntry createNewWithModDate(String newName, InputStream inputStream, Date modDate) throws IOException,
 			ConflictException, NotAuthorizedException, BadRequestException {
 		resolveFolder();
 		
@@ -239,7 +241,7 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 				// We need to create a new entry
 				if(logger.isDebugEnabled())
 					logger.debug("createNew: creating new file '" + newName + "' + in folder " + id);
-				FolderUtils.createLibraryEntry(folder, newName, inputStream, modDate, true);
+				entry = FolderUtils.createLibraryEntry(folder, newName, inputStream, modDate, true);
 			}
 		}
 		catch (AccessControlException e) {
@@ -252,7 +254,7 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 			throw new WebdavException(e.getLocalizedMessage());
 		}
 		
-		return childFile(newName);
+		return entry;
 	}
 
 	/* (non-Javadoc)
