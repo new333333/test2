@@ -44,6 +44,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment;
@@ -352,16 +353,21 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 				}
 				else { // The file is being copied to another folder.
 					Folder destFolder = ((FolderResource)toCollection).getFolder();
-					// Make sure that the destination is a mirrored folder.
+					// Make sure that the destination is a library folder.
 					if(destFolder.isLibrary()) {
 						// Make sure that the destination folder doesn't already contain a file with the new name.
 						if(getFolderModule().getLibraryFolderEntryByFileName(destFolder, name) == null) {
-							// Copy the file/entry
-							FolderEntry destEntry = getFolderModule().copyEntry(entry.getParentBinder().getId(), entry.getId(), toFolderId, null);
-							if(!sourceFileName.equals(name)) {
-								// The source and destination have different names. We need to rename the destination.
-								FileAttachment destFa = destEntry.getFileAttachment(sourceFileName);
-								renameFile(destEntry, destFa, name);
+							if(entry.getFileAttachmentsCount() > 1) {
+								// This entry contains more than one file, therefore, copying the entire entry is no good
+								// since it would result in multiple files being copied to the user's surprise.
+								// We will create a new entry in the destination and copy the select file.
+								copyFileToNewEntry(entry, fa, (FolderResource)toCollection);
+							}
+							else {
+								// This is the only file contained in the entry, therefore, we can safely copy the entire entry.
+								HashMap options = new HashMap();
+								options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, name);
+								FolderEntry destEntry = getFolderModule().copyEntry(entry.getParentBinder().getId(), entry.getId(), toFolderId, options);
 							}
 						}
 						else {
@@ -372,8 +378,6 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 						// The destination folder is not a library folder. 
 						throw new BadRequestException(this, "Can not copy file '" + id + "' because the destination folder '" + destFolder.getId() + "' is not a library folder");						
 					}
-
-						
 				}
 			}
 			else {
@@ -423,19 +427,33 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 				}
 				else { // The file is being moved to another folder.
 					Folder destFolder = destFolderResource.getFolder();
-					// Make sure that the destination is a mirrored folder.
+					// Make sure that the destination is a library folder.
 					if(destFolder.isLibrary()) {
 						// Make sure that the destination folder doesn't already contain a file with the new name.
 						if(getFolderModule().getLibraryFolderEntryByFileName(destFolder, name) == null) {
-							// Move the file/entry
-							getFolderModule().moveEntry(entry.getParentBinder().getId(), entry.getId(), destFolderId, null);
-							if(!fa.getFileItem().getName().equals(name)) {
-								// The source and destination have different names. We need to rename the destination.
-								renameFile(entry, fa, name);
+							if(entry.getFileAttachmentsCount() > 1) {
+								// This entry contains more than one file, therefore, moving the entire entry is no good
+								// since it would result in multiple files being moved to the user's surprise.
+								// On top of that, silently moving just one file out of this entry into another doesn't
+								// seem as reasonable as the case with copy, because unlike partial copy, partial move alters 
+								// the state of the source entry. The fact that multiple files were attached to the same entry
+								// (mostly likely through browser interface) implies that there are some logical relationship 
+								// between those files, which can not be shown/expressed through WebDAV interface.
+								// For that reason, we will not allow partial move through WebDAV interface. If that's 
+								// indeed the intention of the user, the user will have to do that through browser interface
+								// in the same way that WebDAV interface doesn't allow a way to attach multiple files to
+								// the same entry.
+								throw new BadRequestException(this, "Can not move file '" + id + "' because the enclosing entry represents more than one file");
 							}
-							// Finally, we need to adjust the state of this FileResource to properly reflect the post-operation state.
-							// Reload file attachment object just in case.
-							init(destFolderResource.getWebdavPath() + "/" + name, getFileModule().getFileAttachmentById(id));
+							else {
+								// This is the only file contained in the entry, therefore, we can safely move the entire entry.
+								HashMap options = new HashMap();
+								options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, name);
+								getFolderModule().moveEntry(entry.getParentBinder().getId(), entry.getId(), destFolderId, options);
+								// Finally, we need to adjust the state of this FileResource to properly reflect the post-operation state.
+								// Reload file attachment object just in case.
+								init(destFolderResource.getWebdavPath() + "/" + name, getFileModule().getFileAttachmentById(id));
+							}
 						}
 						else {
 							throw new BadRequestException(this, "Can not move file '" + id + "' into the folder '" + destFolderId + "' because there is already a file with the same name in the destination folder");
@@ -499,4 +517,5 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 			} catch (IOException ignore) {}
 		}							
 	}
+	
 }
