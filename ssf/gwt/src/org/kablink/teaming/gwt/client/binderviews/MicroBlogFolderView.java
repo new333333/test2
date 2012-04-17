@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.Map;
 
-import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -52,10 +51,6 @@ import com.google.gwt.dom.client.Style.Unit;
  * @author drfoster@novell.com
  */
 public class MicroBlogFolderView extends DataTableFolderViewBase {
-	// The following define the indexes into a VibeVerticalPanel of the
-	// additional panel that makes up a micro-blog view.
-	private final static int BINDER_OWNER_AVATAR_PANEL_INDEX	= ENTRY_MENU_PANEL_INDEX;	// Inserted before the entry menu.
-
 	/*
 	 * Class constructor.
 	 * 
@@ -162,7 +157,7 @@ public class MicroBlogFolderView extends DataTableFolderViewBase {
 	}
 
 	/*
-	 * Asynchronously loads the BinderOwnerAvatarPanel.
+	 * Asynchronously loads the micro-blog folder's content.
 	 */
 	private void loadPart1Async() {
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
@@ -175,24 +170,11 @@ public class MicroBlogFolderView extends DataTableFolderViewBase {
 	}
 	
 	/*
-	 * Synchronously loads the BinderOwnerAvatarPanel.
+	 * Synchronously loads the micro-blog folder's content.
 	 */
 	private void loadPart1Now() {
-		BinderOwnerAvatarPanel.createAsync(this, getFolderInfo(), this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-				viewReady();
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, BINDER_OWNER_AVATAR_PANEL_INDEX);
-				viewReady();
-				populateContent();
-			}
-		});
+		viewReady();
+		populateContent();
 	}
 
 	/**

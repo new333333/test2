@@ -38,6 +38,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
+import org.kablink.teaming.gwt.client.binderviews.FolderViewBase.FolderPanels;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
@@ -113,6 +114,30 @@ public class TaskFolderView extends FolderViewBase
 	@Override
 	public void constructView() {
 		loadPart1Async();
+	}
+
+	/**
+	 * Returns true for panels that are to be included and false
+	 * otherwise.
+	 * 
+	 * Overrides the FolderViewBase.includePanel() method.
+	 * 
+	 * @param folderPanel
+	 * 
+	 * @return
+	 */
+	@Override
+	protected boolean includePanel(FolderPanels folderPanel) {
+		boolean reply;
+
+		// In the task folder view, we don't show the binder owner
+		// avatar panels.
+		switch (folderPanel) {
+		case BINDER_OWNER_AVATAR:  reply = false; break;
+		default:                   reply = true;  break;
+		}
+		
+		return reply;
 	}
 
 	/*

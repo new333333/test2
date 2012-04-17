@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.binderviews;
 
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.binderviews.FolderViewBase.FolderPanels;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 import com.google.gwt.core.client.GWT;
@@ -97,6 +98,30 @@ public class FileFolderView extends DataTableFolderViewBase {
 		});
 	}
 	
+	/**
+	 * Returns true for panels that are to be included and false
+	 * otherwise.
+	 * 
+	 * Overrides the FolderViewBase.includePanel() method.
+	 * 
+	 * @param folderPanel
+	 * 
+	 * @return
+	 */
+	@Override
+	protected boolean includePanel(FolderPanels folderPanel) {
+		boolean reply;
+
+		// In the file folder view, we don't show the binder owner
+		// avatar panels.
+		switch (folderPanel) {
+		case BINDER_OWNER_AVATAR:  reply = false; break;
+		default:                   reply = true;  break;
+		}
+		
+		return reply;
+	}
+
 	/**
 	 * Called from the base class to reset the content of this
 	 * file folder view.
