@@ -75,7 +75,7 @@
     
     <servlet>
         <servlet-name>milton</servlet-name>
-        <servlet-class>com.bradmcevoy.http.MiltonServlet</servlet-class>        
+        <servlet-class>org.kablink.teaming.webdav.servlet.WebdavServlet</servlet-class>        
         <init-param>
             <param-name>resource.factory.factory.class</param-name>
             <param-value>org.kablink.teaming.webdav.WebdavResourceFactoryFactory</param-value>
