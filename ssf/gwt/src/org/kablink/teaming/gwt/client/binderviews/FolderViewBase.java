@@ -53,13 +53,11 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
-import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -85,7 +83,8 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	private List<ToolPanelBase>					m_toolPanels;			// List of the various tools panels that appear in the view.
 	private String								m_styleBase;			// Base name for the view specific styles to use for this view.
 	private VibeFlowPanel						m_flowPanel;			// The flow panel used to hold the view specific content of the view.
-	private VibeVerticalPanel					m_verticalPanel;		// The vertical panel that holds all components of the view, both common and view specific.
+	private VibeFlowPanel						m_verticalFlowPanel;	// The flow panel that holds all components of the view, both common and view specific that flow vertically down the view.
+	private Widget[]							m_verticalPanels;		// Tracks the widgets added as vertical panels.
 
 	// Control whether a FilterPanel can ever be instantiated.  true
 	// and they can and false and they can't.
@@ -105,9 +104,10 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	public final static int ENTRY_MENU_PANEL_INDEX		= 4;
 	public final static int VIEW_CONTENT_PANEL_INDEX	= 5;
 	public final static int FOOTER_PANEL_INDEX			= 6;
+	public final static int MAX_PANELS					= (FOOTER_PANEL_INDEX + 1);
 
 	public final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of a the data table widget.
-	public final static int NO_VSCROLL_ADJUST			=  28;	// Height adjustment required so there's no vertical scroll bar by default.
+	public final static int NO_VSCROLL_ADJUST			=  20;	// Height adjustment required so there's no vertical scroll bar by default.
 
 	/*
 	 * Enumeration that identifies the various optional panels that
@@ -155,7 +155,6 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	final public boolean                          isProfilesRootWS()     {return m_folderInfo.isBinderProfilesRootWS();}	//
 	final public boolean                          isTrash()              {return m_folderInfo.isBinderTrash();         }	//
 	final public FolderDisplayDataRpcResponseData getFolderDisplayData() {return m_folderDisplayData;                  }	//
-	final public List<ToolPanelBase>              getToolPanels()        {return m_toolPanels;                         }	//
 	final public Long                             getFolderId()          {return m_folderInfo.getBinderIdAsLong();     }	//
 	final public VibeFlowPanel                    getFlowPanel()         {return m_flowPanel;                          }	// Flow panel holding the view's content (no toolbars, ...)
 
@@ -163,9 +162,8 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Returns a Widget to use for tool panels that aren't used.
 	 */
 	private Widget buildToolPanelPlaceholder() {
-		InlineLabel reply = new InlineLabel();
-		reply.removeStyleName("gwt-InlineLabel");
-		return reply;
+		// We don't use a place holder for empty tools.
+		return null;
 	}
 	
 	/*
@@ -203,17 +201,16 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 
 		// ...create a vertical panel to holds the layout that flows
 		// ...down the view...
-		m_verticalPanel = new VibeVerticalPanel();
-		m_verticalPanel.addStyleName(m_styleBase + "VerticalPanel");
+		m_verticalFlowPanel = new VibeFlowPanel();
+		m_verticalFlowPanel.addStyleName(m_styleBase + "VerticalPanel");
 	
 		// ...create a flow panel to put the main content...
 		m_flowPanel = new VibeFlowPanel();
 		m_flowPanel.addStyleName(m_styleBase + "FlowPanel");
 		
 		// ...and finally, tie everything together.
-		m_verticalPanel.add(m_flowPanel);
-		m_verticalPanel.addBottomPad();
-		mainPanel.add(m_verticalPanel);
+		m_verticalPanels[VIEW_CONTENT_PANEL_INDEX] = m_flowPanel;
+		mainPanel.add(m_verticalFlowPanel);
 		
 		return mainPanel;
 	}
@@ -247,7 +244,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * @return
 	 */
 	public EntryMenuPanel getEntryMenuPanel() {
-		for (ToolPanelBase tpb:  getToolPanels()) {
+		for (ToolPanelBase tpb:  m_toolPanels) {
 			if (tpb instanceof EntryMenuPanel) {
 				return ((EntryMenuPanel) tpb);
 			}
@@ -261,7 +258,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * @return
 	 */
 	public FooterPanel getFooterPanel() {
-		for (ToolPanelBase tpb:  getToolPanels()) {
+		for (ToolPanelBase tpb:  m_toolPanels) {
 			if (tpb instanceof FooterPanel) {
 				return ((FooterPanel) tpb);
 			}
@@ -289,8 +286,12 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 */
 	private void initDataMembers() {
 		// Allocate a List<ToolPanelBase> to track the tool panels
-		// created for the view.
+		// created for the view...
 		m_toolPanels = new ArrayList<ToolPanelBase>();
+		
+		// ...and allocate a Widget[] to track the panels in
+		// ...the view.
+		m_verticalPanels = new Widget[MAX_PANELS];
 	}
 
 	/**
@@ -301,7 +302,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 */
 	final public void insertToolPanel(ToolPanelBase tpb, int tpIndex) {
 		m_toolPanels.add(tpb);
-		m_verticalPanel.insert(tpb, tpIndex);
+		m_verticalPanels[tpIndex] = tpb;
 	}
 	
 	/**
@@ -311,7 +312,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * @param tpIndex
 	 */
 	final public void insertToolPanelPlaceholder(int tpIndex) {
-		m_verticalPanel.insert(buildToolPanelPlaceholder(), tpIndex);
+		m_verticalPanels[tpIndex] = buildToolPanelPlaceholder();
 	}
 	
 	/*
@@ -600,6 +601,15 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Loads the display data information for the folder.
 	 */
 	private void loadPart7Now() {
+		// Scan the widgets that got defined for the vertical flow...
+		for (int i = 0; i < m_verticalPanels.length; i += 1) {
+			Widget w = m_verticalPanels[i];
+			if (null != w) {
+				// ...adding each to the vertical flow panel.
+				m_verticalFlowPanel.add(w);
+			}
+		}
+		
 		GwtClientHelper.executeCommand(
 				new GetFolderDisplayDataCmd(m_folderInfo),
 				new AsyncCallback<VibeRpcResponse>() {

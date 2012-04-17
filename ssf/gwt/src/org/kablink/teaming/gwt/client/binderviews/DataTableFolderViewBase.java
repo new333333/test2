@@ -1994,8 +1994,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	    folderRowProvider.addDataDisplay(m_dataTable);
 
 	    // Add the table and pager to the view.
-		vp = new VibeVerticalPanel();
-	    vp.add(m_dataTable);
+		vp = new VibeVerticalPanel("100%", null);
+	    vp.add(m_dataTable     );
 	    vp.add(m_dataTablePager);
 	    vp.setCellHorizontalAlignment(m_dataTablePager, HasHorizontalAlignment.ALIGN_CENTER);
 		getFlowPanel().add(vp);
