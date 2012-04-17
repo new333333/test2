@@ -321,10 +321,15 @@ function insertChar(chr) {
 }
 
 function previewChar(codeA, codeB, codeN) {
+	var s = tinymce.EditorManager.settings;
 	var elmA = document.getElementById('codeA');
 	var elmB = document.getElementById('codeB');
 	var elmV = document.getElementById('codeV');
-	var elmN = document.getElementById('codeN');
+	var elmN = "";
+	if (s.language == 'en') {
+		//Show the English text only when lang = en
+		elmN = document.getElementById('codeN');
+	}
 
 	if (codeA=='#160;') {
 		elmV.innerHTML = '__';
