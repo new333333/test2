@@ -419,8 +419,13 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			if (showExpander) {
 				// Yes!  Put an expander Anchor to allow expanding and
 				// collapsing of its contents.
-				expanderImg = new Image(expanderImgRes);
+				expanderImg = new Image();
+				expanderImg.setUrl(expanderImgRes.getSafeUri());
+				expanderImg.getElement().setAttribute("align", "absmiddle");
 				expanderImg.addStyleName("breadCrumb_ContentNode_ExpanderImg");
+				if (getTreeMode().isHorizontalBinder()) {
+					expanderImg.addStyleName("breadCrumb_ContentNode_ExpanderImgSmall");
+				}
 				Anchor expanderA = new Anchor();
 				expanderA.getElement().appendChild(expanderImg.getElement());
 				expanderA.addClickHandler(new BinderExpander(ti, nodeGrid, expanderImg));
