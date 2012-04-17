@@ -455,9 +455,16 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	   Map<EntityIdentifier, List<Tag>> tags = getCoreDao().loadAllTagsByEntity(ids);
 	   Map<FolderEntry, FolderEntry> sourceMap = new HashMap();
        getCoreDao().lock(destination);
+       String newTitle = (options==null)?null:(String) options.get(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE);
 	   //get ordered list of entries
 	   for (FolderEntry child:children) {
-		   FolderEntry entry = new FolderEntry(child);		   
+		   FolderEntry entry = new FolderEntry(child);		
+		   if(child.equals(source) && Validator.isNotNull(newTitle)) { 
+			   // If the caller specified new title for the new entry, then we must set the title 
+			   // of the top-level entry in the copied hierarchy to this title. The titles of the 
+			   // children remain unchanged.
+			   entry.setTitle(newTitle);
+		   }
 			if (child.isTop()) {
 				//docnumber will be different
 				((Folder)destination).addEntry(entry);
@@ -586,6 +593,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    		if (from.isUniqueTitles()) getCoreDao().updateTitle(from, entry, entry.getNormalTitle(), null);		
    	    from.removeEntry(fEntry);
     	to.addEntry(fEntry);
+    	String newTitle = (options==null)?null:(String)options.get(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE);
+    	if(Validator.isNotNull(newTitle)) {
+		   // If the caller specified new title for the moved entry, then we need to change the title here.
+    		entry.setTitle(newTitle);
+    	}
    		if (to.isUniqueTitles()) getCoreDao().updateTitle(to, entry, null, entry.getNormalTitle());		
         Statistics statistics = getFolderStatistics(from);        
         statistics.deleteStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());

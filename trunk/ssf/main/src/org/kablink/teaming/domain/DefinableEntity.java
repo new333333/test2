@@ -379,6 +379,24 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     }
     
     /**
+     * Return the number of FileAttachments.
+     * @return
+     */
+    public int getFileAttachmentsCount() {
+    	Set atts = getAttachments();
+    	int count = 0;
+    	Attachment att;
+    	for (Iterator iter=atts.iterator(); iter.hasNext();) {
+    		att = (Attachment)iter.next();
+    		//return only file attachments.  Version not in attachment list
+    		if (att instanceof FileAttachment) {
+    			count++;
+    		}
+    	}
+    	return count;
+    }
+    
+    /**
      * Returns a list of <code>FileAttachment</code> whose repository name
      * matches the argument. 
      * 
