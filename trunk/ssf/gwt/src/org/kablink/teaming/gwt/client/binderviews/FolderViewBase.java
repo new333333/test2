@@ -61,7 +61,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Folder view base calls.  All folder views should be based off this
+ * Folder view base class.  All folder views should be based off this
  * class.
  * 
  * Provides common housekeeping for a folder view including:
@@ -80,11 +80,10 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	private boolean								m_viewReady;			// Set true once the view and all its components are ready.
 	private FolderDisplayDataRpcResponseData	m_folderDisplayData;	// Various pieces of display information about the folder (sorting, page size, column widths, ...) 
 	private int									m_readyComponents;		// Tracks items as they become ready.
-	private List<ToolPanelBase>					m_toolPanels;			// List of the various tools panels that appear in the view.
+	private List<Widget>						m_verticalPanels;		// Tracks the widgets added as vertical panels.
 	private String								m_styleBase;			// Base name for the view specific styles to use for this view.
 	private VibeFlowPanel						m_flowPanel;			// The flow panel used to hold the view specific content of the view.
-	private VibeFlowPanel						m_verticalFlowPanel;	// The flow panel that holds all components of the view, both common and view specific that flow vertically down the view.
-	private Widget[]							m_verticalPanels;		// Tracks the widgets added as vertical panels.
+	private VibeFlowPanel						m_verticalFlowPanel;	// The flow panel that holds all the components of the view, both common and view specific, that flow vertically down the view.
 
 	// Control whether a FilterPanel can ever be instantiated.  true
 	// and they can and false and they can't.
@@ -97,14 +96,14 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	
 	// The following define the indexes into a VibeVerticalPanel of the
 	// various panels that make up a folder view.
-	public final static int BREADCRUMB_PANEL_INDEX		= 0;
-	public final static int ACCESSORY_PANEL_INDEX		= 1;
-	public final static int DESCRIPTION_PANEL_INDEX		= 2;
-	public final static int FILTER_PANEL_INDEX			= 3;
-	public final static int ENTRY_MENU_PANEL_INDEX		= 4;
-	public final static int VIEW_CONTENT_PANEL_INDEX	= 5;
-	public final static int FOOTER_PANEL_INDEX			= 6;
-	public final static int MAX_PANELS					= (FOOTER_PANEL_INDEX + 1);
+	public final static int BREADCRUMB_PANEL_INDEX			= 0;
+	public final static int ACCESSORY_PANEL_INDEX			= 1;
+	public final static int DESCRIPTION_PANEL_INDEX			= 2;
+	public final static int FILTER_PANEL_INDEX				= 3;
+	public final static int BINDER_OWNER_AVATAR_PANEL_INDEX	= 4;
+	public final static int ENTRY_MENU_PANEL_INDEX			= 5;
+	public final static int VIEW_CONTENT_PANEL_INDEX		= 6;
+	public final static int FOOTER_PANEL_INDEX				= 7;
 
 	public final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of a the data table widget.
 	public final static int NO_VSCROLL_ADJUST			=  20;	// Height adjustment required so there's no vertical scroll bar by default.
@@ -118,6 +117,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		ACCESSORIES,
 		DESCRIPTION,
 		FILTER,
+		BINDER_OWNER_AVATAR,
 		ENTRY_MENU,
 		FOOTER,
 	}
@@ -171,8 +171,15 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * the super class' viewReady() method.
 	 */
 	private void checkReadyness() {
+		// Count the tool panels we've got.
+		int toolPanels = 0;
+		for (Widget w: m_verticalPanels) {
+			if ((null != w) && (w instanceof ToolPanelBase)) {
+				toolPanels += 1;
+			}
+		}
+		
 		// If everything's ready...
-		int toolPanels = m_toolPanels.size();
 		if ((toolPanels + 1) == m_readyComponents) {	// Count of tool panels plus 1 for the view itself.
 			// ...tell the super class.
 			m_viewReady = true;
@@ -209,7 +216,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		m_flowPanel.addStyleName(m_styleBase + "FlowPanel");
 		
 		// ...and finally, tie everything together.
-		m_verticalPanels[VIEW_CONTENT_PANEL_INDEX] = m_flowPanel;
+		trackVerticalPanel(VIEW_CONTENT_PANEL_INDEX, m_flowPanel);
 		mainPanel.add(m_verticalFlowPanel);
 		
 		return mainPanel;
@@ -244,11 +251,17 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * @return
 	 */
 	public EntryMenuPanel getEntryMenuPanel() {
-		for (ToolPanelBase tpb:  m_toolPanels) {
-			if (tpb instanceof EntryMenuPanel) {
-				return ((EntryMenuPanel) tpb);
+		// Scan the vertical panels...
+		for (Widget w:  m_verticalPanels) {
+			// ...and if we find an entry menu panel...
+			if ((null != w) && (w instanceof EntryMenuPanel)) {
+				// ...return it.
+				return ((EntryMenuPanel) w);
 			}
 		}
+		
+		// If we get here, an entry menu panel isn't defined.  Return
+		// null.
 		return null;
 	}
 	
@@ -258,11 +271,16 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * @return
 	 */
 	public FooterPanel getFooterPanel() {
-		for (ToolPanelBase tpb:  m_toolPanels) {
-			if (tpb instanceof FooterPanel) {
-				return ((FooterPanel) tpb);
+		// Scan the vertical panels...
+		for (Widget w:  m_verticalPanels) {
+			// ...and if we find a footer panel...
+			if ((null != w) && (w instanceof FooterPanel)) {
+				// ...return it.
+				return ((FooterPanel) w);
 			}
 		}
+		
+		// If we get here, a footer panel isn't defined.  Return null.
 		return null;
 	}
 
@@ -285,13 +303,9 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Initializes various data members for the class.
 	 */
 	private void initDataMembers() {
-		// Allocate a List<ToolPanelBase> to track the tool panels
-		// created for the view...
-		m_toolPanels = new ArrayList<ToolPanelBase>();
-		
-		// ...and allocate a Widget[] to track the panels in
-		// ...the view.
-		m_verticalPanels = new Widget[MAX_PANELS];
+		// Allocate an ArrayList<Widget> to track the panels we add
+		// vertically to the view.
+		m_verticalPanels = new ArrayList<Widget>();
 	}
 
 	/**
@@ -301,8 +315,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * @param tpIndex
 	 */
 	final public void insertToolPanel(ToolPanelBase tpb, int tpIndex) {
-		m_toolPanels.add(tpb);
-		m_verticalPanels[tpIndex] = tpb;
+		trackVerticalPanel(tpIndex, tpb);
 	}
 	
 	/**
@@ -312,7 +325,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * @param tpIndex
 	 */
 	final public void insertToolPanelPlaceholder(int tpIndex) {
-		m_verticalPanels[tpIndex] = buildToolPanelPlaceholder();
+		trackVerticalPanel(tpIndex, buildToolPanelPlaceholder());
 	}
 	
 	/*
@@ -582,14 +595,54 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	
 	/*
 	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the display data information for the folder.
 	 */
 	private void loadPart7Async() {
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.BINDER_OWNER_AVATAR))) {
+			// ...we don't show the binder owner avatar.
+			insertToolPanelPlaceholder(BINDER_OWNER_AVATAR_PANEL_INDEX);
+			loadPart8Async();
+			return;
+		}
+		
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart7Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously loads the next part of the view.
+	 */
+	private void loadPart7Now() {
+		BinderOwnerAvatarPanel.createAsync(this, getFolderInfo(), this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				insertToolPanel(tpb, FolderViewBase.BINDER_OWNER_AVATAR_PANEL_INDEX);
+				loadPart8Async();
+			}
+		});
+	}
+
+	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the display data information for the folder.
+	 */
+	private void loadPart8Async() {
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart8Now();
 			}
 		};
 		Scheduler.get().scheduleDeferred(doLoad);
@@ -600,10 +653,9 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * 
 	 * Loads the display data information for the folder.
 	 */
-	private void loadPart7Now() {
-		// Scan the widgets that got defined for the vertical flow...
-		for (int i = 0; i < m_verticalPanels.length; i += 1) {
-			Widget w = m_verticalPanels[i];
+	private void loadPart8Now() {
+		// Scan the widgets that defined for the vertical flow...
+		for (Widget w:  m_verticalPanels) {
 			if (null != w) {
 				// ...adding each to the vertical flow panel.
 				m_verticalFlowPanel.add(w);
@@ -653,8 +705,10 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		
 		// ...tell the tool panels to perform any resetting they need
 		// ...to do...
-		for (ToolPanelBase tpb:  m_toolPanels) {
-			tpb.resetPanel();
+		for (Widget w:  m_verticalPanels) {
+			if ((null != w) && (w instanceof ToolPanelBase)) {
+				((ToolPanelBase) w).resetPanel();
+			}
 		}
 		
 		// ...and reset any other information.
@@ -698,6 +752,21 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		}
 	}
 
+	/*
+	 * Ensures m_verticalPanels is large enough to hold an item at
+	 * index and sets w as the widget at that index.
+	 */
+	private void trackVerticalPanel(int index, Widget w) {
+		// Ensure the list is big enough...
+		int c = m_verticalPanels.size();
+		for (int i = c; i <= index; i += 1) {
+			m_verticalPanels.add(i, null);
+		}
+		
+		// ...and store the widget.
+		m_verticalPanels.set(index, w);
+	}
+	
 	/**
 	 * Called when everything about the view (tool panels, ...) is
 	 * complete.

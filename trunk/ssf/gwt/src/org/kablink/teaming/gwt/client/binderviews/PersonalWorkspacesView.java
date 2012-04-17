@@ -135,9 +135,10 @@ public class PersonalWorkspacesView extends DataTableFolderViewBase {
 		boolean reply;
 
 		// In the personal workspaces view, we don't show the bread
-		// crumbs or filter panels.
+		// crumbs, binder owner avatar or filter panels.
 		switch (folderPanel) {
 		case BREADCRUMB:
+		case BINDER_OWNER_AVATAR:
 		case FILTER:  reply = false; break;
 		default:      reply = true;  break;
 		}
