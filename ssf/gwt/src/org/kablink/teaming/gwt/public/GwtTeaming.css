@@ -1614,6 +1614,12 @@ body, table td, select
 	margin-top: 2px;
 	margin-right: 2px;
 }
+.breadCrumb_ContentNode_ExpanderImgSmall
+{
+	height: 10px;
+	width: 10px;
+	padding-top: 3px;
+}
 .breadCrumb_ContentNode_Anchor
 {
 	margin-top: 3px;
@@ -1625,7 +1631,7 @@ body, table td, select
 }
 .breadCrumb_ContentNode_AnchorTail
 {
-	font-size: 1.6em !important;
+	font-size: 1.4em !important;
 	margin-top: 2px !important;
 	margin-left: 0px !important;
 }
@@ -1635,25 +1641,6 @@ body, table td, select
 	font-size: large;
 	margin-top: 0px;
 	margin-right: 8px;
-}
-
-/* Styles for the breadcrumbs on a binder view page */
-.breadCrumb_BrowserBinder .breadCrumb_ContentNode_ExpanderImg
-{
-	cursor: pointer;
-	margin-top: 0px;
-	margin-right: 0px;
-	width: 0px !important;
-}
-
-.breadCrumb_BrowserBinder .breadCrumb_ContentNode_Anchor
-{
-	margin-top: 0px;
-	margin-right: 5px;
-	padding-right: 20px;
-	background-image: url(images/breadspace.gif);
-	background-repeat:no-repeat;
-	background-position: right;
 }
 
 /* Styles for the search options. */
