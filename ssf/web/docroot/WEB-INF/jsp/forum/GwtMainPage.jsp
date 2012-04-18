@@ -78,6 +78,7 @@
 			mode : "none",
 			editor_selector : "mceEditable_standard",
 			theme : "advanced", 
+			onpageload : "ss_addLanguageChanges",
 		    <c:choose><%--
 		    --%><c:when test="${ssUser.locale == 'zh_TW'}">language: 'tw',</c:when><%--
 		    --%><c:otherwise>language: '${ssUser.locale.language}',</c:otherwise><%--
@@ -106,7 +107,6 @@
 			// pdw_element_id : "ss_htmleditor_${element_name}",
 			theme_advanced_resizing_use_cookie : true
 		} );
-
 
 		var ss_workareaIframeMinOffset = 12;
 		function ss_setWorkareaIframeSize() {
