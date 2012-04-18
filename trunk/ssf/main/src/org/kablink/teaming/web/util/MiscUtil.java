@@ -722,6 +722,7 @@ public final class MiscUtil
 	// The following defines the language strings that may need to be
 	// patched into a documentation URL.
 	private final static String[] DOC_LANGS = {
+		"cs-cz",
 		"da-dk",
 		"de-de",
 		"es-es",
