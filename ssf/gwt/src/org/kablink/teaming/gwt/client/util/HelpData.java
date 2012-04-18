@@ -55,6 +55,7 @@ public class HelpData
 	// documentation supports (except English, English does not need a language code)
 	private final static String[] DOC_LANGS =
 	{
+		"cs-cz",
 		"da-dk",
 		"de-de",
 		"es-es",
