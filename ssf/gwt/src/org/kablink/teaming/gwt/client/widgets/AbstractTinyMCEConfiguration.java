@@ -34,8 +34,11 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
+import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -52,6 +55,7 @@ public abstract class AbstractTinyMCEConfiguration
 	
 	private String mode = "none";
 	private String theme = "advanced";
+	private String onPageLoad = "ss_addLanguageChanges";
 	protected String language = null;
 	protected String contentCss = null;
 	private boolean relativeUrls = false;
@@ -218,7 +222,17 @@ public abstract class AbstractTinyMCEConfiguration
 	 */
 	public String getLanguage()
 	{
-		return language;
+		String locale = "";
+		String lang = language;
+		RequestInfo ri = GwtClientHelper.getRequestInfo();
+		if ( ri != null ) {
+			locale = ri.getLocale();
+		}
+		//Special case: If this is Taiwan, set the language to "tw"
+		if ("zh_tw".equals(locale.toLowerCase())) {
+			lang = "tw";
+		}
+		return lang;
 	}// end getLanguage()
 	
 	
@@ -322,7 +336,13 @@ public abstract class AbstractTinyMCEConfiguration
 		this.templateExternalListUrl = template_external_list_url;
 	}
 	
-	
+	public String getOnPageLoad() {
+		return onPageLoad;
+	}
+	public void setOnPageLoad(String onPageLoad) {
+		this.onPageLoad = onPageLoad;
+	}
+
 	public String getTheme() {
 		return theme;
 	}
