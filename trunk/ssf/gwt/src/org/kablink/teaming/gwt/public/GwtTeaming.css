@@ -2900,6 +2900,10 @@ top:100px;
 {
 	padding-right: 10px;
 }
+.gwtTaskTools_Order
+{
+	font-size: 0.7em;
+}
 .gwtTaskTools_ViewMenuAnchor
 {
 	cursor: pointer;
@@ -2913,7 +2917,7 @@ top:100px;
 .gwtTaskTools_ViewMenuSpan
 {
 	color: #333333;
-	font-size: 0.75em;
+	font-size: 0.6em;
 	padding: 5px;
 }
 .gwtTaskToolsButton_WidgetAnchor
@@ -2927,7 +2931,7 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 .gwtTaskToolsButton_WidgetImage
 {
 	margin-left: 3px;
-	vertical-align: text-top;
+	vertical-align: middle;
 }
 .gwtTaskToolsButton_WidgetText
 {
@@ -2956,11 +2960,18 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 }
 .gwtTaskListing
 {
-	width: 100%;
 	font-size: 1.35em; 
 	overflow-y: auto;
 	overflow-x: hidden;
 	border: 1px solid #cccccc;
+}
+.gwtTaskListing_IE
+{
+		width: 99%;
+}
+.gwtTaskListing_NonIE
+{
+		width: 100%;
 }
 .gwtTaskList_assigneesList tr td
 {
@@ -3137,7 +3148,7 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 .gwtTaskList_objlist2b tr.columnhead td   /* Apply to the column headings row following the menu <tr class="columnhead"> */
 { 
 	color: #666; 
-	font-size: 0.75em; 
+	font-size: 0.6em; 
 	padding-top: 0.2em; 
 	padding-bottom: 0.2em;
 	padding-left: 0;

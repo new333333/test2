@@ -67,6 +67,7 @@ import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg;
 import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg.SizeColumnsDlgClient;
 import org.kablink.teaming.gwt.client.datatable.StringColumn;
 import org.kablink.teaming.gwt.client.datatable.TaskFolderColumn;
+import org.kablink.teaming.gwt.client.datatable.VibeCheckboxCell;
 import org.kablink.teaming.gwt.client.datatable.VibeDataGrid;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
 import org.kablink.teaming.gwt.client.datatable.ViewColumn;
@@ -588,8 +589,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	private void addSelectColumn(final FolderRowSelectionModel selectionModel, int colIndex, double pctTotal) {
 		// Define the select all checkbox in the header...
-		CheckboxCell cbCell = new CheckboxCell();
-		final SelectAllHeader saHeader = new SelectAllHeader(cbCell);
+		CheckboxCell cbSelectAllCell = new CheckboxCell();
+		final SelectAllHeader saHeader = new SelectAllHeader(cbSelectAllCell);
 		saHeader.setUpdater(new ValueUpdater<Boolean>() {
 			@Override
 			public void update(Boolean checked) {
@@ -611,7 +612,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		});
 
 		// ...define a column for it...
-		final Column<FolderRow, Boolean> column = new Column<FolderRow, Boolean>(cbCell) {
+		VibeCheckboxCell cbRowCell = new VibeCheckboxCell();
+		final Column<FolderRow, Boolean> column = new Column<FolderRow, Boolean>(cbRowCell) {
 			@Override
 			public Boolean getValue(FolderRow row) {
 				return selectionModel.isSelected(row);

@@ -19,7 +19,7 @@
 	/* ...End:  Accessory styles. */
 	
 	/* ...Start:  Bread crumb panel styles. */
-		.vibe-breadCrumbPanel {}
+		.vibe-breadCrumbPanel {width: 1%;}
 	/* ...End:  Bread crumb panel styles. */
 	
 	/* ...Start:  Binder owner avatar panel styles. */

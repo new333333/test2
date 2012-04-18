@@ -154,6 +154,7 @@ public class TaskListing extends Composite implements TaskProvider {
 		m_taskRootDIV.add(m_taskToolsDIV);		
 		m_taskListingDIV = new FlowPanel();
 		m_taskListingDIV.addStyleName("gwtTaskListing");
+		m_taskListingDIV.addStyleName(GwtClientHelper.jsIsIE() ? "gwtTaskListing_IE" : "gwtTaskListing_NonIE");
 		m_taskListingDIV.getElement().setId("ss_gwtTaskListingDIV");
 		FlowPanel pleaseWaitPanel = new FlowPanel();
 		pleaseWaitPanel.addStyleName("wiki-noentries-panel gwtTaskList_loading");
@@ -450,7 +451,7 @@ public class TaskListing extends Composite implements TaskProvider {
 		m_moveDownButton = new TaskButton(m_images.arrowDown(), m_images.arrowDownDisabled(), m_images.arrowDownMouseOver(), false, m_messages.taskAltMoveDown(), TeamingEvents.TASK_MOVE_DOWN);
 		m_moveDownButton.addStyleName("gwtTaskTools_Span");
 		InlineLabel il   = new InlineLabel(m_messages.taskLabelOrder());
-		il.addStyleName("mediumtext");
+		il.addStyleName("gwtTaskTools_Order");
 		m_taskToolsLinkageDIV.add(il);
 		m_taskToolsLinkageDIV.add(m_moveUpButton);
 		m_taskToolsLinkageDIV.add(m_moveDownButton);
@@ -460,7 +461,7 @@ public class TaskListing extends Composite implements TaskProvider {
 		m_moveRightButton = new TaskButton(m_images.arrowRight(), m_images.arrowRightDisabled(), m_images.arrowRightMouseOver(), false, m_messages.taskAltMoveRight(), TeamingEvents.TASK_MOVE_RIGHT);
 		m_moveRightButton.addStyleName("gwtTaskTools_Span");
 		il = new InlineLabel(m_messages.taskLabelSubtask());
-		il.addStyleName("mediumtext");
+		il.addStyleName("gwtTaskTools_Order");
 		m_taskToolsLinkageDIV.add(il);
 		m_taskToolsLinkageDIV.add(m_moveLeftButton);
 		m_taskToolsLinkageDIV.add(m_moveRightButton);
