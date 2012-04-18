@@ -159,6 +159,7 @@ public class TinyMCE extends Composite
 				paste_postprocess: function(pi,o){o.node.innerHTML=$wnd.TinyMCEWebKitPasteFixup("paste_postprocess",o.node.innerHTML);},
 				mode : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getMode()(),
 				theme : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getTheme()(),
+				onpageload : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getOnPageLoad()(),
 				language : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getLanguage()(),
 				content_css : conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getContentCss()(),
 				relative_urls: conf.@org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration::getRelativeUrls()(),
