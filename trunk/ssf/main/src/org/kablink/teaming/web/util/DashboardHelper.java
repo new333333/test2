@@ -637,7 +637,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	    			};
 	    		}
 	    	}
-			idData.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
+	    	try {
+	    		idData.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
+	    	} catch(AccessControlException ace) {}
  	   	}
 	}
 	
