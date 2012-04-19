@@ -345,7 +345,40 @@ public class LoginFilter  implements Filter {
 			Long binderId = homePageConfig.getDefaultGuestHomePageId();
 			if (binderId == null) binderId = homePageConfig.getDefaultHomePageId();
 			if (binderId != null) {
-				return PermaLinkUtil.getPermalink( req, binderId, EntityType.folder);
+				// See if guest has access to the default home page.
+				try
+				{
+					String url = null;
+					RunasCallback callback;
+					final Long defaultBinderId;
+					
+					defaultBinderId = binderId;
+					callback = new RunasCallback()
+					{
+						public Object doAs()
+						{
+							@SuppressWarnings("unused")
+							Binder binder;
+							
+							binder = getBinderModule().getBinder( defaultBinderId );
+							
+							// If we get here, guest as access to the default home page.
+							return PermaLinkUtil.getPermalink( req, defaultBinderId, EntityType.folder);
+						}
+					};
+					url = (String) RunasTemplate.runas(
+													callback,
+													WebHelper.getRequiredZoneName( req ),
+													WebHelper.getRequiredUserId( req ) );
+					if ( url != null )
+						return url;
+				}
+				catch (Exception ex)
+				{
+					// Nothing to do
+				}
+				
+				// If we get here, guest does not have access to the default home page.
 			}
 		} else if (!WebHelper.isGuestLoggedIn(req)) {
 			//This user is logged in. Look for a default home page
