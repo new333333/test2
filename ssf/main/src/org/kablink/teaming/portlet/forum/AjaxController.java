@@ -136,6 +136,7 @@ import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.relevance.Relevance;
 import org.kablink.teaming.relevance.util.RelevanceUtils;
 import org.kablink.teaming.search.SearchFieldResult;
+import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFiltersBuilder;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlException;
@@ -2635,7 +2636,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 							//This is a request for calendar events for the current user
 							modeType = ModeType.MY_EVENTS;
 						}
-						Document searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.CALENDAR);
+						SearchFilter sf = EventHelper.buildSearchFilter(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.CALENDAR);
+						sf.addFamilyFilter(Constants.FAMILY_FIELD_CALENDAR);
+						Document searchFilter = sf.getFilter();
 						retMap = getBinderModule().executeSearchQuery(searchFilter, options);
 						entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 						
@@ -2643,7 +2646,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 						if (virtual) {
 							// Yes!  Search for the events that are
 							// task entries...
-							searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.TASK);
+							sf = EventHelper.buildSearchFilter(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.TASK);
+							sf.addFamilyFilter(Constants.FAMILY_FIELD_TASK);
+							searchFilter = sf.getFilter();
 							retMap = getBinderModule().executeSearchQuery(searchFilter, options);
 							List taskEntries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 							int tasks = ((null == taskEntries) ? 0 : taskEntries.size());
