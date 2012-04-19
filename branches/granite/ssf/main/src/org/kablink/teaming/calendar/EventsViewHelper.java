@@ -216,7 +216,7 @@ public class EventsViewHelper {
 		Set<String> eventBinderIds = new TreeSet<String>();
 		for (Map e : events) {
 			Map entry = (Map) e.get("entry");
-			eventBinderIds.add((String)entry.get("_binderId"));
+			if (entry.get("_binderId") != null) eventBinderIds.add((String)entry.get("_binderId"));
 		}
 		return eventBinderIds;
 	}
