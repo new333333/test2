@@ -126,9 +126,11 @@
 	<c:if test="${!empty mashupBinder}">
 	  <c:set var="ssBinderOriginal" value="${ssBinder}" scope="request"/>
 	  <c:set var="ssBinder" value="${mashupBinder}" scope="request"/>
+	  <c:set var="ss_calendarIsReadOnly" value="true" scope="request"/>
 	  <c:set var="ss_calendarHeaderBackgroundColor" value="ss_mashup_folder_header_view_background" scope="request"/>
 	  <%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_content.jsp" %>
 	  <c:set var="ssBinder" value="${ssBinderOriginal}" scope="request"/>
+	  <c:set var="ss_calendarIsReadOnly" value="" scope="request"/>
 	</c:if>
 	</div>
 	<c:if test="${empty mashupBinder}">

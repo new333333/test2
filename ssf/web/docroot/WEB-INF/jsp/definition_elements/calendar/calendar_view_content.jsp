@@ -49,6 +49,7 @@
 
 		ss_calendar_${prefix} = ss_calendar.createCalendar({
 			containerId: "ss_calendar_container${prefix}", 
+			<c:if test="${ss_calendarIsReadOnly == 'true'}"> readOnly: true, </c:if>
 			calendarDataProvider: new ss_calendar_data_provider("${ssBinder.id}", "${ssBinder.id}", "${ssBinder.id}_${componentId}"), 
 		    defaultCalendarId: "${ssBinder.id}",
 		    weekFirstDayDefault:  "${ssUser.weekFirstDayDefault}",

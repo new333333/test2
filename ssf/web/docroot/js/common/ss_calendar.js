@@ -950,7 +950,9 @@ function ss_calendarEngine(
 			
 			(function() {
 				dojo.connect(allDayBadge, "onmouseover", function(evt) {
-					dojo.addClass(evt.target, "ss_cal_monthGridDayBadgeOverHighlight");
+					if (!readOnly) {
+						dojo.addClass(evt.target, "ss_cal_monthGridDayBadgeOverHighlight");
+					}
        			});
             })();
 			
@@ -1019,7 +1021,9 @@ function ss_calendarEngine(
 			    
 				(function() {
 					dojo.connect(dateAddEntry, "onmouseover", function(evt) {
-						dojo.addClass(evt.target, "ss_cal_monthGridDayBadgeOverHighlight");
+						if (!readOnly) {
+							dojo.addClass(evt.target, "ss_cal_monthGridDayBadgeOverHighlight");
+						}
 	       			});
 	            })();
 				
