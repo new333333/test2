@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.binderviews.BlogFolderView;
 import org.kablink.teaming.gwt.client.binderviews.DiscussionFolderView;
 import org.kablink.teaming.gwt.client.binderviews.DiscussionWSView;
 import org.kablink.teaming.gwt.client.binderviews.FileFolderView;
@@ -1042,7 +1043,27 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowBlogFolder( final ShowBlogFolderEvent event )
 	{
-		Window.alert( "not yet implemented" );
+		ViewClient vClient;
+		
+		// Display a Blog folder for the given binder id.
+		vClient = new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess( ViewBase blogFolderView )
+			{
+				blogFolderView.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( blogFolderView );
+			}
+		};
+		
+		// Create a BlogFolderView widget for the selected binder.
+		BlogFolderView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
 	}
 	
 	/**

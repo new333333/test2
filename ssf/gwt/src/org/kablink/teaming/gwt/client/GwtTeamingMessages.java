@@ -468,6 +468,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_AdminInfoDlg();
 	String codeSplitFailure_BinderOwnerAvatarPanel();
+	String codeSplitFailure_BlogFolderView();
 	String codeSplitFailure_BreadCrumbPanel();
 	String codeSplitFailure_ChangeEntryTypesDlg();
 	String codeSplitFailure_ChildBindersWidget();
