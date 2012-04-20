@@ -3013,7 +3013,11 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	margin-top: 5px;
 	margin-left: 5px;
 	white-space: nowrap;
-	display: inline-block;
+	display: inline;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	position: relative;
+	top: 5px;
 }
 .gwtTaskList_newTaskMenu_Link {
 }
