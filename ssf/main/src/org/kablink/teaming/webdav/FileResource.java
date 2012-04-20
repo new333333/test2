@@ -367,7 +367,7 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 								// This is the only file contained in the entry, therefore, we can safely copy the entire entry.
 								HashMap options = new HashMap();
 								options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, name);
-								FolderEntry destEntry = getFolderModule().copyEntry(entry.getParentBinder().getId(), entry.getId(), toFolderId, options);
+								FolderEntry destEntry = getFolderModule().copyEntry(entry.getParentBinder().getId(), entry.getId(), toFolderId, new String[] {name}, options);
 							}
 						}
 						else {
@@ -449,7 +449,7 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 								// This is the only file contained in the entry, therefore, we can safely move the entire entry.
 								HashMap options = new HashMap();
 								options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, name);
-								getFolderModule().moveEntry(entry.getParentBinder().getId(), entry.getId(), destFolderId, options);
+								getFolderModule().moveEntry(entry.getParentBinder().getId(), entry.getId(), destFolderId, new String[] {name}, options);
 								// Finally, we need to adjust the state of this FileResource to properly reflect the post-operation state.
 								// Reload file attachment object just in case.
 								init(destFolderResource.getWebdavPath() + "/" + name, getFileModule().getFileAttachmentById(id));

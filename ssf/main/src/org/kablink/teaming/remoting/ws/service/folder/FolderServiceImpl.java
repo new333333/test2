@@ -550,10 +550,10 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 			new TrashHelper.TrashEntry(hm));
 	}
     public long folder_copyEntry(String accessToken, long entryId, long destinationId) {
-    	return getFolderModule().copyEntry(null, entryId, destinationId, null).getId().longValue();
+    	return getFolderModule().copyEntry(null, entryId, destinationId, null, null).getId().longValue();
     }
     public void folder_moveEntry(String accessToken, long entryId, long destinationId) {
-    	getFolderModule().moveEntry(null, entryId, destinationId, null);
+    	getFolderModule().moveEntry(null, entryId, destinationId, null, null);
     }
     public void folder_reserveEntry(String accessToken,  long entryId) {
     	getFolderModule().reserveEntry(null, entryId);

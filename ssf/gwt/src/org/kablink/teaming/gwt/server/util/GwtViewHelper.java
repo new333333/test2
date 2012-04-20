@@ -478,7 +478,7 @@ public class GwtViewHelper {
 				for (EntryId entryId:  entryIds) {
 					try {
 						// Can we copy this entry?
-						bs.getFolderModule().copyEntry(entryId.getBinderId(), entryId.getEntryId(), targetFolderId, null);
+						bs.getFolderModule().copyEntry(entryId.getBinderId(), entryId.getEntryId(), targetFolderId, null, null);
 					}
 
 					catch (Exception e) {
@@ -3140,7 +3140,7 @@ public class GwtViewHelper {
 				for (EntryId entryId:  entryIds) {
 					try {
 						// Can we move this entry?
-						bs.getFolderModule().moveEntry(entryId.getBinderId(), entryId.getEntryId(), targetFolderId, null);
+						bs.getFolderModule().moveEntry(entryId.getBinderId(), entryId.getEntryId(), targetFolderId, null, null);
 					}
 
 					catch (Exception e) {

@@ -87,8 +87,7 @@ public class WebdavServlet extends MiltonServlet {
     				else if(handler instanceof MoveHandler) {
     					logger.debug("Configuring move handler");
     					MoveHandler moveHandler = (MoveHandler) handler;
-    					// 4/17/2012 TODO After Brad checks in enhancement
-    					//moveHandler.setDeleteExistingBeforeCopy(SPropsUtil.getBoolean("", DELETE_EXISTING_BEFORE_MOVE_DEFAULT));
+    					moveHandler.setDeleteExistingBeforeMove(SPropsUtil.getBoolean("", DELETE_EXISTING_BEFORE_MOVE_DEFAULT));
     				}
     			}
     		}

@@ -44,6 +44,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
@@ -622,7 +623,12 @@ public class FolderUtils {
 				// This file being deleted is the only file associated with the entry.
 				// Delete the entire entry, instead of leaving an empty/dangling entry with no file.
 				// This will honor the Bug #554284.
-				getFolderModule().deleteEntry(parentBinder.getId(), entry.getId(), true, null);					
+				// By default, entry is simply moved into trash rather than permanently deleted.
+				boolean predelete = SPropsUtil.getBoolean("folderutils.deleteentry.predelete", true);
+				if(predelete)
+					getFolderModule().preDeleteEntry(parentBinder.getId(), entry.getId(), RequestContextHolder.getRequestContext().getUserId());
+				else
+					getFolderModule().deleteEntry(parentBinder.getId(), entry.getId(), true, null);					
 			}
 		}
 
