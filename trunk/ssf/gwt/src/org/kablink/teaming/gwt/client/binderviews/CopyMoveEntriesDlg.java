@@ -368,7 +368,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 	public Panel createContent(Object callbackData) {
 		// Create and return a vertical panel to hold the dialog's
 		// content.
-		m_vp = new VibeVerticalPanel();
+		m_vp = new VibeVerticalPanel(null, null);
 		m_vp.addStyleName("vibe-cmeDlg_RootPanel");
 		return m_vp;
 	}

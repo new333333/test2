@@ -161,6 +161,7 @@ public class TaskListing extends Composite implements TaskProvider {
 		m_pleaseWaitLabel = new InlineLabel(m_messages.taskPleaseWait_Loading());
 		pleaseWaitPanel.add(m_pleaseWaitLabel);
 		Image busyImg = new Image(m_images.busyAnimation());
+		busyImg.addStyleName("gwtTaskList_loadingImg");
 		busyImg.getElement().setAttribute("align", "absmiddle");
 		pleaseWaitPanel.add(busyImg);
 		m_taskListingDIV.add(pleaseWaitPanel);
