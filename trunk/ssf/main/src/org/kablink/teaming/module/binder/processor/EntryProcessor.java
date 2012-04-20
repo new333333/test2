@@ -63,7 +63,7 @@ public interface EntryProcessor extends BinderProcessor {
     public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Map options)
     	throws WriteFilesException, WriteEntryDataException;
     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, Map options);  
-    public Entry copyEntry(Binder binder, Entry entry, Binder destination, Map options);
+    public Entry copyEntry(Binder binder, Entry entry, Binder destination, String[] toFileNames, Map options);
     public void copyEntries(Binder source, Binder binder, Map options);
     public void disableEntry(Principal entry, boolean disable);
     public void deleteEntry(Binder binder, Entry entry, boolean deleteMirroredSource, Map options);
@@ -76,6 +76,6 @@ public interface EntryProcessor extends BinderProcessor {
   	public IndexErrors indexEntries(Collection entries);
   	public IndexErrors indexEntry(Entry entry);
   	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags);
-    public void moveEntry(Binder binder, Entry entry, Binder destination, Map options);
+    public void moveEntry(Binder binder, Entry entry, Binder destination, String[] toFileNames, Map options);
 	public ChangeLog processChangeLog(DefinableEntity entity, String operation);
  }

@@ -937,7 +937,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         processor.deleteEntry(folder, entry, deleteMirroredSource, options);
     }
     //inside write transaction    
-    public void moveEntry(Long folderId, Long entryId, Long destinationId, Map options) {
+    public void moveEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options) {
         FolderEntry entry = loadEntry(folderId, entryId);   	
         checkAccess(entry, FolderOperation.moveEntry);
         Folder folder = entry.getParentFolder();
@@ -961,7 +961,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 			throw new BinderQuotaException(entry.getTitle());
 		}
 
-        processor.moveEntry(folder, entry, destination, options);
+        processor.moveEntry(folder, entry, destination, toFileNames, options);
     }
     
 	private void checkFileUploadSizeLimit(Binder binder, Long fileSize, String fileName) 
@@ -999,7 +999,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	}
 
     //inside write transaction    
-    public FolderEntry copyEntry(Long folderId, Long entryId, Long destinationId, Map options) {
+    public FolderEntry copyEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options) {
         FolderEntry entry = loadEntry(folderId, entryId);   	
         checkAccess(entry, FolderOperation.copyEntry);
         Folder folder = entry.getParentFolder();
@@ -1024,7 +1024,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 			throw new BinderQuotaException(entry.getTitle());
 		}
 
-		return (FolderEntry) processor.copyEntry(folder, entry, destination, options);
+		return (FolderEntry) processor.copyEntry(folder, entry, destination, toFileNames, options);
     }
     //inside write transaction    
     public void setSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles) {

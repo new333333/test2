@@ -1426,7 +1426,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			getCoreDao().save(myDashboard);
 		  }
 		//copy all file attachments; need to do first so custom file attributes have a real object to reference
-		getFileModule().copyFiles(source, source, binder, binder);
+		getFileModule().copyFiles(source, source, binder, binder, null);
 		EntryBuilder.copyAttributes(source, binder);
   		getWorkAreaFunctionMembershipManager().copyWorkAreaFunctionMemberships(binder.getZoneId(), source, binder);
   		List<Tag> tags = getCoreDao().loadAllTagsByEntity(source.getEntityIdentifier());

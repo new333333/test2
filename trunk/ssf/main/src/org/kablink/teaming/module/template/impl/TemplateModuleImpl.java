@@ -467,7 +467,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			 getCoreDao().save(myDashboard);
 		 }
 		 //copy all file attachments
-		 getFileModule().copyFiles(source, source, destination, destination);
+		 getFileModule().copyFiles(source, source, destination, destination, null);
 		 EntryBuilder.copyAttributes(source, destination);
 		 //Set quota (if any)
 		 if (getBinderModule().isBinderDiskQuotaEnabled()) {

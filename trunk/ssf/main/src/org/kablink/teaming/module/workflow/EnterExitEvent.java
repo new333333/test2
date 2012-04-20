@@ -322,7 +322,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 		Binder parent = entry.getParentBinder();
 		Binder destination  = getDestination(item, entry);
 		EntryProcessor processor = (EntryProcessor)((ProcessorManager)SpringContextUtil.getBean("modelProcessorManager")).getProcessor(parent, parent.getProcessorKey(EntryProcessor.PROCESSOR_KEY));
-		processor.moveEntry(parent, entry, destination, null);
+		processor.moveEntry(parent, entry, destination, null, null);
 	}
 	protected void copyEntry(Element item, ExecutionContext executionContext, WorkflowSupport wfEntry, WorkflowState currentWs) {
 		Entry entry = (Entry)wfEntry;
@@ -336,7 +336,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 		Map options = new HashMap();
 		options.put(ObjectKeys.WORKFLOW_START_WORKFLOW, startWorkflow);
 		EntryProcessor processor = (EntryProcessor)((ProcessorManager)SpringContextUtil.getBean("modelProcessorManager")).getProcessor(parent, parent.getProcessorKey(EntryProcessor.PROCESSOR_KEY));
-		processor.copyEntry(parent, entry, destination, options);
+		processor.copyEntry(parent, entry, destination, null, options);
 
 	}
 	protected Binder getDestination(Element item, Entry entry) {

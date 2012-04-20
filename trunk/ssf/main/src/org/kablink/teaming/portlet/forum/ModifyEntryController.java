@@ -216,7 +216,7 @@ public class ModifyEntryController extends SAbstractController {
 					PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 					portletSession.setAttribute(ObjectKeys.SESSION_SAVE_LOCATION_ID, destinationId);
 					try {
-						getFolderModule().moveEntry(folderId, entryId, destinationId, null);
+						getFolderModule().moveEntry(folderId, entryId, destinationId, null, null);
 					} catch(DataQuotaException e) {
 			    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
 			    		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
@@ -241,7 +241,7 @@ public class ModifyEntryController extends SAbstractController {
 					PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 					portletSession.setAttribute(ObjectKeys.SESSION_SAVE_LOCATION_ID, destinationId);
 					try {
-						getFolderModule().copyEntry(folderId, entryId, destinationId, null);
+						getFolderModule().copyEntry(folderId, entryId, destinationId, null, null);
 					} catch(DataQuotaException e) {
 			    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
 			    		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());

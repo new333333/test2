@@ -196,10 +196,11 @@ public interface FolderModule {
      * @param folderId
      * @param entryId
      * @param destinationId
+     * @param toFileNames
      * @param options additional processing options or null
      * @throws AccessControlException
      */
-    public FolderEntry copyEntry(Long folderId, Long entryId, Long destinationId, Map options)
+    public FolderEntry copyEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options)
     	throws AccessControlException;
     /**
      * Restores a <code>FolderEntry</code> and all of its replies.  Deleted mirrored resources also.
@@ -525,10 +526,11 @@ public interface FolderModule {
      * @param folderId
      * @param entryId
      * @param destinationId
+     * @param toFileNames
      * @param options - processing options or null
      * @throws AccessControlException
      */
-    public void moveEntry(Long folderId, Long entryId, Long destinationId, Map options) 
+    public void moveEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options) 
     	throws AccessControlException;
 
     /**

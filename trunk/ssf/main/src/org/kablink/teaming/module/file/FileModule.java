@@ -360,7 +360,7 @@ public interface FileModule {
 	 * @throws RepositoryServiceException
 	 */
 	public void moveFiles(Binder binder, DefinableEntity entity, 
-			Binder destBinder, DefinableEntity destEntity)
+			Binder destBinder, DefinableEntity destEntity, String[] toFileNames)
 	throws UncheckedIOException, RepositoryServiceException;
 	
 	/**
@@ -379,7 +379,7 @@ public interface FileModule {
 	 * @throws RepositoryServiceException
 	 */
 	public void copyFiles(Binder binder, DefinableEntity entity, 
-			Binder destBinder, DefinableEntity destEntity)
+			Binder destBinder, DefinableEntity destEntity, String[] toFileNames)
 	throws UncheckedIOException, RepositoryServiceException;
 	
 	/**

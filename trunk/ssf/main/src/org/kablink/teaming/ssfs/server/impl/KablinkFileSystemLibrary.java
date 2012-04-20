@@ -1063,7 +1063,7 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 	private void moveResource(Map sourceUri, Map sourceMap, Map targetUri, 
 			Map targetMap) throws NoAccessException {
 		try {
-			bs.getFolderModule().moveEntry(null, getFolderEntry(sourceMap).getId(), getParentBinder(targetMap).getId(), null);
+			bs.getFolderModule().moveEntry(null, getFolderEntry(sourceMap).getId(), getParentBinder(targetMap).getId(), null, null);
 		}
 		catch(AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());

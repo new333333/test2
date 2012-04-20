@@ -45,34 +45,14 @@
 
     <filter-mapping>
 		<filter-name>springSecurityFilterChain</filter-name>
-		<url-pattern>/dav/*</url-pattern>
-	</filter-mapping>
-    
-    <filter-mapping>
-		<filter-name>springSecurityFilterChain</filter-name>
-		<url-pattern>/dave/*</url-pattern>
-	</filter-mapping>
-    
-    <filter-mapping>
-		<filter-name>springSecurityFilterChain</filter-name>
-		<url-pattern>/davs/*</url-pattern>
+		<url-pattern>/*</url-pattern>
 	</filter-mapping>
     
     <filter-mapping>
 		<filter-name>requestContextAndSessionSetup</filter-name>
-		<url-pattern>/dav/*</url-pattern>
+		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-    
-    <filter-mapping>
-		<filter-name>requestContextAndSessionSetup</filter-name>
-		<url-pattern>/dave/*</url-pattern>
-	</filter-mapping>
-    
-    <filter-mapping>
-		<filter-name>requestContextAndSessionSetup</filter-name>
-		<url-pattern>/davs/*</url-pattern>
-	</filter-mapping>
-    
+        
     <servlet>
         <servlet-name>milton</servlet-name>
         <servlet-class>org.kablink.teaming.webdav.servlet.WebdavServlet</servlet-class>        

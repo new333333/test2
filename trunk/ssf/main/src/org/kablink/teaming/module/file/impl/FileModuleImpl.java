@@ -997,7 +997,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	public void moveFiles(Binder binder, DefinableEntity entity, 
-			Binder destBinder, DefinableEntity destEntity)
+			Binder destBinder, DefinableEntity destEntity, String[] toFileNames)
 	throws UncheckedIOException, RepositoryServiceException {
     	Collection<FileAttachment> atts = entity.getFileAttachments();
     	//Decrement and increment the various quota counts
@@ -1017,37 +1017,47 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	}
 
     	//first register file names, so if one fails, files are not copied
-    	for(FileAttachment fa :atts) {    			
+    	int i = 0;
+    	String toFileName;
+    	for(FileAttachment fa :atts) {
+    		toFileName = (toFileNames != null)? toFileNames[i] : fa.getFileItem().getName();
    			if (binder.isLibrary() && !binder.equals(entity))
    				getCoreDao().unRegisterFileName(binder, fa.getFileItem().getName());
     		if (destBinder.isLibrary() && !destBinder.equals(destEntity))
-    			getCoreDao().registerFileName(destBinder, destEntity, fa.getFileItem().getName());
+    			getCoreDao().registerFileName(destBinder, destEntity, toFileName);
+    		i++;
     	}
     	
 		// Rename the file in the repository
+    	i = 0;
        	for(FileAttachment fa :atts) {   
+    		toFileName = (toFileNames != null)? toFileNames[i] : fa.getFileItem().getName();
        		if(!ObjectKeys.FI_ADAPTER.equals(fa.getRepositoryName())) { // regular repository
        	 		RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
        					fa.getFileItem().getName(), destBinder, destEntity, 
-       					fa.getFileItem().getName());       			
+       					toFileName);       			
        		}
        		else { // mirrored repository
-       			moveMirroredFile(binder, entity, destBinder, destEntity, fa);
+       			moveMirroredFile(binder, entity, destBinder, destEntity, fa, toFileName);
        		}
    			ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMOVE);
 			ChangeLogUtils.buildLog(changes, fa);
 			getCoreDao().save(changes);
-       	}
+			// Now that we're done with the existing fa object (hence we don't need access to
+			// the previous name), we can finally change its name to the new name if different.
+			fa.getFileItem().setName(toFileName);
+			i++;
+       	}	
 	}
 
 	protected void moveMirroredFile(Binder binder, DefinableEntity entity, 
-			Binder destBinder, DefinableEntity destEntity, FileAttachment fa) {
+			Binder destBinder, DefinableEntity destEntity, FileAttachment fa, String toFileName) {
 		if(binder.getResourceDriverName().equals(destBinder.getResourceDriverName())) {
 			// Both source and destination binders use the same resource
 			// driver. Move is possible.
    	 		RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
    					fa.getFileItem().getName(), destBinder, destEntity, 
-   					fa.getFileItem().getName());       								
+   					toFileName);       								
 		}
 		else {
 			// Source and destination binders do not share the same driver. 
@@ -1057,7 +1067,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			try {
 				InputStream is = readFile(binder, entity, fa);
 				try {
-					createVersionedWithInputData(session, destBinder, destEntity, fa.getFileItem().getName(), true, is);
+					createVersionedWithInputData(session, destBinder, destEntity, toFileName, true, is);
 				}
 				finally {
 					try {
@@ -1083,7 +1093,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 
 	public void copyFiles(Binder binder, DefinableEntity entity, 
-			Binder destBinder, DefinableEntity destEntity)
+			Binder destBinder, DefinableEntity destEntity, String[] toFileNames)
 	throws UncheckedIOException, RepositoryServiceException {
 		List<FileUploadItem> fuis = new ArrayList<FileUploadItem>();
     	Collection<FileAttachment> atts = entity.getFileAttachments();
@@ -1091,6 +1101,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
      	String targetName;
      	String targetRepositoryName;
     	SimpleMultipartFile file;
+    	int i=0;
     	for(FileAttachment fa :atts) {
     		targetName = fa.getName(); 
   			targetRepositoryName = fa.getRepositoryName();
@@ -1116,8 +1127,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
   					}
   				}
   			}
+  			String toFileName = (toFileNames != null)? toFileNames[i] : fa.getFileItem().getName();
 			// Preserve modification time of the source for the target
-  			file = new DatedMultipartFile(fa.getFileItem().getName(),
+  			file = new DatedMultipartFile(toFileName,
 				readFile(binder, entity, fa), fa.getModification().getDate());
     		int type = FileUploadItem.TYPE_FILE;
     		if(Validator.isNull(targetName))
@@ -1125,10 +1137,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			fui = new FileUploadItem(type, targetName, file, targetRepositoryName);
 			//register here so entire copy fails if any one file is an issue
 	   		if (destBinder.isLibrary() && !(destEntity instanceof Binder)) {
-	   			getCoreDao().registerFileName(destBinder, destEntity, fa.getFileItem().getName());
+	   			getCoreDao().registerFileName(destBinder, destEntity, toFileName);
 	   			fui.setRegistered(true);
 	   		}
 	   		fuis.add(fui);
+	   		i++;
     	}
     	try {	
     		writeFiles(destBinder, destEntity, fuis, null);

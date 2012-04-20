@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -435,7 +436,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	   }
    }
    //***********************************************************************************************************
-   public Entry copyEntry(Binder binder, Entry source, Binder destination, Map options) {
+   public Entry copyEntry(Binder binder, Entry source, Binder destination, String[] toFileNames, Map options) {
    	 
 	   if (destination.isZone() || 
 			   ObjectKeys.PROFILE_ROOT_INTERNALID.equals(destination.getInternalId()) ||
@@ -476,7 +477,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 			sourceMap.put(child, entry);
 		    List<Tag> entryTags = tags.get(child.getEntityIdentifier());
 			try{
-				doCopy(child, entry, entryTags, options);
+				// file name change is possible only for the top-level entry being copied.
+				doCopy(child, entry, entryTags, child.equals(source)?toFileNames:null, options);
 			} catch(Exception e) {
 				logger.error(e);
 				//The copy failed, so delete the attempted copy
@@ -496,9 +498,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	   return top; 
    }
  
-	protected void doCopy(FolderEntry source, FolderEntry entry, List<Tag> tags, Map copyOptions) {
+	protected void doCopy(FolderEntry source, FolderEntry entry, List<Tag> tags, String[] toFileNames, Map copyOptions) {
 		User user = RequestContextHolder.getRequestContext().getUser();
-		getFileModule().copyFiles(source.getParentBinder(), source, entry.getParentBinder(), entry);
+		getFileModule().copyFiles(source.getParentBinder(), source, entry.getParentBinder(), entry, toFileNames);
 		EntryBuilder.copyAttributes(source, entry);
  		//copy tags
  		List myTags = new ArrayList();
@@ -570,7 +572,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  
    //***********************************************************************************************************
     //inside write transaction    
-    public void moveEntry(Binder binder, Entry entry, Binder destination, Map options) {
+    public void moveEntry(Binder binder, Entry entry, Binder destination, String[] toFileNames, Map options) {
        	if (destination == null || binder.equals(destination)) return;
     	Folder from = (Folder)binder;
     	if (!(destination instanceof Folder))
@@ -638,7 +640,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	getFolderDao().moveEntries(to,ids);
     	entries.add(fEntry);
     	// Move files in the entries
-    	moveFiles(binder, entries, destination);
+   		for (Iterator iter=entries.iterator(); iter.hasNext();) {
+   			FolderEntry e = (FolderEntry)iter.next();
+   			// file name change is possible only for the top-level entry being moved
+   			getFileModule().moveFiles(binder, e, destination, e, e.equals(entry)?toFileNames:null);
+   		}
     	//finally remove from index and reAdd.
     	indexEntries(entries);
    		getRssModule().updateRssFeed(fEntry); 
@@ -847,7 +853,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		       				getCoreDao().save(dEntry); //need to generate id; do after sortkey is set
 		       				sourceMap.put(sEntry, dEntry);
 		      		    	List<Tag> entryTags = tags.get(sEntry.getEntityIdentifier());
-		       				doCopy(sEntry, dEntry, entryTags, options);
+		       				doCopy(sEntry, dEntry, entryTags, null, options);
 
 		       				// Does the folder we're copy entries from
 		       				// contain task linkage information?

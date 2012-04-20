@@ -856,7 +856,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     //***********************************************************************************************************   
     //inside write transaction    
-    public Entry copyEntry(Binder binder, Entry source, Binder destination, Map options) {
+    public Entry copyEntry(Binder binder, Entry source, Binder destination, String[] toFileNames, Map options) {
 		throw new NotSupportedException(
 				"errorcode.notsupported.copyEntry", new String[]{source.getTitle()});
     }
@@ -975,7 +975,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
    }
     //***********************************************************************************************************
-    public void moveEntry(Binder binder, Entry entry, Binder destination, Map options) {
+    public void moveEntry(Binder binder, Entry entry, Binder destination, String[] toFileNames, Map options) {
 		throw new NotSupportedException(
 				"errorcode.notsupported.moveEntry", new String[]{entry.getTitle()});
     }
@@ -1267,13 +1267,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		}
    		return errors;
    	}
-   	protected void moveFiles(Binder binder, Collection entries, Binder destination) {
-   		for (Iterator iter=entries.iterator(); iter.hasNext();) {
-   			Entry entry = (Entry)iter.next();
-   		   	getFileModule().moveFiles(binder, entry, destination, entry);
-   		}
-   	}
-   	   	
+	
     //***********************************************************************************************************
     public Map getBinderEntries(Binder binder, String[] entryTypes, Map options) {
         //search engine will only return entries you have access to
