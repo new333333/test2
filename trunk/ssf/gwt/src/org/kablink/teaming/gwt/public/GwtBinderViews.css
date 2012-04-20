@@ -231,6 +231,13 @@
 		.vibe-trashDataTable {}
 		.vibe-trashFlowPanel {}
 	/* ...End:  trash view styles. */
+
+	/* ...Start:  Blog folder view styles. */
+		.vibe-blogFolderFlowPanel     {}
+		.vibe-blogFolderVerticalPanel {}
+		.vibe-blogFolderView          {}
+	/* ...End:  Task folder view styles. */
+	
 /* End:  GWT folder view styles. */
 
 
