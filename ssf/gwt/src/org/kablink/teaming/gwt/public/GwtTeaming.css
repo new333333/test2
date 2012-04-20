@@ -3019,6 +3019,10 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	position: relative;
 	top: 5px;
 }
+.gwtTaskList_loadingImg
+{
+	vertical-align: middle;
+}
 .gwtTaskList_newTaskMenu_Link {
 }
 .gwtTaskList_popupGlass

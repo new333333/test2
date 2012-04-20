@@ -113,7 +113,7 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 	@Override
 	public Panel createContent(Object callbackData) {
 		// Create and return a panel to hold the dialog's content.
-		m_vp = new VibeVerticalPanel();
+		m_vp = new VibeVerticalPanel(null, null);
 		m_vp.addStyleName("vibe-confirmDlg-rootPanel");
 		return m_vp;
 	}
