@@ -903,6 +903,17 @@ public class EventHelper {
 				}
 				break;
 			
+			case SHOW_BLOG_FOLDER:
+				// A ShowBlogFolderEvent!  Can the event handlerwe were given handle that?
+				if ( eventHandler instanceof ShowBlogFolderEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = ShowBlogFolderEvent.registerEvent(
+																		eventBus,
+																		((ShowBlogFolderEvent.Handler) eventHandler) );
+				}
+				break;
+			
 			case SHOW_CONTENT_CONTROL:
 				// A ShowContentControlEvent!  Can the event handler we
 				// were given handle that?
@@ -1600,6 +1611,7 @@ public class EventHelper {
 			case SEARCH_SIMPLE:                     	hasHandler = (eventHandler instanceof SearchSimpleEvent.Handler);                  break;
 			case SEARCH_TAG:                        	hasHandler = (eventHandler instanceof SearchTagEvent.Handler);                     break;
 			
+			case SHOW_BLOG_FOLDER:						hasHandler = (eventHandler instanceof ShowBlogFolderEvent.Handler);		   		   break;
 			case SHOW_CONTENT_CONTROL:                  hasHandler = (eventHandler instanceof ShowContentControlEvent.Handler);            break;
 			case SHOW_DISCUSSION_FOLDER:				hasHandler = (eventHandler instanceof ShowDiscussionFolderEvent.Handler);		   break;
 			case SHOW_DISCUSSION_WORKSPACE:				hasHandler = (eventHandler instanceof ShowDiscussionWSEvent.Handler);			   break;
