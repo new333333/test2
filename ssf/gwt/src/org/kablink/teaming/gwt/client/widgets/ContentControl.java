@@ -61,6 +61,7 @@ import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
+import org.kablink.teaming.gwt.client.event.ShowBlogFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
 import org.kablink.teaming.gwt.client.event.ShowDiscussionFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowDiscussionWSEvent;
@@ -124,6 +125,7 @@ public class ContentControl extends Composite
 		ContributorIdsRequestEvent.Handler,
 		ChangeContextEvent.Handler,
 		GotoUrlEvent.Handler,
+		ShowBlogFolderEvent.Handler,
 		ShowDiscussionFolderEvent.Handler,
 		ShowDiscussionWSEvent.Handler,
 		ShowFileFolderEvent.Handler,
@@ -162,6 +164,7 @@ public class ContentControl extends Composite
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		
 		// Show events.
+		TeamingEvents.SHOW_BLOG_FOLDER,
 		TeamingEvents.SHOW_DISCUSSION_FOLDER,
 		TeamingEvents.SHOW_DISCUSSION_WORKSPACE,
 		TeamingEvents.SHOW_FILE_FOLDER,
@@ -238,14 +241,11 @@ public class ContentControl extends Composite
 	 */
 	public void clear()
 	{
-		String html;
 		FrameElement frameElement;
 			
-		html = "<div style=\"text-align: center\">" + GwtTeaming.getMessages().oneMomentPlease() + "</div>";
-		
 		frameElement = getContentFrame();
 		if ( null != frameElement )
-			frameElement.getContentDocument().getBody().setInnerHTML( html );
+			frameElement.setSrc( "/ssf/html/empty.html" );
 
 		//setFrameHtml( m_frame.getName(), html );		
 	}
@@ -276,16 +276,7 @@ public class ContentControl extends Composite
 	 */
 	public void empty()
 	{
-		FrameElement frameElement;
-		
-		frameElement = getContentFrame();
-		if ( null != frameElement )
-		{
-			String html;
-			
-			html = "<body><div/></body>";
-			frameElement.getContentDocument().getBody().setInnerHTML( html );
-		}
+		clear();
 	}
 
 	/*
@@ -613,6 +604,24 @@ public class ContentControl extends Composite
 						FolderType ft = bi.getFolderType();
 						switch ( ft )
 						{
+						case BLOG:
+						{
+							boolean showNew = true;
+							
+							if ( m_isDebugLP )
+							{
+								if ( !Window.confirm( "Show new blog folder?" ) )
+									showNew = false;
+							}
+
+							if ( showNew )
+							{
+								GwtTeaming.fireEvent( new ShowBlogFolderEvent( bi, viewReady ) );
+								m_contentInGWT = true;
+							}
+							break;
+						}
+							
 						case DISCUSSION:
 							GwtTeaming.fireEvent( new ShowDiscussionFolderEvent( bi, viewReady ) );
 							m_contentInGWT = true;
@@ -667,7 +676,6 @@ public class ContentControl extends Composite
 							break;
 							
 	
-						case BLOG:
 						case CALENDAR:
 						case PHOTOALBUM:
 						case WIKI:
@@ -1023,6 +1031,19 @@ public class ContentControl extends Composite
 		setViewNow( null, event.getUrl() );
 	}
 
+	
+	/**
+	 * Handles ShowBlogFolderEvent's received by this class.
+	 * 
+	 * Implements the ShowBlogFolderEvent.Handler.onShowBlogFolder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowBlogFolder( final ShowBlogFolderEvent event )
+	{
+		Window.alert( "not yet implemented" );
+	}
 	
 	/**
 	 * Handles ShowDiscussionFolderEvent's received by this class.
