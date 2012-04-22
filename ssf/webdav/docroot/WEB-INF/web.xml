@@ -16,15 +16,11 @@
     </listener>
     
 	<filter>
-		<filter-name>rootDispatch</filter-name>
-		<filter-class>org.kablink.teaming.webdav.servlet.filter.RootDispatchFilter</filter-class>
+		<filter-name>resourceDispatch</filter-name>
+		<filter-class>org.kablink.teaming.webdav.servlet.filter.ResourceDispatchFilter</filter-class>
 		<init-param>
 			<param-name>mainUiPath</param-name>
 			<param-value>/ssf/a/</param-value>
-		</init-param>
-		<init-param>
-			<param-name>methodNames</param-name>
-			<param-value>GET</param-value>
 		</init-param>
 	</filter>
 
@@ -39,8 +35,8 @@
 	</filter>
 
     <filter-mapping>
-		<filter-name>rootDispatch</filter-name>
-		<url-pattern>/</url-pattern>
+		<filter-name>resourceDispatch</filter-name>
+		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
     <filter-mapping>

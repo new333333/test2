@@ -34,26 +34,30 @@
 package org.kablink.teaming.webdav.servlet.filter;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.kablink.util.StringUtil;
-
 /**
  * @author jong
  *
  */
-public class RootDispatchFilter implements Filter {
+public class ResourceDispatchFilter implements Filter {
+	
+	private static final int BUFFER_SIZE = 4096;
+
+	private ServletContext context;
 	
 	private String mainUiPath;
-	private String[] methodNames;
 	
 	/* (non-Javadoc)
 	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
@@ -61,7 +65,20 @@ public class RootDispatchFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		if(matchingMethod(((HttpServletRequest)request).getMethod())) {
+		HttpServletRequest req = (HttpServletRequest)request;
+		
+		String resource = req.getPathInfo();
+		
+		// Check if the client is requesting one of the few static resources
+		// available only at the system root.
+		if(req.getMethod().equalsIgnoreCase("GET")) {
+			if(knownStaticResource(resource)) {
+				getKnownStaticResource(resource, (HttpServletResponse)response);
+				return; // This request fulfilled.
+			}
+		}
+
+		if(resource.equals("/") && req.getMethod().equalsIgnoreCase("GET")) {
 			// Re-direct the client to the conventional webapp entry point.
 			((HttpServletResponse)response).sendRedirect(mainUiPath);
 		}
@@ -83,20 +100,43 @@ public class RootDispatchFilter implements Filter {
 	 */
 	@Override
 	public void init(FilterConfig fc) throws ServletException {
+        this.context = fc.getServletContext();
 		mainUiPath = fc.getInitParameter("mainUiPath");
 		if(mainUiPath == null)
 			throw new ServletException("mainUiPath param is missing");
-		String mNames = fc.getInitParameter("methodNames");
-		if(mNames == null)
-			throw new ServletException("methodNames param is missing");
-		methodNames = StringUtil.split(mNames,",");
 	}
 
-	private boolean matchingMethod(String requestMethod) {
-		for(String methodName:methodNames) {
-			if(methodName.equalsIgnoreCase(requestMethod))
-				return true;
-		}
-		return false;
+    private boolean knownStaticResource(String resourcePath) {
+		return (resourcePath.equals("/favicon.ico") || resourcePath.equals("/robots.txt"));
 	}
+    
+    private void getKnownStaticResource(String resourcePath, HttpServletResponse resp) throws ServletException, IOException {
+ 		InputStream in = context.getResourceAsStream(resourcePath);
+		if(in != null) {
+    		OutputStream out = resp.getOutputStream();
+    		try {
+    			copyStream(in, out);
+    		}
+    		finally {
+    			try {
+    				in.close();
+    			}
+    			catch(IOException ignore) {}
+    		}
+		}
+		else {
+			resp.sendError(HttpServletResponse.SC_NOT_FOUND, resourcePath);
+		}
+    }
+
+    private void copyStream(InputStream in, OutputStream out)
+			throws IOException {
+		// Copy the input stream to the output stream
+		byte[] buffer = new byte[BUFFER_SIZE];
+		int bytesRead = -1;
+		while ((bytesRead = in.read(buffer)) != -1) {
+			out.write(buffer, 0, bytesRead);
+		}
+    }
+
 }
