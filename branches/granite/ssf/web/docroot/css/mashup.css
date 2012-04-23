@@ -40,17 +40,17 @@ table.ss_mashup_border td {
 
 div.ss_mashup_element {
   margin: 5px 5px 8px;
-  border: 1px solid #ccc;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
 }
 
 div.ss_mashup_element_content {
+  background: #ffffff !important;
 }
 
 div.ss_mashup_element #ss_calendar_container,
 div.ss_mashup_element .tasks {
-  background: transparent !important;
+  background: #ffffff !important;
 }
 
 div.ss_mashup_form_element_header {
@@ -75,9 +75,11 @@ div.ss_mashup_list_header_form span {
 
 div.ss_mashup_list_content {
   padding: 8px;
-  }
+  background: #ffffff !important;
+}
 div.ss_mashup_list_content_border {
   padding: 8px;
+  background: #ffffff !important;
   border:1px solid #CCCCCC; 
 }
 
@@ -132,21 +134,25 @@ div.ss_mashup_folder_header_view a span:hover {
   
 div.ss_mashup_folder_description {
   padding: 0px;
+  background: #ffffff !important;
   color: #505354;
   font-size: 14px;
   } 
 
 div.ss_mashup_folder_list_closed {
   padding:5px;
-  }
+  background: #ffffff !important;
+}
 
 div.ss_mashup_folder_list_open {
   padding: 8px 0 0 0;
   margin: 0px 0px 2px 0px;
+  background: #ffffff !important;
 }
 div.ss_mashup_folder_list_open_no_border {
   padding: 0px;
   margin: 0px 0px 2px 0px;
+  background: #ffffff !important;
 }
 
 div.ss_mashup_folder_list_open span.ss_size_20px {
@@ -161,7 +167,8 @@ div.ss_mashup_folder_list_open_title {
 
 div.ss_mashup_folder_list_open_entry {
   padding: 2px 10px;
-  }
+  background: #ffffff !important;
+}
 div.ss_mashup_entry_header {
   background-color:#ededed; 
   padding:6px 10px;
@@ -173,6 +180,7 @@ div.ss_mashup_entry_header  span.ss_size_20px {
   
 div.ss_mashup_entry_content {
   padding: 2px 10px;
+  background: #ffffff !important;
   color: #353838;
   }
 div.ss_mashup_element .ss_labelLeft {
