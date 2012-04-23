@@ -44,10 +44,11 @@ div.ss_mashup_element {
 }
 div.ss_mashup_element #ss_calendar_container,
 div.ss_mashup_element .tasks {
-  background: transparent !important;
+  background: #ededed !important;
 }
 
 div.ss_mashup_element_content {
+  background: #ededed !important;
 }
 
 div.ss_mashup_form_element_header {
@@ -78,10 +79,12 @@ div.ss_mashup_list_header_form span {
   }
 div.ss_mashup_list_content {
   padding: 8px;
-  }
+  background: #ededed !important;
+}
 div.ss_mashup_list_content_border {
   padding: 8px;
   border:1px solid #CCCCCC; 
+  background: #ededed !important;
 }
 div.ss_mashup_list_content ul, div.ss_mashup_list_content_border ul {
   padding:4px 0px 0px 16px;
@@ -140,7 +143,8 @@ div.ss_mashup_folder_description {
   padding: 5px 10px 5px 0px;
   color: #F6F6F6;
   font-size: 14px;
-  }
+  background: #ededed !important;
+}
 div.ss_mashup_folder_description p {
   margin: 0px;
   }
@@ -148,6 +152,7 @@ div.ss_mashup_folder_description p {
 div.ss_mashup_folder_list_closed {
   padding:6px;
   border:1px solid #CCCCCC; 
+  background: #ededed !important;
 }
 	
 div.ss_mashup_folder_list_open span.ss_size_20px {
@@ -158,6 +163,7 @@ div.ss_mashup_folder_list_open span.ss_size_20px {
 div.ss_mashup_folder_list_open {
   padding: 0px;
   margin-bottom: 2px;
+  background: #ededed !important;
   border:1px solid #CCCCCC; 
   -moz-border-radius: 6px;
   -webkit-border-radius: 6px;
@@ -165,6 +171,7 @@ div.ss_mashup_folder_list_open {
 div.ss_mashup_folder_list_open_no_border {
   padding: 0px;
   margin: 0px 0px 2px 0px;
+  background: #ededed !important;
   -moz-border-radius: 6px;
   -webkit-border-radius: 6px;
   }
@@ -179,7 +186,7 @@ div.ss_mashup_folder_list_open_title {
 
 div.ss_mashup_folder_list_open_entry {
   padding: 5px 5px 0 5px;
-  background: transparent !important;
+  background: #ededed !important;
   }
 div.ss_mashup_folder_list_open ul {
   list-style: circle;
@@ -202,7 +209,8 @@ div.ss_mashup_entry_header  span.ss_size_20px {
   
 div.ss_mashup_entry_content {
   padding: 3px 10px;
-  }
+  background: #ededed !important;
+}
 div.ss_mashup_entry_content p {
   margin-top: 0px;
   }  
