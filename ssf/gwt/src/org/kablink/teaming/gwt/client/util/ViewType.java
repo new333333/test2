@@ -40,9 +40,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * client and the server as part of a GWT RPC request.
  * 
  * @author drfoster@novell.com
- *
  */
 public enum ViewType implements IsSerializable {
+	ADD_BINDER,
 	ADD_FOLDER_ENTRY,
 	ADD_PROFILE_ENTRY,
 	ADVANCED_SEARCH,

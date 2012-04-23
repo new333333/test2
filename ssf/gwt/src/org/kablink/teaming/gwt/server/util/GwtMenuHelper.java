@@ -1750,7 +1750,8 @@ public class GwtMenuHelper {
 		boolean reply = ((null != folder) && MiscUtil.hasString(viewType));
 		if (reply) {
 			reply =
-				((viewType.equals(Definition.VIEW_STYLE_DISCUSSION) ||
+				((viewType.equals(Definition.VIEW_STYLE_BLOG)       ||
+				  viewType.equals(Definition.VIEW_STYLE_DISCUSSION) ||
 				  viewType.equals(Definition.VIEW_STYLE_TABLE)      ||
 				  viewType.equals(Definition.VIEW_STYLE_FILE)       ||
 				  viewType.equals(Definition.VIEW_STYLE_GUESTBOOK)  ||
