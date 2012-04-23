@@ -708,7 +708,12 @@ public class GwtViewHelper {
 			
 			break;
 			
+		case ADD_BINDER:
+		case ADD_FOLDER_ENTRY:
+		case ADD_PROFILE_ENTRY:
 		case ADVANCED_SEARCH:
+		case BUILD_FILTER:
+		case VIEW_PROFILE_ENTRY:
 		case OTHER:
 			break;
 			
@@ -2938,6 +2943,11 @@ public class GwtViewHelper {
 		else if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
 			// An add folder entry!  Simply mark the ViewInfo as such.
 			vi.setViewType(ViewType.ADD_FOLDER_ENTRY);
+		}
+		
+		else if (action.equals(WebKeys.ACTION_ADD_BINDER)) {
+			// An add binder!  Simply mark the ViewInfo as such.
+			vi.setViewType(ViewType.ADD_BINDER);
 		}
 		
 		else if (action.equals(WebKeys.ACTION_ADD_PROFILE_ENTRY)) {

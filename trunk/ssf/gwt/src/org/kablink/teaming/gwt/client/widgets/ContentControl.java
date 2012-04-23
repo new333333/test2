@@ -877,6 +877,7 @@ public class ContentControl extends Composite
 					}
 					break;
 					
+				case ADD_BINDER:
 				case ADD_FOLDER_ENTRY:
 				case ADD_PROFILE_ENTRY:
 				case ADVANCED_SEARCH:
