@@ -3622,7 +3622,7 @@ div.ss_calendarNaviBar {
 	background-color: #c4c4c4;
 	margin: 0px;
 	padding: 10px;
-	overflow: hidden;
+	overflow: auto;
 	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
 	-webkit-border-top-left-radius: 5px;
