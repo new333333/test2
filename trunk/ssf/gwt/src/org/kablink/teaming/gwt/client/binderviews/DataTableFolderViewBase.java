@@ -85,6 +85,7 @@ import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedUserWorkspacesEvent;
@@ -177,6 +178,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		InvokeSignGuestbookEvent.Handler,
 		LockSelectedEntriesEvent.Handler,
 		MarkReadSelectedEntriesEvent.Handler,
+		MarkUnreadSelectedEntriesEvent.Handler,
 		MoveSelectedEntriesEvent.Handler,
 		PurgeSelectedEntriesEvent.Handler,
 		PurgeSelectedUserWorkspacesEvent.Handler,
@@ -234,6 +236,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.INVOKE_SIGN_GUESTBOOK,
 		TeamingEvents.LOCK_SELECTED_ENTRIES,
 		TeamingEvents.MARK_READ_SELECTED_ENTRIES,
+		TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES,
 		TeamingEvents.MOVE_SELECTED_ENTRIES,
 		TeamingEvents.PURGE_SELECTED_ENTRIES,
 		TeamingEvents.PURGE_SELECTED_USER_WORKSPACES,
@@ -1564,6 +1567,23 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the mark entries read.
 			BinderViewsHelper.markEntriesRead(getSelectedEntryIdsAsLongs());
+		}
+	}
+	
+	/**
+	 * Handles MarkUnreadSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the MarkUnreadSelectedEntriesEvent.Handler.onMarkUnreadSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMarkUnreadSelectedEntries(MarkUnreadSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Invoke the mark entries read.
+			BinderViewsHelper.markEntriesUnread(getSelectedEntryIdsAsLongs());
 		}
 	}
 	

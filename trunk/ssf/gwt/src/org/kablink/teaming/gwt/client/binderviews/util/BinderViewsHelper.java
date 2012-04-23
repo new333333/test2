@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.EnableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.LockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UnlockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntryId;
@@ -449,6 +450,45 @@ public class BinderViewsHelper {
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
 					GwtTeaming.getMessages().rpcFailure_SetSeen());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Simply force the content to refresh just in case its
+				// got something displayed that depends based on an
+				// entry's read/unread state.
+				busy.hide();
+				FullUIReloadEvent.fireOne();
+			}
+		});
+	}
+
+	/**
+	 * Marks the entries unread based on a List<Long> of their entry
+	 * IDs.
+	 *
+	 * @param entryIds
+	 */
+	public static void markEntriesUnread(List<Long> entryIds) {
+		// If we weren't given any entry IDs to be marked unread...
+		if ((null == entryIds) || entryIds.isEmpty()) {
+			// ...bail.
+			return;
+		}
+		
+		// Show a busy spinner while we mark entries unread.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send a request to mark the entries unread.
+		SetUnseenCmd cmd = new SetUnseenCmd(entryIds);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_SetUnseen());
 			}
 
 			@Override

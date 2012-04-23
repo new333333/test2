@@ -786,6 +786,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case MARK_UNREAD_SELECTED_ENTRIES:
+				// A MarkUnreadSelectedEntriesEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof MarkUnreadSelectedEntriesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = MarkUnreadSelectedEntriesEvent.registerEvent(eventBus, ((MarkUnreadSelectedEntriesEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case MASTHEAD_HIDE:
 				// A MastheadHideEvent!  Can the event handler we were
 				// given handle that?
@@ -1683,6 +1692,7 @@ public class EventHelper {
 			case ENABLE_SELECTED_USERS:                 hasHandler = (eventHandler instanceof EnableSelectedUsersEvent.Handler);           break;
 			case LOCK_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof LockSelectedEntriesEvent.Handler);           break;
 			case MARK_READ_SELECTED_ENTRIES:            hasHandler = (eventHandler instanceof MarkReadSelectedEntriesEvent.Handler);       break;
+			case MARK_UNREAD_SELECTED_ENTRIES:          hasHandler = (eventHandler instanceof MarkUnreadSelectedEntriesEvent.Handler);     break;
 			case MOVE_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof MoveSelectedEntriesEvent.Handler);           break;
 			case PURGE_SELECTED_ENTRIES:                hasHandler = (eventHandler instanceof PurgeSelectedEntriesEvent.Handler);          break;
 			case PURGE_SELECTED_USER_WORKSPACES:        hasHandler = (eventHandler instanceof PurgeSelectedUserWorkspacesEvent.Handler);   break;
