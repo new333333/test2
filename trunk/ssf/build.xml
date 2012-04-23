@@ -130,7 +130,7 @@
 
 		<ant dir="war" target="clean" inheritAll="false"/>
 		
-		<ant dir="ssfs" target="clean" inheritAll="false"/>
+		<!--<ant dir="ssfs" target="clean" inheritAll="false"/>-->
 		
 		<ant dir="ssr" target="clean" inheritAll="false"/>
 		<ant dir="simple-url" target="clean" inheritAll="false"/>		
@@ -216,7 +216,7 @@
 
 		<ant dir="war" target="war" inheritall="false"/>
 		
-		<ant dir="ssfs" target="war" inheritall="false"/>
+		<!--<ant dir="ssfs" target="war" inheritall="false"/>-->
 		
 		<ant dir="ssr" target="war" inheritall="false"/>
 		
@@ -261,7 +261,7 @@
 		
 		<ant dir="web" target="deploy" inheritall="false"/>
 		
-		<ant dir="ssfs" target="deploy" inheritall="false"/>
+		<!--<ant dir="ssfs" target="deploy" inheritall="false"/>-->
 		
 		<ant dir="ssr" target="deploy" inheritall="false"/>
 		
