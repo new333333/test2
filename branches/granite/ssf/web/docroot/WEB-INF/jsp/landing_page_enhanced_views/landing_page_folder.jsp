@@ -104,6 +104,7 @@
 
 	</div>
 	
+    <c:if test="${!empty ss_mashupBinderEntries[mashupBinderId]}">
     <div style="${mHeight} ${mOverflow}">
 
 	<c:forEach var="entryMap" items="${ss_mashupBinderEntries[mashupBinderId]}" varStatus="status">
@@ -212,8 +213,9 @@
 		  
 		</c:if>
 	</c:forEach>
-  <div class="ss_mashup_round_bottom"><div></div></div>
   </div>
+  </c:if>
+  <div class="ss_mashup_round_bottom"><div></div></div>
 </div>
 <% if (ss_mashupListDepth > 0) { %>
 <c:if test="${!empty mashupBinder}">

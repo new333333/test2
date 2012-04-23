@@ -109,6 +109,7 @@
 		</div>
       </c:if>
 	
+	<c:if test="${!empty ss_mashupBinderEntries[mashupBinderId]}">
 	<div class="ss_mashup_folder_list_open" style="${mHeight} ${mOverflow}">
 <% 
 	TreeMap tm = new java.util.TreeMap(new StringComparator(ssUser.getLocale()));
@@ -133,6 +134,7 @@
 		</div>
 	</c:forEach>
 	</div>
+	</c:if>
   <div class="ss_mashup_round_bottom"><div></div></div>
 </div>
 <% if (ss_mashupListDepth > 0) { %>
