@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Window;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
@@ -83,6 +84,8 @@ public class BlogFolderView extends FolderViewBase
 	@Override
 	public void constructView()
 	{
+		//!!! Call viewReady() when we are finished constructing everything.
+		viewReady();
 	}
 
 	/**
@@ -151,6 +154,33 @@ public class BlogFolderView extends FolderViewBase
 	}
 	
 	/*
+	 * Asynchronously populates the blog view.
+	 */
+	private void populateViewAsync()
+	{
+		Scheduler.ScheduledCommand doPopulate;
+
+		doPopulate = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				populateViewNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doPopulate);
+	}
+	
+	/*
+	 * Synchronously populates the the task view.
+	 */
+	private void populateViewNow()
+	{
+//!!!		getFlowPanel().add(m_taskListing);
+		viewReady();
+	}
+	
+	/*
 	 * Registers any global event handlers that need to be registered.
 	 */
 	private void registerEvents()
@@ -185,8 +215,7 @@ public class BlogFolderView extends FolderViewBase
 	public void resetView()
 	{
 		getFlowPanel().clear();
-		//!!! What to do here?
-		//populateViewAsync();
+		populateViewAsync();
 	}
 	
 	/**

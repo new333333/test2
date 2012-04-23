@@ -607,7 +607,7 @@ public class ContentControl extends Composite
 						{
 						case BLOG:
 						{
-							boolean showNew = true;
+							boolean showNew = false;
 							
 							if ( m_isDebugLP )
 							{
