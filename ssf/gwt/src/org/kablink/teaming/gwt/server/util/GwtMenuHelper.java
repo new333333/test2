@@ -608,10 +608,16 @@ public class GwtMenuHelper {
 		
 		// ...if the user is not the Guest user...
 		if (!isGuest) {
-			// ...add the mark read item....
+			// ...add the mark read....
 			tbi = new ToolbarItem("1_markReadSelected");
 			markTBITitle(tbi, "toolbar.markRead");
 			markTBIEvent(tbi, TeamingEvents.MARK_READ_SELECTED_ENTRIES);
+			moreTBI.addNestedItem(tbi);
+			
+			// ...and the mark unread items....
+			tbi = new ToolbarItem("1_markUnreadSelected");
+			markTBITitle(tbi, "toolbar.markUnread");
+			markTBIEvent(tbi, TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES);
 			moreTBI.addNestedItem(tbi);
 		}
 		

@@ -201,7 +201,8 @@ public enum TeamingEvents implements IsSerializable {
 	DISABLE_SELECTED_USERS,				// Disables the Selected Users.
 	ENABLE_SELECTED_USERS,				// Enables the Selected Users.
 	LOCK_SELECTED_ENTRIES,				// Locks the Selected Entries.
-	MARK_READ_SELECTED_ENTRIES,			// Marks the Selected Entries as Having Been Read.
+	MARK_READ_SELECTED_ENTRIES,			// Marks the Selected Entries as     Having Been Read.
+	MARK_UNREAD_SELECTED_ENTRIES,		// Marks the Selected Entries as Not Having Been Read.
 	MOVE_SELECTED_ENTRIES,				// Moves the Selected Entries.
 	PURGE_SELECTED_ENTRIES,				// Deletes and Immediately Purges the Selected Entries.
 	PURGE_SELECTED_USER_WORKSPACES,		// Purges the Selected User Workspaces.
