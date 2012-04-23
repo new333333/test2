@@ -88,7 +88,8 @@
   </c:if>
 >
     <div class="ss_mashup_round_top"><div></div></div>
-	<div class="ss_mashup_folder_header_view">
+      <c:if test="${!empty mashup_attributes['showTitle']}">
+	  <div class="ss_mashup_folder_header_view">
 		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
 		  action="view_permalink" 
 		  binderId="${mashupBinder.id}">
@@ -103,7 +104,9 @@
 		</c:if>
 
 	</div>
+	</c:if>
 
+	<c:if test="${!empty ss_mashupBinderEntries[mashupBinderId]}">
 	<div class="ss_mashup_folder_list_open" style="${mHeight} ${mOverflow}">
 	<ul>
 	<c:forEach var="entryMap" items="${ss_mashupBinderEntries[mashupBinderId]}" varStatus="status">
@@ -130,6 +133,7 @@
 	</c:forEach>
 	</ul>
 	</div>
+	</c:if>
   <div class="ss_mashup_round_bottom"><div></div></div>
 </div>
 <% if (ss_mashupListDepth > 0) { %>

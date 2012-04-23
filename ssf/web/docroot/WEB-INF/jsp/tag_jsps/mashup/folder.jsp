@@ -115,7 +115,8 @@
 			</div>
 		</c:if>
 
-	<c:if test="${ssConfigJspStyle != 'form' && empty mashup_attributes['showEntriesOpened']}">
+	<c:if test="${ssConfigJspStyle != 'form' && empty mashup_attributes['showEntriesOpened'] && 
+			!empty ss_mashupBinderEntries[mashupBinderIdIndex]}">
 	<div class="ss_mashup_folder_list_closed" style="${mHeight} ${mOverflow}">
 	  <c:forEach var="entry" items="${ss_mashupBinderEntries[mashupBinderIdIndex]}" varStatus="status">
 	    <c:if test="${empty mashup_attributes['entriesToShow'] || status.count <= mashup_attributes['entriesToShow']}">
@@ -138,7 +139,8 @@
 	  </c:forEach>
 	</div>
 	</c:if>
-	<c:if test="${ssConfigJspStyle != 'form' && !empty mashup_attributes['showEntriesOpened']}">
+	<c:if test="${ssConfigJspStyle != 'form' && !empty mashup_attributes['showEntriesOpened'] &&
+			!empty ss_mashupBinderEntries[mashupBinderIdIndex]}">
 	  <div class="ss_mashup_folder_list_open" style="${mHeight} ${mOverflow}">
 	  <c:forEach var="entry" items="${ss_mashupBinderEntries[mashupBinderIdIndex]}" varStatus="status">
 	    <c:if test="${empty mashup_attributes['entriesToShow'] || status.count <= mashup_attributes['entriesToShow']}">
