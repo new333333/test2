@@ -39,6 +39,7 @@
 		
 		<delete dir="${app.server.ssf.dir}"/>
 		<delete dir="${app.server.ssfs.dir}"/>
+		<delete dir="${app.server.webdav.dir}"/>
 	</target>
 	
 	<target name="init-standalone">
@@ -110,7 +111,7 @@
 		<ant dir="${project.dir}/as-common" target="${target}" inheritAll="false" />
 		<ant dir="${project.dir}/as-shared" target="${target}" inheritAll="false" />
 		<!-- ssfs component is deployed into its own web app -->
-		<ant dir="${project.dir}/ssfs" target="${target}" inheritAll="false" />
+		<!--<ant dir="${project.dir}/ssfs" target="${target}" inheritAll="false" />-->
 		<!-- ssr component is deployed into its own web app -->
 		<ant dir="${project.dir}/ssr" target="${target}" inheritAll="false" />
 		<!-- simple-url component is deployed into its own web app -->
