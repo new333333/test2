@@ -295,15 +295,23 @@ public class RelevanceDashboardHelper {
 		DateTime future = today.plusWeeks(SPropsUtil.getInt("relevance.tasks2WeeksAhead")).plusDays(1);
 		DateTime fromDate = today.minusMonths(SPropsUtil.getInt("relevance.tasksFromMonthsAgo"));
 		
+		Criteria crit;
+		Map results;
 		if (model.containsKey(WebKeys.TYPE3) && model.get(WebKeys.TYPE3).equals("all")) {
-			future = today.plusMonths(SPropsUtil.getInt("relevance.tasksAllMonthsAhead"));
-		}
-		Criteria crit = SearchUtils.tasksForUser(binder.getOwnerId(), 
+			//Get all of the tasks
+			crit = SearchUtils.tasksForUser(binder.getOwnerId(), 
+					(String[])groupsS.toArray(new String[groupsS.size()]), 
+					(String[])teams.toArray(new String[teams.size()]));
+			results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+		} else {
+			//Get the tasks due shortly
+			crit = SearchUtils.tasksForUser(binder.getOwnerId(), 
 													(String[])groupsS.toArray(new String[groupsS.size()]), 
 													(String[])teams.toArray(new String[teams.size()]),
 													fromDate.toDate(),
 													future.toDate());
-		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+			results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+		}
 
 		model.put(WebKeys.MY_TASKS, results.get(ObjectKeys.SEARCH_ENTRIES));
 
