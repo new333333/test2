@@ -250,6 +250,7 @@
 	font-size: 12px;
 	margin-top: 4px;
 	margin-left: 1px;
+	position: relative;
 }
 
 .activityStreamCommentAvatarImg
