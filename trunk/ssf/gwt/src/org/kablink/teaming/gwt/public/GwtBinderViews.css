@@ -297,6 +297,7 @@
 	.vibe-sizeColumnsDlg-colCaptionImg {}
 	.vibe-sizeColumnsDlg-colCaptionTxt {font-size:  14px;}
 	.vibe-sizeColumnsDlg-colPanel      {}
+	.vibe-sizeColumnsDlg-content       {}
 	.vibe-sizeColumnsDlg-dataTable     {background-color: #F6F6F6; border-bottom: 0px solid #F6F6F6; border: 1px solid #D2D5D1;}
 	.vibe-sizeColumnsDlg-headerCell    {}
 	.vibe-sizeColumnsDlg-headerRow     {
@@ -309,19 +310,20 @@
 		text-indent: 0.5em;
 		white-space: nowrap;
 	}
-	.vibe-sizeColumnsDlg-label         {}
-	.vibe-sizeColumnsDlg-radio         {}
-	.vibe-sizeColumnsDlg-radioLabel    {}
-	.vibe-sizeColumnsDlg-rowCell       {font-size: .75em; padding: 3px 8px; border-bottom: 1px solid #D2D5D1; white-space: nowrap;}
-	.vibe-sizeColumnsDlg-rowCellCB     {text-align: center;}
-	.vibe-sizeColumnsDlg-row-even      {background: white;  }
-	.vibe-sizeColumnsDlg-row-odd       {background: #F3F7FB;}
-	.vibe-sizeColumnsDlg-scrollLimit   {height: 210px;}
-	.vibe-sizeColumnsDlg-scrollPanel   {overflow-y: auto !important; overflow-x: hidden !important; padding: 5px; padding-right: 28px; margin: 5px;}
-	.vibe-sizeColumnsDlg-sizePanel     {}
-	.vibe-sizeColumnsDlg-sizeRB        {}
-	.vibe-sizeColumnsDlg-sizeSlider    {width: 100px !important;}
-	.vibe-sizeColumnsDlg-sizeSpinner   {}
+	.vibe-sizeColumnsDlg-label          {}
+	.vibe-sizeColumnsDlg-radio          {}
+	.vibe-sizeColumnsDlg-radioLabel     {}
+	.vibe-sizeColumnsDlg-rowCell        {font-size: .75em; padding: 3px 8px; border-bottom: 1px solid #D2D5D1; white-space: nowrap;}
+	.vibe-sizeColumnsDlg-rowCellCB      {text-align: center;}
+	.vibe-sizeColumnsDlg-row-even       {background: white;  }
+	.vibe-sizeColumnsDlg-row-odd        {background: #F3F7FB;}
+	.vibe-sizeColumnsDlg-scrollLimit    {height: 210px;}
+	.vibe-sizeColumnsDlg-scrollPanel    {overflow-y: auto !important; overflow-x: hidden !important; padding: 5px; padding-right: 28px; margin: 5px;}
+	.vibe-sizeColumnsDlg-sizePanel      {}
+	.vibe-sizeColumnsDlg-sizeRB         {}
+	.vibe-sizeColumnsDlg-sizeSlider     {width: 100px !important;}
+	.vibe-sizeColumnsDlg-sizeSliderHint {display: inline-block; width: 425px; padding-top: 10px; padding-left: 10px; font-family: Arial, Helvetica, sans-serif; font-weight: inherit; font-size: 12px; background-color: transparent; color: #1f1f1f; line-height: 1.4em;}
+	.vibe-sizeColumnsDlg-sizeSpinner    {}
 	.vibe-sizeColumnsDlg-sizeSpinner .textBox
 	{
 		font-size: 12px;

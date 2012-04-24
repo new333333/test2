@@ -1363,6 +1363,8 @@ public interface GwtTeamingMessages extends Messages
 	String sizeColumnsDlgFixedRB();
 	String sizeColumnsDlgFlowRB();
 	String sizeColumnsDlgHeader();
+	String sizeColumnsDlgSizingDisabledHover();
+	String sizeColumnsDlgSliderHint();
 	String sizeColumnsDlgUnitPercentRB();
 	String sizeColumnsDlgUnitPixelRB();
 	String sizeColumnsDlgWarnPercents();
