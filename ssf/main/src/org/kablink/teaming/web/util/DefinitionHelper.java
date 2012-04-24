@@ -997,16 +997,11 @@ public class DefinitionHelper {
 	        					teams.add(((Map)teamMembershipsIt.next()).get(Constants.DOCID_FIELD));
 	        				}
 	        				
-	        				DateTime today = (new DateMidnight(DateTimeZone.forTimeZone(user.getTimeZone()))).toDateTime();
-	        				DateTime future = future = today.plusMonths(SPropsUtil.getInt("relevance.tasksAllMonthsAhead"));
-	        				DateTime fromDate = today.minusMonths(SPropsUtil.getInt("relevance.tasksFromMonthsAgo"));
+	        				//Get the tasks irrespective of due dates
 	        				Criteria crit = SearchUtils.tasksForUser(user.getId(), 
-	        															(String[])groupsS.toArray(new String[groupsS.size()]), 
-	        															(String[])teams.toArray(new String[teams.size()]),
-	        															fromDate.toDate(),
-	        															future.toDate());
+	        									(String[])groupsS.toArray(new String[groupsS.size()]), 
+	        									(String[])teams.toArray(new String[teams.size()]));
 	        				Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
-
         					mashupMyTaskEntries.addAll((List)results.get(ObjectKeys.SEARCH_ENTRIES));
 
         					//Get the task binders so the title can be shown
