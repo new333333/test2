@@ -611,8 +611,8 @@ public class ContentControl extends Composite
 							
 							if ( m_isDebugLP )
 							{
-								if ( !Window.confirm( "Show new blog folder?" ) )
-									showNew = false;
+								if ( Window.confirm( "Show new blog folder?" ) )
+									showNew = true;
 							}
 
 							if ( showNew )

@@ -295,18 +295,32 @@
 
 /* Start:  Size columns dialog styles. */
 	.vibe-sizeColumnsDlg-colCaptionImg {}
-	.vibe-sizeColumnsDlg-colCaptionTxt {font-size:  14px; font-weight: bold;}
-	.vibe-sizeColumnsDlg-cell-even     {background: white;  }
-	.vibe-sizeColumnsDlg-cell-odd      {background: #F3F7FB;}
+	.vibe-sizeColumnsDlg-colCaptionTxt {font-size:  14px;}
 	.vibe-sizeColumnsDlg-colPanel      {}
-	.vibe-sizeColumnsDlg-horizPanel    {}
+	.vibe-sizeColumnsDlg-dataTable     {background-color: #F6F6F6; border-bottom: 0px solid #F6F6F6; border: 1px solid #D2D5D1;}
+	.vibe-sizeColumnsDlg-headerCell    {}
+	.vibe-sizeColumnsDlg-headerRow     {
+		background: transparent url("images/blends/gray_blend8_28.png") repeat-x scroll center;
+		color: #505354;
+		font-size: 0.8em;
+		height: 24px;
+		padding: 0.2em;
+		text-align: left;
+		text-indent: 0.5em;
+		white-space: nowrap;
+	}
 	.vibe-sizeColumnsDlg-label         {}
 	.vibe-sizeColumnsDlg-radio         {}
 	.vibe-sizeColumnsDlg-radioLabel    {}
-	.vibe-sizeColumnsDlg-scrollLimit   {width: 600px;}
-	.vibe-sizeColumnsDlg-scrollPanel   {overflow-y: hidden; overflow-x: auto; padding: 5px; margin: 5px;}
+	.vibe-sizeColumnsDlg-rowCell       {font-size: .75em; padding: 3px 8px; border-bottom: 1px solid #D2D5D1; white-space: nowrap;}
+	.vibe-sizeColumnsDlg-rowCellCB     {text-align: center;}
+	.vibe-sizeColumnsDlg-row-even      {background: white;  }
+	.vibe-sizeColumnsDlg-row-odd       {background: #F3F7FB;}
+	.vibe-sizeColumnsDlg-scrollLimit   {height: 210px;}
+	.vibe-sizeColumnsDlg-scrollPanel   {overflow-y: auto !important; overflow-x: hidden !important; padding: 5px; padding-right: 28px; margin: 5px;}
 	.vibe-sizeColumnsDlg-sizePanel     {}
-	.vibe-sizeColumnsDlg-sizeRB        {margin-top: 0px !important;}
+	.vibe-sizeColumnsDlg-sizeRB        {}
+	.vibe-sizeColumnsDlg-sizeSlider    {width: 100px !important;}
 	.vibe-sizeColumnsDlg-sizeSpinner   {}
 	.vibe-sizeColumnsDlg-sizeSpinner .textBox
 	{

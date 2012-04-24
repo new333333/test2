@@ -1354,6 +1354,11 @@ public interface GwtTeamingMessages extends Messages
 	String taskFolderWidget_status();
 
 	// Strings used in the SizeColumnsDlg.
+	String sizeColumnsDlgColColumn();
+	String sizeColumnsDlgColDefault();
+	String sizeColumnsDlgColResize();
+	String sizeColumnsDlgColSize();
+	String sizeColumnsDlgColUnit();
 	String sizeColumnsDlgDefaultRB(String def);
 	String sizeColumnsDlgFixedRB();
 	String sizeColumnsDlgFlowRB();
