@@ -50,9 +50,11 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.SliderBar;
 import org.kablink.teaming.gwt.client.widgets.Spinner;
 import org.kablink.teaming.gwt.client.widgets.SpinnerListener;
 import org.kablink.teaming.gwt.client.widgets.ValueSpinner;
+import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
 import org.kablink.teaming.gwt.client.widgets.VibeHorizontalPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
@@ -63,12 +65,16 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.cellview.client.AbstractCellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.HTMLTable.RowFormatter;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -92,6 +98,8 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	private BinderInfo						m_folderInfo;			// The folder the dialog is running against.
 	private boolean							m_warnOnUnitMix;		// true -> Warn the user about mixing %/pixel values.  false -> Don't.
 	private ColumnWidth						m_defaultColumnWidth;	// The default column width for the data table.
+	private FlexCellFormatter				m_dataTableCF;			//
+	private FlexTable						m_dataTable;			//
 	private GwtTeamingDataTableImageBundle	m_images;				// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;				// Access to Vibe's messages.
 	private int								m_dtAbsTop;				// The absolute top of the data table whose columns are being sized.  Used to position the dialog.
@@ -99,18 +107,18 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	private Map<String, ColumnWidth>		m_columnWidths;			// The current widths of the columns.
 	private Map<String, ColumnWidth>		m_defaultColumnWidths;	// The default widths of the columns in the data table.
 	private Map<String, ColumnWidth>		m_initialColumnWidths;	// The widths of the columns passed in when the dialog was invoked.
+	private RowFormatter					m_dataTableRF;			//
 	private ScrollPanel						m_sp;					// ScrollPanel with the dialog's contents.
 
-	// The following defines the amount of padded that will be inserted
-	// between the bottom of the dialog and the top of the data table.
-	private final static int PADDING_BEWTEEN_DLG_AND_DT	= 20;
+	private final static int PADDING_FOR_DLG_HEADER	= 25;
 
-	// The following define the row indexes into the FlexTable used to
-	// edit the size of an individual column.
-	private final static int ROW_CAPTION	= 0;
-	private final static int ROW_DEFAULT_RB	= 1;
-	private final static int ROW_FIXED_RB	= 2;
-	private final static int ROW_SIZER		= 3;
+	// The following define the column indexes into the FlexTable used
+	// to edit the column sizes.
+	private final static int COL_DEFAULT_CB	= 0;
+	private final static int COL_COLUMN		= 1;
+	private final static int COL_RESIZE		= 2;
+	private final static int COL_SIZE		= 3;
+	private final static int COL_UNIT		= 4;
 	
 	/*
 	 * Inner class that wraps items displayed in the dialog's content.
@@ -198,45 +206,49 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * Connect the appropriate column listeners to the various sizing
 	 * widgets for a column.
 	 */
-	private void connectColumnListeners(final String cName, final RadioButton flowRB, final RadioButton fixedRB, final ValueSpinner vSizeSpinner, final RadioButton pctRB, final RadioButton pxRB) {
-		// Connect a listener to the flow radio button.
-		flowRB.addClickHandler(new ClickHandler() {
+	private void connectColumnListeners(final String cName, final CheckBox useDefaultCB, final SliderBar vSizeSlider, final ValueSpinner vSizeSpinner, final RadioButton pctRB, final RadioButton pxRB) {
+		// Connect a listener to the default checkbox.
+		useDefaultCB.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				// If this radio button is being checked...
-				if (flowRB.getValue()) {
-					// ...adjust the column widths accordingly and
-					// ...disable the sizer widgets.
+				// If this checkbox is being checked, adjust the column
+				// widths accordingly and enable/disable the sizer
+				// widgets as appropriate.
+				if (useDefaultCB.getValue()) {
 					ColumnWidth defaultCW = m_defaultColumnWidths.get(cName);
 					if (null == defaultCW) {
 						defaultCW = m_defaultColumnWidth;
 					}
 					adjustColumnWidth(cName, defaultCW);
-					setSizeWidgetsEnabled(false, vSizeSpinner, pctRB, pxRB);
+					setSizeWidgetsEnabled(false, vSizeSlider, vSizeSpinner, pctRB, pxRB);
+				}
+				else {
+					adjustColumnWidth(cName, new ColumnWidth(vSizeSpinner.getSpinner().getValue(), (pctRB.getValue() ? Unit.PCT : Unit.PX)));
+					setSizeWidgetsEnabled(true, vSizeSlider, vSizeSpinner, pctRB, pxRB);
 				}
 			}
 		});
 		
-		// Connect a listener to the fixed radio button.
-		fixedRB.addClickHandler(new ClickHandler() {
+		// Connect a listener to the size slider.
+		vSizeSlider.addValueChangeHandler(new ValueChangeHandler<Double>() {
 			@Override
-			public void onClick(ClickEvent event) {
-				// If this radio button is being checked...
-				if (fixedRB.getValue()) {
-					// ...adjust the column widths accordingly and
-					// ...enable the sizer widgets.
-					adjustColumnWidth(cName, new ColumnWidth(vSizeSpinner.getSpinner().getValue(), (pctRB.getValue() ? Unit.PCT : Unit.PX)));
-					setSizeWidgetsEnabled(true, vSizeSpinner, pctRB, pxRB);
-				}
+			public void onValueChange(ValueChangeEvent<Double> event) {
+				// Adjust the column width with the value from the
+				// slider.
+				double value = event.getValue();
+				vSizeSpinner.getTextBox().setValue(String.valueOf(value));
+				vSizeSpinner.getSpinner().setValue(value, false);
+				adjustColumnWidth(cName, new ColumnWidth(value, (pctRB.getValue() ? Unit.PCT : Unit.PX)));
 			}
 		});
-
+		
 		// Connect a listener to the size spinner.
 		vSizeSpinner.getSpinner().addSpinnerListener(new SpinnerListener() {
 			@Override
 			public void onSpinning(double value) {
 				// Adjust the column width with the value from the
 				// spinner.
+				vSizeSlider.setCurrentValue(value, false);
 				adjustColumnWidth(cName, new ColumnWidth(value, (pctRB.getValue() ? Unit.PCT : Unit.PX)));
 			}
 		});
@@ -445,18 +457,34 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	private void populateDlgNow() {
 		// Reset the contents of the scroll panel...
 		m_sp.clear();
-		HorizontalPanel hp = new VibeHorizontalPanel();
-		hp.addStyleName("vibe-sizeColumnsDlg-horizPanel");
-		m_sp.add(hp);
 
-		// ...render the column data...
-		int cols = 0;
+		// ...create a table to hold the sizing widgets...
+		m_dataTable = new VibeFlexTable();
+		m_dataTable.addStyleName("vibe-sizeColumnsDlg-dataTable");
+		m_dataTable.setCellPadding(0);
+		m_dataTable.setCellSpacing(0);
+		m_sp.add(m_dataTable);
+
+		// ...get the formatters for laying out the table...
+		m_dataTableCF = m_dataTable.getFlexCellFormatter();
+		m_dataTableRF = m_dataTable.getRowFormatter();
+
+		// ...render the table's header...
+		renderHeaderRow();
+		
+		// ...render the rows for the column data...
+		int rows = 0;
 		for (FolderColumn fc:  m_fcList) {
-			renderColumn(hp, fc, ((0 == (cols++ % 2)) ? "vibe-sizeColumnsDlg-cell-even" : "cell-odd"));
+			renderColumnRow(
+				fc,
+				++rows,
+				("vibe-sizeColumnsDlg-" + ((0 == (rows % 2)) ?
+					"row-even"                               :
+					"row-odd")));
 		}
 		
 		// ...and adjust the scroll panel's styles as appropriate.
-		if (4 < cols)
+		if (5 < rows)
 		     m_sp.addStyleName(   "vibe-sizeColumnsDlg-scrollLimit");
 		else m_sp.removeStyleName("vibe-sizeColumnsDlg-scrollLimit");
 		
@@ -470,8 +498,7 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 				int left  = ((0 >= wDiff) ? 0 : (wDiff / 2));
 
 				// ...and top dialog positions...
-				int hDiff = (m_dtAbsTop - (offsetHeight + PADDING_BEWTEEN_DLG_AND_DT));
-				int top   = ((0 >= hDiff) ? 0 : hDiff);
+				int top = (m_dtAbsTop + PADDING_FOR_DLG_HEADER);
 				
 				// ...and put the dialog there.
 				setPopupPosition(left, top);
@@ -480,18 +507,21 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	}
 	
 	/*
-	 * Renders a column sizer into a HorizontalPanel.
+	 * Renders a column sizer row into data table.
 	 */
-	private void renderColumn(HorizontalPanel hp, FolderColumn fc, String cellStyle) {
-		// Create a FlexTable to hold the widgets to size this column.
-		FlexTable ft = new FlexTable();
-		ft.addStyleName("vibe-sizeColumnsDlg-colPanel " + cellStyle);
-		hp.add(ft);
-		FlexCellFormatter ftFmt = ft.getFlexCellFormatter();
-
-		// Create a caption for this column's sizer.
+	private void renderColumnRow(FolderColumn fc, int rowIndex, String rowStyle) {
+		// Create the 'use default' checkbox for the column.
+		String      cName     = fc.getColumnName();
+		ColumnWidth cw        = m_columnWidths.get(       cName);
+		ColumnWidth defaultCW = m_defaultColumnWidths.get(cName);
+		boolean isDefault = ((null == cw) || (cw.equals(defaultCW)));	// No column width or the default for the column.
+		CheckBox useDefaultCB = new CheckBox();
+		useDefaultCB.setValue(isDefault);
+		m_dataTable.setWidget(     rowIndex, COL_DEFAULT_CB, useDefaultCB);
+		m_dataTableCF.addStyleName(rowIndex, COL_DEFAULT_CB, "vibe-sizeColumnsDlg-rowCell vibe-sizeColumnsDlg-rowCellCB");
+		
+		// Create a caption for the column.
 		Widget captionWidget;
-		String cName = fc.getColumnName();
 		if (cName.equals(ColumnWidth.COLUMN_PIN)) {
 			Image columnCaption = new Image(m_images.grayPin());
 			columnCaption.addStyleName("vibe-sizeColumnsDlg-colCaptionImg");
@@ -503,84 +533,88 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 			columnCaption.addStyleName("vibe-sizeColumnsDlg-colCaptionTxt");
 			captionWidget = columnCaption;
 		}
-		ft.setWidget(    ROW_CAPTION, 0, captionWidget);
-		ftFmt.setColSpan(ROW_CAPTION, 0, 4            );
-		
-		// Create a radio button to allow this column's width to flow.
-		ColumnWidth cw        = m_columnWidths.get(       cName);
-		ColumnWidth defaultCW = m_defaultColumnWidths.get(cName);
-		boolean isFlow = ((null == cw) || (cw.equals(defaultCW)));	// No column width or the default for the column -> Flow.
-		if (isFlow) {
-			cw = defaultCW;
-			if (null == defaultCW) {
-				cw = m_defaultColumnWidth;
-				if (null == cw) {
-					cw = new ColumnWidth(
-						1,
-						(ColumnWidth.hasPCTWidths(m_fcList, m_columnWidths, m_defaultColumnWidth) ?
-							Unit.PCT                                                              :
-							Unit.PX));
-				}
-			}
-		}
-		String rbGroup = (cName + "_value");
-		RadioButton flowRB = new RadioButton(rbGroup);
-		flowRB.addStyleName("vibe-sizeColumnsDlg-radio");
-		ft.setWidget(ROW_DEFAULT_RB, 0, flowRB);
-		flowRB.setValue(isFlow);
-		if (null == defaultCW) {
-			defaultCW = m_defaultColumnWidth;
-		}
-		String flowText = ((null == defaultCW) ? m_messages.sizeColumnsDlgFlowRB() : m_messages.sizeColumnsDlgDefaultRB(defaultCW.getWidth() + defaultCW.getUnits().getType()));
-		DlgLabel flowLabel = new DlgLabel(flowText);
-		flowLabel.addStyleName("vibe-sizeColumnsDlg-radioLabel");
-		ft.setWidget(    ROW_DEFAULT_RB, 1, flowLabel);
-		ftFmt.setColSpan(ROW_DEFAULT_RB, 1, 3        );
+		m_dataTable.setWidget(     rowIndex, COL_COLUMN, captionWidget);
+		m_dataTableCF.addStyleName(rowIndex, COL_COLUMN, "vibe-sizeColumnsDlg-rowCell");
 
-		// Create a radio button to specify a fixed width for this
-		// column.
-		RadioButton fixedRB = new RadioButton(rbGroup);
-		fixedRB.addStyleName("vibe-sizeColumnsDlg-radio");
-		ft.setWidget(ROW_FIXED_RB, 0, fixedRB);
-		fixedRB.setValue(!isFlow);
-		
-		DlgLabel fixedLabel = new DlgLabel(m_messages.sizeColumnsDlgFixedRB());
-		fixedLabel.addStyleName("vibe-sizeColumnsDlg-radioLabel");
-		ft.setWidget(    ROW_FIXED_RB, 1, fixedLabel);
-		ftFmt.setColSpan(ROW_FIXED_RB, 1, 3         );
+		// Create a resizing slider for the column.
+		int unitMax = getUnitMax(cw.getUnits());
+		SliderBar vSizeSlider = new SliderBar(0, unitMax);
+		vSizeSlider.addStyleName("vibe-sizeColumnsDlg-sizeSlider");
+		vSizeSlider.setStepSize(1);
+		vSizeSlider.setCurrentValue(cw.getWidth());
+		m_dataTable.setWidget(     rowIndex, COL_RESIZE, vSizeSlider);
+		m_dataTableCF.addStyleName(rowIndex, COL_RESIZE, "vibe-sizeColumnsDlg-rowCell");
 
-		// Create the widgets for specifying a fixed width for a
+		// Create the widgets for specifying a fixed width for the
 		// column...
-		ValueSpinner vSizeSpinner = new ValueSpinner(cw.getWidth(), 0, getUnitMax(cw.getUnits()));
+		ValueSpinner vSizeSpinner = new ValueSpinner(cw.getWidth(), 0, unitMax);
 		vSizeSpinner.addStyleName("vibe-sizeColumnsDlg-sizeSpinner");
-		ft.setWidget(ROW_SIZER, 1, vSizeSpinner);
+		m_dataTable.setWidget(     rowIndex, COL_SIZE, vSizeSpinner);
+		m_dataTableCF.addStyleName(rowIndex, COL_SIZE, "vibe-sizeColumnsDlg-rowCell");
 		vSizeSpinner.getTextBox().setVisibleLength(5);
-
-		// ...that can either be a percentage...
-		VerticalPanel sizerPanel = new VibeVerticalPanel();
+		
+		// ...that can either be a pixel value...
+		HorizontalPanel sizerPanel = new VibeHorizontalPanel();
 		sizerPanel.addStyleName("vibe-sizeColumnsDlg-sizePanel");
-		ft.setWidget(ROW_SIZER, 2, sizerPanel);
+		m_dataTable.setWidget(     rowIndex, COL_UNIT, sizerPanel);
+		m_dataTableCF.addStyleName(rowIndex, COL_UNIT, "vibe-sizeColumnsDlg-rowCell");
 		String unitRBGroup = (cName + "_units");
+		RadioButton pxRB  = new RadioButton(unitRBGroup, m_messages.sizeColumnsDlgUnitPixelRB()  );
+		pxRB.addStyleName("vibe-sizeColumnsDlg-sizeRB");
+		sizerPanel.add(pxRB);
+		pxRB.setWordWrap(false);
+		pxRB.setValue(Unit.PX == cw.getUnits());
+		
+		// ...or a percentage.
 		RadioButton pctRB = new RadioButton(unitRBGroup, m_messages.sizeColumnsDlgUnitPercentRB());
 		pctRB.addStyleName("vibe-sizeColumnsDlg-sizeRB");
 		sizerPanel.add(pctRB);
 		pctRB.setWordWrap(false);
 		pctRB.setValue(Unit.PCT == cw.getUnits());
 
-		// ...or a pixel value.
-		RadioButton pxRB  = new RadioButton(unitRBGroup, m_messages.sizeColumnsDlgUnitPixelRB()  );
-		pxRB.addStyleName("vibe-sizeColumnsDlg-sizeRB");
-		sizerPanel.add(pxRB);
-		pxRB.setWordWrap(false);
-		pxRB.setValue(Unit.PX == cw.getUnits());
-
-		// Finally, in flow mode... 
-		if (isFlow) {
+		// Add the style (odd vs. even) to the row.
+		m_dataTableRF.setStyleName(rowIndex, rowStyle);
+		
+		// Finally, in default mode... 
+		if (isDefault) {
 			// ...disable the sizer widgets...
-			setSizeWidgetsEnabled(false, vSizeSpinner, pctRB, pxRB);
+			setSizeWidgetsEnabled(false, vSizeSlider, vSizeSpinner, pctRB, pxRB);
 		}
 		// ...and connect the appropriate column listeners.
-		connectColumnListeners(cName, flowRB, fixedRB, vSizeSpinner, pctRB, pxRB);
+		connectColumnListeners(cName, useDefaultCB, vSizeSlider, vSizeSpinner, pctRB, pxRB);
+	}
+
+	/*
+	 * Renders the header row into the data table.
+	 */
+	private void renderHeaderRow() {
+		// Define the column headers for the data table...
+		DlgLabel il = new DlgLabel(m_messages.sizeColumnsDlgColColumn());
+		il.addStyleName("vibe-sizeColumnsDlg-headerCell");
+		m_dataTable.setWidget(     0, COL_COLUMN, il);
+		m_dataTableCF.addStyleName(0, COL_COLUMN, "paddingRight8px");
+		
+		il = new DlgLabel(m_messages.sizeColumnsDlgColDefault());
+		il.addStyleName("vibe-sizeColumnsDlg-headerCell");
+		m_dataTable.setWidget(     0, COL_DEFAULT_CB, il);
+		m_dataTableCF.addStyleName(0, COL_DEFAULT_CB, "paddingRight8px");
+		
+		il = new DlgLabel(m_messages.sizeColumnsDlgColResize());
+		il.addStyleName("vibe-sizeColumnsDlg-headerCell");
+		m_dataTable.setWidget(     0, COL_RESIZE, il);
+		m_dataTableCF.addStyleName(0, COL_RESIZE, "paddingRight8px");
+		
+		il = new DlgLabel(m_messages.sizeColumnsDlgColSize());
+		il.addStyleName("vibe-sizeColumnsDlg-headerCell");
+		m_dataTable.setWidget(     0, COL_SIZE, il);
+		m_dataTableCF.addStyleName(0, COL_SIZE, "paddingRight8px");
+		
+		il = new DlgLabel(m_messages.sizeColumnsDlgColUnit());
+		il.addStyleName("vibe-sizeColumnsDlg-headerCell");
+		m_dataTable.setWidget(0, COL_UNIT, il);
+
+		// ...and set the header row's style.
+		m_dataTableRF.setStyleName(0, "vibe-sizeColumnsDlg-headerRow");
 	}
 	
 	/*
@@ -633,7 +667,8 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	/*
 	 * Enabled/disables the sizer widgets.
 	 */
-	private void setSizeWidgetsEnabled(boolean enabled, ValueSpinner vSizeSpinner, RadioButton pctRB, RadioButton pxRB) {
+	private void setSizeWidgetsEnabled(boolean enabled, SliderBar vSizeSlider, ValueSpinner vSizeSpinner, RadioButton pctRB, RadioButton pxRB) {
+		vSizeSlider.setEnabled( enabled);
 		vSizeSpinner.setEnabled(enabled);
 		pctRB.setEnabled(       enabled);
 		pxRB.setEnabled(        enabled);

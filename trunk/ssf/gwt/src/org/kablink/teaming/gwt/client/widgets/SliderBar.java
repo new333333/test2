@@ -97,7 +97,6 @@ import com.google.gwt.user.client.ui.RequiresResize;
  * <h3>CSS Style Rules</h3>
  * <ul class='css'>
  * <li>.gwt-SliderBar-shell { primary style }</li>
- * <li>.gwt-SliderBar-shell-focused { primary style when focused }</li>
  * <li>.gwt-SliderBar-shell gwt-SliderBar-line { the line that the knob moves along }</li>
  * <li>.gwt-SliderBar-shell gwt-SliderBar-line-sliding { the line that the knob moves along when sliding }</li>
  * <li>.gwt-SliderBar-shell .gwt-SliderBar-knob { the sliding knob }</li>
@@ -205,6 +204,7 @@ public class SliderBar extends FocusPanel implements RequiresResize, HasValue<Do
 	private double			m_minValue;									// The minimum slider value.
 	private double			m_stepSize;									// The size of the increments between knob positions.
 	private Element			m_lineElement;								// The line that the knob moves over.
+	private Element			m_knobElement;								//
 	private Image			m_knobImage      = new Image();				// The knob that slides across the line.
 	private int				m_lineLeftOffset = 0;						// The offset between the edge of the shell and the line.
 	private int				m_numLabels      = 0;						// The number of labels to show.
@@ -254,21 +254,22 @@ public class SliderBar extends FocusPanel implements RequiresResize, HasValue<Do
 
 		// Create the outer shell.
 		DOM.setStyleAttribute(getElement(), "position", "relative");
-		setStyleName("gwt-SliderBar-shell");
 
 		// Create the line.
 		m_lineElement = DOM.createDiv();
 		DOM.appendChild(getElement(), m_lineElement);
-		DOM.setStyleAttribute( m_lineElement, "position",  "absolute"          );
-		DOM.setElementProperty(m_lineElement, "className", "gwt-SliderBar-line");
+		DOM.setStyleAttribute( m_lineElement, "position", "absolute");
 
 		// Create the knob.
 		m_knobImage.setResource(images.slider());
-		Element knobElement = m_knobImage.getElement();
-		DOM.appendChild(getElement(), knobElement);
-		DOM.setStyleAttribute( knobElement, "position",  "absolute"          );
-		DOM.setElementProperty(knobElement, "className", "gwt-SliderBar-knob");
+		m_knobElement = m_knobImage.getElement();
+		DOM.appendChild(getElement(), m_knobElement);
+		DOM.setStyleAttribute( m_knobElement, "position", "absolute");
+		
+		// Set the styles for the slider elements.
+		setSliderStyles();
 
+		// Sink the events we care about.
 		sinkEvents(Event.MOUSEEVENTS | Event.KEYEVENTS | Event.FOCUSEVENTS);
 
 		// Workaround to render properly when parent Widget does not
@@ -516,12 +517,12 @@ public class SliderBar extends FocusPanel implements RequiresResize, HasValue<Do
 		m_enabled = enabled;
 		if (enabled) {
 			m_knobImage.setResource(m_images.slider());
-			DOM.setElementProperty(m_lineElement, "className", "gwt-SliderBar-line");
+			DOM.setElementProperty(m_lineElement, "className", "gwt-SliderBar-line " + ((0 < m_numLabels) ? "gwt-SliderBar-line1" : "gwt-SliderBar-line2"));
 		}
 		
 		else {
 			m_knobImage.setResource(m_images.sliderDisabled());
-			DOM.setElementProperty(m_lineElement, "className", "gwt-SliderBar-line gwt-SliderBar-line-disabled");
+			DOM.setElementProperty(m_lineElement, "className", "gwt-SliderBar-line gwt-SliderBar-line-disabled " + ((0 < m_numLabels) ? "gwt-SliderBar-line1" : "gwt-SliderBar-line2"));
 		}
 		
 		redraw();
@@ -578,6 +579,7 @@ public class SliderBar extends FocusPanel implements RequiresResize, HasValue<Do
 	 */
 	public void setNumLabels(int numLabels) {
 		m_numLabels = numLabels;
+		setSliderStyles();
 		drawLabels();
 	}
 
@@ -798,8 +800,8 @@ public class SliderBar extends FocusPanel implements RequiresResize, HasValue<Do
 				}
 				
 				if (m_enabled)
-				     DOM.setElementProperty(tick, "className", "gwt-SliderBar-tick"                            );
-				else DOM.setElementProperty(tick, "className", "gwt-SliderBar-tick gwt-SliderBar-tick-disabled");
+				     DOM.setElementProperty(tick, "className", "gwt-SliderBar-tick "                             + ((0 < m_numLabels) ? "gwt-SliderBar-tick1" : "gwt-SliderBar-tick2"));
+				else DOM.setElementProperty(tick, "className", "gwt-SliderBar-tick gwt-SliderBar-tick-disabled " + ((0 < m_numLabels) ? "gwt-SliderBar-tick1" : "gwt-SliderBar-tick2"));
 
 				// Position the tick and make it visible.
 				DOM.setStyleAttribute(tick, "visibility", "hidden");
@@ -829,8 +831,7 @@ public class SliderBar extends FocusPanel implements RequiresResize, HasValue<Do
 	 * Highlight this widget.
 	 */
 	private void highlight() {
-		String styleName = getStylePrimaryName();
-		DOM.setElementProperty(getElement(), "className", (styleName + " " + styleName + "-focused"));
+		// Nothing to do.
 	}
 
 	/*
@@ -841,6 +842,17 @@ public class SliderBar extends FocusPanel implements RequiresResize, HasValue<Do
 		setCurrentValue(getCurrentValue());
 	}
 
+	/*
+	 * Sets the appropriate styles for the slider bar elements.
+	 */
+	private void setSliderStyles() {
+		setStyleName(                     "gwt-SliderBar-shell"                           );
+		addStyleName(((0 < m_numLabels) ? "gwt-SliderBar-shell1" : "gwt-SliderBar-shell2"));
+		
+		DOM.setElementProperty(m_lineElement, "className", "gwt-SliderBar-line "  + ((0 < m_numLabels) ? "gwt-SliderBar-line1"  : "gwt-SliderBar-line2") );
+		DOM.setElementProperty(m_knobElement, "className", "gwt-SliderBar-knob "  + ((0 < m_numLabels) ? "gwt-SliderBar-knob1"  : "gwt-SliderBar-knob2") );
+	}
+	
 	/*
 	 * Slide the knob to a new location.
 	 */
@@ -859,8 +871,8 @@ public class SliderBar extends FocusPanel implements RequiresResize, HasValue<Do
 	 */
 	private void startSliding(boolean highlight, boolean fireEvent) {
 		if (highlight) {
-			DOM.setElementProperty(m_lineElement,            "className", "gwt-SliderBar-line gwt-SliderBar-line-sliding");
-			DOM.setElementProperty(m_knobImage.getElement(), "className", "gwt-SliderBar-knob gwt-SliderBar-knob-sliding");
+			DOM.setElementProperty(m_lineElement,            "className", "gwt-SliderBar-line gwt-SliderBar-line-sliding " + ((0 < m_numLabels) ? "gwt-SliderBar-line1" : "gwt-SliderBar-line2"));
+			DOM.setElementProperty(m_knobImage.getElement(), "className", "gwt-SliderBar-knob gwt-SliderBar-knob-sliding " + ((0 < m_numLabels) ? "gwt-SliderBar-knob1" : "gwt-SliderBar-knob2"));
 			m_knobImage.setResource(m_images.sliderSliding());
 		}
 	}
@@ -870,8 +882,8 @@ public class SliderBar extends FocusPanel implements RequiresResize, HasValue<Do
 	 */
 	private void stopSliding(boolean unhighlight, boolean fireEvent) {
 		if (unhighlight) {
-			DOM.setElementProperty(m_lineElement,            "className", "gwt-SliderBar-line");
-			DOM.setElementProperty(m_knobImage.getElement(), "className", "gwt-SliderBar-knob");
+			DOM.setElementProperty(m_lineElement,            "className", "gwt-SliderBar-line " + ((0 < m_numLabels) ? "gwt-SliderBar-line1" : "gwt-SliderBar-line2"));
+			DOM.setElementProperty(m_knobImage.getElement(), "className", "gwt-SliderBar-knob " + ((0 < m_numLabels) ? "gwt-SliderBar-knob1" : "gwt-SliderBar-knob2"));
 			m_knobImage.setResource(m_images.slider());
 		}
 	}
@@ -880,7 +892,7 @@ public class SliderBar extends FocusPanel implements RequiresResize, HasValue<Do
 	 * Removes highlight from this widget.
 	 */
 	private void unhighlight() {
-		DOM.setElementProperty(getElement(), "className", getStylePrimaryName());
+		// Nothing to do.
 	}
 
 	@Override

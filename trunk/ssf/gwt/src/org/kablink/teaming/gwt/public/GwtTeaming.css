@@ -2325,6 +2325,11 @@ body, table td, select
 	padding-left: 1em;
 }
 
+.paddingRight8px
+{
+	padding-right: 8px;
+}
+
 /* Use this style if you want to set text-decoration: none */
 .noTextDecoration
 {
