@@ -39,6 +39,10 @@
   top: 4pt;
 }
 
+.gwt-SliderBar-shell .gwt-SliderBar-knob-disabled {
+	cursor: default !important;
+}
+
 .gwt-SliderBar-shell .gwt-SliderBar-tick {
   width: 1px;
   height: 6pt;
@@ -63,4 +67,8 @@
 
 .gwt-SliderBar-shell .gwt-SliderBar-line-sliding {
   cursor: pointer;
+}
+
+.gwt-SliderBar-shell-disabled {
+	outline: 0 !important;
 }

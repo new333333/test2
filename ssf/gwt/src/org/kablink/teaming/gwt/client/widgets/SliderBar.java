@@ -205,11 +205,12 @@ public class SliderBar extends FocusPanel implements RequiresResize, HasValue<Do
 	private double			m_stepSize;									// The size of the increments between knob positions.
 	private Element			m_lineElement;								// The line that the knob moves over.
 	private Element			m_knobElement;								//
-	private Image			m_knobImage      = new Image();				// The knob that slides across the line.
-	private int				m_lineLeftOffset = 0;						// The offset between the edge of the shell and the line.
-	private int				m_numLabels      = 0;						// The number of labels to show.
-	private int				m_numTicks       = 0;						// The number of tick marks to show.
-	private KeyTimer		m_keyTimer       = new KeyTimer();			// The timer used to continue to shift the knob if the user holds down a key.
+	private Image			m_knobImage       = new Image();			// The knob that slides across the line.
+	private int				m_enabledTabIndex = 0;						//
+	private int				m_lineLeftOffset  = 0;						// The offset between the edge of the shell and the line.
+	private int				m_numLabels       = 0;						// The number of labels to show.
+	private int				m_numTicks        = 0;						// The number of tick marks to show.
+	private KeyTimer		m_keyTimer        = new KeyTimer();			// The timer used to continue to shift the knob if the user holds down a key.
 	private LabelFormatter	m_labelFormatter;							// The formatter used to generate label text.
 	private List<Element>	m_labelElements = new ArrayList<Element>();	// The elements used to display labels above the ticks.
 	private List<Element>	m_tickElements  = new ArrayList<Element>();	// The elements used to display tick marks, which are the vertical lines along the slider bar.
@@ -514,15 +515,27 @@ public class SliderBar extends FocusPanel implements RequiresResize, HasValue<Do
 	 * @param enabled	true to enable the widget, false to disable it.
 	 */
 	public void setEnabled(boolean enabled) {
+		boolean wasEnabled = m_enabled;
 		m_enabled = enabled;
 		if (enabled) {
-			m_knobImage.setResource(m_images.slider());
+			if (!wasEnabled) {
+				setTabIndex(m_enabledTabIndex);
+				removeStyleName("gwt-SliderBar-shell-disabled");
+			}
 			DOM.setElementProperty(m_lineElement, "className", "gwt-SliderBar-line " + ((0 < m_numLabels) ? "gwt-SliderBar-line1" : "gwt-SliderBar-line2"));
+			DOM.setElementProperty(m_knobElement, "className", "gwt-SliderBar-knob " + ((0 < m_numLabels) ? "gwt-SliderBar-knob1" : "gwt-SliderBar-knob2"));
+			m_knobImage.setResource(m_images.slider());
 		}
 		
 		else {
-			m_knobImage.setResource(m_images.sliderDisabled());
+			if (wasEnabled) {
+				m_enabledTabIndex = getTabIndex();
+				setTabIndex(-1);
+				addStyleName("gwt-SliderBar-shell-disabled");
+			}
 			DOM.setElementProperty(m_lineElement, "className", "gwt-SliderBar-line gwt-SliderBar-line-disabled " + ((0 < m_numLabels) ? "gwt-SliderBar-line1" : "gwt-SliderBar-line2"));
+			DOM.setElementProperty(m_knobElement, "className", "gwt-SliderBar-knob gwt-SliderBar-knob-disabled " + ((0 < m_numLabels) ? "gwt-SliderBar-knob1" : "gwt-SliderBar-knob2"));
+			m_knobImage.setResource(m_images.sliderDisabled());
 		}
 		
 		redraw();
@@ -699,12 +712,11 @@ public class SliderBar extends FocusPanel implements RequiresResize, HasValue<Do
 		}
 
 		// Move the knob to the correct position.
-		Element knobElement = m_knobImage.getElement();
 		int lineWidth = m_lineElement.getOffsetWidth();
-		int knobWidth = knobElement.getOffsetWidth();
+		int knobWidth = m_knobElement.getOffsetWidth();
 		int knobLeftOffset = (int) (m_lineLeftOffset + (getKnobPercent() * lineWidth) - (knobWidth / 2));
 		knobLeftOffset = Math.min(knobLeftOffset, m_lineLeftOffset + lineWidth - (knobWidth / 2) - 1);
-		DOM.setStyleAttribute(knobElement, "left", knobLeftOffset + "px");
+		DOM.setStyleAttribute(m_knobElement, "left", knobLeftOffset + "px");
 	}
 
 	/*
@@ -871,8 +883,8 @@ public class SliderBar extends FocusPanel implements RequiresResize, HasValue<Do
 	 */
 	private void startSliding(boolean highlight, boolean fireEvent) {
 		if (highlight) {
-			DOM.setElementProperty(m_lineElement,            "className", "gwt-SliderBar-line gwt-SliderBar-line-sliding " + ((0 < m_numLabels) ? "gwt-SliderBar-line1" : "gwt-SliderBar-line2"));
-			DOM.setElementProperty(m_knobImage.getElement(), "className", "gwt-SliderBar-knob gwt-SliderBar-knob-sliding " + ((0 < m_numLabels) ? "gwt-SliderBar-knob1" : "gwt-SliderBar-knob2"));
+			DOM.setElementProperty(m_lineElement, "className", "gwt-SliderBar-line gwt-SliderBar-line-sliding " + ((0 < m_numLabels) ? "gwt-SliderBar-line1" : "gwt-SliderBar-line2"));
+			DOM.setElementProperty(m_knobElement, "className", "gwt-SliderBar-knob gwt-SliderBar-knob-sliding " + ((0 < m_numLabels) ? "gwt-SliderBar-knob1" : "gwt-SliderBar-knob2"));
 			m_knobImage.setResource(m_images.sliderSliding());
 		}
 	}
@@ -882,8 +894,8 @@ public class SliderBar extends FocusPanel implements RequiresResize, HasValue<Do
 	 */
 	private void stopSliding(boolean unhighlight, boolean fireEvent) {
 		if (unhighlight) {
-			DOM.setElementProperty(m_lineElement,            "className", "gwt-SliderBar-line " + ((0 < m_numLabels) ? "gwt-SliderBar-line1" : "gwt-SliderBar-line2"));
-			DOM.setElementProperty(m_knobImage.getElement(), "className", "gwt-SliderBar-knob " + ((0 < m_numLabels) ? "gwt-SliderBar-knob1" : "gwt-SliderBar-knob2"));
+			DOM.setElementProperty(m_lineElement, "className", "gwt-SliderBar-line " + ((0 < m_numLabels) ? "gwt-SliderBar-line1" : "gwt-SliderBar-line2"));
+			DOM.setElementProperty(m_knobElement, "className", "gwt-SliderBar-knob " + ((0 < m_numLabels) ? "gwt-SliderBar-knob1" : "gwt-SliderBar-knob2"));
 			m_knobImage.setResource(m_images.slider());
 		}
 	}
