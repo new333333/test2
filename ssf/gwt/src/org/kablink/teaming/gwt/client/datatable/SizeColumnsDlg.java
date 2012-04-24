@@ -55,6 +55,7 @@ import org.kablink.teaming.gwt.client.widgets.Spinner;
 import org.kablink.teaming.gwt.client.widgets.SpinnerListener;
 import org.kablink.teaming.gwt.client.widgets.ValueSpinner;
 import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
+import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeHorizontalPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
@@ -74,8 +75,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLTable.RowFormatter;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -189,14 +192,16 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	/*
 	 * Changes a column width based on a unit change.
 	 */
-	private void adjustColumnWidthByUnits(String cName, ValueSpinner vUnitSpinner, Unit units) {
-		Spinner unitSpinner = vUnitSpinner.getSpinner();
-		double value = unitSpinner.getValue();
+	private void adjustColumnWidthByUnits(String cName, SliderBar vSizeSlider, ValueSpinner vSizeSpinner, Unit units) {
 		int max = getUnitMax(units);
-		unitSpinner.setMax(max);
+		vSizeSlider.setMaxValue(max);
+		Spinner sizeSpinner = vSizeSpinner.getSpinner();
+		double value = sizeSpinner.getValue();
+		sizeSpinner.setMax(max);
 		if (max < value) {
-			vUnitSpinner.getTextBox().setValue(String.valueOf(max));
-			unitSpinner.setValue(max, false);
+			vSizeSlider.setCurrentValue(max);
+			vSizeSpinner.getTextBox().setValue(String.valueOf(max));
+			sizeSpinner.setValue(max, false);
 			value = max;
 		}
 		adjustColumnWidth(cName, new ColumnWidth(value, units));
@@ -260,7 +265,7 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 				// If this radio button is being checked...
 				if (pctRB.getValue()) {
 					// ...adjust the column widths accordingly.
-					adjustColumnWidthByUnits(cName, vSizeSpinner, Unit.PCT);
+					adjustColumnWidthByUnits(cName, vSizeSlider, vSizeSpinner, Unit.PCT);
 				}
 			}
 		});
@@ -272,7 +277,7 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 				// If this radio button is being checked...
 				if (pxRB.getValue()) {
 					// ...adjust the column widths accordingly.
-					adjustColumnWidthByUnits(cName, vSizeSpinner, Unit.PX);
+					adjustColumnWidthByUnits(cName, vSizeSlider, vSizeSpinner, Unit.PX);
 
 					// Do we need to warn the user about mixing pixel
 					// widths with percentage widths?
@@ -297,12 +302,20 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 */
 	@Override
 	public Panel createContent(Object callbackData) {
+		FlowPanel fp = new VibeFlowPanel();
+		fp.addStyleName("vibe-sizeColumnsDlg-content");
+		
+		Label sliderHint = new Label(m_messages.sizeColumnsDlgSliderHint());
+		sliderHint.addStyleName("vibe-sizeColumnsDlg-sizeSliderHint");
+		fp.add(sliderHint);
+		
 		// Create a panel to hold the dialog's content...
 		m_sp = new ScrollPanel();
 		m_sp.addStyleName("vibe-sizeColumnsDlg-scrollPanel");
+		fp.add(m_sp);
 		
 		// ...and return the Panel that holds the dialog's contents.
-		return m_sp;
+		return fp;
 	}
 
 	/**
@@ -668,10 +681,19 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * Enabled/disables the sizer widgets.
 	 */
 	private void setSizeWidgetsEnabled(boolean enabled, SliderBar vSizeSlider, ValueSpinner vSizeSpinner, RadioButton pctRB, RadioButton pxRB) {
+		// Enable/disable the widgets...
 		vSizeSlider.setEnabled( enabled);
 		vSizeSpinner.setEnabled(enabled);
 		pctRB.setEnabled(       enabled);
 		pxRB.setEnabled(        enabled);
+
+		// ...and if disabled, show some hover text about how to get
+		// ...them enabled.
+		String hover = (enabled ? "" : m_messages.sizeColumnsDlgSizingDisabledHover());
+		vSizeSlider.setTitle( hover);
+		vSizeSpinner.setTitle(hover);
+		pctRB.setTitle(       hover);
+		pxRB.setTitle(        hover);
 	}
 	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
