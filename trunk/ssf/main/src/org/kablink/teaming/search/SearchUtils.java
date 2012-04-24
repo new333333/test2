@@ -80,6 +80,29 @@ public class SearchUtils {
 		return crit;
 	}
 	
+	//Get tasks that have no due date
+	public static Criteria tasksForUser(Long userId, String[] groupIds, String[] teamIds)
+	{
+		Criteria crit = new Criteria();
+		crit.add(eq(FAMILY_FIELD,FAMILY_FIELD_TASK))
+			.add(eq(DOC_TYPE_FIELD, DOC_TYPE_ENTRY))
+			.add(not().add(eq("status","s3")))	// Not completed.
+			.add(not().add(eq("status","s4")));	// Not canceled.
+		crit.addOrder(Order.desc(TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME + BasicIndexUtils.DELIMITER + Constants.EVENT_FIELD_LOGICAL_END_DATE));
+		
+		Disjunction disjunction = disjunction();
+		disjunction.add(eq(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,userId.toString()));
+		
+		if (groupIds != null & groupIds.length > 0) {
+			disjunction.add(in(TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME,groupIds));
+		}
+		if (teamIds != null & teamIds.length > 0) {
+			disjunction.add(in(TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME,teamIds));
+		}
+		crit.add(disjunction);
+		return crit;
+	}
+
 	public static Criteria entriesForUser(Long userId)
 	{
 		Criteria crit = new Criteria();

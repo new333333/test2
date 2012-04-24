@@ -991,18 +991,10 @@ public class DefinitionHelper {
 	        					teams.add(((Map)teamMembershipsIt.next()).get(Constants.DOCID_FIELD));
 	        				}
 	        				
-	        				DateTime today = (new DateMidnight(DateTimeZone.forTimeZone(user.getTimeZone()))).toDateTime();
-	        				DateTime future = today.plusWeeks(SPropsUtil.getInt("relevance.tasks2WeeksAhead")).plusDays(1);
-	        				DateTime fromDate = today.minusMonths(SPropsUtil.getInt("relevance.tasksFromMonthsAgo"));
-	        				
-	        				if (model.containsKey(WebKeys.TYPE3) && model.get(WebKeys.TYPE3).equals("all")) {
-	        					future = today.plusMonths(SPropsUtil.getInt("relevance.tasksAllMonthsAhead"));
-	        				}
+	        				//Get the tasks irrespective of due dates
 	        				Criteria crit = SearchUtils.tasksForUser(user.getId(), 
-	        															(String[])groupsS.toArray(new String[groupsS.size()]), 
-	        															(String[])teams.toArray(new String[teams.size()]),
-	        															fromDate.toDate(),
-	        															future.toDate());
+	        									(String[])groupsS.toArray(new String[groupsS.size()]), 
+	        									(String[])teams.toArray(new String[teams.size()]));
 	        				Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
         					mashupMyTaskEntries.addAll((List)results.get(ObjectKeys.SEARCH_ENTRIES));
