@@ -116,7 +116,9 @@ public class BridgeServer {
 		if(contextUserName == null)
 			contextUserName = SZoneConfig.getAdminUserName(contextZoneName);
 		
-		SessionUtil.sessionStartup();	
+		boolean hadSession = SessionUtil.sessionActive();
+		if(!hadSession)
+			SessionUtil.sessionStartup();	
 		
 		try {
 			return RunasTemplate.runas(new RunasCallback() {
@@ -132,20 +134,24 @@ public class BridgeServer {
 			}, contextZoneName, contextUserName);	
 		}
 		finally {
-			SessionUtil.sessionStop();
+			if(!hadSession)
+				SessionUtil.sessionStop();
 		}
 	}
 	
 	private static Object invokeWithoutContextInternal(
 			final Method methodObj, final Object obj, final Object[] methodArgs) 
 	throws Exception {		
-		SessionUtil.sessionStartup();	
+		boolean hadSession = SessionUtil.sessionActive();
+		if(!hadSession)
+			SessionUtil.sessionStartup();	
 		
 		try {
 			return methodObj.invoke(obj, methodArgs);
 		}
 		finally {
-			SessionUtil.sessionStop();
+			if(!hadSession)
+				SessionUtil.sessionStop();
 		}
 	}
 	
