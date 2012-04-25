@@ -2085,6 +2085,9 @@ public class GwtTaskHelper {
 					ti.getEvent().getAllDayEvent(),
 					false));	// false -> Don't return a null entry.
 			
+			ti.setCreatorId( getLongFromMap(taskEntry, Constants.CREATORID_FIELD)     );
+			ti.setModifierId(getLongFromMap(taskEntry, Constants.MODIFICATIONID_FIELD));
+			
 			reply.add(ti);
 		}
 

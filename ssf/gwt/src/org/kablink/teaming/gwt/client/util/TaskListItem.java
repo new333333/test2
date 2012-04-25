@@ -342,16 +342,18 @@ public class TaskListItem implements IsSerializable {
 		private List<AssignmentInfo>	m_assignments      = new ArrayList<AssignmentInfo>();
 		private List<AssignmentInfo>	m_assignmentGroups = new ArrayList<AssignmentInfo>();
 		private List<AssignmentInfo>	m_assignmentTeams  = new ArrayList<AssignmentInfo>();
-		private String					m_completed        = "";	
-		private String					m_entityType       = "";
-		private String					m_location         = "";
-		private String					m_priority         = "";
-		private String					m_title            = "";
-		private String					m_status           = "";
-		private TaskDate				m_completedDate    = new TaskDate();	
-		private TaskEvent				m_event            = new TaskEvent();
-		private EntryId					m_taskId           = new EntryId();
-		private String					m_desc			   = "";
+		private Long					m_creatorId;
+		private Long					m_modifierId;
+		private String					m_completed     = "";	
+		private String					m_entityType    = "";
+		private String					m_location      = "";
+		private String					m_priority      = "";
+		private String					m_title         = "";
+		private String					m_status        = "";
+		private TaskDate				m_completedDate = new TaskDate();	
+		private TaskEvent				m_event         = new TaskEvent();
+		private EntryId					m_taskId        = new EntryId();
+		private String					m_desc			= "";
 
 		// The following are the values used for task completion
 		// percentages.
@@ -403,6 +405,8 @@ public class TaskListItem implements IsSerializable {
 		public List<AssignmentInfo> getAssignments()      {return m_assignments;     }
 		public List<AssignmentInfo> getAssignmentGroups() {return m_assignmentGroups;}
 		public List<AssignmentInfo> getAssignmentTeams()  {return m_assignmentTeams; }
+		public Long                 getCreatorId()        {return m_creatorId;       }
+		public Long                 getModifierId()       {return m_modifierId;      }
 		public String               getCompleted()        {return m_completed;       }
 		public String               getEntityType()       {return m_entityType;      }
 		public String               getLocation()         {return m_location;        }
@@ -427,6 +431,8 @@ public class TaskListItem implements IsSerializable {
 		public void setAssignments(     List<AssignmentInfo> assignments)      {m_assignments      = assignments;     }
 		public void setAssignmentGroups(List<AssignmentInfo> assignmentGroups) {m_assignmentGroups = assignmentGroups;}
 		public void setAssignmentTeams( List<AssignmentInfo> assignmentTeams)  {m_assignmentTeams  = assignmentTeams; }
+		public void setCreatorId(       Long                 creatorId)        {m_creatorId        = creatorId;       }
+		public void setModifierId(      Long                 modifierId)       {m_modifierId       = modifierId;      }
 		public void setCompleted(       String               completed)        {m_completed        = completed;       }
 		public void setEntityType(      String               entityType)       {m_entityType       = entityType;      }
 		public void setLocation(        String               location)         {m_location         = location;        }

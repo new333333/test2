@@ -44,6 +44,8 @@ import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper;
 import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
+import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -158,6 +160,7 @@ public class TaskTable extends Composite
 	implements
 	// Event handlers implemented by this class.
 		ChangeEntryTypeSelectedEntriesEvent.Handler,
+		ContributorIdsRequestEvent.Handler,
 		CopySelectedEntriesEvent.Handler,
 		DeleteSelectedEntriesEvent.Handler,
 		LockSelectedEntriesEvent.Handler,
@@ -242,6 +245,7 @@ public class TaskTable extends Composite
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES,
+		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.COPY_SELECTED_ENTRIES,
 		TeamingEvents.DELETE_SELECTED_ENTRIES,
 		TeamingEvents.LOCK_SELECTED_ENTRIES,
@@ -2796,6 +2800,41 @@ public class TaskTable extends Composite
 			BinderViewsHelper.changeEntryTypes(
 				FolderType.TASK,
 				getTaskIdsChecked());
+		}
+	}
+	
+	/**
+	 * Handles ContributorIdsRequestEvent's received by this class.
+	 * 
+	 * Implements the ContributorIdsRequestEvent.Handler.onContributorIdsRequest() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onContributorIdsRequest(ContributorIdsRequestEvent event) {
+		// If we're embedded in JSP...
+		if (m_taskListing.isEmbeddedInJSP()) {
+			// ...contributor IDs will have been handled by the
+			// ...controller.  Simply bail.
+			return;
+		}
+		
+		// Is the event targeted to this folder?
+		final Long eventBinderId = event.getBinderId();
+		if (eventBinderId.equals(m_taskListing.getBinderId())) {
+			// Yes!  Asynchronously fire the corresponding reply event
+			// with the contributor IDs.
+			ScheduledCommand doReply = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					GwtTeaming.fireEvent(
+						new ContributorIdsReplyEvent(
+							eventBinderId,
+							TaskListItemHelper.findContributorIds(
+								m_taskBundle.getTasks())));
+				}
+			};
+			Scheduler.get().scheduleDeferred(doReply);
 		}
 	}
 	

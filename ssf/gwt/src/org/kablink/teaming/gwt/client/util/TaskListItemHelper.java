@@ -59,6 +59,20 @@ public class TaskListItemHelper {
 		// Inhibits this class from being instantiated.
 	}
 
+	/*
+	 * Adds a Long to a List<Long> if it's not already there.
+	 */
+	private static void addLToLLIfUnique(List<Long> lList, Long l) {
+		// Do we have both a List<Long> and a Long to work with? 
+		if ((null != lList) && (null != l)) {
+			// Yes!  If the List<Long> doesn't contain the Long...
+			if (!(lList.contains(l))) {
+				// ...add it.
+				lList.add(l);
+			}
+		}
+	}
+
 	/**
 	 * Restructures the tasks in a TaskBundle as per a new TaskLinkage.
 	 * 
@@ -370,6 +384,23 @@ public class TaskListItemHelper {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Returns a List<Long> of the contributor IDs from a
+	 * List<TaskListItem>.
+	 * 
+	 * @return
+	 */
+	public static List<Long> findContributorIds(List<TaskListItem> tasks) {
+		List<Long> reply = new ArrayList<Long>();
+		if (null != tasks) {
+			for (TaskListItem task:  tasks) {
+				addLToLLIfUnique(reply, task.getTask().getCreatorId() );
+				addLToLLIfUnique(reply, task.getTask().getModifierId());
+			}
+		}
+		return reply;
 	}
 	
 	/**
