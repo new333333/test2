@@ -2181,7 +2181,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/*
-	 * Synchronously shows the clipboard dialog.
+	 * Synchronously shows the column sizing dialog.
 	 */
 	private void showSizeColumnsDlgNow() {
 		SizeColumnsDlg.initAndShow(

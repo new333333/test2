@@ -179,11 +179,17 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	 * Changes a column width, both in the data table and the data
 	 * structures used to persist the changes.
 	 */
-	private void adjustColumnWidth(String cName, ColumnWidth cw) {
+	private void adjustColumnWidth(String cName, SliderBar vSizeSlider, ValueSpinner vSizeSpinner, ColumnWidth cw) {
 		// Adjust the columns...
 		if (null == cw)
 		     m_columnWidths.remove(cName);
 		else m_columnWidths.put(cName, cw);
+		
+		// ...adjust the widgets to reflect the new width...
+		double value = cw.getWidth();
+		vSizeSpinner.getTextBox().setValue(String.valueOf(value));
+		vSizeSpinner.getSpinner().setValue(value, false);	// false -> Don't fire...
+		vSizeSlider.setCurrentValue(       value, false);	// ...any change events. 
 		
 		// ...and table to show the width.
 		m_acw.applyColumnWidths(m_fcList, m_columnWidths, m_defaultColumnWidth);
@@ -199,12 +205,10 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 		double value = sizeSpinner.getValue();
 		sizeSpinner.setMax(max);
 		if (max < value) {
-			vSizeSlider.setCurrentValue(max);
-			vSizeSpinner.getTextBox().setValue(String.valueOf(max));
 			sizeSpinner.setValue(max, false);
 			value = max;
 		}
-		adjustColumnWidth(cName, new ColumnWidth(value, units));
+		adjustColumnWidth(cName, vSizeSlider, vSizeSpinner, new ColumnWidth(value, units));
 	}
 
 	/*
@@ -224,12 +228,19 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 					if (null == defaultCW) {
 						defaultCW = m_defaultColumnWidth;
 					}
-					adjustColumnWidth(cName, defaultCW);
-					setSizeWidgetsEnabled(false, vSizeSlider, vSizeSpinner, pctRB, pxRB);
+					adjustColumnWidth(cName, vSizeSlider, vSizeSpinner, defaultCW);
 				}
+				
 				else {
-					adjustColumnWidth(cName, new ColumnWidth(vSizeSpinner.getSpinner().getValue(), (pctRB.getValue() ? Unit.PCT : Unit.PX)));
-					setSizeWidgetsEnabled(true, vSizeSlider, vSizeSpinner, pctRB, pxRB);
+					adjustColumnWidth(
+						cName,
+						vSizeSlider,
+						vSizeSpinner,
+						new ColumnWidth(
+							vSizeSpinner.getSpinner().getValue(),
+							(pctRB.getValue() ?
+								Unit.PCT      :
+								Unit.PX)));
 				}
 			}
 		});
@@ -239,11 +250,19 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 			@Override
 			public void onValueChange(ValueChangeEvent<Double> event) {
 				// Adjust the column width with the value from the
-				// slider.
-				double value = event.getValue();
-				vSizeSpinner.getTextBox().setValue(String.valueOf(value));
-				vSizeSpinner.getSpinner().setValue(value, false);
-				adjustColumnWidth(cName, new ColumnWidth(value, (pctRB.getValue() ? Unit.PCT : Unit.PX)));
+				// slider...
+				adjustColumnWidth(
+					cName,
+					vSizeSlider,
+					vSizeSpinner,
+					new ColumnWidth(
+						event.getValue(),
+						(pctRB.getValue() ?
+							Unit.PCT      :
+							Unit.PX)));
+				
+				// ...and make sure the checkbox is unchecked.
+				useDefaultCB.setValue(false);
 			}
 		});
 		
@@ -252,9 +271,19 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 			@Override
 			public void onSpinning(double value) {
 				// Adjust the column width with the value from the
-				// spinner.
-				vSizeSlider.setCurrentValue(value, false);
-				adjustColumnWidth(cName, new ColumnWidth(value, (pctRB.getValue() ? Unit.PCT : Unit.PX)));
+				// spinner...
+				adjustColumnWidth(
+					cName,
+					vSizeSlider,
+					vSizeSpinner,
+					new ColumnWidth(
+						value,
+						(pctRB.getValue() ?
+							Unit.PCT      :
+							Unit.PX)));
+				
+				// ...and make sure the checkbox is unchecked.
+				useDefaultCB.setValue(false);
 			}
 		});
 
@@ -264,9 +293,12 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 			public void onClick(ClickEvent event) {
 				// If this radio button is being checked...
 				if (pctRB.getValue()) {
-					// ...adjust the column widths accordingly.
+					// ...adjust the column widths accordingly...
 					adjustColumnWidthByUnits(cName, vSizeSlider, vSizeSpinner, Unit.PCT);
 				}
+				
+				// ...and make sure the checkbox is unchecked.
+				useDefaultCB.setValue(false);
 			}
 		});
 
@@ -276,8 +308,11 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 			public void onClick(ClickEvent event) {
 				// If this radio button is being checked...
 				if (pxRB.getValue()) {
-					// ...adjust the column widths accordingly.
+					// ...adjust the column widths accordingly...
 					adjustColumnWidthByUnits(cName, vSizeSlider, vSizeSpinner, Unit.PX);
+					
+					// ...and make sure the checkbox is unchecked.
+					useDefaultCB.setValue(false);
 
 					// Do we need to warn the user about mixing pixel
 					// widths with percentage widths?
@@ -585,14 +620,9 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 		pctRB.setWordWrap(false);
 		pctRB.setValue(Unit.PCT == cw.getUnits());
 
-		// Add the style (odd vs. even) to the row.
+		// Finally, add the style (odd vs. even) to the row...
 		m_dataTableRF.setStyleName(rowIndex, rowStyle);
 		
-		// Finally, in default mode... 
-		if (isDefault) {
-			// ...disable the sizer widgets...
-			setSizeWidgetsEnabled(false, vSizeSlider, vSizeSpinner, pctRB, pxRB);
-		}
 		// ...and connect the appropriate column listeners.
 		connectColumnListeners(cName, useDefaultCB, vSizeSlider, vSizeSpinner, pctRB, pxRB);
 	}
@@ -677,25 +707,6 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 		populateDlgAsync();
 	}
 
-	/*
-	 * Enabled/disables the sizer widgets.
-	 */
-	private void setSizeWidgetsEnabled(boolean enabled, SliderBar vSizeSlider, ValueSpinner vSizeSpinner, RadioButton pctRB, RadioButton pxRB) {
-		// Enable/disable the widgets...
-		vSizeSlider.setEnabled( enabled);
-		vSizeSpinner.setEnabled(enabled);
-		pctRB.setEnabled(       enabled);
-		pxRB.setEnabled(        enabled);
-
-		// ...and if disabled, show some hover text about how to get
-		// ...them enabled.
-		String hover = (enabled ? "" : m_messages.sizeColumnsDlgSizingDisabledHover());
-		vSizeSlider.setTitle( hover);
-		vSizeSpinner.setTitle(hover);
-		pctRB.setTitle(       hover);
-		pxRB.setTitle(        hover);
-	}
-	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
 	/* the size columns dialog and perform some operation on it.     */
