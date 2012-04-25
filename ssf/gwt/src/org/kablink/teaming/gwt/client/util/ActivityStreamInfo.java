@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.util;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
-
 
 /**
  * Class used to communicate information about an activity stream
@@ -73,18 +72,18 @@ public class ActivityStreamInfo
 		// *** Please, consider any changes made CAREFULLY!!!
 		// ***
 		// *** WARNING *** WARNING *** WARNING *** WARNING ***
-		UNKNOWN(        0),
-		CURRENT_BINDER( 1),
-		FOLLOWED_PEOPLE(2),
-		FOLLOWED_PERSON(3),
-		FOLLOWED_PLACES(4),
-		FOLLOWED_PLACE( 5),
-		MY_FAVORITES(   6),
-		MY_FAVORITE(    7),
-		MY_TEAMS(       8),
-		MY_TEAM(        9),
-		SITE_WIDE(     10),
-		SPECIFIC_BINDER( 11 );
+		UNKNOWN(         0),
+		CURRENT_BINDER(  1),
+		FOLLOWED_PEOPLE( 2),
+		FOLLOWED_PERSON( 3),
+		FOLLOWED_PLACES( 4),
+		FOLLOWED_PLACE(  5),
+		MY_FAVORITES(    6),
+		MY_FAVORITE(     7),
+		MY_TEAMS(        8),
+		MY_TEAM(         9),
+		SITE_WIDE(      10),
+		SPECIFIC_BINDER(11);
 
 		private int m_asValue;
 		
@@ -142,9 +141,9 @@ public class ActivityStreamInfo
 		}
 	}
 
-	private ActivityStream m_as;
-	private String m_title = "";
-	private String[] m_binderIds;
+	private ActivityStream	m_as;
+	private String			m_title = "";
+	private String[]		m_binderIds;
 	
 	/**
 	 * Constructor method.

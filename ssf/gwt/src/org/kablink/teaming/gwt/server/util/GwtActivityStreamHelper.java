@@ -61,6 +61,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
+import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificBinderData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
@@ -1076,10 +1077,11 @@ public class GwtActivityStreamHelper {
 	 * @param asi
 	 * @param pagingData - null -> Start fresh at page 0.
 	 * @param asdt
+	 * @param specificBinderData
 	 * 
 	 * @return
 	 */
-	public static ActivityStreamData getActivityStreamData(HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, ActivityStreamDataType asdt) {
+	public static ActivityStreamData getActivityStreamData(HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, ActivityStreamDataType asdt, SpecificBinderData specificBinderData) {
 		GwtServerProfiler profiler = GwtServerHelper.GwtServerProfiler.start(
 			m_logger,
 			"GwtActivityStreamHelper.getActivityStreamData()");
