@@ -40,12 +40,19 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.ShowSetting;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
+import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
+import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -55,7 +62,10 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 public class BlogFolderView extends FolderViewBase
 {
+	private static final int LIST_MIN_HEIGHT = 150;
+	
 	private List<HandlerRegistration> m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private ActivityStreamCtrl m_activityStreamCtrl;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -84,8 +94,58 @@ public class BlogFolderView extends FolderViewBase
 	@Override
 	public void constructView()
 	{
-		//!!! Call viewReady() when we are finished constructing everything.
-		viewReady();
+		final FlexTable table;
+		FlexCellFormatter cellFormatter;
+
+		getFlowPanel().addStyleName( "vibe-blogFolderFlowPanel" );
+
+		table = new FlexTable();
+		table.setCellSpacing( 4 );
+		table.addStyleName( "blogFolderView_MainTable" );
+		
+		cellFormatter = table.getFlexCellFormatter();
+		cellFormatter.setWidth( 0, 0, "80%" );
+		cellFormatter.setWidth( 0, 1, "20%" );
+		
+		// Create the ActivityStreamCtrl.  It will hold the list of blog entries
+		ActivityStreamCtrl.createAsync( false, new ActivityStreamCtrlClient()
+		{			
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess( ActivityStreamCtrl asCtrl )
+			{
+				ActivityStreamInfo asi;
+				BinderInfo binderInfo;
+
+				binderInfo = getFolderInfo();
+				
+				asi = new ActivityStreamInfo();
+				asi.setActivityStream( ActivityStream.SPECIFIC_BINDER );
+				asi.setBinderId( binderInfo.getBinderId());
+				asi.setTitle( binderInfo.getBinderTitle() );
+
+				table.setWidget( 0, 0, asCtrl );
+				asCtrl.setActivityStream( asi, ShowSetting.SHOW_ALL );
+				
+				m_activityStreamCtrl = asCtrl;
+				
+				// Call viewReady() when we are finished constructing everything.
+				viewReady();
+			}
+		} );
+		
+		// Add the Archive control
+		{
+			table.setText( 0, 1, "This is where the archive control will be" );
+		}
+
+		getFlowPanel().add( table );
 	}
 
 	/**
@@ -176,7 +236,6 @@ public class BlogFolderView extends FolderViewBase
 	 */
 	private void populateViewNow()
 	{
-//!!!		getFlowPanel().add(m_taskListing);
 		viewReady();
 	}
 	
@@ -206,15 +265,13 @@ public class BlogFolderView extends FolderViewBase
 	}
 
 	/**
-	 * Called from the base class to reset the content of this
-	 * discussion folder view.
+	 * Called from the base class to reset the content of this blog folder view
 	 * 
 	 * Implements the FolderViewBase.resetView() method.
 	 */
 	@Override
 	public void resetView()
 	{
-		getFlowPanel().clear();
 		populateViewAsync();
 	}
 	
@@ -226,7 +283,46 @@ public class BlogFolderView extends FolderViewBase
 	@Override
 	public void resizeView()
 	{
-		//!!!m_taskListing.resize();
+		// Set the size of the list of blog entries
+		setListOfBlogEntriesSize();
+	}
+	
+	/**
+	 * Set the size of the list of blog entries
+	 */
+	private void setListOfBlogEntriesSize()
+	{
+		FooterPanel footerPanel;
+		int viewHeight;
+		int viewTop;		
+		int listTop;		
+		int footerPanelHeight;
+		int totalBelow;
+		int listHeight;
+
+		// Get the sizes we need to calculate the height of the list of blog entries
+		footerPanel = getFooterPanel();
+		viewHeight = getOffsetHeight();
+		viewTop = getAbsoluteTop();		
+		listTop = m_activityStreamCtrl.getAbsoluteTop() - viewTop;	// Top of the blog listing relative to the top of the view.
+		if ( footerPanel != null )
+			footerPanelHeight = footerPanel.getOffsetHeight();
+		else
+			footerPanelHeight = 0;
+		
+		totalBelow = footerPanelHeight;
+
+		// Get the optimum height for the task listing so we don't get a vertical scroll bar?
+		listHeight = (((viewHeight - listTop) - totalBelow) - 20);
+		if ( LIST_MIN_HEIGHT > listHeight)
+		{
+			// Too small!  Use the minimum even though this will turn on the vertical scroll bar.
+			listHeight = LIST_MIN_HEIGHT;
+		}
+		
+		// Set the height of the list of blog entries
+		m_activityStreamCtrl.resize( m_activityStreamCtrl.getOffsetWidth(), listHeight );
+		m_activityStreamCtrl.show();
 	}
 
 	/*
@@ -252,9 +348,8 @@ public class BlogFolderView extends FolderViewBase
 	@Override
 	public void viewComplete()
 	{
-		// Tell the task listing to resize itself now that it can
-		// determine how big everything is.
-		//!!!m_taskListing.resize();
+		// Set the size of the list of blog entries
+		setListOfBlogEntriesSize();
 	}
 	
 	/**
