@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,7 +37,6 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
  * Class used to communicate the data from an activity stream between
  * the activity stream control and the GWT RPC service methods.
@@ -49,7 +48,7 @@ public class ActivityStreamData implements IsSerializable {
 	private PagingData 					m_pagingData;	// The paging data based on where we're at in paging through the activity stream.
 	private String						m_dateTime;		// The date/time string in the user's locale and time zone that this data was produced. 
 	
-	/*
+	/**
 	 * Inner class used to manage paging through an activity
 	 * stream.
 	 */
@@ -140,6 +139,55 @@ public class ActivityStreamData implements IsSerializable {
 				m_totalPages += 1;
 			}
 		}
+	}
+	
+	/**
+	 * Inner class used to expand the criteria used to search for
+	 * activity stream data when the ActivityStream being searched is
+	 * set to SPECIFIC_BINDER.
+	 * 
+	 * The defaults supplied by a newly constructed object will return
+	 * the values that have been historically returned by the
+	 * GetActivityStreamDataCmd.
+	 */
+	public static class SpecificBinderData implements IsSerializable {
+		private boolean m_applyBinderFilters        = false;			//
+		private boolean m_forcePlainTextDescription = false;			//
+		private boolean m_returnComments            = true;				//
+		private boolean m_searchSubBinders          = true;				//
+		private boolean m_sortDescending            = true;				//
+		private String	m_sortKey                   = "_lastActivity";	// Default:  Constants.LASTACTIVITY_FIELD.
+
+		/**
+		 * Constructor method.
+		 */
+		public SpecificBinderData() {
+			// Initialize the super class.
+			super();
+		}
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean isApplyBinderFilters()        {return m_applyBinderFilters;       }
+		public boolean isForcePlainTextDescription() {return m_forcePlainTextDescription;}
+		public boolean isReturnComments()            {return m_returnComments;           }
+		public boolean isSearchSubBinders()          {return m_searchSubBinders;         }
+		public boolean isSortDescending()            {return m_sortDescending;           }
+		public String  getSortKey()                  {return m_sortKey;                  }
+		
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setApplyBinderFilters(       boolean applyBinderFilters       ) {m_applyBinderFilters        = applyBinderFilters;       }
+		public void setForcePlainTextDescription(boolean forcePlainTextDescription) {m_forcePlainTextDescription = forcePlainTextDescription;}
+		public void setReturnComments(           boolean returnComments           ) {m_returnComments            = returnComments;           }
+		public void setSearchSubBinders(         boolean searchSubBinders         ) {m_searchSubBinders          = searchSubBinders;         }
+		public void setSortDescending(           boolean sortDescending           ) {m_sortDescending            = sortDescending;           }
 	}
 	
 	/**
