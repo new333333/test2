@@ -53,7 +53,7 @@ public class SessionUtil {
 		if (sessionFactory == null) sessionFactory = (SessionFactory)SpringContextUtil.getBean("sessionFactory");
 		return sessionFactory;
 	}
-	public static Session getSession() {
+	private static Session getSession() {
 		return SessionFactoryUtils.getSession(getSessionFactory(), false);
 	}
 	public static void sessionStartup() {

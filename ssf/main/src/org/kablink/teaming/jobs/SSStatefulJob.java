@@ -84,12 +84,12 @@ public abstract class SSStatefulJob implements StatefulJob {
 		return description.substring(0, Math.min(description.length(), DESCRIPTION_MAX));
 	}
 	public void execute(final JobExecutionContext context) throws JobExecutionException {
-		setupSession();
     	fileModule = (FileModule)SpringContextUtil.getBean("fileModule");
     	profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
     	coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
     	jobDataMap = context.getJobDetail().getJobDataMap();
 		context.setResult("Success");
+		setupSession();
 		try {  
 	           	//zone required
            	if (!jobDataMap.containsKey(ZONEID)) {			
