@@ -1717,6 +1717,18 @@ public class ActivityStreamCtrl extends ResizeComposite
 	
 	
 	/**
+	 * Reset the size of this control.
+	 */
+	public void resize( int width, int height )
+	{
+		// Set the width and height
+		setSize( String.valueOf( width ) + "px", String.valueOf( height ) + "px" );
+		m_width = width;
+		m_height = height;
+		relayoutPage();
+	}
+	
+	/**
 	 * Set the size of this control.
 	 */
 	public void setSize( int width, int height )
@@ -1732,6 +1744,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		
 		relayoutPage();
 	}
+	
 	
 	/**
 	 * Set the text in the title.
