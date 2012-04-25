@@ -63,6 +63,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
+import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificBinderData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
@@ -141,6 +142,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	private AsyncCallback<VibeRpcResponse> m_getActivityStreamParamsCallback = null;
 	private PagingData m_pagingData = null;
 	private ActivityStreamParams m_activityStreamParams = null;
+	private SpecificBinderData m_specificBinderData = null;
 	private Timer m_searchTimer = null;
 	private Timer m_checkForChangesTimer = null;	// This timer is used to check for updates in the current activity stream.
 	private boolean m_searchInProgress = false;
@@ -991,7 +993,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 			return;
 		}
 		
-		GetActivityStreamDataCmd cmd = new GetActivityStreamDataCmd( asType, m_activityStreamInfo, m_activityStreamParams, m_pagingData );
+		GetActivityStreamDataCmd cmd = new GetActivityStreamDataCmd( asType, m_activityStreamInfo, m_activityStreamParams, m_pagingData, m_specificBinderData );
 		GwtClientHelper.executeCommand( cmd, m_searchResultsCallback );
 		
 		// We only want to show "Searching..." after the search has taken more than .5 seconds.
@@ -1172,6 +1174,14 @@ public class ActivityStreamCtrl extends ResizeComposite
 			});
 		}
 	}// end invokeShareThisDlg()
+	
+	/**
+	 * Set the information that is used when searching a specific binder 
+	 */
+	public void setSpecificBinderData( SpecificBinderData specificBinderData )
+	{
+		m_specificBinderData = specificBinderData;
+	}
 	
 	
 	/*

@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificBinderData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.ShowSetting;
@@ -124,6 +125,20 @@ public class BlogFolderView extends FolderViewBase
 				BinderInfo binderInfo;
 
 				binderInfo = getFolderInfo();
+				
+				// Create the SpecificBinderData that will be used so search the blog
+				// folder we are working with.
+				{
+					SpecificBinderData specificBinderData;
+
+					specificBinderData = new SpecificBinderData();
+					specificBinderData.setApplyBinderFilters( true );
+					specificBinderData.setForcePlainTextDescription( false );
+					specificBinderData.setReturnComments( false );
+					specificBinderData.setSearchSubBinders( false );
+					
+					asCtrl.setSpecificBinderData( specificBinderData );
+				}
 				
 				asi = new ActivityStreamInfo();
 				asi.setActivityStream( ActivityStream.SPECIFIC_BINDER );
