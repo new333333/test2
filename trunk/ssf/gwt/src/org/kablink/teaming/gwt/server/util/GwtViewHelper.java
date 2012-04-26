@@ -62,7 +62,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -143,7 +142,6 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DashboardHelper;
@@ -234,7 +232,7 @@ public class GwtViewHelper {
 		if (m_logger.isDebugEnabled()) {
 			// ...dump the search filter XML.
 			m_logger.debug("GwtViewHelper.addQuickFilterToSearch( '" + quickFilter + "'):  Search Filter:");
-			m_logger.debug("\n" + getXmlString(sfDoc));
+			m_logger.debug("\n" + GwtServerHelper.getXmlString(sfDoc));
 		}
 	}
 	
@@ -2991,21 +2989,6 @@ public class GwtViewHelper {
 		return url.toString();
 	}
 
-	/*
-	 * Returns a formatted XML document for displaying somewhere.
-	 */
-    private static String getXmlString(Document document) {
-    	String xmlString;
-    	try {
-    		OutputFormat format = OutputFormat.createPrettyPrint();
-			format.setSuppressDeclaration(true);
-    		xmlString = XmlFileUtil.writeString(document, format);
-    	} catch (Exception ex) {
-    		xmlString = document.asXML();
-    	}
-    	return xmlString;
-    }
-    
 	/*
 	 * Initializes a ViewInfo based on a binder ID.
 	 * 

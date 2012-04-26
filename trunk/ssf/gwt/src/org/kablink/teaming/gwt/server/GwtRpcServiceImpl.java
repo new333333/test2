@@ -113,7 +113,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.Membershi
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
-import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificBinderData;
+import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.EntryId;
@@ -460,7 +460,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				gasdCmd.getActivityStreamInfo(),
 				gasdCmd.getPagingData(),
 				gasdCmd.getActivityStreamDataType(),
-				gasdCmd.getSpecificBinderData() );
+				gasdCmd.getSpecificFolderData() );
 			response = new VibeRpcResponse( new ActivityStreamDataRpcResponseData( asData ) );
 			return response;
 		}
@@ -2820,9 +2820,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Returns a ActivityStreamData of corresponding to activity stream
 	 * parameters, paging data and info provided.
 	 */
-	private ActivityStreamData getActivityStreamData( HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pagingData, ActivityStreamDataType asdt, SpecificBinderData specificBinderData )
+	private ActivityStreamData getActivityStreamData( HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pagingData, ActivityStreamDataType asdt, SpecificFolderData sfData )
 	{
-		return GwtActivityStreamHelper.getActivityStreamData( getRequest( ri ), this, asp, asi, pagingData, asdt, specificBinderData );
+		return GwtActivityStreamHelper.getActivityStreamData( getRequest( ri ), this, asp, asi, pagingData, asdt, sfData );
 	}// end getActivityStreamData()
 	
 	/**

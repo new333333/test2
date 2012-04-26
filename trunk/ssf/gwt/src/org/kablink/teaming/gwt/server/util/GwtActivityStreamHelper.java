@@ -46,8 +46,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
 
+import org.dom4j.Document;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SeenMap;
@@ -61,7 +69,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
-import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificBinderData;
+import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
@@ -73,6 +81,7 @@ import org.kablink.teaming.gwt.server.util.GwtServerHelper.GwtServerProfiler;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.search.SearchUtils;
+import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
@@ -290,7 +299,7 @@ public class GwtActivityStreamHelper {
 		 * Returns a List<ASEntryData> corresponding to what should be
 		 * displayed for a given List<Map> of entry search results.
 		 */
-		private static List<ASEntryData> buildEntryDataList(HttpServletRequest request, AllModulesInjected bs, boolean isPresenceEnabled, boolean isOtherUserAccessRestricted, ActivityStreamParams asp, List<Map> searchEntries) {
+		private static List<ASEntryData> buildEntryDataList(HttpServletRequest request, AllModulesInjected bs, boolean returnComments, boolean forcePlainTextDescriptions, boolean isPresenceEnabled, boolean isOtherUserAccessRestricted, ActivityStreamParams asp, List<Map> searchEntries) {
 			// If we weren't given any search results...
 			List<ASEntryData> reply = new ArrayList<ASEntryData>();			
 			if ((null == searchEntries) || searchEntries.isEmpty()) {
@@ -320,11 +329,15 @@ public class GwtActivityStreamHelper {
 			// Are we tracking any ASEntryData's in the
 			// List<ASEntryData> that we're going to return?
 			if (!(reply.isEmpty())) {
-				// Yes!  Build their stubbed out comment
-				// List<ASEntryData>'s...
-				completeCommentEntryDataLists(bs, asp, reply);
+				// Yes!  Have comments been requested?
+				if (returnComments) {
+					// Yes!  Build their stubbed out comment
+					// List<ASEntryData>'s.
+					completeCommentEntryDataLists(bs, asp, reply);
+				}
 
-				// ...read their required User's and Binder's...
+				// Read the ASEntryData's required User's and
+				// Binder's...
 				Map<Long, User>   userMap   = readUsers(  bs,          reply);
 				Map<Long, Binder> binderMap = readBinders(bs, userMap, reply);
 				
@@ -833,6 +846,7 @@ public class GwtActivityStreamHelper {
 			case MY_FAVORITE:
 			case MY_TEAM:
 			case SPECIFIC_BINDER:
+			case SPECIFIC_FOLDER:
 				// These are valid so long as they both refer to the
 				// same, single binder in their binder ID list. 
 				singleBinder          =
@@ -870,7 +884,7 @@ public class GwtActivityStreamHelper {
 	 * object.
 	 */
 	@SuppressWarnings("unchecked")
-	private static ActivityStreamEntry buildASEFromED(HttpServletRequest request, SeenMap sm, ASEntryData entryData) {
+	private static ActivityStreamEntry buildASEFromED(HttpServletRequest request, SeenMap sm, ASEntryData entryData, boolean forcePlainTextDescriptions) {
 		ActivityStreamEntry reply = new ActivityStreamEntry();
 
 		// First, initialize the author information.
@@ -905,13 +919,29 @@ public class GwtActivityStreamHelper {
 		reply.setEntryType(             GwtServerHelper.getStringFromEntryMap(              em, Constants.ENTRY_TYPE_FIELD        ));
 		reply.setEntrySeen(             sm.checkIfSeen(          em                                    ));
 
+		// Are we supposed to force plain text descriptions?
+		if (forcePlainTextDescriptions) {
+			// Yes!  Is this entry's description in HTML?
+			if (Description.FORMAT_HTML == reply.getEntryDescriptionFormat()) {
+				String desc = reply.getEntryDescription();
+				if (MiscUtil.hasString(desc)) {
+					// Yes!  Convert it to plain text...
+					reply.setEntryDescription(Html.stripHtml(desc));
+				}
+				
+				// ...and mark the description format as being plain
+				// ...text.
+				reply.setEntryDescriptionFormat(Description.FORMAT_NONE);
+			}
+		}
+
 		// Finally, scan the comment ASEntryData...
 		List<ActivityStreamEntry> commentsASEList = reply.getComments();
 		for (ASEntryData commentEntryData:  entryData.getCommentEntryDataList()) {
 			// ...adding an ActivityStreamEntry for each to the
 			// ...ActivityStreamEntry's List<ActivityStreamEntry> of
 			// ...comments.
-			commentsASEList.add(buildASEFromED(request, sm, commentEntryData));
+			commentsASEList.add(buildASEFromED(request, sm, commentEntryData, forcePlainTextDescriptions));
 		}
 		
 		// If we get here, reply refers to the ActivityStreamEntry that
@@ -975,7 +1005,7 @@ public class GwtActivityStreamHelper {
 	 * Constructs and returns the base Criteria object for performing
 	 * the search for activity stream data.
 	 */
-	private static Criteria buildBaseCriteria(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedUsersAL) {
+	private static Criteria buildSearchCriteria(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedUsersAL) {
 		return 
 			SearchUtils.entriesForTrackedPlacesAndPeople(
 				bs,
@@ -983,6 +1013,53 @@ public class GwtActivityStreamHelper {
 				trackedUsersAL,
 				true,	// true -> Entries only (no replies.)
 				Constants.LASTACTIVITY_FIELD);
+	}
+	
+	/*
+	 * Constructs and returns the base Criteria object for performing
+	 * the search for activity stream data.
+	 */
+	private static Document buildSearchQuery(AllModulesInjected bs, Long sfId, SpecificFolderData sfData, String lastActivityStart, String lastActivityEnd) {
+		// Create a SearchFilter for the search query.
+		SearchFilter sf = new SearchFilter(true);
+
+		// If we to search for a date range bounded set of items...
+		if (MiscUtil.hasString(lastActivityStart) && MiscUtil.hasString(lastActivityEnd)) {
+			// ...add in the dates.
+			sf.addLastActivityDateRange(lastActivityStart, lastActivityEnd);
+		}
+
+		// Yes!  Do we need to factor in the user's search filters?
+		if (sfData.isApplyFolderFilters()) {
+			// Yes!  Do they have any defined on the folder?
+			Folder			folder               = bs.getFolderModule().getFolder(sfId);
+			User			user                 = GwtServerHelper.getCurrentUser();
+			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), sfId);
+			Document searchFilters = GwtServerHelper.getBinderSearchFilter(bs, folder, userFolderProperties, true);
+			if (null != searchFilters) {
+				// Yes!  Add them to the search filter.
+				sf.appendFilter(searchFilters);
+			}
+		}
+
+		// If we get here, sf refers to a SearchFilter object
+		// containing the search query for the activity stream data.
+		// Extract its XML Document. 
+		Document reply = sf.getFilter();
+		
+		// If we're logging debug messages...
+		if (m_logger.isDebugEnabled()) {
+			// ...dump the search filter XML.
+			m_logger.debug("GwtActivityStreamHelper.buildSearchQuery():  Search query:\n" + GwtServerHelper.getXmlString(reply));
+		}
+
+		// Finally, return the search query XML.
+		return reply;
+	}
+	
+	private static Document buildSearchQuery(AllModulesInjected bs, Long sfId, SpecificFolderData sfData) {
+		// Always use the initial form of the method.
+		return buildSearchQuery(bs, sfId, sfData, null, null);	// nulls -> No activity date range.
 	}
 	
 	/*
@@ -1077,11 +1154,11 @@ public class GwtActivityStreamHelper {
 	 * @param asi
 	 * @param pagingData - null -> Start fresh at page 0.
 	 * @param asdt
-	 * @param specificBinderData
+	 * @param sfData
 	 * 
 	 * @return
 	 */
-	public static ActivityStreamData getActivityStreamData(HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, ActivityStreamDataType asdt, SpecificBinderData specificBinderData) {
+	public static ActivityStreamData getActivityStreamData(HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, ActivityStreamDataType asdt, SpecificFolderData sfData) {
 		GwtServerProfiler profiler = GwtServerHelper.GwtServerProfiler.start(
 			m_logger,
 			"GwtActivityStreamHelper.getActivityStreamData()");
@@ -1114,7 +1191,8 @@ public class GwtActivityStreamHelper {
 					reply,
 					asp,
 					asi,
-					asdt);		
+					asdt,
+					sfData);		
 			}
 			catch (Exception e) {
 				m_logger.error("GwtActivityStreamHelper.getActivityStreamData( EXCEPTION ):  ", e);
@@ -1248,6 +1326,22 @@ public class GwtActivityStreamHelper {
 			catch (Exception ex) {}
 		}
 		return reply;
+	}
+
+	/*
+	 * Returns the appropriate sort descending boolean for an activity
+	 * stream search.
+	 */
+	private static boolean getSortDescend(SpecificFolderData sfData) {
+		return ((null != sfData) ? sfData.isSortDescending() : true);
+	}
+	
+	/*
+	 * Returns the appropriate sort key for an activity stream search.
+	 */
+	private static String getSortKey(SpecificFolderData sfData) {
+		String sortKey = ((null != sfData) ? sfData.getSortKey() : null);
+		return (MiscUtil.hasString(sortKey) ? sortKey : Constants.LASTACTIVITY_FIELD);
 	}
 	
 	/**
@@ -1696,9 +1790,115 @@ public class GwtActivityStreamHelper {
 	 * tracked places and users lists. 
 	 */
 	@SuppressWarnings("unchecked")
+	private static ASSearchResults performASSearch_All(AllModulesInjected bs, Long sfId, int pageStart, int entriesPerPage, SpecificFolderData sfData) {
+		// Create the search options map with the paging setup.
+		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_OFFSET,   pageStart     );
+		options.put(ObjectKeys.SEARCH_MAX_HITS, entriesPerPage);
+		
+		// Add the search query to the map.
+		Document searchQuery = buildSearchQuery(bs, sfId, sfData);
+		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchQuery);
+
+		// Add the sort options to the map.
+		options.put(ObjectKeys.SEARCH_SORT_BY,      getSortKey(    sfData));
+		options.put(ObjectKeys.SEARCH_SORT_DESCEND, getSortDescend(sfData));
+		
+		// Perform the search...
+		Map searchResults = bs.getFolderModule().getEntries(sfId, options);
+
+		// ...and return an appropriate ASSearchResults.
+		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
+		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+		return new ASSearchResults(searchEntries, totalRecords);
+	}
+	
+	/*
+	 * Returns an ASSearchResults object containing the search results
+	 * from performing an activity stream search for the read or unread
+	 * entries in the tracked places and users lists. 
+	 */
+	@SuppressWarnings("unchecked")
+	private static ASSearchResults performASSearch_ReadUnread(AllModulesInjected bs, Long sfId, int pageStart, int entriesPerPage, boolean read, ActivityStreamParams asp, SpecificFolderData sfData) {
+		// Create the search options map with the paging setup.
+		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_OFFSET,   pageStart            );
+		options.put(ObjectKeys.SEARCH_MAX_HITS, asp.getReadEntryMax());
+		
+	    // Return up to the maximum number entries that have had
+		// activity within last n days.
+		Date activityDate = new Date();
+		activityDate.setTime(activityDate.getTime() - (((long) asp.getReadEntryDays()) * 24L * 60L * 60L * 1000L));
+		DateTimeFormatter	fmt       = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").withZone(DateTimeZone.forTimeZone(GwtServerHelper.getCurrentUser().getTimeZone()));
+		String				startDate = fmt.print(new DateTime(activityDate));
+		String				now       = fmt.print(new DateTime(new Date()  ));
+
+		// Add the search query to the map.
+		Document searchQuery = buildSearchQuery(bs, sfId, sfData, startDate, now);
+		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchQuery);
+		
+		// Add the sort options to the map.
+		options.put(ObjectKeys.SEARCH_SORT_BY,      getSortKey(    sfData));
+		options.put(ObjectKeys.SEARCH_SORT_DESCEND, getSortDescend(sfData));
+		
+		// Perform the search...
+		Map searchResults = bs.getFolderModule().getEntries(sfId, options);
+
+		// ...get the user's seen map...
+		SeenMap seen = bs.getProfileModule().getUserSeenMap(null);
+		
+		// ...and scan the entries we read.
+		List<Map> targetEntries = new ArrayList<Map>();
+		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+		boolean   readSatisfied = false;
+		for (Map searchEntry: searchEntries) {
+			// If the user has seen this entry and we're looking for
+			// read entries or the user has not seen it and we're
+			// looking for unread entries...
+			boolean hasSeen = seen.checkIfSeen(searchEntry);
+			if (hasSeen == read) {
+				// ...and we haven't satisfied the number of records
+				// ...requested...
+				if (!readSatisfied) {
+					// ...keep track of it until we've got all the entries
+					// ...we need.
+					targetEntries.add(searchEntry);
+					readSatisfied = (targetEntries.size() >= (pageStart + entriesPerPage));
+				}
+			}
+			
+			else {
+				// Otherwise, this is read when were looking for unread
+				// or unread while we're looking for read!  In either
+				// case, we don't want to include it in the total
+				// record count.
+				totalRecords -= 1;
+			}
+		}
+
+		// Ensure that we've only got the entries we need from the
+		// list...
+		if (targetEntries.size() > pageStart && targetEntries.size() >= pageStart + entriesPerPage) {
+			targetEntries = targetEntries.subList(pageStart, pageStart + entriesPerPage);
+		}		
+		else if (targetEntries.size() > pageStart) {
+			targetEntries = targetEntries.subList(pageStart, targetEntries.size());
+		}
+				
+		// ...and return an appropriate ASSearchResults.
+		return new ASSearchResults(targetEntries, totalRecords);
+	}
+	
+	/*
+	 * Returns an ASSearchResults object containing the search results
+	 * from performing an activity stream search for all entries in the
+	 * tracked places and users lists. 
+	 */
+	@SuppressWarnings("unchecked")
 	private static ASSearchResults performASSearch_All(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedUsersAL, int pageStart, int entriesPerPage) {
 		// Perform the search...
-		Criteria searchCriteria = buildBaseCriteria(bs, trackedPlacesAL, trackedUsersAL);
+		Criteria searchCriteria = buildSearchCriteria(bs, trackedPlacesAL, trackedUsersAL);
 		Map searchResults = bs.getBinderModule().executeSearchQuery(
 			searchCriteria,
 			pageStart,
@@ -1724,7 +1924,7 @@ public class GwtActivityStreamHelper {
 		String startDate = DateTools.dateToString(activityDate, DateTools.Resolution.SECOND);
 		String now       = DateTools.dateToString(new Date(),   DateTools.Resolution.SECOND);
 		
-		Criteria searchCriteria = buildBaseCriteria(bs, trackedPlacesAL, trackedUsersAL);
+		Criteria searchCriteria = buildSearchCriteria(bs, trackedPlacesAL, trackedUsersAL);
 		searchCriteria.add(
 			Restrictions.between(
 				Constants.LASTACTIVITY_FIELD,
@@ -1787,7 +1987,7 @@ public class GwtActivityStreamHelper {
 	 * information object and the current paging data.
 	 */
 	@SuppressWarnings("unchecked")
-	private static void populateASD(HttpServletRequest request, AllModulesInjected bs, SeenMap sm, boolean isPresenceEnabled, boolean isOtherUserAccessRestricted, ActivityStreamData asd, ActivityStreamParams asp, ActivityStreamInfo asi, ActivityStreamDataType asdt) {		
+	private static void populateASD(HttpServletRequest request, AllModulesInjected bs, SeenMap sm, boolean isPresenceEnabled, boolean isOtherUserAccessRestricted, ActivityStreamData asd, ActivityStreamParams asp, ActivityStreamInfo asi, ActivityStreamDataType asdt, SpecificFolderData sfData) {		
 		// Setup some int's for the controlling the search.
 		PagingData pd				= asd.getPagingData();
 		int        entriesPerPage	= pd.getEntriesPerPage();
@@ -1798,6 +1998,10 @@ public class GwtActivityStreamHelper {
 		List<String> trackedPlacesAL = new ArrayList<String>();
 		List<String> trackedUsersAL  = new ArrayList<String>();
 
+		// Initialize the variables for processing a specific folder.
+		boolean	asIsSpecificFolder = false;
+		Long	specificFolderId   = null;
+		
 		// What type of activity stream are we reading the data for?
 		String[] trackedPlaces = asi.getBinderIds();
 		switch (asi.getActivityStream()) {
@@ -1810,6 +2014,13 @@ public class GwtActivityStreamHelper {
 			trackedPlaces = new String[0];
 			
 			break;
+			
+		case SPECIFIC_FOLDER:
+			asIsSpecificFolder = true;
+			
+			// * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+			// Fall through and handle with the other 'place' types. //
+			// * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 			
 		case CURRENT_BINDER:
 		case FOLLOWED_PLACES:
@@ -1836,13 +2047,73 @@ public class GwtActivityStreamHelper {
 		// Store the tracked places into the ArrayList for them.
 		sATosL(trackedPlaces, trackedPlacesAL);
 
+		// Is this an activity stream request for a specific folder?
+		if (asIsSpecificFolder) {
+			// Yes!  There shouldn't be any users and a single place,
+			// that being the specific folder.  Is that the case?
+			int users  = ((null == trackedUsersAL)  ? 0 : trackedUsersAL.size() );
+			int places = ((null == trackedPlacesAL) ? 0 : trackedPlacesAL.size());
+			if ((0 != users) || (1 != places)) {
+				// No!  Log a warning that something is bogus...
+				m_logger.warn("GwtActivityStreamDataHelper.populateASD( *Internal Error* ):  SPECIFIC_FOLDER request being converted to SPECIFIC_BINDER.  Users: " + users + " (should be 0), Places: " + places + " (should be 1).");
+				
+				// ...and treat things as though a specific binder was
+				// ...requested.
+				asIsSpecificFolder = false;
+				asi.setActivityStream(ActivityStream.SPECIFIC_BINDER);
+				sfData = null;
+			}
+			
+			else {
+				// Yes, there's no users and only a single place!
+				// Convert that place ID to a Long...
+				specificFolderId = Long.parseLong(trackedPlacesAL.get(0));
+				
+				// ...and if we weren't give a SpecificFolderData
+				// ...object...
+				if (null == sfData) {
+					// ...create one with the appropriate defaults.
+					sfData = new SpecificFolderData();
+				}
+			}
+		}
+		
+		// Are we processing an activity stream for other than a
+		// specific binder and given a SpecificFolderData object?
+		if ((!asIsSpecificFolder) && (null != sfData)) {
+			// Yes!  Log a warning and forget about the
+			// SpecificFolderData.
+			m_logger.warn("GwtActivityStreamHelper.populateASD( *Internal Error* ):  A SpecificFolderData was supplied for a non SPECIFIC_FOLDER activity stream request.  The object is being ignored.");
+			sfData = null;
+		}
+
 		// Perform the search and extract the results.
-		ASSearchResults searchResults;
-		switch (asdt) {
-		default:
-		case ALL:     searchResults = performASSearch_All(       bs, trackedPlacesAL, trackedUsersAL, pageStart, entriesPerPage            ); break;
-		case READ:    searchResults = performASSearch_ReadUnread(bs, trackedPlacesAL, trackedUsersAL, pageStart, entriesPerPage, true,  asp); break;
-		case UNREAD:  searchResults = performASSearch_ReadUnread(bs, trackedPlacesAL, trackedUsersAL, pageStart, entriesPerPage, false, asp); break;
+		ASSearchResults	searchResults;
+		boolean			forcePlainTextDescriptions;
+		boolean			returnComments;
+		
+		if (asIsSpecificFolder) {
+			forcePlainTextDescriptions = sfData.isForcePlainTextDescriptions();
+			returnComments             = sfData.isReturnComments();
+			
+			switch (asdt) {
+			default:
+			case ALL:     searchResults = performASSearch_All(       bs, specificFolderId, pageStart, entriesPerPage,             sfData); break;
+			case READ:    searchResults = performASSearch_ReadUnread(bs, specificFolderId, pageStart, entriesPerPage, true,  asp, sfData); break;
+			case UNREAD:  searchResults = performASSearch_ReadUnread(bs, specificFolderId, pageStart, entriesPerPage, false, asp, sfData); break;
+			}
+		}
+		
+		else {
+			forcePlainTextDescriptions = false;
+			returnComments             = true;
+			
+			switch (asdt) {
+			default:
+			case ALL:     searchResults = performASSearch_All(       bs, trackedPlacesAL, trackedUsersAL, pageStart, entriesPerPage            ); break;
+			case READ:    searchResults = performASSearch_ReadUnread(bs, trackedPlacesAL, trackedUsersAL, pageStart, entriesPerPage, true,  asp); break;
+			case UNREAD:  searchResults = performASSearch_ReadUnread(bs, trackedPlacesAL, trackedUsersAL, pageStart, entriesPerPage, false, asp); break;
+			}
 		}
 		
 		List<Map> searchEntries  = searchResults.getSearchEntries();
@@ -1861,9 +2132,12 @@ public class GwtActivityStreamHelper {
 				request,
 				sm,
 				asd,
+				forcePlainTextDescriptions,
 				ASEntryData.buildEntryDataList(
 					request,
 					bs,
+					returnComments,
+					forcePlainTextDescriptions,
 					isPresenceEnabled,
 					isOtherUserAccessRestricted,
 					asp,
@@ -1884,13 +2158,18 @@ public class GwtActivityStreamHelper {
 	 * Populates an ActivityStreamData object from the information
 	 * contained in a List<ASEntryData>.
 	 */
-	private static void populateASDFromED(HttpServletRequest request, SeenMap sm, ActivityStreamData asd, List<ASEntryData> entryDataList) {
+	private static void populateASDFromED(HttpServletRequest request, SeenMap sm, ActivityStreamData asd, boolean forcePlainTextDescriptions, List<ASEntryData> entryDataList) {
 		// Scan the List<ASEntryData>...
     	List<ActivityStreamEntry> aseList = asd.getEntries();
     	for (ASEntryData entryData:  entryDataList) {
     		// ...and add an ActivtyStreamEntry for each to the
 			// ...List<ActivityStreamEntry> in the ActivityStreamData.
-   			aseList.add(buildASEFromED(request, sm, entryData));
+   			aseList.add(
+   				buildASEFromED(
+   					request,
+   					sm,
+   					entryData,
+   					forcePlainTextDescriptions));
     	}
 	}
 	

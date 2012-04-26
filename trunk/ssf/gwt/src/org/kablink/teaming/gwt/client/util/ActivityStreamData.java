@@ -144,24 +144,23 @@ public class ActivityStreamData implements IsSerializable {
 	/**
 	 * Inner class used to expand the criteria used to search for
 	 * activity stream data when the ActivityStream being searched is
-	 * set to SPECIFIC_BINDER.
+	 * set to SPECIFIC_FOLDER.
 	 * 
 	 * The defaults supplied by a newly constructed object will return
 	 * the values that have been historically returned by the
 	 * GetActivityStreamDataCmd.
 	 */
-	public static class SpecificBinderData implements IsSerializable {
-		private boolean m_applyBinderFilters        = false;			//
-		private boolean m_forcePlainTextDescription = false;			//
-		private boolean m_returnComments            = true;				//
-		private boolean m_searchSubBinders          = true;				//
-		private boolean m_sortDescending            = true;				//
-		private String	m_sortKey                   = "_lastActivity";	// Default:  Constants.LASTACTIVITY_FIELD.
+	public static class SpecificFolderData implements IsSerializable {
+		private boolean m_applyFolderFilters         = false;			//
+		private boolean m_forcePlainTextDescriptions = false;			//
+		private boolean m_returnComments             = true;			//
+		private boolean m_sortDescending             = true;			//
+		private String	m_sortKey                    = "_lastActivity";	// Default:  Constants.LASTACTIVITY_FIELD.
 
 		/**
 		 * Constructor method.
 		 */
-		public SpecificBinderData() {
+		public SpecificFolderData() {
 			// Initialize the super class.
 			super();
 		}
@@ -171,23 +170,21 @@ public class ActivityStreamData implements IsSerializable {
 		 * 
 		 * @return
 		 */
-		public boolean isApplyBinderFilters()        {return m_applyBinderFilters;       }
-		public boolean isForcePlainTextDescription() {return m_forcePlainTextDescription;}
-		public boolean isReturnComments()            {return m_returnComments;           }
-		public boolean isSearchSubBinders()          {return m_searchSubBinders;         }
-		public boolean isSortDescending()            {return m_sortDescending;           }
-		public String  getSortKey()                  {return m_sortKey;                  }
+		public boolean isApplyFolderFilters()         {return m_applyFolderFilters;        }
+		public boolean isForcePlainTextDescriptions() {return m_forcePlainTextDescriptions;}
+		public boolean isReturnComments()             {return m_returnComments;            }
+		public boolean isSortDescending()             {return m_sortDescending;            }
+		public String  getSortKey()                   {return m_sortKey;                   }
 		
 		/**
 		 * Set'er methods.
 		 * 
 		 * @param
 		 */
-		public void setApplyBinderFilters(       boolean applyBinderFilters       ) {m_applyBinderFilters        = applyBinderFilters;       }
-		public void setForcePlainTextDescription(boolean forcePlainTextDescription) {m_forcePlainTextDescription = forcePlainTextDescription;}
-		public void setReturnComments(           boolean returnComments           ) {m_returnComments            = returnComments;           }
-		public void setSearchSubBinders(         boolean searchSubBinders         ) {m_searchSubBinders          = searchSubBinders;         }
-		public void setSortDescending(           boolean sortDescending           ) {m_sortDescending            = sortDescending;           }
+		public void setApplyFolderFilters(        boolean applyFolderFilters        ) {m_applyFolderFilters         = applyFolderFilters;        }
+		public void setForcePlainTextDescriptions(boolean forcePlainTextDescriptions) {m_forcePlainTextDescriptions = forcePlainTextDescriptions;}
+		public void setReturnComments(            boolean returnComments            ) {m_returnComments             = returnComments;            }
+		public void setSortDescending(            boolean sortDescending            ) {m_sortDescending             = sortDescending;            }
 	}
 	
 	/**
