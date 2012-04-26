@@ -37,6 +37,8 @@
 <%@ include file="/WEB-INF/jsp/common/tinymce_translations.jsp" %>
 <script type="text/javascript">
 //need to shut off relative links and adding pictures for mail.
+var ss_imageSelections${element_id} = "";
+
 tinyMCE.init({
 	paste_postprocess: function(pi,o){o.node.innerHTML=TinyMCEWebKitPasteFixup("paste_postprocess",o.node.innerHTML);},
 	mode: "specific_textareas", editor_selector: "mceEditable",
