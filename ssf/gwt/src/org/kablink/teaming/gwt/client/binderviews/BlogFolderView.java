@@ -40,7 +40,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificBinderData;
+import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.ShowSetting;
@@ -126,22 +126,21 @@ public class BlogFolderView extends FolderViewBase
 
 				binderInfo = getFolderInfo();
 				
-				// Create the SpecificBinderData that will be used so search the blog
+				// Create the SpecificFolderData that will be used so search the blog
 				// folder we are working with.
 				{
-					SpecificBinderData specificBinderData;
+					SpecificFolderData specificFolderData;
 
-					specificBinderData = new SpecificBinderData();
-					specificBinderData.setApplyBinderFilters( true );
-					specificBinderData.setForcePlainTextDescription( false );
-					specificBinderData.setReturnComments( false );
-					specificBinderData.setSearchSubBinders( false );
+					specificFolderData = new SpecificFolderData();
+					specificFolderData.setApplyFolderFilters( true );
+					specificFolderData.setForcePlainTextDescriptions( false );
+					specificFolderData.setReturnComments( false );
 					
-					asCtrl.setSpecificBinderData( specificBinderData );
+					asCtrl.setSpecificFolderData( specificFolderData );
 				}
 				
 				asi = new ActivityStreamInfo();
-				asi.setActivityStream( ActivityStream.SPECIFIC_BINDER );
+				asi.setActivityStream( ActivityStream.SPECIFIC_FOLDER );
 				asi.setBinderId( binderInfo.getBinderId());
 				asi.setTitle( binderInfo.getBinderTitle() );
 

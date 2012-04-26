@@ -33,7 +33,7 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificBinderData;
+import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
@@ -46,11 +46,11 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
  * @author drfoster@novell.com
  */
 public class GetActivityStreamDataCmd extends VibeRpcCmd {
-	private ActivityStreamDataType	m_asDataType;			//
-	private ActivityStreamInfo		m_asInfo;				//
-	private ActivityStreamParams	m_asParams;				//
-	private PagingData				m_pagingData;			//
-	private SpecificBinderData		m_sbData;	//
+	private ActivityStreamDataType	m_asDataType;	//
+	private ActivityStreamInfo		m_asInfo;		//
+	private ActivityStreamParams	m_asParams;		//
+	private PagingData				m_pagingData;	//
+	private SpecificFolderData		m_sfData;		//
 	
 	/**
 	 * Class constructor.
@@ -89,14 +89,14 @@ public class GetActivityStreamDataCmd extends VibeRpcCmd {
 	 * @param asInfo
 	 * @param asParams
 	 * @param pagingData
-	 * @param sbData 
+	 * @param sfData 
 	 */
-	public GetActivityStreamDataCmd(ActivityStreamDataType asDataType, ActivityStreamInfo asInfo, ActivityStreamParams asParams, PagingData pagingData, SpecificBinderData sbData) {
+	public GetActivityStreamDataCmd(ActivityStreamDataType asDataType, ActivityStreamInfo asInfo, ActivityStreamParams asParams, PagingData pagingData, SpecificFolderData sfData) {
 		// Initialize this object...
 		this(asDataType, asInfo, asParams, pagingData);
 		
 		// ...and store the remaining parameters.
-		setSpecificBinderData(sbData);
+		setSpecificFolderData(sfData);
 	}
 	
 	/**
@@ -108,7 +108,7 @@ public class GetActivityStreamDataCmd extends VibeRpcCmd {
 	public ActivityStreamInfo     getActivityStreamInfo()     {return m_asInfo;    }
 	public ActivityStreamParams   getActivityStreamParams()   {return m_asParams;  }
 	public PagingData             getPagingData()             {return m_pagingData;}
-	public SpecificBinderData     getSpecificBinderData()     {return m_sbData;    }
+	public SpecificFolderData     getSpecificFolderData()     {return m_sfData;    }
 	
 	/**
 	 * Set'er methods.
@@ -119,7 +119,7 @@ public class GetActivityStreamDataCmd extends VibeRpcCmd {
 	public void setActivityStreamInfo    (ActivityStreamInfo     asInfo)     {m_asInfo     = asInfo;    }
 	public void setActivityStreamParams(  ActivityStreamParams   asParams)   {m_asParams   = asParams;  }
 	public void setPagingData(            PagingData             pagingData) {m_pagingData = pagingData;}
-	public void setSpecificBinderData(    SpecificBinderData     sbData)     {m_sbData     = sbData;    }
+	public void setSpecificFolderData(    SpecificFolderData     sfData)     {m_sfData     = sfData;    }
 	
 	/**
 	 * Returns the command's enumeration value.
