@@ -93,15 +93,16 @@
 		  binderId="${mashupBinder.id}">
 		  <ssf:param name="entityType" value="${mashupBinder.entityType}"/>
 		  </ssf:url>"><span>${mashupBinder.title}</span></a>
+
+		<c:if test="${!empty mashupBinder.description.text}">
+		  <div class="ss_mashup_folder_description">
+			<ssf:markup entity="${mashupBinder}">${mashupBinder.description.text}</ssf:markup>
+			<div class="ss_clear"></div>
+		  </div>
+		</c:if>
+	
 	</div>
 
-	<c:if test="${!empty mashupBinder.description.text}">
-	  <div class="ss_mashup_folder_description">
-		<ssf:markup entity="${mashupBinder}">${mashupBinder.description.text}</ssf:markup>
-		<div class="ss_clear"></div>
-	  </div>
-	</c:if>
-	
   <div class="ss_mashup_folder_list_open" style="${mHeight} ${mOverflow}">
 
 
