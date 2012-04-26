@@ -55,9 +55,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * @author jwootton
  *
  */
-public class LandingPageView extends ViewBase implements ToolPanelReady
+public class LandingPageView extends WorkspaceViewBase implements ToolPanelReady
 {
-	private BinderInfo m_binderInfo;
 	private VibeFlowPanel m_mainPanel;
 	
 	/**
@@ -65,7 +64,7 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 	 */
 	private LandingPageView( final BinderInfo binderInfo, final ViewReady viewReady )
 	{
-		super( viewReady );
+		super( binderInfo, viewReady );
 		
 		Scheduler.ScheduledCommand cmd;
 
@@ -91,7 +90,7 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 	 */
 	private LandingPageView( final ConfigData configData )
 	{
-		super( null );
+		super( null, null );
 		
 		Scheduler.ScheduledCommand cmd;
 		
@@ -117,9 +116,12 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 	 */
 	private void addFooter()
 	{
-		if ( m_binderInfo != null )
+		BinderInfo binderInfo;
+		
+		binderInfo = getBinderInfo();
+		if ( binderInfo != null )
 		{
-			FooterPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
+			FooterPanel.createAsync( this, binderInfo, this, new ToolPanelClient()
 			{			
 				@Override
 				public void onUnavailable()
@@ -143,6 +145,7 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 	{
 		String bgColor;
 		String bgImgUrl;
+		BinderInfo binderInfo;
 		
 		m_mainPanel.clear();
 		
@@ -156,11 +159,12 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 		if ( configData.isPreviewMode() == false )
 			super.viewReady();
 
-		String binderId = ((null == m_binderInfo) ? null : m_binderInfo.getBinderId());
+		binderInfo = getBinderInfo();
+		String binderId = ((null == binderInfo) ? null : binderInfo.getBinderId());
 		if ( configData.isPreviewMode() == false && binderId != null )
 		{
 			// Add the description to the page.
-			DescriptionPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
+			DescriptionPanel.createAsync( this, binderInfo, this, new ToolPanelClient()
 			{			
 				@Override
 				public void onUnavailable()
@@ -236,7 +240,7 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 	 */
 	private void buildLandingPage( BinderInfo binderInfo )
 	{
-		m_binderInfo = binderInfo;
+		setBinderInfo( binderInfo );
 
 		// Read the configuration data from the server.
 		readConfigurationData();
@@ -320,7 +324,7 @@ public class LandingPageView extends ViewBase implements ToolPanelReady
 	{
 		GetLandingPageDataCmd cmd;
 
-		final String binderId = ((null == m_binderInfo) ? null : m_binderInfo.getBinderId());
+		final String binderId = getBinderIdAsString();
 		if ( binderId == null )
 			return;
 		

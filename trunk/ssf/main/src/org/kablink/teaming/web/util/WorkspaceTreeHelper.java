@@ -1294,7 +1294,7 @@ public class WorkspaceTreeHelper {
 		model.put(WebKeys.GWT_UI_TOOLBAR,  gwtUIToolbar.getToolbar());
 	}
 	
-	private static String[] collectContributorIds(Workspace workspace) {
+	public static String[] collectContributorIds(Workspace workspace) {
 		Set principals = new HashSet();
 		principals.add(workspace.getCreation().getPrincipal().getId().toString());
 		principals.add(workspace.getOwner().getId().toString());

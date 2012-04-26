@@ -399,6 +399,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetViewFileUrl();
 	String rpcFailure_GetViewFolderEntryUrl();
 	String rpcFailure_GetViewInfo();
+	String rpcFailure_GetWorkspaceContributorIds();
 	String rpcFailure_ImportIcalByUrl();
 	String rpcFailure_IsAllUsersGroup();
 	String rpcFailure_IsPersonTracked();

@@ -36,7 +36,6 @@ package org.kablink.teaming.gwt.client.binderviews;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
-import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
@@ -56,9 +55,8 @@ import com.google.gwt.user.client.Window;
  * @author jwootton
  *
  */
-public class TeamWSView extends ViewBase implements ToolPanelReady
+public class TeamWSView extends WorkspaceViewBase implements ToolPanelReady
 {
-	private BinderInfo m_binderInfo;
 	private VibeFlowPanel m_mainPanel;
 	private VibeFlowPanel m_breadCrumbPanel;
 	private VibeFlowPanel m_titlePanel;
@@ -73,9 +71,7 @@ public class TeamWSView extends ViewBase implements ToolPanelReady
 	 */
 	private TeamWSView( BinderInfo binderInfo, ViewReady viewReady )
 	{
-		super( viewReady );
-		
-		m_binderInfo = binderInfo;
+		super( binderInfo, viewReady );
 		
 		// Build this view
 		buildView();
@@ -100,7 +96,7 @@ public class TeamWSView extends ViewBase implements ToolPanelReady
 			m_breadCrumbPanel.addStyleName( "vibe-teamWSView_BreadCrumbPanel" );
 			m_mainPanel.add( m_breadCrumbPanel );
 
-			BreadCrumbPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
+			BreadCrumbPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
 			{			
 				@Override
 				public void onUnavailable()
@@ -126,7 +122,7 @@ public class TeamWSView extends ViewBase implements ToolPanelReady
 			m_descPanel.addStyleName( "vibe-teamWSView_DescPanel" );
 			m_mainPanel.add( m_descPanel );
 			
-			DescriptionPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
+			DescriptionPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
 			{			
 				@Override
 				public void onUnavailable()
@@ -149,7 +145,7 @@ public class TeamWSView extends ViewBase implements ToolPanelReady
 			m_lpPanel.addStyleName( "vibe-teamWSView_LPPanel" );
 			m_mainPanel.add( m_lpPanel );
 
-			LandingPageWidget.createAsync( m_binderInfo, new LandingPageWidgetClient()
+			LandingPageWidget.createAsync( getBinderInfo(), new LandingPageWidgetClient()
 			{
 				@Override
 				public void onUnavailable()
@@ -171,7 +167,7 @@ public class TeamWSView extends ViewBase implements ToolPanelReady
 			m_listOfChildrenPanel.addStyleName( "vibe-teamWSView_ListOfChildrenPanel" );
 			m_mainPanel.add( m_listOfChildrenPanel );
 
-			ChildBindersWidget.createAsync( this, m_binderInfo, this, new ToolPanelClient()
+			ChildBindersWidget.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
 			{
 				@Override
 				public void onUnavailable()
@@ -193,7 +189,7 @@ public class TeamWSView extends ViewBase implements ToolPanelReady
 			m_accessoriesPanel.addStyleName( "vibe-teamWSView_AccessoriesPanel" );
 			m_mainPanel.add( m_accessoriesPanel );
 			
-			AccessoriesPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
+			AccessoriesPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
 			{			
 				@Override
 				public void onUnavailable()
@@ -215,7 +211,7 @@ public class TeamWSView extends ViewBase implements ToolPanelReady
 			m_footerPanel.addStyleName( "vibe-discussionWSView_FooterPanel" );
 			m_mainPanel.add( m_footerPanel );
 
-			FooterPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
+			FooterPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
 			{			
 				@Override
 				public void onUnavailable()
