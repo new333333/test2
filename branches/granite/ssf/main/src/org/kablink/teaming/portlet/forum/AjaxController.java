@@ -2629,9 +2629,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 							//This is a request for calendar events for the current user
 							modeType = ModeType.MY_EVENTS;
 						}
-						SearchFilter sf = EventHelper.buildSearchFilter(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.CALENDAR);
-						sf.addFamilyFilter(Constants.FAMILY_FIELD_CALENDAR);
-						Document searchFilter = sf.getFilter();
+						Document searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.CALENDAR);
 						retMap = getBinderModule().executeSearchQuery(searchFilter, options);
 						entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 						
@@ -2639,17 +2637,25 @@ public class AjaxController  extends SAbstractControllerRetry {
 						if (virtual) {
 							// Yes!  Search for the events that are
 							// task entries...
-							sf = EventHelper.buildSearchFilter(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.TASK);
-							sf.addFamilyFilter(Constants.FAMILY_FIELD_TASK);
-							searchFilter = sf.getFilter();
+							searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.TASK);
 							retMap = getBinderModule().executeSearchQuery(searchFilter, options);
 							List taskEntries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 							int tasks = ((null == taskEntries) ? 0 : taskEntries.size());
 							if (0 < tasks) {
+								//First, build a list of entryIds we have seen already
+								Set entryIds = new HashSet();
+								for (int i = 0; i < entries.size(); i++) {
+									Map entry = (Map)entries.get(i);
+									String docId = (String)entry.get("_docId");
+									entryIds.add(docId);
+								}
 								// ...and add them to the calendar
 								// ...events we found above.
 								for (int i = 0; i < tasks; i += 1) {
-									entries.add(taskEntries.get(i));
+									Map entry = (Map)taskEntries.get(i);
+									String docId = (String)entry.get("_docId");
+									//Only add the task if it hasn't already been seen
+									if (docId != null && !entryIds.contains(docId)) entries.add(taskEntries.get(i));
 								}
 							}
 						}
