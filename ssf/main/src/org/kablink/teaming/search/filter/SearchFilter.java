@@ -295,10 +295,6 @@ public class SearchFilter {
 		addFieldFilter(Constants.PERSONFLAG_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}
 	
-	public void addFamilyFilter(String searchTerm) {
-		addFieldFilter(Constants.FAMILY_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
-	}
-	
 	public void addAssignmentFilter(String searchTerm) {
 		addFieldFilter(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}
