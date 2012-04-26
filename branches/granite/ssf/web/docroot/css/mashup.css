@@ -40,6 +40,7 @@ table.ss_mashup_border td {
 
 div.ss_mashup_element {
   margin: 5px 5px 8px;
+  border: 1px solid #ccc;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
 }
