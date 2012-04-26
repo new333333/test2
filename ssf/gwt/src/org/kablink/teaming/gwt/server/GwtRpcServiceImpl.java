@@ -178,6 +178,7 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
+import org.kablink.teaming.web.util.WorkspaceTreeHelper;
 import org.kablink.util.search.Constants;
 
 /**
@@ -1550,6 +1551,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case GET_WORKSPACE_CONTRIBUTOR_IDS:
+		{
+			GetWorkspaceContributorIdsCmd gwciCmd;
+			GetWorkspaceContributorIdsRpcResponseData responseData;
+			ArrayList<Long> listOfIds;
+			
+			// Get a list of contributor ids for the given workspace.
+			gwciCmd = (GetWorkspaceContributorIdsCmd) cmd;
+			listOfIds = getWorkspaceContributorIds( ri,gwciCmd.getWorkspaceId() );
+			responseData = new GetWorkspaceContributorIdsRpcResponseData( listOfIds );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+
 		case HAS_ACTIVITY_STREAM_CHANGED:
 		{
 			ActivityStreamInfo asi;
@@ -2851,6 +2866,46 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		return GwtActivityStreamHelper.getDefaultActivityStream( getRequest( ri ), this, currentBinderId );
 	}// end getDefaultActivityStream()
+	
+	/**
+	 * Return a list of contributor ids for the given workspace.
+	 * The list of contributors will include
+	 * 1. The creator of the workspace
+	 * 2. The owner of the workspace
+	 * 3. The last user to modify the workspace.
+	 */
+	private ArrayList<Long> getWorkspaceContributorIds( HttpRequestInfo ri, Long workspaceId )
+	{
+		String[] ids;
+		ArrayList<Long> listOfIds;
+		Workspace workspace = null;
+		
+		listOfIds = new ArrayList<Long>();
+		
+		try
+		{
+			workspace = getWorkspaceModule().getWorkspace( workspaceId );
+		}
+		catch (Exception ex)
+		{
+			// Nothing to do
+		}
+		
+		if ( workspace != null )
+		{
+			// Get the list of contributor ids for the given workspace.
+			ids = WorkspaceTreeHelper.collectContributorIds( workspace );
+			if ( ids != null )
+			{
+				for (String id: ids)
+				{
+					listOfIds.add( Long.valueOf( id ) );
+				}
+			}
+		}
+		
+		return listOfIds;
+	}
 	
 	/**
 	 * Returns true if the data for an activity stream has changed (or

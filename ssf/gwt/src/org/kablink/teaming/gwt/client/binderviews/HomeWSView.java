@@ -37,7 +37,6 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
-import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -55,9 +54,8 @@ import com.google.gwt.user.client.Window;
  * @author jwootton
  *
  */
-public class HomeWSView extends ViewBase implements ToolPanelReady
+public class HomeWSView extends WorkspaceViewBase implements ToolPanelReady
 {
-	private BinderInfo m_binderInfo;
 	private VibeFlowPanel m_mainPanel;
 	private VibeFlowPanel m_descPanel;
 	private VibeFlowPanel m_lpPanel;
@@ -68,9 +66,7 @@ public class HomeWSView extends ViewBase implements ToolPanelReady
 	 */
 	private HomeWSView( BinderInfo binderInfo, ViewReady viewReady )
 	{
-		super( viewReady );
-		
-		m_binderInfo = binderInfo;
+		super( binderInfo, viewReady );
 		
 		// Build this view
 		buildView();
@@ -96,7 +92,7 @@ public class HomeWSView extends ViewBase implements ToolPanelReady
 			m_descPanel.addStyleName( "vibe-homeWSView_DescPanel" );
 			m_mainPanel.add( m_descPanel );
 			
-			DescriptionPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
+			DescriptionPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
 			{			
 				@Override
 				public void onUnavailable()
@@ -119,7 +115,7 @@ public class HomeWSView extends ViewBase implements ToolPanelReady
 			m_lpPanel.addStyleName( "vibe-homeWSView_LPPanel" );
 			m_mainPanel.add( m_lpPanel );
 
-			LandingPageWidget.createAsync( m_binderInfo, new LandingPageWidgetClient()
+			LandingPageWidget.createAsync( getBinderInfo(), new LandingPageWidgetClient()
 			{
 				@Override
 				public void onUnavailable()
@@ -141,7 +137,7 @@ public class HomeWSView extends ViewBase implements ToolPanelReady
 			m_footerPanel.addStyleName( "vibe-homeWSView_FooterPanel" );
 			m_mainPanel.add( m_footerPanel );
 
-			FooterPanel.createAsync( this, m_binderInfo, this, new ToolPanelClient()
+			FooterPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
 			{			
 				@Override
 				public void onUnavailable()
