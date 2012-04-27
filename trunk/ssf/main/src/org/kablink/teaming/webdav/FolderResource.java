@@ -66,6 +66,7 @@ import org.kablink.teaming.web.util.TrashHelper;
 import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
 import com.bradmcevoy.http.CopyableResource;
+import com.bradmcevoy.http.DeletableCollectionResource;
 import com.bradmcevoy.http.DeletableResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.MakeCollectionableResource;
@@ -84,7 +85,7 @@ import com.bradmcevoy.http.exceptions.NotAuthorizedException;
  *
  */
 public class FolderResource extends BinderResource 
-implements PropFindableResource, GetableResource, CollectionResource, PutableResource, MakeCollectionableResource, DeletableResource, CopyableResource, MoveableResource {
+implements PropFindableResource, GetableResource, CollectionResource, PutableResource, MakeCollectionableResource, DeletableResource, CopyableResource, MoveableResource, DeletableCollectionResource {
 	
 	private static final Log logger = LogFactory.getLog(FolderResource.class);
 	
