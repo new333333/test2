@@ -240,6 +240,7 @@ public class PostFiles extends Thread {
       }
     }
 
+    static final int CHUNK_SIZE = 1024 * 8;
     static final int BUFF_SIZE = 1024 * 128;
     static final byte[] buffer = new byte[BUFF_SIZE];
 
@@ -283,7 +284,7 @@ public class PostFiles extends Thread {
             conn.setRequestProperty("Accept", "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2");
             conn.setRequestProperty("Accept-Charset", "utf-8;q=0.9");
             conn.setRequestProperty("Connection", "keep-alive");
-            conn.setChunkedStreamingMode(BUFF_SIZE);
+            conn.setChunkedStreamingMode(CHUNK_SIZE);
             try {
             	conn.connect();
             } catch(Exception e) {
