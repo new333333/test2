@@ -58,7 +58,10 @@ import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.FolderUtils;
+import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.webdav.util.WebdavUtils;
 
 import com.bradmcevoy.http.Auth;
@@ -74,6 +77,8 @@ import com.bradmcevoy.http.LockableResource;
 import com.bradmcevoy.http.MoveableResource;
 import com.bradmcevoy.http.PropFindableResource;
 import com.bradmcevoy.http.Range;
+import com.bradmcevoy.http.Request;
+import com.bradmcevoy.http.Request.Method;
 import com.bradmcevoy.http.exceptions.BadRequestException;
 import com.bradmcevoy.http.exceptions.ConflictException;
 import com.bradmcevoy.http.exceptions.LockedException;
@@ -262,7 +267,7 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 				// Our WebDAV service exposes only files stored in a folder, which is
 				// attached either to an entry in the folder or to the folder itself.
 				// Therefore, this can not and should not occur.
-				throw new BadRequestException(this, "Can not delete file '" + id + "' because it is owned by an entity of type '" + owningEntity.getEntityType() + "'");
+				throw new ConflictException(this, "Can not delete file '" + id + "' because it is owned by an entity of type '" + owningEntity.getEntityType() + "'");
 			}
 		}
 		catch (AccessControlException e) {
@@ -338,7 +343,8 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 					// The file is being copied within the same parent folder. 
 					if(sourceFileName.equals(name)) {
 						// The target name is the same as the source name. This can not be allowed when copying within the same folder.
-						throw new BadRequestException(this, "Can not copy file '" + id + "' to the same name within the same folder");  
+						// Note: NEVER throw BadRequestException. It will result in the WebDAV client on Windows repeating the same request a few more times unnecessarily.
+						throw new ConflictException(this, "Can not copy file '" + id + "' to the same name within the same folder");  
 					}
 					else { 
 						// Make sure that the current folder doesn't already contain a file with the new name.
@@ -347,7 +353,7 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 							copyFileToNewEntry(entry, fa, (FolderResource)toCollection);
 						}
 						else {
-							throw new BadRequestException(this, "Can not copy file '" + id + "' because there is already a file with the same name in this folder");
+							throw new ConflictException(this, "Can not copy file '" + id + "' because there is already a file with the same name in this folder");
 						}						
 					}
 				}
@@ -371,26 +377,26 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 							}
 						}
 						else {
-							throw new BadRequestException(this, "Can not copy file '" + id + "' into the folder '" + toFolderId + "' because there is already a file with the same name in the destination folder");
+							throw new ConflictException(this, "Can not copy file '" + id + "' into the folder '" + toFolderId + "' because there is already a file with the same name in the destination folder");
 						}
 					}
 					else {
 						// The destination folder is not a library folder. 
-						throw new BadRequestException(this, "Can not copy file '" + id + "' because the destination folder '" + destFolder.getId() + "' is not a library folder");						
+						throw new ConflictException(this, "Can not copy file '" + id + "' because the destination folder '" + destFolder.getId() + "' is not a library folder");						
 					}
 				}
 			}
 			else {
 				// We allow copy operation only on those files attached to entries.
 				// This is because file copy operation indirectly involves entry creation or modification.
-				throw new BadRequestException(this, "Can not copy file '" + id + "' because it is owned by an entity of type '" + owningEntity.getEntityType() + "'");
+				throw new ConflictException(this, "Can not copy file '" + id + "' because it is owned by an entity of type '" + owningEntity.getEntityType() + "'");
 			}
 		}
 		else if(toCollection instanceof WorkspaceResource) {
-			throw new BadRequestException(this, "It is not allowed to copy a file into a workspace.");
+			throw new ConflictException(this, "It is not allowed to copy a file into a workspace.");
 		}
 		else {
-			throw new BadRequestException(this, "Destination is an unknown type '" + toCollection.getClass().getName() + "'. Must be a folder resource.");
+			throw new ConflictException(this, "Destination is an unknown type '" + toCollection.getClass().getName() + "'. Must be a folder resource.");
 		}
 	}
 
@@ -421,7 +427,7 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 							renameFile(entry, fa, name);
 						}
 						else {
-							throw new BadRequestException(this, "Can not rename file '" + id + "' because there is already a file with the same name in this folder");
+							throw new ConflictException(this, "Can not rename file '" + id + "' because there is already a file with the same name in this folder");
 						}
 					}
 				}
@@ -443,7 +449,7 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 								// indeed the intention of the user, the user will have to do that through browser interface
 								// in the same way that WebDAV interface doesn't allow a way to attach multiple files to
 								// the same entry.
-								throw new BadRequestException(this, "Can not move file '" + id + "' because the enclosing entry represents more than one file");
+								throw new ConflictException(this, "Can not move file '" + id + "' because the enclosing entry represents more than one file");
 							}
 							else {
 								// This is the only file contained in the entry, therefore, we can safely move the entire entry.
@@ -456,36 +462,63 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 							}
 						}
 						else {
-							throw new BadRequestException(this, "Can not move file '" + id + "' into the folder '" + destFolderId + "' because there is already a file with the same name in the destination folder");
+							throw new ConflictException(this, "Can not move file '" + id + "' into the folder '" + destFolderId + "' because there is already a file with the same name in the destination folder");
 						}
 					}
 					else {
 						// The destination folder is not a library folder. 
-						throw new BadRequestException(this, "Can not move file '" + id + "' because the destination folder '" + destFolder.getId() + "' is not a library folder");
+						throw new ConflictException(this, "Can not move file '" + id + "' because the destination folder '" + destFolder.getId() + "' is not a library folder");
 					}
 				}
 			}
 			else {
 				// We allow move operation only on those files attached to entries.
 				// Moving other files is ill-defined.
-				throw new BadRequestException(this, "Can not move file '" + id + "' because it is owned by an entity of type '" + owningEntity.getEntityType() + "'");
+				throw new ConflictException(this, "Can not move file '" + id + "' because it is owned by an entity of type '" + owningEntity.getEntityType() + "'");
 			}
 		}
 		else if(rDest instanceof WorkspaceResource) {
-			throw new BadRequestException(this, "It is not allowed to move a file into a workspace.");
+			throw new ConflictException(this, "It is not allowed to move a file into a workspace.");
 		}
 		else {
-			throw new BadRequestException(this, "Destination is an unknown type '" + rDest.getClass().getName() + "'. Must be a folder resource.");
+			throw new ConflictException(this, "Destination is an unknown type '" + rDest.getClass().getName() + "'. Must be a folder resource.");
 		}
 	}
+	
+	/*
+	//$$$$$
+	@Override
+	public boolean authorise(Request request, Method method, Auth auth) {
+		if(Method.MOVE == method) {
+			return false;
+		}
+		else {
+			return super.authorise(request, method, auth);
+		}
+	}
+	*/
+
 	
 	private void renameFile(FolderEntry entry, FileAttachment fa, String newName) throws NotAuthorizedException, ConflictException {
 		Map<FileAttachment,String> renamesTo = new HashMap<FileAttachment,String>();
 		renamesTo.put(fa, newName);
 		
+		InputDataAccessor inputData = null;
+		
+		if(fa.getFileItem().getName().equals(entry.getTitle())) {
+			// This entry's title is identical to the current name of the file.
+			// In this case, it's reasonable to change the title to match the new name as well.
+			Map data = new HashMap();
+			data.put("title", newName);
+			inputData = new MapInputData(data);
+		}
+		else {
+			inputData = new EmptyInputData();
+		}
+		
 		try {
 			getFolderModule().modifyEntry(entry.getParentBinder().getId(), 
-					entry.getId(), new EmptyInputData(), null, null, renamesTo, null);
+					entry.getId(), inputData, null, null, renamesTo, null);
 		}
 		catch (AccessControlException e) {
 			throw new NotAuthorizedException(this);

@@ -226,7 +226,7 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 		resolveFolder();
 		
 		if(!folder.isLibrary())
-			throw new BadRequestException(this, "This folder is not a library folder");
+			throw new ConflictException(this, "This folder is not a library folder");
 		
 		FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, newName);
 		
@@ -295,14 +295,14 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 			else if(toCollection instanceof WorkspaceResource) { // Copy a folder into a workspace
 				EntityIdentifier toCollectionEntityIdentifier = ((WorkspaceResource)toCollection).getEntityIdentifier();
 				if(EntityType.profiles == toCollectionEntityIdentifier.getEntityType()) {
-					throw new BadRequestException(this, "Can not copy a folder into the profiles binder");
+					throw new ConflictException(this, "Can not copy a folder into the profiles binder");
 				}
 				else {
 					newBinder = getBinderModule().copyBinder(id, toCollectionEntityIdentifier.getEntityId(), true, options);
 				}
 			}
 			else {
-				throw new BadRequestException(this, "Destination is an unknown type '" + toCollection.getClass().getName() + "'. Must be a binder resource.");
+				throw new ConflictException(this, "Destination is an unknown type '" + toCollection.getClass().getName() + "'. Must be a binder resource.");
 			}
 		}
 		catch(AccessControlException e) {
@@ -333,7 +333,7 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 					}
 					else { // Move a folder into a workspace
 						if(EntityType.profiles == destBinderIdentifier.getEntityType()) {
-							throw new BadRequestException(this, "Can not copy a folder into the profiles binder");
+							throw new ConflictException(this, "Can not copy a folder into the profiles binder");
 						}
 						else {
 							getBinderModule().moveBinder(id, destBinderIdentifier.getEntityId(), options);
@@ -342,7 +342,7 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 				}
 			}
 			else {
-				throw new BadRequestException(this, "Destination is an unknown type '" + rDest.getClass().getName() + "'. Must be a binder resource.");				
+				throw new ConflictException(this, "Destination is an unknown type '" + rDest.getClass().getName() + "'. Must be a binder resource.");				
 			}
 		}
 		catch(AccessControlException e) {

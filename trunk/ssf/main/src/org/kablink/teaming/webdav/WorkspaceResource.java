@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.webdav;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +67,7 @@ import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.MakeCollectionableResource;
 import com.bradmcevoy.http.MoveableResource;
 import com.bradmcevoy.http.PropFindableResource;
+import com.bradmcevoy.http.PutableResource;
 import com.bradmcevoy.http.Request;
 import com.bradmcevoy.http.Resource;
 import com.bradmcevoy.http.Request.Method;
@@ -77,7 +80,7 @@ import com.bradmcevoy.http.exceptions.NotAuthorizedException;
  *
  */
 public class WorkspaceResource extends BinderResource  
-implements PropFindableResource, GetableResource, CollectionResource, MakeCollectionableResource, DeletableResource, CopyableResource, MoveableResource {
+implements PropFindableResource, GetableResource, CollectionResource, PutableResource, MakeCollectionableResource, DeletableResource, CopyableResource, MoveableResource {
 	
 	private static final Log logger = LogFactory.getLog(WorkspaceResource.class);
 	
@@ -147,7 +150,7 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 		Workspace parentWorkspace = resolveWorkspace();
 		
 		if(EntityType.profiles == parentWorkspace.getEntityType())
-			throw new BadRequestException(this, "Can not create a folder in the profiles binder");
+			throw new ConflictException(this, "Can not create a folder in the profiles binder");
 		
 		try {
 			Binder folder = FolderUtils.createLibraryFolder(parentWorkspace, newName);
@@ -221,12 +224,12 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 			ConflictException {
 		try {
 			if(toCollection instanceof FolderResource) {
-				throw new BadRequestException(this, "Can not copy a workspace into a folder");
+				throw new ConflictException(this, "Can not copy a workspace into a folder");
 			}
 			else if(toCollection instanceof WorkspaceResource) {
 				EntityIdentifier toCollectionEntityIdentifier = ((WorkspaceResource)toCollection).getEntityIdentifier();
 				if(EntityType.profiles == toCollectionEntityIdentifier.getEntityType()) {
-					throw new BadRequestException(this, "Can not copy a workspace into the profiles binder");
+					throw new ConflictException(this, "Can not copy a workspace into the profiles binder");
 				}
 				else {
 					HashMap options = new HashMap();
@@ -235,7 +238,7 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 				}
 			}
 			else {
-				throw new BadRequestException(this, "Destination is an unknown type '" + toCollection.getClass().getName() + "'. Must be a workspace resource.");
+				throw new ConflictException(this, "Destination is an unknown type '" + toCollection.getClass().getName() + "'. Must be a workspace resource.");
 			}
 		}
 		catch(AccessControlException e) {
@@ -260,7 +263,7 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 				}
 				else { // This is a move
 					if(EntityType.profiles == destWorkspaceIdentifier.getEntityType()) {
-						throw new BadRequestException(this, "Can not move a workspace into the profiles binder");
+						throw new ConflictException(this, "Can not move a workspace into the profiles binder");
 					}
 					else {
 						HashMap options = new HashMap();
@@ -271,10 +274,10 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 			}
 			else if(rDest instanceof FolderResource) {
 				// Moving a workspace into a folder is not allowed.
-				throw new BadRequestException(this, "Can not move a workspace into a folder");
+				throw new ConflictException(this, "Can not move a workspace into a folder");
 			}
 			else {
-				throw new BadRequestException(this, "Destination is an unknown type '" + rDest.getClass().getName() + "'. Must be a workspace resource.");								
+				throw new ConflictException(this, "Destination is an unknown type '" + rDest.getClass().getName() + "'. Must be a workspace resource.");								
 			}
 		}
 		catch(AccessControlException e) {
@@ -284,6 +287,20 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 		} catch (WriteEntryDataException e) {
 			throw new WebdavException(e.getLocalizedMessage());
 		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.PutableResource#createNew(java.lang.String, java.io.InputStream, java.lang.Long, java.lang.String)
+	 */
+	@Override
+	public Resource createNew(String newName, InputStream inputStream,
+			Long length, String contentType) throws IOException,
+			ConflictException, NotAuthorizedException, BadRequestException {
+		// Reject PUT by throwing this exception since Vibe does not support adding files in a workspace.
+		// This unfortunate workaround is necessary, because Windows Explorer on Windows 7 ignores
+		// the correct "501 Not Implemented" status code returned by Milton when this class did not 
+		// implement PutableResource interface. 
+		throw new ConflictException(this, "Can not write a file in a workspace");
 	}
 	
 	private Workspace resolveWorkspace() throws NoWorkspaceByTheIdException {

@@ -146,8 +146,8 @@ public class EipFileIdResource extends WebdavResource implements PropFindableRes
 			else if(EntityType.workspace == entityType || EntityType.folder == entityType || EntityType.profiles == entityType) { // binder	
 				FileUtils.modifyBinderWithFile((Binder)entity, dataName, filename, inputStream);
 			}
-			else if(EntityType.user == entityType) {		
-				throw new BadRequestException(this, "This file is attached to an entity whose type is unsupported: " + entity.getEntityIdentifier().toString());
+			else {		
+				throw new ConflictException(this, "This file is attached to an entity whose type is unsupported: " + entity.getEntityIdentifier().toString());
 			}
 			return new EipFileNameResource(factory, fa);
 		}
