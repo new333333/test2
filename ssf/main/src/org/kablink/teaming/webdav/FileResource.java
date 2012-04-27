@@ -206,7 +206,7 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 		// relying on the meta data we provide. This is to avoid the unlikely
 		// (but possible) situation where the length information is out-of-sync with
 		// the content for whatever reason (e.g. Lucene index is out-of-sync, etc.).
-		return null;
+		return null;// $$$$$$$ This shows size of 0 on windows 7
 	}
 	
 	public String getWebdavPath() {

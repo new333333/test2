@@ -49,11 +49,13 @@ import org.kablink.teaming.security.AccessControlException;
 
 import com.bradmcevoy.http.CollectionResource;
 import com.bradmcevoy.http.CopyableResource;
+import com.bradmcevoy.http.DeletableCollectionResource;
 import com.bradmcevoy.http.DeletableResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.MakeCollectionableResource;
 import com.bradmcevoy.http.MoveableResource;
 import com.bradmcevoy.http.PropFindableResource;
+import com.bradmcevoy.http.Request;
 import com.bradmcevoy.http.Resource;
 
 /**
@@ -61,7 +63,7 @@ import com.bradmcevoy.http.Resource;
  *
  */
 public abstract class BinderResource extends WebdavCollectionResource  
-implements PropFindableResource, GetableResource, CollectionResource, MakeCollectionableResource, DeletableResource, CopyableResource, MoveableResource {
+implements PropFindableResource, GetableResource, CollectionResource, MakeCollectionableResource, DeletableResource, CopyableResource, MoveableResource, DeletableCollectionResource {
 
 	// Required properties
 	protected Long id;
@@ -145,6 +147,19 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 	@Override
 	public Date getCreateDate() {
 		return createdDate;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.bradmcevoy.http.DeletableCollectionResource#isLockedOutRecursive(com.bradmcevoy.http.Request)
+	 */
+	@Override
+	public boolean isLockedOutRecursive(Request request) {
+		// For now, always return false without checking actual locks on individual files
+		// so that efficient version of delete can proceed.
+		// In the current system this is expensive to implement and execute, but it's no 
+		// worse than the browser interface since both interface proceed with binder
+		// deletion without first checking any locks that might exist.
+		return false;
 	}
 
 	@Override
