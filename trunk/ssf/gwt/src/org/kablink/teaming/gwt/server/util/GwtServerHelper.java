@@ -119,6 +119,7 @@ import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
+import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.gwt.client.util.BinderFilter;
@@ -132,7 +133,6 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.MilestoneStats;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ProjectInfo;
-import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagType;
@@ -5766,11 +5766,11 @@ public class GwtServerHelper {
 	/**
 	 * Return the "show setting" (show all or show unread) for the "What's new" page.
 	 */
-	public static ShowSetting getWhatsNewShowSetting( UserProperties userProperties )
+	public static ActivityStreamDataType getWhatsNewShowSetting( UserProperties userProperties )
 	{
-		ShowSetting showSetting;
+		ActivityStreamDataType showSetting;
 		
-		showSetting = ShowSetting.SHOW_ALL;
+		showSetting = ActivityStreamDataType.ALL;
 		
 		// Do we have a user properties?
 		if ( userProperties != null )
@@ -5784,10 +5784,10 @@ public class GwtServerHelper {
 				
 				value = property.intValue();
 				
-				if ( value == ShowSetting.SHOW_ALL.ordinal() )
-					showSetting = ShowSetting.SHOW_ALL;
-				else if ( value == ShowSetting.SHOW_UNREAD.ordinal() )
-					showSetting = ShowSetting.SHOW_UNREAD;
+				if ( value == ActivityStreamDataType.ALL.ordinal() )
+					showSetting = ActivityStreamDataType.ALL;
+				else if ( value == ActivityStreamDataType.UNREAD.ordinal() )
+					showSetting = ActivityStreamDataType.UNREAD;
 			}
 		}
 		
@@ -7085,7 +7085,7 @@ public class GwtServerHelper {
 	 * Save the show setting (show all or show unread) for the What's New page to
 	 * the user's properties.
 	 */
-	public static Boolean saveWhatsNewShowSetting( AllModulesInjected bs, ShowSetting showSetting )
+	public static Boolean saveWhatsNewShowSetting( AllModulesInjected bs, ActivityStreamDataType showSetting )
 	{
 		ProfileModule profileModule;
 		Integer setting;

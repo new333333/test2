@@ -75,7 +75,6 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
-import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper.GwtServerProfiler;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -120,17 +119,17 @@ public class GwtActivityStreamHelper {
 		// Create an activity stream parameter object with the
 		// appropriate defaults.
 		m_activityStreamParams = new ActivityStreamParams();
-		m_activityStreamParams.setActivityStreamsOnLogin(GwtUIHelper.isActivityStreamOnLogin());
-		m_activityStreamParams.setLookback(              cacheLookback);
-		m_activityStreamParams.setClientRefresh(         clientRefresh);
-		m_activityStreamParams.setCacheRefresh(          cacheRefresh);
+		m_activityStreamParams.setShowSetting(           ActivityStreamDataType.ALL                               );
+		m_activityStreamParams.setActivityStreamsOnLogin(GwtUIHelper.isActivityStreamOnLogin()                    );
+		m_activityStreamParams.setLookback(              cacheLookback                                            );
+		m_activityStreamParams.setClientRefresh(         clientRefresh                                            );
+		m_activityStreamParams.setCacheRefresh(          cacheRefresh                                             );
 		m_activityStreamParams.setActiveComments(        SPropsUtil.getInt("activity.stream.active.comments",   2));
 		m_activityStreamParams.setDisplayWords(          SPropsUtil.getInt("activity.stream.display.words",  (-1)));
 		m_activityStreamParams.setEntriesPerPage(        SPropsUtil.getInt("folder.records.listed",            25));
 		m_activityStreamParams.setMaxHits(               SPropsUtil.getInt("activity.stream.maxhits",        1000));
-		m_activityStreamParams.setReadEntryDays(         SPropsUtil.getInt("activity.stream.read.entry.days",  30));
 		m_activityStreamParams.setReadEntryMax(          SPropsUtil.getInt("activity.stream.read.entry.max", 1000));
-		m_activityStreamParams.setShowSetting( ShowSetting.SHOW_ALL );
+		m_activityStreamParams.setReadEntryDays(         SPropsUtil.getInt("activity.stream.read.entry.days",  30));
 	};
 	
 	/*
@@ -1227,7 +1226,7 @@ public class GwtActivityStreamHelper {
 
 		try {
 			UserProperties userProperties;
-			ShowSetting showSetting;
+			ActivityStreamDataType showSetting;
 			
 			// Get the user's properties
 			userProperties = bs.getProfileModule().getUserProperties( null );
