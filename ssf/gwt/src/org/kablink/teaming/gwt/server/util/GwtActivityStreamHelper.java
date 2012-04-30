@@ -274,8 +274,8 @@ public class GwtActivityStreamHelper {
 
 			// ...and initialize everything else.
 			m_commentEntryDataList = new ArrayList<ASEntryData>();			
-			m_authorId    = Long.parseLong(GwtServerHelper.getStringFromEntryMap(m_entryMap, Constants.CREATORID_FIELD   ));
-			m_authorTitle =                GwtServerHelper.getStringFromEntryMap(m_entryMap, Constants.CREATOR_TITLE_FIELD);
+			m_authorId             = Long.parseLong(GwtServerHelper.getStringFromEntryMap(m_entryMap, Constants.CREATORID_FIELD   ));
+			m_authorTitle          =                GwtServerHelper.getStringFromEntryMap(m_entryMap, Constants.CREATOR_TITLE_FIELD);
 		}
 		
 		/*
@@ -299,7 +299,7 @@ public class GwtActivityStreamHelper {
 		 * Returns a List<ASEntryData> corresponding to what should be
 		 * displayed for a given List<Map> of entry search results.
 		 */
-		private static List<ASEntryData> buildEntryDataList(HttpServletRequest request, AllModulesInjected bs, boolean returnComments, boolean forcePlainTextDescriptions, boolean isPresenceEnabled, boolean isOtherUserAccessRestricted, ActivityStreamParams asp, List<Map> searchEntries) {
+		private static List<ASEntryData> buildEntryDataList(HttpServletRequest request, AllModulesInjected bs, ActivityStreamDataType asdt, boolean returnComments, boolean forcePlainTextDescriptions, boolean isPresenceEnabled, boolean isOtherUserAccessRestricted, ActivityStreamParams asp, SeenMap sm, List<Map> searchEntries) {
 			// If we weren't given any search results...
 			List<ASEntryData> reply = new ArrayList<ASEntryData>();			
 			if ((null == searchEntries) || searchEntries.isEmpty()) {
@@ -333,7 +333,7 @@ public class GwtActivityStreamHelper {
 				if (returnComments) {
 					// Yes!  Build their stubbed out comment
 					// List<ASEntryData>'s.
-					completeCommentEntryDataLists(bs, asp, reply);
+					completeCommentEntryDataLists(bs, asdt, asp, sm, reply);
 				}
 
 				// Read the ASEntryData's required User's and
@@ -430,7 +430,7 @@ public class GwtActivityStreamHelper {
 		 * Uses a single index search to complete the comment
 		 * information in a List<ASEntryData>.
 		 */
-		private static void completeCommentEntryDataLists(AllModulesInjected bs, ActivityStreamParams asp, List<ASEntryData> entryDataList) {
+		private static void completeCommentEntryDataLists(AllModulesInjected bs, ActivityStreamDataType asdt, ActivityStreamParams asp, SeenMap sm, List<ASEntryData> entryDataList) {
 			// Scan the List<ASEntryData>...
 			int c = entryDataList.size();
 			String[] entryIds = new String[c];
@@ -450,7 +450,8 @@ public class GwtActivityStreamHelper {
 			}
 
 			// Scan the comment entry search results Map's
-			int activeComments = asp.getActiveComments();
+			boolean isAll = (ActivityStreamDataType.ALL == asdt);
+			int activeComments = (isAll ? asp.getActiveComments() : Integer.MAX_VALUE);
 			for (Map commentEntryMap:  searchEntries) {
 				// Can we find the ASEntryData for the top level entry
 				// for this comment?
@@ -481,6 +482,13 @@ public class GwtActivityStreamHelper {
 				if (commentEntryDataList.size() < activeComments) {
 					// No!  Add a stubbed out ASEntryData to the
 					// comment List<ASEntryData> that we're completing.
+					if (!isAll) {
+						boolean commentSeen = sm.checkIfSeen(commentEntryMap);
+						switch (asdt) {
+						case READ:    if (!commentSeen) continue; break;
+						case UNREAD:  if ( commentSeen) continue; break;
+						}
+					}
 					commentEntryDataList.add(
 						new ASEntryData(
 							commentEntryMap,
@@ -2139,11 +2147,13 @@ public class GwtActivityStreamHelper {
 				ASEntryData.buildEntryDataList(
 					request,
 					bs,
+					asdt,
 					returnComments,
 					forcePlainTextDescriptions,
 					isPresenceEnabled,
 					isOtherUserAccessRestricted,
 					asp,
+					sm,
 					searchEntries));
     	}
     				
