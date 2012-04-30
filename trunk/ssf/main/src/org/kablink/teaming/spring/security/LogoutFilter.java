@@ -43,6 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.kablink.teaming.util.SPropsUtil;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 public class LogoutFilter extends org.springframework.security.web.authentication.logout.LogoutFilter {
 
@@ -53,6 +54,11 @@ public class LogoutFilter extends org.springframework.security.web.authenticatio
 		allowLogoutViaGet = SPropsUtil.getBoolean("allow.logout.via.get", false);
 	}
 
+    public LogoutFilter(LogoutSuccessHandler logoutSuccessHandler, LogoutHandler... handlers) {
+    	super(logoutSuccessHandler, handlers);
+		allowLogoutViaGet = SPropsUtil.getBoolean("allow.logout.via.get", false);
+    }
+    
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException,
     ServletException {
     	HttpServletRequest request = (HttpServletRequest) req;
