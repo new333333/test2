@@ -152,9 +152,10 @@ public class ActivityStreamData implements IsSerializable {
 	 */
 	public static class SpecificFolderData implements IsSerializable {
 		private boolean m_applyFolderFilters         = false;			//
-		private boolean m_forcePlainTextDescriptions = false;			//
+		private boolean	m_forcePlainTextDescriptions = false;			//
 		private boolean m_returnComments             = true;			//
 		private boolean m_sortDescending             = true;			//
+		private String	m_quickFilter                = null;			//
 		private String	m_sortKey                    = "_lastActivity";	// Default:  Constants.LASTACTIVITY_FIELD.
 
 		/**
@@ -174,6 +175,7 @@ public class ActivityStreamData implements IsSerializable {
 		public boolean isForcePlainTextDescriptions() {return m_forcePlainTextDescriptions;}
 		public boolean isReturnComments()             {return m_returnComments;            }
 		public boolean isSortDescending()             {return m_sortDescending;            }
+		public String  getQuickFilter()               {return m_quickFilter;               }
 		public String  getSortKey()                   {return m_sortKey;                   }
 		
 		/**
@@ -184,6 +186,7 @@ public class ActivityStreamData implements IsSerializable {
 		public void setApplyFolderFilters(        boolean applyFolderFilters        ) {m_applyFolderFilters         = applyFolderFilters;        }
 		public void setForcePlainTextDescriptions(boolean forcePlainTextDescriptions) {m_forcePlainTextDescriptions = forcePlainTextDescriptions;}
 		public void setReturnComments(            boolean returnComments            ) {m_returnComments             = returnComments;            }
+		public void setQuickFilter(               String  quickFilter               ) {m_quickFilter                = quickFilter;               }
 		public void setSortDescending(            boolean sortDescending            ) {m_sortDescending             = sortDescending;            }
 	}
 	

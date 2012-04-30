@@ -1803,6 +1803,9 @@ public class GwtActivityStreamHelper {
 		// Add the sort options to the map.
 		options.put(ObjectKeys.SEARCH_SORT_BY,      getSortKey(    sfData));
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, getSortDescend(sfData));
+
+		// Factor in any quick filter.
+		GwtServerHelper.addQuickFilterToSearch(options, sfData.getQuickFilter());
 		
 		// Perform the search...
 		Map searchResults = bs.getFolderModule().getEntries(sfId, options);

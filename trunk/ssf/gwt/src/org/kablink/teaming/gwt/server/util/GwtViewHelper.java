@@ -193,50 +193,6 @@ public class GwtViewHelper {
 	}
 
 	/*
-	 * Adds a quick filter to the search filter in the options map.
-	 */
-	@SuppressWarnings("unchecked")
-	private static void addQuickFilterToSearch(AllModulesInjected bs, BinderInfo binderInfo, Binder binder, Map options, String quickFilter) {
-		// If we weren't given a quick filter to add...
-	    quickFilter = ((null == quickFilter) ? "" : quickFilter.trim());
-		if (0 == quickFilter.length()) {
-			// ...there's nothing to do.  Bail.
-			return;
-		}
-		
-		// If the quick filter doesn't end with an '*'...
-		if (!(quickFilter.endsWith("*"))) {
-			// ...add one.
-			quickFilter += "*";
-		}
-
-		// Create a SearchFilter from whatever filter is already in
-		// affect...
-		SearchFilter sf = new SearchFilter(true);
-		Document sfDoc = ((Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER));
-		if (null != sfDoc) {
-			sf.appendFilter(sfDoc);
-		}
-
-		// ...add in the quick filter...
-		SearchFilter sfQF = new SearchFilter(true);
-    	sfQF.newCurrentFilterTermsBlock(true);
-    	sfQF.addTextFilter(quickFilter);
-    	sf.appendFilter(sfQF.getFilter());
-
-		// ...store the new filter's XML Document in the options Map...
-		sfDoc = sf.getFilter();
-		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, sfDoc);
-
-		// ...and if we logging debug messages...
-		if (m_logger.isDebugEnabled()) {
-			// ...dump the search filter XML.
-			m_logger.debug("GwtViewHelper.addQuickFilterToSearch( '" + quickFilter + "'):  Search Filter:");
-			m_logger.debug("\n" + GwtServerHelper.getXmlString(sfDoc));
-		}
-	}
-	
-	/*
 	 * Extracts the ID's of the entry contributors and adds them to the
 	 * contributor ID's list if they're not already there. 
 	 */
@@ -1892,7 +1848,7 @@ public class GwtViewHelper {
 			if (isFolder)
 			     options = getFolderSearchFilter(bs, folder, userFolderProperties, null);
 			else options = new HashMap();
-			addQuickFilterToSearch(bs, folderInfo, binder, options, quickFilter);
+			GwtServerHelper.addQuickFilterToSearch(options, quickFilter);
 			options.put(ObjectKeys.SEARCH_OFFSET,   start );
 			options.put(ObjectKeys.SEARCH_MAX_HITS, length);
 
