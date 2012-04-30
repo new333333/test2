@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.QuickFilter;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
+import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.TaskHierarchyDisabledEvent;
 import org.kablink.teaming.gwt.client.event.TaskListReadyEvent;
@@ -229,6 +230,18 @@ public class TaskListing extends Composite implements TaskProvider {
 		     reply = null;
 		else reply = m_taskBundle.getTasks();
 		return reply;
+	}
+	
+	/**
+	 * Handles ContributorIdsRequestEvent's received by this task
+	 * folder view.
+	 * 
+	 * @param event
+	 */
+	public void handleContributorIdsRequest(ContributorIdsRequestEvent event) {
+		if (null != m_taskTable) {
+			m_taskTable.handleContributorIdsRequest(event);
+		}
 	}
 	
 	/*

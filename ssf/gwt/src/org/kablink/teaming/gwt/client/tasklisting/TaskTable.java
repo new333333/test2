@@ -160,7 +160,6 @@ public class TaskTable extends Composite
 	implements
 	// Event handlers implemented by this class.
 		ChangeEntryTypeSelectedEntriesEvent.Handler,
-		ContributorIdsRequestEvent.Handler,
 		CopySelectedEntriesEvent.Handler,
 		DeleteSelectedEntriesEvent.Handler,
 		LockSelectedEntriesEvent.Handler,
@@ -245,7 +244,6 @@ public class TaskTable extends Composite
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES,
-		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.COPY_SELECTED_ENTRIES,
 		TeamingEvents.DELETE_SELECTED_ENTRIES,
 		TeamingEvents.LOCK_SELECTED_ENTRIES,
@@ -1469,41 +1467,39 @@ public class TaskTable extends Composite
 		}
 	}
 	
-	/*
-	 * Called to create JavaScript methods that will be invoked from
-	 * the the task table to handle hover events over a task.
+	/**
+	 * Handles ContributorIdsRequestEvent's received by the task
+	 * listing.
+	 * 
+	 * @param event
 	 */
-	private native void jsInitTaskMouseEventHandlers(TaskTable taskTable) /*-{
-		$wnd.ss_taskMouseOut = function(row) {
-			taskTable.@org.kablink.teaming.gwt.client.tasklisting.TaskTable::handleTaskMouseOut(Ljava/lang/String;)(row);
+	public void handleContributorIdsRequest(ContributorIdsRequestEvent event) {
+		// If we're embedded in JSP...
+		if (m_taskListing.isEmbeddedInJSP()) {
+			// ...contributor IDs will have been handled by the
+			// ...controller.  Simply bail.
+			return;
 		}
 		
-		$wnd.ss_taskMouseOver = function(row) {
-			taskTable.@org.kablink.teaming.gwt.client.tasklisting.TaskTable::handleTaskMouseOver(Ljava/lang/String;)(row);
-		}
-	}-*/;
-
-	/**
-	 * Called by TaskPopupMenu when a selection has been made in one of
-	 * the task's option menus.
-	 * 
-	 * @param task
-	 * @param event
-	 * @param optionValue
-	 */
-	public void setTaskOption(TaskListItem task, TeamingEvents event, String optionValue) {
-		switch (event) {
-		case TASK_NEW_TASK:          handleTaskNewTask(       task, optionValue); break;
-		case TASK_SET_PERCENT_DONE:  handleTaskSetPercentDone(task, optionValue); break;
-		case TASK_SET_PRIORITY:      handleTaskSetPriority(   task, optionValue); break;
-		case TASK_SET_STATUS:        handleTaskSetStatus(     task, optionValue); break;
-			
-		default:
-			GwtClientHelper.deferredAlert(m_messages.taskInternalError_UnexpectedEvent(event.toString()));
-			break;
+		// Is the event targeted to this folder?
+		final Long eventBinderId = event.getBinderId();
+		if (eventBinderId.equals(m_taskListing.getBinderId())) {
+			// Yes!  Asynchronously fire the corresponding reply event
+			// with the contributor IDs.
+			ScheduledCommand doReply = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					GwtTeaming.fireEvent(
+						new ContributorIdsReplyEvent(
+							eventBinderId,
+							TaskListItemHelper.findContributorIds(
+								m_taskBundle.getTasks())));
+				}
+			};
+			Scheduler.get().scheduleDeferred(doReply);
 		}
 	}
-
+	
 	/*
 	 * Called when the membership of a group or team has been
 	 * determined to display the members.
@@ -2741,6 +2737,20 @@ public class TaskTable extends Composite
 	}-*/;
 	
 	/*
+	 * Called to create JavaScript methods that will be invoked from
+	 * the the task table to handle hover events over a task.
+	 */
+	private native void jsInitTaskMouseEventHandlers(TaskTable taskTable) /*-{
+		$wnd.ss_taskMouseOut = function(row) {
+			taskTable.@org.kablink.teaming.gwt.client.tasklisting.TaskTable::handleTaskMouseOut(Ljava/lang/String;)(row);
+		}
+		
+		$wnd.ss_taskMouseOver = function(row) {
+			taskTable.@org.kablink.teaming.gwt.client.tasklisting.TaskTable::handleTaskMouseOver(Ljava/lang/String;)(row);
+		}
+	}-*/;
+
+	/*
 	 * Uses JSNI to store the ID of the most recently selected task.
 	 */
 	private native void jsSetNewTaskDisposition(String newTaskDisposition) /*-{
@@ -2800,41 +2810,6 @@ public class TaskTable extends Composite
 			BinderViewsHelper.changeEntryTypes(
 				FolderType.TASK,
 				getTaskIdsChecked());
-		}
-	}
-	
-	/**
-	 * Handles ContributorIdsRequestEvent's received by this class.
-	 * 
-	 * Implements the ContributorIdsRequestEvent.Handler.onContributorIdsRequest() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onContributorIdsRequest(ContributorIdsRequestEvent event) {
-		// If we're embedded in JSP...
-		if (m_taskListing.isEmbeddedInJSP()) {
-			// ...contributor IDs will have been handled by the
-			// ...controller.  Simply bail.
-			return;
-		}
-		
-		// Is the event targeted to this folder?
-		final Long eventBinderId = event.getBinderId();
-		if (eventBinderId.equals(m_taskListing.getBinderId())) {
-			// Yes!  Asynchronously fire the corresponding reply event
-			// with the contributor IDs.
-			ScheduledCommand doReply = new ScheduledCommand() {
-				@Override
-				public void execute() {
-					GwtTeaming.fireEvent(
-						new ContributorIdsReplyEvent(
-							eventBinderId,
-							TaskListItemHelper.findContributorIds(
-								m_taskBundle.getTasks())));
-				}
-			};
-			Scheduler.get().scheduleDeferred(doReply);
 		}
 	}
 	
@@ -4037,6 +4012,27 @@ public class TaskTable extends Composite
 	private void renderTaskList(List<TaskListItem> tasks) {
 		// Always use the implementation form of the method.
 		renderTaskListImpl(tasks, true);
+	}
+
+	/**
+	 * Called by TaskPopupMenu when a selection has been made in one of
+	 * the task's option menus.
+	 * 
+	 * @param task
+	 * @param event
+	 * @param optionValue
+	 */
+	public void setTaskOption(TaskListItem task, TeamingEvents event, String optionValue) {
+		switch (event) {
+		case TASK_NEW_TASK:          handleTaskNewTask(       task, optionValue); break;
+		case TASK_SET_PERCENT_DONE:  handleTaskSetPercentDone(task, optionValue); break;
+		case TASK_SET_PRIORITY:      handleTaskSetPriority(   task, optionValue); break;
+		case TASK_SET_STATUS:        handleTaskSetStatus(     task, optionValue); break;
+			
+		default:
+			GwtClientHelper.deferredAlert(m_messages.taskInternalError_UnexpectedEvent(event.toString()));
+			break;
+		}
 	}
 
 	/*
