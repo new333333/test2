@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
+import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -95,8 +96,12 @@ public class UnreadEntriesDlg extends DlgBox
 	 */
 	private void addActivityStream( final BinderInfo binderInfo )
 	{
+		ActionsPopupMenu actionsMenu;
+		
+		actionsMenu = new ActionsPopupMenu( true, true );
+
 		// Create an ActivityStreamCtrl for the given binder and insert it into the page.
-		ActivityStreamCtrl.createAsync( false, new ActivityStreamCtrlClient()
+		ActivityStreamCtrl.createAsync( false, actionsMenu, new ActivityStreamCtrlClient()
 		{			
 			@Override
 			public void onUnavailable()
@@ -116,6 +121,7 @@ public class UnreadEntriesDlg extends DlgBox
 				asi.setTitle( binderInfo.getBinderTitle() );
 
 				m_mainPanel.add( asCtrl );
+				asCtrl.setCheckForChanges( false );
 				asCtrl.setActivityStream( asi, ActivityStreamDataType.UNREAD );
 				asCtrl.setSize( 600, 300 );
 				asCtrl.show();
