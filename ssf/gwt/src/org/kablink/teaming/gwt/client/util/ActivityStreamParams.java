@@ -44,17 +44,17 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class ActivityStreamParams implements IsSerializable, VibeRpcResponseData {
-	private boolean		m_activityStreamsOnLogin;	//
-	private int     	m_activeComments;			//
-	private int     	m_cacheRefresh;				//
-	private int     	m_clientRefresh;			//
-	private int			m_displayWords;				//
-	private int     	m_entriesPerPage;			//
-	private int     	m_lookback;					//
-	private int     	m_maxHits;					//
-	private long    	m_readEntryDays;			//
-	private int    		m_readEntryMax;				//
-	private ShowSetting	m_showSetting;				// What to show, show all or show unread.
+	private ActivityStreamDataType	m_showSetting;				// What to show, show all or show unread.
+	private boolean					m_activityStreamsOnLogin;	//
+	private int     				m_activeComments;			//
+	private int     				m_cacheRefresh;				//
+	private int     				m_clientRefresh;			//
+	private int						m_displayWords;				//
+	private int     				m_entriesPerPage;			//
+	private int     				m_lookback;					//
+	private int     				m_maxHits;					//
+	private int    					m_readEntryMax;				//
+	private long    				m_readEntryDays;			//
 	
 	/**
 	 * Constructor method.
@@ -68,32 +68,32 @@ public class ActivityStreamParams implements IsSerializable, VibeRpcResponseData
 	/**
 	 * Get'er methods.
 	 */
-	public boolean     getActivityStreamsOnLogin() {return m_activityStreamsOnLogin;}
-	public int         getActiveComments()         {return m_activeComments;        }
-	public int         getCacheRefresh()           {return m_cacheRefresh;          }
-	public int         getClientRefresh()          {return m_clientRefresh;         }
-	public int         getDisplayWords()           {return m_displayWords;          }
-	public int         getEntriesPerPage()         {return m_entriesPerPage;        }
-	public int         getLookback()               {return m_lookback;              }
-	public int         getMaxHits()                {return m_maxHits;               }
-	public long        getReadEntryDays()          {return m_readEntryDays;         }
-	public int         getReadEntryMax()           {return m_readEntryMax;          }
-	public ShowSetting getShowSetting()            {return m_showSetting;           }
+	public ActivityStreamDataType getShowSetting()            {return m_showSetting;           }
+	public boolean                getActivityStreamsOnLogin() {return m_activityStreamsOnLogin;}
+	public int                    getActiveComments()         {return m_activeComments;        }
+	public int                    getCacheRefresh()           {return m_cacheRefresh;          }
+	public int                    getClientRefresh()          {return m_clientRefresh;         }
+	public int                    getDisplayWords()           {return m_displayWords;          }
+	public int                    getEntriesPerPage()         {return m_entriesPerPage;        }
+	public int                    getLookback()               {return m_lookback;              }
+	public int                    getMaxHits()                {return m_maxHits;               }
+	public int                    getReadEntryMax()           {return m_readEntryMax;          }
+	public long                   getReadEntryDays()          {return m_readEntryDays;         }
 	
 	/**
 	 * Set'er methods.
 	 */
-	public void setActivityStreamsOnLogin(boolean     activityStreamsOnLogin) {m_activityStreamsOnLogin = activityStreamsOnLogin;      }
-	public void setActiveComments(        int         activeComments)         {m_activeComments         = activeComments;              }
-	public void setCacheRefresh(          int         cacheRefresh)           {m_cacheRefresh           = cacheRefresh;                }
-	public void setClientRefresh(         int         clientRefresh)          {m_clientRefresh          = clientRefresh;               }
-	public void setDisplayWords(          int         displayWords)           {m_displayWords           = displayWords;                }
-	public void setEntriesPerPage(        int         entriesPerPage)         {m_entriesPerPage         = entriesPerPage;              }
-	public void setLookback(              int         lookback)               {m_lookback               = lookback;                    }
-	public void setMaxHits(               int         maxHits)                {m_maxHits                = maxHits;                     }
-	public void setReadEntryDays(         long        readEntryDays)          {m_readEntryDays          = Math.min(readEntryDays, 30L);}	// See ObjectKeys.SEEN_TIMEOUT_DAYS.
-	public void setReadEntryMax(          int         readEntryMax)           {m_readEntryMax           = readEntryMax;                }
-	public void setShowSetting(           ShowSetting showSetting)            {m_showSetting            = showSetting;                 }
+	public void setShowSetting(           ActivityStreamDataType showSetting)            {m_showSetting            = showSetting;                 }
+	public void setActivityStreamsOnLogin(boolean                activityStreamsOnLogin) {m_activityStreamsOnLogin = activityStreamsOnLogin;      }
+	public void setActiveComments(        int                    activeComments)         {m_activeComments         = activeComments;              }
+	public void setCacheRefresh(          int                    cacheRefresh)           {m_cacheRefresh           = cacheRefresh;                }
+	public void setClientRefresh(         int                    clientRefresh)          {m_clientRefresh          = clientRefresh;               }
+	public void setDisplayWords(          int                    displayWords)           {m_displayWords           = displayWords;                }
+	public void setEntriesPerPage(        int                    entriesPerPage)         {m_entriesPerPage         = entriesPerPage;              }
+	public void setLookback(              int                    lookback)               {m_lookback               = lookback;                    }
+	public void setMaxHits(               int                    maxHits)                {m_maxHits                = maxHits;                     }
+	public void setReadEntryMax(          int                    readEntryMax)           {m_readEntryMax           = readEntryMax;                }
+	public void setReadEntryDays(         long                   readEntryDays)          {m_readEntryDays          = Math.min(readEntryDays, 30L);}	// See ObjectKeys.SEEN_TIMEOUT_DAYS.
 	
 	/**
 	 * Creates a copy ActivityStreamParams with the base information
@@ -104,6 +104,7 @@ public class ActivityStreamParams implements IsSerializable, VibeRpcResponseData
 	public ActivityStreamParams copyBaseASP() {
 		ActivityStreamParams reply = new ActivityStreamParams();
 		
+		reply.setShowSetting(           getShowSetting()           );
 		reply.setActivityStreamsOnLogin(getActivityStreamsOnLogin());
 		reply.setActiveComments(        getActiveComments()        );
 		reply.setCacheRefresh(          getCacheRefresh()          );
@@ -112,9 +113,8 @@ public class ActivityStreamParams implements IsSerializable, VibeRpcResponseData
 		reply.setEntriesPerPage(        getEntriesPerPage()        );
 		reply.setLookback(              getLookback()              );
 		reply.setMaxHits(               getMaxHits()               );
-		reply.setReadEntryDays(         getReadEntryDays()         );
 		reply.setReadEntryMax(          getReadEntryMax()          );
-		reply.setShowSetting(           getShowSetting()           );
+		reply.setReadEntryDays(         getReadEntryDays()         );
 		
 		return reply;
 	}

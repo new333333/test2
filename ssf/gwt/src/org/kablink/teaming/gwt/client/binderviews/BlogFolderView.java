@@ -41,9 +41,9 @@ import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData;
+import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
@@ -150,7 +150,7 @@ public class BlogFolderView extends FolderViewBase
 				asi.setTitle( binderInfo.getBinderTitle() );
 
 				table.setWidget( 0, 0, asCtrl );
-				asCtrl.setActivityStream( asi, ShowSetting.SHOW_ALL );
+				asCtrl.setActivityStream( asi, ActivityStreamDataType.ALL );
 				
 				m_activityStreamCtrl = asCtrl;
 				

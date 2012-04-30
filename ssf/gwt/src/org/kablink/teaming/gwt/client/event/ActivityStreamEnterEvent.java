@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,8 +33,8 @@
 
 package org.kablink.teaming.gwt.client.event;
 
+import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
-import org.kablink.teaming.gwt.client.util.ShowSetting;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -49,7 +49,7 @@ public class ActivityStreamEnterEvent extends VibeEventBase<ActivityStreamEnterE
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private ActivityStreamInfo m_asi;
-	private ShowSetting m_showSetting = ShowSetting.UNKNOWN; 
+	private ActivityStreamDataType m_showSetting = ActivityStreamDataType.OTHER; 
 
 	/**
 	 * Handler interface for this event.
@@ -72,7 +72,7 @@ public class ActivityStreamEnterEvent extends VibeEventBase<ActivityStreamEnterE
 	 * @param asi	May be null.
 	 * @param ss
 	 */
-	public ActivityStreamEnterEvent(ActivityStreamInfo asi, ShowSetting ss) {
+	public ActivityStreamEnterEvent(ActivityStreamInfo asi, ActivityStreamDataType ss) {
 		// Initialize the object...
 		this();
 
@@ -88,7 +88,7 @@ public class ActivityStreamEnterEvent extends VibeEventBase<ActivityStreamEnterE
 	 */
 	public ActivityStreamEnterEvent(ActivityStreamInfo asi) {
 		// Always use one of the initial forms of the method.
-		this(asi, ShowSetting.UNKNOWN);
+		this(asi, ActivityStreamDataType.OTHER);
 	}
 	
 	/**
@@ -96,7 +96,7 @@ public class ActivityStreamEnterEvent extends VibeEventBase<ActivityStreamEnterE
 	 * 
 	 * @param ss
 	 */
-	public ActivityStreamEnterEvent(ShowSetting ss) {
+	public ActivityStreamEnterEvent(ActivityStreamDataType ss) {
 		// Always use one of the initial forms of the method.
 		this(null, ss);
 	}
@@ -106,16 +106,16 @@ public class ActivityStreamEnterEvent extends VibeEventBase<ActivityStreamEnterE
 	 * 
 	 * @return
 	 */
-	public ActivityStreamInfo getActivityStreamInfo() {return m_asi;        }
-	public ShowSetting        getShowSetting()        {return m_showSetting;}
+	public ActivityStreamInfo     getActivityStreamInfo() {return m_asi;        }
+	public ActivityStreamDataType getShowSetting()        {return m_showSetting;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setActivityStreamInfo(ActivityStreamInfo asi) {m_asi         = asi;}
-	public void setShowSetting(       ShowSetting        ss)  {m_showSetting = ss; }
+	public void setActivityStreamInfo(ActivityStreamInfo     asi) {m_asi         = asi;}
+	public void setShowSetting(       ActivityStreamDataType ss)  {m_showSetting = ss; }
 	
 
 	/**

@@ -126,7 +126,6 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
@@ -5859,7 +5858,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Save the given show setting (show all, show unread) for the What's New page
 	 * to the user's properties.
 	 */
-	private Boolean saveWhatsNewShowSetting( HttpRequestInfo ri, ShowSetting showSetting )
+	private Boolean saveWhatsNewShowSetting( HttpRequestInfo ri, ActivityStreamDataType showSetting )
 	{
 		return GwtServerHelper.saveWhatsNewShowSetting( this, showSetting );
 	}

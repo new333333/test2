@@ -99,6 +99,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.TrackBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UntrackBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UntrackPersonCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.Agent;
 import org.kablink.teaming.gwt.client.util.AgentBase;
@@ -106,7 +107,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.VibeProduct;
@@ -926,7 +926,7 @@ public class GwtMainPage extends ResizeComposite
 			// ...otherwise ignore this.
 			m_requestInfo.clearShowWhatsNewOnLogin();
 			m_mainMenuCtrl.setContext( binderId, inSearch, searchTabId );
-			handleOnActivityStreamEnter(ShowSetting.UNKNOWN);
+			handleOnActivityStreamEnter(ActivityStreamDataType.OTHER);
 			return;
 		}
 		
@@ -1298,7 +1298,7 @@ public class GwtMainPage extends ResizeComposite
 	/**
 	 * Do the work when we enter activity stream mode.
 	 */
-	private void handleOnActivityStreamEnter( ShowSetting ss )
+	private void handleOnActivityStreamEnter( ActivityStreamDataType ss )
 	{
 		// Hide any popup entry iframe divs.
 		GwtClientHelper.jsHideEntryPopupDiv();

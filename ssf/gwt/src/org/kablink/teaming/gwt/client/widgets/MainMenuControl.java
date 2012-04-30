@@ -92,6 +92,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetTeamManagementInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -99,7 +100,6 @@ import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.GWT;
@@ -604,7 +604,7 @@ public class MainMenuControl extends Composite
 			new Command() {
 				@Override
 				public void execute() {
-					doWhatsNewAsync(ShowSetting.UNKNOWN);
+					doWhatsNewAsync(ActivityStreamDataType.OTHER);
 				}
 			});
 		menuPanel.addItem(m_whatsNewBox);
@@ -687,7 +687,7 @@ public class MainMenuControl extends Composite
 	 * Asynchronously enters activity stream mode on the current
 	 * binder.
 	 */
-	private void doWhatsNewAsync(final ShowSetting ss) {
+	private void doWhatsNewAsync(final ActivityStreamDataType ss) {
 		ScheduledCommand doShow = new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -700,7 +700,7 @@ public class MainMenuControl extends Composite
 	/*
 	 * Synchronously enters activity stream mode on the current binder.
 	 */
-	private void doWhatsNewNow(ShowSetting ss) {
+	private void doWhatsNewNow(ActivityStreamDataType ss) {
 		// Are we connected to a binder?
 		if (null != m_contextBinder) {
 			// Yes!  Use it as the current binder for the
@@ -1145,7 +1145,7 @@ public class MainMenuControl extends Composite
 	 */
 	@Override
 	public void onViewWhatsNewInBinder(ViewWhatsNewInBinderEvent event) {
-		doWhatsNewAsync(ShowSetting.SHOW_ALL);
+		doWhatsNewAsync(ActivityStreamDataType.ALL);
 	}
 	
 	/**
@@ -1157,7 +1157,7 @@ public class MainMenuControl extends Composite
 	 */
 	@Override
 	public void onViewWhatsUnseenInBinder(ViewWhatsUnseenInBinderEvent event) {
-		doWhatsNewAsync(ShowSetting.SHOW_UNREAD);
+		doWhatsNewAsync(ActivityStreamDataType.UNREAD);
 	}
 	
 	/**

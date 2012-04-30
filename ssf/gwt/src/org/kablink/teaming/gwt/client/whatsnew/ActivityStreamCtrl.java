@@ -61,7 +61,6 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
@@ -171,7 +170,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	private SubscribeToEntryDlg m_subscribeToEntryDlg = null;
 	private TagThisDlg m_tagThisDlg = null;
 	private ShareThisDlg m_shareThisDlg = null;
-	private ShowSetting m_showSetting = ShowSetting.UNKNOWN;
+	private ActivityStreamDataType m_showSetting = ActivityStreamDataType.OTHER;
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
 
 	// Used to adjust the size and position of things to account for
@@ -963,8 +962,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	private void executeSearch()
 	{
-		ActivityStreamDataType asType;
-		
 		if ( m_activityStreamParams == null )
 		{
 			Window.alert( "In executeSearch(), m_activityStreamParams is null.  This should never happen." );
@@ -983,17 +980,18 @@ public class ActivityStreamCtrl extends ResizeComposite
 
 		// Issue an ajax request to search for the specified type of object.
 		m_searchInProgress = true;
-		if ( m_showSetting == ShowSetting.SHOW_ALL )
-			asType = ActivityStreamDataType.ALL;
-		else if ( m_showSetting == ShowSetting.SHOW_UNREAD )
-			asType = ActivityStreamDataType.UNREAD;
-		else
+		switch ( m_showSetting )
 		{
+		case ALL:
+		case UNREAD:
+			break;
+			
+		default:
 			Window.alert( "in executeSearch() unknown m_showSetting" );
 			return;
 		}
 		
-		GetActivityStreamDataCmd cmd = new GetActivityStreamDataCmd( asType, m_activityStreamInfo, m_activityStreamParams, m_pagingData, m_specificFolderData );
+		GetActivityStreamDataCmd cmd = new GetActivityStreamDataCmd( m_showSetting, m_activityStreamInfo, m_activityStreamParams, m_pagingData, m_specificFolderData );
 		GwtClientHelper.executeCommand( cmd, m_searchResultsCallback );
 		
 		// We only want to show "Searching..." after the search has taken more than .5 seconds.
@@ -1074,7 +1072,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * Take all the actions necessary to handle the changing of the show setting.
 	 * 
 	 */
-	private void handleNewShowSetting( ShowSetting showSetting, boolean doRefresh )
+	private void handleNewShowSetting( ActivityStreamDataType showSetting, boolean doRefresh )
 	{
 		m_showSetting = showSetting;
 		
@@ -1544,7 +1542,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	/**
 	 * Set the activity stream this control is dealing with.
 	 */
-	public void setActivityStream( ActivityStreamInfo activityStreamInfo, final ShowSetting showSetting )
+	public void setActivityStream( ActivityStreamInfo activityStreamInfo, final ActivityStreamDataType showSetting )
 	{
 		ActivityStream src;
 		
@@ -1774,14 +1772,14 @@ public class ActivityStreamCtrl extends ResizeComposite
 	/**
 	 * 
 	 */
-	public void show( ShowSetting ss )
+	public void show( ActivityStreamDataType ss )
 	{
 		Scheduler.ScheduledCommand cmd;
 
 		// Register handlers for all the events we are interested in.
 		registerEvents();
 
-		if ( ShowSetting.UNKNOWN != ss )
+		if ( ActivityStreamDataType.OTHER != ss )
 		{
 			handleNewShowSetting( ss, false );
 		}
@@ -1804,7 +1802,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	
 	public void show()
 	{
-		show( ShowSetting.UNKNOWN );
+		show( ActivityStreamDataType.OTHER );
 	}
 	
 	
@@ -1965,9 +1963,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 	{
 		String text;
 		
-		if ( m_showSetting == ShowSetting.SHOW_ALL )
+		if ( m_showSetting == ActivityStreamDataType.ALL )
 			text = GwtTeaming.getMessages().showAllEntries();
-		else if ( m_showSetting == ShowSetting.SHOW_UNREAD )
+		else if ( m_showSetting == ActivityStreamDataType.UNREAD )
 			text = GwtTeaming.getMessages().showUnreadEntries();
 		else
 			text = "Unknown show setting";
@@ -2112,7 +2110,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 			
 			// If we are displaying "show unread" we need to hide this entry.
 			hide = false;
-			if ( m_showSetting == ShowSetting.SHOW_UNREAD )
+			if ( m_showSetting == ActivityStreamDataType.UNREAD )
 				hide = true;
 			
 			// Mark the given entry as read.
@@ -2148,7 +2146,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	@Override
 	public void onViewAllEntries( ViewAllEntriesEvent event )
 	{
-		handleNewShowSetting( ShowSetting.SHOW_ALL, true );
+		handleNewShowSetting( ActivityStreamDataType.ALL, true );
 	}// end onViewAllEntries()
 	
 	/**
@@ -2161,7 +2159,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	@Override
 	public void onViewUnreadEntries( ViewUnreadEntriesEvent event )
 	{
-		handleNewShowSetting( ShowSetting.SHOW_UNREAD, true );
+		handleNewShowSetting( ActivityStreamDataType.UNREAD, true );
 	}// end onViewUnreadEntries()
 	
 	/**
