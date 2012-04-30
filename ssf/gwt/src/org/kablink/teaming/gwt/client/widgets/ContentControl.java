@@ -698,76 +698,33 @@ public class ContentControl extends Composite
 						{
 						case LANDING_PAGE:
 						{
-							boolean showNew = true;
-							
-							if ( m_isDebugLP )
-							{
-								if ( !Window.confirm( "Show new landing page?" ) )
-									showNew = false;
-							}
-							
-							if ( showNew )
-							{
-								GwtTeaming.fireEvent( new ShowLandingPageEvent( bi, viewReady ) );
-								m_contentInGWT = true;
-							}
+							// Fire the event that will display the landing page.
+							GwtTeaming.fireEvent( new ShowLandingPageEvent( bi, viewReady ) );
+							m_contentInGWT = true;
 							break;
 						}
 							
 						case DISCUSSIONS:
 						{
-							boolean showNew = true;
-							
-							if ( m_isDebugLP )
-							{
-								if ( !Window.confirm( "Show new discussion workspace?" ) )
-									showNew = false;
-							}
-							
-							if ( showNew )
-							{
-								// Fire the event that will display the Discussion workspace.
-								GwtTeaming.fireEvent( new ShowDiscussionWSEvent( bi, viewReady ) );
-								m_contentInGWT = true;
-							}
+							// Fire the event that will display the Discussion workspace.
+							GwtTeaming.fireEvent( new ShowDiscussionWSEvent( bi, viewReady ) );
+							m_contentInGWT = true;
 							break;
 						}
 							
 						case TEAM:
 						{
-							boolean showNew = true;
-							
-							if ( m_isDebugLP )
-							{
-								if ( !Window.confirm( "Show new team workspace?" ) )
-									showNew = false;
-							}
-							
-							if ( showNew )
-							{
-								// Fire the event that will display the Team workspace.
-								GwtTeaming.fireEvent( new ShowTeamWSEvent( bi, viewReady ) );
-								m_contentInGWT = true;
-							}
+							// Fire the event that will display the Team workspace.
+							GwtTeaming.fireEvent( new ShowTeamWSEvent( bi, viewReady ) );
+							m_contentInGWT = true;
 							break;
 						}
 							
 						case WORKSPACE:
 						{
-							boolean showNew = true;
-							
-							if ( m_isDebugLP )
-							{
-								if ( !Window.confirm( "Show new generic workspace?" ) )
-									showNew = false;
-							}
-							
-							if ( showNew )
-							{
-								// Fire the event that will display the generic workspace.
-								GwtTeaming.fireEvent( new ShowGenericWSEvent( bi, viewReady ) );
-								m_contentInGWT = true;
-							}
+							// Fire the event that will display the generic workspace.
+							GwtTeaming.fireEvent( new ShowGenericWSEvent( bi, viewReady ) );
+							m_contentInGWT = true;
 							break;
 						}
 							
@@ -779,84 +736,43 @@ public class ContentControl extends Composite
 							
 						case GLOBAL_ROOT:
 						{
-							boolean showNew = true;
-							
-							if ( m_isDebugLP )
-							{
-								if ( !Window.confirm( "Show new global workspace?" ) )
-									showNew = false;
-							}
-							
-							if ( showNew )
-							{
-								// Fire the event that will display the Global workspace.
-								GwtTeaming.fireEvent( new ShowGlobalWSEvent( bi, viewReady ) );
-								m_contentInGWT = true;
-							}
+							// Fire the event that will display the Global workspace.
+							GwtTeaming.fireEvent( new ShowGlobalWSEvent( bi, viewReady ) );
+							m_contentInGWT = true;
 							break;
 						}
 							
 						case TEAM_ROOT:
 						{
-							boolean showNew = true;
-							
-							if ( m_isDebugLP )
-							{
-								if ( !Window.confirm( "Show new team root workspace?" ) )
-									showNew = false;
-							}
-							
-							if ( showNew )
-							{
-								// Fire the event that will display the Team root workspace.
-								GwtTeaming.fireEvent( new ShowTeamRootWSEvent( bi, viewReady ) );
-								m_contentInGWT = true;
-							}
+							// Fire the event that will display the Team root workspace.
+							GwtTeaming.fireEvent( new ShowTeamRootWSEvent( bi, viewReady ) );
+							m_contentInGWT = true;
 							break;
 						}
 
 						case TOP:
 						{
-							boolean showNew = true;
-							
-							if ( m_isDebugLP )
-							{
-								if ( !Window.confirm( "Show new home workspace?" ) )
-									showNew = false;
-							}
-							
-							if ( showNew )
-							{
-								// Fire the event that will display the home (top) workspace.
-								GwtTeaming.fireEvent( new ShowHomeWSEvent( bi, viewReady ) );
-								m_contentInGWT = true;
-							}
+							// Fire the event that will display the home (top) workspace.
+							GwtTeaming.fireEvent( new ShowHomeWSEvent( bi, viewReady ) );
+							m_contentInGWT = true;
 							break;
 						}
 							
 						case PROJECT_MANAGEMENT:
 						{
-							boolean showNew = true;
-							
-							if ( m_isDebugLP )
-							{
-								if ( !Window.confirm( "Show new project management workspace?" ) )
-									showNew = false;
-							}
-							
-							if ( showNew )
-							{
-								// Fire the event that will display the project management workspace.
-								GwtTeaming.fireEvent( new ShowProjectManagementWSEvent( bi, viewReady ) );
-								m_contentInGWT = true;
-							}
+							// Fire the event that will display the project management workspace.
+							GwtTeaming.fireEvent( new ShowProjectManagementWSEvent( bi, viewReady ) );
+							m_contentInGWT = true;
 							break;
 						}
 							
 						case PROFILE_ROOT:
+						{
+							// Fire the event that will display the profile root workspace.
 							GwtTeaming.fireEvent( new ShowPersonalWorkspacesEvent( bi, viewReady ) );
 							m_contentInGWT = true;
 							break;
+						}
 
 						case USER:
 							// These aren't handled!  Let things take 

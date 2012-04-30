@@ -873,6 +873,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 		switch (m_binderInfo.getBinderType()) {
 		case FOLDER:
 			switch (m_binderInfo.getFolderType()) {
+			case BLOG:
 			case DISCUSSION:
 			case FILE:
 			case GUESTBOOK:
