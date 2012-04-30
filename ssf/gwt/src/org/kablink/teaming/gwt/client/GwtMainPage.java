@@ -110,6 +110,7 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.VibeProduct;
+import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.AdminControl;
@@ -435,7 +436,10 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void ActivityStreamCtrl()
 	{
-		ActivityStreamCtrl.createAsync( new ActivityStreamCtrlClient()
+		ActionsPopupMenu actionsMenu;
+		
+		actionsMenu = new ActionsPopupMenu( true, true );
+		ActivityStreamCtrl.createAsync( actionsMenu, new ActivityStreamCtrlClient()
 		{			
 			@Override
 			public void onUnavailable()

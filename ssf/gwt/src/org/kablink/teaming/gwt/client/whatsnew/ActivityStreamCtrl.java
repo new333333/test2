@@ -144,6 +144,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	private SpecificFolderData m_specificFolderData = null;
 	private Timer m_searchTimer = null;
 	private Timer m_checkForChangesTimer = null;	// This timer is used to check for updates in the current activity stream.
+	private boolean m_checkForChanges = true;
 	private boolean m_searchInProgress = false;
 	private InlineLabel m_showSettingLabel;
 	private Image m_pauseImg;
@@ -234,8 +235,10 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ActivityStreamCtrl( boolean createHeader )
+	private ActivityStreamCtrl( boolean createHeader, ActionsPopupMenu actionsMenu )
 	{
+		m_actionsPopupMenu = actionsMenu;
+		
 		FlowPanel mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "activityStreamCtrl" );
 		
@@ -321,9 +324,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 			}// end onSuccess()
 		};
 		m_searchInProgress = false;
-		
-		// Create an Actions popup menu.
-		createActionsPopupMenu();
 		
 		// Create the popup menu used to set "show all" or "show unread"
 		m_showSettingPopupMenu  = new ShowSettingPopupMenu( true, true );
@@ -466,6 +466,13 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	public void checkForChanges()
 	{
+		// Should we be checking for changes?
+		if ( !m_checkForChanges )
+		{
+			// No, bail
+			return;
+		}
+		
 		if ( m_activityStreamParams == null )
 		{
 			Window.alert( "In checkForChanges(), m_activityStreamParams is null.  This should never happen." );
@@ -931,20 +938,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 
 
-	/**
-	 * Create the actions popup menu
-	 */
-	private void createActionsPopupMenu()
-	{
-		// Have we created an ActionsMenu yet?
-		if ( m_actionsPopupMenu == null )
-		{
-			// No, create one.
-			m_actionsPopupMenu = new ActionsPopupMenu( true, true );
-		}
-	}
-	
-	
 	/**
 	 * Create the panel that will hold the search results. 
 	 */
@@ -1737,6 +1730,14 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 	
 	/**
+	 * Set the flag that tells us if we should check for changes in the activity stream.
+	 */
+	public void setCheckForChanges( boolean checkForChanges )
+	{
+		m_checkForChanges = checkForChanges;
+	}
+	
+	/**
 	 * Set the size of this control.
 	 */
 	public void setSize( int width, int height )
@@ -1861,6 +1862,13 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	private void startCheckForChangesTimer()
 	{
+		// Should we be checking for changes?
+		if ( !m_checkForChanges )
+		{
+			// No, bail
+			return;
+		}
+		
 		// Do we have an activity stream parameter object?
 		if ( m_activityStreamParams != null )
 		{
@@ -2178,14 +2186,14 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * @param mainPage
 	 * @param asCtrlClient
 	 */
-	public static void createAsync( final boolean createHeader, final ActivityStreamCtrlClient asCtrlClient )
+	public static void createAsync( final boolean createHeader, final ActionsPopupMenu actionsMenu, final ActivityStreamCtrlClient asCtrlClient )
 	{
 		GWT.runAsync( ActivityStreamCtrl.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess()
 			{
-				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( createHeader );
+				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( createHeader, actionsMenu );
 				asCtrlClient.onSuccess( asCtrl );
 			}// end onSuccess()
 			
@@ -2205,14 +2213,14 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * @param mainPage
 	 * @param asCtrlClient
 	 */
-	public static void createAsync( final ActivityStreamCtrlClient asCtrlClient )
+	public static void createAsync( final ActionsPopupMenu actionsMenu, final ActivityStreamCtrlClient asCtrlClient )
 	{
 		GWT.runAsync( ActivityStreamCtrl.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess()
 			{
-				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( true );
+				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( true, actionsMenu );
 				asCtrlClient.onSuccess( asCtrl );
 			}// end onSuccess()
 			

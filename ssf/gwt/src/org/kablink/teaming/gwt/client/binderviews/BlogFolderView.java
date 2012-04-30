@@ -39,12 +39,14 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
+import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
 
@@ -65,12 +67,14 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class BlogFolderView extends FolderViewBase
 	implements
 	// Event handlers implemented by this class.
-		ContributorIdsRequestEvent.Handler
+		ContributorIdsRequestEvent.Handler,
+		QuickFilterEvent.Handler
 {
 	private static final int LIST_MIN_HEIGHT = 150;
 	
 	private List<HandlerRegistration> m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private ActivityStreamCtrl m_activityStreamCtrl;
+	private String m_quickFilter;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -78,6 +82,7 @@ public class BlogFolderView extends FolderViewBase
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[]
     {
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
+		TeamingEvents.QUICK_FILTER
 	};
 	
 	/**
@@ -102,6 +107,7 @@ public class BlogFolderView extends FolderViewBase
 	{
 		final FlexTable table;
 		FlexCellFormatter cellFormatter;
+		ActionsPopupMenu actionsMenu;
 
 		getFlowPanel().addStyleName( "vibe-blogFolderFlowPanel" );
 
@@ -113,8 +119,10 @@ public class BlogFolderView extends FolderViewBase
 		cellFormatter.setWidth( 0, 0, "80%" );
 		cellFormatter.setWidth( 0, 1, "20%" );
 		
+		actionsMenu = new ActionsPopupMenu( true, true );
+		
 		// Create the ActivityStreamCtrl.  It will hold the list of blog entries
-		ActivityStreamCtrl.createAsync( false, new ActivityStreamCtrlClient()
+		ActivityStreamCtrl.createAsync( false, actionsMenu, new ActivityStreamCtrlClient()
 		{			
 			@Override
 			public void onUnavailable()
@@ -126,33 +134,13 @@ public class BlogFolderView extends FolderViewBase
 			@Override
 			public void onSuccess( ActivityStreamCtrl asCtrl )
 			{
-				ActivityStreamInfo asi;
-				BinderInfo binderInfo;
-
-				binderInfo = getFolderInfo();
-				
-				// Create the SpecificFolderData that will be used so search the blog
-				// folder we are working with.
-				{
-					SpecificFolderData specificFolderData;
-
-					specificFolderData = new SpecificFolderData();
-					specificFolderData.setApplyFolderFilters( true );
-					specificFolderData.setForcePlainTextDescriptions( false );
-					specificFolderData.setReturnComments( false );
-					
-					asCtrl.setSpecificFolderData( specificFolderData );
-				}
-				
-				asi = new ActivityStreamInfo();
-				asi.setActivityStream( ActivityStream.SPECIFIC_FOLDER );
-				asi.setBinderId( binderInfo.getBinderId());
-				asi.setTitle( binderInfo.getBinderTitle() );
-
-				table.setWidget( 0, 0, asCtrl );
-				asCtrl.setActivityStream( asi, ActivityStreamDataType.ALL );
-				
 				m_activityStreamCtrl = asCtrl;
+				m_activityStreamCtrl.setCheckForChanges( false );
+				
+				table.setWidget( 0, 0, asCtrl );
+
+				// Search for blog entries
+				searchForBlogEntries();
 				
 				// Call viewReady() when we are finished constructing everything.
 				viewReady();
@@ -245,6 +233,25 @@ public class BlogFolderView extends FolderViewBase
 		unregisterEvents();
 	}
 	
+	/**
+	 * Handles QuickFilterEvent's received by this class.
+	 * 
+	 * Implements the QuickFilterEvent.Handler.onQuickFilter() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onQuickFilter( QuickFilterEvent event )
+	{
+		// Is the event is targeted to the folder we're viewing?
+		if ( event.getFolderId().equals( getFolderInfo().getBinderIdAsLong() ) )
+		{
+			// Yes.  Search for blog entries using the quick filter.
+			m_quickFilter = event.getQuickFilter();
+			searchForBlogEntries();
+		}
+	}
+
 	/*
 	 * Asynchronously populates the blog view.
 	 */
@@ -317,6 +324,41 @@ public class BlogFolderView extends FolderViewBase
 	{
 		// Set the size of the list of blog entries
 		setListOfBlogEntriesSize();
+	}
+	
+	/**
+	 * Do a search for blog entries
+	 */
+	private void searchForBlogEntries()
+	{
+		if ( m_activityStreamCtrl != null )
+		{
+			ActivityStreamInfo asi;
+			BinderInfo binderInfo;
+	
+			binderInfo = getFolderInfo();
+			
+			// Create the SpecificFolderData that will be used to search the blog
+			// folder we are working with.
+			{
+				SpecificFolderData specificFolderData;
+	
+				specificFolderData = new SpecificFolderData();
+				specificFolderData.setApplyFolderFilters( true );
+				specificFolderData.setForcePlainTextDescriptions( false );
+				specificFolderData.setReturnComments( false );
+				specificFolderData.setQuickFilter( m_quickFilter );
+				
+				m_activityStreamCtrl.setSpecificFolderData( specificFolderData );
+			}
+			
+			asi = new ActivityStreamInfo();
+			asi.setActivityStream( ActivityStream.SPECIFIC_FOLDER );
+			asi.setBinderId( binderInfo.getBinderId());
+			asi.setTitle( binderInfo.getBinderTitle() );
+	
+			m_activityStreamCtrl.setActivityStream( asi, ActivityStreamDataType.ALL );
+		}
 	}
 	
 	/**
