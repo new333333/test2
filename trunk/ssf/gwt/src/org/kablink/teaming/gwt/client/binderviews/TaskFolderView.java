@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
+import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -69,6 +70,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class TaskFolderView extends FolderViewBase
 	implements
 	// Event handlers implemented by this class.
+		ContributorIdsRequestEvent.Handler,
 		InvokeDropBoxEvent.Handler
 {
 	private AddFilesDlg						m_addFilesDlg;				//
@@ -80,6 +82,7 @@ public class TaskFolderView extends FolderViewBase
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.INVOKE_DROPBOX,
 	};
 	
@@ -250,6 +253,20 @@ public class TaskFolderView extends FolderViewBase
 		// Let the widget attach and then register our event handlers.
 		super.onAttach();
 		registerEvents();
+	}
+	
+	/**
+	 * Handles ContributorIdsRequestEvent's received by this class.
+	 * 
+	 * Implements the ContributorIdsRequestEvent.Handler.onContributorIdsRequest() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onContributorIdsRequest(ContributorIdsRequestEvent event) {
+		if (null != m_taskListing) {
+			m_taskListing.handleContributorIdsRequest(event);
+		}
 	}
 	
 	/**

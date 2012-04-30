@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -47,7 +48,11 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author drfoster@novell.com
  */
-public abstract class ViewBase extends ResizeComposite {
+public abstract class ViewBase extends ResizeComposite
+	implements
+		// Event handlers implemented by this class.
+		ContributorIdsRequestEvent.Handler
+{
 	private   final        ViewReady			m_viewReady;							// Stores a ViewReady created for the classes that extends it.
 	protected final static GwtTeamingMessages	m_messages = GwtTeaming.getMessages();	// Access to the GWT localized string resource.
 
@@ -105,6 +110,16 @@ public abstract class ViewBase extends ResizeComposite {
 		super.initWidget(widget);
 		addStyleName("vibe-viewBase");
 	}
+	
+	/**
+	 * Handles ContributorIdsRequestEvent's received by this class.
+	 * 
+	 * Implements the ContributorIdsRequestEvent.Handler.onContributorIdsRequest() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public abstract void onContributorIdsRequest(ContributorIdsRequestEvent event);
 	
 	/**
 	 * Manages resizing the view.

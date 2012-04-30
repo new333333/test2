@@ -48,6 +48,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
 
+import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
@@ -62,6 +63,9 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author jwootton@novell.com
  */
 public class BlogFolderView extends FolderViewBase
+	implements
+	// Event handlers implemented by this class.
+		ContributorIdsRequestEvent.Handler
 {
 	private static final int LIST_MIN_HEIGHT = 150;
 	
@@ -73,6 +77,7 @@ public class BlogFolderView extends FolderViewBase
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[]
     {
+		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 	};
 	
 	/**
@@ -211,6 +216,19 @@ public class BlogFolderView extends FolderViewBase
 		// Let the widget attach and then register our event handlers.
 		super.onAttach();
 		registerEvents();
+	}
+	
+	/**
+	 * Handles ContributorIdsRequestEvent's received by this class.
+	 * 
+	 * Implements the ContributorIdsRequestEvent.Handler.onContributorIdsRequest() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onContributorIdsRequest( ContributorIdsRequestEvent event )
+	{
+//!		...this needs to be implemented...
 	}
 	
 	/**
