@@ -45,6 +45,30 @@ import com.google.gwt.resources.client.ImageResource.RepeatStyle;
  */
 public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/arrow_down.png")
+	public ImageResource arrowDown();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/arrow_down_g.png")
+	public ImageResource arrowDownDisabled();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/arrow_down_over.png")
+	public ImageResource arrowDownMouseOver();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/arrow_up.png")
+	public ImageResource arrowUp();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/arrow_up_g.png")
+	public ImageResource arrowUpDisabled();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/arrow_up_over.png")
+	public ImageResource arrowUpMouseOver();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/browse_hierarchy.png")
 	public ImageResource browseHierarchy();
 

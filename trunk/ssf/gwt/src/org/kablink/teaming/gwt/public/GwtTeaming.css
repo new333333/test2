@@ -1802,11 +1802,8 @@ body, table td, select
 {
 	z-index: 351;
 }
-.folderColumnsDlg_ScrollPanel
-{
-	width: 700px;
-	height: 450px;
-}
+.folderColumnsDlg_ScrollLimit {height: 215px;}
+.folderColumnsDlg_ScrollPanel {overflow-y: auto !important; overflow-x: hidden !important; padding: 0px; padding-right: 28px; margin: 0px;}
 .folderColumnsDlg_Radio
 {
 	margin-left: 5px;
@@ -1814,27 +1811,7 @@ body, table td, select
 .folderColumnsDlg_Grid
 {
 	margin: 8px 8px 4px 8px;
-	width: 660px;
-}
-.folderColumnsDlg_GridCell_0
-{
-	width: 25px;
-}
-.folderColumnsDlg_GridCell_1
-{
-	width: 280px;
-}
-.folderColumnsDlg_GridCell_0and1
-{
-	width: 305px;
-}
-.folderColumnsDlg_GridCell_2
-{
-	width: 200px;
-}
-.folderColumnsDlg_GridCell_3
-{
-	width: 155px;
+	background-color: #F6F6F6; border-bottom: 0px solid #F6F6F6; border: 1px solid #D2D5D1;
 }
 .folderColumnsDlg_Label
 {
@@ -1844,26 +1821,31 @@ body, table td, select
 	padding: 0.2em 0.5em 0.3em; 
 	white-space: nowrap;
 }
-.folderColumnsDlg_MenuItem
-{
-}
-.folderColumnsDlg_SectionHeader
-{
-	font-size: 1em;
-	font-weight: bold;
-	padding-top: 8px;
-	padding-bottom: 5px;
-}
-.folderColumnsDlg_SectionHeaderCell
-{
-}
-.folderColumnsDlg_SectionHeaderRow
-{
+.folderColumnsDlg_MenuBar           {margin-left: 8px; margin-bottom: 3px; border: 0px !important; background: transparent !important;}
+.folderColumnsDlg_MenuImg           {}
+.folderColumnsDlg_MenuItem          {white-space: nowrap; color #1f1f1f !important; background-color: transparent !important; padding: 0px !important;}
+.folderColumnsDlg_MenuItem_Order    {padding-right: 5px !important;}
+.folderColumnsDlg_MoveEnabled       {cursor: pointer;    }
+.folderColumnsDlg_SectionHeader     {font-size: 1em; font-weight: bold; padding-top: 8px; padding-bottom: 5px;}
+.folderColumnsDlg_SectionHeaderCell {}
+.folderColumnsDlg_SectionHeaderRow  {
+	background: transparent url("images/blends/gray_blend8_28.png") repeat-x scroll center;
+	color: #505354;
+	font-size: 0.8em;
+	height: 24px;
+	padding: 0.2em;
+	text-align: left;
+	text-indent: 0.5em;
+	white-space: nowrap;
 }
 .folderColumnsDlg_OptionsGrid
 {
 	margin: 10px 0px;
 }
+.folderColumnsDlg_RowCell   {padding: 3px 8px; border-bottom: 1px solid #D2D5D1; white-space: nowrap;}
+.folderColumnsDlg_RowCellCB {text-align: center; }
+.folderColumnsDlg_Row-even  {background: white;  }
+.folderColumnsDlg_Row-odd   {background: #F3F7FB;}
 
 /* Styles for the manage saved searches dialog. */
 .manageSavedSearchesDlg
@@ -2326,6 +2308,10 @@ body, table td, select
 	padding-left: 1em;
 }
 
+.paddingRight3px
+{
+	padding-right: 3px;
+}
 .paddingRight8px
 {
 	padding-right: 8px;

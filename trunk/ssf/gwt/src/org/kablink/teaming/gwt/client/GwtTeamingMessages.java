@@ -1300,14 +1300,16 @@ public interface GwtTeamingMessages extends Messages
 	String vibeEntryMenu_PersonalizeFilter(String filterName);
 		
 	// Strings used in the Folder Columns dialog
+	String folderColumnsDlgColumn();
+	String folderColumnsDlgCustomLabel();
 	String folderColumnsDlgHeader();
-	String folderColumnsDlgFolderColumn();
-	String folderColumnsDlgFolderCustomLabel();
-	String folderColumnsDlgFolderOrder();
-	String folderColumnsRestoreDefaults();
-	String folderColumnsNoOptions();
-	String folderColumnsSetAsDefault();
-	String folderColumnsUnexpectedEvent(String eventName);
+	String folderColumnsDlgMoveDown();
+	String folderColumnsDlgMoveUp();
+	String folderColumnsDlgNoOptions();
+	String folderColumnsDlgOrder();
+	String folderColumnsDlgRestoreDefaults();
+	String folderColumnsDlgSetAsDefault();
+	String folderColumnsDlgShow();
 	
 	// Strings used by various widgets of the Vibe Data table.
 	String vibeDataTable_Alt_CollapseDescription();
