@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
@@ -51,6 +52,8 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
+import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -60,61 +63,194 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTMLTable.RowFormatter;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MenuBar;
-import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
 /**
- * Implements a dialog for selecting the folder columns.
+ * Implements a dialog for configuring folder columns.
  *  
  * @author phurley@novell.com
  */
 public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHandler {
-	private final static String IDBASE				= "folderColumn_";	// Base ID for rows in the folder columns Grid.
-	private final static String IDTAIL_CHECKBOX		= "_cb";			// Used for constructing the ID of a row's checkbox.
-	private final static String IDTAIL_RADIO		= "_rb";			// Used for constructing the ID of a row's radio button.
-	private final static String IDTAIL_TEXTBOX		= "_tb";			// Used for constructing the ID of a row's text box.
-	private final static String OPTION_HEADER_ID	= "optionHeader";
+	private Button							m_folderDefaultBtn;			// Restore default settings
+	private CheckBox						m_folderDefaultCheckBox;	// Set the folder default columns.
+	private FlexCellFormatter				m_folderColumnsGridCF;		//
+	private FlexTable						m_folderColumnsGrid;		// Once displayed, the table of folder columns.
+	private GwtTeamingMainMenuImageBundle	m_images;	//
+	private GwtTeamingMessages				m_messages;					// Access to the GWT UI messages.
+	private int								m_folderColumnsListCount;	// Count of items in m_folderColumnsList.
+	private List<FolderColumn>				m_folderColumnsList;		// List of selected folder column items.
+	private List<FolderColumn>				m_folderColumnsListAll;		// List of all folder column items.
+	private RowFormatter					m_folderColumnsGridRF;		//
+	private ScrollPanel						m_sp;						//
+	private String							m_binderId;					// The ID of the binder the folder columns dialog is running against.
+	private VerticalPanel					m_vp;						//
+	private VibeMenuItem					m_moveDown;					//
+	private VibeMenuItem					m_moveUp;					//
 	
-	private Grid m_folderColumnsGrid;				// Once displayed, the table of folder columns.
-	private Grid m_header;
-	private CheckBox m_folderDefaultCheckBox;		// Set the folder default columns.
-	private Button m_folderDefaultBtn;				// Restore default settings
-	private GwtTeamingMessages m_messages;			// Access to the GWT UI messages.
-	private String m_binderId;						// The ID of the binder the folder columns dialog is running against.
-	private int m_folderColumnsListCount;			// Count of items in m_folderColumnsList.
-	private List<FolderColumn> m_folderColumnsList;		// List of selected folder column items.
-	private List<FolderColumn> m_folderColumnsListAll;	// List of all folder column items.
-	private ScrollPanel m_sp;
-	private VerticalPanel m_vp;
+	private final static String IDBASE				= "folderColumn_";				// Base ID for rows in the folder columns Grid.
+	private final static String IDTAIL_CHECKBOX		= "_cb";						// Used for constructing the ID of a row's checkbox.
+	private final static String IDTAIL_MOVE_DOWN	= "down";						// Used for constructing the ID of the move down menu item.
+	private final static String IDTAIL_MOVE_UP		= "up";							// Used for constructing the ID of the move up   menu item.
+	private final static String IDTAIL_RADIO		= "_rb";						// Used for constructing the ID of a row's radio button.
+	private final static String IDTAIL_TEXTBOX		= "_tb";						// Used for constructing the ID of a row's text box.
+	private final static String ID_MOVE_DOWN		= (IDBASE + IDTAIL_MOVE_DOWN);	//
+	private final static String ID_MOVE_UP			= (IDBASE + IDTAIL_MOVE_UP);	//
+	
+	// The following define the column indexes into the FlexTable used
+	// to edit the column sizes.
+	private final static int COL_SELECT_RB		= 0;
+	private final static int COL_COLUMN			= 1;
+	private final static int COL_CUSTOM_LABEL	= 2;
+	private final static int COL_SHOW_CB		= 3;
 
 	/*
 	 * Inner class that wraps labels displayed in the dialog's content.
 	 */
-	private class DlgLabel extends Label {
-		public DlgLabel(String label) {
+	private class DlgLabel extends InlineLabel {
+		/**
+		 * Constructor method.
+		 * 
+		 * @param label
+		 * @param title
+		 */
+		public DlgLabel(String label, String title) {
 			super(label);
+			if (GwtClientHelper.hasString(title)) {
+				setTitle(title);
+			}
 			addStyleName("folderColumnsDlg_Label");
+		}
+		
+		/**
+		 * Constructor method.
+		 * 
+		 * @param label
+		 */
+		public DlgLabel(String label) {
+			// Always use the initial form of the method.
+			this(label, null);
+		}
+		
+		/**
+		 * Constructor method.
+		 */
+		public DlgLabel() {
+			// Always use the initial form of the method.
+			this(" ", null);
 		}
 	}
 
+	/*
+	 * Inner class that implements the move down command.
+	 */
+	private class DoMoveDown implements Command {
+		@Override
+		public void execute() {
+			// If the table is empty...
+			if (0 == m_folderColumnsListCount) {
+				// ...there's nothing to do.
+				return;
+			}
+			
+			// Do we have some rows in the table without the bottom one
+			// being checked?
+			int rows = m_folderColumnsGrid.getRowCount();
+			if ((2 < rows) && (!(isRowChecked(rows - 1)))) {
+				// Yes!  Scan the rows.
+				getDataFromDlg();	//Make sure all of the changed settings are captured first.
+				int checked = (-1);
+				for (int rowIndex = (rows - 1); rowIndex > 0; rowIndex -= 1) {
+					// If this row checked...
+					if (isRowChecked(rowIndex)) {
+						// ...move it down.
+						int colIndex = (rowIndex - 1);
+						renderRow(    rowIndex,      m_folderColumnsListAll.get(colIndex + 1));
+						renderRow(   (rowIndex + 1), m_folderColumnsListAll.get(colIndex    ));
+						checked = (rowIndex + 1);
+						setRowChecked(checked);
+						FolderColumn fc1 = m_folderColumnsListAll.get(colIndex    );
+						FolderColumn fc2 = m_folderColumnsListAll.get(colIndex + 1);
+						m_folderColumnsListAll.set( colIndex,      fc2);
+						m_folderColumnsListAll.set((colIndex + 1), fc1);
+						
+						break;
+					}
+				}
+				resetRowStyles();
+				if ((-1) != checked) {
+					validateMoves(checked);
+				}
+			}
+		}
+	}
+	
+	/*
+	 * Inner class that implements the move up command.
+	 */
+	private class DoMoveUp implements Command {
+		@Override
+		public void execute() {
+			// If the table is empty...
+			if (0 == m_folderColumnsListCount) {
+				// ...there's nothing to do.
+				return;
+			}
+			
+			// Do we have some rows in the table without the top one
+			// being checked?
+			int rows = m_folderColumnsGrid.getRowCount();
+			if ((2 < rows) && (!(isRowChecked(1)))) {
+				// Yes!  Scan the rows.
+				getDataFromDlg();	//Make sure all of the changed settings are captured first
+				int checked = (-1);
+				for (int rowIndex = 2; rowIndex < rows; rowIndex += 1) {
+					// If this row checked...
+					if (isRowChecked(rowIndex)) {
+						// ...move it up.
+						int colIndex = (rowIndex - 1);
+						renderRow(   (rowIndex - 1), m_folderColumnsListAll.get(colIndex    ));
+						renderRow(    rowIndex,      m_folderColumnsListAll.get(colIndex - 1));
+						checked = (rowIndex - 1);
+						setRowChecked(checked);
+						FolderColumn fc1 = m_folderColumnsListAll.get(colIndex    );
+						FolderColumn fc2 = m_folderColumnsListAll.get(colIndex - 1);
+						m_folderColumnsListAll.set( colIndex,      fc2);
+						m_folderColumnsListAll.set((colIndex - 1), fc1);
+						
+						break;
+					}
+				}
+				resetRowStyles();
+				if ((-1) != checked) {
+					validateMoves(checked);
+				}
+			}
+		}
+	}
+	
 	/*
 	 * Class constructor.
 	 * 
@@ -127,6 +263,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		super(true, true);
 
 		// ...initialize everything else...
+		m_images   = GwtTeaming.getMainMenuImageBundle();
 		m_messages = GwtTeaming.getMessages();
 	
 		// ...and create the main dialog panels.
@@ -134,7 +271,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			m_messages.folderColumnsDlgHeader(),
 			this,						// The dialog's EditSuccessfulHandler.
 			getSimpleCanceledHandler(),	// The dialog's EditCanceledHandler.
-			null);						// Data passed via global data members.
+			null);						// null -> Data passed via global data members.
 	}
 	
 	/**
@@ -149,31 +286,61 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	/*
 	 * Adds a section header row to the folder options grid.
 	 */
-	private void addHeaderRow(Grid grid, int row) {
-		String columnText = m_messages.folderColumnsDlgFolderColumn();
-		String customLabelText = m_messages.folderColumnsDlgFolderCustomLabel();
-		Label columnHeader = new Label(columnText);
-		Label customLabelHeader = new Label(customLabelText);
-		MenuBar mb = new MenuBar();
-		mb.addStyleName("favoritesDlg_MenuBar");
-		mb.addItem(new DlgMenuItem(m_messages.mainMenuFavoritesDlgMoveUp(),   new DoMoveUp()));
-		mb.addItem(new DlgMenuItem(m_messages.mainMenuFavoritesDlgMoveDown(), new DoMoveDown()));
+	private void addHeaderRow() {
+		m_folderColumnsGridRF.setStyleName(0, "folderColumnsDlg_SectionHeaderRow");
+		
+		Label il = new DlgLabel();
+		il.getElement().setInnerHTML("&nbsp;");
+		il.addStyleName("folderColumnsDlg_SectionHeaderCell");
+		m_folderColumnsGrid.setWidget(0, COL_SELECT_RB, il);
+		
+		il = new DlgLabel(m_messages.folderColumnsDlgColumn());
+		il.addStyleName("folderColumnsDlg_SectionHeaderCell");
+		m_folderColumnsGrid.setWidget(0, COL_COLUMN, il);
+		
+		il = new DlgLabel(m_messages.folderColumnsDlgCustomLabel());
+		il.addStyleName("folderColumnsDlg_SectionHeaderCell");
+		m_folderColumnsGrid.setWidget(0, COL_CUSTOM_LABEL, il);
+		
+		il = new DlgLabel(m_messages.folderColumnsDlgShow());
+		il.addStyleName("folderColumnsDlg_SectionHeaderCell");
+		m_folderColumnsGrid.setWidget(0, COL_SHOW_CB, il);
+	}
 
-		grid.insertRow(row);
-		Element e = grid.getRowFormatter().getElement(row); 
-		e.setId(OPTION_HEADER_ID);
-		e.addClassName("folderColumnsDlg_SectionHeaderRow");
-		e = grid.getCellFormatter().getElement(row, 0);
-		e.addClassName("folderColumnsDlg_SectionHeaderCell");
-		e.addClassName("folderColumnsDlg_GridCell_0and1");
-		grid.setWidget(row, 0, columnHeader);
-		e = grid.getCellFormatter().getElement(row, 2);
-		e.addClassName("folderColumnsDlg_GridCell_2");
-		GwtClientHelper.setGridColSpan(grid, row, 0, 2);
-		grid.setWidget(row, 2, customLabelHeader);
-		e = grid.getCellFormatter().getElement(row, 3);
-		e.addClassName("folderColumnsDlg_GridCell_3");
-		grid.setWidget(row, 3, mb);
+	/*
+	 * Adds the menu bar to the dialog.
+	 */
+	private void addMenu() {
+		MenuBar mb = new VibeMenuBar();
+		mb.setStyleName("folderColumnsDlg_MenuBar");
+		
+		VibeMenuItem order = new VibeMenuItem(m_messages.folderColumnsDlgOrder(), ((Command) null), "folderColumnsDlg_MenuItem_Order folderColumnsDlg_MenuItem");
+		order.setEnabled(false);
+		mb.addItem(order);
+
+		FlowPanel fp = new FlowPanel();
+		Image i = new Image();
+		i.addStyleName("folderColumnsDlg_MenuImg");
+		i.setTitle(m_messages.folderColumnsDlgMoveUp());
+		Element iE = i.getElement();
+		iE.setAttribute("align", "absmiddle");
+		iE.setId(ID_MOVE_UP);
+		fp.add(i);
+		m_moveUp = new VibeMenuItem(fp.getElement().getInnerHTML(), true, new DoMoveUp(), "folderColumnsDlg_MenuItem");
+		mb.addItem(m_moveUp);
+		
+		fp = new FlowPanel();
+		i = new Image();
+		i.addStyleName("folderColumnsDlg_MenuImg");
+		i.setTitle(m_messages.folderColumnsDlgMoveDown());
+		iE = i.getElement();
+		iE.setAttribute("align", "absmiddle");
+		iE.setId(ID_MOVE_DOWN);
+		fp.add(i);
+		m_moveDown = new VibeMenuItem(fp.getElement().getInnerHTML(), true, new DoMoveDown(), "folderColumnsDlg_MenuItem");
+		mb.addItem(m_moveDown);
+		
+		m_vp.add(mb);
 	}
 
 	/**
@@ -188,11 +355,11 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	@Override
 	public Panel createContent(Object ignored) {
 		// Create the panels to hold the dialog's content...
-		m_vp = new VerticalPanel();
+		m_vp = new VibeVerticalPanel(null, null);
 		m_vp.setStyleName( "teamingDlgBoxContent" );
-		m_header =  new Grid(0, 4);
-		m_header.addStyleName("folderColumnsDlg_Grid");
-		m_vp.add(m_header);
+		
+		addMenu();
+		
 		m_sp = new ScrollPanel();
 		m_sp.addStyleName("folderColumnsDlg_ScrollPanel");
 		m_vp.add(m_sp);
@@ -209,92 +376,79 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		// Are there any folder columns to display in the dialog?
 		if (0 < (m_folderColumnsListCount)) {
 			// Yes!  Create a grid to contain them... 
-			m_folderColumnsGrid = new Grid(0, 4);
+			m_folderColumnsGrid = new VibeFlexTable();
 			m_folderColumnsGrid.addStyleName("folderColumnsDlg_Grid");
 			m_folderColumnsGrid.setCellPadding(0);
 			m_folderColumnsGrid.setCellSpacing(0);
+			m_folderColumnsGridRF = m_folderColumnsGrid.getRowFormatter();
+			m_folderColumnsGridCF = m_folderColumnsGrid.getFlexCellFormatter();
 			
 			// ...render the folder columns into the panel...
 			if (0 < m_folderColumnsListCount) {
-				addHeaderRow(m_header, 0);
+				addHeaderRow();
 				for (int i = 0; i < m_folderColumnsListCount; i += 1) {
-					renderRow(m_folderColumnsGrid, m_folderColumnsGrid.getRowCount(), 
-							m_folderColumnsListCount, m_folderColumnsListAll.get(i));
+					renderRow(m_folderColumnsGrid.getRowCount(), m_folderColumnsListAll.get(i));
 				}
+				resetRowStyles();
 			}
 
-			// ...and connect everything together.
+			// ...connect everything together...
 			m_sp.add(m_folderColumnsGrid);
 			
-			//Add the option to set the folder default
-			FlexTable ft = new FlexTable();
+			// ...and adjust the scroll panel's styles as appropriate.
+			if (5 < m_folderColumnsListCount)
+			     m_sp.addStyleName(   "folderColumnsDlg_ScrollLimit");
+			else m_sp.removeStyleName("folderColumnsDlg_ScrollLimit");
+			
+			// Add the option to set the folder default.
+			FlexTable ft = new VibeFlexTable();
 			m_folderDefaultCheckBox = new CheckBox();
 			ft.setWidget(0, 0, m_folderDefaultCheckBox);
-			ft.setText(0, 1, m_messages.folderColumnsSetAsDefault());
+			ft.setText(0, 1, m_messages.folderColumnsDlgSetAsDefault());
 			
-			//Add a button to restore factory defaults
-			m_folderDefaultBtn = new Button(m_messages.folderColumnsRestoreDefaults());
+			// Add a button to restore factory defaults.
+			m_folderDefaultBtn = new Button(m_messages.folderColumnsDlgRestoreDefaults());
 			m_folderDefaultBtn.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					//Go restore the defaults
-					AsyncCallback<VibeRpcResponse> rpcSaveCallback;
-					rpcSaveCallback = new AsyncCallback<VibeRpcResponse>() {
-						/**
-						 * 
-						 */
+					// Restore the defaults.
+					SaveFolderColumnsCmd cmd = new SaveFolderColumnsCmd(m_binderId, new ArrayList<FolderColumn>(), new Boolean(Boolean.TRUE));
+					GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 						@Override
-						public void onFailure( Throwable t )
-						{
+						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
-								GwtTeaming.getMessages().rpcFailure_SaveFolderColumns() );
+								GwtTeaming.getMessages().rpcFailure_SaveFolderColumns());
 						}
 						
-						/**
-						 * 
-						 */
 						@Override
-						public void onSuccess( VibeRpcResponse response ) {
-							GetBinderPermalinkCmd cmd;
-							
-							cmd = new GetBinderPermalinkCmd( m_binderId );
-							GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-							{
+						public void onSuccess(VibeRpcResponse response) {
+							GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd( m_binderId );
+							GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 								@Override
 								public void onFailure( Throwable t ) {
 									GwtClientHelper.handleGwtRPCFailure(
 										t,
 										GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
-										m_binderId );
-								}//end onFailure()
+										m_binderId);
+								}
 								
 								@Override
-								public void onSuccess( VibeRpcResponse response )
-								{
-									String binderUrl;
-									OnSelectBinderInfo osbInfo;
-									StringRpcResponseData responseData;
-
-									responseData = (StringRpcResponseData) response.getResponseData();
-									binderUrl = responseData.getStringValue();
-									
-									osbInfo = new OnSelectBinderInfo( m_binderId, binderUrl, false, Instigator.CONTENT_AREA_CHANGED );
-									if (GwtClientHelper.validateOSBI( osbInfo ))
-									{
-										GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
+								public void onSuccess(VibeRpcResponse response) {
+									StringRpcResponseData responseData = (StringRpcResponseData) response.getResponseData();
+									String binderUrl = responseData.getStringValue();
+									OnSelectBinderInfo osbInfo = new OnSelectBinderInfo( m_binderId, binderUrl, false, Instigator.CONTENT_AREA_CHANGED );
+									if (GwtClientHelper.validateOSBI(osbInfo)) {
+										GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
 									}
 									hide();
-								}// end onSuccess()
-							});// end AsyncCallback()
+								}
+							});
 						}
-					};
-
-					SaveFolderColumnsCmd cmd = new SaveFolderColumnsCmd( m_binderId, 
-							new ArrayList<FolderColumn>(), new Boolean(Boolean.TRUE));
-					GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
+					});
 				}
 			});
+			
 			ft.getFlexCellFormatter().setColSpan(1, 0, 2);
 			ft.setWidget(1, 0, m_folderDefaultBtn);
 			ft.addStyleName("folderColumnsDlg_OptionsGrid");
@@ -304,10 +458,12 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		else {
 			// No, there weren't any folder options to display in the
 			// dialog!  Put a simple no available options message.
-			m_vp.add(new DlgLabel(m_messages.folderColumnsNoOptions()));
+			m_vp.add(new DlgLabel(m_messages.folderColumnsDlgNoOptions()));
 		}
+		
+		setButtonEnabled(m_moveUp,   ID_MOVE_UP,   false, m_images.arrowUp(),   m_images.arrowUpDisabled()  );
+		setButtonEnabled(m_moveDown, ID_MOVE_DOWN, false, m_images.arrowDown(), m_images.arrowDownDisabled());
 	}
-	
 	
 	/**
 	 * This method gets called when user user presses the OK push
@@ -326,68 +482,47 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		@SuppressWarnings("unchecked")
 		List<FolderColumn> fcList = ((List<FolderColumn>) callbackData);
 		Boolean isDefault = m_folderDefaultCheckBox.getValue();
-		AsyncCallback<VibeRpcResponse> rpcSaveCallback;
-		rpcSaveCallback = new AsyncCallback<VibeRpcResponse>() {
-			/**
-			 * 
-			 */
+		SaveFolderColumnsCmd cmd = new SaveFolderColumnsCmd(m_binderId, fcList, isDefault);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure( Throwable t )
-			{
+			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
-					GwtTeaming.getMessages().rpcFailure_SaveFolderColumns() );
+					GwtTeaming.getMessages().rpcFailure_SaveFolderColumns());
 			}
 			
-			/**
-			 * 
-			 */
 			@Override
-			public void onSuccess( VibeRpcResponse response ) {
-				GetBinderPermalinkCmd cmd;
-				
-				cmd = new GetBinderPermalinkCmd( m_binderId );
-				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-				{
+			public void onSuccess(VibeRpcResponse response) {
+				GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd(m_binderId);
+				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 					@Override
-					public void onFailure( Throwable t ) {
+					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
 							GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
-							m_binderId );
-					}//end onFailure()
+							m_binderId);
+					}
 					
 					@Override
-					public void onSuccess( VibeRpcResponse response )
-					{
-						String binderUrl;
-						OnSelectBinderInfo osbInfo;
-						StringRpcResponseData responseData;
-
-						responseData = (StringRpcResponseData) response.getResponseData();
-						binderUrl = responseData.getStringValue();
-						
-						osbInfo = new OnSelectBinderInfo( m_binderId, binderUrl, false, Instigator.CONTENT_AREA_CHANGED );
-						if (GwtClientHelper.validateOSBI( osbInfo ))
-						{
-							GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
+					public void onSuccess(VibeRpcResponse response) {
+						StringRpcResponseData responseData = (StringRpcResponseData) response.getResponseData();
+						String binderUrl = responseData.getStringValue();
+						OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(m_binderId, binderUrl, false, Instigator.CONTENT_AREA_CHANGED);
+						if (GwtClientHelper.validateOSBI(osbInfo)) {
+							GwtTeaming.fireEvent( new ChangeContextEvent(osbInfo));
 						}
 						
 						hide();
-					}// end onSuccess()
-				});// end AsyncCallback()
+					}
+				});
 			}
-		};
-
-		SaveFolderColumnsCmd cmd = new SaveFolderColumnsCmd( m_binderId, fcList, isDefault );
-		GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
+		});
 
 		// Return false so close the dialog doesn't close yet.  Well
 		// close it only after we've successfully saved the column data
 		// information.  Note the hide() in the above onSuccess().
 		return false;
 	}
-
 	
 	/**
 	 * Returns the edited List<FolderColumn>.
@@ -400,9 +535,9 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	public Object getDataFromDlg() {
 		// Are there any rows in the grid?
 		int rows = m_folderColumnsGrid.getRowCount();
-		if (0 < rows) {
+		if (1 < rows) {
 			// Yes!  Scan and update them.
-			for (int i = 0; i < rows; i += 1) {
+			for (int i = 1; i < rows; i += 1) {
 				String rowId = getRowId(i);
 				String fcName = getFolderColumnNameFromRow(i);
 				FolderColumn fc = getFolderColumnByName(fcName);
@@ -467,169 +602,115 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	 * Returns the ID of a row.
 	 */
 	private String getRowId(int row) {
-		return m_folderColumnsGrid.getRowFormatter().getElement(row).getId();
+		return m_folderColumnsGridRF.getElement(row).getId();
 	}
 	
 	/*
 	 * Returns true if a row's checkbox is checked. 
 	 */
 	private boolean isRowChecked(int row) {
-		boolean reply;
-		String rowId = getRowId(row);
-		if (rowId.equals(OPTION_HEADER_ID)) {
-			reply = false;
-		} else {
-			InputElement rb = Document.get().getElementById(rowId + IDTAIL_RADIO).getFirstChild().cast();
-			reply = rb.isChecked();
+		if (0 == row) {
+			return false;
 		}
-		return reply;
+		
+		String rowId = getRowId(row);
+		InputElement rb = Document.get().getElementById(rowId + IDTAIL_RADIO).getFirstChild().cast();
+		return rb.isChecked();
 	}
 	
 	/*
 	 * Check a row's radio button. 
 	 */
 	private void setRowChecked(int row) {
+		if (0 == row) {
+			return;
+		}
+		
 		String rowId = getRowId(row);
-		if (!rowId.equals(OPTION_HEADER_ID)) {
-			InputElement rb = Document.get().getElementById(rowId + IDTAIL_RADIO).getFirstChild().cast();
-			if (rb != null) {
-				rb.setChecked(true);
-			}
+		InputElement rb = Document.get().getElementById(rowId + IDTAIL_RADIO).getFirstChild().cast();
+		if (rb != null) {
+			rb.setChecked(true);
 		}
 	}
 	
 	/*
 	 * Renders a folder column as a row in a Grid.
 	 */
-	private void renderRow(Grid grid, int row, int gridSize, FolderColumn fci) {
-		grid.insertRow(row);
-		
+	private void renderRow(final int row, FolderColumn fci) {
+		// Create the row...
 		String rowIdSuffix = fci.getColumnName();
 		if (fci.getColumnDefId() != null && !fci.getColumnDefId().equals("")) {
 			rowIdSuffix = fci.getColumnDefId()+"."+fci.getColumnEleName();
 		}
 		String rowId = (IDBASE + rowIdSuffix);
-		grid.getRowFormatter().getElement(row).setId(rowId);
+		if (row >= m_folderColumnsGrid.getRowCount()) {
+			m_folderColumnsGrid.insertRow(row);
+		}
+		m_folderColumnsGridRF.getElement(row).setId(rowId);
 		
-		//Checkbox to select the column for view
-		CheckBox cb = new CheckBox();
-		cb.setName("ColumnSelected_" + rowIdSuffix);
-		cb.addStyleName("folderColumnsDlg_CheckBox");
-		cb.getElement().setId(rowId + IDTAIL_CHECKBOX);
-		cb.setValue(fci.getColumnIsShown());
-		grid.setWidget(row, 0, cb);
-		grid.getCellFormatter().addStyleName(row, 0, "folderColumnsDlg_GridCell_0");
+		// ...create the radio button for moving the row..
+		RadioButton rb = new RadioButton("MoveButton");
+		rb.getElement().setId(rowId + IDTAIL_RADIO);
+		rb.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				validateMoves(row);
+			}
+		});
+		m_folderColumnsGrid.setWidget(     row, COL_SELECT_RB, rb);
+		m_folderColumnsGridCF.addStyleName(row, COL_SELECT_RB, "folderColumnsDlg_RowCell folderColumnsDlg_RowCellCB");
+		m_folderColumnsGridCF.setAlignment(row, COL_SELECT_RB, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
 		
-		//Column title
+		// ...create the column title...
 		String txt = fci.getColumnDefaultTitle();
 		if (!(GwtClientHelper.hasString(txt))) {
 			txt = fci.getColumnEleName();
 		}
-		grid.setWidget(row, 1, new Label(txt));
-		grid.getCellFormatter().addStyleName(row, 1, "folderColumnsDlg_GridCell_1");
+		m_folderColumnsGrid.setWidget(     row, COL_COLUMN, new DlgLabel(txt));
+		m_folderColumnsGridCF.addStyleName(row, COL_COLUMN, "folderColumnsDlg_RowCell");
 		
-		//Custom label textbox
+		// ...create the custom label input widget...
 		TextBox tb = new TextBox();
 		tb.setName("CustomName");
 		tb.getElement().setId(rowId + IDTAIL_TEXTBOX);
 		if ((GwtClientHelper.hasString(fci.getColumnCustomTitle()))) {
 			tb.setValue(fci.getColumnCustomTitle());
 		}
-		grid.setWidget(row, 2, tb);
-		grid.getCellFormatter().addStyleName(row, 2, "folderColumnsDlg_GridCell_2");
+		m_folderColumnsGrid.setWidget(     row, COL_CUSTOM_LABEL, tb);
+		m_folderColumnsGridCF.addStyleName(row, COL_CUSTOM_LABEL, "folderColumnsDlg_RowCell");
 		
-		//Radio button for moving rows
-		RadioButton rb = new RadioButton("MoveButton");
-		rb.getElement().setId(rowId + IDTAIL_RADIO);
-		grid.setWidget(row, 3, rb);
-		grid.getCellFormatter().setAlignment(row, 3, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
-		grid.getCellFormatter().addStyleName(row, 3, "folderColumnsDlg_GridCell_3");
+		// ...and create the checkbox to select the column for viewing.
+		CheckBox cb = new CheckBox();
+		cb.setName("ColumnSelected_" + rowIdSuffix);
+		cb.addStyleName("folderColumnsDlg_CheckBox");
+		cb.getElement().setId(rowId + IDTAIL_CHECKBOX);
+		cb.setValue(fci.getColumnIsShown());
+		m_folderColumnsGrid.setWidget(     row, COL_SHOW_CB, cb);
+		m_folderColumnsGridCF.addStyleName(row, COL_SHOW_CB, "folderColumnsDlg_RowCell folderColumnsDlg_RowCellCB");
 	}
 
 	/*
-	 * Inner class that wraps item's on the dialog's menu.
+	 * Walks the rows in the grid and sets the rows for the odd/even
+	 * styling.
 	 */
-	private class DlgMenuItem extends MenuItem {
-		public DlgMenuItem(String text, Command menuCommand) {
-			super(text, menuCommand);
-			addStyleName("folderColumnsDlg_MenuItem");
+	private void resetRowStyles() {
+		// Scan the rows in the grid...
+		for (int i = 1; i < m_folderColumnsListCount; i += 1) {
+			// ...adding/removing the styles from each as appropriate.
+			String addStyle;
+			String removeStyle;
+			if (0 == (i % 2)) {
+				addStyle    = "folderColumnsDlg_Row-even";
+				removeStyle = "folderColumnsDlg_Row-odd";
+			}
+			else {
+				addStyle    = "folderColumnsDlg_Row-odd";
+				removeStyle = "folderColumnsDlg_Row-even";
+			}
+			m_folderColumnsGridRF.addStyleName(   i, addStyle   );
+			m_folderColumnsGridRF.removeStyleName(i, removeStyle);
 		}
 	}
-
-	/*
-	 * Inner class that implements the move down command.
-	 */
-	private class DoMoveDown implements Command {
-		@Override
-		public void execute() {
-			// If the table is empty...
-			if (0 == m_folderColumnsListCount) {
-				// ...there's nothing to do.
-				return;
-			}
-			
-			// Do we have some rows in the table without the bottom one
-			// being checked?
-			int rows = m_folderColumnsGrid.getRowCount();
-			if ((0 < rows) && (!(isRowChecked(rows-1)))) {
-				// Yes!  Scan the rows.
-				getDataFromDlg();	//Make sure all of the changed settings are captured first
-				for (int i = (rows - 1); i >= 0; i -= 1) {
-					// If this row checked...
-					if (isRowChecked(i)) {
-						// ...move it down.
-						m_folderColumnsGrid.removeRow(i);
-						renderRow(m_folderColumnsGrid, i+1, 
-								m_folderColumnsListCount, m_folderColumnsListAll.get(i));
-						setRowChecked(i+1);
-						FolderColumn fc1 = m_folderColumnsListAll.get(i);
-						FolderColumn fc2 = m_folderColumnsListAll.get(i+1);
-						m_folderColumnsListAll.set(i, fc2);
-						m_folderColumnsListAll.set(i+1, fc1);
-						break;
-					}
-				}
-			}
-		}
-	}
-	
-	/*
-	 * Inner class that implements the move up command.
-	 */
-	private class DoMoveUp implements Command {
-		@Override
-		public void execute() {
-			// If the table is empty...
-			if (0 == m_folderColumnsListCount) {
-				// ...there's nothing to do.
-				return;
-			}
-			
-			// Do we have some rows in the table without the top one
-			// being checked?
-			int rows = m_folderColumnsGrid.getRowCount();
-			if ((0 < rows) && (!(isRowChecked(0)))) {
-				// Yes!  Scan the rows.
-				getDataFromDlg();	//Make sure all of the changed settings are captured first
-				for (int i = 1; i < rows; i += 1) {
-					// If this row checked...
-					if (isRowChecked(i)) {
-						// ...move it up.
-						m_folderColumnsGrid.removeRow(i);
-						renderRow(m_folderColumnsGrid, i-1, 
-								m_folderColumnsListCount, m_folderColumnsListAll.get(i));
-						setRowChecked(i-1);
-						FolderColumn fc1 = m_folderColumnsListAll.get(i);
-						FolderColumn fc2 = m_folderColumnsListAll.get(i-1);
-						m_folderColumnsListAll.set(i, fc2);
-						m_folderColumnsListAll.set(i-1, fc1);
-						break;
-					}
-				}
-			}
-		}
-	}
-	
 
 	/*
 	 * Asynchronously runs the given instance of the dialog.
@@ -643,7 +724,6 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		};
 		Scheduler.get().scheduleDeferred(doRun);
 	}
-	
 	
 	/*
 	 * Synchronously runs the dialog.
@@ -676,7 +756,6 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		GwtClientHelper.executeCommand( cmd, rpcReadCallback );
 	}
 	
-
 	/*
 	 * Asynchronously populates the dialog.
 	 */
@@ -690,7 +769,6 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		Scheduler.get().scheduleDeferred(doRun);
 	}
 
-	
 	/*
 	 * Asynchronously populates the dialog.
 	 */
@@ -717,7 +795,33 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		show(true);	// true -> Display the dialog centered on the screen.
 	}
 
+	/*
+	 * Enables/disables one of the move buttons on the menu.
+	 */
+	private static void setButtonEnabled(VibeMenuItem mi, String id, boolean enabled, ImageResource imgEnabled, ImageResource imgDisabled) {
+		Element e = DOM.getElementById(id);
+		if (enabled) {
+			e.addClassName("folderColumnsDlg_MoveEnabled");
+			e.setAttribute("src", imgEnabled.getSafeUri().asString());
+		}
+		else {
+			e.removeClassName("folderColumnsDlg_MoveEnabled");
+			e.setAttribute("src", imgDisabled.getSafeUri().asString());
+		}
+		mi.setEnabled(enabled);
+	}
 	
+	/*
+	 * Called to validate the move buttons.
+	 */
+	private void validateMoves(int rowSelected) {
+		boolean canMoveUp   = (1 < rowSelected);
+		boolean canMoveDown = (rowSelected < m_folderColumnsListCount);
+		
+		setButtonEnabled(m_moveUp,   ID_MOVE_UP,   canMoveUp,   m_images.arrowUp(),   m_images.arrowUpDisabled()  );
+		setButtonEnabled(m_moveDown, ID_MOVE_DOWN, canMoveDown, m_images.arrowDown(), m_images.arrowDownDisabled());
+	}
+
 	/*
 	 * Asynchronously loads the split point and performs some operation
 	 * against the code.
@@ -757,7 +861,6 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		});
 	}
 	
-	
 	/**
 	 * Loads the FolderColumnsConfigDlg split point and returns an
 	 * instance of it via the callback.
@@ -767,7 +870,6 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	public static void createAsync(FolderColumnsConfigDlgClient fccDlgClient) {
 		doAsyncOperation(fccDlgClient, null, null);
 	}
-	
 	
 	/**
 	 * Initializes and shows the dialog.
