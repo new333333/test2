@@ -30,41 +30,42 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.webdav.milton;
 
-package org.kablink.teaming.webdav;
-
-import org.kablink.teaming.webdav.milton.VibeWebDavResponseHandler;
+import org.kablink.teaming.util.SPropsUtil;
 
 import com.bradmcevoy.http.AuthenticationService;
-import com.bradmcevoy.http.ResourceFactory;
-import com.bradmcevoy.http.ResourceFactoryFactory;
-import com.bradmcevoy.http.webdav.WebDavResponseHandler;
+import com.bradmcevoy.http.Request;
+import com.bradmcevoy.http.Resource;
+import com.bradmcevoy.http.Response;
+import com.bradmcevoy.http.ResponseStatus;
+import com.bradmcevoy.http.webdav.DefaultWebDavResponseHandler;
 
 /**
  * @author jong
  *
  */
-public class WebdavResourceFactoryFactory implements ResourceFactoryFactory {
-
-	private static AuthenticationService authenticationService;
-	private static WebdavResourceFactory resourceFactory;
- 
+public class VibeWebDavResponseHandler extends DefaultWebDavResponseHandler {
+	
+    public VibeWebDavResponseHandler( AuthenticationService authenticationService ) {
+    	super(authenticationService);
+    }
+    
 	@Override
-	public ResourceFactory createResourceFactory() {
-		return resourceFactory;
-	}
- 
-	@Override
-	public WebDavResponseHandler createResponseHandler() {
-		return new VibeWebDavResponseHandler(authenticationService);
-	}
- 
-	@Override
-	public void init() {
-		if (authenticationService == null) {
-			authenticationService = new AuthenticationService();
-			resourceFactory = new WebdavResourceFactory();
+    public void respondUnauthorised( Resource resource, Response response, Request request ) {
+		if(org.kablink.teaming.context.request.RequestContextHolder.getRequestContext() != null) {
+			// A successfully logged in user has been denied access to a particular resource
+			// or an operation on that resource. In this case, there's no point in asking the
+			// user to authenticate again. As a matter of fact, when/if this happens, it 
+			// make Windows Explorer truly mad, and it will go wild to the extent that the
+			// user has no choice but disconnect the drive and map another one. Yuk...
+			int statusCode = SPropsUtil.getInt("wd.respond.unauthorised.status.code", ResponseStatus.SC_FORBIDDEN);
+			// Bug in the library - The fromCode method should have been a static method...
+			// I'm working around this bug by calling it on a random instance.
+			response.setStatus(Response.Status.SC_UNAUTHORIZED.fromCode(statusCode));
+		}
+		else {
+			 wrapped.respondUnauthorised( resource, response, request );
 		}
 	}
-
 }

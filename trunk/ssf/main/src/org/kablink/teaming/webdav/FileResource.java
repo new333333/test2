@@ -101,24 +101,28 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 	private Date createdDate; // creation date
 	private Date modifiedDate; // last modification date
 	
+	// This property may be null. The same information from FileAttachment is preferred.
+	private Long size;
+	
 	// lazy resolved for efficiency, so may be null initially
 	private FileAttachment fa; 
 	
-	private void init(String webdavPath, String name, String id, Date createdDate, Date modifiedDate) {
+	private void init(String webdavPath, String name, String id, Date createdDate, Date modifiedDate, Long size) {
 		this.webdavPath = webdavPath;
 		this.name = name;
 		this.id = id;
 		this.createdDate = getMiltonSafeDate(createdDate);
 		this.modifiedDate = getMiltonSafeDate(modifiedDate);
+		this.size = size;
 	}
 	
 	private void init(String webdavPath, FileAttachment fa) {
-		init(webdavPath, fa.getFileItem().getName(), fa.getId(), fa.getCreation().getDate(), fa.getModification().getDate());		
+		init(webdavPath, fa.getFileItem().getName(), fa.getId(), fa.getCreation().getDate(), fa.getModification().getDate(), null);		
 		this.fa = fa; // already resolved
 	}
 	
 	private void init(String webdavPath, FileIndexData fid) {
-		init(webdavPath, fid.getName(), fid.getId(),  fid.getCreatedDate(), fid.getModifiedDate());
+		init(webdavPath, fid.getName(), fid.getId(),  fid.getCreatedDate(), fid.getModifiedDate(), fid.getSize());
 	}
 	
 	public FileResource(WebdavResourceFactory factory, String webdavPath, FileAttachment fa) {
@@ -201,12 +205,25 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 	 */
 	@Override
 	public Long getContentLength() {
-		// Return null to play safe. This way, we let WebDAV interaction to compute
-		// the file length based on the content being transmitted as opposed to 
-		// relying on the meta data we provide. This is to avoid the unlikely
-		// (but possible) situation where the length information is out-of-sync with
-		// the content for whatever reason (e.g. Lucene index is out-of-sync, etc.).
-		return null;// $$$$$$$ This shows size of 0 on windows 7
+		// Although the library can correctly transmit file content to the client without
+		// this information, we still need to supply this piece of information. Otherwise,
+		// file browsing WebDAV client such as Windows Explorer will display zero for
+		// all file sizes. 
+		
+		// If file attachment object already exists, always get it from the object since
+		// the information in the database is most up-to-date.
+		if(fa != null)
+			return fa.getFileItem().getLength();
+		
+		if(size != null)
+			return size;
+		
+		// If you're still here, it means that, unfortunately, the Lucene index does not
+		// contain the file size information, which means that the index is old and has
+		// not been re-indexed after upgrading to Hudson. We have no choice but fetch
+		// the information from the database.
+		resolveFileAttachment();
+		return fa.getFileItem().getLength();
 	}
 	
 	public String getWebdavPath() {
