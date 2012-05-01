@@ -1010,6 +1010,8 @@ public class EntityIndexUtils {
         	doc.add(fileOwnerIdField); 
         	Field fileSizeField = new Field(FILE_SIZE_FIELD, getSortableNumber(String.valueOf(fa.getFileItem().getLengthKB()), ObjectKeys.MAX_FILE_SIZE_DECIMAL_PLACES), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         	doc.add(fileSizeField); 
+        	Field fileSizeInBytesField = new Field(FILE_SIZE_IN_BYTES_FIELD, String.valueOf(fa.getFileItem().getLength()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        	doc.add(fileSizeInBytesField); 
         	Field fileTimeField = new Field(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         	doc.add(fileTimeField); 
         	Field fileNameField = new Field(FILENAME_FIELD, fa.getFileItem().getName(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
@@ -1030,6 +1032,8 @@ public class EntityIndexUtils {
     	doc.add(fileOwnerIdField); 
     	Field fileSizeField = new Field(FILE_SIZE_FIELD, getSortableNumber(String.valueOf(fa.getFileItem().getLengthKB()), ObjectKeys.MAX_FILE_SIZE_DECIMAL_PLACES), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     	doc.add(fileSizeField); 
+    	Field fileSizeInBytesField = new Field(FILE_SIZE_IN_BYTES_FIELD, String.valueOf(fa.getFileItem().getLength()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+    	doc.add(fileSizeInBytesField); 
     	Field fileTimeField = new Field(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
     	doc.add(fileTimeField); 
       	Field fileNameField = new Field(FILENAME_FIELD, fa.getFileItem().getName(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);

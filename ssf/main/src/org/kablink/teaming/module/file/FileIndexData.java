@@ -66,6 +66,7 @@ public class FileIndexData {
 	private String modifierName; // modifier name
 	private Date createdDate; // created date
 	private Date modifiedDate; // modified date
+	private Long size; // size in bytes - this field is new in Hudson, so may not exist in old index
 	
 	public FileIndexData(org.apache.lucene.document.Document doc)  throws IllegalArgumentException {
 		name = doc.get(Constants.FILENAME_FIELD);
@@ -93,6 +94,11 @@ public class FileIndexData {
 			logger.warn("Error parsing modification date [" + dateStr 
 					+ "] for file [" + id + "]. Setting it to current date");
 		}
+		String sizeStr = doc.get(Constants.FILE_SIZE_IN_BYTES_FIELD);
+		if(sizeStr != null)
+			size = Long.valueOf(sizeStr);
+		else
+			size = null;
 	}
 
 	public String getName() {
@@ -141,6 +147,10 @@ public class FileIndexData {
 
 	public Date getModifiedDate() {
 		return modifiedDate;
+	}
+	
+	public Long getSize() {
+		return size;
 	}
 	
 	private EntityType entityTypeFromString(String entityTypeStr) throws IllegalArgumentException {
