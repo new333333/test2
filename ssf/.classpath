@@ -176,5 +176,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-ldap.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-openid.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-web.jar"/>
+	<classpathentry kind="lib" path="lib/commons-compress.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
