@@ -38,6 +38,9 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.MenuItemSeparator;
@@ -214,6 +217,47 @@ public class VibeMenuBar extends MenuBar {
 	@Override
 	public List<MenuItem> getItems() {
 		return super.getItems();
+	}
+	
+	/*
+	 * Added in support of onBrowserEvent() patch below.
+	 */
+	private MenuItem myFindItem(Element hItem) {
+		for (MenuItem item : getItems()) { 
+			if (DOM.isOrHasChild(item.getElement(), hItem)) {
+				return item;
+			}
+		}
+    
+		return null;
+	}
+	
+	/**
+	 * 20120502 (DRF):
+	 *   I added this method to get around the problem of top level
+	 *   menu items that don't open a drop down not remove the
+	 *   selected state correctly.  I found this patch here:
+	 *   
+	 *      http://code.google.com/p/google-web-toolkit/issues/detail?id=374&colspec=ID%20Type%20Status%20Owner%20Milestone%20Summary%20Stars
+	 */
+	@Override
+	public void onBrowserEvent(Event event) {
+		super.onBrowserEvent(event);
+		MenuItem item = myFindItem(DOM.eventGetTarget(event));
+	    
+		if (null == item) { 
+			return;
+		}
+
+		switch (DOM.eventGetType(event)) {
+		case Event.ONMOUSEOUT:
+			item.removeStyleName("gwt-MenuItem-selected");
+			break;
+	    	
+		case Event.ONMOUSEOVER:
+			item.addStyleName("gwt-MenuItem-selected");
+			break;
+		}
 	}
 	
 	@Override
