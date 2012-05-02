@@ -1732,187 +1732,71 @@ body, table td, select
 }
 
 /* Styles for the favorites dialog. */
-.favoritesDlg
-{
-	z-index: 351;
-}
-.favoritesDlg_Checkbox
-{
-	margin-left: 5px;
-}
-.favoritesDlg_Grid
-{
-	margin-top: 8px;
-}
-.favoritesDlg_Label
-{
-	color: #414648; /* dark grey */
-	line-height: 1.1em; 
-	margin-right: 5px;
-	padding: 0.2em 0.5em 0.3em; 
-	white-space: nowrap;
-}
-.favoritesDlg_MenuBar
-{
-}
-.favoritesDlg_MenuItem
-{
-}
+	.favoritesDlg          {z-index: 351;}
+	.favoritesDlg_Checkbox {margin-left: 5px;}
+	.favoritesDlg_Grid     {margin-top: 8px;}
+	.favoritesDlg_Label    {color: #414648; line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 0.3em; white-space: nowrap;}
+	.favoritesDlg_MenuBar  {}
+	.favoritesDlg_MenuItem {}
+/* End:  Styles for the favorites dialog. */
 
 /* Styles for the folder options dialog. */
-.folderOptionsDlg
-{
-	z-index: 351;
-}
-.folderOptionsDlg_Radio
-{
-	margin-left: 5px;
-}
-.folderOptionsDlg_Grid
-{
-	margin-top: 8px;
-}
-.folderOptionsDlg_Label
-{
-	color: #414648; /* dark grey */
-	line-height: 1.1em; 
-	margin-right: 5px;
-	padding: 0.2em 0.5em 0.3em; 
-	white-space: nowrap;
-}
-.folderOptionsDlg_MenuItem
-{
-}
-.folderOptionsDlg_SectionHeader
-{
-	font-size: 1em;
-	font-weight: bold;
-	padding-top: 8px;
-	padding-bottom: 5px;
-}
-.folderOptionsDlg_SectionHeaderCell
-{
-}
-.folderOptionsDlg_SectionHeaderRow
-{
-}
+	.folderOptionsDlg                   {z-index: 351;}
+	.folderOptionsDlg_Grid              {margin-top: 8px;}
+	.folderOptionsDlg_Label             {color: #414648; line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 0.3em; white-space: nowrap;}
+	.folderOptionsDlg_MenuItem          {}
+	.folderOptionsDlg_Radio             {margin-left: 5px;}
+	.folderOptionsDlg_SectionHeader     {font-size: 1em; font-weight: bold; padding-top: 8px; padding-bottom: 5px;}
+	.folderOptionsDlg_SectionHeaderCell {}
+	.folderOptionsDlg_SectionHeaderRow  {}
+/* End:  Styles for the folder options dialog. */
 
 /* Styles for the folder column configuration dialog. */
-.folderColumnsDlg
-{
-	z-index: 351;
-}
-.folderColumnsDlg_ScrollLimit {height: 215px;}
-.folderColumnsDlg_ScrollPanel {overflow-y: auto !important; overflow-x: hidden !important; padding: 0px; padding-right: 28px; margin: 0px;}
-.folderColumnsDlg_Radio
-{
-	margin-left: 5px;
-}
-.folderColumnsDlg_Grid
-{
-	margin: 8px 8px 4px 8px;
-	background-color: #F6F6F6; border-bottom: 0px solid #F6F6F6; border: 1px solid #D2D5D1;
-}
-.folderColumnsDlg_Label
-{
-	color: #414648; /* dark grey */
-	line-height: 1.1em; 
-	margin-right: 5px;
-	padding: 0.2em 0.5em 0.3em; 
-	white-space: nowrap;
-}
-.folderColumnsDlg_MenuBar           {margin-left: 8px; margin-bottom: 3px; border: 0px !important; background: transparent !important;}
-.folderColumnsDlg_MenuImg           {}
-.folderColumnsDlg_MenuItem          {white-space: nowrap; color #1f1f1f !important; background-color: transparent !important; padding: 0px !important;}
-.folderColumnsDlg_MenuItem_Order    {padding-right: 5px !important;}
-.folderColumnsDlg_MoveEnabled       {cursor: pointer;    }
-.folderColumnsDlg_SectionHeader     {font-size: 1em; font-weight: bold; padding-top: 8px; padding-bottom: 5px;}
-.folderColumnsDlg_SectionHeaderCell {}
-.folderColumnsDlg_SectionHeaderRow  {
-	background: transparent url("images/blends/gray_blend8_28.png") repeat-x scroll center;
-	color: #505354;
-	font-size: 0.8em;
-	height: 24px;
-	padding: 0.2em;
-	text-align: left;
-	text-indent: 0.5em;
-	white-space: nowrap;
-}
-.folderColumnsDlg_OptionsGrid
-{
-	margin: 10px 0px;
-}
-.folderColumnsDlg_RowCell   {padding: 3px 8px; border-bottom: 1px solid #D2D5D1; white-space: nowrap;}
-.folderColumnsDlg_RowCellCB {text-align: center; }
-.folderColumnsDlg_Row-even  {background: white;  }
-.folderColumnsDlg_Row-odd   {background: #F3F7FB;}
+	.folderColumnsDlg                   {z-index: 351;}
+	.folderColumnsDlg_Grid              {margin: 8px 8px 4px 8px; background-color: #F6F6F6; border-bottom: 0px solid #F6F6F6; border: 1px solid #D2D5D1;}
+	.folderColumnsDlg_Label             {color: #414648; line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 0.3em; white-space: nowrap;}
+	.folderColumnsDlg_MenuBar           {margin-left: 8px; margin-bottom: 3px; border: 0px; background: transparent;}
+	.folderColumnsDlg_MenuImg           {}
+	.folderColumnsDlg_MenuItem          {white-space: nowrap; color #1f1f1f !important; background-color: transparent !important; padding: 0px !important;}
+	.folderColumnsDlg_MenuItem_Order    {padding-right: 5px !important;}
+	.folderColumnsDlg_MoveEnabled       {cursor: pointer;}
+	.folderColumnsDlg_OptionsGrid       {margin: 10px 0px;}
+	.folderColumnsDlg_Radio             {margin-left: 5px;}
+	.folderColumnsDlg_RowCell           {padding: 3px 8px; border-bottom: 1px solid #D2D5D1; white-space: nowrap;}
+	.folderColumnsDlg_RowCellCB         {text-align: center;}
+	.folderColumnsDlg_Row-even          {background: white;}
+	.folderColumnsDlg_Row-odd           {background: #F3F7FB;}
+	.folderColumnsDlg_ScrollLimit       {height: 215px;}
+	.folderColumnsDlg_ScrollPanel       {overflow-y: auto !important; overflow-x: hidden !important; padding: 0px; padding-right: 28px; margin: 0px;}
+	.folderColumnsDlg_SectionHeader     {font-size: 1em; font-weight: bold; padding-top: 8px; padding-bottom: 5px;}
+	.folderColumnsDlg_SectionHeaderCell {}
+	.folderColumnsDlg_SectionHeaderRow  {
+		background: transparent url("images/blends/gray_blend8_28.png") repeat-x scroll center;
+		color: #505354;
+		font-size: 0.8em;
+		height: 24px;
+		padding: 0.2em;
+		text-align: left;
+		text-indent: 0.5em;
+		white-space: nowrap;
+	}
+/* End:  Styles for the folder column configuration dialog. */
 
 /* Styles for the manage saved searches dialog. */
-.manageSavedSearchesDlg
-{
-	z-index: 351;
-}
-.manageSavedSearchesDlg_DeleteAnchor
-{
-	cursor: pointer;
-}
-.manageSavedSearchesDlg_DeleteImg
-{
-	margin-top: 2px;
-	margin-left: 5px;
-}
-.manageSavedSearchesDlg_Grid
-{
-	margin-top: 8px;
-}
-.manageSavedSearchesDlg_Label
-{
-	color: #414648; /* dark grey */
-	line-height: 1.1em; 
-	margin-right: 5px;
-	padding: 0.2em 0.5em 0.3em; 
-	white-space: nowrap;
-}
-.manageSavedSearchesDlg_Save
-{
-	margin-top: 2px;
-	margin-left: 5px;
-	margin-right: 5px;
-}
-.manageSavedSearchesDlg_SaveButton
-{
-	cursor: pointer;
-	margin-left: 2px;
-}
-.manageSavedSearchesDlg_SaveInput
-{
-}
-.manageSavedSearchesDlg_SearchAnchor
-{
-	color: #0000fc;
-	cursor: pointer;
-	font-size: 1em;
-	padding-right: 3px;
-	text-decoration: none;
-}
-.manageSavedSearchesDlg_SearchAnchorPanel
-{
-	padding-top: 1px;
-	width: 90%;
-}
-.manageSavedSearchesDlg_SectionHeader
-{
-	font-size: 1em;
-	font-weight: bold;
-	padding-top: 8px;
-	padding-bottom: 5px;
-}
-.manageSavedSearchesDlg_SectionHeaderCell
-{
-}
-.manageSavedSearchesDlg_SectionHeaderRow
-{
-}
+	.manageSavedSearchesDlg                   {z-index: 351;}
+	.manageSavedSearchesDlg_DeleteAnchor      {cursor: pointer;}
+	.manageSavedSearchesDlg_DeleteImg         {margin-top: 2px; margin-left: 5px;}
+	.manageSavedSearchesDlg_Grid              {margin-top: 8px;}
+	.manageSavedSearchesDlg_Label             {color: #414648; line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 0.3em; white-space: nowrap;}
+	.manageSavedSearchesDlg_Save              {margin-top: 2px; margin-left: 5px; margin-right: 5px;}
+	.manageSavedSearchesDlg_SaveButton        {cursor: pointer; margin-left: 2px;}
+	.manageSavedSearchesDlg_SaveInput         {}
+	.manageSavedSearchesDlg_SearchAnchor      {color: #0000fc; cursor: pointer; font-size: 1em; padding-right: 3px; text-decoration: none;}
+	.manageSavedSearchesDlg_SearchAnchorPanel {padding-top: 1px; width: 90%;}
+	.manageSavedSearchesDlg_SectionHeader     {font-size: 1em; font-weight: bold; padding-top: 8px; padding-bottom: 5px;}
+	.manageSavedSearchesDlg_SectionHeaderCell {}
+	.manageSavedSearchesDlg_SectionHeaderRow  {}
+/* End:  Styles for the manage saved searches dialog. */
 
 /* Styles for the tag this dialog. */
 .tagThisDlg
