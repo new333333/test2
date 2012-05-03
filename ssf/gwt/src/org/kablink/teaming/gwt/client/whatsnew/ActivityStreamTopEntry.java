@@ -94,6 +94,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * Add the name of the binder this entry comes from.
 	 */
+	@Override
 	public void addAdditionalHeaderUI( FlowPanel headerPanel )
 	{
 		ImageResource imageResource;
@@ -122,6 +123,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 				/**
 				 * 
 				 */
+				@Override
 				public void onMouseOver( MouseOverEvent event )
 				{
 					m_parentBinderName.addStyleName( "activityStreamHover" );
@@ -140,6 +142,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 				/**
 				 * 
 				 */
+				@Override
 				public void onMouseOut( MouseOutEvent event )
 				{
 					m_parentBinderName.removeStyleName( "activityStreamHover" );
@@ -157,6 +160,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 				/**
 				 * 
 				 */
+				@Override
 				public void onClick( ClickEvent event )
 				{
 					handleClickOnParentBinder();
@@ -225,6 +229,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
+	@Override
 	public void clearEntrySpecificInfo()
 	{
 		super.clearEntrySpecificInfo();
@@ -253,6 +258,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * Create the panel that all comments will live in.
 	 */
+	@Override
 	public FlowPanel createCommentsPanel()
 	{
 		return new FlowPanel();
@@ -292,6 +298,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
+	@Override
 	public String getAvatarImageStyleName()
 	{
 		return "activityStreamTopEntryAvatarImg";
@@ -301,15 +308,26 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * Return the name of the style used with the content panel.
 	 */
+	@Override
 	public String getContentPanelStyleName()
 	{
 		return "activityStreamTopEntryContentPanel";
+	}
+	
+	/**
+	 * Return the name of the style used with a top entry's description.
+	 */
+	@Override
+	public String getDescStyleName()
+	{
+		return "activityStreamTopEntryDesc";
 	}
 
 	
 	/**
 	 * 
 	 */
+	@Override
 	public String getEntryHeaderStyleName()
 	{
 		return "activityStreamTopEntryHeader";
@@ -319,6 +337,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * Return the name of the style used with the div that holds the entry.
 	 */
+	@Override
 	public String getMainPanelStyleName()
 	{
 		return "activityStreamTopEntryMainPanel";
@@ -328,6 +347,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
+	@Override
 	public String getTitlePanelStyleName()
 	{
 		return "activityStreamTopEntryTitlePanel";
@@ -337,6 +357,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
+	@Override
 	public String getTitleStyleName()
 	{
 		return "activityStreamTopEntryTitle";
@@ -383,6 +404,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 				/**
 				 * 
 				 */
+				@Override
 				public void onFailure(Throwable t)
 				{
 					GwtClientHelper.handleGwtRPCFailure(
@@ -394,6 +416,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 				/**
 				 * 
 				 */
+				@Override
 				public void onSuccess(  VibeRpcResponse response )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -404,6 +427,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 					
 					cmd = new Scheduler.ScheduledCommand()
 					{
+						@Override
 						public void execute()
 						{
 							// Take the user to the parent binder.
@@ -424,6 +448,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * Insert the given reply as the first reply to this entry.
 	 */
+	@Override
 	public void insertReply( ActivityStreamEntry reply )
 	{
 		FlowPanel commentsPanel;
@@ -466,6 +491,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * Set the data this we should display from the given ActivityStreamEntry
 	 */
+	@Override
 	public void setData( ActivityStreamEntry entryItem )
 	{
 		List<ActivityStreamEntry> comments = null;
