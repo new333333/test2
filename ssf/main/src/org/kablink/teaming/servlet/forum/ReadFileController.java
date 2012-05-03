@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,6 +33,7 @@
 package org.kablink.teaming.servlet.forum;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -40,8 +41,8 @@ import javax.activation.FileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.tools.zip.ZipEntry;
-import org.apache.tools.zip.ZipOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -62,15 +63,15 @@ import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
 import org.springframework.web.servlet.ModelAndView;
 
 public class ReadFileController extends AbstractReadFileController {
+	private final static boolean ZIP_ENCODED_FILENAMES	= true;
+	private final static boolean UTF8_ENCODE_ZIPS		= true;
 	
 	private FileTypeMap mimeTypes = new ConfigurableMimeFileTypeMap();
 	
+	@Override
 	@SuppressWarnings("unused")
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-		boolean zipEncodeFilenames  = SPropsUtil.getBoolean("encode.zip.download.filenames",         false  );
-		String  zipFilenameEncoding = SPropsUtil.getString( "encode.zip.download.filename.encoding", "cp437");
-		
 		// Assuming that the full request URL was http://localhost:8080/ssf/s/readFile/entityType/entryId/fileTime/fileVersion/filename.ext
 		// the following call returns "/readFile/entityType/entryId/fileId/fileTime/fileVersion/filename.ext" portion of the URL.
 		String pathInfo = request.getPathInfo();
@@ -97,16 +98,14 @@ public class ReadFileController extends AbstractReadFileController {
 							"attachment; filename=\"" + fileName + "\"");
 				
 				InputStream fileStream = null;
-				ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream());		
+				ZipArchiveOutputStream zipOut = buildZipOutputStream(response.getOutputStream());
 			
-				//Standard zip encoding is cp437. (needed when chars are outside the ASCII range)
-				zipOut.setEncoding(zipFilenameEncoding);
 				Integer fileCounter = 1;
 				for (Attachment attachment : attachments) {
 					if (attachment instanceof FileAttachment) {
 						String attExt = EntityIndexUtils.getFileExtension(((FileAttachment) attachment).getFileItem().getName());
 						String attName = ((FileAttachment) attachment).getFileItem().getName();	//Note: do not translate this name
-						if (!zipEncodeFilenames) {
+						if (!ZIP_ENCODED_FILENAMES) {
 							attName = getBinderModule().filename8BitSingleByteOnly(attName, 
 									"__file"+fileCounter.toString(), singleByte);	//Note: do not translate this name
 						}
@@ -122,9 +121,9 @@ public class ReadFileController extends AbstractReadFileController {
 								return null;
 							}
 	
-							zipOut.putNextEntry(new ZipEntry(attName));
+							zipOut.putArchiveEntry(new ZipArchiveEntry(attName));
 							FileUtil.copy(fileStream, zipOut);
-							zipOut.closeEntry();
+							zipOut.closeArchiveEntry();
 	
 							fileStream.close();
 						} catch (Exception e) {
@@ -170,13 +169,11 @@ public class ReadFileController extends AbstractReadFileController {
 								"attachment; filename=\"" + fileName + "\"");
 					
 					InputStream fileStream = null;
-					ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream());		
+					ZipArchiveOutputStream zipOut = buildZipOutputStream(response.getOutputStream());		
 				
-					//Standard zip encoding is cp437. (needed when chars are outside the ASCII range)
-					zipOut.setEncoding(zipFilenameEncoding);
 					String attExt = EntityIndexUtils.getFileExtension(fileAtt.getFileItem().getName());
 					String attName = fileAtt.getFileItem().getName();	//Note: do not translate this name
-					if (!zipEncodeFilenames) {
+					if (!ZIP_ENCODED_FILENAMES) {
 						attName = getBinderModule().filename8BitSingleByteOnly(attName, 
 								"file", singleByte);	//Note: do not translate this name
 					}
@@ -191,7 +188,7 @@ public class ReadFileController extends AbstractReadFileController {
 							return null;
 						}
 
-						zipOut.putNextEntry(new ZipEntry(attName));
+						zipOut.putArchiveEntry(new ZipArchiveEntry(attName));
 						String loggerText = "Copying an unencrypted file of length ";
 						if (fileAtt.isEncrypted()) {
 							loggerText = "Copying an encrypted file of length ";
@@ -203,7 +200,7 @@ public class ReadFileController extends AbstractReadFileController {
 						logger.info(loggerText + fileAtt.getFileItem().getLengthKB() + 
 								"KB took " + (System.nanoTime()-startTime)/1000000.0 + " ms");
 						*/
-						zipOut.closeEntry();
+						zipOut.closeArchiveEntry();
 
 						fileStream.close();
 					} catch (Exception e) {
@@ -284,5 +281,25 @@ public class ReadFileController extends AbstractReadFileController {
 		}
 		
 		return null;
+	}
+	
+	/*
+	 * Constructs a ZipArchiveOutputStream from an OutputStream.
+	 */
+	private static ZipArchiveOutputStream buildZipOutputStream(OutputStream stream) {
+		ZipArchiveOutputStream reply = new ZipArchiveOutputStream(stream);
+
+		if (UTF8_ENCODE_ZIPS) {
+			reply.setEncoding("UTF-8");
+		}
+		else {
+			//Standard zip encoding is cp437. (needed when chars are outside the ASCII range)
+			reply.setEncoding("cp437");
+			reply.setFallbackToUTF8(true);
+			reply.setUseLanguageEncodingFlag(true);
+		}
+		reply.setCreateUnicodeExtraFields(ZipArchiveOutputStream.UnicodeExtraFieldPolicy.ALWAYS);
+		
+		return reply;
 	}
 }
