@@ -244,12 +244,25 @@
 	vertical-align: top;
 }
 
-.activityStreamEntryDesc
+.activityStreamTopEntryDesc
 {
 	color: #333333;
 	font-size: 12px;
+	height: 4em;
 	margin-top: 4px;
 	margin-left: 1px;
+	overflow: hidden;
+	position: relative;
+}
+
+.activityStreamCommentDesc
+{
+	color: #333333;
+	font-size: 12px;
+	height: 2em;
+	margin-top: 4px;
+	margin-left: 1px;
+	overflow: hidden;
 	position: relative;
 }
 
@@ -293,19 +306,15 @@
 .activityStreamCommentContentPanel
 {
 	font-size: 12px;
-	height: 2.7em;
 	margin-left: 35px;
-	overflow: hidden;
 	white-space: normal;
 }
 
 .activityStreamTopEntryContentPanel
 {
 	font-size: 13px;
-	height: 4.65em;
 	margin-top: 5px;
 	margin-left: 55px;
-	overflow: hidden;
 	white-space: normal;
 }
 

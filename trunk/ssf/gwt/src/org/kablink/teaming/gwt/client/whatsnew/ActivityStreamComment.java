@@ -58,6 +58,7 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	/**
 	 * Nothing to do.
 	 */
+	@Override
 	public void addAdditionalHeaderUI( FlowPanel headerPanel )
 	{
 		// Nothing to do.
@@ -67,6 +68,7 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
+	@Override
 	public String getAvatarImageStyleName()
 	{
 		return "activityStreamCommentAvatarImg";
@@ -76,15 +78,26 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	/**
 	 * Return the name of the style used with the content panel.
 	 */
+	@Override
 	public String getContentPanelStyleName()
 	{
 		return "activityStreamCommentContentPanel";
+	}
+	
+	/**
+	 * Return the name of the style used with a comment's description
+	 */
+	@Override
+	public String getDescStyleName()
+	{
+		return "activityStreamCommentDesc";
 	}
 
 	
 	/**
 	 * 
 	 */
+	@Override
 	public String getEntryHeaderStyleName()
 	{
 		return "activityStreamCommentHeader";
@@ -94,6 +107,7 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	/**
 	 * Return the name of the style used with the div that holds the entry.
 	 */
+	@Override
 	public String getMainPanelStyleName()
 	{
 		return "activityStreamCommentMainPanel";
@@ -103,6 +117,7 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
+	@Override
 	public String getTitlePanelStyleName()
 	{
 		return "activityStreamCommentTitlePanel";
@@ -112,6 +127,7 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
+	@Override
 	public String getTitleStyleName()
 	{
 		return "activityStreamCommentTitle";
@@ -120,6 +136,7 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	/**
 	 * Insert the given reply into the top entry's list of replies
 	 */
+	@Override
 	public void insertReply( ActivityStreamEntry reply )
 	{
 		// Add this reply to the top entry.
