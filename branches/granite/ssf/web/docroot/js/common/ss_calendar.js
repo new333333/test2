@@ -2579,7 +2579,7 @@ function ss_calendarEngine(
 					}
 					
 					
-					var lightBox = ss_showLightbox(null, null, null, "ss_lightBox_transparent");
+					var lightBox = ss_showLightbox(null, null, null, "ss_lightBox_transparent", container);
 					dojo.connect(lightBox, "onclick", function(evt) {
 						moreEventsDiv.parentNode.removeChild(moreEventsDiv);
 						lightBox.parentNode.removeChild(lightBox);
