@@ -11,7 +11,12 @@
 	<inherits name='com.google.gwt.user.theme.standard.Standard'/>
 	<!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
 	<!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
-
+	
+	<!-- Inherit the jars required for GWT Calendar support. -->
+	<inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'                    />
+	<inherits name='com.bradrydzewski.gwt.calendar.Calendar'            />
+	<inherits name='com.bradrydzewski.gwt.calendar.theme.google.Google' />
+	
  	<!-- Other generic module inherits go here. -->
 
 	<!-- Specify the app entry point class. -->
