@@ -48,6 +48,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
+import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu.ActionMenuItem;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
 
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
@@ -108,6 +109,13 @@ public class BlogFolderView extends FolderViewBase
 		final FlexTable table;
 		FlexCellFormatter cellFormatter;
 		ActionsPopupMenu actionsMenu;
+		ActionMenuItem[] menuItems = {  ActionMenuItem.REPLY,
+										ActionMenuItem.SUBSCRIBE,
+										ActionMenuItem.TAG,
+										ActionMenuItem.SEPARATOR,
+										ActionMenuItem.MARK_READ,
+										ActionMenuItem.MARK_UNREAD };
+
 
 		getFlowPanel().addStyleName( "vibe-blogFolderFlowPanel" );
 
@@ -119,7 +127,7 @@ public class BlogFolderView extends FolderViewBase
 		cellFormatter.setWidth( 0, 0, "80%" );
 		cellFormatter.setWidth( 0, 1, "20%" );
 		
-		actionsMenu = new ActionsPopupMenu( true, true );
+		actionsMenu = new ActionsPopupMenu( true, true, menuItems );
 		
 		// Create the ActivityStreamCtrl.  It will hold the list of blog entries
 		ActivityStreamCtrl.createAsync( false, actionsMenu, new ActivityStreamCtrlClient()

@@ -70,6 +70,18 @@ import com.google.gwt.user.client.ui.UIObject;
  */
 public class ActionsPopupMenu extends PopupMenu
 {
+	public enum ActionMenuItem
+	{
+		MARK_READ,
+		MARK_UNREAD,
+		REPLY,
+		SEPARATOR,
+		SEND_TO_FRIEND,
+		SHARE,
+		SUBSCRIBE,
+		TAG;
+	}
+	
 	private VibeMenuItem m_replyMenuItem;
 	private VibeMenuItem m_shareMenuItem;
 	private VibeMenuItem m_subscribeMenuItem;
@@ -84,11 +96,12 @@ public class ActionsPopupMenu extends PopupMenu
 	/**
 	 * 
 	 */
-	public ActionsPopupMenu( boolean autoHide, boolean modal )
+	public ActionsPopupMenu( boolean autoHide, boolean modal, ActionMenuItem[] menuItems )
 	{
 		super( autoHide, modal, false );
 		
-		// Add all the possible menu items.
+		// Add the menu items that were passed to us
+		if ( menuItems != null && menuItems.length > 0 )
 		{
 			GwtTeamingMessages messages;
 			
@@ -96,26 +109,50 @@ public class ActionsPopupMenu extends PopupMenu
 			
 			m_eventValidations = new ArrayList<EventValidation>();
 			
-			// Create the "Reply" menu item.
-			m_replyMenuItem = addMenuItem( new InvokeReplyEvent(), null, messages.reply() );
-			
-			// Create the "Share" menu item.
-			m_shareMenuItem = addMenuItem( new InvokeShareEvent(), null, messages.share() );
-			
-			// Create the "Subscribe" menu item.
-			m_subscribeMenuItem = addMenuItem( new InvokeSubscribeEvent(), null, messages.subscribe() );
-			
-			// Create the "Tag" menu item.
-			m_tagMenuItem = addMenuItem( new InvokeTagEvent(), null, messages.tag() );
-			
-			// Add a separator
-			addSeparator();
-			
-			// Create the "Mark read" menu item.
-			m_markReadMenuItem = addMenuItem( new MarkEntryReadEvent(), null, messages.markRead() );
-
-			// Create the "Mark unread" menu item.
-			m_markUnreadMenuItem = addMenuItem( new MarkEntryUnreadEvent(), null, messages.markUnread() );
+			for ( ActionMenuItem menuItem: menuItems )
+			{
+				switch (menuItem)
+				{
+				case MARK_READ:
+					// Create the "Mark read" menu item.
+					m_markReadMenuItem = addMenuItem( new MarkEntryReadEvent(), null, messages.markRead() );
+					break;
+				
+				case MARK_UNREAD:
+					// Create the "Mark unread" menu item.
+					m_markUnreadMenuItem = addMenuItem( new MarkEntryUnreadEvent(), null, messages.markUnread() );
+					break;
+					
+				case REPLY:
+					// Create the "Reply" menu item.
+					m_replyMenuItem = addMenuItem( new InvokeReplyEvent(), null, messages.reply() );
+					break;
+				
+				case SEPARATOR:
+					// Add a separator
+					addSeparator();
+					break;
+					
+				case SHARE:
+					// Create the "Share" menu item.
+					m_shareMenuItem = addMenuItem( new InvokeShareEvent(), null, messages.share() );
+					break;
+				
+				case SUBSCRIBE:
+					// Create the "Subscribe" menu item.
+					m_subscribeMenuItem = addMenuItem( new InvokeSubscribeEvent(), null, messages.subscribe() );
+					break;
+				
+				case TAG:
+					// Create the "Tag" menu item.
+					m_tagMenuItem = addMenuItem( new InvokeTagEvent(), null, messages.tag() );
+					break;
+					
+				default:
+					Window.alert( "Unknown menu item in ActionsPopupMenu()" );
+					break;
+				}
+			}
 		}
 	}
 	
@@ -193,13 +230,13 @@ public class ActionsPopupMenu extends PopupMenu
 									
 									event = TeamingEvents.getEnum(nextValidation.getEventOrdinal());
 									
-									if ( event.equals( TeamingEvents.INVOKE_REPLY ) )
+									if ( event.equals( TeamingEvents.INVOKE_REPLY ) && m_replyMenuItem != null )
 										m_replyMenuItem.setVisible( false );
-									else if ( event.equals( TeamingEvents.INVOKE_SUBSCRIBE ) )
+									else if ( event.equals( TeamingEvents.INVOKE_SUBSCRIBE ) && m_subscribeMenuItem != null )
 										m_subscribeMenuItem.setVisible( false );
-									else if ( event.equals( TeamingEvents.INVOKE_SHARE ) )
+									else if ( event.equals( TeamingEvents.INVOKE_SHARE ) && m_shareMenuItem != null )
 										m_shareMenuItem.setVisible( false );
-									else if ( event.equals( TeamingEvents.INVOKE_TAG ) )
+									else if ( event.equals( TeamingEvents.INVOKE_TAG ) && m_tagMenuItem != null )
 										m_tagMenuItem.setVisible( false );
 								}
 							}
@@ -268,37 +305,65 @@ public class ActionsPopupMenu extends PopupMenu
 		m_actionsMenuTarget = target;
 		
 		// Associate the given entry with each menu item.
-		InvokeReplyEvent reply = ((InvokeReplyEvent) m_replyMenuItem.getEvent());
-		reply.setUIEntry( entry );
+		if ( m_replyMenuItem != null )
+		{
+			InvokeReplyEvent reply = ((InvokeReplyEvent) m_replyMenuItem.getEvent());
+			reply.setUIEntry( entry );
+
+			m_replyMenuItem.setVisible( true );
+		}
 		
-		InvokeShareEvent share = ((InvokeShareEvent) m_shareMenuItem.getEvent());
-		share.setUIEntry( entry );
+		if ( m_shareMenuItem != null )
+		{
+			InvokeShareEvent share = ((InvokeShareEvent) m_shareMenuItem.getEvent());
+			share.setUIEntry( entry );
+
+			m_shareMenuItem.setVisible( true );
+		}
 		
-		InvokeSubscribeEvent subscribe = ((InvokeSubscribeEvent) m_subscribeMenuItem.getEvent());
-		subscribe.setUIEntry( entry );
+		if ( m_subscribeMenuItem != null )
+		{
+			InvokeSubscribeEvent subscribe = ((InvokeSubscribeEvent) m_subscribeMenuItem.getEvent());
+			subscribe.setUIEntry( entry );
+
+			m_subscribeMenuItem.setVisible( true );
+		}
 		
-		InvokeTagEvent tag = ((InvokeTagEvent) m_tagMenuItem.getEvent());
-		tag.setUIEntry( entry );
+		if ( m_tagMenuItem != null )
+		{
+			InvokeTagEvent tag = ((InvokeTagEvent) m_tagMenuItem.getEvent());
+			tag.setUIEntry( entry );
+
+			m_tagMenuItem.setVisible( true );
+		}
 		
-		MarkEntryReadEvent markRead = ((MarkEntryReadEvent) m_markReadMenuItem.getEvent());
-		markRead.setUIEntry( entry );
+		if ( m_markReadMenuItem != null )
+		{
+			MarkEntryReadEvent markRead = ((MarkEntryReadEvent) m_markReadMenuItem.getEvent());
+			markRead.setUIEntry( entry );
+
+			m_markReadMenuItem.setVisible( true );
+		}
 		
-		MarkEntryUnreadEvent markUnread = ((MarkEntryUnreadEvent) m_markUnreadMenuItem.getEvent());
-		markUnread.setUIEntry( entry );
-		
-		// Make sure all the menu items are visible.
-		m_replyMenuItem.setVisible( true );
-		m_shareMenuItem.setVisible( true );
-		m_subscribeMenuItem.setVisible( true );
-		m_tagMenuItem.setVisible( true );
-		m_markReadMenuItem.setVisible( true );
-		m_markUnreadMenuItem.setVisible( true );
+		if ( m_markUnreadMenuItem != null )
+		{
+			MarkEntryUnreadEvent markUnread = ((MarkEntryUnreadEvent) m_markUnreadMenuItem.getEvent());
+			markUnread.setUIEntry( entry );
+
+			m_markUnreadMenuItem.setVisible( true );
+		}
 		
 		// Hide "Mark read" or "Mark unread" depending on whether or not the entry has been read.
 		if ( entry.isEntryUnread() )
-			m_markUnreadMenuItem.setVisible( false );
+		{
+			if ( m_markUnreadMenuItem != null )
+				m_markUnreadMenuItem.setVisible( false );
+		}
 		else
-			m_markReadMenuItem.setVisible( false );
+		{
+			if ( m_markReadMenuItem != null )
+				m_markReadMenuItem.setVisible( false );
+		}
 
 		// Make an ajax request to see what rights the user has for the given entry.
 		// After the ajax request returns we will display this menu.

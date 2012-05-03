@@ -111,6 +111,7 @@ import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.VibeProduct;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu;
+import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu.ActionMenuItem;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.AdminControl;
@@ -437,8 +438,15 @@ public class GwtMainPage extends ResizeComposite
 	private void ActivityStreamCtrl()
 	{
 		ActionsPopupMenu actionsMenu;
+		ActionMenuItem[] menuItems = {  ActionMenuItem.REPLY,
+										ActionMenuItem.SHARE,
+										ActionMenuItem.SUBSCRIBE,
+										ActionMenuItem.TAG,
+										ActionMenuItem.SEPARATOR,
+										ActionMenuItem.MARK_READ,
+										ActionMenuItem.MARK_UNREAD };
 		
-		actionsMenu = new ActionsPopupMenu( true, true );
+		actionsMenu = new ActionsPopupMenu( true, true, menuItems );
 		ActivityStreamCtrl.createAsync( actionsMenu, new ActivityStreamCtrlClient()
 		{			
 			@Override
