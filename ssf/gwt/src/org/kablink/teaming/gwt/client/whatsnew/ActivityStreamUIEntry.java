@@ -470,10 +470,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	/**
 	 * Return the name of the style used with the description
 	 */
-	public String getDescStyleName()
-	{
-		return "activityStreamEntryDesc";
-	}
+	public abstract String getDescStyleName();
 	
 	
 	/**

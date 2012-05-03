@@ -83,6 +83,16 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 
 	
 	/**
+	 * Return the name of the style used with a comment's description
+	 */
+	@Override
+	public String getDescStyleName()
+	{
+		return "activityStreamCommentDesc";
+	}
+
+	
+	/**
 	 * 
 	 */
 	public String getEntryHeaderStyleName()

@@ -308,6 +308,16 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 
 	
 	/**
+	 * Return the name of the style used with a top entry's description.
+	 */
+	@Override
+	public String getDescStyleName()
+	{
+		return "activityStreamTopEntryDesc";
+	}
+
+	
+	/**
 	 * 
 	 */
 	public String getEntryHeaderStyleName()
