@@ -119,6 +119,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/subethasmtp.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-net.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-fileupload.jar"/>
+	<classpathentry kind="lib" path="lib/commons-compress.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jbpm.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-ldap.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-core.jar"/>
@@ -130,6 +131,8 @@
 	<classpathentry kind="lib" path="tools/gwt/gwt-dev.jar"/>
 	<classpathentry kind="lib" path="tools/gwt/gwt-user.jar"/>
 	<classpathentry kind="lib" path="lib/gwt-servlet.jar"/>
+	<classpathentry kind="lib" path="tools/gwt/gwt-cal.jar"/>
+	<classpathentry kind="lib" path="tools/gwt/gwt-dnd.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat-dbcp.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/lucene-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jtidy.jar"/>
@@ -176,6 +179,5 @@
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-ldap.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-openid.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-web.jar"/>
-	<classpathentry kind="lib" path="lib/commons-compress.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
