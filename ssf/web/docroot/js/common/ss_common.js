@@ -3251,7 +3251,7 @@ function ss_showNotLoggedInMsg() {
 	alert(ss_not_logged_in);
 }
 
-function ss_showLightbox(id, zIndex, opacity, className) {
+function ss_showLightbox(id, zIndex, opacity, className, parentDiv) {
 	ss_hideSpannedAreas();
 	ss_hidePopupDivs();
 	if (ss_isGwtUIActive && window.name != "ss_showentryframe") {
@@ -3273,11 +3273,19 @@ function ss_showLightbox(id, zIndex, opacity, className) {
     lightBox.style.visibility = "hidden";
     lightBox.className = className;
     lightBox.style.display = "block";
-    lightBox.style.top = "0px";
-    lightBox.style.left = "0px";
-    ss_setOpacity(lightBox, 0);
-    lightBox.style.width = ss_getBodyWidth() + "px";
-    lightBox.style.height = ss_getBodyHeight() + "px";
+    if (typeof parentDiv == "undefined") {
+	    lightBox.style.top = "0px";
+	    lightBox.style.left = "0px";
+	    ss_setOpacity(lightBox, 0);
+	    lightBox.style.width = ss_getBodyWidth() + "px";
+	    lightBox.style.height = ss_getBodyHeight() + "px";
+    } else {
+	    lightBox.style.top = ss_getDivTop(parentDiv.id) + "px";
+	    lightBox.style.left = ss_getDivLeft(parentDiv.id) + "px";
+	    ss_setOpacity(lightBox, 0);
+	    lightBox.style.width = ss_getDivWidth(parentDiv.id) + "px";
+	    lightBox.style.height = ss_getDivHeight(parentDiv.id) + "px";
+    }
     lightBox.style.zIndex = zIndex;
     lightBox.style.visibility = "visible";
     lightBox.focus();
