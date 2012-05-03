@@ -418,15 +418,16 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			if(sc != null) {
 				uProps = (UserProperties)sc.getProperty(key);
 				if (uProps == null) {
-					//load any saved props
-					UserProperties gProps = getProfileDao().loadUserProperties(user.getId());
+					//Start with an empty set of properties for this guest user session
+					UserProperties gProps = new UserProperties(user.getId());
 					uProps = new GuestProperties(gProps);
 					RequestContextHolder.getRequestContext().getSessionContext().setProperty(key, uProps);				
 				}
 			}
 			else {
 				// For whatever reason, there is no session context for the user
-				uProps = getProfileDao().loadUserProperties(user.getId());
+				UserProperties gProps = new UserProperties(user.getId());
+				uProps = new GuestProperties(gProps);
 			}
 		} else {
 			uProps = getProfileDao().loadUserProperties(user.getId());
