@@ -1058,7 +1058,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		long begin = System.nanoTime();
 		try {
 	    	LibraryEntry le = new LibraryEntry(binderId, LibraryEntry.TITLE, title);
-			LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
+			LibraryEntry exist = loadLibraryEntry(le);
 			if(exist != null)
 				return exist.getEntityId();
 			else
@@ -1072,7 +1072,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		long begin = System.nanoTime();
 		try {
 	    	LibraryEntry le = new LibraryEntry(binderId, LibraryEntry.TITLE, title);
-			LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
+			LibraryEntry exist = loadLibraryEntry(le);
 			return exist;
     	}
     	finally {
@@ -1083,7 +1083,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		long begin = System.nanoTime();
 		try {
 	    	LibraryEntry le = new LibraryEntry(binderId, LibraryEntry.FILE, fileName);
-			LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
+			LibraryEntry exist = loadLibraryEntry(le);
 			return exist;
     	}
     	finally {
@@ -1109,7 +1109,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
     }
     protected void removeOldName(LibraryEntry oldLe, DefinableEntity entity) {
-		LibraryEntry le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, oldLe);
+		LibraryEntry le = loadLibraryEntry(oldLe);
 		if (le != null) {
 			//it exists, is it ours?
 			if (le.getEntityId() == null) {
@@ -1129,7 +1129,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     }
     protected void addNewName(LibraryEntry newLe, DefinableEntity entity) {
 		try {
-			LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, newLe);
+			LibraryEntry exist = loadLibraryEntry(newLe);
 			if (exist == null) {
 				save(newLe);
 			}
@@ -1145,7 +1145,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     public void addExistingName(LibraryEntry le, DefinableEntity entity) {
 		long begin = System.nanoTime();
 		try {
-			LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
+			LibraryEntry exist = loadLibraryEntry(le);
 			if (exist != null) {
 				delete(exist);
 				flush();
@@ -2704,4 +2704,13 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 
+	private LibraryEntry loadLibraryEntry(LibraryEntry le) {
+		// As far as Hibernate is concerned, the input LibraryEntry instance is merely a primary key
+		// for the table/class, and it ends up returning the same instance from the get() call
+		// rather than creating a new instance. This causes trouble for the layer above because
+		// the application layer may depend on the value of the entityId field that exists on 
+		// the input instance (eg. Bug #760515)
+		LibraryEntry primaryKeyValue = new LibraryEntry(le.getBinderId(), le.getType(), le.getName());
+		return (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, primaryKeyValue);
+	}
  }
