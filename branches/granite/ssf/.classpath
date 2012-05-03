@@ -161,5 +161,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/hibernate-memcached.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spymemcached.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xmemcached.jar"/>
+	<classpathentry kind="lib" path="lib/commons-compress.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
