@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.BlogFolderView;
+import org.kablink.teaming.gwt.client.binderviews.CalendarFolderView;
 import org.kablink.teaming.gwt.client.binderviews.DiscussionFolderView;
 import org.kablink.teaming.gwt.client.binderviews.DiscussionWSView;
 import org.kablink.teaming.gwt.client.binderviews.FileFolderView;
@@ -63,6 +64,7 @@ import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
 import org.kablink.teaming.gwt.client.event.ShowBlogFolderEvent;
+import org.kablink.teaming.gwt.client.event.ShowCalendarFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
 import org.kablink.teaming.gwt.client.event.ShowDiscussionFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowDiscussionWSEvent;
@@ -127,6 +129,7 @@ public class ContentControl extends Composite
 		ChangeContextEvent.Handler,
 		GotoUrlEvent.Handler,
 		ShowBlogFolderEvent.Handler,
+		ShowCalendarFolderEvent.Handler,
 		ShowDiscussionFolderEvent.Handler,
 		ShowDiscussionWSEvent.Handler,
 		ShowFileFolderEvent.Handler,
@@ -146,6 +149,8 @@ public class ContentControl extends Composite
 		ShowTeamWSEvent.Handler,
 		ShowTrashEvent.Handler
 {
+	private final static boolean SHOW_NEW_CALENDAR_VIEW = false;	// false until I get it all working!
+	
 	private boolean m_contentInGWT;
 	private boolean m_isAdminContent;
 	private boolean m_isDebugUI;
@@ -166,6 +171,7 @@ public class ContentControl extends Composite
 		
 		// Show events.
 		TeamingEvents.SHOW_BLOG_FOLDER,
+		TeamingEvents.SHOW_CALENDAR_FOLDER,
 		TeamingEvents.SHOW_DISCUSSION_FOLDER,
 		TeamingEvents.SHOW_DISCUSSION_WORKSPACE,
 		TeamingEvents.SHOW_FILE_FOLDER,
@@ -605,6 +611,15 @@ public class ContentControl extends Composite
 						FolderType ft = bi.getFolderType();
 						switch ( ft )
 						{
+						case CALENDAR:
+							if ( SHOW_NEW_CALENDAR_VIEW ) {
+								GwtTeaming.fireEvent( new ShowCalendarFolderEvent( bi, viewReady ) );
+								m_contentInGWT = true;
+							}
+							
+							break;
+	
+							
 						case BLOG:
 						{
 							boolean showNew = false;
@@ -677,7 +692,6 @@ public class ContentControl extends Composite
 							break;
 							
 	
-						case CALENDAR:
 						case PHOTOALBUM:
 						case WIKI:
 							// These aren't handled!  Let things take
@@ -982,6 +996,37 @@ public class ContentControl extends Composite
 		// Create a BlogFolderView widget for the selected binder.
 		BlogFolderView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
 	}
+	
+	/**
+	 * Handles ShowCalendarFolderEvent's received by this class.
+	 * 
+	 * Implements the ShowCalendarFolderEvent.Handler.onShowCalendarFolder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowCalendarFolder( final ShowCalendarFolderEvent event )
+	{
+		// Create a CalendarFolderView widget for the selected binder.
+		CalendarFolderView.createAsync(
+				event.getFolderInfo(),
+				event.getViewReady(),
+				new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}// end onUnavailable()
+
+			@Override
+			public void onSuccess( ViewBase tfView )
+			{
+				tfView.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( tfView );
+			}// end onSuccess()
+		});
+	}// end onShowCalendarFolder()
 	
 	/**
 	 * Handles ShowDiscussionFolderEvent's received by this class.

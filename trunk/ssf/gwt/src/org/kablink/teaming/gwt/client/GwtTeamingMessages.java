@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.i18n.client.Messages;
 
-
 /**
  * This interface is used to retrieve strings from the file
  * GwtTeamingMessages*.properties.
@@ -472,6 +471,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_BinderOwnerAvatarPanel();
 	String codeSplitFailure_BlogFolderView();
 	String codeSplitFailure_BreadCrumbPanel();
+	String codeSplitFailure_CalendarFolderView();
 	String codeSplitFailure_ChangeEntryTypesDlg();
 	String codeSplitFailure_ChildBindersWidget();
 	String codeSplitFailure_ClipboardDlg();
