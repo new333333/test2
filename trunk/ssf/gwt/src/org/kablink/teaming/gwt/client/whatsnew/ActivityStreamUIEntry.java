@@ -52,6 +52,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
+import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -102,19 +103,22 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private String m_entryId;
 	private String m_viewEntryUrl;
 	private ActivityStreamReply m_replyWidget;
+	private DescViewFormat m_descViewFormat;
 	
 	
 	/**
 	 * 
 	 */
 	public ActivityStreamUIEntry(
-		ActivityStreamCtrl activityStreamCtrl )
+		ActivityStreamCtrl activityStreamCtrl,
+		DescViewFormat descViewFormat )
 	{
 		FlowPanel mainPanel;
 		FlowPanel panel;
 		EditSuccessfulHandler onSuccessHandler;
 
 		m_activityStreamCtrl = activityStreamCtrl;
+		m_descViewFormat = descViewFormat;
 		
 		mainPanel = new FlowPanel();
 		mainPanel.addStyleName( getMainPanelStyleName() );
@@ -473,7 +477,31 @@ public abstract class ActivityStreamUIEntry extends Composite
 	/**
 	 * Return the name of the style used with the description
 	 */
-	public abstract String getDescStyleName();
+	public String getDescStyleName()
+	{
+		if ( m_descViewFormat == DescViewFormat.FULL )
+			return getFullDescStyleName();
+		
+		return getPartialDescStyleName();
+	}
+	
+	/**
+	 * Return how we should display the description
+	 */
+	public DescViewFormat getDescViewFormat()
+	{
+		return m_descViewFormat;
+	}
+	
+	/**
+	 * 
+	 */
+	public abstract String getFullDescStyleName();
+	
+	/**
+	 * 
+	 */
+	public abstract String getPartialDescStyleName();
 	
 	
 	/**

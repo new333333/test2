@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.whatsnew;
 
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
+import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -47,9 +48,12 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
-	public ActivityStreamComment( ActivityStreamCtrl activityStreamCtrl, ActivityStreamTopEntry topEntry )
+	public ActivityStreamComment(
+				ActivityStreamCtrl activityStreamCtrl,
+				ActivityStreamTopEntry topEntry,
+				DescViewFormat descViewFormat )
 	{
-		super( activityStreamCtrl );
+		super( activityStreamCtrl, descViewFormat );
 		
 		m_topEntry = topEntry;
 	}
@@ -85,16 +89,6 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	}
 	
 	/**
-	 * Return the name of the style used with a comment's description
-	 */
-	@Override
-	public String getDescStyleName()
-	{
-		return "activityStreamCommentDesc";
-	}
-
-	
-	/**
 	 * 
 	 */
 	@Override
@@ -105,6 +99,16 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 
 
 	/**
+	 * Return the name of the style used with a comment's full description
+	 */
+	@Override
+	public String getFullDescStyleName()
+	{
+		return "activityStreamCommentFullDesc";
+	}
+
+	
+	/**
 	 * Return the name of the style used with the div that holds the entry.
 	 */
 	@Override
@@ -113,6 +117,16 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 		return "activityStreamCommentMainPanel";
 	}
 	
+	
+	/**
+	 * Return the name of the style used with a comment's partial description
+	 */
+	@Override
+	public String getPartialDescStyleName()
+	{
+		return "activityStreamCommentPartialDesc";
+	}
+
 	
 	/**
 	 * 

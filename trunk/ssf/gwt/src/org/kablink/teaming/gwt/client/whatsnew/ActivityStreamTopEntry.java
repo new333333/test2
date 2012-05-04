@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -79,9 +80,9 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
-	public ActivityStreamTopEntry( ActivityStreamCtrl activityStreamCtrl )
+	public ActivityStreamTopEntry( ActivityStreamCtrl activityStreamCtrl, DescViewFormat descViewFormat )
 	{
-		super( activityStreamCtrl );
+		super( activityStreamCtrl, descViewFormat );
 		
 		m_parentBinderId = null;
 		m_parentBinderPermalink = null;
@@ -288,7 +289,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		if ( commentUI == null )
 		{
 			// Create a new one.
-			commentUI = new ActivityStreamComment( getActivityStreamCtrl(), this );
+			commentUI = new ActivityStreamComment( getActivityStreamCtrl(), this, getDescViewFormat() );
 			m_comments.add( commentUI );
 		}
 		
@@ -315,16 +316,6 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	}
 	
 	/**
-	 * Return the name of the style used with a top entry's description.
-	 */
-	@Override
-	public String getDescStyleName()
-	{
-		return "activityStreamTopEntryDesc";
-	}
-
-	
-	/**
 	 * 
 	 */
 	@Override
@@ -335,6 +326,16 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	
 	
 	/**
+	 * Return the name of the style used with a top entry's full description.
+	 */
+	@Override
+	public String getFullDescStyleName()
+	{
+		return "activityStreamTopEntryFullDesc";
+	}
+
+	
+	/**
 	 * Return the name of the style used with the div that holds the entry.
 	 */
 	@Override
@@ -343,6 +344,16 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		return "activityStreamTopEntryMainPanel";
 	}
 	
+	
+	/**
+	 * Return the name of the style used with a top entry's partial description.
+	 */
+	@Override
+	public String getPartialDescStyleName()
+	{
+		return "activityStreamTopEntryPartialDesc";
+	}
+
 	
 	/**
 	 * 

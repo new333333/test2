@@ -244,7 +244,16 @@
 	vertical-align: top;
 }
 
-.activityStreamTopEntryDesc
+.activityStreamTopEntryFullDesc
+{
+	color: #333333;
+	font-size: 12px;
+	margin-top: 4px;
+	margin-left: 1px;
+	position: relative;
+}
+
+.activityStreamTopEntryPartialDesc
 {
 	color: #333333;
 	font-size: 12px;
@@ -255,7 +264,18 @@
 	position: relative;
 }
 
-.activityStreamCommentDesc
+.activityStreamCommentFullDesc
+{
+	color: #333333;
+	font-size: 12px;
+	height: 2em;
+	margin-top: 4px;
+	margin-left: 1px;
+	overflow: hidden;
+	position: relative;
+}
+
+.activityStreamCommentPartialDesc
 {
 	color: #333333;
 	font-size: 12px;
