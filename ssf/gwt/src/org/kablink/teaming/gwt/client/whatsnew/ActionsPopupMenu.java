@@ -39,6 +39,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.InvokeReplyEvent;
+import org.kablink.teaming.gwt.client.event.InvokeSendToFriendEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSubscribeEvent;
 import org.kablink.teaming.gwt.client.event.InvokeTagEvent;
@@ -83,6 +84,7 @@ public class ActionsPopupMenu extends PopupMenu
 	}
 	
 	private VibeMenuItem m_replyMenuItem;
+	private VibeMenuItem m_sendToFriendMenuItem;
 	private VibeMenuItem m_shareMenuItem;
 	private VibeMenuItem m_subscribeMenuItem;
 	private VibeMenuItem m_tagMenuItem;
@@ -128,6 +130,10 @@ public class ActionsPopupMenu extends PopupMenu
 					m_replyMenuItem = addMenuItem( new InvokeReplyEvent(), null, messages.reply() );
 					break;
 				
+				case SEND_TO_FRIEND:
+					m_sendToFriendMenuItem = addMenuItem( new InvokeSendToFriendEvent(), null, messages.sendToFriend() );
+					break;
+					
 				case SEPARATOR:
 					// Add a separator
 					addSeparator();
@@ -224,20 +230,42 @@ public class ActionsPopupMenu extends PopupMenu
 							
 							for( EventValidation nextValidation : eventValidations )
 							{
+								// Is this menu item valid?
 								if ( nextValidation.isValid() == false )
 								{
 									TeamingEvents event;
 									
+									// No
+									
 									event = TeamingEvents.getEnum(nextValidation.getEventOrdinal());
 									
-									if ( event.equals( TeamingEvents.INVOKE_REPLY ) && m_replyMenuItem != null )
-										m_replyMenuItem.setVisible( false );
-									else if ( event.equals( TeamingEvents.INVOKE_SUBSCRIBE ) && m_subscribeMenuItem != null )
-										m_subscribeMenuItem.setVisible( false );
-									else if ( event.equals( TeamingEvents.INVOKE_SHARE ) && m_shareMenuItem != null )
-										m_shareMenuItem.setVisible( false );
-									else if ( event.equals( TeamingEvents.INVOKE_TAG ) && m_tagMenuItem != null )
-										m_tagMenuItem.setVisible( false );
+									switch (event)
+									{
+									case INVOKE_REPLY:
+										if ( m_replyMenuItem != null )
+											m_replyMenuItem.setVisible( false );
+										break;
+									
+									case INVOKE_SEND_TO_FRIEND:
+										if ( m_sendToFriendMenuItem != null )
+											m_sendToFriendMenuItem.setVisible( false );
+										break;
+										
+									case INVOKE_SUBSCRIBE:
+										if ( m_subscribeMenuItem != null )
+											m_subscribeMenuItem.setVisible( false );
+										break;
+									
+									case INVOKE_SHARE:
+										if ( m_shareMenuItem != null )
+											m_shareMenuItem.setVisible( false );
+										break;
+										
+									case INVOKE_TAG:
+										if ( m_tagMenuItem != null )
+											m_tagMenuItem.setVisible( false );
+										break;
+									}
 								}
 							}
 							
@@ -305,12 +333,21 @@ public class ActionsPopupMenu extends PopupMenu
 		m_actionsMenuTarget = target;
 		
 		// Associate the given entry with each menu item.
+		
 		if ( m_replyMenuItem != null )
 		{
 			InvokeReplyEvent reply = ((InvokeReplyEvent) m_replyMenuItem.getEvent());
 			reply.setUIEntry( entry );
 
 			m_replyMenuItem.setVisible( true );
+		}
+		
+		if ( m_sendToFriendMenuItem != null )
+		{
+			InvokeSendToFriendEvent reply = ((InvokeSendToFriendEvent) m_sendToFriendMenuItem.getEvent());
+			reply.setUIEntry( entry );
+			
+			m_sendToFriendMenuItem.setVisible( true );
 		}
 		
 		if ( m_shareMenuItem != null )

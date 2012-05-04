@@ -7547,26 +7547,64 @@ public class GwtServerHelper {
 				{
 					teamingEvent = TeamingEvents.getEnum(nextValidation.getEventOrdinal());
 					
-					if ( teamingEvent.equals( TeamingEvents.INVOKE_REPLY ))
-						folderModule.checkAccess( folderEntry, FolderOperation.addReply );
-					else if ( teamingEvent.equals( TeamingEvents.INVOKE_TAG ))
+					switch (teamingEvent)
 					{
-						// Tag is valid if the user can manage public tags or can read the entry.
-						if ( canManagePublicEntryTags( bs, entryId ) == true )
+						case INVOKE_REPLY:
+							folderModule.checkAccess( folderEntry, FolderOperation.addReply );
+							break;
+						
+						case INVOKE_TAG:
 						{
-							// Nothing to do.
+							// Tag is valid if the user can manage public tags or can read the entry.
+							if ( canManagePublicEntryTags( bs, entryId ) == true )
+							{
+								// Nothing to do.
+							}
+							else if ( canManagePersonalEntryTags( bs, entryId ) )
+							{
+								// Nothing to do.
+							}
+							else
+								throw new AccessControlException();
+							break;
 						}
-						else if ( canManagePersonalEntryTags( bs, entryId ) )
+						
+						case INVOKE_SHARE:
+							folderModule.checkAccess( folderEntry, FolderOperation.readEntry );
+							break;
+						
+						case INVOKE_SUBSCRIBE:
+							folderModule.checkAccess( folderEntry, FolderOperation.readEntry );
+							break;
+							
+						case INVOKE_SEND_TO_FRIEND:
 						{
-							// Nothing to do.
+							User user;
+							
+							user = getCurrentUser();
+	
+							// Does the user have an email address and is the user not guest?
+							if ( !user.getEmailAddresses().isEmpty() && 
+									!ObjectKeys.GUEST_USER_INTERNALID.equals( user.getInternalId() ) )
+							{
+								// Yes, nothing to do
+							}
+							else
+							{
+								throw new AccessControlException();
+							}
+							break;
 						}
-						else
-							throw new AccessControlException();
+						
+						case MARK_ENTRY_READ:
+						case MARK_ENTRY_UNREAD:
+							// Nothing to do.
+							break;
+						
+						default:
+							m_logger.info( "Unknown event in GwtServerHelper.validateEntryEvents() - " + teamingEvent.toString() );
+							break;
 					}
-					else if ( teamingEvent.equals( TeamingEvents.INVOKE_SHARE ))
-						folderModule.checkAccess( folderEntry, FolderOperation.readEntry );
-					else if ( teamingEvent.equals( TeamingEvents.INVOKE_SUBSCRIBE ))
-						folderModule.checkAccess( folderEntry, FolderOperation.readEntry );
 
 					// If we get here the action is valid.
 					nextValidation.setIsValid( true );

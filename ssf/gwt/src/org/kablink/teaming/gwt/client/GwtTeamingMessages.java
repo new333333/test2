@@ -374,6 +374,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetRootWorkspaceId();
 	String rpcFailure_GetSavedSearches();
 	String rpcFailure_GetSelfRegInfo();
+	String rpcFailure_GetSendToFriendUrl();
 	String rpcFailure_GetShareBinderPageUrl();
 	String rpcFailure_GetSignGuestbookUrl();
 	String rpcFailure_GetSiteAdminUrl();
@@ -1087,6 +1088,7 @@ public interface GwtTeamingMessages extends Messages
 	String markRead();
 	String markUnread();
 	String reply();
+	String sendToFriend();
 	String share();
 	String subscribe();
 	String tag();
