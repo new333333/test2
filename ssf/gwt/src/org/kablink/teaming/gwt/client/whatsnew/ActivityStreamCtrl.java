@@ -130,6 +130,13 @@ public class ActivityStreamCtrl extends ResizeComposite
 		ViewAllEntriesEvent.Handler,
 		ViewUnreadEntriesEvent.Handler
 {
+	public enum DescViewFormat
+	{
+		FULL,
+		PARTIAL
+	}
+	
+	private DescViewFormat m_defaultDescViewFormat = DescViewFormat.PARTIAL;
 	private int m_width;
 	private int m_height;
 	private InlineLabel m_sourceName;
@@ -382,7 +389,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 				if ( topEntry == null )
 				{
 					// No, create a new one.
-					topEntry = new ActivityStreamTopEntry( this );
+					topEntry = new ActivityStreamTopEntry( this, getDefaultDescViewFormat() );
 					m_searchResultsUIWidgets.add( topEntry );
 				}
 				
@@ -1046,6 +1053,14 @@ public class ActivityStreamCtrl extends ResizeComposite
 		}
 		
 		return binderId;
+	}
+	
+	/**
+	 * Return the style used to display the description of an entry
+	 */
+	public DescViewFormat getDefaultDescViewFormat()
+	{
+		return m_defaultDescViewFormat;
 	}
 	
 	/**
@@ -1837,6 +1852,14 @@ public class ActivityStreamCtrl extends ResizeComposite
 	public void setCheckForChanges( boolean checkForChanges )
 	{
 		m_checkForChanges = checkForChanges;
+	}
+	
+	/**
+	 * Set the default style used to display an entry's description
+	 */
+	public void setDefaultDescViewFormat( DescViewFormat viewFormat )
+	{
+		m_defaultDescViewFormat = viewFormat;
 	}
 	
 	/**

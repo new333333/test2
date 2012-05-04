@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu.ActionMenuItem;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
+import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import com.google.gwt.core.client.GWT;
@@ -145,6 +146,7 @@ public class BlogFolderView extends FolderViewBase
 			{
 				m_activityStreamCtrl = asCtrl;
 				m_activityStreamCtrl.setCheckForChanges( false );
+				m_activityStreamCtrl.setDefaultDescViewFormat( DescViewFormat.FULL );
 				
 				table.setWidget( 0, 0, asCtrl );
 
