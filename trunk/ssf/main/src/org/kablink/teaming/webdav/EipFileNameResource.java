@@ -195,4 +195,8 @@ public class EipFileNameResource extends WebdavResource implements FileAttachmen
 		return fa;
 	}
 	
+	@Override
+	public String toString() {
+		return getName();
+	}
 }

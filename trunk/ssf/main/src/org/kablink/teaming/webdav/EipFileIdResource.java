@@ -177,5 +177,10 @@ public class EipFileIdResource extends WebdavResource implements PropFindableRes
 	public String getWebdavPath() {
 		return EipResource.WEBDAV_PATH + "/" + fa.getId();
 	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
 
 }
