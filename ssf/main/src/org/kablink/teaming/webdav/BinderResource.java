@@ -173,6 +173,11 @@ implements PropFindableResource, GetableResource, CollectionResource, MakeCollec
 		return webdavPath;
 	}
 
+	@Override
+	public String toString() {
+		return path;
+	}
+	
 	public EntityIdentifier getEntityIdentifier() {
 		return entityIdentifier;
 	}
