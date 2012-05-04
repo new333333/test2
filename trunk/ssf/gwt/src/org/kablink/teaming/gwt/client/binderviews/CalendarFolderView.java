@@ -40,11 +40,19 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
+import org.kablink.teaming.gwt.client.event.CalendarShowAssignedEvent;
+import org.kablink.teaming.gwt.client.event.CalendarShowFolderAllEvent;
+import org.kablink.teaming.gwt.client.event.CalendarShowFolderByActivityEvent;
+import org.kablink.teaming.gwt.client.event.CalendarShowFolderByCreationEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarDisplayDataCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeCalendar;
 
 import com.bradrydzewski.gwt.calendar.client.CalendarViews;
@@ -53,6 +61,7 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -60,20 +69,30 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * 
  * @author drfoster@novell.com
  */
+@SuppressWarnings("unused")
 public class CalendarFolderView extends FolderViewBase
 	implements
 	// Event handlers implemented by this class.
+		CalendarShowAssignedEvent.Handler,
+		CalendarShowFolderAllEvent.Handler,
+		CalendarShowFolderByActivityEvent.Handler,
+		CalendarShowFolderByCreationEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
 		InvokeDropBoxEvent.Handler
 {
-	private AddFilesDlg					m_addFilesDlg;				//
-	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private VibeCalendar				m_calendar;					// The calendar widget contained in the view.
+	private AddFilesDlg							m_addFilesDlg;				//
+	private CalendarDisplayDataRpcResponseData	m_calendarDisplayData;		//
+	private List<HandlerRegistration>			m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private VibeCalendar						m_calendar;					// The calendar widget contained in the view.
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.CALENDAR_SHOW_ASSIGNED,
+		TeamingEvents.CALENDAR_SHOW_FOLDER_ALL,
+		TeamingEvents.CALENDAR_SHOW_FOLDER_BY_ACTIVITY,
+		TeamingEvents.CALENDAR_SHOW_FOLDER_BY_CREATION,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.INVOKE_DROPBOX,
 	};
@@ -140,14 +159,30 @@ public class CalendarFolderView extends FolderViewBase
 	 * Synchronously loads the calendar display data.
 	 */
 	private void loadPart1Now() {
-		// Load the calendar data to display...
-//!		...this needs to be implemented...
-		
-		loadPart2Async();
+		// Load the calendar display data.
+		GwtClientHelper.executeCommand(
+				new GetCalendarDisplayDataCmd(getFolderInfo()),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetCalendarDisplayData(),
+					getFolderInfo().getBinderIdAsLong());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Store the calendar display data and continue loading
+				// the view.
+				m_calendarDisplayData = ((CalendarDisplayDataRpcResponseData) response.getResponseData());
+				loadPart2Async();
+			}
+		});
 	}
 
 	/*
-	 * Asynchronously loads the Calendar widget.
+	 * Asynchronously loads the calendar event data.
 	 */
 	private void loadPart2Async() {
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
@@ -160,9 +195,32 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/*
-	 * Synchronously loads the Calendar widget.
+	 * Synchronously loads the calendar display data.
 	 */
 	private void loadPart2Now() {
+		// Load the calendar event data to display...
+//!		...this needs to be implemented...
+		
+		loadPart3Async();
+	}
+
+	/*
+	 * Asynchronously loads the Calendar widget.
+	 */
+	private void loadPart3Async() {
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart3Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously loads the Calendar widget.
+	 */
+	private void loadPart3Now() {
 		// Create the Calendar widget for the view...
 		m_calendar = new VibeCalendar(CalendarViews.MONTH);
 		
@@ -184,6 +242,74 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
+	 * Handles CalendarShowAssignedEvent's received by this class.
+	 * 
+	 * Implements the CalendarShowAssignedEvent.Handler.onCalendarShowAssigned() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCalendarShowAssigned(CalendarShowAssignedEvent event) {
+		// Is the event targeted to this folder?
+		if (event.getFolderId().equals(getFolderId())) {
+			// Yes!
+//!			...this needs to be implemented...
+			Window.alert("CalendarFolderView.onCalendarShowAssigned():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles CalendarShowFolderAllEvent's received by this class.
+	 * 
+	 * Implements the CalendarShowFolderAllEvent.Handler.onCalendarShowFolderAll() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCalendarShowFolderAll(CalendarShowFolderAllEvent event) {
+		// Is the event targeted to this folder?
+		if (event.getFolderId().equals(getFolderId())) {
+			// Yes!
+//!			...this needs to be implemented...
+			Window.alert("CalendarFolderView.onCalendarShowFolderAll():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles CalendarShowFolderByActivityEvent's received by this class.
+	 * 
+	 * Implements the CalendarShowFolderByActivityEvent.Handler.onCalendarShowFolderByActivity() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCalendarShowFolderByActivity(CalendarShowFolderByActivityEvent event) {
+		// Is the event targeted to this folder?
+		if (event.getFolderId().equals(getFolderId())) {
+			// Yes!
+//!			...this needs to be implemented...
+			Window.alert("CalendarFolderView.onCalendarShowFolderByActivity():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles CalendarShowFolderByCreationEvent's received by this class.
+	 * 
+	 * Implements the CalendarShowFolderByCreationEvent.Handler.onCalendarShowFolderByCreation() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCalendarShowFolderByCreation(CalendarShowFolderByCreationEvent event) {
+		// Is the event targeted to this folder?
+		if (event.getFolderId().equals(getFolderId())) {
+			// Yes!
+//!			...this needs to be implemented...
+			Window.alert("CalendarFolderView.onCalendarShowFolderByCreation():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
 	 * Handles ContributorIdsRequestEvent's received by this class.
 	 * 
 	 * Implements the ContributorIdsRequestEvent.Handler.onContributorIdsRequest() method.
@@ -192,7 +318,12 @@ public class CalendarFolderView extends FolderViewBase
 	 */
 	@Override
 	public void onContributorIdsRequest(ContributorIdsRequestEvent event) {
-//!		...this needs to be implemented...
+		// Is the event targeted to this folder?
+		if (event.getBinderId().equals(getFolderId())) {
+			// Yes!
+//!			...this needs to be implemented...
+			Window.alert("CalendarFolderView.onContributorIdsRequest():  ...this needs to be implemented...");
+		}
 	}
 	
 	/**

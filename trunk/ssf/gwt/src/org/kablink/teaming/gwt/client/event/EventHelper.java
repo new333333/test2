@@ -254,6 +254,42 @@ public class EventHelper {
 				}
 				break;
 			
+			case CALENDAR_SHOW_ASSIGNED:
+				// A CalendarShowAssignedEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof CalendarShowAssignedEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = CalendarShowAssignedEvent.registerEvent(eventBus, ((CalendarShowAssignedEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case CALENDAR_SHOW_FOLDER_ALL:
+				// A CalendarShowFolderAllEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof CalendarShowFolderAllEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = CalendarShowFolderAllEvent.registerEvent(eventBus, ((CalendarShowFolderAllEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case CALENDAR_SHOW_FOLDER_BY_ACTIVITY:
+				// A CalendarShowFolderByActivityEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof CalendarShowFolderByActivityEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = CalendarShowFolderByActivityEvent.registerEvent(eventBus, ((CalendarShowFolderByActivityEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case CALENDAR_SHOW_FOLDER_BY_CREATION:
+				// A CalendarShowFolderByCreationEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof CalendarShowFolderByCreationEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = CalendarShowFolderByCreationEvent.registerEvent(eventBus, ((CalendarShowFolderByCreationEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case CHANGE_CONTEXT:
 				// A ChangeContextEvent!  Can the event handler we were
 				// given handle that?
@@ -1563,6 +1599,11 @@ public class EventHelper {
 			
 			case BROWSE_HIERARCHY:                  	hasHandler = (eventHandler instanceof BrowseHierarchyEvent.Handler);               break;
 			case BROWSE_HIERARCHY_EXIT:             	hasHandler = (eventHandler instanceof BrowseHierarchyExitEvent.Handler);           break;
+			
+			case CALENDAR_SHOW_ASSIGNED:                hasHandler = (eventHandler instanceof CalendarShowAssignedEvent.Handler);          break;
+			case CALENDAR_SHOW_FOLDER_ALL:              hasHandler = (eventHandler instanceof CalendarShowFolderAllEvent.Handler);         break;
+			case CALENDAR_SHOW_FOLDER_BY_ACTIVITY:      hasHandler = (eventHandler instanceof CalendarShowFolderByActivityEvent.Handler);  break;
+			case CALENDAR_SHOW_FOLDER_BY_CREATION:      hasHandler = (eventHandler instanceof CalendarShowFolderByCreationEvent.Handler);  break;
 			
 			case CHANGE_CONTEXT:                    	hasHandler = (eventHandler instanceof ChangeContextEvent.Handler);                 break;
 			case CONTEXT_CHANGED:                   	hasHandler = (eventHandler instanceof ContextChangedEvent.Handler);                break;
