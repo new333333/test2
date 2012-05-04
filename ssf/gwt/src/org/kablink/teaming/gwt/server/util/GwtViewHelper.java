@@ -89,6 +89,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.rpc.shared.AvatarInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ColumnWidthsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData.EntryType;
@@ -130,7 +131,6 @@ import org.kablink.teaming.portletadapter.portlet.RenderResponseImpl;
 import org.kablink.teaming.portletadapter.support.AdaptedPortlets;
 import org.kablink.teaming.portletadapter.support.KeyNames;
 import org.kablink.teaming.portletadapter.support.PortletInfo;
-import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper;
@@ -158,8 +158,6 @@ import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.teaming.web.util.TrashHelper.TrashEntry;
 import org.kablink.teaming.web.util.TrashHelper.TrashResponse;
 import org.kablink.util.search.Constants;
-
-
 
 /**
  * Helper methods for the GWT binder views.
@@ -1297,6 +1295,41 @@ public class GwtViewHelper {
 		}
 	}
 
+	/**
+	 * Reads the current user's display data for a calendar and returns
+	 * it as a CalendarDisplayDataRpcResponseData.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderInfo
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unused")
+	public static CalendarDisplayDataRpcResponseData getCalendarDisplayData(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) throws GwtTeamingException {
+		try {
+			Long			folderId             = folderInfo.getBinderIdAsLong();
+			User			user                 = GwtServerHelper.getCurrentUser();
+			UserProperties	userProperties       = bs.getProfileModule().getUserProperties(user.getId());
+			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
+
+//!			...this needs to be implemented...
+			
+			// Finally, use the data we obtained to create a
+			// CalendarDisplayDataRpcResponseData and return that. 
+			return new CalendarDisplayDataRpcResponseData();
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getCalendarDisplayData( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
 	/*
 	 * Returns a LinkedHashMap of the column names from a String[]
 	 * of them.

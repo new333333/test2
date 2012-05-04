@@ -57,6 +57,11 @@ public enum TeamingEvents implements IsSerializable {
 	BROWSE_HIERARCHY,					// Browse Vibe OnPrem's hierarchy (i.e., the bread crumb tree.) 
 	BROWSE_HIERARCHY_EXIT,				// Exits the bread crumb browser, if open.
 	
+	CALENDAR_SHOW_ASSIGNED,				// Tells the calendar to display assigned events.
+	CALENDAR_SHOW_FOLDER_ALL,			// Tells the calendar to display all events from the folder.
+	CALENDAR_SHOW_FOLDER_BY_ACTIVITY,	// Tells the calendar to display events using their last activity date.
+	CALENDAR_SHOW_FOLDER_BY_CREATION,	// Tells the calendar to display events using their create date.
+	
 	CHANGE_CONTEXT,						// Tells the UI that a context switch is currently taking place.	(I.e., Is happening.      )
 	CONTEXT_CHANGED,					// Tells the UI that a context switch has just taken places.		(I.e., Has happened.      )
 	CONTEXT_CHANGING,					// Tells the UI That a context switch is about to take place.		(I.e., Is going to happen.)

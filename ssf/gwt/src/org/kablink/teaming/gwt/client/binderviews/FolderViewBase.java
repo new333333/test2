@@ -51,6 +51,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseDat
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderDisplayDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -661,26 +662,37 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 				m_verticalFlowPanel.add(w);
 			}
 		}
+
+		// Are we loading a calendar folder?
+		if (FolderType.CALENDAR == m_folderInfo.getFolderType()) {
+			// Yes!  Then we don't need the folder display data as
+			// pertains to data table based views.
+			constructViewAsync();
+		}
 		
-		GwtClientHelper.executeCommand(
-				new GetFolderDisplayDataCmd(m_folderInfo),
-				new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetFolderDisplayData(),
-					m_folderInfo.getBinderIdAsLong());
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Store the core folder display data and tell the view
-				// to construct itself.
-				m_folderDisplayData = ((FolderDisplayDataRpcResponseData) response.getResponseData());
-				constructViewAsync();
-			}
-		});
+		else {
+			// No, we aren't loading a calendar folder!  Load the
+			// display data for the folder.
+			GwtClientHelper.executeCommand(
+					new GetFolderDisplayDataCmd(m_folderInfo),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_GetFolderDisplayData(),
+						m_folderInfo.getBinderIdAsLong());
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Store the core folder display data and tell the view
+					// to construct itself.
+					m_folderDisplayData = ((FolderDisplayDataRpcResponseData) response.getResponseData());
+					constructViewAsync();
+				}
+			});
+		}
 	}
 	
 	/**

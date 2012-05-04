@@ -616,6 +616,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_CALENDAR_DISPLAY_DATA:
+		{
+			GetCalendarDisplayDataCmd gfddCmd = ((GetCalendarDisplayDataCmd) cmd);
+			CalendarDisplayDataRpcResponseData responseData = GwtViewHelper.getCalendarDisplayData(
+				this,
+				getRequest( ri ),
+				gfddCmd.getFolderInfo() );
+			return new VibeRpcResponse( responseData );
+		}
+		
 		case GET_CLIPBOARD_TEAM_USERS:
 		{
 			GetClipboardTeamUsersCmd gctuCmd = ((GetClipboardTeamUsersCmd) cmd);
