@@ -5,21 +5,31 @@
 	<inherits name='com.google.gwt.i18n.I18N' />
 	<inherits name='com.google.gwt.json.JSON' />
 	
-	<!-- Inherit the default GWT style sheet.  You can change       -->
-	<!-- the theme of your GWT application by uncommenting          -->
-	<!-- any one of the following lines.                            -->
+	<!-- Inherit the default GWT theme style sheet. -->
 	<inherits name='com.google.gwt.user.theme.standard.Standard'/>
-	<!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
-	<!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
 	
-	<!-- Inherit the jars required for GWT Calendar support. -->
-	<inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'                    />
+	<!-- Other possible themes for GWT.  -->
+	<!--
+		<inherits name='com.google.gwt.user.theme.chrome.Chrome'/>
+		<inherits name='com.google.gwt.user.theme.dark.Dark'    />
+	-->
+	
+	<!-- Inherit the the GWT Calendar support libraries. -->
 	<inherits name='com.bradrydzewski.gwt.calendar.Calendar'            />
 	<inherits name='com.bradrydzewski.gwt.calendar.theme.google.Google' />
 	
- 	<!-- Other generic module inherits go here. -->
+	<!-- Other possible themes for the GWT Calendar.  -->
+	<!--
+		<inherits name='com.bradrydzewski.gwt.calendar.theme.ical.iCal' />
+		<inherits name='com.bradrydzewski.gwt.calendar.theme.outlook.Outlook' /> 
+	-->
+	
+	<!-- Inherit the the GWT drag-and-drop support libraries. -->
+	<inherits name='com.allen_sauer.gwt.dnd.gwt-dnd' />
+	
+ 	<!-- Other 'generic' module inherits go here. -->
 
-	<!-- Specify the app entry point class. -->
+	<!-- Specify the application entry point class. -->
 	<entry-point class='org.kablink.teaming.gwt.client.GwtTeaming'/>
 
 	<!-- Specify the initial split point that needs to be loaded. -->
@@ -29,7 +39,7 @@
 			value="org.kablink.teaming.gwt.client.GwtMainPage"/>
 	-->
 	
-    <!-- Specify the application specific style sheet. -->
+    <!-- Specify the application specific style sheets. -->
 	<stylesheet src='GwtTeaming.css'     />
     <stylesheet src='GwtProfile.css'     />		
     <stylesheet src='GwtLandingPage.css' />		
@@ -37,7 +47,7 @@
     <stylesheet src='GwtMenus.css'       />		
     <stylesheet src='VibeCellTable.css'  />		
     <stylesheet src='VibeDataGrid.css'   />
-    <stylesheet src='VibeWidgets.css'   />
+    <stylesheet src='VibeWidgets.css'    />
 	
 	<!-- Limit support of which browsers we compile for.  Speeds up -->
 	<!-- compilation during development.                            -->
@@ -51,8 +61,8 @@
 	<!--    opera:     Opera, all versions.                         -->
 	<!--    safari:    Safari and Chrome (webkit), all versions.    -->
 
-	<!-- Using deferred binder, when requested, load the -->
-	<!-- appropriate agent class.                        -->	
+	<!-- Using deferred binding, when requested, load the -->
+	<!-- appropriate agent class.                         -->	
 	<replace-with class="org.kablink.teaming.gwt.client.util.AgentGecko18">
 		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
 		<when-property-is name="user.agent" value="gecko1_8" />
