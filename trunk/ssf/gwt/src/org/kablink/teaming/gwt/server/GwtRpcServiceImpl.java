@@ -1287,6 +1287,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case GET_SEND_TO_FRIEND_URL:
+		{
+			GetSendToFriendUrlCmd gstfuCmd;
+			String url;
+			StringRpcResponseData responseData;
+			
+			gstfuCmd = (GetSendToFriendUrlCmd) cmd;
+			url = getSendToFriendUrl( ri, gstfuCmd.getEntryId() );
+			responseData = new StringRpcResponseData( url );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_SHARE_BINDER_PAGE_URL:
 		{
 			GetShareBinderPageUrlCmd gsbpuCmd;
@@ -3790,6 +3803,43 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getPersonalPreferences()
 	
 	
+	/**
+	 * Return the url needed to invoke the "Send to friend" page.
+	 */
+	private String getSendToFriendUrl( HttpRequestInfo ri, String entryId ) throws GwtTeamingException
+	{
+		AdaptedPortletURL url;
+		
+		try
+		{
+			FolderEntry entry;
+			Binder parentBinder;
+			Long entryIdL;
+			Long parentBinderId;
+
+			url = new AdaptedPortletURL( getRequest( ri ), "ss_forum", true );
+			url.setParameter( WebKeys.ACTION, WebKeys.ACTION_SEND_ENTRY_EMAIL );
+			url.setParameter( WebKeys.URL_ENTRY_ID, entryId );
+
+			entryIdL = new Long( entryId );
+			entry = getFolderModule().getEntry( null, entryIdL );
+
+			parentBinder = entry.getParentBinder();
+			if ( parentBinder != null )
+			{
+				parentBinderId = parentBinder.getId();
+				url.setParameter( WebKeys.URL_BINDER_ID, String.valueOf( parentBinderId ) );
+			}
+		}
+		catch ( Exception ex )
+		{
+			throw GwtServerHelper.getGwtTeamingException( ex );
+		}		
+
+
+		return url.toString();
+	}
+
 	/**
 	 * Return the URL needed to invoke the "site administration" page.  If the user does not
 	 * have rights to run the "site administration" page we will throw an exception.

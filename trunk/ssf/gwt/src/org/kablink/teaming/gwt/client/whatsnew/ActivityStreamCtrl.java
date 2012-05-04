@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeReplyEvent;
+import org.kablink.teaming.gwt.client.event.InvokeSendToFriendEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSubscribeEvent;
 import org.kablink.teaming.gwt.client.event.InvokeTagEvent;
@@ -77,6 +78,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetActivityStreamDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetActivityStreamParamsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSendToFriendUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.HasActivityStreamChangedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveWhatsNewSettingsCmd;
@@ -119,6 +121,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		ActivityStreamEvent.Handler,
 		ActivityStreamExitEvent.Handler,
 		InvokeReplyEvent.Handler,
+		InvokeSendToFriendEvent.Handler,
 		InvokeShareEvent.Handler,
 		InvokeSubscribeEvent.Handler,
 		InvokeTagEvent.Handler,
@@ -188,6 +191,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		
 		// Invoke events.
 		TeamingEvents.INVOKE_REPLY,
+		TeamingEvents.INVOKE_SEND_TO_FRIEND,
 		TeamingEvents.INVOKE_SHARE,
 		TeamingEvents.INVOKE_SUBSCRIBE,
 		TeamingEvents.INVOKE_TAG,
@@ -1113,19 +1117,98 @@ public class ActivityStreamCtrl extends ResizeComposite
 		m_searchingPanel.setVisible( false );
 	}
 	
+
+	/**
+	 * Invoke the "Send to friend" dialog for the given entry.
+	 */
+	private void invokeSendToFriendDlg( final ActivityStreamUIEntry entry )
+	{
+		Scheduler.ScheduledCommand cmd;
+		
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				GetSendToFriendUrlCmd cmd;
+				AsyncCallback<VibeRpcResponse> callback;
+				
+				callback = new AsyncCallback<VibeRpcResponse>()
+				{
+					/**
+					 * 
+					 */
+					@Override
+					public void onFailure(Throwable t)
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+								t,
+								GwtTeaming.getMessages().rpcFailure_GetSendToFriendUrl() );
+					}
+					
+					/**
+					 * 
+					 */
+					@Override
+					public void onSuccess( VibeRpcResponse response )
+					{
+						StringRpcResponseData responseData;
+						final String url;
+
+						responseData = (StringRpcResponseData) response.getResponseData();
+						url = responseData.getStringValue();
+						
+						if ( url != null )
+						{
+							Scheduler.ScheduledCommand schCmd;
+
+							schCmd = new Scheduler.ScheduledCommand()
+							{
+								@Override
+								public void execute()
+								{
+									String features;
+									
+									// Open a new window for the "send to friend" page to live in.
+									features = "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no,width=630,height=780";
+									Window.open( url, "sendToFriend", features );
+								}
+							};
+							Scheduler.get().scheduleDeferred( schCmd );
+						}
+					}
+				};
+				
+				// Issue an ajax request to get the url needed to open the "send to friend" page.
+				cmd = new GetSendToFriendUrlCmd( entry.getEntryId() );
+				GwtClientHelper.executeCommand( cmd, callback );
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
 	
 	/**
 	 * Invoke the Subscribe to Entry dialog for the given entry.
 	 */
 	private void invokeSubscribeToEntryDlg( final ActivityStreamUIEntry entry )
 	{
-		if ( m_subscribeToEntryDlg == null )
-		{
-			m_subscribeToEntryDlg = new SubscribeToEntryDlg( false, true, 0, 0 );
-		}
+		Scheduler.ScheduledCommand cmd;
 		
-		m_subscribeToEntryDlg.init( entry.getEntryId(), entry.getEntryTitle() );
-		m_subscribeToEntryDlg.showRelativeToTarget( entry );
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				if ( m_subscribeToEntryDlg == null )
+				{
+					m_subscribeToEntryDlg = new SubscribeToEntryDlg( false, true, 0, 0 );
+				}
+				
+				m_subscribeToEntryDlg.init( entry.getEntryId(), entry.getEntryTitle() );
+				m_subscribeToEntryDlg.showRelativeToTarget( entry );
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
 	}
 	
 	
@@ -1134,36 +1217,46 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	private void invokeShareThisDlg( final ActivityStreamUIEntry entry )
 	{
-		// If we've already created the dialog... 
-		if ( m_shareThisDlg != null )
-		{
-			// ...simply show it against with the entry.
-			showShareThisDlg( entry );
-		}
+		Scheduler.ScheduledCommand cmd;
 		
-		else
+		cmd = new Scheduler.ScheduledCommand()
 		{
-			// Otherwise, we need to create it!  Note that the "Share
-			// This" dialog requires the FindCtrl be loaded before it
-			// loads in order to function.  Prefetch the FindControl...
-			FindCtrl.prefetch(new FindCtrlClient()
+			@Override
+			public void execute()
 			{
-				@Override
-				public void onUnavailable()
+				// If we've already created the dialog... 
+				if ( m_shareThisDlg != null )
 				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess(FindCtrl findCtrl)
-				{
-					// ...and create and show the dialog.
-					m_shareThisDlg = new ShareThisDlg( false, true, 0, 0, GwtTeaming.getMessages().shareCaption() );
+					// ...simply show it against with the entry.
 					showShareThisDlg( entry );
-				}// end onSuccess()
-			});
-		}
+				}
+				
+				else
+				{
+					// Otherwise, we need to create it!  Note that the "Share
+					// This" dialog requires the FindCtrl be loaded before it
+					// loads in order to function.  Prefetch the FindControl...
+					FindCtrl.prefetch(new FindCtrlClient()
+					{
+						@Override
+						public void onUnavailable()
+						{
+							// Nothing to do.  Error handled in
+							// asynchronous provider.
+						}// end onUnavailable()
+						
+						@Override
+						public void onSuccess(FindCtrl findCtrl)
+						{
+							// ...and create and show the dialog.
+							m_shareThisDlg = new ShareThisDlg( false, true, 0, 0, GwtTeaming.getMessages().shareCaption() );
+							showShareThisDlg( entry );
+						}// end onSuccess()
+					});
+				}
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
 	}// end invokeShareThisDlg()
 	
 	/**
@@ -1189,34 +1282,43 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	private void invokeTagThisDlg( final ActivityStreamUIEntry entry )
 	{
-		if ( m_tagThisDlg == null )
-		{
-			TagThisDlg.createAsync(
-					false,
-					true,
-					null,
-					0,
-					0,
-					GwtTeaming.getMessages().tagThisEntry(),
-				new TagThisDlgClient() {						
-					@Override
-					public void onUnavailable() {
-						// Nothing to do.  Error handled in
-						// asynchronous provider.
-					}
-					
-					@Override
-					public void onSuccess(TagThisDlg dlg) {
-						m_tagThisDlg = dlg;
-						invokeTagThisDlgImpl( entry );
-					}
-				});
-		}
+		Scheduler.ScheduledCommand cmd;
 		
-		else
+		cmd = new Scheduler.ScheduledCommand()
 		{
-			invokeTagThisDlgImpl( entry );
-		}
+			@Override
+			public void execute()
+			{
+				if ( m_tagThisDlg == null )
+				{
+					TagThisDlg.createAsync(
+							false,
+							true,
+							null,
+							0,
+							0,
+							GwtTeaming.getMessages().tagThisEntry(),
+						new TagThisDlgClient() {						
+							@Override
+							public void onUnavailable() {
+								// Nothing to do.  Error handled in
+								// asynchronous provider.
+							}
+							
+							@Override
+							public void onSuccess(TagThisDlg dlg) {
+								m_tagThisDlg = dlg;
+								invokeTagThisDlgImpl( entry );
+							}
+						});
+				}
+				else
+				{
+					invokeTagThisDlgImpl( entry );
+				}
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
 	}// end invokeTagThisDlg()
 	
 	/**
@@ -2046,6 +2148,24 @@ public class ActivityStreamCtrl extends ResizeComposite
 			uiEntry.invokeReplyUI();
 		}
 	}// end onInvokeReply()
+	
+	/**
+	 * Handles InvokeSendToFriendEvent's received by this class.
+	 * 
+	 * Implements the InvokeShareEvent.Handler.onInvokeSendToFriend() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeSendToFriend( InvokeSendToFriendEvent event )
+	{
+		ActivityStreamUIEntry uiEntry = event.getUIEntry();
+		if ( null != uiEntry )
+		{
+			// Invoke the "Send to friend" dialog.
+			invokeSendToFriendDlg( uiEntry );
+		}
+	}
 	
 	/**
 	 * Handles InvokeShareEvent's received by this class.

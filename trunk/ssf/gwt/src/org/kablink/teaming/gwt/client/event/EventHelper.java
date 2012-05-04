@@ -624,6 +624,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case INVOKE_SEND_TO_FRIEND:
+				// An InvokeSendToFriendEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof InvokeSendToFriendEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = InvokeSendToFriendEvent.registerEvent( eventBus, ((InvokeSendToFriendEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case INVOKE_SHARE:
 				// An InvokeShareEvent!  Can the event handler we were
 				// given handle that?
@@ -1593,6 +1602,7 @@ public class EventHelper {
 			case INVOKE_MANAGE_GROUPS_DLG:				hasHandler = (eventHandler instanceof InvokeManageGroupsDlgEvent.Handler);		   break;
 			case INVOKE_REPLY:                      	hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                   break;
 			case INVOKE_SEND_EMAIL_TO_TEAM:             hasHandler = (eventHandler instanceof InvokeSendEmailToTeamEvent.Handler);         break;
+			case INVOKE_SEND_TO_FRIEND:					hasHandler = (eventHandler instanceof InvokeSendToFriendEvent.Handler);			   break;
 			case INVOKE_SHARE:                      	hasHandler = (eventHandler instanceof InvokeShareEvent.Handler);                   break;
 			case INVOKE_SHARE_BINDER:					hasHandler = (eventHandler instanceof InvokeShareBinderEvent.Handler);			   break;
 			case INVOKE_SIGN_GUESTBOOK:					hasHandler = (eventHandler instanceof InvokeSignGuestbookEvent.Handler);           break;
