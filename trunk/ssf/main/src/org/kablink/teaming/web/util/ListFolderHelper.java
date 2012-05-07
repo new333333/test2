@@ -553,6 +553,7 @@ public class ListFolderHelper {
 	}
 
 	//Return the list of calendar events to show
+	//  Note: this routine is used by the Mobile devices to get the list of calendar events to show
 	public static List findCalendarEvents(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Binder binder, Map model) throws PortletRequestBindingException {
 		Map folderEntries = new HashMap();
@@ -658,7 +659,17 @@ public class ListFolderHelper {
 		intervals.add(intervalView.getVisibleIntervalRaw());
        	options.put(ObjectKeys.SEARCH_EVENT_DAYS, intervals);
        	
-		if (!calendarModeType.equals(ObjectKeys.CALENDAR_MODE_TYPE_MY_EVENTS)) {
+		AbstractIntervalView calendarViewRangeDates = new OneMonthView(currentDate, weekFirstDay);
+       	String start = DateTools.dateToString(calendarViewRangeDates.getVisibleStart(), DateTools.Resolution.SECOND);
+       	String end =  DateTools.dateToString(calendarViewRangeDates.getVisibleEnd(), DateTools.Resolution.SECOND);
+       	
+       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, start);
+       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, end);
+
+       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, start);
+       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, end);
+
+       	if (!calendarModeType.equals(ObjectKeys.CALENDAR_MODE_TYPE_MY_EVENTS)) {
 			//See if there is a filter turned on for this folder. But don't do it for the MyEvents display
 			options.putAll(ListFolderHelper.getSearchFilter(bs, request, binder, userFolderProperties));
 		}
@@ -739,7 +750,6 @@ public class ListFolderHelper {
 				if (virtual) {
 					// Yes!  Search for the events that are
 					// task entries...
-					AbstractIntervalView calendarViewRangeDates = new OneMonthView(currentDate, weekFirstDay);
 					List taskIntervals = new ArrayList(1);
 					taskIntervals.add(calendarViewRangeDates.getVisibleIntervalRaw());
 			       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, taskIntervals);
