@@ -1002,6 +1002,7 @@ public interface GwtTeamingMessages extends Messages
 	String autoRefreshIsPaused();
 	String followedPeople();
 	String followedPlaces();
+	String hideDesc();
 	String markEntryAsReadHint();
 	String myFavorites();
 	String myTeams();
@@ -1021,6 +1022,7 @@ public interface GwtTeamingMessages extends Messages
 	String siteWide();
 	String showAll();
 	String showAllEntries();
+	String showEntireDesc();
 	String showUnread();
 	String showUnreadEntries();
 	String whatsNew();

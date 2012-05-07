@@ -66,6 +66,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -96,7 +97,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private ClickHandler m_presenceClickHandler;
 	private Label m_author;
 	private Label m_date;
-	private FlowPanel m_desc;
+	private FlowPanel m_descPanel;
+	private Anchor m_showHideDescAnchor;
 	@SuppressWarnings("unused")
 	private String m_authorId;
 	private String m_authorWSId;	// Id of the author's workspace.
@@ -228,7 +230,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		m_title.getElement().setInnerHTML( "" );
 		m_author.setText( "" );
 		m_date.setText( "" );
-		m_desc.getElement().setInnerHTML( "" );
+		m_descPanel.getElement().setInnerHTML( "" );
 		m_authorId = null;
 		m_authorWSId = null;
 		m_entryId = null;
@@ -282,9 +284,39 @@ public abstract class ActivityStreamUIEntry extends Composite
 		panel.add( m_date );
 
 		// Add a <div> for the description to live in.
-		m_desc = new FlowPanel();
-		m_desc.addStyleName( getDescStyleName() );
-		panel.add( m_desc );
+		m_descPanel = new FlowPanel();
+		m_descPanel.addStyleName( getDescStyleName() );
+		panel.add( m_descPanel );
+		
+		// Create a label that will hold either "See all" or "Hide" that the
+		// user can click on the see the entire description or hide the description
+		m_showHideDescAnchor = new Anchor();
+		m_showHideDescAnchor.addStyleName( "activityStreamShowHideDescLabel" );
+		updateShowHideDescLabel();
+		panel.add( m_showHideDescAnchor );
+		
+		// Add a click handler on the m_showHideDescLabel
+		m_showHideDescAnchor.addClickHandler( new ClickHandler()
+		{
+			@Override
+			public void onClick(ClickEvent event)
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						if ( m_descViewFormat == DescViewFormat.FULL )
+							setDescViewFormat( DescViewFormat.PARTIAL );
+						else
+							setDescViewFormat( DescViewFormat.FULL );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		} );
 		
 		return panel;
 	}
@@ -1027,7 +1059,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		m_authorId = entryItem.getAuthorId();
 		m_authorWSId = entryItem.getAuthorWorkspaceId();
 		m_date.setText( entryItem.getEntryModificationDate() );
-		m_desc.getElement().setInnerHTML( getEntryDesc( entryItem ) );
+		m_descPanel.getElement().setInnerHTML( getEntryDesc( entryItem ) );
 		m_entryId = entryItem.getEntryId();
 		
 		// Has the author's workspace been deleted?
@@ -1046,6 +1078,30 @@ public abstract class ActivityStreamUIEntry extends Composite
 		}
 		
 		m_viewEntryUrl = null;
+		
+		// Set the format of how to view the description back to the default.
+		setDescViewFormat( m_activityStreamCtrl.getDefaultDescViewFormat() );
+	}
+	
+	/**
+	 * Set the format used to display the description
+	 */
+	private void setDescViewFormat( DescViewFormat format )
+	{
+		if ( m_descPanel != null )
+		{
+			// Remove the current style on the description panel.
+			m_descPanel.removeStyleName( getDescStyleName() );
+			
+			// Change the format used to display the description
+			m_descViewFormat = format;
+			
+			// Add the appropriate style on the description panel.
+			m_descPanel.addStyleName( getDescStyleName() );
+			
+			// Update the text on the "Show all"/"Hide" label
+			updateShowHideDescLabel();
+		}
 	}
 	
 	/**
@@ -1065,6 +1121,24 @@ public abstract class ActivityStreamUIEntry extends Composite
 		{
 			m_title.addStyleName( "unreadEntry" );
 			m_unreadImg.setVisible( true );
+		}
+	}
+	
+	/**
+	 * Update the label that the user can click on the see the entire description or hide the description
+	 */
+	private void updateShowHideDescLabel()
+	{
+		if ( m_showHideDescAnchor != null )
+		{
+			String text;
+			
+			if ( m_descViewFormat == DescViewFormat.FULL )
+				text = GwtTeaming.getMessages().hideDesc();
+			else
+				text = GwtTeaming.getMessages().showEntireDesc();
+			
+			m_showHideDescAnchor.setText( text );
 		}
 	}
 
