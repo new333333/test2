@@ -337,8 +337,10 @@ Date nextDate = calendarNextDate.getTime();
 			if (familyType.equals(family)) {
 				boolean allDayEvent = false;
 				java.util.Date eventDate = null;
+				java.util.Date startDate = null;
 				if (entry2.containsKey(eventName + "#LogicalStartDate")) {
-					eventDate = (java.util.Date)entry2.get(eventName + "#LogicalStartDate");
+					startDate = (java.util.Date)entry2.get(eventName + "#LogicalStartDate");
+					eventDate = startDate;
 				}
 				java.util.Date endDate = null;
 				if (entry2.containsKey(eventName + "#LogicalEndDate")) {
@@ -363,7 +365,10 @@ Date nextDate = calendarNextDate.getTime();
 			<c:set var="calMonthDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 	      		value="<%= eventDate %>" pattern="MMM" /></c:set>
 		<%  } %>
-	<c:if test="${currMonthDate == calMonthDate}">
+	<c:set var="startDate" value="<%= startDate %>"/>
+	<c:set var="endDate" value="<%= endDate %>"/>
+	<c:set var="currDate" value="<%= currDate %>"/>
+	<c:if test="${currMonthDate == calMonthDate || (startDate != null && endDate != null && startDate.time <= currDate.time && endDate.time >= currDate.time)}">
 	    <c:set var="entriesSeen" value="${entriesSeen + 1}"/>
 	    <%  if (allDayEvent) {  %>
 		    <c:set var="calDayDate"><fmt:formatDate timeZone="GMT"
