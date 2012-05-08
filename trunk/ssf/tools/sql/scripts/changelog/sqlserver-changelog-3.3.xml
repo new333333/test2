@@ -498,7 +498,7 @@
             <column name="modification_principal" type="NUMERIC(19,0)"/>
             <column name="fileName" type="NVARCHAR(255)"/>
             <column name="fileLength" type="NUMERIC(19,0)"/>
-            <column name="description_text" type="NVARCHAR"/>
+            <column name="description_text" type="ntext"/>
             <column name="description_format" type="INT"/>
             <column name="lastVersion" type="INT"/>
             <column name="majorVersion" type="INT"/>
