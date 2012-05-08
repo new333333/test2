@@ -68,6 +68,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -338,12 +339,23 @@ public abstract class ActivityStreamUIEntry extends Composite
 		// be visible when the mouse is not over the entry.  Image 2 will be visible
 		// when the mouse is over the entry.
 		{
+			FlexTable table;
 			FlowPanel actionsPanel;
+			FlowPanel numCommentsPanel;
 			ClickHandler clickHandler;
 
+			table = new FlexTable();
+			table.addStyleName( "activityStreamActionsTable" );
+			headerPanel.add( table );
+			
+			// Get the panel that will hold the number of comments.
+			numCommentsPanel = getNumCommentsPanel();
+			if ( numCommentsPanel != null )
+				table.setWidget( 0, 0, numCommentsPanel );
+			
 			actionsPanel = new FlowPanel();
 			actionsPanel.addStyleName( "activityStreamActionsPanel" );
-			headerPanel.add( actionsPanel );
+			table.setWidget( 0, 1, actionsPanel );
 			
 			m_actionsLabel = new InlineLabel( GwtTeaming.getMessages().actionsLabel() );
 			m_actionsLabel.addStyleName( "activityStreamActionsLabel" );
@@ -651,6 +663,12 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 * Return the name of the style used with the div that holds the entry.
 	 */
 	public abstract String getMainPanelStyleName();
+	
+	
+	/**
+	 * Return the panel that holds the number of comments.  Can return null
+	 */
+	public abstract FlowPanel getNumCommentsPanel();
 	
 	
 	/**

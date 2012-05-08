@@ -29,12 +29,16 @@
 	-webkit-border-radius: 5px;
 }
 
+.activityStreamActionsTable
+{
+	position: absolute;
+	right: 5px;
+	top: 0px;
+}
+
 .activityStreamActionsPanel
 {
 	cursor: pointer;
-	position: absolute;
-	right: 5px;
-	top: 5px;
 }
 
 .activityStreamActionsPanel:hover
@@ -395,12 +399,18 @@
 	vertical-align: top;
 }
 
-.activityStreamNumCommentsLabel
+.activityStreamNumCommentsPanel
 {
-	font-size: 10px;
-	white-space: nowrap;
-	margin-left: 5px;
-	margin-right: 5px;
+    background: url(images/comments_22.png) no-repeat scroll center center transparent;
+    color: #333333;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    padding-top: 2px;
+    padding-bottom: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+    text-align: center;
 }
 
 .activityStreamReply

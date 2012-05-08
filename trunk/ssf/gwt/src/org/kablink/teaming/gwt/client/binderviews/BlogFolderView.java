@@ -122,7 +122,7 @@ public class BlogFolderView extends FolderViewBase
 		getFlowPanel().addStyleName( "vibe-blogFolderFlowPanel" );
 
 		table = new FlexTable();
-		table.setCellSpacing( 4 );
+		table.setCellSpacing( 0 );
 		table.addStyleName( "blogFolderView_MainTable" );
 		
 		cellFormatter = table.getFlexCellFormatter();

@@ -54,13 +54,13 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -70,7 +70,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 {
 	private ArrayList<ActivityStreamComment> m_comments;
-	private InlineLabel m_numCommentsLabel;		// Shows the number of comments that exist for this entry.
+	private FlowPanel m_numCommentsPanel;		// Shows the number of comments that exist for this entry.
 	private Anchor m_parentBinderName;			// Name of the binder this entry comes from.
 	private String m_parentBinderId;			// Id of the binder this entry comes from.
 	private String m_parentBinderPermalink;
@@ -100,11 +100,6 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	{
 		ImageResource imageResource;
 
-		// Create a span for the number of comments text to live in.
-		m_numCommentsLabel = new InlineLabel();
-		m_numCommentsLabel.addStyleName( "activityStreamNumCommentsLabel" );
-		headerPanel.add( m_numCommentsLabel );
-		
 		imageResource = GwtTeaming.getImageBundle().breadSpace();
 		m_breadSpaceImg = new Image( imageResource );
 		m_breadSpaceImg.setVisible( false );
@@ -245,7 +240,8 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		}
 		
 		m_numComments = 0;
-		m_numCommentsLabel.setText( "" );
+		if ( m_numCommentsPanel != null )
+			m_numCommentsPanel.getElement().setInnerText( "" );
 		m_parentBinderName.setText( "" );
 		m_parentBinderName.setTitle( "" );
 		m_parentBinderId = null;
@@ -344,6 +340,50 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		return "activityStreamTopEntryMainPanel";
 	}
 	
+	
+	/**
+	 * Return the panel that holds the number of comments
+	 */
+	@Override
+	public FlowPanel getNumCommentsPanel()
+	{
+		// Create a span for the number of comments text to live in.
+		m_numCommentsPanel = new FlowPanel();
+		m_numCommentsPanel.setTitle( GwtTeaming.getMessages().showAllComments() );
+		m_numCommentsPanel.addStyleName( "activityStreamNumCommentsPanel" );
+		
+		// Add a click handler.
+		{
+			ClickHandler clickHandler;
+			
+			clickHandler = new ClickHandler()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							// Show or hide the comments.
+							toggleComments();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+				
+			};
+			m_numCommentsPanel.addDomHandler( clickHandler, ClickEvent.getType() );
+		}
+
+		return m_numCommentsPanel;
+	}
 	
 	/**
 	 * Return the name of the style used with a top entry's partial description.
@@ -549,22 +589,34 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	}
 	
 	/**
+	 * Show or hide the comments for this entry
+	 */
+	private void toggleComments()
+	{
+		Window.alert( "Not yet implemented" );
+		if ( m_numCommentsPanel != null )
+		{
+			m_numCommentsPanel.setTitle( GwtTeaming.getMessages().hideComments() );
+		}
+	}
+	
+	/**
 	 * Update the label that displays the number of comments there are on this entry.
 	 */
 	private void updateCommentsLabel()
 	{
-		if ( m_numComments > 0 )
+		if ( m_numCommentsPanel != null )
 		{
-			String text;
-			
-			if ( m_numComments == 1 )
-				text = GwtTeaming.getMessages().oneComment();
+			if ( m_numComments > 0 )
+			{
+				String text;
+
+				text = String.valueOf( m_numComments );
+				m_numCommentsPanel.getElement().setInnerText( text );
+				m_numCommentsPanel.setVisible( true );
+			}
 			else
-				text = GwtTeaming.getMessages().multipleComments( m_numComments );
-			m_numCommentsLabel.setText( text );
-			m_numCommentsLabel.setVisible( true );
+				m_numCommentsPanel.setVisible( false );
 		}
-		else
-			m_numCommentsLabel.setVisible( false );
 	}
 }
