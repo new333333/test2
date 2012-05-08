@@ -290,9 +290,10 @@ public class GwtActivityStreamHelper {
 		private Map               getEntryMap()            {return m_entryMap;            }
 		private String            getAuthorTitle()         {return m_authorTitle;         }
 		
-		private void incrCommentCount()                     {m_commentCount += 1;         }
-		private void setAuthorInfo(ASAuthorInfo authorInfo) {m_authorInfo    = authorInfo;}
-		private void setBinderInfo(ASBinderInfo binderInfo) {m_binderInfo    = binderInfo;}
+		private void incrCommentCount()                         {m_commentCount += 1;           }
+		private void setAuthorInfo(  ASAuthorInfo authorInfo)   {m_authorInfo    = authorInfo;  }
+		private void setBinderInfo(  ASBinderInfo binderInfo)   {m_binderInfo    = binderInfo;  }
+		private void setCommentCount(int          commentCount) {m_commentCount  = commentCount;}
 
 		/*
 		 * Returns a List<ASEntryData> corresponding to what should be
@@ -318,11 +319,14 @@ public class GwtActivityStreamHelper {
 
 				// Add a stubbed out ASEntryData to the
 				// List<ASEntryData> that we're going to return.
-				reply.add(
-					new ASEntryData(
-						entryMap,
-						Long.parseLong(binderId),
-						Long.parseLong(entryId)));
+				ASEntryData ased = new ASEntryData(entryMap, Long.parseLong(binderId), Long.parseLong(entryId));
+				if (!returnComments) {
+					String totalReplyCount = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.TOTALREPLYCOUNT_FIELD);
+					if (MiscUtil.hasString(totalReplyCount)) {
+						ased.setCommentCount(Integer.parseInt(totalReplyCount));
+					}
+				}
+				reply.add(ased);
 			}
 
 			// Are we tracking any ASEntryData's in the
