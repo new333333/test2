@@ -21,7 +21,6 @@
 	.vibe-configureMenuImg         {padding-top: 1px; cursor: pointer;}
 	
 	.vibe-filterMenuBar         {padding-right: 0px !important;}
-	.vibe-filterMenuBarCheck    {margin-right: 2px;}
 	.vibe-filterMenuBarDropDown {}
 	.vibe-filterMenuBarItem     {border: 0 !important; padding-left: 0px !important; padding-right: 0px !important;}
 	.vibe-filterMenuImg         {padding-top: 1px; cursor: pointer;}
@@ -49,9 +48,10 @@
 			color-stop(1, #C8E4E9));
 	}
 
-	.vibe-entryMenuBar {padding: 3px;}
-	.vibe-menuDisabled {color: silver !important;}
-	.vibe-menuDisabled:hover  {
+	.vibe-entryMenuBar       {padding: 3px;}
+	.vibe-entryMenuBarCheck  {margin-right: 2px;}
+	.vibe-menuDisabled       {color: silver !important;}
+	.vibe-menuDisabled:hover {
 		background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
 		background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
 		background-color: transparent;

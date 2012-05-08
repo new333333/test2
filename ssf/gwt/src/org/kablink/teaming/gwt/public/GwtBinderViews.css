@@ -32,6 +32,10 @@
 		.vibe-binderOwnerAvatar-infoTitle     {display: block;}
 		.vibe-binderOwnerAvatar-panel         {}
 	/* ...End:  Binder owner avatar panel styles. */
+	
+	/* ...Start:  Calendar navigation panel styles. */
+		.vibe-calendarNavigation-panel {}
+	/* ...End:  Calendar navigation panel styles. */
 
 	/* ...Start:  Description panel styles. */
 		.vibe-descriptionContent        {}

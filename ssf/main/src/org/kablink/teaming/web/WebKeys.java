@@ -1418,6 +1418,7 @@ public class WebKeys {
     public static final String SIMPLE_WEBDAV_PREFIX="ssSimpleWebdavPrefix";
     public static final String STAND_ALONE="ssStandAlone";
     public static final String TOOLBAR="ss_toolbar";
+    public static final String TOOLBAR_MENU_CONTENTS_SELECTABLE="contentsSelectable"; 
     public static final String TOOLBAR_MENU_SELECTED="selected"; 
     public static final String TOOLBAR_FORMAT="ss_toolbar_format";
     public static final String TOOLBAR_STYLE="ss_toolbar_style";

@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.event.CalendarShowFolderByCreationEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
+import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarDisplayDataCmd;
@@ -78,11 +79,13 @@ public class CalendarFolderView extends FolderViewBase
 		CalendarShowFolderByActivityEvent.Handler,
 		CalendarShowFolderByCreationEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
-		InvokeDropBoxEvent.Handler
+		InvokeDropBoxEvent.Handler,
+		QuickFilterEvent.Handler
 {
 	private AddFilesDlg							m_addFilesDlg;				//
 	private CalendarDisplayDataRpcResponseData	m_calendarDisplayData;		//
 	private List<HandlerRegistration>			m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private String								m_quickFilter;				// Any quick filter that's active.
 	private VibeCalendar						m_calendar;					// The calendar widget contained in the view.
 
 	// The following defines the TeamingEvents that are handled by
@@ -95,6 +98,7 @@ public class CalendarFolderView extends FolderViewBase
 		TeamingEvents.CALENDAR_SHOW_FOLDER_BY_CREATION,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.INVOKE_DROPBOX,
+		TeamingEvents.QUICK_FILTER,
 	};
 	
 	/**
@@ -130,15 +134,13 @@ public class CalendarFolderView extends FolderViewBase
 	 */
 	@Override
 	protected boolean includePanel(FolderPanels folderPanel) {
+		// In the calendar folder view, we add the calendar navigation
+		// panel beyond the default.
 		boolean reply;
-
-		// In the calendar folder view, we don't show the binder owner
-		// avatar panels.
 		switch (folderPanel) {
-		case BINDER_OWNER_AVATAR:  reply = false; break;
-		default:                   reply = true;  break;
+		case CALENDAR_NAVIGATION:  reply = true;                             break;
+		default:                   reply = super.includePanel(folderPanel);  break;
 		}
-		
 		return reply;
 	}
 
@@ -182,7 +184,7 @@ public class CalendarFolderView extends FolderViewBase
 	}
 
 	/*
-	 * Asynchronously loads the calendar event data.
+	 * Asynchronously loads the Calendar widget.
 	 */
 	private void loadPart2Async() {
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
@@ -195,37 +197,12 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/*
-	 * Synchronously loads the calendar display data.
-	 */
-	private void loadPart2Now() {
-		// Load the calendar event data to display...
-//!		...this needs to be implemented...
-		
-		loadPart3Async();
-	}
-
-	/*
-	 * Asynchronously loads the Calendar widget.
-	 */
-	private void loadPart3Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart3Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-	
-	/*
 	 * Synchronously loads the Calendar widget.
 	 */
-	private void loadPart3Now() {
-		// Create the Calendar widget for the view...
-		m_calendar = new VibeCalendar(CalendarViews.MONTH);
-		
+	private void loadPart2Now() {
+		// Create the Calendar widget for the view and populate it.
 //!		...this needs to be implemented...
-		
+		m_calendar = new VibeCalendar(CalendarViews.MONTH);	//! ...use the display data for the initial view...
 		populateViewAsync();
 	}
 
@@ -385,6 +362,45 @@ public class CalendarFolderView extends FolderViewBase
 		}
 	}
 	
+	/**
+	 * Handles QuickFilterEvent's received by this class.
+	 * 
+	 * Implements the QuickFilterEvent.Handler.onQuickFilter() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onQuickFilter(QuickFilterEvent event) {
+		// Is the event is targeted to the folder we're viewing?
+		if (event.getFolderId().equals(getFolderInfo().getBinderIdAsLong())) {
+			// Yes!  Track the current quick filter and force the
+			// calendar to refresh with it.
+			m_quickFilter = event.getQuickFilter();
+			m_calendar.clearAppointments();
+			populateCalendarEventsAsync();
+		}
+	}
+
+	/*
+	 * Asynchronously populates the the calendar's events.
+	 */
+	private void populateCalendarEventsAsync() {
+		Scheduler.ScheduledCommand doPopulate = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				populateCalendarEventsNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doPopulate);
+	}
+	
+	/*
+	 * Synchronously populates the the calendar's events.
+	 */
+	private void populateCalendarEventsNow() {
+//!		...this needs to be implemented...
+	}
+	
 	/*
 	 * Asynchronously populates the the calendar view.
 	 */
@@ -402,8 +418,12 @@ public class CalendarFolderView extends FolderViewBase
 	 * Synchronously populates the the calendar view.
 	 */
 	private void populateViewNow() {
+		// Put the calendar in the view...
 		getFlowPanel().add(m_calendar);
 		viewReady();
+
+		// ...and populate it's events.
+		populateCalendarEventsAsync();
 	}
 	
 	/*

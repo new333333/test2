@@ -205,13 +205,13 @@ public class TrashView extends DataTableFolderViewBase {
 		boolean reply;
 
 		// In the trash view, we don't show the accessories,
-		// description, binder owner avatar or filter panels.
+		// description or filter panels beyond the default.
 		switch (folderPanel) {
 		case ACCESSORIES:
 		case DESCRIPTION:
 		case BINDER_OWNER_AVATAR:
-		case FILTER:  reply = false; break;
-		default:      reply = true;  break;
+		case FILTER:  reply = false;                            break;
+		default:      reply = super.includePanel(folderPanel);  break;
 		}
 		
 		return reply;

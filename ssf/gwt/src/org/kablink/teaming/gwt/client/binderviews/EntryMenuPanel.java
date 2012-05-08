@@ -35,6 +35,10 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.CalendarShowAssignedEvent;
+import org.kablink.teaming.gwt.client.event.CalendarShowFolderAllEvent;
+import org.kablink.teaming.gwt.client.event.CalendarShowFolderByActivityEvent;
+import org.kablink.teaming.gwt.client.event.CalendarShowFolderByCreationEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
@@ -353,7 +357,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 					m_entryMenu.addSeparator();
 				}
 				else {
-					renderSimpleTBI(m_entryMenu, null, perEntryTBI);
+					renderSimpleTBI(m_entryMenu, null, perEntryTBI, false);
 				}
 			}
 		}
@@ -412,7 +416,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 				configureDropdownMenu.addSeparator();
 			}
 			else {
-				renderSimpleTBI(null, configureDropdownMenu, configureTBI);
+				renderSimpleTBI(null, configureDropdownMenu, configureTBI, false);
 			}
 		}
 	}
@@ -581,12 +585,12 @@ public class EntryMenuPanel extends ToolPanelBase {
 					Image checkImg;
 					if (isCurrent) {
 						checkImg = new Image(m_images.check12());
-						checkImg.addStyleName("vibe-filterMenuBarCheck");
+						checkImg.addStyleName("vibe-entryMenuBarCheck");
 						checkImg.getElement().setAttribute("align", "absmiddle");
 					}
 					else {
 						checkImg = new Image(m_images.spacer1px());
-						checkImg.addStyleName("vibe-filterMenuBarCheck");
+						checkImg.addStyleName("vibe-entryMenuBarCheck");
 						checkImg.setWidth("12px");
 					}
 					html.add(checkImg);
@@ -640,8 +644,35 @@ public class EntryMenuPanel extends ToolPanelBase {
 	/*
 	 * Renders any simple (i.e., URL or event based) toolbar item.
 	 */
-	private void renderSimpleTBI(VibeMenuBar menuBar, PopupMenu popupMenu, final ToolbarItem simpleTBI) {
-		VibeMenuItem menuItem = new VibeMenuItem(simpleTBI.getTitle(), new Command() {
+	private void renderSimpleTBI(VibeMenuBar menuBar, PopupMenu popupMenu, final ToolbarItem simpleTBI, boolean contentsSelectable) {
+		// Generate the text to display for the menu item...
+		String title = simpleTBI.getTitle();
+		String menuText;
+		if (contentsSelectable) {
+			String contentsCheckedS = simpleTBI.getQualifierValue("selected");
+			boolean contentsChecked = (GwtClientHelper.hasString(contentsCheckedS) && contentsCheckedS.equals("true"));
+			VibeFlowPanel html = new VibeFlowPanel();
+			Image checkImg;
+			if (contentsChecked) {
+				checkImg = new Image(m_images.check12());
+				checkImg.addStyleName("vibe-entryMenuBarCheck");
+				checkImg.getElement().setAttribute("align", "absmiddle");
+			}
+			else {
+				checkImg = new Image(m_images.spacer1px());
+				checkImg.addStyleName("vibe-entryMenuBarCheck");
+				checkImg.setWidth("12px");
+			}
+			html.add(checkImg);
+			html.add(new InlineLabel(title));
+			menuText = html.getElement().getInnerHTML();
+		}
+		else {
+			menuText = title;
+		}
+
+		// ...and generate the menu item.
+		VibeMenuItem menuItem = new VibeMenuItem(menuText, contentsSelectable, new Command() {
 			@Override
 			public void execute() {
 				// Does the simple toolbar item contain a URL to
@@ -668,6 +699,10 @@ public class EntryMenuPanel extends ToolPanelBase {
 					VibeEventBase<?> event;
 					switch (simpleEvent) {
 					default:                                  event = EventHelper.createSimpleEvent(          simpleEvent); break;
+					case CALENDAR_SHOW_ASSIGNED:              event = new CalendarShowAssignedEvent(          folderId   ); break;
+					case CALENDAR_SHOW_FOLDER_ALL:            event = new CalendarShowFolderAllEvent(         folderId   ); break;
+					case CALENDAR_SHOW_FOLDER_BY_ACTIVITY:    event = new CalendarShowFolderByActivityEvent(  folderId   ); break;
+					case CALENDAR_SHOW_FOLDER_BY_CREATION:    event = new CalendarShowFolderByCreationEvent(  folderId   ); break;
 					case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:  event = new ChangeEntryTypeSelectedEntriesEvent(folderId   ); break;
 					case COPY_SELECTED_ENTRIES:               event = new CopySelectedEntriesEvent(           folderId   ); break;
 					case DELETE_SELECTED_ENTRIES:             event = new DeleteSelectedEntriesEvent(         folderId   ); break;
@@ -756,6 +791,8 @@ public class EntryMenuPanel extends ToolPanelBase {
 		}
 		
 		// ...scan the nested items...
+		String contentsSelectableS = structuredTBI.getQualifierValue("contentsSelectable");
+		boolean contentsSelectable = (GwtClientHelper.hasString(contentsSelectableS) && contentsSelectableS.equals("true"));
 		for (ToolbarItem nestedTBI:  structuredTBI.getNestedItemsList()) {
 			// ...rendering each of them.
 			if (nestedTBI.hasNestedToolbarItems()) {
@@ -765,7 +802,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 				structuredMenuBar.addSeparator();
 			}
 			else {
-				renderSimpleTBI(structuredMenuBar, null, nestedTBI);
+				renderSimpleTBI(structuredMenuBar, null, nestedTBI, contentsSelectable);
 			}
 		}
 	}
@@ -874,6 +911,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 		case FOLDER:
 			switch (m_binderInfo.getFolderType()) {
 			case BLOG:
+			case CALENDAR:
 			case DISCUSSION:
 			case FILE:
 			case GUESTBOOK:
