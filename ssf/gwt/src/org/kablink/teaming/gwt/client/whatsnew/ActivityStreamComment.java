@@ -119,6 +119,16 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	
 	
 	/**
+	 * We don't display the number of comments so return null.
+	 */
+	@Override
+	public FlowPanel getNumCommentsPanel()
+	{
+		return null;
+	}
+	
+	
+	/**
 	 * Return the name of the style used with a comment's partial description
 	 */
 	@Override
