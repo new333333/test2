@@ -118,30 +118,6 @@ public class TaskFolderView extends FolderViewBase
 		loadPart1Async();
 	}
 
-	/**
-	 * Returns true for panels that are to be included and false
-	 * otherwise.
-	 * 
-	 * Overrides the FolderViewBase.includePanel() method.
-	 * 
-	 * @param folderPanel
-	 * 
-	 * @return
-	 */
-	@Override
-	protected boolean includePanel(FolderPanels folderPanel) {
-		boolean reply;
-
-		// In the task folder view, we don't show the binder owner
-		// avatar panels.
-		switch (folderPanel) {
-		case BINDER_OWNER_AVATAR:  reply = false; break;
-		default:                   reply = true;  break;
-		}
-		
-		return reply;
-	}
-
 	/*
 	 * Asynchronously loads the task display data.
 	 */

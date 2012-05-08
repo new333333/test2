@@ -142,15 +142,16 @@ public class MicroBlogFolderView extends DataTableFolderViewBase {
 	 */
 	@Override
 	protected boolean includePanel(FolderPanels folderPanel) {
+		// In the micro-blog folder view, we never show the bread
+		// crumbs, accessories or filter panels but do show the binder
+		// owner avatar panel beyond the default.
 		boolean reply;
-
-		// In the micro-blog folder view, we don't show the bread
-		// crumbs, accessories or filter panels.
 		switch (folderPanel) {
 		case BREADCRUMB:
 		case ACCESSORIES:
-		case FILTER:  reply = false; break;
-		default:      reply = true;  break;
+		case FILTER:               reply = false;                            break;
+		case BINDER_OWNER_AVATAR:  reply = true;                             break;
+		default:                   reply = super.includePanel(folderPanel);  break;
 		}
 		
 		return reply;

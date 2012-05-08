@@ -132,17 +132,15 @@ public class PersonalWorkspacesView extends DataTableFolderViewBase {
 	 */
 	@Override
 	protected boolean includePanel(FolderPanels folderPanel) {
-		boolean reply;
-
 		// In the personal workspaces view, we don't show the bread
-		// crumbs, binder owner avatar or filter panels.
+		// crumbs or filter panels beyond the default.
+		boolean reply;
 		switch (folderPanel) {
 		case BREADCRUMB:
 		case BINDER_OWNER_AVATAR:
-		case FILTER:  reply = false; break;
-		default:      reply = true;  break;
+		case FILTER:  reply = false;                            break;
+		default:      reply = super.includePanel(folderPanel);  break;
 		}
-		
 		return reply;
 	}
 

@@ -203,7 +203,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private Map<String, ColumnWidth>	m_columnWidths;				// Map of column names -> Current ColumnWidth objects.
 	private SizeColumnsDlg				m_sizeColumnsDlg;			//
 	private String						m_folderStyles;				// Specific style(s) for the for the folders that extend this.
-	private String						m_quickFilter;				// Any quick filter that's in active.
+	private String						m_quickFilter;				// Any quick filter that's active.
 	private VibeDataGrid<FolderRow>		m_dataTable;				// The actual data table holding the view's information.
 	
 	protected GwtTeamingDataTableImageBundle m_images;	//

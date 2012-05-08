@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
-import org.kablink.teaming.gwt.client.binderviews.FolderViewBase.FolderPanels;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
@@ -125,30 +124,6 @@ public class SurveyFolderView extends DataTableFolderViewBase {
 		});
 	}
 	
-	/**
-	 * Returns true for panels that are to be included and false
-	 * otherwise.
-	 * 
-	 * Overrides the FolderViewBase.includePanel() method.
-	 * 
-	 * @param folderPanel
-	 * 
-	 * @return
-	 */
-	@Override
-	protected boolean includePanel(FolderPanels folderPanel) {
-		boolean reply;
-
-		// In the survey folder view, we don't show the binder owner
-		// avatar panels.
-		switch (folderPanel) {
-		case BINDER_OWNER_AVATAR:  reply = false; break;
-		default:                   reply = true;  break;
-		}
-		
-		return reply;
-	}
-
 	/**
 	 * Scans the rows looking for overdue due dates and adds the
 	 * appropriate styling to the cells.

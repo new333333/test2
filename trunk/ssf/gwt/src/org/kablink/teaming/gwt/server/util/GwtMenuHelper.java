@@ -47,6 +47,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
@@ -71,6 +72,7 @@ import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem.NameValuePair;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -923,6 +925,81 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Constructs a ToolbarItem for view operations against a calendar
+	 * folder.
+	 * 
+	 * View:
+	 *      Assigned Events (depending on containment)
+	 *      From Folder - Events
+	 *      From Folder - All by Creation
+	 *      From Folder - All by Activity
+	 */
+	private static void constructEntryViewCalendarItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Long folderId, String viewType, Folder folder) {
+		// How is the current user currently view events in this
+		// folder?
+		String eventType = EventsViewHelper.getCalendarDisplayEventType(
+			bs,
+			GwtServerHelper.getCurrentUser().getId(),
+			folderId);
+		
+		if (null == eventType) {
+			eventType = EventsViewHelper.EVENT_TYPE_EVENT;
+		}
+
+		// Create the view toolbar item...
+		ToolbarItem viewTBI = new ToolbarItem("1_view");
+		markTBITitle(viewTBI, "calendar.navi.chooseMode");
+		markTBIContentsSelectable(viewTBI);
+
+		// ...if the calendar folder is directly contained by a user...
+		// ...workspace...
+		Workspace folderWs = BinderHelper.getBinderWorkspace(folder);
+		if (BinderHelper.isBinderUserWorkspace(folderWs)) {
+			// ...add the 'assigned events' item...
+			ToolbarItem tbi = new ToolbarItem("1_assigned");
+			markTBITitle(tbi, "calendar.navi.mode.alt.virtual");
+			markTBIEvent(tbi, TeamingEvents.CALENDAR_SHOW_ASSIGNED);
+			if (eventType.equals(EventsViewHelper.EVENT_TYPE_VIRTUAL)) {
+				markTBISelected(tbi);
+			}
+			viewTBI.addNestedItem(tbi);
+		}
+
+		// ...add the 'from folder all' item...
+		ToolbarItem tbi = new ToolbarItem("1_fromFolderAll");
+		markTBITitle(tbi, "calendar.navi.mode.alt.physical");
+		markTBIEvent(tbi, TeamingEvents.CALENDAR_SHOW_FOLDER_ALL);
+		if (eventType.equals(EventsViewHelper.EVENT_TYPE_EVENT)) {
+			markTBISelected(tbi);
+		}
+		viewTBI.addNestedItem(tbi);
+
+		// ...add the 'from folder by creation' item...
+		tbi = new ToolbarItem("1_fromFolderByCreation");
+		markTBITitle(tbi, "calendar.navi.mode.alt.physical.byCreation");
+		markTBIEvent(tbi, TeamingEvents.CALENDAR_SHOW_FOLDER_BY_CREATION);
+		if (eventType.equals(EventsViewHelper.EVENT_TYPE_CREATION)) {
+			markTBISelected(tbi);
+		}
+		viewTBI.addNestedItem(tbi);
+
+		// ...and add the 'from folder by activity' item.
+		tbi = new ToolbarItem("1_fromFolderByActivity");
+		markTBITitle(tbi, "calendar.navi.mode.alt.physical.byActivity");
+		markTBIEvent(tbi, TeamingEvents.CALENDAR_SHOW_FOLDER_BY_ACTIVITY);
+		if (eventType.equals(EventsViewHelper.EVENT_TYPE_CREATION)) {
+			markTBISelected(tbi);
+		}
+		viewTBI.addNestedItem(tbi);
+
+		// If we added anything to the view toolbar...
+		if (!(viewTBI.getNestedItemsList().isEmpty())) {
+			// ...and the view toolbar to the entry toolbar.
+			entryToolbar.addNestedItem(viewTBI);
+		}
+	}
+	
+	/*
 	 * Constructs a ToolbarItem for folders.
 	 */
 	@SuppressWarnings("unused")
@@ -1357,7 +1434,7 @@ public class GwtMenuHelper {
 				// ...and create a ToolbarItem for it.
 				ToolbarItem viewTBI = new ToolbarItem(def.getName());
 				if (def.equals(currentDef)) {
-					viewTBI.addQualifier(WebKeys.TOOLBAR_MENU_SELECTED, "true");
+					markTBISelected(viewTBI);
 				}				
 				markTBITitleGetDef(viewTBI, def.getTitle());
 				markTBIUrl(  viewTBI, url           );
@@ -1881,6 +1958,13 @@ public class GwtMenuHelper {
 					// Construct the various items that appear in the
 					// more drop down.
 					constructEntryMoreItems(entryToolbar, bs, request, folderId, viewType, folder);
+					
+					// Are we working on a calendar folder?
+					if (FolderType.CALENDAR == folderInfo.getFolderType()) {
+						// Yes!  Construct the various items that
+						// appear in the view drop down.
+						constructEntryViewCalendarItems(entryToolbar, bs, request, folderId, viewType, folder);
+					}
 				}
 			}
 			
@@ -2170,6 +2254,14 @@ public class GwtMenuHelper {
 	}
 
 	/*
+	 * Marks a ToolbarItem as containing items that can be selected in
+	 * some way.
+	 */
+	private static void markTBIContentsSelectable(ToolbarItem tbi) {
+		tbi.addQualifier(WebKeys.TOOLBAR_MENU_CONTENTS_SELECTABLE, "true");
+	}
+	
+	/*
 	 * Marks a ToolbarItem as being the default of some sort.
 	 */
 	private static void markTBIDefault(ToolbarItem tbi) {
@@ -2207,6 +2299,13 @@ public class GwtMenuHelper {
 	}
 	private static void markTBIPopup(ToolbarItem tbi) {
 		markTBIPopup(tbi, null, null);
+	}
+	
+	/*
+	 * Marks a ToolbarItem as being selected in some way.
+	 */
+	private static void markTBISelected(ToolbarItem tbi) {
+		tbi.addQualifier(WebKeys.TOOLBAR_MENU_SELECTED, "true");
 	}
 	
 	/*

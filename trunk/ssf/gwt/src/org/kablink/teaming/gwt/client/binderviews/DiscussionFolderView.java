@@ -99,30 +99,6 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 	}
 	
 	/**
-	 * Returns true for panels that are to be included and false
-	 * otherwise.
-	 * 
-	 * Overrides the FolderViewBase.includePanel() method.
-	 * 
-	 * @param folderPanel
-	 * 
-	 * @return
-	 */
-	@Override
-	protected boolean includePanel(FolderPanels folderPanel) {
-		boolean reply;
-
-		// In the discussion folder view, we don't show the binder
-		// owner avatar panels.
-		switch (folderPanel) {
-		case BINDER_OWNER_AVATAR:  reply = false; break;
-		default:                   reply = true;  break;
-		}
-		
-		return reply;
-	}
-
-	/**
 	 * Called from the base class to reset the content of this
 	 * discussion folder view.
 	 * 

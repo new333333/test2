@@ -103,8 +103,9 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	public final static int FILTER_PANEL_INDEX				= 3;
 	public final static int BINDER_OWNER_AVATAR_PANEL_INDEX	= 4;
 	public final static int ENTRY_MENU_PANEL_INDEX			= 5;
-	public final static int VIEW_CONTENT_PANEL_INDEX		= 6;
-	public final static int FOOTER_PANEL_INDEX				= 7;
+	public final static int CALENDAR_NAVIGATION_PANEL_INDEX	= 6;
+	public final static int VIEW_CONTENT_PANEL_INDEX		= 7;
+	public final static int FOOTER_PANEL_INDEX				= 8;
 
 	public final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of a the data table widget.
 	public final static int NO_VSCROLL_ADJUST			=  20;	// Height adjustment required so there's no vertical scroll bar by default.
@@ -120,6 +121,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		FILTER,
 		BINDER_OWNER_AVATAR,
 		ENTRY_MENU,
+		CALENDAR_NAVIGATION,
 		FOOTER,
 	}
 	
@@ -296,8 +298,15 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * @return
 	 */
 	protected boolean includePanel(FolderPanels folderPanel) {
-		// Unless overridden, all panels are included.
-		return true;
+		// Unless overridden, all panels except the binder owner avatar
+		// panel and calendar navigation panel are included.
+		boolean reply;
+		switch (folderPanel) {
+		case BINDER_OWNER_AVATAR:
+		case CALENDAR_NAVIGATION:  reply = false; break;
+		default:                   reply = true;  break;
+		}
+		return reply;
 	}
 	
 	/*
@@ -636,14 +645,54 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 
 	/*
 	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the display data information for the folder.
 	 */
 	private void loadPart8Async() {
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.CALENDAR_NAVIGATION))) {
+			// ...we don't show the calendar navigation panel.
+			insertToolPanelPlaceholder(CALENDAR_NAVIGATION_PANEL_INDEX);
+			loadPart9Async();
+			return;
+		}
+		
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart8Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously loads the next part of the view.
+	 */
+	private void loadPart8Now() {
+		CalendarNavigationPanel.createAsync(this, getFolderInfo(), this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				insertToolPanel(tpb, FolderViewBase.CALENDAR_NAVIGATION_PANEL_INDEX);
+				loadPart9Async();
+			}
+		});
+	}
+
+	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the display data information for the folder.
+	 */
+	private void loadPart9Async() {
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart9Now();
 			}
 		};
 		Scheduler.get().scheduleDeferred(doLoad);
@@ -654,7 +703,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * 
 	 * Loads the display data information for the folder.
 	 */
-	private void loadPart8Now() {
+	private void loadPart9Now() {
 		// Scan the widgets that defined for the vertical flow...
 		for (Widget w:  m_verticalPanels) {
 			if (null != w) {
