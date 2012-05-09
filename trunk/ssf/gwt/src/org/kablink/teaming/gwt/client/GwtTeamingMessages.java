@@ -1521,6 +1521,20 @@ public interface GwtTeamingMessages extends Messages
 	String binderViewsPurgeUsersProgress();
 	String binderViewsPurgeUserWorkspacesCaption();
 	String binderViewsPurgeUserWorkspacesProgress();
+	
+	// Strings used in the calendar view.
+	String calendarNav_Alt_GoTo();
+	String calendarNav_Alt_GoToToday();
+	String calendarNav_Alt_NextTimePeriod();
+	String calendarNav_Alt_PreviousTimePeriod();
+	String calendarNav_Alt_Settings();
+	String calendarNav_Alt_View1();
+	String calendarNav_Alt_View3();
+	String calendarNav_Alt_ViewMonth();
+	String calendarNav_Alt_ViewWeek();
+	String calendarNav_Alt_ViewWorkWeek();
+	String calendarNav_Hours_FullDay();
+	String calendarNav_Hours_WorkDay();
 
 	// Strings used by the 'Progress' dialog.
 	String progressDlgConfirmCancel();
@@ -1592,5 +1606,4 @@ public interface GwtTeamingMessages extends Messages
 	String showDynamicMembershipDlgGroupTab();
 	String showDynamicMembershipDlgHeader();
 	String showDynamicMembershipDlgUserTab();
-
 }// end GwtTeamingMessages

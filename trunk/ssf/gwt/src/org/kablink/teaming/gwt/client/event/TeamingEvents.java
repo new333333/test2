@@ -56,7 +56,11 @@ public enum TeamingEvents implements IsSerializable {
 	
 	BROWSE_HIERARCHY,					// Browse Vibe OnPrem's hierarchy (i.e., the bread crumb tree.) 
 	BROWSE_HIERARCHY_EXIT,				// Exits the bread crumb browser, if open.
-	
+
+	CALENDAR_HOURS_FULL_DAY,			// Tells the calendar to display the full     hours in a day.
+	CALENDAR_HOURS_WORK_DAY,			// Tells the calendar to display the work day hours in a day.
+	CALENDAR_NEXT_PERIOD,				// Tells the calendar to display the next     time period.
+	CALENDAR_PREVIOUS_PERIOD,			// Tells the calendar to display the previous time period.
 	CALENDAR_SHOW_ASSIGNED,				// Tells the calendar to display assigned events.
 	CALENDAR_SHOW_FOLDER_ALL,			// Tells the calendar to display all events from the folder.
 	CALENDAR_SHOW_FOLDER_BY_ACTIVITY,	// Tells the calendar to display events using their last activity date.

@@ -254,6 +254,42 @@ public class EventHelper {
 				}
 				break;
 			
+			case CALENDAR_HOURS_FULL_DAY:
+				// A CalendarHoursFullDayEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof CalendarHoursFullDayEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = CalendarHoursFullDayEvent.registerEvent(eventBus, ((CalendarHoursFullDayEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case CALENDAR_HOURS_WORK_DAY:
+				// A CalendarHoursWorkDayEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof CalendarHoursWorkDayEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = CalendarHoursWorkDayEvent.registerEvent(eventBus, ((CalendarHoursWorkDayEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case CALENDAR_NEXT_PERIOD:
+				// A CalendarNextPeriodEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof CalendarNextPeriodEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = CalendarNextPeriodEvent.registerEvent(eventBus, ((CalendarNextPeriodEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case CALENDAR_PREVIOUS_PERIOD:
+				// A CalendarPreviousPeriodEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof CalendarPreviousPeriodEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = CalendarPreviousPeriodEvent.registerEvent(eventBus, ((CalendarPreviousPeriodEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case CALENDAR_SHOW_ASSIGNED:
 				// A CalendarShowAssignedEvent!  Can the event handler
 				// we were given handle that?
@@ -1600,6 +1636,10 @@ public class EventHelper {
 			case BROWSE_HIERARCHY:                  	hasHandler = (eventHandler instanceof BrowseHierarchyEvent.Handler);               break;
 			case BROWSE_HIERARCHY_EXIT:             	hasHandler = (eventHandler instanceof BrowseHierarchyExitEvent.Handler);           break;
 			
+			case CALENDAR_HOURS_FULL_DAY:               hasHandler = (eventHandler instanceof CalendarHoursFullDayEvent.Handler);          break;
+			case CALENDAR_HOURS_WORK_DAY:               hasHandler = (eventHandler instanceof CalendarHoursWorkDayEvent.Handler);          break;
+			case CALENDAR_NEXT_PERIOD:                  hasHandler = (eventHandler instanceof CalendarNextPeriodEvent.Handler);            break;
+			case CALENDAR_PREVIOUS_PERIOD:              hasHandler = (eventHandler instanceof CalendarPreviousPeriodEvent.Handler);        break;
 			case CALENDAR_SHOW_ASSIGNED:                hasHandler = (eventHandler instanceof CalendarShowAssignedEvent.Handler);          break;
 			case CALENDAR_SHOW_FOLDER_ALL:              hasHandler = (eventHandler instanceof CalendarShowFolderAllEvent.Handler);         break;
 			case CALENDAR_SHOW_FOLDER_BY_ACTIVITY:      hasHandler = (eventHandler instanceof CalendarShowFolderByActivityEvent.Handler);  break;
