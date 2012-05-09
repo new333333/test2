@@ -747,6 +747,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_ENTRY_COMMENTS:
+		{
+			GetEntryCommentsCmd gecCmd;
+			List<ActivityStreamEntry> listOfComments;
+			ActivityStreamEntryListRpcResponseData result;
+			
+			gecCmd = (GetEntryCommentsCmd) cmd;
+			listOfComments = getEntryComments( ri, gecCmd.getEntryId() );
+			result = new ActivityStreamEntryListRpcResponseData( listOfComments );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_ENTRY_TAGS:
 		{
 			GetEntryTagsCmd getCmd;
@@ -3312,6 +3325,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			throw GwtServerHelper.getGwtTeamingException( ex );
 		}		
 	}
+
+	/**
+	 * Return a list of comments for the given entry.
+	 */
+	private List<ActivityStreamEntry> getEntryComments( HttpRequestInfo ri, String entryId )
+	{
+		return GwtActivityStreamHelper.getEntryComments( this, entryId );
+	}
+	
 	
 	/**
 	 * Return a list of tags associated with the given entry.

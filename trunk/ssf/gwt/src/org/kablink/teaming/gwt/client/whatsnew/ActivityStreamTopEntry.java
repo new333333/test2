@@ -38,7 +38,9 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCommentsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
@@ -54,7 +56,6 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -76,6 +77,8 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	private String m_parentBinderPermalink;
 	private Image m_breadSpaceImg;
 	private int m_numComments;
+	private boolean m_showingAllComments;
+	private boolean m_retrievedAllComments;
 	
 	/**
 	 * 
@@ -89,6 +92,9 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		
 		// Create a list to hold the comments for this entry.
 		m_comments = new ArrayList<ActivityStreamComment>();
+
+		m_showingAllComments = false;
+		m_retrievedAllComments = false;
 	}
 
 	
@@ -182,7 +188,8 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		
 		// Add this ui widget to panel that holds all comments
 		commentsPanel = getCommentsPanel();
-		commentsPanel.add( commentUI );
+		if ( commentsPanel != null )
+			commentsPanel.add( commentUI );
 	}
 	
 	
@@ -239,6 +246,8 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 			nextComment.removeFromParent();
 		}
 		
+		m_showingAllComments = false;
+		m_retrievedAllComments = false;
 		m_numComments = 0;
 		if ( m_numCommentsPanel != null )
 			m_numCommentsPanel.getElement().setInnerText( "" );
@@ -371,8 +380,25 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 						@Override
 						public void execute() 
 						{
-							// Show or hide the comments.
-							toggleComments();
+							// Are we currently showing all comments?
+							if ( m_showingAllComments == false )
+							{
+								// No
+								showAllComments();
+								m_showingAllComments = true;
+
+								// Change the title on the "num comments" label to "hide comments"
+								m_numCommentsPanel.setTitle( GwtTeaming.getMessages().hideComments() );
+							}
+							else
+							{
+								// Yes
+								hideComments();
+								m_showingAllComments = false;
+								
+								// Change the title on the "num comments" label to "show comments"
+								m_numCommentsPanel.setTitle( GwtTeaming.getMessages().showAllComments() );
+							}
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -494,6 +520,20 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 			GwtClientHelper.executeCommand( cmd, callback );
 		}
 	}
+	
+	/**
+	 * 
+	 */
+	private void hideComments()
+	{
+		FlowPanel commentsPanel;
+		
+		commentsPanel = getCommentsPanel();
+		if ( commentsPanel != null )
+		{
+			commentsPanel.setVisible( false );
+		}
+	}
 
 	
 	/**
@@ -589,14 +629,101 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	}
 	
 	/**
-	 * Show or hide the comments for this entry
+	 * Show all the comments for this entry
 	 */
-	private void toggleComments()
+	private void showAllComments()
 	{
-		Window.alert( "Not yet implemented" );
 		if ( m_numCommentsPanel != null )
 		{
-			m_numCommentsPanel.setTitle( GwtTeaming.getMessages().hideComments() );
+			// Have we already retrieved all the comments for this entry?
+			if ( m_retrievedAllComments == false )
+			{
+				GetEntryCommentsCmd cmd;
+				AsyncCallback<VibeRpcResponse> callback;
+				
+				// No
+				callback = new AsyncCallback<VibeRpcResponse>()
+				{
+					/**
+					 * 
+					 */
+					@Override
+					public void onFailure(Throwable t)
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+												t,
+												GwtTeaming.getMessages().rpcFailure_GetEntryComments(),
+												getEntryTitle() );
+					}
+					
+					/**
+					 * 
+					 */
+					@Override
+					public void onSuccess(  VibeRpcResponse response )
+					{
+						Scheduler.ScheduledCommand cmd;
+						ActivityStreamEntryListRpcResponseData responseData;
+						final List<ActivityStreamEntry> listOfComments;
+
+						// Clear all data from the existing ui comment objects
+						if ( m_comments != null )
+						{
+							for (ActivityStreamComment nextComment : m_comments)
+							{
+								nextComment.clearEntrySpecificInfo();
+								
+								// Remove this comment from this entry.
+								nextComment.removeFromParent();
+							}
+						}
+						
+						// Get the list of comments from the response.
+						responseData = (ActivityStreamEntryListRpcResponseData) response.getResponseData();
+						listOfComments = responseData.getActivityStreamEntryList();
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								FlowPanel commentsPanel;
+								
+								m_retrievedAllComments = true;
+								
+								// Do we have a list of comments?
+								if ( listOfComments != null )
+								{
+									// Yes
+									for (ActivityStreamEntry nextComment: listOfComments)
+									{
+										addComment( nextComment );
+									}
+								}
+								
+								commentsPanel = getCommentsPanel();
+								commentsPanel.setVisible( true );
+								
+								m_numComments = listOfComments.size();
+								updateCommentsLabel();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				};
+				
+				// Issue a request to get all the comments for this entry.
+				cmd = new GetEntryCommentsCmd( getEntryId() );
+				GwtClientHelper.executeCommand( cmd, callback );
+			}
+			else
+			{
+				FlowPanel commentsPanel;
+				
+				// Yes, simply show the comments panel
+				commentsPanel = getCommentsPanel();
+				commentsPanel.setVisible( true );
+			}
 		}
 	}
 	

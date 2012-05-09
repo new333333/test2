@@ -1301,6 +1301,15 @@ public class GwtActivityStreamHelper {
 		return reply;
 	}
 	
+	/**
+	 * Return a list of comments for the given entry
+	 */
+	public static List<ActivityStreamEntry> getEntryComments( AllModulesInjected ami, String entryIdS )
+	{
+		return new ArrayList<ActivityStreamEntry>();
+	}
+	
+	
 	/*
 	 * Extracts a description from an entry map and replaces any mark
 	 * up with the appropriate URL.  For example, replaces:
