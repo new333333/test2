@@ -83,6 +83,7 @@ import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -451,22 +452,27 @@ public class EntityIndexUtils {
 		// look through the custom attributes of this entry for any of type EVENT, DATE, or DATE_TIME
 
 		Set entryEventsDates = new HashSet();
+		org.dom4j.Document defDoc = entry.getEntryDefDoc();
 		while (attIt.hasNext()) {
 			CustomAttribute att = (CustomAttribute) customAttrs.get(attIt.next());
 			if (att.getValueType() == CustomAttribute.EVENT) {
-				// set the event name to event + count
-				Event event = (Event)att.getValue();
-				List recurencesDates = event.getAllRecurrenceDates();
-				List allEventDays = Event.getEventDaysFromRecurrencesDates(recurencesDates);
-				entryEventsDates.addAll(allEventDays);
-								
-				if (att.getValue() != null) {
-					doc.add(new Field(EVENT_FIELD + count, att.getName(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
-					doc.add(new Field(event.getName() + BasicIndexUtils.DELIMITER + Constants.EVENT_ID, event.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
-					doc.add(getEntryEventDaysField(event.getName() + BasicIndexUtils.DELIMITER + Constants.EVENT_DATES, new HashSet(allEventDays)));
-					count++;
+				//See if this attribute is still in the definition
+				Element attrEle = DefinitionHelper.findAttribute(att.getName(), defDoc);
+				if (attrEle != null) {
+					// set the event name to event + count
+					Event event = (Event)att.getValue();
+					List recurencesDates = event.getAllRecurrenceDates();
+					List allEventDays = Event.getEventDaysFromRecurrencesDates(recurencesDates);
+					entryEventsDates.addAll(allEventDays);
+									
+					if (att.getValue() != null) {
+						doc.add(new Field(EVENT_FIELD + count, att.getName(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
+						doc.add(new Field(event.getName() + BasicIndexUtils.DELIMITER + Constants.EVENT_ID, event.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
+						doc.add(getEntryEventDaysField(event.getName() + BasicIndexUtils.DELIMITER + Constants.EVENT_DATES, new HashSet(allEventDays)));
+						count++;
+					}
+					doc.add(getRecurrenceDatesField(event, recurencesDates));
 				}
-				doc.add(getRecurrenceDatesField(event, recurencesDates));
 			} else if (att.getValueType() == CustomAttribute.DATE) {
 				Date dateValue = ((Date)att.getValue());
 				if (att.getName().equals(TaskHelper.TASK_COMPLETED_DATE_ATTRIBUTE)) {
