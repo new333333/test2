@@ -1026,6 +1026,14 @@ public class GwtActivityStreamHelper {
 				Constants.LASTACTIVITY_FIELD);
 	}
 	
+	private static Criteria buildSearchCriteria(AllModulesInjected bs, Long entryId) {
+		Criteria reply = new Criteria();
+		reply.add(Restrictions.in(Constants.ENTRY_TYPE_FIELD, new String[] {Constants.ENTRY_TYPE_ENTRY}))
+			.add(Restrictions.in(Constants.DOC_TYPE_FIELD,   new String[] {Constants.DOC_TYPE_ENTRY  }))
+			.add(Restrictions.in(Constants.DOCID_FIELD,      new String[] {String.valueOf(entryId)}));
+		return reply;
+	}
+	
 	/*
 	 * Constructs and returns the base Criteria object for performing
 	 * the search for activity stream data.
@@ -1303,10 +1311,73 @@ public class GwtActivityStreamHelper {
 	
 	/**
 	 * Return a list of comments for the given entry
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param entryId
+	 * 
+	 * @return
 	 */
-	public static List<ActivityStreamEntry> getEntryComments( AllModulesInjected ami, String entryIdS )
-	{
-		return new ArrayList<ActivityStreamEntry>();
+	@SuppressWarnings("unchecked")
+	public static List<ActivityStreamEntry> getEntryComments(AllModulesInjected bs, HttpServletRequest request, Long entryId) {
+		// Can we find the single entry whose comments were requested?
+		ASSearchResults           searchResults = performASSearch_One(bs, entryId);
+		List<Map>                 searchEntries = searchResults.getSearchEntries();
+		List<ActivityStreamEntry> reply         = null;
+    	if ((null != searchEntries) && (1 == searchEntries.size())) {
+    		// Yes!  Construct a base ActivityStreamData to build the
+    		// rest of its activity stream information with...
+			ActivityStreamParams asp = getActivityStreamParams(bs);
+			asp.setEntriesPerPage(Integer.MAX_VALUE);
+			asp.setActiveComments(Integer.MAX_VALUE);
+			
+			ActivityStreamData asd = new ActivityStreamData();
+			asd.setDateTime(GwtServerHelper.getDateTimeString(new Date()));
+			
+			PagingData pd = asd.getPagingData();
+			pd.initializePaging(asp);
+			pd.setTotalRecords(searchResults.getTotalRecords());
+
+			// ...read the current user's seen map...
+    		SeenMap sm = bs.getProfileModule().getUserSeenMap(null);
+    		
+    		// ...and populate the ActivityStreamData from the entry
+    		// ...data we got from the search.
+ 			populateASDFromED(
+				request,
+				sm,
+				asd,
+				false,	// false -> Don't force plain text descriptions.
+				ASEntryData.buildEntryDataList(
+					request,
+					bs,
+					ActivityStreamDataType.ALL,
+					true,	// true  -> Return comments - That's what this is about, right?
+					false,	// false -> Don't force plain text descriptions.
+					GwtServerHelper.isPresenceEnabled(),
+					Utils.canUserOnlySeeCommonGroupMembers(),
+					asp,
+					sm,
+					searchEntries));
+
+ 			// Did we resolve things down to the single entry we requested?
+ 			List<ActivityStreamEntry> entries = asd.getEntries();
+ 			if ((null != entries) && (1 == entries.size())) {
+ 				// Yes!  Return its comments.
+ 	 			reply = entries.get(0).getComments();
+ 			}
+    	}
+    	
+    	// If we don't have a List<ActivityStreamEntry> of the entry's
+    	// comments...
+    	if (null == reply) {
+    		// ...return an empty list.
+    		new ArrayList<ActivityStreamEntry>();
+    	}
+
+    	// If we get here, reply refers to a List<ActivityStreamEntry>
+    	// of the requested entry's comments.  Return it.
+		return reply;
 	}
 	
 	
@@ -1926,6 +1997,25 @@ public class GwtActivityStreamHelper {
 			searchCriteria,
 			pageStart,
 			entriesPerPage);
+
+		// ...and return an appropriate ASSearchResults.
+		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
+		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+		return new ASSearchResults(searchEntries, totalRecords);
+	}
+	
+	/*
+	 * Returns an ASSearchResults object containing the search results
+	 * from performing an activity stream search for a single entry. 
+	 */
+	@SuppressWarnings("unchecked")
+	private static ASSearchResults performASSearch_One(AllModulesInjected bs, Long entryId) {
+		// Perform the search...
+		Criteria searchCriteria = buildSearchCriteria(bs, entryId);
+		Map searchResults = bs.getBinderModule().executeSearchQuery(
+			searchCriteria,
+			0,
+			Integer.MAX_VALUE);
 
 		// ...and return an appropriate ASSearchResults.
 		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
