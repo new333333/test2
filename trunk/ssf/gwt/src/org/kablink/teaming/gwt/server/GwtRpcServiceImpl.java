@@ -3326,12 +3326,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}		
 	}
 
-	/**
+	/*
 	 * Return a list of comments for the given entry.
 	 */
 	private List<ActivityStreamEntry> getEntryComments( HttpRequestInfo ri, String entryId )
 	{
-		return GwtActivityStreamHelper.getEntryComments( this, entryId );
+		return GwtActivityStreamHelper.getEntryComments( this, getRequest( ri ), Long.parseLong( entryId ) );
 	}
 	
 	
