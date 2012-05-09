@@ -306,6 +306,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource nextDisabled16();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/arrow_right_over.png")
+	public ImageResource nextMouseOver16();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/pause.png")
 	public ImageResource pauseActivityStream();
 	
@@ -352,6 +356,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/arrow_left_disabled.png")
 	public ImageResource previousDisabled16();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/arrow_left_over.png")
+	public ImageResource previousMouseOver16();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/refresh.png")
@@ -480,5 +488,4 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/folder_generic_large.gif")
 	public ImageResource genericFolderLarge();
-	
 }// end GwtTeamingImageBundle

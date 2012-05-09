@@ -49,7 +49,7 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	public ImageResource arrowDown();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_down_g.png")
+	@Source("org/kablink/teaming/gwt/public/images/arrow_down_disabled.png")
 	public ImageResource arrowDownDisabled();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -61,7 +61,7 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	public ImageResource arrowUp();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_up_g.png")
+	@Source("org/kablink/teaming/gwt/public/images/arrow_up_disabled.png")
 	public ImageResource arrowUpDisabled();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)

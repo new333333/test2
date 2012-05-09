@@ -33,7 +33,17 @@
 package org.kablink.teaming.gwt.client.binderviews;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.CalendarHoursFullDayEvent;
+import org.kablink.teaming.gwt.client.event.CalendarHoursWorkDayEvent;
+import org.kablink.teaming.gwt.client.event.CalendarNextPeriodEvent;
+import org.kablink.teaming.gwt.client.event.CalendarPreviousPeriodEvent;
+import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
+import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
+import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarDisplayDataCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -41,16 +51,23 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RequiresResize;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Class used for displaying the calendar navigation tool panel.  
  * 
  * @author drfoster@novell.com
  */
+@SuppressWarnings("unused")
 public class CalendarNavigationPanel extends ToolPanelBase {
-	private VibeFlowPanel	m_fp;	// The panel holding the content.
+	private CalendarDisplayDataRpcResponseData	m_calendarDisplayData;	//
+	private VibeFlowPanel						m_fp;					// The panel holding the content.
 	
 	/*
 	 * Constructor method.
@@ -65,9 +82,62 @@ public class CalendarNavigationPanel extends ToolPanelBase {
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
-		m_fp.addStyleName("vibe-binderViewTools vibe-calendarNavigation-panel");
+		m_fp.addStyleName("vibe-binderViewTools vibe-calNav-panel");
 		initWidget(m_fp);
 		loadPart1Async();
+	}
+	
+	/*
+	 * Returns the menu bar item for the hours menu.
+	 */
+	private VibeMenuBar buildHoursMenu() {
+		// Construct the menu bar to return.
+		VibeMenuBar reply = new VibeMenuBar();
+		reply.addStyleName("vibe-calNav-hoursMenu");
+
+		// Extract the current hours value from the display
+		// information.
+//! 	...this needs to be implemented...
+		String selectedHours = m_messages.calendarNav_Hours_WorkDay();
+
+		// Generate the top level menu item...
+		VibeMenuBar	hoursMenuBar = new VibeMenuBar(true);	// true -> Vertical drop down menu.
+		hoursMenuBar.addStyleName("vibe-entryMenuPopup");
+		final VibeMenuItem hoursMenuItem = new VibeMenuItem(selectedHours, hoursMenuBar);
+		hoursMenuItem.addStyleName("vibe-entryMenuBarItem");
+		hoursMenuItem.setHTML(renderItemHTML(selectedHours, true));
+
+		// ...the menu item for 'full day'...
+		hoursMenuBar.addItem(new VibeMenuItem(m_messages.calendarNav_Hours_FullDay(), false, new Command() {
+			@Override
+			public void execute() {
+				hoursMenuItem.setHTML(renderItemHTML(m_messages.calendarNav_Hours_FullDay(), true));
+				GwtTeaming.fireEvent(new CalendarHoursFullDayEvent(m_binderInfo.getBinderIdAsLong()));
+			}
+		}));
+		
+		// ...and the menu item for 'work day'.
+		hoursMenuBar.addItem(new VibeMenuItem(m_messages.calendarNav_Hours_WorkDay(), false, new Command() {
+			@Override
+			public void execute() {
+				hoursMenuItem.setHTML(renderItemHTML(m_messages.calendarNav_Hours_WorkDay(), true));
+				GwtTeaming.fireEvent(new CalendarHoursWorkDayEvent(m_binderInfo.getBinderIdAsLong()));
+			}
+		}));
+
+		// Finally, return the menu bar item we constructed.
+		reply.addItem(hoursMenuItem);
+		return reply;
+	}
+	
+	/*
+	 * Constructs a widget that can be used as a separator on the
+	 * calendar navigation bar.
+	 */
+	private static Widget buildSeparator() {
+		InlineLabel reply = new InlineLabel();
+		reply.addStyleName("vibe-calNav-separator");
+		return reply;
 	}
 
 	/**
@@ -114,9 +184,26 @@ public class CalendarNavigationPanel extends ToolPanelBase {
 	 * panel.
 	 */
 	private void loadPart1Now() {
-//!		...this needs to be implemented...
-		
-		renderCalendarNavigationAsync();
+		// Load the calendar display data.
+		GwtClientHelper.executeCommand(
+				new GetCalendarDisplayDataCmd(m_binderInfo),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetCalendarDisplayData(),
+					m_binderInfo.getBinderIdAsLong());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Store the calendar display data and render the
+				// panel.
+				m_calendarDisplayData = ((CalendarDisplayDataRpcResponseData) response.getResponseData());
+				renderCalendarNavigationAsync();
+			}
+		});
 	}
 
 	/*
@@ -136,13 +223,53 @@ public class CalendarNavigationPanel extends ToolPanelBase {
 	 * Synchronously renders the calendar navigation panel.
 	 */
 	private void renderCalendarNavigationNow() {
+		// Add the hours select widget...
+		m_fp.add(buildHoursMenu());
+		m_fp.add(buildSeparator());
+		
+		// ...add the next/previous period buttons...
+		m_fp.add(new CalendarNavigationButton(m_images.previous16(), m_images.previousDisabled16(), m_images.previousMouseOver16(), true, m_messages.calendarNav_Alt_PreviousTimePeriod(), new CalendarPreviousPeriodEvent(m_binderInfo.getBinderIdAsLong())));
+		m_fp.add(new CalendarNavigationButton(m_images.next16(),     m_images.nextDisabled16(),     m_images.nextMouseOver16(),     true, m_messages.calendarNav_Alt_NextTimePeriod(),     new CalendarNextPeriodEvent(    m_binderInfo.getBinderIdAsLong())));
+
+		// ...add the currently selected date/date range...
 //!		...this needs to be implemented...
-		m_fp.add(new InlineLabel("CalendarNavigationPanel.renderCalendarNavigationNow():  ...this needs to be implemented..."));
+		
+		// ...add the date navigation buttons...
+//!		...this needs to be implemented...
+
+		// ...add the view selection buttons...
+//!		...this needs to be implemented...
+		
+		// ...and add the settings button.
+//!		...this needs to be implemented...
+		
+		InlineLabel il = new InlineLabel("CalendarNavigationPanel.renderCalendarNavigationNow():  ...this needs to be implemented...");
+		il.addStyleName("white marginleft8px");
+		m_fp.add(il);
 		
 		// Finally, tell our container that we're ready.
 		toolPanelReady();
 	}
 
+	/*
+	 * Renders HTML for a menu item.
+	 */
+	private String renderItemHTML(String itemText, boolean enabled) {
+		FlowPanel htmlPanel = new FlowPanel();
+		InlineLabel itemLabel = new InlineLabel(itemText);
+		itemLabel.addStyleName("vibe-mainMenuBar_BoxText");
+		htmlPanel.add(itemLabel);
+
+		Image dropDownImg = new Image(enabled ? GwtTeaming.getMainMenuImageBundle().menuArrow() : GwtTeaming.getMainMenuImageBundle().menuArrowGray());
+		dropDownImg.addStyleName("vibe-mainMenuBar_BoxDropDownImg");
+		if (!(GwtClientHelper.jsIsIE())) {
+			dropDownImg.addStyleName("vibe-mainMenuBar_BoxDropDownImgNonIE");
+		}
+		htmlPanel.add(dropDownImg);
+		
+		return htmlPanel.getElement().getInnerHTML();
+	}
+	
 	/**
 	 * Called from the binder view to allow the panel to do any work
 	 * required to reset itself.

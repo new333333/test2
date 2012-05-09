@@ -49,7 +49,7 @@ public interface GwtTeamingTaskListingImageBundle extends ClientBundle {
 	public ImageResource arrowDown();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_down_g.png")
+	@Source("org/kablink/teaming/gwt/public/images/arrow_down_disabled.png")
 	public ImageResource arrowDownDisabled();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -57,27 +57,27 @@ public interface GwtTeamingTaskListingImageBundle extends ClientBundle {
 	public ImageResource arrowDownMouseOver();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/TaskListing/arrow_left.png")
+	@Source("org/kablink/teaming/gwt/public/images/arrow_left.png")
 	public ImageResource arrowLeft();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/TaskListing/arrow_left_g.png")
+	@Source("org/kablink/teaming/gwt/public/images/arrow_left_disabled.png")
 	public ImageResource arrowLeftDisabled();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/TaskListing/arrow_left_over.png")
+	@Source("org/kablink/teaming/gwt/public/images/arrow_left_over.png")
 	public ImageResource arrowLeftMouseOver();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/TaskListing/arrow_right.png")
+	@Source("org/kablink/teaming/gwt/public/images/arrow_right.png")
 	public ImageResource arrowRight();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/TaskListing/arrow_right_g.png")
+	@Source("org/kablink/teaming/gwt/public/images/arrow_right_disabled.png")
 	public ImageResource arrowRightDisabled();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/TaskListing/arrow_right_over.png")
+	@Source("org/kablink/teaming/gwt/public/images/arrow_right_over.png")
 	public ImageResource arrowRightMouseOver();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -85,7 +85,7 @@ public interface GwtTeamingTaskListingImageBundle extends ClientBundle {
 	public ImageResource arrowUp();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/arrow_up_g.png")
+	@Source("org/kablink/teaming/gwt/public/images/arrow_up_disabled.png")
 	public ImageResource arrowUpDisabled();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)

@@ -40,6 +40,10 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
+import org.kablink.teaming.gwt.client.event.CalendarHoursFullDayEvent;
+import org.kablink.teaming.gwt.client.event.CalendarHoursWorkDayEvent;
+import org.kablink.teaming.gwt.client.event.CalendarNextPeriodEvent;
+import org.kablink.teaming.gwt.client.event.CalendarPreviousPeriodEvent;
 import org.kablink.teaming.gwt.client.event.CalendarShowAssignedEvent;
 import org.kablink.teaming.gwt.client.event.CalendarShowFolderAllEvent;
 import org.kablink.teaming.gwt.client.event.CalendarShowFolderByActivityEvent;
@@ -74,6 +78,10 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class CalendarFolderView extends FolderViewBase
 	implements
 	// Event handlers implemented by this class.
+		CalendarHoursFullDayEvent.Handler,
+		CalendarHoursWorkDayEvent.Handler,
+		CalendarNextPeriodEvent.Handler,
+		CalendarPreviousPeriodEvent.Handler,
 		CalendarShowAssignedEvent.Handler,
 		CalendarShowFolderAllEvent.Handler,
 		CalendarShowFolderByActivityEvent.Handler,
@@ -92,6 +100,10 @@ public class CalendarFolderView extends FolderViewBase
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.CALENDAR_HOURS_FULL_DAY,
+		TeamingEvents.CALENDAR_HOURS_WORK_DAY,
+		TeamingEvents.CALENDAR_NEXT_PERIOD,
+		TeamingEvents.CALENDAR_PREVIOUS_PERIOD,
 		TeamingEvents.CALENDAR_SHOW_ASSIGNED,
 		TeamingEvents.CALENDAR_SHOW_FOLDER_ALL,
 		TeamingEvents.CALENDAR_SHOW_FOLDER_BY_ACTIVITY,
@@ -216,6 +228,74 @@ public class CalendarFolderView extends FolderViewBase
 		// Let the widget attach and then register our event handlers.
 		super.onAttach();
 		registerEvents();
+	}
+	
+	/**
+	 * Handles CalendarHoursFullDayEvent's received by this class.
+	 * 
+	 * Implements the CalendarHoursFullDayEvent.Handler.onCalendarHoursFullDay() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCalendarHoursFullDay(CalendarHoursFullDayEvent event) {
+		// Is the event targeted to this folder?
+		if (event.getFolderId().equals(getFolderId())) {
+			// Yes!
+//!			...this needs to be implemented...
+			Window.alert("CalendarFolderView.onCalendarHoursFullDay():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles CalendarHoursWorkDayEvent's received by this class.
+	 * 
+	 * Implements the CalendarHoursWorkDayEvent.Handler.onCalendarHoursWorkDay() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCalendarHoursWorkDay(CalendarHoursWorkDayEvent event) {
+		// Is the event targeted to this folder?
+		if (event.getFolderId().equals(getFolderId())) {
+			// Yes!
+//!			...this needs to be implemented...
+			Window.alert("CalendarFolderView.onCalendarHoursWorkDay():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles CalendarNextPeriodEvent's received by this class.
+	 * 
+	 * Implements the CalendarNextPeriodEvent.Handler.onCalendarNextPeriod() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCalendarNextPeriod(CalendarNextPeriodEvent event) {
+		// Is the event targeted to this folder?
+		if (event.getFolderId().equals(getFolderId())) {
+			// Yes!
+//!			...this needs to be implemented...
+			Window.alert("CalendarFolderView.onCalendarNextPeriod():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles CalendarPreviousPeriodEvent's received by this class.
+	 * 
+	 * Implements the CalendarPreviousPeriodEvent.Handler.onCalendarPreviousPeriod() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCalendarPreviousPeriod(CalendarPreviousPeriodEvent event) {
+		// Is the event targeted to this folder?
+		if (event.getFolderId().equals(getFolderId())) {
+			// Yes!
+//!			...this needs to be implemented...
+			Window.alert("CalendarFolderView.onCalendarPreviousPeriod():  ...this needs to be implemented...");
+		}
 	}
 	
 	/**
