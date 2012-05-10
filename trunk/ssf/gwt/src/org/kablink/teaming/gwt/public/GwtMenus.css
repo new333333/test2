@@ -4,14 +4,8 @@
 
 
 /* Start:  Generic menu styles. */
-	.gwt-MenuBar-horizontal {
-		border: 0px solid #BBB !important;
-		background: transparent url(images/main_menu_bg.png) !important;
-		}
-	.gwt-MenuBar-horizontal .gwt-MenuItem {
-		color: #1f1f1f;
-		padding: 0 6px;
-		}
+	.gwt-MenuBar-horizontal               {border: 0px solid #BBB !important; background: transparent url(images/main_menu_bg.png);}
+	.gwt-MenuBar-horizontal .gwt-MenuItem {color: #1f1f1f; padding: 0 6px;}
 /* End:  Generic binder view tools styles. */
 
 /* Start:  Entry menu styles. */
@@ -155,17 +149,8 @@
 		padding-top: 0px;
 	}
 
-	.vibe-binderViewTools
-	.gwt-MenuBar-horizontal {
-		background: #ededed url(images/spacer_1px.png) !important;
-		-moz-border-radius-topleft: 5px;
-		-moz-border-radius-topright: 5px;
-		-webkit-border-top-left-radius: 5px;
-		-webkit-border-top-right-radius: 5px;
-		}
-	.vibe-binderViewTools .gwt-MenuBar-horizontal .gwt-MenuBar table td {
-		padding-right: 5px;
-		}	
+	.vibe-binderViewTools .gwt-MenuBar-horizontal                       {background: #ededed url(images/spacer_1px.png); -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px;}
+	.vibe-binderViewTools .gwt-MenuBar-horizontal .gwt-MenuBar table td {padding-right: 5px;}	
 
 	.vibe-mainMenuControl
 	{

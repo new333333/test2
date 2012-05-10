@@ -76,15 +76,16 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public abstract class FolderViewBase extends ViewBase implements ToolPanelReady {
-	private BinderInfo							m_folderInfo;			// A BinderInfo object that describes the folder being viewed.
-	private boolean								m_allowColumnSizing;	// true -> Add the column sizing entry menu item.  false -> Don't.
-	private boolean								m_viewReady;			// Set true once the view and all its components are ready.
-	private FolderDisplayDataRpcResponseData	m_folderDisplayData;	// Various pieces of display information about the folder (sorting, page size, column widths, ...) 
-	private int									m_readyComponents;		// Tracks items as they become ready.
-	private List<Widget>						m_verticalPanels;		// Tracks the widgets added as vertical panels.
-	private String								m_styleBase;			// Base name for the view specific styles to use for this view.
-	private VibeFlowPanel						m_flowPanel;			// The flow panel used to hold the view specific content of the view.
-	private VibeFlowPanel						m_verticalFlowPanel;	// The flow panel that holds all the components of the view, both common and view specific, that flow vertically down the view.
+	private BinderInfo							m_folderInfo;					// A BinderInfo object that describes the folder being viewed.
+	private boolean								m_allowColumnSizing;			// true -> Add the column sizing entry menu item.  false -> Don't.
+	private boolean								m_viewReady;					// Set true once the view and all its components are ready.
+	private CalendarDisplayDataProvider			m_calendarDisplayDataProvider;	// A CalendarDisplayDataProvider to use to obtain a CalendarDisplayDataRpcResponseData object.
+	private FolderDisplayDataRpcResponseData	m_folderDisplayData;			// Various pieces of display information about the folder (sorting, page size, column widths, ...) 
+	private int									m_readyComponents;				// Tracks items as they become ready.
+	private List<Widget>						m_verticalPanels;				// Tracks the widgets added as vertical panels.
+	private String								m_styleBase;					// Base name for the view specific styles to use for this view.
+	private VibeFlowPanel						m_flowPanel;					// The flow panel used to hold the view specific content of the view.
+	private VibeFlowPanel						m_verticalFlowPanel;			// The flow panel that holds all the components of the view, both common and view specific, that flow vertically down the view.
 
 	// Control whether a FilterPanel can ever be instantiated.  true
 	// and they can and false and they can't.
@@ -130,6 +131,8 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * 
 	 * @param folderInfo
 	 * @param viewReady
+	 * @param styleBase
+	 * @param allowColumnSizing
 	 */
 	public FolderViewBase(BinderInfo folderInfo, ViewReady viewReady, String styleBase, boolean allowColumnSizing) {
 		// Initialize the super class...
@@ -668,7 +671,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Synchronously loads the next part of the view.
 	 */
 	private void loadPart8Now() {
-		CalendarNavigationPanel.createAsync(this, getFolderInfo(), this, new ToolPanelClient() {			
+		CalendarNavigationPanel.createAsync(this, m_calendarDisplayDataProvider, getFolderInfo(), this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -798,6 +801,15 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		Scheduler.get().scheduleDeferred(doResize);
 	}
 
+	/**
+	 * Stores a CalendarDisplayDataProvider for use by folder view.
+	 * 
+	 * @param calendarDisplayDataProvider
+	 */
+	public void setCalendarDisplayDataProvider(CalendarDisplayDataProvider calendarDisplayDataProvider) {
+		m_calendarDisplayDataProvider = calendarDisplayDataProvider;
+	}
+	
 	/**
 	 * Implements the ToolPanelReady.toolPanelReady() method.
 	 */
