@@ -76,7 +76,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 @SuppressWarnings("unused")
 public class CalendarFolderView extends FolderViewBase
-	implements
+	implements CalendarDisplayDataProvider,
 	// Event handlers implemented by this class.
 		CalendarHoursFullDayEvent.Handler,
 		CalendarHoursWorkDayEvent.Handler,
@@ -120,8 +120,12 @@ public class CalendarFolderView extends FolderViewBase
 	 * @param viewReady
 	 */
 	public CalendarFolderView(BinderInfo folderInfo, ViewReady viewReady) {
-		// Simply initialize the super class.
+		// Initialize the super class...
 		super(folderInfo, viewReady, "vibe-calendarFolder", false);
+		
+		// ...and tell it that we can provide the calendar display data
+		// ...if it needs it.
+		setCalendarDisplayDataProvider(this);
 	}
 	
 	/**
@@ -132,6 +136,46 @@ public class CalendarFolderView extends FolderViewBase
 	@Override
 	public void constructView() {
 		loadPart1Async();
+	}
+
+	/**
+	 * Returns the CalendarDisplayDataRpcResponseData used by this view.
+	 * 
+	 * Implements the CalendarDisplayDataProvider.getCalendarDisplayData() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public void getCalendarDisplayData(final AsyncCalendarDisplayDataCallback cb) {
+		// If we've already loaded the calendar display data...
+		if (null != m_calendarDisplayData) {
+			// ...simply return it.
+			cb.success(m_calendarDisplayData);
+		}
+		
+		else {
+			// Otherwise, load it now.
+			GwtClientHelper.executeCommand(
+					new GetCalendarDisplayDataCmd(getFolderInfo()),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_GetCalendarDisplayData(),
+						getFolderInfo().getBinderIdAsLong());
+					cb.failure();
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Store the calendar display data and return it
+					// through the callback.
+					m_calendarDisplayData = ((CalendarDisplayDataRpcResponseData) response.getResponseData());
+					cb.success(m_calendarDisplayData);
+				}
+			});
+		}
 	}
 
 	/**
@@ -173,26 +217,34 @@ public class CalendarFolderView extends FolderViewBase
 	 * Synchronously loads the calendar display data.
 	 */
 	private void loadPart1Now() {
-		// Load the calendar display data.
-		GwtClientHelper.executeCommand(
-				new GetCalendarDisplayDataCmd(getFolderInfo()),
-				new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetCalendarDisplayData(),
-					getFolderInfo().getBinderIdAsLong());
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Store the calendar display data and continue loading
-				// the view.
-				m_calendarDisplayData = ((CalendarDisplayDataRpcResponseData) response.getResponseData());
-				loadPart2Async();
-			}
-		});
+		// If we've already loaded the calendar display data...
+		if (null != m_calendarDisplayData) {
+			// ...simply continue the load process.
+			loadPart2Async();
+		}
+		
+		else {
+			// Otherwise, load it now.
+			GwtClientHelper.executeCommand(
+					new GetCalendarDisplayDataCmd(getFolderInfo()),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_GetCalendarDisplayData(),
+						getFolderInfo().getBinderIdAsLong());
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Store the calendar display data and continue
+					// loading the view.
+					m_calendarDisplayData = ((CalendarDisplayDataRpcResponseData) response.getResponseData());
+					loadPart2Async();
+				}
+			});
+		}
 	}
 
 	/*

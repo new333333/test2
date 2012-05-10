@@ -34,7 +34,7 @@
 	/* ...End:  Binder owner avatar panel styles. */
 	
 	/* ...Start:  Calendar navigation panel styles. */
-		.vibe-calNav-hoursMenu                {display: inline-block; vertical-align: middle;}
+		.vibe-calNav-hoursMenu                {display: inline-block; vertical-align: middle; background: transparent !important;}
 		.vibe-calNav-panel                    {background-color: #C4C4C4; margin: 0px; padding: 10px; overflow: hidden; white-space: nowrap; -moz-border-radius: 0px !important; -webkit-border-radius: 0px  !important;}
 		.vibe-calNav-separator                {border-left: 1px dotted #FFFFFF; margin: 0px 5px 0px 5px; padding: 0px; width: 0px; vertical-align: middle; white-space: nowrap;}
 		.vibe-calNavButton-widgetAnchor       {background: none !important;}

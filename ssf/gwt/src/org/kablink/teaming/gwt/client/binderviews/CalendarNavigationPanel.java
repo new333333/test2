@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.binderviews;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.binderviews.CalendarDisplayDataProvider.AsyncCalendarDisplayDataCallback;
 import org.kablink.teaming.gwt.client.event.CalendarHoursFullDayEvent;
 import org.kablink.teaming.gwt.client.event.CalendarHoursWorkDayEvent;
 import org.kablink.teaming.gwt.client.event.CalendarNextPeriodEvent;
@@ -66,8 +67,9 @@ import com.google.gwt.user.client.ui.Widget;
  */
 @SuppressWarnings("unused")
 public class CalendarNavigationPanel extends ToolPanelBase {
-	private CalendarDisplayDataRpcResponseData	m_calendarDisplayData;	//
-	private VibeFlowPanel						m_fp;					// The panel holding the content.
+	private CalendarDisplayDataProvider			m_calendarDisplayDataProvider;	//
+	private CalendarDisplayDataRpcResponseData	m_calendarDisplayData;			//
+	private VibeFlowPanel						m_fp;							// The panel holding the content.
 	
 	/*
 	 * Constructor method.
@@ -76,9 +78,12 @@ public class CalendarNavigationPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private CalendarNavigationPanel(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
+	private CalendarNavigationPanel(RequiresResize containerResizer, CalendarDisplayDataProvider calendarDisplayDataProvider, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
 		super(containerResizer, binderInfo, toolPanelReady);
+		
+		// ...store the parameters...
+		m_calendarDisplayDataProvider = calendarDisplayDataProvider;
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
@@ -92,8 +97,7 @@ public class CalendarNavigationPanel extends ToolPanelBase {
 	 */
 	private VibeMenuBar buildHoursMenu() {
 		// Construct the menu bar to return.
-		VibeMenuBar reply = new VibeMenuBar();
-		reply.addStyleName("vibe-calNav-hoursMenu");
+		VibeMenuBar reply = new VibeMenuBar("vibe-entryMenuBar vibe-calNav-hoursMenu");
 
 		// Extract the current hours value from the display
 		// information.
@@ -101,10 +105,8 @@ public class CalendarNavigationPanel extends ToolPanelBase {
 		String selectedHours = m_messages.calendarNav_Hours_WorkDay();
 
 		// Generate the top level menu item...
-		VibeMenuBar	hoursMenuBar = new VibeMenuBar(true);	// true -> Vertical drop down menu.
-		hoursMenuBar.addStyleName("vibe-entryMenuPopup");
-		final VibeMenuItem hoursMenuItem = new VibeMenuItem(selectedHours, hoursMenuBar);
-		hoursMenuItem.addStyleName("vibe-entryMenuBarItem");
+		VibeMenuBar	hoursMenuBar = new VibeMenuBar(true, "vibe-entryMenuPopup");	// true -> Vertical drop down menu.
+		final VibeMenuItem hoursMenuItem = new VibeMenuItem(selectedHours, false, hoursMenuBar, "vibe-entryMenuBarItem");
 		hoursMenuItem.setHTML(renderItemHTML(selectedHours, true));
 
 		// ...the menu item for 'full day'...
@@ -149,11 +151,11 @@ public class CalendarNavigationPanel extends ToolPanelBase {
 	 * @param toolPanelReady
 	 * @param tpClient
 	 */
-	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+	public static void createAsync(final RequiresResize containerResizer, final CalendarDisplayDataProvider calendarDisplayDataProvider, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
 		GWT.runAsync(CalendarNavigationPanel.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				CalendarNavigationPanel bcp = new CalendarNavigationPanel(containerResizer, binderInfo, toolPanelReady);
+				CalendarNavigationPanel bcp = new CalendarNavigationPanel(containerResizer, calendarDisplayDataProvider, binderInfo, toolPanelReady);
 				tpClient.onSuccess(bcp);
 			}
 			
@@ -184,26 +186,54 @@ public class CalendarNavigationPanel extends ToolPanelBase {
 	 * panel.
 	 */
 	private void loadPart1Now() {
-		// Load the calendar display data.
-		GwtClientHelper.executeCommand(
-				new GetCalendarDisplayDataCmd(m_binderInfo),
-				new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetCalendarDisplayData(),
-					m_binderInfo.getBinderIdAsLong());
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Store the calendar display data and render the
-				// panel.
-				m_calendarDisplayData = ((CalendarDisplayDataRpcResponseData) response.getResponseData());
-				renderCalendarNavigationAsync();
-			}
-		});
+		// Were we given a CalendarDisplayDataProvider?
+		if (null != m_calendarDisplayDataProvider) {
+			// Yes!  Can it get us the
+			// CalendarDisplayDataRpcResponseData?
+			m_calendarDisplayDataProvider.getCalendarDisplayData(new AsyncCalendarDisplayDataCallback() {
+				@Override
+				public void success(CalendarDisplayDataRpcResponseData data) {
+					// Yes!  Store it and render the calendar
+					// navigation panel.
+					m_calendarDisplayData = data;
+					renderCalendarNavigationAsync();
+				}
+				
+				@Override
+				public void failure() {
+					// No, it couldn't provide the
+					// CalendarDisplayDataRpcResponseData!  Forget
+					// about the provider and try getting the display
+					// data directly.
+					m_calendarDisplayDataProvider = null;
+					loadPart1Async();
+				}
+			});
+		}
+		
+		else {
+			// No, we weren't given a CalendarDisplayDataProvider!
+			// Load the calendar display data directly.
+			GwtClientHelper.executeCommand(
+					new GetCalendarDisplayDataCmd(m_binderInfo),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_GetCalendarDisplayData(),
+						m_binderInfo.getBinderIdAsLong());
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Store the calendar display data and render the
+					// panel.
+					m_calendarDisplayData = ((CalendarDisplayDataRpcResponseData) response.getResponseData());
+					renderCalendarNavigationAsync();
+				}
+			});
+		}
 	}
 
 	/*
