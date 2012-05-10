@@ -254,6 +254,24 @@ public class EventHelper {
 				}
 				break;
 			
+			case CALENDAR_CHANGED:
+				// A CalendarChangedEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof CalendarChangedEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = CalendarChangedEvent.registerEvent(eventBus, ((CalendarChangedEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case CALENDAR_GOTO_DATE:
+				// A CalendarGotoDateEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof CalendarGotoDateEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = CalendarGotoDateEvent.registerEvent(eventBus, ((CalendarGotoDateEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case CALENDAR_HOURS_FULL_DAY:
 				// A CalendarHoursFullDayEvent!  Can the event handler
 				// we were given handle that?
@@ -1636,6 +1654,8 @@ public class EventHelper {
 			case BROWSE_HIERARCHY:                  	hasHandler = (eventHandler instanceof BrowseHierarchyEvent.Handler);               break;
 			case BROWSE_HIERARCHY_EXIT:             	hasHandler = (eventHandler instanceof BrowseHierarchyExitEvent.Handler);           break;
 			
+			case CALENDAR_CHANGED:                      hasHandler = (eventHandler instanceof CalendarChangedEvent.Handler);               break;
+			case CALENDAR_GOTO_DATE:                    hasHandler = (eventHandler instanceof CalendarGotoDateEvent.Handler);              break;
 			case CALENDAR_HOURS_FULL_DAY:               hasHandler = (eventHandler instanceof CalendarHoursFullDayEvent.Handler);          break;
 			case CALENDAR_HOURS_WORK_DAY:               hasHandler = (eventHandler instanceof CalendarHoursWorkDayEvent.Handler);          break;
 			case CALENDAR_NEXT_PERIOD:                  hasHandler = (eventHandler instanceof CalendarNextPeriodEvent.Handler);            break;

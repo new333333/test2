@@ -82,6 +82,22 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource browseHierarchy();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/cal_menu.png")
+	public ImageResource calDatePicker();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/cal_menu_over.png")
+	public ImageResource calDatePickerMouseOver();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/calView_today_btn.png")
+	public ImageResource calViewToday();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/calView_today_over_btn.png")
+	public ImageResource calViewTodayMouseOver();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/close_x.png")
 	public ImageResource closeX();
 

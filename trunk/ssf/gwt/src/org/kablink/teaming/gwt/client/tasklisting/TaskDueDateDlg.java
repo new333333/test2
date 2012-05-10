@@ -53,6 +53,7 @@ import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.EventButton;
 import org.kablink.teaming.gwt.client.widgets.TimePicker;
 import org.kablink.teaming.gwt.client.widgets.ValueSpinner;
 import org.kablink.teaming.gwt.client.widgets.TZDateBox;
@@ -657,7 +658,7 @@ public class TaskDueDateDlg extends DlgBox
 		m_dateBoxMap.put(baseId, dateBox);
 
 		// ...create the associated picker button...
-		TaskButton datePickerButton = new TaskButton(
+		EventButton datePickerButton = new EventButton(
 			m_images.calMenu(),
 			null,	// null -> No disabled image.
 			m_images.calMenuOver(),
