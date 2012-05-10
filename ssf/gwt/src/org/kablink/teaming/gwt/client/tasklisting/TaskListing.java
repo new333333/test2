@@ -57,6 +57,7 @@ import org.kablink.teaming.gwt.client.util.EventWrapper;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
+import org.kablink.teaming.gwt.client.widgets.EventButton;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -89,6 +90,12 @@ public class TaskListing extends Composite implements TaskProvider {
 	private boolean			m_updateCalculatedDates;	// true -> Tell the task table to update the calculated dates upon loading.
 	private boolean			m_showModeSelect;			// true -> Show the 'All Entries vs. From Folder' options.  false -> Don't.
 	private boolean			m_sortDescend;				// true -> Sort is descending.  false -> Sort is ascending.
+	private EventButton		m_deleteButton;				//
+	private EventButton		m_moveDownButton;			//
+	private EventButton		m_moveUpButton;				//
+	private EventButton		m_moveLeftButton;			//
+	private EventButton		m_moveRightButton;			//
+	private EventButton		m_purgeButton;				//
 	private FlowPanel		m_taskListingDIV;			// The <DIV> in the content pane that's to contain the task listing.
 	private FlowPanel		m_taskRootDIV;				// The <DIV> in the content pane that's to contain the task tool bar.
 	private FlowPanel		m_taskToolsDIV;				// The <DIV> in the content pane that's to contain the task tool bar.
@@ -103,12 +110,6 @@ public class TaskListing extends Composite implements TaskProvider {
 	private String			m_sortBy;					// The column the tasks are currently sorted by.
 	private String			m_taskChangeReason;			// Empty, taskAdded or taskModified, as the case may be.
 	private TaskBundle		m_taskBundle;				// The TaskLinkage and List<TaskListItem> that we're listing.
-	private TaskButton		m_deleteButton;				//
-	private TaskButton		m_moveDownButton;			//
-	private TaskButton		m_moveUpButton;				//
-	private TaskButton		m_moveLeftButton;			//
-	private TaskButton		m_moveRightButton;			//
-	private TaskButton		m_purgeButton;				//
 	private TaskFolderView	m_taskFolderView;			//
 	private TaskPopupMenu	m_viewMenu;					//
 	private TaskTable		m_taskTable;				//
@@ -202,12 +203,12 @@ public class TaskListing extends Composite implements TaskProvider {
 	public String      getSortBy()                {return m_sortBy;               }
 	public String      getTaskChangeReason()      {return m_taskChangeReason;     }
 	public TaskBundle  getTaskBundle()            {return m_taskBundle;           }
-	public TaskButton  getDeleteButton()          {return m_deleteButton;         }
-	public TaskButton  getMoveDownButton()        {return m_moveDownButton;       }
-	public TaskButton  getMoveUpButton()          {return m_moveUpButton;         }
-	public TaskButton  getMoveLeftButton()        {return m_moveLeftButton;       }
-	public TaskButton  getMoveRightButton()       {return m_moveRightButton;      }
-	public TaskButton  getPurgeButton()           {return m_purgeButton;          }
+	public EventButton  getDeleteButton()          {return m_deleteButton;         }
+	public EventButton  getMoveDownButton()        {return m_moveDownButton;       }
+	public EventButton  getMoveUpButton()          {return m_moveUpButton;         }
+	public EventButton  getMoveLeftButton()        {return m_moveLeftButton;       }
+	public EventButton  getMoveRightButton()       {return m_moveRightButton;      }
+	public EventButton  getPurgeButton()           {return m_purgeButton;          }
 	
 	/**
 	 * Set'er methods.
@@ -461,8 +462,8 @@ public class TaskListing extends Composite implements TaskProvider {
 		m_taskToolsLinkageDIV.addStyleName("gwtTaskTools_LinkageDIV" + displayStyle);
 		
 		// ...create the order buttons...
-		m_moveUpButton   = new TaskButton(m_images.arrowUp(),   m_images.arrowUpDisabled(),   m_images.arrowUpMouseOver(),   false, m_messages.taskAltMoveUp(),   TeamingEvents.TASK_MOVE_UP);
-		m_moveDownButton = new TaskButton(m_images.arrowDown(), m_images.arrowDownDisabled(), m_images.arrowDownMouseOver(), false, m_messages.taskAltMoveDown(), TeamingEvents.TASK_MOVE_DOWN);
+		m_moveUpButton   = new EventButton(m_images.arrowUp(),   m_images.arrowUpDisabled(),   m_images.arrowUpMouseOver(),   false, m_messages.taskAltMoveUp(),   TeamingEvents.TASK_MOVE_UP);
+		m_moveDownButton = new EventButton(m_images.arrowDown(), m_images.arrowDownDisabled(), m_images.arrowDownMouseOver(), false, m_messages.taskAltMoveDown(), TeamingEvents.TASK_MOVE_DOWN);
 		m_moveDownButton.addStyleName("gwtTaskTools_Span");
 		InlineLabel il   = new InlineLabel(m_messages.taskLabelOrder());
 		il.addStyleName("gwtTaskTools_Order");
@@ -471,8 +472,8 @@ public class TaskListing extends Composite implements TaskProvider {
 		m_taskToolsLinkageDIV.add(m_moveDownButton);
 
 		// ...create the subtask buttons...
-		m_moveLeftButton  = new TaskButton(m_images.arrowLeft(),  m_images.arrowLeftDisabled(),  m_images.arrowLeftMouseOver(),  false, m_messages.taskAltMoveLeft(),  TeamingEvents.TASK_MOVE_LEFT);
-		m_moveRightButton = new TaskButton(m_images.arrowRight(), m_images.arrowRightDisabled(), m_images.arrowRightMouseOver(), false, m_messages.taskAltMoveRight(), TeamingEvents.TASK_MOVE_RIGHT);
+		m_moveLeftButton  = new EventButton(m_images.arrowLeft(),  m_images.arrowLeftDisabled(),  m_images.arrowLeftMouseOver(),  false, m_messages.taskAltMoveLeft(),  TeamingEvents.TASK_MOVE_LEFT);
+		m_moveRightButton = new EventButton(m_images.arrowRight(), m_images.arrowRightDisabled(), m_images.arrowRightMouseOver(), false, m_messages.taskAltMoveRight(), TeamingEvents.TASK_MOVE_RIGHT);
 		m_moveRightButton.addStyleName("gwtTaskTools_Span");
 		il = new InlineLabel(m_messages.taskLabelSubtask());
 		il.addStyleName("gwtTaskTools_Order");
@@ -503,14 +504,14 @@ public class TaskListing extends Composite implements TaskProvider {
 			// ...create the delete and purge button panel...
 			FlowPanel buttonDIV = new FlowPanel();
 			buttonDIV.addStyleName("gwtTaskTools_ButtonDIV" + displayStyle);
-			m_deleteButton = new TaskButton(
+			m_deleteButton = new EventButton(
 				m_messages.taskLabelDelete(),
 				m_messages.taskAltDelete(),
 				false,	// false -> Disabled by default.
 				TeamingEvents.TASK_DELETE);
 			m_deleteButton.addStyleName("marginright2px");
 			buttonDIV.add(m_deleteButton);
-			m_purgeButton = new TaskButton(
+			m_purgeButton = new EventButton(
 				m_messages.taskLabelPurge(),
 				m_messages.taskAltPurge(),
 				false,	// false -> Disabled by default.

@@ -30,7 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.tasklisting;
+package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,17 +50,20 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
- * Class used to implement a task tool button.  
+ * Class used to implement a button that triggers an event when
+ * clicked.  
  * 
  * @author drfoster@novell.com
  */
-public class TaskButton extends Anchor {
+public class EventButton extends Anchor {
 	private boolean				m_enabled;			// true -> The button is enabled.  false -> The button is disabled.
+	private Command				m_command;			//
 	private Image				m_buttonImage;		// For image buttons, the Image widget that displays the button.
 	private ImageResource		m_baseImgRes;		// For image buttons, the base       image resource. 
 	private ImageResource		m_disabledImgRes;	// For image buttons, the disabled   image resource.
@@ -100,7 +103,7 @@ public class TaskButton extends Anchor {
 		@Override
 		public void onMouseOut(MouseOutEvent me) {
 			if (m_enabled) {
-				if      (null != m_hoverLabel) m_hoverLabel.removeStyleName("gwtTaskToolsButton_WidgetTextHover");
+				if      (null != m_hoverLabel) m_hoverLabel.removeStyleName("vibe-eventButton-widgetTextHover");
 				else if (null != m_hoverImage) m_hoverImage.setResource(m_baseImgRes);
 			}
 		}
@@ -113,7 +116,7 @@ public class TaskButton extends Anchor {
 		@Override
 		public void onMouseOver(MouseOverEvent me) {
 			if (m_enabled) {
-				if      (null != m_hoverLabel) m_hoverLabel.addStyleName("gwtTaskToolsButton_WidgetTextHover");
+				if      (null != m_hoverLabel) m_hoverLabel.addStyleName("vibe-eventButton-widgetTextHover");
 				else if (null != m_hoverImage) m_hoverImage.setResource(m_overImgRes);
 			}
 		}
@@ -132,8 +135,10 @@ public class TaskButton extends Anchor {
 		public void onClick(ClickEvent event) {
 			// If the button is enabled...
 			if (m_enabled) {
-				// ...fire the event.
-				GwtTeaming.fireEvent(m_event);
+				// ...fire the command or event.
+				if (null != m_command)
+				     m_command.execute();
+				else GwtTeaming.fireEvent(m_event);
 			}
 		}
 	}
@@ -148,13 +153,17 @@ public class TaskButton extends Anchor {
 	 * @param imgTitle
 	 * @param eventEnum
 	 * @param event
+	 * @param command
 	 */
-	private TaskButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, TeamingEvents eventEnum, VibeEventBase<?> event) {
+	private EventButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, TeamingEvents eventEnum, VibeEventBase<?> event, Command command) {
 		// Initialize the super class...
 		super();
 		
 		// ...store the parameters...
-		if (null == event) {
+		if ((null == event) && (null == eventEnum)) {
+			m_command = command;
+		}
+		else if (null == event) {
 			m_eventEnum = eventEnum;
 			m_event     = EventHelper.createSimpleEvent(m_eventEnum);
 		}
@@ -169,7 +178,7 @@ public class TaskButton extends Anchor {
 		m_imgTitle       = imgTitle;
 		
 		// ...initialize the Anchor...
-		addStyleName("gwtTaskToolsButton_WidgetAnchor");
+		addStyleName("vibe-eventButton-widgetAnchor");
 		m_enabled = (!enabled);
 		setEnabled(enabled);
 		
@@ -178,7 +187,7 @@ public class TaskButton extends Anchor {
 		if (GwtClientHelper.hasString(imgTitle)) {
 			m_buttonImage.setTitle(imgTitle);
 		}
-		m_buttonImage.addStyleName("gwtTaskToolsButton_WidgetImage");
+		m_buttonImage.addStyleName("vibe-eventButton-widgetImage");
 		m_buttonImage.getElement().setAttribute("align", "absmiddle");
 		
 		// ...tie things together, including the various event
@@ -190,12 +199,16 @@ public class TaskButton extends Anchor {
 		EventWrapper.addHandlers(this, ehs);
 	}
 	
-	public TaskButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, TeamingEvents eventEnum) {
-		this(baseImgRes, disabledImgRes, overImgRes, enabled, imgTitle, eventEnum, null);
+	public EventButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, TeamingEvents eventEnum) {
+		this(baseImgRes, disabledImgRes, overImgRes, enabled, imgTitle, eventEnum, null, null);
 	}
 	
-	public TaskButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, VibeEventBase<?> event) {
-		this(baseImgRes, disabledImgRes, overImgRes, enabled, imgTitle, null, event);
+	public EventButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, VibeEventBase<?> event) {
+		this(baseImgRes, disabledImgRes, overImgRes, enabled, imgTitle, null, event, null);
+	}
+	
+	public EventButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, Command command) {
+		this(baseImgRes, disabledImgRes, overImgRes, enabled, imgTitle, null, null, command);
 	}
 	
 	/**
@@ -207,12 +220,15 @@ public class TaskButton extends Anchor {
 	 * @param eventEnum
 	 * @param event
 	 */
-	private TaskButton(String buttonText, String buttonTitle, boolean enabled, TeamingEvents eventEnum, VibeEventBase<?> event) {
+	private EventButton(String buttonText, String buttonTitle, boolean enabled, TeamingEvents eventEnum, VibeEventBase<?> event, Command command) {
 		// Initialize the super class...
 		super();
 		
 		// ...store the parameters...
-		if (null == event) {
+		if ((null == event) && (null == eventEnum)) {
+			m_command = command;
+		}
+		else if (null == event) {
 			m_eventEnum = eventEnum;
 			m_event     = EventHelper.createSimpleEvent(m_eventEnum);
 		}
@@ -223,16 +239,16 @@ public class TaskButton extends Anchor {
 		m_enabled = enabled;
 		
 		// ..initialize the Anchor...
-		addStyleName("gwtTaskToolsButton_WidgetAnchor");
+		addStyleName("vibe-eventButton-widgetAnchor");
 		m_enabled = (!enabled);
 		setEnabled(enabled);
 		
 		// ...create the button...
 		m_buttonLabel = new InlineLabel(buttonText);
 		m_buttonLabel.setTitle(buttonTitle);
-		m_buttonLabel.addStyleName("gwtTaskToolsButton_WidgetText");
+		m_buttonLabel.addStyleName("vibe-eventButton-widgetText");
 		if (!enabled) {
-			m_buttonLabel.addStyleName("gwtTaskToolsButton_WidgetTextDisabled");
+			m_buttonLabel.addStyleName("vibe-eventButton-widgetTextDisabled");
 		}
 		
 		// ...tie things together, including the various event
@@ -244,12 +260,25 @@ public class TaskButton extends Anchor {
 		EventWrapper.addHandlers(this, ehs);
 	}
 	
-	public TaskButton(String buttonText, String buttonTitle, boolean enabled, TeamingEvents eventEnum) {
-		this(buttonText, buttonTitle, enabled, eventEnum, null);
+	public EventButton(String buttonText, String buttonTitle, boolean enabled, TeamingEvents eventEnum) {
+		this(buttonText, buttonTitle, enabled, eventEnum, null, null);
 	}
 	
-	public TaskButton(String buttonText, String buttonTitle, boolean enabled, VibeEventBase<?> event) {
-		this(buttonText, buttonTitle, enabled, null, event);
+	public EventButton(String buttonText, String buttonTitle, boolean enabled, VibeEventBase<?> event) {
+		this(buttonText, buttonTitle, enabled, null, event, null);
+	}
+	
+	public EventButton(String buttonText, String buttonTitle, boolean enabled, Command command) {
+		this(buttonText, buttonTitle, enabled, null, null, command);
+	}
+
+	/**
+	 * Sets a command to be executed when the button is selected.
+	 * 
+	 * @param command
+	 */
+	public void setCommand(Command command) {
+		m_command = command;
 	}
 	
 	/**
@@ -277,9 +306,9 @@ public class TaskButton extends Anchor {
 		m_enabled = enabled;
 		super.setEnabled(enabled);
 		if (null != m_buttonLabel) {
-			m_buttonLabel.removeStyleName("gwtTaskToolsButton_WidgetTextHover");
-			if (enabled) m_buttonLabel.removeStyleName("gwtTaskToolsButton_WidgetTextDisabled");
-			else         m_buttonLabel.addStyleName(   "gwtTaskToolsButton_WidgetTextDisabled");
+			m_buttonLabel.removeStyleName("vibe-eventButton-widgetTextHover");
+			if (enabled) m_buttonLabel.removeStyleName("vibe-eventButton-widgetTextDisabled");
+			else         m_buttonLabel.addStyleName(   "vibe-eventButton-widgetTextDisabled");
 		}
 		else if (null != m_buttonImage) {
 			m_buttonImage.setResource(enabled ? m_baseImgRes : m_disabledImgRes);

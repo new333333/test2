@@ -32,12 +32,20 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.CalendarDisplayDataProvider.AsyncCalendarDisplayDataCallback;
+import org.kablink.teaming.gwt.client.event.CalendarChangedEvent;
+import org.kablink.teaming.gwt.client.event.CalendarGotoDateEvent;
 import org.kablink.teaming.gwt.client.event.CalendarHoursFullDayEvent;
 import org.kablink.teaming.gwt.client.event.CalendarHoursWorkDayEvent;
 import org.kablink.teaming.gwt.client.event.CalendarNextPeriodEvent;
 import org.kablink.teaming.gwt.client.event.CalendarPreviousPeriodEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
@@ -45,12 +53,17 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarDisplayDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.widgets.EventButton;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.i18n.shared.DateTimeFormat;
+import com.google.gwt.i18n.shared.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.Command;
@@ -58,7 +71,10 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RequiresResize;
+import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.datepicker.client.DatePicker;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * Class used for displaying the calendar navigation tool panel.  
@@ -66,10 +82,23 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 @SuppressWarnings("unused")
-public class CalendarNavigationPanel extends ToolPanelBase {
+public class CalendarNavigationPanel extends ToolPanelBase
+	implements
+		// Event handlers implemented by this class.
+		CalendarChangedEvent.Handler
+{
+	private boolean								m_toolPanelReady;				//
 	private CalendarDisplayDataProvider			m_calendarDisplayDataProvider;	//
 	private CalendarDisplayDataRpcResponseData	m_calendarDisplayData;			//
+	private List<HandlerRegistration>			m_registeredEventHandlers;		// Event handlers that are currently registered.
 	private VibeFlowPanel						m_fp;							// The panel holding the content.
+	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.CALENDAR_CHANGED,
+	};
 	
 	/*
 	 * Constructor method.
@@ -91,11 +120,91 @@ public class CalendarNavigationPanel extends ToolPanelBase {
 		initWidget(m_fp);
 		loadPart1Async();
 	}
-	
+
 	/*
-	 * Returns the menu bar item for the hours menu.
+	 * Returns a widget with the date/date range.
 	 */
-	private VibeMenuBar buildHoursMenu() {
+	private Widget buildDateDisplay() {
+		// Extract the current date/date range from the display
+		// information.
+//! 	...this needs to be implemented...
+		DateTimeFormat df = DateTimeFormat.getFormat(PredefinedFormat.YEAR_MONTH);
+		String dateDisplay = df.format(new Date());
+		
+		InlineLabel il = new InlineLabel(dateDisplay);
+		il.addStyleName("vibe-calNav-date");
+		
+		VibeFlowPanel reply = new VibeFlowPanel();
+		reply.addStyleName("vibe-calNav-datePanel");
+		reply.add(il);
+		
+		return reply;
+	}
+
+	/*
+	 * Returns a widget with the date navigation buttons.
+	 */
+	private Widget buildDateNavigation() {
+		// Construct a button to activate the date picker...
+		final EventButton datePickerButton = new EventButton(
+			m_images.calDatePicker(),
+			null,
+			m_images.calDatePickerMouseOver(),
+			true,
+			m_messages.calendarNav_Alt_GoTo(),
+			((Command) null));
+		datePickerButton.addStyleName("vibe-calNav-datePicker");
+
+		// ...connect a command to it that gets called when the button
+		// ...is selected...
+		datePickerButton.setCommand(
+			new Command() {
+				@Override
+				public void execute() {
+					final TeamingPopupPanel popup = new TeamingPopupPanel(true);
+					popup.setStyleName("dateBoxPopup");
+					DatePicker dp = new DatePicker();
+					dp.addValueChangeHandler(new ValueChangeHandler<Date>() {
+						@Override
+						public void onValueChange(ValueChangeEvent<Date> event) {
+							popup.hide();
+							navigateToDateAsync(event.getValue());
+						}
+					});
+					popup.add(dp);
+					popup.showRelativeTo(datePickerButton);
+				}
+			});
+
+		// ...construct a button to navigate to today...
+		final EventButton todayButton = new EventButton(
+			m_images.calViewToday(),
+			null,
+			m_images.calViewTodayMouseOver(),
+			true,
+			m_messages.calendarNav_Alt_GoToToday(),
+			new Command() {
+				@Override
+				public void execute() {
+					navigateToDateAsync(new Date());
+				}
+			});
+		todayButton.addStyleName("vibe-calNav-today");
+
+		// ...add the buttons to a panel...
+		VibeFlowPanel reply = new VibeFlowPanel();
+		reply.addStyleName("vibe-calNav-dateNavPanel");
+		reply.add(datePickerButton);
+		reply.add(todayButton     );
+
+		// ...and return the panel.
+		return reply;
+	}
+
+	/*
+	 * Returns a widget with the hours menu.
+	 */
+	private Widget buildHoursMenu() {
 		// Construct the menu bar to return.
 		VibeMenuBar reply = new VibeMenuBar("vibe-entryMenuBar vibe-calNav-hoursMenu");
 
@@ -133,8 +242,8 @@ public class CalendarNavigationPanel extends ToolPanelBase {
 	}
 	
 	/*
-	 * Constructs a widget that can be used as a separator on the
-	 * calendar navigation bar.
+	 * Returns a widget with a separator that can be used between
+	 * sections of the calendar navigation bar.
 	 */
 	private static Widget buildSeparator() {
 		InlineLabel reply = new InlineLabel();
@@ -235,6 +344,89 @@ public class CalendarNavigationPanel extends ToolPanelBase {
 			});
 		}
 	}
+	
+	/*
+	 * Asynchronously navigates the calendar to the given date.
+	 */
+	private void navigateToDateAsync(final Date date) {
+		ScheduledCommand doNavigate = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				navigateToDateNow(date);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doNavigate);
+	}
+	
+	/**
+	 * Called when the calendar folder view is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach() {
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
+	
+	/**
+	 * Called when the calendar folder view is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach() {
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Handles CalendarChangedEvent's received by this class.
+	 * 
+	 * Implements the CalendarChangedEvent.Handler.onCalendarChanged() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCalendarChanged(CalendarChangedEvent event) {
+		// Is the event targeted to this folder?
+		if (event.getFolderId().equals(m_binderInfo.getBinderIdAsLong())) {
+			// Yes!  Tell the navigation panel to reset.
+			resetPanel();
+		}
+	}
+	
+	/*
+	 * Synchronously navigates the calendar to the given date.
+	 */
+	private void navigateToDateNow(Date date) {
+		GwtTeaming.fireEvent(new CalendarGotoDateEvent(m_binderInfo.getBinderIdAsLong(), date));
+	}
+
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents() {
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if (null == m_registeredEventHandlers) {
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if (m_registeredEventHandlers.isEmpty()) {
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				m_registeredEvents,
+				this,
+				m_registeredEventHandlers);
+		}
+	}
 
 	/*
 	 * Asynchronously renders the calendar navigation panel.
@@ -258,14 +450,14 @@ public class CalendarNavigationPanel extends ToolPanelBase {
 		m_fp.add(buildSeparator());
 		
 		// ...add the next/previous period buttons...
-		m_fp.add(new CalendarNavigationButton(m_images.previous16(), m_images.previousDisabled16(), m_images.previousMouseOver16(), true, m_messages.calendarNav_Alt_PreviousTimePeriod(), new CalendarPreviousPeriodEvent(m_binderInfo.getBinderIdAsLong())));
-		m_fp.add(new CalendarNavigationButton(m_images.next16(),     m_images.nextDisabled16(),     m_images.nextMouseOver16(),     true, m_messages.calendarNav_Alt_NextTimePeriod(),     new CalendarNextPeriodEvent(    m_binderInfo.getBinderIdAsLong())));
+		m_fp.add(new EventButton(m_images.previous16(), m_images.previousDisabled16(), m_images.previousMouseOver16(), true, m_messages.calendarNav_Alt_PreviousTimePeriod(), new CalendarPreviousPeriodEvent(m_binderInfo.getBinderIdAsLong())));
+		m_fp.add(new EventButton(m_images.next16(),     m_images.nextDisabled16(),     m_images.nextMouseOver16(),     true, m_messages.calendarNav_Alt_NextTimePeriod(),     new CalendarNextPeriodEvent(    m_binderInfo.getBinderIdAsLong())));
 
 		// ...add the currently selected date/date range...
-//!		...this needs to be implemented...
+		m_fp.add(buildDateDisplay());
 		
 		// ...add the date navigation buttons...
-//!		...this needs to be implemented...
+		m_fp.add(buildDateNavigation());
 
 		// ...add the view selection buttons...
 //!		...this needs to be implemented...
@@ -277,8 +469,12 @@ public class CalendarNavigationPanel extends ToolPanelBase {
 		il.addStyleName("white marginleft8px");
 		m_fp.add(il);
 		
-		// Finally, tell our container that we're ready.
-		toolPanelReady();
+		// Finally, if we haven't told it yet...
+		if (!m_toolPanelReady) {
+			// ...tell our container that we're ready.
+			toolPanelReady();
+			m_toolPanelReady = true;
+		}
 	}
 
 	/*
@@ -312,5 +508,17 @@ public class CalendarNavigationPanel extends ToolPanelBase {
 		// already been rendered.)
 		m_fp.clear();
 		renderCalendarNavigationAsync();
+	}
+	
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents() {
+		// If we have a non-empty list of registered events...
+		if ((null != m_registeredEventHandlers) && (!(m_registeredEventHandlers.isEmpty()))) {
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+		}
 	}
 }

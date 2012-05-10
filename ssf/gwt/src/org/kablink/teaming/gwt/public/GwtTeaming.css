@@ -2854,39 +2854,6 @@ top:100px;
 	font-size: 0.6em;
 	padding: 5px;
 }
-.gwtTaskToolsButton_WidgetAnchor
-{
-	background: none !important;
-}
-a.gwtTaskToolsButton_WidgetAnchor:hover
-{
-	background: none !important;
-}
-.gwtTaskToolsButton_WidgetImage
-{
-	margin-left: 3px;
-	vertical-align: middle;
-}
-.gwtTaskToolsButton_WidgetText
-{
-	background:            none repeat scroll 0 0 #949494 !important;
-	color:                 #FFFFFF                        !important;
-	font-size:             .7em;
-	padding:               2px 12px;
-	text-decoration:       none;
-	-moz-border-radius:    15px;
-	-webkit-border-radius: 15px;
-}
-.gwtTaskToolsButton_WidgetTextDisabled
-{
-	background:            none repeat scroll 0 0 #B8B8B8 !important;
-	color:                 #EDEDED                        !important;
-}
-.gwtTaskToolsButton_WidgetTextHover
-{
-	background:  #81B2BD url(images/slice_blend_teal_27.png) repeat-x !important;
-	color:       #FFFFFF                                              !important;
-}
 
 .gwtTasks
 {
@@ -3704,3 +3671,12 @@ td.datePickerMonth {
 }
 
 /* End of styles used with TabPanels */
+
+/* ...Start:  Event button styles. */
+	.vibe-eventButton-widgetAnchor       {background: none !important;}
+   a.vibe-eventButton-widgetAnchor:hover {background: none !important;}
+	.vibe-eventButton-widgetImage        {margin-left: 3px; vertical-align: middle;}
+	.vibe-eventButton-widgetText         {background: none repeat scroll 0 0 #949494 !important; color: #FFFFFF !important; font-size: .7em; padding: 2px 12px; text-decoration: none; -moz-border-radius: 15px; -webkit-border-radius: 15px;}
+	.vibe-eventButton-widgetTextDisabled {background: none repeat scroll 0 0 #B8B8B8 !important; color: #EDEDED !important;}
+	.vibe-eventButton-widgetTextHover    {background: #81B2BD url(images/slice_blend_teal_27.png) repeat-x !important; color: #FFFFFF !important;}
+/* ...End:  Event button styles. */

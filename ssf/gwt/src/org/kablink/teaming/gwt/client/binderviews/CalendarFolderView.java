@@ -40,6 +40,8 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
+import org.kablink.teaming.gwt.client.event.CalendarChangedEvent;
+import org.kablink.teaming.gwt.client.event.CalendarGotoDateEvent;
 import org.kablink.teaming.gwt.client.event.CalendarHoursFullDayEvent;
 import org.kablink.teaming.gwt.client.event.CalendarHoursWorkDayEvent;
 import org.kablink.teaming.gwt.client.event.CalendarNextPeriodEvent;
@@ -77,7 +79,8 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 @SuppressWarnings("unused")
 public class CalendarFolderView extends FolderViewBase
 	implements CalendarDisplayDataProvider,
-	// Event handlers implemented by this class.
+		// Event handlers implemented by this class.
+		CalendarGotoDateEvent.Handler,
 		CalendarHoursFullDayEvent.Handler,
 		CalendarHoursWorkDayEvent.Handler,
 		CalendarNextPeriodEvent.Handler,
@@ -100,6 +103,7 @@ public class CalendarFolderView extends FolderViewBase
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.CALENDAR_GOTO_DATE,
 		TeamingEvents.CALENDAR_HOURS_FULL_DAY,
 		TeamingEvents.CALENDAR_HOURS_WORK_DAY,
 		TeamingEvents.CALENDAR_NEXT_PERIOD,
@@ -280,6 +284,23 @@ public class CalendarFolderView extends FolderViewBase
 		// Let the widget attach and then register our event handlers.
 		super.onAttach();
 		registerEvents();
+	}
+	
+	/**
+	 * Handles CalendarGotoDateEvent's received by this class.
+	 * 
+	 * Implements the CalendarGotoDateEvent.Handler.onCalendarGotoDate() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCalendarGotoDate(CalendarGotoDateEvent event) {
+		// Is the event targeted to this folder?
+		if (event.getFolderId().equals(getFolderId())) {
+			// Yes!  Tell the calendar to goto the requested date.
+			m_calendar.setDate(event.getDate());
+			GwtTeaming.fireEvent(new CalendarChangedEvent(getFolderId()));
+		}
 	}
 	
 	/**
