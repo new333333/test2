@@ -672,6 +672,7 @@ public class BinderHelper {
 		return new ModelAndView(view, model);
 	}
 
+	@SuppressWarnings("deprecation")
 	public static String setupMobileFrontPageBeans(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Map model, String view) {
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -4131,6 +4132,28 @@ public class BinderHelper {
 			bs.getProfileModule().setUserProperty(user.getId(), userWorkspaceId, 
 					ObjectKeys.USER_PROPERTY_RELEVANCE_MAP, relevanceMap);
 		}
+	}
+	
+	/**
+	 * Returns true if a binder is the guest user workspace and false
+	 * otherwise.
+	 * 
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static boolean isBinderGuestWorkspaceId(Long binderId) {
+		boolean reply = false;
+		if (null != binderId) {
+			User guest = getProfileModule().getGuestUser();
+			if (null != guest) {
+				Long guestWSId = guest.getWorkspaceId();
+				if (null != guestWSId) {
+					reply = guestWSId.equals(binderId);
+				}
+			}
+		}
+		return reply;
 	}
 	
 	public static boolean isBinderTracked(AllModulesInjected bs, Long binderId) {
