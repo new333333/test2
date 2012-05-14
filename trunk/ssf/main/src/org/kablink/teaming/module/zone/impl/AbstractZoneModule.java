@@ -171,11 +171,16 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	public void setZoneClassManager(ZoneClassManager zoneClassManager) {
 		this.zoneClassManager = zoneClassManager;
 	}
+	
 	/**
      * Called after bean is initialized.  
      * Check on zones
      */
  	public void afterPropertiesSet() {
+ 		// Do nothing
+ 	}
+	
+ 	public void initZones() {
 		boolean closeSession = false;
 		if (!SessionUtil.sessionActive()) {
 			SessionUtil.sessionStartup();	
