@@ -37,15 +37,38 @@ import java.util.Date;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.security.accesstoken.AccessTokenManager;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.springframework.transaction.support.TransactionTemplate;
 
 
 public class ContextListenerPostSpring implements ServletContextListener {
 
 	public void contextInitialized(ServletContextEvent sce) {
+		// This should be the first thing in this method. Don't place anything before this.
+		initZones();
+
+		initAccessTokens();
+		
+		/// For simple profiler ///
+		boolean simpleProfilerEnable = SPropsUtil.getBoolean("simple.profiler.enable", false);
+		if(simpleProfilerEnable)
+			SimpleProfiler.enable();
+		else
+			SimpleProfiler.disable();
+	}
+
+	public void contextDestroyed(ServletContextEvent sce) {
+		/// For simple profiler ///
+		SimpleProfiler.dumpToLog();
+		SimpleProfiler.clear();
+	}
+
+	private void initAccessTokens() {
 		/// For access token manager ///
 		
 		// Do not destroy all tokens when a node starts up because -
@@ -79,19 +102,21 @@ public class ContextListenerPostSpring implements ServletContextListener {
 		Date thisDate = new Date(System.currentTimeMillis() - timeoutDays * 24 * 60 * 60 * 1000);
 
 		accessTokenManager.destroyTokenInfoOlderThan(thisDate);
-		
-		/// For simple profiler ///
-		boolean simpleProfilerEnable = SPropsUtil.getBoolean("simple.profiler.enable", false);
-		if(simpleProfilerEnable)
-			SimpleProfiler.enable();
-		else
-			SimpleProfiler.disable();
 	}
-
-	public void contextDestroyed(ServletContextEvent sce) {
-		/// For simple profiler ///
-		SimpleProfiler.dumpToLog();
-		SimpleProfiler.clear();
+	
+	private void initZones() {
+		getZoneModule().initZones();
 	}
-
+	
+	private ZoneModule getZoneModule() {
+		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
+	}
+	
+	private CoreDao getCoreDao() {
+		return (CoreDao) SpringContextUtil.getBean("coreDao");
+	}
+	
+	private TransactionTemplate getTransactionTemplate() {
+		return (TransactionTemplate) SpringContextUtil.getBean("transactionTemplate");
+	}
 }
