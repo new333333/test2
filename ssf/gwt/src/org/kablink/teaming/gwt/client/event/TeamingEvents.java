@@ -63,10 +63,12 @@ public enum TeamingEvents implements IsSerializable {
 	CALENDAR_HOURS_WORK_DAY,			// Tells the calendar to display the work day hours in a day.
 	CALENDAR_NEXT_PERIOD,				// Tells the calendar to display the next     time period.
 	CALENDAR_PREVIOUS_PERIOD,			// Tells the calendar to display the previous time period.
+	CALENDAR_SETTINGS,					// Tells the calendar to invoke its settings dialog.
 	CALENDAR_SHOW_ASSIGNED,				// Tells the calendar to display assigned events.
 	CALENDAR_SHOW_FOLDER_ALL,			// Tells the calendar to display all events from the folder.
 	CALENDAR_SHOW_FOLDER_BY_ACTIVITY,	// Tells the calendar to display events using their last activity date.
 	CALENDAR_SHOW_FOLDER_BY_CREATION,	// Tells the calendar to display events using their create date.
+	CALENDAR_VIEW_DAYS,					// Tells the calendar to change is day view.
 	
 	CHANGE_CONTEXT,						// Tells the UI that a context switch is currently taking place.	(I.e., Is happening.      )
 	CONTEXT_CHANGED,					// Tells the UI that a context switch has just taken places.		(I.e., Has happened.      )

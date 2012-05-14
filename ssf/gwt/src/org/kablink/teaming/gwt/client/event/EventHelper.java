@@ -308,6 +308,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case CALENDAR_SETTINGS:
+				// A CalendarSettingsEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof CalendarSettingsEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = CalendarSettingsEvent.registerEvent(eventBus, ((CalendarSettingsEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case CALENDAR_SHOW_ASSIGNED:
 				// A CalendarShowAssignedEvent!  Can the event handler
 				// we were given handle that?
@@ -341,6 +350,15 @@ public class EventHelper {
 				if (eventHandler instanceof CalendarShowFolderByCreationEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = CalendarShowFolderByCreationEvent.registerEvent(eventBus, ((CalendarShowFolderByCreationEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case CALENDAR_VIEW_DAYS:
+				// A CalendarViewDaysEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof CalendarViewDaysEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = CalendarViewDaysEvent.registerEvent(eventBus, ((CalendarViewDaysEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -1660,10 +1678,12 @@ public class EventHelper {
 			case CALENDAR_HOURS_WORK_DAY:               hasHandler = (eventHandler instanceof CalendarHoursWorkDayEvent.Handler);          break;
 			case CALENDAR_NEXT_PERIOD:                  hasHandler = (eventHandler instanceof CalendarNextPeriodEvent.Handler);            break;
 			case CALENDAR_PREVIOUS_PERIOD:              hasHandler = (eventHandler instanceof CalendarPreviousPeriodEvent.Handler);        break;
+			case CALENDAR_SETTINGS:                     hasHandler = (eventHandler instanceof CalendarSettingsEvent.Handler);              break;
 			case CALENDAR_SHOW_ASSIGNED:                hasHandler = (eventHandler instanceof CalendarShowAssignedEvent.Handler);          break;
 			case CALENDAR_SHOW_FOLDER_ALL:              hasHandler = (eventHandler instanceof CalendarShowFolderAllEvent.Handler);         break;
 			case CALENDAR_SHOW_FOLDER_BY_ACTIVITY:      hasHandler = (eventHandler instanceof CalendarShowFolderByActivityEvent.Handler);  break;
 			case CALENDAR_SHOW_FOLDER_BY_CREATION:      hasHandler = (eventHandler instanceof CalendarShowFolderByCreationEvent.Handler);  break;
+			case CALENDAR_VIEW_DAYS:                    hasHandler = (eventHandler instanceof CalendarViewDaysEvent.Handler);              break;
 			
 			case CHANGE_CONTEXT:                    	hasHandler = (eventHandler instanceof ChangeContextEvent.Handler);                 break;
 			case CONTEXT_CHANGED:                   	hasHandler = (eventHandler instanceof ContextChangedEvent.Handler);                break;

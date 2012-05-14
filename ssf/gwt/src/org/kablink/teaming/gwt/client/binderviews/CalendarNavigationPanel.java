@@ -44,6 +44,8 @@ import org.kablink.teaming.gwt.client.event.CalendarHoursFullDayEvent;
 import org.kablink.teaming.gwt.client.event.CalendarHoursWorkDayEvent;
 import org.kablink.teaming.gwt.client.event.CalendarNextPeriodEvent;
 import org.kablink.teaming.gwt.client.event.CalendarPreviousPeriodEvent;
+import org.kablink.teaming.gwt.client.event.CalendarSettingsEvent;
+import org.kablink.teaming.gwt.client.event.CalendarViewDaysEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
@@ -52,6 +54,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseD
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarDisplayDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.CalendarDayView;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.EventButton;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -87,6 +90,7 @@ public class CalendarNavigationPanel extends ToolPanelBase
 		// Event handlers implemented by this class.
 		CalendarChangedEvent.Handler
 {
+	private boolean								m_isIE;							//
 	private boolean								m_toolPanelReady;				//
 	private CalendarDisplayDataProvider			m_calendarDisplayDataProvider;	//
 	private CalendarDisplayDataRpcResponseData	m_calendarDisplayData;			//
@@ -114,6 +118,9 @@ public class CalendarNavigationPanel extends ToolPanelBase
 		// ...store the parameters...
 		m_calendarDisplayDataProvider = calendarDisplayDataProvider;
 		
+		// ...initialize the other data members...
+		m_isIE = GwtClientHelper.jsIsIE();
+		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
 		m_fp.addStyleName("vibe-binderViewTools vibe-calNav-panel");
@@ -135,7 +142,7 @@ public class CalendarNavigationPanel extends ToolPanelBase
 		il.addStyleName("vibe-calNav-date");
 		
 		VibeFlowPanel reply = new VibeFlowPanel();
-		reply.addStyleName("vibe-calNav-datePanel");
+		reply.addStyleName(buildDisplayStyle("vibe-calNav-datePanel"));
 		reply.add(il);
 		
 		return reply;
@@ -193,7 +200,7 @@ public class CalendarNavigationPanel extends ToolPanelBase
 
 		// ...add the buttons to a panel...
 		VibeFlowPanel reply = new VibeFlowPanel();
-		reply.addStyleName("vibe-calNav-dateNavPanel");
+		reply.addStyleName(buildDisplayStyle("vibe-calNav-dateNavPanel"));
 		reply.add(datePickerButton);
 		reply.add(todayButton     );
 
@@ -202,11 +209,51 @@ public class CalendarNavigationPanel extends ToolPanelBase
 	}
 
 	/*
+	 * Returns a widget containing the days viewed selection buttons.
+	 */
+	private Widget buildDaysSelection() {
+		VibeFlowPanel reply = new VibeFlowPanel();
+		reply.addStyleName(buildDisplayStyle("vibe-calNav-daysSelPanel"));
+		
+		EventButton oneDay    = new EventButton(m_images.calView1Day(),  null, m_images.calView1DayMouseOver(),  true, m_messages.calendarNav_Alt_View1(),        new CalendarViewDaysEvent(m_binderInfo.getBinderIdAsLong(), CalendarDayView.ONE_DAY),    "vibe-calNav-daysSelImg");
+		EventButton threeDays = new EventButton(m_images.calView3Day(),  null, m_images.calView3DayMouseOver(),  true, m_messages.calendarNav_Alt_View3(),        new CalendarViewDaysEvent(m_binderInfo.getBinderIdAsLong(), CalendarDayView.THREE_DAYS), "vibe-calNav-daysSelImg");
+		EventButton fiveDays  = new EventButton(m_images.calView5Day(),  null, m_images.calView5DayMouseOver(),  true, m_messages.calendarNav_Alt_ViewWorkWeek(), new CalendarViewDaysEvent(m_binderInfo.getBinderIdAsLong(), CalendarDayView.FIVE_DAYS),  "vibe-calNav-daysSelImg");
+		EventButton oneWeek   = new EventButton(m_images.calViewWeek(),  null, m_images.calViewWeekMouseOver(),  true, m_messages.calendarNav_Alt_ViewWeek(),     new CalendarViewDaysEvent(m_binderInfo.getBinderIdAsLong(), CalendarDayView.WEEK),       "vibe-calNav-daysSelImg");
+		EventButton twoWeeks  = new EventButton(m_images.calView2Week(), null, m_images.calView2WeekMouseOver(), true, m_messages.calendarNav_Alt_View2Weeks(),   new CalendarViewDaysEvent(m_binderInfo.getBinderIdAsLong(), CalendarDayView.TWO_WEEKS),  "vibe-calNav-daysSelImg");
+		EventButton oneMonth  = new EventButton(m_images.calViewMonth(), null, m_images.calViewMonthMouseOver(), true, m_messages.calendarNav_Alt_ViewMonth(),    new CalendarViewDaysEvent(m_binderInfo.getBinderIdAsLong(), CalendarDayView.MONTH),      "vibe-calNav-daysSelImg");
+		
+		// Extract the current day view selection from the display
+		// information.
+//! 	...this needs to be implemented...
+		oneMonth.setBaseImgRes(m_images.calViewMonthSelected());
+		
+		reply.add(oneDay   );
+		reply.add(threeDays);
+		reply.add(fiveDays );
+		reply.add(oneWeek  );
+		reply.add(twoWeeks );
+		reply.add(oneMonth );
+		
+		return reply;
+	}
+
+	/*
+	 * Returns a string with a base style and a IE/non-IE specific
+	 * display style.
+	 */
+	private String buildDisplayStyle(String baseStyle) {
+		return (baseStyle + " " + (m_isIE ? "displayInline" : "displayInlineBlock"));
+	}
+	
+	/*
 	 * Returns a widget with the hours menu.
 	 */
 	private Widget buildHoursMenu() {
+		VibeFlowPanel reply = new VibeFlowPanel();
+		reply.addStyleName(buildDisplayStyle("vibe-calNav-hoursMenuPanel"));
+		
 		// Construct the menu bar to return.
-		VibeMenuBar reply = new VibeMenuBar("vibe-entryMenuBar vibe-calNav-hoursMenu");
+		VibeMenuBar hoursMenu = new VibeMenuBar(buildDisplayStyle("vibe-entryMenuBar vibe-calNav-hoursMenu"));
 
 		// Extract the current hours value from the display
 		// information.
@@ -227,7 +274,7 @@ public class CalendarNavigationPanel extends ToolPanelBase
 			}
 		}));
 		
-		// ...and the menu item for 'work day'.
+		// ...the menu item for 'work day'...
 		hoursMenuBar.addItem(new VibeMenuItem(m_messages.calendarNav_Hours_WorkDay(), false, new Command() {
 			@Override
 			public void execute() {
@@ -236,8 +283,26 @@ public class CalendarNavigationPanel extends ToolPanelBase
 			}
 		}));
 
-		// Finally, return the menu bar item we constructed.
-		reply.addItem(hoursMenuItem);
+		// ...and add the menu item to the menu bar.
+		hoursMenu.addItem(hoursMenuItem);
+		
+		// Finally, tie everything together.
+		reply.add(hoursMenu       );
+		reply.add(buildSeparator());
+		
+		return reply;
+	}
+
+	/*
+	 * Returns a widget containing the period navigation buttons.
+	 */
+	private Widget buildPeriodNavigation() {
+		VibeFlowPanel reply = new VibeFlowPanel();
+		reply.addStyleName(buildDisplayStyle("vibe-calNav-periodNavPanel"));
+		
+		reply.add(new EventButton(m_images.previous16(), m_images.previousDisabled16(), m_images.previousMouseOver16(), true, m_messages.calendarNav_Alt_PreviousTimePeriod(), new CalendarPreviousPeriodEvent(m_binderInfo.getBinderIdAsLong())));
+		reply.add(new EventButton(m_images.next16(),     m_images.nextDisabled16(),     m_images.nextMouseOver16(),     true, m_messages.calendarNav_Alt_NextTimePeriod(),     new CalendarNextPeriodEvent(    m_binderInfo.getBinderIdAsLong())));
+		
 		return reply;
 	}
 	
@@ -251,6 +316,19 @@ public class CalendarNavigationPanel extends ToolPanelBase
 		return reply;
 	}
 
+	/*
+	 * Returns a widget containing the settings access button.
+	 */
+	private Widget buildSettings() {
+		VibeFlowPanel reply = new VibeFlowPanel();
+		reply.addStyleName(buildDisplayStyle("vibe-calNav-settingsPanel"));
+
+		reply.add(buildSeparator());
+		reply.add(new EventButton(m_images.configOptions(), null, m_images.configOptionsMouseOver(), true, m_messages.calendarNav_Alt_Settings(), new CalendarSettingsEvent(m_binderInfo.getBinderIdAsLong())));
+		
+		return reply;
+	}
+	
 	/**
 	 * Loads the CalendarNavigationPanel split point and returns an instance
 	 * of it via the callback.
@@ -445,29 +523,13 @@ public class CalendarNavigationPanel extends ToolPanelBase
 	 * Synchronously renders the calendar navigation panel.
 	 */
 	private void renderCalendarNavigationNow() {
-		// Add the hours select widget...
-		m_fp.add(buildHoursMenu());
-		m_fp.add(buildSeparator());
-		
-		// ...add the next/previous period buttons...
-		m_fp.add(new EventButton(m_images.previous16(), m_images.previousDisabled16(), m_images.previousMouseOver16(), true, m_messages.calendarNav_Alt_PreviousTimePeriod(), new CalendarPreviousPeriodEvent(m_binderInfo.getBinderIdAsLong())));
-		m_fp.add(new EventButton(m_images.next16(),     m_images.nextDisabled16(),     m_images.nextMouseOver16(),     true, m_messages.calendarNav_Alt_NextTimePeriod(),     new CalendarNextPeriodEvent(    m_binderInfo.getBinderIdAsLong())));
-
-		// ...add the currently selected date/date range...
-		m_fp.add(buildDateDisplay());
-		
-		// ...add the date navigation buttons...
-		m_fp.add(buildDateNavigation());
-
-		// ...add the view selection buttons...
-//!		...this needs to be implemented...
-		
-		// ...and add the settings button.
-//!		...this needs to be implemented...
-		
-		InlineLabel il = new InlineLabel("CalendarNavigationPanel.renderCalendarNavigationNow():  ...this needs to be implemented...");
-		il.addStyleName("white marginleft8px");
-		m_fp.add(il);
+		// Add the various calendar navigation widgets.
+		m_fp.add(buildHoursMenu()       );
+		m_fp.add(buildPeriodNavigation());
+		m_fp.add(buildDateDisplay()     );
+		m_fp.add(buildDateNavigation()  );
+		m_fp.add(buildDaysSelection()   );
+		m_fp.add(buildSettings()        );
 		
 		// Finally, if we haven't told it yet...
 		if (!m_toolPanelReady) {

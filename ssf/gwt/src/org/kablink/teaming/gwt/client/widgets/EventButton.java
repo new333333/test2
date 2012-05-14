@@ -143,19 +143,10 @@ public class EventButton extends Anchor {
 		}
 	}
 
-	/**
+	/*
 	 * Class constructor for image buttons.
-	 * 
-	 * @param baseImgRes
-	 * @param disabledImgRes
-	 * @param overImgRes
-	 * @param enabled
-	 * @param imgTitle
-	 * @param eventEnum
-	 * @param event
-	 * @param command
 	 */
-	private EventButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, TeamingEvents eventEnum, VibeEventBase<?> event, Command command) {
+	private EventButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, TeamingEvents eventEnum, VibeEventBase<?> event, Command command, String imgStyle) {
 		// Initialize the super class...
 		super();
 		
@@ -187,7 +178,7 @@ public class EventButton extends Anchor {
 		if (GwtClientHelper.hasString(imgTitle)) {
 			m_buttonImage.setTitle(imgTitle);
 		}
-		m_buttonImage.addStyleName("vibe-eventButton-widgetImage");
+		m_buttonImage.addStyleName(GwtClientHelper.hasString(imgStyle) ? imgStyle : "vibe-eventButton-widgetImage");
 		m_buttonImage.getElement().setAttribute("align", "absmiddle");
 		
 		// ...tie things together, including the various event
@@ -200,25 +191,31 @@ public class EventButton extends Anchor {
 	}
 	
 	public EventButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, TeamingEvents eventEnum) {
-		this(baseImgRes, disabledImgRes, overImgRes, enabled, imgTitle, eventEnum, null, null);
+		this(baseImgRes, disabledImgRes, overImgRes, enabled, imgTitle, eventEnum, null, null, null);
+	}
+	
+	public EventButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, TeamingEvents eventEnum, String imgStyle) {
+		this(baseImgRes, disabledImgRes, overImgRes, enabled, imgTitle, eventEnum, null, null, imgStyle);
 	}
 	
 	public EventButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, VibeEventBase<?> event) {
-		this(baseImgRes, disabledImgRes, overImgRes, enabled, imgTitle, null, event, null);
+		this(baseImgRes, disabledImgRes, overImgRes, enabled, imgTitle, null, event, null, null);
+	}
+	
+	public EventButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, VibeEventBase<?> event, String imgStyle) {
+		this(baseImgRes, disabledImgRes, overImgRes, enabled, imgTitle, null, event, null, imgStyle);
 	}
 	
 	public EventButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, Command command) {
-		this(baseImgRes, disabledImgRes, overImgRes, enabled, imgTitle, null, null, command);
+		this(baseImgRes, disabledImgRes, overImgRes, enabled, imgTitle, null, null, command, null);
 	}
 	
-	/**
+	public EventButton(ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, Command command, String imgStyle) {
+		this(baseImgRes, disabledImgRes, overImgRes, enabled, imgTitle, null, null, command, imgStyle);
+	}
+	
+	/*
 	 * Class constructor for text buttons.
-	 * 
-	 * @param buttonText
-	 * @param buttonTitle
-	 * @param enabled
-	 * @param eventEnum
-	 * @param event
 	 */
 	private EventButton(String buttonText, String buttonTitle, boolean enabled, TeamingEvents eventEnum, VibeEventBase<?> event, Command command) {
 		// Initialize the super class...
@@ -273,21 +270,28 @@ public class EventButton extends Anchor {
 	}
 
 	/**
-	 * Sets a command to be executed when the button is selected.
+	 * Get'er methods.
 	 * 
-	 * @param command
+	 * @return
 	 */
-	public void setCommand(Command command) {
-		m_command = command;
-	}
+	public ImageResource getBaseImgRes()     {return m_baseImgRes;    }
+	public ImageResource getDisabledImgRes() {return m_disabledImgRes;}
+	public ImageResource getOverImgRes()     {return m_overImgRes;    }
 	
 	/**
-	 * Enables/disables the button.
+	 * Set'er methods.
 	 * 
-	 * @param enabled
-	 * @param imgTitle
+	 * @param
 	 */
-	public void setEnabled(boolean enabled, String imgTitle) {
+	public void setCommand(       Command       command)        {m_command        = command;                                                }
+	public void setBaseImgRes(    ImageResource baseImgRes)     {m_baseImgRes     = baseImgRes;     setEnabled(m_enabled, m_imgTitle, true);}
+	public void setDisabledImgRes(ImageResource disabledImgRes) {m_disabledImgRes = disabledImgRes; setEnabled(m_enabled, m_imgTitle, true);}
+	public void setOverImgRes(    ImageResource overImgRes)     {m_overImgRes     = overImgRes;                                             }
+	
+	/*
+	 * Enables/disables the button.
+	 */
+	private void setEnabled(boolean enabled, String imgTitle, boolean forceChange) {
 		// Make sure an image button has the correct title text on it.
 		if (null != m_buttonImage) {
 			if (!(GwtClientHelper.hasString(imgTitle))) {
@@ -297,7 +301,7 @@ public class EventButton extends Anchor {
 		}
 		
 		// If the existing state is what's being requested...
-		if (enabled == m_enabled) {
+		if ((enabled == m_enabled) && (!forceChange)) {
 			// ...there's nothing to do.
 			return;
 		}
@@ -322,8 +326,20 @@ public class EventButton extends Anchor {
 		addStyleName(addCursorStyle);
 	}
 	
+	/**
+	 * Enables/disables the button.
+	 * 
+	 * @param enabled
+	 * @param imgTitle
+	 */
+	public void setEnabled(boolean enabled, String imgTitle) {
+		// Always use the initial form of the method.
+		setEnabled(enabled, imgTitle, false);
+	}
+	
 	@Override
 	public void setEnabled(boolean enabled) {
-		setEnabled(enabled, null);
+		// Always use the initial form of the method.
+		setEnabled(enabled, null, false);
 	}
 }

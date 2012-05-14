@@ -46,10 +46,12 @@ import org.kablink.teaming.gwt.client.event.CalendarHoursFullDayEvent;
 import org.kablink.teaming.gwt.client.event.CalendarHoursWorkDayEvent;
 import org.kablink.teaming.gwt.client.event.CalendarNextPeriodEvent;
 import org.kablink.teaming.gwt.client.event.CalendarPreviousPeriodEvent;
+import org.kablink.teaming.gwt.client.event.CalendarSettingsEvent;
 import org.kablink.teaming.gwt.client.event.CalendarShowAssignedEvent;
 import org.kablink.teaming.gwt.client.event.CalendarShowFolderAllEvent;
 import org.kablink.teaming.gwt.client.event.CalendarShowFolderByActivityEvent;
 import org.kablink.teaming.gwt.client.event.CalendarShowFolderByCreationEvent;
+import org.kablink.teaming.gwt.client.event.CalendarViewDaysEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
@@ -85,10 +87,12 @@ public class CalendarFolderView extends FolderViewBase
 		CalendarHoursWorkDayEvent.Handler,
 		CalendarNextPeriodEvent.Handler,
 		CalendarPreviousPeriodEvent.Handler,
+		CalendarSettingsEvent.Handler,
 		CalendarShowAssignedEvent.Handler,
 		CalendarShowFolderAllEvent.Handler,
 		CalendarShowFolderByActivityEvent.Handler,
 		CalendarShowFolderByCreationEvent.Handler,
+		CalendarViewDaysEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
 		InvokeDropBoxEvent.Handler,
 		QuickFilterEvent.Handler
@@ -108,10 +112,12 @@ public class CalendarFolderView extends FolderViewBase
 		TeamingEvents.CALENDAR_HOURS_WORK_DAY,
 		TeamingEvents.CALENDAR_NEXT_PERIOD,
 		TeamingEvents.CALENDAR_PREVIOUS_PERIOD,
+		TeamingEvents.CALENDAR_SETTINGS,
 		TeamingEvents.CALENDAR_SHOW_ASSIGNED,
 		TeamingEvents.CALENDAR_SHOW_FOLDER_ALL,
 		TeamingEvents.CALENDAR_SHOW_FOLDER_BY_ACTIVITY,
 		TeamingEvents.CALENDAR_SHOW_FOLDER_BY_CREATION,
+		TeamingEvents.CALENDAR_VIEW_DAYS,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.INVOKE_DROPBOX,
 		TeamingEvents.QUICK_FILTER,
@@ -372,6 +378,23 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
+	 * Handles CalendarSettingsEvent's received by this class.
+	 * 
+	 * Implements the CalendarSettingsEvent.Handler.onCalendarSettings() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCalendarSettings(CalendarSettingsEvent event) {
+		// Is the event targeted to this folder?
+		if (event.getFolderId().equals(getFolderId())) {
+			// Yes!
+//!			...this needs to be implemented...
+			Window.alert("CalendarFolderView.onCalendarSettings():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
 	 * Handles CalendarShowAssignedEvent's received by this class.
 	 * 
 	 * Implements the CalendarShowAssignedEvent.Handler.onCalendarShowAssigned() method.
@@ -436,6 +459,40 @@ public class CalendarFolderView extends FolderViewBase
 			// Yes!
 //!			...this needs to be implemented...
 			Window.alert("CalendarFolderView.onCalendarShowFolderByCreation():  ...this needs to be implemented...");
+		}
+	}
+	
+	/**
+	 * Handles CalendarViewDaysEvent's received by this class.
+	 * 
+	 * Implements the CalendarViewDaysEvent.Handler.onCalendarViewDays() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCalendarViewDays(CalendarViewDaysEvent event) {
+		// Is the event targeted to this folder?
+		if (event.getFolderId().equals(getFolderId())) {
+			// If we can save the view setting on the server....
+//!			...this needs to be implemented...
+			
+			// ...put the view into affect...
+			int days = (-1);
+			CalendarViews cView;
+			switch (event.getDayView()) {
+			default:
+			case MONTH:       cView = CalendarViews.MONTH;          break;
+			case ONE_DAY:     cView = CalendarViews.DAY; days =  1; break;
+			case THREE_DAYS:  cView = CalendarViews.DAY; days =  3; break;
+			case FIVE_DAYS:   cView = CalendarViews.DAY; days =  5; break;
+			case WEEK:        cView = CalendarViews.DAY; days =  7; break;
+			case TWO_WEEKS:   cView = CalendarViews.DAY; days = 14; break;
+			}
+			if ((-1) == days)
+			     m_calendar.setView(cView      );
+			else m_calendar.setView(cView, days);
+			GwtTeaming.fireEvent(new CalendarChangedEvent(getFolderId()));
+			
 		}
 	}
 	

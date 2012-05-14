@@ -1532,6 +1532,7 @@ public interface GwtTeamingMessages extends Messages
 	String calendarNav_Alt_View3();
 	String calendarNav_Alt_ViewMonth();
 	String calendarNav_Alt_ViewWeek();
+	String calendarNav_Alt_View2Weeks();
 	String calendarNav_Alt_ViewWorkWeek();
 	String calendarNav_Hours_FullDay();
 	String calendarNav_Hours_WorkDay();
