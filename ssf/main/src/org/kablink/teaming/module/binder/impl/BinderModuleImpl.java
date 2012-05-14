@@ -1086,6 +1086,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	public void preDeleteBinder(Long binderId, Long userId, boolean deleteMirroredSource, Map options, boolean reindex) {
 		Binder binder = loadBinder(binderId);
+		if (BinderHelper.isBinderSystemUserWS(binder)) {
+			throw new NotSupportedException("errorcode.notsupported.preDeleteBinder.systemUserWS");
+		}
 		if ((null != binder) && (!(binder.isMirrored()))) {
 			EntityType et = binder.getEntityType();
 			boolean isFolder    = (EntityType.folder    == et);
@@ -2775,6 +2778,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	protected void deleteBinderPhase1(Long binderId, final boolean deleteMirroredSource,
 			final Map options) {
 		final Binder top = loadBinder(binderId);
+		if (BinderHelper.isBinderSystemUserWS(top)) {
+			throw new NotSupportedException("errorcode.notsupported.deleteBinder.systemUserWS");
+		}
 		checkAccess(top, BinderOperation.deleteBinder);
 		List<Long> ids = new ArrayList();// maintain order, bottom up
 		Map params = new HashMap();

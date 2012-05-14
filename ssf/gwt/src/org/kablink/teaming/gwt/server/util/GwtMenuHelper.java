@@ -55,7 +55,6 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.SimpleName.SimpleNamePK;
@@ -1231,7 +1230,7 @@ public class GwtMenuHelper {
 		if ((isFolder || isWorkspace) && (!isWorkspaceReserved) && bm.testAccess(binder, BinderOperation.deleteBinder)) {
 			// Yes!  Is the binder other than a system user's
 			// workspace?
-			if (!(isBinderSystemUserWS(bs, binder))) {
+			if (!(BinderHelper.isBinderSystemUserWS(binder))) {
 				// Yes!  Add the ToolbarItem for it.
 				adminMenuCreated  =
 				configMenuCreated = true;
@@ -2250,38 +2249,6 @@ public class GwtMenuHelper {
 		}
 	}
 
-	/*
-	 * Returns true if a binder is a system user's workspace and false
-	 * otherwise.
-	 */
-	private static boolean isBinderSystemUserWS(AllModulesInjected bs, Binder binder) {
-		// Is the binder a workspace?
-		boolean reply = false;
-		if (binder.getEntityType().name().equals(EntityType.workspace.name())) {
-			// Yes!  Is it the guest user's workspace?
-			Long binderId = binder.getId();
-			if (BinderHelper.isBinderGuestWorkspaceId(binderId)) {
-				// Yes!  Return true.
-				reply = true;
-			}
-			
-			else {
-				// No, the binder isn't get guest user's workspace!  Is
-				// the owner a system user?
-				Principal owner = binder.getOwner();
-				if (owner.isReserved()) {
-					// Yes!  Is the binder that user's workspace?
-					Long ownerWSId = owner.getWorkspaceId();
-					reply = ((null != ownerWSId) && ownerWSId.equals(binderId));
-				}
-			}
-		}
-		
-		// If we get here, reply is true if binder is a system user's
-		// workspace and false otherwise.  Return it.
-		return reply;
-	}
-	
 	/*
 	 * Returns true if a folder is writable mirrored folder and false
 	 * otherwise.

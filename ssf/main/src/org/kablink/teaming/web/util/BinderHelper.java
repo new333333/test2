@@ -4890,4 +4890,40 @@ public class BinderHelper {
 	    	return title;
     	}
     }
+    
+	/**
+	 * Returns true if a binder is a system user's workspace and false
+	 * otherwise.
+	 * 
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static boolean isBinderSystemUserWS(Binder binder) {
+		// Is the binder a workspace?
+		boolean reply = false;
+		if (binder.getEntityType().name().equals(EntityType.workspace.name())) {
+			// Yes!  Is it the guest user's workspace?
+			Long binderId = binder.getId();
+			if (BinderHelper.isBinderGuestWorkspaceId(binderId)) {
+				// Yes!  Return true.
+				reply = true;
+			}
+			
+			else {
+				// No, the binder isn't get guest user's workspace!  Is
+				// the owner a system user?
+				Principal owner = binder.getOwner();
+				if (owner.isReserved()) {
+					// Yes!  Is the binder that user's workspace?
+					Long ownerWSId = owner.getWorkspaceId();
+					reply = ((null != ownerWSId) && ownerWSId.equals(binderId));
+				}
+			}
+		}
+		
+		// If we get here, reply is true if binder is a system user's
+		// workspace and false otherwise.  Return it.
+		return reply;
+	}
 }
