@@ -40,8 +40,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.CalendarDisplayDataProvider.AsyncCalendarDisplayDataCallback;
 import org.kablink.teaming.gwt.client.event.CalendarChangedEvent;
 import org.kablink.teaming.gwt.client.event.CalendarGotoDateEvent;
-import org.kablink.teaming.gwt.client.event.CalendarHoursFullDayEvent;
-import org.kablink.teaming.gwt.client.event.CalendarHoursWorkDayEvent;
+import org.kablink.teaming.gwt.client.event.CalendarHoursEvent;
 import org.kablink.teaming.gwt.client.event.CalendarNextPeriodEvent;
 import org.kablink.teaming.gwt.client.event.CalendarPreviousPeriodEvent;
 import org.kablink.teaming.gwt.client.event.CalendarSettingsEvent;
@@ -55,6 +54,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarDisplayDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CalendarDayView;
+import org.kablink.teaming.gwt.client.util.CalendarHours;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.EventButton;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -65,8 +65,6 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.i18n.shared.DateTimeFormat;
-import com.google.gwt.i18n.shared.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.Command;
@@ -84,7 +82,6 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * 
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
 public class CalendarNavigationPanel extends ToolPanelBase
 	implements
 		// Event handlers implemented by this class.
@@ -134,11 +131,7 @@ public class CalendarNavigationPanel extends ToolPanelBase
 	private Widget buildDateDisplay() {
 		// Extract the current date/date range from the display
 		// information.
-//! 	...this needs to be implemented...
-		DateTimeFormat df = DateTimeFormat.getFormat(PredefinedFormat.YEAR_MONTH);
-		String dateDisplay = df.format(new Date());
-		
-		InlineLabel il = new InlineLabel(dateDisplay);
+		InlineLabel il = new InlineLabel(m_calendarDisplayData.getDisplayDate());
 		il.addStyleName("vibe-calNav-date");
 		
 		VibeFlowPanel reply = new VibeFlowPanel();
@@ -224,8 +217,14 @@ public class CalendarNavigationPanel extends ToolPanelBase
 		
 		// Extract the current day view selection from the display
 		// information.
-//! 	...this needs to be implemented...
-		oneMonth.setBaseImgRes(m_images.calViewMonthSelected());
+		switch (m_calendarDisplayData.getDayView()) {
+		case ONE_DAY:     oneDay.setBaseImgRes(   m_images.calView1DaySelected());  break;
+		case THREE_DAYS:  threeDays.setBaseImgRes(m_images.calView3DaySelected());  break;
+		case FIVE_DAYS:   fiveDays.setBaseImgRes( m_images.calView5DaySelected());  break;
+		case WEEK:        oneWeek.setBaseImgRes(  m_images.calViewWeekSelected());  break;
+		case TWO_WEEKS:   twoWeeks.setBaseImgRes( m_images.calView2WeekSelected()); break;
+		case MONTH:       oneMonth.setBaseImgRes( m_images.calViewMonthSelected()); break;
+		}
 		
 		reply.add(oneDay   );
 		reply.add(threeDays);
@@ -257,8 +256,12 @@ public class CalendarNavigationPanel extends ToolPanelBase
 
 		// Extract the current hours value from the display
 		// information.
-//! 	...this needs to be implemented...
-		String selectedHours = m_messages.calendarNav_Hours_WorkDay();
+		String selectedHours;
+		switch(m_calendarDisplayData.getHours()) {
+		default:
+		case WORK_DAY:  selectedHours = m_messages.calendarNav_Hours_WorkDay(); break;
+		case FULL_DAY:  selectedHours = m_messages.calendarNav_Hours_FullDay(); break;
+		}
 
 		// Generate the top level menu item...
 		VibeMenuBar	hoursMenuBar = new VibeMenuBar(true, "vibe-entryMenuPopup");	// true -> Vertical drop down menu.
@@ -270,7 +273,7 @@ public class CalendarNavigationPanel extends ToolPanelBase
 			@Override
 			public void execute() {
 				hoursMenuItem.setHTML(renderItemHTML(m_messages.calendarNav_Hours_FullDay(), true));
-				GwtTeaming.fireEvent(new CalendarHoursFullDayEvent(m_binderInfo.getBinderIdAsLong()));
+				GwtTeaming.fireEvent(new CalendarHoursEvent(m_binderInfo.getBinderIdAsLong(), CalendarHours.FULL_DAY));
 			}
 		}));
 		
@@ -279,7 +282,7 @@ public class CalendarNavigationPanel extends ToolPanelBase
 			@Override
 			public void execute() {
 				hoursMenuItem.setHTML(renderItemHTML(m_messages.calendarNav_Hours_WorkDay(), true));
-				GwtTeaming.fireEvent(new CalendarHoursWorkDayEvent(m_binderInfo.getBinderIdAsLong()));
+				GwtTeaming.fireEvent(new CalendarHoursEvent(m_binderInfo.getBinderIdAsLong(), CalendarHours.WORK_DAY));
 			}
 		}));
 
