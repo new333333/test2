@@ -195,9 +195,18 @@ public class ModifyBinderController extends AbstractBinderController {
 				//retrieve binder so we can return to parent
 				Binder binder = getBinderModule().getBinder(binderId);			
 				Binder parentBinder = binder.getParentBinder();			
+				boolean doPurge = (binder.isMirrored() || Boolean.parseBoolean(purgeImmediately));
+				//Make sure this isn't a system user workspace being deleted
+				if (BinderHelper.isBinderSystemUserWS(binder)) {
+					throw
+						new NotSupportedException(
+							(doPurge                                               ?
+								"errorcode.notsupported.deleteBinder.systemUserWS" :
+								"errorcode.notsupported.preDeleteBinder.systemUserWS"));
+				}
 				//get view data, before binder is deleted
 				setupViewBinder(response, binder);
-				if (binder.isMirrored() || Boolean.parseBoolean(purgeImmediately)) {
+				if (doPurge) {
 					getBinderModule().deleteBinder(binderId, Boolean.parseBoolean(deleteSource), null);
 				}
 				else {
