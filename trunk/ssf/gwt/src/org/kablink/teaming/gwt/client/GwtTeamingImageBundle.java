@@ -90,12 +90,84 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource calDatePickerMouseOver();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/calView_today_btn.png")
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_1day_btn.png")
+	public ImageResource calView1Day();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_1day_over_btn.png")
+	public ImageResource calView1DayMouseOver();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_1day_sel_btn.png")
+	public ImageResource calView1DaySelected();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_3day_btn.png")
+	public ImageResource calView3Day();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_3day_over_btn.png")
+	public ImageResource calView3DayMouseOver();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_3day_sel_btn.png")
+	public ImageResource calView3DaySelected();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_5day_btn.png")
+	public ImageResource calView5Day();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_5day_over_btn.png")
+	public ImageResource calView5DayMouseOver();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_5day_sel_btn.png")
+	public ImageResource calView5DaySelected();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_2week_btn.png")
+	public ImageResource calView2Week();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_2week_over_btn.png")
+	public ImageResource calView2WeekMouseOver();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_2week_sel_btn.png")
+	public ImageResource calView2WeekSelected();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_month_btn.png")
+	public ImageResource calViewMonth();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_month_over_btn.png")
+	public ImageResource calViewMonthMouseOver();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_month_sel_btn.png")
+	public ImageResource calViewMonthSelected();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_today_btn.png")
 	public ImageResource calViewToday();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/calView_today_over_btn.png")
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_today_over_btn.png")
 	public ImageResource calViewTodayMouseOver();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_week_btn.png")
+	public ImageResource calViewWeek();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_week_over_btn.png")
+	public ImageResource calViewWeekMouseOver();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/CalView/calView_week_sel_btn.png")
+	public ImageResource calViewWeekSelected();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/close_x.png")
@@ -128,6 +200,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/config_options_btn.png")
 	public ImageResource configOptions();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/config_options_over_btn.png")
+	public ImageResource configOptionsMouseOver();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/delete.png")
