@@ -107,6 +107,9 @@ import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.CalendarDayView;
+import org.kablink.teaming.gwt.client.util.CalendarHours;
+import org.kablink.teaming.gwt.client.util.CalendarShow;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
 import org.kablink.teaming.gwt.client.util.EntryId;
@@ -1314,10 +1317,14 @@ public class GwtViewHelper {
 			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
 
 //!			...this needs to be implemented...
+			CalendarDayView	dayView     = CalendarDayView.MONTH;
+			CalendarHours	hours	    = CalendarHours.WORK_DAY;
+			CalendarShow	show        = CalendarShow.PHYSICAL_EVENTS;
+			String			displayDate = GwtServerHelper.getDateString(new Date(), DateFormat.SHORT);
 			
 			// Finally, use the data we obtained to create a
 			// CalendarDisplayDataRpcResponseData and return that. 
-			return new CalendarDisplayDataRpcResponseData();
+			return new CalendarDisplayDataRpcResponseData(dayView, hours, show, displayDate);
 		}
 		
 		catch (Exception e) {

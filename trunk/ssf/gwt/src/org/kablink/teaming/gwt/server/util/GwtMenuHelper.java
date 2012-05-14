@@ -72,6 +72,7 @@ import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem.NameValuePair;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.CalendarShow;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -957,8 +958,9 @@ public class GwtMenuHelper {
 		if (BinderHelper.isBinderUserWorkspace(folderWs)) {
 			// ...add the 'assigned events' item...
 			ToolbarItem tbi = new ToolbarItem("1_assigned");
-			markTBITitle(tbi, "calendar.navi.mode.alt.virtual");
-			markTBIEvent(tbi, TeamingEvents.CALENDAR_SHOW_ASSIGNED);
+			markTBITitle(       tbi, "calendar.navi.mode.alt.virtual");
+			markTBIEvent(       tbi, TeamingEvents.CALENDAR_SHOW);
+			markTBICalendarShow(tbi, CalendarShow.VIRTUAL);
 			if (eventType.equals(EventsViewHelper.EVENT_TYPE_VIRTUAL)) {
 				markTBISelected(tbi);
 			}
@@ -967,8 +969,9 @@ public class GwtMenuHelper {
 
 		// ...add the 'from folder all' item...
 		ToolbarItem tbi = new ToolbarItem("1_fromFolderAll");
-		markTBITitle(tbi, "calendar.navi.mode.alt.physical");
-		markTBIEvent(tbi, TeamingEvents.CALENDAR_SHOW_FOLDER_ALL);
+		markTBITitle(       tbi, "calendar.navi.mode.alt.physical");
+		markTBIEvent(       tbi, TeamingEvents.CALENDAR_SHOW);
+		markTBICalendarShow(tbi, CalendarShow.PHYSICAL_EVENTS);
 		if (eventType.equals(EventsViewHelper.EVENT_TYPE_EVENT)) {
 			markTBISelected(tbi);
 		}
@@ -976,8 +979,9 @@ public class GwtMenuHelper {
 
 		// ...add the 'from folder by creation' item...
 		tbi = new ToolbarItem("1_fromFolderByCreation");
-		markTBITitle(tbi, "calendar.navi.mode.alt.physical.byCreation");
-		markTBIEvent(tbi, TeamingEvents.CALENDAR_SHOW_FOLDER_BY_CREATION);
+		markTBITitle(       tbi, "calendar.navi.mode.alt.physical.byCreation");
+		markTBIEvent(       tbi, TeamingEvents.CALENDAR_SHOW);
+		markTBICalendarShow(tbi, CalendarShow.PHYSICAL_BY_CREATION);
 		if (eventType.equals(EventsViewHelper.EVENT_TYPE_CREATION)) {
 			markTBISelected(tbi);
 		}
@@ -985,9 +989,10 @@ public class GwtMenuHelper {
 
 		// ...and add the 'from folder by activity' item.
 		tbi = new ToolbarItem("1_fromFolderByActivity");
-		markTBITitle(tbi, "calendar.navi.mode.alt.physical.byActivity");
-		markTBIEvent(tbi, TeamingEvents.CALENDAR_SHOW_FOLDER_BY_ACTIVITY);
-		if (eventType.equals(EventsViewHelper.EVENT_TYPE_CREATION)) {
+		markTBITitle(       tbi, "calendar.navi.mode.alt.physical.byActivity");
+		markTBIEvent(       tbi, TeamingEvents.CALENDAR_SHOW);
+		markTBICalendarShow(tbi, CalendarShow.PHYSICAL_BY_ACTIVITY);
+		if (eventType.equals(EventsViewHelper.EVENT_TYPE_ACTIVITY)) {
 			markTBISelected(tbi);
 		}
 		viewTBI.addNestedItem(tbi);
@@ -2260,6 +2265,13 @@ public class GwtMenuHelper {
 				MiscUtil.hasString(folder.getResourceDriverName()));	// ...and the resource driver is configured.
 	}
 
+	/*
+	 * Marks a ToolbarItem as needing to calendar show mode.
+	 */
+	private static void markTBICalendarShow(ToolbarItem tbi, CalendarShow show) {
+		tbi.addQualifier("calendarShow", String.valueOf(show.ordinal()));
+	}
+	
 	/*
 	 * Marks a ToolbarItem as containing items that can be selected in
 	 * some way.

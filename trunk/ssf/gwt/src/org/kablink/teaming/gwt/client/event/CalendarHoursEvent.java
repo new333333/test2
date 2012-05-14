@@ -33,32 +33,35 @@
 
 package org.kablink.teaming.gwt.client.event;
 
+import org.kablink.teaming.gwt.client.util.CalendarHours;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The CalendarShowFolderByCreationEvent requests that the calendar show all
- * events contained in the folder by their creation date.
+ * The CalendarHoursEvent requests that the calendar show the
+ * hours (full day or work day) in a day.
  * 
  * @author drfoster@novell.com
  */
-public class CalendarShowFolderByCreationEvent extends VibeEventBase<CalendarShowFolderByCreationEvent.Handler> {
+public class CalendarHoursEvent extends VibeEventBase<CalendarHoursEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
-	private Long	m_folderId;	//
+	private CalendarHours	m_hours;	//
+	private Long			m_folderId;	//
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onCalendarShowFolderByCreation(CalendarShowFolderByCreationEvent event);
+		void onCalendarHours(CalendarHoursEvent event);
 	}
 	
 	/**
 	 * Constructor method.
 	 */
-	public CalendarShowFolderByCreationEvent() {
+	public CalendarHoursEvent() {
 		// Initialize the super class.
 		super();
 	}
@@ -67,13 +70,15 @@ public class CalendarShowFolderByCreationEvent extends VibeEventBase<CalendarSho
 	 * Constructor method.
 	 * 
 	 * @param folderId
+	 * @param hours
 	 */
-	public CalendarShowFolderByCreationEvent(Long folderId) {
+	public CalendarHoursEvent(Long folderId, CalendarHours hours) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameter.
 		setFolderId(folderId);
+		setHours(   hours   );
 	}
 	
 	/**
@@ -85,7 +90,7 @@ public class CalendarShowFolderByCreationEvent extends VibeEventBase<CalendarSho
 	 */
 	@Override
 	protected void dispatch(Handler handler) {
-		handler.onCalendarShowFolderByCreation(this);
+		handler.onCalendarHours(this);
 	}
 	
 	/**
@@ -110,7 +115,7 @@ public class CalendarShowFolderByCreationEvent extends VibeEventBase<CalendarSho
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.CALENDAR_SHOW_FOLDER_BY_CREATION;
+		return TeamingEvents.CALENDAR_HOURS;
 	}
 		
 	/**
@@ -118,14 +123,16 @@ public class CalendarShowFolderByCreationEvent extends VibeEventBase<CalendarSho
 	 * 
 	 * @return
 	 */
-	public Long getFolderId() {return m_folderId;}
+	public CalendarHours getHours()    {return m_hours;   }
+	public Long          getFolderId() {return m_folderId;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderId(Long folderId) {m_folderId = folderId;}
+	public void setHours(   CalendarHours hours)    {m_hours    = hours;   }
+	public void setFolderId(Long          folderId) {m_folderId = folderId;}
 
 	/**
 	 * Registers this event on the given event bus and returns its

@@ -35,10 +35,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.CalendarShowAssignedEvent;
-import org.kablink.teaming.gwt.client.event.CalendarShowFolderAllEvent;
-import org.kablink.teaming.gwt.client.event.CalendarShowFolderByActivityEvent;
-import org.kablink.teaming.gwt.client.event.CalendarShowFolderByCreationEvent;
+import org.kablink.teaming.gwt.client.event.CalendarShowEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
@@ -78,6 +75,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsRpcRespons
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.CalendarShow;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -699,10 +697,6 @@ public class EntryMenuPanel extends ToolPanelBase {
 					VibeEventBase<?> event;
 					switch (simpleEvent) {
 					default:                                  event = EventHelper.createSimpleEvent(          simpleEvent); break;
-					case CALENDAR_SHOW_ASSIGNED:              event = new CalendarShowAssignedEvent(          folderId   ); break;
-					case CALENDAR_SHOW_FOLDER_ALL:            event = new CalendarShowFolderAllEvent(         folderId   ); break;
-					case CALENDAR_SHOW_FOLDER_BY_ACTIVITY:    event = new CalendarShowFolderByActivityEvent(  folderId   ); break;
-					case CALENDAR_SHOW_FOLDER_BY_CREATION:    event = new CalendarShowFolderByCreationEvent(  folderId   ); break;
 					case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:  event = new ChangeEntryTypeSelectedEntriesEvent(folderId   ); break;
 					case COPY_SELECTED_ENTRIES:               event = new CopySelectedEntriesEvent(           folderId   ); break;
 					case DELETE_SELECTED_ENTRIES:             event = new DeleteSelectedEntriesEvent(         folderId   ); break;
@@ -726,6 +720,11 @@ public class EntryMenuPanel extends ToolPanelBase {
 					case TRASH_PURGE_SELECTED_ENTRIES:        event = new TrashPurgeSelectedEntriesEvent(     folderId   ); break;
 					case TRASH_RESTORE_ALL:                   event = new TrashRestoreAllEvent(               folderId   ); break;
 					case TRASH_RESTORE_SELECTED_ENTRIES:      event = new TrashRestoreSelectedEntriesEvent(   folderId   ); break;
+					
+					case CALENDAR_SHOW:
+						int calendarShow = Integer.parseInt(simpleTBI.getQualifierValue("calendarShow"));
+						event = new CalendarShowEvent(folderId, CalendarShow.getEnum(calendarShow));
+						break;
 			        			        					
 					case UNDEFINED:
 						Window.alert(m_messages.eventHandling_NoEntryMenuHandler(simpleEvent.name()));

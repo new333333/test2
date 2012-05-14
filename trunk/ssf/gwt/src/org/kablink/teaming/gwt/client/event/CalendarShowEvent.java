@@ -33,32 +33,35 @@
 
 package org.kablink.teaming.gwt.client.event;
 
+import org.kablink.teaming.gwt.client.util.CalendarShow;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The CalendarShowFolderByActivityEvent requests that the calendar show all
- * events contained in the folder by their last activity.
+ * The CalendarShowEvent requests that the calendar show only
+ * events assigned to the current user.
  * 
  * @author drfoster@novell.com
  */
-public class CalendarShowFolderByActivityEvent extends VibeEventBase<CalendarShowFolderByActivityEvent.Handler> {
+public class CalendarShowEvent extends VibeEventBase<CalendarShowEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
-	private Long	m_folderId;	//
+	private CalendarShow	m_show;		//
+	private Long			m_folderId;	//
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onCalendarShowFolderByActivity(CalendarShowFolderByActivityEvent event);
+		void onCalendarShow(CalendarShowEvent event);
 	}
 	
 	/**
 	 * Constructor method.
 	 */
-	public CalendarShowFolderByActivityEvent() {
+	public CalendarShowEvent() {
 		// Initialize the super class.
 		super();
 	}
@@ -67,13 +70,15 @@ public class CalendarShowFolderByActivityEvent extends VibeEventBase<CalendarSho
 	 * Constructor method.
 	 * 
 	 * @param folderId
+	 * @param show
 	 */
-	public CalendarShowFolderByActivityEvent(Long folderId) {
+	public CalendarShowEvent(Long folderId, CalendarShow show) {
 		// Initialize this object...
 		this();
 		
-		// ...and store the parameter.
+		// ...and store the parameters.
 		setFolderId(folderId);
+		setShow(    show    );
 	}
 	
 	/**
@@ -85,7 +90,7 @@ public class CalendarShowFolderByActivityEvent extends VibeEventBase<CalendarSho
 	 */
 	@Override
 	protected void dispatch(Handler handler) {
-		handler.onCalendarShowFolderByActivity(this);
+		handler.onCalendarShow(this);
 	}
 	
 	/**
@@ -110,7 +115,7 @@ public class CalendarShowFolderByActivityEvent extends VibeEventBase<CalendarSho
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.CALENDAR_SHOW_FOLDER_BY_ACTIVITY;
+		return TeamingEvents.CALENDAR_SHOW;
 	}
 		
 	/**
@@ -118,14 +123,16 @@ public class CalendarShowFolderByActivityEvent extends VibeEventBase<CalendarSho
 	 * 
 	 * @return
 	 */
-	public Long getFolderId() {return m_folderId;}
+	public CalendarShow getShow()     {return m_show;    }
+	public Long         getFolderId() {return m_folderId;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderId(Long folderId) {m_folderId = folderId;}
+	public void setShow(    CalendarShow show)     {m_show     = show;    }
+	public void setFolderId(Long         folderId) {m_folderId = folderId;}
 
 	/**
 	 * Registers this event on the given event bus and returns its

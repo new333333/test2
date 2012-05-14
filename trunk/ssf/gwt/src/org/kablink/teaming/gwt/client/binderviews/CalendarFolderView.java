@@ -42,15 +42,11 @@ import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
 import org.kablink.teaming.gwt.client.event.CalendarChangedEvent;
 import org.kablink.teaming.gwt.client.event.CalendarGotoDateEvent;
-import org.kablink.teaming.gwt.client.event.CalendarHoursFullDayEvent;
-import org.kablink.teaming.gwt.client.event.CalendarHoursWorkDayEvent;
+import org.kablink.teaming.gwt.client.event.CalendarHoursEvent;
 import org.kablink.teaming.gwt.client.event.CalendarNextPeriodEvent;
 import org.kablink.teaming.gwt.client.event.CalendarPreviousPeriodEvent;
 import org.kablink.teaming.gwt.client.event.CalendarSettingsEvent;
-import org.kablink.teaming.gwt.client.event.CalendarShowAssignedEvent;
-import org.kablink.teaming.gwt.client.event.CalendarShowFolderAllEvent;
-import org.kablink.teaming.gwt.client.event.CalendarShowFolderByActivityEvent;
-import org.kablink.teaming.gwt.client.event.CalendarShowFolderByCreationEvent;
+import org.kablink.teaming.gwt.client.event.CalendarShowEvent;
 import org.kablink.teaming.gwt.client.event.CalendarViewDaysEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -83,15 +79,11 @@ public class CalendarFolderView extends FolderViewBase
 	implements CalendarDisplayDataProvider,
 		// Event handlers implemented by this class.
 		CalendarGotoDateEvent.Handler,
-		CalendarHoursFullDayEvent.Handler,
-		CalendarHoursWorkDayEvent.Handler,
+		CalendarHoursEvent.Handler,
 		CalendarNextPeriodEvent.Handler,
 		CalendarPreviousPeriodEvent.Handler,
 		CalendarSettingsEvent.Handler,
-		CalendarShowAssignedEvent.Handler,
-		CalendarShowFolderAllEvent.Handler,
-		CalendarShowFolderByActivityEvent.Handler,
-		CalendarShowFolderByCreationEvent.Handler,
+		CalendarShowEvent.Handler,
 		CalendarViewDaysEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
 		InvokeDropBoxEvent.Handler,
@@ -108,15 +100,11 @@ public class CalendarFolderView extends FolderViewBase
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		TeamingEvents.CALENDAR_GOTO_DATE,
-		TeamingEvents.CALENDAR_HOURS_FULL_DAY,
-		TeamingEvents.CALENDAR_HOURS_WORK_DAY,
+		TeamingEvents.CALENDAR_HOURS,
 		TeamingEvents.CALENDAR_NEXT_PERIOD,
 		TeamingEvents.CALENDAR_PREVIOUS_PERIOD,
 		TeamingEvents.CALENDAR_SETTINGS,
-		TeamingEvents.CALENDAR_SHOW_ASSIGNED,
-		TeamingEvents.CALENDAR_SHOW_FOLDER_ALL,
-		TeamingEvents.CALENDAR_SHOW_FOLDER_BY_ACTIVITY,
-		TeamingEvents.CALENDAR_SHOW_FOLDER_BY_CREATION,
+		TeamingEvents.CALENDAR_SHOW,
 		TeamingEvents.CALENDAR_VIEW_DAYS,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.INVOKE_DROPBOX,
@@ -310,36 +298,19 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles CalendarHoursFullDayEvent's received by this class.
+	 * Handles CalendarHoursEvent's received by this class.
 	 * 
-	 * Implements the CalendarHoursFullDayEvent.Handler.onCalendarHoursFullDay() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onCalendarHoursFullDay(CalendarHoursFullDayEvent event) {
-		// Is the event targeted to this folder?
-		if (event.getFolderId().equals(getFolderId())) {
-			// Yes!
-//!			...this needs to be implemented...
-			Window.alert("CalendarFolderView.onCalendarHoursFullDay():  ...this needs to be implemented...");
-		}
-	}
-	
-	/**
-	 * Handles CalendarHoursWorkDayEvent's received by this class.
-	 * 
-	 * Implements the CalendarHoursWorkDayEvent.Handler.onCalendarHoursWorkDay() method.
+	 * Implements the CalendarHoursEvent.Handler.onCalendarHours() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onCalendarHoursWorkDay(CalendarHoursWorkDayEvent event) {
+	public void onCalendarHours(CalendarHoursEvent event) {
 		// Is the event targeted to this folder?
 		if (event.getFolderId().equals(getFolderId())) {
 			// Yes!
 //!			...this needs to be implemented...
-			Window.alert("CalendarFolderView.onCalendarHoursWorkDay():  ...this needs to be implemented...");
+			Window.alert("CalendarFolderView.onCalendarHours():  ...this needs to be implemented...");
 		}
 	}
 	
@@ -395,70 +366,19 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles CalendarShowAssignedEvent's received by this class.
+	 * Handles CalendarShowEvent's received by this class.
 	 * 
-	 * Implements the CalendarShowAssignedEvent.Handler.onCalendarShowAssigned() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onCalendarShowAssigned(CalendarShowAssignedEvent event) {
-		// Is the event targeted to this folder?
-		if (event.getFolderId().equals(getFolderId())) {
-			// Yes!
-//!			...this needs to be implemented...
-			Window.alert("CalendarFolderView.onCalendarShowAssigned():  ...this needs to be implemented...");
-		}
-	}
-	
-	/**
-	 * Handles CalendarShowFolderAllEvent's received by this class.
-	 * 
-	 * Implements the CalendarShowFolderAllEvent.Handler.onCalendarShowFolderAll() method.
+	 * Implements the CalendarShowEvent.Handler.onCalendarShow() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onCalendarShowFolderAll(CalendarShowFolderAllEvent event) {
+	public void onCalendarShow(CalendarShowEvent event) {
 		// Is the event targeted to this folder?
 		if (event.getFolderId().equals(getFolderId())) {
 			// Yes!
 //!			...this needs to be implemented...
-			Window.alert("CalendarFolderView.onCalendarShowFolderAll():  ...this needs to be implemented...");
-		}
-	}
-	
-	/**
-	 * Handles CalendarShowFolderByActivityEvent's received by this class.
-	 * 
-	 * Implements the CalendarShowFolderByActivityEvent.Handler.onCalendarShowFolderByActivity() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onCalendarShowFolderByActivity(CalendarShowFolderByActivityEvent event) {
-		// Is the event targeted to this folder?
-		if (event.getFolderId().equals(getFolderId())) {
-			// Yes!
-//!			...this needs to be implemented...
-			Window.alert("CalendarFolderView.onCalendarShowFolderByActivity():  ...this needs to be implemented...");
-		}
-	}
-	
-	/**
-	 * Handles CalendarShowFolderByCreationEvent's received by this class.
-	 * 
-	 * Implements the CalendarShowFolderByCreationEvent.Handler.onCalendarShowFolderByCreation() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onCalendarShowFolderByCreation(CalendarShowFolderByCreationEvent event) {
-		// Is the event targeted to this folder?
-		if (event.getFolderId().equals(getFolderId())) {
-			// Yes!
-//!			...this needs to be implemented...
-			Window.alert("CalendarFolderView.onCalendarShowFolderByCreation():  ...this needs to be implemented...");
+			Window.alert("CalendarFolderView.onCalendarShow():  ...this needs to be implemented...");
 		}
 	}
 	

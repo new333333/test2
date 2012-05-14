@@ -32,6 +32,10 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import org.kablink.teaming.gwt.client.util.CalendarDayView;
+import org.kablink.teaming.gwt.client.util.CalendarHours;
+import org.kablink.teaming.gwt.client.util.CalendarShow;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -41,6 +45,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class CalendarDisplayDataRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private CalendarDayView	m_dayView;				// Day view:  1 day, 3 days, 5 days, 1 week, 2 weeks or 1 month.
+	private CalendarHours	m_hours;				//
+	private CalendarShow	m_show;					//
+	private String			m_displayDate;			// The date to display in the navigation bar corresponding to the selected view.
 	
 	/**
 	 * Constructor method.
@@ -55,14 +63,20 @@ public class CalendarDisplayDataRpcResponseData implements IsSerializable, VibeR
 	/**
 	 * Constructor method.
 	 *
-	 * @param xxx
+	 * @param dayView
+	 * @param hours
+	 * @param show
+	 * @param displayDate
 	 */
-	public CalendarDisplayDataRpcResponseData(int xxx) {
+	public CalendarDisplayDataRpcResponseData(CalendarDayView dayView, CalendarHours hours, CalendarShow show, String displayDate) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
-//!		...this needs to be implemented...
+		setDayView(    dayView    );
+		setHours(      hours      );
+		setShow(       show       );
+		setDisplayDate(displayDate);
 	}
 	
 	/**
@@ -70,12 +84,18 @@ public class CalendarDisplayDataRpcResponseData implements IsSerializable, VibeR
 	 * 
 	 * @return
 	 */
-	public int getXxx() {return 0;}
+	public CalendarDayView getDayView()     {return m_dayView;    }
+	public CalendarHours   getHours()       {return m_hours;      }
+	public CalendarShow    getShow()        {return m_show;       }
+	public String          getDisplayDate() {return m_displayDate;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setXxx(int xxx) {}
+	public void setDayView(    CalendarDayView dayView)     {m_dayView     = dayView;    }
+	public void setHours(      CalendarHours   hours)       {m_hours       = hours;      }
+	public void setShow(       CalendarShow    show)        {m_show        = show;       }
+	public void setDisplayDate(String          displayDate) {m_displayDate = displayDate;}
 }
