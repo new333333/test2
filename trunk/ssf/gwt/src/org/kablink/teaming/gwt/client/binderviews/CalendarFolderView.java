@@ -55,11 +55,16 @@ import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarDisplayDataCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarDayViewCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarHoursCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.CalendarDayView;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeCalendar;
 
+import com.bradrydzewski.gwt.calendar.client.CalendarFormat;
+import com.bradrydzewski.gwt.calendar.client.CalendarSettings;
 import com.bradrydzewski.gwt.calendar.client.CalendarViews;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -263,8 +268,8 @@ public class CalendarFolderView extends FolderViewBase
 	 */
 	private void loadPart2Now() {
 		// Create the Calendar widget for the view and populate it.
-//!		...this needs to be implemented...
-		m_calendar = new VibeCalendar(CalendarViews.MONTH);	//! ...use the display data for the initial view...
+		m_calendar = new VibeCalendar();
+		setCalendarDisplay();
 		populateViewAsync();
 	}
 
@@ -293,7 +298,7 @@ public class CalendarFolderView extends FolderViewBase
 		if (event.getFolderId().equals(getFolderId())) {
 			// Yes!  Tell the calendar to goto the requested date.
 			m_calendar.setDate(event.getDate());
-			GwtTeaming.fireEvent(new CalendarChangedEvent(getFolderId()));
+			GwtTeaming.fireEvent(new CalendarChangedEvent(getFolderId(), m_calendarDisplayData));
 		}
 	}
 	
@@ -308,9 +313,30 @@ public class CalendarFolderView extends FolderViewBase
 	public void onCalendarHours(CalendarHoursEvent event) {
 		// Is the event targeted to this folder?
 		if (event.getFolderId().equals(getFolderId())) {
-			// Yes!
-//!			...this needs to be implemented...
-			Window.alert("CalendarFolderView.onCalendarHours():  ...this needs to be implemented...");
+			// Yes!  Can we can save the hours setting on the server?
+			GwtClientHelper.executeCommand(
+					new SaveCalendarHoursCmd(getFolderInfo(), event.getHours()),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_SaveCalendarHours());
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Yes!  Put the new calendar display data into
+					// affect...
+					m_calendarDisplayData = ((CalendarDisplayDataRpcResponseData) response.getResponseData());
+					GwtTeaming.fireEvent(new CalendarChangedEvent(getFolderId(), m_calendarDisplayData));
+
+					// ...and repopulate the view.
+					setCalendarDisplay();
+					m_calendar.clearAppointments();
+					populateCalendarEventsAsync();
+				}
+			});
 		}
 	}
 	
@@ -393,26 +419,30 @@ public class CalendarFolderView extends FolderViewBase
 	public void onCalendarViewDays(CalendarViewDaysEvent event) {
 		// Is the event targeted to this folder?
 		if (event.getFolderId().equals(getFolderId())) {
-			// If we can save the view setting on the server....
-//!			...this needs to be implemented...
-			
-			// ...put the view into affect...
-			int days = (-1);
-			CalendarViews cView;
-			switch (event.getDayView()) {
-			default:
-			case MONTH:       cView = CalendarViews.MONTH;          break;
-			case ONE_DAY:     cView = CalendarViews.DAY; days =  1; break;
-			case THREE_DAYS:  cView = CalendarViews.DAY; days =  3; break;
-			case FIVE_DAYS:   cView = CalendarViews.DAY; days =  5; break;
-			case WEEK:        cView = CalendarViews.DAY; days =  7; break;
-			case TWO_WEEKS:   cView = CalendarViews.DAY; days = 14; break;
-			}
-			if ((-1) == days)
-			     m_calendar.setView(cView      );
-			else m_calendar.setView(cView, days);
-			GwtTeaming.fireEvent(new CalendarChangedEvent(getFolderId()));
-			
+			// Yes!  Can we can save the view setting on the server?
+			GwtClientHelper.executeCommand(
+					new SaveCalendarDayViewCmd(getFolderInfo(), event.getDayView()),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_SaveCalendarDayView());
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Yes!  Put the new calendar display data into
+					// affect...
+					m_calendarDisplayData = ((CalendarDisplayDataRpcResponseData) response.getResponseData());
+					GwtTeaming.fireEvent(new CalendarChangedEvent(getFolderId(), m_calendarDisplayData));
+
+					// ...and repopulate the view.
+					setCalendarDisplay();
+					m_calendar.clearAppointments();
+					populateCalendarEventsAsync();
+				}
+			});
 		}
 	}
 	
@@ -618,6 +648,50 @@ public class CalendarFolderView extends FolderViewBase
 		m_calendar.setHeight(cHeight + "px");
 	}
 
+	/*
+	 * Given a CalendarDayView enumeration value, sets the calendar
+	 * widget to that view.
+	 */
+	private void setCalendarDisplay() {
+		// Calculate the hours to display...
+		int hourStart;
+		int duration;
+		switch (m_calendarDisplayData.getHours()) {
+		default:
+		case WORK_DAY:  hourStart = m_calendarDisplayData.getWorkDayStart(); duration = 12; break;
+		case FULL_DAY:  hourStart = 0;                                       duration = 24; break;
+		}
+		
+		// ...and put them into affect.
+		CalendarSettings cs = m_calendar.getSettings();
+		cs.setWorkingHourStart(hourStart);
+		cs.setWorkingHourEnd(  hourStart + duration);
+		m_calendar.setSettings(cs);
+
+		// Put the first day of the week into affect.
+		CalendarFormat cf = CalendarFormat.INSTANCE;
+		cf.setFirstDayOfWeek(m_calendarDisplayData.getWeekFirstDay());
+		
+		// Calculate the view and days...
+		int days = (-1);
+		CalendarViews cView;
+		switch (m_calendarDisplayData.getDayView()) {
+		default:
+		case MONTH:       cView = CalendarViews.MONTH;          break;
+		case ONE_DAY:     cView = CalendarViews.DAY; days =  1; break;
+		case THREE_DAYS:  cView = CalendarViews.DAY; days =  3; break;
+		case FIVE_DAYS:   cView = CalendarViews.DAY; days =  5; break;
+		case WEEK:        cView = CalendarViews.DAY; days =  7; break;
+		case TWO_WEEKS:   cView = CalendarViews.DAY; days = 14; break;
+		}
+
+		// ...and put them into affect.
+		if ((-1) == days)
+		     m_calendar.setView(cView      );
+		else m_calendar.setView(cView, days);
+		m_calendar.setDate(m_calendarDisplayData.getFirstDay());
+	}
+	
 	/*
 	 * Synchronously shows the add files dialog.
 	 */

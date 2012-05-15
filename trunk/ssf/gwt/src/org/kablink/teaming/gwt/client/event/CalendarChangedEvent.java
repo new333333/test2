@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.event;
 
+import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
@@ -46,7 +48,8 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 public class CalendarChangedEvent extends VibeEventBase<CalendarChangedEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
-	private Long	m_folderId;	//
+	private CalendarDisplayDataRpcResponseData	m_displayData;	//
+	private Long								m_folderId;		//
 
 	/**
 	 * Handler interface for this event.
@@ -68,12 +71,13 @@ public class CalendarChangedEvent extends VibeEventBase<CalendarChangedEvent.Han
 	 * 
 	 * @param folderId
 	 */
-	public CalendarChangedEvent(Long folderId) {
+	public CalendarChangedEvent(Long folderId, CalendarDisplayDataRpcResponseData displayData) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameter.
-		setFolderId(folderId);
+		setFolderId(   folderId   );
+		setDisplayData(displayData);
 	}
 	
 	/**
@@ -118,14 +122,16 @@ public class CalendarChangedEvent extends VibeEventBase<CalendarChangedEvent.Han
 	 * 
 	 * @return
 	 */
-	public Long getFolderId() {return m_folderId;}
+	public CalendarDisplayDataRpcResponseData getDisplayData() {return m_displayData;}
+	public Long                               getFolderId()    {return m_folderId;   }
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderId(Long folderId) {m_folderId = folderId;}
+	public void setDisplayData(CalendarDisplayDataRpcResponseData displayData) {m_displayData = displayData;}
+	public void setFolderId(   Long                               folderId)    {m_folderId    = folderId;   }
 
 	/**
 	 * Registers this event on the given event bus and returns its

@@ -1860,6 +1860,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case SAVE_CALENDAR_DAY_VIEW:
+		{
+			SaveCalendarDayViewCmd scdvCmd = ((SaveCalendarDayViewCmd) cmd);
+			CalendarDisplayDataRpcResponseData result = GwtViewHelper.saveCalendarDayView( this, getRequest( ri ), scdvCmd.getFolderInfo(), scdvCmd.getDayView() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case SAVE_CALENDAR_HOURS:
+		{
+			SaveCalendarHoursCmd schCmd = ((SaveCalendarHoursCmd) cmd);
+			CalendarDisplayDataRpcResponseData result = GwtViewHelper.saveCalendarHours( this, getRequest( ri ), schCmd.getFolderInfo(), schCmd.getHours() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case SAVE_CLIPBOARD_USERS:
 		{
 			SaveClipboardUsersCmd scuCmd = ((SaveClipboardUsersCmd) cmd);

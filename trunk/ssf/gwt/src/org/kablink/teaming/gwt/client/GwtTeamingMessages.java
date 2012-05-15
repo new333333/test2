@@ -423,6 +423,8 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_RemoveSavedSearch();
 	String rpcFailure_ReplyToEntry();
 	String rpcFailure_SaveBinderRegionState();
+	String rpcFailure_SaveCalendarDayView();
+	String rpcFailure_SaveCalendarHours();
 	String rpcFailure_SaveClipboardUsers();
 	String rpcFailure_SaveColumnWidths();
 	String rpcFailure_SaveEmailNotificationInfo();
