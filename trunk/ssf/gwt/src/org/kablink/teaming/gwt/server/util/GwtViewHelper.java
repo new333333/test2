@@ -1320,7 +1320,7 @@ public class GwtViewHelper {
 			CalendarDayView	dayView     = CalendarDayView.MONTH;
 			CalendarHours	hours	    = CalendarHours.WORK_DAY;
 			CalendarShow	show        = CalendarShow.PHYSICAL_EVENTS;
-			String			displayDate = GwtServerHelper.getDateString(new Date(), DateFormat.SHORT);
+			String			displayDate = GwtServerHelper.getDateString(new Date(), DateFormat.MEDIUM);
 			
 			// Finally, use the data we obtained to create a
 			// CalendarDisplayDataRpcResponseData and return that. 
