@@ -476,6 +476,7 @@ public class CalendarNavigationPanel extends ToolPanelBase
 		// Is the event targeted to this folder?
 		if (event.getFolderId().equals(m_binderInfo.getBinderIdAsLong())) {
 			// Yes!  Tell the navigation panel to reset.
+			m_calendarDisplayData = event.getDisplayData();
 			resetPanel();
 		}
 	}

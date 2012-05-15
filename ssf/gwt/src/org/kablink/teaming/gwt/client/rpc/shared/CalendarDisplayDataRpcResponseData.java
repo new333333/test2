@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import java.util.Date;
+
 import org.kablink.teaming.gwt.client.util.CalendarDayView;
 import org.kablink.teaming.gwt.client.util.CalendarHours;
 import org.kablink.teaming.gwt.client.util.CalendarShow;
@@ -48,6 +50,9 @@ public class CalendarDisplayDataRpcResponseData implements IsSerializable, VibeR
 	private CalendarDayView	m_dayView;				// Day view:  1 day, 3 days, 5 days, 1 week, 2 weeks or 1 month.
 	private CalendarHours	m_hours;				//
 	private CalendarShow	m_show;					//
+	private Date			m_firstDay;				//
+	private int				m_weekFirstDay;			//
+	private int				m_workDayStart;			//
 	private String			m_displayDate;			// The date to display in the navigation bar corresponding to the selected view.
 	
 	/**
@@ -63,20 +68,26 @@ public class CalendarDisplayDataRpcResponseData implements IsSerializable, VibeR
 	/**
 	 * Constructor method.
 	 *
+	 * @param firstDay
 	 * @param dayView
 	 * @param hours
 	 * @param show
+	 * @param weekFirstDay
+	 * @param workDayStart
 	 * @param displayDate
 	 */
-	public CalendarDisplayDataRpcResponseData(CalendarDayView dayView, CalendarHours hours, CalendarShow show, String displayDate) {
+	public CalendarDisplayDataRpcResponseData(Date firstDay, CalendarDayView dayView, CalendarHours hours, CalendarShow show, int weekFirstDay, int workDayStart, String displayDate) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
-		setDayView(    dayView    );
-		setHours(      hours      );
-		setShow(       show       );
-		setDisplayDate(displayDate);
+		setFirstDay(    firstDay    );
+		setDayView(     dayView     );
+		setHours(       hours       );
+		setShow(        show        );
+		setWeekFirstDay(weekFirstDay);
+		setWorkDayStart(workDayStart);
+		setDisplayDate( displayDate );
 	}
 	
 	/**
@@ -84,18 +95,24 @@ public class CalendarDisplayDataRpcResponseData implements IsSerializable, VibeR
 	 * 
 	 * @return
 	 */
-	public CalendarDayView getDayView()     {return m_dayView;    }
-	public CalendarHours   getHours()       {return m_hours;      }
-	public CalendarShow    getShow()        {return m_show;       }
-	public String          getDisplayDate() {return m_displayDate;}
+	public CalendarDayView getDayView()      {return m_dayView;     }
+	public CalendarHours   getHours()        {return m_hours;       }
+	public CalendarShow    getShow()         {return m_show;        }
+	public Date            getFirstDay()     {return m_firstDay;    }
+	public int             getWeekFirstDay() {return m_weekFirstDay;}
+	public int             getWorkDayStart() {return m_workDayStart;}
+	public String          getDisplayDate()  {return m_displayDate; }
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setDayView(    CalendarDayView dayView)     {m_dayView     = dayView;    }
-	public void setHours(      CalendarHours   hours)       {m_hours       = hours;      }
-	public void setShow(       CalendarShow    show)        {m_show        = show;       }
-	public void setDisplayDate(String          displayDate) {m_displayDate = displayDate;}
+	public void setDayView(     CalendarDayView dayView)      {m_dayView      = dayView;     }
+	public void setHours(       CalendarHours   hours)        {m_hours        = hours;       }
+	public void setShow(        CalendarShow    show)         {m_show         = show;        }
+	public void setFirstDay(    Date            firstDay)     {m_firstDay     = firstDay;    }
+	public void setWeekFirstDay(int             weekFirstDay) {m_weekFirstDay = weekFirstDay;}
+	public void setWorkDayStart(int             workDayStart) {m_workDayStart = workDayStart;}
+	public void setDisplayDate( String          displayDate)  {m_displayDate  = displayDate; }
 }
