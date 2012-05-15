@@ -871,6 +871,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     			return null;
     		}});
     	SimpleProfiler.stop("deleteEntry_transactionExecute");
+ 	   if (disable) {
+		   //Remove the entry from the index
+ 	    	final Map ctx = new HashMap();
+ 	    	deleteEntry_indexDel(entry.getParentBinder(), entry, ctx);
+	   } else {
+		   //Add the entry to the index
+		   indexEntry(entry);
+	   }
     }
     //***********************************************************************************************************   
     //no transaction expected
