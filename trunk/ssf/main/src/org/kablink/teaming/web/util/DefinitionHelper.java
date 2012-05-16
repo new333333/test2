@@ -151,6 +151,14 @@ public class DefinitionHelper {
 		List<Definition> definitions = getInstance().getDefinitionModule().getDefinitions(binderId, Boolean.TRUE, defType);
 		return orderDefinitions(definitions, true);
 	}
+	public static SortedMap<String, Definition> getAvailableReplyDefinitions(Long binderId) {
+		List<Definition> defs = getInstance().getDefinitionModule().getDefinitions(binderId, Boolean.TRUE, Definition.FOLDER_ENTRY);
+		List<String> commentTypes = new ArrayList<String>();
+		commentTypes.add(Definition.FAMILY_COMMENT);
+		commentTypes.add(Definition.FAMILY_FILE_COMMENT);
+		defs = Utils.validateDefinitions(defs, commentTypes);
+		return orderDefinitions(defs, true);
+	}
 	public static TreeMap orderDefinitions(Collection<Definition> defs, Boolean includeDefinitionName) {
 		TreeMap<String, Definition> orderedDefinitions = new TreeMap(new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale()));
 		for (Definition def:defs) {

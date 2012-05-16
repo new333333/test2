@@ -634,7 +634,11 @@ public class EntityIndexUtils {
     	String ids = LongIdUtil.getIdsAsString(teamList);
     	if (teamList.contains(allUsersId)) {
     		boolean personal = Utils.isWorkareaInProfilesTree(binder);
-	    	if (!personal) ids = ids.trim() + " " + Constants.READ_ACL_GLOBAL;
+	    	if (!personal) {
+	    		ids = ids.trim() + " " + Constants.READ_ACL_GLOBAL + " " + Constants.READ_ACL_ALL;
+	    	} else {
+	    		ids = ids.trim() + " " + Constants.READ_ACL_ALL;
+	    	}
     	}
     	return ids;
     }
@@ -718,7 +722,7 @@ public class EntityIndexUtils {
    		acl = parent.addElement(Constants.TEAM_ACL_FIELD);
    		String tms = binder.getTeamMemberString();
    		if (binder.getTeamMemberIds().contains(allUsersId)) {
-   			tms = tms + " " + Constants.READ_ACL_GLOBAL;
+   			tms = tms + " " + Constants.READ_ACL_GLOBAL + " " + Constants.READ_ACL_ALL;
    		}
    		acl.setText(tms);
     }
@@ -730,8 +734,9 @@ public class EntityIndexUtils {
     	boolean personal = Utils.isWorkareaInProfilesTree(binder);
     	//set entryAcl to "all" and 
 		doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
-		if (!personal) 
+		if (!personal) {
 			doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_GLOBAL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
+		}
 		//add binder acls
 		addBinderAcls(doc, binder, includeTitleAcl);
     }
