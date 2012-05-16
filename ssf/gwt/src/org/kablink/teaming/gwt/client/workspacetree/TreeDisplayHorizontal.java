@@ -36,15 +36,18 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyExitEvent;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeCollapsedEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeExpandedEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.ExpandHorizontalBucketCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalNodeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
+import org.kablink.teaming.gwt.client.widgets.EventButton;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
 import com.google.gwt.core.client.Scheduler;
@@ -52,6 +55,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -301,6 +305,30 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	}
 
 	/*
+	 * Returns the TreeInfo that appears immediately before the given
+	 * TreeInfo in the bread crumb list.
+	 */
+	private TreeInfo getPreviousTI(TreeInfo ti) {
+		// Scan the TreeInfo's in the bread crumb list.
+		TreeInfo prevTI = null;
+		for (TreeInfo tiScan:  getRootTreeInfoList()) {
+			// Is this TreeInfo the same instance as the one we were
+			// given?
+			if (tiScan == ti) {
+				// Yes!  Return the one before it.
+				return prevTI;
+			}
+			
+			// Store the current one as the most recent previous.
+			prevTI = tiScan;
+		}
+		
+		// If we get here, we couldn't find the given TreeInfo in the
+		// list.  Return null.
+		return null;
+	}
+	
+	/*
 	 * Returns the widget to use as a TreeInfo selector's label.
 	 */
 	private Widget getSelectorLabel(TreeInfo ti, boolean rootNode) {
@@ -316,6 +344,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				baseLabelStyle += (" breadCrumb_ContentNode_AnchorTail");
 			}
 		}
+		
 		if (ti.isBucket()) {
 			// Yes!  Generate the appropriate widgets. 
 			FlowPanel selectorPanel = new FlowPanel();
@@ -402,8 +431,9 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 */
 	private void renderNode(TreeInfo ti, Grid nodeGrid) {
 		int depth = Integer.parseInt(nodeGrid.getElement().getAttribute(GRID_DEPTH_ATTRIBUTE));
-		Widget selectorLabel = getSelectorLabel(ti, (0 == depth));
-		boolean binderBreadcrumbTail = selectorLabel.getStyleName().contains("breadCrumb_ContentNode_AnchorTail");
+		Widget selectorLabel      = getSelectorLabel(ti, (0 == depth));
+		String selectorLabelStyle = selectorLabel.getStyleName();
+		boolean binderBreadcrumbTail = selectorLabelStyle.contains("breadCrumb_ContentNode_AnchorTail");
 		
 		// Is this Binder expandable?
 		boolean showExpander;
@@ -451,12 +481,60 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			setWidgetHover(selectorA, getBinderHover(ti));
 		}
 		
-		// Add the expander and selector to the Grid.
+		// Are we rendering the tail node in a binder bread crumb tree?
 		if (binderBreadcrumbTail) {
-		    m_rootPanel.add(selectorA);
+			// Yes!  Make the selector display inline...
+			selectorLabel.addStyleName("displayInline");
+
+			// ...create panel to hold the various widgets we'll lay
+			// ...down for the tail node...
+			FlowPanel fp = new FlowPanel();
+			fp.addStyleName("breadCrumb_ContentTail_Panel");
+
+			// ...if the binder about the tail is a folder...
+			final TreeInfo prevTI = getPreviousTI(ti);
+			if ((null != prevTI) && (BinderType.FOLDER == prevTI.getBinderInfo().getBinderType())) {
+				// ...add a back button to navigate to it...
+				EventButton backButton = new EventButton(
+					getBaseImages().previousDisabled16(),
+					null,
+					getBaseImages().previousMouseOver16(),
+					true,
+					getMessages().treePreviousFolder(),
+					new Command() {
+						@Override
+						public void execute() {
+							if (canChangeContext()) {
+								selectBinder(prevTI);
+								GwtTeaming.fireEvent(
+									new ChangeContextEvent(
+										buildOnSelectBinderInfo(
+											prevTI)));
+							}
+						}
+					});
+				backButton.addStyleName("breadCrumb_ContentTail_Back");
+				fp.add(backButton);
+			}
+
+			// ...add an image for the binder itself...
+			Image binderImg = new Image();
+			binderImg.addStyleName("breadCrumb_ContentTail_Img");
+			binderImg.getElement().setAttribute("align", "absmiddle");
+			ti.setBinderUIImage(binderImg);
+			setBinderImageResource(ti, 30, 30, getFilrImages().folder());
+
+			// ...finally, tie it all together and add it to the root
+			// ...panel.
+			fp.add(binderImg);
+			fp.add(selectorA);
+		    m_rootPanel.add(fp);
 		}
 		
 		else {
+			// No, we aren't rendering the tail node in a binder bread
+			// crumb tree!  Simply add the expander and selector to the
+			// Grid.
 			nodeGrid.setWidget(0, 0, expanderWidget);
 			nodeGrid.setWidget(0, 1, selectorA     );
 		}
