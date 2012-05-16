@@ -435,7 +435,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// Do we have a TreeInfo for the tree node that's busy?
 			if (hasBusyTI()) {
 				// Yes!  Restore its default image.
-				setBinderImageResource(getBusyTI());
+				TreeInfo busyTI = getBusyTI();
+				setBinderImageResource(busyTI, getBinderImgWidth(busyTI), getBinderImgHeight(busyTI));
 			}
 			
 			else {
@@ -699,10 +700,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	/*
 	 * Returns various height and widths to use from binder images.
 	 */
-	private int    getBinderImgHeightInt(TreeInfo ti) {return (ti.isActivityStream() ? AS_BINDER_HEIGHT_INT : BINDER_HEIGHT_INT);}
-	private String getBinderImgHeight(   TreeInfo ti) {return (getBinderImgHeightInt(ti) + "px");}
-	private int    getBinderImgWidthInt( TreeInfo ti) {return (ti.isActivityStream() ? AS_BINDER_WIDTH_INT : BINDER_WIDTH_INT);}
-	private String getBinderImgWidth(    TreeInfo ti) {return (getBinderImgWidthInt(ti) + "px");}
+	private int getBinderImgHeight(TreeInfo ti) {return (ti.isActivityStream() ? AS_BINDER_HEIGHT_INT : BINDER_HEIGHT_INT);}
+	private int getBinderImgWidth( TreeInfo ti) {return (ti.isActivityStream() ? AS_BINDER_WIDTH_INT : BINDER_WIDTH_INT);}
 	
 	/*
 	 * Returns the style to use for the mouse over cursor for a given
@@ -993,7 +992,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorGrid.setCellPadding(0);
 		Image binderImg = new Image();
 		ti.setBinderUIImage(binderImg);
-		setBinderImageResource(ti);
+		setBinderImageResource(ti, getBinderImgWidth(ti), getBinderImgHeight(ti));
 		binderImg.addStyleName("workspaceTreeBinderImg");
 		setWidgetHover(binderImg, ti.getBinderHoverImage());
 		selectorGrid.setWidget(0, 0, binderImg);
@@ -1003,7 +1002,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorGrid.setWidget(0, 2, new Label("\u00A0"));
 		selectorGrid.getCellFormatter().setWidth(0, 2, "100%");
 		int width = (SELECTOR_GRID_WIDTH - (SELECTOR_GRID_DEPTH_OFFSET * renderDepth));
-		if (getBinderImgWidthInt(ti) > width) {
+		if (getBinderImgWidth(ti) > width) {
 			width = SELECTOR_GRID_WIDTH;
 		}
 		selectorGrid.setWidth(String.valueOf(width) + "px");
@@ -1255,41 +1254,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		}
 	}
 
-	/*
-	 * Sets the image resource on a binder image based on its TreeInfo.
-	 */
-	private void setBinderImageResource(TreeInfo ti) {
-		Image binderImg = ((Image) ti.getBinderUIImage());
-		if (null != binderImg) {
-			String binderIconName = ti.getBinderIconName();
-			if (GwtClientHelper.hasString(binderIconName)) {
-				if (binderIconName.startsWith("/")) {
-					//The imagesPath operation always ends in "/", so don't allow two slashes 
-					binderImg.setUrl(getImagesPath() + binderIconName.substring(1));
-				} else {
-					binderImg.setUrl(getImagesPath() + binderIconName);
-				}
-			}
-			else {
-				ImageResource binderImgRes = ti.getBinderImage();
-				if (null == binderImgRes) {
-					binderImgRes = getImages().spacer_1px();
-					binderImg.setResource(binderImgRes);
-				}
-				else {
-					binderImg.setResource(binderImgRes);
-				}
-				binderImg.setVisibleRect(
-					0,
-					0,
-					getBinderImgWidthInt( ti),
-					getBinderImgHeightInt(ti));
-			}
-			binderImg.setWidth( getBinderImgWidth( ti));
-			binderImg.setHeight(getBinderImgHeight(ti));
-		}
-	}
-		
 	/**
 	 * Sets the initial context to use for the tree.
 	 * 

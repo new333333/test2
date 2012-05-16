@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.workspacetree;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
+import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
@@ -51,6 +53,7 @@ import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -268,12 +271,30 @@ public abstract class TreeDisplayBase {
 	}
 	
 	/**
+	 * Returns access to the Filr image bundle.
+	 *  
+	 * @return
+	 */
+	GwtTeamingFilrImageBundle getFilrImages() {
+		return GwtTeaming.getFilrImageBundle();
+	}
+	
+	/**
 	 * Returns access to the workspace tree's image bundle.
 	 *  
 	 * @return
 	 */
 	GwtTeamingWorkspaceTreeImageBundle getImages() {
 		return GwtTeaming.getWorkspaceTreeImageBundle();
+	}
+	
+	/**
+	 * Returns access to the Vibe base image bundle.
+	 *  
+	 * @return
+	 */
+	GwtTeamingImageBundle getBaseImages() {
+		return GwtTeaming.getImageBundle();
 	}
 	
 	/**
@@ -369,6 +390,44 @@ public abstract class TreeDisplayBase {
 		// By default, we ignore this.
 	}
 	
+	/**
+	 * Sets the image resource on a binder image based on its TreeInfo.
+	 * 
+	 * @param ti
+	 * @param width
+	 * @param height
+	 */
+	public void setBinderImageResource(TreeInfo ti, int width, int height, ImageResource defaultImg) {
+		Image binderImg = ((Image) ti.getBinderUIImage());
+		if (null != binderImg) {
+			String binderIconName = ti.getBinderIconName();
+			if (GwtClientHelper.hasString(binderIconName)) {
+				if (binderIconName.startsWith("/"))
+				     binderImg.setUrl(getImagesPath() + binderIconName.substring(1));
+				else binderImg.setUrl(getImagesPath() + binderIconName);
+			}
+			
+			else {
+				ImageResource binderImgRes = ti.getBinderImage();
+				if (null == binderImgRes) {
+					binderImgRes = defaultImg;
+				}
+				binderImg.setUrl(binderImgRes.getSafeUri());
+				binderImg.setVisibleRect(
+					0,
+					0,
+					width,
+					height);
+			}
+			binderImg.setWidth( width  + "px");
+			binderImg.setHeight(height + "px");
+		}
+	}
+	
+	public void setBinderImageResource(TreeInfo ti, int width, int height) {
+		setBinderImageResource(ti, width, height, getImages().spacer_1px());
+	}
+		
 	/**
 	 * Stores a new root TreeInfo.
 	 *  

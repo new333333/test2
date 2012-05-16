@@ -1693,6 +1693,23 @@ body, table td, select
 	font-size: 1.4em !important;
 	margin-top: 2px !important;
 	margin-left: 0px !important;
+	vertical-align: middle;
+}
+.breadCrumb_ContentTail_Back
+{
+	margin-right: 3px;
+	vertical-align: middle;
+}
+.breadCrumb_ContentTail_Img
+{
+	margin-right: 3px;
+	vertical-align: middle;
+}
+.breadCrumb_ContentTail_Panel
+{
+	display: block;
+	padding-top: 8px;
+	white-space: nowrap;
 }
 .breadCrumb_TrashLabel
 {

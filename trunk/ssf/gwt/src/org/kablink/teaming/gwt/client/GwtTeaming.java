@@ -63,6 +63,7 @@ public class GwtTeaming implements EntryPoint
 {
 	private static final GwtTeamingMessages					m_stringMessages			=                       GWT.create( GwtTeamingMessages.class                 );
 	private static final GwtTeamingDataTableImageBundle		m_dataTableImageBundle		=                       GWT.create( GwtTeamingDataTableImageBundle.class     );
+	private static final GwtTeamingFilrImageBundle			m_filrImageBundle			=                       GWT.create( GwtTeamingFilrImageBundle.class          );
 	private static final GwtTeamingImageBundle				m_imageBundle				=                       GWT.create( GwtTeamingImageBundle.class              );
 	private static final GwtTeamingMainMenuImageBundle		m_mainMenuImageBundle		=                       GWT.create( GwtTeamingMainMenuImageBundle.class      );
 	private static final GwtTeamingTaskListingImageBundle	m_taskListingImageBundle	=                       GWT.create( GwtTeamingTaskListingImageBundle.class   );
@@ -81,6 +82,17 @@ public class GwtTeaming implements EntryPoint
 	{
 		return m_dataTableImageBundle;
 	}// end getDataTableImageBundle()
+	
+	
+	/**
+	 * Returns the object that is used to retrieve Filr images.
+	 * 
+	 * @return
+	 */
+	public static GwtTeamingFilrImageBundle getFilrImageBundle()
+	{
+		return m_filrImageBundle;
+	}// end getFilrImageBundle()
 	
 	
 	/**
