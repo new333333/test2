@@ -118,6 +118,7 @@ import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -597,6 +598,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
  	 		filter.add("name", name);
   	 		defs =  coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
  	 	}
+		defs = Utils.validateDefinitions(defs);
    	 	//find the first one
 		if (defs.size() == 0) throw new NoDefinitionByTheIdException(name);
 		//should only be 1 if binder is null
@@ -1155,6 +1157,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								type.equals("radio") || type.equals("replyStyle") ||
 								type.equals("iconList") || type.equals("repositoryList") ||
 								type.equals("folderSelect") || type.equals("locale")) {
+							newPropertyEle.addAttribute("value", value);
+						} else if (type.startsWith("familySelectbox")) {
+							if (Utils.checkIfVibeLite()) {
+								//This is Vibe Lite, check for a valid family type
+								if (!Utils.checkIfVibeLiteFamily(type, value)) {
+									throw new DefinitionInvalidException("definition.error.familyInvalid");
+								}
+							}
 							newPropertyEle.addAttribute("value", value);
 						} else if (type.equals("boolean") || type.equals("checkbox")) {
 							if (value == null) {value = "false";}
@@ -2813,7 +2823,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		// Controllers need access to definitions.  Allow world read
     	FilterControls filter = new FilterControls();
     	filter.add("type", type);
-    	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
+    	List<Definition> defs = coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
+    	return Utils.validateDefinitions(defs);
      }
 
     public List<Definition> getDefinitions(Long binderId, Boolean includeAncestors) {
@@ -2821,7 +2832,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
        	if (binderId == null) {
         	FilterControls filter = new FilterControls()
         		.add(Restrictions.eq("binderId", ObjectKeys.RESERVED_BINDER_ID));
-        	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
+        	List<Definition> defs = coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
+        	return Utils.validateDefinitions(defs);
     	}
     	try {
     		Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
@@ -2831,11 +2843,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    	 			ids.add(ObjectKeys.RESERVED_BINDER_ID);
    	 			params.put("binderId", ids);
    	 			params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());
-   	 			return filterDefinitions(coreDao.loadObjects("from org.kablink.teaming.domain.Definition where binderId in (:binderId) and zoneId=:zoneId", params));
+   	 			List<Definition> defs = filterDefinitions(coreDao.loadObjects("from org.kablink.teaming.domain.Definition where binderId in (:binderId) and zoneId=:zoneId", params));
+   	 			return Utils.validateDefinitions(defs);
    	 		} else {
-   	 			FilterControls filter = new FilterControls()
-   	 			.add(Restrictions.eq("binderId", binder.getId()));
-   	 			return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
+   	 			FilterControls filter = new FilterControls().add(Restrictions.eq("binderId", binder.getId()));
+   	 			List<Definition> defs = coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
+   	 			return Utils.validateDefinitions(defs);
    	 		}
     	} catch (NoBinderByTheIdException nb) {
   	 		if (includeAncestors.equals(Boolean.TRUE)) {
@@ -2853,7 +2866,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
         	FilterControls filter = new FilterControls()
          		.add(Restrictions.eq("type", type))
          		.add(Restrictions.eq("binderId", ObjectKeys.RESERVED_BINDER_ID));
-       	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
+        	List<Definition> defs = coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
+        	return Utils.validateDefinitions(defs);
     	}
     	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
    	 	if (includeAncestors.equals(Boolean.TRUE)) {
@@ -2864,12 +2878,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
   	    	params.put("binderId", ids);
    	 		params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());
 
-   	    	return filterDefinitions(coreDao.loadObjects("from org.kablink.teaming.domain.Definition where binderId in (:binderId) and zoneId=:zoneId  and type=:type", params));
+   	 		List<Definition> defs = filterDefinitions(coreDao.loadObjects("from org.kablink.teaming.domain.Definition where binderId in (:binderId) and zoneId=:zoneId  and type=:type", params));
+   	 		return Utils.validateDefinitions(defs);
   	 	} else {
   	      	FilterControls filter = new FilterControls()
   	      		.add(Restrictions.eq("type", type))
   	      		.add(Restrictions.eq("binderId", binder.getId()));
- 	    	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
+  	      	List<Definition> defs = coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
+  	      	return Utils.validateDefinitions(defs);
   	 	}
 
     }

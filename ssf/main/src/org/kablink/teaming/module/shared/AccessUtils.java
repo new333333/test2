@@ -306,6 +306,9 @@ public class AccessUtils  {
 	        	       			}
 	        	       		}
 	        	        }
+	        	    	if (mId.equals(allUsersId)) {
+	        	    		readEntries.add(Constants.READ_ACL_ALL + cond.toString());
+	        	    	}
 	        	    	if (mId.equals(allUsersId) && !personal) {
 	        	    		readEntries.add(Constants.READ_ACL_GLOBAL + cond.toString());
 	        	    	}
@@ -343,6 +346,9 @@ public class AccessUtils  {
 		        	       			}
 		        	       		}
 		        	        }
+		        	    	if (mId.equals(allUsersId)) {
+		        	    		readEntries.add(Constants.READ_ACL_ALL + Constants.CONDITION_ACL_PREFIX + String.valueOf(cId));
+		        	    	}
 		        	    	if (mId.equals(allUsersId) && !personal) {
 		        	    		readEntries.add(Constants.READ_ACL_GLOBAL + Constants.CONDITION_ACL_PREFIX + String.valueOf(cId));
 		        	    	}
@@ -378,6 +384,9 @@ public class AccessUtils  {
         	       			}
         	       		}
         	        }
+        	    	if (mId.equals(allUsersId)) {
+        	    		readEntries.add(Constants.READ_ACL_ALL);
+        	    	}
         	    	if (mId.equals(allUsersId) && !personal) {
         	    		readEntries.add(Constants.READ_ACL_GLOBAL);
         	    	}

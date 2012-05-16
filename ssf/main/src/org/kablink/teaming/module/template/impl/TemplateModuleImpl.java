@@ -93,6 +93,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.StatusTicket;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.DashboardHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.GetterUtil;
@@ -717,26 +718,32 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	}
 	public TemplateBinder getTemplate(Long id) {
 		//public
-		return getCoreDao().loadTemplate(id, RequestContextHolder.getRequestContext().getZoneId());
+		TemplateBinder binder = getCoreDao().loadTemplate(id, RequestContextHolder.getRequestContext().getZoneId());
+		return Utils.validateTemplateBinder(binder);
 	}
 	public TemplateBinder getTemplateByName(String name) {
 		//public
-		return getCoreDao().loadTemplateByName(name, RequestContextHolder.getRequestContext().getZoneId());
+		TemplateBinder binder =  getCoreDao().loadTemplateByName(name, RequestContextHolder.getRequestContext().getZoneId());
+		return Utils.validateTemplateBinder(binder);
 	}
 	public List<TemplateBinder> getTemplates() {
 		//world read
-		return getCoreDao().loadTemplates(RequestContextHolder.getRequestContext().getZoneId());
+		List<TemplateBinder> binders = getCoreDao().loadTemplates(RequestContextHolder.getRequestContext().getZoneId());
+		return Utils.validateTemplateBinders(binders);
 	}
 	public List<TemplateBinder> getTemplates(Binder binder) {
 		//world read
-		return getCoreDao().loadTemplates(binder, RequestContextHolder.getRequestContext().getZoneId(), false);
+		List<TemplateBinder> binders = getCoreDao().loadTemplates(binder, RequestContextHolder.getRequestContext().getZoneId(), false);
+		return Utils.validateTemplateBinders(binders);
 	}
 	public List<TemplateBinder> getTemplates(int type) {
 		//world read
-		return getCoreDao().loadTemplates( RequestContextHolder.getRequestContext().getZoneId(), type);
+		List<TemplateBinder> binders = getCoreDao().loadTemplates( RequestContextHolder.getRequestContext().getZoneId(), type);
+		return Utils.validateTemplateBinders(binders);
 	}
 	public List<TemplateBinder> getTemplates(int type, Binder binder, boolean includeAncestors) {
-		return getCoreDao().loadTemplates(binder, RequestContextHolder.getRequestContext().getZoneId(), type, includeAncestors);
+		List<TemplateBinder> binders = getCoreDao().loadTemplates(binder, RequestContextHolder.getRequestContext().getZoneId(), type, includeAncestors);
+		return Utils.validateTemplateBinders(binders);
 	}
 	//no transaction - Adding the top binder can lead to optimisitic lock exceptions.
 	//In order to reduce the risk, we try to shorten the transaction time by managing it ourselves

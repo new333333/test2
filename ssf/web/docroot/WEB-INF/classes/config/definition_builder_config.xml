@@ -207,7 +207,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__name" type="text" />
-			<property name="family" caption="__family" type="selectbox" 
+			<property name="family" caption="__family" type="familySelectboxEntry" 
 				  default="" value="">
 				<option name="" caption="__family_unspecified" />
 				<option name="blog" caption="__family_blog" />
@@ -221,6 +221,8 @@
 				<option name="miniblog" caption="__family_miniblog" />
 				<option name="survey" caption="__family_survey" />
 				<option name="guestbook" caption="__family_guestbook" />
+				<option name="comment" caption="__family_comment" />
+				<option name="fileComment" caption="__family_file_comment" />
 				<help>ihelp.other.definition_family</help>
 			</property>
 			<property name="replyStyle" caption="__reply_style" type="replyStyle" />
@@ -607,7 +609,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__name" type="text" />
-			<property name="family" caption="__family" type="selectbox" 
+			<property name="family" caption="__family" type="familySelectboxFolder" 
 				  default="" value="">
 				<option name="" caption="__family_unspecified" />
 				<option name="blog" caption="__family_blog" />
@@ -2280,14 +2282,15 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__name" type="text" />
-			<property name="family" caption="__family" type="selectbox" 
+			<property name="family" caption="__family" type="familySelectboxWorkspace" 
 				  default="" value="">
 				<option name="" caption="__family_unspecified" />
 				<option name="workspace" caption="__family_workspace" />
-				<option name="team" caption="__family_team" />
+				<option name="landingpage" caption="__family_landingpage" />
 				<option name="blog" caption="__family_blog" />
 				<option name="discussion" caption="__family_discussion" />
 				<option name="project" caption="__family_project" />
+				<option name="team" caption="__family_team" />
 				<help>ihelp.other.definition_family</help>
 			</property>
 			<property name="icon" caption="__icons.workspace" type="iconList" 
@@ -2451,7 +2454,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__name" type="text" />
-			<property name="family" caption="__family" type="selectbox" 
+			<property name="family" caption="__family" type="familySelectboxUserWorkspace" 
 				  default="user" value="user">
 				<option name="user" caption="__family_user" />
 				<help>ihelp.other.definition_family</help>

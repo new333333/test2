@@ -142,9 +142,15 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					if (sVal != null) updates.put(ObjectKeys.FIELD_BINDER_NAME, sVal);
 					Long configId = getTemplateModule().addTemplate(parentBinder, type, updates).getId();
 					TemplateBinder config = getTemplateModule().getTemplate(configId);
-					//	redirect to modify binder
-					response.setRenderParameter(WebKeys.URL_BINDER_ID, config.getId().toString());
-					response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
+					if (config == null) {
+						String[] errors = new String[1];
+						errors[0] = NLT.get("error.template.notAllowedToUse");
+						response.setRenderParameter(WebKeys.ERROR_LIST, errors);
+					} else {
+						//	redirect to modify binder
+						response.setRenderParameter(WebKeys.URL_BINDER_ID, config.getId().toString());
+						response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
+					}
 				}
 			} else if (WebKeys.OPERATION_IMPORT.equals(operation)) {
 				if (request instanceof MultipartFileSupport) {
@@ -252,11 +258,17 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			//Get the function id from the form
 			Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 			TemplateBinder config = getTemplateModule().getTemplate(configId);
-			if (!config.isRoot())
-				response.setRenderParameter(WebKeys.URL_BINDER_ID, config.getParentBinder().getId().toString());
-			response.setRenderParameter(WebKeys.URL_OPERATION, "");
-			getBinderModule().deleteBinder(configId);
-			//an add without an okBtn - check for reload
+			if (config == null) {
+				String[] errors = new String[1];
+				errors[0] = NLT.get("error.template.notAllowedToUse");
+				response.setRenderParameter(WebKeys.ERROR_LIST, errors);
+			} else {
+				if (!config.isRoot())
+					response.setRenderParameter(WebKeys.URL_BINDER_ID, config.getParentBinder().getId().toString());
+				response.setRenderParameter(WebKeys.URL_OPERATION, "");
+				getBinderModule().deleteBinder(configId);
+				//an add without an okBtn - check for reload
+			}
 		} else if (WebKeys.OPERATION_SET_DISPLAY_DEFINITION.equals(operation)) {
 			Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 			getProfileModule().setUserProperty(RequestContextHolder.getRequestContext().getUserId(), configId, 
@@ -312,6 +324,9 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		String path = WebKeys.VIEW_TEMPLATE;
 		if (configId != null) {
 			TemplateBinder config = getTemplateModule().getTemplate(configId);
+			if (config == null) {
+				throw new Exception(NLT.get("error.template.notAllowedToUse"));
+			}
 			//See if this is a local template binder.
 			parentBinderId = config.getTemplateOwningBinderId();
 			model.put(WebKeys.CONFIGURE_CONFIGURATION_LOCAL, false);

@@ -94,6 +94,24 @@ public class Definition extends PersistentTimestampObject  {
 	public static final String VIEW_STYLE_FILE="file"; 
 	public static final String VIEW_STYLE_TEAM_ROOT="team_root";
 	public static final String VIEW_STYLE_TEAM="team";
+	
+	//Family names
+	public static final String FAMILY_BLOG="blog"; 
+	public static final String FAMILY_CALENDAR="calendar"; 
+	public static final String FAMILY_DISCUSSION="discussion"; 
+	public static final String FAMILY_FILE="file"; 
+	public static final String FAMILY_MILESTONE="milestone"; 
+	public static final String FAMILY_MINIBLOG="miniblog"; 
+	public static final String FAMILY_PHOTO="photo"; 
+	public static final String FAMILY_TASK="task"; 
+	public static final String FAMILY_WIKI="wiki"; 
+	public static final String FAMILY_WORKSPACE="workspace"; 
+	public static final String FAMILY_TEAM="team"; 
+	public static final String FAMILY_PROJECT="project"; 
+	public static final String FAMILY_USER_WORKSPACE="user"; 
+	public static final String FAMILY_COMMENT="comment"; 
+	public static final String FAMILY_FILE_COMMENT="fileComment"; 
+	
 	//visibility values
 	public static final Integer VISIBILITY_PUBLIC=1; 
 	public static final Integer VISIBILITY_DEPRECATED=3; //owning binder deleted; or marked obsolete
