@@ -216,6 +216,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case ADD_NEW_FOLDER:
+		{
+			AddNewFolderCmd afCmd = ((AddNewFolderCmd) cmd);
+			ErrorListRpcResponseData responseData = GwtViewHelper.addNewFolder( this, getRequest( ri ), afCmd.getBinderId(), afCmd.getFolderTemplateId(), afCmd.getFolderName() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+
 		case CAN_MODIFY_BINDER:
 		{
 			CanModifyBinderCmd cmbCmd;

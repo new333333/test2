@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.event.DisableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
+import org.kablink.teaming.gwt.client.event.InvokeAddNewFolderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
@@ -726,7 +727,12 @@ public class EntryMenuPanel extends ToolPanelBase {
 						int calendarShow = Integer.parseInt(simpleTBI.getQualifierValue("calendarShow"));
 						event = new CalendarShowEvent(folderId, CalendarShow.getEnum(calendarShow));
 						break;
-			        			        					
+
+					case INVOKE_ADD_NEW_FOLDER:
+						String folderTemplateId = simpleTBI.getQualifierValue("folderTemplateId");
+						event = new InvokeAddNewFolderEvent(folderId, Long.parseLong(folderTemplateId));
+						break;
+						
 					case UNDEFINED:
 						Window.alert(m_messages.eventHandling_NoEntryMenuHandler(simpleEvent.name()));
 						event = null;

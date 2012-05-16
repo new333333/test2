@@ -379,14 +379,58 @@ public class GwtMenuHelper {
 		// mirrored folder that can be written to?
 		boolean hasVT = MiscUtil.hasString(viewType);
 		AdaptedPortletURL url;
+		BinderModule   bm = bs.getBinderModule();
+		TemplateModule tm = bs.getTemplateModule();
 		if ((!(folder.isMirrored())) || isFolderWritableMirrored(folder)) {
-			// Yes!  Does the folder support more than one entry type?
-			if (1 < defaultEntryDefs) {
-				// Yes!  Define the toolbar items for them.
-				ToolbarItem addTBI = new ToolbarItem("1_add");
-				markTBITitle(addTBI, "toolbar.new");
-				entryToolbar.addNestedItem(addTBI);
+			// Yes!  Define the toolbar items for them.
+			ToolbarItem addTBI = new ToolbarItem("1_add");
+			markTBITitle(addTBI, "toolbar.new");
+			entryToolbar.addNestedItem(addTBI);
+			
+			// Does the user have rights add a new sub-folder to this
+			// folder?
+			if (bm.testAccess(folder, BinderOperation.addFolder)) {
+				// Yes!  Can we access any folder templates?
+				List<TemplateBinder> folderTemplates = tm.getTemplates(Definition.FOLDER_VIEW);
+				folderTemplates.addAll(tm.getTemplates(Definition.FOLDER_VIEW, folder, true));
+				if (folderTemplates.isEmpty()) {
+					folderTemplates.add(tm.addDefaultTemplate(Definition.FOLDER_VIEW));
+				}
+				if ((null != folderTemplates) && (0 < folderTemplates.size())) {
+					// Yes!  Scan them.
+					String fedId = folder.getEntryDefId();
+					Long folderTemplateId = null;
+					for (TemplateBinder tb:  folderTemplates) {
+						// Is the the template for this folder?
+						if (tb.getEntryDefId().equals(fedId)) {
+							// Yes!  Save its ID.
+							folderTemplateId = tb.getId();
+							break;
+						}
+					}
 
+					// Did we find the template ID for the folder?
+					if (null == folderTemplateId) {
+						// No!  Default to the first one in the list.
+						folderTemplateId = folderTemplates.get(0).getId();
+					}
+				
+					// Finally, use the information we've got to add a
+					// ToolbarItem to add a new folder.
+					ToolbarItem addFolderTBI = new ToolbarItem(ADD_FOLDER);
+					markTBITitle(           addFolderTBI, "toolbar.menu.addFolder"           );
+					markTBIEvent(           addFolderTBI, TeamingEvents.INVOKE_ADD_NEW_FOLDER);
+					markTBIFolderTemplateId(addFolderTBI, folderTemplateId                   );
+					addTBI.addNestedItem(addFolderTBI);
+				}
+			}
+			
+			// Does this folder have more than one entry definition or
+			// is for other than a guest book folder?
+			if ((1 < defaultEntryDefs) || (!hasVT) || (!(viewType.equals(Definition.VIEW_STYLE_GUESTBOOK)))) {
+				// Yes!  Added items for each entry type.  (Note that
+				// we skip this on guest books because they get their
+				// own 'Sign the Guest Book' top level menu item.)
 				int count = 1;
 				int	defaultEntryDefIndex = ListFolderHelper.getDefaultFolderEntryDefinitionIndex(
 					RequestContextHolder.getRequestContext().getUser().getId(),
@@ -415,30 +459,9 @@ public class GwtMenuHelper {
 					addTBI.addNestedItem(entriesTBI);
 				}
 			}
-				
-			// No, the folder doesn't support more than one entry type!
-			// Does it support one and only one entry type and the
-			// folder is other than a guest book?
-			else if ((1 == defaultEntryDefs) && ((!hasVT) || (!(viewType.equals(Definition.VIEW_STYLE_GUESTBOOK))))) {
-				// Yes!  Define the toolbar item for it.
-				Definition def = (Definition) defaultEntryDefinitions.get(0);
-				url = createActionUrl(request);
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
-				url.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
-				url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-				
-				ToolbarItem addTBI = new ToolbarItem("1_add");
-				markTBITitle(    addTBI, "toolbar.new");
-				markTBIHighlight(addTBI               );
-				markTBIPopup(    addTBI               );
-				markTBIUrl(      addTBI, url          );
-				entryToolbar.addNestedItem(addTBI);
-			}
 		}
 
 		if (hasVT) {
-			BinderModule bm = bs.getBinderModule();
-			TemplateModule tm = bs.getTemplateModule();
 			if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 				if (bm.testAccess(folder, BinderOperation.addFolder)) {
 					TemplateBinder blogTemplate = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_BLOG);
@@ -2243,7 +2266,7 @@ public class GwtMenuHelper {
 			SimpleProfiler.stop("GwtMenuHelper.getTeamManagementInfo()");
 		}
 	}
-	
+
 	/**
 	 * Returns a List<ToolbarItem> of the ToolbarItem's
 	 * applicable for the given context.
@@ -2320,12 +2343,19 @@ public class GwtMenuHelper {
 	private static void markTBIDefault(ToolbarItem tbi) {
 		tbi.addQualifier("default", "true");
 	}
-	
+
 	/*
 	 * Marks a ToolbarItem's event.
 	 */
 	private static void markTBIEvent(ToolbarItem tbi, TeamingEvents event) {
 		tbi.setTeamingEvent(event);
+	}
+	
+	/*
+	 * Marks a ToolbarItem with a folder template ID qualifier.
+	 */
+	private static void markTBIFolderTemplateId(ToolbarItem tbi, Long folderTemplateId) {
+		tbi.addQualifier("folderTemplateId", String.valueOf(folderTemplateId));
 	}
 	
 	/*

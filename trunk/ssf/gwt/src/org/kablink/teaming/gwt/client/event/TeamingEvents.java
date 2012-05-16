@@ -94,6 +94,7 @@ public enum TeamingEvents implements IsSerializable {
 	GROUP_MODIFIED,						// Notification that a group was modified.
 
 	INVOKE_ABOUT,						// Invokes the About dialog.
+	INVOKE_ADD_NEW_FOLDER,				// Invokes the Add New Folder dialog.
 	INVOKE_CLIPBOARD,					// Invokes the Clipboard dialog.
 	INVOKE_COLUMN_RESIZER,				// Invokes the column resizing dialog.
 	INVOKE_CONFIGURE_COLUMNS,			// Invokes the Configure Columns dialog.
