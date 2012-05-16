@@ -55,6 +55,7 @@ import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
+import org.kablink.teaming.gwt.client.event.InvokeAddNewFolderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
@@ -114,6 +115,8 @@ import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu.ActionMenuItem;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
+import org.kablink.teaming.gwt.client.widgets.AddNewFolderDlg;
+import org.kablink.teaming.gwt.client.widgets.AddNewFolderDlg.AddNewFolderDlgClient;
 import org.kablink.teaming.gwt.client.widgets.AdminControl;
 import org.kablink.teaming.gwt.client.widgets.AdminControl.AdminControlClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
@@ -173,6 +176,7 @@ public class GwtMainPage extends ResizeComposite
 		GotoContentUrlEvent.Handler,
 		GotoMyWorkspaceEvent.Handler,
 		GotoPermalinkUrlEvent.Handler,
+		InvokeAddNewFolderEvent.Handler,
 		InvokeHelpEvent.Handler,
 		InvokeSimpleProfileEvent.Handler,
 		InvokeShareBinderEvent.Handler,
@@ -205,6 +209,7 @@ public class GwtMainPage extends ResizeComposite
 	public static RequestInfo m_requestInfo = jsGetRequestInfo();;
 	public static ContentControl m_contentCtrl;
 
+	private AddNewFolderDlg m_addNewFolderDlg = null;
 	private VibeDockLayoutPanel m_mainPanel = null;
 	private DockLayoutPanel m_splitLayoutPanel = null;
 	private MainContentLayoutPanel m_contentLayoutPanel = null;
@@ -264,6 +269,7 @@ public class GwtMainPage extends ResizeComposite
 		TeamingEvents.EDIT_SITE_BRANDING,
 
 		// Invoke events.
+		TeamingEvents.INVOKE_ADD_NEW_FOLDER,
 		TeamingEvents.INVOKE_HELP,
 		TeamingEvents.INVOKE_SIMPLE_PROFILE,
 		
@@ -2127,6 +2133,55 @@ public class GwtMainPage extends ResizeComposite
 	}// end onLogin()
 	
 	/**
+	 * Handles InvokeAddNewFolderEvent's received by this class.
+	 * 
+	 * Implements the InvokeAddNewFolderEvent.Handler.onInvokeAddNewFolder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeAddNewFolder( final InvokeAddNewFolderEvent event )
+	{
+		// Have we instantiated a add new file dialog yet?
+		if ( null == m_addNewFolderDlg )
+		{
+			// No!  Instantiate one now.
+			AddNewFolderDlg.createAsync( new AddNewFolderDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final AddNewFolderDlg anfDlg )
+				{
+					// ...and show it.
+					m_addNewFolderDlg = anfDlg;
+					ScheduledCommand doShow = new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							showAddNewFolderDlgNow( event.getBinderId(), event.getFolderTemplateId() );
+						}// end execute()
+					};
+					Scheduler.get().scheduleDeferred( doShow );
+				}// end onSuccess()
+			});
+		}
+		
+		else
+		{
+			// Yes, we've instantiated a add new file dialog already!
+			// Simply show it.
+			showAddNewFolderDlgNow( event.getBinderId(), event.getFolderTemplateId() );
+		}
+	}// end onInvokeAddNewFolder()
+	
+	/**
 	 * Handles InvokeHelpEvent's received by this class.
 	 * 
 	 * Implements the InvokeHelpEvent.Handler.onInvokeHelp() method.
@@ -3006,6 +3061,14 @@ public class GwtMainPage extends ResizeComposite
 	{
 		m_mainMenuCtrl.setContext(selectedBinderId, inSearch, searchTabId);
 	}// end setMenuContext()
+	
+	/*
+	 * Synchronously shows the add new file dialog.
+	 */
+	private void showAddNewFolderDlgNow(Long binderId, Long folderTemplateId)
+	{
+		AddNewFolderDlg.initAndShow( m_addNewFolderDlg, binderId, folderTemplateId );
+	}// end showAddNewFolderDlgNow()
 	
 	/**
 	 * Callback interface to interact with the main page asynchronously

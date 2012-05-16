@@ -43,6 +43,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public enum VibeRpcCmdType implements IsSerializable
 {
 	ADD_FAVORITE,
+	ADD_NEW_FOLDER,
 	CAN_MODIFY_BINDER,
 	CHANGE_ENTRY_TYPES,
 	COLLAPSE_SUBTASKS,

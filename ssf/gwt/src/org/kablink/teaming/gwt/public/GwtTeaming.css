@@ -3298,6 +3298,14 @@ td.datePickerMonth {
 	
 .vibe-aboutBox {z-index: 1001;}
 
+/* Start:  Add new folder dialog styles. */
+	.vibe-addNewFolderDlg_Label     {}
+	.vibe-addNewFolderDlg_NameInput {width: 250px;}
+	.vibe-addNewFolderDlg_NameLabel {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
+	.vibe-addNewFolderDlg_NamePanel {}
+	.vibe-addNewFolderDlg_Panel     {padding: 10px;}
+/* End:  Add new folder dialog styles. */
+
 /* Start:  Cliboard dialog styles. */
 	.vibe-cbDlg_Anchor          {color: #135c8f; text-decoration: none;}
 	.vibe-cbDlg_Anchor:hover    {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}

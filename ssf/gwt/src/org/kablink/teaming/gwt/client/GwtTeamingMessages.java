@@ -290,6 +290,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_AddBinderTag();
 	String rpcFailure_AddFavorite();
 	String rpcFailure_AddFavoriteLimitExceeded();
+	String rpcFailure_AddNewFolder();
 	String rpcFailure_CanManagePublicTags();
 	String rpcFailure_CanModifyBinder();
 	String rpcFailure_ChangeEntryTypes();
@@ -470,6 +471,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_AccessoriesPanel();
 	String codeSplitFailure_ActivityStreamCtrl();
 	String codeSplitFailure_AddFilesDlg();
+	String codeSplitFailure_AddNewFolderDlg();
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_AdminInfoDlg();
 	String codeSplitFailure_BinderOwnerAvatarPanel();
@@ -745,6 +747,12 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuViewsWhatsNewInWorkspace();
 	String mainMenuViewsWhatsUnreadInFolder();
 	String mainMenuViewsWhatsUnreadInWorkspace();
+	
+	// Strings used by the 'Add New Folder' dialog.
+	String addNewFolderDlgError_AddFailed();
+	String addNewFolderDlgError_NoName();
+	String addNewFolderDlgHeader();
+	String addNewFolderDlgName();
 
 	// Strings used in the workspace tree control.
 	String treeAltEntry();

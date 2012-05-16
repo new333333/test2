@@ -624,22 +624,11 @@ public abstract class DlgBox extends PopupPanel
 		m_focusWidget = getFocusWidget();
 		if ( m_focusWidget != null )
 		{
-			Timer timer;
-			
 			// Yes
 			// For some unknown reason if we give the focus to the a field
 			// right now the cursor doesn't show up.  We need to set a timer and
 			// wait for the dialog to be displayed.
-			timer = new Timer()
-			{
-				@Override
-				public void run()
-				{
-					// Give the focus to the appropriate field.
-					m_focusWidget.setFocus( true );
-				}
-			};
-			timer.schedule( 500 );
+			GwtClientHelper.setFocusDelayed( m_focusWidget );
 		}
 	}// end show()
 	

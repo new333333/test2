@@ -588,6 +588,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case INVOKE_ADD_NEW_FOLDER:
+				// An InvokeAddNewFolderEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof InvokeAddNewFolderEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeAddNewFolderEvent.registerEvent(eventBus, ((InvokeAddNewFolderEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case INVOKE_CLIPBOARD:
 				// An InvokeClipboardEvent!  Can the event handler we
 				// were given handle that?
@@ -1680,6 +1689,7 @@ public class EventHelper {
 			case GROUP_MODIFIED:                		hasHandler = (eventHandler instanceof GroupModifiedEvent.Handler);             	   break;
 
 			case INVOKE_ABOUT:							hasHandler = (eventHandler instanceof InvokeAboutEvent.Handler);                   break;
+			case INVOKE_ADD_NEW_FOLDER:					hasHandler = (eventHandler instanceof InvokeAddNewFolderEvent.Handler);            break;
 			case INVOKE_CLIPBOARD:						hasHandler = (eventHandler instanceof InvokeClipboardEvent.Handler);               break;
 			case INVOKE_COLUMN_RESIZER:				    hasHandler = (eventHandler instanceof InvokeColumnResizerEvent.Handler);           break;
 			case INVOKE_CONFIGURE_COLUMNS:				hasHandler = (eventHandler instanceof InvokeConfigureColumnsEvent.Handler);        break;

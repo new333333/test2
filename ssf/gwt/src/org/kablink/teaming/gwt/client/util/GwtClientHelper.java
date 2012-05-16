@@ -67,6 +67,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ListBox;
@@ -1202,6 +1203,26 @@ public class GwtClientHelper {
 		scrollUIForPopup(popup, ScrollType.VERTICAL);
 	}
 
+	/**
+	 * Puts the focus into the given widget after a 1/2 second delay.
+	 * @param focusWidget
+	 */
+	public static void setFocusDelayed(final FocusWidget focusWidget) {
+		// Set the focus in the given widget after 1/2 second delay.
+		Timer timer = new Timer() {
+			@Override
+			public void run() {
+				// Give the focus to the widget.
+				setFocusNow(focusWidget);
+			}
+		};
+		timer.schedule(500);
+	}
+	
+	public static void setFocusNow(FocusWidget focusWidget) {
+		focusWidget.setFocus(true);
+	}
+	
 	/**
 	 * Simulates a click event on the given element.
 	 * 

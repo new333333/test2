@@ -126,6 +126,8 @@ import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FilesLockedByOtherUsersException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
@@ -139,6 +141,9 @@ import org.kablink.teaming.portletadapter.support.AdaptedPortlets;
 import org.kablink.teaming.portletadapter.support.KeyNames;
 import org.kablink.teaming.portletadapter.support.PortletInfo;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.security.runwith.RunWithCallback;
+import org.kablink.teaming.security.runwith.RunWithTemplate;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.task.TaskHelper.FilterType;
@@ -198,12 +203,69 @@ public class GwtViewHelper {
 		}
 	}
 
+	/**
+	 * Creates a new folder in the given binder based on a folder
+	 * definition ID and the name of the new folder.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * @param folderTemplateId
+	 * @param folderName
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData addNewFolder( AllModulesInjected bs, HttpServletRequest request, Long binderId, Long folderTemplateId, String folderName) throws GwtTeamingException {
+		try {
+			// Allocate an error list response we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+
+			try {
+				// Can we create the new folder?
+				final BinderModule bm = bs.getBinderModule();
+				final Long newId = bs.getTemplateModule().addBinder(folderTemplateId, binderId, folderName, null).getId();
+				if (bm.getBinder(newId) != null) {
+					RunWithTemplate.runWith(new RunWithCallback() {
+						@Override
+						public Object runWith() {
+							bm.setTeamMembershipInherited(newId, true);			
+							return null;
+						}
+					}, new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION}, null);
+				}
+			}
+
+			catch (Exception e) {
+				// No!  Add an error  to the error list.
+				String messageKey;
+				if      (e instanceof AccessControlException) messageKey = "addNewFolderError.AccssControlException";
+				else if (e instanceof WriteFilesException)    messageKey = "addNewFolderError.WriteFilesException";
+				else                                          messageKey = "addNewFolderError.OtherException";
+				reply.addError(NLT.get(messageKey, new String[]{folderName}));
+			}
+
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing any errors we
+			// encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.addNewFolder( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
 	/*
 	 * Returns the date string to display on a calendar's navigation bar.
 	 */
 	private static String buildCalendarDateDisplay(User user, Calendar startDay, Calendar firstDay, CalendarDayView dayView, int weekFirstDay) {
-//!		...this needs to be implemented...
-		
 		String		firstDayToShow = GwtServerHelper.getDateString(firstDay.getTime(), DateFormat.MEDIUM);
 		String		reply;
 		switch (dayView) {
