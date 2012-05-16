@@ -386,7 +386,7 @@ public class GwtMenuHelper {
 				ToolbarItem addTBI = new ToolbarItem("1_add");
 				markTBITitle(addTBI, "toolbar.new");
 				entryToolbar.addNestedItem(addTBI);
-				
+
 				int count = 1;
 				int	defaultEntryDefIndex = ListFolderHelper.getDefaultFolderEntryDefinitionIndex(
 					RequestContextHolder.getRequestContext().getUser().getId(),
@@ -518,7 +518,7 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for deleting the selected entries.
 	 */
-	private static void constructEntryDeleteItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
+	private static void constructEntryDeleteItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
 		// For the view types that support it...
 		if (MiscUtil.hasString(viewType)) {
 			BinderModule bm = bs.getBinderModule();
@@ -566,15 +566,6 @@ public class GwtMenuHelper {
 		markTBITitle(tbi, "toolbar.copy");
 		markTBIEvent(tbi, TeamingEvents.COPY_SELECTED_ENTRIES);
 		moreTBI.addNestedItem(tbi);
-
-		// ...if the user is not the Guest user...
-		if (!isGuest) {
-			// ...add the share item...
-			tbi = new ToolbarItem("1_shareSelected");
-			markTBITitle(tbi, "toolbar.shareSelected");
-			markTBIEvent(tbi, TeamingEvents.SHARE_SELECTED_ENTRIES);
-			moreTBI.addNestedItem(tbi);
-		}
 
 		// ...add the move item....
 		tbi = new ToolbarItem("1_moveSelected");
@@ -742,6 +733,27 @@ public class GwtMenuHelper {
 		if (!(moreTBI.getNestedItemsList().isEmpty())) {
 			// ...and the more toolbar to the entry toolbar.
 			entryToolbar.addNestedItem(moreTBI);
+		}
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for sharing the selected entries.
+	 */
+	private static void constructEntryShareItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
+		// For the view types that support it...
+		if (MiscUtil.hasString(viewType)) {
+			if (folderSupportsShare(folder, viewType)) {
+				// ...for non-guest users...
+				User    user    = GwtServerHelper.getCurrentUser();
+				boolean isGuest = ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
+				if (!isGuest) {
+					// ...add the share item...
+					ToolbarItem shareTBI = new ToolbarItem("1_shareSelected");
+					markTBITitle(shareTBI, "toolbar.shareSelected");
+					markTBIEvent(shareTBI, TeamingEvents.SHARE_SELECTED_ENTRIES);
+					entryToolbar.addNestedItem(shareTBI);
+				}
+			}
 		}
 	}
 	
@@ -1850,6 +1862,27 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Returns true if a folder (including its view type) supports
+	 * share operations and false otherwise.
+	 */
+	private static boolean folderSupportsShare(Folder folder, String viewType) {
+		boolean reply = ((null != folder) && MiscUtil.hasString(viewType));
+		if (reply) {
+			reply =
+				((viewType.equals(Definition.VIEW_STYLE_BLOG)       ||
+				  viewType.equals(Definition.VIEW_STYLE_DISCUSSION) ||
+				  viewType.equals(Definition.VIEW_STYLE_TABLE)      ||
+				  viewType.equals(Definition.VIEW_STYLE_FILE)       ||
+				  viewType.equals(Definition.VIEW_STYLE_GUESTBOOK)  ||
+				  viewType.equals(Definition.VIEW_STYLE_MILESTONE)  ||
+				  viewType.equals(Definition.VIEW_STYLE_MINIBLOG)   ||
+				  viewType.equals(Definition.VIEW_STYLE_SURVEY)     ||
+				  viewType.equals(Definition.VIEW_STYLE_TASK)));
+		}
+		return reply;
+	}
+	
+	/*
 	 * Walks up the parentage change of a folder looking for the
 	 * topmost containing folder of the same type.
 	 * 
@@ -1940,6 +1973,11 @@ public class GwtMenuHelper {
 						constructEntryAddItems(entryToolbar, bs, request, viewType, folder);
 					}
 		
+					// Constructs the items for sharing and deleting
+					// the selected entries.
+					constructEntryShareItem( entryToolbar, bs, request, viewType, folder);
+					constructEntryDeleteItem(entryToolbar, bs, request, viewType, folder);
+		
 					// Can we determine the folder's view type?
 					if (hasVT) {
 						// Yes!  Is it a blog or photo album?
@@ -1959,10 +1997,6 @@ public class GwtMenuHelper {
 							}
 						}
 					}
-		
-					// Constructs the item for deleting the selected
-					// entries.
-					constructEntryDeleteItems(entryToolbar, bs, request, viewType, folder);
 		
 					// Are we working on a calendar folder?
 					boolean isCalendar = (FolderType.CALENDAR == folderInfo.getFolderType());

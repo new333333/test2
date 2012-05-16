@@ -120,6 +120,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 	private VibeMenuItem					m_addFilesMenu;				//
 	private VibeMenuItem					m_deleteMenu;				//
 	private VibeMenuItem					m_moreMenu;					//
+	private VibeMenuItem					m_shareMenu;				//
 	private VibeMenuItem					m_trashPurgeAllMenu;		//
 	private VibeMenuItem					m_trashPurgeSelectedMenu;	//
 	private VibeMenuItem					m_trashRestoreAllMenu;		//
@@ -740,6 +741,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 		switch (simpleTBI.getTeamingEvent()) {
 		case INVOKE_DROPBOX:                  m_addFilesMenu             = menuItem; break;
 		case DELETE_SELECTED_ENTRIES:         m_deleteMenu               = menuItem; break;
+		case SHARE_SELECTED_ENTRIES:          m_shareMenu                = menuItem; break;
 		case TRASH_PURGE_ALL:                 m_trashPurgeAllMenu        = menuItem; break;
 		case TRASH_PURGE_SELECTED_ENTRIES:    m_trashPurgeSelectedMenu   = menuItem; break;
 		case TRASH_RESTORE_ALL:               m_trashRestoreAllMenu      = menuItem; break;
@@ -855,6 +857,15 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * @param enable
 	 */
 	public void setEntriesSelected(boolean enable) {
+		// If we have a share menu item...
+		if (null != m_shareMenu) {
+			// ...enable disable it.
+			m_shareMenu.setEnabled(enable);
+			if (enable)
+			     m_shareMenu.removeStyleName("vibe-menuDisabled");
+			else m_shareMenu.addStyleName(   "vibe-menuDisabled");
+		}
+
 		// If we have a delete menu item...
 		if (null != m_deleteMenu) {
 			// ...enable disable it.
