@@ -134,6 +134,7 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.Range;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.AbstractCellTable;
@@ -570,11 +571,17 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		EntryPinColumn<FolderRow> column = new EntryPinColumn<FolderRow>() {
 			@Override
 			public EntryPinInfo getValue(FolderRow fr) {
-				return
-					new EntryPinInfo(
+				EntryPinInfo reply;
+				if (fr.isBinder()) {
+					reply = null;
+				}
+				else {
+					reply = new EntryPinInfo(
 						fr.getPinned(),
 						getFolderId(),
 						fr.getEntryId().getEntryId());
+				}
+				return reply;
 			}
 		};
 		
@@ -1071,7 +1078,25 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				column = new EntryTitleColumn<FolderRow>(fc) {
 					@Override
 					public EntryTitleInfo getValue(FolderRow fr) {
-						return fr.getColumnValueAsEntryTitle(fc);
+						EntryTitleInfo reply = fr.getColumnValueAsEntryTitle(fc);
+						if ((null != reply) && fr.isBinder()) {
+							Image binderImg = new Image();
+							String binderIconName = fr.getBinderIconName();
+							if (GwtClientHelper.hasString(binderIconName)) {
+								String imagesPath = GwtClientHelper.getRequestInfo().getImagesPath();
+								if (binderIconName.startsWith("/"))
+								     binderImg.setUrl(imagesPath + binderIconName.substring(1));
+								else binderImg.setUrl(imagesPath + binderIconName);
+							}
+							
+							else {
+								ImageResource binderImgRes = GwtTeaming.getFilrImageBundle().folder();
+								binderImg.setUrl(binderImgRes.getSafeUri());
+							}
+							binderImg.getElement().setAttribute("align", "absmiddle");
+							reply.setClientBinderImage(binderImg);
+						}
+						return reply;
 					}
 				};
 			}

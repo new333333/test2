@@ -72,6 +72,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.GroupPrincipal;
@@ -127,6 +128,7 @@ import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FilesLockedByOtherUsersException;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -1111,9 +1113,13 @@ public class GwtViewHelper {
 		}
 
 		// Collect the entry IDs of the rows from the List<FolderRow>.
-		List<Long> entryIds = new ArrayList<Long>();
+		List<Long> entryIds  = new ArrayList<Long>();
+		List<Long> binderIds = new ArrayList<Long>();
 		for (FolderRow fr:  frList) {
-			entryIds.add(fr.getEntryId().getEntryId());
+			Long id = fr.getEntryId().getEntryId();
+			if (fr.isBinder())
+			     binderIds.add(id);
+			else entryIds.add( id);
 		}
 		
 		try {
@@ -1129,8 +1135,13 @@ public class GwtViewHelper {
 
 			// Scan the List<FolderRow> again.
 			for (FolderRow fr:  frList) {
-				// Do we have a FolderEntry for this row?
-				FolderEntry entry = entryMap.get(fr.getEntryId());
+				// Skipping any binders.
+				if (fr.isBinder()) {
+					continue;
+				}
+				
+				// Do we have the FolderEntry for this row?
+				FolderEntry entry = entryMap.get(fr.getEntryId().getEntryId());
 				if (null != entry) {
 					// Yes!  Store the user's rights to that
 					// FolderEntry.
@@ -1139,8 +1150,38 @@ public class GwtViewHelper {
 					fr.setCanTrash( fm.testAccess(entry, FolderOperation.preDeleteEntry));
 				}
 			}
-			
+
+			// Read the Binder's for the rows...
+			BinderModule bm = bs.getBinderModule();
+			SortedSet<Binder> binders = bm.getBinders(binderIds);
+
+			// ...mapping each Binder to its ID.
+			Map<Long, Binder> binderMap = new HashMap<Long, Binder>();
+			for (Binder binder:  binders) {
+				binderMap.put(binder.getId(), binder);
+			}
+
+			// Scan the List<FolderRow> again.
+			for (FolderRow fr:  frList) {
+				// Skipping any entries.
+				if (!(fr.isBinder())) {
+					continue;
+				}
+
+				// Do we have the Binder for this row?
+				Binder binder = binderMap.get(fr.getEntryId().getEntryId());
+				if (null != binder) {
+					// Yes!  Store its icon name...
+					fr.setBinderIconName(binder.getIconName());
+
+					// ...and the user's rights to that Binder.
+					fr.setCanModify(bm.testAccess(binder, BinderOperation.modifyBinder   ));
+					fr.setCanPurge( bm.testAccess(binder, BinderOperation.deleteBinder   ));
+					fr.setCanTrash( bm.testAccess(binder, BinderOperation.preDeleteBinder));
+				}
+			}
 		}
+		
 		catch (Exception ex) {/* Ignored. */}
 	}
 
@@ -2023,9 +2064,10 @@ public class GwtViewHelper {
 	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length, String quickFilter) throws GwtTeamingException {
 		try {
 			// Access the binder/folder.
-			Long   folderId = folderInfo.getBinderIdAsLong();
-			Binder binder   = bs.getBinderModule().getBinder(folderId);
-			Folder folder   = ((binder instanceof Folder)    ? ((Folder)    binder) : null);
+			Long	folderId = folderInfo.getBinderIdAsLong();
+			Binder	binder   = bs.getBinderModule().getBinder(folderId);
+			Folder	folder   = ((binder instanceof Folder) ? ((Folder) binder) : null);
+			boolean	isFolder = (null != folder);
 			
 			// If we're reading from a mirrored file folder...
 			if (FolderType.MIRROREDFILE == folderInfo.getFolderType()) {
@@ -2044,7 +2086,6 @@ public class GwtViewHelper {
 			
 			// What type of folder are we dealing with?
 			boolean isDiscussion     = false;
-			boolean isFolder         = (null != folder);
 			boolean isGuestbook      = false;
 			boolean isMilestone      = false;
 			boolean isSurvey         = false;
@@ -2079,9 +2120,12 @@ public class GwtViewHelper {
 
 			// Read the entries based on the search.
 			Map searchResults;
-			if      (isTrash)          searchResults = TrashHelper.getTrashEntries(bs, binder,   options);
-			else if (isProfilesRootWS) searchResults = bs.getProfileModule().getUsers(           options);
-			else                       searchResults = bs.getFolderModule().getEntries(folderId, options);
+			if      (isTrash)          searchResults = TrashHelper.getTrashEntries(bs, binder, options);
+			else if (isProfilesRootWS) searchResults = bs.getProfileModule().getUsers(         options);
+			else {
+//!				options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
+				searchResults = bs.getFolderModule().getEntries(folderId, options);
+			}
 			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
 			int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
 
@@ -2102,10 +2146,14 @@ public class GwtViewHelper {
 			List<FolderRow> folderRows       = new ArrayList<FolderRow>();
 			List<Long>      contributorIds   = new ArrayList<Long>();
 			for (Map entryMap:  searchEntries) {
+				// Is this an entry or folder?
+				String  entityType     = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD);
+				boolean isEntityFolder = EntityType.folder.name().equals(entityType);
+				
 				// Have we already process this entry's ID?
-				String entryIdS  = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
-				Long entryId = Long.parseLong(entryIdS);
-				if (isEntryIInList(entryId, folderRows)) {
+				String entryIdS = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
+				Long   entryId  = Long.parseLong(entryIdS);
+				if (isEntryIInList(entryId, folderRows, entityType)) {
 					// Yes!  Skip it now.  Note that we may have
 					// duplicates because of pinning.
 					continue;
@@ -2115,13 +2163,12 @@ public class GwtViewHelper {
 				collectContributorIds(entryMap, contributorIds);
 				
 				// Create a FolderRow for each entry.
-				String entityType       = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD   );
 				String locationBinderId = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDER_ID_FIELD);
 				if (!(MiscUtil.hasString(locationBinderId))) {
 					locationBinderId = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDERS_PARENT_ID_FIELD);
 				}
 				FolderRow fr = new FolderRow(new EntryId(Long.parseLong(locationBinderId), entryId), entityType, folderColumns);
-				if (pinnedEntryIds.contains(entryId)) {
+				if ((!(isEntityFolder)) && pinnedEntryIds.contains(entryId)) {
 					fr.setPinned(true);
 				}
 				
@@ -2140,17 +2187,37 @@ public class GwtViewHelper {
 						String cn      = fc.getColumnName();
 						String csk     = fc.getColumnSearchKey();
 						Object emValue = GwtServerHelper.getValueFromEntryMap(entryMap, csk);
+						if ((null == emValue) && csk.equals(Constants.LASTACTIVITY_FIELD)) {
+							emValue = GwtServerHelper.getValueFromEntryMap(entryMap, Constants.CREATION_DATE_FIELD);
+							if (null != emValue) {
+								csk = Constants.CREATION_DATE_FIELD;
+							}
+						}
+						if (null == emValue) {
+							fr.setColumnValue(fc, "");
+							continue;
+						}
+						
 						GuestInfo     gi = null;
 						PrincipalInfo pi = null;
 						if (emValue instanceof Principal) {
 							// Yes!  Are we looking at the 'guest'
 							// column in a guest book folder?
-							Principal p   = ((Principal) emValue);
+							Principal p = ((Principal) emValue);
 							if (isGuestbook && cn.equals("guest")) {
-								// Yes!  Use the principal to generate
-								// a GuestInfo for the column.
-								gi = getGuestInfoFromPrincipal(bs, request, p);
-								fr.setColumnValue(fc, gi);
+								// Yes!  If the entity is a folder...
+								if (isEntityFolder) {
+									// ...don't store a value for the
+									// ...column...
+									fr.setColumnValue(fc, "");
+								}
+								else {
+									// ...otherwise, use the principal
+									// ...to generate a GuestInfo for
+									// ...the column.
+									gi = getGuestInfoFromPrincipal(bs, request, p);
+									fr.setColumnValue(fc, gi);
+								}
 							}
 							
 							else {
@@ -2225,7 +2292,7 @@ public class GwtViewHelper {
 									// Yes!  Construct an
 									// EntryTitleInfo for it.
 									EntryTitleInfo eti = new EntryTitleInfo();
-									eti.setSeen(seenMap.checkIfSeen(entryMap));
+									eti.setSeen(isEntityFolder ? true : seenMap.checkIfSeen(entryMap));
 									eti.setTrash(isTrash);
 									eti.setEntityType(entityType);
 									eti.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
@@ -2319,9 +2386,14 @@ public class GwtViewHelper {
 									else if (csk.equals(Constants.FILE_SIZE_FIELD)) {
 										// Yes!  Trim any leading 0's
 										// from the value.
-										value = trimFileSize(value);
-										if (MiscUtil.hasString(value)) {
-											value += "KB";
+										if (isEntityFolder) {
+											value = "";
+										}
+										else {
+											value = trimFileSize(value);
+											if (MiscUtil.hasString(value)) {
+												value += "KB";
+											}
 										}
 									}
 
@@ -3267,12 +3339,18 @@ public class GwtViewHelper {
 	 * Returns true if a FolderRow with the specified entry ID is in
 	 * a List<FolderRow> or false otherwise.
 	 */
-	private static boolean isEntryIInList(Long entryId, List<FolderRow> folderRows) {
+	private static boolean isEntryIInList(Long entryId, List<FolderRow> folderRows, String entityType) {
+		// Scan the List<FolderRow>.
 		for (FolderRow fr:  folderRows) {
-			if (fr.getEntryId().equals(entryId)) {
+			// Do entry entry ID's and entity type's match?
+			if ((fr.getEntryId().equals(entryId) && fr.getEntityType().equals(entityType))) {
+				// Yes!  Then we found it.  Return true.
 				return true;
 			}
 		}
+		
+		// If we get here, we couldn't find the entry in question.
+		// Return false.
 		return false;
 	}
 
