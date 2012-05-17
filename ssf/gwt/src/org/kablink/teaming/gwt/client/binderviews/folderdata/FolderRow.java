@@ -73,6 +73,7 @@ public class FolderRow implements IsSerializable {
 	private Map<String, List<TaskFolderInfo>>	m_rowTaskFolderInfos;	// A map of column names to List<TaskFolderInfo>'s                possibly stored for a column.
 	private Map<String, ViewFileInfo>			m_rowViewFiles;			// A map of column names to ViewFileInfo's                        possibly stored for a column.
 	private Map<String, String>					m_rowStrings;			// A map of column names to String values                         possible stored for a column.
+	private String								m_binderIconName;		// Only when m_entityType is 'folder' or 'workspace'.
 	private String								m_entityType;			// The type of entity this row represents (entry, folder or workspace.)
 	
 	/**
@@ -125,6 +126,7 @@ public class FolderRow implements IsSerializable {
 	public Map<String, List<TaskFolderInfo>> getRowTaskFolderInfoListsMap() {validateMapTaskFolders();      return m_rowTaskFolderInfos; } 
 	public Map<String, ViewFileInfo>         getRowViewFilesMap()           {validateMapViews();            return m_rowViewFiles;       } 
 	public Map<String, String>               getRowStringsMap()             {validateMapStrings();          return m_rowStrings;         }
+	public String                            getBinderIconName()            {                               return m_binderIconName;     }
 	public String                            getEntityType()                {                               return m_entityType;         }
 
 	/**
@@ -132,10 +134,11 @@ public class FolderRow implements IsSerializable {
 	 * 
 	 * @param
 	 */
-	public void setCanModify(boolean canModify) {m_canModify = canModify;}
-	public void setCanPurge( boolean canPurge)  {m_canPurge  = canPurge; }
-	public void setCanTrash( boolean canTrash)  {m_canTrash  = canTrash; }
-	public void setPinned(   boolean pinned)    {m_pinned    = pinned;   }
+	public void setCanModify(     boolean canModify)      {m_canModify      = canModify;     }
+	public void setCanPurge(      boolean canPurge)       {m_canPurge       = canPurge;      }
+	public void setCanTrash(      boolean canTrash)       {m_canTrash       = canTrash;      }
+	public void setPinned(        boolean pinned)         {m_pinned         = pinned;        }
+	public void setBinderIconName(String  binderIconName) {m_binderIconName = binderIconName;}
 	
 	/**
 	 * Stores the value for a specific column.

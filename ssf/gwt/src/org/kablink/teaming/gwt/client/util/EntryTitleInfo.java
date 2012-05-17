@@ -47,6 +47,10 @@ public class EntryTitleInfo implements IsSerializable {
 	private String	m_description;	//
 	private String  m_entityType;	//
 	private String  m_title;		//
+	
+	// The following is only used on the client side to push an Image
+	// through to the data table for binders.
+	private transient Object m_clientBinderImage; 
 
 	/**
 	 * Constructor method.
@@ -62,24 +66,26 @@ public class EntryTitleInfo implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean getSeen()        {return m_seen;       }
-	public boolean getTrash()       {return m_trash;      }
-	public Long    getEntryId()     {return m_entryId;    }
-	public String  getDescription() {return m_description;}
-	public String  getEntityType()  {return m_entityType; }
-	public String  getTitle()       {return m_title;      }
+	public boolean getSeen()              {return m_seen;             }
+	public boolean getTrash()             {return m_trash;            }
+	public Long    getEntryId()           {return m_entryId;          }
+	public String  getDescription()       {return m_description;      }
+	public String  getEntityType()        {return m_entityType;       }
+	public String  getTitle()             {return m_title;            }
+	public Object  getClientBinderImage() {return m_clientBinderImage;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setSeen(       boolean seen)        {m_seen        = seen;       }
-	public void setTrash(      boolean trash)       {m_trash       = trash;      }
-	public void setEntryId(    Long    entryId)     {m_entryId     = entryId;    }
-	public void setDescription(String  description) {m_description = description;}
-	public void setEntityType( String  entityType)  {m_entityType  = entityType; }
-	public void setTitle(      String  title)       {m_title       = title;      }
+	public void setSeen(             boolean seen)              {m_seen              = seen;             }
+	public void setTrash(            boolean trash)             {m_trash             = trash;            }
+	public void setEntryId(          Long    entryId)           {m_entryId           = entryId;          }
+	public void setDescription(      String  description)       {m_description       = description;      }
+	public void setEntityType(       String  entityType)        {m_entityType        = entityType;       }
+	public void setTitle(            String  title)             {m_title             = title;            }
+	public void setClientBinderImage(Object  clientBinderImage) {m_clientBinderImage = clientBinderImage;}
 	
 	/**
 	 * Constructs an EntryTitleInfo from the parameters.

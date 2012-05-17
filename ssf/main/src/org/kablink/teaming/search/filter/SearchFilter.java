@@ -50,7 +50,7 @@ import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.util.search.Constants;
 
-
+@SuppressWarnings("unchecked")
 public class SearchFilter {
 	private static String [] sample = new String[0];
 	
@@ -429,13 +429,20 @@ public class SearchFilter {
 	}
 	
 	public void addDocumentType(String documentType) {
-		checkCurrent();
- 
 		if (documentType == null || documentType.equals("")) {
 			return;
 		}
+		addDocumentTypes(new String[] { documentType });
+	}
+	
+	public void addDocumentTypes(String[] documentTypes) {
+		checkCurrent();
+ 
+		if (documentTypes == null || documentTypes.length == 0) {
+			return;
+		}
 		
-		addNestedTerms(SearchFilterKeys.FilterTypeDocTypes, SearchFilterKeys.FilterDocType, Arrays.asList(new String[] { documentType }));
+		addNestedTerms(SearchFilterKeys.FilterTypeDocTypes, SearchFilterKeys.FilterDocType, Arrays.asList(documentTypes));
 	}
 	
 	public void addEntryTypes(String[] entryTypes) {
@@ -604,6 +611,17 @@ public class SearchFilter {
 		Element filterTerms = parent.addElement(SearchFilterKeys.FilterTerms);
 		filterTerms.addAttribute(SearchFilterKeys.FilterAnd, Boolean.toString(joinAnd));
 		return filterTerms;
+	}
+	
+	protected Element newNestedFilterTermsBlock() {
+		return newNestedFilterTermsBlock(this.joinAnd);
+	}
+	
+	public Element newNestedFilterTermsBlock(boolean joinAnd) {
+		checkCurrent();
+		
+		this.currentFilterTerms = newFilterTermsBlock(this.currentFilterTerms, joinAnd);
+		return this.currentFilterTerms;
 	}
 	
 	protected void checkCurrent() {
@@ -1088,4 +1106,11 @@ public class SearchFilter {
 					!filter.getRootElement().hasContent());
 	}
 
+	public Element getCurrentFilterTerms() {
+		return this.currentFilterTerms;
+	}
+	
+	public void setCurrentFilterTerms(Element currentFilterTerms) {
+		this.currentFilterTerms = currentFilterTerms;
+	}
 }

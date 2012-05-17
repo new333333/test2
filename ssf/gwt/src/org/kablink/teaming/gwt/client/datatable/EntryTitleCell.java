@@ -35,12 +35,16 @@ package org.kablink.teaming.gwt.client.datatable;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -87,23 +91,55 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	 * Invokes an entry viewer on the entry.
 	 */
 	private void invokeViewEntry(final EntryTitleInfo eti, Element pElement) {
-		GetViewFolderEntryUrlCmd cmd = new GetViewFolderEntryUrlCmd(null, eti.getEntryId());
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
-					String.valueOf(eti.getEntryId()));
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				String viewFolderEntryUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
-				GwtClientHelper.jsShowForumEntry(viewFolderEntryUrl);
-				markEntryUISeenAsync(eti);
-			}
-		});
+		// Is this entry a folder?
+		if (eti.getEntityType().equals("folder")) {
+			// Yes!  Can we get a permalink to it?
+			final String folderId = String.valueOf(eti.getEntryId());
+			GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd(folderId);
+			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					// No!  Tell the user about the problem.
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
+						folderId);
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Yes, we have a permalink to the folder!  Change
+					// contexts to it.
+					StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+					String binderPermalink = responseData.getStringValue();
+					OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(binderPermalink, false, Instigator.GOTO_CONTENT_URL);
+					if (GwtClientHelper.validateOSBI(osbInfo)) {
+						GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+					}
+				}
+			});
+		}
+		
+		else {
+			// No this entry isn't a folder!  It must be an entry.
+			GetViewFolderEntryUrlCmd cmd = new GetViewFolderEntryUrlCmd(null, eti.getEntryId());
+			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
+						String.valueOf(eti.getEntryId()));
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					String viewFolderEntryUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
+					GwtClientHelper.jsShowForumEntry(viewFolderEntryUrl);
+					markEntryUISeenAsync(eti);
+				}
+			});
+		}
 	}
 	
 	/*
@@ -279,9 +315,10 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		// If we're dealing with an item in the trash...
 		String entryIdS = String.valueOf(eti.getEntryId());
 		VibeFlowPanel fp = new VibeFlowPanel();
+		String entityType   = eti.getEntityType();
 		boolean entryUnseen = (!(eti.getSeen()));
 		boolean isTrash     = eti.getTrash();
-		String entityType   = eti.getEntityType();
+		boolean isEntry     = entityType.equals("folderEntry");
 		if (isTrash) {
 			// ...and we know what type of item it is...
 			if (null != entityType) {
@@ -290,10 +327,10 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 				GwtTeamingWorkspaceTreeImageBundle images   = GwtTeaming.getWorkspaceTreeImageBundle();
 				ImageResource                      entityImage;
 				String                             entityAlt;
-				if      (entityType.equals("folderEntry")) {entityImage = images.folder_entry();     entityAlt = messages.treeAltEntry();    }
-				else if (entityType.equals("folder"))      {entityImage = images.folder();           entityAlt = messages.treeAltFolder();   }
-				else if (entityType.equals("workspace"))   {entityImage = images.folder_workspace(); entityAlt = messages.treeAltWorkspace();}
-				else                                       {entityImage = null;                      entityAlt = null;                       }
+				if      (isEntry)                        {entityImage = images.folder_entry();     entityAlt = messages.treeAltEntry();    }
+				else if (entityType.equals("folder"))    {entityImage = images.folder();           entityAlt = messages.treeAltFolder();   }
+				else if (entityType.equals("workspace")) {entityImage = images.folder_workspace(); entityAlt = messages.treeAltWorkspace();}
+				else                                     {entityImage = null;                      entityAlt = null;                       }
 				if (null != entityImage) {
 					Image i = GwtClientHelper.buildImage(entityImage, entityAlt);
 					i.addStyleName("vibe-dataTableEntity-Marker");
@@ -313,6 +350,14 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			iE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_ENTRY_UNSEEN_IMAGE);
 			iE.setId(VibeDataTableConstants.CELL_WIDGET_ENTRY_UNSEEN_IMAGE + "_" + entryIdS);
 			fp.add(i);
+		}
+		
+		else if (!isEntry) {
+			Image binderImg = ((Image) eti.getClientBinderImage());
+			if (null != binderImg) {
+				binderImg.addStyleName("vibe-dataTableBinder-Img");
+				fp.add(binderImg);
+			}
 		}
 
 		// ...add the title link...
