@@ -45,7 +45,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetEmailNotificationInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveEmailNotificationInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
@@ -73,12 +73,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author drfoster@novell.com
  */
 public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandler {
-	private BinderInfo								m_binderInfo;				// The binder the dialog is running against.  null -> Entry subscription mode.
+	private BinderInfo								m_binderInfo;				// The binder the dialog is running against.  null -> Entity subscription mode.
 	private CheckBox								m_footerCB;					//
 	private EmailNotificationInfoRpcResponseData	m_emailNotificationInfo;	//
 	private GwtTeamingMainMenuImageBundle			m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages						m_messages;					// Access to Vibe's messages.
-	private List<EntryId>							m_entryIds;					// List<EntryId> of entry subscriptions.  null -> Binder email notification mode.
+	private List<EntityId>							m_entityIds;				// List<EntityId> of entity subscriptions.  null -> Binder email notification mode.
 	private ListBox									m_digestList;				//
 	private ListBox									m_msgList;					//
 	private ListBox									m_msgNoAttList;				//
@@ -168,7 +168,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 		ListBox emaBox = new ListBox(true);
 		emaBox.addStyleName("vibe-emailNotifDlg_SectionList " + emaBoxStyle);
 	    emaBox.setVisibleItemCount(4);
-	    if (isEntrySubscriptions()) {
+	    if (isEntitySubscriptions()) {
 	    	emaBox.addItem(m_messages.mainMenuEmailNotificationDlgNoChanges(),              EMA_VALUE_NO_CHANGES        );
 	    	emaBox.addItem(m_messages.mainMenuEmailNotificationDlgClearEntrySubscription(), EMA_VALUE_CLEAR_SUBSCRIPTION);
 	    }
@@ -293,7 +293,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 				// Is this one of the built-in (i.e.,
 				// '--make a selection--', ...) items?
 				String itemValue = emaBox.getValue(i);
-				boolean isBuiltIn = ((0 == i) || ((1 == i) && isEntrySubscriptions()));
+				boolean isBuiltIn = ((0 == i) || ((1 == i) && isEntitySubscriptions()));
 				if (isBuiltIn) {
 					// Yes!  We only add those that will involve a
 					// change on the server to the list.
@@ -325,7 +325,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	}
 
 	/*
-	 * Returns false if the dialog is running in entry subscription
+	 * Returns false if the dialog is running in entity subscription
 	 * mode or true if it's running in binder email notification mode.
 	 */
 	private boolean isBinderEmailNotifications() {
@@ -333,11 +333,11 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	}
 	
 	/*
-	 * Returns true if the dialog is running in entry subscription mode
-	 * or false if it's running in binder email notification mode.
+	 * Returns true if the dialog is running in entity subscription
+	 * mode or false if it's running in binder email notification mode.
 	 */
-	private boolean isEntrySubscriptions() {
-		return (null != m_entryIds);
+	private boolean isEntitySubscriptions() {
+		return (null != m_entityIds);
 	}
 	
 	/*
@@ -358,7 +358,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 */
 	private void populateDlgNow() {
 		GetEmailNotificationInfoCmd geniCmd;
-		if (isEntrySubscriptions())
+		if (isEntitySubscriptions())
 		     geniCmd = new GetEmailNotificationInfoCmd();
 		else geniCmd = new GetEmailNotificationInfoCmd(m_binderInfo.getBinderIdAsLong());
 		GwtClientHelper.executeCommand(geniCmd, new AsyncCallback<VibeRpcResponse>() {
@@ -499,11 +499,11 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 * Asynchronously runs the given instance of the email notification
 	 * dialog.
 	 */
-	private static void runDlgAsync(final EmailNotificationDlg enDlg, final BinderInfo bi, final List<EntryId> entryIds) {
+	private static void runDlgAsync(final EmailNotificationDlg enDlg, final BinderInfo bi, final List<EntityId> entityIds) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				enDlg.runDlgNow(bi, entryIds);
+				enDlg.runDlgNow(bi, entityIds);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -513,10 +513,10 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 * Synchronously runs the given instance of the email notification
 	 * dialog.
 	 */
-	private void runDlgNow(BinderInfo bi, List<EntryId> entryIds) {
+	private void runDlgNow(BinderInfo bi, List<EntityId> entityIds) {
 		// Store the parameters...
-		m_binderInfo = bi;			// null -> Entry subscription mode.
-		m_entryIds   = entryIds;	// null -> Binder email notification mode.
+		m_binderInfo = bi;			// null -> Entity subscription mode.
+		m_entityIds  = entityIds;	// null -> Binder email notification mode.
 
 		// ...and display a reading message, start populating the
 		// ...dialog and show it.
@@ -544,8 +544,8 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	private void saveEmailNotificationInfoNow() {
 		// Create a save command with the contents of the dialog.
 		SaveEmailNotificationInfoCmd seniCmd;
-		if (isEntrySubscriptions())
-		     seniCmd = new SaveEmailNotificationInfoCmd(m_entryIds);
+		if (isEntitySubscriptions())
+		     seniCmd = new SaveEmailNotificationInfoCmd(m_entityIds);
 		else seniCmd = new SaveEmailNotificationInfoCmd(m_binderInfo.getBinderIdAsLong());
 		if (!(getSelectedEMAs(seniCmd.getMsgAddressTypes(),      m_msgList     ))) return;
 		if (!(getSelectedEMAs(seniCmd.getMsgNoAttAddressTypes(), m_msgNoAttList))) return;
@@ -600,7 +600,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 			// initAndShow parameters,
 			final EmailNotificationDlg	enDlg,
 			final BinderInfo			bi,
-			final List<EntryId>			entryIds) {
+			final List<EntityId>		entityIds) {
 		GWT.runAsync(EmailNotificationDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -623,7 +623,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(enDlg, bi, entryIds);
+					runDlgAsync(enDlg, bi, entityIds);
 				}
 			}
 		});
@@ -642,8 +642,8 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	/*
 	 * Initializes and shows the email notification dialog.
 	 */
-	private static void initAndShowImpl(EmailNotificationDlg enDlg, BinderInfo bi, List<EntryId> entryIds) {
-		doAsyncOperation(null, enDlg, bi, entryIds);
+	private static void initAndShowImpl(EmailNotificationDlg enDlg, BinderInfo bi, List<EntityId> entityIds) {
+		doAsyncOperation(null, enDlg, bi, entityIds);
 	}
 	
 	/**
@@ -654,33 +654,33 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 */
 	public static void initAndShow(EmailNotificationDlg enDlg, BinderInfo bi) {
 		// Always use the implementation form of the method.
-		initAndShowImpl(enDlg, bi, ((List<EntryId>) null));
+		initAndShowImpl(enDlg, bi, ((List<EntityId>) null));
 	}
 	
 	/**
-	 * Initializes and shows the email notification dialog for entry
+	 * Initializes and shows the email notification dialog for entity
 	 * subscriptions.
 	 * 
 	 * @param enDlg
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public static void initAndShow(EmailNotificationDlg enDlg, List<EntryId> entryIds) {
+	public static void initAndShow(EmailNotificationDlg enDlg, List<EntityId> entityIds) {
 		// Always use the implementation form of the method.
-		initAndShowImpl(enDlg, null, entryIds);
+		initAndShowImpl(enDlg, null, entityIds);
 	}
 	
 	/**
-	 * Initializes and shows the email notification dialog for entry
+	 * Initializes and shows the email notification dialog for entity
 	 * subscriptions.
 	 * 
 	 * @param enDlg
-	 * @param entryId
+	 * @param entityId
 	 */
-	public static void initAndShow(EmailNotificationDlg enDlg, EntryId entryId) {
+	public static void initAndShow(EmailNotificationDlg enDlg, EntityId entityId) {
 		// Always use the implementation form of the method.
-		List<EntryId> entryIds = new ArrayList<EntryId>();
-		entryIds.add(entryId);
-		initAndShowImpl(enDlg, null, entryIds);
+		List<EntityId> entityIds = new ArrayList<EntityId>();
+		entityIds.add(entityId);
+		initAndShowImpl(enDlg, null, entityIds);
 	}
 	
 }

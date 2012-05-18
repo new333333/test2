@@ -36,7 +36,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 
 /**
  * Base class that holds all of the information necessary to execute
@@ -45,7 +45,7 @@ import org.kablink.teaming.gwt.client.util.EntryId;
  * @author drfoster@novell.com
  */
 public abstract class DeletePurgeFolderEntriesCmdBase extends VibeRpcCmd {
-	private List<EntryId>	m_entryIds;	//
+	private List<EntityId>	m_entityIds;	//
 	
 	/**
 	 * Class constructor.
@@ -54,34 +54,38 @@ public abstract class DeletePurgeFolderEntriesCmdBase extends VibeRpcCmd {
 	 * constructor.
 	 */
 	public DeletePurgeFolderEntriesCmdBase() {
+		// Initialize the super class.
 		super();		
 	}
 
 	/**
 	 * Class constructor.
 	 * 
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public DeletePurgeFolderEntriesCmdBase(List<EntryId> entryIds) {
+	public DeletePurgeFolderEntriesCmdBase(List<EntityId> entityIds) {
+		// Initialize this object...
 		this();
 		
-		setEntryIds(entryIds);
+		// ...and store the parameter.
+		setEntityIds(entityIds);
 	}
 	
 	/**
 	 * Class constructor.
 	 * 
-	 * @param entryId
+	 * @param entityId
 	 */
-	public DeletePurgeFolderEntriesCmdBase(EntryId entryId) {
-		this(getEIdListFromEId(entryId));
+	public DeletePurgeFolderEntriesCmdBase(EntityId entityId) {
+		// Initialize this object.
+		this(getEIdListFromEId(entityId));
 	}
 
 	/*
-	 * Returns a List<EntryId> that contains the specified EntryId.
+	 * Returns a List<EntityId> that contains the specified EntityId.
 	 */
-	private static List<EntryId> getEIdListFromEId(EntryId l) {
-		List<EntryId> reply = new ArrayList<EntryId>();
+	private static List<EntityId> getEIdListFromEId(EntityId l) {
+		List<EntityId> reply = new ArrayList<EntityId>();
 		reply.add(l);
 		return reply;
 	}
@@ -91,14 +95,14 @@ public abstract class DeletePurgeFolderEntriesCmdBase extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public List<EntryId> getEntryIds() {return m_entryIds;}	
+	public List<EntityId> getEntityIds() {return m_entityIds;}	
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setEntryIds(List<EntryId> entryIds) {m_entryIds = entryIds;}
+	public void setEntityIds(List<EntityId> entityIds) {m_entityIds = entityIds;}
 	
 	/**
 	 * Returns the command's enumeration value.

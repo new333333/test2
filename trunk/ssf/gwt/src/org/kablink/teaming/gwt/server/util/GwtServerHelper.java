@@ -127,7 +127,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.MilestoneStats;
@@ -1463,27 +1463,29 @@ public class GwtServerHelper {
 	 *
 	 * @param bs
 	 * @param request
-	 * @param entryIds
+	 * @param entityIds
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData deleteFolderEntries(AllModulesInjected bs, HttpServletRequest request, List<EntryId> entryIds) throws GwtTeamingException {
+	public static ErrorListRpcResponseData deleteFolderEntries(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// Scan the entry IDs...
-			for (EntryId entryId:  entryIds) {
+			for (EntityId entityId:  entityIds) {
 				try {
-					// ...deleting each entry...
-					TrashHelper.preDeleteEntry(bs, entryId.getBinderId(), entryId.getEntryId());
+					// ...deleting each entity...
+					if (entityId.isBinder())
+					     TrashHelper.preDeleteBinder(bs,                         entityId.getEntityId());
+					else TrashHelper.preDeleteEntry( bs, entityId.getBinderId(), entityId.getEntityId());
 				}
 
 				catch (Exception e) {
 					// ...tracking any that we couldn't delete.
-					String entryTitle = getEntryTitle(bs, entryId);
+					String entryTitle = getEntityTitle(bs, entityId);
 					String messageKey;
 					if      (e instanceof AccessControlException) messageKey = "deleteEntryError.AccssControlException";
 					else                                          messageKey = "deleteEntryError.OtherException";
@@ -3741,6 +3743,27 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Returns a string that can be used as an binder's title in an
+	 * error message.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static String getBinderTitle(AllModulesInjected bs, Long binderId) {
+		String reply;
+		try {
+			Binder binder = bs.getBinderModule().getBinder(binderId);
+			reply = binder.getTitle();
+		}
+		catch (Exception e) {
+			reply = String.valueOf(binderId);
+		}
+		return reply;
+	}
+	
+	/**
 	 * Returns a string that can be used as an entry's title in an
 	 * error message.
 	 * 
@@ -3761,10 +3784,22 @@ public class GwtServerHelper {
 		}
 		return reply;
 	}
-	
-	public static String getEntryTitle(AllModulesInjected bs, EntryId entryId) {
-		// Always use the initial form of the method.
-		return getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
+
+	/**
+	 * Returns a string that can be used as an entity's title in an
+	 * error message.
+	 * 
+	 * @param bs
+	 * @param entityId
+	 * 
+	 * @return
+	 */
+	public static String getEntityTitle(AllModulesInjected bs, EntityId entityId) {
+		String reply;
+		if (entityId.isBinder())
+		     reply = getBinderTitle(bs,                        entityId.getEntityId());
+		else reply = getEntryTitle(bs, entityId.getBinderId(), entityId.getEntityId());;
+		return reply;
 	}
 
 	/**
@@ -5749,12 +5784,12 @@ public class GwtServerHelper {
 	public static String getViewFileUrl(HttpServletRequest request, ViewFileInfo vfi) throws GwtTeamingException {
 		try {
 			StringBuffer webUrl = new StringBuffer(WebUrlUtil.getServletRootURL(request) + WebKeys.ACTION_VIEW_FILE);
-			webUrl.append(org.kablink.teaming.util.Constants.QUESTION  + WebKeys.URL_BINDER_ID   + org.kablink.teaming.util.Constants.EQUAL + vfi.getBinderId()  );
-			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_ENTRY_ID    + org.kablink.teaming.util.Constants.EQUAL + vfi.getEntryId()   );
-			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_ENTITY_TYPE + org.kablink.teaming.util.Constants.EQUAL + vfi.getEntityType());
-			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_FILE_ID     + org.kablink.teaming.util.Constants.EQUAL + vfi.getFileId()    );
-			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_FILE_TIME   + org.kablink.teaming.util.Constants.EQUAL + vfi.getFileTime()  );
-			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_VIEW_TYPE   + org.kablink.teaming.util.Constants.EQUAL + vfi.getViewType()  );
+			webUrl.append(org.kablink.teaming.util.Constants.QUESTION  + WebKeys.URL_BINDER_ID   + org.kablink.teaming.util.Constants.EQUAL + vfi.getEntityId().getBinderId()  );
+			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_ENTRY_ID    + org.kablink.teaming.util.Constants.EQUAL + vfi.getEntityId().getEntityId()  );
+			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_ENTITY_TYPE + org.kablink.teaming.util.Constants.EQUAL + vfi.getEntityId().getEntityType());
+			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_FILE_ID     + org.kablink.teaming.util.Constants.EQUAL + vfi.getFileId()                  );
+			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_FILE_TIME   + org.kablink.teaming.util.Constants.EQUAL + vfi.getFileTime()                );
+			webUrl.append(org.kablink.teaming.util.Constants.AMPERSAND + WebKeys.URL_VIEW_TYPE   + org.kablink.teaming.util.Constants.EQUAL + vfi.getViewType()                );
 			return webUrl.toString();
 		}
 		
@@ -6755,28 +6790,31 @@ public class GwtServerHelper {
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param entryIds
+	 * @param entityIds
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData purgeFolderEntries(AllModulesInjected bs, HttpServletRequest request, List<EntryId> entryIds) throws GwtTeamingException {
+	public static ErrorListRpcResponseData purgeFolderEntries(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// Scan the entry IDs...
+			BinderModule bm = bs.getBinderModule();
 			FolderModule fm = bs.getFolderModule();
-			for (EntryId entryId:  entryIds) {
+			for (EntityId entityId:  entityIds) {
 				try {
-					// ...purging each entry...
-					fm.deleteEntry(entryId.getBinderId(), entryId.getEntryId());
+					// ...purging each entity...
+					if (entityId.isBinder())
+					     bm.deleteBinder(                       entityId.getEntityId());
+					else fm.deleteEntry(entityId.getBinderId(), entityId.getEntityId());
 				}
 				
 				catch (Exception e) {
 					// ...tracking any that we couldn't purge.
-					String entryTitle = getEntryTitle(bs, entryId);
+					String entryTitle = getEntityTitle(bs, entityId);
 					String messageKey;
 					if      (e instanceof AccessControlException) messageKey = "purgeEntryError.AccssControlException";
 					else                                          messageKey = "purgeEntryError.OtherException";

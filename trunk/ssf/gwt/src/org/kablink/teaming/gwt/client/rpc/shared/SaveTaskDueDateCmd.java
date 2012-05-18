@@ -33,7 +33,7 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 
 
@@ -44,7 +44,7 @@ import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
  * @author drfoster@novell.com
  */
 public class SaveTaskDueDateCmd extends VibeRpcCmd {
-	private EntryId		m_taskId;	//
+	private EntityId		m_taskId;	//
 	private TaskEvent	m_dueDate;	//
 	
 	/**
@@ -63,7 +63,7 @@ public class SaveTaskDueDateCmd extends VibeRpcCmd {
 	 * @param taskId
 	 * @param dueDate
 	 */
-	public SaveTaskDueDateCmd(EntryId taskId, TaskEvent dueDate) {
+	public SaveTaskDueDateCmd(EntityId taskId, TaskEvent dueDate) {
 		this();		
 		m_taskId  = taskId;
 		m_dueDate = dueDate;
@@ -74,7 +74,7 @@ public class SaveTaskDueDateCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public EntryId   getTaskId()  {return m_taskId; }	
+	public EntityId   getTaskId()  {return m_taskId; }	
 	public TaskEvent getDueDate() {return m_dueDate;}	
 	
 	/**

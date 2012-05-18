@@ -352,7 +352,7 @@ public class TaskListItem implements IsSerializable {
 		private String					m_status        = "";
 		private TaskDate				m_completedDate = new TaskDate();	
 		private TaskEvent				m_event         = new TaskEvent();
-		private EntryId					m_taskId        = new EntryId();
+		private EntityId				m_taskId        = new EntityId();
 		private String					m_desc			= "";
 
 		// The following are the values used for task completion
@@ -415,7 +415,7 @@ public class TaskListItem implements IsSerializable {
 		public String               getStatus()           {return m_status;          }
 		public TaskDate             getCompletedDate()    {return m_completedDate;   }
 		public TaskEvent            getEvent()            {return m_event;           }
-		public EntryId              getTaskId()           {return m_taskId;          }
+		public EntityId             getTaskId()           {return m_taskId;          }
 		public String				getDesc()			  {return m_desc;			 }
 		
 		/**
@@ -441,7 +441,7 @@ public class TaskListItem implements IsSerializable {
 		public void setStatus(          String               status)           {m_status           = status;          }
 		public void setCompletedDate(   TaskDate             completedDate)    {m_completedDate    = completedDate;   }
 		public void setEvent(           TaskEvent            event)            {m_event            = event;           }
-		public void setTaskId(          EntryId              taskId)           {m_taskId           = taskId;          }
+		public void setTaskId(          EntityId             taskId)           {m_taskId           = taskId;          }
 		public void setDesc(			String				 desc )			   {m_desc			   = desc;			  }
 
 		/**

@@ -81,14 +81,16 @@ public final class MiscUtil
 {
 	protected static Log m_logger = LogFactory.getLog(MiscUtil.class);
 	
-	public static class IdPair {
-		public Long m_binderId;
-		public Long m_entryId;
+	public static class IdTriple {
+		public Long		m_binderId;		//
+		public Long		m_entryId;		//
+		public String	m_entityType;	//
 		
-		public IdPair(Long binderId, Long entryId) {
+		public IdTriple(Long binderId, Long entryId, String entityType) {
 			super();
-			m_binderId = binderId;
-			m_entryId  = entryId;
+			m_binderId   = binderId;
+			m_entryId    = entryId;
+			m_entityType = entityType;
 		}
 	}
 
@@ -941,23 +943,23 @@ public final class MiscUtil
 	}
 	
 	/**
-	 * Returns a List<IdPair> of the binder ID/entry ID pairs stored in
-	 * a multiple entry ID string.
+	 * Returns a List<IdTriple> of the binder ID/entry ID/entity type
+	 * stored in a multiple entity ID string.
 	 * 
-	 * @param multipleEntryIds
+	 * @param multipleEntityIds
 	 * 
 	 * @return
 	 */
-	public static List<IdPair> getIdPairsFromMultipleEntryIds( String multipleEntryIds )
+	public static List<IdTriple> getIdTriplesFromMultipleEntryIds( String multipleEntityIds )
 	{
-		List<IdPair> reply = new ArrayList<IdPair>();
-		if ( MiscUtil.hasString( multipleEntryIds ) )
+		List<IdTriple> reply = new ArrayList<IdTriple>();
+		if ( MiscUtil.hasString( multipleEntityIds ) )
 		{
-			String[] meIds = multipleEntryIds.split( "," );
+			String[] meIds = multipleEntityIds.split( "," );
 			for ( String meId:  meIds )
 			{
 				String[] eId = meId.split( ":" );
-				reply.add(new IdPair(Long.parseLong(eId[0]), Long.parseLong(eId[1])));
+				reply.add(new IdTriple(Long.parseLong(eId[0]), Long.parseLong(eId[1]), eId[2]));
 			}
 		}
 		return reply;

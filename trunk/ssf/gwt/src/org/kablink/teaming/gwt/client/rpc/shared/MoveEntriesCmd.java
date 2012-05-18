@@ -35,7 +35,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 
 /**
  * This class holds all of the information necessary to execute the
@@ -60,7 +60,7 @@ public class MoveEntriesCmd extends CopyMoveEntriesCmdBase {
 	 * @param targetFolderId
 	 * @param entryIds
 	 */
-	public MoveEntriesCmd(final Long targetFolderId, final List<EntryId> entryIds) {
+	public MoveEntriesCmd(final Long targetFolderId, final List<EntityId> entryIds) {
 		// Initialize the super class.
 		super(targetFolderId, entryIds);
 	}

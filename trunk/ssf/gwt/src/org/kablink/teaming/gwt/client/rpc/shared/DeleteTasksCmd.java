@@ -35,7 +35,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 
 /**
  * This class holds all of the information necessary to execute the
@@ -59,7 +59,7 @@ public class DeleteTasksCmd extends DeletePurgeFolderEntriesCmdBase {
 	 * 
 	 * @param entryIds
 	 */
-	public DeleteTasksCmd(List<EntryId> entryIds) {
+	public DeleteTasksCmd(List<EntityId> entryIds) {
 		super(entryIds);		
 	}
 	
@@ -68,7 +68,7 @@ public class DeleteTasksCmd extends DeletePurgeFolderEntriesCmdBase {
 	 * 
 	 * @param entryIds
 	 */
-	public DeleteTasksCmd(EntryId entryId) {
+	public DeleteTasksCmd(EntityId entryId) {
 		super(entryId);		
 	}
 	

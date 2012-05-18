@@ -49,7 +49,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
@@ -449,7 +449,7 @@ public class SimpleListOfTasksWidget extends VibeWidget
 						GetViewFolderEntryUrlCmd cmd;
 
 						// No, issue an rpc request to get the needed url
-						cmd = new GetViewFolderEntryUrlCmd( m_taskInfo.getTaskId().getBinderId(), m_taskInfo.getTaskId().getEntryId() );
+						cmd = new GetViewFolderEntryUrlCmd( m_taskInfo.getTaskId().getBinderId(), m_taskInfo.getTaskId().getEntityId() );
 						GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 						{
 							@Override
@@ -458,7 +458,7 @@ public class SimpleListOfTasksWidget extends VibeWidget
 								GwtClientHelper.handleGwtRPCFailure(
 									t,
 									GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
-									String.valueOf( m_taskInfo.getTaskId().getEntryId() ) );
+									String.valueOf( m_taskInfo.getTaskId().getEntityId() ) );
 							}
 							
 							@Override
@@ -991,7 +991,7 @@ public class SimpleListOfTasksWidget extends VibeWidget
 						@Override
 						public void execute()
 						{
-							EntryId taskId;
+							EntityId taskId;
 							Long binderId;
 							
 							taskId = taskInfo.getTaskId();

@@ -52,7 +52,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.CopyMoveEntriesCmdBase;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.MoveEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ProgressDlg;
@@ -92,8 +92,8 @@ public class CopyMoveEntriesDlg extends DlgBox
 	private GwtFolder					m_selectedDest;				// The currently selected folder returned by the search widget.
 	private GwtTeamingMessages 			m_messages;					// Access to Vibe's string resource.
 	private InlineLabel					m_progressIndicator;		// Label containing the 'x of y' progress indicator.
-	private int							m_totalDone;				// Tracks the number of entries that have been copied/moved while the operation is in progress.
-	private List<EntryId>				m_entryIds;					// Current list of entry IDs to be copied/moved.
+	private int							m_totalDone;				// Tracks the number of entities that have been copied/moved while the operation is in progress.
+	private List<EntityId>				m_entityIds;				// Current list of entity IDs to be copied/moved.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private ProgressBar					m_progressBar;				// Progress bar shown as part of progress handling.
 	private VibeFlowPanel				m_progressPanel;			// Panel containing the progress indicator.
@@ -162,12 +162,12 @@ public class CopyMoveEntriesDlg extends DlgBox
 	}
 
 	/*
-	 * Returns a List<EntryId> clone of the original list.
+	 * Returns a List<EntityId> clone of the original list.
 	 */
-	private List<EntryId> cloneEntryIds(List<EntryId> entryIds) {
-		List<EntryId> reply = new ArrayList<EntryId>();
-		for (EntryId entryId:  entryIds) {
-			reply.add(new EntryId(entryId.getBinderId(), entryId.getEntryId()));
+	private List<EntityId> cloneEntityIds(List<EntityId> entityIds) {
+		List<EntityId> reply = new ArrayList<EntityId>();
+		for (EntityId entityId:  entityIds) {
+			reply.add(new EntityId(entityId.getBinderId(), entityId.getEntityId(), entityId.getEntityType()));
 		}
 		return reply;
 	}
@@ -178,8 +178,8 @@ public class CopyMoveEntriesDlg extends DlgBox
 	private void copyMoveEntriesAsync(
 			final CopyMoveEntriesCmdBase cmd,
 			final GwtFolder              targetFolder,
-			final List<EntryId>          sourceEntryIds,
-			final int                    totalEntryCount,
+			final List<EntityId>         sourceEntityIds,
+			final int                    totalEntityCount,
 			final List<String>           collectedErrors) {
 		ScheduledCommand doCopyMove = new ScheduledCommand() {
 			@Override
@@ -187,8 +187,8 @@ public class CopyMoveEntriesDlg extends DlgBox
 				copyMoveEntriesNow(
 					cmd,
 					targetFolder,
-					sourceEntryIds,
-					totalEntryCount,
+					sourceEntityIds,
+					totalEntityCount,
 					collectedErrors);
 			}
 		};
@@ -201,44 +201,44 @@ public class CopyMoveEntriesDlg extends DlgBox
 	private void copyMoveEntriesNow(
 			final CopyMoveEntriesCmdBase cmd,
 			final GwtFolder              targetFolder,
-			final List<EntryId>          sourceEntryIds,
-			final int                    totalEntryCount,
+			final List<EntityId>         sourceEntityIds,
+			final int                    totalEntityCount,
 			final List<String>           collectedErrors) {
 		// Do we need to send the request to copy/move in chunks?  (We
 		// do if we've already been sending chunks or the source list
 		// contains more items then our threshold.)
-		boolean cmdIsChunkList = (cmd.getEntryIds() != sourceEntryIds);
-		if (cmdIsChunkList || ProgressDlg.needsChunking(sourceEntryIds.size())) {
+		boolean cmdIsChunkList = (cmd.getEntityIds() != sourceEntityIds);
+		if (cmdIsChunkList || ProgressDlg.needsChunking(sourceEntityIds.size())) {
 			// Yes!  If we're not showing the progress bar or panel
 			// yet...
 			if ((!(m_progressPanel.isVisible())) || (!(m_progressBar.isVisible()))) {
 				// ...show them now.
 				m_progressBar.setVisible(  true);
 				m_progressPanel.setVisible(true);
-				updateProgress(0, totalEntryCount);
+				updateProgress(0, totalEntityCount);
 			}
 			
 			// Make sure we're using a separate list for the chunks
 			// vs. the source list that we're copying.
-			List<EntryId> chunkList;
+			List<EntityId> chunkList;
 			if (cmdIsChunkList) {
-				chunkList = cmd.getEntryIds();
+				chunkList = cmd.getEntityIds();
 				chunkList.clear();
 			}
 			else {
-				chunkList = new ArrayList<EntryId>();
-				cmd.setEntryIds(chunkList);
+				chunkList = new ArrayList<EntityId>();
+				cmd.setEntityIds(chunkList);
 			}
 			
-			// Scan the entry IDs to be copied/moved...
+			// Scan the entity IDs to be copied/moved...
 			while(true) {
-				// ...moving each entry ID from the source list into
+				// ...moving each entity ID from the source list into
 				// ...the chunk list.
-				chunkList.add(sourceEntryIds.get(0));
-				sourceEntryIds.remove(0);
+				chunkList.add(sourceEntityIds.get(0));
+				sourceEntityIds.remove(0);
 				
 				// Was that the last entry to be copied/moved?
-				if (sourceEntryIds.isEmpty()) {
+				if (sourceEntityIds.isEmpty()) {
 					// Yes!  Break out of the loop and let the chunk
 					// get handled as if we weren't sending by chunks.
 					break;
@@ -252,8 +252,8 @@ public class CopyMoveEntriesDlg extends DlgBox
 					copyMoveEntriesImpl(
 						cmd,
 						targetFolder,
-						sourceEntryIds,
-						totalEntryCount,
+						sourceEntityIds,
+						totalEntityCount,
 						collectedErrors,
 						true);	// true -> This is a one of multiple chunks to be copied/moved.
 					
@@ -262,14 +262,14 @@ public class CopyMoveEntriesDlg extends DlgBox
 			}
 		}
 
-		// Do we have any entries to be copied/moved?
-		if (!(cmd.getEntryIds().isEmpty())) {
+		// Do we have any entities to be copied/moved?
+		if (!(cmd.getEntityIds().isEmpty())) {
 			// Yes!  Perform the final move/copy.
 			copyMoveEntriesImpl(
 				cmd,
 				targetFolder,
-				sourceEntryIds,
-				totalEntryCount,
+				sourceEntityIds,
+				totalEntityCount,
 				collectedErrors,
 				false);	// false -> This is the last copy/move that needs to happen.
 		}
@@ -282,8 +282,8 @@ public class CopyMoveEntriesDlg extends DlgBox
 	private void copyMoveEntriesImpl(
 			final CopyMoveEntriesCmdBase cmd,
 			final GwtFolder              targetFolder,
-			final List<EntryId>          sourceEntryIds,
-			final int                    totalEntryCount,
+			final List<EntityId>         sourceEntityIds,
+			final int                    totalEntityCount,
 			final List<String>           collectedErrors,
 			final boolean                moreRemaining) {
 		// Send the request to copy/move the entries.
@@ -312,14 +312,14 @@ public class CopyMoveEntriesDlg extends DlgBox
 				// Did we just copy/move a part of what we need to
 				// copy/move?
 				if (moreRemaining) {
-					// Yes!  Clear the entry ID list in the command
+					// Yes!  Clear the entity ID list in the command
 					// and request that the next chunk be send.
-					updateProgress(cmd.getEntryIds().size(), totalEntryCount);
+					updateProgress(cmd.getEntityIds().size(), totalEntityCount);
 					copyMoveEntriesAsync(
 						cmd,
 						targetFolder,
-						sourceEntryIds,
-						totalEntryCount,
+						sourceEntityIds,
+						totalEntityCount,
 						collectedErrors);
 				}
 				
@@ -327,7 +327,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 					// No, we didn't just copy/move part of it, but
 					// everything remaining!  Did we collect any errors
 					// in during the copy/move process?
-					updateProgress(cmd.getEntryIds().size(), totalEntryCount);
+					updateProgress(cmd.getEntityIds().size(), totalEntityCount);
 					int totalErrorCount = collectedErrors.size();
 					if (0 < totalErrorCount) {
 						// Yes!  Tell the user about the problem(s).
@@ -336,12 +336,17 @@ public class CopyMoveEntriesDlg extends DlgBox
 							collectedErrors);
 					}
 					
-					// If we just completed moving anything...
-					if ((!m_doCopy) && totalErrorCount != totalEntryCount) {
+					// If we just completed moving anything or doing
+					// doing anything with a binder...
+					boolean copyMovedBinders = EntityId.areBindersInEntityList(sourceEntityIds);
+					if (((!m_doCopy) || copyMovedBinders) && totalErrorCount != totalEntityCount) {
 						// ...force the content to refresh to reflect
-						// ...what was moved.  We don't do this for a
-						// ...copy as there's generally nothing showing
-						// ...that needs to be changed.
+						// ...what was done.  We don't do this for a
+						// ...copy of just entries as there's generally
+						// ...nothing showing that needs to be changed.
+						if (copyMovedBinders) {
+							GwtClientHelper.getRequestInfo().setSidebarReload();
+						}
 						FullUIReloadEvent.fireOne();
 					}
 					
@@ -398,11 +403,11 @@ public class CopyMoveEntriesDlg extends DlgBox
 		// Yes, we have a target folder to work with!  Are we trying to
 		// copy/move any entries from the target folder?
 		Long targetFolderId = Long.parseLong(targetFolder.getFolderId());
-		int  sourceIsTargetCount = getFolderReferenceCount(m_entryIds, targetFolderId);
+		int  sourceIsTargetCount = getFolderReferenceCount(m_entityIds, targetFolderId);
 		if (0 < sourceIsTargetCount) {
 			// Yes!  Tell the user about the problem and bail.
 			String msg;
-			if (sourceIsTargetCount == m_entryIds.size())
+			if (sourceIsTargetCount == m_entityIds.size())
 			     msg = m_strMap.get(StringIds.ERROR_TARGET_IN_SOURCE_ALL);
 			else msg = m_strMap.get(StringIds.ERROR_TARGET_IN_SOURCE_SOME);
 			GwtClientHelper.deferredAlert(msg);
@@ -411,14 +416,14 @@ public class CopyMoveEntriesDlg extends DlgBox
 
 		// No, the target is a unique folder!  Create the appropriate
 		// copy/move command...
-		List<EntryId> sourceEntryIds  = cloneEntryIds(m_entryIds);	// We use a clone because we manipulate the list's contents during the copy/move.
-		int           totalEntryCount = sourceEntryIds.size();		// Total number of entries that we're starting with.
-		List<String>  collectedErrors = new ArrayList<String>();
+		List<EntityId> sourceEntityIds  = cloneEntityIds(m_entityIds);	// We use a clone because we manipulate the list's contents during the copy/move.
+		int            totalEntityCount = sourceEntityIds.size();		// Total number of entities that we're starting with.
+		List<String>   collectedErrors  = new ArrayList<String>();
 		
 		CopyMoveEntriesCmdBase cmd;
 		if (m_doCopy)
-		     cmd = new CopyEntriesCmd(targetFolderId, sourceEntryIds);
-		else cmd = new MoveEntriesCmd(targetFolderId, sourceEntryIds);
+		     cmd = new CopyEntriesCmd(targetFolderId, sourceEntityIds);
+		else cmd = new MoveEntriesCmd(targetFolderId, sourceEntityIds);
 		
 		// ...and start the operation.
 		m_totalDone = 0;
@@ -426,8 +431,8 @@ public class CopyMoveEntriesDlg extends DlgBox
 		copyMoveEntriesAsync(
 			cmd,
 			targetFolder,
-			sourceEntryIds,
-			totalEntryCount,
+			sourceEntityIds,
+			totalEntityCount,
 			collectedErrors);
 		
 		// Return false.  We'll close the dialog manually if/when the
@@ -462,13 +467,13 @@ public class CopyMoveEntriesDlg extends DlgBox
 	}
 
 	/*
-	 * Returns a count of the number of entries in a List<EntryId>
+	 * Returns a count of the number of entities in a List<EntityId>
 	 * that refer to a given folder ID.
 	 */
-	private int getFolderReferenceCount(List<EntryId> entryIds, Long targetFolderId) {
+	private int getFolderReferenceCount(List<EntityId> entityIds, Long targetFolderId) {
 		int reply = 0;
-		for (EntryId entryId:  entryIds) {
-			if (entryId.getBinderId().equals(targetFolderId)) {
+		for (EntityId entityId:  entityIds) {
+			if (entityId.getBinderId().equals(targetFolderId)) {
 				reply += 1;
 			}
 		}
@@ -672,7 +677,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 		fp.add(il);
 
 		// ...add a progress bar...
-		m_progressBar = new ProgressBar(0, m_entryIds.size());
+		m_progressBar = new ProgressBar(0, m_entityIds.size());
 		m_progressBar.addStyleName("vibe-cmeDlg_ProgressBar");
 		m_vp.add(m_progressBar);
 		m_progressBar.setVisible(false);
@@ -720,11 +725,11 @@ public class CopyMoveEntriesDlg extends DlgBox
 	 * Asynchronously runs the given instance of the move entries
 	 * dialog.
 	 */
-	private static void runDlgAsync(final CopyMoveEntriesDlg cmeDlg, final boolean doCopy, final FolderType folderType, final List<EntryId> entryIds) {
+	private static void runDlgAsync(final CopyMoveEntriesDlg cmeDlg, final boolean doCopy, final FolderType folderType, final List<EntityId> entityIds) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				cmeDlg.runDlgNow(doCopy, folderType, entryIds);
+				cmeDlg.runDlgNow(doCopy, folderType, entityIds);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -734,10 +739,10 @@ public class CopyMoveEntriesDlg extends DlgBox
 	 * Synchronously runs the given instance of the move entries
 	 * dialog.
 	 */
-	private void runDlgNow(boolean doCopy, FolderType folderType, List<EntryId> entryIds) {
+	private void runDlgNow(boolean doCopy, FolderType folderType, List<EntityId> entityIds) {
 		// Store the parameters...
-		m_doCopy   = doCopy;
-		m_entryIds = entryIds;
+		m_doCopy    = doCopy;
+		m_entityIds = entityIds;
 		
 		// ...initialize any other data members...
 		m_selectedDest = null;
@@ -763,22 +768,22 @@ public class CopyMoveEntriesDlg extends DlgBox
 	/*
 	 * Called up update the progress indicator in the dialog.
 	 */
-	private void updateProgress(int justCompleted, int totalEntryCount) {
+	private void updateProgress(int justCompleted, int totalEntityCount) {
 		// If we're done...
 		m_totalDone += justCompleted;
-		if (m_totalDone == totalEntryCount) {
+		if (m_totalDone == totalEntityCount) {
 			// ...hide the progress bar and panel.
 			m_progressBar.setVisible(  false);
 			m_progressPanel.setVisible(false);
 		}
 		else {
 			// ...otherwise, set the number we've completed.
-			m_progressBar.setMaxProgress(totalEntryCount);
+			m_progressBar.setMaxProgress(totalEntityCount);
 			m_progressBar.setProgress(   m_totalDone    );
 			m_progressIndicator.setText(
 				(m_doCopy                                                                         ?
-					m_messages.copyEntriesDlgProgress(m_totalDone, totalEntryCount) :
-					m_messages.moveEntriesDlgProgress(m_totalDone, totalEntryCount)));
+					m_messages.copyEntriesDlgProgress(m_totalDone, totalEntityCount) :
+					m_messages.moveEntriesDlgProgress(m_totalDone, totalEntityCount)));
 		}
 	}
 	
@@ -808,7 +813,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 			final CopyMoveEntriesDlg cmeDlg,
 			final boolean            doCopy,
 			final FolderType         folderType,
-			final List<EntryId>      entryIds) {
+			final List<EntityId>     entityIds) {
 		GWT.runAsync(CopyMoveEntriesDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -831,7 +836,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(cmeDlg, doCopy, folderType, entryIds);
+					runDlgAsync(cmeDlg, doCopy, folderType, entityIds);
 				}
 			}
 		});
@@ -853,9 +858,9 @@ public class CopyMoveEntriesDlg extends DlgBox
 	 * @param cmeDlg
 	 * @param doCopy
 	 * @param folderType
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public static void initAndShow(CopyMoveEntriesDlg cmeDlg, boolean doCopy, FolderType folderType, List<EntryId> entryIds) {
-		doAsyncOperation(null, cmeDlg, doCopy, folderType, entryIds);
+	public static void initAndShow(CopyMoveEntriesDlg cmeDlg, boolean doCopy, FolderType folderType, List<EntityId> entityIds) {
+		doAsyncOperation(null, cmeDlg, doCopy, folderType, entityIds);
 	}
 }

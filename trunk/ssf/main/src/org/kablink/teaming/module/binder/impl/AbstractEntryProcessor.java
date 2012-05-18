@@ -1332,12 +1332,18 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		Map options) {
     	int maxResults = 0;
        	int searchOffset = 0;
+   		boolean includeNestedBinders;
         if (options != null) {
         	if (options.containsKey(ObjectKeys.SEARCH_MAX_HITS)) 
         		maxResults = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
         
         	if (options.containsKey(ObjectKeys.SEARCH_OFFSET)) 
-    			searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);       
+    			searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
+        	
+       		includeNestedBinders = options.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS);
+        }
+        else {
+       		includeNestedBinders = false;
         }
         if (searchOffset < 0) searchOffset = 0;
     	maxResults = getBinderEntries_maxEntries(maxResults); 
@@ -1346,7 +1352,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        	if ((options != null) && options.containsKey(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN)) {
 	   		SearchFilter searchFilter = new SearchFilter(true);
 	   		searchFilter.addEntryId((String) options.get(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN));
-	   		boolean includeNestedBinders = options.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS);
 	   		getBinderEntries_getSearchDocument(binder, entryTypes, includeNestedBinders, searchFilter);
 	   		queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), null);
        	} else {
@@ -1382,7 +1387,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		}
         	}
         	
-	   		boolean includeNestedBinders = options.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS);
         	getBinderEntries_getSearchDocument(searchBinder, entryTypes, includeNestedBinders, searchFilter);
 	   		queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), null);
         	SearchUtils.getQueryFields(queryTree, options); 

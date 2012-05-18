@@ -49,7 +49,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.TrashRestoreAllCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.TrashRestoreSelectedEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
@@ -123,12 +123,12 @@ public class TrashView extends DataTableFolderViewBase {
 				if (fsm.isSelected(row)) {
 					// Yes!  We need to add trash information about it
 					// the reply list. 
-					EntryId rowEntryId = row.getEntryId();
+					EntityId rowEntryId = row.getEntityId();
 					String trashData =
-						 rowEntryId.getEntryId()              + ":" +
+						 rowEntryId.getEntityId()              + ":" +
 						 rowEntryId.getBinderId()             + ":" +
-						(row.isBinder() ? "binder" : "entry") + ":" +
-						 row.getEntityType();
+						(rowEntryId.isBinder() ? "binder" : "entry") + ":" +
+						 rowEntryId.getEntityType();
 					reply.add(trashData);
 				}
 			}

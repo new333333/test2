@@ -39,7 +39,7 @@ import java.util.Map;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
@@ -59,7 +59,7 @@ public class FolderRow implements IsSerializable {
 	private boolean								m_canPurge;				//
 	private boolean								m_canTrash;				//
 	private boolean								m_pinned;				//
-	private EntryId								m_entryId;				// The entry ID of the FolderEntry this FolderRow corresponds to.
+	private EntityId							m_entityId;				// The entity ID of the FolderEntry this FolderRow corresponds to.
 	private List<FolderColumn>					m_columns;				// The FolderColumns that contribute to this FolderRow.
 	private Map<String, Boolean>				m_rowOverdueDates;		// A map of column names to Boolean indicators of an overdue date possibly stored for a column.
 	private Map<String, DescriptionHtml>		m_rowDescriptionHtmls;	// A map of column names to DescriptionHtml's                     possibly stored for a column.
@@ -73,8 +73,7 @@ public class FolderRow implements IsSerializable {
 	private Map<String, List<TaskFolderInfo>>	m_rowTaskFolderInfos;	// A map of column names to List<TaskFolderInfo>'s                possibly stored for a column.
 	private Map<String, ViewFileInfo>			m_rowViewFiles;			// A map of column names to ViewFileInfo's                        possibly stored for a column.
 	private Map<String, String>					m_rowStrings;			// A map of column names to String values                         possible stored for a column.
-	private String								m_binderIconName;		// Only when m_entityType is 'folder' or 'workspace'.
-	private String								m_entityType;			// The type of entity this row represents (entry, folder or workspace.)
+	private String								m_binderIconName;		// Only when the entity type is 'folder' or 'workspace'.
 	
 	/**
 	 * Constructor method.
@@ -89,18 +88,16 @@ public class FolderRow implements IsSerializable {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param entryId
-	 * @param entityType
+	 * @param entityId
 	 * @param columns
 	 */
-	public FolderRow(EntryId entryId, String entityType, List<FolderColumn> columns) {
+	public FolderRow(EntityId entityId, List<FolderColumn> columns) {
 		// Initialize the class...
 		this();
 
 		// ...and store the parameters.
-		m_entryId    = entryId;
-		m_entityType = entityType;
-		m_columns    = columns;
+		m_entityId = entityId;
+		m_columns  = columns;
 	}
 
 	/**
@@ -112,7 +109,7 @@ public class FolderRow implements IsSerializable {
 	public boolean                           getCanPurge()                  {                               return m_canPurge;           }
 	public boolean                           getCanTrash()                  {                               return m_canTrash;           }
 	public boolean                           getPinned()                    {                               return m_pinned;             }
-	public EntryId                           getEntryId()                   {                               return m_entryId;            }
+	public EntityId                          getEntityId()                  {                               return m_entityId;           }
 	public List<FolderColumn>                getColumns()                   {                               return m_columns;            }
 	public Map<String, Boolean>              getRowOverdueDates()           {validateMapOverdueDates();     return m_rowOverdueDates;    }
 	public Map<String, DescriptionHtml>      getRowDescriptionHtmlMap()     {validateMapDescriptionHtmls(); return m_rowDescriptionHtmls;}
@@ -127,7 +124,6 @@ public class FolderRow implements IsSerializable {
 	public Map<String, ViewFileInfo>         getRowViewFilesMap()           {validateMapViews();            return m_rowViewFiles;       } 
 	public Map<String, String>               getRowStringsMap()             {validateMapStrings();          return m_rowStrings;         }
 	public String                            getBinderIconName()            {                               return m_binderIconName;     }
-	public String                            getEntityType()                {                               return m_entityType;         }
 
 	/**
 	 * Set'er methods.
@@ -354,9 +350,7 @@ public class FolderRow implements IsSerializable {
 	 * @return
 	 */
 	public boolean isBinder() {
-		String entityType = getEntityType();
-		if (null == entityType) entityType = "";
-		return (entityType.equals("folder") || entityType.equals("workspace"));
+		return ((null == m_entityId) ? false : m_entityId.isBinder());
 	}
 	
 	/**

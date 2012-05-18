@@ -36,7 +36,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 
 
 /**
@@ -46,7 +46,7 @@ import org.kablink.teaming.gwt.client.util.EntryId;
  * @author drfoster@novell.com
  */
 public class SaveTaskCompletedCmd extends VibeRpcCmd {
-	private List<EntryId>	m_taskIds;		//
+	private List<EntityId>	m_taskIds;		//
 	private String			m_completed;	//
 	
 	/**
@@ -64,7 +64,7 @@ public class SaveTaskCompletedCmd extends VibeRpcCmd {
 	 * 
 	 * @param taskIds
 	 */
-	public SaveTaskCompletedCmd(List<EntryId> taskIds, String completed) {
+	public SaveTaskCompletedCmd(List<EntityId> taskIds, String completed) {
 		this();		
 		m_taskIds   = taskIds;
 		m_completed = completed;
@@ -74,14 +74,15 @@ public class SaveTaskCompletedCmd extends VibeRpcCmd {
 	 * Class constructor.
 	 * 
 	 * @param binderId
-	 * @param entryId
+	 * @param entityId
+	 * @param completed
 	 */
-	public SaveTaskCompletedCmd(Long binderId, Long entryId, String completed) {
+	public SaveTaskCompletedCmd(Long binderId, Long entityId, String completed) {
 		this();
 		
 		m_completed = completed;
-		m_taskIds   = new ArrayList<EntryId>();
-		m_taskIds.add(new EntryId(binderId, entryId));
+		m_taskIds   = new ArrayList<EntityId>();
+		m_taskIds.add(new EntityId(binderId, entityId, EntityId.FOLDER_ENTRY));
 	}
 	
 	/**
@@ -89,8 +90,8 @@ public class SaveTaskCompletedCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public List<EntryId> getTaskIds()   {return m_taskIds;  }	
-	public String        getCompleted() {return m_completed;}	
+	public List<EntityId> getTaskIds()   {return m_taskIds;  }	
+	public String         getCompleted() {return m_completed;}	
 	
 	/**
 	 * Returns the command's enumeration value.

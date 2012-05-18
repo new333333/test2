@@ -36,11 +36,12 @@
 <ssf:ifadapter>
 <body>
 </ssf:ifadapter>
-<jsp:useBean id="multipleEntryIds" type="java.lang.String" scope="request" />
+<jsp:useBean id="multipleEntityIds" type="java.lang.String" scope="request" />
 <%
-	boolean multiEntry = false;
-	if ((null != multipleEntryIds) && (0 < multipleEntryIds.length())) {
-		multiEntry = (0 < multipleEntryIds.indexOf(','));
+	boolean hasMultiEntityIds = ((null != multipleEntityIds) && (0 < multipleEntityIds.length()));
+	boolean multiEntity = false;
+	if (hasMultiEntityIds) {
+		multiEntity = (0 < multipleEntityIds.indexOf(','));
 	}
 %>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
@@ -50,15 +51,23 @@
 			<ssf:nlt tag="relevance.shareThisWorkspace"/>
 		</c:if>
 		<c:if test="${ssBinder.entityType == 'folder' && !empty ssEntry}">
-			<% if (multiEntry) { %> 
-				<ssf:nlt tag="relevance.shareTheseEntries"/>
+			<% if (multiEntity) { %> 
+				<ssf:nlt tag="relevance.shareTheseItems"/>
+			<% } else if (hasMultiEntityIds) { %>
+				<ssf:nlt tag="relevance.shareThisItem"/>
 			<% } else { %>
 				<ssf:nlt tag="relevance.shareThisEntry"/>
 			<% } %>
 		</c:if>
 		<c:if test="${ssBinder.entityType == 'folder' && empty ssEntry}">
 			<c:if test="${ssDefinitionFamily != 'calendar'}">
-				<ssf:nlt tag="relevance.shareThisFolder"/>
+				<% if (multiEntity) { %> 
+					<ssf:nlt tag="relevance.shareTheseItems"/>
+				<% } else if (hasMultiEntityIds) { %>
+					<ssf:nlt tag="relevance.shareThisItem"/>
+				<% } else { %>
+					<ssf:nlt tag="relevance.shareThisFolder"/>
+				<% } %>
 			</c:if>
 			<c:if test="${ssDefinitionFamily == 'calendar'}">
 				<ssf:nlt tag="relevance.shareThisCalendar"/>
@@ -100,7 +109,7 @@
 		<div class="ss_labelAbove margintop3"><ssf:nlt tag="relevance.shareThisWithComment"/></div>
 		<div><%@ include file="/WEB-INF/jsp/binder/sendMail_htmlTextarea.jsp" %> </div>
 		
-		<input type="hidden" name="multipleEntryIds" value="${multipleEntryIds}" />
+		<input type="hidden" name="multipleEntityIds" value="${multipleEntityIds}" />
 	
 		<div class="teamingDlgBoxFooter" style="border-top: 0px;">
 			<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" />

@@ -116,7 +116,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderStats;
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.ProjectInfo;
 import org.kablink.teaming.gwt.client.util.TagSortOrder;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
@@ -256,7 +256,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case COPY_ENTRIES:
 		{
 			CopyEntriesCmd ceCmd = ((CopyEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.copyEntries( this, getRequest( ri ), ceCmd.getTargetFolderId(), ceCmd.getEntryIds() );
+			ErrorListRpcResponseData responseData = GwtViewHelper.copyEntries( this, getRequest( ri ), ceCmd.getTargetFolderId(), ceCmd.getEntityIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -302,7 +302,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case DELETE_FOLDER_ENTRIES:
 		{
 			DeleteFolderEntriesCmd dfeCmd = ((DeleteFolderEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtServerHelper.deleteFolderEntries( this, getRequest( ri ), dfeCmd.getEntryIds() );
+			ErrorListRpcResponseData responseData = GwtServerHelper.deleteFolderEntries( this, getRequest( ri ), dfeCmd.getEntityIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -310,7 +310,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case DELETE_TASKS:
 		{
 			DeleteTasksCmd dtCmd = ((DeleteTasksCmd) cmd);
-			ErrorListRpcResponseData responseData = deleteTasks( ri, dtCmd.getEntryIds() );
+			ErrorListRpcResponseData responseData = deleteTasks( ri, dtCmd.getEntityIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1691,7 +1691,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case MOVE_ENTRIES:
 		{
 			MoveEntriesCmd meCmd = ((MoveEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.moveEntries( this, getRequest( ri ), meCmd.getTargetFolderId(), meCmd.getEntryIds() );
+			ErrorListRpcResponseData responseData = GwtViewHelper.moveEntries( this, getRequest( ri ), meCmd.getTargetFolderId(), meCmd.getEntityIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1746,7 +1746,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case PURGE_FOLDER_ENTRIES:
 		{
 			PurgeFolderEntriesCmd pfeCmd = ((PurgeFolderEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtServerHelper.purgeFolderEntries( this, getRequest( ri ), pfeCmd.getEntryIds() );
+			ErrorListRpcResponseData responseData = GwtServerHelper.purgeFolderEntries( this, getRequest( ri ), pfeCmd.getEntityIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1754,7 +1754,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case PURGE_TASKS:
 		{
 			PurgeTasksCmd dtCmd = ((PurgeTasksCmd) cmd);
-			ErrorListRpcResponseData responseData = purgeTasks( ri, dtCmd.getEntryIds() );
+			ErrorListRpcResponseData responseData = purgeTasks( ri, dtCmd.getEntityIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -2333,7 +2333,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Deletes the specified tasks.
 	 */
-	private ErrorListRpcResponseData deleteTasks( HttpRequestInfo ri, List<EntryId> taskIds ) throws GwtTeamingException {
+	private ErrorListRpcResponseData deleteTasks( HttpRequestInfo ri, List<EntityId> taskIds ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.deleteTasks()");
 		try {
 			return GwtTaskHelper.deleteTasks( getRequest( ri ), this, taskIds );
@@ -2441,7 +2441,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Purges the specified tasks.
 	 */
-	private ErrorListRpcResponseData purgeTasks( HttpRequestInfo ri, List<EntryId> taskIds ) throws GwtTeamingException {
+	private ErrorListRpcResponseData purgeTasks( HttpRequestInfo ri, List<EntityId> taskIds ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.purgeTasks()");
 		try {
 			return GwtTaskHelper.purgeTasks( getRequest( ri ), this, taskIds );
@@ -4056,7 +4056,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Stores a completed value on the specified tasks.
 	 */
-	private String saveTaskCompleted( HttpRequestInfo ri, List<EntryId> taskIds, String completed ) throws GwtTeamingException {
+	private String saveTaskCompleted( HttpRequestInfo ri, List<EntityId> taskIds, String completed ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.saveTaskCompleted()");
 		try {
 			return GwtTaskHelper.saveTaskCompleted( this, taskIds, completed );
@@ -4069,7 +4069,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Stores a due date on the specified task.
 	 */
-	private TaskEvent saveTaskDueDate( HttpRequestInfo ri, EntryId taskId, TaskEvent taskEvent ) throws GwtTeamingException {
+	private TaskEvent saveTaskDueDate( HttpRequestInfo ri, EntityId taskId, TaskEvent taskEvent ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.saveTaskDueDate()");
 		try {
 			return GwtTaskHelper.saveTaskDueDate( this, taskId, taskEvent );
@@ -4135,7 +4135,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Stores a status value on the specified tasks.
 	 */
-	private String saveTaskStatus( HttpRequestInfo ri, List<EntryId> taskIds, String status ) throws GwtTeamingException {
+	private String saveTaskStatus( HttpRequestInfo ri, List<EntityId> taskIds, String status ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.saveTaskStatus()");
 		try {
 			return GwtTaskHelper.saveTaskStatus( this, taskIds, status );

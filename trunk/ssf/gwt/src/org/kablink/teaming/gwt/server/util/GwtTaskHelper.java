@@ -83,7 +83,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TaskDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskDate;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
@@ -685,10 +685,10 @@ public class GwtTaskHelper {
 			return;
 		}
 
-		// Collect the entry IDs of the tasks from the List<TaskInfo>.
+		// Collect the entity IDs of the tasks from the List<TaskInfo>.
 		List<Long> entryIds = new ArrayList<Long>();
 		for (TaskInfo ti:  tasks) {
-			entryIds.add(ti.getTaskId().getEntryId());
+			entryIds.add(ti.getTaskId().getEntityId());
 		}
 		
 		try {
@@ -705,7 +705,7 @@ public class GwtTaskHelper {
 			// Scan the List<TaskInfo> again.
 			for (TaskInfo ti:  tasks) {
 				// Do we have a FolderEntry for this task?
-				FolderEntry task = taskEntryMap.get(ti.getTaskId().getEntryId());
+				FolderEntry task = taskEntryMap.get(ti.getTaskId().getEntityId());
 				if (null != task) {
 					// Yes!  Store the user's rights to that
 					// FolderEntry.
@@ -730,7 +730,7 @@ public class GwtTaskHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData deleteTasks(HttpServletRequest request, AllModulesInjected bs, List<EntryId> taskIds) throws GwtTeamingException {
+	public static ErrorListRpcResponseData deleteTasks(HttpServletRequest request, AllModulesInjected bs, List<EntityId> taskIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
@@ -738,17 +738,17 @@ public class GwtTaskHelper {
 			// If we get here, we have rights to delete all the tasks
 			// that we were given.  Scan them...
 			List<Long> binderIds = new ArrayList<Long>();  
-			for (EntryId taskId:  taskIds) {
+			for (EntityId taskId:  taskIds) {
 				// ...deleting each...
 				Long binderId = taskId.getBinderId();
 				MiscUtil.addLongToListLongIfUnique(binderIds, binderId);
 				try {
-					TrashHelper.preDeleteEntry(bs, taskId.getBinderId(), taskId.getEntryId());
+					TrashHelper.preDeleteEntry(bs, taskId.getBinderId(), taskId.getEntityId());
 				}
 
 				catch (Exception e) {
 					// ...tracking any that we couldn't delete.
-					String entryTitle = GwtServerHelper.getEntryTitle(bs, taskId);
+					String entryTitle = GwtServerHelper.getEntityTitle(bs, taskId);
 					String messageKey;
 					if      (e instanceof AccessControlException) messageKey = "deleteEntryError.AccssControlException";
 					else                                          messageKey = "deleteEntryError.OtherException";
@@ -799,7 +799,7 @@ public class GwtTaskHelper {
 		m_logger.debug("GwtTaskHelper.dumpTaskInfoList( START: " + String.valueOf(tasks.size()) + " )");
 		for (TaskInfo ti:  tasks) {
 			StringBuffer buf = new StringBuffer("");
-			buf.append(buildDumpString("\n\tTask ID",            ti.getTaskId().getEntryId()    ));
+			buf.append(buildDumpString("\n\tTask ID",            ti.getTaskId().getEntityId()   ));
 			buf.append(buildDumpString("\n\t\tBinder ID",        ti.getTaskId().getBinderId()   ));
 			buf.append(buildDumpString("\n\t\tCanModify",        ti.getCanModify()              ));
 			buf.append(buildDumpString("\n\t\tCanPurge",         ti.getCanPurge()               ));
@@ -942,7 +942,7 @@ public class GwtTaskHelper {
 		// Scan the List<TaskInfo>.
 		for (TaskInfo task:  tasks) {
 			// Is this the task in question?
-			if (task.getTaskId().getEntryId().equals(entryId)) {
+			if (task.getTaskId().getEntityId().equals(entryId)) {
 				// Yes!  Return it.
 				return task;
 			}
@@ -1263,7 +1263,7 @@ public class GwtTaskHelper {
 			seenMap = ami.getProfileModule().getUserSeenMap( null );
 			for (Map taskEntry:  taskEntriesList)
 			{			
-				EntryId taskId;
+				EntityId taskId;
 				String title;
 				String desc;
 				TaskInfo ti;
@@ -1291,9 +1291,10 @@ public class GwtTaskHelper {
 				desc = getStringFromMap( taskEntry, Constants.DESC_FIELD );
 				ti.setDesc( desc );
 				
-				taskId = new EntryId();
-				taskId.setBinderId( getLongFromMap( taskEntry, Constants.BINDER_ID_FIELD ) );
-				taskId.setEntryId( getLongFromMap( taskEntry, Constants.DOCID_FIELD ) );
+				taskId = new EntityId(
+					getLongFromMap(taskEntry, Constants.BINDER_ID_FIELD),
+					getLongFromMap(taskEntry, Constants.DOCID_FIELD    ),
+					EntityId.FOLDER_ENTRY);
 				ti.setTaskId( taskId );
 
 				ti.setCompletedDate(
@@ -1844,7 +1845,7 @@ public class GwtTaskHelper {
 			// ...wrap it in a TaskListItem and add it to the
 			// ...List<TaskListItem>...
 			TaskListItem tli = new TaskListItem(task);
-			tli.setExpandedSubtasks(!(collapsedSubtasks.contains(task.getTaskId().getEntryId())));
+			tli.setExpandedSubtasks(!(collapsedSubtasks.contains(task.getTaskId().getEntityId())));
 			taskList.add(tli);
 			
 			// ...and recursively process any subtasks.
@@ -1862,7 +1863,7 @@ public class GwtTaskHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData purgeTasks(HttpServletRequest request, AllModulesInjected bs, List<EntryId> taskIds) throws GwtTeamingException {
+	public static ErrorListRpcResponseData purgeTasks(HttpServletRequest request, AllModulesInjected bs, List<EntityId> taskIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
@@ -1871,19 +1872,19 @@ public class GwtTaskHelper {
 			// that we were given.  Scan them...
 			List<Long> binderIds = new ArrayList<Long>();
 			FolderModule fm = bs.getFolderModule();
-			for (EntryId taskId:  taskIds) {
+			for (EntityId taskId:  taskIds) {
 				// ...purging each...
 				Long binderId = taskId.getBinderId();
 				MiscUtil.addLongToListLongIfUnique(binderIds, binderId);
 				try {
 					fm.deleteEntry(
 						binderId,
-						taskId.getEntryId());
+						taskId.getEntityId());
 				}
 				
 				catch (Exception e) {
 					// ...tracking any that we couldn't purge.
-					String entryTitle = GwtServerHelper.getEntryTitle(bs, taskId);
+					String entryTitle = GwtServerHelper.getEntityTitle(bs, taskId);
 					String messageKey;
 					if      (e instanceof AccessControlException) messageKey = "purgeEntryError.AccssControlException";
 					else                                          messageKey = "purgeEntryError.OtherException";
@@ -1959,7 +1960,7 @@ public class GwtTaskHelper {
 			// ...built...
 			TaskListItem tli = new TaskListItem(task);
 			if (respectLinkage) {
-				tli.setExpandedSubtasks(!(collapsedSubtasks.contains(task.getTaskId().getEntryId())));
+				tli.setExpandedSubtasks(!(collapsedSubtasks.contains(task.getTaskId().getEntityId())));
 			}
 			taskList.add(tli);
 
@@ -1969,7 +1970,7 @@ public class GwtTaskHelper {
 				// ...considered 'linked into' the task folder's order
 				// ...and hierarchy.
 				TaskLink tl = new TaskLink();
-				tl.setEntryId(task.getTaskId().getEntryId());
+				tl.setEntryId(task.getTaskId().getEntityId());
 				taskOrder.add(tl);
 				linkageChanged = true;
 			}
@@ -2073,9 +2074,10 @@ public class GwtTaskHelper {
 			String desc = getStringFromMap( taskEntry, Constants.DESC_FIELD );
 			ti.setDesc( desc );
 			
-			EntryId taskId = new EntryId();
-			taskId.setBinderId(getLongFromMap(taskEntry, Constants.BINDER_ID_FIELD));
-			taskId.setEntryId( getLongFromMap(taskEntry, Constants.DOCID_FIELD    ));
+			EntityId taskId = new EntityId(
+				getLongFromMap(taskEntry, Constants.BINDER_ID_FIELD),
+				getLongFromMap(taskEntry, Constants.DOCID_FIELD    ),
+				EntityId.FOLDER_ENTRY);
 			ti.setTaskId(taskId);
 
 			ti.setCompletedDate(
@@ -2141,7 +2143,7 @@ public class GwtTaskHelper {
 	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-	public static String saveTaskCompleted(AllModulesInjected bs, List<EntryId> taskIds, String completed) throws GwtTeamingException {
+	public static String saveTaskCompleted(AllModulesInjected bs, List<EntityId> taskIds, String completed) throws GwtTeamingException {
 		// Are we marking the tasks completed?
 		boolean nowCompleted = (TaskInfo.COMPLETED_100.equals(completed));
 				
@@ -2149,9 +2151,9 @@ public class GwtTaskHelper {
 		FolderModule  fm      = bs.getFolderModule();
 		ProfileModule pm      = bs.getProfileModule();
 		SeenMap       seenMap = pm.getUserSeenMap(null);
-		for (EntryId taskId:  taskIds) {
+		for (EntityId taskId:  taskIds) {
 			Long binderId = taskId.getBinderId();
-			Long entryId  = taskId.getEntryId();
+			Long entryId  = taskId.getEntityId();
 			try {
 				// Has the user seen this entry already?
 				FolderEntry fe       = fm.getEntry(binderId, entryId);
@@ -2221,7 +2223,7 @@ public class GwtTaskHelper {
 	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-	public static TaskEvent saveTaskDueDate(AllModulesInjected bs, EntryId taskId, TaskEvent taskEvent) throws GwtTeamingException {
+	public static TaskEvent saveTaskDueDate(AllModulesInjected bs, EntityId taskId, TaskEvent taskEvent) throws GwtTeamingException {
 		TaskEvent reply = null;
 		try {
 			// - - - - - - - - - - - - - //
@@ -2230,7 +2232,7 @@ public class GwtTaskHelper {
 			
 			// Read the Event currently stored on the task...
 			Long binderId = taskId.getBinderId();
-			Long entryId = taskId.getEntryId();
+			Long entryId  = taskId.getEntityId();
 			FolderModule fm = bs.getFolderModule();
 			FolderEntry fe = fm.getEntry(binderId, entryId);
 			CustomAttribute customAttribute = fe.getCustomAttribute(TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME);
@@ -2304,7 +2306,7 @@ public class GwtTaskHelper {
 		}
 		
 		catch (Exception ex) {
-			m_logger.debug("GwtTaskHelper.saveTaskDueDate( Can't Save Due Date on task:  '" + taskId.getEntryId() + "' )");
+			m_logger.debug("GwtTaskHelper.saveTaskDueDate( Can't Save Due Date on task:  '" + taskId.getEntityId() + "' )");
 			m_logger.debug("GwtTaskHelper.saveTaskDueDate( EXCEPTION ):  ", ex);
 			
 			throw GwtServerHelper.getGwtTeamingException(ex);
@@ -2429,7 +2431,7 @@ public class GwtTaskHelper {
 	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-	public static String saveTaskStatus(AllModulesInjected bs, List<EntryId> taskIds, String status) throws GwtTeamingException {
+	public static String saveTaskStatus(AllModulesInjected bs, List<EntityId> taskIds, String status) throws GwtTeamingException {
 		// Are we marking the tasks completed?
 		boolean nowCompleted = (TaskInfo.STATUS_COMPLETED.equals(status));
 		
@@ -2437,9 +2439,9 @@ public class GwtTaskHelper {
 		FolderModule  fm      = bs.getFolderModule();
 		ProfileModule pm      = bs.getProfileModule();
 		SeenMap       seenMap = pm.getUserSeenMap(null);
-		for (EntryId taskId:  taskIds) {
+		for (EntityId taskId:  taskIds) {
 			Long binderId = taskId.getBinderId();
-			Long entryId  = taskId.getEntryId();
+			Long entryId  = taskId.getEntityId();
 			try {
 				// Has the user seen this entry already?
 				FolderEntry   fe       = fm.getEntry(binderId, entryId);
@@ -2558,7 +2560,7 @@ public class GwtTaskHelper {
 	 *    Map<Long, TaskDate> returned will contain a mapping between
 	 *    the task IDs and the new calculated end date.  Otherwise, the
 	 *    map returned will be empty.
-	 * 2) If the entryId is null, ALL the tasks in the binder will have
+	 * 2) If the entry is null, ALL the tasks in the binder will have
 	 *    their calculated dates updated.
 	 *
 	 * @param request
@@ -2776,7 +2778,7 @@ public class GwtTaskHelper {
 							
 							// ...and track the fact that we changed
 							// ...this task's calculated end date.
-							updates.put(ti.getTaskId().getEntryId(), calcTD);
+							updates.put(ti.getTaskId().getEntityId(), calcTD);
 						}
 					}
 				}
@@ -2856,7 +2858,7 @@ public class GwtTaskHelper {
 					
 					if (null != pNewCalcEnd) {
 						pEvent.setLogicalEnd(  pNewCalcEnd  );
-						updates.put(pTask.getTaskId().getEntryId(), pNewCalcEnd);
+						updates.put(pTask.getTaskId().getEntityId(), pNewCalcEnd);
 					}
 				}
 			}
@@ -2876,7 +2878,7 @@ public class GwtTaskHelper {
 			try {
 				// Yes!  Read the existing Event data from it...
 				Long            binderId        = ti.getTaskId().getBinderId();
-				Long            entryId         = ti.getTaskId().getEntryId();
+				Long            entryId         = ti.getTaskId().getEntityId();
 				FolderModule    fm              = bs.getFolderModule();
 				FolderEntry     fe              = fm.getEntry(binderId, entryId);
 				CustomAttribute customAttribute = fe.getCustomAttribute(TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME);

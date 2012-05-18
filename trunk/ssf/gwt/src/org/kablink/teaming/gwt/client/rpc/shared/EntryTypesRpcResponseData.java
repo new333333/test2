@@ -44,7 +44,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class EntryTypesRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private EntryType		m_baseEntryType;		// EntryType for EntryId passed in the get request.
+	private EntryType		m_baseEntryType;		// EntryType for EntityId passed in the get request.
 	private List<EntryType>	m_entryTypes;		// The List<EntryType> defined for a collection of binders.
 	private String			m_baseEntryTitle;	// The title of the entry passed in the get request.
 	

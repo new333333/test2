@@ -52,7 +52,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UnlockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
@@ -73,7 +73,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 public class BinderViewsHelper {
 	private static ChangeEntryTypesDlg	m_cetDlg;	// An instance of a change entry types dialog. 
 	private static CopyMoveEntriesDlg	m_cmeDlg;	// An instance of a copy/move entries dialog.
-	private static EmailNotificationDlg	m_enDlg;	// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntryId>. 
+	private static EmailNotificationDlg	m_enDlg;	// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntityId>. 
 	
 	/*
 	 * Constructor method. 
@@ -84,15 +84,15 @@ public class BinderViewsHelper {
 
 	/**
 	 * Invokes the appropriate UI to change the entry type of the
-	 * entries based on a List<EntryId> of the entries.
+	 * entries based on a List<EntityId> of the entries.
 	 *
 	 * @param folderType
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public static void changeEntryTypes(final FolderType folderType, final List<EntryId> entryIds) {
-		// If we weren't given any entry IDs to entries whose types
+	public static void changeEntryTypes(final FolderType folderType, final List<EntityId> entityIds) {
+		// If we weren't given any entity IDs to entry whose types
 		// are to be changed...
-		if ((null == entryIds) || entryIds.isEmpty()) {
+		if ((null == entityIds) || entityIds.isEmpty()) {
 			// ...bail.
 			return;
 		}
@@ -114,7 +114,7 @@ public class BinderViewsHelper {
 					ScheduledCommand doSubscribe = new ScheduledCommand() {
 						@Override
 						public void execute() {
-							changeEntryTypesNow(entryIds);
+							changeEntryTypesNow(entityIds);
 						}
 					};
 					Scheduler.get().scheduleDeferred(doSubscribe);
@@ -125,28 +125,28 @@ public class BinderViewsHelper {
 		else {
 			// Yes, we've instantiated a change entry types dialog
 			// already!  Simply show it.
-			changeEntryTypesNow(entryIds);
+			changeEntryTypesNow(entityIds);
 		}
 	}
 
 	/*
 	 * Synchronously invokes the appropriate UI to change the entry
-	 * type of the entries based on a List<EntryId> of the entries.
+	 * type of the entries based on a List<EntityId> of the entries.
 	 */
-	private static void changeEntryTypesNow(List<EntryId> entryIds) {
-		ChangeEntryTypesDlg.initAndShow(m_cetDlg, entryIds);
+	private static void changeEntryTypesNow(List<EntityId> entityIds) {
+		ChangeEntryTypesDlg.initAndShow(m_cetDlg, entityIds);
 	}
 	
 	/**
 	 * Invokes the appropriate UI to copy the entries based on a
-	 * List<EntryId> of the entries.
+	 * List<EntityId> of the entries.
 	 *
 	 * @param folderType
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public static void copyEntries(final FolderType folderType, final List<EntryId> entryIds) {
-		// If we weren't given any entry IDs to be copied...
-		if ((null == entryIds) || entryIds.isEmpty()) {
+	public static void copyEntries(final FolderType folderType, final List<EntityId> entityIds) {
+		// If we weren't given any entity IDs to be copied...
+		if ((null == entityIds) || entityIds.isEmpty()) {
 			// ...bail.
 			return;
 		}
@@ -165,7 +165,7 @@ public class BinderViewsHelper {
 				public void onSuccess(CopyMoveEntriesDlg cmeDlg) {
 					// ...and run it to copy.
 					m_cmeDlg = cmeDlg;
-					showCMEDlgNow(m_cmeDlg, true, folderType, entryIds);
+					showCMEDlgNow(m_cmeDlg, true, folderType, entityIds);
 				}
 			});
 		}
@@ -173,19 +173,19 @@ public class BinderViewsHelper {
 		else {
 			// Yes, we've created a copy/move entries dialog already!
 			// Run it to copy.
-			showCMEDlgNow(m_cmeDlg, true, folderType, entryIds);
+			showCMEDlgNow(m_cmeDlg, true, folderType, entityIds);
 		}
 	}
 
 	/**
 	 * Deletes the folder entries based on a folder ID and List<Long>
-	 * of their entry IDs.
+	 * of their entity IDs.
 	 *
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public static void deleteFolderEntries(final List<EntryId> entryIds, final DeletePurgeEntriesCallback dpeCallback) {
-		// If we weren't given any entry IDs to be deleted...
-		if ((null == entryIds) || entryIds.isEmpty()) {
+	public static void deleteFolderEntries(final List<EntityId> entityIds, final DeletePurgeEntriesCallback dpeCallback) {
+		// If we weren't given any entity IDs to be deleted...
+		if ((null == entityIds) || entityIds.isEmpty()) {
 			// ...bail.
 			return;
 		}
@@ -213,7 +213,7 @@ public class BinderViewsHelper {
 						public void accepted() {
 							// Yes, they're sure!  Perform the delete.
 							DeletePurgeEntriesHelper.deleteSelectedEntriesAsync(
-								entryIds,
+								entityIds,
 								dpeCallback);
 						}
 
@@ -375,14 +375,14 @@ public class BinderViewsHelper {
 	}
 
 	/**
-	 * Locks the entries based on a List<EntryId> of their entry IDs.
+	 * Locks the entries based on a List<EntityId> of their entity IDs.
 	 *
 	 * @param folderType
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public static void lockEntries(final FolderType folderType, final List<EntryId> entryIds) {
-		// If we weren't given any entry IDs to be locked...
-		if ((null == entryIds) || entryIds.isEmpty()) {
+	public static void lockEntries(final FolderType folderType, final List<EntityId> entityIds) {
+		// If we weren't given any entity IDs to be locked...
+		if ((null == entityIds) || entityIds.isEmpty()) {
 			// ...bail.
 			return;
 		}
@@ -392,7 +392,7 @@ public class BinderViewsHelper {
 		busy.center();
 
 		// Send a request to lock the entries.
-		LockEntriesCmd cmd = new LockEntriesCmd(entryIds);
+		LockEntriesCmd cmd = new LockEntriesCmd(entityIds);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -415,7 +415,7 @@ public class BinderViewsHelper {
 				}
 
 				// If anything was locked...
-				if (count != entryIds.size()) {
+				if (count != entityIds.size()) {
 					// ...force the content to refresh just in case its
 					// ...got something displayed that depends on
 					// ...locks.
@@ -426,13 +426,14 @@ public class BinderViewsHelper {
 	}
 
 	/**
-	 * Marks the entries read based on a List<Long> of their entry IDs.
+	 * Marks the entries read based on a List<Long> of their entity
+	 * IDs.
 	 *
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public static void markEntriesRead(List<Long> entryIds) {
-		// If we weren't given any entry IDs to be marked read...
-		if ((null == entryIds) || entryIds.isEmpty()) {
+	public static void markEntriesRead(List<Long> entityIds) {
+		// If we weren't given any entity IDs to be marked read...
+		if ((null == entityIds) || entityIds.isEmpty()) {
 			// ...bail.
 			return;
 		}
@@ -442,7 +443,7 @@ public class BinderViewsHelper {
 		busy.center();
 
 		// Send a request to mark the entries read.
-		SetSeenCmd cmd = new SetSeenCmd(entryIds);
+		SetSeenCmd cmd = new SetSeenCmd(entityIds);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -467,11 +468,11 @@ public class BinderViewsHelper {
 	 * Marks the entries unread based on a List<Long> of their entry
 	 * IDs.
 	 *
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public static void markEntriesUnread(List<Long> entryIds) {
-		// If we weren't given any entry IDs to be marked unread...
-		if ((null == entryIds) || entryIds.isEmpty()) {
+	public static void markEntriesUnread(List<Long> entityIds) {
+		// If we weren't given any entity IDs to be marked unread...
+		if ((null == entityIds) || entityIds.isEmpty()) {
 			// ...bail.
 			return;
 		}
@@ -481,7 +482,7 @@ public class BinderViewsHelper {
 		busy.center();
 
 		// Send a request to mark the entries unread.
-		SetUnseenCmd cmd = new SetUnseenCmd(entryIds);
+		SetUnseenCmd cmd = new SetUnseenCmd(entityIds);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -504,14 +505,14 @@ public class BinderViewsHelper {
 
 	/**
 	 * Invokes the appropriate UI to move the entries based on a
-	 * List<EntryId> of the entries.
+	 * List<EntityId> of the entries.
 	 *
 	 * @param folderType
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public static void moveEntries(final FolderType folderType, final List<EntryId> entryIds) {
-		// If we weren't given any entry IDs to be moved...
-		if ((null == entryIds) || entryIds.isEmpty()) {
+	public static void moveEntries(final FolderType folderType, final List<EntityId> entityIds) {
+		// If we weren't given any entity IDs to be moved...
+		if ((null == entityIds) || entityIds.isEmpty()) {
 			// ...bail.
 			return;
 		}
@@ -530,7 +531,7 @@ public class BinderViewsHelper {
 				public void onSuccess(CopyMoveEntriesDlg cmeDlg) {
 					// ...and run it to move.
 					m_cmeDlg = cmeDlg;
-					showCMEDlgNow(m_cmeDlg, false, folderType, entryIds);
+					showCMEDlgNow(m_cmeDlg, false, folderType, entityIds);
 				}
 			});
 		}
@@ -538,19 +539,19 @@ public class BinderViewsHelper {
 		else {
 			// Yes, we've created a copy/move entries dialog already!
 			// Run it to move.
-			showCMEDlgNow(m_cmeDlg, false, folderType, entryIds);
+			showCMEDlgNow(m_cmeDlg, false, folderType, entityIds);
 		}
 	}
 	
 	/**
 	 * Purges the folder entries based on a folder ID and List<Long> of
-	 * the entry IDs.
+	 * the entity IDs.
 	 *
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public static void purgeFolderEntries(final List<EntryId> entryIds, final DeletePurgeEntriesCallback dpeCallback) {
-		// If we weren't given any entry IDs to be purged...
-		if ((null == entryIds) || entryIds.isEmpty()) {
+	public static void purgeFolderEntries(final List<EntityId> entityIds, final DeletePurgeEntriesCallback dpeCallback) {
+		// If we weren't given any entity IDs to be purged...
+		if ((null == entityIds) || entityIds.isEmpty()) {
 			// ...bail.
 			return;
 		}
@@ -578,7 +579,7 @@ public class BinderViewsHelper {
 						public void accepted() {
 							// Yes, they're sure!  Perform the purge.
 							DeletePurgeEntriesHelper.purgeSelectedEntriesAsync(
-								entryIds,
+								entityIds,
 								dpeCallback);
 						}
 
@@ -696,14 +697,14 @@ public class BinderViewsHelper {
 
 	/**
 	 * Invokes the appropriate UI to share the entries based on a
-	 * List<EntryId> of the entries.
+	 * List<EntityId> of the entries.
 	 *
 	 * @param folderType
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public static void shareEntries(final FolderType folderType, final List<EntryId> entryIds) {
-		// If we weren't given any entry IDs to be shared...
-		if ((null == entryIds) || entryIds.isEmpty()) {
+	public static void shareEntries(final FolderType folderType, final List<EntityId> entityIds) {
+		// If we weren't given any entity IDs to be shared...
+		if ((null == entityIds) || entityIds.isEmpty()) {
 			// ...bail.
 			return;
 		}
@@ -712,9 +713,9 @@ public class BinderViewsHelper {
 		StringBuffer url = new StringBuffer(GwtClientHelper.getRequestInfo().getBaseVibeUrl());
 		url.append("&operation=share_this_binder");
 		url.append("&action=__ajax_relevance");
-		url.append("&binderId="         + String.valueOf(entryIds.get(0).getBinderId()));
-		url.append("&entryId="          + String.valueOf(entryIds.get(0).getEntryId()) );
-		url.append("&multipleEntryIds=" + EntryId.getMultipleEntryIdsParam(entryIds)   );
+		url.append("&binderId="          + String.valueOf(entityIds.get(0).getBinderId()));
+		url.append("&entityId="          + String.valueOf(entityIds.get(0).getEntityId()));
+		url.append("&multipleEntityIds=" + EntityId.getMultipleEntityIdsParam(entityIds) );
 
 		// ...and launch it.
 		GwtClientHelper.jsLaunchToolbarPopupUrl(url.toString(), 800, 650);
@@ -724,24 +725,24 @@ public class BinderViewsHelper {
 	 * Initializes and shows and instance of the copy/move entries
 	 * dialog.
 	 */
-	private static void showCMEDlgNow(final CopyMoveEntriesDlg cmeDlg, final boolean invokeToCopy, final FolderType folderType, final List<EntryId> entryIds) {
+	private static void showCMEDlgNow(final CopyMoveEntriesDlg cmeDlg, final boolean invokeToCopy, final FolderType folderType, final List<EntityId> entityIds) {
 		CopyMoveEntriesDlg.initAndShow(
 			cmeDlg,			// The dialog to show.
 			invokeToCopy,	// true -> Run it do a copy.  false -> Run it to do a move.
 			folderType,		// The type of folder that we're dealing with.
-			entryIds);		// The List<EntryId> to be copied/moved.
+			entityIds);		// The List<EntityId> to be copied/moved.
 	}
 
 	/**
 	 * Invokes the appropriate UI to subscribe to the entries based on
-	 * a List<EntryId> of the entries.
+	 * a List<EntityId> of the entries.
 	 *
 	 * @param folderType
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public static void subscribeToEntries(final FolderType folderType, final List<EntryId> entryIds) {
-		// If we weren't given any entry IDs to be subscribed to...
-		if ((null == entryIds) || entryIds.isEmpty()) {
+	public static void subscribeToEntries(final FolderType folderType, final List<EntityId> entityIds) {
+		// If we weren't given any entity IDs to be subscribed to...
+		if ((null == entityIds) || entityIds.isEmpty()) {
 			// ...bail.
 			return;
 		}
@@ -763,7 +764,7 @@ public class BinderViewsHelper {
 					ScheduledCommand doSubscribe = new ScheduledCommand() {
 						@Override
 						public void execute() {
-							subscribeToEntriesNow(entryIds);
+							subscribeToEntriesNow(entityIds);
 						}
 					};
 					Scheduler.get().scheduleDeferred(doSubscribe);
@@ -774,27 +775,27 @@ public class BinderViewsHelper {
 		else {
 			// Yes, we've instantiated an email notification dialog
 			// already!  Simply show it.
-			subscribeToEntriesNow(entryIds);
+			subscribeToEntriesNow(entityIds);
 		}
 	}
 
 	/*
 	 * Synchronously invokes the appropriate UI to subscribe to the
-	 * entries based on a List<EntryId> of the entries.
+	 * entries based on a List<EntityId> of the entries.
 	 */
-	private static void subscribeToEntriesNow(List<EntryId> entryIds) {
-		EmailNotificationDlg.initAndShow(m_enDlg, entryIds);
+	private static void subscribeToEntriesNow(List<EntityId> entityIds) {
+		EmailNotificationDlg.initAndShow(m_enDlg, entityIds);
 	}
 	
 	/**
-	 * Unlocks the entries based on a List<EntryId> of the entries.
+	 * Unlocks the entries based on a List<EntityId> of the entries.
 	 *
 	 * @param folderType
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public static void unlockEntries(final FolderType folderType, final List<EntryId> entryIds) {
-		// If we weren't given any entry IDs to be unlocked...
-		if ((null == entryIds) || entryIds.isEmpty()) {
+	public static void unlockEntries(final FolderType folderType, final List<EntityId> entityIds) {
+		// If we weren't given any entity IDs to be unlocked...
+		if ((null == entityIds) || entityIds.isEmpty()) {
 			// ...bail.
 			return;
 		}
@@ -804,7 +805,7 @@ public class BinderViewsHelper {
 		busy.center();
 
 		// Send a request to unlock the entries.
-		UnlockEntriesCmd cmd = new UnlockEntriesCmd(entryIds);
+		UnlockEntriesCmd cmd = new UnlockEntriesCmd(entityIds);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -827,7 +828,7 @@ public class BinderViewsHelper {
 				}
 
 				// If anything was unlocked...
-				if (count != entryIds.size()) {
+				if (count != entityIds.size()) {
 					// ...force the content to refresh just in case its
 					// ...got something displayed that depends on
 					// ...locks.

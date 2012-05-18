@@ -43,7 +43,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData.Entry
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryTypesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -72,7 +72,7 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	private EntryType			m_baseEntryType;	// The EntryType of an individual item, if all that was requested.
 	private GwtTeamingMessages	m_messages;			// Access to Vibe's messages.
 	private ListBox				m_entryTypeLB;		// The list of entry types the user can choose from.
-	private List<EntryId>		m_entryIds;			// Current list of entry IDs whose entry types are to be changed.
+	private List<EntityId>		m_entryIds;			// Current list of entry IDs whose entry types are to be changed.
 	private List<EntryType>		m_entryTypes;		// List<EntryType> for the binder's referred to by m_entryIds.
 	private String				m_baseEntryTitle;	// The title of an individual item, if all that was requested.
 	private VibeFlowPanel		m_fp;				// The panel holding the dialog's content.
@@ -251,7 +251,7 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 		// change entry types...
 		GetEntryTypesCmd getCmd = new GetEntryTypesCmd();
 		List<Long> binderIds = getCmd.getBinderIds();
-		for (EntryId entryId:  m_entryIds) {
+		for (EntityId entryId:  m_entryIds) {
 			GwtClientHelper.addLongToListLongIfUnique(binderIds, entryId.getBinderId());
 		}
 		if (1 == m_entryIds.size()) {
@@ -357,7 +357,7 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 * Asynchronously runs the given instance of the change entry types
 	 * dialog.
 	 */
-	private static void runDlgAsync(final ChangeEntryTypesDlg cetDlg, final List<EntryId> entryIds) {
+	private static void runDlgAsync(final ChangeEntryTypesDlg cetDlg, final List<EntityId> entryIds) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -371,7 +371,7 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 * Synchronously runs the given instance of the change entry types
 	 * dialog.
 	 */
-	private void runDlgNow(List<EntryId> entryIds) {
+	private void runDlgNow(List<EntityId> entryIds) {
 		// Store the parameter...
 		m_entryIds = entryIds;
 		
@@ -409,7 +409,7 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 			
 			// initAndShow parameters,
 			final ChangeEntryTypesDlg cetDlg,
-			final List<EntryId> entryIds) {
+			final List<EntityId> entryIds) {
 		GWT.runAsync(ChangeEntryTypesDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -454,7 +454,7 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 * @param cetDlg
 	 * @param entryIds
 	 */
-	public static void initAndShow(ChangeEntryTypesDlg cetDlg, List<EntryId> entryIds) {
+	public static void initAndShow(ChangeEntryTypesDlg cetDlg, List<EntityId> entryIds) {
 		doAsyncOperation(null, cetDlg, entryIds);
 	}
 }

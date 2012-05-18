@@ -214,7 +214,7 @@ public class TaskDispositionDlg extends DlgBox implements EditSuccessfulHandler,
 				m_taskTable.applyTaskDisposition(
 					td,
 					m_newTaskId,
-					m_selectedTask.getTask().getTaskId().getEntryId());
+					m_selectedTask.getTask().getTaskId().getEntityId());
 			}
 		};
 		Scheduler.get().scheduleDeferred(taskDispositioner);
