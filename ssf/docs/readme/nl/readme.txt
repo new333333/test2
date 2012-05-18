@@ -1,18 +1,18 @@
-﻿Novell Vibe 3.2
+﻿Novell Vibe 3.3
 
 1.0  Aan de slag
 
      De volledige systeemvereisten en gedetailleerde instructies voor de
      installatie van de software voor de Novell Vibe-beheerder vindt u in de
-     "Vibe 3.2 Installatiehandleiding." Instructies voor het instellen van de
-     Vibe-website, sitebeheer en -onderhoud vindt u in de "Vibe 3.2
+     "Vibe 3.3 Installatiehandleiding." Instructies voor het instellen van de
+     Vibe-website, sitebeheer en -onderhoud vindt u in de "Vibe 3.3
      Beheerdershandleiding."
 
-     Zodra uw Vibe-site is geïnstalleerd, kunnen Vibe-gebruikers instructies
-     vinden in de "Gebruikershandleiding van Vibe 3.2" en de "Vibe 3.2
-     Geavanceerde gebruikershandleiding". (Voor talen waarin de "Vibe 3.2
+     Wanneer uw Vibe-site is geïnstalleerd, kunnen Vibe-gebruikers instructies
+     vinden in de "Gebruikershandleiding van Vibe 3.3" en de "Vibe 3.3
+     Geavanceerde gebruikershandleiding". (Voor talen waarin de "Vibe 3.3
      Gebruikershandleiding" niet verkrijgbaar is, kunt u gebruikmaken van de
-     "Vibe 3.2 Aan de slag".)
+     "Vibe 3.3 Aan de slag".)
 
      U kunt de online help van Vibe weergeven wanneer u bent aangemeld bij uw
      Vibe-site
@@ -20,18 +20,18 @@
 
 2.0  Bekende problemen
 
-     Raadpleeg het volledige leesmij-bestand van Novell Vibe 3.2 op de website
-     met Novell Vibe 3.2-documentatie
-     (http://www.novell.com/documentation/vibe32) voor een bijgewerkte lijst met
+     Raadpleeg het volledige leesmij-bestand van Novell Vibe 3.3 op de website
+     met Novell Vibe 3.3-documentatie
+     (http://www.novell.com/documentation/vibe33) voor een bijgewerkte lijst met
      bekende problemen voor deze release.
 
 
 3.0  Documentatie
 
-     Alle Novell Vibe 3.2-documentatie is beschikbaar op de website met Novell
-     Vibe 3.2-documentatie (http://www.novell.com/documentation/vibe32):
+     Alle Novell Vibe 3.3-documentatie is beschikbaar op de website met Novell
+     Vibe 3.3-documentatie (http://www.novell.com/documentation/vibe33):
 
-     -  Volledig leesmij-bestand voor Vibe 3.2
+     -  Volledig leesmij-bestand voor Vibe 3.3
 
      -  "Installatiehandleiding"
 
@@ -41,9 +41,13 @@
 
      -  "Geavanceerde gebruikershandleiding"
 
-     -  "Snel starten"
-
      -  "Ontwikkelaarshandleiding"
+
+     -  "Aan de slag met Vibe"
+
+     -  "Aan de slag met Vibe Desktop"
+
+     -  "Aan de slag met de Vibe-invoegtoepassing"
 
      Naast de productdocumentatie van Novell Vibe is er nog een aantal andere
      bronnen met informatie over Vibe.
@@ -62,13 +66,7 @@
      meer informatie over Vibe.
 
 
-4.0  Conventies in de documentatie
-
-     In deze documentatie wordt het groter-dan-teken (>) gebruikt om handelingen
-     binnen een stap en onderdelen van een verwijzing te scheiden.
-
-
-5.0  Juridische kennisgevingen
+4.0  Juridische kennisgevingen
 
      Novell, Inc. geeft geen garanties betreffende de inhoud of het gebruik van
      deze documentatie, en doet met name afstand van alle expliciete of
@@ -102,7 +100,7 @@
      gevallen waarin u er niet in slaagt de benodigde exportvergunningen te
      verkrijgen.
 
-     Copyright © 2008-2011 Novell, Inc. Alle rechten voorbehouden. Niets uit deze
+     Copyright © 2008-2012 Novell, Inc. Alle rechten voorbehouden. Niets uit deze
      uitgave mag worden verveelvoudigd, gefotokopieerd, opgeslagen in een
      geautomatiseerd gegevensbestand of verzonden zonder de uitdrukkelijke
      schriftelijke goedkeuring van de uitgever.
