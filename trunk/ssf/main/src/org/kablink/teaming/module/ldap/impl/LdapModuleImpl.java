@@ -342,20 +342,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					  		}
 						}
 					}
-			  		
-			  		// Did we encounter a problem?
-			  		if ( namingEx != null )
-			  		{
-			  			LdapSyncException	ldapSyncEx;
-
-			  			// Yes
-			  			logError( NLT.get( "errorcode.ldap.context" ), namingEx );
-			  			
-			  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
-			  			// the LdapConnectionConfig object that was being used when the error happened.
-			  			ldapSyncEx = new LdapSyncException( nextLdapConfig, namingEx );
-			  			throw ldapSyncEx;
-			  		}
 				}
 			}
 		}
@@ -1424,20 +1410,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					  		}
 						}
 					}
-			  		
-			  		// Did we encounter a problem?
-			  		if ( namingEx != null )
-			  		{
-			  			LdapSyncException	ldapSyncEx;
-
-			  			// Yes
-			  			logError( NLT.get( "errorcode.ldap.context" ), namingEx );
-			  			
-			  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
-			  			// the LdapConnectionConfig object that was being used when the error happened.
-			  			ldapSyncEx = new LdapSyncException( nextLdapConfig, namingEx );
-			  			throw ldapSyncEx;
-			  		}
 				}
 			}
 		}
@@ -1726,7 +1698,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			boolean foundLocalUser = false;
 			
 			if (logger.isDebugEnabled())
-				logger.debug("Recording user: '" + dn + "'");
+				logger.debug("\t\tRecording user: '" + dn + "'");
 
 			// Do we have the name of the ldap attribute that holds the guid?
 			if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
@@ -1996,7 +1968,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					Long id = me.getKey();
 					String name = me.getValue();
 					if (logger.isDebugEnabled())
-						logger.debug("'"+name+"'");
+						logger.debug("\t'"+name+"'");
 					
 					Object row[] = (Object[])ssUsers.get(name);
 					if (!name.equalsIgnoreCase((String)row[PRINCIPAL_FOREIGN_NAME])) {//was synched from somewhere else	
@@ -2058,7 +2030,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
 				SearchControls sch = new SearchControls(scope, 0, 0, (String [])la.toArray(sample), false, false);
 	
-				logger.info( "Searching for users in base dn: " + searchInfo.getBaseDn() );
+				logger.info( "\tSearching for users in base dn: " + searchInfo.getBaseDn() );
 				
 				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), sch);
 				while (ctxSearch.hasMore()) {
@@ -2248,7 +2220,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			Object[] row = null;
 			
 			if (logger.isDebugEnabled())
-				logger.debug("Recording group: '" + dn + "'");
+				logger.debug("\t\tRecording group: '" + dn + "'");
 			
 			// Do we have the name of the ldap attribute that holds the guid?
 			if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
@@ -2322,7 +2294,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					Map userMods = new HashMap();
 					if (logger.isDebugEnabled())
-						logger.debug("Updating group:" + ssName);
+						logger.debug("\t\tUpdating group:" + ssName);
 					
 					// Map the attributes read from the ldap directory to Teaming attributes.
 					getUpdates( groupAttributeNames, groupAttributes, lAttrs, userMods, ldapGuidAttribute );
@@ -2432,7 +2404,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if (logger.isDebugEnabled()) {
 					logger.debug("Groups not found in ldap:");
 					for (String name:notInLdap.values()) {
-						logger.debug("'" + name + "'");
+						logger.debug("\t'" + name + "'");
 					}
 					
 				}
@@ -2463,7 +2435,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				List memberAttributes;
 				int i;
 				
-				logger.info( "Searching for groups in base dn: " + searchInfo.getBaseDn() );
+				logger.info( "\tSearching for groups in base dn: " + searchInfo.getBaseDn() );
 				
 				// Get the name of the ldap attribute we will use to get a guid from the ldap directory.
 				ldapGuidAttribute = config.getLdapGuidAttribute();
@@ -3246,7 +3218,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		} catch (Exception ex) {
 			logError("Error adding users", ex);
 			for (Map.Entry<String, Map> me:users.entrySet()) {
-				logger.error("'" + me.getKey() + "':'" + me.getValue().get(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME) + "'");
+				logger.error("\t'" + me.getKey() + "':'" + me.getValue().get(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME) + "'");
 			}
 
 			//continue, returning empty list
