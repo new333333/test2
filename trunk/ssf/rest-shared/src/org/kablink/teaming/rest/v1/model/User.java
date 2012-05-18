@@ -32,6 +32,148 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-public class User {
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement(name = "user")
+public class User extends Principal {
+    private String firstName;
+   	private String middleName;
+   	private String lastName;
+   	private String organization;
+   	private String phone;
+   	private Locale locale;
+   	private String timeZone;
+   	private String skypeId;
+   	private String twitterId;
+   	private Long miniBlogId;
+   	private Long diskQuota;
+   	private Long fileSizeLimit;
+   	private Long diskSpaceUsed;
+   	private Long workspaceId;
+
+    @XmlElement(name="disk_quota")
+    public Long getDiskQuota() {
+        return diskQuota;
+    }
+
+    public void setDiskQuota(Long diskQuota) {
+        this.diskQuota = diskQuota;
+    }
+
+    @XmlElement(name="disk_space_used")
+    public Long getDiskSpaceUsed() {
+        return diskSpaceUsed;
+    }
+
+    public void setDiskSpaceUsed(Long diskSpaceUsed) {
+        this.diskSpaceUsed = diskSpaceUsed;
+    }
+
+    @XmlElement(name="file_size_limit")
+    public Long getFileSizeLimit() {
+        return fileSizeLimit;
+    }
+
+    public void setFileSizeLimit(Long fileSizeLimit) {
+        this.fileSizeLimit = fileSizeLimit;
+    }
+
+    @XmlElement(name="first_name")
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @XmlElement(name="last_name")
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
+
+    @XmlElement(name="middle_name")
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    @XmlElement(name="mini_blog_id")
+    public Long getMiniBlogId() {
+        return miniBlogId;
+    }
+
+    public void setMiniBlogId(Long miniBlogId) {
+        this.miniBlogId = miniBlogId;
+    }
+
+    @XmlElement(name="organization")
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
+
+    @XmlElement(name="phone")
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    @XmlElement(name="skype_id")
+    public String getSkypeId() {
+        return skypeId;
+    }
+
+    public void setSkypeId(String skypeId) {
+        this.skypeId = skypeId;
+    }
+
+    @XmlElement(name="time_zone")
+    public String getTimeZone() {
+        return timeZone;
+    }
+
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    @XmlElement(name="twitter_id")
+    public String getTwitterId() {
+        return twitterId;
+    }
+
+    public void setTwitterId(String twitterId) {
+        this.twitterId = twitterId;
+    }
+
+    @XmlElement(name="workspace_id")
+    public Long getWorkspaceId() {
+        return workspaceId;
+    }
+
+    public void setWorkspaceId(Long workspaceId) {
+        this.workspaceId = workspaceId;
+    }
 }

@@ -33,12 +33,34 @@
 
 package org.kablink.teaming.remoting.rest.v1.util;
 
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.rest.v1.model.AverageRating;
+import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.BinderQuotasConfig;
+import org.kablink.teaming.rest.v1.model.DefinableEntity;
+import org.kablink.teaming.rest.v1.model.Description;
+import org.kablink.teaming.rest.v1.model.DiskQuotasConfig;
+import org.kablink.teaming.rest.v1.model.Entry;
+import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
+import org.kablink.teaming.rest.v1.model.FsaConfig;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
+import org.kablink.teaming.rest.v1.model.Locale;
+import org.kablink.teaming.rest.v1.model.Principal;
+import org.kablink.teaming.rest.v1.model.PrincipalBrief;
+import org.kablink.teaming.rest.v1.model.TeamBrief;
+import org.kablink.teaming.rest.v1.model.User;
+import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * This class contains utility methods that are shared among multiple resource types.
@@ -49,11 +71,130 @@ import org.kablink.teaming.web.util.WebUrlUtil;
  */
 public class ResourceUtil {
 
+    public static Calendar toCalendar(Date date) {
+   		Calendar cal = Calendar.getInstance();
+   		cal.setTime(date);
+   		return cal;
+   	}
+
+    public static FileProperties buildFileProperties(FileAttachment fa) {
+        FileAttachment.FileLock fl = fa.getFileLock();
+        FileProperties fp = new FileProperties(fa.getId(),
+      				fa.getFileItem().getName(),
+      				new HistoryStamp(buildPrincipalBrief(Utils.redactUserPrincipalIfNecessary(fa.getCreation().getPrincipal())),
+                              fa.getCreation().getDate()),
+      				new HistoryStamp(buildPrincipalBrief(Utils.redactUserPrincipalIfNecessary(fa.getModification().getPrincipal())),
+                              fa.getModification().getDate()),
+      				fa.getFileItem().getLength(),
+      				fa.getHighestVersionNumber(),
+      				fa.getMajorVersion(),
+      				fa.getMinorVersion(),
+      				fa.getFileItem().getDescription().getText(),
+      				fa.getFileStatus(),
+      				WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, fa),
+      				(fl != null && fl.getOwner() != null)? fl.getOwner().getId():null,
+      				(fl!= null)? fl.getExpirationDate():null);
+        return fp;
+    }
+
+    public static TeamBrief buildTeamBrief(org.kablink.teaming.domain.TeamInfo binder) {
+        TeamBrief model = new TeamBrief();
+        model.setId(binder.getId());
+        model.setTitle(binder.getTitle());
+        model.setEntityType(binder.getEntityType());
+        model.setFamily(binder.getFamily());
+        model.setLibrary(binder.getLibrary());
+        model.setMirrored(binder.getMirrored());
+        model.setDefinitionType(binder.getDefinitionType());
+        model.setPath(binder.getPath());
+        model.setCreation(buildHistoryStamp(binder.getCreation()));
+        model.setModification(buildHistoryStamp(binder.getModification()));
+        model.setDefinitionType(binder.getDefinitionType());
+        model.setPermaLink(binder.getPermaLink());
+        model.setLink(getBinderLinkUri(binder));
+        return model;
+    }
+
+    public static TeamBrief buildTeamBrief(org.kablink.teaming.domain.Binder binder) {
+        TeamBrief model = new TeamBrief();
+        populateBinderBrief(model, binder);
+        return model;
+    }
+
+    public static BinderBrief buildBinderBrief(org.kablink.teaming.domain.Binder binder) {
+        BinderBrief model = new BinderBrief();
+        populateBinderBrief(model, binder);
+        return model;
+    }
+
+    public static User buildUser(org.kablink.teaming.domain.User user) {
+        User model = new User();
+        populatePrincipal(model, user);
+        model.setFirstName(user.getFirstName());
+        model.setMiddleName(user.getMiddleName());
+        model.setLastName(user.getLastName());
+        model.setOrganization(user.getOrganization());
+        model.setPhone(user.getPhone());
+
+        java.util.Locale locale = user.getLocale();
+        if(locale != null) {
+            Locale localeModel = new Locale();
+            localeModel.setLanguage(locale.getLanguage());
+            localeModel.setCountry(locale.getCountry());
+            model.setLocale(localeModel);
+        }
+        if(user.getTimeZone() != null) {
+            model.setTimeZone(user.getTimeZone().getID());
+        }
+        model.setSkypeId(user.getSkypeId());
+        model.setTwitterId(user.getTwitterId());
+        model.setMiniBlogId(user.getMiniBlogId());
+        model.setDiskQuota(user.getDiskQuota());
+        model.setFileSizeLimit(user.getFileSizeLimit());
+        model.setDiskSpaceUsed(user.getDiskSpaceUsed());
+        model.setWorkspaceId(user.getWorkspaceId());
+
+        if (user.getId().equals(RequestContextHolder.getRequestContext().getUserId())) {
+            model.setLink("/self");
+        }
+        model.addAdditionalLink("favorites", model.getLink() + "/favorites");
+        model.addAdditionalLink("teams", model.getLink() + "/teams");
+
+        return model;
+    }
+
+    public static ZoneConfig buildZoneConfig(org.kablink.teaming.domain.ZoneConfig config) {
+        ZoneConfig modelConfig = new ZoneConfig();
+        BinderQuotasConfig binderQuotasConfig = new BinderQuotasConfig();
+        binderQuotasConfig.setAllowOwner(config.isBinderQuotaAllowBinderOwnerEnabled());
+        binderQuotasConfig.setEnabled(config.isBinderQuotaEnabled());
+        binderQuotasConfig.setInitialized(config.isBinderQuotaInitialized());
+        modelConfig.setBinderQuotasConfig(binderQuotasConfig);
+
+        DiskQuotasConfig diskQuotasConfig = new DiskQuotasConfig();
+        diskQuotasConfig.setEnabled(config.isDiskQuotaEnabled());
+        diskQuotasConfig.setHighwaterPercentage(config.getDiskQuotasHighwaterPercentage());
+        diskQuotasConfig.setUserDefault(config.getDiskQuotaUserDefault());
+        modelConfig.setDiskQuotasConfig(diskQuotasConfig);
+
+        modelConfig.setFileSizeLimitUserDefault(config.getFileSizeLimitUserDefault());
+        modelConfig.setFileVersionsMaxAge(config.getFileVersionsMaxAge());
+
+        FsaConfig fsaConfig = new FsaConfig();
+        fsaConfig.setAutoUpdateUrl(config.getFsaAutoUpdateUrl());
+        fsaConfig.setEnabled(config.getFsaEnabled());
+        fsaConfig.setSyncInterval(config.getFsaSynchInterval());
+        modelConfig.setFsaConfig(fsaConfig);
+
+        modelConfig.setMobileAccessEnabled(config.isMobileAccessEnabled());
+        return modelConfig;
+    }
+
 	public static FileVersionProperties fileVersionFromFileAttachment(VersionAttachment va) {
 		return new FileVersionProperties(
 				va.getId(),
-				new HistoryStamp(Utils.redactUserPrincipalIfNecessary(va.getCreation().getPrincipal()).getId(), va.getCreation().getDate()),
-				new HistoryStamp(Utils.redactUserPrincipalIfNecessary(va.getModification().getPrincipal()).getId(), va.getModification().getDate()),
+				new HistoryStamp(buildPrincipalBrief(Utils.redactUserPrincipalIfNecessary(va.getCreation().getPrincipal())), va.getCreation().getDate()),
+				new HistoryStamp(buildPrincipalBrief(Utils.redactUserPrincipalIfNecessary(va.getModification().getPrincipal())), va.getModification().getDate()),
 				Long.valueOf(va.getFileItem().getLength()),
 				Integer.valueOf(va.getVersionNumber()),
 				Integer.valueOf(va.getMajorVersion()),
@@ -63,4 +204,148 @@ public class ResourceUtil {
 				WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, va)
 				);
 	}
+
+    private static void populateDefinableEntity(DefinableEntity model, org.kablink.teaming.domain.DefinableEntity entity) {
+        model.setId(entity.getId());
+
+        if (entity.getParentBinder() != null)
+            model.setParentBinderId(entity.getParentBinder().getId());
+
+        if(entity.getEntryDefId() != null)
+            model.setDefinitionId(entity.getEntryDefId());
+
+        model.setTitle(entity.getTitle());
+
+        org.kablink.teaming.domain.Description desc = entity.getDescription();
+        if(desc != null) {
+            model.setDescription(buildDescription(desc));
+        }
+
+        if(entity.getCreation() != null) {
+            model.setCreation(buildHistoryStamp(entity.getCreation()));
+        }
+        if(entity.getModification() != null) {
+            model.setModification(buildHistoryStamp(entity.getModification()));
+        }
+
+        if(entity.getAverageRating() != null) {
+            model.setAverageRating(buildAverageRating(entity.getAverageRating()));
+        }
+        if(entity.getEntityType() != null) {
+            model.setEntityType(entity.getEntityType().name());
+        }
+        org.dom4j.Document def = entity.getEntryDefDoc();
+        if(def != null) {
+            model.setFamily(DefinitionUtils.getFamily(def));
+        }
+        model.setPermaLink(PermaLinkUtil.getPermalink(entity));
+    }
+
+    private static void populateEntry(Entry model, org.kablink.teaming.domain.Entry entry) {
+        populateDefinableEntity(model, entry);
+    }
+
+    private static void populatePrincipal(Principal model, org.kablink.teaming.domain.Principal principal) {
+        populateEntry(model, principal);
+        model.setEmailAddress(principal.getEmailAddress());
+        model.setDisabled(principal.isDeleted());
+        model.setReserved(principal.isReserved());
+        model.setName(principal.getName());
+        model.setLink(getPrincipalLinkUri(principal));
+    }
+
+    private static void populateBinderBrief(BinderBrief model, org.kablink.teaming.domain.Binder binder) {
+        model.setId(binder.getId());
+        model.setTitle(binder.getTitle());
+        model.setEntityType(binder.getEntityType().toString());
+        org.dom4j.Document def = binder.getEntryDefDoc();
+        if(def != null) {
+            model.setFamily(DefinitionUtils.getFamily(def));
+        }
+        model.setLibrary(binder.isLibrary());
+        model.setMirrored(binder.isMirrored());
+        model.setDefinitionType(binder.getDefinitionType());
+        model.setPath(binder.getPathName());
+        if(binder.getCreation() != null) {
+            model.setCreation(buildHistoryStamp(binder.getCreation()));
+        }
+        if(binder.getModification() != null) {
+            model.setDefinitionType(binder.getDefinitionType());
+        }
+        model.setPermaLink(PermaLinkUtil.getPermalink(binder));
+        model.setLink(getBinderLinkUri(binder));
+    }
+
+    private static AverageRating buildAverageRating(org.kablink.teaming.domain.AverageRating rating){
+        AverageRating model = new AverageRating();
+        model.setAverage(rating.getAverage());
+        model.setCount(rating.getCount());
+        return model;
+    }
+
+    private static HistoryStamp buildHistoryStamp(org.kablink.teaming.domain.HistoryStampBrief historyStamp) {
+        return new HistoryStamp(buildPrincipalBrief(historyStamp), historyStamp.getDate());
+    }
+
+    private static HistoryStamp buildHistoryStamp(org.kablink.teaming.domain.HistoryStamp historyStamp) {
+        return new HistoryStamp(buildPrincipalBrief(historyStamp.getPrincipal()), historyStamp.getDate());
+    }
+
+    private static PrincipalBrief buildPrincipalBrief(org.kablink.teaming.domain.HistoryStampBrief historyStamp) {
+        PrincipalBrief model = new PrincipalBrief();
+        model.setId(historyStamp.getPrincipalId());
+        model.setName(historyStamp.getPrincipalName());
+        String link = getUserLinkUri(historyStamp.getPrincipalId());
+        if (link!=null) {
+            model.setLink(link);
+        }
+       return model;
+    }
+
+    private static PrincipalBrief buildPrincipalBrief(org.kablink.teaming.domain.Principal principal) {
+        PrincipalBrief model = new PrincipalBrief();
+        model.setId(principal.getId());
+        model.setName(principal.getName());
+        String link = getPrincipalLinkUri(principal);
+        if (link!=null) {
+            model.setLink(link);
+        }
+       return model;
+    }
+
+    private static Description buildDescription(org.kablink.teaming.domain.Description description){
+        Description model = new Description();
+        model.setText(description.getText());
+        model.setFormat(description.getFormat());
+        return model;
+    }
+
+    private static String getBinderLinkUri(org.kablink.teaming.domain.Binder binder) {
+        if (binder instanceof org.kablink.teaming.domain.Folder) {
+            return "/folder/" + binder.getId();
+        } else if (binder instanceof org.kablink.teaming.domain.Workspace) {
+            return "/workspace/" + binder.getId();
+        }
+        return "/binder/" + binder.getId();
+    }
+
+    private static String getBinderLinkUri(org.kablink.teaming.domain.TeamInfo binder) {
+        if ("folder".equals(binder.getEntityType())) {
+            return "/folder/" + binder.getId();
+        } else if ("workspace".equals(binder.getEntityType())) {
+            return "/workspace/" + binder.getId();
+        }
+        return "/binder/" + binder.getId();
+    }
+
+    private static String getPrincipalLinkUri(org.kablink.teaming.domain.Principal principal) {
+        if (principal instanceof org.kablink.teaming.domain.UserPrincipal) {
+            return "/user/" + principal.getId();
+        }
+        return null;
+    }
+
+    public static String getUserLinkUri(Long id) {
+        return "/user/" + id;
+    }
 }

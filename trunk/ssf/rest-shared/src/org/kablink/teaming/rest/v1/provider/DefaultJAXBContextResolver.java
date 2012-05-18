@@ -41,9 +41,7 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 
-import org.kablink.teaming.rest.v1.model.FileProperties;
-import org.kablink.teaming.rest.v1.model.FileVersionProperties;
-import org.kablink.teaming.rest.v1.model.FileVersionPropertiesCollection;
+import org.kablink.teaming.rest.v1.model.*;
 
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.api.json.JSONJAXBContext;
@@ -59,10 +57,26 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
     
     private final Set<Class> types;
     
-    private final Class[] cTypes = {
+    public static final Class[] cTypes = {
+            AverageRating.class,
+    		BinderBrief.class,
+    		BinderQuotasConfig.class,
+    		Description.class,
+    		DiskQuotasConfig.class,
     		FileProperties.class,
     		FileVersionProperties.class,
-    		FileVersionPropertiesCollection.class
+    		FileVersionPropertiesCollection.class,
+            FsaConfig.class,
+    		Link.class,
+    		LinkCollection.class,
+    		PrincipalBrief.class,
+            ReleaseInfo.class,
+            RootRestObject.class,
+            SearchResults.class,
+            TeamBrief.class,
+            User.class,
+            UserBrief.class,
+            ZoneConfig.class,
     		};
     
     public DefaultJAXBContextResolver() throws Exception {

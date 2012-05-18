@@ -51,6 +51,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.ApplicationExistsException;
 import org.kablink.teaming.ApplicationGroupExistsException;
@@ -81,8 +83,10 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
+import org.kablink.teaming.domain.HistoryStampBrief;
 import org.kablink.teaming.domain.IndividualPrincipal;
 import org.kablink.teaming.domain.NoApplicationByTheNameException;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
@@ -90,6 +94,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.SharedEntity;
+import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -125,6 +130,7 @@ import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -1009,7 +1015,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	 * Index all of the entries found in the given Collection
 	 * @param entries
 	 */
-	@Override
 	public IndexErrors indexEntries( Collection<Principal> entries )
 	{
         ProfileCoreProcessor processor;
@@ -2081,5 +2086,100 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		Set<Long> groupIds = getProfileDao().getAllGroupMembership(userId, RequestContextHolder.getRequestContext().getZoneId());
 		return getProfileDao().loadGroups(groupIds, RequestContextHolder.getRequestContext().getZoneId());
 	}
+
+    public List<Binder> getUserFavorites(Long userId) {
+        List<Binder> binders = new ArrayList<Binder>();
+        Document favorites = null;
+        UserProperties userProperties = getUserProperties(userId);
+        Object obj = userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
+
+        if(obj != null) {
+            if(obj instanceof Document) {
+                favorites = (Document)obj;
+            } else {
+                try {
+                    favorites = DocumentHelper.parseText((String) obj);
+                } catch (DocumentException e) {}
+            }
+        }
+
+        if(favorites != null) {
+            java.util.Iterator it = favorites.getRootElement().selectNodes("favorite[@type=\"binder\"]").iterator();
+            while(it.hasNext()) {
+                Element e = (Element)it.next();
+                Binder binder = getBinderIfAccessible(Long.valueOf(e.attributeValue("value")));
+                if(binder != null){
+                    binders.add(binder);
+                }
+            }
+        }
+        return binders;
+    }
+
+    public List<TeamInfo> getUserTeams(Long userId) {
+        List<Map> myTeams = getBinderModule().getTeamMemberships(userId);
+
+        List<TeamInfo> teamList = new ArrayList<TeamInfo>();
+        for(Map binder : myTeams) {
+            String binderIdStr = (String) binder.get(Constants.DOCID_FIELD);
+            Long binderId = (binderIdStr != null)? Long.valueOf(binderIdStr) : null;
+            Boolean library = null;
+            String libraryStr = (String) binder.get(Constants.IS_LIBRARY_FIELD);
+            if(Constants.TRUE.equals(libraryStr))
+                library = Boolean.TRUE;
+            else if(Constants.FALSE.equals(libraryStr))
+                library = Boolean.FALSE;
+
+            Boolean mirrored = null;
+            String mirroredStr = (String) binder.get(Constants.IS_MIRRORED_FIELD);
+            if(Constants.TRUE.equals(mirroredStr))
+                mirrored = Boolean.TRUE;
+            else if(Constants.FALSE.equals(mirroredStr))
+                mirrored = Boolean.FALSE;
+
+            UserPrincipal creator = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) binder.get(Constants.CREATORID_FIELD)));
+            UserPrincipal modifier = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) binder.get(Constants.MODIFICATIONID_FIELD)));
+
+            Long parentBinderId = null;
+            String parentBinderIdStr = (String) binder.get(Constants.BINDERS_PARENT_ID_FIELD);
+            if(Validator.isNotNull(parentBinderIdStr))
+                parentBinderId = Long.valueOf(parentBinderIdStr);
+
+            TeamInfo info = new TeamInfo();
+            info.setId(binderId);
+            info.setTitle((String) binder.get(Constants.TITLE_FIELD));
+            info.setEntityType((String)binder.get(Constants.ENTITY_FIELD));
+            info.setFamily((String) binder.get(Constants.FAMILY_FIELD));
+            info.setLibrary(library);
+            info.setDefinitionType(Integer.valueOf((String)binder.get(Constants.DEFINITION_TYPE_FIELD)));
+            info.setPath((String) binder.get(Constants.ENTITY_PATH));
+            info.setCreation(
+                    new HistoryStampBrief(((creator != null)? creator.getName() : (String) binder.get(Constants.CREATOR_NAME_FIELD)),
+                            Long.valueOf((String)binder.get(Constants.CREATORID_FIELD)),
+                            (Date) binder.get(Constants.CREATION_DATE_FIELD)));
+            info.setModification(
+                    new HistoryStampBrief(((modifier != null)? modifier.getName() : (String) binder.get(Constants.MODIFICATION_NAME_FIELD)),
+                            Long.valueOf((String)binder.get(Constants.MODIFICATIONID_FIELD)),
+                            (Date) binder.get(Constants.MODIFICATION_DATE_FIELD)));
+            info.setPermaLink(PermaLinkUtil.getPermalink(binder));
+            info.setMirrored(mirrored);
+            info.setParentBinderId(parentBinderId);
+            teamList.add(info);
+        }
+        return teamList;
+    }
+
+    private org.kablink.teaming.domain.Binder getBinderIfAccessible(Long binderId) {
+   		try {
+   			return getBinderModule().getBinder(binderId);
+   		}
+   		catch(NoBinderByTheIdException e) {
+   			return null;
+   		}
+   		catch(AccessControlException e) {
+   			return null;
+   		}
+   	}
+
 }
 

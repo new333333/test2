@@ -46,6 +46,7 @@ import java.util.SortedSet;
 import org.dom4j.Document;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
@@ -58,6 +59,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.SharedEntity;
+import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
@@ -776,4 +778,7 @@ public interface ProfileModule {
      */
 	public List<Group> getUserGroups(Long userId) throws AccessControlException;
 
+    public List<Binder> getUserFavorites(Long userId) throws AccessControlException;
+
+    public List<TeamInfo> getUserTeams(Long userId);
 }
