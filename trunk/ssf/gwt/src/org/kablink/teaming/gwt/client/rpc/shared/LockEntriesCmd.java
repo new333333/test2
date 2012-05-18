@@ -44,7 +44,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
  * @author drfoster@novell.com
  */
 public class LockEntriesCmd extends VibeRpcCmd {
-	private List<EntityId>	m_entryIds;	//
+	private List<EntityId>	m_entityIds;	//
 	
 	/**
 	 * Constructor method.
@@ -59,14 +59,14 @@ public class LockEntriesCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public LockEntriesCmd(List<EntityId> entryIds) {
+	public LockEntriesCmd(List<EntityId> entityIds) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
-		setEntryIds(entryIds);
+		setEntityIds(entityIds);
 	}
 	
 	/**
@@ -74,14 +74,14 @@ public class LockEntriesCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public List<EntityId> getEntryIds() {return m_entryIds;}
+	public List<EntityId> getEntityIds() {return m_entityIds;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setEntryIds(List<EntityId> entryIds) {m_entryIds = entryIds;}
+	public void setEntityIds(List<EntityId> entityIds) {m_entityIds = entityIds;}
 	
 	/**
 	 * Returns the command's enumeration value.
