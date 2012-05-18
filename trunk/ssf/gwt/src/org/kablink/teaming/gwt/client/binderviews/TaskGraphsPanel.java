@@ -112,13 +112,9 @@ public class TaskGraphsPanel extends ToolPanelBase
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private TaskGraphsPanel(RequiresResize containerResizer, TaskProvider taskProvider, boolean expandGraphs, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
+	private TaskGraphsPanel(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
 		super(containerResizer, binderInfo, toolPanelReady);
-		
-		// ...store the parameters...
-		m_taskProvider = taskProvider;
-		m_expandGraphs = expandGraphs;
 		
 		// ...initialize any other data members...
 		m_notifyOnReady = true;
@@ -135,17 +131,15 @@ public class TaskGraphsPanel extends ToolPanelBase
 	 * of it via the callback.
 	 * 
 	 * @param containerResizer
-	 * @param taskProvider
-	 * @param expandGraphs
 	 * @param binderInfo
 	 * @param toolPanelReady
 	 * @param tpClient
 	 */
-	public static void createAsync(final RequiresResize containerResizer, final TaskProvider taskProvider, final boolean expandGraphs, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
 		GWT.runAsync(TaskGraphsPanel.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				TaskGraphsPanel bcp = new TaskGraphsPanel(containerResizer, taskProvider, expandGraphs, binderInfo, toolPanelReady);
+				TaskGraphsPanel bcp = new TaskGraphsPanel(containerResizer, binderInfo, toolPanelReady);
 				tpClient.onSuccess(bcp);
 			}
 			
@@ -390,6 +384,20 @@ public class TaskGraphsPanel extends ToolPanelBase
 		// Finally, create the status bar chart.
 		TaskStatusGraph tsg = new TaskStatusGraph(m_taskStats, "vibe-taskGraphsStatusBar", true);
 		m_statusPanel.add(tsg);
+	}
+
+	/**
+	 * Called by the view to provide the graphs panel with its task
+	 * information.
+	 * 
+	 * @param taskProvider
+	 * @param expandGraphs
+	 */
+	public void renderTaskGraphs(TaskProvider taskProvider, boolean expandGraphs) {
+		m_taskProvider = taskProvider;
+		m_expandGraphs = expandGraphs;
+		
+		renderTaskGraphsAsync();
 	}
 	
 	/*
