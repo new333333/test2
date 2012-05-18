@@ -45,7 +45,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
  */
 public class SaveEmailNotificationInfoCmd extends VibeRpcCmd {
 	private boolean			m_overridePresets;		// true -> These settings override the presets.  false -> They don't.
-	private List<EntityId>	m_entryIds;				// List of EntityId's when running in entry subscription mode.
+	private List<EntityId>	m_entityIds;			// List of EntityId's when running in entity subscription mode.
 	private List<String>	m_digestAddressTypes;	// List of email address types used for digests,                                 if any.
 	private List<String>	m_msgAddressTypes;		// List of email address types used for individual messages,                     if any.
 	private List<String>	m_msgNoAttAddressTypes;	// List of email address types used for individual messages without attachments, if any.
@@ -82,12 +82,12 @@ public class SaveEmailNotificationInfoCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public SaveEmailNotificationInfoCmd(List<EntityId> entryIds) {
+	public SaveEmailNotificationInfoCmd(List<EntityId> entityIds) {
 		// Initialize the super class and save the parameter.
 		this();
-		setEntryIds(entryIds);
+		setEntityIds(entityIds);
 	}
 
 	/**
@@ -95,26 +95,26 @@ public class SaveEmailNotificationInfoCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public boolean       getOverridePresets()      {return m_overridePresets;     }
-	public List<EntityId> getEntryIds()             {return m_entryIds;            }
-	public List<String>  getDigestAddressTypes()   {return m_digestAddressTypes;  }
-	public List<String>  getMsgAddressTypes()      {return m_msgAddressTypes;     }
-	public List<String>  getMsgNoAttAddressTypes() {return m_msgNoAttAddressTypes;}
-	public List<String>  getTextAddressTypes()     {return m_textAddressTypes;    }
-	public Long          getBinderId()             {return m_binderId;            }
+	public boolean        getOverridePresets()      {return m_overridePresets;     }
+	public List<EntityId> getEntityIds()            {return m_entityIds;           }
+	public List<String>   getDigestAddressTypes()   {return m_digestAddressTypes;  }
+	public List<String>   getMsgAddressTypes()      {return m_msgAddressTypes;     }
+	public List<String>   getMsgNoAttAddressTypes() {return m_msgNoAttAddressTypes;}
+	public List<String>   getTextAddressTypes()     {return m_textAddressTypes;    }
+	public Long           getBinderId()             {return m_binderId;            }
 	
 	/**
 	 * Set'er methods.
 	 * 
-	 * @param binderId
+	 * @param
 	 */
-	public void setEntryIds(            List<EntityId> entryIds)             {m_entryIds             = entryIds;            }
-	public void setOverridePresets(     boolean       overridePresets)      {m_overridePresets      = overridePresets;     }
-	public void setDigestAddressTypes(  List<String>  digestAddressTypes)   {m_digestAddressTypes   = digestAddressTypes;  }
-	public void setMsgAddressTypes(     List<String>  msgAddressTypes)      {m_msgAddressTypes      = msgAddressTypes;     }
-	public void setMsgNoAttAddressTypes(List<String>  msgNoAttAddressTypes) {m_msgNoAttAddressTypes = msgNoAttAddressTypes;}
-	public void setTextAddressTypes(    List<String>  textAddressTypes)     {m_textAddressTypes     = textAddressTypes;    }
-	public void setBinderId(            Long          binderId)             {m_binderId             = binderId;            }
+	public void setEntityIds(           List<EntityId> entityIds)            {m_entityIds            = entityIds;           }
+	public void setOverridePresets(     boolean        overridePresets)      {m_overridePresets      = overridePresets;     }
+	public void setDigestAddressTypes(  List<String>   digestAddressTypes)   {m_digestAddressTypes   = digestAddressTypes;  }
+	public void setMsgAddressTypes(     List<String>   msgAddressTypes)      {m_msgAddressTypes      = msgAddressTypes;     }
+	public void setMsgNoAttAddressTypes(List<String>   msgNoAttAddressTypes) {m_msgNoAttAddressTypes = msgNoAttAddressTypes;}
+	public void setTextAddressTypes(    List<String>   textAddressTypes)     {m_textAddressTypes     = textAddressTypes;    }
+	public void setBinderId(            Long           binderId)             {m_binderId             = binderId;            }
 	
 	/**
 	 * Adds an email address to a list of email addresses.

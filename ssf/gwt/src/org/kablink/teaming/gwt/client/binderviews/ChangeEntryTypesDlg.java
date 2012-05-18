@@ -72,8 +72,8 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	private EntryType			m_baseEntryType;	// The EntryType of an individual item, if all that was requested.
 	private GwtTeamingMessages	m_messages;			// Access to Vibe's messages.
 	private ListBox				m_entryTypeLB;		// The list of entry types the user can choose from.
-	private List<EntityId>		m_entryIds;			// Current list of entry IDs whose entry types are to be changed.
-	private List<EntryType>		m_entryTypes;		// List<EntryType> for the binder's referred to by m_entryIds.
+	private List<EntityId>		m_entityIds;		// Current list of entity IDs whose entry types are to be changed.
+	private List<EntryType>		m_entryTypes;		// List<EntryType> for the binder's referred to by m_entityIds.
 	private String				m_baseEntryTitle;	// The title of an individual item, if all that was requested.
 	private VibeFlowPanel		m_fp;				// The panel holding the dialog's content.
 
@@ -140,7 +140,7 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 		
 		// Can we perform the change?
 		String defId = m_entryTypeLB.getValue(selIndex);
-		ChangeEntryTypesCmd cetCmd = new ChangeEntryTypesCmd(defId, m_entryIds);
+		ChangeEntryTypesCmd cetCmd = new ChangeEntryTypesCmd(defId, m_entityIds);
 		GwtClientHelper.executeCommand(cetCmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -251,11 +251,11 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 		// change entry types...
 		GetEntryTypesCmd getCmd = new GetEntryTypesCmd();
 		List<Long> binderIds = getCmd.getBinderIds();
-		for (EntityId entryId:  m_entryIds) {
-			GwtClientHelper.addLongToListLongIfUnique(binderIds, entryId.getBinderId());
+		for (EntityId entityId:  m_entityIds) {
+			GwtClientHelper.addLongToListLongIfUnique(binderIds, entityId.getBinderId());
 		}
-		if (1 == m_entryIds.size()) {
-			getCmd.setEntryId(m_entryIds.get(0));
+		if (1 == m_entityIds.size()) {
+			getCmd.setEntityId(m_entityIds.get(0));
 		}
 		
 		// ...get their available entry types...
@@ -357,11 +357,11 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 * Asynchronously runs the given instance of the change entry types
 	 * dialog.
 	 */
-	private static void runDlgAsync(final ChangeEntryTypesDlg cetDlg, final List<EntityId> entryIds) {
+	private static void runDlgAsync(final ChangeEntryTypesDlg cetDlg, final List<EntityId> entityIds) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				cetDlg.runDlgNow(entryIds);
+				cetDlg.runDlgNow(entityIds);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -371,9 +371,9 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 * Synchronously runs the given instance of the change entry types
 	 * dialog.
 	 */
-	private void runDlgNow(List<EntityId> entryIds) {
+	private void runDlgNow(List<EntityId> entityIds) {
 		// Store the parameter...
-		m_entryIds = entryIds;
+		m_entityIds = entityIds;
 		
 		// ...initialize any other data members...
 		m_baseEntryType  = null;
@@ -409,7 +409,7 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 			
 			// initAndShow parameters,
 			final ChangeEntryTypesDlg cetDlg,
-			final List<EntityId> entryIds) {
+			final List<EntityId> entityIds) {
 		GWT.runAsync(ChangeEntryTypesDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -432,7 +432,7 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(cetDlg, entryIds);
+					runDlgAsync(cetDlg, entityIds);
 				}
 			}
 		});
@@ -452,9 +452,9 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 * Initializes and shows the change entry types dialog.
 	 * 
 	 * @param cetDlg
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public static void initAndShow(ChangeEntryTypesDlg cetDlg, List<EntityId> entryIds) {
-		doAsyncOperation(null, cetDlg, entryIds);
+	public static void initAndShow(ChangeEntryTypesDlg cetDlg, List<EntityId> entityIds) {
+		doAsyncOperation(null, cetDlg, entityIds);
 	}
 }

@@ -44,7 +44,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
  * @author drfoster@novell.com
  */
 public class GetEntryTypesCmd extends VibeRpcCmd {
-	private EntityId		m_entryId;		// If not null, returns this entry's EntryType in the results.
+	private EntityId	m_entityId;		// If not null, returns this entity's EntryType in the results.
 	private List<Long>	m_binderIds;	//
 	
 	/**
@@ -76,15 +76,15 @@ public class GetEntryTypesCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 *
-	 * @param entryId
+	 * @param entityId
 	 * @param binderIds
 	 */
-	public GetEntryTypesCmd(EntityId entryId, List<Long> binderIds) {
+	public GetEntryTypesCmd(EntityId entityId, List<Long> binderIds) {
 		// Initialize the super class...
 		super();
 		
 		// ...and save the parameters.
-		setEntryId(  entryId  );
+		setEntityId( entityId );
 		setBinderIds(binderIds);
 	}
 	
@@ -104,15 +104,15 @@ public class GetEntryTypesCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param entryId
+	 * @param entityId
 	 * @param binderId
 	 */
-	public GetEntryTypesCmd(EntityId entryId, Long binderId) {
+	public GetEntryTypesCmd(EntityId entityId, Long binderId) {
 		// Initialize this object...
 		this();
 
 		// ...and save the parameters.
-		setEntryId(entryId);
+		setEntityId(entityId);
 		addBinderId(binderId);
 	}
 
@@ -121,7 +121,7 @@ public class GetEntryTypesCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public EntityId    getEntryId()   {return m_entryId;  }
+	public EntityId   getEntityId()  {return m_entityId; }
 	public List<Long> getBinderIds() {return m_binderIds;}
 	
 	/**
@@ -129,7 +129,7 @@ public class GetEntryTypesCmd extends VibeRpcCmd {
 	 * 
 	 * @param
 	 */
-	public void setEntryId(  EntityId    entryId)   {m_entryId   = entryId;  }
+	public void setEntityId( EntityId   entityId)  {m_entityId  = entityId; }
 	public void setBinderIds(List<Long> binderIds) {m_binderIds = binderIds;}
 
 	/**

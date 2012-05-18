@@ -784,7 +784,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_ENTRY_TYPES:
 		{
 			GetEntryTypesCmd getCmd = ((GetEntryTypesCmd) cmd);
-			EntryTypesRpcResponseData result = GwtViewHelper.getEntryTypes( this, getRequest( ri ), getCmd.getEntryId(), getCmd.getBinderIds() );
+			EntryTypesRpcResponseData result = GwtViewHelper.getEntryTypes( this, getRequest( ri ), getCmd.getEntityId(), getCmd.getBinderIds() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -1659,7 +1659,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case LOCK_ENTRIES:
 		{
 			LockEntriesCmd leCmd = ((LockEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.lockEntries( this, getRequest( ri ), leCmd.getEntryIds() );
+			ErrorListRpcResponseData responseData = GwtViewHelper.lockEntries( this, getRequest( ri ), leCmd.getEntityIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1911,7 +1911,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				this,
 				getRequest( ri ),
 				seniCmd.getBinderId(),	// null -> Entry subscription mode.
-				seniCmd.getEntryIds(),	// null -> Binder email notification mode.
+				seniCmd.getEntityIds(),	// null -> Binder email notification mode.
 				seniCmd.getOverridePresets(),
 				seniCmd.getDigestAddressTypes(),
 				seniCmd.getMsgAddressTypes(),
@@ -2170,7 +2170,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case UNLOCK_ENTRIES:
 		{
 			UnlockEntriesCmd uleCmd = ((UnlockEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.unlockEntries( this, getRequest( ri ), uleCmd.getEntryIds() );
+			ErrorListRpcResponseData responseData = GwtViewHelper.unlockEntries( this, getRequest( ri ), uleCmd.getEntityIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
