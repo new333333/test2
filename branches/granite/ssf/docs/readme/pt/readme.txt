@@ -1,19 +1,19 @@
-﻿Novell Vibe 3.2
+﻿Novell Vibe 3.3
 
 1.0  Introdução
 
      Os requisitos completos do sistema e instruções detalhadas de instalação do
-     software são fornecidos para o administrador do Novell Vibe no "Vibe 3.2
+     software são fornecidos para o administrador do Novell Vibe no "Vibe 3.3
      Installation Guide (Guia de Instalação do Vibe OnPrem 3)." A configuração do
      site do Vibe, bem como as instruções de administração e manutenção do site
-     em funcionamento, estão disponíveis no "Vibe 3.2 Administration Guide" (Guia
+     em funcionamento, estão disponíveis no "Vibe 3.3 Administration Guide" (Guia
      de Administração do Vibe OnPrem 3).
 
      Depois que seu site do Vibe estiver configurado, os usuários do Vibe poderão
-     obter instruções no "Guia do Usuário do Vibe 3.2" e no "Vibe 3.2 Advanced
+     obter instruções no "Guia do Usuário do Vibe 3.3" e no "Vibe 3.3 Advanced
      User Guide" (Guia do Usuário Avançado do Vibe OnPrem 3). Uma "Inicialização
-     Rápida do Vibe 3.2" é fornecida nos idiomas em que o "Guia do Usuário do
-     Vibe 3.2" não está disponível.
+     Rápida do Vibe 3.3" é fornecida nos idiomas em que o "Guia do Usuário do
+     Vibe 3.3" não está disponível.
 
      Você pode exibir a ajuda online do Vibe ao efetuar login no seu site do
      Vibe.
@@ -22,18 +22,18 @@
 2.0  Problemas conhecidos
 
      Para obter uma lista atualizada dos problemas conhecidos desta versão,
-     consulte o Readme completo do produto Novell Vibe 3.2 localizado no site de
-     documentação do Novell Vibe 3.2 na Web
-     (http://www.novell.com/documentation/vibe32).
+     consulte o Readme completo do produto Novell Vibe 3.3 localizado no site de
+     documentação do Novell Vibe 3.3 na Web
+     (http://www.novell.com/documentation/vibe33).
 
 
 3.0  Documentação
 
-     Toda a documentação do Novell Vibe 3.2 está disponível no site de
-     documentação do Novell Vibe 3.2 na Web
-     (http://www.novell.com/documentation/vibe32):
+     Toda a documentação do Novell Vibe 3.3 está disponível no site de
+     documentação do Novell Vibe 3.3 na Web
+     (http://www.novell.com/documentation/vibe33):
 
-     -  Readme completo do produto Vibe 3.2
+     -  Readme completo do produto Vibe 3.3
 
      -  "Guia de Instalação"
 
@@ -43,9 +43,13 @@
 
      -  "Guia do Usuário Avançado"
 
-     -  "Inicialização Rápida"
-
      -  "Developer Guide" (Guia do Desenvolvedor)
+
+     -  "Inicialização Rápida do Vibe"
+
+     -  "Inicialização Rápida do Vibe Desktop"
+
+     -  "Inicialização Rápida do Vibe Add-In"
 
      Além da documentação do produto Novell Vibe, recursos adicionais fornecem
      informações sobre o Vibe.
@@ -66,13 +70,7 @@
      Collaboration Project (http://www.kablink.org).
 
 
-4.0  Convenções da documentação
-
-     Nesta documentação, o símbolo maior que (>) é utilizado para separar ações
-     dentro de uma etapa e itens em um caminho de referência cruzada.
-
-
-5.0  Informações legais
+4.0  Informações legais
 
      A Novell, Inc. não faz representações ou garantias com relação ao conteúdo
      ou uso desta documentação e, particularmente, não se responsabiliza por
@@ -105,9 +103,9 @@
      exportação de software da Novell. A Novell não se responsabiliza pela falha
      na aquisição de quaisquer aprovações necessárias para exportação.
 
-     Copyright © 2008 - 2011 Novell, Inc. Todos os direitos reservados. Nenhuma
+     Copyright © 2008 - 2012 Novell, Inc. Todos os direitos reservados. Nenhuma
      parte desta publicação poderá ser reproduzida, fotocopiada, armazenada em um
-     sistema de recuperação ou transmitida sem o consentimento expresso por
+     sistema de recuperação nem transmitida sem o consentimento expresso por
      escrito do editor.
 
      Para as marcas registradas da Novell, consulte a Lista de marcas registradas

@@ -1,17 +1,18 @@
-﻿Novell Vibe 3.2
+﻿Novell Vibe 3.3
 
 1.0  Első lépések
 
      A rendszerkövetelmények teljes körű ismertetését és a részletes
      szoftvertelepítési útmutatást a Novell Vibe rendszergazdája számára a "Vibe
-     3.2 telepítési kézikönyv tartalmazza." A Vibe webhely beállításával,
+     3.3 telepítési kézikönyv tartalmazza." A Vibe webhely beállításával,
      valamint a folyamatos webhely-adminisztrációval és -karbantartással
-     kapcsolatos útmutatók a "Vibe 3.2 adminisztrátori kézikönyvben" találhatók.
+     kapcsolatos útmutatók a "Vibe 3.3 adminisztrátori kézikönyvben" találhatók.
 
-     A Vibe webhely telepítése után a Vibe felhasználói a "Vibe 3.2 felhasználói
-     kézikönyv" és a "Vibe 3.2 haladó felhasználói kézikönyv" tartalmában
-     találhatnak útmutatást. (A "Vibe 3.2 Gyorskalauz" több nyelven is elérhető
-     abban az esetben, ha a "Vibe 3.2 felhasználói kézikönyv" nem érhető el.)
+     A Vibe webhely telepítése után a Vibe felhasználói a "Vibe 3.3 felhasználói
+     kézikönyv" és a "Vibe 3.3 haladó felhasználói kézikönyv" tartalmában
+     találhatnak útmutatást. (A "Vibe 3.3 Gyorskalauz" több nyelven is elérhető
+     abban az esetben, ha a "Vibe 3.3 felhasználói kézikönyv" nem áll
+     rendelkezésre.)
 
      A Vibe webhelyre való bejelentkezés után megjelenítheti a Vibe rendszer
      online súgóját.
@@ -20,17 +21,17 @@
 2.0  Ismert problémák
 
      Az ehhez a kiadáshoz kapcsolódó ismert problémák naprakész listáját
-     megtalálja a Novell Vibe 3.2 termék teljes Readme ismertetőjében, amely a
-     Novell Vibe 3.2 dokumentációs webhelyén
-     (http://www.novell.com/documentation/vibe32) található.
+     megtalálja a Novell Vibe 3.3 termék teljes Readme ismertetőjében, amely a
+     Novell Vibe 3.3 dokumentációs webhelyén
+     (http://www.novell.com/documentation/vibe33) található.
 
 
 3.0  Dokumentáció
 
-     A Novell Vibe 3.2 termék összes dokumentációja elérhető a Novell Vibe 3.2
-     dokumentációs webhelyén (http://www.novell.com/documentation/vibe32):
+     A Novell Vibe 3.3 termék összes dokumentációja elérhető a Novell Vibe 3.3
+     dokumentációs webhelyén (http://www.novell.com/documentation/vibe33):
 
-     -  A Vibe 3.2 termék teljes Readme ismertetője
+     -  A Vibe 3.3 termék teljes Readme ismertetője
 
      -  "Telepítési kézikönyv"
 
@@ -40,9 +41,13 @@
 
      -  "Haladó felhasználói kézikönyv"
 
-     -  "Gyorskalauz"
-
      -  "Fejlesztői kézikönyv"
+
+     -  "Vibe gyorskalauz"
+
+     -  "Vibe Desktop gyorskalauz"
+
+     -  "Vibe beépülő modul gyorskalauz"
 
      A Novell Vibe termék dokumentációja mellett további forrásokból is elérhető
      tájékoztatás a Vibe termékkel kapcsolatban.
@@ -62,14 +67,7 @@
      projekt) webhelye tartalmaz.
 
 
-4.0  A dokumentációban használt jelölések
-
-     A dokumentációban egyes esetekben „nagyobb mint” jel (>) választja el az egy
-     lépésen belüli műveleteket, illetve a kereszthivatkozások útvonalában
-     található elemeket.
-
-
-5.0  Szerzői jogi megjegyzések
+4.0  Szerzői jogi megjegyzések
 
      A Novell, Inc. nem vállal felelősséget a jelen dokumentáció tartalmára
      vonatkozóan, illetve a dokumentáció használatából eredő esetleges károkért.
@@ -105,7 +103,7 @@
      felelősséget, ha Ön elmulasztja beszerezni a szükséges exportálási
      engedélyeket.
 
-     Copyright © 2008–2011 Novell, Inc. Minden jog fenntartva. A kiadó előzetes
+     Copyright © 2008–2012 Novell, Inc. Minden jog fenntartva. A kiadó előzetes
      írásbeli hozzájárulása nélkül a kiadvány sem részben, sem egészében nem
      reprodukálható, nem fénymásolható, nem tárolható dokumentum-visszakereső
      rendszerben, és nem továbbítható.
