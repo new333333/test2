@@ -34,25 +34,19 @@
 package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.rest.v1.model.AverageRating;
-import org.kablink.teaming.rest.v1.model.BinderBrief;
-import org.kablink.teaming.rest.v1.model.BinderQuotasConfig;
+import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
 import org.kablink.teaming.rest.v1.model.Description;
-import org.kablink.teaming.rest.v1.model.DiskQuotasConfig;
 import org.kablink.teaming.rest.v1.model.Entry;
-import org.kablink.teaming.rest.v1.model.FileProperties;
-import org.kablink.teaming.rest.v1.model.FileVersionProperties;
-import org.kablink.teaming.rest.v1.model.FsaConfig;
+import org.kablink.teaming.rest.v1.model.Folder;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
-import org.kablink.teaming.rest.v1.model.Locale;
 import org.kablink.teaming.rest.v1.model.Principal;
-import org.kablink.teaming.rest.v1.model.PrincipalBrief;
-import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
+import org.kablink.teaming.rest.v1.model.Workspace;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
@@ -118,6 +112,21 @@ public class ResourceUtil {
     public static TeamBrief buildTeamBrief(org.kablink.teaming.domain.Binder binder) {
         TeamBrief model = new TeamBrief();
         populateBinderBrief(model, binder);
+        return model;
+    }
+
+    public static Binder buildBinder(org.kablink.teaming.domain.Binder binder) {
+        Binder model;
+        if (binder instanceof org.kablink.teaming.domain.Folder) {
+            model = new Folder();
+            populateFolder((Folder)model, (org.kablink.teaming.domain.Folder)binder);
+        } else if (binder instanceof org.kablink.teaming.domain.Workspace) {
+            model = new Workspace();
+            populateWorkspace((Workspace)model, (org.kablink.teaming.domain.Workspace)binder);
+        } else {
+            model = new Binder();
+            populateBinder(model, binder);
+        }
         return model;
     }
 
@@ -252,6 +261,26 @@ public class ResourceUtil {
         model.setReserved(principal.isReserved());
         model.setName(principal.getName());
         model.setLink(getPrincipalLinkUri(principal));
+    }
+
+    private static void populateBinder(Binder model, org.kablink.teaming.domain.Binder binder) {
+        populateDefinableEntity(model, binder);
+        model.setPath(binder.getPathName());
+        org.dom4j.Document def = binder.getEntryDefDoc();
+        if(def != null) {
+            model.setFamily(DefinitionUtils.getFamily(def));
+        }
+        model.setLink(getBinderLinkUri(binder));
+    }
+
+    private static void populateWorkspace(Workspace model, org.kablink.teaming.domain.Workspace workspace) {
+        populateBinder(model, workspace);
+    }
+
+    private static void populateFolder(Folder model, org.kablink.teaming.domain.Folder folder) {
+        populateBinder(model, folder);
+        model.setLibrary(folder.isLibrary());
+        model.setMirrored(folder.isMirrored());
     }
 
     private static void populateBinderBrief(BinderBrief model, org.kablink.teaming.domain.Binder binder) {

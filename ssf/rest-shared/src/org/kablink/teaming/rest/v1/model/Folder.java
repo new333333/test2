@@ -32,6 +32,26 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-public class Folder {
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
+public class Folder extends Binder {
+    private Boolean library;
+   	private Boolean mirrored;
+
+    public Boolean getLibrary() {
+        return library;
+    }
+
+    public void setLibrary(Boolean library) {
+        this.library = library;
+    }
+
+    public Boolean getMirrored() {
+        return mirrored;
+    }
+
+    public void setMirrored(Boolean mirrored) {
+        this.mirrored = mirrored;
+    }
 }

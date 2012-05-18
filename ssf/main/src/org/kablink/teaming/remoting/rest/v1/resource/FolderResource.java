@@ -46,56 +46,39 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import com.sun.jersey.api.core.InjectParam;
+import com.sun.jersey.spi.resource.Singleton;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
+import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.Folder;
 import org.kablink.teaming.rest.v1.model.FolderEntry;
 import org.kablink.teaming.rest.v1.model.Subscription;
 import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.rest.v1.model.Team;
+import org.kablink.util.api.ApiErrorCode;
 
-@Path("/folder/{id}")
+@Path("/v1/folder/{id}")
+@Singleton
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class FolderResource extends AbstractResource {
+    @InjectParam("binderModule") private BinderModule binderModule;
 
 	// Read folder (meaning returning folder properties, not including children list)
 	@GET
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public Folder getFolder(@PathParam("id") long id) {
-		return null;
-	}
-	
-	// Update folder (meaning updating folder properties)
-	@PUT
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response putFolder(@PathParam("id") long id) {
-		return null;
-	}
-	
-	// Delete folder (meaning not only the properties but also the folder itself and everything in it)
-	@DELETE
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void deleteFolder(@PathParam("id") long id) {
-		
-	}
-	
-	// Add folder entry in the folder
-	@POST
-	@Path("add_folder_entry")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response addFolderEntry(@PathParam("id") long id) {
-		return null;
-	}
-	
-	// Add subfolder
-	@POST
-	@Path("add_subfolder")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response addSubFolder(@PathParam("id") long id) {
-		return null;
+        org.kablink.teaming.domain.Binder binder = binderModule.getBinder(id);
+        if (binder instanceof org.kablink.teaming.domain.Folder) {
+            return (Folder) ResourceUtil.buildBinder(binder);
+        }
+        throw new NotFoundException(ApiErrorCode.FOLDER_NOT_FOUND, "NOT FOUND");
 	}
 	
 	// Read sub-folders
 	@GET
 	@Path("subfolders")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public List<Folder> getSubFolders(@PathParam("id") long id) {
 		return null;
 	}
@@ -103,106 +86,9 @@ public class FolderResource extends AbstractResource {
 	// Read entries
 	@GET
 	@Path("entries")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public List<FolderEntry> getFolderEntries(@PathParam("id") long id) {
 		return null;
-	}
-
-	// Copy folder
-	@POST
-	@Path("dest_binder/{dest_binder_id}/copy")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void copyFolder(@PathParam("id") long id,
-			@PathParam("dest_binder_id") long destBinderId) {
-	}
-
-	// Move folder
-	@POST
-	@Path("dest_binder/{dest_binder_id}/move")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void moveFolder(@PathParam("id") long id,
-			@PathParam("dest_binder_id") long destBinderId) {
-	}
-
-	// Index folder
-	@PUT
-	@Path("index")
-	public void indexFolder(@PathParam("id") long id,
-			@QueryParam("include_entries") Boolean includeEntries) {
-		
-	}
-
-	// Index folder recursively. This always include entries.
-	@PUT
-	@Path("index_recursively")
-	public void indexRecursively(@PathParam("id") long id) {
-		
-	}
-
-	// Set whether to inherit ACL (role membership) or not
-	@PUT
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Path("acl")
-	public void setInheritAcl(@QueryParam("inherit") boolean inheritRoleMembership) {
-		
-	}
-
-	// Set owner
-	@PUT
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Path("owner/{id}")
-	public void setOwner(@PathParam("id") long userId) {
-		
-	}
-
-	// Test if the user has the right to execute the specified operation on the folder
-	@GET
-	@Path("test_operation/{operation_name}")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public boolean testOperation(@PathParam("id") long id,
-			@PathParam("operation_name") String operationName) {
-		return false;
-	}
-	
-	// Read a list of tags associated with the folder
-	@GET
-	@Path("tags")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<Tag> getTags(@PathParam("id") long id) {
-		return null;
-	}
-	
-	// Add a tag to the folder
-	@POST
-	@Path("add_tag")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response addTag(@PathParam("id") long id) {
-		return null;
-	}
-
-	// Get subscription for the folder
-	@GET
-	@Path("subscription")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Subscription getSubscription(@PathParam("id") long id) {
-		return null;
-	}
-	
-	@GET
-	@Path("team")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Team getTeam(@PathParam("id") long id,
-			@QueryParam("explode_groups") Boolean explodeGroups,
-			@QueryParam("offset") Integer offset,
-			@QueryParam("maxcount") Integer maxCount) {
-		return null;
-	}
-	
-	@PUT
-	@Path("team")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void setTeam(@PathParam("id") long id) {
-		
 	}
 
 }

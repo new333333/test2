@@ -32,6 +32,12 @@
  */
 package org.kablink.teaming.remoting.rest.v1.resource;
 
+import com.sun.jersey.api.core.InjectParam;
+import com.sun.jersey.spi.resource.Singleton;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
+import org.kablink.teaming.rest.v1.model.Binder;
+
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -43,23 +49,18 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.kablink.teaming.remoting.ws.model.Binder;
-import org.kablink.teaming.remoting.ws.model.FunctionMembership;
-import org.kablink.teaming.remoting.ws.model.TeamMemberCollection;
-import org.kablink.teaming.rest.v1.model.Subscription;
-import org.kablink.teaming.rest.v1.model.Tag;
+@Path("/v1/binder/{id}")
+@Singleton
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+public class BinderResource extends AbstractResource {
 
-public class BinderResource {
+    @InjectParam("binderModule") private BinderModule binderModule;
 
-	// Set definitions (LATER)
-	//public void binder_setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations);
-
-
-	
-	
-	
-	// Set function membership (LATER)
-	// public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships);
-
+    @GET
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public Binder getBinder(@PathParam("id") long id) {
+        org.kablink.teaming.domain.Binder binder = binderModule.getBinder(id);
+        return ResourceUtil.buildBinder(binder);
+    }
 
 }
