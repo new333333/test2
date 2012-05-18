@@ -38,21 +38,27 @@ import java.util.List;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Class used to bundle a binder ID and entry ID to uniquely identify
- * an entry with its binder for GWT RPC requests.
+ * Class used to bundle a binder ID, entity ID and an entity type to
+ * uniquely identify an entity with its containing binder for GWT RPC
+ * requests.
  *  
- * @author drfoster
+ * @author drfoster@novell.com
  */
-public class EntryId implements IsSerializable {
-	private Long m_binderId;	//
-	private Long m_entryId;		//
+public class EntityId implements IsSerializable {
+	private Long	m_binderId;		//
+	private Long	m_entityId;		//
+	private String	m_entityType;	// folderEntry, folder, workspace, ...
+	
+	public final static String FOLDER		= "folder";
+	public final static String FOLDER_ENTRY	= "folderEntry";
+	public final static String WORKSPACE	= "workspace";
 
 	/**
 	 * Constructor method.
 	 * 
 	 * No parameters as per GWT serialization requirements.
 	 */
-	public EntryId() {
+	public EntityId() {
 		// Initialize the super class.
 		super();
 	}
@@ -61,15 +67,17 @@ public class EntryId implements IsSerializable {
 	 * Constructor method.
 	 * 
 	 * @param binderId
-	 * @param entryId
+	 * @param entityId
+	 * @param entityType
 	 */
-	public EntryId(Long binderId, Long entryId) {
+	public EntityId(Long binderId, Long entityId, String entityType) {
 		// Initialize this object...
 		this();
 
 		// ...and store the parameters.
-		setBinderId(binderId);
-		setEntryId( entryId );
+		setBinderId(  binderId  );
+		setEntityId(  entityId  );
+		setEntityType(entityType);
 	}
 
 	/**
@@ -77,48 +85,84 @@ public class EntryId implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public Long getBinderId() {return m_binderId;}
-	public Long getEntryId()  {return m_entryId; }
+	public Long   getBinderId()   {return m_binderId;  }
+	public Long   getEntityId()   {return m_entityId;  }
+	public String getEntityType() {return m_entityType;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setBinderId(Long binderId) {m_binderId = binderId;}
-	public void setEntryId( Long entryId)  {m_entryId  = entryId; }
+	public void setBinderId(  Long   binderId)   {m_binderId   = binderId;  }
+	public void setEntityId(  Long   entityId)   {m_entityId   = entityId;  }
+	public void setEntityType(String entityType) {m_entityType = entityType;}
+	
+	/**
+	 * Returns true if a List<EntityId> contains a binder references
+	 * and false otherwise.
+	 * 
+	 * @param entityIds
+	 * 
+	 * @return
+	 */
+	public static boolean areBindersInEntityList(List<EntityId> entityIds) {
+		if (null != entityIds) {
+			for (EntityId entityId:  entityIds) {
+				if (entityId.isBinder()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	
 	/**
 	 * Convert a folder ID and List<Long> of entry IDs into a
-	 * List<EntryId>'s.
+	 * List<EntityId>'s.
 	 * 
 	 * @param folderId
-	 * @param entryIds
+	 * @param entityIds
+	 * @param entityType
 	 */
-	public static List<EntryId> buildEntryIdListFromLongs(Long folderId, List<Long> entryIds) {
-		List<EntryId> reply = new ArrayList<EntryId>();
-		for (Long entryId:  entryIds) {
-			reply.add(new EntryId(folderId, entryId));
+	public static List<EntityId> buildEntityIdListFromLongs(Long folderId, List<Long> entityIds, String entityType) {
+		List<EntityId> reply = new ArrayList<EntityId>();
+		for (Long entityId:  entityIds) {
+			reply.add(new EntityId(folderId, entityId, entityType));
 		}
 		return reply;
 	}
 
 	/**
-	 * Returns a string that can be used to pass a List<EntryId> as a
-	 * parameter on a URL.
-	 * 
-	 * @param entryIds
+	 * Returns true if this row refers to a binder and false otherwise.
 	 * 
 	 * @return
 	 */
-	public static String getMultipleEntryIdsParam(List<EntryId> entryIds) {
+	public boolean isBinder() {
+		String entityType = m_entityType;
+		if (null == entityType) entityType = "";
+		return (entityType.equals(EntityId.FOLDER) || entityType.equals(EntityId.WORKSPACE));
+	}
+
+	/**
+	 * Returns a string that can be used to pass a List<EntityId> as a
+	 * parameter on a URL.
+	 * 
+	 * @param entityIds
+	 * 
+	 * @return
+	 */
+	public static String getMultipleEntityIdsParam(List<EntityId> entityIds) {
 		StringBuffer reply = new StringBuffer("");
 		boolean firstId  = true;
-		for (EntryId entryId:  entryIds) {
+		for (EntityId entityId:  entityIds) {
 			if (firstId)
 			     firstId = false;
 			else reply.append(",");
-			reply.append(String.valueOf(entryId.getBinderId()) + ":" + String.valueOf(entryId.getEntryId()));
+			reply.append(
+				String.valueOf(entityId.getBinderId()) + ":" +
+				String.valueOf(entityId.getEntityId()) + ":" +
+				               entityId.getEntityType());
 		}
 		return reply.toString();
 	}

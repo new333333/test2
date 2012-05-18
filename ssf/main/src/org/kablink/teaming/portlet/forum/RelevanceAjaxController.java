@@ -52,6 +52,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
@@ -66,7 +67,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractControllerRetry;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
-import org.kablink.teaming.web.util.MiscUtil.IdPair;
+import org.kablink.teaming.web.util.MiscUtil.IdTriple;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.RelevanceDashboardHelper;
@@ -198,29 +199,32 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 			});
 		
 		// If we don't have multiple entry IDs to worry about...
-		List<IdPair> meIds = MiscUtil.getIdPairsFromMultipleEntryIds(
+		List<IdTriple> meIds = MiscUtil.getIdTriplesFromMultipleEntryIds(
 			PortletRequestUtils.getStringParameter(
 				request,
-				WebKeys.URL_MULTIPLE_ENTRY_IDS,
+				WebKeys.URL_MULTIPLE_ENTITY_IDS,
 				""));
 		if (null == meIds) {
-			meIds = new ArrayList<IdPair>();
+			meIds = new ArrayList<IdTriple>();
 		}
 		if (meIds.isEmpty()) {
 			// ...simply use the single IDs we were given.
-			meIds.add(new IdPair(binderId, entryId));
+			meIds.add(new IdTriple(binderId, entryId, EntityType.folderEntry.name()));
 		}
 		
-		// Scan the entry IDs...
+		// Scan the entity IDs...
 		List<String> noAccessPrincipals = null;
 		List combinedErrors = new ArrayList();
-		for (IdPair meId:  meIds) {
+		for (IdTriple meId:  meIds) {
 			// ...accessing the next one as a DefinableEntity.
 			binderId = meId.m_binderId;
 			entryId  = meId.m_entryId;
+			String entityType = meId.m_entityType;
 			DefinableEntity entity;
 			if (entryId == null) {
 				entity = getBinderModule().getBinder(binderId);
+			} else if (!(entityType.equals(EntityType.folderEntry.name()))) {
+				entity = getBinderModule().getBinder(entryId);
 			} else {
 				entity = getFolderModule().getEntry(binderId, entryId);
 			}
@@ -390,8 +394,8 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.ENTRY_ID, entryId.toString());
 		}
-		String multipleEntryIds = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MULTIPLE_ENTRY_IDS, "");
-		model.put(WebKeys.URL_MULTIPLE_ENTRY_IDS, multipleEntryIds);
+		String multipleEntityIds = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MULTIPLE_ENTITY_IDS, "");
+		model.put(WebKeys.URL_MULTIPLE_ENTITY_IDS, multipleEntityIds);
 		RelevanceDashboardHelper.setupMyTeamsBeans(bs, model);
 		return new ModelAndView("forum/relevance_dashboard/share_this_item", model);
 	}

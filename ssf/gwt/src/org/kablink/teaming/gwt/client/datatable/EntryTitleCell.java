@@ -92,9 +92,9 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	 */
 	private void invokeViewEntry(final EntryTitleInfo eti, Element pElement) {
 		// Is this entry a folder?
-		if (eti.getEntityType().equals("folder")) {
+		if (eti.getEntityId().isBinder()) {
 			// Yes!  Can we get a permalink to it?
-			final String folderId = String.valueOf(eti.getEntryId());
+			final String folderId = String.valueOf(eti.getEntityId().getEntityId());
 			GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd(folderId);
 			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
@@ -122,14 +122,14 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		
 		else {
 			// No this entry isn't a folder!  It must be an entry.
-			GetViewFolderEntryUrlCmd cmd = new GetViewFolderEntryUrlCmd(null, eti.getEntryId());
+			GetViewFolderEntryUrlCmd cmd = new GetViewFolderEntryUrlCmd(null, eti.getEntityId().getEntityId());
 			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
 						GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
-						String.valueOf(eti.getEntryId()));
+						String.valueOf(eti.getEntityId().getEntityId()));
 				}
 				
 				@Override
@@ -146,7 +146,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	 * Marks the entry as having been seen.
 	 */
 	private void markEntrySeen(final EntryTitleInfo eti, final Element pElement) {
-		final Long entryId = eti.getEntryId();
+		final Long entryId = eti.getEntityId().getEntityId();
 		SetSeenCmd cmd = new SetSeenCmd(entryId);
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
@@ -184,7 +184,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	 */
 	private void markEntryUISeenNow(final EntryTitleInfo eti) {
 		// Hide the marker to set the entry unseen...
-		String entryIdS = String.valueOf(eti.getEntryId());
+		String entryIdS = String.valueOf(eti.getEntityId().getEntityId());
 		Element e = DOM.getElementById(VibeDataTableConstants.CELL_WIDGET_ENTRY_UNSEEN_IMAGE + "_" + entryIdS);
 		if (null != e) {
 			e.getStyle().setDisplay(Display.NONE);
@@ -313,9 +313,9 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		}
 
 		// If we're dealing with an item in the trash...
-		String entryIdS = String.valueOf(eti.getEntryId());
+		String entryIdS = String.valueOf(eti.getEntityId().getEntityId());
 		VibeFlowPanel fp = new VibeFlowPanel();
-		String entityType   = eti.getEntityType();
+		String entityType   = eti.getEntityId().getEntityType();
 		boolean entryUnseen = (!(eti.getSeen()));
 		boolean isTrash     = eti.getTrash();
 		boolean isEntry     = entityType.equals("folderEntry");

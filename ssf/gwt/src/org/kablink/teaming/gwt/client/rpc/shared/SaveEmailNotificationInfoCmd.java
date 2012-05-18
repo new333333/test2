@@ -35,7 +35,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 
 /**
  * This class holds all of the information necessary to execute the
@@ -45,7 +45,7 @@ import org.kablink.teaming.gwt.client.util.EntryId;
  */
 public class SaveEmailNotificationInfoCmd extends VibeRpcCmd {
 	private boolean			m_overridePresets;		// true -> These settings override the presets.  false -> They don't.
-	private List<EntryId>	m_entryIds;				// List of EntryId's when running in entry subscription mode.
+	private List<EntityId>	m_entryIds;				// List of EntityId's when running in entry subscription mode.
 	private List<String>	m_digestAddressTypes;	// List of email address types used for digests,                                 if any.
 	private List<String>	m_msgAddressTypes;		// List of email address types used for individual messages,                     if any.
 	private List<String>	m_msgNoAttAddressTypes;	// List of email address types used for individual messages without attachments, if any.
@@ -84,7 +84,7 @@ public class SaveEmailNotificationInfoCmd extends VibeRpcCmd {
 	 * 
 	 * @param entryIds
 	 */
-	public SaveEmailNotificationInfoCmd(List<EntryId> entryIds) {
+	public SaveEmailNotificationInfoCmd(List<EntityId> entryIds) {
 		// Initialize the super class and save the parameter.
 		this();
 		setEntryIds(entryIds);
@@ -96,7 +96,7 @@ public class SaveEmailNotificationInfoCmd extends VibeRpcCmd {
 	 * @return
 	 */
 	public boolean       getOverridePresets()      {return m_overridePresets;     }
-	public List<EntryId> getEntryIds()             {return m_entryIds;            }
+	public List<EntityId> getEntryIds()             {return m_entryIds;            }
 	public List<String>  getDigestAddressTypes()   {return m_digestAddressTypes;  }
 	public List<String>  getMsgAddressTypes()      {return m_msgAddressTypes;     }
 	public List<String>  getMsgNoAttAddressTypes() {return m_msgNoAttAddressTypes;}
@@ -108,7 +108,7 @@ public class SaveEmailNotificationInfoCmd extends VibeRpcCmd {
 	 * 
 	 * @param binderId
 	 */
-	public void setEntryIds(            List<EntryId> entryIds)             {m_entryIds             = entryIds;            }
+	public void setEntryIds(            List<EntityId> entryIds)             {m_entryIds             = entryIds;            }
 	public void setOverridePresets(     boolean       overridePresets)      {m_overridePresets      = overridePresets;     }
 	public void setDigestAddressTypes(  List<String>  digestAddressTypes)   {m_digestAddressTypes   = digestAddressTypes;  }
 	public void setMsgAddressTypes(     List<String>  msgAddressTypes)      {m_msgAddressTypes      = msgAddressTypes;     }

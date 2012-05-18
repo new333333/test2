@@ -96,7 +96,7 @@ import org.kablink.teaming.gwt.client.tasklisting.TaskDispositionDlg.TaskDisposi
 import org.kablink.teaming.gwt.client.tasklisting.TaskDueDateDlg;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -738,7 +738,7 @@ public class TaskTable extends Composite
 	public void applyTaskDueDate(TaskEvent newDueDate, Long selectedTaskId) {
 		final TaskListItem selectedTask = TaskListItemHelper.findTask(m_taskBundle, selectedTaskId);
 		final TaskInfo ti = selectedTask.getTask();
-		final Long entryId = ti.getTaskId().getEntryId();
+		final Long entryId = ti.getTaskId().getEntityId();
 		SaveTaskDueDateCmd cmd = new SaveTaskDueDateCmd(ti.getTaskId(), newDueDate);
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
@@ -1032,7 +1032,7 @@ public class TaskTable extends Composite
 			Element aE = a.getElement();
 			aE.appendChild(imgElement);
 			aE.appendChild(GwtClientHelper.buildImage(m_images.menu()).getElement());
-			aE.setAttribute(ATTR_ENTRY_ID, String.valueOf(task.getTask().getTaskId().getEntryId()));
+			aE.setAttribute(ATTR_ENTRY_ID, String.valueOf(task.getTask().getTaskId().getEntityId()));
 			aE.setAttribute(ATTR_OPTION_MENU, taskMenu.getTaskEventEnum().toString());
 			EventWrapper.addHandler(a, m_taskOptionClickHandler);
 			reply = a;
@@ -1301,16 +1301,16 @@ public class TaskTable extends Composite
 	}
 	
 	/*
-	 * Returns a List<EntryId> of the IDs of the tasks in the TaskTable
+	 * Returns a List<EntityId> of the IDs of the tasks in the TaskTable
 	 * that are currently checked.
 	 */
-	private List<EntryId> getTaskIdsChecked() {
-		List<EntryId> reply = new ArrayList<EntryId>();;
+	private List<EntityId> getTaskIdsChecked() {
+		List<EntityId> reply = new ArrayList<EntityId>();;
 		getTaskIdsCheckedImpl(m_taskBundle.getTasks(), reply);
 		return reply;
 	}
 	
-	private void getTaskIdsCheckedImpl(List<TaskListItem> tasks, List<EntryId> checkedTaskIds) {
+	private void getTaskIdsCheckedImpl(List<TaskListItem> tasks, List<EntityId> checkedTaskIds) {
 		for (TaskListItem task:  tasks) {
 			if (getUIData(task).isTaskCBChecked()) {
 				checkedTaskIds.add(task.getTask().getTaskId());
@@ -1320,13 +1320,13 @@ public class TaskTable extends Composite
 	}
 
 	/*
-	 * Returns a List<Long> of just the entry IDs from a List<EntryId>.
+	 * Returns a List<Long> of just the entry IDs from a List<EntityId>.
 	 */
 	private List<Long> getTaskIdsCheckedAsListLong() {
-		List<EntryId> entryIds = getTaskIdsChecked();
+		List<EntityId> entryIds = getTaskIdsChecked();
 		List<Long> reply = new ArrayList<Long>();
-		for (EntryId entryId:  entryIds) {
-			reply.add(entryId.getEntryId());
+		for (EntityId entryId:  entryIds) {
+			reply.add(entryId.getEntityId());
 		}
 		return reply;
 	}
@@ -1747,7 +1747,7 @@ public class TaskTable extends Composite
 						@Override
 						public void accepted() {
 							// Yes!  Delete the selected tasks.
-							final List<EntryId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
+							final List<EntityId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
 							DeletePurgeEntriesHelper.deleteSelectedTasksAsync(taskIds, new DeletePurgeEntriesCallback() {
 								@Override
 								public void operationCanceled() {
@@ -1783,9 +1783,9 @@ public class TaskTable extends Composite
 	 */
 	private void handleTaskExpander(final TaskListItem task) {
 		// Extract the IDs we need to perform the expand/collapse.
-		EntryId taskId   = task.getTask().getTaskId();
+		EntityId taskId   = task.getTask().getTaskId();
 		Long    binderId = taskId.getBinderId();
-		Long    entryId  = taskId.getEntryId();
+		Long    entryId  = taskId.getEntityId();
 
 		// Are we collapsing the subtasks?
 		if (task.getExpandSubtasks()) {
@@ -1995,7 +1995,7 @@ public class TaskTable extends Composite
 	 */
 	private void handleTaskNewTask(TaskListItem task, String newTaskDisposition) {
 		jsSetNewTaskDisposition(newTaskDisposition);
-		jsSetSelectedTaskId(String.valueOf(task.getTask().getTaskId().getEntryId()));
+		jsSetSelectedTaskId(String.valueOf(task.getTask().getTaskId().getEntityId()));
 		String newTaskUrl = m_taskBundle.getNewTaskUrl();
 		if (m_taskListing.isEmbeddedInJSP()) {
 			GwtClientHelper.jsLaunchToolbarPopupUrl(newTaskUrl);
@@ -2185,9 +2185,9 @@ public class TaskTable extends Composite
 		final Long binderId;
 		final Long entryId;
 		if ((null != taskList) && (1 == taskList.size())) {
-			EntryId taskId = taskList.get(0).getTask().getTaskId();
+			EntityId taskId = taskList.get(0).getTask().getTaskId();
 		    binderId       = taskId.getBinderId();
-		    entryId        = taskId.getEntryId();
+		    entryId        = taskId.getEntityId();
 		}
 		else {
 			binderId = m_taskBundle.getBinderId();
@@ -2206,7 +2206,7 @@ public class TaskTable extends Composite
 	 * Does what's necessary after a task is deleted or purged to put
 	 * the change into affect.
 	 */
-	private void handleTaskPostRemoveAsync(final List<EntryId> taskIds) {
+	private void handleTaskPostRemoveAsync(final List<EntityId> taskIds) {
 		ScheduledCommand postRemover = new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -2216,12 +2216,12 @@ public class TaskTable extends Composite
 		Scheduler.get().scheduleDeferred(postRemover);
 	}
 	
-	private void handleTaskPostRemoveNow(List<EntryId> taskIds) {
+	private void handleTaskPostRemoveNow(List<EntityId> taskIds) {
 		// Scan the tasks that were removed...
-		for (EntryId taskId:  taskIds) {
+		for (EntityId taskId:  taskIds) {
 			// ...scan the task's subtasks...
-			List<TaskListItem> taskList = TaskListItemHelper.findTaskList(m_taskBundle, taskId.getEntryId());
-			TaskListItem       task     = TaskListItemHelper.findTask(    taskList,     taskId.getEntryId());
+			List<TaskListItem> taskList = TaskListItemHelper.findTaskList(m_taskBundle, taskId.getEntityId());
+			TaskListItem       task     = TaskListItemHelper.findTask(    taskList,     taskId.getEntityId());
 			int taskIndex = taskList.indexOf(task);
 			List<TaskListItem> subtaskList = task.getSubtasks();
 			int tasks = subtaskList.size();
@@ -2291,7 +2291,7 @@ public class TaskTable extends Composite
 						@Override
 						public void accepted() {
 							// Yes!  Purge the selected tasks.
-							final List<EntryId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
+							final List<EntityId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
 							DeletePurgeEntriesHelper.purgeSelectedTasksAsync(taskIds, new DeletePurgeEntriesCallback() {
 								@Override
 								public void operationCanceled() {
@@ -2368,7 +2368,7 @@ public class TaskTable extends Composite
 	 * Called when the user clicks the seen sun burst on a task.
 	 */
 	private void handleTaskSeen(final TaskListItem task) {
-		final Long entryId = task.getTask().getTaskId().getEntryId();
+		final Long entryId = task.getTask().getTaskId().getEntityId();
 		SetSeenCmd cmd = new SetSeenCmd(entryId);
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
@@ -2434,7 +2434,7 @@ public class TaskTable extends Composite
 		}
 		
 		// Save the new task percent done value.
-		final Long entryId = task.getTask().getTaskId().getEntryId();
+		final Long entryId = task.getTask().getTaskId().getEntityId();
 		SaveTaskCompletedCmd cmd = new SaveTaskCompletedCmd(task.getTask().getTaskId().getBinderId(), entryId, percentDone);
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
@@ -2520,7 +2520,7 @@ public class TaskTable extends Composite
 		}
 
 		// Save the new task priority.
-		final Long entryId = task.getTask().getTaskId().getEntryId();
+		final Long entryId = task.getTask().getTaskId().getEntityId();
 		SaveTaskPriorityCmd cmd = new SaveTaskPriorityCmd(task.getTask().getTaskId().getBinderId(), entryId, priority);
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
@@ -2572,8 +2572,8 @@ public class TaskTable extends Composite
 
 		// Collect the TaskId's of the affected tasks.
 		TaskInfo            ti              = task.getTask();
-		final EntryId       taskId          = ti.getTaskId();
-		final List<EntryId> affectedTaskIds = new ArrayList<EntryId>();
+		final EntityId       taskId          = ti.getTaskId();
+		final List<EntityId> affectedTaskIds = new ArrayList<EntityId>();
 		for (TaskListItem affectedTask:  affectedTasks) {
 			affectedTaskIds.add(affectedTask.getTask().getTaskId());
 		}
@@ -2586,7 +2586,7 @@ public class TaskTable extends Composite
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
 					GwtTeaming.getMessages().rpcFailure_SaveTaskStatus(),
-					String.valueOf(taskId.getEntryId()));
+					String.valueOf(taskId.getEntityId()));
 			}
 
 			@Override
@@ -2680,14 +2680,14 @@ public class TaskTable extends Composite
 		final TaskInfo ti = task.getTask();
 		GetViewFolderEntryUrlCmd cmd;
 		
-		cmd = new GetViewFolderEntryUrlCmd( ti.getTaskId().getBinderId(), ti.getTaskId().getEntryId() );
+		cmd = new GetViewFolderEntryUrlCmd( ti.getTaskId().getBinderId(), ti.getTaskId().getEntityId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
-					String.valueOf(ti.getTaskId().getEntryId()));
+					String.valueOf(ti.getTaskId().getEntityId()));
 			}
 			
 			@Override
@@ -3407,7 +3407,7 @@ public class TaskTable extends Composite
 			Element aE = a.getElement();
 			aE.appendChild(il.getElement());
 			aE.appendChild(GwtClientHelper.buildImage(m_images.menu()).getElement());
-			aE.setAttribute(ATTR_ENTRY_ID, String.valueOf(ti.getTaskId().getEntryId()));
+			aE.setAttribute(ATTR_ENTRY_ID, String.valueOf(ti.getTaskId().getEntityId()));
 			EventWrapper.addHandler(a, m_dueDateClickHandler);
 			dueDateWidget = a;
 		}
@@ -3433,7 +3433,7 @@ public class TaskTable extends Composite
 			
 			// Yes, we have a location string for this task!  If the
 			// task is from the folder that we're displaying...
-			EntryId tid = ti.getTaskId();
+			EntityId tid = ti.getTaskId();
 			InlineLabel locationLabel = new InlineLabel(location);
 			Widget locationWidget;
 			if (tid.getBinderId().equals(m_taskBundle.getBinderId())) {
@@ -3446,7 +3446,7 @@ public class TaskTable extends Composite
 				// ...otherwise, render a link for it.
 				Anchor locationAnchor = buildAnchor();
 				locationAnchor.addStyleName("gwtTaskList_task-locationAnchor");
-				locationAnchor.getElement().setAttribute(ATTR_ENTRY_ID, String.valueOf(tid.getEntryId()));
+				locationAnchor.getElement().setAttribute(ATTR_ENTRY_ID, String.valueOf(tid.getEntityId()));
 				EventWrapper.addHandler(locationAnchor, m_taskLocationClickHandler);
 				locationLabel.setTitle(m_messages.taskAltLocationGotoThisFolder());
 				Element taElement = locationAnchor.getElement();
@@ -3474,7 +3474,7 @@ public class TaskTable extends Composite
 			// Yes!  Add an Anchor for it...
 			Anchor menuAnchor = buildAnchor("gwtTaskList_newTaskMenu_Link");
 			Element menuElement = menuAnchor.getElement();
-			String entryId = String.valueOf(task.getTask().getTaskId().getEntryId());
+			String entryId = String.valueOf(task.getTask().getTaskId().getEntityId());
 			menuElement.setAttribute(ATTR_ENTRY_ID, entryId);
 			EventWrapper.addHandler(menuAnchor, m_newTaskClickHandler);
 			Image newTaskMenuImg = GwtClientHelper.buildImage(m_images.newTaskButton1());
@@ -3537,7 +3537,7 @@ public class TaskTable extends Composite
 				ta.setText(orderHTML);
 				ta.addStyleName("gwtTaskList_task-orderAnchor");
 				Element taE = ta.getElement();
-				String entryId = String.valueOf(task.getTask().getTaskId().getEntryId());
+				String entryId = String.valueOf(task.getTask().getTaskId().getEntityId());
 				taE.setAttribute(ATTR_ENTRY_ID, entryId);
 				EventWrapper.addHandler(ta, m_taskOrderClickHandler);
 				fp.add(ta);
@@ -3591,7 +3591,7 @@ public class TaskTable extends Composite
 		// Extract the UIData from this task.
 		UIData uid = getUIData(task);
 
-		String entryId = String.valueOf(task.getTask().getTaskId().getEntryId());
+		String entryId = String.valueOf(task.getTask().getTaskId().getEntityId());
 		CheckBox cb = new CheckBox();
 		uid.setTaskSelectorCB(cb);
 		cb.getElement().setId("gwtTaskList_taskSelect_" + entryId);
@@ -3674,7 +3674,7 @@ public class TaskTable extends Composite
 		markerPanel.addStyleName(nameMarkerStyles);
 		Widget marker;
 		TaskInfo ti = task.getTask();
-		String entryId = String.valueOf(ti.getTaskId().getEntryId());
+		String entryId = String.valueOf(ti.getTaskId().getEntityId());
 		if (ti.isTaskClosed()) {
 			taStyles        += " gwtTaskList_task-strike_Inner";
 			namePanelStyles += " gwtTaskList_task-strike_Outer";
@@ -4374,7 +4374,7 @@ public class TaskTable extends Composite
 		int tasksCheckedCount = tasksChecked.size();
 		String selectedTaskId;
 		if (1 == tasksCheckedCount)
-		     selectedTaskId = String.valueOf(tasksChecked.get(0).getTask().getTaskId().getEntryId());
+		     selectedTaskId = String.valueOf(tasksChecked.get(0).getTask().getTaskId().getEntityId());
 		else selectedTaskId = "";
 		jsSetSelectedTaskId(selectedTaskId);
 		

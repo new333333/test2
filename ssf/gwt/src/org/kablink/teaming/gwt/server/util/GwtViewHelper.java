@@ -117,7 +117,7 @@ import org.kablink.teaming.gwt.client.util.CalendarHours;
 import org.kablink.teaming.gwt.client.util.CalendarShow;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
@@ -451,30 +451,36 @@ public class GwtViewHelper {
 	 * @param bs
 	 * @param request
 	 * @param defId
-	 * @param entryIds
+	 * @param entityIds
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData changeEntryTypes(AllModulesInjected bs, HttpServletRequest request, String defId, List<EntryId> entryIds) throws GwtTeamingException {
+	public static ErrorListRpcResponseData changeEntryTypes(AllModulesInjected bs, HttpServletRequest request, String defId, List<EntityId> entityIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 			
 			// Were we given the IDs of any entries to change their
 			// entry types and the entry type to change them to?
-			if ((null != entryIds) && (!(entryIds.isEmpty())) && MiscUtil.hasString(defId)) {
+			if ((null != entityIds) && (!(entityIds.isEmpty())) && MiscUtil.hasString(defId)) {
 				// Yes!  Scan them.
 				FolderModule fm = bs.getFolderModule();
-				for (EntryId entryId:  entryIds) {
+				for (EntityId entityId:  entityIds) {
+					// If this entity is a binder...
+					if (entityId.isBinder()) {
+						// ...skip it.
+						continue;
+					}
+					
 					try {
 						// Can we change this entry's entry type?
-						fm.changeEntryType(entryId.getEntryId(), defId);
+						fm.changeEntryType(entityId.getEntityId(), defId);
 					}
 					catch (Exception e) {
 						// No!  Add an error  to the error list.
-						String entryTitle = GwtServerHelper.getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
+						String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 						String messageKey;
 						if (e instanceof AccessControlException) messageKey = "changeEntryTypeError.AccssControlException";
 						else                                     messageKey = "changeEntryTypeError.OtherException";
@@ -505,29 +511,31 @@ public class GwtViewHelper {
 	 * @param bs
 	 * @param request
 	 * @param targetFolderId
-	 * @param entryIds
+	 * @param entityIds
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData copyEntries(AllModulesInjected bs, HttpServletRequest request, Long targetFolderId, List<EntryId> entryIds) throws GwtTeamingException {
+	public static ErrorListRpcResponseData copyEntries(AllModulesInjected bs, HttpServletRequest request, Long targetFolderId, List<EntityId> entityIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// Were we given the IDs of any entries to copy?
-			if ((null != entryIds) && (!(entryIds.isEmpty()))) {
+			if ((null != entityIds) && (!(entityIds.isEmpty()))) {
 				// Yes!  Scan them.
-				for (EntryId entryId:  entryIds) {
+				for (EntityId entityId:  entityIds) {
 					try {
-						// Can we copy this entry?
-						bs.getFolderModule().copyEntry(entryId.getBinderId(), entryId.getEntryId(), targetFolderId, null, null);
+						// Can we copy this entity?
+						if (entityId.isBinder())
+						     bs.getBinderModule().copyBinder(                        entityId.getEntityId(), targetFolderId, true, null);
+						else bs.getFolderModule().copyEntry( entityId.getBinderId(), entityId.getEntityId(), targetFolderId, null, null);
 					}
 
 					catch (Exception e) {
 						// No!  Add an error  to the error list.
-						String entryTitle = GwtServerHelper.getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
+						String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 						String messageKey;
 						if (e instanceof AccessControlException) messageKey = "copyEntryError.AccssControlException";
 						else                                     messageKey = "copyEntryError.OtherException";
@@ -1112,11 +1120,11 @@ public class GwtViewHelper {
 			return;
 		}
 
-		// Collect the entry IDs of the rows from the List<FolderRow>.
+		// Collect the entity IDs of the rows from the List<FolderRow>.
 		List<Long> entryIds  = new ArrayList<Long>();
 		List<Long> binderIds = new ArrayList<Long>();
 		for (FolderRow fr:  frList) {
-			Long id = fr.getEntryId().getEntryId();
+			Long id = fr.getEntityId().getEntityId();
 			if (fr.isBinder())
 			     binderIds.add(id);
 			else entryIds.add( id);
@@ -1141,7 +1149,7 @@ public class GwtViewHelper {
 				}
 				
 				// Do we have the FolderEntry for this row?
-				FolderEntry entry = entryMap.get(fr.getEntryId().getEntryId());
+				FolderEntry entry = entryMap.get(fr.getEntityId().getEntityId());
 				if (null != entry) {
 					// Yes!  Store the user's rights to that
 					// FolderEntry.
@@ -1169,7 +1177,7 @@ public class GwtViewHelper {
 				}
 
 				// Do we have the Binder for this row?
-				Binder binder = binderMap.get(fr.getEntryId().getEntryId());
+				Binder binder = binderMap.get(fr.getEntityId().getEntityId());
 				if (null != binder) {
 					// Yes!  Store its icon name...
 					fr.setBinderIconName(binder.getIconName());
@@ -1586,14 +1594,14 @@ public class GwtViewHelper {
 	 *
 	 * @param bs
 	 * @param request
-	 * @param entryId
+	 * @param entityId
 	 * @param binderIds
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static EntryTypesRpcResponseData getEntryTypes(AllModulesInjected bs, HttpServletRequest request, EntryId entryId, List<Long> binderIds) throws GwtTeamingException {
+	public static EntryTypesRpcResponseData getEntryTypes(AllModulesInjected bs, HttpServletRequest request, EntityId entityId, List<Long> binderIds) throws GwtTeamingException {
 		try {
 			// Allocate an EntryTypesRpcResponseData to track the entry
 			// types for the requested binders.
@@ -1617,9 +1625,9 @@ public class GwtViewHelper {
 			}
 
 			// Was the entry type of a specific entry requested?
-			if (null != entryId) {
+			if (null != entityId) {
 				// Yes!  Get its definition ID...
-				FolderEntry fe = bs.getFolderModule().getEntry(entryId.getBinderId(), entryId.getEntryId());
+				FolderEntry fe = bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
 				String feDefId = fe.getEntryDefId();
 				
 				// ...can the definition IDs we found...
@@ -2123,7 +2131,7 @@ public class GwtViewHelper {
 			if      (isTrash)          searchResults = TrashHelper.getTrashEntries(bs, binder, options);
 			else if (isProfilesRootWS) searchResults = bs.getProfileModule().getUsers(         options);
 			else {
-//!				options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
+				options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
 				searchResults = bs.getFolderModule().getEntries(folderId, options);
 			}
 			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
@@ -2150,10 +2158,16 @@ public class GwtViewHelper {
 				String  entityType     = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD);
 				boolean isEntityFolder = EntityType.folder.name().equals(entityType);
 				
+				String locationBinderId = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDER_ID_FIELD);
+				if (!(MiscUtil.hasString(locationBinderId))) {
+					locationBinderId = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDERS_PARENT_ID_FIELD);
+				}
+				
 				// Have we already process this entry's ID?
-				String entryIdS = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
-				Long   entryId  = Long.parseLong(entryIdS);
-				if (isEntryIInList(entryId, folderRows, entityType)) {
+				String   docIdS   = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
+				Long     docId    = Long.parseLong(docIdS);
+				EntityId entityId = new EntityId(Long.parseLong(locationBinderId), docId, entityType);
+				if (isEntityInList(entityId, folderRows)) {
 					// Yes!  Skip it now.  Note that we may have
 					// duplicates because of pinning.
 					continue;
@@ -2163,12 +2177,8 @@ public class GwtViewHelper {
 				collectContributorIds(entryMap, contributorIds);
 				
 				// Create a FolderRow for each entry.
-				String locationBinderId = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDER_ID_FIELD);
-				if (!(MiscUtil.hasString(locationBinderId))) {
-					locationBinderId = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDERS_PARENT_ID_FIELD);
-				}
-				FolderRow fr = new FolderRow(new EntryId(Long.parseLong(locationBinderId), entryId), entityType, folderColumns);
-				if ((!(isEntityFolder)) && pinnedEntryIds.contains(entryId)) {
+				FolderRow fr = new FolderRow(entityId, folderColumns);
+				if ((!(isEntityFolder)) && pinnedEntryIds.contains(entityId.getEntityId())) {
 					fr.setPinned(true);
 				}
 				
@@ -2294,9 +2304,8 @@ public class GwtViewHelper {
 									EntryTitleInfo eti = new EntryTitleInfo();
 									eti.setSeen(isEntityFolder ? true : seenMap.checkIfSeen(entryMap));
 									eti.setTrash(isTrash);
-									eti.setEntityType(entityType);
 									eti.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
-									eti.setEntryId(entryId);
+									eti.setEntityId(entityId);
 									eti.setDescription(getEntryDescriptionFromMap(request, entryMap));
 									fr.setColumnValue(fc, eti);
 								}
@@ -2330,11 +2339,9 @@ public class GwtViewHelper {
 										// ViewFileInfo for it.
 										ViewFileInfo vfi = new ViewFileInfo();
 										vfi.setFileId(     value);
-										vfi.setBinderId(   Long.parseLong(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDER_ID_FIELD)));
-										vfi.setEntryId(    entryId);
-										vfi.setEntityType( GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD));
+										vfi.setEntityId(   entityId);
 										vfi.setFileTime(   GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILE_TIME_FIELD));
-										vfi.setViewFileUrl(GwtServerHelper.getViewFileUrl(       request,  vfi));
+										vfi.setViewFileUrl(GwtServerHelper.getViewFileUrl(request, vfi));
 										fr.setColumnValue(fc, vfi);
 									}
 								}
@@ -2805,7 +2812,7 @@ public class GwtViewHelper {
 	}
 	
 	/*
-	 * Returns a List<Long> of the entry ID's of the entries that are
+	 * Returns a List<Long> of the entity ID's of the entries that are
 	 * pinned in the given folder. 
 	 */
 	@SuppressWarnings("unchecked")
@@ -3336,14 +3343,17 @@ public class GwtViewHelper {
 	}
 
 	/*
-	 * Returns true if a FolderRow with the specified entry ID is in
+	 * Returns true if a FolderRow with the specified entity ID is in
 	 * a List<FolderRow> or false otherwise.
 	 */
-	private static boolean isEntryIInList(Long entryId, List<FolderRow> folderRows, String entityType) {
+	private static boolean isEntityInList(EntityId entityId, List<FolderRow> folderRows) {
 		// Scan the List<FolderRow>.
 		for (FolderRow fr:  folderRows) {
-			// Do entry entry ID's and entity type's match?
-			if ((fr.getEntryId().equals(entryId) && fr.getEntityType().equals(entityType))) {
+			// Do entry entity ID's and entity type's match?
+			EntityId rowEID = fr.getEntityId();
+			if (rowEID.getBinderId().equals(  entityId.getBinderId()) &&
+				rowEID.getEntityId().equals(  entityId.getEntityId()) &&
+				rowEID.getEntityType().equals(entityId.getEntityType())) {
 				// Yes!  Then we found it.  Return true.
 				return true;
 			}
@@ -3359,29 +3369,35 @@ public class GwtViewHelper {
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param entryIds
+	 * @param entityIds
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData lockEntries(AllModulesInjected bs, HttpServletRequest request, List<EntryId> entryIds) throws GwtTeamingException {
+	public static ErrorListRpcResponseData lockEntries(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// Were we given the IDs of any entries to lock?
-			if ((null != entryIds) && (!(entryIds.isEmpty()))) {
+			if ((null != entityIds) && (!(entityIds.isEmpty()))) {
 				// Yes!  Scan them.
-				for (EntryId entryId:  entryIds) {
+				for (EntityId entityId:  entityIds) {
+					// If the entity is a binder...
+					if (entityId.isBinder()) {
+						// ...skip it.
+						continue;
+					}
+					
 					try {
 						// Can we lock this entry?
-						bs.getFolderModule().reserveEntry(entryId.getBinderId(), entryId.getEntryId());
+						bs.getFolderModule().reserveEntry(entityId.getBinderId(), entityId.getEntityId());
 					}
 
 					catch (Exception e) {
 						// No!  Add an error  to the error list.
-						String entryTitle = GwtServerHelper.getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
+						String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 						String messageKey;
 						if      (e instanceof AccessControlException)           messageKey = "lockEntryError.AccssControlException";
 						else if (e instanceof ReservedByAnotherUserException)   messageKey = "lockEntryError.ReservedByAnotherUserException";
@@ -3414,29 +3430,31 @@ public class GwtViewHelper {
 	 * @param bs
 	 * @param request
 	 * @param targetFolderId
-	 * @param entryIds
+	 * @param entityIds
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData moveEntries(AllModulesInjected bs, HttpServletRequest request, Long targetFolderId, List<EntryId> entryIds) throws GwtTeamingException {
+	public static ErrorListRpcResponseData moveEntries(AllModulesInjected bs, HttpServletRequest request, Long targetFolderId, List<EntityId> entityIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// Were we given the IDs of any entries to move?
-			if ((null != entryIds) && (!(entryIds.isEmpty()))) {
+			if ((null != entityIds) && (!(entityIds.isEmpty()))) {
 				// Yes!  Scan them.
-				for (EntryId entryId:  entryIds) {
+				for (EntityId entityId:  entityIds) {
 					try {
-						// Can we move this entry?
-						bs.getFolderModule().moveEntry(entryId.getBinderId(), entryId.getEntryId(), targetFolderId, null, null);
+						// Can we move this entity?
+						if (entityId.isBinder())
+						     bs.getBinderModule().moveBinder(                       entityId.getEntityId(), targetFolderId,       null);
+						else bs.getFolderModule().moveEntry(entityId.getBinderId(), entityId.getEntityId(), targetFolderId, null, null);
 					}
 
 					catch (Exception e) {
 						// No!  Add an error  to the error list.
-						String entryTitle = GwtServerHelper.getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
+						String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 						String messageKey;
 						if (e instanceof AccessControlException) messageKey = "moveEntryError.AccssControlException";
 						else                                     messageKey = "moveEntryError.OtherException";
@@ -3630,29 +3648,35 @@ public class GwtViewHelper {
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param entryIds
+	 * @param entityIds
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData unlockEntries(AllModulesInjected bs, HttpServletRequest request, List<EntryId> entryIds) throws GwtTeamingException {
+	public static ErrorListRpcResponseData unlockEntries(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// Were we given the IDs of any entries to unlock?
-			if ((null != entryIds) && (!(entryIds.isEmpty()))) {
+			if ((null != entityIds) && (!(entityIds.isEmpty()))) {
 				// Yes!  Scan them.
-				for (EntryId entryId:  entryIds) {
+				for (EntityId entityId:  entityIds) {
+					// If this entity is a binder...
+					if (entityId.isBinder()) {
+						// ...skip it.
+						continue;
+					}
+					
 					try {
 						// Can we unlock this entry?
-						bs.getFolderModule().unreserveEntry(entryId.getBinderId(), entryId.getEntryId());
+						bs.getFolderModule().unreserveEntry(entityId.getBinderId(), entityId.getEntityId());
 					}
 
 					catch (Exception e) {
 						// No!  Add an error  to the error list.
-						String entryTitle = GwtServerHelper.getEntryTitle(bs, entryId.getBinderId(), entryId.getEntryId());
+						String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 						String messageKey;
 						if      (e instanceof AccessControlException)         messageKey = "unlockEntryError.AccssControlException";
 						else if (e instanceof ReservedByAnotherUserException) messageKey = "unlockEntryError.ReservedByAnotherUserException";
@@ -4019,8 +4043,8 @@ public class GwtViewHelper {
 			// Log the exception...
 			m_logger.debug("GwtViewHelper.setValueForCustomColumn( EXCEPTION ):  ", ex);
 			m_logger.debug("...Element:  " + fc.getColumnEleName());
-			m_logger.debug("...Column:  " + fc.getColumnName());
-			m_logger.debug("...Row:  "    + fr.getEntryId());
+			m_logger.debug("...Column:  "  + fc.getColumnName());
+			m_logger.debug("...Row:  "     + fr.getEntityId().getEntityId());
 
 			// ...and store something for the column to display.
 			fr.setColumnValue(

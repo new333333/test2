@@ -46,7 +46,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PurgeFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PurgeTasksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ProgressDlg;
 import org.kablink.teaming.gwt.client.util.ProgressDlg.ProgressCallback;
@@ -66,8 +66,8 @@ public class DeletePurgeEntriesHelper {
 	private boolean							m_operationCanceled;	// Set true if the operation gets canceled.
 	private DeletePurgeEntriesCallback		m_dpeCallback;			// Callback interface used to inform callers about what happens.
 	private DeletePurgeFolderEntriesCmdBase	m_dpeCmd;				// The delete/purge folder entries command to perform.
-	private int								m_totalEntryCount;		// Count of items in m_sourceEntryIds.
-	private List<EntryId>					m_sourceEntryIds;		// The entry IDs being operated on.
+	private int								m_totalEntityCount;		// Count of items in m_sourceEntityIds.
+	private List<EntityId>					m_sourceEntityIds;		// The entity IDs being operated on.
 	private List<String>					m_collectedErrors;		// Collects errors that occur while processing an operation on the list of entries.
 	private Map<StringIds, String>			m_strMap;				// Initialized with a map of the strings used to run the operation.
 	
@@ -98,16 +98,16 @@ public class DeletePurgeEntriesHelper {
 	 * Private to inhibit the class from being instantiated from
 	 * outside of it.
 	 */
-	private DeletePurgeEntriesHelper(List<EntryId> sourceEntryIds, Map<StringIds, String> strMap, DeletePurgeFolderEntriesCmdBase dpeCmd, DeletePurgeEntriesCallback dpeCallback) {
+	private DeletePurgeEntriesHelper(List<EntityId> sourceEntityIds, Map<StringIds, String> strMap, DeletePurgeFolderEntriesCmdBase dpeCmd, DeletePurgeEntriesCallback dpeCallback) {
 		// Initialize the super class...
 		super();
 		
 		// ...store the parameters...
-		m_sourceEntryIds  = sourceEntryIds;
-		m_totalEntryCount = m_sourceEntryIds.size();
-		m_strMap          = strMap;
-		m_dpeCmd          = dpeCmd;
-		m_dpeCallback     = dpeCallback;
+		m_sourceEntityIds  = sourceEntityIds;
+		m_totalEntityCount = m_sourceEntityIds.size();
+		m_strMap           = strMap;
+		m_dpeCmd           = dpeCmd;
+		m_dpeCallback      = dpeCallback;
 		
 		// ...and initialize everything else.
 		m_collectedErrors = new ArrayList<String>();
@@ -116,10 +116,10 @@ public class DeletePurgeEntriesHelper {
 	/**
 	 * Asynchronously deletes the selected entries.
 	 * 
-	 * @param sourceEntryIds
+	 * @param sourceEntityIds
 	 * @param dpeCallback
 	 */
-	public static void deleteSelectedEntriesAsync(final List<EntryId> sourceEntryIds, final DeletePurgeEntriesCallback dpeCallback) {
+	public static void deleteSelectedEntriesAsync(final List<EntityId> sourceEntityIds, final DeletePurgeEntriesCallback dpeCallback) {
 		ProgressDlg.createAsync(new ProgressDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -138,9 +138,9 @@ public class DeletePurgeEntriesHelper {
 
 				// ...create the helper...
 				DeletePurgeEntriesHelper dpeHelper = new DeletePurgeEntriesHelper(
-					sourceEntryIds,
+					sourceEntityIds,
 					strMap,
-					new DeleteFolderEntriesCmd(sourceEntryIds),
+					new DeleteFolderEntriesCmd(sourceEntityIds),
 					dpeCallback);
 				
 				// ...and perform the delete.
@@ -155,7 +155,7 @@ public class DeletePurgeEntriesHelper {
 	 * @param sourceTaskIds
 	 * @param dpeCallback
 	 */
-	public static void deleteSelectedTasksAsync(final List<EntryId> sourceTaskIds, final DeletePurgeEntriesCallback dpeCallback) {
+	public static void deleteSelectedTasksAsync(final List<EntityId> sourceTaskIds, final DeletePurgeEntriesCallback dpeCallback) {
 		ProgressDlg.createAsync(new ProgressDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -247,29 +247,29 @@ public class DeletePurgeEntriesHelper {
 		}
 		
 		// Do we need to process things in chunks?
-		boolean cmdIsChunkList = (m_dpeCmd.getEntryIds() != m_sourceEntryIds);
-		if (cmdIsChunkList || ((null != pDlg) && ProgressDlg.needsChunking(m_totalEntryCount))) {
+		boolean cmdIsChunkList = (m_dpeCmd.getEntityIds() != m_sourceEntityIds);
+		if (cmdIsChunkList || ((null != pDlg) && ProgressDlg.needsChunking(m_totalEntityCount))) {
 			// Yes!  Make sure we're using a separate list for the
 			// chunks vs. the source list that we're operating on.
-			List<EntryId> chunkList;
+			List<EntityId> chunkList;
 			if (cmdIsChunkList) {
-				chunkList = m_dpeCmd.getEntryIds();
+				chunkList = m_dpeCmd.getEntityIds();
 				chunkList.clear();
 			}
 			else {
-				chunkList = new ArrayList<EntryId>();
-				m_dpeCmd.setEntryIds(chunkList);
+				chunkList = new ArrayList<EntityId>();
+				m_dpeCmd.setEntityIds(chunkList);
 			}
 			
-			// Scan the entry IDs to be operated on...
+			// Scan the entity IDs to be operated on...
 			while (!m_operationCanceled) {
-				// ...moving each entry ID from the source list into
+				// ...moving each entity ID from the source list into
 				// ...the chunk list.
-				chunkList.add(m_sourceEntryIds.get(0));
-				m_sourceEntryIds.remove(0);
+				chunkList.add(m_sourceEntityIds.get(0));
+				m_sourceEntityIds.remove(0);
 				
 				// Was that the entry to be operated on?
-				if (m_sourceEntryIds.isEmpty()) {
+				if (m_sourceEntityIds.isEmpty()) {
 					// Yes!  Break out of the loop and let the chunk
 					// get handled as if we weren't sending by chunks.
 					break;
@@ -287,10 +287,10 @@ public class DeletePurgeEntriesHelper {
 		}
 
 		// Do we have any entries to be operated on?
-		if ((!m_operationCanceled) && (!(m_dpeCmd.getEntryIds().isEmpty()))) {
+		if ((!m_operationCanceled) && (!(m_dpeCmd.getEntityIds().isEmpty()))) {
 			// Yes!  If we're doing things without using chunks...
 			SpinnerPopup busy;
-			if (m_dpeCmd.getEntryIds() == m_sourceEntryIds) {
+			if (m_dpeCmd.getEntityIds() == m_sourceEntityIds) {
 				// ...create a busy spinner for the operation...
 				busy = new SpinnerPopup();
 				busy.center();
@@ -329,7 +329,7 @@ public class DeletePurgeEntriesHelper {
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
 				if ((null != busy) && (!moreRemaining)) busy.hide();
-				if  (null != pDlg)                      pDlg.updateProgress(m_dpeCmd.getEntryIds().size());
+				if  (null != pDlg)                      pDlg.updateProgress(m_dpeCmd.getEntityIds().size());
 				
 				// Did everything we ask get done?
 				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
@@ -365,10 +365,10 @@ public class DeletePurgeEntriesHelper {
 	/**
 	 * Asynchronously purges the selected entries.
 	 * 
-	 * @param sourceEntryIds
+	 * @param sourceEntityIds
 	 * @param dpeCallback
 	 */
-	public static void purgeSelectedEntriesAsync(final List<EntryId> sourceEntryIds, final DeletePurgeEntriesCallback dpeCallback) {
+	public static void purgeSelectedEntriesAsync(final List<EntityId> sourceEntityIds, final DeletePurgeEntriesCallback dpeCallback) {
 		ProgressDlg.createAsync(new ProgressDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -387,9 +387,9 @@ public class DeletePurgeEntriesHelper {
 
 				// ...create the helper...
 				DeletePurgeEntriesHelper dpeHelper = new DeletePurgeEntriesHelper(
-					sourceEntryIds,
+					sourceEntityIds,
 					strMap,
-					new PurgeFolderEntriesCmd(sourceEntryIds),
+					new PurgeFolderEntriesCmd(sourceEntityIds),
 					dpeCallback);
 				
 				// ...and perform the purge...
@@ -404,7 +404,7 @@ public class DeletePurgeEntriesHelper {
 	 * @param sourceTaskIds
 	 * @param dpeCallback
 	 */
-	public static void purgeSelectedTasksAsync(final List<EntryId> sourceTaskIds, final DeletePurgeEntriesCallback dpeCallback) {
+	public static void purgeSelectedTasksAsync(final List<EntityId> sourceTaskIds, final DeletePurgeEntriesCallback dpeCallback) {
 		ProgressDlg.createAsync(new ProgressDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -439,7 +439,7 @@ public class DeletePurgeEntriesHelper {
 	 */
 	private void runOpNow(final ProgressDlg pDlg) {
 		// Perform the operation...
-		if (ProgressDlg.needsChunking(m_totalEntryCount)) {
+		if (ProgressDlg.needsChunking(m_totalEntityCount)) {
 			// ...chunking as necessary.
 			ProgressDlg.initAndShow(pDlg, new ProgressCallback() {
 				@Override
@@ -464,7 +464,7 @@ public class DeletePurgeEntriesHelper {
 			true,	// true -> Operation can be canceled.
 			m_strMap.get(StringIds.PROGRESS_CAPTION),
 			m_strMap.get(StringIds.PROGRESS_MESSAGE),
-			m_totalEntryCount);
+			m_totalEntityCount);
 		}
 		
 		else {

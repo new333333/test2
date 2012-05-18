@@ -35,7 +35,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 
 /**
  * This class holds all of the information necessary to execute the
@@ -59,7 +59,7 @@ public class PurgeTasksCmd extends DeletePurgeFolderEntriesCmdBase {
 	 * 
 	 * @param entryIds
 	 */
-	public PurgeTasksCmd(List<EntryId> entryIds) {
+	public PurgeTasksCmd(List<EntityId> entryIds) {
 		super(entryIds);		
 	}
 	
@@ -68,7 +68,7 @@ public class PurgeTasksCmd extends DeletePurgeFolderEntriesCmdBase {
 	 * 
 	 * @param entryId
 	 */
-	public PurgeTasksCmd(EntryId entryId) {
+	public PurgeTasksCmd(EntityId entryId) {
 		super(entryId);		
 	}
 	

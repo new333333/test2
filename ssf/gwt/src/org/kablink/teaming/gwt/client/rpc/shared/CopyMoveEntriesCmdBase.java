@@ -35,7 +35,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 
 /**
  * Base class that holds all of the information necessary to execute
@@ -44,7 +44,7 @@ import org.kablink.teaming.gwt.client.util.EntryId;
  * @author drfoster@novell.com
  */
 public abstract class CopyMoveEntriesCmdBase extends VibeRpcCmd {
-	private List<EntryId>	m_entryIds;			//
+	private List<EntityId>	m_entityIds;		//
 	private Long			m_targetFolderId;	//
 	
 	/**
@@ -61,14 +61,14 @@ public abstract class CopyMoveEntriesCmdBase extends VibeRpcCmd {
 	 * Constructor method.
 	 * 
 	 * @param targetFolderId
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public CopyMoveEntriesCmdBase(final Long targetFolderId, final List<EntryId> entryIds) {
+	public CopyMoveEntriesCmdBase(final Long targetFolderId, final List<EntityId> entityIds) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
-		setEntryIds(      entryIds      );
+		setEntityIds(     entityIds     );
 		setTargetFolderId(targetFolderId);
 	}
 	
@@ -77,16 +77,16 @@ public abstract class CopyMoveEntriesCmdBase extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	final public List<EntryId> getEntryIds()       {return m_entryIds;      }
-	final public Long          getTargetFolderId() {return m_targetFolderId;}
+	final public List<EntityId> getEntityIds()      {return m_entityIds;     }
+	final public Long           getTargetFolderId() {return m_targetFolderId;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	final public void setEntryIds(      List<EntryId> entryIds)       {m_entryIds       = entryIds;      }
-	final public void setTargetFolderId(Long          targetFolderId) {m_targetFolderId = targetFolderId;}
+	final public void setEntityIds(     List<EntityId> entityIds)      {m_entityIds      = entityIds;     }
+	final public void setTargetFolderId(Long           targetFolderId) {m_targetFolderId = targetFolderId;}
 	
 	/**
 	 * Returns the command's enumeration value.

@@ -50,7 +50,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EmailNotificationInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EmailNotificationInfoRpcResponseData.EmailAddressInfo;
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -196,8 +196,8 @@ public class GwtEmailHelper {
 	public static BooleanRpcResponseData saveEmailNotificationInfo(
 		AllModulesInjected	bs,						//
 		HttpServletRequest	request,				//
-		Long				binderId,				// null -> Entry subscription mode.
-		List<EntryId>		entryIds,				// null -> Binder email notification mode.
+		Long				binderId,				// null -> Entity subscription mode.
+		List<EntityId>		entityIds,				// null -> Binder email notification mode.
 		boolean				overridePresets,		//
 		List<String>		digestAddressTypes,		//
 		List<String>		msgAddressTypes,		//
@@ -247,43 +247,56 @@ public class GwtEmailHelper {
 				// No, we aren't saving email notification settings on
 				// a binder!  We must be saving them for entries.  Scan
 				// the entries.
+				BinderModule bm = bs.getBinderModule();
 				FolderModule fm = bs.getFolderModule();
-				for (EntryId entryId:  entryIds) {
-					// Access the entry and subscriptions we're working
-					// on.
-					Long         bId   = entryId.getBinderId();
-					Long         eId   = entryId.getEntryId();
-					FolderEntry  fe    = fm.getEntry(bId, eId);
-					Subscription feSub = fm.getSubscription(fe);
+				for (EntityId entityId:  entityIds) {
+					// Access the entity and subscriptions we're
+					// working on.
+					boolean			isBinder = entityId.isBinder();
+					Long			bId      = entityId.getBinderId();
+					Long			eId      = entityId.getEntityId();
+					Binder			binder;
+					FolderEntry		fe;
+					Subscription	sub;
+					if (entityId.isBinder()) {
+						binder = bm.getBinder(      eId   );
+						sub    = bm.getSubscription(binder);
+					}
+					else {
+						fe  = fm.getEntry(bId,   eId);
+						sub = fm.getSubscription(fe );
+					}
 					
 					// Scan the email addresses we need to save for
-					// this entry.
-					Map<Integer, String[]> entryStyles = new HashMap<Integer, String[]>();
+					// this entity.
+					Map<Integer, String[]> entityStyles = new HashMap<Integer, String[]>();
 					for (Integer key:  saveStyles.keySet()) {
 						// Is this email address saying don't change
 						// what's currently there for this user on this
-						// entry?
+						// entity?
 						String[] emas = saveStyles.get(key);
 						if ((null != emas) && (1 == emas.length) && ("*no-change*".equals(emas[0]))) {
 							// Yes!  If the user has anything there,
 							// use it, otherwise, don't use anything.
-							if ((null != feSub) && feSub.hasStyle(key))
-								 entryStyles.put(key, feSub.getEmailTypes(key));
-							else entryStyles.put(key, new String[0]);
+							if ((null != sub) && sub.hasStyle(key))
+								 entityStyles.put(key, sub.getEmailTypes(key));
+							else entityStyles.put(key, new String[0]);
 						}
 						else {
 							// No, this isn't an email address saying
 							// don't change what's currently there!
 							// Use what we were given.
-							entryStyles.put(key, emas);
+							entityStyles.put(key, emas);
 						}
 							
 					}
 					
-					// When we get here, entryStyles contains the
-					// appropriate settings for this entry for the
+					// When we get here, entityStyles contains the
+					// appropriate settings for this entity for the
 					// user.  Save it.
-					fm.setSubscription(bId, eId, entryStyles);
+					if (isBinder)
+					     bm.setSubscription(     eId, entityStyles);
+					else fm.setSubscription(bId, eId, entityStyles);
 				}
 			}
 			

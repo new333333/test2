@@ -114,7 +114,7 @@ public class TaskLinkage implements IsSerializable {
 		}
 		
 		/**
-		 * Returns the entry ID from this TaskLink.
+		 * Returns the entity ID from this TaskLink.
 		 * 
 		 * @return
 		 */
@@ -141,7 +141,7 @@ public class TaskLinkage implements IsSerializable {
 		}
 		
 		/**
-		 * Stores an entry ID of a task in this TaskLink.
+		 * Stores an entity ID of a task in this TaskLink.
 		 * 
 		 * @param entryId
 		 */

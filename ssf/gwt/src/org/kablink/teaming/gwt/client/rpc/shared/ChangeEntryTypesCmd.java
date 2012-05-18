@@ -34,7 +34,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.util.EntryId;
+import org.kablink.teaming.gwt.client.util.EntityId;
 
 /**
  * This class holds all of the information necessary to execute the
@@ -43,7 +43,7 @@ import org.kablink.teaming.gwt.client.util.EntryId;
  * @author drfoster@novell.com
  */
 public class ChangeEntryTypesCmd extends VibeRpcCmd {
-	private List<EntryId>	m_entryIds;	//
+	private List<EntityId>	m_entryIds;	//
 	private String			m_defId;	//
 	
 	/**
@@ -62,7 +62,7 @@ public class ChangeEntryTypesCmd extends VibeRpcCmd {
 	 * @param defId
 	 * @param entryIds
 	 */
-	public ChangeEntryTypesCmd(String defId, List<EntryId> entryIds) {
+	public ChangeEntryTypesCmd(String defId, List<EntityId> entryIds) {
 		// Initialize this object...
 		this();
 		
@@ -77,7 +77,7 @@ public class ChangeEntryTypesCmd extends VibeRpcCmd {
 	 * @return
 	 */
 	public String        getDefId()    {return m_defId;   }
-	public List<EntryId> getEntryIds() {return m_entryIds;}
+	public List<EntityId> getEntryIds() {return m_entryIds;}
 	
 	/**
 	 * Set'er methods.
@@ -85,7 +85,7 @@ public class ChangeEntryTypesCmd extends VibeRpcCmd {
 	 * @param
 	 */
 	public void setDefId(   String        defId)    {m_defId    = defId;   }
-	public void setEntryIds(List<EntryId> entryIds) {m_entryIds = entryIds;}
+	public void setEntryIds(List<EntityId> entryIds) {m_entryIds = entryIds;}
 
 	/**
 	 * Returns the command's enumeration value.

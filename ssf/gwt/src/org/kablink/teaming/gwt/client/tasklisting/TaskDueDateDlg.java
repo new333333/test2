@@ -356,7 +356,7 @@ public class TaskDueDateDlg extends DlgBox
 					// Put the new due date information into affect.
 					m_taskTable.applyTaskDueDate(
 						event,
-						m_selectedTask.getTaskId().getEntryId());
+						m_selectedTask.getTaskId().getEntityId());
 				}
 			};
 			Scheduler.get().scheduleDeferred(doApply);

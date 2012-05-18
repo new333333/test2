@@ -188,7 +188,7 @@ public class TaskListItemHelper {
 		for (TaskListItem taskScan:  tb.getTasks()) {
 			// ...adding a new TaskLink to the linkage...
 			TaskLink newTaskLink = new TaskLink();
-			newTaskLink.setEntryId(taskScan.getTask().getTaskId().getEntryId());
+			newTaskLink.setEntryId(taskScan.getTask().getTaskId().getEntityId());
 			reply.appendTask(newTaskLink);
 
 			// ...and updating its subtasks.
@@ -205,7 +205,7 @@ public class TaskListItemHelper {
 		for (TaskListItem taskScan:  task.getSubtasks()) {
 			// ...adding a new TaskLink to the subtask linkage...
 			TaskLink newTaskLink = new TaskLink();
-			newTaskLink.setEntryId(taskScan.getTask().getTaskId().getEntryId());
+			newTaskLink.setEntryId(taskScan.getTask().getTaskId().getEntityId());
 			taskLink.appendSubtask(newTaskLink);
 			
 			// ...and updating its subtasks.
@@ -412,7 +412,7 @@ public class TaskListItemHelper {
 	 */
 	public static TaskListItem findSubtask(TaskListItem task, Long entryId) {
 		for (TaskListItem taskScan:  task.getSubtasks()) {
-			if (entryId.equals(taskScan.getTask().getTaskId().getEntryId())) {
+			if (entryId.equals(taskScan.getTask().getTaskId().getEntityId())) {
 				return taskScan;
 			}
 			
@@ -436,7 +436,7 @@ public class TaskListItemHelper {
 	 */
 	public static List<TaskListItem> findSubtaskList(TaskListItem task, Long entryId) {
 		for (TaskListItem taskScan:  task.getSubtasks()) {
-			if (entryId.equals(taskScan.getTask().getTaskId().getEntryId())) {
+			if (entryId.equals(taskScan.getTask().getTaskId().getEntityId())) {
 				return task.getSubtasks();
 			}
 			
@@ -461,7 +461,7 @@ public class TaskListItemHelper {
 		// Scan the TaskListItem's in this TaskListItemHelper.
 		for (TaskListItem taskScan:  taskList) {
 			// Is this the TaskListItem in question?
-			if (taskScan.getTask().getTaskId().getEntryId().equals(entryId)) {
+			if (taskScan.getTask().getTaskId().getEntityId().equals(entryId)) {
 				// Yes!  Return it.
 				return taskScan;
 			}
@@ -498,7 +498,7 @@ public class TaskListItemHelper {
 		// Scan the TaskListItem's in this TaskListItemHelper.
 		for (TaskListItem taskScan:  tb.getTasks()) {
 			// Is this the TaskListItem in question?
-			if (taskScan.getTask().getTaskId().getEntryId().equals(entryId)) {
+			if (taskScan.getTask().getTaskId().getEntityId().equals(entryId)) {
 				// Yes!  Return it.
 				return tb.getTasks();
 			}
@@ -518,7 +518,7 @@ public class TaskListItemHelper {
 	
 	public static List<TaskListItem> findTaskList(TaskBundle tb, TaskListItem task) {
 		// Always use the initial form of the method.
-		return findTaskList(tb, task.getTask().getTaskId().getEntryId());
+		return findTaskList(tb, task.getTask().getTaskId().getEntityId());
 	}
 
 	/**
@@ -669,17 +669,17 @@ public class TaskListItemHelper {
 	 * 
 	 * @return
 	 */
-	public static List<EntryId> getTaskIdsFromList(List<TaskListItem> tliList, boolean includeSubtasks) {
-		List<EntryId> reply = new ArrayList<EntryId>();		
+	public static List<EntityId> getTaskIdsFromList(List<TaskListItem> tliList, boolean includeSubtasks) {
+		List<EntityId> reply = new ArrayList<EntityId>();		
 		getTaskIdsFromListImpl(tliList, reply, includeSubtasks);		
 		return reply;
 	}
 	
-	public static List<EntryId> getTaskIdsFromList(List<TaskListItem> tliList) {
+	public static List<EntityId> getTaskIdsFromList(List<TaskListItem> tliList) {
 		return getTaskIdsFromList(tliList, true);
 	}
 	
-	private static void getTaskIdsFromListImpl(List<TaskListItem> tliList, List<EntryId> taskIds, boolean includeSubtasks) {
+	private static void getTaskIdsFromListImpl(List<TaskListItem> tliList, List<EntityId> taskIds, boolean includeSubtasks) {
 		for (TaskListItem task:  tliList) {
 			taskIds.add(task.getTask().getTaskId());
 			if (includeSubtasks) {
