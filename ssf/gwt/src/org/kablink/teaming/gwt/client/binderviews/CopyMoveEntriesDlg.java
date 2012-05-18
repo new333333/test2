@@ -72,6 +72,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -638,13 +639,33 @@ public class CopyMoveEntriesDlg extends DlgBox
 		VibeFlowPanel fp = new VibeFlowPanel();
 		fp.addStyleName("vibe-cmeDlg_CaptionPanel");
 		m_vp.add(fp);
-		InlineLabel il = new InlineLabel(m_strMap.get(StringIds.CAPTION1));
-		il.addStyleName("vibe-cmeDlg_CaptionLeft");
+		Label l = new Label(m_strMap.get(StringIds.CAPTION1));
+		l.addStyleName("vibe-cmeDlg_Caption1");
+		l.setWordWrap(false);
+		fp.add(l);
+		l = new Label(m_strMap.get(StringIds.CAPTION2));
+		l.addStyleName("vibe-cmeDlg_Caption2");
+		l.setWordWrap(false);
+		fp.add(l);
+
+		// ...add information about any recent destination...
+		fp = new VibeFlowPanel();
+		fp.addStyleName("vibe-cmeDlg_DestPanel");
+		m_vp.add(fp);
+		InlineLabel il = new InlineLabel(m_strMap.get(StringIds.CURRENT_DEST));
+		il.addStyleName("vibe-cmeDlg_DestLabel");
 		il.setWordWrap(false);
 		fp.add(il);
-		il = new InlineLabel(m_strMap.get(StringIds.CAPTION2));
-		il.addStyleName("vibe-cmeDlg_CaptionRight");
+		boolean hasRecentDest = (null != m_recentDest);
+		il = new InlineLabel(hasRecentDest ? m_recentDest.getFolderName() : m_strMap.get(StringIds.CURRENT_DEST_NONE));
+		il.addStyleName(hasRecentDest ? "vibe-cmeDlg_Dest" : "vibe-cmeDlg_DestNone");
 		il.setWordWrap(false);
+		if (null != m_recentDest) {
+			String pName = m_recentDest.getParentBinderName();
+			if (GwtClientHelper.hasString(pName)) {
+				il.setTitle(pName);
+			}
+		}
 		fp.add(il);
 
 		// ...add the search widget...
@@ -656,25 +677,6 @@ public class CopyMoveEntriesDlg extends DlgBox
 		il.setWordWrap(false);
 		fp.add(il);
 		fp.add(m_findControl);
-
-		// ...add information about any recent destination...
-		fp = new VibeFlowPanel();
-		fp.addStyleName("vibe-cmeDlg_DestPanel");
-		m_vp.add(fp);
-		il = new InlineLabel(m_strMap.get(StringIds.CURRENT_DEST));
-		il.addStyleName("vibe-cmeDlg_DestLabel");
-		il.setWordWrap(false);
-		fp.add(il);
-		il = new InlineLabel((null != m_recentDest) ? m_recentDest.getFolderName() : m_strMap.get(StringIds.CURRENT_DEST_NONE));
-		il.addStyleName("vibe-cmeDlg_Dest");
-		il.setWordWrap(false);
-		if (null != m_recentDest) {
-			String pName = m_recentDest.getParentBinderName();
-			if (GwtClientHelper.hasString(pName)) {
-				il.setTitle(pName);
-			}
-		}
-		fp.add(il);
 
 		// ...add a progress bar...
 		m_progressBar = new ProgressBar(0, m_entityIds.size());
@@ -747,7 +749,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 		// ...initialize any other data members...
 		m_selectedDest = null;
 		initDlgStrings();
-		setCaption(m_strMap.get(StringIds.HEADER));
+		setCaption(GwtClientHelper.patchMessage(m_strMap.get(StringIds.HEADER), String.valueOf(m_entityIds.size())));
 
 		// ...and populate the dialog.
 		loadPart1Async();

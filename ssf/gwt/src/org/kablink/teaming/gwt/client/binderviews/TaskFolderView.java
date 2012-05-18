@@ -37,8 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
-import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
@@ -86,10 +84,6 @@ public class TaskFolderView extends FolderViewBase
 		TeamingEvents.INVOKE_DROPBOX,
 	};
 	
-	// The following define the indexes into a VibeVerticalPanel of the
-	// additional panel that makes up a task folder view.
-	private final static int TASK_GRAPHS_PANEL_INDEX	= FILTER_PANEL_INDEX;	// Inserted before the filter panel.
-
 	/**
 	 * Constructor method.
 	 * 
@@ -116,6 +110,28 @@ public class TaskFolderView extends FolderViewBase
 	@Override
 	public void constructView() {
 		loadPart1Async();
+	}
+
+	/**
+	 * Returns true for panels that are to be included and false
+	 * otherwise.
+	 * 
+	 * Overrides the FolderViewBase.includePanel() method.
+	 * 
+	 * @param folderPanel
+	 * 
+	 * @return
+	 */
+	@Override
+	protected boolean includePanel(FolderPanels folderPanel) {
+		// In the task folder view, we show the task graphs panel
+		// beyond the default.
+		boolean reply;
+		switch (folderPanel) {
+		case TASK_GRAPHS:  reply = true;                             break;
+		default:           reply = super.includePanel(folderPanel);  break;
+		}
+		return reply;
 	}
 
 	/*
@@ -188,7 +204,7 @@ public class TaskFolderView extends FolderViewBase
 	}
 
 	/*
-	 * Asynchronously loads the TaskGraphsPanel.
+	 * Asynchronously initializes the TaskGraphsPanel.
 	 */
 	private void loadPart3Async() {
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
@@ -201,22 +217,18 @@ public class TaskFolderView extends FolderViewBase
 	}
 	
 	/*
-	 * Synchronously loads the TaskGraphsPanel.
+	 * Synchronously initializes the TaskGraphsPanel.
 	 */
 	private void loadPart3Now() {
-		TaskGraphsPanel.createAsync(this, m_taskListing, m_taskDisplayData.getExpandGraphs(), getFolderInfo(), this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, TASK_GRAPHS_PANEL_INDEX);
-				populateViewAsync();
-			}
-		});
+		// If we can find the task graphs panel...
+		TaskGraphsPanel tgp = getTaskGraphsPanel();
+		if (null != tgp) {
+			// ...give it what it needs to render...
+			tgp.renderTaskGraphs(m_taskListing, m_taskDisplayData.getExpandGraphs());
+		}
+
+		// ...and populate the rest of the view.
+		populateViewAsync();
 	}
 
 	/**

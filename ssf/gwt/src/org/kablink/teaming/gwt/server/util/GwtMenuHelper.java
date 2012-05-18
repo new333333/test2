@@ -456,6 +456,9 @@ public class GwtMenuHelper {
 					if (i == defaultEntryDefIndex) {
 						markTBIDefault(entriesTBI);
 					}
+					if ((0 == i) && addTBI.hasNestedToolbarItems()) {
+						addTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+					}
 					addTBI.addNestedItem(entriesTBI);
 				}
 			}

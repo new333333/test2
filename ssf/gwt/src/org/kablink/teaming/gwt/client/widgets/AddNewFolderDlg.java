@@ -48,6 +48,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -254,6 +257,17 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 		// ...and add an input widget.
 		m_folderNameInput = new TextBox();
 		m_folderNameInput.addStyleName("vibe-addNewFolderDlg_NameInput");
+		m_folderNameInput.addKeyPressHandler(new KeyPressHandler() {
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				// If this the enter key being pressed...
+				int key = event.getNativeEvent().getKeyCode();
+				if (KeyCodes.KEY_ENTER == key) {
+					// ...treat it like the user pressed OK.
+					editSuccessful(null);
+				}
+			}
+		});
 		hp.add(m_folderNameInput);
 		hp.setCellVerticalAlignment(m_folderNameInput, HasVerticalAlignment.ALIGN_MIDDLE);
 		GwtClientHelper.setFocusDelayed(m_folderNameInput);
