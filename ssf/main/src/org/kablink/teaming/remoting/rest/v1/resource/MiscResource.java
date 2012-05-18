@@ -37,17 +37,57 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.sun.jersey.api.core.InjectParam;
+import com.sun.jersey.spi.resource.Singleton;
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.ReleaseInfo;
+import org.kablink.teaming.rest.v1.model.RootRestObject;
+import org.kablink.teaming.rest.v1.model.ZoneConfig;
 
-@Path("/misc")
-public class MiscResource {
+@Path("/v1")
+@Singleton
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+public class MiscResource extends AbstractResource {
+
+    @InjectParam("zoneModule") private ZoneModule zoneModule;
+
+    @GET
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+   	public RootRestObject getRootObject() {
+        RootRestObject obj = new RootRestObject();
+        obj.addAdditionalLink("release_info", "/release_info");
+        obj.addAdditionalLink("self", "/self");
+        obj.addAdditionalLink("users", "/users");
+        obj.addAdditionalLink("zone_config", "/zone_config");
+   		return obj;
+   	}
+
 
 	@GET
 	@Path("release_info")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public ReleaseInfo getReleaseInfo() {
-		return null;
+        ReleaseInfo releaseInfo = new ReleaseInfo();
+        releaseInfo.setBuildDate(ResourceUtil.toCalendar(org.kablink.teaming.util.ReleaseInfo.getBuildDate()));
+        releaseInfo.setBuildNumber(org.kablink.teaming.util.ReleaseInfo.getBuildNumber());
+        releaseInfo.setContentVersion(org.kablink.teaming.util.ReleaseInfo.getContentVersion());
+        releaseInfo.setLicenseRequiredEdition(org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition());
+        releaseInfo.setProductName(org.kablink.teaming.util.ReleaseInfo.getName());
+        releaseInfo.setProductVersion(org.kablink.teaming.util.ReleaseInfo.getVersion());
+        releaseInfo.setServerStartTime(ResourceUtil.toCalendar(org.kablink.teaming.util.ReleaseInfo.getServerStartTime()));
+        return releaseInfo;
 	}
 	
-	
+	@GET
+	@Path("zone_config")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public ZoneConfig getZoneConfig() {
+        org.kablink.teaming.domain.ZoneConfig zoneConfig =
+      			zoneModule.getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+        return ResourceUtil.buildZoneConfig(zoneConfig);
+	}
+
+
 }

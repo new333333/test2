@@ -329,24 +329,6 @@ public class FileResource extends AbstractResource {
 		return fileVersionsFromFileAttachment(fa);
 	}
 	
-	private FileProperties filePropertiesFromFileAttachment(FileAttachment fa) {
-		FileLock fl = fa.getFileLock();
-		FileProperties fp = new FileProperties(fa.getId(),
-				fa.getFileItem().getName(),
-				new HistoryStamp(Utils.redactUserPrincipalIfNecessary(fa.getCreation().getPrincipal()).getId(), fa.getCreation().getDate()),
-				new HistoryStamp(Utils.redactUserPrincipalIfNecessary(fa.getModification().getPrincipal()).getId(), fa.getModification().getDate()),
-				fa.getFileItem().getLength(),
-				fa.getHighestVersionNumber(),
-				fa.getMajorVersion(),
-				fa.getMinorVersion(),
-				fa.getFileItem().getDescription().getText(),
-				fa.getFileStatus(),
-				WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, fa),
-				(fl != null && fl.getOwner() != null)? fl.getOwner().getId():null, 
-				(fl!= null)? fl.getExpirationDate():null);
-		return fp;
-	}
-	
 	private FileVersionPropertiesCollection fileVersionsFromFileAttachment(FileAttachment fa) {
 		Set<VersionAttachment> vas = fa.getFileVersions();
 		List<FileVersionProperties> list = new ArrayList<FileVersionProperties>(vas.size());
@@ -510,7 +492,7 @@ public class FileResource extends AbstractResource {
         	throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + entityType + "' is unknown or not supported by this method");
         }
         if(result)
-        	return filePropertiesFromFileAttachment(fa);
+        	return ResourceUtil.buildFileProperties(fa);
         else
         	throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file");
 	}
@@ -585,7 +567,7 @@ public class FileResource extends AbstractResource {
 	private FileProperties readFileProperties(String entityType, long entityId, String filename) 
 	throws BadRequestException, NotFoundException {
 		FileAttachment fa = findFileAttachment(entityType, entityId, filename);
-		return filePropertiesFromFileAttachment(fa);
+        return ResourceUtil.buildFileProperties(fa);
 	}
 	
 	private void deleteFile(String entityType, long entityId, String filename) 

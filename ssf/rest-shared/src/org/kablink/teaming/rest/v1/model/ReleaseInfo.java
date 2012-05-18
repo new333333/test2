@@ -32,6 +32,80 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-public class ReleaseInfo {
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Calendar;
 
+@XmlRootElement(name = "release_info")
+public class ReleaseInfo extends BaseRestObject {
+    private String productName;
+   	private String productVersion;
+   	private int buildNumber;
+   	private Calendar buildDate;
+   	private Calendar serverStartTime;
+   	private boolean licenseRequiredEdition;
+   	private String contentVersion;
+
+    @XmlElement(name="build_date")
+    public Calendar getBuildDate() {
+        return buildDate;
+    }
+
+    @XmlElement(name="build_number")
+    public int getBuildNumber() {
+        return buildNumber;
+    }
+
+    @XmlElement(name="content_version")
+    public String getContentVersion() {
+        return contentVersion;
+    }
+
+    @XmlElement(name="licensed_edition")
+    public boolean isLicenseRequiredEdition() {
+        return licenseRequiredEdition;
+    }
+
+    @XmlElement(name="product_name")
+    public String getProductName() {
+        return productName;
+    }
+
+    @XmlElement(name="product_version")
+    public String getProductVersion() {
+        return productVersion;
+    }
+
+    @XmlElement(name="server_start_time")
+    public Calendar getServerStartTime() {
+        return serverStartTime;
+    }
+
+    public void setBuildDate(Calendar buildDate) {
+        this.buildDate = buildDate;
+    }
+
+    public void setBuildNumber(int buildNumber) {
+        this.buildNumber = buildNumber;
+    }
+
+    public void setContentVersion(String contentVersion) {
+        this.contentVersion = contentVersion;
+    }
+
+    public void setLicenseRequiredEdition(boolean licenseRequiredEdition) {
+        this.licenseRequiredEdition = licenseRequiredEdition;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public void setProductVersion(String productVersion) {
+        this.productVersion = productVersion;
+    }
+
+    public void setServerStartTime(Calendar serverStartTime) {
+        this.serverStartTime = serverStartTime;
+    }
 }

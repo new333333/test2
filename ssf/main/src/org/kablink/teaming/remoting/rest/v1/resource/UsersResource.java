@@ -32,103 +32,78 @@
  */
 package org.kablink.teaming.remoting.rest.v1.resource;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.kablink.teaming.rest.v1.model.Team;
+import com.sun.jersey.api.core.InjectParam;
+import com.sun.jersey.spi.resource.Singleton;
+import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilder;
+import org.kablink.teaming.remoting.rest.v1.util.UserBriefBuilder;
+import org.kablink.teaming.rest.v1.model.SearchResults;
 import org.kablink.teaming.rest.v1.model.User;
+import org.kablink.teaming.rest.v1.model.UserBrief;
+import org.kablink.teaming.search.filter.SearchFilter;
 
-@Path("/users")
-public class UsersResource {
+@Path("/v1/users")
+@Singleton
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+public class UsersResource extends AbstractResource {
+    @InjectParam("profileModule") protected ProfileModule profileModule;
 
 	// Get all users
 	@GET
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<User> getUsers(
-		@QueryParam("offset") Integer offset,
-		@QueryParam("maxcount") Integer maxCount) {
-		return null;
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	public SearchResults<UserBrief> getUsers(
+		@QueryParam("name") String name,
+		@QueryParam("email") String email,
+		@QueryParam("first") Integer offset,
+		@QueryParam("count") Integer maxCount) {
+        Map<String, Object> options = new HashMap<String, Object>();
+        SearchFilter searchTermFilter = new SearchFilter();
+        if (name!=null) {
+            searchTermFilter.addLoginNameFilter(name);
+            options.put( ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter() );
+        }
+        if (offset!=null) {
+            options.put(ObjectKeys.SEARCH_OFFSET, offset);
+        }
+        if (maxCount!=null) {
+            options.put(ObjectKeys.SEARCH_MAX_HITS, maxCount);
+        }
+        Map resultMap = profileModule.getUsers(options);
+        SearchResults<UserBrief> results = new SearchResults<UserBrief>();
+        buildSearchResults(results, new UserBriefBuilder(), resultMap);
+		return results;
 	}
 	
 	// Create a new user.
 	@POST
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public void createUser() {		
 		// optionally accept initial password
 	}
-	
-	@GET
-	@Path("byemail")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<User> getUsersByEmail(
-		@QueryParam("email_address") String emailAddress,
-		@QueryParam("email_type") String emailType) {
-		return null;
-	}
 
-	@GET
-	@Path("user")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public User getUserByName(@QueryParam("name") String name) {
-		return null;
-	}
-
-	@GET
-	@Path("user/{id}")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public User getUser(@PathParam("id") Long id) {
-		return null;
-	}
-	
-	// Update user. This only updates properties/metadata.
-	@PUT
-	@Path("user/{id}")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void updateUser(@PathParam("id") long id) {
-	}
-	
-	// Delete user.
-	@DELETE
-	@Path("user/{id}")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void deleteUser(@PathParam("id") long id) {
-	}
-
-	// Create personal workspace for the user, if it doesn't already exist. 
-	@PUT
-	@Path("user/{id}/personal_workspace")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void addPersonalWorkspace(@PathParam("id") long id) {
-	}
-
-	// Change password
-	@POST
-	@Path("user/{id}/password")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void changePassword(@PathParam("id") long id) {
-	}
-
-	@GET
-	@Path("user/{id}/favorites")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void getFavorites(@PathParam("id") long id) {
-		// Return a list of favorites (i.e., a list of binders).
-	}
-	
-	// Return my teams (i.e, a list of teams I'm a member of).
-	@GET
-	@Path("user/{id}/teams")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<Team> getTeams(@PathParam("id") long id) {
-		return null;
-	}
+    public static <T> void buildSearchResults(SearchResults<T> results, SearchResultBuilder<T> builder, Map resultMap) {
+        results.setFirst((Integer)resultMap.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED));
+        results.setTotal((Integer)resultMap.get(ObjectKeys.TOTAL_SEARCH_COUNT));
+        List<Map> entries = (List<Map>)resultMap.get(ObjectKeys.SEARCH_ENTRIES);
+        if (entries!=null) {
+            for (Map entry : entries) {
+                T obj = builder.build(entry);
+                if (obj!=null) {
+                    results.append(obj);
+                }
+            }
+        }
+    }
 }

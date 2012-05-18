@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
- * 
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ *
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
  * obtain a copy of the CPAL at http://www.opensource.org/licenses/cpal_1.0. The
@@ -8,17 +8,17 @@
  * have been added to cover use of software over a computer network and provide
  * for limited attribution for the Original Developer. In addition, Exhibit A has
  * been modified to be consistent with Exhibit B.
- * 
+ *
  * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT
  * WARRANTY OF ANY KIND, either express or implied. See the CPAL for the specific
  * language governing rights and limitations under the CPAL.
- * 
+ *
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
  * (c) 1998-2009 Novell, Inc. All Rights Reserved.
- * 
+ *
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -26,56 +26,50 @@
  * Display of Attribution Information is required in Larger Works which are
  * defined in the CPAL as a work which combines Covered Code or portions thereof
  * with code not governed by the terms of the CPAL.
- * 
+ *
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.rest.v1.model;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * @author jong
- *
+ * User: david
+ * Date: 5/18/12
+ * Time: 12:45 PM
  */
 @XmlRootElement
-public class HistoryStamp {
+public class SearchResults<T> {
+    private int first;
+    private int total;
+    private List<T> results = new ArrayList<T>();
 
-	private PrincipalBrief principal;
-	private Calendar date;
-	
-	private HistoryStamp() {}
-	
-	public HistoryStamp(PrincipalBrief principal, Calendar date) {
-		this.principal = principal;
-		this.date = date;
-	}
+    public int getFirst() {
+        return first;
+    }
 
-	public HistoryStamp(PrincipalBrief principal, Date date) {
-		this.principal = principal;
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		this.date = cal;
-	}
+    public void setFirst(int first) {
+        this.first = first;
+    }
 
-    @XmlElement(name="principal")
-	public PrincipalBrief getPrincipal() {
-		return principal;
-	}
+    public int getTotal() {
+        return total;
+    }
 
-	public void setPrincipal(PrincipalBrief principal) {
-		this.principal = principal;
-	}
+    public void setTotal(int total) {
+        this.total = total;
+    }
 
-	public Calendar getDate() {
-		return date;
-	}
+    @XmlElement(name = "results")
+    public List<T> getResults() {
+        return results;
+    }
 
-	public void setDate(Calendar date) {
-		this.date = date;
-	}
+    public void append(T obj) {
+        results.add(obj);
+    }
 }
