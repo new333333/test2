@@ -356,7 +356,7 @@
 /* Start:  Copy/Move entries dialog styles. */
 	.vibe-cmeDlg_Caption1        {display: block !important;}
 	.vibe-cmeDlg_Caption2        {display: block !important;}
-	.vibe-cmeDlg_CaptionPanel    {white-space: nowrap;}
+	.vibe-cmeDlg_CaptionPanel    {white-space: nowrap; color: #505354;}
 	.vibe-cmeDlg_Dest            {font-weight: bold; margin-left: 3px;}
 	.vibe-cmeDlg_DestNone        {margin-left: 3px; color: graytext;}
 	.vibe-cmeDlg_DestLabel       {}
@@ -368,7 +368,7 @@
 	.vibe-cmeDlg_ProgressLabel   {margin-left: 3px;}
 	.vibe-cmeDlg_ProgressPanel   {white-space: nowrap; font-size: 1.1em; font-weight: bold;}
 	.vibe-cmeDlg_ProgressSpinner {}
-	.vibe-cmeDlg_RootPanel       {padding: 6px;}
+	.vibe-cmeDlg_RootPanel       {padding: 10px;}
 /* End:  Copy/Move entries dialog styles. */
 
 /* Start:  Change entry types dialog styles. */
