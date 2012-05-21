@@ -1038,7 +1038,8 @@ public interface GwtTeamingMessages extends Messages
 	String showAll();
 	String showAllEntries();
 	String showAllComments();
-	String showEntireDesc();
+	String showEntireDescHint();
+	String showPartialDescHint();
 	String showUnread();
 	String showUnreadEntries();
 	String whatsNew();
