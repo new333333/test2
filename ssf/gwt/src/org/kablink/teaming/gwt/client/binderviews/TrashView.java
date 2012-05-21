@@ -123,12 +123,12 @@ public class TrashView extends DataTableFolderViewBase {
 				if (fsm.isSelected(row)) {
 					// Yes!  We need to add trash information about it
 					// the reply list. 
-					EntityId rowEntryId = row.getEntityId();
+					EntityId rowEntityId = row.getEntityId();
 					String trashData =
-						 rowEntryId.getEntityId()              + ":" +
-						 rowEntryId.getBinderId()             + ":" +
-						(rowEntryId.isBinder() ? "binder" : "entry") + ":" +
-						 rowEntryId.getEntityType();
+						 rowEntityId.getEntityId()                    + ":" +
+						 rowEntityId.getBinderId()                    + ":" +
+						(rowEntityId.isBinder() ? "binder" : "entry") + ":" +
+						 rowEntityId.getEntityType();
 					reply.add(trashData);
 				}
 			}

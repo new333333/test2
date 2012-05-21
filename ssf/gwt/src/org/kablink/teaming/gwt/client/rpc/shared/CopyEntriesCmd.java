@@ -58,11 +58,11 @@ public class CopyEntriesCmd extends CopyMoveEntriesCmdBase {
 	 * Constructor method.
 	 * 
 	 * @param targetFolderId
-	 * @param entryIds
+	 * @param entityIds
 	 */
-	public CopyEntriesCmd(final Long targetFolderId, final List<EntityId> entryIds) {
+	public CopyEntriesCmd(final Long targetFolderId, final List<EntityId> entityIds) {
 		// Initialize the super class.
-		super(targetFolderId, entryIds);
+		super(targetFolderId, entityIds);
 	}
 	
 	/**
