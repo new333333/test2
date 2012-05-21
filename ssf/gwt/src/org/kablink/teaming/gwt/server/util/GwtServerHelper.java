@@ -86,6 +86,7 @@ import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CommaSeparatedValue;
 import org.kablink.teaming.domain.CustomAttribute;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -7303,29 +7304,37 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Send an email notification to the given recipients for the given entry.
-	 * This code was taken from RelevanceAjaxController.java, ajaxSaveShareThisBinder() and modified.
+	 * Send an email notification to the given recipients for the given
+	 * entities.
+	 * 
+	 * This code was taken from RelevanceAjaxController.java,
+	 * ajaxSaveShareThisBinder() and modified.
+	 * 
+	 * @param ami
+	 * @param entityIds
+	 * @param addedComments
+	 * @param principalIds
+	 * @param teamIds
+	 * 
+	 * @return
+	 * 
+	 * @throws Exception
 	 */
-	public static GwtShareEntryResults shareEntry( AllModulesInjected ami, String entryId, String addedComments, List<String> principalIds, List<String> teamIds )
+	public static GwtShareEntryResults shareEntry( AllModulesInjected ami, List<EntityId> entityIds, String addedComments, List<String> principalIds, List<String> teamIds )
 		throws Exception
 	{
+		AdminModule adminModule;
+		BinderModule binderModule;
 		FolderModule folderModule;
 		ProfileModule profileModule;
-		FolderEntry entry;
-		Long entryIdL;
 		Set<Long> principalIdsL;
 		Set<Long> teamIdsL;
-		Map sendEmailStatus;
+		List emailErrors;
 		List<User> noAccessPrincipals;
 		GwtShareEntryResults results;
 		
-		folderModule = ami.getFolderModule();
-		entryIdL = new Long( entryId );
-		entry = folderModule.getEntry( null, entryIdL );
-		
-		principalIdsL = new HashSet<Long>();
-
 		// Convert all of the user and groups ids to Longs
+		principalIdsL = new HashSet<Long>();
 		if ( principalIds != null )
 		{
 			for ( String nextId : principalIds )
@@ -7333,10 +7342,9 @@ public class GwtServerHelper {
 				principalIdsL.add( Long.valueOf( nextId ) );
 			}
 		}
-
-		teamIdsL = new HashSet<Long>();
 		
 		// Convert all of the team ids to Longs
+		teamIdsL = new HashSet<Long>();
 		if ( teamIds != null )
 		{
 			for ( String nextId : teamIds )
@@ -7345,73 +7353,99 @@ public class GwtServerHelper {
 			}
 		}
 		
+		emailErrors        = null;
+		noAccessPrincipals = new ArrayList<User>();
+
+		adminModule   = ami.getAdminModule();
+		binderModule  = ami.getBinderModule();
+		folderModule  = ami.getFolderModule();
 		profileModule = ami.getProfileModule();
-		profileModule.setShares( entry, principalIdsL, teamIdsL );
 
-		// Send an email to the given recipients.
+		for ( EntityId entityId:  entityIds )
 		{
-			String title;
-			String shortTitle;
-			String desc;
-			Description body;
-	        User user;
-			String mailTitle;
-			Set<String> emailAddress;
-			String bccEmailAddress;
-
-	        user = RequestContextHolder.getRequestContext().getUser();
-
-			title = entry.getTitle();
-			shortTitle = title;
+			DefinableEntity de;
+			if ( entityId.isBinder() )
+			     de = binderModule.getBinder(                        entityId.getEntityId() );
+			else de = folderModule.getEntry( entityId.getBinderId(), entityId.getEntityId() );
 			
-			if ( entry.getParentBinder() != null )
-				title = entry.getParentBinder().getPathName() + "/" + title;
-
-			// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
-			desc = "<a href=\"" + PermaLinkUtil.getPermalinkForEmail( entry ) + "\">" + title + "</a><br/><br/>" + addedComments;
-			body = new Description( desc );
-
-			mailTitle = NLT.get( "relevance.mailShared", new Object[]{Utils.getUserTitle( user )} );
-			mailTitle += " (" + shortTitle +")";
-			
-			emailAddress = new HashSet();
-			
-			//See if this user wants to be BCC'd on all mail sent out
-			bccEmailAddress = user.getBccEmailAddress();
-			if ( bccEmailAddress != null && !bccEmailAddress.equals("") )
+			profileModule.setShares( de, principalIdsL, teamIdsL );
+	
+			// Send an email to the given recipients.
 			{
-				if ( !emailAddress.contains( bccEmailAddress.trim() ) )
+				String title;
+				String shortTitle;
+				String desc;
+				Description body;
+		        User user;
+				String mailTitle;
+				Set<String> emailAddress;
+				String bccEmailAddress;
+				List entityEmailErrors;
+	
+		        user = RequestContextHolder.getRequestContext().getUser();
+	
+				title = de.getTitle();
+				shortTitle = title;
+				
+				if ( de.getParentBinder() != null )
+					title = de.getParentBinder().getPathName() + "/" + title;
+	
+				// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
+				desc = "<a href=\"" + PermaLinkUtil.getPermalinkForEmail( de ) + "\">" + title + "</a><br/><br/>" + addedComments;
+				body = new Description( desc );
+	
+				mailTitle = NLT.get( "relevance.mailShared", new Object[]{Utils.getUserTitle( user )} );
+				mailTitle += " (" + shortTitle +")";
+				
+				emailAddress = new HashSet();
+				
+				//See if this user wants to be BCC'd on all mail sent out
+				bccEmailAddress = user.getBccEmailAddress();
+				if ( bccEmailAddress != null && !bccEmailAddress.equals("") )
 				{
-					//Add the user's chosen bcc email address
-					emailAddress.add( bccEmailAddress.trim() );
+					if ( !emailAddress.contains( bccEmailAddress.trim() ) )
+					{
+						//Add the user's chosen bcc email address
+						emailAddress.add( bccEmailAddress.trim() );
+					}
+				}
+				
+				// Send the email notification
+				entityEmailErrors = (List)adminModule.sendMail( principalIdsL, teamIdsL, emailAddress, null, null, mailTitle, body ).get( ObjectKeys.SENDMAIL_ERRORS );
+				if ( null == emailErrors )
+				{
+					emailErrors = entityEmailErrors;
+				}
+				else
+				{
+					if ( null != entityEmailErrors )
+					{
+						emailErrors.addAll( entityEmailErrors );
+					}
 				}
 			}
-			
-			// Send the email notification
-			sendEmailStatus = ami.getAdminModule().sendMail( principalIdsL, teamIdsL, emailAddress, null, null, mailTitle, body );
-		}
-			
-		// Check to see if the recipients have rights to see the given entry.
-		{
-			Set<Long> totalIds;
-			Set<Principal> totalUsers;
-
-			totalIds = new HashSet<Long>();
-			totalIds.addAll( principalIdsL );
-			
-			totalUsers = profileModule.getPrincipals( totalIds );
-			noAccessPrincipals = new ArrayList<User>();
-			for ( Principal p : totalUsers )
+				
+			// Check to see if the recipients have rights to see the given entry.
 			{
-				if ( p instanceof User )
+				Set<Long> totalIds;
+				Set<Principal> totalUsers;
+	
+				totalIds = new HashSet<Long>();
+				totalIds.addAll( principalIdsL );
+				
+				totalUsers = profileModule.getPrincipals( totalIds );
+				for ( Principal p : totalUsers )
 				{
-					try
+					if ( p instanceof User )
 					{
-						AccessUtils.readCheck( (User)p, entry );
-					}
-					catch( AccessControlException e )
-					{
-						noAccessPrincipals.add( (User) p );
+						try
+						{
+							AccessUtils.readCheck( (User)p, de );
+						}
+						catch( AccessControlException e )
+						{
+							noAccessPrincipals.add( (User) p );
+						}
 					}
 				}
 			}
@@ -7421,8 +7455,6 @@ public class GwtServerHelper {
 		
 		// Package up the results.
 		{
-			List errors;
-
 			// Do we have any users who were sent an email who don't have rights to read the entry?
 			if ( noAccessPrincipals != null && noAccessPrincipals.size() > 0 )
 			{
@@ -7443,8 +7475,10 @@ public class GwtServerHelper {
 			}
 			
 			// Add any errors that happened to the results.
-			errors = (List)sendEmailStatus.get( ObjectKeys.SENDMAIL_ERRORS );
-			results.setErrors( (String[])errors.toArray( new String[0]) );
+			if ( null != emailErrors )
+			{
+				results.setErrors( (String[])emailErrors.toArray( new String[0]) );
+			}
 		}
 			
 		return results;

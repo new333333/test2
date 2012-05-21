@@ -1822,9 +1822,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the share.
-			BinderViewsHelper.shareEntries(
-				getFolderType(),
-				getSelectedEntityIds());
+			BinderViewsHelper.shareEntries(getSelectedEntityIds());
 		}
 	}
 	

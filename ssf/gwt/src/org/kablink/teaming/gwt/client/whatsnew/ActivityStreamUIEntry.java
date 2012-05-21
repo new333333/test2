@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
@@ -104,6 +105,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private String m_authorId;
 	private String m_authorWSId;	// Id of the author's workspace.
 	private String m_entryId;
+	private String m_binderId;
 	private String m_viewEntryUrl;
 	private ActivityStreamReply m_replyWidget;
 	private DescViewFormat m_descViewFormat;
@@ -235,6 +237,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		m_authorId = null;
 		m_authorWSId = null;
 		m_entryId = null;
+		m_binderId = null;
 		m_viewEntryUrl = null;
 		
 		// Remove the presence control from the presence panel.
@@ -592,6 +595,23 @@ public abstract class ActivityStreamUIEntry extends Composite
 	public String getEntryId()
 	{
 		return m_entryId;
+	}
+	
+	
+	/**
+	 * Return the id of this entry's binder.
+	 */
+	public String getBinderId()
+	{
+		return m_binderId;
+	}
+	
+	
+	/**
+	 * Returns an EntityId for this entry.
+	 */
+	public EntityId getEntryEntityId() {
+		return new EntityId( Long.parseLong( m_binderId ), Long.parseLong( m_entryId ), EntityId.FOLDER_ENTRY );
 	}
 	
 	
@@ -1079,6 +1099,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		m_date.setText( entryItem.getEntryModificationDate() );
 		m_descPanel.getElement().setInnerHTML( getEntryDesc( entryItem ) );
 		m_entryId = entryItem.getEntryId();
+		m_binderId = entryItem.getParentBinderId();
 		
 		// Has the author's workspace been deleted?
 		if ( m_authorWSId != null && m_authorWSId.length() > 0 )

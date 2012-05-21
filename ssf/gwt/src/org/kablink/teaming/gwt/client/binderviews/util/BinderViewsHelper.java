@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.binderviews.util;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.ChangeEntryTypesDlg;
 import org.kablink.teaming.gwt.client.binderviews.ChangeEntryTypesDlg.ChangeEntryTypesDlgClient;
 import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg;
@@ -58,6 +59,9 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
+import org.kablink.teaming.gwt.client.widgets.FindCtrl;
+import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 
 import com.google.gwt.core.client.Scheduler;
@@ -71,9 +75,11 @@ import com.google.gwt.user.client.ui.CheckBox;
  * @author drfoster@novell.com
  */
 public class BinderViewsHelper {
-	private static ChangeEntryTypesDlg	m_cetDlg;	// An instance of a change entry types dialog. 
-	private static CopyMoveEntriesDlg	m_cmeDlg;	// An instance of a copy/move entries dialog.
-	private static EmailNotificationDlg	m_enDlg;	// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntityId>. 
+	private static ChangeEntryTypesDlg	m_cetDlg;								// An instance of a change entry types dialog. 
+	private static CopyMoveEntriesDlg	m_cmeDlg;								// An instance of a copy/move entries dialog.
+	private static EmailNotificationDlg	m_enDlg;								// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntityId>. 
+	private static GwtTeamingMessages	m_messages = GwtTeaming.getMessages();	// Access to the GWT localized strings.
+	private static ShareThisDlg			m_shareDlg;								// An instance of a share this dialog.
 	
 	/*
 	 * Constructor method. 
@@ -222,7 +228,7 @@ public class BinderViewsHelper {
 							// No, they're not sure!
 						}
 					},
-					GwtTeaming.getMessages().binderViewsConfirmDeleteEntries());
+					m_messages.binderViewsConfirmDeleteEntries());
 			}
 		});
 	}
@@ -271,7 +277,7 @@ public class BinderViewsHelper {
 							// No, they're not sure!
 						}
 					},
-					GwtTeaming.getMessages().binderViewsConfirmDeleteUserWS());
+					m_messages.binderViewsConfirmDeleteUserWS());
 			}
 		});
 	}
@@ -300,7 +306,7 @@ public class BinderViewsHelper {
 				busy.hide();
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
-					GwtTeaming.getMessages().rpcFailure_DisableUsers());
+					m_messages.rpcFailure_DisableUsers());
 			}
 
 			@Override
@@ -312,7 +318,7 @@ public class BinderViewsHelper {
 				int count = ((null == errors) ? 0 : errors.size());
 				if (0 < count) {
 					// No!  Tell the user about the problem.
-					GwtClientHelper.displayMultipleErrors(GwtTeaming.getMessages().disableUsersError(), errors);
+					GwtClientHelper.displayMultipleErrors(m_messages.disableUsersError(), errors);
 				}
 
 				// If anything was disabled...
@@ -349,7 +355,7 @@ public class BinderViewsHelper {
 				busy.hide();
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
-					GwtTeaming.getMessages().rpcFailure_EnableUsers());
+					m_messages.rpcFailure_EnableUsers());
 			}
 
 			@Override
@@ -361,7 +367,7 @@ public class BinderViewsHelper {
 				int count = ((null == errors) ? 0 : errors.size());
 				if (0 < count) {
 					// No!  Tell the user about the problem.
-					GwtClientHelper.displayMultipleErrors(GwtTeaming.getMessages().enableUsersError(), errors);
+					GwtClientHelper.displayMultipleErrors(m_messages.enableUsersError(), errors);
 				}
 
 				// If anything was enabled...
@@ -399,7 +405,7 @@ public class BinderViewsHelper {
 				busy.hide();
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
-					GwtTeaming.getMessages().rpcFailure_LockEntries());
+					m_messages.rpcFailure_LockEntries());
 			}
 
 			@Override
@@ -411,7 +417,7 @@ public class BinderViewsHelper {
 				int count = ((null == errors) ? 0 : errors.size());
 				if (0 < count) {
 					// No!  Tell the user about the problem.
-					GwtClientHelper.displayMultipleErrors(GwtTeaming.getMessages().lockEntriesError(), errors);
+					GwtClientHelper.displayMultipleErrors(m_messages.lockEntriesError(), errors);
 				}
 
 				// If anything was locked...
@@ -450,7 +456,7 @@ public class BinderViewsHelper {
 				busy.hide();
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
-					GwtTeaming.getMessages().rpcFailure_SetSeen());
+					m_messages.rpcFailure_SetSeen());
 			}
 
 			@Override
@@ -489,7 +495,7 @@ public class BinderViewsHelper {
 				busy.hide();
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
-					GwtTeaming.getMessages().rpcFailure_SetUnseen());
+					m_messages.rpcFailure_SetUnseen());
 			}
 
 			@Override
@@ -588,7 +594,7 @@ public class BinderViewsHelper {
 							// No, they're not sure!
 						}
 					},
-					GwtTeaming.getMessages().binderViewsConfirmPurgeEntries());
+					m_messages.binderViewsConfirmPurgeEntries());
 			}
 		});
 	}
@@ -608,7 +614,7 @@ public class BinderViewsHelper {
 
 		// Is the user sure they want to the selected user workspaces
 		// and user objects?
-		final CheckBox cb = new CheckBox(GwtTeaming.getMessages().binderViewsPromptPurgeMirroredFolders());
+		final CheckBox cb = new CheckBox(m_messages.binderViewsPromptPurgeMirroredFolders());
 		ConfirmDlg.createAsync(new ConfirmDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -638,7 +644,7 @@ public class BinderViewsHelper {
 							// No, they're not sure!
 						}
 					},
-					GwtTeaming.getMessages().binderViewsConfirmPurgeUsers(),
+					m_messages.binderViewsConfirmPurgeUsers(),
 					cb);
 			}
 		});
@@ -659,7 +665,7 @@ public class BinderViewsHelper {
 		
 		// Is the user sure they want to purge the selected user
 		// workspaces?
-		final CheckBox cb = new CheckBox(GwtTeaming.getMessages().binderViewsPromptPurgeMirroredFolders());
+		final CheckBox cb = new CheckBox(m_messages.binderViewsPromptPurgeMirroredFolders());
 		ConfirmDlg.createAsync(new ConfirmDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -689,7 +695,7 @@ public class BinderViewsHelper {
 							// No, they're not sure!
 						}
 					},
-					GwtTeaming.getMessages().binderViewsConfirmPurgeUserWS(),
+					m_messages.binderViewsConfirmPurgeUserWS(),
 					cb);
 			}
 		});
@@ -699,26 +705,46 @@ public class BinderViewsHelper {
 	 * Invokes the appropriate UI to share the entries based on a
 	 * List<EntityId> of the entries.
 	 *
-	 * @param folderType
 	 * @param entityIds
 	 */
-	public static void shareEntries(final FolderType folderType, final List<EntityId> entityIds) {
+	public static void shareEntries(final List<EntityId> entityIds) {
 		// If we weren't given any entity IDs to be shared...
 		if ((null == entityIds) || entityIds.isEmpty()) {
 			// ...bail.
 			return;
 		}
 
-		// Generate the URL to launch the JSP code to do sharing...
-		StringBuffer url = new StringBuffer(GwtClientHelper.getRequestInfo().getBaseVibeUrl());
-		url.append("&operation=share_this_binder");
-		url.append("&action=__ajax_relevance");
-		url.append("&binderId="          + String.valueOf(entityIds.get(0).getBinderId()));
-		url.append("&entityId="          + String.valueOf(entityIds.get(0).getEntityId()));
-		url.append("&multipleEntityIds=" + EntityId.getMultipleEntityIdsParam(entityIds) );
-
-		// ...and launch it.
-		GwtClientHelper.jsLaunchToolbarPopupUrl(url.toString(), 800, 650);
+		// If we've already instantiated a share dialog...
+		if (null != m_shareDlg) {
+			// ...simply invoke it.
+			showShareDlgAsync(entityIds);
+			return;
+		}
+		
+		// Otherwise, we need to instantiate one now!  Note that the
+		// 'Share This' dialog requires the FindCtrl be loaded before
+		// it loads in order to function.  Prefetch the FindControl...
+		ScheduledCommand doPrefetch = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				FindCtrl.prefetch(new FindCtrlClient()
+				{
+					@Override
+					public void onUnavailable() {
+						// Nothing to do.  Error handled in
+						// asynchronous provider.
+					}
+					
+					@Override
+					public void onSuccess(FindCtrl findCtrl) {
+						// ...and create and show the dialog.
+						m_shareDlg = new ShareThisDlg(false, true, 0, 0, m_messages.shareCaption());
+						showShareDlgAsync(entityIds);
+					}
+				});
+			}
+		};
+		Scheduler.get().scheduleDeferred( doPrefetch );
 	}
 
 	/*
@@ -731,6 +757,31 @@ public class BinderViewsHelper {
 			invokeToCopy,	// true -> Run it do a copy.  false -> Run it to do a move.
 			folderType,		// The type of folder that we're dealing with.
 			entityIds);		// The List<EntityId> to be copied/moved.
+	}
+	
+	/*
+	 * Asynchronously shows the share dialog.
+	 */
+	private static void showShareDlgAsync(final List<EntityId> entityIds) {
+		ScheduledCommand doShow = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showShareDlgNow(entityIds);
+			}
+		};
+		Scheduler.get().scheduleDeferred( doShow );
+	}
+	
+	/*
+	 * Synchronously shows the share dialog.
+	 */
+	private static void showShareDlgNow(List<EntityId> entityIds) {
+		int entities = entityIds.size();
+		m_shareDlg.setCaption(
+			(1 < entities)                   ?
+				m_messages.shareTheseItems() :
+				m_messages.shareThisItem());
+		m_shareDlg.showDlg(null, null, entityIds);
 	}
 
 	/**
@@ -812,7 +863,7 @@ public class BinderViewsHelper {
 				busy.hide();
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
-					GwtTeaming.getMessages().rpcFailure_UnlockEntries());
+					m_messages.rpcFailure_UnlockEntries());
 			}
 
 			@Override
@@ -824,7 +875,7 @@ public class BinderViewsHelper {
 				int count = ((null == errors) ? 0 : errors.size());
 				if (0 < count) {
 					// No!  Tell the user about the problem.
-					GwtClientHelper.displayMultipleErrors(GwtTeaming.getMessages().unlockEntriesError(), errors);
+					GwtClientHelper.displayMultipleErrors(m_messages.unlockEntriesError(), errors);
 				}
 
 				// If anything was unlocked...
