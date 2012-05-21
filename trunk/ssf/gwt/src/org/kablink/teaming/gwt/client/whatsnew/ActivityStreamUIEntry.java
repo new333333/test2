@@ -56,6 +56,8 @@ import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -67,7 +69,6 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -92,15 +93,17 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private Image m_actionsImg1;
 	private Image m_actionsImg2;
 	private Image m_unreadImg;
+	private Image m_expandDescImg;
+	private Image m_collapseDescImg;
 	private InlineLabel m_title;
 	private InlineLabel m_actionsLabel;
+	private FlowPanel m_mainPanel;
 	private FlowPanel m_presencePanel;
 	private FlowPanel m_commentsPanel;
 	private ClickHandler m_presenceClickHandler;
 	private Label m_author;
 	private Label m_date;
 	private FlowPanel m_descPanel;
-	private Anchor m_showHideDescAnchor;
 	@SuppressWarnings("unused")
 	private String m_authorId;
 	private String m_authorWSId;	// Id of the author's workspace.
@@ -118,25 +121,24 @@ public abstract class ActivityStreamUIEntry extends Composite
 		ActivityStreamCtrl activityStreamCtrl,
 		DescViewFormat descViewFormat )
 	{
-		FlowPanel mainPanel;
 		FlowPanel panel;
 		EditSuccessfulHandler onSuccessHandler;
 
 		m_activityStreamCtrl = activityStreamCtrl;
 		m_descViewFormat = descViewFormat;
 		
-		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( getMainPanelStyleName() );
+		m_mainPanel = new FlowPanel();
+		m_mainPanel.addStyleName( getMainPanelStyleName() );
 		
 		// Add a mouse over/out handler for the main panel.
-		mainPanel.addDomHandler( this, MouseOverEvent.getType() );
-		mainPanel.addDomHandler( this, MouseOutEvent.getType() );
+		m_mainPanel.addDomHandler( this, MouseOverEvent.getType() );
+		m_mainPanel.addDomHandler( this, MouseOutEvent.getType() );
 
 		// Add a place to show the avatar
 		m_avatarImg = new Image();
 		m_avatarImg.addStyleName( getAvatarImageStyleName() );
 		m_avatarImg.setVisible( false );
-		mainPanel.add( m_avatarImg );
+		m_mainPanel.add( m_avatarImg );
 		
 		// Add mouse-over and mouse-out handlers.
 		m_avatarImg.addMouseOverHandler( this );
@@ -147,11 +149,11 @@ public abstract class ActivityStreamUIEntry extends Composite
 		
 		// Create the panel that holds the entry's header.
 		panel = createHeaderPanel();
-		mainPanel.add( panel );
+		m_mainPanel.add( panel );
 		
 		// Create the panel that holds the content.
 		panel = createContentPanel();
-		mainPanel.add( panel );
+		m_mainPanel.add( panel );
 		
 		// Create a reply widget and hide it.
 		{
@@ -177,13 +179,13 @@ public abstract class ActivityStreamUIEntry extends Composite
 			};
 			m_replyWidget = new ActivityStreamReply( onSuccessHandler );
 			m_replyWidget.setVisible( false );
-			mainPanel.add( m_replyWidget );
+			m_mainPanel.add( m_replyWidget );
 		}
 		
 		// Create a panel for comments to go in.
 		m_commentsPanel = createCommentsPanel();
 		if ( m_commentsPanel != null )
-			mainPanel.add( m_commentsPanel );
+			m_mainPanel.add( m_commentsPanel );
 
 		// Create a click handler that will be used for the presence control.
 		m_presenceClickHandler = new ClickHandler()
@@ -212,7 +214,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		};
 		
 		// All composites must call initWidget() in their constructors.
-		initWidget( mainPanel );
+		initWidget( m_mainPanel );
 	}
 	
 	
@@ -246,6 +248,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 		// Hide the reply ui if we have one.
 		if ( m_replyWidget != null )
 			m_replyWidget.close();
+		
+		m_descViewFormat = m_activityStreamCtrl.getDefaultDescViewFormat();
 }
 
 
@@ -263,10 +267,29 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public FlowPanel createContentPanel()
 	{
-		FlowPanel panel;
+		final FlowPanel panel;
 		
 		panel = new FlowPanel();
 		panel.addStyleName( getContentPanelStyleName() );
+
+		// Create a expand desc image and a collapse desc image
+		{
+			ImageResource imageResource;
+			
+			imageResource = GwtTeaming.getImageBundle().expander();
+			m_expandDescImg = new Image( imageResource );
+			m_expandDescImg.addStyleName( "activityStreamExpandDescImg" );
+			m_expandDescImg.setTitle( GwtTeaming.getMessages().showEntireDescHint() );
+			m_expandDescImg.setVisible( false );
+			panel.add( m_expandDescImg );
+			
+			imageResource = GwtTeaming.getImageBundle().collapser();
+			m_collapseDescImg = new Image( imageResource );
+			m_collapseDescImg.addStyleName( "activityStreamCollapseDescImg" );
+			m_collapseDescImg.setTitle( GwtTeaming.getMessages().showPartialDescHint() );
+			m_collapseDescImg.setVisible( false );
+			panel.add( m_collapseDescImg );
+		}
 		
 		m_presencePanel = new FlowPanel();
 		m_presencePanel.addStyleName( getPresencePanelStyleName() );
@@ -290,37 +313,74 @@ public abstract class ActivityStreamUIEntry extends Composite
 		// Add a <div> for the description to live in.
 		m_descPanel = new FlowPanel();
 		m_descPanel.addStyleName( getDescStyleName() );
+		m_descPanel.addStyleName( "cursorPointer" );
+		if ( m_descViewFormat == DescViewFormat.FULL )
+			m_descPanel.setTitle( GwtTeaming.getMessages().showPartialDescHint() );
+		else
+			m_descPanel.setTitle( GwtTeaming.getMessages().showEntireDescHint() );
 		panel.add( m_descPanel );
-		
-		// Create a label that will hold either "See all" or "Hide" that the
-		// user can click on the see the entire description or hide the description
-		m_showHideDescAnchor = new Anchor();
-		m_showHideDescAnchor.addStyleName( "activityStreamShowHideDescLabel" );
-		updateShowHideDescLabel();
-		panel.add( m_showHideDescAnchor );
-		
-		// Add a click handler on the m_showHideDescLabel
-		m_showHideDescAnchor.addClickHandler( new ClickHandler()
+
+		// Add a click handler to the description panel so the user can click on the
+		// description to expand or collapse it.
 		{
-			@Override
-			public void onClick(ClickEvent event)
+			ClickHandler clickHandler;
+			
+			clickHandler = new ClickHandler()
 			{
-				Scheduler.ScheduledCommand cmd;
-				
-				cmd = new Scheduler.ScheduledCommand()
+				/**
+				 * 
+				 */
+				@Override
+				public void onClick( ClickEvent event )
 				{
-					@Override
-					public void execute()
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
 					{
-						if ( m_descViewFormat == DescViewFormat.FULL )
-							setDescViewFormat( DescViewFormat.PARTIAL );
-						else
-							setDescViewFormat( DescViewFormat.FULL );
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
-			}
-		} );
+						@Override
+						public void execute() 
+						{
+							if ( m_descViewFormat == DescViewFormat.FULL )
+								setDescViewFormat( DescViewFormat.PARTIAL );
+							else
+								setDescViewFormat( DescViewFormat.FULL );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+				
+			};
+			m_descPanel.addDomHandler( clickHandler, ClickEvent.getType() );
+			
+			// Use this click handler for the expand/collapse description images.
+			m_expandDescImg.addClickHandler( clickHandler );
+			m_collapseDescImg.addClickHandler( clickHandler );
+		}
+		
+		{
+			Scheduler.ScheduledCommand cmd;
+			
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					int top;
+					Style style;
+					
+					// Set the position of the expand/collapse images to be just to the left
+					// of the top of the description.
+					top = m_descPanel.getAbsoluteTop() - m_mainPanel.getAbsoluteTop() - 20;
+
+					style = m_expandDescImg.getElement().getStyle();
+					style.setTop( top, Unit.PX );
+
+					style = m_collapseDescImg.getElement().getStyle();
+					style.setTop( top, Unit.PX );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
 		
 		return panel;
 	}
@@ -997,6 +1057,10 @@ public abstract class ActivityStreamUIEntry extends Composite
 			m_actionsImg1.setVisible( true );
 
 			m_actionsLabel.removeStyleName( "activityStreamActionsLabelBold" );
+			
+			// Hide the expand/collapse description image.
+			m_collapseDescImg.setVisible( false );
+			m_expandDescImg.setVisible( false );
 		}
 	}
 
@@ -1025,6 +1089,9 @@ public abstract class ActivityStreamUIEntry extends Composite
 			m_actionsImg2.setVisible( true );
 
 			m_actionsLabel.addStyleName( "activityStreamActionsLabelBold" );
+
+			// Display the expand/collapse description image
+			updateExpandCollapseDescImage();
 		}
 	}
 
@@ -1138,8 +1205,30 @@ public abstract class ActivityStreamUIEntry extends Composite
 			// Add the appropriate style on the description panel.
 			m_descPanel.addStyleName( getDescStyleName() );
 			
-			// Update the text on the "Show all"/"Hide" label
-			updateShowHideDescLabel();
+			if ( m_expandDescImg.isVisible() || m_collapseDescImg.isVisible() )
+			{
+				// Update the expand/collapse image
+				updateExpandCollapseDescImage();
+			}
+		}
+	}
+	
+	/**
+	 * Update the image that is used to expand/collapse the description
+	 */
+	private void updateExpandCollapseDescImage()
+	{
+		if ( m_descViewFormat == DescViewFormat.FULL )
+		{
+			m_descPanel.setTitle( GwtTeaming.getMessages().showPartialDescHint() );
+			m_expandDescImg.setVisible( false );
+			m_collapseDescImg.setVisible( true );
+		}
+		else
+		{
+			m_descPanel.setTitle( GwtTeaming.getMessages().showEntireDescHint() );
+			m_expandDescImg.setVisible( true );
+			m_collapseDescImg.setVisible( false );
 		}
 	}
 	
@@ -1162,25 +1251,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 			m_unreadImg.setVisible( true );
 		}
 	}
-	
-	/**
-	 * Update the label that the user can click on the see the entire description or hide the description
-	 */
-	private void updateShowHideDescLabel()
-	{
-		if ( m_showHideDescAnchor != null )
-		{
-			String text;
-			
-			if ( m_descViewFormat == DescViewFormat.FULL )
-				text = GwtTeaming.getMessages().hideDesc();
-			else
-				text = GwtTeaming.getMessages().showEntireDesc();
-			
-			m_showHideDescAnchor.setText( text );
-		}
-	}
-
 	
 	/**
 	 * Tell the action handler to open the given entry.
