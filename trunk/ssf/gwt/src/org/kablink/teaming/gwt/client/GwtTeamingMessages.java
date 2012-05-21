@@ -526,6 +526,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_QuickViewDlg();
 	String codeSplitFailure_SearchOptionsComposite();
 	String codeSplitFailure_SurveyFolderView();
+	String codeSplitFailure_ShareThisDlg();
 	String codeSplitFailure_SizeColumnsDlg();
 	String codeSplitFailure_TagThisDlg();
 	String codeSplitFailure_TaskFolderView();
@@ -1059,7 +1060,6 @@ public interface GwtTeamingMessages extends Messages
 	String shareErrors();
 	String shareHint();
 	String shareName();
-	String shareThisItem();
 	String shareTheseItems();
 	String shareType();
 	String shareTypeGroup();
