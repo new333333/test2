@@ -60,6 +60,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
@@ -1288,7 +1289,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	private void showShareThisDlg( final ActivityStreamUIEntry entry )
 	{
-		m_shareThisDlg.showDlg( entry, entry.getEntryTitle(), entry.getEntryId() );
+		List<EntityId> eIdList = new ArrayList<EntityId>();
+		eIdList.add( entry.getEntryEntityId() );
+		m_shareThisDlg.showDlg( entry, entry.getEntryTitle(), eIdList );
 	}// end showShareThisDlg()
 	
 	

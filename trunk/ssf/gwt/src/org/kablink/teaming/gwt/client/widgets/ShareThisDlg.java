@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -55,6 +55,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseData;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
@@ -83,7 +84,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -94,8 +94,8 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * This class is used to present a UI the user can use to share an item with
  * users, groups and teams.
+ * 
  * @author jwootton
- *
  */
 public class ShareThisDlg extends DlgBox
 	implements EditSuccessfulHandler, EditCanceledHandler,
@@ -113,7 +113,7 @@ public class ShareThisDlg extends DlgBox
 	private FlowPanel m_myTeamsPanel;
 	private FlowPanel m_recipientTablePanel;
 	private FlexCellFormatter m_cellFormatter;
-	private String m_entryId;
+	private List<EntityId> m_entityIds;
 	private AsyncCallback<VibeRpcResponse> m_readTeamsCallback;
 	private AsyncCallback<VibeRpcResponse> m_shareEntryCallback;
 
@@ -298,6 +298,7 @@ public class ShareThisDlg extends DlgBox
 		 * This gets called when the user clicks on the recipient's name.  This will only
 		 * be called if the recipient is a group.
 		 */
+		@Override
 		public void onClick( ClickEvent event )
 		{
 			// Create a popup that will display the membership of this group.
@@ -317,6 +318,7 @@ public class ShareThisDlg extends DlgBox
 		/**
 		 * Remove the mouse-over style from the name. 
 		 */
+		@Override
 		public void onMouseOut( MouseOutEvent event )
 		{
 			m_nameLabel.removeStyleName( "shareThisDlgNameHover" );
@@ -326,6 +328,7 @@ public class ShareThisDlg extends DlgBox
 		/**
 		 * Add the mouse-over style to the name.
 		 */
+		@Override
 		public void onMouseOver( MouseOverEvent event )
 		{
 			m_nameLabel.addStyleName( "shareThisDlgNameHover" );
@@ -374,6 +377,7 @@ public class ShareThisDlg extends DlgBox
 		/**
 		 * This gets called when the user clicks on the remove recipient image.
 		 */
+		@Override
 		public void onClick( ClickEvent event )
 		{
 			removeRecipient( m_recipientInfo );
@@ -503,6 +507,7 @@ public class ShareThisDlg extends DlgBox
 		
 		cmd = new Scheduler.ScheduledCommand()
 		{
+			@Override
 			public void execute()
 			{
 				int height;
@@ -530,6 +535,7 @@ public class ShareThisDlg extends DlgBox
 		
 		cmd = new Scheduler.ScheduledCommand()
 		{
+			@Override
 			public void execute()
 			{
 				int height;
@@ -551,6 +557,7 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog.
 	 */
+	@Override
 	public Panel createContent( Object callbackData )
 	{
 		FlowPanel mainPanel;
@@ -610,12 +617,14 @@ public class ShareThisDlg extends DlgBox
 			// Add a click handler for the users rb
 			clickHandler = new ClickHandler()
 			{
+				@Override
 				public void onClick( ClickEvent clickEvent )
 				{
 					Scheduler.ScheduledCommand cmd;
 					
 					cmd = new Scheduler.ScheduledCommand()
 					{
+						@Override
 						public void execute()
 						{
 							// Set the filter of the Find Control to only search for users.
@@ -637,12 +646,14 @@ public class ShareThisDlg extends DlgBox
 			// Add a click handler for the groups rb
 			clickHandler = new ClickHandler()
 			{
+				@Override
 				public void onClick( ClickEvent clickEvent )
 				{
 					Scheduler.ScheduledCommand cmd;
 					
 					cmd = new Scheduler.ScheduledCommand()
 					{
+						@Override
 						public void execute()
 						{
 							// Set the filter of the Find Control to only search for groups.
@@ -770,6 +781,7 @@ public class ShareThisDlg extends DlgBox
 	 * 
 	 * @return
 	 */
+	@Override
 	public boolean editCanceled()
 	{
 		int i;
@@ -807,6 +819,7 @@ public class ShareThisDlg extends DlgBox
 	 * 
 	 * @return
 	 */
+	@Override
 	public boolean editSuccessful( Object callbackData )
 	{
 		String comment;
@@ -930,8 +943,8 @@ public class ShareThisDlg extends DlgBox
 		if ( (principalIds != null && principalIds.size() > 0) || (teamIds != null && teamIds.size() > 0) )
 		{
 			// Yes
-			// Issue an ajax request to send the email.
-			ShareEntryCmd cmd = new ShareEntryCmd( m_entryId, comment, principalIds, teamIds );
+			// Issue an ajax request to share the entities.
+			ShareEntryCmd cmd = new ShareEntryCmd( m_entityIds, comment, principalIds, teamIds );
 			GwtClientHelper.executeCommand( cmd, m_shareEntryCallback );
 		}
 		else
@@ -1108,13 +1121,22 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private void init( String title, String entryId )
+	private void init( String title, List<EntityId> entityIds )
 	{
 		GetMyTeamsCmd cmd;
 		
-		m_titleTextBox.setText( title );
+		if ( GwtClientHelper.hasString( title ))
+		{
+			m_titleTextBox.setVisible( true  );
+			m_titleTextBox.setText(    title );
+		}
+		else
+		{
+			m_titleTextBox.setVisible( false );
+		}
+
 		m_msgTextArea.setText( "" );
-		m_entryId = entryId;
+		m_entityIds = entityIds;
 		m_findCtrl.setInitialSearchString( "" );
 		m_usersRB.setValue( Boolean.TRUE );
 		m_groupsRB.setValue( Boolean.FALSE );
@@ -1143,6 +1165,7 @@ public class ShareThisDlg extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onFailure( Throwable t )
 				{
 					GwtClientHelper.handleGwtRPCFailure(
@@ -1153,6 +1176,7 @@ public class ShareThisDlg extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
 					List<TeamInfo> listOfTeams;
@@ -1205,17 +1229,18 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void showDlg( UIObject target, String title, String entryId )
+	public void showDlg( UIObject target, String title, List<EntityId> entityIds  )
 	{
-		init( title, entryId );
+		init( title, entityIds );
 		
 		hideErrorPanel();
 		showContentPanel();
 		createFooterButtons( DlgBox.DlgButtonMode.OkCancel );
 
-		showRelativeToTarget( target );
+		if ( null == target )
+		     show(                 true   );	// true -> Show centered when not given a target.
+		else showRelativeToTarget( target );
 	}
-	
 	
 	/**
 	 * Create a checkbox for every team so the user can select the teams that should

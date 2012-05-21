@@ -1059,6 +1059,8 @@ public interface GwtTeamingMessages extends Messages
 	String shareErrors();
 	String shareHint();
 	String shareName();
+	String shareThisItem();
+	String shareTheseItems();
 	String shareType();
 	String shareTypeGroup();
 	String shareTypeUser();

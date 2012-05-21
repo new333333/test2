@@ -2086,7 +2086,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			ShareEntryCmd seCmd = ((ShareEntryCmd) cmd);
 			GwtShareEntryResults results = shareEntry(
-					ri, seCmd.getEntryId(), seCmd.getComment(), seCmd.getPrincipalIds(), seCmd.getTeamIds() );
+					ri, seCmd.getEntityIds(), seCmd.getComment(), seCmd.getPrincipalIds(), seCmd.getTeamIds() );
 			ShareEntryResultsRpcResponseData responseData = new ShareEntryResultsRpcResponseData( results );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -5371,14 +5371,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Send an email notification to the given recipients for the given entry.
 	 */
-	private GwtShareEntryResults shareEntry( HttpRequestInfo ri, String entryId, String comment, List<String> principalIds, List<String> teamIds )
+	private GwtShareEntryResults shareEntry( HttpRequestInfo ri, List<EntityId> entityIds, String comment, List<String> principalIds, List<String> teamIds )
 		throws GwtTeamingException
 	{
 		GwtShareEntryResults retValue;
 		
 		try
 		{
-			retValue = GwtServerHelper.shareEntry( this, entryId, comment, principalIds, teamIds );
+			retValue = GwtServerHelper.shareEntry( this, entityIds, comment, principalIds, teamIds );
 		}
 		catch ( Exception ex )
 		{
