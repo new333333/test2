@@ -127,31 +127,6 @@ public class TaskGraphsPanel extends ToolPanelBase
 	}
 
 	/**
-	 * Loads the TaskGraphsPanel split point and returns an instance
-	 * of it via the callback.
-	 * 
-	 * @param containerResizer
-	 * @param binderInfo
-	 * @param toolPanelReady
-	 * @param tpClient
-	 */
-	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
-		GWT.runAsync(TaskGraphsPanel.class, new RunAsyncCallback() {			
-			@Override
-			public void onSuccess() {
-				TaskGraphsPanel bcp = new TaskGraphsPanel(containerResizer, binderInfo, toolPanelReady);
-				tpClient.onSuccess(bcp);
-			}
-			
-			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_TaskGraphsPanel());
-				tpClient.onUnavailable();
-			}
-		});
-	}
-
-	/**
 	 * Called when the task folder view is attached.
 	 * 
 	 * Overrides the Widget.onAttach() method.
@@ -386,17 +361,16 @@ public class TaskGraphsPanel extends ToolPanelBase
 		m_statusPanel.add(tsg);
 	}
 
-	/**
+	/*
 	 * Called by the view to provide the graphs panel with its task
 	 * information.
-	 * 
-	 * @param taskProvider
-	 * @param expandGraphs
 	 */
-	public void renderTaskGraphs(TaskProvider taskProvider, boolean expandGraphs) {
+	private void renderTaskGraphsImpl(TaskProvider taskProvider, boolean expandGraphs) {
+		// Store the parameters...
 		m_taskProvider = taskProvider;
 		m_expandGraphs = expandGraphs;
 		
+		// ...and render the panel
 		renderTaskGraphsAsync();
 	}
 	
@@ -477,5 +451,80 @@ public class TaskGraphsPanel extends ToolPanelBase
 			// ...list.)
 			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
 		}
+	}
+	
+	
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	/* The following code is used to load the split point containing */
+	/* the task graphs and perform some operation on it.             */
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	
+	/*
+	 * Asynchronously loads the TaskGraphsPanel and performs some
+	 * operation against the code.
+	 */
+	private static void doAsyncOperation(
+			// Required creation parameters.
+			final RequiresResize	containerResizer,
+			final BinderInfo		binderInfo,
+			final ToolPanelReady	toolPanelReady,
+			final ToolPanelClient 	tpClient,
+			
+			// renderTaskGraphs parameters.
+			final TaskGraphsPanel	tgp,
+			final TaskProvider		taskProvider,
+			final boolean			expandGraphs) {
+		GWT.runAsync(TaskGraphsPanel.class, new RunAsyncCallback() {
+			@Override
+			public void onFailure(Throwable reason) {
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_TaskGraphsPanel());
+				if (null != tpClient) {
+					tpClient.onUnavailable();
+				}
+			}
+
+			@Override
+			public void onSuccess() {
+				// Is this a request to create a task graphs panel?
+				if ( null != tpClient )
+				{
+					// Yes!  Create it and return it via the callback.
+					TaskGraphsPanel tgp = new TaskGraphsPanel(containerResizer, binderInfo, toolPanelReady);
+					tpClient.onSuccess(tgp);
+				}
+				
+				else {
+					// No, it's not a request to create a task graphs
+					// panel!  It must be a request to render an
+					// existing one.  Render it.
+					tgp.renderTaskGraphsImpl(taskProvider, expandGraphs);
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Loads the TaskGraphsPanel split point and returns an instance
+	 * of it via the callback.
+	 * 
+	 * @param containerResizer
+	 * @param binderInfo
+	 * @param toolPanelReady
+	 * @param tpClient
+	 */
+	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+		doAsyncOperation(containerResizer, binderInfo, toolPanelReady, tpClient, null, null, false);
+	}
+	
+	/**
+	 * Called by the view to provide the graphs panel with its task
+	 * information.
+	 * 
+	 * @param tgp
+	 * @param taskProvider
+	 * @param expandGraphs
+	 */
+	public static void renderTaskGraphs(final TaskGraphsPanel tgp, final TaskProvider taskProvider, final boolean expandGraphs) {
+		doAsyncOperation(null, null, null, null, tgp, taskProvider, expandGraphs);
 	}
 }
