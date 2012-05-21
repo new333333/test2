@@ -41,22 +41,16 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Time: 4:47 PM
  */
 @XmlRootElement
-public class PrincipalBrief extends BaseRestObject {
-    private Long id;
-    private Long binderId;
-   	private String definitionId;
-   	private String title;
-   	private String emailAddress;
-   	private String entityType;
+public class PrincipalBrief extends EntryBrief {
     private String name;
-    private String permaLink;
+    private String emailAddress;
 
-    public Long getId() {
-        return id;
+    public PrincipalBrief() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public PrincipalBrief(Long id, String link) {
+        super(link);
+        super.setId(id);
     }
 
     public String getName() {
@@ -67,24 +61,6 @@ public class PrincipalBrief extends BaseRestObject {
         this.name = name;
     }
 
-    @XmlElement(name = "parent_binder_id")
-    public Long getBinderId() {
-        return binderId;
-    }
-
-    public void setBinderId(Long binderId) {
-        this.binderId = binderId;
-    }
-
-    @XmlElement(name = "definition_id")
-    public String getDefinitionId() {
-        return definitionId;
-    }
-
-    public void setDefinitionId(String definitionId) {
-        this.definitionId = definitionId;
-    }
-
     @XmlElement(name = "email_address")
     public String getEmailAddress() {
         return emailAddress;
@@ -92,31 +68,5 @@ public class PrincipalBrief extends BaseRestObject {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    @XmlElement(name = "entity_type")
-    public String getEntityType() {
-        return entityType;
-    }
-
-    public void setEntityType(String entityType) {
-        this.entityType = entityType;
-    }
-
-    @XmlElement(name = "permalink")
-    public String getPermaLink() {
-        return permaLink;
-    }
-
-    public void setPermaLink(String permaLink) {
-        this.permaLink = permaLink;
     }
 }

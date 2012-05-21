@@ -52,104 +52,13 @@ public class FolderEntriesResource extends AbstractResource {
 
 	@Context UriInfo uriInfo;
 
-	// Resource method for browser
-	/*
 	@GET
-	@Produces(MediaType.TEXT_XML)
-	public List<FolderEntry> getFolderEntriesBrowser() {
-		List<FolderEntry> result = new ArrayList<FolderEntry>();
-		FolderEntry entry = new FolderEntry();
-		entry.setId(10L);
-		entry.setTitle("My title");
-		entry.setDescription("My description");
-		result.add(entry);
-		entry = new FolderEntry();
-		entry.setId(20L);
-		entry.setTitle("Your title");
-		entry.setDescription("Your description");
-		result.add(entry);
-		return result;
-	}
-	*/
-	
-	// Resource method for application
-	@GET
-	@Produces( { MediaType.APPLICATION_XML })
-	public List<FolderEntry> getFolderEntriesXML(
-			@QueryParam("folderid") Long folderId,
-			@QueryParam("offset") Integer offset,
-			@QueryParam("maxcount") Integer maxCount) {
-		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters(); 
-		
-		List<FolderEntry> result = new ArrayList<FolderEntry>();
-		FolderEntry entry = new FolderEntry();
-		entry.setId(10L);
-		entry.setTitle("My title");
-		entry.setDescription("My description");
-		result.add(entry);
-		
-		if(maxCount != null && maxCount.intValue() > 1) {
-			entry = new FolderEntry();
-			entry.setId(20L);
-			entry.setTitle("Your title");
-			entry.setDescription("Your description");
-			result.add(entry);
-		}
-		return result;
-	}
-	
-	@GET
-	@Path("entry")
-	@Produces( { MediaType.APPLICATION_XML })
-	public FolderEntry getFolderEntryXML() {
-		FolderEntry entry = new FolderEntry();
-		entry.setId(100L);
-		entry.setTitle("Nice title");
-		entry.setDescription("Nice description");
-		return entry;
-	}
-	
-	
-	@GET
-	@Produces( { MediaType.APPLICATION_JSON })
+	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public List<FolderEntry> getFolderEntriesJSON(
 			@QueryParam("folderid") Long folderId,
 			@QueryParam("offset") Integer offset,
 			@QueryParam("maxcount") Integer maxCount) {
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters(); 
-		
-		List<FolderEntry> result = new ArrayList<FolderEntry>();
-		FolderEntry entry = new FolderEntry();
-		entry.setId(10L);
-		entry.setTitle("My title");
-		entry.setDescription("My description");
-		result.add(entry);
-		
-		if(maxCount != null && maxCount.intValue() > 1) {
-			entry = new FolderEntry();
-			entry.setId(20L);
-			entry.setTitle("Your title");
-			entry.setDescription("Your description");
-			result.add(entry);
-		}
-		return result;
+		return null;
 	}
-	
-	@GET
-	@Path("entry")
-	@Produces( { MediaType.APPLICATION_JSON })
-	public FolderEntry getFolderEntryJSON() {
-		FolderEntry entry = new FolderEntry();
-		entry.setId(200L);
-		entry.setTitle("Cool title");
-		entry.setDescription("Cool description");
-		return entry;
-	}
-
-	/*
-	// Sub-resource locator
-	@Path("{folderEntryId}")
-	public FolderEntryResource getFolderEntryResource(@PathParam("folderEntryId") long id) {
-		return new FolderEntryResource();
-	}*/
 }

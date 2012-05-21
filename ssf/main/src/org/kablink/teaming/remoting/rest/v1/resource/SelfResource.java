@@ -34,6 +34,8 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
@@ -70,5 +72,37 @@ public class SelfResource extends AbstractUserResource {
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public TeamBrief[] getTeams() {
         return getTeams(RequestContextHolder.getRequestContext().getUserId());
+    }
+
+    @GET
+    @Path("/roots")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public BinderBrief[] getRoots() {
+        return new BinderBrief[] {getFakeMyWorkspace(), getFakeMyTeams(), getFakeMyFavorites()};
+    }
+
+    private BinderBrief getFakeMyWorkspace() {
+        org.kablink.teaming.domain.User loggedInUser = RequestContextHolder.getRequestContext().getUser();
+        Binder myWorkspace = binderModule.getBinder(loggedInUser.getWorkspaceId());
+        BinderBrief binder = ResourceUtil.buildBinderBrief(myWorkspace);
+        //TODO: localize
+        binder.setTitle("My Workspace");
+        return binder;
+    }
+
+    private BinderBrief getFakeMyTeams() {
+        BinderBrief binder = new BinderBrief();
+        //TODO: localize
+        binder.setTitle("My Teams");
+        binder.addAdditionalLink("child_binders", "/self/teams");
+        return binder;
+    }
+
+    private BinderBrief getFakeMyFavorites() {
+        BinderBrief binder = new BinderBrief();
+        //TODO: localize
+        binder.setTitle("My Favorites");
+        binder.addAdditionalLink("child_binders", "/self/favorites");
+        return binder;
     }
 }

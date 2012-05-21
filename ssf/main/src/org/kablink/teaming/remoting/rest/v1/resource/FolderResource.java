@@ -32,63 +32,95 @@
  */
 package org.kablink.teaming.remoting.rest.v1.resource;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 
 import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.spi.resource.Singleton;
-import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
-import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
-import org.kablink.teaming.rest.v1.model.Folder;
+import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
+import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.FolderEntry;
-import org.kablink.teaming.rest.v1.model.Subscription;
-import org.kablink.teaming.rest.v1.model.Tag;
-import org.kablink.teaming.rest.v1.model.Team;
+import org.kablink.teaming.rest.v1.model.FolderEntryBrief;
+import org.kablink.teaming.rest.v1.model.SearchResults;
+import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.util.api.ApiErrorCode;
 
 @Path("/v1/folder/{id}")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class FolderResource extends AbstractResource {
-    @InjectParam("binderModule") private BinderModule binderModule;
+public class FolderResource extends AbstractBinderResource {
+    @InjectParam("folderModule") protected FolderModule folderModule;
 
-	// Read folder (meaning returning folder properties, not including children list)
-	@GET
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public Folder getFolder(@PathParam("id") long id) {
-        org.kablink.teaming.domain.Binder binder = binderModule.getBinder(id);
-        if (binder instanceof org.kablink.teaming.domain.Folder) {
-            return (Folder) ResourceUtil.buildBinder(binder);
-        }
-        throw new NotFoundException(ApiErrorCode.FOLDER_NOT_FOUND, "NOT FOUND");
-	}
-	
 	// Read sub-folders
 	@GET
-	@Path("subfolders")
+	@Path("folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public List<Folder> getSubFolders(@PathParam("id") long id) {
-		return null;
+	public SearchResults<BinderBrief> getSubFolders(@PathParam("id") long id) {
+        SearchFilter filter = new SearchFilter();
+        filter.addFolderFilter("");
+        return getSubBinders(id, filter);
 	}
 	
 	// Read entries
 	@GET
 	@Path("entries")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public List<FolderEntry> getFolderEntries(@PathParam("id") long id) {
+	public SearchResults<FolderEntryBrief> getFolderEntries(@PathParam("id") long id,
+                                                            @QueryParam("first") Integer offset,
+                                                            @QueryParam("count") Integer maxCount) {
+        _getFolder(id);
+
+        Map<String, Object> options = new HashMap<String, Object>();
+        if (offset!=null) {
+            options.put(ObjectKeys.SEARCH_OFFSET, offset);
+        } else {
+            offset = 0;
+        }
+        if (maxCount!=null) {
+            options.put(ObjectKeys.SEARCH_MAX_HITS, maxCount);
+        }
+        Map resultMap = folderModule.getFullEntries(id, options);
+        SearchResults<FolderEntryBrief> results = new SearchResults<FolderEntryBrief>(offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(), resultMap, "/folder/" + id + "/entries", offset);
+		return results;
+	}
+
+	// Read entries
+	@GET
+	@Path("files")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	public List<FolderEntry> getFiles(@PathParam("id") long id) {
 		return null;
 	}
 
+    @Override
+    protected Binder _getBinder(long id) {
+        return _getFolder(id);
+    }
+
+    private org.kablink.teaming.domain.Folder _getFolder(long id) {
+        try{
+            org.kablink.teaming.domain.Binder binder = binderModule.getBinder(id);
+            if (binder instanceof org.kablink.teaming.domain.Folder) {
+                return (org.kablink.teaming.domain.Folder) binder;
+            }
+        } catch (NoBinderByTheIdException e) {
+            // Throw exception below.
+        }
+        throw new NotFoundException(ApiErrorCode.FOLDER_NOT_FOUND, "NOT FOUND");
+    }
 }

@@ -79,7 +79,6 @@ public class FolderEntryResource extends AbstractResource {
 		FolderEntry entry = new FolderEntry();
 		entry.setId(hEntry.getId());
 		entry.setTitle(hEntry.getTitle());
-		entry.setDescription(hEntry.getDescription().getText());
 		return entry;
 	}
 	
