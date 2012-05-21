@@ -60,7 +60,10 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -89,6 +92,7 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
 /**
@@ -107,6 +111,7 @@ public class ShareThisDlg extends DlgBox
 	private RadioButton m_usersRB;
 	private RadioButton m_groupsRB;
 	private FindCtrl m_findCtrl;
+	private FlowPanel m_mainPanel;
 	private ImageResource m_deleteImgR;
 	private FlexTable m_recipientTable;
 	private FlowPanel m_shareWithTeamsPanel;
@@ -114,13 +119,17 @@ public class ShareThisDlg extends DlgBox
 	private FlowPanel m_recipientTablePanel;
 	private FlexCellFormatter m_cellFormatter;
 	private List<EntityId> m_entityIds;
+	private List<HandlerRegistration> m_registeredEventHandlers;
 	private AsyncCallback<VibeRpcResponse> m_readTeamsCallback;
 	private AsyncCallback<VibeRpcResponse> m_shareEntryCallback;
+	private String m_title;
+	private UIObject m_target;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+	private static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[]
+    {
 		// Search events.
 		TeamingEvents.SEARCH_FIND_RESULTS,
 	};
@@ -385,28 +394,21 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	
-	/**
+	/*
+	 * Class constructor.
 	 * 
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
-	public ShareThisDlg(
-		boolean autoHide,
-		boolean modal,
-		int left,
-		int top,
-		String dlgCaption )
+	private ShareThisDlg()
 	{
-		// Initialize the superclass
-		super( autoHide, modal, left, top );
-
-		// Register the events to be handled by this class.
-		EventHelper.registerEventHandlers(
-			GwtTeaming.getEventBus(),
-			m_registeredEvents,
-			this);
+		// Initialize the superclass.
+		super( false, true );
 		
 		// Create the dialog's content
 		createAllDlgContent(
-			dlgCaption,
+			"",		// // No caption yet.  It's set appropriately when the dialog runs.
 			this,	// EditSuccessfulHandler
 			this,	// EditCanceledHandler
 			null );
@@ -560,41 +562,12 @@ public class ShareThisDlg extends DlgBox
 	@Override
 	public Panel createContent( Object callbackData )
 	{
-		FlowPanel mainPanel;
-		FlowPanel inputPanel;
-		FlowPanel recipientPanel;
-		Label comments;
-		
-		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "teamingDlgBoxContent" );
-		mainPanel.addStyleName( "dlgContent" );
-		
-		// Add a textbox for the title
-		inputPanel = new FlowPanel();
-		inputPanel.addStyleName( "shareThisTitlePanel" );
-		m_titleTextBox = new TextBox();
-		m_titleTextBox.addStyleName( "shareThisTitleTextBox" );
-		inputPanel.add( m_titleTextBox );
-		mainPanel.add( inputPanel );
-		
-		// Add the controls for defining the recipients
-		recipientPanel = createRecipientControls();
-		mainPanel.add( recipientPanel );
-		
-		// Add a "Comments:" label before the textbox.
-		comments = new Label( GwtTeaming.getMessages().commentsLabel() );
-		comments.addStyleName( "shareThisCommentsLabel" );
-		mainPanel.add( comments );
-		
-		// Create a textbox
-		inputPanel = new FlowPanel();
-		m_msgTextArea = new TextArea();
-		m_msgTextArea.addStyleName( "shareThisTextArea" );
-		m_msgTextArea.addStyleName( "shareThisTextAreaBorder" );
-		inputPanel.add( m_msgTextArea );
-		mainPanel.add( inputPanel );
-		
-		return mainPanel;
+		// Construct the main dialog panel.
+		m_mainPanel = new FlowPanel();
+		m_mainPanel.addStyleName( "teamingDlgBoxContent" );
+		m_mainPanel.addStyleName( "dlgContent" );
+
+		return m_mainPanel;
 	}
 	
 	/**
@@ -675,25 +648,8 @@ public class ShareThisDlg extends DlgBox
 			rowFormatter.setVerticalAlign( 0, HasVerticalAlignment.ALIGN_TOP );
 			mainPanel.add( table );
 			
-			FindCtrl.createAsync(
-					this,
-					GwtSearchCriteria.SearchType.USER,
-					new FindCtrlClient() {				
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// onUnavailable()
-				
-				@Override
-				public void onSuccess( FindCtrl findCtrl )
-				{
-					m_findCtrl = findCtrl;
-					m_findCtrl.setIsSendingEmail( true );
-					table.setWidget( 0, 0, m_findCtrl );
-				}// end onSuccess()
-			} );
+			m_findCtrl.setIsSendingEmail( true );
+			table.setWidget( 0, 0, m_findCtrl );
 		}
 		
 		// Add some space
@@ -1121,14 +1077,14 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private void init( String title, List<EntityId> entityIds )
+	private void init()
 	{
 		GetMyTeamsCmd cmd;
 		
-		if ( GwtClientHelper.hasString( title ))
+		if ( GwtClientHelper.hasString( m_title ))
 		{
-			m_titleTextBox.setVisible( true  );
-			m_titleTextBox.setText(    title );
+			m_titleTextBox.setVisible( true    );
+			m_titleTextBox.setText(    m_title );
 		}
 		else
 		{
@@ -1136,7 +1092,6 @@ public class ShareThisDlg extends DlgBox
 		}
 
 		m_msgTextArea.setText( "" );
-		m_entityIds = entityIds;
 		m_findCtrl.setInitialSearchString( "" );
 		m_usersRB.setValue( Boolean.TRUE );
 		m_groupsRB.setValue( Boolean.FALSE );
@@ -1226,20 +1181,19 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	
-	/**
-	 * 
+	/*
 	 */
-	public void showDlg( UIObject target, String title, List<EntityId> entityIds  )
+	private void showDlg()
 	{
-		init( title, entityIds );
+		init();
 		
 		hideErrorPanel();
 		showContentPanel();
 		createFooterButtons( DlgBox.DlgButtonMode.OkCancel );
 
-		if ( null == target )
-		     show(                 true   );	// true -> Show centered when not given a target.
-		else showRelativeToTarget( target );
+		if ( null == m_target )
+		     show( true );	// true -> Show centered when not given a target.
+		else showRelativeToTarget( m_target );
 	}
 	
 	/**
@@ -1280,6 +1234,33 @@ public class ShareThisDlg extends DlgBox
 			m_shareWithTeamsPanel.setVisible( true );
 			adjustMyTeamsPanelHeight();
 		}
+	}
+	
+	/**
+	 * Called when the dialog is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach()
+	{
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Called when the dialog is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach()
+	{
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
 	}
 	
 	/**
@@ -1343,4 +1324,263 @@ public class ShareThisDlg extends DlgBox
 			m_findCtrl.clearText();
 		}
 	}// end onSearchFindResults()
+	
+	/*
+	 * Asynchronously loads the find control.
+	 */
+	private void loadPart1Async()
+	{
+		ScheduledCommand doLoad = new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				loadPart1Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously loads the find control.
+	 */
+	private void loadPart1Now()
+	{
+		FindCtrl.createAsync( this, GwtSearchCriteria.SearchType.FOLDERS, new FindCtrlClient()
+		{			
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess( FindCtrl findCtrl )
+			{
+				// ...and populate the dialog.
+				m_findCtrl = findCtrl;
+				populateDlgAsync();
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously runs the given instance of the move entries
+	 * dialog.
+	 */
+	private static void runDlgAsync( final ShareThisDlg stDlg, final UIObject target, final String caption, final String title, final List<EntityId> entityIds )
+	{
+		ScheduledCommand doRun = new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				stDlg.runDlgNow( target, caption, title, entityIds );
+			}
+		};
+		Scheduler.get().scheduleDeferred( doRun );
+	}
+	
+	/*
+	 * Synchronously runs the given instance of the move entries
+	 * dialog.
+	 */
+	private void runDlgNow( UIObject target, String caption, String title, List<EntityId> entityIds )
+	{
+		// Set the caption...
+		setCaption( caption );
+		
+		// ...and store the parameters.
+		m_target    = target;
+		m_title     = title;
+		m_entityIds = entityIds;
+		
+		// If we haven't completed construction of the dialog yet,
+		// complete it now.  Otherwise, simply show it.
+		if (null == m_findCtrl)
+		     loadPart1Async();	// This completes construction and shows the dialog.
+		else showDlg();			// This simply shows the dialog.
+	}
+
+	/*
+	 * Asynchronously populates the contents of the dialog.
+	 */
+	private void populateDlgAsync()
+	{
+		ScheduledCommand doPopulate = new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				populateDlgNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred( doPopulate );
+	}
+	
+	/*
+	 * Synchronously populates the contents of the dialog.
+	 */
+	private void populateDlgNow()
+	{
+		FlowPanel inputPanel;
+		FlowPanel recipientPanel;
+		Label comments;
+		
+		// No!  Add a textbox for the title
+		inputPanel = new FlowPanel();
+		inputPanel.addStyleName( "shareThisTitlePanel" );
+		m_titleTextBox = new TextBox();
+		m_titleTextBox.addStyleName( "shareThisTitleTextBox" );
+		inputPanel.add( m_titleTextBox );
+		m_mainPanel.add( inputPanel );
+		
+		// Add the controls for defining the recipients
+		recipientPanel = createRecipientControls();
+		m_mainPanel.add( recipientPanel );
+		
+		// Add a "Comments:" label before the textbox.
+		comments = new Label( GwtTeaming.getMessages().commentsLabel() );
+		comments.addStyleName( "shareThisCommentsLabel" );
+		m_mainPanel.add( comments );
+		
+		// Create a textbox
+		inputPanel = new FlowPanel();
+		m_msgTextArea = new TextArea();
+		m_msgTextArea.addStyleName( "shareThisTextArea" );
+		m_msgTextArea.addStyleName( "shareThisTextAreaBorder" );
+		inputPanel.add( m_msgTextArea );
+		m_mainPanel.add( inputPanel );
+		
+		// Show the dialog.
+		showDlg();
+	}
+	
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents()
+	{
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if ( null == m_registeredEventHandlers )
+		{
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if ( m_registeredEventHandlers.isEmpty() )
+		{
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				REGISTERED_EVENTS,
+				this,
+				m_registeredEventHandlers );
+		}
+	}
+
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents()
+	{
+		// If we have a non-empty list of registered events...
+		if ( ( null != m_registeredEventHandlers ) && ( ! ( m_registeredEventHandlers.isEmpty() ) ) )
+		{
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers( m_registeredEventHandlers );
+		}
+	}
+
+	
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	/* The following code is used to load the split point containing */
+	/* the share this dialog and perform some operation on it.       */
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	
+	/**
+	 * Callback interface to interact with the share this dialog
+	 * asynchronously after it loads. 
+	 */
+	public interface ShareThisDlgClient
+	{
+		void onSuccess( ShareThisDlg stDlg );
+		void onUnavailable();
+	}
+
+	/*
+	 * Asynchronously loads the ShareThisDlg and performs some
+	 * operation against the code.
+	 */
+	private static void doAsyncOperation(
+			// Required creation parameters.
+			final ShareThisDlgClient stDlgClient,
+			
+			// initAndShow parameters,
+			final ShareThisDlg		stDlg,
+			final UIObject			target,
+			final String			caption,
+			final String			title,
+			final List<EntityId>	entityIds )
+	{
+		GWT.runAsync(ShareThisDlg.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onFailure(Throwable reason)
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ShareThisDlg() );
+				if ( null != stDlgClient )
+				{
+					stDlgClient.onUnavailable();
+				}
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				// Is this a request to create a dialog?
+				if ( null != stDlgClient )
+				{
+					// Yes!  Create it and return it via the callback.
+					ShareThisDlg stDlg = new ShareThisDlg();
+					stDlgClient.onSuccess( stDlg );
+				}
+				
+				else {
+					// No, it's not a request to create a dialog!  It
+					// must be a request to run an existing one.  Run
+					// it.
+					runDlgAsync( stDlg, target, caption, title, entityIds );
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Loads the ShareThisDlg split point and returns an instance
+	 * of it via the callback.
+	 * 
+	 * @param stDlgClient
+	 */
+	public static void createAsync( ShareThisDlgClient stDlgClient )
+	{
+		doAsyncOperation( stDlgClient, null, null, null, null, null );
+	}
+	
+	/**
+	 * Initializes and shows the share this dialog.
+	 * 
+	 * @param stDlg
+	 * @param caption
+	 * @param title
+	 * @param entityIds
+	 */
+	public static void initAndShow( ShareThisDlg stDlg, UIObject target, String caption, String title, List<EntityId> entityIds )
+	{
+		doAsyncOperation( null, stDlg, target, caption, title, entityIds );
+	}
 }

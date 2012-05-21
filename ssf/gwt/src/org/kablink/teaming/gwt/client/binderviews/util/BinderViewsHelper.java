@@ -59,9 +59,8 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
-import org.kablink.teaming.gwt.client.widgets.FindCtrl;
-import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgClient;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 
 import com.google.gwt.core.client.Scheduler;
@@ -120,7 +119,7 @@ public class BinderViewsHelper {
 					ScheduledCommand doSubscribe = new ScheduledCommand() {
 						@Override
 						public void execute() {
-							changeEntryTypesNow(entityIds);
+							changeEntryTypesAsync(entityIds);
 						}
 					};
 					Scheduler.get().scheduleDeferred(doSubscribe);
@@ -131,15 +130,29 @@ public class BinderViewsHelper {
 		else {
 			// Yes, we've instantiated a change entry types dialog
 			// already!  Simply show it.
-			changeEntryTypesNow(entityIds);
+			changeEntryTypesAsync(entityIds);
 		}
 	}
 
 	/*
+	 * Asynchronously invokes the appropriate UI to change the entry
+	 * type of the entries based on a List<EntityId> of the entries.
+	 */
+	private static void changeEntryTypesAsync(final List<EntityId> entityIds) {
+		ScheduledCommand doShow = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				changeEntryTypesNow(entityIds);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doShow);
+	}
+	
+	/*
 	 * Synchronously invokes the appropriate UI to change the entry
 	 * type of the entries based on a List<EntityId> of the entries.
 	 */
-	private static void changeEntryTypesNow(List<EntityId> entityIds) {
+	private static void changeEntryTypesNow(final List<EntityId> entityIds) {
 		ChangeEntryTypesDlg.initAndShow(m_cetDlg, entityIds);
 	}
 	
@@ -171,7 +184,7 @@ public class BinderViewsHelper {
 				public void onSuccess(CopyMoveEntriesDlg cmeDlg) {
 					// ...and run it to copy.
 					m_cmeDlg = cmeDlg;
-					showCMEDlgNow(m_cmeDlg, true, folderType, entityIds);
+					showCMEDlgAsync(m_cmeDlg, true, folderType, entityIds);
 				}
 			});
 		}
@@ -179,7 +192,7 @@ public class BinderViewsHelper {
 		else {
 			// Yes, we've created a copy/move entries dialog already!
 			// Run it to copy.
-			showCMEDlgNow(m_cmeDlg, true, folderType, entityIds);
+			showCMEDlgAsync(m_cmeDlg, true, folderType, entityIds);
 		}
 	}
 
@@ -537,7 +550,7 @@ public class BinderViewsHelper {
 				public void onSuccess(CopyMoveEntriesDlg cmeDlg) {
 					// ...and run it to move.
 					m_cmeDlg = cmeDlg;
-					showCMEDlgNow(m_cmeDlg, false, folderType, entityIds);
+					showCMEDlgAsync(m_cmeDlg, false, folderType, entityIds);
 				}
 			});
 		}
@@ -545,7 +558,7 @@ public class BinderViewsHelper {
 		else {
 			// Yes, we've created a copy/move entries dialog already!
 			// Run it to move.
-			showCMEDlgNow(m_cmeDlg, false, folderType, entityIds);
+			showCMEDlgAsync(m_cmeDlg, false, folderType, entityIds);
 		}
 	}
 	
@@ -714,41 +727,48 @@ public class BinderViewsHelper {
 			return;
 		}
 
-		// If we've already instantiated a share dialog...
-		if (null != m_shareDlg) {
-			// ...simply invoke it.
-			showShareDlgAsync(entityIds);
-			return;
+		// Have we created a copy/move entries dialog yet?
+		if (null == m_shareDlg) {
+			// No!  Create one now...
+			ShareThisDlg.createAsync(new ShareThisDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(ShareThisDlg stDlg) {
+					// ...and show it with the given entity IDs.
+					m_shareDlg = stDlg;
+					showShareDlgAsync(entityIds);
+				}
+			});
 		}
 		
-		// Otherwise, we need to instantiate one now!  Note that the
-		// 'Share This' dialog requires the FindCtrl be loaded before
-		// it loads in order to function.  Prefetch the FindControl...
-		ScheduledCommand doPrefetch = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				FindCtrl.prefetch(new FindCtrlClient()
-				{
-					@Override
-					public void onUnavailable() {
-						// Nothing to do.  Error handled in
-						// asynchronous provider.
-					}
-					
-					@Override
-					public void onSuccess(FindCtrl findCtrl) {
-						// ...and create and show the dialog.
-						m_shareDlg = new ShareThisDlg(false, true, 0, 0, m_messages.shareCaption());
-						showShareDlgAsync(entityIds);
-					}
-				});
-			}
-		};
-		Scheduler.get().scheduleDeferred( doPrefetch );
+		else {
+			// Yes, we've already create a share dialog!  Simply show
+			// it with the given entry IDs.
+			showShareDlgAsync(entityIds);
+		}
 	}
 
 	/*
-	 * Initializes and shows and instance of the copy/move entries
+	 * Asynchronously initializes and shows the copy/move entries
+	 * dialog.
+	 */
+	private static void showCMEDlgAsync(final CopyMoveEntriesDlg cmeDlg, final boolean invokeToCopy, final FolderType folderType, final List<EntityId> entityIds) {
+		ScheduledCommand doShow = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showCMEDlgNow(cmeDlg, invokeToCopy, folderType, entityIds);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doShow);
+	}
+	
+	/*
+	 * Synchronously initializes and shows the copy/move entries
 	 * dialog.
 	 */
 	private static void showCMEDlgNow(final CopyMoveEntriesDlg cmeDlg, final boolean invokeToCopy, final FolderType folderType, final List<EntityId> entityIds) {
@@ -769,19 +789,15 @@ public class BinderViewsHelper {
 				showShareDlgNow(entityIds);
 			}
 		};
-		Scheduler.get().scheduleDeferred( doShow );
+		Scheduler.get().scheduleDeferred(doShow);
 	}
 	
 	/*
 	 * Synchronously shows the share dialog.
 	 */
 	private static void showShareDlgNow(List<EntityId> entityIds) {
-		int entities = entityIds.size();
-		m_shareDlg.setCaption(
-			(1 < entities)                   ?
-				m_messages.shareTheseItems() :
-				m_messages.shareThisItem());
-		m_shareDlg.showDlg(null, null, entityIds);
+		String caption = GwtClientHelper.patchMessage(m_messages.shareTheseItems(), String.valueOf(entityIds.size()));
+		ShareThisDlg.initAndShow(m_shareDlg, null, caption, null, entityIds);
 	}
 
 	/**
@@ -815,7 +831,7 @@ public class BinderViewsHelper {
 					ScheduledCommand doSubscribe = new ScheduledCommand() {
 						@Override
 						public void execute() {
-							subscribeToEntriesNow(entityIds);
+							subscribeToEntriesAsync(entityIds);
 						}
 					};
 					Scheduler.get().scheduleDeferred(doSubscribe);
@@ -826,15 +842,29 @@ public class BinderViewsHelper {
 		else {
 			// Yes, we've instantiated an email notification dialog
 			// already!  Simply show it.
-			subscribeToEntriesNow(entityIds);
+			subscribeToEntriesAsync(entityIds);
 		}
 	}
 
 	/*
+	 * Asynchronously invokes the appropriate UI to subscribe to the
+	 * entries based on a List<EntityId> of the entries.
+	 */
+	private static void subscribeToEntriesAsync(final List<EntityId> entityIds) {
+		ScheduledCommand doShow = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				subscribeToEntriesNow(entityIds);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doShow);
+	}
+	
+	/*
 	 * Synchronously invokes the appropriate UI to subscribe to the
 	 * entries based on a List<EntityId> of the entries.
 	 */
-	private static void subscribeToEntriesNow(List<EntityId> entityIds) {
+	private static void subscribeToEntriesNow(final List<EntityId> entityIds) {
 		EmailNotificationDlg.initAndShow(m_enDlg, entityIds);
 	}
 	

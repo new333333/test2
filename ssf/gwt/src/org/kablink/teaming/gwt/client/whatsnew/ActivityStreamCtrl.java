@@ -33,8 +33,6 @@
 
 package org.kablink.teaming.gwt.client.whatsnew;
 
-
-
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,9 +65,8 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.widgets.FindCtrl;
-import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgClient;
 import org.kablink.teaming.gwt.client.widgets.SubscribeToEntryDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
@@ -1243,16 +1240,14 @@ public class ActivityStreamCtrl extends ResizeComposite
 				// If we've already created the dialog... 
 				if ( m_shareThisDlg != null )
 				{
-					// ...simply show it against with the entry.
+					// ...simply show it again with the entry.
 					showShareThisDlg( entry );
 				}
 				
 				else
 				{
-					// Otherwise, we need to create it!  Note that the "Share
-					// This" dialog requires the FindCtrl be loaded before it
-					// loads in order to function.  Prefetch the FindControl...
-					FindCtrl.prefetch(new FindCtrlClient()
+					// Otherwise, we need to create it!
+					ShareThisDlg.createAsync(new ShareThisDlgClient()
 					{
 						@Override
 						public void onUnavailable()
@@ -1262,10 +1257,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 						}// end onUnavailable()
 						
 						@Override
-						public void onSuccess(FindCtrl findCtrl)
+						public void onSuccess( ShareThisDlg stDlg )
 						{
-							// ...and create and show the dialog.
-							m_shareThisDlg = new ShareThisDlg( false, true, 0, 0, GwtTeaming.getMessages().shareCaption() );
+							m_shareThisDlg = stDlg;
 							showShareThisDlg( entry );
 						}// end onSuccess()
 					});
@@ -1274,6 +1268,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		};
 		Scheduler.get().scheduleDeferred( cmd );
 	}// end invokeShareThisDlg()
+
 	
 	/**
 	 * Set the information that is used when searching a specific folder 
@@ -1289,9 +1284,14 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	private void showShareThisDlg( final ActivityStreamUIEntry entry )
 	{
-		List<EntityId> eIdList = new ArrayList<EntityId>();
-		eIdList.add( entry.getEntryEntityId() );
-		m_shareThisDlg.showDlg( entry, entry.getEntryTitle(), eIdList );
+		List<EntityId> entityIds = new ArrayList<EntityId>();
+		entityIds.add( entry.getEntryEntityId() );
+		ShareThisDlg.initAndShow(
+			m_shareThisDlg,
+			entry,	// Show the dialog relative to this.
+			GwtTeaming.getMessages().shareCaption(),
+			entry.getEntryTitle(),
+			entityIds );
 	}// end showShareThisDlg()
 	
 	
