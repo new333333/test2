@@ -895,7 +895,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			}
 		}
 		
-		// If we get here, reply refers to List<EntityId> of the entry
+		// If we get here, reply refers to List<EntityId> of the entity
 		// IDs of the selected rows from the data table.  Return it.
 		return reply;
 	}
@@ -909,11 +909,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	public List<Long> getSelectedEntryIdsAsLongs() {
 		// Scan the List<EntityId>'s from the selected rows in the
 		// table...
-		List<Long>    reply    = new ArrayList<Long>();
-		List<EntityId> entryIds = getSelectedEntityIds();
-		for (EntityId entryId:  entryIds) {
+		List<Long>     reply     = new ArrayList<Long>();
+		List<EntityId> entityIds = getSelectedEntityIds();
+		for (EntityId  entityId:  entityIds) {
 			// ...adding each the List<Long> we'll return.
-			reply.add(entryId.getEntityId());
+			reply.add(entityId.getEntityId());
 		}
 		
 		// If we get here, reply refers to List<Long> of the entry IDs
