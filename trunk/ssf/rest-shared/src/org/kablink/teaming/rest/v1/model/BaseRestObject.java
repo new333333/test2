@@ -41,10 +41,17 @@ import java.util.List;
  * Date: 5/16/12
  * Time: 12:43 PM
  */
-public class BaseRestObject {
+public abstract class BaseRestObject {
     private String link;
     @XmlElement(name="links")
     private List<Link> additionalLinks;
+
+    public BaseRestObject() {
+    }
+
+    public BaseRestObject(String link) {
+        this.link = link;
+    }
 
     public String getLink() {
         return link;

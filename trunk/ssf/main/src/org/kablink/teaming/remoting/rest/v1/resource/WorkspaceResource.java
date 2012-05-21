@@ -32,64 +32,62 @@
  */
 package org.kablink.teaming.remoting.rest.v1.resource;
 
-import java.util.List;
-
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
-import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.spi.resource.Singleton;
-import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
-import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
-import org.kablink.teaming.rest.v1.model.Folder;
-import org.kablink.teaming.rest.v1.model.Subscription;
-import org.kablink.teaming.rest.v1.model.Tag;
-import org.kablink.teaming.rest.v1.model.Team;
-import org.kablink.teaming.rest.v1.model.Workspace;
+import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.SearchResults;
+import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.util.api.ApiErrorCode;
 
 @Path("/v1/workspace/{id}")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class WorkspaceResource {
-    @InjectParam("binderModule") private BinderModule binderModule;
-
+public class WorkspaceResource extends AbstractBinderResource {
 	// TODO $$$ Get top workspace ID
 	//public long binder_getTopWorkspaceId(String accessToken);
 	
-	// Read workspace (meaning returning workspace properties, not including children list)
-	@GET
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public Workspace getWorkspace(@PathParam("id") long id) {
-        org.kablink.teaming.domain.Binder binder = binderModule.getBinder(id);
-        if (binder instanceof org.kablink.teaming.domain.Workspace) {
-            return (Workspace) ResourceUtil.buildBinder(binder);
-        }
-        throw new NotFoundException(ApiErrorCode.WORKSPACE_NOT_FOUND, "NOT FOUND");
-	}
-	
 	// Read subworkspaces
 	@GET
-	@Path("subworkspaces")
+	@Path("workspaces")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public List<Workspace> getSubWorkspaces(@PathParam("id") long id) {
-		return null;
+	public SearchResults<BinderBrief> getSubWorkspaces(@PathParam("id") long id) {
+        SearchFilter filter = new SearchFilter();
+        filter.addWorkspaceFilter("");
+        return getSubBinders(id, filter);
 	}
-	
-	// Read subfolders
+
+    // Read subfolders
 	@GET
-	@Path("subfolders")
+	@Path("folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public List<Folder> getSubFolders(@PathParam("id") long id) {
-		return null;
+	public SearchResults<BinderBrief> getSubFolders(@PathParam("id") long id) {
+        SearchFilter filter = new SearchFilter();
+        filter.addFolderFilter("");
+        return getSubBinders(id, filter);
 	}
+
+    @Override
+    protected Binder _getBinder(long id) {
+        return _getWorkspace(id);
+    }
+
+    private org.kablink.teaming.domain.Workspace _getWorkspace(long id) {
+        try{
+            org.kablink.teaming.domain.Binder binder = binderModule.getBinder(id);
+            if (binder instanceof org.kablink.teaming.domain.Workspace) {
+                return (org.kablink.teaming.domain.Workspace) binder;
+            }
+        } catch (NoBinderByTheIdException e) {
+            // Throw exception below.
+        }
+        throw new NotFoundException(ApiErrorCode.WORKSPACE_NOT_FOUND, "NOT FOUND");
+    }
 }

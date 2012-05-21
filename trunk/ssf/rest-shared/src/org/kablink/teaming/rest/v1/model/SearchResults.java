@@ -45,8 +45,18 @@ import java.util.List;
 @XmlRootElement
 public class SearchResults<T> {
     private int first;
+    private int count;
     private int total;
+    private String next;
     private List<T> results = new ArrayList<T>();
+
+    public SearchResults() {
+        first = 0;
+    }
+
+    public SearchResults(int first) {
+        this.first = first;
+    }
 
     public int getFirst() {
         return first;
@@ -56,12 +66,28 @@ public class SearchResults<T> {
         this.first = first;
     }
 
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
     public int getTotal() {
         return total;
     }
 
     public void setTotal(int total) {
         this.total = total;
+    }
+
+    public String getNext() {
+        return next;
+    }
+
+    public void setNext(String next) {
+        this.next = next;
     }
 
     @XmlElement(name = "results")

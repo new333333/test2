@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.remoting.rest.v1.util;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.definition.DefinitionUtils;
@@ -55,6 +56,8 @@ import org.kablink.teaming.web.util.WebUrlUtil;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class contains utility methods that are shared among multiple resource types.
@@ -104,8 +107,8 @@ public class ResourceUtil {
         model.setCreation(buildHistoryStamp(binder.getCreation()));
         model.setModification(buildHistoryStamp(binder.getModification()));
         model.setDefinitionType(binder.getDefinitionType());
-        model.setPermaLink(binder.getPermaLink());
-        model.setLink(getBinderLinkUri(binder));
+        model.setLink(getBinderLinkUri(model));
+        populateBinderLinks(model, model.isWorkspace(), model.isFolder());
         return model;
     }
 
@@ -165,6 +168,7 @@ public class ResourceUtil {
 
         if (user.getId().equals(RequestContextHolder.getRequestContext().getUserId())) {
             model.setLink("/self");
+            model.addAdditionalLink("roots", model.getLink() + "/roots");
         }
         model.addAdditionalLink("favorites", model.getLink() + "/favorites");
         model.addAdditionalLink("teams", model.getLink() + "/teams");
@@ -271,6 +275,7 @@ public class ResourceUtil {
             model.setFamily(DefinitionUtils.getFamily(def));
         }
         model.setLink(getBinderLinkUri(binder));
+        populateBinderLinks(model, model instanceof Workspace, model instanceof Folder);
     }
 
     private static void populateWorkspace(Workspace model, org.kablink.teaming.domain.Workspace workspace) {
@@ -301,8 +306,8 @@ public class ResourceUtil {
         if(binder.getModification() != null) {
             model.setDefinitionType(binder.getDefinitionType());
         }
-        model.setPermaLink(PermaLinkUtil.getPermalink(binder));
-        model.setLink(getBinderLinkUri(binder));
+        model.setLink(getBinderLinkUri(model));
+        populateBinderLinks(model, model.isWorkspace(), model.isFolder());
     }
 
     private static AverageRating buildAverageRating(org.kablink.teaming.domain.AverageRating rating){
@@ -358,7 +363,7 @@ public class ResourceUtil {
         return "/binder/" + binder.getId();
     }
 
-    private static String getBinderLinkUri(org.kablink.teaming.domain.TeamInfo binder) {
+    public static String getBinderLinkUri(BinderBrief binder) {
         if ("folder".equals(binder.getEntityType())) {
             return "/folder/" + binder.getId();
         } else if ("workspace".equals(binder.getEntityType())) {
@@ -374,7 +379,22 @@ public class ResourceUtil {
         return null;
     }
 
+    public static String getFolderEntryLinkUri(FolderEntryBrief entry) {
+        return "/folder_entry/" + entry.getId();
+    }
+
     public static String getUserLinkUri(Long id) {
         return "/user/" + id;
+    }
+
+    public static void populateBinderLinks(BaseRestObject model, boolean isWorkspace, boolean isFolder) {
+        model.addAdditionalLink("child_binders", model.getLink() + "/binders");
+        model.addAdditionalLink("child_folders", model.getLink() + "/folders");
+        if (isWorkspace) {
+            model.addAdditionalLink("child_workspaces", model.getLink() + "/workspaces");
+        }
+        if (isFolder) {
+            model.addAdditionalLink("child_entries", model.getLink() + "/entries");
+        }
     }
 }

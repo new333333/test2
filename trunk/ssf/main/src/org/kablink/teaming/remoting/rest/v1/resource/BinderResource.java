@@ -32,35 +32,13 @@
  */
 package org.kablink.teaming.remoting.rest.v1.resource;
 
-import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.spi.resource.Singleton;
-import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
-import org.kablink.teaming.rest.v1.model.Binder;
-
-import java.util.List;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 @Path("/v1/binder/{id}")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class BinderResource extends AbstractResource {
-
-    @InjectParam("binderModule") private BinderModule binderModule;
-
-    @GET
-   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public Binder getBinder(@PathParam("id") long id) {
-        org.kablink.teaming.domain.Binder binder = binderModule.getBinder(id);
-        return ResourceUtil.buildBinder(binder);
-    }
-
+public class BinderResource extends AbstractBinderResource {
 }

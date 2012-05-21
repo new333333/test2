@@ -41,63 +41,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Time: 3:54 PM
  */
 @XmlRootElement
-public class BinderBrief extends BaseRestObject {
-    private Long id;
-   	private String title;
-   	private String entityType;
-   	private String family;
+public class BinderBrief extends DefinableEntityBrief {
    	private Boolean library;
-   	private Integer definitionType; // Shows what kind binder this is, that is, whether workspace or folder. Corresponds to the constants in Definition.java
    	private String path;
-   	private HistoryStamp creation;
-   	private HistoryStamp modification;
-   	private String permaLink;
    	private Boolean mirrored;
-   	private Long parentBinderId;
-
-    @XmlElement(name="creation")
-    public HistoryStamp getCreation() {
-        return creation;
-    }
-
-    public void setCreation(HistoryStamp creation) {
-        this.creation = creation;
-    }
-
-    @XmlElement(name="definition_type")
-    public Integer getDefinitionType() {
-        return definitionType;
-    }
-
-    public void setDefinitionType(Integer definitionType) {
-        this.definitionType = definitionType;
-    }
-
-    @XmlElement(name="entity_type")
-    public String getEntityType() {
-        return entityType;
-    }
-
-    public void setEntityType(String entityType) {
-        this.entityType = entityType;
-    }
-
-    @XmlElement(name="family")
-    public String getFamily() {
-        return family;
-    }
-
-    public void setFamily(String family) {
-        this.family = family;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Boolean getLibrary() {
         return library;
@@ -115,23 +62,6 @@ public class BinderBrief extends BaseRestObject {
         this.mirrored = mirrored;
     }
 
-    public HistoryStamp getModification() {
-        return modification;
-    }
-
-    public void setModification(HistoryStamp modification) {
-        this.modification = modification;
-    }
-
-    @XmlElement(name="parent_binder_id")
-    public Long getParentBinderId() {
-        return parentBinderId;
-    }
-
-    public void setParentBinderId(Long parentBinderId) {
-        this.parentBinderId = parentBinderId;
-    }
-
     public String getPath() {
         return path;
     }
@@ -140,21 +70,11 @@ public class BinderBrief extends BaseRestObject {
         this.path = path;
     }
 
-    @XmlElement(name="permalink")
-    public String getPermaLink() {
-        return permaLink;
+    public boolean isFolder() {
+        return "folder".equals(getEntityType());
     }
 
-    public void setPermaLink(String permaLink) {
-        this.permaLink = permaLink;
-    }
-
-    @XmlElement(name="title")
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public boolean isWorkspace() {
+        return "workspace".equals(getEntityType());
     }
 }

@@ -59,14 +59,20 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
     
     public static final Class[] cTypes = {
             AverageRating.class,
+    		Binder.class,
     		BinderBrief.class,
     		BinderQuotasConfig.class,
     		Description.class,
     		DiskQuotasConfig.class,
+    		ErrorInfo.class,
     		FileProperties.class,
     		FileVersionProperties.class,
     		FileVersionPropertiesCollection.class,
+            Folder.class,
+            FolderEntry.class,
+            FolderEntryBrief.class,
             FsaConfig.class,
+    		HistoryStamp.class,
     		Link.class,
     		LinkCollection.class,
     		PrincipalBrief.class,
@@ -76,6 +82,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             TeamBrief.class,
             User.class,
             UserBrief.class,
+            Workspace.class,
             ZoneConfig.class,
     		};
     

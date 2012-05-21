@@ -47,10 +47,9 @@ import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.module.profile.ProfileModule;
-import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilder;
+import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UserBriefBuilder;
 import org.kablink.teaming.rest.v1.model.SearchResults;
-import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.UserBrief;
 import org.kablink.teaming.search.filter.SearchFilter;
 
@@ -76,13 +75,15 @@ public class UsersResource extends AbstractResource {
         }
         if (offset!=null) {
             options.put(ObjectKeys.SEARCH_OFFSET, offset);
+        } else {
+            offset = 0;
         }
         if (maxCount!=null) {
             options.put(ObjectKeys.SEARCH_MAX_HITS, maxCount);
         }
         Map resultMap = profileModule.getUsers(options);
         SearchResults<UserBrief> results = new SearchResults<UserBrief>();
-        buildSearchResults(results, new UserBriefBuilder(), resultMap);
+        SearchResultBuilderUtil.buildSearchResults(results, new UserBriefBuilder(), resultMap, "/users", offset);
 		return results;
 	}
 	
@@ -92,18 +93,4 @@ public class UsersResource extends AbstractResource {
 	public void createUser() {		
 		// optionally accept initial password
 	}
-
-    public static <T> void buildSearchResults(SearchResults<T> results, SearchResultBuilder<T> builder, Map resultMap) {
-        results.setFirst((Integer)resultMap.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED));
-        results.setTotal((Integer)resultMap.get(ObjectKeys.TOTAL_SEARCH_COUNT));
-        List<Map> entries = (List<Map>)resultMap.get(ObjectKeys.SEARCH_ENTRIES);
-        if (entries!=null) {
-            for (Map entry : entries) {
-                T obj = builder.build(entry);
-                if (obj!=null) {
-                    results.append(obj);
-                }
-            }
-        }
-    }
 }

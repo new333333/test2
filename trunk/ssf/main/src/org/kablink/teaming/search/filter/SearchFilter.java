@@ -556,10 +556,14 @@ public class SearchFilter {
 		}
 	}
 	
+	public void addFolderFilter(String searchText) {
+		addPlacesFilter(searchText, folderTypes);
+	}
+		
 	public void addWorkspaceFilter(String searchText) {
 		addPlacesFilter(searchText, workspaceTypes);
 	}
-		
+
 	public void addTeamFilter() {
 		addTeamFilter("");
 	}

@@ -45,12 +45,9 @@ import java.util.Map;
 public class UserBriefBuilder implements SearchResultBuilder<UserBrief> {
     public UserBrief build(Map entry) {
         UserBrief user = new UserBrief();
-        user.setBinderId(Long.parseLong((String) entry.get(Constants.BINDER_ID_FIELD)));
-        user.setDefinitionId((String) entry.get(Constants.CREATED_WITH_DEFINITION_FIELD));
-        user.setId(Long.parseLong((String) entry.get(Constants.DOCID_FIELD)));
+        SearchResultBuilderUtil.populateDefinableEntityBrief(user, entry);
+        user.setParentBinderId(SearchResultBuilderUtil.getLong(entry, Constants.BINDER_ID_FIELD));
         user.setName((String) entry.get(Constants.LOGINNAME_FIELD));
-        user.setTitle((String) entry.get(Constants.TITLE_FIELD));
-        user.setEntityType((String)entry.get(Constants.ENTRY_TYPE_FIELD));
         user.setLink(ResourceUtil.getUserLinkUri(user.getId()));
         return user;
     }

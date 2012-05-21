@@ -36,6 +36,7 @@ import com.sun.jersey.api.core.InjectParam;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TeamInfo;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
@@ -50,6 +51,7 @@ import java.util.List;
  * Time: 11:56 AM
  */
 public abstract class AbstractUserResource extends AbstractResource {
+    @InjectParam("binderModule") protected BinderModule binderModule;
     @InjectParam("profileModule") protected ProfileModule profileModule;
 
     protected User getUser(long userId) {
