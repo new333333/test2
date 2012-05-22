@@ -35,7 +35,11 @@ package org.kablink.teaming.gwt.client.whatsnew;
 
 import java.util.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
@@ -1075,6 +1079,60 @@ public class ActivityStreamCtrl extends ResizeComposite
 	public Object getSelectedObject()
 	{
 		return m_selectedObj;
+	}
+	
+	/**
+	 * Return the ids of all the contributors of top-level entries
+	 */
+	public ArrayList<Long> getTopLevelContributorIds()
+	{
+		HashMap<Long,Long> listOfContributorIds;
+		ArrayList<Long> returnValue;
+		int numEntries;
+		int i;
+		
+		listOfContributorIds = new HashMap<Long,Long>();
+		
+		// Go through each entry on the page and get the id of the creator of the entry
+		numEntries = m_searchResultsPanel.getWidgetCount();
+		for (i = 0; i < numEntries; ++i)
+		{
+			Widget nextWidget;
+			
+			nextWidget = m_searchResultsPanel.getWidget( i );
+			if ( nextWidget instanceof ActivityStreamTopEntry )
+			{
+				ActivityStreamTopEntry topEntry;
+				Long id;
+				
+				topEntry = (ActivityStreamTopEntry) nextWidget;
+				id = topEntry.getAuthorId();
+				listOfContributorIds.put( id, id );
+			}
+		}
+		
+		// Create an ArrayList from the HashMap
+		{
+			Set<Map.Entry<Long, Long>> set;
+			Iterator<Map.Entry<Long, Long>> iterator;
+			
+			returnValue = new ArrayList<Long>();
+			
+			set = listOfContributorIds.entrySet();
+			iterator = set.iterator();
+			
+			while ( iterator.hasNext() )
+			{
+				Map.Entry<Long, Long> nextEntry;
+				Long nextId;
+				
+				nextEntry = iterator.next();
+				nextId = nextEntry.getKey();
+				returnValue.add( nextId );
+			}
+		}
+		
+		return returnValue;
 	}
 	
 	
