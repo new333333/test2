@@ -56,6 +56,8 @@ import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -64,6 +66,7 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Element;
@@ -101,10 +104,11 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private FlowPanel m_presencePanel;
 	private FlowPanel m_commentsPanel;
 	private ClickHandler m_presenceClickHandler;
+	private ClickHandler m_descClickHandler;
+	private HandlerRegistration m_descClickHandlerReg;
 	private Label m_author;
 	private Label m_date;
 	private FlowPanel m_descPanel;
-	@SuppressWarnings("unused")
 	private String m_authorId;
 	private String m_authorWSId;	// Id of the author's workspace.
 	private String m_entryId;
@@ -313,19 +317,12 @@ public abstract class ActivityStreamUIEntry extends Composite
 		// Add a <div> for the description to live in.
 		m_descPanel = new FlowPanel();
 		m_descPanel.addStyleName( getDescStyleName() );
-		m_descPanel.addStyleName( "cursorPointer" );
-		if ( m_descViewFormat == DescViewFormat.FULL )
-			m_descPanel.setTitle( GwtTeaming.getMessages().showPartialDescHint() );
-		else
-			m_descPanel.setTitle( GwtTeaming.getMessages().showEntireDescHint() );
 		panel.add( m_descPanel );
 
-		// Add a click handler to the description panel so the user can click on the
+		// Create a click handler that can be added to the description panel so the user can click on the
 		// description to expand or collapse it.
 		{
-			ClickHandler clickHandler;
-			
-			clickHandler = new ClickHandler()
+			m_descClickHandler = new ClickHandler()
 			{
 				/**
 				 * 
@@ -350,11 +347,10 @@ public abstract class ActivityStreamUIEntry extends Composite
 				}
 				
 			};
-			m_descPanel.addDomHandler( clickHandler, ClickEvent.getType() );
 			
 			// Use this click handler for the expand/collapse description images.
-			m_expandDescImg.addClickHandler( clickHandler );
-			m_collapseDescImg.addClickHandler( clickHandler );
+			m_expandDescImg.addClickHandler( m_descClickHandler );
+			m_collapseDescImg.addClickHandler( m_descClickHandler );
 		}
 		
 		{
@@ -900,6 +896,56 @@ public abstract class ActivityStreamUIEntry extends Composite
 	
 	
 	/**
+	 * Determine whether the description is totally visible.
+	 */
+	private boolean isDescTotallyVisible()
+	{
+		String desc;
+		
+		// Do we have a description?
+		desc = m_descPanel.getElement().getInnerHTML();
+		if ( desc != null && desc.length() > 0 )
+		{
+			int panelHeight;
+			int childrenHeight;
+			NodeList<Node> children;
+			
+			// Yes
+			// Get the height of the panel that holds the description
+			panelHeight = m_descPanel.getOffsetHeight();
+			
+			// Get the height of all the children that live in the description panel.
+			childrenHeight = 4;
+			children = m_descPanel.getElement().getChildNodes();
+			if ( children != null )
+			{
+				int i;
+
+				for (i = 0; i < children.getLength(); ++i)
+				{
+					Node nextChildNode;
+					
+					nextChildNode = children.getItem( i );
+					
+					if ( nextChildNode instanceof Element )
+					{
+						Element nextChildElement;
+						
+						nextChildElement = (Element) nextChildNode;
+						childrenHeight += nextChildElement.getOffsetHeight();
+					}
+				}
+			}
+			
+			if ( childrenHeight > panelHeight )
+				return false;
+		}
+		
+		// If we get here the description is totally visible.
+		return true;
+	}
+	
+	/**
 	 * Return whether this entry is unread. 
 	 */
 	public boolean isEntryUnread()
@@ -925,6 +971,43 @@ public abstract class ActivityStreamUIEntry extends Composite
 		return false;
 	}
 	
+	/**
+	 * Make it so the user can click on the description to expand or collapse it.
+	 */
+	private void makeDescClickable()
+	{
+		// Does the description panel already have a click handler on it?
+		if ( m_descClickHandlerReg == null )
+		{
+			// No
+			// Add a click handler on the description panel.
+			m_descClickHandlerReg = m_descPanel.addDomHandler( m_descClickHandler, ClickEvent.getType() );
+		}
+
+		// Make the cursor a pointer when the user mouses over the description.
+		m_descPanel.addStyleName( "cursorPointer" );
+		
+		// Set the title of the description panel.
+		if ( m_descViewFormat == DescViewFormat.FULL )
+			m_descPanel.setTitle( GwtTeaming.getMessages().showPartialDescHint() );
+		else
+			m_descPanel.setTitle( GwtTeaming.getMessages().showEntireDescHint() );
+	}
+	
+	/**
+	 * Make it so the user can't click on the description.
+	 */
+	private void makeDescNotClickable()
+	{
+		if ( m_descClickHandlerReg != null )
+		{
+			m_descClickHandlerReg.removeHandler();
+			m_descClickHandlerReg = null;
+		}
+
+		m_descPanel.removeStyleName( "cursorPointer" );
+		m_descPanel.setTitle( "" );
+	}
 	
 	/**
 	 * Mark this entry as being read.
@@ -1172,7 +1255,46 @@ public abstract class ActivityStreamUIEntry extends Composite
 		m_authorId = entryItem.getAuthorId();
 		m_authorWSId = entryItem.getAuthorWorkspaceId();
 		m_date.setText( entryItem.getEntryModificationDate() );
-		m_descPanel.getElement().setInnerHTML( getEntryDesc( entryItem ) );
+		
+		// Set the description
+		{
+			String desc;
+			
+			desc = getEntryDesc( entryItem );
+			m_descPanel.getElement().setInnerHTML( desc );
+			
+			// Do we have a description?
+			if ( desc != null && desc.length() > 0 )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				// Yes
+				makeDescClickable();
+				
+				// Schedule a command that will determine if the description is totally visible.
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						// Is the description view format partial and the
+						// description is totally visible anyway?
+						if ( getDescViewFormat() == DescViewFormat.PARTIAL && isDescTotallyVisible() )
+						{
+							// Yes, no need to make the description clickable.
+							makeDescNotClickable();
+						}
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+			else
+			{
+				// No, remove the click handler on the description panel.
+				makeDescNotClickable();
+			}
+		}
+		
 		m_entryId = entryItem.getEntryId();
 		m_binderId = entryItem.getParentBinderId();
 		
@@ -1226,17 +1348,32 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	private void updateExpandCollapseDescImage()
 	{
-		if ( m_descViewFormat == DescViewFormat.FULL )
+		m_descPanel.setTitle( "" );
+		m_expandDescImg.setVisible( false );
+		m_collapseDescImg.setVisible( false );
+
+		// Is the description clickable?
+		if ( m_descClickHandlerReg != null )
 		{
-			m_descPanel.setTitle( GwtTeaming.getMessages().showPartialDescHint() );
-			m_expandDescImg.setVisible( false );
-			m_collapseDescImg.setVisible( true );
-		}
-		else
-		{
-			m_descPanel.setTitle( GwtTeaming.getMessages().showEntireDescHint() );
-			m_expandDescImg.setVisible( true );
-			m_collapseDescImg.setVisible( false );
+			// Yes
+			// Display either the expand or collapse image.
+			if ( m_descViewFormat == DescViewFormat.FULL )
+			{
+				m_descPanel.setTitle( GwtTeaming.getMessages().showPartialDescHint() );
+				m_expandDescImg.setVisible( false );
+				m_collapseDescImg.setVisible( true );
+			}
+			else
+			{
+				// Is the description totally visible?
+				if ( isDescTotallyVisible() == false )
+				{
+					// No
+					m_descPanel.setTitle( GwtTeaming.getMessages().showEntireDescHint() );
+					m_expandDescImg.setVisible( true );
+					m_collapseDescImg.setVisible( false );
+				}
+			}
 		}
 	}
 	
