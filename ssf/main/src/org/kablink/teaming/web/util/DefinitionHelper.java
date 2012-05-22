@@ -119,6 +119,7 @@ public class DefinitionHelper {
 	
 	private static DefinitionHelper instance; // A singleton instance
 	private DefinitionModule definitionModule;
+	private BinderModule binderModule;
 	private DefinitionConfigurationBuilder definitionBuilderConfig;
 	public DefinitionHelper() {
 		if(instance != null)
@@ -134,6 +135,12 @@ public class DefinitionHelper {
     }
     public DefinitionModule getDefinitionModule() {
     	return definitionModule;
+    }
+    public void setBinderModule(BinderModule binderModule) {
+    	this.binderModule = binderModule;
+    }
+    public BinderModule getBinderModule() {
+    	return binderModule;
     }
 	public static DefinitionConfigurationBuilder getDefinitionBuilderConfig() {
         return getInstance().definitionBuilderConfig;
@@ -156,7 +163,8 @@ public class DefinitionHelper {
 		List<String> commentTypes = new ArrayList<String>();
 		commentTypes.add(Definition.FAMILY_COMMENT);
 		commentTypes.add(Definition.FAMILY_FILE_COMMENT);
-		defs = Utils.validateDefinitions(defs, commentTypes);
+		Binder binder = getInstance().getBinderModule().getBinder(binderId);
+		defs = Utils.validateDefinitions(defs, binder, commentTypes);
 		return orderDefinitions(defs, true);
 	}
 	public static TreeMap orderDefinitions(Collection<Definition> defs, Boolean includeDefinitionName) {

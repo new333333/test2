@@ -99,6 +99,7 @@ if (ss_getUserDisplayStyle() != "accessible") {
 	
 		<!-- CSS Tabs -->
 		<% /* If we are dealing with a Template Binder select the Overview tab as the default tab. */ %>
+		<ssf:ifNotAuthorizedByLicense featureName="com.novell.teaming.VibeLite">
 		<c:if test="${usingTemplateBinder == 'true'}">
 			<c:set var="ssRDCurrentTab" value="overview" scope="request"/>
 		</c:if>
@@ -114,8 +115,15 @@ if (ss_getUserDisplayStyle() != "accessible") {
 				<c:set var="ssRDCurrentTab" value="overview" scope="request"/>
 			</c:if>
 		</c:if>
+		</ssf:ifNotAuthorizedByLicense>
+		<ssf:ifAuthorizedByLicense featureName="com.novell.teaming.VibeLite">
+		  <c:if test="${empty ssRDCurrentTab}">
+		    <c:set var="ssRDCurrentTab" value="filespaces" scope="request"/>
+		  </c:if>
+		</ssf:ifAuthorizedByLicense>
+		
 	<tr>
-			
+	
 	<% /* Only add the What's New tab if we are not dealing with a Template Binder. */ %>
 	<c:if test="${!empty ssRelevanceDashboardConfigElement && usingTemplateBinder == 'false'}">
 		<td>
@@ -147,6 +155,23 @@ if (ss_getUserDisplayStyle() != "accessible") {
 		</td>
 		</c:if>
 	
+		<ssf:ifAuthorizedByLicense featureName="com.novell.teaming.VibeLite">
+		<ssf:ifLoggedIn>
+		<td>
+		<div
+			<c:choose>
+				<c:when test="${ssRDCurrentTab == 'filespaces'}">class="ss_tabsCCurrent"</c:when>
+				<c:otherwise>class="ss_tabsC_other"</c:otherwise>			
+			</c:choose>>
+		<a 
+		  <c:if test="${ssRDCurrentTab == 'filespaces'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
+		  href="javascript: ;"
+			onclick="ss_selectRelevanceTab(this, 'filespaces', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
+			><span><ssf:nlt tag="relevance.tab.filespaces"/></span></a></div>
+		</td>
+		</ssf:ifLoggedIn>
+		</ssf:ifAuthorizedByLicense>
+			
 		<% /* Only add the other tabs if we are not dealing with a Template Binder. */ %>
 		<c:if test="${usingTemplateBinder == 'false'}">
 		  <ssf:ifLoggedIn>
@@ -166,6 +191,7 @@ if (ss_getUserDisplayStyle() != "accessible") {
 		</td>
 
 		<% /* Tasks and Calendars Tab */ %>
+		<ssf:ifNotAuthorizedByLicense featureName="com.novell.teaming.VibeLite">
 		<td>
 			<div
 				<c:choose>
@@ -178,8 +204,10 @@ if (ss_getUserDisplayStyle() != "accessible") {
 				onclick="ss_selectRelevanceTab(this, 'tasks_and_calendars', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
 				<span><ssf:nlt tag="relevance.tab.tasksAndCalendars"/></span></a></div>
 		</td>
+		</ssf:ifNotAuthorizedByLicense>
 
 		<% /* Mini-blogs and Shared Items Tab */ %>
+		<ssf:ifNotAuthorizedByLicense featureName="com.novell.teaming.VibeLite">
 		<td>
 			<div
 				<c:choose>
@@ -192,10 +220,12 @@ if (ss_getUserDisplayStyle() != "accessible") {
 				onclick="ss_selectRelevanceTab(this, 'miniblogs', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
 				<span><ssf:nlt tag="relevance.tab.miniblogs"/></span></a></div>
 		</td>
-		  </ssf:ifLoggedIn>
+		</ssf:ifNotAuthorizedByLicense>
+		</ssf:ifLoggedIn>
 		</c:if>
 
 		<% /* Add the "Overview" tab as the first tab. */ %>
+		<ssf:ifNotAuthorizedByLicense featureName="com.novell.teaming.VibeLite">
 		<td>
 		<div
 			<c:choose>
@@ -218,6 +248,7 @@ if (ss_getUserDisplayStyle() != "accessible") {
 			</a>
 		</div>
 		</td>
+		</ssf:ifNotAuthorizedByLicense>
 
 		<td width="100%"></td>	
 		</tr>
@@ -238,6 +269,7 @@ ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
   <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tasks_and_calendars_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'activities'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'miniblogs'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/miniblogs_tab.jsp" /></c:if>
+  <c:if test="${ssRDCurrentTab == 'filespaces'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/filespaces_tab.jsp" /></c:if>
 </c:if>
 <c:if test="${!empty ssRelevanceDashboardConfigElement}">
   <c:if test="${ssRDCurrentTab == 'overview'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/overview.jsp" /></c:if>
@@ -245,6 +277,7 @@ ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
   <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tasks_and_calendars_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'activities'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'miniblogs'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/miniblogs_tab.jsp" /></c:if>
+  <c:if test="${ssRDCurrentTab == 'miniblogs'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/filespaces_tab.jsp" /></c:if>
 </c:if>
 </div>
 </div>
