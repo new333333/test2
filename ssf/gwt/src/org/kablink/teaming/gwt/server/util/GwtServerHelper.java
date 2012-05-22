@@ -6675,6 +6675,7 @@ public class GwtServerHelper {
 		case SAVE_WHATS_NEW_SETTINGS:
 		case SET_SEEN:
 		case SET_UNSEEN:
+		case SET_VIBE_LITE_MODE:
 		case TEST_GROUP_MEMBERSHIP_LDAP_QUERY:
 		case TRACK_BINDER:
 		case TRASH_PURGE_ALL:
