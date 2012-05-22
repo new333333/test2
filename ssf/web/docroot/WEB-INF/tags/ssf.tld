@@ -991,6 +991,17 @@
 			<type>java.lang.String</type>
 		</attribute>		
 	</tag>
+
+	<tag>
+		<name>ifVibeLite</name>
+		<tag-class>org.kablink.teaming.taglib.IfVibeLite</tag-class>
+		<body-content>JSP</body-content>
+	</tag>
+	<tag>
+		<name>ifNotVibeLite</name>
+		<tag-class>org.kablink.teaming.taglib.IfNotVibeLite</tag-class>
+		<body-content>JSP</body-content>
+	</tag>
 	
 	<tag>
 		<name>inlineHelp</name>

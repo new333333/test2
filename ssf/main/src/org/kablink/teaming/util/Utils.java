@@ -571,7 +571,6 @@ public class Utils {
 	 * 
 	 */
 	public static boolean checkIfVibeLite() {
-		//if (1 == 1) return true; //Use this line to test as if running under Vibe Lite license
 		if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.VibeLite") || GwtUIHelper.isVibeLiteEnabled()) {
 			return true;
 		} else {

@@ -735,7 +735,8 @@ public class BuildDefinitionDivs extends TagSupport {
 								Iterator  itSelections = propertyConfig.elementIterator("option");
 								while (itSelections.hasNext()) {
 									Element selection = (Element) itSelections.next();
-									if (type.startsWith("familySelectbox") && Utils.checkIfVibeLite()) {
+									if (type.startsWith("familySelectbox") && 
+											Utils.checkIfVibeLiteUI((HttpServletRequest) pageContext.getRequest())) {
 										if (Utils.checkIfVibeLiteFamily(type, selection.attributeValue("name", ""))) count++;
 									} else {
 										count++;
@@ -769,7 +770,8 @@ public class BuildDefinitionDivs extends TagSupport {
 								if (type.equals("radio")) checked = " checked=\"checked\"";							}
 							if (type.equals("selectbox") || type.startsWith("familySelectbox")) {
 								boolean allowed = true;
-								if (type.startsWith("familySelectbox") && Utils.checkIfVibeLite()) {
+								if (type.startsWith("familySelectbox") && 
+										Utils.checkIfVibeLiteUI((HttpServletRequest) pageContext.getRequest())) {
 									allowed = Utils.checkIfVibeLiteFamily(type, selection.attributeValue("name", ""));
 								}
 								if (allowed) {
