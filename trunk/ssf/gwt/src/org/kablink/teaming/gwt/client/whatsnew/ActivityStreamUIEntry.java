@@ -543,6 +543,14 @@ public abstract class ActivityStreamUIEntry extends Composite
 	
 	
 	/**
+	 * Return the id of the author of this entry
+	 */
+	public Long getAuthorId()
+	{
+		return Long.valueOf( m_authorId );
+	}
+	
+	/**
 	 * Return the name of the style used with the author.
 	 */
 	public String getAuthorStyleName()

@@ -38,6 +38,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -56,6 +57,7 @@ import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
@@ -227,7 +229,33 @@ public class BlogFolderView extends FolderViewBase
 	@Override
 	public void onContributorIdsRequest( ContributorIdsRequestEvent event )
 	{
-//!		...this needs to be implemented...
+		// Is the event targeted to this folder?
+		final Long eventBinderId = event.getBinderId();
+
+		// Is this request for the workspace we are working with?
+		if ( eventBinderId.equals( getFolderInfo().getBinderIdAsLong() ) )
+		{
+			ScheduledCommand cmd;
+				
+			// Yes!  Asynchronously fire the corresponding reply event with the contributor IDs.
+			cmd = new ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					ContributorIdsReplyEvent replyEvent;
+					ArrayList<Long> contributorIds;
+					
+					contributorIds = m_activityStreamCtrl.getTopLevelContributorIds();
+					
+					replyEvent = new ContributorIdsReplyEvent(
+														eventBinderId,
+														contributorIds ); 
+					GwtTeaming.fireEvent( replyEvent );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
 	}
 	
 	/**
