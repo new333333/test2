@@ -99,22 +99,27 @@ public class EntityId implements IsSerializable {
 	public void setEntityType(String entityType) {m_entityType = entityType;}
 	
 	/**
-	 * Returns true if a List<EntityId> contains a binder references
+	 * Returns true if a List<EntityId> contains any binder references
 	 * and false otherwise.
 	 * 
 	 * @param entityIds
 	 * 
 	 * @return
 	 */
-	public static boolean areBindersInEntityList(List<EntityId> entityIds) {
-		if (null != entityIds) {
-			for (EntityId entityId:  entityIds) {
-				if (entityId.isBinder()) {
-					return true;
-				}
-			}
-		}
-		return false;
+	public static boolean areBindersInEntityIds(List<EntityId> entityIds) {
+		return (0 < countBindersInEntityIds(entityIds));
+	}
+	
+	/**
+	 * Returns true if a List<EntityId> contains any entry references
+	 * and false otherwise.
+	 * 
+	 * @param entityIds
+	 * 
+	 * @return
+	 */
+	public static boolean areEntriesInEntityIds(List<EntityId> entityIds) {
+		return (0 < countEntriesInEntityIds(entityIds));
 	}
 	
 	/**
@@ -134,14 +139,96 @@ public class EntityId implements IsSerializable {
 	}
 
 	/**
-	 * Returns true if this row refers to a binder and false otherwise.
+	 * Returns a count of the binders in a List<EntityId>.
+	 * 
+	 * @param entityIds
 	 * 
 	 * @return
 	 */
-	public boolean isBinder() {
-		String entityType = m_entityType;
-		if (null == entityType) entityType = "";
-		return (entityType.equals(EntityId.FOLDER) || entityType.equals(EntityId.WORKSPACE));
+	public static int countBindersInEntityIds(List<EntityId> entityIds) {
+		int reply = 0;
+		if (null != entityIds) {
+			for (EntityId entityId:  entityIds) {
+				if (entityId.isBinder()) {
+					reply += 1;
+				}
+			}
+		}
+		return reply;
+	}
+	
+	/**
+	 * Returns a count of the entries in a List<EntityId>.
+	 * 
+	 * @param entityIds
+	 * 
+	 * @return
+	 */
+	public static int countEntriesInEntityIds(List<EntityId> entityIds) {
+		int reply = 0;
+		if (null != entityIds) {
+			for (EntityId entityId:  entityIds) {
+				if (entityId.isEntry()) {
+					reply += 1;
+				}
+			}
+		}
+		return reply;
+	}
+	
+	/**
+	 * Returns a List<Long> of the IDs of the entries from a List<EntityId>.
+	 * 
+	 * @param entityIds
+	 * 
+	 * @return
+	 */
+	public static List<Long> getBinderLongsFromEntityIds(List<EntityId> entityIds) {
+		return getLongsFromEntityIdsImpl(entityIds, false, true);
+	}
+	
+	/**
+	 * Returns a List<Long> of the IDs of the entries from a List<EntityId>.
+	 * 
+	 * @param entityIds
+	 * 
+	 * @return
+	 */
+	public static List<Long> getEntryLongsFromEntityIds(List<EntityId> entityIds) {
+		return getLongsFromEntityIdsImpl(entityIds, true, false);
+	}
+	
+	/*
+	 * Returns a List<Long> of the IDs of the entries from a List<EntityId>.
+	 */
+	private static List<Long> getLongsFromEntityIdsImpl(List<EntityId> entityIds, boolean entriesOnly, boolean bindersOnly) {
+		List<Long> reply = new ArrayList<Long>();
+		if (null != entityIds) {
+			for (EntityId entityId:  entityIds) {
+				boolean include = ((!entriesOnly) && (!bindersOnly));
+				if (!include) {
+					include = (entriesOnly && entityId.isEntry());
+					if (!include) {
+						include = (bindersOnly && entityId.isBinder());
+					}
+				}
+				if (include) {
+					reply.add(entityId.getEntityId());
+				}
+			}
+		}
+		return reply;
+	}
+	
+	/**
+	 * Returns a List<Long> of the IDs of the entries from a List<EntityId>.
+	 * 
+	 * @param entityIds
+	 * 
+	 * @return
+	 */
+	public static List<Long> getLongsFromEntityIds(List<EntityId> entityIds) {
+		return getLongsFromEntityIdsImpl(entityIds, false, false);
 	}
 
 	/**
@@ -165,5 +252,69 @@ public class EntityId implements IsSerializable {
 				               entityId.getEntityType());
 		}
 		return reply.toString();
+	}
+	
+	/**
+	 * Returns true if this row refers to a binder and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isBinder() {
+		String entityType = m_entityType;
+		if (null == entityType) entityType = "";
+		return (entityType.equals(EntityId.FOLDER) || entityType.equals(EntityId.WORKSPACE));
+	}
+
+	/**
+	 * Returns true if this row refers to an entry and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isEntry() {
+		String entityType = m_entityType;
+		if (null == entityType) entityType = "";
+		return (entityType.equals(EntityId.FOLDER_ENTRY));
+	}
+
+	/**
+	 * Removes the EntityId's that reference a binder from a
+	 * List<EntityId>.
+	 * 
+	 * @param entityIds
+	 */
+	public static void removeBindersFromEntityIds(List<EntityId> entityIds) {
+		// If there are any entities in the list...
+		if (null != entityIds) {
+			// ...scan them...
+			int entities = entityIds.size();
+			for (int i = (entities - 1); i >= 0; i -= 1) {
+				EntityId eid = entityIds.get(i);
+				if (eid.isBinder()) {
+					// ...removing any binders.
+					entityIds.remove(i);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Removes the EntityId's that reference an entry from a
+	 * List<EntityId>.
+	 * 
+	 * @param entityIds
+	 */
+	public static void removeEntriesFromEntityIds(List<EntityId> entityIds) {
+		// If there are any entities in the list...
+		if (null != entityIds) {
+			// ...scan them...
+			int entities = entityIds.size();
+			for (int i = (entities - 1); i >= 0; i -= 1) {
+				EntityId eid = entityIds.get(i);
+				if (eid.isEntry()) {
+					// ...removing any entries.
+					entityIds.remove(i);
+				}
+			}
+		}
 	}
 }

@@ -339,7 +339,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 					
 					// If we just completed moving anything or doing
 					// doing anything with a binder...
-					boolean copyMovedBinders = EntityId.areBindersInEntityList(sourceEntityIds);
+					boolean copyMovedBinders = EntityId.areBindersInEntityIds(sourceEntityIds);
 					if (((!m_doCopy) || copyMovedBinders) && totalErrorCount != totalEntityCount) {
 						// ...force the content to refresh to reflect
 						// ...what was done.  We don't do this for a

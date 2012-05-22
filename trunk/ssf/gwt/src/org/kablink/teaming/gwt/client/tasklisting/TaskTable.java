@@ -2894,7 +2894,7 @@ public class TaskTable extends Composite
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the mark entries read.
-			BinderViewsHelper.markEntriesRead(getTaskIdsCheckedAsListLong());
+			BinderViewsHelper.markEntriesRead(getTaskIdsChecked());
 		}
 	}
 	

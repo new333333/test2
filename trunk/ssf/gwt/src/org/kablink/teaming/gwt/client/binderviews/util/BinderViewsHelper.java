@@ -102,6 +102,13 @@ public class BinderViewsHelper {
 			return;
 		}
 		
+		// If there aren't any entries in the entity list...
+		if (!(validateEntriesInEntityIds(entityIds))) {
+			// ...bail.  (Note that validateEntriesInEntityIds() will
+			// ...have told the user about any errors.)
+			return;
+		}
+
 		// Have we instantiated a change entry types dialog yet?
 		if (null == m_cetDlg) {
 			// No!  Instantiate one now.
@@ -406,6 +413,13 @@ public class BinderViewsHelper {
 			return;
 		}
 
+		// If there aren't any entries in the entity list...
+		if (!(validateEntriesInEntityIds(entityIds))) {
+			// ...bail.  (Note that validateEntriesInEntityIds() will
+			// ...have told the user about any errors.)
+			return;
+		}
+
 		// Show a busy spinner while we lock entries.
 		final SpinnerPopup busy = new SpinnerPopup();
 		busy.center();
@@ -450,10 +464,17 @@ public class BinderViewsHelper {
 	 *
 	 * @param entityIds
 	 */
-	public static void markEntriesRead(List<Long> entityIds) {
+	public static void markEntriesRead(List<EntityId> entityIds) {
 		// If we weren't given any entity IDs to be marked read...
 		if ((null == entityIds) || entityIds.isEmpty()) {
 			// ...bail.
+			return;
+		}
+		
+		// If there aren't any entries in the entity list...
+		if (!(validateEntriesInEntityIds(entityIds))) {
+			// ...bail.  (Note that validateEntriesInEntityIds() will
+			// ...have told the user about any errors.)
 			return;
 		}
 		
@@ -462,7 +483,7 @@ public class BinderViewsHelper {
 		busy.center();
 
 		// Send a request to mark the entries read.
-		SetSeenCmd cmd = new SetSeenCmd(entityIds);
+		SetSeenCmd cmd = new SetSeenCmd(EntityId.getEntryLongsFromEntityIds(entityIds));
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -489,19 +510,26 @@ public class BinderViewsHelper {
 	 *
 	 * @param entityIds
 	 */
-	public static void markEntriesUnread(List<Long> entityIds) {
+	public static void markEntriesUnread(List<EntityId> entityIds) {
 		// If we weren't given any entity IDs to be marked unread...
 		if ((null == entityIds) || entityIds.isEmpty()) {
 			// ...bail.
 			return;
 		}
 		
+		// If there aren't any entries in the entity list...
+		if (!(validateEntriesInEntityIds(entityIds))) {
+			// ...bail.  (Note that validateEntriesInEntityIds() will
+			// ...have told the user about any errors.)
+			return;
+		}
+
 		// Show a busy spinner while we mark entries unread.
 		final SpinnerPopup busy = new SpinnerPopup();
 		busy.center();
 
 		// Send a request to mark the entries unread.
-		SetUnseenCmd cmd = new SetUnseenCmd(entityIds);
+		SetUnseenCmd cmd = new SetUnseenCmd(EntityId.getEntryLongsFromEntityIds(entityIds));
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -881,6 +909,13 @@ public class BinderViewsHelper {
 			return;
 		}
 
+		// If there aren't any entries in the entity list...
+		if (!(validateEntriesInEntityIds(entityIds))) {
+			// ...bail.  (Note that validateEntriesInEntityIds() will
+			// ...have told the user about any errors.)
+			return;
+		}
+
 		// Show a busy spinner while we unlock entries.
 		final SpinnerPopup busy = new SpinnerPopup();
 		busy.center();
@@ -917,5 +952,31 @@ public class BinderViewsHelper {
 				}
 			}
 		});
+	}
+
+	/*
+	 * Validates a List<EntityId> for containing entry references.
+	 */
+	private static boolean validateEntriesInEntityIds(List<EntityId> entityIds) {
+		// If the list contains no entries...
+		boolean hasEntries = EntityId.areEntriesInEntityIds(entityIds);
+		if (!hasEntries) {
+			// ...tell the user about the problem and return false.
+			GwtClientHelper.deferredAlert(m_messages.vibeEntryMenu_Warning_OnlyFolders());
+			return false;
+		}
+
+		// If the list contains any binders...
+		boolean hasBinders = EntityId.areBindersInEntityIds(entityIds);
+		if (hasBinders) {
+			// ...tell the user they'll be ignored and remove them from
+			// ...the list.
+			GwtClientHelper.deferredAlert(m_messages.vibeEntryMenu_Warning_FoldersIgnored());
+			EntityId.removeBindersFromEntityIds(entityIds);
+		}
+
+		// If we get here, the list contained entry references.  Return
+		// true.
+		return true;
 	}
 }
