@@ -304,7 +304,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					if (null != emp) {
 						// ...tell it to update the state of its items that
 						// ...require entries be available.
-						emp.setEntriesAvailable(false);
+						EntryMenuPanel.setEntriesAvailable(emp, false);
 					}
 				}
 				
@@ -331,7 +331,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					if (null != emp) {
 						// ...tell it to update the state of its items that
 						// ...require entries be available.
-						emp.setEntriesAvailable(0 < rowsRead);
+						EntryMenuPanel.setEntriesAvailable(emp, (0 < rowsRead));
 					}
 
 					// Allow the view's that extend this do what ever
@@ -617,7 +617,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				if (null != emp) {
 					// ...tell it to update the state of its items that
 					// ...require a selection.
-					emp.setEntriesSelected(checked);
+					EntryMenuPanel.setEntriesSelected(emp, checked);
 				}
 			}
 		});
@@ -647,7 +647,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				if (null != emp) {
 					// ...tell it to update the state of its items that
 					// ...require a selection.
-					emp.setEntriesSelected(checked);
+					EntryMenuPanel.setEntriesSelected(emp, checked);
 				}
 			};
 		});
