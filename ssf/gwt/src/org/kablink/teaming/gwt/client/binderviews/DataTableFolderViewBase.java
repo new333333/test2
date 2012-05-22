@@ -900,27 +900,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		return reply;
 	}
 	
-	/**
-	 * Returns a List<Long> of the entry IDs from the selected rows
-	 * from the table.
-	 * 
-	 * @return
-	 */
-	public List<Long> getSelectedEntryIdsAsLongs() {
-		// Scan the List<EntityId>'s from the selected rows in the
-		// table...
-		List<Long>     reply     = new ArrayList<Long>();
-		List<EntityId> entityIds = getSelectedEntityIds();
-		for (EntityId  entityId:  entityIds) {
-			// ...adding each the List<Long> we'll return.
-			reply.add(entityId.getEntityId());
-		}
-		
-		// If we get here, reply refers to List<Long> of the entry IDs
-		// of the selected rows from the data table.  Return it.
-		return reply;
-	}
-	
 	/*
 	 * Initializes various data members for the class.
 	 */
@@ -1360,7 +1339,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Yes!  Delete the selected entries and reset the view to
 			// redisplay things with the entries deleted.
 			List<EntityId> selectedEntityIds = getSelectedEntityIds();
-			final boolean deletingBinders = EntityId.areBindersInEntityList(selectedEntityIds);
+			final boolean deletingBinders = EntityId.areBindersInEntityIds(selectedEntityIds);
 			BinderViewsHelper.deleteFolderEntries(
 					selectedEntityIds,
 					new DeletePurgeEntriesCallback() {
@@ -1408,7 +1387,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventWorkspaceId = event.getWorkspaceId();
 		if (eventWorkspaceId.equals(getFolderId())) {
 			// Yes!  Invoke the delete.
-			BinderViewsHelper.deleteUserWorkspaces(getSelectedEntryIdsAsLongs());
+			BinderViewsHelper.deleteUserWorkspaces(
+				EntityId.getLongsFromEntityIds(
+					getSelectedEntityIds()));
 		}
 	}
 	
@@ -1438,7 +1419,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventWorkspaceId = event.getWorkspaceId();
 		if (eventWorkspaceId.equals(getFolderId())) {
 			// Yes!  Invoke the disable.
-			BinderViewsHelper.disableUsers(getSelectedEntryIdsAsLongs());
+			BinderViewsHelper.disableUsers(
+				EntityId.getLongsFromEntityIds(
+					getSelectedEntityIds()));
 		}
 	}
 	
@@ -1455,7 +1438,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventWorkspaceId = event.getWorkspaceId();
 		if (eventWorkspaceId.equals(getFolderId())) {
 			// Yes!  Invoke the enable.
-			BinderViewsHelper.enableUsers(getSelectedEntryIdsAsLongs());
+			BinderViewsHelper.enableUsers(
+				EntityId.getLongsFromEntityIds(
+					getSelectedEntityIds()));
 		}
 	}
 	
@@ -1606,7 +1591,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the mark entries read.
-			BinderViewsHelper.markEntriesRead(getSelectedEntryIdsAsLongs());
+			BinderViewsHelper.markEntriesRead(getSelectedEntityIds());
 		}
 	}
 	
@@ -1623,7 +1608,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the mark entries read.
-			BinderViewsHelper.markEntriesUnread(getSelectedEntryIdsAsLongs());
+			BinderViewsHelper.markEntriesUnread(getSelectedEntityIds());
 		}
 	}
 	
@@ -1661,7 +1646,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Yes!  Purge the selected entries and reset the view to
 			// redisplay things with the entries purged.
 			List<EntityId> selectedEntityIds = getSelectedEntityIds();
-			final boolean purgingBinders = EntityId.areBindersInEntityList(selectedEntityIds);
+			final boolean purgingBinders = EntityId.areBindersInEntityIds(selectedEntityIds);
 			BinderViewsHelper.purgeFolderEntries(
 					selectedEntityIds,
 					new DeletePurgeEntriesCallback() {
@@ -1709,7 +1694,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventWorkspaceId = event.getWorkspaceId();
 		if (eventWorkspaceId.equals(getFolderId())) {
 			// Yes!  Invoke the purge.
-			BinderViewsHelper.purgeUsers(getSelectedEntryIdsAsLongs());
+			BinderViewsHelper.purgeUsers(
+				EntityId.getLongsFromEntityIds(
+					getSelectedEntityIds()));
 		}
 	}
 	
@@ -1726,7 +1713,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventWorkspaceId = event.getWorkspaceId();
 		if (eventWorkspaceId.equals(getFolderId())) {
 			// Yes!  Invoke the purge.
-			BinderViewsHelper.purgeUserWorkspaces(getSelectedEntryIdsAsLongs());
+			BinderViewsHelper.purgeUserWorkspaces(
+				EntityId.getLongsFromEntityIds(
+					getSelectedEntityIds()));
 		}
 	}
 	
