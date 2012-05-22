@@ -454,7 +454,7 @@ public class MainMenuControl extends Composite
 		addMyWorkspaceToCommon(        m_mainMenu);
 		addWhatsNewToCommon(           m_mainMenu);
 		addMyFavoritesToCommon(        m_mainMenu);
-		if ( !ri.isVibeLite() ) {
+		if (!(ri.isVibeLite())) {
 			addMyTeamsToCommon(        m_mainMenu);
 		}
 		addCloseAdministrationToCommon(m_mainMenu);

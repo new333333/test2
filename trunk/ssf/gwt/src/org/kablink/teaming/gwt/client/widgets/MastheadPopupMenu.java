@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.EditPersonalPreferencesEvent;
@@ -45,11 +46,14 @@ import org.kablink.teaming.gwt.client.event.ViewTeamingFeedEvent;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SetVibeLiteModeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 
@@ -110,6 +114,38 @@ public class MastheadPopupMenu extends PopupMenu
 				img = new Image( GwtTeaming.getImageBundle().helpMenuImg() );
 				addMenuItem( new InvokeHelpEvent(), img, messages.helpMenuItem() );
 			}
+			
+			final RequestInfo ri = GwtClientHelper.getRequestInfo();
+			if ( ri.isVibeLiteEnabled() )
+			{
+				addSeparator();
+				final boolean vibeLite = ri.isVibeLite();
+				VibeMenuItem mi = new VibeMenuItem( (vibeLite ? "Turn off Vibe Lite UI" : "Turn on Vibe Lite UI" ), new Command() {
+					@Override
+					public void execute()
+					{
+						SetVibeLiteModeCmd cmd = new SetVibeLiteModeCmd( !vibeLite );
+						GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+						{
+							@Override
+							public void onFailure( Throwable t )
+							{
+								// Ignore.
+							}
+					
+							@Override
+							public void onSuccess( VibeRpcResponse response )
+							{
+								if (vibeLite)
+								     ri.clearVibeLite();
+								else ri.setVibeLite();
+								Window.Location.reload();
+							}
+						} );
+					}
+				} );
+				addMenuItem( mi );
+			}
 		}
 	}
 	
@@ -127,6 +163,7 @@ public class MastheadPopupMenu extends PopupMenu
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				// Note:  We don't pass a string here such as
@@ -147,6 +184,7 @@ public class MastheadPopupMenu extends PopupMenu
 			 * 
 			 * @param result
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				String url;
@@ -166,6 +204,7 @@ public class MastheadPopupMenu extends PopupMenu
 						/**
 						 * 
 						 */
+						@Override
 						public void execute()
 						{
 							// Since the user has administration rights, show them a list of
