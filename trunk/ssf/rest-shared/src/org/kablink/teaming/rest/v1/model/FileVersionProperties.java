@@ -34,12 +34,10 @@ package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name="fileVersion")
+@XmlRootElement(name="file_version")
 public class FileVersionProperties extends FileCommonProperties {
 
-	private Boolean promoteCurrent; // processing instruction - used for update only
-	
-	private FileVersionProperties() {
+	public FileVersionProperties() {
 		super();
 	}
 	
@@ -48,13 +46,4 @@ public class FileVersionProperties extends FileCommonProperties {
 			String note, Integer status, String webUrl) {
 		super(id, creation, modification, length, versionNumber, majorVersion, minorVersion, note, status, webUrl);
 	}
-
-	public Boolean getPromoteCurrent() {
-		return promoteCurrent;
-	}
-
-	public void setPromoteCurrent(Boolean promoteCurrent) {
-		this.promoteCurrent = promoteCurrent;
-	}
-
 }

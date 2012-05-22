@@ -38,7 +38,8 @@ import java.io.InputStream;
 import java.util.Date;
 
 import org.kablink.teaming.rest.v1.model.FileProperties;
-import org.kablink.teaming.rest.v1.model.FileVersionPropertiesCollection;
+import org.kablink.teaming.rest.v1.model.FileVersionProperties;
+import org.kablink.teaming.rest.v1.model.SearchResults;
 
 /**
  * @author jong
@@ -77,8 +78,8 @@ public interface Api {
 	
 	public void deleteFile(String fileId);
 	
-	public FileVersionPropertiesCollection getFileVersions(String entityType, long entityId, String filename);
+	public SearchResults<FileVersionProperties> getFileVersions(String entityType, long entityId, String filename);
 	
-	public FileVersionPropertiesCollection getFileVersions(String fileId);
+	public SearchResults<FileVersionProperties> getFileVersions(String fileId);
 
 }

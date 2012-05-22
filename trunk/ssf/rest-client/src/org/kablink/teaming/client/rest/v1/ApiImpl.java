@@ -45,10 +45,11 @@ import javax.ws.rs.core.UriBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.kablink.teaming.rest.v1.model.FileProperties;
-import org.kablink.teaming.rest.v1.model.FileVersionPropertiesCollection;
+import org.kablink.teaming.rest.v1.model.FileVersionProperties;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import org.kablink.teaming.rest.v1.model.SearchResults;
 
 /**
  * @author jong
@@ -65,28 +66,23 @@ public class ApiImpl implements Api {
 		this.conn = conn;
 	}
 	
-	@Override
 	public FileProperties writeFile(String entityType, long entityId, String filename, File inFile) {
 		return writeFileContent(entityType, entityId, filename, inFile, null, null, null, null, null);
 	}
 	
-	@Override
 	public FileProperties writeFile(String entityType, long entityId, String filename, InputStream file) {
 		return writeFileContent(entityType, entityId, filename, file, null, null, null, null, null);
 	}
 	
-	@Override
 	public FileProperties writeFile(String fileId, File inFile) {
 		String mt = new MimetypesFileTypeMap().getContentType(inFile.getName());
 		return writeFileContent(fileId, inFile, mt, null, null, null, null, null);
 	}
 	
-	@Override
 	public FileProperties writeFile(String fileId, InputStream file, String mimeType) {
 		return writeFileContent(fileId, file, mimeType, null, null, null, null, null);
 	}
 	
-	@Override
 	public FileProperties writeFile(String entityType, long entityId,
 			String filename, File inFile, String dataName, Date modDate,
 			Integer lastVersionNumber, Integer lastMajorVersionNumber,
@@ -94,7 +90,6 @@ public class ApiImpl implements Api {
 		return writeFileContent(entityType, entityId, filename, inFile, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
 	}
 
-	@Override
 	public FileProperties writeFile(String entityType, long entityId,
 			String filename, InputStream file, String dataName, Date modDate,
 			Integer lastVersionNumber, Integer lastMajorVersionNumber,
@@ -102,7 +97,6 @@ public class ApiImpl implements Api {
 		return writeFileContent(entityType, entityId, filename, file, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
 	}
 
-	@Override
 	public FileProperties writeFile(String fileId, File inFile, String dataName,
 			Date modDate, Integer lastVersionNumber,
 			Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
@@ -110,7 +104,6 @@ public class ApiImpl implements Api {
 		return writeFileContent(fileId, inFile, mt, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
 	}
 
-	@Override
 	public FileProperties writeFile(String fileId, InputStream file,
 			String mimeType, String dataName, Date modDate,
 			Integer lastVersionNumber, Integer lastMajorVersionNumber,
@@ -126,7 +119,6 @@ public class ApiImpl implements Api {
 		return r.accept(MediaType.WILDCARD).get(File.class);
 	}
 	
-	@Override
 	public InputStream readFile(String entityType, long entityId, String filename) {
 		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME);
 		URI resourceUri = ub.build(entityType, entityId, filename);
@@ -143,7 +135,6 @@ public class ApiImpl implements Api {
 		return r.accept(MediaType.WILDCARD).get(File.class);
 	}
 	
-	@Override
 	public InputStream readFile(String fileId) {
 		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID);
 		URI resourceUri = ub.build(fileId);
@@ -152,7 +143,6 @@ public class ApiImpl implements Api {
 		return r.accept(MediaType.WILDCARD).get(InputStream.class);
 	}
 	
-	@Override
 	public FileProperties readFileProperties(String entityType, long entityId, String filename) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME).path("properties").build(entityType, entityId, filename);
@@ -160,7 +150,6 @@ public class ApiImpl implements Api {
 		return r.accept(conn.getAcceptableMediaTypes()).get(FileProperties.class);
 	}
 	
-	@Override
 	public FileProperties readFileProperties(String fileId) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID).path("properties").build(fileId);
@@ -168,7 +157,6 @@ public class ApiImpl implements Api {
 		return r.accept(conn.getAcceptableMediaTypes()).get(FileProperties.class);
 	}
 	
-	@Override
 	public FileProperties updateFileProperties(String entityType, long entityId, String filename, FileProperties fileProperties) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME).path("properties").build(entityType, entityId, filename);
@@ -176,7 +164,6 @@ public class ApiImpl implements Api {
 		return r.accept(conn.getAcceptableMediaTypes()).post(FileProperties.class, fileProperties);
 	}
 	
-	@Override
 	public FileProperties updateFileProperties(String fileId, FileProperties fileProperties) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID).path("properties").build(fileId);
@@ -184,7 +171,6 @@ public class ApiImpl implements Api {
 		return r.accept(conn.getAcceptableMediaTypes()).post(FileProperties.class, fileProperties);
 	}
 	
-	@Override
 	public void deleteFile(String entityType, long entityId, String filename) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME).build(entityType, entityId, filename);
@@ -192,7 +178,6 @@ public class ApiImpl implements Api {
 		r.accept(conn.getAcceptableMediaTypes()).delete();
 	}
 	
-	@Override
 	public void deleteFile(String fileId) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID).build(fileId);
@@ -200,20 +185,18 @@ public class ApiImpl implements Api {
 		r.accept(conn.getAcceptableMediaTypes()).delete();
 	}
 	
-	@Override
-	public FileVersionPropertiesCollection getFileVersions(String entityType, long entityId, String filename) {
+	public SearchResults<FileVersionProperties> getFileVersions(String entityType, long entityId, String filename) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME).path("versions").build(entityType, entityId, filename);
 		WebResource r = c.resource(resourceUri);
-		return r.accept(conn.getAcceptableMediaTypes()).get(FileVersionPropertiesCollection.class);
+		return r.accept(conn.getAcceptableMediaTypes()).get(SearchResults.class);
 	}
 	
-	@Override
-	public FileVersionPropertiesCollection getFileVersions(String fileId) {
+	public SearchResults<FileVersionProperties> getFileVersions(String fileId) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID).path("versions").build(fileId);
 		WebResource r = c.resource(resourceUri);
-		return r.accept(conn.getAcceptableMediaTypes()).get(FileVersionPropertiesCollection.class);
+		return r.accept(conn.getAcceptableMediaTypes()).get(SearchResults.class);
 	}
 
 	private String ISO8601FromDate(Date date) {

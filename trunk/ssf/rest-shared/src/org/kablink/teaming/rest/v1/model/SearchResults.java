@@ -35,6 +35,7 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -97,5 +98,22 @@ public class SearchResults<T> {
 
     public void append(T obj) {
         results.add(obj);
+        if (count<results.size()) {
+            count = results.size();
+        }
+        if (total<count) {
+            total = count;
+        }
     }
+
+    public void appendAll(Collection<T> obj) {
+        results.addAll(obj);
+        if (count<results.size()) {
+            count = results.size();
+        }
+        if (total<count) {
+            total = count;
+        }
+    }
+
 }

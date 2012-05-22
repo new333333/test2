@@ -48,12 +48,15 @@ import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.module.file.FileIndexData;
+import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
+import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
-import org.kablink.teaming.rest.v1.model.FolderEntry;
+import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FolderEntryBrief;
 import org.kablink.teaming.rest.v1.model.SearchResults;
 import org.kablink.teaming.search.filter.SearchFilter;
@@ -64,6 +67,7 @@ import org.kablink.util.api.ApiErrorCode;
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class FolderResource extends AbstractBinderResource {
     @InjectParam("folderModule") protected FolderModule folderModule;
+    @InjectParam("fileModule") protected FileModule fileModule;
 
 	// Read sub-folders
 	@GET
@@ -93,7 +97,7 @@ public class FolderResource extends AbstractBinderResource {
         if (maxCount!=null) {
             options.put(ObjectKeys.SEARCH_MAX_HITS, maxCount);
         }
-        Map resultMap = folderModule.getFullEntries(id, options);
+        Map resultMap = folderModule.getEntries(id, options);
         SearchResults<FolderEntryBrief> results = new SearchResults<FolderEntryBrief>(offset);
         SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(), resultMap, "/folder/" + id + "/entries", offset);
 		return results;
@@ -103,8 +107,20 @@ public class FolderResource extends AbstractBinderResource {
 	@GET
 	@Path("files")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public List<FolderEntry> getFiles(@PathParam("id") long id) {
-		return null;
+	public SearchResults<FileProperties> getFiles(@PathParam("id") long id,
+                                                  @QueryParam("first") Integer offset,
+                                                  @QueryParam("count") Integer maxCount) {
+        _getFolder(id);
+        Map<String,FileIndexData> files = fileModule.getChildrenFileDataFromIndex(id);
+        SearchResults<FileProperties> results = new SearchResults<FileProperties>();
+        results.setFirst(0);
+        results.setCount(files.size());
+        results.setTotal(files.size());
+        for (FileIndexData file : files.values()) {
+            results.append(ResourceUtil.buildFileProperties(file));
+        }
+
+        return results;
 	}
 
     @Override

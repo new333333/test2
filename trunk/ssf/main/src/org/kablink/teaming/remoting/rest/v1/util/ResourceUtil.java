@@ -33,22 +33,12 @@
 
 package org.kablink.teaming.remoting.rest.v1.util;
 
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.*;
+import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.rest.v1.model.*;
-import org.kablink.teaming.rest.v1.model.AverageRating;
-import org.kablink.teaming.rest.v1.model.Binder;
-import org.kablink.teaming.rest.v1.model.DefinableEntity;
-import org.kablink.teaming.rest.v1.model.Description;
-import org.kablink.teaming.rest.v1.model.Entry;
-import org.kablink.teaming.rest.v1.model.Folder;
-import org.kablink.teaming.rest.v1.model.HistoryStamp;
-import org.kablink.teaming.rest.v1.model.Principal;
-import org.kablink.teaming.rest.v1.model.User;
-import org.kablink.teaming.rest.v1.model.Workspace;
-import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -56,8 +46,6 @@ import org.kablink.teaming.web.util.WebUrlUtil;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class contains utility methods that are shared among multiple resource types.
@@ -73,6 +61,29 @@ public class ResourceUtil {
    		cal.setTime(date);
    		return cal;
    	}
+
+    public static FolderEntry buildFolderEntry(org.kablink.teaming.domain.FolderEntry entry) {
+        FolderEntry model = new FolderEntry();
+        populateEntry(model, entry);
+        model.setDocLevel(entry.getDocLevel());
+        model.setDocNumber(entry.getDocNumber());
+        return model;
+    }
+
+    public static FileProperties buildFileProperties(FileIndexData fa) {
+        FileProperties fp = new FileProperties();
+        fp.setId(fa.getId());
+        fp.setEntryId(fa.getOwningEntityId());
+        fp.setBinderId(fa.getBinderId());
+        fp.setName(fa.getName());
+        fp.setCreation(new HistoryStamp(new PrincipalBrief(fa.getCreatorId(), getUserLinkUri(fa.getCreatorId())),
+                                        fa.getCreatedDate()));
+        fp.setModification(new HistoryStamp(new PrincipalBrief(fa.getModifierId(), getUserLinkUri(fa.getModifierId())),
+                                            fa.getModifiedDate()));
+        fp.setLength(fa.getSize());
+        populateFileLinks(fp);
+        return fp;
+    }
 
     public static FileProperties buildFileProperties(FileAttachment fa) {
         FileAttachment.FileLock fl = fa.getFileLock();
@@ -91,6 +102,9 @@ public class ResourceUtil {
       				WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, fa),
       				(fl != null && fl.getOwner() != null)? fl.getOwner().getId():null,
       				(fl!= null)? fl.getExpirationDate():null);
+        fp.setEntryId(fa.getOwner().getEntity().getId());
+        fp.setBinderId(fa.getOwner().getEntity().getParentBinder().getId());
+        populateFileLinks(fp);
         return fp;
     }
 
@@ -109,12 +123,6 @@ public class ResourceUtil {
         model.setDefinitionType(binder.getDefinitionType());
         model.setLink(getBinderLinkUri(model));
         populateBinderLinks(model, model.isWorkspace(), model.isFolder());
-        return model;
-    }
-
-    public static TeamBrief buildTeamBrief(org.kablink.teaming.domain.Binder binder) {
-        TeamBrief model = new TeamBrief();
-        populateBinderBrief(model, binder);
         return model;
     }
 
@@ -204,7 +212,7 @@ public class ResourceUtil {
     }
 
 	public static FileVersionProperties fileVersionFromFileAttachment(VersionAttachment va) {
-		return new FileVersionProperties(
+        FileVersionProperties props = new FileVersionProperties(
 				va.getId(),
 				new HistoryStamp(buildPrincipalBrief(Utils.redactUserPrincipalIfNecessary(va.getCreation().getPrincipal())), va.getCreation().getDate()),
 				new HistoryStamp(buildPrincipalBrief(Utils.redactUserPrincipalIfNecessary(va.getModification().getPrincipal())), va.getModification().getDate()),
@@ -216,6 +224,8 @@ public class ResourceUtil {
 				va.getFileStatus(),
 				WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, va)
 				);
+        populateFileVersionLinks(props);
+        return props;
 	}
 
     private static void populateDefinableEntity(DefinableEntity model, org.kablink.teaming.domain.DefinableEntity entity) {
@@ -387,6 +397,18 @@ public class ResourceUtil {
         return "/user/" + id;
     }
 
+    public static String getFilePropertiesLinkUri(FileProperties fp) {
+        return "/file/" + fp.getId() + "/metadata";
+    }
+
+    public static String getFileBaseLinkUri(FileProperties fp) {
+        return "/file/" + fp.getId();
+    }
+
+    public static String getFileVersionBaseLinkUri(FileVersionProperties fp) {
+        return "/file_version/" + fp.getId();
+    }
+
     public static void populateBinderLinks(BaseRestObject model, boolean isWorkspace, boolean isFolder) {
         model.addAdditionalLink("child_binders", model.getLink() + "/binders");
         model.addAdditionalLink("child_folders", model.getLink() + "/folders");
@@ -395,6 +417,26 @@ public class ResourceUtil {
         }
         if (isFolder) {
             model.addAdditionalLink("child_entries", model.getLink() + "/entries");
+            model.addAdditionalLink("child_files", model.getLink() + "/files");
         }
+    }
+
+    public static void populateFileLinks(FileProperties fp) {
+        fp.setLink(ResourceUtil.getFilePropertiesLinkUri(fp));
+        String baseUrl = ResourceUtil.getFileBaseLinkUri(fp);
+        fp.addAdditionalLink("content", baseUrl);
+        fp.addAdditionalLink("major_version", baseUrl + "/major_version");
+        fp.addAdditionalLink("versions", baseUrl + "/versions");
+        fp.addAdditionalLink("current_version", baseUrl + "/version/current");
+    }
+
+    public static void populateFileVersionLinks(FileVersionProperties fp) {
+        String baseUrl = ResourceUtil.getFileVersionBaseLinkUri(fp);
+        fp.addAdditionalLink("content", baseUrl);
+        fp.setLink(baseUrl + "/metadata");
+        fp.addAdditionalLink("note", baseUrl + "/note");
+        fp.addAdditionalLink("status", baseUrl + "/status");
+        fp.addAdditionalLink("current", baseUrl + "/current");
+        fp.addAdditionalLink("file_metadata", "/file/" + fp.getId() + "/metadata");
     }
 }

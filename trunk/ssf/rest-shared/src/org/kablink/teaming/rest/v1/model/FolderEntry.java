@@ -38,4 +38,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 // This annotation is necessary not only for XML but also for JSON representation.
 @XmlRootElement
 public class FolderEntry extends Entry {
+    private String docNumber;
+   	private int docLevel;
+
+    public int getDocLevel() {
+        return docLevel;
+    }
+
+    public void setDocLevel(int docLevel) {
+        this.docLevel = docLevel;
+    }
+
+    public String getDocNumber() {
+        return docNumber;
+    }
+
+    public void setDocNumber(String docNumber) {
+        this.docNumber = docNumber;
+    }
 }
