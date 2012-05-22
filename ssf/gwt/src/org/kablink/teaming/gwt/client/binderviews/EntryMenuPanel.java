@@ -193,33 +193,6 @@ public class EntryMenuPanel extends ToolPanelBase {
 	}
 	
 	/**
-	 * Loads the EntryMenuPanel split point and returns an instance
-	 * of it via the callback.
-	 * 
-	 * @param containerResizer
-	 * @param binderInfo
-	 * @param includeColumnResizer
-	 * @param toolPanelReady
-	 * @param tpClient
-	 */
-	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final boolean includeColumnResizer, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
-		GWT.runAsync(EntryMenuPanel.class, new RunAsyncCallback()
-		{			
-			@Override
-			public void onSuccess() {
-				EntryMenuPanel emp = new EntryMenuPanel(containerResizer, binderInfo, includeColumnResizer, toolPanelReady);
-				tpClient.onSuccess(emp);
-			}
-			
-			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert(m_messages.codeSplitFailure_EntryMenuPanel());
-				tpClient.onUnavailable();
-			}
-		});
-	}
-
-	/**
 	 * Get'er methods.
 	 * 
 	 * @return
@@ -361,7 +334,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 				}
 			}
 		}
-		setEntriesSelected(false);
+		setEntriesSelectedImpl(false);
 		
 		// Render the various right end capabilities applicable to the
 		// current binder.
@@ -830,13 +803,11 @@ public class EntryMenuPanel extends ToolPanelBase {
 		loadPart1Async();
 	}
 
-	/**
+	/*
 	 * Called to enable/disable the menu items that require something
 	 * to be available (i.e., a data table is not empty, ...)
-	 * 
-	 * @param enable
 	 */
-	public void setEntriesAvailable(boolean dataAvailable) {
+	private void setEntriesAvailableImpl(boolean dataAvailable) {
 		// If we have a trash purge all menu item...
 		if (null != m_trashPurgeAllMenu) {
 			// ...enable disable it.
@@ -856,13 +827,11 @@ public class EntryMenuPanel extends ToolPanelBase {
 		}
 	}
 	
-	/**
+	/*
 	 * Called to enable/disable the menu items that require something
 	 * to be selected.
-	 * 
-	 * @param enable
 	 */
-	public void setEntriesSelected(boolean enable) {
+	private void setEntriesSelectedImpl(boolean enable) {
 		// If we have a share menu item...
 		if (null != m_shareMenu) {
 			// ...enable disable it.
@@ -941,5 +910,93 @@ public class EntryMenuPanel extends ToolPanelBase {
 			}
 		}
 		return reply;
+	}
+	
+	
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	/* The following code is used to load the split point containing */
+	/* the entry menu and perform some operation on it.              */
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	
+	/*
+	 * Asynchronously loads the EntryMenuPanel and performs some
+	 * operation against the code.
+	 */
+	private static void doAsyncOperation(
+			// Required creation parameters.
+			final RequiresResize	containerResizer,
+			final BinderInfo		binderInfo,
+			final boolean			includeColumnResizer,
+			final ToolPanelReady	toolPanelReady,
+			final ToolPanelClient 	tpClient,
+			
+			// setEntriesAvailable/Selected parameters.
+			final EntryMenuPanel	emp,
+			final boolean			setAvailable,
+			final boolean			enable) {
+		GWT.runAsync(EntryMenuPanel.class, new RunAsyncCallback() {
+			@Override
+			public void onFailure(Throwable reason) {
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_EntryMenuPanel());
+				if (null != tpClient) {
+					tpClient.onUnavailable();
+				}
+			}
+
+			@Override
+			public void onSuccess() {
+				// Is this a request to create an entry menu panel?
+				if (null != tpClient) {
+					// Yes!  Create it and return it via the callback.
+					EntryMenuPanel emp = new EntryMenuPanel(containerResizer, binderInfo, includeColumnResizer, toolPanelReady);
+					tpClient.onSuccess(emp);
+				}
+				
+				else {
+					// No, it's not a request to create an entry menu
+					// panel!  It must be a notification about entries
+					// being available or selected.
+					if (setAvailable)
+					     emp.setEntriesAvailableImpl(enable);
+					else emp.setEntriesSelectedImpl( enable);
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Loads the EntryMenuPanel split point and returns an instance
+	 * of it via the callback.
+	 * 
+	 * @param containerResizer
+	 * @param binderInfo
+	 * @param includeColumnResizer
+	 * @param toolPanelReady
+	 * @param tpClient
+	 */
+	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final boolean includeColumnResizer, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+		doAsyncOperation(containerResizer, binderInfo, includeColumnResizer, toolPanelReady, tpClient, null, false, false);
+	}
+	
+	/**
+	 * Called to enable/disable the menu items that require something
+	 * to be available (i.e., a data table is not empty, ...)
+	 * 
+	 * @param emp
+	 * @param enable
+	 */
+	public static void setEntriesAvailable(final EntryMenuPanel emp, final boolean enable) {
+		doAsyncOperation(null, null, false, null, null, emp, true, enable);
+	}
+	
+	/**
+	 * Called to enable/disable the menu items that require something
+	 * to be selected.
+	 *
+	 * @param
+	 * @param enable
+	 */
+	public static void setEntriesSelected(final EntryMenuPanel emp, final boolean enable) {
+		doAsyncOperation(null, null, false, null, null, emp, false, enable);
 	}
 }

@@ -224,7 +224,10 @@ public class TaskFolderView extends FolderViewBase
 		TaskGraphsPanel tgp = getTaskGraphsPanel();
 		if (null != tgp) {
 			// ...give it what it needs to render...
-			TaskGraphsPanel.renderTaskGraphs(tgp, m_taskListing, m_taskDisplayData.getExpandGraphs());
+			TaskGraphsPanel.initAndShow(
+				tgp,
+				m_taskListing,
+				m_taskDisplayData.getExpandGraphs());
 		}
 
 		// ...and populate the rest of the view.

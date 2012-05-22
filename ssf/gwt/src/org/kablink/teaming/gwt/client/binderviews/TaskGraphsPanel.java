@@ -470,7 +470,7 @@ public class TaskGraphsPanel extends ToolPanelBase
 			final ToolPanelReady	toolPanelReady,
 			final ToolPanelClient 	tpClient,
 			
-			// renderTaskGraphs parameters.
+			// initAndShow parameters.
 			final TaskGraphsPanel	tgp,
 			final TaskProvider		taskProvider,
 			final boolean			expandGraphs) {
@@ -486,8 +486,7 @@ public class TaskGraphsPanel extends ToolPanelBase
 			@Override
 			public void onSuccess() {
 				// Is this a request to create a task graphs panel?
-				if ( null != tpClient )
-				{
+				if (null != tpClient) {
 					// Yes!  Create it and return it via the callback.
 					TaskGraphsPanel tgp = new TaskGraphsPanel(containerResizer, binderInfo, toolPanelReady);
 					tpClient.onSuccess(tgp);
@@ -495,8 +494,8 @@ public class TaskGraphsPanel extends ToolPanelBase
 				
 				else {
 					// No, it's not a request to create a task graphs
-					// panel!  It must be a request to render an
-					// existing one.  Render it.
+					// panel!  It must be a request to initialize and
+					// show an existing one.  Render it.
 					tgp.renderTaskGraphsImpl(taskProvider, expandGraphs);
 				}
 			}
@@ -524,7 +523,7 @@ public class TaskGraphsPanel extends ToolPanelBase
 	 * @param taskProvider
 	 * @param expandGraphs
 	 */
-	public static void renderTaskGraphs(final TaskGraphsPanel tgp, final TaskProvider taskProvider, final boolean expandGraphs) {
+	public static void initAndShow(final TaskGraphsPanel tgp, final TaskProvider taskProvider, final boolean expandGraphs) {
 		doAsyncOperation(null, null, null, null, tgp, taskProvider, expandGraphs);
 	}
 }

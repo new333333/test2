@@ -663,7 +663,7 @@ public class TaskListing extends Composite implements TaskProvider {
 			// ...otherwise, enable/disable them on the entry menu.
 			EntryMenuPanel emp = m_taskFolderView.getEntryMenuPanel();
 			if (null != emp) {
-				emp.setEntriesSelected(enable);
+				EntryMenuPanel.setEntriesSelected(emp, enable);
 			}
 		}
 	}
