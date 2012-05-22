@@ -100,24 +100,24 @@ if (ss_getUserDisplayStyle() != "accessible") {
 		<!-- CSS Tabs -->
 		<% /* If we are dealing with a Template Binder select the Overview tab as the default tab. */ %>
 		<ssf:ifNotAuthorizedByLicense featureName="com.novell.teaming.VibeLite">
-		<c:if test="${usingTemplateBinder == 'true'}">
-			<c:set var="ssRDCurrentTab" value="overview" scope="request"/>
-		</c:if>
-	
-		<% /* Do we have a current tab? */ %>
-		<c:if test="${empty ssRDCurrentTab}">
-			<% /* No, set the current tab to the "Overview" tab. */ %>
-			<c:set var="ssRDCurrentTab" value="overview" scope="request"/>
-	
-			<% /* Is the user looking at their own workspace? */ %>
-			<c:if test="${ssBinder.id == ssUser.workspaceId}">
-				<% /* Yes, set the current tab to the "Overview" tab. */ %>
+			<c:if test="${usingTemplateBinder == 'true'}">
 				<c:set var="ssRDCurrentTab" value="overview" scope="request"/>
 			</c:if>
-		</c:if>
+		
+			<% /* Do we have a current tab? */ %>
+			<c:if test="${empty ssRDCurrentTab}">
+				<% /* No, set the current tab to the "Overview" tab. */ %>
+				<c:set var="ssRDCurrentTab" value="overview" scope="request"/>
+		
+				<% /* Is the user looking at their own workspace? */ %>
+				<c:if test="${ssBinder.id == ssUser.workspaceId}">
+					<% /* Yes, set the current tab to the "Overview" tab. */ %>
+					<c:set var="ssRDCurrentTab" value="overview" scope="request"/>
+				</c:if>
+			</c:if>
 		</ssf:ifNotAuthorizedByLicense>
 		<ssf:ifAuthorizedByLicense featureName="com.novell.teaming.VibeLite">
-		  <c:if test="${empty ssRDCurrentTab}">
+		  <c:if test="${empty ssRDCurrentTab || ssRDCurrentTab == 'overview'}">
 		    <c:set var="ssRDCurrentTab" value="filespaces" scope="request"/>
 		  </c:if>
 		</ssf:ifAuthorizedByLicense>
@@ -277,7 +277,7 @@ ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
   <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tasks_and_calendars_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'activities'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'miniblogs'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/miniblogs_tab.jsp" /></c:if>
-  <c:if test="${ssRDCurrentTab == 'miniblogs'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/filespaces_tab.jsp" /></c:if>
+  <c:if test="${ssRDCurrentTab == 'filespaces'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/filespaces_tab.jsp" /></c:if>
 </c:if>
 </div>
 </div>
