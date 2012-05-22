@@ -91,6 +91,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
@@ -2219,39 +2220,41 @@ public class GwtMenuHelper {
 				Binder binder = GwtUIHelper.getBinderSafely(bm, binderId);
 				if ((null != binder) && (EntityIdentifier.EntityType.profiles != binder.getEntityType())) {				
 					// Yes!  Then the user is allowed to view team membership.
+					if (!Utils.checkIfVibeLite() || binder.getTeamMemberIds().size() == 0) {
 					reply.setViewAllowed(true);
 		
-					// If the user can manage the team...
-					AdaptedPortletURL adapterUrl;
-					if (bm.testAccess(binder, BinderOperation.manageTeamMembers)) {
-						// ...store the team management URL...
-						adapterUrl = createActionUrl(request);
-						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_TEAM_MEMBER);
-						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
-						adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
-						reply.setManageUrl(adapterUrl.toString());
-					}
-		
-					// ...if the user can send mail to the team...
-					if (MiscUtil.hasString(user.getEmailAddress())) {
-						// ...store the send mail URL...
-						adapterUrl = createActionUrl(request);
-						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
-						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
-						adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
-						reply.setSendMailUrl(adapterUrl.toString());
-					}
-		
-					// ...if the user can start a team meeting...
-					if (bs.getConferencingModule().isEnabled()) {
-						CustomAttribute ca = user.getCustomAttribute("conferencingID");
-						if ((null != ca) && MiscUtil.hasString((String)ca.getValue())) {		
-							// ...store the team meeting URL.
-							try {
-								reply.setTeamMeetingUrl(GwtServerHelper.getAddMeetingUrl(bs, request, binderId));
-							}
-							catch (GwtTeamingException e) {
-								// Nothing to do...
+						// If the user can manage the team...
+						AdaptedPortletURL adapterUrl;
+						if (bm.testAccess(binder, BinderOperation.manageTeamMembers)) {
+							// ...store the team management URL...
+							adapterUrl = createActionUrl(request);
+							adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_TEAM_MEMBER);
+							adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
+							adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
+							reply.setManageUrl(adapterUrl.toString());
+						}
+			
+						// ...if the user can send mail to the team...
+						if (MiscUtil.hasString(user.getEmailAddress())) {
+							// ...store the send mail URL...
+							adapterUrl = createActionUrl(request);
+							adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
+							adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
+							adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
+							reply.setSendMailUrl(adapterUrl.toString());
+						}
+			
+						// ...if the user can start a team meeting...
+						if (bs.getConferencingModule().isEnabled()) {
+							CustomAttribute ca = user.getCustomAttribute("conferencingID");
+							if ((null != ca) && MiscUtil.hasString((String)ca.getValue())) {		
+								// ...store the team meeting URL.
+								try {
+									reply.setTeamMeetingUrl(GwtServerHelper.getAddMeetingUrl(bs, request, binderId));
+								}
+								catch (GwtTeamingException e) {
+									// Nothing to do...
+								}
 							}
 						}
 					}

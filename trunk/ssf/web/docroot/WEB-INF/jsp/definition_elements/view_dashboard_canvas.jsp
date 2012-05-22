@@ -41,7 +41,8 @@
 <!-- The accessory panel can only be displayed once in a page. -->
 <!-- If the accessory panel has already been loaded then don't display it again. -->
 <c:set var="ss_dashboardComponentNumber" value="0" scope="request"/>
-<c:choose>
+<ssf:ifNotVibeLite>
+  <c:choose>
 	<c:when test="${empty accessory_panel_loaded}">
 		<c:set var="accessory_panel_loaded" value="true" scope="request"/>
 
@@ -274,4 +275,5 @@ ss_createOnLayoutChangeObj('ss_resizeDashboardCanvas',
 		<!-- Add some text that tells the user they can't have more than one accessory panel on a page. -->
 		<ssf:nlt tag="workspace.accessoryPanel.moreThanOne" />
 	</c:otherwise>
-</c:choose>
+  </c:choose>
+</ssf:ifNotVibeLite>

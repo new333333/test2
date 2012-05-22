@@ -71,6 +71,7 @@ import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -98,7 +99,11 @@ public class RelevanceDashboardHelper {
 			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
 			String relevanceTab = (String)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_TAB);
 			if (!(MiscUtil.hasString(relevanceTab))) {
-				relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW;
+				if (Utils.checkIfVibeLiteUI(request)) {
+					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_FILESPACES;
+				} else {
+					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW;
+				}
 			}
 			if (!type.equals("") && !type.equals(relevanceTab)) {
 				//Remember the last tab
