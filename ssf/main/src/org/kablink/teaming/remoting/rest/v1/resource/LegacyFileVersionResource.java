@@ -32,56 +32,50 @@
  */
 package org.kablink.teaming.remoting.rest.v1.resource;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
-import com.sun.jersey.spi.resource.Singleton;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.NoFileVersionByTheIdException;
+import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.file.FileModule;
-import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.shared.FileUtils;
+import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
-import org.kablink.teaming.rest.v1.model.FolderEntry;
+import org.kablink.teaming.rest.v1.model.FileVersionProperties;
+import org.kablink.util.api.ApiErrorCode;
 
 import com.sun.jersey.api.core.InjectParam;
+import com.sun.jersey.spi.resource.Singleton;
 
-@Path("/v1/folder_entry/{id}")
+@Path("/v1/fileVersion")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class FolderEntryResource extends AbstractResource {
-		
-	@Context UriInfo uriInfo;
-	
-	@InjectParam("folderModule") private FolderModule folderModule;
-    @InjectParam("fileModule") private FileModule fileModule;
+public class LegacyFileVersionResource extends AbstractResource {
 
-	
-	// Read folder entry
+	@InjectParam("fileModule") private FileModule fileModule;
+
+	// Read file version content
 	@GET
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public FolderEntry getFolderEntry(
-			@PathParam("id") long id) {
-		org.kablink.teaming.domain.FolderEntry hEntry = folderModule.getEntry(null, id);
-		return ResourceUtil.buildFolderEntry(hEntry);
-	}
-	
-	// Update folder entry
-	@PUT
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public Response putFolderEntry(@PathParam("id") long id) {
-		return null;
-	}
-
-	// Delete folder entry
-	@DELETE
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public void deleteFolderEntry(@PathParam("id") long id) {
-		folderModule.deleteEntry(null, id);
+	@Path("/id/{fileversionid}")
+	public Response readFileVersionContentById(@PathParam("fileversionid") String fileVersionId) {
+		VersionAttachment va = FileUtils.findVersionAttachment(fileVersionId);
+		DefinableEntity entity = va.getOwner().getEntity();
+		Binder binder;
+		if(entity instanceof Binder) 
+			binder = (Binder) entity;
+		else
+			binder = entity.getParentBinder();
+		String mt = new MimetypesFileTypeMap().getContentType(va.getFileItem().getName());
+		return Response.ok(fileModule.readFile(binder, entity, va), mt).build();
 	}
 }

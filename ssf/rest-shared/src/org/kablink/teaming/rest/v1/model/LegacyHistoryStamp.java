@@ -30,32 +30,43 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.rest.v1.model;
-
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author jong
  *
  */
-@XmlRootElement(name="fileVersions")
-public class FileVersionPropertiesCollection {
+@XmlRootElement
+public class LegacyHistoryStamp {
 
-	@XmlElement(name="fileVersion")
-	private List<FileVersionProperties> list; 
-	
-	private FileVersionPropertiesCollection() {}
-	
-	public FileVersionPropertiesCollection(List<FileVersionProperties> list) {
-		this.list = list;
+	private Long principalId;
+	private Calendar date;
+
+	public LegacyHistoryStamp() {}
+
+    public LegacyHistoryStamp(HistoryStamp hs) {
+        principalId = hs.getPrincipal().getId();
+        date = hs.getDate();
+    }
+
+    public Long getPrincipalId() {
+        return principalId;
+    }
+
+    public void setPrincipalId(Long principalId) {
+        this.principalId = principalId;
+    }
+
+    public Calendar getDate() {
+		return date;
 	}
 
-	public List<FileVersionProperties> asList() {
-		return list;
+	public void setDate(Calendar date) {
+		this.date = date;
 	}
-	
 }

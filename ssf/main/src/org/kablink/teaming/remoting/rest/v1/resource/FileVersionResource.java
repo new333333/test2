@@ -32,18 +32,11 @@
  */
 package org.kablink.teaming.remoting.rest.v1.resource;
 
-import javax.activation.MimetypesFileTypeMap;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
+import com.sun.jersey.api.core.InjectParam;
+import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.NoFileVersionByTheIdException;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -54,21 +47,24 @@ import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
 import org.kablink.util.api.ApiErrorCode;
 
-import com.sun.jersey.api.core.InjectParam;
-import com.sun.jersey.spi.resource.Singleton;
+import javax.activation.MimetypesFileTypeMap;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-@Path("/v1/fileVersion")
+@Path("/v1/file_version/{id}")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class FileVersionResource extends AbstractResource {
-
-	@InjectParam("fileModule") private FileModule fileModule;
-	@InjectParam("binderModule") private BinderModule binderModule;
+public class FileVersionResource extends AbstractFileResource {
 
 	// Read file version content
 	@GET
-	@Path("/id/{fileversionid}")
-	public Response readFileVersionContentById(@PathParam("fileversionid") String fileVersionId) {
+	public Response readFileVersionContentById(@PathParam("id") String fileVersionId) {
 		VersionAttachment va = FileUtils.findVersionAttachment(fileVersionId);
 		DefinableEntity entity = va.getOwner().getEntity();
 		Binder binder;
@@ -82,50 +78,83 @@ public class FileVersionResource extends AbstractResource {
 	
 	// Read file version properties
 	@GET
-	@Path("/id/{fileversionid}/properties")
-	public FileVersionProperties readFileVersionPropertiesById(@PathParam("fileversionid") String fileVersionId) {
+	@Path("/metadata")
+	public FileVersionProperties readFileVersionPropertiesById(@PathParam("id") String fileVersionId) {
 		VersionAttachment va = FileUtils.findVersionAttachment(fileVersionId);
 		return ResourceUtil.fileVersionFromFileAttachment(va);
 	}
 	
 	// Update file version properties
 	@POST
-	@Path("/id/{fileversionid}/properties")
+	@Path("/current")
 	public FileVersionProperties updateFileVersionPropertiesById(
-			@PathParam("fileversionid") String fileVersionId,
+			@PathParam("id") String fileVersionId) {
+		VersionAttachment va = FileUtils.findVersionAttachment(fileVersionId);
+        try {
+            FileUtils.promoteFileVersionCurrent(va);
+        }
+        catch(UnsupportedOperationException e) {
+            throw new ConflictException(ApiErrorCode.NOT_SUPPORTED, e.getLocalizedMessage());
+        }
+
+        FileAttachment fa = findFileAttachment(va.getParentAttachment().getId());
+		return ResourceUtil.fileVersionFromFileAttachment(fa.getHighestVersion());
+	}
+	
+    @GET
+   	@Path("/note")
+    public FileVersionProperties getNote(@PathParam("id") String fileVersionId) {
+   		VersionAttachment va = FileUtils.findVersionAttachment(fileVersionId);
+        FileVersionProperties props = new FileVersionProperties();
+        props.setNote(va.getFileItem().getDescription().getText());
+   		return props;
+   	}
+
+	// Update file version properties
+	@POST
+	@Path("/note")
+	public FileVersionProperties updateNote(
+			@PathParam("id") String fileVersionId,
 			FileVersionProperties fileVersionProperties) {
 		VersionAttachment va = FileUtils.findVersionAttachment(fileVersionId);
-		DefinableEntity entity = va.getOwner().getEntity();
-		// Promote this version to current
-		if(fileVersionProperties.getPromoteCurrent() == Boolean.TRUE) {
-			try {
-				FileUtils.promoteFileVersionCurrent(va);
-			}
-			catch(UnsupportedOperationException e) {
-				throw new ConflictException(ApiErrorCode.NOT_SUPPORTED, e.getLocalizedMessage());
-			}
-		}
-		
 		// Set note/comment for the file version
 		String note = fileVersionProperties.getNote();
 		if(note != null &&
 				!note.equals(va.getFileItem().getDescription().getText())) {
 			FileUtils.setFileVersionNote(va, note);
 		}
-		
+		return ResourceUtil.fileVersionFromFileAttachment(va);
+	}
+
+    @GET
+   	@Path("/status")
+    public FileVersionProperties getStatus(@PathParam("id") String fileVersionId) {
+   		VersionAttachment va = FileUtils.findVersionAttachment(fileVersionId);
+        FileVersionProperties props = new FileVersionProperties();
+        props.setStatus(va.getFileStatus());
+   		return props;
+   	}
+
+	// Update file version properties
+	@POST
+	@Path("/status")
+	public FileVersionProperties updateStatus(
+			@PathParam("id") String fileVersionId,
+			FileVersionProperties fileVersionProperties) {
+		VersionAttachment va = FileUtils.findVersionAttachment(fileVersionId);
+
 		// Set status for a file version.
 		Integer status = fileVersionProperties.getStatus();
 		if(status != null && !status.equals(va.getFileStatus())) {
 			FileUtils.setFileVersionStatus(va, status);
 		}
-		
+
 		return ResourceUtil.fileVersionFromFileAttachment(va);
 	}
-	
+
 	// Delete file version. This deletes both the content and the properties associated with the version.
 	@DELETE
-	@Path("/id/{fileversionid}")
-	public void deleteFileVersionById(@PathParam("fileversionid") String fileVersionId) {
+	public void deleteFileVersionById(@PathParam("id") String fileVersionId) {
 		VersionAttachment va;
 		try {
 			va = FileUtils.findVersionAttachment(fileVersionId);

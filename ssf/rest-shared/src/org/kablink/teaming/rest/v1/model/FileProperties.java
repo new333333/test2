@@ -35,20 +35,20 @@ package org.kablink.teaming.rest.v1.model;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 //This annotation is necessary not only for XML but also for JSON representation.
 @XmlRootElement(name="file")
 public class FileProperties extends FileCommonProperties {
-	
+
+    private Long entryId;
+    private Long binderId;
 	private String name;
 	private Long lockedBy;
 	private Calendar lockExpiration;
 	
-	// The following fields are processing instructions used for update only.
-	private Boolean incrementMajorVersion; // used for update only
-	
-	private FileProperties() {
+	public FileProperties() {
 		super();
 	}
 	
@@ -74,7 +74,25 @@ public class FileProperties extends FileCommonProperties {
 		}
 	}
 
-	public String getName() {
+    @XmlElement(name="entry_id")
+    public Long getEntryId() {
+        return entryId;
+    }
+
+    public void setEntryId(Long entryId) {
+        this.entryId = entryId;
+    }
+
+    @XmlElement(name="parent_binder_id")
+    public Long getBinderId() {
+        return binderId;
+    }
+
+    public void setBinderId(Long binderId) {
+        this.binderId = binderId;
+    }
+
+    public String getName() {
 		return name;
 	}
 
@@ -82,6 +100,7 @@ public class FileProperties extends FileCommonProperties {
 		this.name = name;
 	}
 
+    @XmlElement(name="locked_by")
 	public Long getLockedBy() {
 		return lockedBy;
 	}
@@ -90,6 +109,7 @@ public class FileProperties extends FileCommonProperties {
 		this.lockedBy = lockedBy;
 	}
 
+    @XmlElement(name="lock_expiration")
 	public Calendar getLockExpiration() {
 		return lockExpiration;
 	}
@@ -97,13 +117,4 @@ public class FileProperties extends FileCommonProperties {
 	public void setLockExpiration(Calendar lockExpiration) {
 		this.lockExpiration = lockExpiration;
 	}
-
-	public Boolean getIncrementMajorVersion() {
-		return incrementMajorVersion;
-	}
-
-	public void setIncrementMajorVersion(Boolean incrementMajorVersion) {
-		this.incrementMajorVersion = incrementMajorVersion;
-	}
-	
 }

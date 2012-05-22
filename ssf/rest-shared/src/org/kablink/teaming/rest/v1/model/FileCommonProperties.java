@@ -33,11 +33,13 @@
 
 package org.kablink.teaming.rest.v1.model;
 
+import javax.xml.bind.annotation.XmlElement;
+
 /**
  * @author jong
  *
  */
-public abstract class FileCommonProperties {
+public abstract class FileCommonProperties extends BaseRestObject {
 
 	private String id;
 	private HistoryStamp creation;
@@ -99,6 +101,7 @@ public abstract class FileCommonProperties {
 		this.length = length;
 	}
 
+    @XmlElement(name="version_number")
 	public Integer getVersionNumber() {
 		return versionNumber;
 	}
@@ -107,6 +110,7 @@ public abstract class FileCommonProperties {
 		this.versionNumber = versionNumber;
 	}
 
+    @XmlElement(name="major_version")
 	public Integer getMajorVersion() {
 		return majorVersion;
 	}
@@ -115,6 +119,7 @@ public abstract class FileCommonProperties {
 		this.majorVersion = majorVersion;
 	}
 
+    @XmlElement(name="minor_version")
 	public Integer getMinorVersion() {
 		return minorVersion;
 	}
@@ -139,6 +144,7 @@ public abstract class FileCommonProperties {
 		this.status = status;
 	}
 
+    @XmlElement(name="permalink")
 	public String getWebUrl() {
 		return webUrl;
 	}

@@ -41,5 +41,5 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class AttachmentsField extends Field {
-    private Attachment[] attachments;
+    private FileProperties[] attachments;
 }
