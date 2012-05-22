@@ -70,6 +70,7 @@ public class GwtTeaming implements EntryPoint
 	private static final GwtTeamingWorkspaceTreeImageBundle	m_wsTreeImageBundle			=                       GWT.create( GwtTeamingWorkspaceTreeImageBundle.class );
 	private static final GwtRpcServiceAsync					m_gwtRpcService 			= ((GwtRpcServiceAsync) GWT.create( GwtRpcService.class                     ));
 	private static final SimpleEventBus 					m_eventBus 					= 						GWT.create( SimpleEventBus.class                     );
+	public static RequestInfo m_requestInfo = jsGetRequestInfo();
 	
 	private static GwtMainPage	m_mainPage = null;	
 	
@@ -329,7 +330,7 @@ public class GwtTeaming implements EntryPoint
 		
 		// Are we loading the profile page?
 		final RootPanel usRootPanel = RootPanel.get( "gwtUserStatusDiv" );
-		if ( usRootPanel != null )
+		if ( usRootPanel != null && !m_requestInfo.isVibeLite())
 		{
 			// Yes!  Load the user status control's split point.
 			UserStatusControl.createAsync(
@@ -458,4 +459,14 @@ public class GwtTeaming implements EntryPoint
 		};
 		Scheduler.get().scheduleDeferred(doEvent);
 	}// end fireEvent()	
+	
+	/*
+	 * Uses JSNI to grab the JavaScript object that holds the
+	 * information about the request we are dealing with.
+	 */
+	private static native RequestInfo jsGetRequestInfo() /*-{
+		// Return a reference to the JavaScript variable called, m_requestInfo.
+		return $wnd.m_requestInfo;
+	}-*/;
+
 }// end GwtTeaming

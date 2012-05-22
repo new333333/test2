@@ -598,7 +598,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
  	 		filter.add("name", name);
   	 		defs =  coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
  	 	}
-		defs = Utils.validateDefinitions(defs);
+		defs = Utils.validateDefinitions(defs, binder);
    	 	//find the first one
 		if (defs.size() == 0) throw new NoDefinitionByTheIdException(name);
 		//should only be 1 if binder is null
@@ -2821,19 +2821,21 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
     public List<Definition> getAllDefinitions(Integer type) {
 		// Controllers need access to definitions.  Allow world read
+    	Binder binder = null;
     	FilterControls filter = new FilterControls();
     	filter.add("type", type);
     	List<Definition> defs = coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
-    	return Utils.validateDefinitions(defs);
+    	return Utils.validateDefinitions(defs, binder);
      }
 
     public List<Definition> getDefinitions(Long binderId, Boolean includeAncestors) {
 		// Controllers need access to definitions.  Allow world read
        	if (binderId == null) {
+       		Binder binder = null;
         	FilterControls filter = new FilterControls()
         		.add(Restrictions.eq("binderId", ObjectKeys.RESERVED_BINDER_ID));
         	List<Definition> defs = coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
-        	return Utils.validateDefinitions(defs);
+        	return Utils.validateDefinitions(defs, binder);
     	}
     	try {
     		Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
@@ -2844,11 +2846,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    	 			params.put("binderId", ids);
    	 			params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());
    	 			List<Definition> defs = filterDefinitions(coreDao.loadObjects("from org.kablink.teaming.domain.Definition where binderId in (:binderId) and zoneId=:zoneId", params));
-   	 			return Utils.validateDefinitions(defs);
+   	 			return Utils.validateDefinitions(defs, binder);
    	 		} else {
    	 			FilterControls filter = new FilterControls().add(Restrictions.eq("binderId", binder.getId()));
    	 			List<Definition> defs = coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
-   	 			return Utils.validateDefinitions(defs);
+   	 			return Utils.validateDefinitions(defs, binder);
    	 		}
     	} catch (NoBinderByTheIdException nb) {
   	 		if (includeAncestors.equals(Boolean.TRUE)) {
@@ -2863,11 +2865,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     public List<Definition> getDefinitions(Long binderId, Boolean includeAncestors, Integer type) {
 		// Controllers need access to definitions.  Allow world read
     	if (binderId == null) {
+    		Binder binder = null;
         	FilterControls filter = new FilterControls()
          		.add(Restrictions.eq("type", type))
          		.add(Restrictions.eq("binderId", ObjectKeys.RESERVED_BINDER_ID));
         	List<Definition> defs = coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
-        	return Utils.validateDefinitions(defs);
+        	return Utils.validateDefinitions(defs, binder);
     	}
     	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
    	 	if (includeAncestors.equals(Boolean.TRUE)) {
@@ -2879,13 +2882,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    	 		params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());
 
    	 		List<Definition> defs = filterDefinitions(coreDao.loadObjects("from org.kablink.teaming.domain.Definition where binderId in (:binderId) and zoneId=:zoneId  and type=:type", params));
-   	 		return Utils.validateDefinitions(defs);
+   	 		return Utils.validateDefinitions(defs, binder);
   	 	} else {
   	      	FilterControls filter = new FilterControls()
   	      		.add(Restrictions.eq("type", type))
   	      		.add(Restrictions.eq("binderId", binder.getId()));
   	      	List<Definition> defs = coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
-  	      	return Utils.validateDefinitions(defs);
+  	      	return Utils.validateDefinitions(defs, binder);
   	 	}
 
     }

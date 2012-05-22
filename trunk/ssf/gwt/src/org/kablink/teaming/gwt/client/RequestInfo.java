@@ -361,6 +361,16 @@ public class RequestInfo extends JavaScriptObject
 	}
 
 	/**
+	 * Return the flag that tells us if we are running Vibe Lite.
+	 * 
+	 * @return
+	 */
+	public final native boolean isVibeLite()
+	/*-{
+		return (this.getBFromS( this.isVibeLite ));
+	}-*/;
+
+	/**
 	 * Return the flag that tells us if we are running Kablink Vibe.
 	 * 
 	 * @return

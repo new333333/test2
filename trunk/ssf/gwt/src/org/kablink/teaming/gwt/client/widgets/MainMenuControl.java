@@ -450,10 +450,13 @@ public class MainMenuControl extends Composite
 		m_mainMenu.addItem(m_bhButton);
 
 		// ...and finally, add the common drop down items to the menu bar.
+		RequestInfo ri = GwtClientHelper.getRequestInfo();
 		addMyWorkspaceToCommon(        m_mainMenu);
 		addWhatsNewToCommon(           m_mainMenu);
 		addMyFavoritesToCommon(        m_mainMenu);
-		addMyTeamsToCommon(            m_mainMenu);
+		if ( !ri.isVibeLite() ) {
+			addMyTeamsToCommon(        m_mainMenu);
+		}
 		addCloseAdministrationToCommon(m_mainMenu);
 	}
 	

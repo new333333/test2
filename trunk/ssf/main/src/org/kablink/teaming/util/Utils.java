@@ -49,6 +49,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.DefinitionInvalidException;
@@ -579,6 +580,7 @@ public class Utils {
 	 * 
 	 */
 	public static boolean checkIfVibeLiteUI() {
+		if (checkIfVibeLite()) return true;		//If only licensed for Vibe Lite, force it to this UI
 		return SPropsUtil.getBoolean("UI.type.VibeLite", Boolean.FALSE);
 	}
 
@@ -625,14 +627,33 @@ public class Utils {
 		return false;
 	}
 	
+   	//Validate a definition to see if it is allowed to be used
+	public static boolean validateDefinition(Definition def, Binder binder) {
+		if (!Utils.checkIfVibeLite()) return true;
+		
+		List<Definition> binderDefs = new ArrayList<Definition>();
+		if (binder != null) binderDefs = binder.getDefinitions();
+		
+		//Check if def allowed
+		if (binderDefs.contains(def) || checkIfVibeLiteDefinition(def)) {
+			//This template is allowed
+			return true;
+		} else {
+			return false;
+		}
+	}
+		
    	//Validate which definitions are allowed to be used
-	public static List<Definition> validateDefinitions(List<Definition> defs) {
+	public static List<Definition> validateDefinitions(List<Definition> defs, Binder binder) {
 		if (!Utils.checkIfVibeLite()) return defs;
+		
+		List<Definition> binderDefs = new ArrayList<Definition>();
+		if (binder != null) binderDefs = binder.getDefinitions();
 		
 		//Filter out any definitions that are not allowed
 		List<Definition> filteredList = new ArrayList<Definition>();
 		for (Definition def : defs) {
-			if (checkIfVibeLiteDefinition(def)) {
+			if (binderDefs.contains(def) || checkIfVibeLiteDefinition(def)) {
 				//This template is allowed
 				filteredList.add(def);
 			}
@@ -641,20 +662,28 @@ public class Utils {
 	}
 		
    	//Validate which definitions by family type are allowed to be used
-	public static List<Definition> validateDefinitions(List<Definition> defs, List<String> familyTypes) {
+	public static List<Definition> validateDefinitions(List<Definition> defs, Binder binder, List<String> familyTypes) {
 		if (!Utils.checkIfVibeLite()) return defs;
+		
+		List<Definition> binderDefs = new ArrayList<Definition>();
+		if (binder != null) binderDefs = binder.getDefinitions();
 		
 		//Filter out any definitions that are not allowed
 		List<Definition> filteredList = new ArrayList<Definition>();
 		for (Definition def : defs) {
-			Document doc = def.getDefinition();
-			int defType = def.getType();
-			Element familyProperty = (Element) doc.getRootElement().selectSingleNode("//properties/property[@name='family']");
-			if (familyProperty != null) {
-				String family = familyProperty.attributeValue("value", "");
-				if (familyTypes.contains(family) && checkIfVibeLiteDefinition(def)) {
-					//This template is allowed
-					filteredList.add(def);
+			if (binderDefs.contains(def)) {
+				//This template is allowed
+				filteredList.add(def);
+			} else {
+				Document doc = def.getDefinition();
+				int defType = def.getType();
+				Element familyProperty = (Element) doc.getRootElement().selectSingleNode("//properties/property[@name='family']");
+				if (familyProperty != null) {
+					String family = familyProperty.attributeValue("value", "");
+					if (familyTypes.contains(family) && checkIfVibeLiteDefinition(def)) {
+						//This template is allowed
+						filteredList.add(def);
+					}
 				}
 			}
 		}

@@ -801,8 +801,11 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		   Map ctx = new HashMap();
 		   ctx.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE); //don't bother indexing, until copyBinderAttributes done
 		   for (TemplateBinder child: children) {
-			   Binder childBinder = addBinderInternal(child, binder, NLT.getDef(child.getTitle()), null, null);	
-			   addBinderFinish(child, childBinder);
+			   if (Utils.validateDefinition(child.getEntryDef(), null)) {
+				   //This binder type is allowed, so go add it (and its children)
+				   Binder childBinder = addBinderInternal(child, binder, NLT.getDef(child.getTitle()), null, null);	
+				   addBinderFinish(child, childBinder);
+			   }
 		   }
 		   //finally index binder
 		   loadBinderProcessor(binder).indexBinder(binder, false, false, Collections.EMPTY_LIST);

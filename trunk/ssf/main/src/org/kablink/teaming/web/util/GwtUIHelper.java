@@ -65,6 +65,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.Toolbar;
@@ -1221,6 +1222,7 @@ public class GwtUIHelper {
 	 * Items included are:
 	 * - sessionCaptive
 	 * - isNovellTeaming
+	 * - isVibeLite
 	 * - isTinyMCECapable
 	 * - vibeProduct
 	 * - productName
@@ -1254,6 +1256,11 @@ public class GwtUIHelper {
 		// Kablink Vibe.
 		String isNovellTeaming = Boolean.toString(ReleaseInfo.isLicenseRequiredEdition());
 		model.put( "isNovellTeaming", isNovellTeaming );
+		
+		// Put out the flag that tells us if we are running Novell or
+		// Kablink Vibe.
+		String isVibeLite = Boolean.toString(Utils.checkIfVibeLiteUI());
+		model.put( "isVibeLite", isVibeLite );
 		
 		// Put out the flag that tells us if the tinyMCE editor will work on the device we are running on.
 		{

@@ -52,6 +52,7 @@
 		isFormLoginAllowed:					'${isFormLoginAllowed}',
 		isModifyAllowed:					'${ss_modifyEntryAllowed}',
 		isNovellTeaming:					'${isNovellTeaming}',
+		isVibeLite:							'${isVibeLite}',
 		isQuotasDiskQuotaExceeded:			'${ss_diskQuotaExceeded}',
 		isQuotasEnabled:					'${ss_quotasEnabled}',
 		isTinyMCECapable:					'${isTinyMCECapable}',

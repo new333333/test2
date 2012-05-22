@@ -1,4 +1,3 @@
-<%
 /**
  * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
@@ -31,26 +30,31 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-%>
-<%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
-<c:if test="${ss_type == 'profile'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/profile.jsp" />
-</c:if>
-<c:if test="${ss_type == 'tasks_and_calendars'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tasks_and_calendars_tab.jsp" />
-</c:if>
-<c:if test="${ss_type == 'whatsNew'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tab.jsp" />
-</c:if>
-<c:if test="${ss_type == 'activities'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities_tab.jsp" />
-</c:if>
-<c:if test="${ss_type == 'miniblogs'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/miniblogs_tab.jsp" />
-</c:if>
-<c:if test="${ss_type == 'filespaces'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/filespaces_tab.jsp" />
-</c:if>
-<c:if test="${ss_type == 'overview'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/overview.jsp" />
-</c:if>
+package org.kablink.teaming.taglib;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
+
+import org.kablink.teaming.module.license.LicenseChecker;
+
+
+public class IfNotAuthorizedByLicense extends TagSupport {
+
+	private static final long serialVersionUID = 1L;
+	
+	private String featureName;
+	
+	public void setFeatureName(String featureName) {
+		this.featureName = featureName;
+	}
+	
+	public int doStartTag() throws JspException {
+
+		if(LicenseChecker.isAuthorizedByLicense(featureName)) {
+			return SKIP_BODY;
+		}
+		else {
+			return EVAL_BODY_INCLUDE;
+		}
+	}
+}

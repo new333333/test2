@@ -331,6 +331,7 @@ public interface ObjectKeys {
     public static final String RELEVANCE_DASHBOARD_TASKS_AND_CALENDARS = "tasks_and_calendars";
     public static final String RELEVANCE_DASHBOARD_ACTIVITIES = "activities";
     public static final String RELEVANCE_DASHBOARD_MINIBLOGS = "miniblogs";
+    public static final String RELEVANCE_DASHBOARD_FILESPACES = "filespaces";
     public static final String RELEVANCE_TRACKED_BINDERS = "trackedBinders";
     public static final String RELEVANCE_TRACKED_CALENDARS = "trackedCalendars";
     public static final String RELEVANCE_TRACKED_PEOPLE = "trackedPeople";

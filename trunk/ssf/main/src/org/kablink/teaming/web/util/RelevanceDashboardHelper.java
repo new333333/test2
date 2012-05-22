@@ -141,9 +141,10 @@ public class RelevanceDashboardHelper {
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_MINIBLOGS.equals(type)) {
 			setupSharedItemsBeans(bs, userWorkspace, model);
 			setupMiniblogsBean(bs, userWorkspace, model);
-		}
-		else if ( ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW.equalsIgnoreCase( type ) )
-		{
+		
+		} else if (ObjectKeys.RELEVANCE_DASHBOARD_FILESPACES.equals(type)) {
+			
+		} else if ( ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW.equalsIgnoreCase( type ) ) {
 		}
 	}
 	
