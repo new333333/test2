@@ -166,6 +166,21 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	final public Long                             getFolderId()          {return m_folderInfo.getBinderIdAsLong();     }	//
 	final public VibeFlowPanel                    getFlowPanel()         {return m_flowPanel;                          }	// Flow panel holding the view's content (no toolbars, ...)
 
+	/**
+	 * Returns true if the entry viewer should include next/previous
+	 * buttons and false otherwise. 
+	 *
+	 * Classes that extend this class can override this method to
+	 * inhibit the next/previous buttons on an entry view.
+	 * 
+	 * @return
+	 */
+	protected boolean allowNextPrevOnEntryView() {
+		// By default, all folder views support next/previous on entry
+		// views.
+		return true;
+	}
+	
 	/*
 	 * Returns a Widget to use for tool panels that aren't used.
 	 */
@@ -814,6 +829,28 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 				}
 			});
 		}
+	}
+
+	/**
+	 * Called when the folder view is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach() {
+		super.onAttach();
+		GwtClientHelper.jsSetAllowNextPrevOnView(allowNextPrevOnEntryView());
+	}
+	
+	/**
+	 * Called when the folder view is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		GwtClientHelper.jsSetAllowNextPrevOnView(false);
 	}
 	
 	/**
