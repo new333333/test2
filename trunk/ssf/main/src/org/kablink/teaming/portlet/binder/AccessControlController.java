@@ -200,6 +200,7 @@ public class AccessControlController extends AbstractBinderController {
 				}
 				model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, configureAccess);
 				model.put(WebKeys.DEFINITION_ENTRY, entry);
+				model.put(WebKeys.BINDER, entry.getParentBinder());
 				
 			} else {
 				Binder binder = getBinderModule().getBinder(workAreaId);			

@@ -2220,7 +2220,7 @@ public class GwtMenuHelper {
 				Binder binder = GwtUIHelper.getBinderSafely(bm, binderId);
 				if ((null != binder) && (EntityIdentifier.EntityType.profiles != binder.getEntityType())) {				
 					// Yes!  Then the user is allowed to view team membership.
-					if (!Utils.checkIfVibeLite() || binder.getTeamMemberIds().size() == 0) {
+					if (!Utils.checkIfVibeLite() || binder.getTeamMemberIds().size() > 0) {
 					reply.setViewAllowed(true);
 		
 						// If the user can manage the team...
