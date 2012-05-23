@@ -39,6 +39,8 @@ import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
 
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /**
  * User: david
@@ -52,11 +54,30 @@ public class DefaultObjectMapperContextResolver implements ContextResolver<Objec
     public DefaultObjectMapperContextResolver() throws Exception {
         this.objectMapper = new ObjectMapper();
         AnnotationIntrospector jaxb = new JaxbAnnotationIntrospector();
-        this.objectMapper.setSerializationConfig(this.objectMapper.getSerializationConfig().withSerializationInclusion(JsonSerialize.Inclusion.NON_NULL).withAnnotationIntrospector(jaxb));
-        this.objectMapper.setDeserializationConfig(this.objectMapper.getDeserializationConfig().withAnnotationIntrospector(jaxb));
+        this.objectMapper.setSerializationConfig(
+                this.objectMapper.getSerializationConfig()
+                        .withSerializationInclusion(JsonSerialize.Inclusion.NON_NULL)
+                        .withDateFormat(new CustomDateFormat())
+                        .withAnnotationIntrospector(jaxb));
+        this.objectMapper.setDeserializationConfig(
+                this.objectMapper.getDeserializationConfig()
+                        .withDateFormat(new CustomDateFormat())
+                        .withAnnotationIntrospector(jaxb));
     }
 
     public ObjectMapper getContext(Class<?> aClass) {
         return objectMapper;
+    }
+}
+
+class CustomDateFormat extends SimpleDateFormat {
+
+    public CustomDateFormat() {
+        super("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+    }
+
+    @Override
+    public Object clone() {
+        return new CustomDateFormat();
     }
 }
