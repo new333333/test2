@@ -39,11 +39,13 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 
 /**
  * This class holds all of the information necessary to execute the
- * 'delete folder' command.
+ * 'purge folder entries' command.
  * 
  * @author drfoster@novell.com
  */
 public class PurgeFolderEntriesCmd extends DeletePurgeFolderEntriesCmdBase {
+	private boolean	m_deleteMirroredSource;	// true -> For folder's that are mirrored folders, purge the mirrored source too.
+	
 	/**
 	 * Class constructor.
 	 * 
@@ -51,6 +53,7 @@ public class PurgeFolderEntriesCmd extends DeletePurgeFolderEntriesCmdBase {
 	 * constructor.
 	 */
 	public PurgeFolderEntriesCmd() {
+		// Initialize the super class.
 		super();		
 	}
 
@@ -58,19 +61,43 @@ public class PurgeFolderEntriesCmd extends DeletePurgeFolderEntriesCmdBase {
 	 * Class constructor.
 	 * 
 	 * @param entityIds
+	 * @param deleteMirroredSource
 	 */
-	public PurgeFolderEntriesCmd(List<EntityId> entityIds) {
+	public PurgeFolderEntriesCmd(List<EntityId> entityIds, boolean deleteMirroredSource) {
+		// Initialize the super class...
 		super(entityIds);
+		
+		// ...and store the parameter.
+		setDeleteMirroredSource(deleteMirroredSource);
 	}
 	
 	/**
 	 * Class constructor.
 	 * 
 	 * @param entityId
+	 * @param deleteMirroredSource
 	 */
-	public PurgeFolderEntriesCmd(EntityId entityId) {
+	public PurgeFolderEntriesCmd(EntityId entityId, boolean deleteMirroredSource) {
+		// Initialize the super class...
 		super(entityId);
+
+		// ...and store the parameter.
+		setDeleteMirroredSource(deleteMirroredSource);
 	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public boolean getDeleteMirroredSource() {return m_deleteMirroredSource;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param deleteMirroredSource
+	 */
+	public void setDeleteMirroredSource(boolean deleteMirroredSource) {m_deleteMirroredSource = deleteMirroredSource;}
 
 	/**
 	 * Returns the command's enumeration value.

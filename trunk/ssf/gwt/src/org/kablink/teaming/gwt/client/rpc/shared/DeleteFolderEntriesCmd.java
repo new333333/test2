@@ -39,7 +39,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 
 /**
  * This class holds all of the information necessary to execute the
- * 'delete folder' command.
+ * 'delete folder entries' command.
  * 
  * @author drfoster@novell.com
  */
@@ -51,6 +51,7 @@ public class DeleteFolderEntriesCmd extends DeletePurgeFolderEntriesCmdBase {
 	 * constructor.
 	 */
 	public DeleteFolderEntriesCmd() {
+		// Initialize the super class.
 		super();		
 	}
 
@@ -60,6 +61,7 @@ public class DeleteFolderEntriesCmd extends DeletePurgeFolderEntriesCmdBase {
 	 * @param entityIds
 	 */
 	public DeleteFolderEntriesCmd(List<EntityId> entityIds) {
+		// Initialize the super class.
 		super(entityIds);
 	}
 	
@@ -69,6 +71,7 @@ public class DeleteFolderEntriesCmd extends DeletePurgeFolderEntriesCmdBase {
 	 * @param entityId
 	 */
 	public DeleteFolderEntriesCmd(EntityId entityId) {
+		// Initialize the super class.
 		super(entityId);
 	}
 

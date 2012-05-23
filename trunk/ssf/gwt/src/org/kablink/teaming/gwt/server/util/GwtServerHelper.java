@@ -6792,12 +6792,13 @@ public class GwtServerHelper {
 	 * @param bs
 	 * @param request
 	 * @param entityIds
+	 * @param deleteMirroredSource
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData purgeFolderEntries(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds) throws GwtTeamingException {
+	public static ErrorListRpcResponseData purgeFolderEntries(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, boolean deleteMirroredSource) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
@@ -6809,8 +6810,8 @@ public class GwtServerHelper {
 				try {
 					// ...purging each entity...
 					if (entityId.isBinder())
-					     bm.deleteBinder(                       entityId.getEntityId());
-					else fm.deleteEntry(entityId.getBinderId(), entityId.getEntityId());
+					     bm.deleteBinder(                       entityId.getEntityId(), deleteMirroredSource, null);
+					else fm.deleteEntry(entityId.getBinderId(), entityId.getEntityId()                            );
 				}
 				
 				catch (Exception e) {
