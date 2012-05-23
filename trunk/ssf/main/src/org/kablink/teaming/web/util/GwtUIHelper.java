@@ -1143,7 +1143,9 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static boolean isVibeLiteEnabled() {
-		return (isVibeUiDebug() && SPropsUtil.getBoolean("ssf.ui.vibe.lite.enabled", false));
+		return (
+			Utils.checkIfVibeLiteLicensed() ||
+			(isVibeUiDebug() && SPropsUtil.getBoolean("ssf.ui.vibe.lite.enabled", false)));
 	}
 	
 	/**
@@ -1345,8 +1347,8 @@ public class GwtUIHelper {
 		
 		// Put out the flag indicating whether the Vibe Lite UI is
 		// active.
-		model.put(WebKeys.VIBE_LITE_ENABLED, Utils.checkIfVibeLite());
-		model.put(WebKeys.VIBE_LITE,         Utils.checkIfVibeLiteUI(request));
+		model.put(WebKeys.VIBE_LITE_ENABLED, isVibeLiteEnabled());
+		model.put(WebKeys.VIBE_LITE,         Utils.checkIfVibeLiteUI(request));  
 		
 		// Put out the flag indicating which product we're running as.
 		// Note that we do this first as it has the side affect of
