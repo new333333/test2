@@ -4890,6 +4890,30 @@ public class BinderHelper {
 	    	return title;
     	}
     }
+	
+	/**
+	 * Returns true if a binder is the current user's workspace and
+	 * false otherwise.
+	 * 
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static boolean isBinderCurrentUsersWS(Binder binder) {
+		// Is the binder a workspace?
+		boolean reply = false;
+		if (binder.getEntityType().name().equals(EntityType.workspace.name())) {
+			// Yes!  Is it the current user's workspace?
+			Long binderId = binder.getId();
+			User currentUser = RequestContextHolder.getRequestContext().getUser();
+			Long currentUserWSId = currentUser.getWorkspaceId();
+			reply = ((null != currentUserWSId) && currentUserWSId.equals(binderId));
+		}
+		
+		// If we get here, reply is true if binder is the current
+		// user's workspace and false otherwise.  Return it.
+		return reply;
+	}
     
 	/**
 	 * Returns true if a binder is a system user's workspace and false
