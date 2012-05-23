@@ -137,43 +137,6 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 	
 	/**
-	 * Return true if the UI is in Vibe Lite mode and false otherwise. 
-	 * 
-	 * @return
-	 */
-	public final native boolean isVibeLite()
-	/*-{
-		return this.getBFromS( this.vibeLite );
-	}-*/;
-	
-	/**
-	 * Return true if the Vibe Lite UI is enabled and false
-	 * otherwise. 
-	 * 
-	 * @return
-	 */
-	public final native boolean isVibeLiteEnabled()
-	/*-{
-		return this.getBFromS( this.vibeLiteEnabled );
-	}-*/;
-	
-	/**
-	 * Turns off the Vibe Lite flag.
-	 */
-	public final native void clearVibeLite()
-	/*-{
-		this.vibeLite = 'false';
-	}-*/;
-	
-	/**
-	 * Turns on the Vibe Lite flag.
-	 */
-	public final native void setVibeLite()
-	/*-{
-		this.vibeLite = 'true';
-	}-*/;
-	
-	/**
 	 * Return the error message we should display.
 	 * 
 	 * @return
@@ -396,6 +359,16 @@ public class RequestInfo extends JavaScriptObject
 	public final boolean isNovellVibe() {
 		return isNovellTeaming();
 	}
+
+	/**
+	 * Return the flag that tells us if we are running Vibe Lite.
+	 * 
+	 * @return
+	 */
+	public final native boolean isVibeLite()
+	/*-{
+		return (this.getBFromS( this.isVibeLite ));
+	}-*/;
 
 	/**
 	 * Return the flag that tells us if we are running Kablink Vibe.

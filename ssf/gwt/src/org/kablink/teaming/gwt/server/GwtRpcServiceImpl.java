@@ -2082,15 +2082,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case SET_VIBE_LITE_MODE:
-		{
-			boolean vibeLite = ((SetVibeLiteModeCmd) cmd).getVibeLite();
-			GwtUIHelper.setVibeLite( getRequest( ri ), vibeLite );
-			BooleanRpcResponseData responseData = new BooleanRpcResponseData( true );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
 		case SHARE_ENTRY:
 		{
 			ShareEntryCmd seCmd = ((ShareEntryCmd) cmd);

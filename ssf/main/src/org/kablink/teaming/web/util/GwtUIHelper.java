@@ -1042,110 +1042,9 @@ public class GwtUIHelper {
 	 * 
 	 * @return
 	 */
-	public static boolean isVibeDebugLP() {
-		return SPropsUtil.getBoolean("ssf.lp.debug.enabled", false);
-	}
-	
-	/**
-	 * Returns true if the current user is running the Vibe Lite UI
-	 * and false otherwise.
-	 * 
-	 * @param hRequest
-	 * 
-	 * @return
-	 */
-	public static boolean isVibeLite(HttpServletRequest hRequest) {
-		if (!(isVibeLiteEnabled())) {
-			return false;
-		}
-		
-		HttpSession hs = WebHelper.getRequiredSession(hRequest);
-		return isVibeLiteImpl(hs, null);
-	}
-	
-	/**
-	 * Returns true if the current user is running the Vibe Lite UI
-	 * and false otherwise.
-	 * 
-	 * @param pRequest
-	 * 
-	 * @return
-	 */
-	public static boolean isVibeLite(PortletRequest pRequest) {
-		if (!(isVibeLiteEnabled())) {
-			return false;
-		}
-		
-		PortletSession ps = WebHelper.getRequiredPortletSession(pRequest);
-		return isVibeLiteImpl(null, ps);
-	}
-	
-	/*
-	 * Returns true if the current user is running the Vibe Lite UI
-	 * and false otherwise.
-	 */
-	private static boolean isVibeLiteImpl(HttpSession hs, PortletSession ps) {
-		String vibeLite;
-		if      (null != hs) vibeLite = ((String) hs.getAttribute(WebKeys.VIBE_LITE));
-		else if (null != ps) vibeLite = ((String) ps.getAttribute(WebKeys.VIBE_LITE, PortletSession.APPLICATION_SCOPE));
-		else                 vibeLite = null;
-		
-		boolean reply;
-		if (MiscUtil.hasString(vibeLite))
-		     reply = vibeLite.equals(String.valueOf(Boolean.TRUE));
-		else reply = Utils.checkIfVibeLiteUIBase();
-		return reply;
-	}
-	
-	/**
-	 * Sets whether the current user is running the Vibe Lite UI in
-	 * the session cache.
-	 * 
-	 * @param hRequest
-	 */
-	public static void setVibeLite(HttpServletRequest hRequest, boolean vibeLite) {
-		if (!(isVibeLiteEnabled())) {
-			return;
-		}
-		
-		HttpSession hs = WebHelper.getRequiredSession(hRequest);
-		setVibeLiteImpl(hs, null, vibeLite);
-	}
-	
-	/**
-	 * Sets whether the current user is running the Vibe Lite UI in
-	 * the session cache.
-	 * 
-	 * @param pRequest
-	 */
-	public static void setVibeLite(PortletRequest pRequest, boolean vibeLite) {
-		if (!(isVibeLiteEnabled())) {
-			return;
-		}
-		
-		PortletSession ps = WebHelper.getRequiredPortletSession(pRequest);
-		setVibeLiteImpl(null, ps, vibeLite);
-	}
-	
-	/*
-	 * Sets whether the current user is running the Vibe Lite UI in
-	 * the session cache.
-	 */
-	private static void setVibeLiteImpl(HttpSession hs, PortletSession ps, boolean vibeLite) {
-		if      (null != hs) hs.setAttribute(WebKeys.VIBE_LITE, String.valueOf(vibeLite));
-		else if (null != ps) ps.setAttribute(WebKeys.VIBE_LITE, String.valueOf(vibeLite), PortletSession.APPLICATION_SCOPE);
-	}
-	
-	/**
-	 * Returns true if the Vibe Lite UI is enabled and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isVibeLiteEnabled() {
-		return (
-			Utils.checkIfVibeLiteLicensed() ||
-			(isVibeUiDebug() && SPropsUtil.getBoolean("ssf.ui.vibe.lite.enabled", false)));
+	public static boolean isVibeDebugLP()
+	{
+		return SPropsUtil.getBoolean( "ssf.lp.debug.enabled", false );
 	}
 	
 	/**
@@ -1341,14 +1240,8 @@ public class GwtUIHelper {
 		// ...)
 		model.put(WebKeys.VIBE_UI_DEBUG, isVibeUiDebug());
 		
-		// Put out the flag indicating whether the landing page is in
-		// debug mode.
-		model.put(WebKeys.VIBE_LP_DEBUG, isVibeDebugLP());
-		
-		// Put out the flag indicating whether the Vibe Lite UI is
-		// active.
-		model.put(WebKeys.VIBE_LITE_ENABLED, isVibeLiteEnabled());
-		model.put(WebKeys.VIBE_LITE,         Utils.checkIfVibeLiteUI(request));  
+		// Put out the flag indicating whether the landing page is in debug mode.
+		model.put( WebKeys.VIBE_LP_DEBUG, isVibeDebugLP() );
 		
 		// Put out the flag indicating which product we're running as.
 		// Note that we do this first as it has the side affect of
@@ -1363,6 +1256,11 @@ public class GwtUIHelper {
 		// Kablink Vibe.
 		String isNovellTeaming = Boolean.toString(ReleaseInfo.isLicenseRequiredEdition());
 		model.put( "isNovellTeaming", isNovellTeaming );
+		
+		// Put out the flag that tells us if we are running Novell or
+		// Kablink Vibe.
+		String isVibeLite = Boolean.toString(Utils.checkIfVibeLiteUI());
+		model.put( "isVibeLite", isVibeLite );
 		
 		// Put out the flag that tells us if the tinyMCE editor will work on the device we are running on.
 		{
