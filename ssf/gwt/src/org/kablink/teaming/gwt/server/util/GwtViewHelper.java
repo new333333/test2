@@ -2203,10 +2203,6 @@ public class GwtViewHelper {
 								csk = Constants.CREATION_DATE_FIELD;
 							}
 						}
-						if (null == emValue) {
-							fr.setColumnValue(fc, "");
-							continue;
-						}
 						
 						GuestInfo     gi = null;
 						PrincipalInfo pi = null;
