@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Date: 5/16/12
  * Time: 3:56 PM
  */
-@XmlRootElement
+@XmlRootElement (name="description")
 public class Description {
     private String text;
     private int format;

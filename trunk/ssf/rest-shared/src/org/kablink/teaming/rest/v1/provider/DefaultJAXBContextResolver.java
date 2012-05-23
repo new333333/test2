@@ -75,7 +75,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
     		LegacyFileProperties.class,
     		LegacyHistoryStamp.class,
     		Link.class,
-    		LinkCollection.class,
+    		Locale.class,
     		PrincipalBrief.class,
             ReleaseInfo.class,
             RootRestObject.class,
@@ -89,7 +89,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
     
     public DefaultJAXBContextResolver() throws Exception {
         this.types = new HashSet(Arrays.asList(cTypes)); 
-        this.context = new JSONJAXBContext(JSONConfiguration.natural().build(), cTypes);
+        this.context = new JSONJAXBContext(JSONConfiguration.natural().usePrefixesAtNaturalAttributes().build(), cTypes);
     }
     
     public JAXBContext getContext(Class<?> objectType) {

@@ -33,6 +33,7 @@
 package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,7 +44,7 @@ import java.util.List;
  * Date: 5/18/12
  * Time: 12:45 PM
  */
-@XmlRootElement
+@XmlRootElement (name = "results")
 public class SearchResults<T> {
     private int first;
     private int count;
@@ -91,7 +92,8 @@ public class SearchResults<T> {
         this.next = next;
     }
 
-    @XmlElement(name = "results")
+    @XmlElementWrapper(name = "items")
+    @XmlElement(name = "item")
     public List<T> getResults() {
         return results;
     }
@@ -108,6 +110,18 @@ public class SearchResults<T> {
 
     public void appendAll(Collection<T> obj) {
         results.addAll(obj);
+        if (count<results.size()) {
+            count = results.size();
+        }
+        if (total<count) {
+            total = count;
+        }
+    }
+
+    public void appendAll(T [] objs) {
+        for (T obj : objs) {
+            results.add(obj);
+        }
         if (count<results.size()) {
             count = results.size();
         }

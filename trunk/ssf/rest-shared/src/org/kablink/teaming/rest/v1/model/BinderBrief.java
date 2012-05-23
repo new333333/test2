@@ -32,15 +32,15 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * User: david
  * Date: 5/17/12
  * Time: 3:54 PM
  */
-@XmlRootElement
+@XmlRootElement(name = "binder_brief")
 public class BinderBrief extends DefinableEntityBrief {
    	private Boolean library;
    	private String path;
@@ -70,10 +70,12 @@ public class BinderBrief extends DefinableEntityBrief {
         this.path = path;
     }
 
+    @XmlTransient
     public boolean isFolder() {
         return "folder".equals(getEntityType());
     }
 
+    @XmlTransient
     public boolean isWorkspace() {
         return "workspace".equals(getEntityType());
     }

@@ -40,7 +40,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Date: 5/16/12
  * Time: 4:47 PM
  */
-@XmlRootElement
+@XmlRootElement(name = "principal_brief")
 public class PrincipalBrief extends EntryBrief {
     private String name;
     private String emailAddress;

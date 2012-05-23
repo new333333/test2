@@ -34,7 +34,7 @@ package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
+@XmlRootElement (name = "workspace")
 public class Workspace extends Binder {
 
 }

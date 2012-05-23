@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlElement;
  * @author jong
  *
  */
-public abstract class FileCommonProperties extends BaseRestObject {
+public abstract class BaseFileProperties extends BaseRestObject {
 
 	private String id;
 	private HistoryStamp creation;
@@ -52,11 +52,11 @@ public abstract class FileCommonProperties extends BaseRestObject {
 	private Integer status; // used also for update
 	private String webUrl;
 
-	protected FileCommonProperties() {}
+	protected BaseFileProperties() {}
 	
-	public FileCommonProperties(String id, HistoryStamp creation, HistoryStamp modification, 
-			Long length, Integer versionNumber, Integer majorVersion, Integer minorVersion, 
-			String note, Integer status, String webUrl) {
+	public BaseFileProperties(String id, HistoryStamp creation, HistoryStamp modification,
+                              Long length, Integer versionNumber, Integer majorVersion, Integer minorVersion,
+                              String note, Integer status, String webUrl) {
 		this.id = id;
 		this.creation = creation;
 		this.modification = modification;

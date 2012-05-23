@@ -34,7 +34,7 @@ package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
+@XmlRootElement (name="binder")
 public class Binder extends DefinableEntity {
     private String path;
     private String family;

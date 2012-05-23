@@ -34,7 +34,7 @@ package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
+@XmlRootElement (name="folder")
 public class Folder extends Binder {
     private Boolean library;
    	private Boolean mirrored;

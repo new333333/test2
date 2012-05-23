@@ -33,6 +33,7 @@
 package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +44,8 @@ import java.util.List;
  */
 public abstract class BaseRestObject {
     private String link;
-    @XmlElement(name="links")
+    @XmlElementWrapper(name="links")
+    @XmlElement(name="link")
     private List<Link> additionalLinks;
 
     public BaseRestObject() {
@@ -60,6 +62,10 @@ public abstract class BaseRestObject {
     @XmlElement(name="href")
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public List<Link> getAdditionalLinks() {
+        return additionalLinks;
     }
 
     public void addAdditionalLink(String relation, String uri) {

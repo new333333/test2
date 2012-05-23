@@ -35,7 +35,7 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "Link")
+@XmlRootElement(name = "link")
 public class Link {
     private String rel;
     private String href;

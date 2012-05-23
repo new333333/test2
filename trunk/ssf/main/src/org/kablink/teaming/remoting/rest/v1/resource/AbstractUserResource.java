@@ -40,6 +40,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.SearchResults;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
 
@@ -64,23 +65,21 @@ public abstract class AbstractUserResource extends AbstractResource {
         return ResourceUtil.buildUser((org.kablink.teaming.domain.User) entry);
     }
 
-    protected BinderBrief[] getFavorites(long userId) {
+    protected SearchResults<BinderBrief> getFavorites(long userId) {
         List<Binder> binders = profileModule.getUserFavorites(userId);
-        BinderBrief [] briefs = new BinderBrief[binders.size()];
-        int index = 0;
+        SearchResults<BinderBrief> results = new SearchResults<BinderBrief>();
         for (Binder binder : binders) {
-            briefs[index++] = ResourceUtil.buildBinderBrief(binder);
+            results.append(ResourceUtil.buildBinderBrief(binder));
         }
-        return briefs;
+        return results;
     }
 
-    protected TeamBrief[] getTeams(long userId) {
+    protected SearchResults<TeamBrief> getTeams(long userId) {
         List<TeamInfo> binders = profileModule.getUserTeams(userId);
-        TeamBrief [] briefs = new TeamBrief[binders.size()];
-        int index = 0;
-        for (TeamInfo team : binders) {
-            briefs[index++] = ResourceUtil.buildTeamBrief(team);
+        SearchResults<TeamBrief> results = new SearchResults<TeamBrief>();
+        for (TeamInfo binder : binders) {
+            results.append(ResourceUtil.buildTeamBrief(binder));
         }
-        return briefs;
+        return results;
     }
 }

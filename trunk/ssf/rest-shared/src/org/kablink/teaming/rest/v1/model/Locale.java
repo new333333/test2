@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Date: 5/16/12
  * Time: 4:36 PM
  */
-@XmlRootElement
+@XmlRootElement(name = "locale")
 public class Locale {
     private String country;
     private String language;

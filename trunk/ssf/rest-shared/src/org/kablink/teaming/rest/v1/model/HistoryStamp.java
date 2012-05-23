@@ -42,7 +42,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author jong
  *
  */
-@XmlRootElement
+@XmlRootElement (name="history_stamp")
 public class HistoryStamp {
 
 	private PrincipalBrief principal;
