@@ -1259,7 +1259,7 @@ public class GwtUIHelper {
 		
 		// Put out the flag that tells us if we are running Novell or
 		// Kablink Vibe.
-		String isVibeLite = Boolean.toString(Utils.checkIfVibeLiteUI());
+		String isVibeLite = Boolean.toString(Utils.checkIfVibeLite());
 		model.put( "isVibeLite", isVibeLite );
 		
 		// Put out the flag that tells us if the tinyMCE editor will work on the device we are running on.
