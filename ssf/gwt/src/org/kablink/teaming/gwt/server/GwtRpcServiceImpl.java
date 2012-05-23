@@ -1746,7 +1746,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case PURGE_FOLDER_ENTRIES:
 		{
 			PurgeFolderEntriesCmd pfeCmd = ((PurgeFolderEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtServerHelper.purgeFolderEntries( this, getRequest( ri ), pfeCmd.getEntityIds() );
+			ErrorListRpcResponseData responseData = GwtServerHelper.purgeFolderEntries( this, getRequest( ri ), pfeCmd.getEntityIds(), pfeCmd.getDeleteMirroredSource() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

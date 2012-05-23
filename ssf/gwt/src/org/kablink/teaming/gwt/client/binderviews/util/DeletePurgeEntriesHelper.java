@@ -366,9 +366,10 @@ public class DeletePurgeEntriesHelper {
 	 * Asynchronously purges the selected entries.
 	 * 
 	 * @param sourceEntityIds
+	 * @param deleteMirroredSource
 	 * @param dpeCallback
 	 */
-	public static void purgeSelectedEntriesAsync(final List<EntityId> sourceEntityIds, final DeletePurgeEntriesCallback dpeCallback) {
+	public static void purgeSelectedEntriesAsync(final List<EntityId> sourceEntityIds, final boolean deleteMirroredSource, final DeletePurgeEntriesCallback dpeCallback) {
 		ProgressDlg.createAsync(new ProgressDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -389,7 +390,7 @@ public class DeletePurgeEntriesHelper {
 				DeletePurgeEntriesHelper dpeHelper = new DeletePurgeEntriesHelper(
 					sourceEntityIds,
 					strMap,
-					new PurgeFolderEntriesCmd(sourceEntityIds),
+					new PurgeFolderEntriesCmd(sourceEntityIds, deleteMirroredSource),
 					dpeCallback);
 				
 				// ...and perform the purge...

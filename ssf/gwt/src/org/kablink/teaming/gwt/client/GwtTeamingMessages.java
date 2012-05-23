@@ -1519,6 +1519,7 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the 'Binder View Helper' APIs.
 	String binderViewsConfirmDeleteEntries();
 	String binderViewsConfirmDeleteUserWS();
+	String binderViewsConfirmPurgeDeleteSourceOnMirroredSubFolders();
 	String binderViewsConfirmPurgeEntries();
 	String binderViewsConfirmPurgeUsers();
 	String binderViewsConfirmPurgeUserWS();

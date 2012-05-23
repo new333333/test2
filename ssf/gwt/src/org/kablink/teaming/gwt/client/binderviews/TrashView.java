@@ -402,7 +402,13 @@ public class TrashView extends DataTableFolderViewBase {
 						    showBusySpinner();
 							List<String> trashSelectionData = buildTrashSelectionList();
 							Long binderId = getFolderInfo().getBinderIdAsLong();
-							GwtClientHelper.executeCommand(new TrashPurgeSelectedEntriesCmd(binderId, ((null == cb) ? false : cb.getValue()), trashSelectionData), new AsyncCallback<VibeRpcResponse>() {
+							GwtClientHelper.executeCommand(new TrashPurgeSelectedEntriesCmd(
+									binderId,
+									((null == cb) ?
+										false     :
+										cb.getValue()),
+									trashSelectionData),
+									new AsyncCallback<VibeRpcResponse>() {
 								@Override
 								public void onFailure(Throwable t) {
 								    hideBusySpinner();
