@@ -723,6 +723,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					} else if (type.equals("selectbox") || type.startsWith("familySelectbox")|| 
 							type.equals("radio")) {
 						int optionCount = 0;
+						boolean selectedSeen = false;
 						if (type.equals("selectbox") || type.startsWith("familySelectbox")) {
 							sb.append("<table>\n<tbody>\n<tr>\n<td>\n");
 							sb.append("<span class=\"ss_bold\">" + propertyConfigCaption + "</span>");
@@ -736,8 +737,17 @@ public class BuildDefinitionDivs extends TagSupport {
 								while (itSelections.hasNext()) {
 									Element selection = (Element) itSelections.next();
 									if (type.startsWith("familySelectbox") && 
-											Utils.checkIfVibeLiteUI()) {
-										if (Utils.checkIfVibeLiteFamily(type, selection.attributeValue("name", ""))) count++;
+											Utils.checkIfVibeLite()) {
+										if (Utils.checkIfVibeLiteFamily(type, selection.attributeValue("name", ""))) {
+											count++;
+											for (int i = 0; i < propertyValues.size(); i++) {
+												if (((String)propertyValues.get(i)).equals(selection.attributeValue("name", ""))) {
+													//Remember that one of these properties is selected
+													selectedSeen = true;
+													break;
+												}
+											}
+										}
 									} else {
 										count++;
 									}
@@ -771,10 +781,15 @@ public class BuildDefinitionDivs extends TagSupport {
 							if (type.equals("selectbox") || type.startsWith("familySelectbox")) {
 								boolean allowed = true;
 								if (type.startsWith("familySelectbox") && 
-										Utils.checkIfVibeLiteUI()) {
+										Utils.checkIfVibeLite()) {
 									allowed = Utils.checkIfVibeLiteFamily(type, selection.attributeValue("name", ""));
 								}
 								if (allowed) {
+									if (!selectedSeen && checked.equals("")) {
+										//Nothing has been selected, so select the first one in the list
+										checked = " selected=\"selected\"";
+									}
+									selectedSeen = true;
 									sb.append("<option value=\"").append(selection.attributeValue("name", "")).append("\"").append(checked).append(">");
 									sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", "")))
 											.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));

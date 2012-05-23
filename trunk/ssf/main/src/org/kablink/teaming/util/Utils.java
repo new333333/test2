@@ -567,23 +567,14 @@ public class Utils {
 	 * 
 	 */
 	public static boolean checkIfVibeLite() {
-		//if (1 == 1) return true; //Use this line to test as if running under Vibe Lite license
-		if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.VibeLite")) {
+		if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.VibeLite") ||
+				SPropsUtil.getBoolean("UI.type.VibeLite", Boolean.FALSE)) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 	
-	/**
-	 * Check if using the Vibe Lite UI
-	 * 
-	 */
-	public static boolean checkIfVibeLiteUI() {
-		if (checkIfVibeLite()) return true;		//If only licensed for Vibe Lite, force it to this UI
-		return SPropsUtil.getBoolean("UI.type.VibeLite", Boolean.FALSE);
-	}
-
 	/**
 	 * Check if this is Vibe Lite definition
 	 * 

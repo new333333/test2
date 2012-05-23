@@ -163,7 +163,8 @@ public class DefinitionHelper {
 		List<String> commentTypes = new ArrayList<String>();
 		commentTypes.add(Definition.FAMILY_COMMENT);
 		commentTypes.add(Definition.FAMILY_FILE_COMMENT);
-		Binder binder = getInstance().getBinderModule().getBinder(binderId);
+		Binder binder = null;
+		if (binderId != null) binder = getInstance().getBinderModule().getBinder(binderId);
 		defs = Utils.validateDefinitions(defs, binder, commentTypes);
 		return orderDefinitions(defs, true);
 	}

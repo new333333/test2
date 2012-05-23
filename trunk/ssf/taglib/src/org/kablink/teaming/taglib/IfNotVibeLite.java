@@ -46,7 +46,7 @@ public class IfNotVibeLite extends TagSupport {
 	
 	public int doStartTag() throws JspException {
 		HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
-		if (!Utils.checkIfVibeLiteUI()) {
+		if (!Utils.checkIfVibeLite()) {
 			return EVAL_BODY_INCLUDE;
 		}
 		else {
