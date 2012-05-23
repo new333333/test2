@@ -567,15 +567,17 @@ public class Utils {
 	//Routines that support Vibe Lite
 	
 	/**
-	 * Check if this is a Vibe Lite license
-	 * 
+	 * Check if Vibe Lite is enabled.
 	 */
 	public static boolean checkIfVibeLite() {
-		if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.VibeLite") || GwtUIHelper.isVibeLiteEnabled()) {
-			return true;
-		} else {
-			return false;
-		}
+		return GwtUIHelper.isVibeLiteEnabled();	// Checks for license or enablement in the ssf*.properties.
+	}
+	
+	/**
+	 * Check if this is a Vibe Lite license.
+	 */
+	public static boolean checkIfVibeLiteLicensed() {
+		return LicenseChecker.isAuthorizedByLicense("com.novell.teaming.VibeLite");
 	}
 	
 	/**
@@ -588,7 +590,14 @@ public class Utils {
 	 * @return
 	 */
 	public static boolean checkIfVibeLiteUIBase() {
-		if (checkIfVibeLite()) return true;		//If only licensed for Vibe Lite, force it to this UI
+		// If licensed for Vibe Lite...
+		if (checkIfVibeLiteLicensed()) {
+			// ...force it to the UI.
+			return true;
+		}
+		
+		// Otherwise, force it if the ssf*.properties setting that
+		// overrides the license is set.
 		return SPropsUtil.getBoolean("UI.type.VibeLite", Boolean.FALSE);
 	}
 	
