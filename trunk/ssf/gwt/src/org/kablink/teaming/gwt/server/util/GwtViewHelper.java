@@ -3072,13 +3072,17 @@ public class GwtViewHelper {
 		// viewing this URL.
 		ViewInfo vi = new ViewInfo();
 
-		// What's URL requesting?
+		// Is there an operation on the URL?
+		String op = getQueryParameterString(nvMap, WebKeys.URL_OPERATION);
+		if (null == op) op = "";
+		
+		// What action is the URL requesting?
 		String action = getQueryParameterString(nvMap, WebKeys.URL_ACTION).toLowerCase();		
 		if (action.equals(WebKeys.ACTION_VIEW_PERMALINK)) {
 			// A view on a permalink!  What type of entity is being
 			// viewed?
 			String entityType = getQueryParameterString(nvMap, WebKeys.URL_ENTITY_TYPE).toLowerCase();
-			if (entityType.equals("user")) {
+			if (entityType.equals(EntityType.user.name())) {
 				// A user!  Can we access the user?
 				Long entryId = getQueryParameterLong(nvMap, WebKeys.URL_ENTRY_ID);			
 				if (!(initVIFromUser(request, bs, GwtServerHelper.getUserFromId(bs, entryId), vi))) {
@@ -3086,120 +3090,136 @@ public class GwtViewHelper {
 					return null;
 				}
 			}
-			else if (entityType.equals("folder") || entityType.equals("workspace") || entityType.equals("profiles")) {
-				// A folder, workspace or the profiles binder!  Setup
-				// a binder view based on the binder ID.
-				if (!(initVIFromBinderId(request, bs, nvMap, WebKeys.URL_BINDER_ID, vi, true))) {
-					m_logger.debug("GwtViewHelper.getViewInfo():  3:Could not determine a view.");
-					return null;
+			else {
+				boolean isProfiles = entityType.equals(EntityType.profiles.name());
+				if (entityType.equals(EntityType.folder.name()) || entityType.equals(EntityType.workspace.name()) || isProfiles) {
+					// A folder, workspace or the profiles binder!  Is
+					// this a request to show team members on this binder?
+					if ((!isProfiles) && op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
+						// Yes!  Simply mark the ViewInfo as such.
+						vi.setViewType(ViewType.ADD_FOLDER_ENTRY);
+					}
+					
+					// Setup a binder view based on the binder ID.
+					else if (!(initVIFromBinderId(request, bs, nvMap, WebKeys.URL_BINDER_ID, vi, true))) {
+						m_logger.debug("GwtViewHelper.getViewInfo():  3:Could not determine a view.");
+						return null;
+					}
 				}
 			}
 		}
 		
 		else if (action.equals(WebKeys.ACTION_VIEW_WS_LISTING) || action.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING)) {
-			// A view workspace or folder listing!  Are we view a
-			// folder while changing its view?
-			boolean       viewFolderListing = action.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			String        op                = getQueryParameterString(nvMap, WebKeys.URL_OPERATION);
-			boolean       hasOp             = MiscUtil.hasString(op);
-			ProfileModule pm                = bs.getProfileModule();
-			Long          userId            = GwtServerHelper.getCurrentUser().getId();
-			if (viewFolderListing && hasOp && op.equals(WebKeys.OPERATION_SET_DISPLAY_DEFINITION)) {
-				// Yes!  Do we have both the view definition and binder
-				// ID's?
-				String defId    = getQueryParameterString(nvMap, WebKeys.URL_VALUE    );
-				Long   binderId = getQueryParameterLong(  nvMap, WebKeys.URL_BINDER_ID);
-				if (MiscUtil.hasString(defId) && (null != binderId)) {
-					// Yes!  Put the view into affect.
-					pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION, defId);
-				}
+			// A view workspace or folder listing!  Is this a request
+			// to show team members on this binder?
+			if (op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
+				// Yes!  Simply mark the ViewInfo as such.
+				vi.setViewType(ViewType.ADD_FOLDER_ENTRY);
 			}
 			
-			// Setup a binder view based on the binder ID.
-			if (!(initVIFromBinderId(request, bs, nvMap, WebKeys.URL_BINDER_ID, vi, true))) {
-				m_logger.debug("GwtViewHelper.getViewInfo():  4:Could not determine a view.");
-				return null;
-			}
-
-			// Is this a view folder listing?
-			Long binderId = vi.getBinderInfo().getBinderIdAsLong();
-			if (viewFolderListing) {
-				// Yes!  Does it also contain changes to the folder
-				// sorting?
-				String sortBy       = getQueryParameterString(nvMap, WebKeys.FOLDER_SORT_BY);		
-				String sortDescendS = getQueryParameterString(nvMap, WebKeys.FOLDER_SORT_DESCEND);
-				if (MiscUtil.hasString(sortBy) && MiscUtil.hasString(sortDescendS)) {
-					// Yes!  Apply the sort changes.
-					Boolean sortDescend = Boolean.parseBoolean(sortDescendS);
-					GwtServerHelper.saveFolderSort(
-						bs,
-						binderId,
-						sortBy,
-						(!sortDescend));
-				}
-				
-				// If the request contain changes to the task
-				// filtering...
-				String taskFilterType = getQueryParameterString(nvMap, WebKeys.TASK_FILTER_TYPE);
-				if (MiscUtil.hasString(taskFilterType)) {
-					// ...put them into effect.
-					TaskHelper.setTaskFilterType(bs, userId, binderId, FilterType.valueOf(taskFilterType));
-				}
-				String folderModeType = getQueryParameterString(nvMap, WebKeys.FOLDER_MODE_TYPE);
-				if (MiscUtil.hasString(folderModeType)) {
-					// ...put them into effect.
-					ListFolderHelper.setFolderModeType(bs, userId, binderId, ModeType.valueOf(folderModeType));
-				}
-			}
-			
-			// Does it contain a filter operation?
-			if (hasOp && op.equals(WebKeys.URL_SELECT_FILTER)) {
-				// Yes, a filter selection!  Apply the selection.
-				String filterName = getQueryParameterString(nvMap, WebKeys.URL_SELECT_FILTER);
-				String op2 = getQueryParameterString(nvMap, WebKeys.URL_OPERATION2);
-				String filterScope;
-				if (MiscUtil.hasString(op2) && op2.equals(ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL))
-				     filterScope = ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL;
-				else filterScope = ObjectKeys.USER_PROPERTY_USER_FILTER_PERSONAL;
-				pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER,       filterName );
-				pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE, filterScope);
-
-				UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUser().getId(), binderId);
-				List<String> currentFilters = ((List<String>) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTERS));
-				if (null == currentFilters) {
-					currentFilters = new ArrayList<String>();
-				}
-				if (MiscUtil.hasString(filterName)) {
-					String filterSpec = BinderFilter.buildFilterSpec(filterName, filterScope);
-					if (!(currentFilters.contains(filterSpec))) {
-						currentFilters.add(filterSpec);
+			else {
+				// No, it's not a request to show team members!  Are we
+				// viewing a folder while changing its view?
+				boolean       viewFolderListing = action.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				ProfileModule pm                = bs.getProfileModule();
+				Long          userId            = GwtServerHelper.getCurrentUser().getId();
+				if (viewFolderListing && op.equals(WebKeys.OPERATION_SET_DISPLAY_DEFINITION)) {
+					// Yes!  Do we have both the view definition and
+					// binder ID's?
+					String defId    = getQueryParameterString(nvMap, WebKeys.URL_VALUE    );
+					Long   binderId = getQueryParameterLong(  nvMap, WebKeys.URL_BINDER_ID);
+					if (MiscUtil.hasString(defId) && (null != binderId)) {
+						// Yes!  Put the view into affect.
+						pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION, defId);
 					}
 				}
-				else {
-					currentFilters.clear();
+				
+				// Setup a binder view based on the binder ID.
+				if (!(initVIFromBinderId(request, bs, nvMap, WebKeys.URL_BINDER_ID, vi, true))) {
+					m_logger.debug("GwtViewHelper.getViewInfo():  4:Could not determine a view.");
+					return null;
 				}
-				pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTERS, currentFilters);
-			}
-			
-			if (MiscUtil.hasString(op) && op.equals(WebKeys.URL_CLEAR_FILTER)) {
-				// Yes, a filter clear!  Apply the selection.
-				String op2 = getQueryParameterString(nvMap, WebKeys.URL_OPERATION2);
-				String filterScope;
-				if (MiscUtil.hasString(op2) && op2.equals(ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL))
-				     filterScope = ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL;
-				else filterScope = ObjectKeys.USER_PROPERTY_USER_FILTER_PERSONAL;
-				pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER,       ""         );
-				pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE, filterScope);
-
-				String filterName = getQueryParameterString(nvMap, WebKeys.URL_CLEAR_FILTER);
-				String filterSpec = BinderFilter.buildFilterSpec(filterName, filterScope);
-				UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUser().getId(), binderId);
-				List<String> currentFilters = ((List<String>) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTERS));
-				if (null == currentFilters) {
-					currentFilters = new ArrayList<String>();
+	
+				// Is this a view folder listing?
+				Long binderId = vi.getBinderInfo().getBinderIdAsLong();
+				if (viewFolderListing) {
+					// Yes!  Does it also contain changes to the folder
+					// sorting?
+					String sortBy       = getQueryParameterString(nvMap, WebKeys.FOLDER_SORT_BY);		
+					String sortDescendS = getQueryParameterString(nvMap, WebKeys.FOLDER_SORT_DESCEND);
+					if (MiscUtil.hasString(sortBy) && MiscUtil.hasString(sortDescendS)) {
+						// Yes!  Apply the sort changes.
+						Boolean sortDescend = Boolean.parseBoolean(sortDescendS);
+						GwtServerHelper.saveFolderSort(
+							bs,
+							binderId,
+							sortBy,
+							(!sortDescend));
+					}
+					
+					// If the request contain changes to the task
+					// filtering...
+					String taskFilterType = getQueryParameterString(nvMap, WebKeys.TASK_FILTER_TYPE);
+					if (MiscUtil.hasString(taskFilterType)) {
+						// ...put them into effect.
+						TaskHelper.setTaskFilterType(bs, userId, binderId, FilterType.valueOf(taskFilterType));
+					}
+					String folderModeType = getQueryParameterString(nvMap, WebKeys.FOLDER_MODE_TYPE);
+					if (MiscUtil.hasString(folderModeType)) {
+						// ...put them into effect.
+						ListFolderHelper.setFolderModeType(bs, userId, binderId, ModeType.valueOf(folderModeType));
+					}
 				}
-				currentFilters.remove(filterSpec);
-				pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTERS, currentFilters);
+				
+				// Does it contain a filter operation?
+				if (op.equals(WebKeys.URL_SELECT_FILTER)) {
+					// Yes, a filter selection!  Apply the selection.
+					String filterName = getQueryParameterString(nvMap, WebKeys.URL_SELECT_FILTER);
+					String op2 = getQueryParameterString(nvMap, WebKeys.URL_OPERATION2);
+					String filterScope;
+					if (MiscUtil.hasString(op2) && op2.equals(ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL))
+					     filterScope = ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL;
+					else filterScope = ObjectKeys.USER_PROPERTY_USER_FILTER_PERSONAL;
+					pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER,       filterName );
+					pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE, filterScope);
+	
+					UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUser().getId(), binderId);
+					List<String> currentFilters = ((List<String>) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTERS));
+					if (null == currentFilters) {
+						currentFilters = new ArrayList<String>();
+					}
+					if (MiscUtil.hasString(filterName)) {
+						String filterSpec = BinderFilter.buildFilterSpec(filterName, filterScope);
+						if (!(currentFilters.contains(filterSpec))) {
+							currentFilters.add(filterSpec);
+						}
+					}
+					else {
+						currentFilters.clear();
+					}
+					pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTERS, currentFilters);
+				}
+				
+				if (op.equals(WebKeys.URL_CLEAR_FILTER)) {
+					// Yes, a filter clear!  Apply the selection.
+					String op2 = getQueryParameterString(nvMap, WebKeys.URL_OPERATION2);
+					String filterScope;
+					if (MiscUtil.hasString(op2) && op2.equals(ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL))
+					     filterScope = ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL;
+					else filterScope = ObjectKeys.USER_PROPERTY_USER_FILTER_PERSONAL;
+					pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER,       ""         );
+					pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE, filterScope);
+	
+					String filterName = getQueryParameterString(nvMap, WebKeys.URL_CLEAR_FILTER);
+					String filterSpec = BinderFilter.buildFilterSpec(filterName, filterScope);
+					UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUser().getId(), binderId);
+					List<String> currentFilters = ((List<String>) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTERS));
+					if (null == currentFilters) {
+						currentFilters = new ArrayList<String>();
+					}
+					currentFilters.remove(filterSpec);
+					pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTERS, currentFilters);
+				}
 			}
 		}
 

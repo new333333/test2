@@ -48,6 +48,7 @@ public enum ViewType implements IsSerializable {
 	ADVANCED_SEARCH,
 	BINDER,
 	BUILD_FILTER,
+	SHOW_TEAM_MEMBERS,
 	VIEW_PROFILE_ENTRY,
 	
 	OTHER,

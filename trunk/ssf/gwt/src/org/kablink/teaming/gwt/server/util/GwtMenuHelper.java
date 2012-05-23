@@ -2219,9 +2219,11 @@ public class GwtMenuHelper {
 				BinderModule bm = bs.getBinderModule();
 				Binder binder = GwtUIHelper.getBinderSafely(bm, binderId);
 				if ((null != binder) && (EntityIdentifier.EntityType.profiles != binder.getEntityType())) {				
-					// Yes!  Then the user is allowed to view team membership.
-					if (!Utils.checkIfVibeLite() || binder.getTeamMemberIds().size() > 0) {
-					reply.setViewAllowed(true);
+					// Yes!  Can the user work with teams on this
+					// binder?
+					if ((!(Utils.checkIfVibeLiteUI())) || (0 < binder.getTeamMemberIds().size())) {
+						// Yes!  Then the user is allowed to view team membership.
+						reply.setViewAllowed(true);
 		
 						// If the user can manage the team...
 						AdaptedPortletURL adapterUrl;
