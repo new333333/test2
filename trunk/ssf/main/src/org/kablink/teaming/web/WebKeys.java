@@ -97,8 +97,6 @@ public class WebKeys {
     public static final String VIBE_PRODUCT = "vibeProduct";
     public static final String VIBE_LP_DEBUG = "vibeLPDebug";
     public static final String VIBE_UI_DEBUG = "vibeUIDebug";
-    public static final String VIBE_LITE = "vibeLite";
-    public static final String VIBE_LITE_ENABLED = "vibeLiteEnabled";
     public static final String IS_FORM_LOGIN_ALLOWED = "isFormLoginAllowed";
     public static final String JSP_NAME = "jspName";
     public static final String CONFIG_STRING = "configStr";
