@@ -103,6 +103,20 @@ public class TaskFolderView extends FolderViewBase
 	public TaskDisplayDataRpcResponseData getTaskDisplayData() {return m_taskDisplayData;}
 	
 	/**
+	 * Returns true if the entry viewer should include next/previous
+	 * buttons and false otherwise. 
+	 *
+	 * Overrides the FolderViewBase.allowNextPrevOnEntryView() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	protected boolean allowNextPrevOnEntryView() {
+		// By default, the task folder doesn't allow next/previous.
+		return false;
+	}
+	
+	/**
 	 * Called to construct the view.
 	 * 
 	 * Implements the FolderViewBase.constructView() method.

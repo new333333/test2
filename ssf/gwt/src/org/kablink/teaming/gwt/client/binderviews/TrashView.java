@@ -100,6 +100,20 @@ public class TrashView extends DataTableFolderViewBase {
 		columnWidths.put(ColumnWidth.COLUMN_TITLE,  new ColumnWidth(27));
 	}
 
+	/**
+	 * Returns true if the entry viewer should include next/previous
+	 * buttons and false otherwise. 
+	 *
+	 * Overrides the FolderViewBase.allowNextPrevOnEntryView() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	protected boolean allowNextPrevOnEntryView() {
+		// By default, the trash doesn't allow next/previous.
+		return false;
+	}
+	
 	/*
 	 * Returns a List<String> of trash selection information.  The
 	 * format of the strings duplicates that used by the JSP version

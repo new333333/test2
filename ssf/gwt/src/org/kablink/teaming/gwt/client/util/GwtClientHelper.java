@@ -695,6 +695,15 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
+	 * Returns the JavaScript variable ss_allowNextPrevOnView.
+	 * 
+	 * @return
+	 */
+	public static native boolean jsGetAllowNextPrevOnView() /*-{
+		return $wnd.top.ss_allowNextPrevOnView;
+	}-*/;
+
+	/**
 	 * Returns the binder ID from the content IFRAME.
 	 * 
 	 * @return
@@ -861,6 +870,16 @@ public class GwtClientHelper {
 	 */
 	public static native void jsResizeGwtContent(String reason) /*-{
 		$wnd.top.resizeGwtContent(reason);
+	}-*/;
+
+	/**
+	 * Set the JavaScript variable, ss_allowNextPrevOnView, to the
+	 * given value.
+	 * 
+	 * @param allowNextPrevOnView
+	 */
+	public static native void jsSetAllowNextPrevOnView(boolean allowNextPrevOnView) /*-{
+		$wnd.top.ss_allowNextPrevOnView = allowNextPrevOnView;
 	}-*/;
 
 	/**
