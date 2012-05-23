@@ -1,6 +1,7 @@
 package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -32,7 +33,8 @@ public class FolderEntryBrief extends EntryBrief {
         this.docNumber = docNumber;
     }
 
-    @XmlElement(name = "file_names")
+    @XmlElementWrapper(name="file_names")
+    @XmlElement(name="file_name")
     public String[] getFileNames() {
         return fileNames;
     }

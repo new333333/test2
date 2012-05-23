@@ -40,7 +40,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 //This annotation is necessary not only for XML but also for JSON representation.
 @XmlRootElement(name="file")
-public class FileProperties extends FileCommonProperties {
+public class FileProperties extends BaseFileProperties {
 
     private Long entryId;
     private Long binderId;

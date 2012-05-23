@@ -37,6 +37,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.SearchResults;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
 
@@ -63,22 +64,24 @@ public class SelfResource extends AbstractUserResource {
     @GET
     @Path("/favorites")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public BinderBrief[] getFavorites() {
+    public SearchResults<BinderBrief> getFavorites() {
         return getFavorites(RequestContextHolder.getRequestContext().getUserId());
     }
 
     @GET
     @Path("/teams")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public TeamBrief[] getTeams() {
+    public SearchResults<TeamBrief> getTeams() {
         return getTeams(RequestContextHolder.getRequestContext().getUserId());
     }
 
     @GET
     @Path("/roots")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public BinderBrief[] getRoots() {
-        return new BinderBrief[] {getFakeMyWorkspace(), getFakeMyTeams(), getFakeMyFavorites()};
+    public SearchResults<BinderBrief> getRoots() {
+        SearchResults<BinderBrief> results = new SearchResults<BinderBrief>();
+        results.appendAll(new BinderBrief[] {getFakeMyWorkspace(), getFakeMyTeams(), getFakeMyFavorites()});
+        return results;
     }
 
     private BinderBrief getFakeMyWorkspace() {

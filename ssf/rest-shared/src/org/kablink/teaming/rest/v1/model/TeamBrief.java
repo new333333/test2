@@ -39,6 +39,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Date: 5/17/12
  * Time: 4:28 PM
  */
-@XmlRootElement
+@XmlRootElement (name = "team_brief")
 public class TeamBrief extends BinderBrief {
 }

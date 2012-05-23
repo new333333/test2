@@ -433,7 +433,11 @@
 			<param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
 			<param-value>org.kablink.teaming.remoting.rest.jersey.filter.ContainerFilter</param-value>
 		</init-param>
-     	<load-on-startup>12</load-on-startup>		
+        <init-param>
+            <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+            <param-value>true</param-value>
+        </init-param>
+     	<load-on-startup>12</load-on-startup>
 	</servlet>
 
 	<servlet-mapping>

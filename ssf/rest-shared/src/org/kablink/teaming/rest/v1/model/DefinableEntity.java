@@ -49,19 +49,9 @@ public abstract class DefinableEntity extends BaseRestObject {
    	private HistoryStamp creation;
    	private HistoryStamp modification;
    	private boolean eventAsIcalString;
-   	private AttachmentsField attachmentsField;
     private String permaLink;
    	private String entityType;
    	private String family;
-
-    @XmlElement(name="attachments")
-    public AttachmentsField getAttachmentsField() {
-        return attachmentsField;
-    }
-
-    public void setAttachmentsField(AttachmentsField attachmentsField) {
-        this.attachmentsField = attachmentsField;
-    }
 
     @XmlElement(name="average_rating")
     public AverageRating getAverageRating() {

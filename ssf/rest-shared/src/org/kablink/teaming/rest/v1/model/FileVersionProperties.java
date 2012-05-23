@@ -35,7 +35,7 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="file_version")
-public class FileVersionProperties extends FileCommonProperties {
+public class FileVersionProperties extends BaseFileProperties {
 
 	public FileVersionProperties() {
 		super();
