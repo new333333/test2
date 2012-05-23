@@ -1271,9 +1271,10 @@ public class GwtMenuHelper {
 		
 		// Does the user have rights to delete this binder?
 		if ((isFolder || isWorkspace) && (!isWorkspaceReserved) && bm.testAccess(binder, BinderOperation.deleteBinder)) {
-			// Yes!  Is the binder other than a system user's
-			// workspace?
-			if (!(BinderHelper.isBinderSystemUserWS(binder))) {
+			// Yes!  Is the binder other than a system user's or the
+			// current user's workspace?
+			if ((!(BinderHelper.isBinderSystemUserWS(  binder))) &&
+				(!(BinderHelper.isBinderCurrentUsersWS(binder)))) {
 				// Yes!  Add the ToolbarItem for it.
 				adminMenuCreated  =
 				configMenuCreated = true;
