@@ -69,6 +69,7 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtAttachment;
@@ -140,6 +141,7 @@ import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
+import org.kablink.teaming.gwt.server.util.GwtBlogHelper;
 import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
 import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
@@ -667,6 +669,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				getRequest( ri ),
 				gcwCmd.getFolderInfo() );
 			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_BLOG_ARCHIVE_INFO:
+		{
+			GetBlogArchiveInfoCmd gbaiCmd;
+			BlogArchiveInfo info;
+			
+			gbaiCmd = (GetBlogArchiveInfoCmd) cmd;
+			info = GwtBlogHelper.getBlogArchiveInfo( this, gbaiCmd.getFolderId() );
+			response = new VibeRpcResponse( info );
 			return response;
 		}
 		
@@ -2911,6 +2924,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		return GwtActivityStreamHelper.getActivityStreamParams(this);
 	}// end getActivityStreamParams()
+	
 	
 	/**
 	 * Returns the current user's default activity stream.  If they
