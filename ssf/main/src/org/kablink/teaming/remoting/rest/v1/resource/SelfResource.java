@@ -41,9 +41,11 @@ import org.kablink.teaming.rest.v1.model.SearchResults;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -57,8 +59,8 @@ import javax.ws.rs.core.MediaType;
 public class SelfResource extends AbstractUserResource {
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public User getSelf() {
-        return getUser(RequestContextHolder.getRequestContext().getUserId());
+    public User getSelf(@QueryParam("include_attachments") @DefaultValue("false") boolean includeAttachments) {
+        return getUser(RequestContextHolder.getRequestContext().getUserId(), includeAttachments);
     }
 
     @GET

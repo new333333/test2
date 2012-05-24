@@ -3,6 +3,7 @@ package org.kablink.teaming.remoting.rest.v1.util;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
+import org.kablink.teaming.rest.v1.model.IdLinkPair;
 import org.kablink.teaming.rest.v1.model.PrincipalBrief;
 import org.kablink.teaming.rest.v1.model.SearchResults;
 import org.kablink.util.Validator;
@@ -43,7 +44,7 @@ public class SearchResultBuilderUtil {
         }
     }
 
-    public static void populateDefinableEntityBrief(DefinableEntityBrief model, Map entry) {
+    public static void populateDefinableEntityBrief(DefinableEntityBrief model, Map entry, String parentBinderField) {
         String binderIdStr = (String) entry.get(Constants.DOCID_FIELD);
         Long binderId = (binderIdStr != null)? Long.valueOf(binderIdStr) : null;
 
@@ -54,14 +55,19 @@ public class SearchResultBuilderUtil {
         model.setDefinitionId((String) entry.get(Constants.COMMAND_DEFINITION_FIELD));
         model.setDefinitionType(Integer.valueOf((String) entry.get(Constants.DEFINITION_TYPE_FIELD)));
 
+        Long parentBinderId = SearchResultBuilderUtil.getLong(entry, parentBinderField);
+        if (parentBinderId!=null) {
+            model.setParentBinder(new IdLinkPair(parentBinderId, LinkUriUtil.getBinderLinkUri(parentBinderId)));
+        }
+
         Long creator = Long.valueOf((String) entry.get(Constants.CREATORID_FIELD));
         model.setCreation(
-                new HistoryStamp(new PrincipalBrief(creator, ResourceUtil.getUserLinkUri(creator)),
+                new HistoryStamp(new IdLinkPair(creator, LinkUriUtil.getUserLinkUri(creator)),
                         (Date) entry.get(Constants.CREATION_DATE_FIELD)));
 
         Long modifier = Long.valueOf((String) entry.get(Constants.MODIFICATIONID_FIELD));
         model.setModification(
-                new HistoryStamp(new PrincipalBrief(modifier, ResourceUtil.getUserLinkUri(modifier)),
+                new HistoryStamp(new IdLinkPair(modifier, LinkUriUtil.getUserLinkUri(modifier)),
                         (Date) entry.get(Constants.MODIFICATION_DATE_FIELD)));
     }
 

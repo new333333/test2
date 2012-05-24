@@ -42,6 +42,7 @@ import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
+import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
@@ -176,7 +177,7 @@ public class FileResource extends AbstractFileResource {
         FileAttachment fa = findFileAttachment(fileId);
         FileVersionProperties props = new FileVersionProperties();
         props.setId(fa.getHighestVersion().getId());
-        ResourceUtil.populateFileVersionLinks(props);
+        LinkUriUtil.populateFileVersionLinks(props);
         return props;
     }
 

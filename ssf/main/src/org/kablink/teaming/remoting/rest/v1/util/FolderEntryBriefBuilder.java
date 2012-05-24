@@ -15,12 +15,11 @@ import java.util.Map;
 public class FolderEntryBriefBuilder implements SearchResultBuilder<FolderEntryBrief> {
     public FolderEntryBrief build(Map entry) {
         FolderEntryBrief model = new FolderEntryBrief();
-        SearchResultBuilderUtil.populateDefinableEntityBrief(model, entry);
-        model.setParentBinderId(SearchResultBuilderUtil.getLong(entry, Constants.BINDER_ID_FIELD));
+        SearchResultBuilderUtil.populateDefinableEntityBrief(model, entry, Constants.BINDER_ID_FIELD);
         model.setDocNumber((String) entry.get(Constants.DOCNUMBER_FIELD));
         model.setDocLevel((new HKey((String) entry.get(Constants.SORTNUMBER_FIELD))).getLevel());
         model.setFileNames(getValueAsStringArray(entry.get(Constants.FILENAME_FIELD)));
-        model.setLink(ResourceUtil.getFolderEntryLinkUri(model));
+        model.setLink(LinkUriUtil.getFolderEntryLinkUri(model));
         return model;
     }
 

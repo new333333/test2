@@ -34,7 +34,6 @@ package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Calendar;
-import java.util.Date;
 
 //This annotation is necessary not only for XML but also for JSON representation.
 @XmlRootElement(name="file")
@@ -71,8 +70,12 @@ public class LegacyFileProperties {
         note = fp.getNote();
         status = fp.getStatus();
         webUrl = fp.getWebUrl();
-        entryId = fp.getEntryId();
-        binderId = fp.getBinderId();
+        if (fp.getEntry()!=null) {
+            entryId = fp.getEntry().getId();
+        }
+        if (fp.getBinder()!=null) {
+            binderId = fp.getBinder().getId();
+        }
         name = fp.getName();
         lockedBy = fp.getLockedBy();
         lockExpiration = fp.getLockExpiration();

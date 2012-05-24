@@ -55,14 +55,14 @@ public abstract class AbstractUserResource extends AbstractResource {
     @InjectParam("binderModule") protected BinderModule binderModule;
     @InjectParam("profileModule") protected ProfileModule profileModule;
 
-    protected User getUser(long userId) {
+    protected User getUser(long userId, boolean includeAttachments) {
         // Retrieve the raw entry.
         Principal entry = profileModule.getEntry(userId);
 
         if(!(entry instanceof org.kablink.teaming.domain.User))
             throw new IllegalArgumentException(userId + " does not represent an user. It is " + entry.getClass().getSimpleName());
 
-        return ResourceUtil.buildUser((org.kablink.teaming.domain.User) entry);
+        return ResourceUtil.buildUser((org.kablink.teaming.domain.User) entry, includeAttachments);
     }
 
     protected SearchResults<BinderBrief> getFavorites(long userId) {

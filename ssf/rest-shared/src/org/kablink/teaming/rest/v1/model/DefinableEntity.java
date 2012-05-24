@@ -33,6 +33,7 @@
 package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 
 /**
  * User: david
@@ -41,7 +42,7 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public abstract class DefinableEntity extends BaseRestObject {
     private Long id;
-   	private Long parentBinderId;
+   	private IdLinkPair parentBinder;
    	private String definitionId;
    	private String title;
    	private Description description;
@@ -52,6 +53,7 @@ public abstract class DefinableEntity extends BaseRestObject {
     private String permaLink;
    	private String entityType;
    	private String family;
+    private BaseFileProperties [] attachments;
 
     @XmlElement(name="average_rating")
     public AverageRating getAverageRating() {
@@ -132,13 +134,13 @@ public abstract class DefinableEntity extends BaseRestObject {
         this.modification = modification;
     }
 
-    @XmlElement(name="parent_binder_id")
-    public Long getParentBinderId() {
-        return parentBinderId;
+    @XmlElement(name="parent_binder")
+    public IdLinkPair getParentBinder() {
+        return parentBinder;
     }
 
-    public void setParentBinderId(Long parentBinderId) {
-        this.parentBinderId = parentBinderId;
+    public void setParentBinder(IdLinkPair parentBinder) {
+        this.parentBinder = parentBinder;
     }
 
     @XmlElement(name="permalink")
@@ -157,5 +159,15 @@ public abstract class DefinableEntity extends BaseRestObject {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    @XmlElementWrapper(name="attachments")
+    @XmlElement(name = "attachment")
+    public BaseFileProperties[] getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(BaseFileProperties[] attachments) {
+        this.attachments = attachments;
     }
 }

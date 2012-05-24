@@ -42,8 +42,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="file")
 public class FileProperties extends BaseFileProperties {
 
-    private Long entryId;
-    private Long binderId;
+    private IdLinkPair entry;
+    private IdLinkPair binder;
 	private String name;
 	private Long lockedBy;
 	private Calendar lockExpiration;
@@ -74,22 +74,22 @@ public class FileProperties extends BaseFileProperties {
 		}
 	}
 
-    @XmlElement(name="entry_id")
-    public Long getEntryId() {
-        return entryId;
+    @XmlElement(name="entry")
+    public IdLinkPair getEntry() {
+        return entry;
     }
 
-    public void setEntryId(Long entryId) {
-        this.entryId = entryId;
+    public void setEntry(IdLinkPair entry) {
+        this.entry = entry;
     }
 
-    @XmlElement(name="parent_binder_id")
-    public Long getBinderId() {
-        return binderId;
+    @XmlElement(name="parent_binder")
+    public IdLinkPair getBinder() {
+        return binder;
     }
 
-    public void setBinderId(Long binderId) {
-        this.binderId = binderId;
+    public void setBinder(IdLinkPair binder) {
+        this.binder = binder;
     }
 
     public String getName() {

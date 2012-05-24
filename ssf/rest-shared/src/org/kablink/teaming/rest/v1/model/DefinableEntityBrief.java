@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public abstract class DefinableEntityBrief extends BaseRestObject {
     private Long id;
-   	private Long parentBinderId;
+   	private IdLinkPair parentBinder;
    	private String title;
     private String definitionId;
     private Integer definitionType; // Shows what kind binder this is, that is, whether workspace or folder. Corresponds to the constants in Definition.java
@@ -66,13 +66,13 @@ public abstract class DefinableEntityBrief extends BaseRestObject {
         this.modification = modification;
     }
 
-    @XmlElement(name = "parent_binder_id")
-    public Long getParentBinderId() {
-        return parentBinderId;
+    @XmlElement(name = "parent_binder")
+    public IdLinkPair getParentBinder() {
+        return parentBinder;
     }
 
-    public void setParentBinderId(Long parentBinderId) {
-        this.parentBinderId = parentBinderId;
+    public void setParentBinder(IdLinkPair parentBinder) {
+        this.parentBinder = parentBinder;
     }
 
     @XmlElement(name = "definition_id")

@@ -14,10 +14,12 @@ import org.kablink.teaming.rest.v1.model.SearchResults;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.util.api.ApiErrorCode;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,8 +34,9 @@ public class AbstractBinderResource {
 
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public org.kablink.teaming.rest.v1.model.Binder getBinder(@PathParam("id") long id) {
-        return ResourceUtil.buildBinder(_getBinder(id));
+    public org.kablink.teaming.rest.v1.model.Binder getBinder(@PathParam("id") long id,
+                                                              @QueryParam("include_attachments") @DefaultValue("false") boolean includeAttachments) {
+        return ResourceUtil.buildBinder(_getBinder(id), includeAttachments);
     }
 
 
