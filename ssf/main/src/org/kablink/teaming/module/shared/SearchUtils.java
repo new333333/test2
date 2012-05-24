@@ -47,7 +47,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.document.AbstractField;
+import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -109,14 +109,14 @@ public class SearchUtils {
 		ArrayList<Map> childEntries = new ArrayList(hits.length());
 		try {
 			int count=0;
-			Field fld;
+			Fieldable fld;
 			while (count < hits.length()) {
 				HashMap ent = new HashMap();
 				Document doc = hits.doc(count);
 				//enumerate thru all the returned fields, and add to the map object
 				List flds = doc.getFields();
 				for(int i = 0; i < flds.size(); i++) {
-					fld = (Field)flds.get(i);
+					fld = (Fieldable)flds.get(i);
 					//TODO This hack needs to go.
 					if (SearchUtils.isDateField(fld.name())) {
 						try {
@@ -153,11 +153,11 @@ public class SearchUtils {
 		for (org.apache.lucene.document.Document doc : entries) {
 			HashMap ent = new HashMap();
 			childEntries.add(ent);
-			AbstractField fld;
+			Fieldable fld;
 			//enumerate thru all the returned fields, and add to the map object
 			List flds = doc.getFields();
 			for(int i = 0; i < flds.size(); i++) {
-				fld = (AbstractField)flds.get(i);
+				fld = (Fieldable)flds.get(i);
 				if (fld.isStored()) {
 					//TODO This hack needs to go.
 					if (SearchUtils.isDateField(fld.name())) {
