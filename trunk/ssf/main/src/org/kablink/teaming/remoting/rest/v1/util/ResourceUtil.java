@@ -34,18 +34,21 @@
 package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.rest.v1.model.*;
-import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This class contains utility methods that are shared among multiple resource types.
@@ -62,9 +65,9 @@ public class ResourceUtil {
    		return cal;
    	}
 
-    public static FolderEntry buildFolderEntry(org.kablink.teaming.domain.FolderEntry entry) {
+    public static FolderEntry buildFolderEntry(org.kablink.teaming.domain.FolderEntry entry, boolean includeAttachments) {
         FolderEntry model = new FolderEntry();
-        populateEntry(model, entry);
+        populateEntry(model, entry, includeAttachments);
         model.setDocLevel(entry.getDocLevel());
         model.setDocNumber(entry.getDocNumber());
         return model;
@@ -73,25 +76,27 @@ public class ResourceUtil {
     public static FileProperties buildFileProperties(FileIndexData fa) {
         FileProperties fp = new FileProperties();
         fp.setId(fa.getId());
-        fp.setEntryId(fa.getOwningEntityId());
-        fp.setBinderId(fa.getBinderId());
+        fp.setEntry(new IdLinkPair(fa.getOwningEntityId(), LinkUriUtil.getUserLinkUri(fa.getOwningEntityId())));
+        fp.setBinder(new IdLinkPair(fa.getBinderId(), LinkUriUtil.getBinderLinkUri(fa.getBinderId())));
         fp.setName(fa.getName());
-        fp.setCreation(new HistoryStamp(new PrincipalBrief(fa.getCreatorId(), getUserLinkUri(fa.getCreatorId())),
+        fp.setCreation(new HistoryStamp(new IdLinkPair(fa.getCreatorId(), LinkUriUtil.getUserLinkUri(fa.getCreatorId())),
                                         fa.getCreatedDate()));
-        fp.setModification(new HistoryStamp(new PrincipalBrief(fa.getModifierId(), getUserLinkUri(fa.getModifierId())),
+        fp.setModification(new HistoryStamp(new IdLinkPair(fa.getModifierId(), LinkUriUtil.getUserLinkUri(fa.getModifierId())),
                                             fa.getModifiedDate()));
         fp.setLength(fa.getSize());
-        populateFileLinks(fp);
+        LinkUriUtil.populateFileLinks(fp);
         return fp;
     }
 
     public static FileProperties buildFileProperties(FileAttachment fa) {
         FileAttachment.FileLock fl = fa.getFileLock();
+        Long creatorId = fa.getCreation().getPrincipal().getId();
+        Long modifierId = fa.getModification().getPrincipal().getId();
         FileProperties fp = new FileProperties(fa.getId(),
       				fa.getFileItem().getName(),
-      				new HistoryStamp(buildPrincipalBrief(Utils.redactUserPrincipalIfNecessary(fa.getCreation().getPrincipal())),
+      				new HistoryStamp(new IdLinkPair(creatorId, LinkUriUtil.getUserLinkUri(creatorId)),
                               fa.getCreation().getDate()),
-      				new HistoryStamp(buildPrincipalBrief(Utils.redactUserPrincipalIfNecessary(fa.getModification().getPrincipal())),
+      				new HistoryStamp(new IdLinkPair(modifierId, LinkUriUtil.getUserLinkUri(modifierId)),
                               fa.getModification().getDate()),
       				fa.getFileItem().getLength(),
       				fa.getHighestVersionNumber(),
@@ -102,9 +107,11 @@ public class ResourceUtil {
       				WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, fa),
       				(fl != null && fl.getOwner() != null)? fl.getOwner().getId():null,
       				(fl!= null)? fl.getExpirationDate():null);
-        fp.setEntryId(fa.getOwner().getEntity().getId());
-        fp.setBinderId(fa.getOwner().getEntity().getParentBinder().getId());
-        populateFileLinks(fp);
+        Long entryId = fa.getOwner().getEntity().getId();
+        fp.setEntry(new IdLinkPair(entryId, LinkUriUtil.getFolderEntryLinkUri(entryId)));
+        Long binderId = fa.getOwner().getEntity().getParentBinder().getId();
+        fp.setBinder(new IdLinkPair(binderId, LinkUriUtil.getBinderLinkUri(binderId)));
+        LinkUriUtil.populateFileLinks(fp);
         return fp;
     }
 
@@ -121,22 +128,22 @@ public class ResourceUtil {
         model.setCreation(buildHistoryStamp(binder.getCreation()));
         model.setModification(buildHistoryStamp(binder.getModification()));
         model.setDefinitionType(binder.getDefinitionType());
-        model.setLink(getBinderLinkUri(model));
-        populateBinderLinks(model, model.isWorkspace(), model.isFolder());
+        model.setLink(LinkUriUtil.getBinderLinkUri(model));
+        LinkUriUtil.populateBinderLinks(model, model.isWorkspace(), model.isFolder());
         return model;
     }
 
-    public static Binder buildBinder(org.kablink.teaming.domain.Binder binder) {
+    public static Binder buildBinder(org.kablink.teaming.domain.Binder binder, boolean includeAttachments) {
         Binder model;
         if (binder instanceof org.kablink.teaming.domain.Folder) {
             model = new Folder();
-            populateFolder((Folder)model, (org.kablink.teaming.domain.Folder)binder);
+            populateFolder((Folder)model, (org.kablink.teaming.domain.Folder)binder, includeAttachments);
         } else if (binder instanceof org.kablink.teaming.domain.Workspace) {
             model = new Workspace();
-            populateWorkspace((Workspace)model, (org.kablink.teaming.domain.Workspace)binder);
+            populateWorkspace((Workspace)model, (org.kablink.teaming.domain.Workspace)binder, includeAttachments);
         } else {
             model = new Binder();
-            populateBinder(model, binder);
+            populateBinder(model, binder, includeAttachments);
         }
         return model;
     }
@@ -147,9 +154,9 @@ public class ResourceUtil {
         return model;
     }
 
-    public static User buildUser(org.kablink.teaming.domain.User user) {
+    public static User buildUser(org.kablink.teaming.domain.User user, boolean includeAttachments) {
         User model = new User();
-        populatePrincipal(model, user);
+        populatePrincipal(model, user, includeAttachments);
         model.setFirstName(user.getFirstName());
         model.setMiddleName(user.getMiddleName());
         model.setLastName(user.getLastName());
@@ -168,11 +175,15 @@ public class ResourceUtil {
         }
         model.setSkypeId(user.getSkypeId());
         model.setTwitterId(user.getTwitterId());
-        model.setMiniBlogId(user.getMiniBlogId());
+        if (user.getMiniBlogId()!=null) {
+            model.setMiniBlog(new IdLinkPair(user.getMiniBlogId(), LinkUriUtil.getFolderLinkUri(user.getMiniBlogId())));
+        }
         model.setDiskQuota(user.getDiskQuota());
         model.setFileSizeLimit(user.getFileSizeLimit());
         model.setDiskSpaceUsed(user.getDiskSpaceUsed());
-        model.setWorkspaceId(user.getWorkspaceId());
+        if (user.getWorkspaceId()!=null) {
+            model.setWorkspace(new IdLinkPair(user.getWorkspaceId(), LinkUriUtil.getWorkspaceLinkUri(user.getWorkspaceId())));
+        }
 
         if (user.getId().equals(RequestContextHolder.getRequestContext().getUserId())) {
             model.setLink("/self");
@@ -212,27 +223,31 @@ public class ResourceUtil {
     }
 
 	public static FileVersionProperties fileVersionFromFileAttachment(VersionAttachment va) {
+        Long creatorId = va.getCreation().getPrincipal().getId();
+        Long modifierId = va.getModification().getPrincipal().getId();
         FileVersionProperties props = new FileVersionProperties(
-				va.getId(),
-				new HistoryStamp(buildPrincipalBrief(Utils.redactUserPrincipalIfNecessary(va.getCreation().getPrincipal())), va.getCreation().getDate()),
-				new HistoryStamp(buildPrincipalBrief(Utils.redactUserPrincipalIfNecessary(va.getModification().getPrincipal())), va.getModification().getDate()),
-				Long.valueOf(va.getFileItem().getLength()),
-				Integer.valueOf(va.getVersionNumber()),
-				Integer.valueOf(va.getMajorVersion()),
-				Integer.valueOf(va.getMinorVersion()),
-				va.getFileItem().getDescription().getText(), 
-				va.getFileStatus(),
-				WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, va)
-				);
-        populateFileVersionLinks(props);
+                va.getId(),
+                new HistoryStamp(new IdLinkPair(creatorId, LinkUriUtil.getUserLinkUri(creatorId)), va.getCreation().getDate()),
+                new HistoryStamp(new IdLinkPair(modifierId, LinkUriUtil.getUserLinkUri(modifierId)), va.getModification().getDate()),
+                Long.valueOf(va.getFileItem().getLength()),
+                Integer.valueOf(va.getVersionNumber()),
+                Integer.valueOf(va.getMajorVersion()),
+                Integer.valueOf(va.getMinorVersion()),
+                va.getFileItem().getDescription().getText(),
+                va.getFileStatus(),
+                WebUrlUtil.getFileUrl((String) null, WebKeys.ACTION_READ_FILE, va)
+        );
+        LinkUriUtil.populateFileVersionLinks(props);
         return props;
 	}
 
-    private static void populateDefinableEntity(DefinableEntity model, org.kablink.teaming.domain.DefinableEntity entity) {
+    private static void populateDefinableEntity(DefinableEntity model, org.kablink.teaming.domain.DefinableEntity entity, boolean includeAttachments) {
         model.setId(entity.getId());
 
-        if (entity.getParentBinder() != null)
-            model.setParentBinderId(entity.getParentBinder().getId());
+        if (entity.getParentBinder() != null) {
+            Long binderId = entity.getParentBinder().getId();
+            model.setParentBinder(new IdLinkPair(binderId, LinkUriUtil.getBinderLinkUri(binderId)));
+        }
 
         if(entity.getEntryDefId() != null)
             model.setDefinitionId(entity.getEntryDefId());
@@ -262,38 +277,51 @@ public class ResourceUtil {
             model.setFamily(DefinitionUtils.getFamily(def));
         }
         model.setPermaLink(PermaLinkUtil.getPermalink(entity));
+        if (includeAttachments) {
+            Set<Attachment> attachments = entity.getAttachments();
+            List<BaseFileProperties> props = new ArrayList<BaseFileProperties>(attachments.size());
+            int i = 0;
+            for (Attachment attachment : attachments) {
+                if (attachment instanceof FileAttachment) {
+                    props.add(ResourceUtil.buildFileProperties((FileAttachment) attachment));
+                } else if (attachment instanceof VersionAttachment) {
+                    props.add(ResourceUtil.fileVersionFromFileAttachment((VersionAttachment) attachment));
+                }
+            }
+            model.setAttachments(props.toArray(new BaseFileProperties[props.size()]));
+        }
     }
 
-    private static void populateEntry(Entry model, org.kablink.teaming.domain.Entry entry) {
-        populateDefinableEntity(model, entry);
+    private static void populateEntry(Entry model, org.kablink.teaming.domain.Entry entry, boolean includeAttachments) {
+        populateDefinableEntity(model, entry, includeAttachments);
     }
 
-    private static void populatePrincipal(Principal model, org.kablink.teaming.domain.Principal principal) {
-        populateEntry(model, principal);
+    private static void populatePrincipal(Principal model, org.kablink.teaming.domain.Principal principal, boolean includeAttachments) {
+        populateEntry(model, principal, includeAttachments);
         model.setEmailAddress(principal.getEmailAddress());
         model.setDisabled(principal.isDeleted());
         model.setReserved(principal.isReserved());
         model.setName(principal.getName());
-        model.setLink(getPrincipalLinkUri(principal));
+        model.setLink(LinkUriUtil.getPrincipalLinkUri(principal));
     }
 
-    private static void populateBinder(Binder model, org.kablink.teaming.domain.Binder binder) {
-        populateDefinableEntity(model, binder);
+    private static void populateBinder(Binder model, org.kablink.teaming.domain.Binder binder, boolean includeAttachments) {
+        populateDefinableEntity(model, binder, includeAttachments);
         model.setPath(binder.getPathName());
         org.dom4j.Document def = binder.getEntryDefDoc();
         if(def != null) {
             model.setFamily(DefinitionUtils.getFamily(def));
         }
-        model.setLink(getBinderLinkUri(binder));
-        populateBinderLinks(model, model instanceof Workspace, model instanceof Folder);
+        model.setLink(LinkUriUtil.getBinderLinkUri(binder));
+        LinkUriUtil.populateBinderLinks(model, model instanceof Workspace, model instanceof Folder);
     }
 
-    private static void populateWorkspace(Workspace model, org.kablink.teaming.domain.Workspace workspace) {
-        populateBinder(model, workspace);
+    private static void populateWorkspace(Workspace model, org.kablink.teaming.domain.Workspace workspace, boolean includeAttachments) {
+        populateBinder(model, workspace, includeAttachments);
     }
 
-    private static void populateFolder(Folder model, org.kablink.teaming.domain.Folder folder) {
-        populateBinder(model, folder);
+    private static void populateFolder(Folder model, org.kablink.teaming.domain.Folder folder, boolean includeAttachments) {
+        populateBinder(model, folder, includeAttachments);
         model.setLibrary(folder.isLibrary());
         model.setMirrored(folder.isMirrored());
     }
@@ -316,8 +344,8 @@ public class ResourceUtil {
         if(binder.getModification() != null) {
             model.setDefinitionType(binder.getDefinitionType());
         }
-        model.setLink(getBinderLinkUri(model));
-        populateBinderLinks(model, model.isWorkspace(), model.isFolder());
+        model.setLink(LinkUriUtil.getBinderLinkUri(model));
+        LinkUriUtil.populateBinderLinks(model, model.isWorkspace(), model.isFolder());
     }
 
     private static AverageRating buildAverageRating(org.kablink.teaming.domain.AverageRating rating){
@@ -328,18 +356,20 @@ public class ResourceUtil {
     }
 
     private static HistoryStamp buildHistoryStamp(org.kablink.teaming.domain.HistoryStampBrief historyStamp) {
-        return new HistoryStamp(buildPrincipalBrief(historyStamp), historyStamp.getDate());
+        Long userId = historyStamp.getPrincipalId();
+        return new HistoryStamp(new IdLinkPair(userId, LinkUriUtil.getUserLinkUri(userId)), historyStamp.getDate());
     }
 
     private static HistoryStamp buildHistoryStamp(org.kablink.teaming.domain.HistoryStamp historyStamp) {
-        return new HistoryStamp(buildPrincipalBrief(historyStamp.getPrincipal()), historyStamp.getDate());
+        Long userId = historyStamp.getPrincipal().getId();
+        return new HistoryStamp(new IdLinkPair(userId, LinkUriUtil.getUserLinkUri(userId)), historyStamp.getDate());
     }
 
     private static PrincipalBrief buildPrincipalBrief(org.kablink.teaming.domain.HistoryStampBrief historyStamp) {
         PrincipalBrief model = new PrincipalBrief();
         model.setId(historyStamp.getPrincipalId());
         model.setName(historyStamp.getPrincipalName());
-        String link = getUserLinkUri(historyStamp.getPrincipalId());
+        String link = LinkUriUtil.getUserLinkUri(historyStamp.getPrincipalId());
         if (link!=null) {
             model.setLink(link);
         }
@@ -350,7 +380,7 @@ public class ResourceUtil {
         PrincipalBrief model = new PrincipalBrief();
         model.setId(principal.getId());
         model.setName(principal.getName());
-        String link = getPrincipalLinkUri(principal);
+        String link = LinkUriUtil.getPrincipalLinkUri(principal);
         if (link!=null) {
             model.setLink(link);
         }
@@ -362,81 +392,5 @@ public class ResourceUtil {
         model.setText(description.getText());
         model.setFormat(description.getFormat());
         return model;
-    }
-
-    private static String getBinderLinkUri(org.kablink.teaming.domain.Binder binder) {
-        if (binder instanceof org.kablink.teaming.domain.Folder) {
-            return "/folder/" + binder.getId();
-        } else if (binder instanceof org.kablink.teaming.domain.Workspace) {
-            return "/workspace/" + binder.getId();
-        }
-        return "/binder/" + binder.getId();
-    }
-
-    public static String getBinderLinkUri(BinderBrief binder) {
-        if ("folder".equals(binder.getEntityType())) {
-            return "/folder/" + binder.getId();
-        } else if ("workspace".equals(binder.getEntityType())) {
-            return "/workspace/" + binder.getId();
-        }
-        return "/binder/" + binder.getId();
-    }
-
-    private static String getPrincipalLinkUri(org.kablink.teaming.domain.Principal principal) {
-        if (principal instanceof org.kablink.teaming.domain.UserPrincipal) {
-            return "/user/" + principal.getId();
-        }
-        return null;
-    }
-
-    public static String getFolderEntryLinkUri(FolderEntryBrief entry) {
-        return "/folder_entry/" + entry.getId();
-    }
-
-    public static String getUserLinkUri(Long id) {
-        return "/user/" + id;
-    }
-
-    public static String getFilePropertiesLinkUri(FileProperties fp) {
-        return "/file/" + fp.getId() + "/metadata";
-    }
-
-    public static String getFileBaseLinkUri(FileProperties fp) {
-        return "/file/" + fp.getId();
-    }
-
-    public static String getFileVersionBaseLinkUri(FileVersionProperties fp) {
-        return "/file_version/" + fp.getId();
-    }
-
-    public static void populateBinderLinks(BaseRestObject model, boolean isWorkspace, boolean isFolder) {
-        model.addAdditionalLink("child_binders", model.getLink() + "/binders");
-        model.addAdditionalLink("child_folders", model.getLink() + "/folders");
-        if (isWorkspace) {
-            model.addAdditionalLink("child_workspaces", model.getLink() + "/workspaces");
-        }
-        if (isFolder) {
-            model.addAdditionalLink("child_entries", model.getLink() + "/entries");
-            model.addAdditionalLink("child_files", model.getLink() + "/files");
-        }
-    }
-
-    public static void populateFileLinks(FileProperties fp) {
-        fp.setLink(ResourceUtil.getFilePropertiesLinkUri(fp));
-        String baseUrl = ResourceUtil.getFileBaseLinkUri(fp);
-        fp.addAdditionalLink("content", baseUrl);
-        fp.addAdditionalLink("major_version", baseUrl + "/major_version");
-        fp.addAdditionalLink("versions", baseUrl + "/versions");
-        fp.addAdditionalLink("current_version", baseUrl + "/version/current");
-    }
-
-    public static void populateFileVersionLinks(FileVersionProperties fp) {
-        String baseUrl = ResourceUtil.getFileVersionBaseLinkUri(fp);
-        fp.addAdditionalLink("content", baseUrl);
-        fp.setLink(baseUrl + "/metadata");
-        fp.addAdditionalLink("note", baseUrl + "/note");
-        fp.addAdditionalLink("status", baseUrl + "/status");
-        fp.addAdditionalLink("current", baseUrl + "/current");
-        fp.addAdditionalLink("file_metadata", "/file/" + fp.getId() + "/metadata");
     }
 }

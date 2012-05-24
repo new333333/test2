@@ -38,10 +38,12 @@ import org.kablink.teaming.rest.v1.model.SearchResults;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -56,8 +58,9 @@ public class UserResource extends AbstractUserResource {
     @Override
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public User getUser(@PathParam("id") long userId) {
-        return super.getUser(userId);
+    public User getUser(@PathParam("id") long userId,
+                        @QueryParam("include_attachments") @DefaultValue("false") boolean includeAttachments) {
+        return super.getUser(userId, includeAttachments);
     }
 
     @Override

@@ -45,13 +45,12 @@ import java.util.Map;
 public class BinderBriefBuilder implements SearchResultBuilder<BinderBrief> {
     public BinderBrief build(Map entry) {
         BinderBrief binder = new BinderBrief();
-        SearchResultBuilderUtil.populateDefinableEntityBrief(binder, entry);
-        binder.setParentBinderId(SearchResultBuilderUtil.getLong(entry, Constants.BINDERS_PARENT_ID_FIELD));
+        SearchResultBuilderUtil.populateDefinableEntityBrief(binder, entry, Constants.BINDERS_PARENT_ID_FIELD);
         binder.setPath((String) entry.get(Constants.ENTITY_PATH));
         binder.setLibrary(SearchResultBuilderUtil.getBoolean(entry, Constants.IS_LIBRARY_FIELD));
         binder.setMirrored(SearchResultBuilderUtil.getBoolean(entry, Constants.IS_MIRRORED_FIELD));
-        binder.setLink(ResourceUtil.getBinderLinkUri(binder));
-        ResourceUtil.populateBinderLinks(binder, binder.isWorkspace(), binder.isFolder());
+        binder.setLink(LinkUriUtil.getBinderLinkUri(binder));
+        LinkUriUtil.populateBinderLinks(binder, binder.isWorkspace(), binder.isFolder());
         return binder;
     }
 }

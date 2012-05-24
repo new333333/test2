@@ -46,11 +46,11 @@ public class User extends Principal {
    	private String timeZone;
    	private String skypeId;
    	private String twitterId;
-   	private Long miniBlogId;
+   	private IdLinkPair miniBlog;
    	private Long diskQuota;
    	private Long fileSizeLimit;
    	private Long diskSpaceUsed;
-   	private Long workspaceId;
+   	private IdLinkPair workspace;
 
     @XmlElement(name="disk_quota")
     public Long getDiskQuota() {
@@ -114,13 +114,13 @@ public class User extends Principal {
         this.middleName = middleName;
     }
 
-    @XmlElement(name="mini_blog_id")
-    public Long getMiniBlogId() {
-        return miniBlogId;
+    @XmlElement(name="mini_blog")
+    public IdLinkPair getMiniBlog() {
+        return miniBlog;
     }
 
-    public void setMiniBlogId(Long miniBlogId) {
-        this.miniBlogId = miniBlogId;
+    public void setMiniBlog(IdLinkPair miniBlog) {
+        this.miniBlog = miniBlog;
     }
 
     @XmlElement(name="organization")
@@ -168,12 +168,12 @@ public class User extends Principal {
         this.twitterId = twitterId;
     }
 
-    @XmlElement(name="workspace_id")
-    public Long getWorkspaceId() {
-        return workspaceId;
+    @XmlElement(name="workspace")
+    public IdLinkPair getWorkspace() {
+        return workspace;
     }
 
-    public void setWorkspaceId(Long workspaceId) {
-        this.workspaceId = workspaceId;
+    public void setWorkspace(IdLinkPair workspace) {
+        this.workspace = workspace;
     }
 }

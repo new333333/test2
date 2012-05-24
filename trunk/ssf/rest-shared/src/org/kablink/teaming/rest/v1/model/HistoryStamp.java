@@ -45,17 +45,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement (name="history_stamp")
 public class HistoryStamp {
 
-	private PrincipalBrief principal;
+	private IdLinkPair principal;
 	private Calendar date;
 	
 	private HistoryStamp() {}
 	
-	public HistoryStamp(PrincipalBrief principal, Calendar date) {
+	public HistoryStamp(IdLinkPair principal, Calendar date) {
 		this.principal = principal;
 		this.date = date;
 	}
 
-	public HistoryStamp(PrincipalBrief principal, Date date) {
+	public HistoryStamp(IdLinkPair principal, Date date) {
 		this.principal = principal;
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
@@ -63,11 +63,11 @@ public class HistoryStamp {
 	}
 
     @XmlElement(name="principal")
-	public PrincipalBrief getPrincipal() {
+	public IdLinkPair getPrincipal() {
 		return principal;
 	}
 
-	public void setPrincipal(PrincipalBrief principal) {
+	public void setPrincipal(IdLinkPair principal) {
 		this.principal = principal;
 	}
 
