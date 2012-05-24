@@ -100,6 +100,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
+import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
@@ -659,7 +660,7 @@ public class WorkspaceTreeHelper {
 		Criteria crit = SearchUtils.newEntriesDescendants(binderIds);
 		crit.add(org.kablink.util.search.Restrictions.between(
 				MODIFICATION_DATE_FIELD, startDate, now));
-		Map results = bs.getBinderModule().executeSearchQuery(crit, 0, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
+		Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
     	List<Map> entries = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 
 		//Get the count of unseen entries

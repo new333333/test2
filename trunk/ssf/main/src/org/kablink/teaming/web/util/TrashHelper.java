@@ -1117,6 +1117,7 @@ public class TrashHelper {
 
 			Map visibleBindersMap = bs.getBinderModule().executeSearchQuery(
 				crit,
+				Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
 				0,		// Start at index 0...
 				2,		// ...requesting a maximum of 2 hits.
 				false);	// false -> Ignore preDeleted entries.
@@ -1253,6 +1254,7 @@ public class TrashHelper {
 		return
 			bs.getBinderModule().executeSearchQuery(
 				crit,
+				Constants.SEARCH_MODE_NORMAL,
 				getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
 				getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
 				true);	// true -> Search deleted entries.

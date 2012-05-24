@@ -54,30 +54,30 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 		this.luceneProvider = luceneProvider;
 	}
 
-	public org.kablink.teaming.lucene.Hits search(Query query) {
-		return this.search(query, 0, -1);
+	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query) {
+		return this.search(contextUserId, aclQueryStr, mode, query, 0, -1);
 	}
 
-	public org.kablink.teaming.lucene.Hits search(Query query, int offset,
+	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, int offset,
 			int size) {
 		SimpleProfiler.start("LocalLuceneReadSession.search(Query,int,int)");
 		try {
-			return luceneProvider.search(query, offset, size);
+			return luceneProvider.search(contextUserId, aclQueryStr, mode, query, offset, size);
 		}
 		finally {
 			SimpleProfiler.stop("LocalLuceneReadSession.search(Query,int,int)");
 		}
 	}
 
-	public org.kablink.teaming.lucene.Hits search(Query query, Sort sort) {
-		return this.search(query, sort, 0, -1);
+	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort) {
+		return this.search(contextUserId, aclQueryStr, mode, query, sort, 0, -1);
 	}
 
-	public org.kablink.teaming.lucene.Hits search(Query query, Sort sort,
+	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
 			int offset, int size) {
 		SimpleProfiler.start("LocalLuceneReadSession.search(Query,Sort,int,int)");
 		try {
-			return luceneProvider.search(query, sort, offset, size);
+			return luceneProvider.search(contextUserId, aclQueryStr, mode, query, sort, offset, size);
 		}
 		finally {
 			SimpleProfiler.stop("LocalLuceneReadSession.search(Query,Sort,int,int)");

@@ -904,7 +904,7 @@ public class BinderHelper {
 		} else if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_MICROBLOG)) {
 			List<Long> trackedPeople = RelevanceDashboardHelper.setupMiniblogsBean(bs, myWorkspaceBinder, model);
 			Criteria crit = SearchUtils.bindersForTrackedMiniBlogs(trackedPeople);
-			Map results = bs.getBinderModule().executeSearchQuery(crit, 0, 10000);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 10000);
 	    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 	    	if (items != null) {
 		    	Iterator it = items.iterator();
@@ -2936,7 +2936,7 @@ public class BinderHelper {
 		for (String s_id : trackedPlaces) trackedBinderIds.add(Long.valueOf(s_id));
 		if (!trackedPlaces.isEmpty() || !trackedPeopleIds.isEmpty()) {
 			Criteria crit = SearchUtils.entriesForTrackedPlacesAndPeople(bs, trackedPlaces, trackedPeopleIds);
-			Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
 			model.put(WebKeys.WHATS_NEW_BINDER, results.get(ObjectKeys.SEARCH_ENTRIES));
 			model.put(WebKeys.SEARCH_TOTAL_HITS, results.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 			
@@ -3016,7 +3016,7 @@ public class BinderHelper {
 		Criteria crit = SearchUtils.entriesForTrackedPlaces(bs, trackedPlaces);
 		crit.add(org.kablink.util.search.Restrictions.between(
 				Constants.MODIFICATION_DATE_FIELD, startDate, now));
-		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+		Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
 		List<Map> entries = (List<Map>) results.get(ObjectKeys.SEARCH_ENTRIES);
 		SeenMap seen = bs.getProfileModule().getUserSeenMap(null);
 		List<Map> unseenEntries = new ArrayList();
@@ -3134,7 +3134,7 @@ public class BinderHelper {
 					// gets removed.
 					Criteria crit = SearchUtils.entriesForTrackedMiniBlogs(new Long[]{user.getId()});
 					crit.add(Restrictions.eq(Constants.BINDER_ID_FIELD, folderId.toString()));
-					Map results   = binderModule.executeSearchQuery(crit, 0, 1);
+					Map results   = binderModule.executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1);
 			    	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 			    	boolean found = false;
 			    	for (Map item: items) {
@@ -3432,7 +3432,7 @@ public class BinderHelper {
 		// execute query
 		// actualize tabs info
 		actualizeOptions(options, request);
-		Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, options);
+		Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, Constants.SEARCH_MODE_NORMAL, options);
 		prepareSearchResultPage(bs, results, model, searchQuery, options, tab);
 		
 		return model;
@@ -3466,7 +3466,7 @@ public class BinderHelper {
 		}
 
 		options.put(Tabs.TITLE, queryName);
-		Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, options);
+		Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, Constants.SEARCH_MODE_NORMAL, options);
 		
 		Tabs.TabEntry tab = tabs.addTab(searchQuery, options);
 		
@@ -3494,7 +3494,7 @@ public class BinderHelper {
 			options = prepareSearchOptions(bs, request);			
 		}
 		
-		Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, options);
+		Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, Constants.SEARCH_MODE_NORMAL, options);
 		
 		Tabs.TabEntry tab = tabs.addTab(searchQuery, options);
 		

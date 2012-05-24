@@ -509,7 +509,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		    			crit.add(disj);
 		    		}
 		    	}
-				return getBinderModule().executeSearchQuery(crit, firstRecord, maxRecords);
+				return getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, firstRecord, maxRecords);
 			}
 		};
 

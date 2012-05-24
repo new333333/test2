@@ -2502,7 +2502,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		       	List entries;
 				if (binder instanceof Folder || binder instanceof Workspace) {
 					Document searchFilter = SearchFiltersBuilder.buildGetEntryQuery(request, entryId);
-					Map retMap = getBinderModule().executeSearchQuery(searchFilter, options);
+					Map retMap = getBinderModule().executeSearchQuery(searchFilter, Constants.SEARCH_MODE_NORMAL, options);
 					entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 				} else {
 					//a template
@@ -2586,7 +2586,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 					if ((!virtual) && filtered) {
 						// Yes!  Simply perform the search using that
 						// filter.
-						retMap = getBinderModule().executeSearchQuery(baseFilter, options);
+						retMap = getBinderModule().executeSearchQuery(baseFilter, Constants.SEARCH_MODE_NORMAL, options);
 						entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 					}
 					
@@ -2637,7 +2637,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 							modeType = ModeType.MY_EVENTS;
 						}
 						Document searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.CALENDAR);
-						retMap = getBinderModule().executeSearchQuery(searchFilter, options);
+						retMap = getBinderModule().executeSearchQuery(searchFilter, Constants.SEARCH_MODE_NORMAL, options);
 						entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 						
 						// Are we searching for virtual events?
@@ -2645,7 +2645,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 							// Yes!  Search for the events that are
 							// task entries...
 							searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.TASK);
-							retMap = getBinderModule().executeSearchQuery(searchFilter, options);
+							retMap = getBinderModule().executeSearchQuery(searchFilter, Constants.SEARCH_MODE_NORMAL, options);
 							List taskEntries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 							int tasks = ((null == taskEntries) ? 0 : taskEntries.size());
 							if (0 < tasks) {
@@ -2746,7 +2746,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 								interval.startDate, interval.endDate));
 					crit.addOrder(Order.asc(MODIFICATION_DATE_FIELD));
 		
-					Map searchResults = getBinderModule().executeSearchQuery(crit, 0, 1000);
+					Map searchResults = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1000);
 					
 					OrderedMap usersFreeBusyInfo = new LinkedMap();
 					OrderedMap allUsersDates = new LinkedMap();

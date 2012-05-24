@@ -690,7 +690,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		
 		Document query = crit.toQuery();
 		
-		Map folderEntries = getBinderModule().executeSearchQuery(query, 0, 0);
+		Map folderEntries = getBinderModule().executeSearchQuery(query, Constants.SEARCH_MODE_NORMAL, 0, 0);
 		List<Map> entryList = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 		List<Long> ids = new ArrayList<Long>();
 		for(Map entry:entryList) {

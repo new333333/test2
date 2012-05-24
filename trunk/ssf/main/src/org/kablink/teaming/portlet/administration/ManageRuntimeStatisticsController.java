@@ -125,7 +125,7 @@ public class ManageRuntimeStatisticsController extends SAbstractController {
 		long startTime = System.nanoTime();
 		BinderModule bm = (BinderModule) SpringContextUtil.getBean("binderModule");
 		Document queryDoc = getDocument(query);
-		Map entries = bm.executeSearchQuery(queryDoc, offset, maxResults);
+		Map entries = bm.executeSearchQuery(queryDoc, org.kablink.util.search.Constants.SEARCH_MODE_NORMAL, offset, maxResults);
 		double duration = elapsedTimeInMs(startTime);
 
 		Integer total = (Integer) entries.get(ObjectKeys.SEARCH_COUNT_TOTAL);

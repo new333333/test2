@@ -278,7 +278,7 @@ public class ExportHelper {
 		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
 			.add(in(Constants.ENTRY_ANCESTRY, folderIds));
 		crit.addOrder(Order.asc(Constants.BINDER_ID_FIELD));
-		Map binderMap = binderModule.executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+		Map binderMap = binderModule.executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
 
 		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
 		List binderIdList = new ArrayList();

@@ -1012,7 +1012,7 @@ public class DefinitionHelper {
 	        				Criteria crit = SearchUtils.tasksForUser(user.getId(), 
 	        									(String[])groupsS.toArray(new String[groupsS.size()]), 
 	        									(String[])teams.toArray(new String[teams.size()]));
-	        				Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+	        				Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
 
         					mashupMyTaskEntries.addAll((List)results.get(ObjectKeys.SEARCH_ENTRIES));
 

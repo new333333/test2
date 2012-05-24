@@ -75,6 +75,7 @@ import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.FilterException;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.EntryBuilder;
@@ -1333,6 +1334,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	int maxResults = 0;
        	int searchOffset = 0;
    		boolean includeNestedBinders;
+   		Integer searchMode = null;
+    	Binder searchBinder = binder;
+   		
         if (options != null) {
         	if (options.containsKey(ObjectKeys.SEARCH_MAX_HITS)) 
         		maxResults = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
@@ -1341,6 +1345,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     			searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
         	
        		includeNestedBinders = options.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS);
+       		
+       		searchMode = (Integer) options.get(ObjectKeys.SEARCH_MODE);
         }
         else {
        		includeNestedBinders = false;
@@ -1352,7 +1358,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        	if ((options != null) && options.containsKey(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN)) {
 	   		SearchFilter searchFilter = new SearchFilter(true);
 	   		searchFilter.addEntryId((String) options.get(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN));
-	   		getBinderEntries_getSearchDocument(binder, entryTypes, includeNestedBinders, searchFilter);
+	   		getBinderEntries_getSearchDocument(searchBinder, entryTypes, includeNestedBinders, searchFilter);
 	   		queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), null);
        	} else {
 
@@ -1379,7 +1385,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
                	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
 
-        	Binder searchBinder = binder;
         	if ((options != null) && options.containsKey(ObjectKeys.FOLDER_MODE_TYPE)) {
         		ListFolderHelper.ModeType mode = ((ListFolderHelper.ModeType) options.get(ObjectKeys.FOLDER_MODE_TYPE));
         		if ((null != mode) && (ListFolderHelper.ModeType.VIRTUAL == mode)) {
@@ -1393,7 +1398,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        	}       	
     	
        	//Create the Lucene query
-    	QueryBuilder qb = new QueryBuilder(true);
+    	QueryBuilder qb = new QueryBuilder(true, false);
     	SearchObject so = qb.buildQuery(queryTree);
     	
     	//Set the sort order
@@ -1406,10 +1411,18 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		logger.debug("Query is: " + soQuery.toString());
     	}
     	
+    	if(searchMode == null) {
+    		// Search mode is not specified by the caller. Let's see if we can figure it out.
+    		if(searchBinder != null && AccessUtils.testReadAccess(searchBinder)) {
+    			searchMode = Integer.valueOf(Constants.SEARCH_MODE_PREAPPROVED_PARENTS);
+    		}
+    	}
+    	
     	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
         try {
-	        hits = luceneSession.search(soQuery, so.getSortBy(), searchOffset, maxResults);
+	        hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
+	        		so.getAclQueryStr(), searchMode.intValue(), soQuery, so.getSortBy(), searchOffset, maxResults);
         }
         finally {
             luceneSession.close();

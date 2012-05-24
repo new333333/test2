@@ -1257,7 +1257,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
    				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_ATTACHMENT))
      		);
 		// We use search engine to get the list of file names in the specified folder.
-		QueryBuilder qb = new QueryBuilder(true);
+		QueryBuilder qb = new QueryBuilder(true, false);
     	org.dom4j.Document qTree = crit.toQuery(); //save for debug
 		SearchObject so = qb.buildQuery(qTree);   	
    	
@@ -1273,7 +1273,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         
     	Hits hits = null;
         try {
-	        hits = luceneSession.search(soQuery, null, 0, Integer.MAX_VALUE);
+	        hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
+	        		so.getAclQueryStr(), Constants.SEARCH_MODE_NORMAL, soQuery, null, 0, Integer.MAX_VALUE);
         }
         finally {
             luceneSession.close();

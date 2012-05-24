@@ -61,11 +61,12 @@ public class DefaultBinderReindex extends SimpleTriggerJob implements BinderRein
 	public void doExecute(JobExecutionContext context) throws JobExecutionException {
 	    BinderModule binderModule = (BinderModule)SpringContextUtil.getBean("binderModule");
     	List<Long> binderIds = (List)jobDataMap.get("binderIds");
+    	Boolean includeEntries = (Boolean)jobDataMap.get("includeEntries");
     	List<Long>retryBinderIds = new ArrayList<Long>();
     	for (Long id:binderIds) {
     		//index binder and it's entries
 			try {
-				binderModule.indexBinderIncremental(id, true);
+				binderModule.indexBinderIncremental(id, (includeEntries==null)? true : includeEntries.booleanValue());
 			} catch (NoObjectByTheIdException ex) {
 				//gone, skip it
 			} catch (Exception ex) {
@@ -85,7 +86,7 @@ public class DefaultBinderReindex extends SimpleTriggerJob implements BinderRein
 
 	}
 
-    public void schedule( List<Long> binderIds, User user) { 
+    public void schedule( List<Long> binderIds, User user, boolean includeEntries) { 
 		//the number of changes could be large, and some databases won't accept it (mssql packet size 1M)
 		int count = 0;
 		int binderIndex=0;
@@ -104,6 +105,7 @@ public class DefaultBinderReindex extends SimpleTriggerJob implements BinderRein
 			} else {
 				data.put("binderIds", Collections.EMPTY_LIST);
 			}
+			data.put("includeEntries", Boolean.valueOf(includeEntries));
 
 			GregorianCalendar start = new GregorianCalendar();
 			start.add(Calendar.SECOND, 3+count);

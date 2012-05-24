@@ -1403,75 +1403,63 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				binder.getEntityIdentifier());
 	}
 
-	public Map executeSearchQuery(Criteria crit, int offset, int maxResults) {
-		return executeSearchQuery(crit, offset, maxResults, false);
+	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults) {
+		return executeSearchQuery(crit, searchMode, offset, maxResults, false);
 	}
-	public Map executeSearchQuery(Criteria crit, int offset, int maxResults, boolean preDeleted) {
-		return executeSearchQuery(crit.toQuery(), offset, maxResults, preDeleted);
-	}
-
-	public Map executeSearchQuery(Criteria crit, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls) {
-		return executeSearchQuery(crit.toQuery(), offset, maxResults, preDeleted, ignoreAcls);
+	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, boolean preDeleted) {
+		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, preDeleted);
 	}
 
-	public Map executeSearchQuery(Criteria crit, int offset, int maxResults,
+	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls) {
+		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, preDeleted, ignoreAcls);
+	}
+
+	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults,
 			Long asUserId) {
-		return executeSearchQuery(crit, offset, maxResults, asUserId, false);
+		return executeSearchQuery(crit, searchMode, offset, maxResults, asUserId, false);
 	}
-	public Map executeSearchQuery(Criteria crit, int offset, int maxResults,
+	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults,
 			Long asUserId, boolean preDeleted, boolean ignoreAcls) {
-		return executeSearchQuery(crit.toQuery(), offset, maxResults, asUserId, preDeleted, ignoreAcls);
+		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, asUserId, preDeleted, ignoreAcls);
 	}
 
-	public Map executeSearchQuery(Criteria crit, int offset, int maxResults,
+	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults,
 			Long asUserId, boolean preDeleted) {
-		return executeSearchQuery(crit.toQuery(), offset, maxResults, asUserId, preDeleted);
+		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, asUserId, preDeleted);
 	}
 
-	public Map executeSearchQuery(Document query, int offset, int maxResults) {
-		return executeSearchQuery(query, offset, maxResults, false);
+	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults) {
+		return executeSearchQuery(query, searchMode, offset, maxResults, false);
 	}
-	public Map executeSearchQuery(Document query, int offset, int maxResults, boolean preDeleted) {
-		return executeSearchQuery(query, offset, maxResults, preDeleted, false);
+	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, boolean preDeleted) {
+		return executeSearchQuery(query, searchMode, offset, maxResults, preDeleted, false);
 	}
-	public Map executeSearchQuery(Document query, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls) {
+	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls) {
 		// Create the Lucene query
-		QueryBuilder qb = new QueryBuilder(true);
-		SearchObject so;
-		if (preDeleted) {
-			so = qb.buildQueryPreDeleted(query, ignoreAcls);
-		}
-		else {
-			so = qb.buildQuery(query, ignoreAcls);
-		}
+		QueryBuilder qb = new QueryBuilder(!ignoreAcls, preDeleted);
+		SearchObject so = qb.buildQuery(query);
 
-		return executeSearchQuery(so, offset, maxResults);
+		return executeSearchQuery(so, searchMode, offset, maxResults);
 	}
 
-	public Map executeSearchQuery(Document query, int offset, int maxResults,
+	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults,
 			Long asUserId) {
-		return executeSearchQuery(query, offset, maxResults, false);
+		return executeSearchQuery(query, searchMode, offset, maxResults, false);
 	}
-	public Map executeSearchQuery(Document query, int offset, int maxResults,
+	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults,
 			Long asUserId, boolean preDeleted) {
-		return executeSearchQuery(query, offset, maxResults, asUserId, preDeleted, false);
+		return executeSearchQuery(query, searchMode, offset, maxResults, asUserId, preDeleted, false);
 	}
-	public Map executeSearchQuery(Document query, int offset, int maxResults,
+	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults,
 			Long asUserId, boolean preDeleted, boolean ignoreAcls) {
 		// Create the Lucene query
-		QueryBuilder qb = new QueryBuilder(true);
-		SearchObject so;
-		if (preDeleted) {
-			so = qb.buildQueryPreDeleted(query, asUserId, ignoreAcls);
-		}
-		else {
-			so = qb.buildQuery(query, asUserId, ignoreAcls);
-		}
+		QueryBuilder qb = new QueryBuilder(!ignoreAcls, preDeleted, asUserId);
+		SearchObject so = qb.buildQuery(query);
 
-		return executeSearchQuery(so, offset, maxResults);
+		return executeSearchQuery(so, searchMode, offset, maxResults);
 	}
 
-	public Map executeSearchQuery(Document searchQuery, Map options) {
+	public Map executeSearchQuery(Document searchQuery, int searchMode, Map options) {
 		SearchObject so;
 		
 		Document qTree = SearchUtils.getInitalSearchDocument(searchQuery,
@@ -1479,13 +1467,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		SearchUtils.getQueryFields(qTree, options);
 
 		// Create the Lucene query
-		QueryBuilder qb = new QueryBuilder(true);
+		QueryBuilder qb;
 		if (options.containsKey(ObjectKeys.SEARCH_PRE_DELETED)) {
-			so = qb.buildQueryPreDeleted(qTree);
+			qb = new QueryBuilder(true, true);
 		} else {
-			so = qb.buildQuery(qTree);
+			qb = new QueryBuilder(true, false);
 		}
 
+		so = qb.buildQuery(qTree);
+		
 		// Set the sort order
 		SortField[] fields = SearchUtils.getSortFields(options);
 		so.setSortBy(fields);
@@ -1504,12 +1494,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				offset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
 		}
 
-		return executeSearchQuery(so, offset, maxResults);
+		return executeSearchQuery(so, searchMode, offset, maxResults);
 	}
 
-	protected Map executeSearchQuery(SearchObject so, int offset, int maxResults) {
+	protected Map executeSearchQuery(SearchObject so, int searchMode, int offset, int maxResults) {
 		List entries = new ArrayList();
-		Hits hits = executeLuceneQuery(so, offset, maxResults);
+		Hits hits = executeLuceneQuery(so, searchMode, offset, maxResults);
 		entries = SearchUtils.getSearchEntries(hits);
 		SearchUtils.extendPrincipalsInfo(entries, getProfileDao(),
 				Constants.CREATORID_FIELD);
@@ -1526,7 +1516,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return retMap;
 	}
 
-	private Hits executeLuceneQuery(SearchObject so, int offset, int maxResults) {
+	private Hits executeLuceneQuery(SearchObject so, int searchMode, int offset, int maxResults) {
 		Hits hits = new Hits(0);
 
 		Query soQuery = so.getLuceneQuery(); // Get the query into a variable to avoid
@@ -1540,7 +1530,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		LuceneReadSession luceneSession = getLuceneSessionFactory()
 				.openReadSession();
 		try {
-			hits = luceneSession.search(soQuery, so.getSortBy(), offset,
+			hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
+					so.getAclQueryStr(), searchMode, soQuery, so.getSortBy(), offset,
 					maxResults);
 		} catch (Exception e) {
 			logger.info("Exception:" + e);
@@ -1561,7 +1552,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			Document qTree = DocumentHelper.createDocument();
 			qTree.addElement(Constants.QUERY_ELEMENT);
 			// Create the query
-			QueryBuilder qb = new QueryBuilder(true);
+			QueryBuilder qb = new QueryBuilder(true, false);
 			so = qb.buildQuery(qTree);
 		}
 		LuceneReadSession luceneSession = getLuceneSessionFactory()
@@ -1595,7 +1586,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			Document qTree = DocumentHelper.createDocument();
 			qTree.addElement(Constants.QUERY_ELEMENT);
 			// Create the query
-			QueryBuilder qb = new QueryBuilder(true);
+			QueryBuilder qb = new QueryBuilder(true, false);
 			so = qb.buildQuery(qTree);
 		}
 		LuceneReadSession luceneSession = getLuceneSessionFactory()
@@ -1792,10 +1783,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			return Collections.EMPTY_LIST;
 		crit.add(in(Constants.TEAM_MEMBERS_FIELD, LongIdUtil
 				.getIdsAsStringSet(ids)));
-		QueryBuilder qb = new QueryBuilder(true);
+		QueryBuilder qb = new QueryBuilder(true, false);
 		SearchObject so = qb.buildQuery(crit.toQuery());
 
-		Hits hits = executeLuceneQuery(so, 0, Integer.MAX_VALUE);
+		Hits hits = executeLuceneQuery(so, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, Integer.MAX_VALUE);
 		if (hits == null)
 			return new ArrayList();
 		return SearchUtils.getSearchEntries(hits);
@@ -2252,7 +2243,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			tuple1 = (String) tuple.get(0);
 			tuple2 = (String) tuple.get(1);
 		}
-		QueryBuilder qb = new QueryBuilder(true);
+		QueryBuilder qb = new QueryBuilder(true, false);
 
 		List results = new ArrayList();
 		Hits hits = null;
@@ -2280,7 +2271,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 				// We have to figure out the size of the pool before building
 				// the buckets
-				Hits testHits = luceneSession.search(query, searchObject
+				Hits testHits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(), searchObject.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, query, searchObject
 						.getSortBy(), 0, maxBucketSize);
 				totalHits = testHits.getTotalHits();
 				if (totalHits > maxBucketSize) {
@@ -2321,7 +2312,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					logger.debug("Query is in executeSearchQuery: "
 							+ query.toString());
 				}
-				hits = luceneSession.search(query, searchObject.getSortBy(), 0,
+				hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(), searchObject.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, query, searchObject.getSortBy(), 0,
 						-1);
 			}
 		} finally {
@@ -2596,8 +2587,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
 			.add(in(Constants.ENTRY_ANCESTRY, folderIds));
 		crit.addOrder(Order.asc(Constants.SORTNUMBER_FIELD));
-		Map binderMap = executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
-		Map binderMapDeleted = executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS, true);
+		Map binderMap = executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+		Map binderMapDeleted = executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS, true);
 
 		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
 		List binderMapListDeleted = (List)binderMapDeleted.get(ObjectKeys.SEARCH_ENTRIES); 
@@ -2973,7 +2964,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
    				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_BINDER))
      		);
 
-		QueryBuilder qb = new QueryBuilder(true);
+		QueryBuilder qb = new QueryBuilder(true, false);
     	org.dom4j.Document qTree = crit.toQuery();
 		SearchObject so = qb.buildQuery(qTree);   	
    	
@@ -2988,7 +2979,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         
     	Hits hits = null;
         try {
-	        hits = luceneSession.search(soQuery, null, 0, Integer.MAX_VALUE);
+	        hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
+	        		so.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, soQuery, null, 0, Integer.MAX_VALUE);
         }
         finally {
             luceneSession.close();
@@ -3014,4 +3006,5 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         
         return result;
 	}
+	
 }

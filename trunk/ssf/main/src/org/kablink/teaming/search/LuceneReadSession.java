@@ -34,6 +34,7 @@ package org.kablink.teaming.search;
 
 import java.util.ArrayList;
 
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.kablink.teaming.lucene.Hits;
@@ -68,12 +69,13 @@ import org.kablink.teaming.lucene.LuceneException;
  *
  */
 public interface LuceneReadSession extends LuceneSession {
-	/**
+		
+	/*
 	 * Search and return the entire result set.
 	 * 
 	 * @throws LuceneException
 	 */
-	public Hits search(Query query) throws LuceneException;
+	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query) throws LuceneException;
 
 	/**
 	 * Search and return only the portion of the result specified.
@@ -84,25 +86,15 @@ public interface LuceneReadSession extends LuceneSession {
 	 * @return
 	 * @throws LuceneException
 	 */
-	public Hits search(Query query, int offset, int size)
+	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, int offset, int size)
 			throws LuceneException;
-
-	/**
-	 * Force the <code>LuceneSession</code> to flush.
-	 * <p>
-	 * Flushing is the process of synchronizing the underlying persistent store
-	 * (ie, index files on disk) with persistable state held in memory.
-	 * 
-	 * @throws LuceneException
-	 *
-	 */
 
 	/**
 	 * Search and return the entire result set.
 	 * 
 	 * @throws LuceneException
 	 */
-	public Hits search(Query query, Sort sort) throws LuceneException;
+	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort) throws LuceneException;
 
 	/**
 	 * Search and return only the portion of the result specified.
@@ -113,7 +105,7 @@ public interface LuceneReadSession extends LuceneSession {
 	 * @return
 	 * @throws LuceneException
 	 */
-	public Hits search(Query query, Sort sort, int offset, int size)
+	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size)
 			throws LuceneException;
 	
 	/**

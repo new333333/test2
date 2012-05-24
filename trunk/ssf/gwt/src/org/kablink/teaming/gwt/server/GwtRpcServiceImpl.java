@@ -2591,7 +2591,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				Map foldersMap;
 				Integer count;
 				
-				retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options );
+				retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), Constants.SEARCH_MODE_NORMAL, options );
 				entries = (List)retMap.get( ObjectKeys.SEARCH_ENTRIES );
 				placesWithCounters = BinderHelper.sortPlacesInEntriesSearchResults( getBinderModule(), entries );
 				foldersMap = BinderHelper.prepareFolderList( placesWithCounters, false );
@@ -2728,7 +2728,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				Iterator it;
 				Integer count;
 				
-				retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options );
+				retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, options );
 
 				// Add the search results to the GwtSearchResults object.
 				count = (Integer) retMap.get( ObjectKeys.SEARCH_COUNT_TOTAL );
@@ -2812,7 +2812,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				Iterator it;
 
 				// Search for teams
-				retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options );
+				retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, options );
 				
 				// Add the search results to the GwtSearchResults object.
 				count = (Integer) retMap.get( ObjectKeys.SEARCH_COUNT_TOTAL );

@@ -432,7 +432,7 @@ public class ActivityStreamCache {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		String adminUserName = SZoneConfig.getAdminUserName(zoneName);
 		User admin = bs.getProfileModule().getUser(adminUserName);
-		Map results = bs.getBinderModule().executeSearchQuery(crit, 0, GwtActivityStreamHelper.m_activityStreamParams.getMaxHits(), admin.getId(), false, true);
+		Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, GwtActivityStreamHelper.m_activityStreamParams.getMaxHits(), admin.getId(), false, true);
 		    		
 		// Did we find any changes that need to be cached?
     	List items = ((List) results.get(ObjectKeys.SEARCH_ENTRIES));

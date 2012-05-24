@@ -752,4 +752,5 @@ public interface ObjectKeys {
     //License Activity
     public static final int LOGIN_ACTIVITY_YEARS = 1;
 	
+    public static final String SEARCH_MODE = "searchMode";
 }

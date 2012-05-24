@@ -484,7 +484,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	User user = RequestContextHolder.getRequestContext().getUser();
 		BinderReindex job=null;
 		if (job == null) job = (BinderReindex)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultBinderReindex.class);
-		job.schedule(binderIds, user); 
+		job.schedule(binderIds, user, false); 
     	return binderIds;
     }
 
@@ -969,6 +969,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    public Map getGroups(Map options) {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
+		options.put(ObjectKeys.SEARCH_MODE, Integer.valueOf(Constants.SEARCH_MODE_SELF_CONTAINED_ONLY));
         return loadProcessor(binder).getBinderEntries(binder, groupDocType, options);        
     }
 	//RO transaction
@@ -1478,6 +1479,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     public Map getUsers(Map options) {
 		//does read check
 		ProfileBinder binder = getProfileBinder();
+		options.put(ObjectKeys.SEARCH_MODE, Integer.valueOf(Constants.SEARCH_MODE_SELF_CONTAINED_ONLY));
         return loadProcessor(binder).getBinderEntries(binder, userDocType, options);
         
    }
@@ -1844,6 +1846,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	public Map getApplicationGroups(Map searchOptions) throws AccessControlException {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
+		searchOptions.put(ObjectKeys.SEARCH_MODE, Integer.valueOf(Constants.SEARCH_MODE_SELF_CONTAINED_ONLY));
         return loadProcessor(binder).getBinderEntries(binder, applicationGroupDocType, searchOptions);        
 	}
 	
@@ -1869,6 +1872,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	public Map getGroupPrincipals(Map searchOptions) throws AccessControlException {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
+		searchOptions.put(ObjectKeys.SEARCH_MODE, Integer.valueOf(Constants.SEARCH_MODE_SELF_CONTAINED_ONLY));
         return loadProcessor(binder).getBinderEntries(binder, groupPrincipalDocType, searchOptions);        
 	}
 	
@@ -1901,6 +1905,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		//does read access check
 		try {
 			ProfileBinder binder = getProfileBinder();
+			searchOptions.put(ObjectKeys.SEARCH_MODE, Integer.valueOf(Constants.SEARCH_MODE_SELF_CONTAINED_ONLY));
 	        result = loadProcessor(binder).getBinderEntries(binder, applicationDocType, searchOptions);
 		} catch(AccessControlException e) {}
 		return result;
@@ -1930,6 +1935,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	public Map getIndividualPrincipals( Map searchOptions) {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
+		searchOptions.put(ObjectKeys.SEARCH_MODE, Integer.valueOf(Constants.SEARCH_MODE_SELF_CONTAINED_ONLY));
         return loadProcessor(binder).getBinderEntries(binder, individualPrincipalDocType, searchOptions);        
 	}
 	//RO transaction
@@ -1946,6 +1952,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	public Map getPrincipals( Map searchOptions) {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
+		searchOptions.put(ObjectKeys.SEARCH_MODE, Integer.valueOf(Constants.SEARCH_MODE_SELF_CONTAINED_ONLY));
         return loadProcessor(binder).getBinderEntries(binder, allPrincipalDocType, searchOptions);        
 	}
     //RO transaction
