@@ -180,5 +180,8 @@
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-ldap.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-openid.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-web.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-jaxrs.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-mapper-asl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-xc.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
