@@ -1150,7 +1150,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 
 		if (doSearch) {
 			if (binder != null) options.put(ObjectKeys.SEARCH_DASHBOARD_CURRENT_BINDER_ID, binder.getId().toString());
-			Map retMap = getInstance().getBinderModule().executeSearchQuery(searchQuery, options);
+			Map retMap = getInstance().getBinderModule().executeSearchQuery(searchQuery, Constants.SEARCH_MODE_NORMAL, options);
 			List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
 			searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
 			Integer searchCount = (Integer)retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL);

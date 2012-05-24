@@ -693,7 +693,7 @@ public class ListFolderHelper {
 			if ((!virtual) && filtered) {
 				// Yes!  Simply perform the search using that
 				// filter.
-				folderEntries = bs.getBinderModule().executeSearchQuery(baseFilter, options);
+				folderEntries = bs.getBinderModule().executeSearchQuery(baseFilter, Constants.SEARCH_MODE_NORMAL, options);
 				entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 			
 			} else {
@@ -743,7 +743,7 @@ public class ListFolderHelper {
 					modeType = ModeType.MY_EVENTS;
 				}
 				Document searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.CALENDAR);
-				folderEntries = bs.getBinderModule().executeSearchQuery(searchFilter, options);
+				folderEntries = bs.getBinderModule().executeSearchQuery(searchFilter, Constants.SEARCH_MODE_NORMAL, options);
 				entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 				
 				// Are we searching for virtual events?
@@ -755,7 +755,7 @@ public class ListFolderHelper {
 			       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, taskIntervals);
 			       	
 					searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.TASK);
-					folderEntries = bs.getBinderModule().executeSearchQuery(searchFilter, options);
+					folderEntries = bs.getBinderModule().executeSearchQuery(searchFilter, Constants.SEARCH_MODE_NORMAL, options);
 					List taskEntries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 					int tasks = ((null == taskEntries) ? 0 : taskEntries.size());
 					if (0 < tasks) {
@@ -1196,7 +1196,7 @@ public class ListFolderHelper {
            	child.setText(Constants.ENTRY_TYPE_ENTRY);
         	options2.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter2);
     	}
-		Map entriesMap = bs.getBinderModule().executeSearchQuery(searchFilter, options2);
+		Map entriesMap = bs.getBinderModule().executeSearchQuery(searchFilter, Constants.SEARCH_MODE_NORMAL, options2);
 		List entries = (List) entriesMap.get(ObjectKeys.SEARCH_ENTRIES);
 		LinkedHashMap monthHits = new LinkedHashMap();
 		Map folderHits = new HashMap();
@@ -1300,7 +1300,7 @@ public class ListFolderHelper {
 		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
 			.add(in(Constants.ENTRY_ANCESTRY, folderIds));
 		crit.addOrder(Order.asc(Constants.SORT_TITLE_FIELD));
-		Map binderMap = bs.getBinderModule().executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+		Map binderMap = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
 
 		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
 		List binderIdList = new ArrayList();

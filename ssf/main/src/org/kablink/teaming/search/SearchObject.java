@@ -68,6 +68,8 @@ public class SearchObject {
 	
 	private Query luceneQuery; // new
 	
+	private String aclQueryStr;
+	
 	// QueryParser is not thread-safe, let try thread local variable, it should be fine
 	private static ThreadLocal<QueryParser> queryParser = new ThreadLocal<QueryParser>();
 	private static ThreadLocal<QueryParser> queryParserARABIC = new ThreadLocal<QueryParser>();
@@ -158,7 +160,16 @@ public class SearchObject {
 	public Query getLuceneQuery() {
 		return luceneQuery;
 	}
+		
 	
+	public String getAclQueryStr() {
+		return aclQueryStr;
+	}
+
+	public void setAclQueryStr(String aclQueryStr) {
+		this.aclQueryStr = aclQueryStr;
+	}
+
 	private QueryParser getParserWSA() {
 		return (QueryParser) queryParserWSA.get();
 	}

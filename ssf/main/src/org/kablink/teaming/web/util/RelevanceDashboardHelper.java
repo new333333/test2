@@ -308,7 +308,7 @@ public class RelevanceDashboardHelper {
 			crit = SearchUtils.tasksForUser(binder.getOwnerId(), 
 					(String[])groupsS.toArray(new String[groupsS.size()]), 
 					(String[])teams.toArray(new String[teams.size()]));
-			results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+			results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
 		} else {
 			//Get the tasks due shortly
 			crit = SearchUtils.tasksForUser(binder.getOwnerId(), 
@@ -316,7 +316,7 @@ public class RelevanceDashboardHelper {
 													(String[])teams.toArray(new String[teams.size()]),
 													fromDate.toDate(),
 													future.toDate());
-			results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+			results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
 		}
 
 		model.put(WebKeys.MY_TASKS, results.get(ObjectKeys.SEARCH_ENTRIES));
@@ -366,7 +366,7 @@ public class RelevanceDashboardHelper {
 		
 		Criteria crit = SearchUtils.entriesForUser(binder.getOwnerId());
 	
-		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+		Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
 
 		model.put(WebKeys.MY_DOCUMENTS, results.get(ObjectKeys.SEARCH_ENTRIES));
 
@@ -415,7 +415,7 @@ public class RelevanceDashboardHelper {
 		} catch(NoUserByTheIdException e) {}
 		if (trackedPlaces.size() > 0 || trackedPeopleIds.size() > 0) {
 			Criteria crit = SearchUtils.entriesForTrackedPlacesAndPeople(bs, trackedPlaces, trackedPeopleIds);
-			Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
 
 			model.put(WebKeys.WHATS_NEW_TRACKED_PLACES, results.get(ObjectKeys.SEARCH_ENTRIES));
 
@@ -469,7 +469,7 @@ public class RelevanceDashboardHelper {
 		}
 		if (myTeams.size() > 0) {
 			Criteria crit = SearchUtils.entriesForTrackedPlaces(bs, teamIds);
-			Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
 
 			model.put(WebKeys.WHATS_NEW_TEAM_PLACES, results.get(ObjectKeys.SEARCH_ENTRIES));
 
@@ -510,7 +510,7 @@ public class RelevanceDashboardHelper {
 			AbstractIntervalView calendarInterval = new OneDayView(new Date());
 			AbstractIntervalView.VisibleIntervalFormattedDates interval = calendarInterval.getVisibleIntervalInTZ();
 			Criteria crit = SearchUtils.entriesForTrackedCalendars(bs, trackedCalendars, interval.startDate, interval.endDate);
-			Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
 
 			Date today = new Date();
 			model.put(WebKeys.WHATS_NEW_TRACKED_CALENDARS, results.get(ObjectKeys.SEARCH_ENTRIES));
@@ -564,7 +564,7 @@ public class RelevanceDashboardHelper {
 		
 		Criteria crit = SearchUtils.newEntries();
 	
-		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+		Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
 
 		model.put(WebKeys.WHATS_NEW, results.get(ObjectKeys.SEARCH_ENTRIES));
 

@@ -683,7 +683,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		Element child = field.addElement(org.kablink.util.search.Constants.FIELD_TERMS_ELEMENT);
 		child.setText(ALL);
 		//create the query
-		QueryBuilder qb = new QueryBuilder(true);
+		QueryBuilder qb = new QueryBuilder(true, false);
 		so = qb.buildQuery(qTree);
 		// add the sort field (by descending age)
 		sortFields[0] = new SortField(sortBy, sortType, descend);

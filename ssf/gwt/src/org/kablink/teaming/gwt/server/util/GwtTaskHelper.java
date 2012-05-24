@@ -1241,7 +1241,7 @@ public class GwtTaskHelper {
 										 (String[])teams.toArray(new String[teams.size()]),
 										 fromDate.toDate(),
 										 future.toDate() );
-		results = ami.getBinderModule().executeSearchQuery( crit, offset, maxResults );
+		results = ami.getBinderModule().executeSearchQuery( crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults );
 
 		// Create a TaskInfo object for every task we found
 		{

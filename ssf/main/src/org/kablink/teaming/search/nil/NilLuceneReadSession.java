@@ -57,20 +57,20 @@ public class NilLuceneReadSession implements LuceneReadSession {
 		return new ArrayList();
 	}
 
-	public Hits search(Query query) throws LuceneException {
+	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query) throws LuceneException {
 		return new Hits(0);
 	}
 
-	public Hits search(Query query, int offset, int size)
+	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, int offset, int size)
 			throws LuceneException {
 		return new Hits(0);
 	}
 
-	public Hits search(Query query, Sort sort) throws LuceneException {
+	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort) throws LuceneException {
 		return new Hits(0);
 	}
 
-	public Hits search(Query query, Sort sort, int offset, int size)
+	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size)
 			throws LuceneException {
 		return new Hits(0);
 	}

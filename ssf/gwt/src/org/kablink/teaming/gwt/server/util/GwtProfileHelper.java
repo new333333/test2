@@ -986,7 +986,7 @@ public class GwtProfileHelper {
 		Criteria crit = SearchUtils.newEntriesDescendants(binderIds);
 		crit.add(org.kablink.util.search.Restrictions.between(
 				MODIFICATION_DATE_FIELD, startDate, now));
-		Map results = bs.getBinderModule().executeSearchQuery(crit, 0, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
+		Map results = bs.getBinderModule().executeSearchQuery(crit, org.kablink.util.search.Constants.SEARCH_MODE_NORMAL, 0, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
     	List<Map> entries = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
     	
     	return ((entries != null) ? entries.size() : 0);

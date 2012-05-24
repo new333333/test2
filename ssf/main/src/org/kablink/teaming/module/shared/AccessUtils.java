@@ -826,4 +826,12 @@ public class AccessUtils  {
 		User guestUser = getInstance().getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zoneId);
 		return guestUser;
     }
+    
+	public static boolean testReadAccess(Binder binder) {
+		// Check if the user has "read" access to the binder.
+		return (getInstance().getAccessControlManager().testOperation(binder, WorkAreaOperation.READ_ENTRIES) || 
+				getInstance().getAccessControlManager().testOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE));
+
+	}
+
 }

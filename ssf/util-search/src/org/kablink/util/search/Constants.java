@@ -34,6 +34,44 @@ package org.kablink.util.search;
 
 public class Constants {
 
+	/**
+	 * The query may match any type of items (binders, entries, and attachments), and the system 
+	 * should apply normal ACL checking as long as ACL clauses are supplied. 
+	 * For example, a free-form text search.
+	 * This is the default mode.
+	 */
+	public static final int SEARCH_MODE_NORMAL = 1;
+	
+	/**
+	 * The query is constructed such that the result set will only contain those items always having 
+	 * their ACL information directly indexed with them. This includes binders and principals (users
+	 * and groups). The query should not match folder entries/replies or file attachments associated 
+	 * with them. For example, a search query used for constructing a binder tree. Another example
+	 * is a search query used for fetching a list of all users in the system. Unlike folder entries,
+	 * principal objects have their ACL information indexed with them.
+	 * This provides the system with an opportunity to optimize the search request.
+	 */
+	public static final int SEARCH_MODE_SELF_CONTAINED_ONLY = 2;
+		
+	/**
+	 * The query may match any type of items (binders, entries, and attachments), but it contains
+	 * clauses that restrict the search space only to a set of binders and the items in them.
+	 * In addition, the caller further guarantees that any items in the search result not having 
+	 * their ACL information indexed with them (specifically, folder entries without entry-level
+	 * ACLs and any file attachments associated with these entries) need not be filtered against the
+	 * calling user's access rights because the user already has access to their parent folders. 
+	 * This condition must be met recursively at all levels not just at the top-most level.
+	 * For example, a search query used for folder listing display, where a search is conducted to
+	 * fetch child entries and optionally immediately nested child folders within a single folder.
+	 * In this case, all entries in the search result have the same parent folder, and therefore,
+	 * it is sufficient that the caller only needs to manually check the ACL on that single folder
+	 * prior to executing a search request.   
+	 * This provides the system with an opportunity to optimize the search request.
+	 * 
+	 */
+	public static final int SEARCH_MODE_PREAPPROVED_PARENTS = 3;
+	
+	
 	public static final String FIELD_NAME_ATTRIBUTE = "fieldname";
 	public static final String EXACT_PHRASE_ATTRIBUTE = "exactphrase";
 	public static final String INCLUSIVE_ATTRIBUTE = "inclusive";
@@ -228,6 +266,9 @@ public class Constants {
 	public static final String IS_MIRRORED_FIELD = "_isMirrored";
 	public static final String TASK_COMPLETED_DATE_FIELD = "_taskCompleted";
 	public static final String IS_GROUP_DYNAMIC_FIELD = "_isGroupDynamic";
+	public static final String ENTRY_ACL_PARENT_ID_FIELD = "_entryAclParentId"; // This numeric field is only used for entries that inherit ACLs from parent folders
+	public static final String FOLDER_ID_FIELD = "_folderId"; // This numeric field contains folder ID. Used only for folders.
+
 
 	public Constants() {
 		super();

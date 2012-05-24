@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.lucene;
 
+import gnu.trove.set.hash.TLongHashSet;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ import java.util.TreeSet;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.cn.ChineseAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Fieldable;
@@ -51,15 +54,24 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Collector;
+import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.Scorer;
 import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
+import org.apache.lucene.util.Version;
 import org.kablink.teaming.lucene.analyzer.VibeIndexAnalyzer;
 import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.lucene.util.TagObject;
@@ -76,6 +88,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	private static final String FIND_TYPE_COMMUNITY_TAGS = "communityTags";
 	
 	private static Analyzer defaultAnalyzer;
+	
+	private static ThreadLocal<QueryParser> queryParserWithWSA = new ThreadLocal<QueryParser>();
 	
 	private LuceneProviderManager luceneProviderManager;
 	
@@ -101,6 +115,15 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		this.statistics = new EventsStatistics();
 		
 		logDebug("Lucene provider instantiated");
+	}
+	
+	private QueryParser getQueryParserWithWSA() {
+		QueryParser qp = queryParserWithWSA.get();
+		if(qp == null) {
+			qp =  new QueryParser(Version.LUCENE_34, Constants.ALL_TEXT_FIELD, new WhitespaceAnalyzer());
+			queryParserWithWSA.set(qp);
+		}
+		return qp;
 	}
 	
 	public void initialize() {
@@ -449,8 +472,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		}
 	}
 	
-	public org.kablink.teaming.lucene.Hits search(Query query) throws LuceneException {
-		return this.search(query, 0, -1);
+	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query) throws LuceneException {
+		return this.search(contextUserId, aclQueryStr, mode, query, null, 0, -1);
 	}
 
 	private IndexSearcherHandle getIndexSearcherHandle() throws LuceneException {
@@ -475,61 +498,73 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		}	
 	}
 	
-	public org.kablink.teaming.lucene.Hits search(Query query, int offset,
-			int size) throws LuceneException {
-		long startTime = System.nanoTime();
-
-		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
-
-		try {
-			if (size < 0)
-				size = Integer.MAX_VALUE;
-			
-			TopDocs topDocs = indexSearcherHandle.getIndexSearcher().search(query, Integer.MAX_VALUE);
-			
-			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
-					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size);
-
-			end(startTime, "search(Query,int,int)", query, tempHits.length());
-			
-			return tempHits;
-		} catch (IOException e) {
-			throw newLuceneException("Error searching index", e);
-		} catch (OutOfMemoryError e) {
-			getIndexingResource().closeOOM(e);
-			throw e;
-		} finally {
-			releaseIndexSearcherHandle(indexSearcherHandle);
-		}
+	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, int offset, int size) throws LuceneException {
+		return search(contextUserId, aclQueryStr, mode, query, null, offset, size);
+	}
+	
+	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort) throws LuceneException {
+		return this.search(contextUserId, aclQueryStr, mode, query, sort, 0, -1);
 	}
 
-	public org.kablink.teaming.lucene.Hits search(Query query, Sort sort) throws LuceneException {
-		return this.search(query, sort, 0, -1);
-	}
-
-	public org.kablink.teaming.lucene.Hits search(Query query, Sort sort,
+	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
 			int offset, int size) throws LuceneException {
 		long startTime = System.nanoTime();
 
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
 		TopDocs topDocs = null;
-
+		
+		Filter aclFilter = null;
+		
 		try {
+			if(aclQueryStr != null && aclQueryStr.length() > 0) {
+				// The query result must be filtered by ACL restriction.
+				if(mode == Constants.SEARCH_MODE_NORMAL) {
+					Query aclInheritingEntriesPermissibleAclQuery = makeAclInheritingEntriesPermissibleAclQuery(parseAclQueryStr(aclQueryStr));
+					
+					QueryWrapperFilter aclInheritingEntriesPermissibleAclFilter = new QueryWrapperFilter(aclInheritingEntriesPermissibleAclQuery);
+					
+					TLongHashSet accessibleFolderIds = null;
+					
+					Query accessibleFoldersAclQuery = makeAccessibleFoldersAclQuery(parseAclQueryStr(aclQueryStr));
+						
+					accessibleFolderIds = obtainAccessibleFolderIds(indexSearcherHandle.getIndexSearcher(), contextUserId, accessibleFoldersAclQuery);
+
+					aclFilter = new AclFilter(aclInheritingEntriesPermissibleAclFilter, accessibleFolderIds);			
+				}
+				else if(mode == Constants.SEARCH_MODE_SELF_CONTAINED_ONLY) {
+					aclFilter = new QueryWrapperFilter(parseAclQueryStr(aclQueryStr));
+				}
+				else if(mode == Constants.SEARCH_MODE_PREAPPROVED_PARENTS) {
+					Query aclInheritingEntriesPermissibleAclQuery = makeAclInheritingEntriesPermissibleAclQuery(parseAclQueryStr(aclQueryStr));
+					
+					QueryWrapperFilter aclInheritingEntriesPermissibleAclFilter = new QueryWrapperFilter(aclInheritingEntriesPermissibleAclQuery);
+
+					aclFilter = aclInheritingEntriesPermissibleAclFilter;
+				}
+				else {
+					throw newLuceneException("Invalid search mode: " + mode);
+				}				
+			}
+			
 			if (size < 0)
 				size = Integer.MAX_VALUE;
-			if (sort == null)
-				topDocs = indexSearcherHandle.getIndexSearcher().search(query, Integer.MAX_VALUE);
-			else
+			
+			if (sort == null) {
+				topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, Integer.MAX_VALUE);
+			}
+			else {
 				try {
-					topDocs = indexSearcherHandle.getIndexSearcher().search(query, null, Integer.MAX_VALUE, sort);
+					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, Integer.MAX_VALUE, sort);
 				} catch (Exception ex) {
-					topDocs = indexSearcherHandle.getIndexSearcher().search(query, Integer.MAX_VALUE);
+					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, Integer.MAX_VALUE);
 				}
+			}
+			
 			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
 					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size);
 
-			end(startTime, "search(Query,Sort,int,int)", query, tempHits.length());
+			end(startTime, "search", contextUserId, aclQueryStr, mode, query, sort, offset, size, tempHits.length());
 			
 			return tempHits;
 		} catch (IOException e) {
@@ -537,6 +572,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		} catch (OutOfMemoryError e) {
 			getIndexingResource().closeOOM(e);
 			throw e;
+		} catch (ParseException e) {
+			throw newLuceneException("Error parsing query", e);
 		} finally {
 			releaseIndexSearcherHandle(indexSearcherHandle);
 		}
@@ -876,6 +913,14 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		}
 	}
 	
+	private void end(long begin, String methodName, Long contextUserId, int length) {
+		endStat(begin, methodName);
+		if(logger.isDebugEnabled()) {
+			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length +
+					", contextUserId=" + contextUserId);
+		}
+	}
+	
 	private void end(long begin, String methodName, Query query, int length) {
 		endStat(begin, methodName);
 		if(logger.isTraceEnabled()) {
@@ -884,6 +929,23 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		}
 		else if(logger.isDebugEnabled()) {
 			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length);
+		}
+	}
+
+	private void end(long begin, String methodName, Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, int resultLength) {
+		endStat(begin, methodName);
+		if(logger.isTraceEnabled()) {
+			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + resultLength + 
+					", contextUserId=" + contextUserId + 
+					", aclQueryStr=[" + aclQueryStr + 
+					"], mode=" + mode + 
+					", query=[" + ((query==null)? null : query.toString()) + 
+					"], sort=[" + ((sort==null)? null : sort.toString()) + 
+					"], offset=" + offset +
+					", size=" + size);
+		}
+		else if(logger.isDebugEnabled()) {
+			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + resultLength);
 		}
 	}
 	
@@ -1182,4 +1244,49 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		return "Indexing and Search Statistics (" + indexName +"), " + statistics.asString();
 	}
 
+	private Query parseAclQueryStr(String aclQueryStr) throws ParseException {
+		return getQueryParserWithWSA().parse(aclQueryStr);
+	}
+	
+	private TLongHashSet obtainAccessibleFolderIds(IndexSearcher searcher, Long contextUserId, Query accessibleFoldersAclQuery) throws IOException {
+		long startTime = System.nanoTime();
+		
+		AccessibleFoldersCollector collector = new AccessibleFoldersCollector();
+		
+		searcher.search(accessibleFoldersAclQuery, collector);
+		
+		TLongHashSet result = collector.getAccessibleFolderIds();
+		
+		end(startTime, "obtainAccessibleFolderIds", contextUserId, result.size());
+		
+		return result;
+	}
+	
+	private Query makeAclInheritingEntriesPermissibleAclQuery(Query aclQuery) {
+		NumericRangeQuery<Long> nrq = NumericRangeQuery.newLongRange(Constants.ENTRY_ACL_PARENT_ID_FIELD, 1L, Long.MAX_VALUE, true, true);
+		
+		if(!(aclQuery instanceof BooleanQuery)) {
+			BooleanQuery bq = new BooleanQuery();
+			bq.add(aclQuery, BooleanClause.Occur.SHOULD);
+			aclQuery = bq;
+		}
+		
+		((BooleanQuery)aclQuery).add(nrq, BooleanClause.Occur.SHOULD);
+		
+		return aclQuery;
+	}
+	
+	private Query makeAccessibleFoldersAclQuery(Query aclQuery) {
+		TermQuery tq = new TermQuery(new Term(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER));
+		
+		if(!(aclQuery instanceof BooleanQuery)) {
+			BooleanQuery bq = new BooleanQuery();
+			bq.add(aclQuery, BooleanClause.Occur.MUST);
+			aclQuery = bq;
+		}
+		
+		((BooleanQuery)aclQuery).add(tq, BooleanClause.Occur.MUST);
+		
+		return aclQuery;
+	}
 }

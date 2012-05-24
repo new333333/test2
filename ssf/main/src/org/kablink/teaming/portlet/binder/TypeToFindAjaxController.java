@@ -232,17 +232,17 @@ public class TypeToFindAjaxController extends SAbstractController {
 			//Do a search to find the first few items that match the search text
 			options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
 			if (findType.equals(WebKeys.FIND_TYPE_PLACES)) {
-				Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
+				Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, options);
 				List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
 				model.put(WebKeys.ENTRIES, entries);
 				model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 			} else if (findType.equals(WebKeys.FIND_TYPE_TEAMS)) {
-				Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
+				Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, options);
 				List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
 				model.put(WebKeys.ENTRIES, entries);
 				model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 			} else if (findType.equals(WebKeys.FIND_TYPE_ENTRIES)) {
-				Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
+				Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), Constants.SEARCH_MODE_NORMAL, options);
 				List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
 				List placesWithCounters = BinderHelper.sortPlacesInEntriesSearchResults(getBinderModule(), entries);
 				Map foldersMap = BinderHelper.prepareFolderList(placesWithCounters, false);

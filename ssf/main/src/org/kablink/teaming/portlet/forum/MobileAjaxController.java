@@ -778,7 +778,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			options.put(ObjectKeys.SEARCH_OFFSET, new Integer(pageStart));
 			options.put(ObjectKeys.SEARCH_USER_MAX_HITS, new Integer(pageSize));
 			if (scope.equals("local")) options.put(ObjectKeys.SEARCH_ANCESTRY, binderId.toString());;
-			Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, options);
+			Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, Constants.SEARCH_MODE_NORMAL, options);
 			
 			//Set the title of the tab
 			DateFormat fmt = DateFormat.getTimeInstance(DateFormat.SHORT, user.getLocale());
@@ -803,7 +803,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			options.put(ObjectKeys.SEARCH_USER_MAX_HITS, new Integer(pageSize));
 
 			options.put(Tabs.TITLE, queryName);
-			Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, options);
+			Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, Constants.SEARCH_MODE_NORMAL, options);
 			
 			Tabs.TabEntry tab = tabs.addTab(searchQuery, options);
 			
@@ -986,7 +986,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
 			.add(in(Constants.BINDERS_PARENT_ID_FIELD, folderIds));
 		crit.addOrder(Order.asc(Constants.SORT_TITLE_FIELD));
-		Map binderMap = bs.getBinderModule().executeSearchQuery(crit, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+		Map binderMap = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
 
 		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
 		List binderIdList = new ArrayList();
@@ -1927,7 +1927,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		} else if (type.equals("group")) {
 			entries = getProfileModule().getGroups(options);
 		} else if (type.equals("team")) {
-			entries = getBinderModule().executeSearchQuery(searchTermFilter.getFilter(), options);
+			entries = getBinderModule().executeSearchQuery(searchTermFilter.getFilter(), Constants.SEARCH_MODE_NORMAL, options);
 		}
 		model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
 		model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
@@ -2074,7 +2074,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 					entries = getProfileModule().getUsers(options);
 					model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
 				} else if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PLACES)) {
-					entries = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
+					entries = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), Constants.SEARCH_MODE_NORMAL, options);
 					model.put(WebKeys.ENTRIES, entries.get(ObjectKeys.SEARCH_ENTRIES));
 					view = "mobile/find_places";
 				}

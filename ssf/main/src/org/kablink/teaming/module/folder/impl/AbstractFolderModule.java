@@ -721,14 +721,15 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     		.add(between(Constants.LASTACTIVITY_DAY_FIELD,EntityIndexUtils.formatDayString(startDate), EntityIndexUtils.formatDayString(now)));
     	Hits results = null;
     	//Create the Lucene query
-    	QueryBuilder qb = new QueryBuilder(true);
+    	QueryBuilder qb = new QueryBuilder(true, false);
     	SearchObject so = qb.buildQuery(crit.toQuery());
     	
     	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
     	//RemoteInStreamSession instreamSession = getInstreamSessionFactory().openSession();
         
         try {
-        	results = luceneSession.search(so.getLuceneQuery(),so.getSortBy(),0,0);
+        	results = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
+        			so.getAclQueryStr(), Constants.SEARCH_MODE_NORMAL, so.getLuceneQuery(),so.getSortBy(),0,0);
         	//results = instreamSession.search(so.getQueryString(),so.getSortBy(),0,0);
         } catch (Exception e) {
         	logger.warn("Exception throw while searching in getRecentEntries: " + e.toString());

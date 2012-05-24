@@ -4651,7 +4651,7 @@ public class GwtServerHelper {
 			now = DateTools.dateToString( new Date(), DateTools.Resolution.SECOND );
 			crit = SearchUtils.newEntriesDescendants( binderIds );
 			crit.add( org.kablink.util.search.Restrictions.between( MODIFICATION_DATE_FIELD, startDate, now ) );
-			results = ami.getBinderModule().executeSearchQuery( crit, 0, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS );
+			results = ami.getBinderModule().executeSearchQuery( crit, Constants.SEARCH_MODE_NORMAL, 0, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS );
 	    	entries = (List) results.get( ObjectKeys.SEARCH_ENTRIES );
 
 			// Get the count of unseen entries

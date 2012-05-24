@@ -49,6 +49,7 @@ import java.util.Collection;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.NumericField;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.kablink.teaming.ObjectKeys;
@@ -576,6 +577,10 @@ public class EntityIndexUtils {
     	//Add the id of the creator (no, not that one...)
         Field docIdField = new Field(DOCID_FIELD, entry.getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
         doc.add(docIdField);
+       	
+       	if(entry instanceof Folder) { // Folder gets another field containing its ID value, but this time as a numeric field.
+       		doc.add(new NumericField(FOLDER_ID_FIELD).setLongValue(entry.getId().longValue()));
+       	}
     }
 
     public static void addParentBinder(Document doc, DefinableEntity entry, boolean fieldsOnly) {
@@ -678,12 +683,18 @@ public class EntityIndexUtils {
     }
 
     private static void addDefaultEntryAcls(Document doc, Binder binder, Entry entry) {
-    	boolean personal = Utils.isWorkareaInProfilesTree(binder);
-		//get default entry access
-		doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
-		if (!personal) {
-			doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_GLOBAL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
-		}
+    	if(entry instanceof FolderEntry) {
+    		doc.add(new NumericField(Constants.ENTRY_ACL_PARENT_ID_FIELD).setLongValue(binder.getId().longValue()));
+    	}
+    	else {
+    		// I don't think this code block can ever get executed, but...
+	    	boolean personal = Utils.isWorkareaInProfilesTree(binder);
+			//get default entry access
+			doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
+			if (!personal) {
+				doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_GLOBAL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
+			}
+    	}
     }
 
     //Add acl fields for binder for storage in search engine

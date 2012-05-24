@@ -444,7 +444,7 @@ public class GwtActivityStreamHelper {
 
 			// Are there any comments posted to any of these entries?
 			Criteria searchCriteria = SearchUtils.entryReplies(entryIds, true);	// true -> All replies, at any level.
-			Map       searchResults = bs.getBinderModule().executeSearchQuery(searchCriteria, 0, (Integer.MAX_VALUE - 1));
+			Map       searchResults = bs.getBinderModule().executeSearchQuery(searchCriteria, Constants.SEARCH_MODE_NORMAL, 0, (Integer.MAX_VALUE - 1));
 			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
 			int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
 			if ((0 >= totalRecords) || (null == searchEntries) || searchEntries.isEmpty()) {
@@ -1995,6 +1995,7 @@ public class GwtActivityStreamHelper {
 		Criteria searchCriteria = buildSearchCriteria(bs, trackedPlacesAL, trackedUsersAL);
 		Map searchResults = bs.getBinderModule().executeSearchQuery(
 			searchCriteria,
+			Constants.SEARCH_MODE_NORMAL,
 			pageStart,
 			entriesPerPage);
 
@@ -2014,6 +2015,7 @@ public class GwtActivityStreamHelper {
 		Criteria searchCriteria = buildSearchCriteria(bs, entryId);
 		Map searchResults = bs.getBinderModule().executeSearchQuery(
 			searchCriteria,
+			Constants.SEARCH_MODE_NORMAL,
 			0,
 			Integer.MAX_VALUE);
 
@@ -2046,6 +2048,7 @@ public class GwtActivityStreamHelper {
 		
 		Map searchResults = bs.getBinderModule().executeSearchQuery(
 			searchCriteria,
+			Constants.SEARCH_MODE_NORMAL,
 			pageStart,
 			asp.getReadEntryMax());
 

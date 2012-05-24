@@ -421,7 +421,7 @@ public class KablinkFileSystemInternal implements KablinkFileSystem {
 			
 	    	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
 			
-			Map searchResults = bs.getBinderModule().executeSearchQuery(null, options);
+			Map searchResults = bs.getBinderModule().executeSearchQuery(null, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, options);
 			List<Map> groups = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
 			List<String> folderIds = new ArrayList();
 			for (Map groupMap: groups) {

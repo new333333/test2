@@ -1541,7 +1541,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
        	
        	//Create the Lucene query
-    	QueryBuilder qb = new QueryBuilder(true);
+    	QueryBuilder qb = new QueryBuilder(true, false);
     	SearchObject so = qb.buildQuery(queryTree);
     	
     	//Set the sort order
@@ -1557,7 +1557,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         
     	Hits hits = null;
         try {
-        	hits = luceneSession.search(soQuery, so.getSortBy(), searchOffset, maxResults);
+        	hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
+        			so.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, soQuery, so.getSortBy(), searchOffset, maxResults);
         }
         finally {
             luceneSession.close();
@@ -1709,12 +1710,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		// Get a list of the binders which need to be reindexed
 		LuceneReadSession luceneSessionn = getLuceneSessionFactory()
 				.openReadSession();
-		QueryBuilder qbb = new QueryBuilder(false); 
+		QueryBuilder qbb = new QueryBuilder(false, false); 
 		
 		crit.add(conjunction().add(
 				eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER)));
-		Hits hits = luceneSessionn.search(qbb.buildQuery(crit.toQuery(), true)
-				.getLuceneQuery());
+		
+		SearchObject so = qbb.buildQuery(crit.toQuery());
+		
+		Hits hits = luceneSessionn.search(RequestContextHolder.getRequestContext().getUserId(), so.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
+				so.getLuceneQuery());
 		luceneSessionn.close();
 		for (int i = 0; i < hits.length(); i++) {
 			doc = hits.doc(i);
@@ -1730,7 +1734,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		User user = RequestContextHolder.getRequestContext().getUser();
 		BinderReindex job=null;
 		if (job == null) job = (BinderReindex)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultBinderReindex.class);
-		job.schedule(binders, user); 
+		job.schedule(binders, user, false); 
 
 	}
      

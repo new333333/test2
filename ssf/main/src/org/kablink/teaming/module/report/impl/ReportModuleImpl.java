@@ -431,7 +431,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		
 		if (userIds.length > 0) {
 			org.kablink.util.search.Criteria crit = SearchUtils.entriesForTrackedMiniBlogs(userIds);
-			Map results = getBinderModule().executeSearchQuery(crit, offset, maxResults);
+			Map results = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
 
 	    	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 
@@ -820,7 +820,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
 		org.kablink.util.search.Criteria crit = SearchUtils.bindersByAccess(userId);
-		Map results = getBinderModule().executeSearchQuery(crit, offset, maxResults, userId);
+		Map results = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxResults, userId);
 
     	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 
@@ -923,7 +923,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 			
 			org.kablink.util.search.Criteria crit = SearchUtils.entitiesByDateAndAncestor(binderIds, null, null);
-			Map results = getBinderModule().executeSearchQuery(crit, offset, maxResults, user.getId());
+			Map results = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults, user.getId());
 			page++;
 	
 	    	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
@@ -1093,7 +1093,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
 		org.kablink.util.search.Criteria crit = SearchUtils.entries(entryIds);
-		Map results = getBinderModule().executeSearchQuery(crit, offset, maxResults);
+		Map results = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
 
     	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 
