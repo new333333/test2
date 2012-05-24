@@ -1953,6 +1953,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case SAVE_FOLDER_PINNING_STATE:
+		{
+			SaveFolderPinningStateCmd sfsCmd = ((SaveFolderPinningStateCmd) cmd);
+			GwtViewHelper.saveUserViewPinnedEntries( getRequest( ri ), sfsCmd.getFolderId(), sfsCmd.getViewPinnedEntries() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( true ));
+			return response;
+		}
+		
 		case SAVE_FOLDER_SORT:
 		{
 			SaveFolderSortCmd sfsCmd = ((SaveFolderSortCmd) cmd);

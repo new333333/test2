@@ -246,6 +246,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource entry_task();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/pin_gray.png")
+	public ImageResource grayPin();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Masthead/help.png")
 	public ImageResource helpMenuImg();
 
@@ -400,6 +404,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/arrow_right_over.png")
 	public ImageResource nextMouseOver16();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/pin_orange.png")
+	public ImageResource orangePin();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/pause.png")

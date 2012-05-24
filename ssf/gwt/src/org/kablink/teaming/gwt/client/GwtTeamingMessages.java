@@ -432,6 +432,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveEmailNotificationInfo();
 	String rpcFailure_SaveFileSyncAppConfiguration();
 	String rpcFailure_SaveFolderColumns();
+	String rpcFailure_SaveFolderPinningState();
 	String rpcFailure_SaveFolderSort();
 	String rpcFailure_SavePersonalPreferences();
 	String rpcFailure_SaveSearch();
@@ -1319,6 +1320,8 @@ public interface GwtTeamingMessages extends Messages
 	String vibeEntryMenu_Alt_FilterOptions();
 	String vibeEntryMenu_Alt_ListOptions();
 	String vibeEntryMenu_Alt_PersonalFilter();
+	String vibeEntryMenu_Alt_Pin_ShowAll();
+	String vibeEntryMenu_Alt_Pin_ShowPinned();
 	String vibeEntryMenu_ClearFilters();
 	String vibeEntryMenu_GlobalizeFilter(String filterName);
 	String vibeEntryMenu_ManageFilters();

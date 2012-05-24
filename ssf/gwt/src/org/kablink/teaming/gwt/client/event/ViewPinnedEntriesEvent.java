@@ -39,27 +39,27 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The InvokeAddNewFolderEvent is used to invoke Vibe's about dialog.
+ * The ViewPinnedEntriesEvent is used to toggle the state of view
+ * pinned entries in a folder.
  * 
  * @author drfoster@novell.com
  */
-public class InvokeAddNewFolderEvent extends VibeEventBase<InvokeAddNewFolderEvent.Handler> {
+public class ViewPinnedEntriesEvent extends VibeEventBase<ViewPinnedEntriesEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
-    public Long	m_binderId;			// The ID of the binder to create the new folder in.
-    public Long	m_folderTemplateId;	// The ID of the folder template to use to create the folder.
+    public Long	m_folderId;	// The ID of the folder whose pinned entry viewing is to be toggled.
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onInvokeAddNewFolder(InvokeAddNewFolderEvent event);
+		void onViewPinnedEntries(ViewPinnedEntriesEvent event);
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public InvokeAddNewFolderEvent() {
+	public ViewPinnedEntriesEvent() {
 		// Initialize the super class.
 		super();
 	}
@@ -67,16 +67,14 @@ public class InvokeAddNewFolderEvent extends VibeEventBase<InvokeAddNewFolderEve
 	/**
 	 * Class constructor.
 	 * 
-	 * @param binderId
-	 * @param folderTemplateId
+	 * @param folderId
 	 */
-	public InvokeAddNewFolderEvent(Long binderId, Long folderTemplateId) {
+	public ViewPinnedEntriesEvent(Long folderId) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
-		setBinderId(        binderId        );
-		setFolderTemplateId(folderTemplateId);
+		setFolderId(folderId);
 	}
 
 	/**
@@ -88,14 +86,14 @@ public class InvokeAddNewFolderEvent extends VibeEventBase<InvokeAddNewFolderEve
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onInvokeAddNewFolder(this);
+        handler.onViewPinnedEntries(this);
     }
 	
 	/**
 	 * Fires a new one of these events.
 	 */
 	public static void fireOne() {
-		GwtTeaming.fireEvent(new InvokeAddNewFolderEvent());
+		GwtTeaming.fireEvent(new ViewPinnedEntriesEvent());
 	}
     
 	/**
@@ -120,7 +118,7 @@ public class InvokeAddNewFolderEvent extends VibeEventBase<InvokeAddNewFolderEve
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.INVOKE_ADD_NEW_FOLDER;
+		return TeamingEvents.VIEW_PINNED_ENTRIES;
 	}
 		
 	/**
@@ -141,14 +139,12 @@ public class InvokeAddNewFolderEvent extends VibeEventBase<InvokeAddNewFolderEve
 	 * 
 	 * @return
 	 */
-	public Long getBinderId()         {return m_binderId;        }
-	public Long getFolderTemplateId() {return m_folderTemplateId;}
+	public Long getFolderId() {return m_folderId;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setBinderId(        Long binderId)         {m_binderId         = binderId;        }
-	public void setFolderTemplateId(Long folderTemplateId) {m_folderTemplateId = folderTemplateId;}
+	public void setFolderId(Long folderId) {m_folderId = folderId;}
 }

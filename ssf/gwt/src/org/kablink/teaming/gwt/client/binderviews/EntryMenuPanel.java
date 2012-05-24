@@ -65,6 +65,7 @@ import org.kablink.teaming.gwt.client.event.TrashRestoreAllEvent;
 import org.kablink.teaming.gwt.client.event.TrashRestoreSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
+import org.kablink.teaming.gwt.client.event.ViewPinnedEntriesEvent;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
@@ -110,6 +111,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 	private BinderInfo						m_binderInfo;				//
 	private boolean							m_includeColumnResizer;		//
 	private boolean							m_isIE;						//
+	private boolean							m_viewingPinnedEntries;		//
 	private List<ToolbarItem>				m_configureToolbarItems;	//
 	private List<ToolbarItem>				m_toolbarIems;				//
 	private VibeFlexTable					m_grid;						//
@@ -134,12 +136,13 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private EntryMenuPanel(RequiresResize containerResizer, BinderInfo binderInfo, boolean includeColumnResizer, ToolPanelReady toolPanelReady) {
+	private EntryMenuPanel(RequiresResize containerResizer, BinderInfo binderInfo, boolean viewingPinnedEntries, boolean includeColumnResizer, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
 		super(containerResizer, binderInfo, toolPanelReady);
 		
 		// ...store the parameters...
 		m_binderInfo           = binderInfo;
+		m_viewingPinnedEntries = viewingPinnedEntries;
 		m_includeColumnResizer = includeColumnResizer;
 
 		// ...initialize any other data members...
@@ -326,9 +329,11 @@ public class EntryMenuPanel extends ToolPanelBase {
 				if (perEntryTBI.hasNestedToolbarItems()) {
 					renderStructuredTBI(m_entryMenu, null, perEntryTBI);
 				}
+				
 				else if (perEntryTBI.isSeparator()) {
 					m_entryMenu.addSeparator();
 				}
+				
 				else {
 					renderSimpleTBI(m_entryMenu, null, perEntryTBI, false);
 				}
@@ -339,8 +344,14 @@ public class EntryMenuPanel extends ToolPanelBase {
 		// Render the various right end capabilities applicable to the
 		// current binder.
 		renderConfigureTBI();
-		renderQuickFilter();
-		renderDefinedFiltering();
+		if (m_viewingPinnedEntries) {
+			m_quickFilterPanel.setVisible(  false);
+			m_filterOptionsPanel.setVisible(false);
+		}
+		else {
+			renderQuickFilter();
+			renderDefinedFiltering();
+		}
 		
 		// Finally, tell who's using this tool panel that it's ready to
 		// go.
@@ -618,34 +629,58 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * Renders any simple (i.e., URL or event based) toolbar item.
 	 */
 	private void renderSimpleTBI(VibeMenuBar menuBar, PopupMenu popupMenu, final ToolbarItem simpleTBI, boolean contentsSelectable) {
-		// Generate the text to display for the menu item...
-		String title = simpleTBI.getTitle();
-		String menuText;
-		if (contentsSelectable) {
-			String contentsCheckedS = simpleTBI.getQualifierValue("selected");
-			boolean contentsChecked = (GwtClientHelper.hasString(contentsCheckedS) && contentsCheckedS.equals("true"));
+		final String        simpleTitle = simpleTBI.getTitle();
+		final TeamingEvents simpleEvent = simpleTBI.getTeamingEvent();
+
+		// Is this a menu item to view pinned entries?
+		boolean menuTextIsHTML;
+		String  menuText;
+		if ((null != simpleEvent) && TeamingEvents.VIEW_PINNED_ENTRIES.equals(simpleEvent)) {
+			// Yes!  Generate the appropriate HTML for the item.
+			Image pinImg = new Image(m_viewingPinnedEntries ? m_images.orangePin() : m_images.grayPin());
+			pinImg.addStyleName("vibe-entryMenuBarPin");
+			pinImg.getElement().setAttribute("align", "absmiddle");
+			pinImg.setTitle(
+				m_viewingPinnedEntries                         ?
+					m_messages.vibeEntryMenu_Alt_Pin_ShowAll() :
+					m_messages.vibeEntryMenu_Alt_Pin_ShowPinned());
 			VibeFlowPanel html = new VibeFlowPanel();
-			Image checkImg;
-			if (contentsChecked) {
-				checkImg = new Image(m_images.check12());
-				checkImg.addStyleName("vibe-entryMenuBarCheck");
-				checkImg.getElement().setAttribute("align", "absmiddle");
+			html.add(pinImg);
+			menuText       = html.getElement().getInnerHTML();
+			menuTextIsHTML = true;
+		}
+		
+		else {
+			// No, this isn't a view pinned entries item!  Generate the
+			// text to display for the menu item...
+			if (contentsSelectable) {
+				String contentsCheckedS = simpleTBI.getQualifierValue("selected");
+				boolean contentsChecked = (GwtClientHelper.hasString(contentsCheckedS) && contentsCheckedS.equals("true"));
+				VibeFlowPanel html = new VibeFlowPanel();
+				Image checkImg;
+				if (contentsChecked) {
+					checkImg = new Image(m_images.check12());
+					checkImg.addStyleName("vibe-entryMenuBarCheck");
+					checkImg.getElement().setAttribute("align", "absmiddle");
+				}
+				else {
+					checkImg = new Image(m_images.spacer1px());
+					checkImg.addStyleName("vibe-entryMenuBarCheck");
+					checkImg.setWidth("12px");
+				}
+				html.add(checkImg);
+				html.add(new InlineLabel(simpleTitle));
+				menuText       = html.getElement().getInnerHTML();
+				menuTextIsHTML = true;
 			}
 			else {
-				checkImg = new Image(m_images.spacer1px());
-				checkImg.addStyleName("vibe-entryMenuBarCheck");
-				checkImg.setWidth("12px");
+				menuText       = simpleTitle;
+				menuTextIsHTML = false;
 			}
-			html.add(checkImg);
-			html.add(new InlineLabel(title));
-			menuText = html.getElement().getInnerHTML();
-		}
-		else {
-			menuText = title;
 		}
 
 		// ...and generate the menu item.
-		VibeMenuItem menuItem = new VibeMenuItem(menuText, contentsSelectable, new Command() {
+		VibeMenuItem menuItem = new VibeMenuItem(menuText, menuTextIsHTML, new Command() {
 			@Override
 			public void execute() {
 				// Does the simple toolbar item contain a URL to
@@ -666,7 +701,6 @@ public class EntryMenuPanel extends ToolPanelBase {
 				else {
 					// No, the simple toolbar item didn't contain a
 					// URL!  The only other option is an event.
-					TeamingEvents simpleEvent = simpleTBI.getTeamingEvent();
 					Long folderId = m_binderInfo.getBinderIdAsLong();
 					
 					VibeEventBase<?> event;
@@ -695,6 +729,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 					case TRASH_PURGE_SELECTED_ENTRIES:        event = new TrashPurgeSelectedEntriesEvent(     folderId   ); break;
 					case TRASH_RESTORE_ALL:                   event = new TrashRestoreAllEvent(               folderId   ); break;
 					case TRASH_RESTORE_SELECTED_ENTRIES:      event = new TrashRestoreSelectedEntriesEvent(   folderId   ); break;
+					case VIEW_PINNED_ENTRIES:                 event = new ViewPinnedEntriesEvent(             folderId   ); break;
 					
 					case CALENDAR_SHOW:
 						int calendarShow = Integer.parseInt(simpleTBI.getQualifierValue("calendarShow"));
@@ -926,6 +961,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 			// Required creation parameters.
 			final RequiresResize	containerResizer,
 			final BinderInfo		binderInfo,
+			final boolean			viewingPinnedEntries,
 			final boolean			includeColumnResizer,
 			final ToolPanelReady	toolPanelReady,
 			final ToolPanelClient 	tpClient,
@@ -948,7 +984,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 				// Is this a request to create an entry menu panel?
 				if (null != tpClient) {
 					// Yes!  Create it and return it via the callback.
-					EntryMenuPanel emp = new EntryMenuPanel(containerResizer, binderInfo, includeColumnResizer, toolPanelReady);
+					EntryMenuPanel emp = new EntryMenuPanel(containerResizer, binderInfo, viewingPinnedEntries, includeColumnResizer, toolPanelReady);
 					tpClient.onSuccess(emp);
 				}
 				
@@ -974,8 +1010,8 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * @param toolPanelReady
 	 * @param tpClient
 	 */
-	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final boolean includeColumnResizer, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
-		doAsyncOperation(containerResizer, binderInfo, includeColumnResizer, toolPanelReady, tpClient, null, false, false);
+	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final boolean viewingPinnedEntries, final boolean includeColumnResizer, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+		doAsyncOperation(containerResizer, binderInfo, viewingPinnedEntries, includeColumnResizer, toolPanelReady, tpClient, null, false, false);
 	}
 	
 	/**
@@ -986,7 +1022,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * @param enable
 	 */
 	public static void setEntriesAvailable(final EntryMenuPanel emp, final boolean enable) {
-		doAsyncOperation(null, null, false, null, null, emp, true, enable);
+		doAsyncOperation(null, null, false, false, null, null, emp, true, enable);
 	}
 	
 	/**
@@ -997,6 +1033,6 @@ public class EntryMenuPanel extends ToolPanelBase {
 	 * @param enable
 	 */
 	public static void setEntriesSelected(final EntryMenuPanel emp, final boolean enable) {
-		doAsyncOperation(null, null, false, null, null, emp, false, enable);
+		doAsyncOperation(null, null, false, false, null, null, emp, false, enable);
 	}
 }

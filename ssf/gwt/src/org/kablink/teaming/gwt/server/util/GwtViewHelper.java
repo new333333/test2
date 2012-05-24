@@ -58,6 +58,7 @@ import javax.portlet.PortletRequest;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -169,6 +170,7 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.Toolbar;
 import org.kablink.teaming.web.util.TrashHelper;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.teaming.web.util.TrashHelper.TrashEntry;
 import org.kablink.teaming.web.util.TrashHelper.TrashResponse;
@@ -186,6 +188,8 @@ public class GwtViewHelper {
 	public static final String RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME	= "responsible_groups";
 	public static final String RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME			= "responsible";
 	public static final String RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME		= "responsible_teams";
+	
+	private static final String CACHED_VIEW_PINNED_ENTRIES_BASE = "viewPinnedEntries_";
 	
 	/*
 	 * Class constructor that prevents this class from being
@@ -2038,10 +2042,21 @@ public class GwtViewHelper {
 			
 			// Has the user defined any column widths on this folder?
 			ColumnWidthsRpcResponseData cwData = getColumnWidths(bs, request, folderInfo);
+
+			// What do we know about pinning of entries on this folder?
+			boolean folderSupportsPinning = getFolderSupportsPinning(folderInfo);
+			boolean viewPinnedEntries     = (folderSupportsPinning && getUserViewPinnedEntries(request, folderId));
 			
 			// Finally, use the data we obtained to create a
 			// FolderDisplayDataRpcResponseData and return that. 
-			return new FolderDisplayDataRpcResponseData(sortBy, sortDescend, pageSize, cwData.getColumnWidths());
+			return
+				new FolderDisplayDataRpcResponseData(
+					sortBy,
+					sortDescend,
+					pageSize,
+					cwData.getColumnWidths(),
+					folderSupportsPinning,
+					viewPinnedEntries);
 		}
 		
 		catch (Exception e) {
@@ -2093,17 +2108,15 @@ public class GwtViewHelper {
 			}
 			
 			// What type of folder are we dealing with?
-			boolean isDiscussion     = false;
 			boolean isGuestbook      = false;
 			boolean isMilestone      = false;
 			boolean isSurvey         = false;
 			boolean isProfilesRootWS = folderInfo.isBinderProfilesRootWS();
 			boolean isTrash          = folderInfo.isBinderTrash();
 			switch (folderInfo.getFolderType()) {
-			case DISCUSSION:  isDiscussion = true; break;
-			case GUESTBOOK:   isGuestbook  = true; break;
-			case MILESTONE:   isMilestone  = true; break;
-			case SURVEY:      isSurvey     = true; break;
+			case GUESTBOOK:  isGuestbook = true; break;
+			case MILESTONE:  isMilestone = true; break;
+			case SURVEY:     isSurvey    = true; break;
 			}
 
 			// Access any other information we need to read the data.
@@ -2126,27 +2139,49 @@ public class GwtViewHelper {
 			options.put(ObjectKeys.SEARCH_SORT_BY,      fdd.getFolderSortBy()     );
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, fdd.getFolderSortDescend());
 
-			// Read the entries based on the search.
-			Map searchResults;
-			if      (isTrash)          searchResults = TrashHelper.getTrashEntries(bs, binder, options);
-			else if (isProfilesRootWS) searchResults = bs.getProfileModule().getUsers(         options);
-			else {
-				options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
-				searchResults = bs.getFolderModule().getEntries(folderId, options);
-			}
-			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
-			int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
-
-			// Is this the first page of a discussion folder?
+			// What do we know about pinning of entries on this folder?
+			boolean folderSupportsPinning = getFolderSupportsPinning(folderInfo);
+			boolean viewPinnedEntries     = (folderSupportsPinning && getUserViewPinnedEntries(request, folderId));
+			
+			// Does this folder support pinning?
+			List<Map>  pinnedEntrySearchMaps;
 			List<Long> pinnedEntryIds = new ArrayList<Long>();
-			if ((0 == start) && isDiscussion) {
+			if (folderSupportsPinning) {
 				// Yes!  Are there any entries pinned in the folder?
-				List<Map>  pinnedEntrySearchMaps = getPinnedEntries(bs, folder, userFolderProperties, pinnedEntryIds);
-				if (!(pinnedEntrySearchMaps.isEmpty())) {
-					// Yes!  Add them to the beginning of the search
-					// entries.
-					searchEntries.addAll(0, pinnedEntrySearchMaps);
+				pinnedEntrySearchMaps = getPinnedEntries(
+					bs,
+					folder,
+					userFolderProperties,
+					pinnedEntryIds,
+					viewPinnedEntries);
+			}
+			else {
+				// No, this folder doesn't support pinning!  We don't
+				// have (or need) the pinned entry maps.
+				pinnedEntrySearchMaps = null;
+			}
+
+			// Is the user currently viewing pinned entries?
+			List<Map>  searchEntries;
+			int        totalRecords;
+			if (viewPinnedEntries) {
+				// Yes!  Use the pinned entries as the search entries.
+				searchEntries = pinnedEntrySearchMaps;
+				totalRecords = searchEntries.size();
+			}
+			
+			else {
+				// No, the user isn't currently viewing pinned entries!
+				// Read the entries based on a search.
+				Map searchResults;
+				if      (isTrash)          searchResults = TrashHelper.getTrashEntries(bs, binder, options);
+				else if (isProfilesRootWS) searchResults = bs.getProfileModule().getUsers(         options);
+				else {
+					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
+					searchResults = bs.getFolderModule().getEntries(folderId, options);
 				}
+				searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
+				totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
 			}
 
 			// Scan the entries we read.
@@ -2443,10 +2478,28 @@ public class GwtViewHelper {
 			// Walk the List<FolderRow>'s performing any remaining
 			// fixups on each as necessary.
 			fixupFRs(bs, folderRows);
+
+			// Is the user viewing pinned entries?
+			if (viewPinnedEntries) {
+				// Yes!  Then we need to sort the rows using the user's
+				// current sort criteria.
+				Comparator<FolderRow> comparator =
+					new FolderRowComparator(
+						fdd.getFolderSortBy(),
+						(!(fdd.getFolderSortDescend())),
+						folderColumns);
+				
+				Collections.sort(folderRows, comparator);
+			}
 			
 			// Finally, return the List<FolderRow> wrapped in a
 			// FolderRowsRpcResponseData.
-			return new FolderRowsRpcResponseData(folderRows, start, totalRecords, contributorIds);
+			return
+				new FolderRowsRpcResponseData(
+					folderRows,
+					start,
+					totalRecords,
+					contributorIds);
 		}
 		
 		catch (Exception e) {
@@ -2644,6 +2697,18 @@ public class GwtViewHelper {
 		return result;
 	}
 
+	/*
+	 * Returns true if a folder supports pinning and folder otherwise.
+	 */
+	private static boolean getFolderSupportsPinning(BinderInfo folderInfo) {
+		boolean reply;
+		switch (folderInfo.getFolderType()) {
+		default:          reply = false; break;
+		case DISCUSSION:  reply = true;  break;
+		}
+		return reply;
+	}
+	
 	/**
 	 * Gets HTML from the execution of a jsp
 	 * 
@@ -2812,7 +2877,7 @@ public class GwtViewHelper {
 	 * pinned in the given folder. 
 	 */
 	@SuppressWarnings("unchecked")
-	private static List<Map> getPinnedEntries(AllModulesInjected bs, Folder folder, UserProperties userFolderProperties, List<Long> pinnedEntryIds) {
+	private static List<Map> getPinnedEntries(AllModulesInjected bs, Folder folder, UserProperties userFolderProperties, List<Long> pinnedEntryIds, boolean returnEntries) {
 		// Allocate a List<Map> for the search results for the entries
 		// pinned in this folder.
 		List<Map> pinnedEntrySearchMaps = new ArrayList<Map>();
@@ -2845,19 +2910,25 @@ public class GwtViewHelper {
 			for (FolderEntry entry:  pinnedFolderEntriesSet) {
 				// Is this entry still viable in this folder?
 				if (!(entry.isPreDeleted()) && entry.getParentBinder().equals(folder)) {
-					// Yes!  Track its ID...
+					// Yes!  Track its ID.
 					pinnedEntryIds.add(entry.getId());
 
-					// ...and indexDoc.
-					org.apache.lucene.document.Document indexDoc = fm.buildIndexDocumentFromEntry(entry.getParentBinder(), entry, null);
-					pinnedFolderEntriesList.add(indexDoc);
+					// Are we returning the entries too?
+					if (returnEntries) {
+						// Yes!  Save its indexDoc.
+						org.apache.lucene.document.Document indexDoc = fm.buildIndexDocumentFromEntry(entry.getParentBinder(), entry, null);
+						pinnedFolderEntriesList.add(indexDoc);
+					}
 				}
 			}
 
-			// Construct search Map's from the indexDoc's for the
-			// pinned entries.
-			pinnedEntrySearchMaps = SearchUtils.getSearchEntries(pinnedFolderEntriesList);
-			bs.getFolderModule().getEntryPrincipals(pinnedEntrySearchMaps);
+			// Are we returning the entries too?
+			if (returnEntries) {
+				// Construct search Map's from the indexDoc's for the
+				// pinned entries.
+				pinnedEntrySearchMaps = SearchUtils.getSearchEntries(pinnedFolderEntriesList);
+				bs.getFolderModule().getEntryPrincipals(pinnedEntrySearchMaps);
+			}
 		}
 		
 		// If we get here, pinnedEntrySearchMaps refers to a List<Map>
@@ -3040,6 +3111,20 @@ public class GwtViewHelper {
 		return reply;
 	}
 
+	/**
+	 * Returns true if the user is viewing pinned entries on a given folder and false other wiser.
+	 * 
+	 * @param request
+	 * @param folderId
+	 * 
+	 * @return
+	 */
+	public static boolean getUserViewPinnedEntries(HttpServletRequest request, Long folderId) {
+		HttpSession session = WebHelper.getRequiredSession(request);
+		Boolean viewPinnedEntries = ((Boolean) session.getAttribute(CACHED_VIEW_PINNED_ENTRIES_BASE + folderId));
+		return ((null != viewPinnedEntries) && viewPinnedEntries);
+	}
+	
 	/**
 	 * Returns a ViewInfo used to control folder views based on a URL.
 	 * 
@@ -4071,6 +4156,18 @@ public class GwtViewHelper {
 		}
 	}
 
+	/**
+	 * Stores whether the user is viewing pinned entries on a given folder.
+	 * 
+	 * @param request
+	 * @param folderId
+	 * @param viewingPinnedEntries;
+	 */
+	public static void saveUserViewPinnedEntries(HttpServletRequest request, Long folderId, boolean viewingPinnedEntries) {
+		HttpSession session = WebHelper.getRequiredSession(request);
+		session.setAttribute((CACHED_VIEW_PINNED_ENTRIES_BASE + folderId), new Boolean(viewingPinnedEntries));
+	}
+	
 	/**
 	 * Called to purge all the entries in the trash.
 	 * 
