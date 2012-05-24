@@ -100,10 +100,12 @@ import org.kablink.teaming.gwt.client.event.TrashPurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TrashRestoreAllEvent;
 import org.kablink.teaming.gwt.client.event.TrashRestoreSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ViewPinnedEntriesEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderRowsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderPinningStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
@@ -192,7 +194,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TrashPurgeSelectedEntriesEvent.Handler,
 		TrashRestoreAllEvent.Handler,
 		TrashRestoreSelectedEntriesEvent.Handler,
-		UnlockSelectedEntriesEvent.Handler
+		UnlockSelectedEntriesEvent.Handler,
+		ViewPinnedEntriesEvent.Handler
 {
 	private AddFilesDlg					m_addFilesDlg;				//
 	private boolean						m_fixedLayout;				//
@@ -251,6 +254,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.TRASH_RESTORE_ALL,
 		TeamingEvents.TRASH_RESTORE_SELECTED_ENTRIES,
 		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
+		TeamingEvents.VIEW_PINNED_ENTRIES,
 	};
 	
 	/*
@@ -778,7 +782,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * false otherwise.
 	 */
 	private boolean canPinEntries() {
-		return (FolderType.DISCUSSION == getFolderType());
+		return getFolderDisplayData().getFolderSupportsPinning();
 	}
 	
 	/*
@@ -1947,6 +1951,37 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			BinderViewsHelper.unlockEntries(
 				getFolderType(),
 				getSelectedEntityIds());
+		}
+	}
+	
+	/**
+	 * Handles ViewPinnedEntriesEvent's received by this class.
+	 * 
+	 * Implements the ViewPinnedEntriesEvent.Handler.onViewPinnedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onViewPinnedEntries(ViewPinnedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Save the toggled pinning state for the folder.
+			final SaveFolderPinningStateCmd cmd = new SaveFolderPinningStateCmd(getFolderId(), (!(getFolderDisplayData().getViewPinnedEntries())));
+			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_SaveFolderPinningState());
+				}
+
+				@Override
+				public void onSuccess(VibeRpcResponse result) {
+					// ...and reload the view to redisplay things.
+					FullUIReloadEvent.fireOne();
+				}
+			});
 		}
 	}
 	

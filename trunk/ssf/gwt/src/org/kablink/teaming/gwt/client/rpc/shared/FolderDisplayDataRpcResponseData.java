@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,10 +44,12 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private boolean				m_folderSortDescend;	//
-	private int					m_folderPageSize;		//
-	private Map<String, String>	m_folderColumnWidths;	//
-	private String				m_folderSortBy;			//
+	private boolean				m_folderSortDescend;		//
+	private boolean				m_folderSupportsPinning;	//
+	private boolean				m_viewPinnedEntries;		//
+	private int					m_folderPageSize;			//
+	private Map<String, String>	m_folderColumnWidths;		//
+	private String				m_folderSortBy;				//
 	
 	/**
 	 * Constructor method.
@@ -66,16 +68,20 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	 * @param folderSortDescend
 	 * @param folderPageSize
 	 * @param folderColumnWidths
+	 * @param folderSupportsPinning
+	 * @param viewPinnedEntries
 	 */
-	public FolderDisplayDataRpcResponseData(String folderSortBy, boolean folderSortDescend, int folderPageSize, Map<String, String> folderColumnWidths) {
+	public FolderDisplayDataRpcResponseData(String folderSortBy, boolean folderSortDescend, int folderPageSize, Map<String, String> folderColumnWidths, boolean folderSupportsPinning, boolean viewPinnedEntries) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
-		setFolderSortBy(      folderSortBy       );
-		setFolderSortDescend( folderSortDescend  );
-		setFolderPageSize(    folderPageSize     );
-		setFolderColumnWidths(folderColumnWidths);
+		setFolderSortBy(         folderSortBy         );
+		setFolderSortDescend(    folderSortDescend    );
+		setFolderPageSize(       folderPageSize       );
+		setFolderColumnWidths(   folderColumnWidths   );
+		setFolderSupportsPinning(folderSupportsPinning);
+		setViewPinnedEntries(    viewPinnedEntries    );
 	}
 	
 	/**
@@ -83,20 +89,22 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	 * 
 	 * @return
 	 */
-	public boolean             getFolderSortDescend()  {return m_folderSortDescend; }
-	public int                 getFolderPageSize()     {return m_folderPageSize;    }
-	public Map<String, String> getFolderColumnWidths() {return m_folderColumnWidths;}
-	public String              getFolderSortBy()       {return m_folderSortBy;      }
+	public boolean             getFolderSortDescend()     {return m_folderSortDescend;    }
+	public boolean             getFolderSupportsPinning() {return m_folderSupportsPinning;}
+	public boolean             getViewPinnedEntries()     {return m_viewPinnedEntries;    }
+	public int                 getFolderPageSize()        {return m_folderPageSize;       }
+	public Map<String, String> getFolderColumnWidths()    {return m_folderColumnWidths;   }
+	public String              getFolderSortBy()          {return m_folderSortBy;         }
 
 	/**
 	 * Set'er methods.
 	 * 
-	 * @param folderSortDescend
-	 * @param folderColumnsList
-	 * @param folderSortBy
+	 * @param
 	 */
-	public void setFolderSortDescend( boolean             folderSortDescend)  {m_folderSortDescend  = folderSortDescend; }
-	public void setFolderPageSize(    int                 folderPageSize)     {m_folderPageSize     = folderPageSize;    }
-	public void setFolderColumnWidths(Map<String, String> folderColumnWidths) {m_folderColumnWidths = folderColumnWidths;}
-	public void setFolderSortBy(      String              folderSortBy)       {m_folderSortBy       = folderSortBy;      }
+	public void setFolderSortDescend(    boolean             folderSortDescend)     {m_folderSortDescend     = folderSortDescend;    }
+	public void setFolderSupportsPinning(boolean             folderSupportsPinning) {m_folderSupportsPinning = folderSupportsPinning;}
+	public void setViewPinnedEntries(    boolean             viewPinnedEntries)     {m_viewPinnedEntries     = viewPinnedEntries;    }
+	public void setFolderPageSize(       int                 folderPageSize)        {m_folderPageSize        = folderPageSize;       }
+	public void setFolderColumnWidths(   Map<String, String> folderColumnWidths)    {m_folderColumnWidths    = folderColumnWidths;   }
+	public void setFolderSortBy(         String              folderSortBy)          {m_folderSortBy          = folderSortBy;         }
 }

@@ -667,6 +667,20 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Constructs a ToolbarItem for viewing pinned vs. non-pinned
+	 * entries.
+	 */
+	private static void constructEntryPinnedItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
+		// Is this a folder that supports pinning entries?
+		if ((null != folder) && folderSupportsPinning(folder, viewType)) {
+			// Yes!  Add the pinned item.
+			ToolbarItem pinnedTBI = new ToolbarItem("1_viewPinned");
+			markTBIEvent(pinnedTBI, TeamingEvents.VIEW_PINNED_ENTRIES);
+			entryToolbar.addNestedItem(pinnedTBI);
+		}
+	}
+	
+	/*
 	 * Constructs a ToolbarItem for the root profiles workspace view.
 	 * 
 	 * The logic for this was copied from
@@ -1890,6 +1904,18 @@ public class GwtMenuHelper {
 	
 	/*
 	 * Returns true if a folder (including its view type) supports
+	 * pinning and false otherwise.
+	 */
+	private static boolean folderSupportsPinning(Folder folder, String viewType) {
+		boolean reply = ((null != folder) && MiscUtil.hasString(viewType));
+		if (reply) {
+			reply = viewType.equals(Definition.VIEW_STYLE_DISCUSSION);
+		}
+		return reply;
+	}
+	
+	/*
+	 * Returns true if a folder (including its view type) supports
 	 * share operations and false otherwise.
 	 */
 	private static boolean folderSupportsShare(Folder folder, String viewType) {
@@ -1954,9 +1980,15 @@ public class GwtMenuHelper {
 			
 			// Access the binder/folder.
 			Long folderId = folderInfo.getBinderIdAsLong();
-			Binder    binder = bs.getBinderModule().getBinder(folderId);
-			Folder    folder = ((binder instanceof Folder)    ? ((Folder)    binder) : null);
-			Workspace ws     = ((binder instanceof Workspace) ? ((Workspace) binder) : null);
+			Binder    binder   = bs.getBinderModule().getBinder(folderId);
+			Folder    folder   = ((binder instanceof Folder)    ? ((Folder)    binder) : null);
+			Workspace ws       = ((binder instanceof Workspace) ? ((Workspace) binder) : null);
+			boolean   isFolder = (null != folder);
+			String    viewType = (isFolder ? DefinitionUtils.getViewType(folder) : null);
+
+			// Construct the item for viewing pinned vs. non-pinned
+			// items.
+			constructEntryPinnedItem(entryToolbar, bs, request, viewType, folder);
 
 			// Are we returning the toolbar items for a trash view?
 			if (folderInfo.isBinderTrash()) {
@@ -1978,13 +2010,12 @@ public class GwtMenuHelper {
 				// root profiles workspace view either!  Is this is
 				// other than a mirrored folder, or if its a mirrored
 				// folder, is its resource driver configured?
-				boolean isMirrored           = ((null != folder) && folder.isMirrored());
+				boolean isMirrored           = (isFolder && folder.isMirrored());
 				boolean isMirroredConfigured = isMirrored && MiscUtil.hasString(folder.getResourceDriverName());
 				if ((!isMirrored) || isMirroredConfigured) {
 					// Yes!  Can the user can add entries to the
 					// folder?
 					FolderModule fm			= bs.getFolderModule();
-					String       viewType	= DefinitionUtils.getViewType(folder);
 					boolean      hasVT      = MiscUtil.hasString(viewType);
 					boolean      addAllowed	= fm.testAccess(folder, FolderOperation.addEntry);
 					

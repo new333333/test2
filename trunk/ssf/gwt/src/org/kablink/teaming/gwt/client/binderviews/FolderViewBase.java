@@ -258,6 +258,15 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Asynchronously tells the view to construct itself.
 	 */
 	private void constructViewAsync() {
+		// Scan the widgets that were defined for the vertical flow...
+		for (Widget w:  m_verticalPanels) {
+			if (null != w) {
+				// ...adding each to the vertical flow panel...
+				m_verticalFlowPanel.add(w);
+			}
+		}
+
+		// ...and asynchronously complete the view construction.
 		ScheduledCommand doConstructView = new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -384,17 +393,9 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	/*
 	 * Asynchronously loads the next part of the view.
 	 * 
-	 * Loads the BreadCrumbPanel.
+	 * Loads the display data information for the folder.
 	 */
 	private void loadPart1Async() {
-		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.BREADCRUMB))) {
-			// ...we don't show the bread crumbs.
-			insertToolPanelPlaceholder(BREADCRUMB_PANEL_INDEX);
-			loadPart2Async();
-			return;
-		}
-		
 		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -403,407 +404,18 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		};
 		Scheduler.get().scheduleDeferred(doLoad);
 	}
-	
+
 	/*
 	 * Synchronously loads the next part of the view.
 	 * 
-	 * Loads the BreadCrumbPanel.
+	 * Loads the display data information for the folder.
 	 */
 	private void loadPart1Now() {
-		BreadCrumbPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, BREADCRUMB_PANEL_INDEX);
-				loadPart2Async();
-			}
-		});
-	}
-	
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the AccessoriesPanel.
-	 */
-	private void loadPart2Async() {
-		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.ACCESSORIES))) {
-			// ...we don't show the accessories.
-			insertToolPanelPlaceholder(ACCESSORY_PANEL_INDEX);
-			loadPart3Async();
-			return;
-		}
-		
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart2Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-	
-	/*
-	 * Synchronously loads the next part of the view.
-	 * 
-	 * Loads the AccessoriesPanel.
-	 */
-	private void loadPart2Now() {
-		AccessoriesPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, ACCESSORY_PANEL_INDEX);
-				loadPart3Async();
-			}
-		});
-	}
-	
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the DescriptionPanel.
-	 */
-	private void loadPart3Async() {
-		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.DESCRIPTION))) {
-			// ...we don't show the description.
-			insertToolPanelPlaceholder(DESCRIPTION_PANEL_INDEX);
-			loadPart4Async();
-			return;
-		}
-		
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart3Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the DescriptionPanel.
-	 */
-	private void loadPart3Now() {
-		DescriptionPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, DESCRIPTION_PANEL_INDEX);
-				loadPart4Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the DescriptionPanel.
-	 */
-	private void loadPart4Async() {
-		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.TASK_GRAPHS))) {
-			// ...we don't show the task graphs panel.
-			insertToolPanelPlaceholder(TASK_GRAPHS_PANEL_INDEX);
-			loadPart5Async();
-			return;
-		}
-		
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart4Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the DescriptionPanel.
-	 */
-	private void loadPart4Now() {
-		TaskGraphsPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, TASK_GRAPHS_PANEL_INDEX);
-				loadPart5Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FilterPanel.
-	 */
-	@SuppressWarnings("unused")
-	private void loadPart5Async() {
-		// For classes that don't want it...
-		if ((!SHOW_LEGACY_FILTERS) || (!(includePanel(FolderPanels.FILTER)))) {
-			// ...we don't show the filter.
-			insertToolPanelPlaceholder(FILTER_PANEL_INDEX);
-			loadPart6Async();
-			return;
-		}
-		
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart5Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-	
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FilterPanel.
-	 */
-	private void loadPart5Now() {
-		FilterPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, FILTER_PANEL_INDEX);
-				loadPart6Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the EntryMenuPanel.
-	 */
-	private void loadPart6Async() {
-		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.ENTRY_MENU))) {
-			// ...we don't show the entry menu.
-			insertToolPanelPlaceholder(ENTRY_MENU_PANEL_INDEX);
-			loadPart7Async();
-			return;
-		}
-		
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart6Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the EntryMenuPanel.
-	 */
-	private void loadPart6Now() {
-		EntryMenuPanel.createAsync(this, m_folderInfo, m_allowColumnSizing, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, ENTRY_MENU_PANEL_INDEX);
-				loadPart7Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FooterPanel.
-	 */
-	private void loadPart7Async() {
-		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.FOOTER))) {
-			// ...we don't show the footer.
-			insertToolPanelPlaceholder(FOOTER_PANEL_INDEX);
-			loadPart8Async();
-			return;
-		}
-		
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart7Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FooterPanel.
-	 */
-	private void loadPart7Now() {
-		FooterPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, FOOTER_PANEL_INDEX);
-				loadPart8Async();
-			}
-		});
-	}
-	
-	/*
-	 * Asynchronously loads the next part of the view.
-	 */
-	private void loadPart8Async() {
-		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.BINDER_OWNER_AVATAR))) {
-			// ...we don't show the binder owner avatar.
-			insertToolPanelPlaceholder(BINDER_OWNER_AVATAR_PANEL_INDEX);
-			loadPart9Async();
-			return;
-		}
-		
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart8Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-	
-	/*
-	 * Synchronously loads the next part of the view.
-	 */
-	private void loadPart8Now() {
-		BinderOwnerAvatarPanel.createAsync(this, getFolderInfo(), this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, FolderViewBase.BINDER_OWNER_AVATAR_PANEL_INDEX);
-				loadPart9Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 */
-	private void loadPart9Async() {
-		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.CALENDAR_NAVIGATION))) {
-			// ...we don't show the calendar navigation panel.
-			insertToolPanelPlaceholder(CALENDAR_NAVIGATION_PANEL_INDEX);
-			loadPart10Async();
-			return;
-		}
-		
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart9Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-	
-	/*
-	 * Synchronously loads the next part of the view.
-	 */
-	private void loadPart9Now() {
-		CalendarNavigationPanel.createAsync(this, m_calendarDisplayDataProvider, getFolderInfo(), this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, FolderViewBase.CALENDAR_NAVIGATION_PANEL_INDEX);
-				loadPart10Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the display data information for the folder.
-	 */
-	private void loadPart10Async() {
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart10Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
-	}
-
-	/*
-	 * Synchronously loads the next part of the view.
-	 * 
-	 * Loads the display data information for the folder.
-	 */
-	private void loadPart10Now() {
-		// Scan the widgets that defined for the vertical flow...
-		for (Widget w:  m_verticalPanels) {
-			if (null != w) {
-				// ...adding each to the vertical flow panel.
-				m_verticalFlowPanel.add(w);
-			}
-		}
-
 		// Are we loading a calendar folder?
 		if (FolderType.CALENDAR == m_folderInfo.getFolderType()) {
 			// Yes!  Then we don't need the folder display data as
 			// pertains to data table based views.
-			constructViewAsync();
+			loadPart2Async();
 		}
 		
 		else {
@@ -825,10 +437,399 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 					// Store the core folder display data and tell the view
 					// to construct itself.
 					m_folderDisplayData = ((FolderDisplayDataRpcResponseData) response.getResponseData());
-					constructViewAsync();
+					loadPart2Async();
 				}
 			});
 		}
+	}
+
+	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the BreadCrumbPanel.
+	 */
+	private void loadPart2Async() {
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.BREADCRUMB))) {
+			// ...we don't show the bread crumbs.
+			insertToolPanelPlaceholder(BREADCRUMB_PANEL_INDEX);
+			loadPart3Async();
+			return;
+		}
+		
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart2Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously loads the next part of the view.
+	 * 
+	 * Loads the BreadCrumbPanel.
+	 */
+	private void loadPart2Now() {
+		BreadCrumbPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				insertToolPanel(tpb, BREADCRUMB_PANEL_INDEX);
+				loadPart3Async();
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the AccessoriesPanel.
+	 */
+	private void loadPart3Async() {
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.ACCESSORIES))) {
+			// ...we don't show the accessories.
+			insertToolPanelPlaceholder(ACCESSORY_PANEL_INDEX);
+			loadPart4Async();
+			return;
+		}
+		
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart3Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously loads the next part of the view.
+	 * 
+	 * Loads the AccessoriesPanel.
+	 */
+	private void loadPart3Now() {
+		AccessoriesPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				insertToolPanel(tpb, ACCESSORY_PANEL_INDEX);
+				loadPart4Async();
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the DescriptionPanel.
+	 */
+	private void loadPart4Async() {
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.DESCRIPTION))) {
+			// ...we don't show the description.
+			insertToolPanelPlaceholder(DESCRIPTION_PANEL_INDEX);
+			loadPart5Async();
+			return;
+		}
+		
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart4Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+
+	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the DescriptionPanel.
+	 */
+	private void loadPart4Now() {
+		DescriptionPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				insertToolPanel(tpb, DESCRIPTION_PANEL_INDEX);
+				loadPart5Async();
+			}
+		});
+	}
+
+	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the DescriptionPanel.
+	 */
+	private void loadPart5Async() {
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.TASK_GRAPHS))) {
+			// ...we don't show the task graphs panel.
+			insertToolPanelPlaceholder(TASK_GRAPHS_PANEL_INDEX);
+			loadPart6Async();
+			return;
+		}
+		
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart5Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+
+	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the DescriptionPanel.
+	 */
+	private void loadPart5Now() {
+		TaskGraphsPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				insertToolPanel(tpb, TASK_GRAPHS_PANEL_INDEX);
+				loadPart6Async();
+			}
+		});
+	}
+
+	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the FilterPanel.
+	 */
+	@SuppressWarnings("unused")
+	private void loadPart6Async() {
+		// For classes that don't want it...
+		if ((!SHOW_LEGACY_FILTERS) || (!(includePanel(FolderPanels.FILTER)))) {
+			// ...we don't show the filter.
+			insertToolPanelPlaceholder(FILTER_PANEL_INDEX);
+			loadPart7Async();
+			return;
+		}
+		
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart6Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the FilterPanel.
+	 */
+	private void loadPart6Now() {
+		FilterPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				insertToolPanel(tpb, FILTER_PANEL_INDEX);
+				loadPart7Async();
+			}
+		});
+	}
+
+	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the EntryMenuPanel.
+	 */
+	private void loadPart7Async() {
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.ENTRY_MENU))) {
+			// ...we don't show the entry menu.
+			insertToolPanelPlaceholder(ENTRY_MENU_PANEL_INDEX);
+			loadPart8Async();
+			return;
+		}
+		
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart7Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+
+	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the EntryMenuPanel.
+	 */
+	private void loadPart7Now() {
+		EntryMenuPanel.createAsync(this, m_folderInfo, m_folderDisplayData.getViewPinnedEntries(), m_allowColumnSizing, this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				insertToolPanel(tpb, ENTRY_MENU_PANEL_INDEX);
+				loadPart8Async();
+			}
+		});
+	}
+
+	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the FooterPanel.
+	 */
+	private void loadPart8Async() {
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.FOOTER))) {
+			// ...we don't show the footer.
+			insertToolPanelPlaceholder(FOOTER_PANEL_INDEX);
+			loadPart9Async();
+			return;
+		}
+		
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart8Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+
+	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the FooterPanel.
+	 */
+	private void loadPart8Now() {
+		FooterPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				insertToolPanel(tpb, FOOTER_PANEL_INDEX);
+				loadPart9Async();
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously loads the next part of the view.
+	 */
+	private void loadPart9Async() {
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.BINDER_OWNER_AVATAR))) {
+			// ...we don't show the binder owner avatar.
+			insertToolPanelPlaceholder(BINDER_OWNER_AVATAR_PANEL_INDEX);
+			loadPart10Async();
+			return;
+		}
+		
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart9Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously loads the next part of the view.
+	 */
+	private void loadPart9Now() {
+		BinderOwnerAvatarPanel.createAsync(this, getFolderInfo(), this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				insertToolPanel(tpb, FolderViewBase.BINDER_OWNER_AVATAR_PANEL_INDEX);
+				loadPart10Async();
+			}
+		});
+	}
+
+	/*
+	 * Asynchronously loads the next part of the view.
+	 */
+	private void loadPart10Async() {
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.CALENDAR_NAVIGATION))) {
+			// ...we don't show the calendar navigation panel.
+			insertToolPanelPlaceholder(CALENDAR_NAVIGATION_PANEL_INDEX);
+			constructViewAsync();
+			return;
+		}
+		
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart10Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously loads the next part of the view.
+	 */
+	private void loadPart10Now() {
+		CalendarNavigationPanel.createAsync(this, m_calendarDisplayDataProvider, getFolderInfo(), this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				insertToolPanel(tpb, FolderViewBase.CALENDAR_NAVIGATION_PANEL_INDEX);
+				constructViewAsync();
+			}
+		});
 	}
 
 	/**
