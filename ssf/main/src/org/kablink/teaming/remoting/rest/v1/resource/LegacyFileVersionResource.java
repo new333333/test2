@@ -62,8 +62,6 @@ import com.sun.jersey.spi.resource.Singleton;
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class LegacyFileVersionResource extends AbstractResource {
 
-	@InjectParam("fileModule") private FileModule fileModule;
-
 	// Read file version content
 	@GET
 	@Path("/id/{fileversionid}")
@@ -76,6 +74,6 @@ public class LegacyFileVersionResource extends AbstractResource {
 		else
 			binder = entity.getParentBinder();
 		String mt = new MimetypesFileTypeMap().getContentType(va.getFileItem().getName());
-		return Response.ok(fileModule.readFile(binder, entity, va), mt).build();
+		return Response.ok(getFileModule().readFile(binder, entity, va), mt).build();
 	}
 }

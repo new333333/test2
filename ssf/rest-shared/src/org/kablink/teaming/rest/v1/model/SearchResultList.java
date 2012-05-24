@@ -45,18 +45,18 @@ import java.util.List;
  * Time: 12:45 PM
  */
 @XmlRootElement (name = "results")
-public class SearchResults<T> {
+public class SearchResultList<T> {
     private int first;
     private int count;
     private int total;
     private String next;
     private List<T> results = new ArrayList<T>();
 
-    public SearchResults() {
+    public SearchResultList() {
         first = 0;
     }
 
-    public SearchResults(int first) {
+    public SearchResultList(int first) {
         this.first = first;
     }
 

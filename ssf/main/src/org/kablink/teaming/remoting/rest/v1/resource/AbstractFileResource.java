@@ -58,16 +58,6 @@ import java.util.Set;
  * Time: 10:39 AM
  */
 abstract public class AbstractFileResource extends AbstractResource {
-
-    @InjectParam("folderModule")
-    protected FolderModule folderModule;
-    @InjectParam("fileModule")
-    protected FileModule fileModule;
-    @InjectParam("profileModule")
-    protected ProfileModule profileModule;
-    @InjectParam("binderModule")
-    protected BinderModule binderModule;
-
     protected Date dateFromISO8601(String modDateISO8601) {
         if (Validator.isNotNull(modDateISO8601)) {
             DateTime dateTime = ISODateTimeFormat.dateTimeParser().parseDateTime(modDateISO8601);
@@ -94,7 +84,7 @@ abstract public class AbstractFileResource extends AbstractResource {
         boolean result = true;
         Date modDate = dateFromISO8601(modDateISO8601);
         if (et == EntityIdentifier.EntityType.folderEntry) {
-            FolderEntry entry = folderModule.getEntry(null, entityId);
+            FolderEntry entry = getFolderModule().getEntry(null, entityId);
             fa = entry.getFileAttachment(filename);
             if (fa != null) {
                 result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
@@ -109,7 +99,7 @@ abstract public class AbstractFileResource extends AbstractResource {
                 }
             }
         } else if (et == EntityIdentifier.EntityType.user) {
-            Principal user = profileModule.getEntry(entityId);
+            Principal user = getProfileModule().getEntry(entityId);
             if (!(user instanceof User))
                 throw new BadRequestException(ApiErrorCode.NOT_USER, "Entity ID '" + entityId + "' does not represent a user");
             fa = user.getFileAttachment(filename);
@@ -126,7 +116,7 @@ abstract public class AbstractFileResource extends AbstractResource {
                 }
             }
         } else if (et == EntityIdentifier.EntityType.group) {
-            Principal group = profileModule.getEntry(entityId);
+            Principal group = getProfileModule().getEntry(entityId);
             if (!(group instanceof Group))
                 throw new BadRequestException(ApiErrorCode.NOT_GROUP, "Entity ID '" + entityId + "' does not represent a group");
             fa = group.getFileAttachment(filename);
@@ -143,7 +133,7 @@ abstract public class AbstractFileResource extends AbstractResource {
                 }
             }
         } else if (et == EntityIdentifier.EntityType.workspace || et == EntityIdentifier.EntityType.folder || et == EntityIdentifier.EntityType.profiles) {
-            Binder binder = binderModule.getBinder(entityId);
+            Binder binder = getBinderModule().getBinder(entityId);
             fa = binder.getFileAttachment(filename);
             if (fa != null) {
                 result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
@@ -186,7 +176,7 @@ abstract public class AbstractFileResource extends AbstractResource {
 
     protected FileAttachment findFileAttachment(String fileId)
             throws NoFileByTheIdException {
-        FileAttachment fa = fileModule.getFileAttachmentById(fileId);
+        FileAttachment fa = getFileModule().getFileAttachmentById(fileId);
         if (fa == null)
             throw new NoFileByTheIdException(fileId);
         else if (fa instanceof VersionAttachment)
@@ -243,20 +233,20 @@ abstract public class AbstractFileResource extends AbstractResource {
         DefinableEntity entity;
         FileAttachment fa;
         if (et == EntityIdentifier.EntityType.folderEntry) {
-            entity = folderModule.getEntry(null, entityId);
+            entity = getFolderModule().getEntry(null, entityId);
             binder = entity.getParentBinder();
         } else if (et == EntityIdentifier.EntityType.user) {
-            entity = profileModule.getEntry(entityId);
+            entity = getProfileModule().getEntry(entityId);
             if (!(entity instanceof User))
                 throw new BadRequestException(ApiErrorCode.NOT_USER, "Entity ID '" + entityId + "' does not represent a user");
             binder = entity.getParentBinder();
         } else if (et == EntityIdentifier.EntityType.group) {
-            entity = profileModule.getEntry(entityId);
+            entity = getProfileModule().getEntry(entityId);
             if (!(entity instanceof Group))
                 throw new BadRequestException(ApiErrorCode.NOT_GROUP, "Entity ID '" + entityId + "' does not represent a group");
             binder = entity.getParentBinder();
         } else if (et == EntityIdentifier.EntityType.workspace || et == EntityIdentifier.EntityType.folder || et == EntityIdentifier.EntityType.profiles) {
-            entity = binderModule.getBinder(entityId);
+            entity = getBinderModule().getBinder(entityId);
             binder = (Binder) entity;
         } else {
             throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + entityType + "' is unknown or not supported by this method");
@@ -271,7 +261,7 @@ abstract public class AbstractFileResource extends AbstractResource {
             }
         }
         String mt = new MimetypesFileTypeMap().getContentType(filename);
-        return Response.ok(fileModule.readFile(binder, entity, fa), mt).lastModified(lastModDate).build();
+        return Response.ok(getFileModule().readFile(binder, entity, fa), mt).lastModified(lastModDate).build();
     }
 
     protected void deleteFile(String entityType, long entityId, String filename)
@@ -280,7 +270,7 @@ abstract public class AbstractFileResource extends AbstractResource {
         FileAttachment fa;
         if (et == EntityIdentifier.EntityType.folderEntry) {
             try {
-                FolderEntry entry = folderModule.getEntry(null, entityId);
+                FolderEntry entry = getFolderModule().getEntry(null, entityId);
                 fa = entry.getFileAttachment(filename);
                 if (fa != null)
                     FolderUtils.deleteFileInFolderEntry(entry, fa);
@@ -289,40 +279,40 @@ abstract public class AbstractFileResource extends AbstractResource {
             }
         } else if (et == EntityIdentifier.EntityType.user) {
             try {
-                Principal user = profileModule.getEntry(entityId);
+                Principal user = getProfileModule().getEntry(entityId);
                 if (!(user instanceof User))
                     throw new BadRequestException(ApiErrorCode.NOT_USER, "Entity ID '" + entityId + "' does not represent a user");
                 fa = user.getFileAttachment(filename);
                 if (fa != null) {
                     List deletes = new ArrayList();
                     deletes.add(fa.getId());
-                    profileModule.modifyEntry(entityId, new EmptyInputData(), null, deletes, null, null);
+                    getProfileModule().modifyEntry(entityId, new EmptyInputData(), null, deletes, null, null);
                 }
             } catch (NoPrincipalByTheIdException e) {
                 // The specified user no longer exists. This is OK for delete request.
             }
         } else if (et == EntityIdentifier.EntityType.group) {
             try {
-                Principal group = profileModule.getEntry(entityId);
+                Principal group = getProfileModule().getEntry(entityId);
                 if (!(group instanceof User))
                     throw new BadRequestException(ApiErrorCode.NOT_GROUP, "Entity ID '" + entityId + "' does not represent a group");
                 fa = group.getFileAttachment(filename);
                 if (fa != null) {
                     List deletes = new ArrayList();
                     deletes.add(fa.getId());
-                    profileModule.modifyEntry(entityId, new EmptyInputData(), null, deletes, null, null);
+                    getProfileModule().modifyEntry(entityId, new EmptyInputData(), null, deletes, null, null);
                 }
             } catch (NoPrincipalByTheIdException e) {
                 // The specified user no longer exists. This is OK for delete request.
             }
         } else if (et == EntityIdentifier.EntityType.workspace || et == EntityIdentifier.EntityType.folder || et == EntityIdentifier.EntityType.profiles) {
             try {
-                Binder binder = binderModule.getBinder(entityId);
+                Binder binder = getBinderModule().getBinder(entityId);
                 fa = binder.getFileAttachment(filename);
                 if (fa != null) {
                     List deletes = new ArrayList();
                     deletes.add(fa.getId());
-                    binderModule.modifyBinder(entityId, new EmptyInputData(), null, deletes, null);
+                    getBinderModule().modifyBinder(entityId, new EmptyInputData(), null, deletes, null);
                 }
             } catch (NoBinderByTheIdException e) {
                 // The specified binder no longer exists. This is OK for delete request.
@@ -345,17 +335,17 @@ abstract public class AbstractFileResource extends AbstractResource {
         EntityIdentifier.EntityType et = entityTypeFromString(entityType);
         DefinableEntity entity;
         if (et == EntityIdentifier.EntityType.folderEntry) {
-            entity = folderModule.getEntry(null, entityId);
+            entity = getFolderModule().getEntry(null, entityId);
         } else if (et == EntityIdentifier.EntityType.user) {
-            entity = profileModule.getEntry(entityId);
+            entity = getProfileModule().getEntry(entityId);
             if (!(entity instanceof User))
                 throw new BadRequestException(ApiErrorCode.NOT_USER, "Entity ID '" + entityId + "' does not represent a user");
         } else if (et == EntityIdentifier.EntityType.group) {
-            entity = profileModule.getEntry(entityId);
+            entity = getProfileModule().getEntry(entityId);
             if (!(entity instanceof Group))
                 throw new BadRequestException(ApiErrorCode.NOT_GROUP, "Entity ID '" + entityId + "' does not represent a group");
         } else if (et == EntityIdentifier.EntityType.workspace || et == EntityIdentifier.EntityType.folder || et == EntityIdentifier.EntityType.profiles) {
-            entity = binderModule.getBinder(entityId);
+            entity = getBinderModule().getBinder(entityId);
         } else {
             throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + entityType + "' is unknown or not supported by this method");
         }

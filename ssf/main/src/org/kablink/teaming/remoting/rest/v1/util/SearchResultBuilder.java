@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.remoting.rest.v1.util;
 
+import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
+
 import java.util.Map;
 
 /**
@@ -41,4 +43,7 @@ import java.util.Map;
  */
 public interface SearchResultBuilder<T> {
     public T build(Map entry);
+    public Object getId(T obj);
+    public Object getParentId(T obj);
+    public SearchResultTreeNode<T> factoryTreeNode(T obj);
 }

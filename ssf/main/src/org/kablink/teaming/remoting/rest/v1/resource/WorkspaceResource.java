@@ -43,7 +43,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
-import org.kablink.teaming.rest.v1.model.SearchResults;
+import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.util.api.ApiErrorCode;
 
@@ -58,7 +58,7 @@ public class WorkspaceResource extends AbstractBinderResource {
 	@GET
 	@Path("workspaces")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResults<BinderBrief> getSubWorkspaces(@PathParam("id") long id) {
+	public SearchResultList<BinderBrief> getSubWorkspaces(@PathParam("id") long id) {
         SearchFilter filter = new SearchFilter();
         filter.addWorkspaceFilter("");
         return getSubBinders(id, filter);
@@ -68,7 +68,7 @@ public class WorkspaceResource extends AbstractBinderResource {
 	@GET
 	@Path("folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResults<BinderBrief> getSubFolders(@PathParam("id") long id) {
+	public SearchResultList<BinderBrief> getSubFolders(@PathParam("id") long id) {
         SearchFilter filter = new SearchFilter();
         filter.addFolderFilter("");
         return getSubBinders(id, filter);
@@ -81,7 +81,7 @@ public class WorkspaceResource extends AbstractBinderResource {
 
     private org.kablink.teaming.domain.Workspace _getWorkspace(long id) {
         try{
-            org.kablink.teaming.domain.Binder binder = binderModule.getBinder(id);
+            org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(id);
             if (binder instanceof org.kablink.teaming.domain.Workspace) {
                 return (org.kablink.teaming.domain.Workspace) binder;
             }

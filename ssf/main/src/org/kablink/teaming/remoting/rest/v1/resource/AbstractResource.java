@@ -35,9 +35,9 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sun.jersey.spi.resource.Singleton;
+import org.kablink.teaming.util.AbstractAllModulesInjected;
 
-public abstract class AbstractResource {
+public abstract class AbstractResource extends AbstractAllModulesInjected {
 	
 	protected Log logger = LogFactory.getLog(getClass());
 

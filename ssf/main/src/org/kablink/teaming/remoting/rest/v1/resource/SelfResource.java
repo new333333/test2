@@ -37,7 +37,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
-import org.kablink.teaming.rest.v1.model.SearchResults;
+import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
 
@@ -66,29 +66,29 @@ public class SelfResource extends AbstractUserResource {
     @GET
     @Path("/favorites")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResults<BinderBrief> getFavorites() {
+    public SearchResultList<BinderBrief> getFavorites() {
         return getFavorites(RequestContextHolder.getRequestContext().getUserId());
     }
 
     @GET
     @Path("/teams")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResults<TeamBrief> getTeams() {
+    public SearchResultList<TeamBrief> getTeams() {
         return getTeams(RequestContextHolder.getRequestContext().getUserId());
     }
 
     @GET
     @Path("/roots")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResults<BinderBrief> getRoots() {
-        SearchResults<BinderBrief> results = new SearchResults<BinderBrief>();
+    public SearchResultList<BinderBrief> getRoots() {
+        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
         results.appendAll(new BinderBrief[] {getFakeMyWorkspace(), getFakeMyTeams(), getFakeMyFavorites()});
         return results;
     }
 
     private BinderBrief getFakeMyWorkspace() {
         org.kablink.teaming.domain.User loggedInUser = RequestContextHolder.getRequestContext().getUser();
-        Binder myWorkspace = binderModule.getBinder(loggedInUser.getWorkspaceId());
+        Binder myWorkspace = getBinderModule().getBinder(loggedInUser.getWorkspaceId());
         BinderBrief binder = ResourceUtil.buildBinderBrief(myWorkspace);
         //TODO: localize
         binder.setTitle("My Workspace");

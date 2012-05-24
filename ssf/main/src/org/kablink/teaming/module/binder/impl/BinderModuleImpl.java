@@ -413,7 +413,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return processor.getBinders(binder, binderIds, options);
 	}
 
-	// no transaction by default
+    public Map getBindersRecursively(Binder binder, Map searchOptions) {
+        BinderProcessor processor = loadBinderProcessor(binder);
+        return processor.getBindersRecursively(binder, searchOptions);
+    }
+
+    // no transaction by default
 	public Binder addBinder(Long parentBinderId, String definitionId,
 			InputDataAccessor inputData, Map fileItems, Map options)
 			throws AccessControlException, WriteFilesException, WriteEntryDataException {

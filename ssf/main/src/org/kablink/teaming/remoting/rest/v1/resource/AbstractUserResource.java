@@ -40,7 +40,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
-import org.kablink.teaming.rest.v1.model.SearchResults;
+import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
 
@@ -52,12 +52,9 @@ import java.util.List;
  * Time: 11:56 AM
  */
 public abstract class AbstractUserResource extends AbstractResource {
-    @InjectParam("binderModule") protected BinderModule binderModule;
-    @InjectParam("profileModule") protected ProfileModule profileModule;
-
     protected User getUser(long userId, boolean includeAttachments) {
         // Retrieve the raw entry.
-        Principal entry = profileModule.getEntry(userId);
+        Principal entry = getProfileModule().getEntry(userId);
 
         if(!(entry instanceof org.kablink.teaming.domain.User))
             throw new IllegalArgumentException(userId + " does not represent an user. It is " + entry.getClass().getSimpleName());
@@ -65,18 +62,18 @@ public abstract class AbstractUserResource extends AbstractResource {
         return ResourceUtil.buildUser((org.kablink.teaming.domain.User) entry, includeAttachments);
     }
 
-    protected SearchResults<BinderBrief> getFavorites(long userId) {
-        List<Binder> binders = profileModule.getUserFavorites(userId);
-        SearchResults<BinderBrief> results = new SearchResults<BinderBrief>();
+    protected SearchResultList<BinderBrief> getFavorites(long userId) {
+        List<Binder> binders = getProfileModule().getUserFavorites(userId);
+        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
         for (Binder binder : binders) {
             results.append(ResourceUtil.buildBinderBrief(binder));
         }
         return results;
     }
 
-    protected SearchResults<TeamBrief> getTeams(long userId) {
-        List<TeamInfo> binders = profileModule.getUserTeams(userId);
-        SearchResults<TeamBrief> results = new SearchResults<TeamBrief>();
+    protected SearchResultList<TeamBrief> getTeams(long userId) {
+        List<TeamInfo> binders = getProfileModule().getUserTeams(userId);
+        SearchResultList<TeamBrief> results = new SearchResultList<TeamBrief>();
         for (TeamInfo binder : binders) {
             results.append(ResourceUtil.buildTeamBrief(binder));
         }
