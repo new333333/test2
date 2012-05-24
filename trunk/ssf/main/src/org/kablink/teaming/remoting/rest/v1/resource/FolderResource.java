@@ -33,7 +33,6 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.GET;
@@ -58,7 +57,7 @@ import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FolderEntryBrief;
-import org.kablink.teaming.rest.v1.model.SearchResults;
+import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.util.api.ApiErrorCode;
 
@@ -73,7 +72,7 @@ public class FolderResource extends AbstractBinderResource {
 	@GET
 	@Path("folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResults<BinderBrief> getSubFolders(@PathParam("id") long id) {
+	public SearchResultList<BinderBrief> getSubFolders(@PathParam("id") long id) {
         SearchFilter filter = new SearchFilter();
         filter.addFolderFilter("");
         return getSubBinders(id, filter);
@@ -83,7 +82,7 @@ public class FolderResource extends AbstractBinderResource {
 	@GET
 	@Path("entries")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResults<FolderEntryBrief> getFolderEntries(@PathParam("id") long id,
+	public SearchResultList<FolderEntryBrief> getFolderEntries(@PathParam("id") long id,
                                                             @QueryParam("first") Integer offset,
                                                             @QueryParam("count") Integer maxCount) {
         _getFolder(id);
@@ -98,7 +97,7 @@ public class FolderResource extends AbstractBinderResource {
             options.put(ObjectKeys.SEARCH_MAX_HITS, maxCount);
         }
         Map resultMap = folderModule.getEntries(id, options);
-        SearchResults<FolderEntryBrief> results = new SearchResults<FolderEntryBrief>(offset);
+        SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(offset);
         SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(), resultMap, "/folder/" + id + "/entries", offset);
 		return results;
 	}
@@ -107,12 +106,12 @@ public class FolderResource extends AbstractBinderResource {
 	@GET
 	@Path("files")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResults<FileProperties> getFiles(@PathParam("id") long id,
+	public SearchResultList<FileProperties> getFiles(@PathParam("id") long id,
                                                   @QueryParam("first") Integer offset,
                                                   @QueryParam("count") Integer maxCount) {
         _getFolder(id);
         Map<String,FileIndexData> files = fileModule.getChildrenFileDataFromIndex(id);
-        SearchResults<FileProperties> results = new SearchResults<FileProperties>();
+        SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
         results.setFirst(0);
         results.setCount(files.size());
         results.setTotal(files.size());
@@ -130,7 +129,7 @@ public class FolderResource extends AbstractBinderResource {
 
     private org.kablink.teaming.domain.Folder _getFolder(long id) {
         try{
-            org.kablink.teaming.domain.Binder binder = binderModule.getBinder(id);
+            org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(id);
             if (binder instanceof org.kablink.teaming.domain.Folder) {
                 return (org.kablink.teaming.domain.Folder) binder;
             }

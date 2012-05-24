@@ -51,8 +51,6 @@ import org.kablink.teaming.rest.v1.model.ZoneConfig;
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class MiscResource extends AbstractResource {
 
-    @InjectParam("zoneModule") private ZoneModule zoneModule;
-
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
    	public RootRestObject getRootObject() {
@@ -85,7 +83,7 @@ public class MiscResource extends AbstractResource {
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public ZoneConfig getZoneConfig() {
         org.kablink.teaming.domain.ZoneConfig zoneConfig =
-      			zoneModule.getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+      			getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
         return ResourceUtil.buildZoneConfig(zoneConfig);
 	}
 

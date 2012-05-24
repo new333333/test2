@@ -15,7 +15,7 @@
  *
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  *
  * Attribution Information:
  * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
@@ -30,39 +30,15 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.remoting.rest.v1.util;
+package org.kablink.teaming.rest.v1.model;
 
-import org.dom4j.Element;
-import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
-import org.kablink.teaming.rest.v1.model.UserBrief;
-import org.kablink.util.search.Constants;
-
-import java.util.Map;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * User: david
- * Date: 5/18/12
- * Time: 1:07 PM
+ * Date: 5/24/12
+ * Time: 1:57 PM
  */
-public class UserBriefBuilder extends DefinableEntityBriefBuilder implements SearchResultBuilder<UserBrief> {
-    public UserBrief build(Map entry) {
-        UserBrief user = new UserBrief();
-        populateDefinableEntityBrief(user, entry, Constants.BINDER_ID_FIELD);
-        user.setName((String) entry.get(Constants.LOGINNAME_FIELD));
-        user.setLink(LinkUriUtil.getUserLinkUri(user.getId()));
-        return user;
-    }
-
-    public Object getId(UserBrief obj) {
-        return obj.getId();
-    }
-
-
-    public Object getParentId(UserBrief obj) {
-        return obj.getParentBinder().getId();
-    }
-
-    public SearchResultTreeNode<UserBrief> factoryTreeNode(UserBrief obj) {
-        return null;
-    }
+@XmlRootElement(name = "binder_tree")
+public class BinderTree extends SearchResultTree<BinderBrief> {
 }

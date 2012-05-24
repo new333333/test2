@@ -73,7 +73,7 @@ public class FileVersionResource extends AbstractFileResource {
 		else
 			binder = entity.getParentBinder();
 		String mt = new MimetypesFileTypeMap().getContentType(va.getFileItem().getName());
-		return Response.ok(fileModule.readFile(binder, entity, va), mt).build();
+		return Response.ok(getFileModule().readFile(binder, entity, va), mt).build();
 	}
 	
 	// Read file version properties

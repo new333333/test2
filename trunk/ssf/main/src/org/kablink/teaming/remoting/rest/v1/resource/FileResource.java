@@ -46,7 +46,7 @@ import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
-import org.kablink.teaming.rest.v1.model.SearchResults;
+import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.util.api.ApiErrorCode;
 
 import javax.servlet.http.HttpServletRequest;
@@ -155,17 +155,17 @@ public class FileResource extends AbstractFileResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public FileProperties incrementMajorVersion(@PathParam("id") String fileId) {
         FileAttachment fa = findFileAttachment(fileId);
-      	binderModule.incrementFileMajorVersion(fa.getOwner().getEntity(), fa);
+        getBinderModule().incrementFileMajorVersion(fa.getOwner().getEntity(), fa);
         return ResourceUtil.buildFileProperties(fa);
     }
 
     @GET
     @Path("/versions")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public SearchResults<FileVersionProperties> getVersions(@PathParam("id") String fileId) {
+    public SearchResultList<FileVersionProperties> getVersions(@PathParam("id") String fileId) {
         FileAttachment fa = findFileAttachment(fileId);
         List<FileVersionProperties> versions = fileVersionsFromFileAttachment(fa);
-        SearchResults<FileVersionProperties> results = new SearchResults<FileVersionProperties>();
+        SearchResultList<FileVersionProperties> results = new SearchResultList<FileVersionProperties>();
         results.appendAll(versions);
         return results;
     }

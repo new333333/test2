@@ -49,7 +49,7 @@ import org.kablink.teaming.rest.v1.model.FileVersionProperties;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
-import org.kablink.teaming.rest.v1.model.SearchResults;
+import org.kablink.teaming.rest.v1.model.SearchResultList;
 
 /**
  * @author jong
@@ -185,18 +185,18 @@ public class ApiImpl implements Api {
 		r.accept(conn.getAcceptableMediaTypes()).delete();
 	}
 	
-	public SearchResults<FileVersionProperties> getFileVersions(String entityType, long entityId, String filename) {
+	public SearchResultList<FileVersionProperties> getFileVersions(String entityType, long entityId, String filename) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME).path("versions").build(entityType, entityId, filename);
 		WebResource r = c.resource(resourceUri);
-		return r.accept(conn.getAcceptableMediaTypes()).get(SearchResults.class);
+		return r.accept(conn.getAcceptableMediaTypes()).get(SearchResultList.class);
 	}
 	
-	public SearchResults<FileVersionProperties> getFileVersions(String fileId) {
+	public SearchResultList<FileVersionProperties> getFileVersions(String fileId) {
 		Client c = conn.getClient();		
 		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID).path("versions").build(fileId);
 		WebResource r = c.resource(resourceUri);
-		return r.accept(conn.getAcceptableMediaTypes()).get(SearchResults.class);
+		return r.accept(conn.getAcceptableMediaTypes()).get(SearchResultList.class);
 	}
 
 	private String ISO8601FromDate(Date date) {

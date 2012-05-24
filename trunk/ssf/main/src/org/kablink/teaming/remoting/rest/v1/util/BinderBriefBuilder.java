@@ -33,6 +33,7 @@
 package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.util.search.Constants;
 
 import java.util.Map;
@@ -42,15 +43,28 @@ import java.util.Map;
  * Date: 5/18/12
  * Time: 1:07 PM
  */
-public class BinderBriefBuilder implements SearchResultBuilder<BinderBrief> {
+public class BinderBriefBuilder extends DefinableEntityBriefBuilder implements SearchResultBuilder<BinderBrief> {
+
     public BinderBrief build(Map entry) {
         BinderBrief binder = new BinderBrief();
-        SearchResultBuilderUtil.populateDefinableEntityBrief(binder, entry, Constants.BINDERS_PARENT_ID_FIELD);
+        populateDefinableEntityBrief(binder, entry, Constants.BINDERS_PARENT_ID_FIELD);
         binder.setPath((String) entry.get(Constants.ENTITY_PATH));
-        binder.setLibrary(SearchResultBuilderUtil.getBoolean(entry, Constants.IS_LIBRARY_FIELD));
-        binder.setMirrored(SearchResultBuilderUtil.getBoolean(entry, Constants.IS_MIRRORED_FIELD));
+        binder.setLibrary(getBoolean(entry, Constants.IS_LIBRARY_FIELD));
+        binder.setMirrored(getBoolean(entry, Constants.IS_MIRRORED_FIELD));
         binder.setLink(LinkUriUtil.getBinderLinkUri(binder));
         LinkUriUtil.populateBinderLinks(binder, binder.isWorkspace(), binder.isFolder());
         return binder;
+    }
+
+    public Object getId(BinderBrief obj) {
+        return obj.getId();
+    }
+
+    public Object getParentId(BinderBrief obj) {
+        return obj.getParentBinder().getId();
+    }
+
+    public SearchResultTreeNode<BinderBrief> factoryTreeNode(BinderBrief binder) {
+        return new SearchResultTreeNode<BinderBrief>(binder);
     }
 }

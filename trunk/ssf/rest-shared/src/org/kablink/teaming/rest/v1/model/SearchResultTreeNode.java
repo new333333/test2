@@ -15,7 +15,7 @@
  *
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  *
  * Attribution Information:
  * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
@@ -30,39 +30,54 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.remoting.rest.v1.util;
+package org.kablink.teaming.rest.v1.model;
 
-import org.dom4j.Element;
-import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
-import org.kablink.teaming.rest.v1.model.UserBrief;
-import org.kablink.util.search.Constants;
-
-import java.util.Map;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: david
- * Date: 5/18/12
- * Time: 1:07 PM
+ * Date: 5/24/12
+ * Time: 11:06 AM
  */
-public class UserBriefBuilder extends DefinableEntityBriefBuilder implements SearchResultBuilder<UserBrief> {
-    public UserBrief build(Map entry) {
-        UserBrief user = new UserBrief();
-        populateDefinableEntityBrief(user, entry, Constants.BINDER_ID_FIELD);
-        user.setName((String) entry.get(Constants.LOGINNAME_FIELD));
-        user.setLink(LinkUriUtil.getUserLinkUri(user.getId()));
-        return user;
+@XmlRootElement(name = "node")
+public class SearchResultTreeNode<T> {
+    private T item;
+    private List<SearchResultTreeNode<T>> children;
+
+    public SearchResultTreeNode() {
     }
 
-    public Object getId(UserBrief obj) {
-        return obj.getId();
+    public SearchResultTreeNode(T item) {
+        this.item = item;
     }
 
-
-    public Object getParentId(UserBrief obj) {
-        return obj.getParentBinder().getId();
+    @XmlElementWrapper(name = "children")
+    @XmlElement(name = "node")
+    public List<SearchResultTreeNode<T>> getChildren() {
+        return children;
     }
 
-    public SearchResultTreeNode<UserBrief> factoryTreeNode(UserBrief obj) {
-        return null;
+    public void setChildren(List<SearchResultTreeNode<T>> children) {
+        this.children = children;
+    }
+
+    public void addChild(SearchResultTreeNode<T> child) {
+        if (children==null) {
+            children = new ArrayList<SearchResultTreeNode<T>>();
+        }
+        children.add(child);
+    }
+
+    @XmlElement(name="item")
+    public T getItem() {
+        return item;
+    }
+
+    public void setItem(T item) {
+        this.item = item;
     }
 }

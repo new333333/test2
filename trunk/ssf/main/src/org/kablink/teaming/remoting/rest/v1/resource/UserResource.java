@@ -34,7 +34,7 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
-import org.kablink.teaming.rest.v1.model.SearchResults;
+import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
 
@@ -67,7 +67,7 @@ public class UserResource extends AbstractUserResource {
     @GET
     @Path("/teams")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResults<TeamBrief> getTeams(@PathParam("id") long userId) {
+    public SearchResultList<TeamBrief> getTeams(@PathParam("id") long userId) {
         return super.getTeams(userId);
     }
 
@@ -75,7 +75,7 @@ public class UserResource extends AbstractUserResource {
     @GET
     @Path("/favorites")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResults<BinderBrief> getFavorites(@PathParam("id") long userId) {
+    public SearchResultList<BinderBrief> getFavorites(@PathParam("id") long userId) {
         return super.getFavorites(userId);
     }
 }

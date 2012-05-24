@@ -33,7 +33,6 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.GET;
@@ -49,7 +48,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UserBriefBuilder;
-import org.kablink.teaming.rest.v1.model.SearchResults;
+import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.UserBrief;
 import org.kablink.teaming.search.filter.SearchFilter;
 
@@ -57,12 +56,10 @@ import org.kablink.teaming.search.filter.SearchFilter;
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class UsersResource extends AbstractResource {
-    @InjectParam("profileModule") protected ProfileModule profileModule;
-
 	// Get all users
 	@GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResults<UserBrief> getUsers(
+	public SearchResultList<UserBrief> getUsers(
 		@QueryParam("name") String name,
 		@QueryParam("email") String email,
 		@QueryParam("first") Integer offset,
@@ -81,8 +78,8 @@ public class UsersResource extends AbstractResource {
         if (maxCount!=null) {
             options.put(ObjectKeys.SEARCH_MAX_HITS, maxCount);
         }
-        Map resultMap = profileModule.getUsers(options);
-        SearchResults<UserBrief> results = new SearchResults<UserBrief>();
+        Map resultMap = getProfileModule().getUsers(options);
+        SearchResultList<UserBrief> results = new SearchResultList<UserBrief>();
         SearchResultBuilderUtil.buildSearchResults(results, new UserBriefBuilder(), resultMap, "/users", offset);
 		return results;
 	}

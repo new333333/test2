@@ -1456,17 +1456,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	//do actual search index query
         Hits hits = getBinders_doSearch(binder, searchOptions);
         //iterate through results
-        List childBinders = SearchUtils.getSearchEntries(hits);
-
-       	Map model = new HashMap();
-        model.put(ObjectKeys.BINDER, binder);      
-        model.put(ObjectKeys.SEARCH_ENTRIES, childBinders);
-        model.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(hits.getTotalHits()));
-        //Total number of results found
-        model.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(hits.getTotalHits()));
-        //Total number of results returned
-        model.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, new Integer(hits.length()));
-        return model;
+        return buildResultMap(binder, hits);
    }
 
     public Map getBinders(Binder binder, List binderIds, Map searchOptions) {
@@ -1474,10 +1464,29 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
          //validate entry count
     	//do actual search index query 
         Hits hits = getBinders_doSearch(binderIds, searchOptions);
+        return buildResultsMap(hits);
+    }
+
+    public Map getBindersRecursively(Binder binder, Map options) {
+        //search engine will only return binder you have access to
+         //validate entry count
+    	//do actual search index query
+        Hits hits = getBinders_doSearch(binder, true, null, options);
+        //iterate through results
+        return buildResultMap(binder, hits);
+    }
+
+    private Map buildResultMap(Binder binder, Hits hits) {
+        Map model = buildResultsMap(hits);
+        model.put(ObjectKeys.BINDER, binder);
+        return model;
+    }
+
+    private Map buildResultsMap(Hits hits) {
         //iterate through results
         List childBinders = SearchUtils.getSearchEntries(hits);
 
-       	Map model = new HashMap();
+        Map model = new HashMap();
         model.put(ObjectKeys.SEARCH_ENTRIES, childBinders);
         model.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(hits.getTotalHits()));
         //Total number of results found
@@ -1485,7 +1494,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         //Total number of results returned
         model.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, new Integer(hits.length()));
         return model;
-   }
+    }
 
     protected int getBinders_maxEntries(int maxChildEntries) {
         return maxChildEntries;
@@ -1498,6 +1507,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	return getBinders_doSearch(binder, null, searchOptions);
     }
     protected Hits getBinders_doSearch(Binder binder, List binderIds, Map searchOptions) {
+        return getBinders_doSearch(binder, false, binderIds, searchOptions);
+    }
+    protected Hits getBinders_doSearch(Binder binder, boolean recursive, List binderIds, Map searchOptions) {
     	int maxResults = 0;
     	int searchOffset = 0;
     	if (searchOptions != null) {
@@ -1531,7 +1543,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        		searchFilter.addBinderParentIds(binderIds);
        	}
        	
-       	if (binder != null) getBinders_getSearchDocument(binder, searchFilter);
+       	if (binder != null) {
+            if (recursive) {
+                getBinders_getSearchDocumentRecursive(binder, searchFilter);
+            } else {
+                getBinders_getSearchDocument(binder, searchFilter);
+            }
+        }
        	
        	org.dom4j.Document queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), searchOptions);
       	
@@ -1574,6 +1592,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    		searchFilter.addDocumentType(Constants.DOC_TYPE_BINDER);
     
     }    
+    protected void getBinders_getSearchDocumentRecursive(Binder binder, SearchFilter searchFilter) {
+    	searchFilter.newCurrentFilterTermsBlock(true);
+
+		searchFilter.addAncestryId(binder.getId().toString());
+   		searchFilter.addDocumentType(Constants.DOC_TYPE_BINDER);
+
+    }
     //***********************************************************************************************************
     //not really meant to be overridden, but here to share code
  
