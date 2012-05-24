@@ -54,8 +54,8 @@ public class FileProperties extends BaseFileProperties {
 	
 	public FileProperties(String id, String name, HistoryStamp creation, HistoryStamp modification, 
 			Long length, Integer versionNumber, Integer majorVersion, Integer minorVersion, 
-			String note, Integer status, String webUrl, Long lockedBy, Calendar lockExpiration) {
-		super(id, creation, modification, length, versionNumber, majorVersion, minorVersion, note, status, webUrl);
+			String note, Integer status, Long lockedBy, Calendar lockExpiration) {
+		super(id, creation, modification, length, versionNumber, majorVersion, minorVersion, note, status);
 		this.name = name;
 		this.lockedBy = lockedBy;
 		this.lockExpiration = lockExpiration;
@@ -63,8 +63,8 @@ public class FileProperties extends BaseFileProperties {
 
 	public FileProperties(String id, String name, HistoryStamp creation, HistoryStamp modification, 
 			Long length, Integer versionNumber, Integer majorVersion, Integer minorVersion, 
-			String note, Integer status, String webUrl, Long lockedBy, Date lockExpiration) {
-		super(id, creation, modification, length, versionNumber, majorVersion, minorVersion, note, status, webUrl);
+			String note, Integer status, Long lockedBy, Date lockExpiration) {
+		super(id, creation, modification, length, versionNumber, majorVersion, minorVersion, note, status);
 		this.name = name;
 		this.lockedBy = lockedBy;
 		if(lockExpiration != null) {

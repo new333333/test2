@@ -43,7 +43,7 @@ public class FileVersionProperties extends BaseFileProperties {
 	
 	public FileVersionProperties(String id, HistoryStamp creation, HistoryStamp modification, 
 			Long length, Integer versionNumber, Integer majorVersion, Integer minorVersion, 
-			String note, Integer status, String webUrl) {
-		super(id, creation, modification, length, versionNumber, majorVersion, minorVersion, note, status, webUrl);
+			String note, Integer status) {
+		super(id, creation, modification, length, versionNumber, majorVersion, minorVersion, note, status);
 	}
 }

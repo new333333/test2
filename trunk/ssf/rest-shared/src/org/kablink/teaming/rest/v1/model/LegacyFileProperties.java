@@ -69,7 +69,6 @@ public class LegacyFileProperties {
         minorVersion = fp.getMinorVersion();
         note = fp.getNote();
         status = fp.getStatus();
-        webUrl = fp.getWebUrl();
         if (fp.getEntry()!=null) {
             entryId = fp.getEntry().getId();
         }
