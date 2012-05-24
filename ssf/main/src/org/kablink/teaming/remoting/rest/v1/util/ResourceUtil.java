@@ -104,7 +104,6 @@ public class ResourceUtil {
       				fa.getMinorVersion(),
       				fa.getFileItem().getDescription().getText(),
       				fa.getFileStatus(),
-      				WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, fa),
       				(fl != null && fl.getOwner() != null)? fl.getOwner().getId():null,
       				(fl!= null)? fl.getExpirationDate():null);
         Long entryId = fa.getOwner().getEntity().getId();
@@ -234,8 +233,7 @@ public class ResourceUtil {
                 Integer.valueOf(va.getMajorVersion()),
                 Integer.valueOf(va.getMinorVersion()),
                 va.getFileItem().getDescription().getText(),
-                va.getFileStatus(),
-                WebUrlUtil.getFileUrl((String) null, WebKeys.ACTION_READ_FILE, va)
+                va.getFileStatus()
         );
         LinkUriUtil.populateFileVersionLinks(props);
         return props;

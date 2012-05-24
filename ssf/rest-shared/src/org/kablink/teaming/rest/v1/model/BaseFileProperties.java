@@ -50,13 +50,12 @@ public abstract class BaseFileProperties extends BaseRestObject {
 	private Integer minorVersion;
 	private String note; // used also for update
 	private Integer status; // used also for update
-	private String webUrl;
 
 	protected BaseFileProperties() {}
 	
 	public BaseFileProperties(String id, HistoryStamp creation, HistoryStamp modification,
                               Long length, Integer versionNumber, Integer majorVersion, Integer minorVersion,
-                              String note, Integer status, String webUrl) {
+                              String note, Integer status) {
 		this.id = id;
 		this.creation = creation;
 		this.modification = modification;
@@ -66,7 +65,6 @@ public abstract class BaseFileProperties extends BaseRestObject {
 		this.minorVersion = minorVersion;
 		this.note = note;
 		this.status = status;
-		this.webUrl = webUrl;
 	}
 
 	public String getId() {
@@ -143,15 +141,4 @@ public abstract class BaseFileProperties extends BaseRestObject {
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
-
-    @XmlElement(name="permalink")
-	public String getWebUrl() {
-		return webUrl;
-	}
-
-	public void setWebUrl(String webUrl) {
-		this.webUrl = webUrl;
-	}
-
-
 }

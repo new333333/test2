@@ -41,6 +41,7 @@ public class FolderEntry extends Entry {
     private String docNumber;
    	private int docLevel;
 
+    @XmlElement(name = "doc_level")
     public int getDocLevel() {
         return docLevel;
     }
@@ -49,6 +50,7 @@ public class FolderEntry extends Entry {
         this.docLevel = docLevel;
     }
 
+    @XmlElement(name = "doc_number")
     public String getDocNumber() {
         return docNumber;
     }
