@@ -52,6 +52,8 @@ import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu.ActionMenuItem;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
+import org.kablink.teaming.gwt.client.widgets.BlogArchiveCtrl;
+import org.kablink.teaming.gwt.client.widgets.BlogArchiveCtrl.BlogArchiveCtrlClient;
 
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import com.google.gwt.core.client.GWT;
@@ -61,6 +63,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -124,12 +127,15 @@ public class BlogFolderView extends FolderViewBase
 		getFlowPanel().addStyleName( "vibe-blogFolderFlowPanel" );
 
 		table = new FlexTable();
+		table.setWidth( "100%" );
 		table.setCellSpacing( 0 );
 		table.addStyleName( "blogFolderView_MainTable" );
 		
 		cellFormatter = table.getFlexCellFormatter();
 		cellFormatter.setWidth( 0, 0, "80%" );
 		cellFormatter.setWidth( 0, 1, "20%" );
+		cellFormatter.setVerticalAlignment( 0, 0, HasVerticalAlignment.ALIGN_TOP );
+		cellFormatter.setVerticalAlignment( 0, 1, HasVerticalAlignment.ALIGN_TOP );
 		
 		actionsMenu = new ActionsPopupMenu( true, true, menuItems );
 		
@@ -162,7 +168,21 @@ public class BlogFolderView extends FolderViewBase
 		
 		// Add the Archive control
 		{
-			table.setText( 0, 1, "This is where the archive control will be" );
+			BlogArchiveCtrl.createAsync( new BlogArchiveCtrlClient()
+			{
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in the asyncronous provider.
+				}
+				
+				@Override
+				public void onSuccess( BlogArchiveCtrl baCtrl )
+				{
+					baCtrl.init( getFolderId() );
+					table.setWidget( 0, 1, baCtrl );
+				}
+			} );
 		}
 
 		getFlowPanel().add( table );

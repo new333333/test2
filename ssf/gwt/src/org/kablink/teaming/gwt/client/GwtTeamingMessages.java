@@ -291,6 +291,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_AddFavorite();
 	String rpcFailure_AddFavoriteLimitExceeded();
 	String rpcFailure_AddNewFolder();
+	String rpcFailure_GetBlogArchiveInfo();
 	String rpcFailure_CanManagePublicTags();
 	String rpcFailure_CanModifyBinder();
 	String rpcFailure_ChangeEntryTypes();
@@ -475,6 +476,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_AdminInfoDlg();
 	String codeSplitFailure_BinderOwnerAvatarPanel();
+	String codeSplitFailure_BlogArchiveCtrl();
 	String codeSplitFailure_BlogFolderView();
 	String codeSplitFailure_BreadCrumbPanel();
 	String codeSplitFailure_CalendarFolderView();
@@ -1624,4 +1626,8 @@ public interface GwtTeamingMessages extends Messages
 	String showDynamicMembershipDlgGroupTab();
 	String showDynamicMembershipDlgHeader();
 	String showDynamicMembershipDlgUserTab();
+	
+	// String used in the blog archive control
+	String blogArchiveTitle();
+	
 }// end GwtTeamingMessages
