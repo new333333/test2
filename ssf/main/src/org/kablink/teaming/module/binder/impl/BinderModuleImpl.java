@@ -263,11 +263,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			case modifyBinder:
 			case setProperty:
 			case manageConfiguration:
-			case manageTeamMembers:
 			case manageSimpleName:
 			case changeEntryTimestamps:
 				getAccessControlManager().checkOperation(binder,
 						WorkAreaOperation.BINDER_ADMINISTRATION);
+				break;
+			case manageTeamMembers:
+				getAccessControlManager().checkOperation(binder,
+						WorkAreaOperation.CHANGE_ACCESS_CONTROL);
 				break;
 			case manageTag:
 				getAccessControlManager().checkOperation(binder,
