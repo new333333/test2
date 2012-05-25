@@ -203,6 +203,21 @@ public class GwtClientHelper {
 	}
 	
 	/**
+	 * If we're in debug UI mode, assert that a condition has been met
+	 * and display an alert if it hasn't.
+	 * 
+	 * @param condition
+	 * @param msg
+	 */
+	public static void debugAssert(boolean condition, String msg) {
+		if (isDebugUI()) {
+			if (!condition) {
+				deferredAlert(msg);
+			}
+		}
+	}
+	
+	/**
 	 * Displays a messages in an 'deferred' alert box.
 	 * 
 	 * @param msg

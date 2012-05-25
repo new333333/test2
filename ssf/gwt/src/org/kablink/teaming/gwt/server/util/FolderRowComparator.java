@@ -35,23 +35,36 @@ package org.kablink.teaming.gwt.server.util;
 import java.util.Comparator;
 import java.util.List;
 
+import org.kablink.teaming.comparator.StringComparator;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.GuestInfo;
+import org.kablink.teaming.gwt.client.util.AssignmentInfo;
+import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
+import org.kablink.teaming.gwt.client.util.EntryEventInfo;
+import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
+import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.PrincipalInfo;
+import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
+import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 
 /**
- * Class used to compare two FolderRow's.
+ * Class used to compare two FolderRow's using a given sort key.
  *
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
 public class FolderRowComparator implements Comparator<FolderRow> {
 	private boolean 			m_sortAscending;	//
+	private FolderColumn		m_sortColumn;		// The column being sorted.
 	private List<FolderColumn>	m_folderColumns;	//
 	private String				m_sortKey;			//
+	private StringComparator	m_sc;				//
 	
-	private final static int LESS		= (-1);
-	private final static int EQUAL		=   0;
-	private final static int GREATER	=   1;
+	// The default sort key to use of the given one doesn't map to a
+	// defined column.
+	private final static String DEFAULT_SORT_KEY	= "_sortTitle";
 
 	/**
 	 * Class constructor.
@@ -64,10 +77,26 @@ public class FolderRowComparator implements Comparator<FolderRow> {
 		// Initialize the super class...
 		super();
 
-		// ...and store the parameters.
+		// ...store the parameters...
 		m_sortKey       = sortKey;
 		m_sortAscending = sortAscending;
 		m_folderColumns = folderColumns;
+
+		// ...and initialize the other data members.
+		m_sc = new StringComparator(GwtServerHelper.getCurrentUser().getLocale());
+		
+		// Can we find the FolderColumn for the sort key were were
+		// given?
+		m_sortColumn = getColumn(m_sortKey);
+		if ((null == m_sortColumn) && (!(DEFAULT_SORT_KEY.equals(m_sortKey)))) {
+			// No!  Can we find it for the default sort key?
+			m_sortColumn = getColumn(DEFAULT_SORT_KEY);
+			if (null != m_sortColumn) {
+				// Yes!  Use that as the sort key instead of the key we
+				// were given.
+				m_sortKey = DEFAULT_SORT_KEY;
+			}
+		}
 	}
 
 	/**
@@ -82,12 +111,187 @@ public class FolderRowComparator implements Comparator<FolderRow> {
 	 */
 	@Override
 	public int compare(FolderRow fr1, FolderRow fr2) {
-		int reply = EQUAL;
+		// Do we have the FolderColumn we're sorting on?
+		if (null == m_sortColumn) {
+			// No!  Then we can't perform a comparison.  Return EQUAL.
+			return 0;
+		}
 
-//!		...this needs to be implemented...
+		// Extract appropriate string values from the rows for the sort
+		// column...
+		String s1 = getColumnValueFromRow(fr1, m_sortColumn);
+		String s2 = getColumnValueFromRow(fr2, m_sortColumn);
+		
+		// ...and compare those.
+		int reply = m_sc.compare(s1, s2);
+		if (!m_sortAscending) {
+			reply = (-reply);
+		}
 		
 		// If we get here, reply contains the appropriate value for
 		// the compare.  Return it.
 		return reply;
+	}
+
+	/*
+	 * Searches the global folder columns for the one using the sort
+	 * key in question.
+	 */
+	private FolderColumn getColumn(String sortKey) {
+		// Do we have a List<FolderColumn> to search?
+		if (null != m_folderColumns) {
+			// Yes!  Scan the FolderColumn's in the list.
+			for (FolderColumn fc:  m_folderColumns) {
+				// Does this column use the sort key in question?
+				if (sortKey.equals(fc.getColumnSortKey())) {
+					// Yes!  Return it.
+					return fc;
+				}
+			}
+		}
+		
+		// If we get here, we couldn't find the sort key in question.
+		// Return null.
+		return null;
+	}
+	
+	public static String getColumnValueFromRow(FolderRow fr, FolderColumn fc) {
+		String reply = null;
+		
+		// Is this a column that should show a download link for?
+		String cName = fc.getColumnEleName();
+		if (FolderColumn.isColumnDownload(cName)) {
+			// Yes!  Use its string value as the reply.
+			reply = fr.getColumnValueAsString(fc);
+		}
+		
+		// No, this column doesn't show a download link!  Does it
+		// show presence?
+		else if (FolderColumn.isColumnPresence(cName) || FolderColumn.isColumnFullName(cName)) {
+			// Yes!  Return the PresenceInfo's title.
+			PrincipalInfo pi = fr.getColumnValueAsPrincipalInfo(fc);
+			if (null != pi) {
+				reply = pi.getTitle();
+			}
+		}
+
+		// No, this column doesn't show presence either!  Does it
+		// show a rating?
+		else if (FolderColumn.isColumnRating(cName)) {
+			// Yes!  Return the rating value.
+			String value = fr.getColumnValueAsString(fc);
+			if (null != value) value = value.trim();
+			Integer iValue;
+			if (GwtClientHelper.hasString(value)) {
+				iValue = Math.round(Float.valueOf(value));
+			}
+			else iValue = null;
+			if (null != iValue) {
+				reply = String.valueOf(iValue);
+			}
+		}
+		
+		// No, this column doesn't show a rating either!  Does it
+		// show an entry title?
+		else if (FolderColumn.isColumnTitle(cName)) {
+			// Yes!  Return the EntyTitleInfo's title.
+			EntryTitleInfo eti = fr.getColumnValueAsEntryTitle(fc);
+			if (null != eti) {
+				reply = eti.getTitle();
+			}
+		}
+		
+		// No, this column doesn't show an entry title either!
+		// Does it show a view link?
+		else if (FolderColumn.isColumnView(cName)) {
+			// Yes!  If it contains a value, return a string (doesn't
+			// matter what since all this column ever displays is
+			// '[VIEW]'.
+			ViewFileInfo vfi = fr.getColumnValueAsViewFile(fc);
+			if (null != vfi) {
+				reply = "view";
+			}
+		}
+		
+		// No, this column doesn't show a view link either!  Is it
+		// a custom column?
+		else if (FolderColumn.isColumnCustom(fc)) {
+			// Yes!  Return an appropriate value for whatever it contains.
+			EntryEventInfo eei = fr.getColumnValueAsEntryEvent(fc);
+			if (null != eei) {
+				reply = eei.getEndDate();
+			}
+			else {
+				EntryLinkInfo eli = fr.getColumnValueAsEntryLink(fc);
+				if (null != eli) {
+					reply = eli.getText();
+				}
+				else {
+					reply = fr.getColumnValueAsString(fc);
+				}
+			}
+		}
+		
+		// No, this column doesn't show a custom column either!  Is
+		// it an assignment of some sort?
+		else if (AssignmentInfo.isColumnAssigneeInfo(cName)){
+			// Yes!  Return the title from the first AssignmentInfo in
+			// the value.
+			List<AssignmentInfo> aiList = fr.getColumnValueAsAssignmentInfos(fc);
+			if ((null != aiList) && (!(aiList.isEmpty()))) {
+				reply = aiList.get(0).getTitle();
+			}
+		}
+		
+		// No, this column doesn't show an assignment either!  Is
+		// it a collection of task folders?
+		else if (FolderColumn.isColumnTaskFolders(cName)) {
+			// Yes!  Return the title from the first TaskFolderInfo in
+			// the value.
+			List<TaskFolderInfo> tfList = fr.getColumnValueAsTaskFolderInfos(fc);
+			if ((null != tfList) && (!(tfList.isEmpty()))) {
+				reply = tfList.get(0).getTitle();
+			}
+		}
+
+		// No, this column isn't a collection of task folders
+		// either!  Is it an HTML description column?
+		else if (FolderColumn.isColumnDescriptionHtml(cName)) {
+			// Yes!  Return the description.
+			DescriptionHtml dh = fr.getColumnValueAsDescriptionHtml(fc);
+			if (null != dh) {
+				reply = dh.getDescription();
+			}
+		}
+		
+		// No, this column isn't an HTML description column either!
+		// Is it the signer of a guest book?
+		else if (FolderColumn.isColumnGuest(cName)) {
+			// Yes!  Return the title from the guest info.
+			GuestInfo gi = fr.getColumnValueAsGuestInfo(fc);
+			if (null != gi) {
+				return gi.getTitle();
+			}
+		}
+		
+		// No, this column isn't signer of a guest book either!  Is
+		// it an email address?
+		else if (FolderColumn.isColumnEmailAddress(cName)) {
+			// Yes!  Return the email address.
+			EmailAddressInfo emi = fr.getColumnValueAsEmailAddress(fc);
+			if (null != emi) {
+				reply = emi.getEmailAddress();
+			}
+		}
+		
+		else {
+			// No, this column isn't an email address either!
+			// Simply return its string value.
+			reply = fr.getColumnValueAsString(fc);
+		}
+
+		// If we get here, reply is null of refers to the string value
+		// to compare.  Return it.
+		return ((null == reply) ? "" : reply);
 	}
 }

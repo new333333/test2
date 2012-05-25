@@ -37,6 +37,7 @@ import java.util.Map;
 
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 import com.google.gwt.core.client.GWT;
@@ -75,9 +76,9 @@ public class PersonalWorkspacesView extends DataTableFolderViewBase {
 	 */
 	@Override
 	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
-		columnWidths.put(ColumnWidth.COLUMN_FULL_NAME,     new ColumnWidth(30));
-		columnWidths.put(ColumnWidth.COLUMN_EMAIL_ADDRESS, new ColumnWidth(50));
-		columnWidths.put(ColumnWidth.COLUMN_LOGIN_ID,      new ColumnWidth(20));
+		columnWidths.put(FolderColumn.COLUMN_FULL_NAME,     new ColumnWidth(30));
+		columnWidths.put(FolderColumn.COLUMN_EMAIL_ADDRESS, new ColumnWidth(50));
+		columnWidths.put(FolderColumn.COLUMN_LOGIN_ID,      new ColumnWidth(20));
 	}
 
 	/**

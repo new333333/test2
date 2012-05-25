@@ -58,6 +58,33 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	private String			m_columnEleName;		// The element name from the definition (if custom attribute), otherwise, it is the column name.
 	private String			m_columnType;			// The type for this column (only used for custom columns.)
 	
+	// The following are the various predefined names used for columns.
+	public final static String COLUMN_AUTHOR			= "author";
+	public final static String COLUMN_COMMENTS			= "comments";
+	public final static String COLUMN_DATE				= "date";
+	public final static String COLUMN_DESCRIPTION		= "description";
+	public final static String COLUMN_DESCRIPTION_HTML	= "descriptionHtml";
+	public final static String COLUMN_DOWNLOAD			= "download";
+	public final static String COLUMN_DUE_DATE			= "dueDate";
+	public final static String COLUMN_EMAIL_ADDRESS		= "emailAddress";
+	public final static String COLUMN_FULL_NAME			= "fullName";
+	public final static String COLUMN_GUEST				= "guest";
+	public final static String COLUMN_HTML				= "html";
+	public final static String COLUMN_LOCATION			= "location";
+	public final static String COLUMN_LOGIN_ID			= "loginId";
+	public final static String COLUMN_NUMBER			= "number";
+	public final static String COLUMN_RATING			= "rating";
+	public final static String COLUMN_RESPONSIBLE		= "responsible";
+	public final static String COLUMN_SIZE				= "size";
+	public final static String COLUMN_STATE				= "state";
+	public final static String COLUMN_STATUS			= "status";
+	public final static String COLUMN_TASKS				= "tasks";
+	public final static String COLUMN_TITLE				= "title";
+	
+	// The following are the various internal names used for columns.
+	public final static String COLUMN_SELECT			= "--select--";
+	public final static String COLUMN_PIN				= "--pin--";
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -195,4 +222,24 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public boolean isCustomColumn() {
 		return ((null != m_columnDefId) && (0 < m_columnDefId.length()));
 	}
+	
+	/**
+	 * Various column type detectors.
+	 * 
+	 * @param
+	 * 
+	 * @return
+	 */
+	public static boolean isColumnCustom(         FolderColumn column)     {return column.isCustomColumn();                                }
+	public static boolean isColumnDescriptionHtml(String       columnName) {return columnName.equals(FolderColumn.COLUMN_DESCRIPTION_HTML);}
+	public static boolean isColumnDownload(       String       columnName) {return columnName.equals(FolderColumn.COLUMN_DOWNLOAD);        }
+	public static boolean isColumnEmailAddress(   String       columnName) {return columnName.equals(FolderColumn.COLUMN_EMAIL_ADDRESS);   }
+	public static boolean isColumnFullName(       String       columnName) {return columnName.equals(FolderColumn.COLUMN_FULL_NAME);       }
+	public static boolean isColumnGuest(          String       columnName) {return columnName.equals(FolderColumn.COLUMN_GUEST);           }
+	public static boolean isColumnRating(         String       columnName) {return columnName.equals(FolderColumn.COLUMN_RATING);          }
+	public static boolean isColumnPresence(       String       columnName) {return columnName.equals(FolderColumn.COLUMN_AUTHOR);          }
+	public static boolean isColumnTaskFolders(    String       columnName) {return columnName.equals(FolderColumn.COLUMN_TASKS);           }
+	public static boolean isColumnTitle(          String       columnName) {return columnName.equals(FolderColumn.COLUMN_TITLE);           }
+	public static boolean isColumnView(           String       columnName) {return columnName.equals(FolderColumn.COLUMN_HTML);            }
+
 }

@@ -45,33 +45,6 @@ import com.google.gwt.dom.client.Style.Unit;
  * @author drfoster@novell.com
  */
 public class ColumnWidth {
-	// The following are the various predefined names used for columns.
-	public final static String COLUMN_AUTHOR			= "author";
-	public final static String COLUMN_COMMENTS			= "comments";
-	public final static String COLUMN_DATE				= "date";
-	public final static String COLUMN_DESCRIPTION		= "description";
-	public final static String COLUMN_DESCRIPTION_HTML	= "descriptionHtml";
-	public final static String COLUMN_DOWNLOAD			= "download";
-	public final static String COLUMN_DUE_DATE			= "dueDate";
-	public final static String COLUMN_EMAIL_ADDRESS		= "emailAddress";
-	public final static String COLUMN_FULL_NAME			= "fullName";
-	public final static String COLUMN_GUEST				= "guest";
-	public final static String COLUMN_HTML				= "html";
-	public final static String COLUMN_LOCATION			= "location";
-	public final static String COLUMN_LOGIN_ID			= "loginId";
-	public final static String COLUMN_NUMBER			= "number";
-	public final static String COLUMN_RATING			= "rating";
-	public final static String COLUMN_RESPONSIBLE		= "responsible";
-	public final static String COLUMN_SIZE				= "size";
-	public final static String COLUMN_STATE				= "state";
-	public final static String COLUMN_STATUS			= "status";
-	public final static String COLUMN_TASKS				= "tasks";
-	public final static String COLUMN_TITLE				= "title";
-	
-	// The following are the various internal names used for columns.
-	public final static String COLUMN_SELECT			= "--select--";
-	public final static String COLUMN_PIN				= "--pin--";
-
 	private double	m_width;	//
 	private Unit	m_units;	//
 	

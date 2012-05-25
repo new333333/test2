@@ -320,10 +320,17 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					List<FolderRow> folderRows = responseData.getFolderRows();
 					int rowsRead = folderRows.size();
 					if (rowsRead > rowsRequested) {
-						// Yes!  This can happen with pinned entries. 
-						// When it does, we end up not displaying all
-						// the entries.  As of yet, I don't have a fix.
-//!						...this needs to be implemented...
+						// Yes!  This should only happen with pinned
+						// entries.  Assert that's the case...
+						GwtClientHelper.debugAssert(
+							getFolderDisplayData().getViewPinnedEntries(),
+							m_messages.vibeDataTable_InternalError_UnexpectedRowCount(
+								rowsRequested,
+								rowsRead));
+						
+						// ...and use the entries read as the new page
+						// ...size.
+						m_vdt.setPageSize(rowsRead);
 					}
 					
 					// Apply the rows we read.
@@ -446,7 +453,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				final String  folderSortBy        = fc.getColumnSortKey();
 				final boolean folderSortByChanged = (!(folderSortBy.equalsIgnoreCase(getFolderSortBy())));
 				final boolean folderSortDescend   = (folderSortByChanged ? getFolderSortDescend() : (!getFolderSortDescend()));
-				final SaveFolderSortCmd cmd = new SaveFolderSortCmd(getFolderId(), fc.getColumnSortKey(), (!folderSortDescend));
+				final SaveFolderSortCmd cmd = new SaveFolderSortCmd(getFolderId(), folderSortBy, (!folderSortDescend));
 				GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 					@Override
 					public void onFailure(Throwable caught) {
@@ -592,8 +599,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		
 		// ...and connect it all together.
 	    m_dataTable.addColumn(column, pinHeader);
-	    setColumnStyles(column, ColumnWidth.COLUMN_PIN, colIndex        );
-	    setColumnWidth(         ColumnWidth.COLUMN_PIN, column, pctTotal);
+	    setColumnStyles(column, FolderColumn.COLUMN_PIN, colIndex        );
+	    setColumnWidth(         FolderColumn.COLUMN_PIN, column, pctTotal);
 	}
 	
 	/*
@@ -658,8 +665,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 
 		// ...and connect it all together.
 	    m_dataTable.addColumn(column, saHeader);
-	    setColumnStyles(column, ColumnWidth.COLUMN_SELECT, colIndex        );
-	    setColumnWidth(         ColumnWidth.COLUMN_SELECT, column, pctTotal);
+	    setColumnStyles(column, FolderColumn.COLUMN_SELECT, colIndex        );
+	    setColumnWidth(         FolderColumn.COLUMN_SELECT, column, pctTotal);
 	}
 
 	/**
@@ -827,7 +834,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (canSelectEntries()) {
 			// ...add a column for the checkbox selector...
 			fc = new FolderColumn();
-			fc.setColumnName(ColumnWidth.COLUMN_SELECT);
+			fc.setColumnName(FolderColumn.COLUMN_SELECT);
 			fc.setColumnTitle(m_messages.vibeDataTable_Select());
 			reply.add(fc);
 		}
@@ -836,7 +843,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (canPinEntries()) {
 			// ...add a column for the pin selector...
 			fc = new FolderColumn();
-			fc.setColumnName(ColumnWidth.COLUMN_PIN);
+			fc.setColumnName(FolderColumn.COLUMN_PIN);
 			fc.setColumnTitle(m_messages.vibeDataTable_Pin());
 			reply.add(fc);
 		}
@@ -849,21 +856,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// ...and return the List<FolderColumn>.
 		return reply;
 	}
-
-	/*
-	 * Various column type detectors.
-	 */
-	private static boolean isColumnCustom(         FolderColumn column)     {return column.isCustomColumn();                               }
-	private static boolean isColumnDescriptionHtml(String       columnName) {return columnName.equals(ColumnWidth.COLUMN_DESCRIPTION_HTML);}
-	private static boolean isColumnDownload(       String       columnName) {return columnName.equals(ColumnWidth.COLUMN_DOWNLOAD);        }
-	private static boolean isColumnEmailAddress(   String       columnName) {return columnName.equals(ColumnWidth.COLUMN_EMAIL_ADDRESS);   }
-	private static boolean isColumnFullName(       String       columnName) {return columnName.equals(ColumnWidth.COLUMN_FULL_NAME);       }
-	private static boolean isColumnGuest(          String       columnName) {return columnName.equals(ColumnWidth.COLUMN_GUEST);           }
-	private static boolean isColumnRating(         String       columnName) {return columnName.equals(ColumnWidth.COLUMN_RATING);          }
-	private static boolean isColumnPresence(       String       columnName) {return columnName.equals(ColumnWidth.COLUMN_AUTHOR);          }
-	private static boolean isColumnTaskFolders(    String       columnName) {return columnName.equals(ColumnWidth.COLUMN_TASKS);           }
-	private static boolean isColumnTitle(          String       columnName) {return columnName.equals(ColumnWidth.COLUMN_TITLE);           }
-	private static boolean isColumnView(           String       columnName) {return columnName.equals(ColumnWidth.COLUMN_HTML);            }
 
 	/**
 	 * Returns the widget to use for displaying the table empty message.
@@ -940,22 +932,22 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		m_defaultColumnWidth = new ColumnWidth(20);
 
 		// Add the widths for predefined column names...
-		m_columnWidths.put(ColumnWidth.COLUMN_AUTHOR,   new ColumnWidth(24));	// Unless otherwise specified...
-		m_columnWidths.put(ColumnWidth.COLUMN_COMMENTS, new ColumnWidth( 8));	// ...the widths default to...
-		m_columnWidths.put(ColumnWidth.COLUMN_DATE,     new ColumnWidth(20));	// ...be a percentage value.
-		m_columnWidths.put(ColumnWidth.COLUMN_DOWNLOAD, new ColumnWidth( 8));
-		m_columnWidths.put(ColumnWidth.COLUMN_HTML,     new ColumnWidth(10));
-		m_columnWidths.put(ColumnWidth.COLUMN_LOCATION, new ColumnWidth(30));
-		m_columnWidths.put(ColumnWidth.COLUMN_NUMBER,   new ColumnWidth( 5));
-		m_columnWidths.put(ColumnWidth.COLUMN_RATING,   new ColumnWidth(10));
-		m_columnWidths.put(ColumnWidth.COLUMN_SIZE,     new ColumnWidth( 8));
-		m_columnWidths.put(ColumnWidth.COLUMN_STATE,    new ColumnWidth( 8));
-		m_columnWidths.put(ColumnWidth.COLUMN_RATING,   new ColumnWidth(10));
-		m_columnWidths.put(ColumnWidth.COLUMN_TITLE,    new ColumnWidth(28));
+		m_columnWidths.put(FolderColumn.COLUMN_AUTHOR,   new ColumnWidth(24));	// Unless otherwise specified...
+		m_columnWidths.put(FolderColumn.COLUMN_COMMENTS, new ColumnWidth( 8));	// ...the widths default to...
+		m_columnWidths.put(FolderColumn.COLUMN_DATE,     new ColumnWidth(20));	// ...be a percentage value.
+		m_columnWidths.put(FolderColumn.COLUMN_DOWNLOAD, new ColumnWidth( 8));
+		m_columnWidths.put(FolderColumn.COLUMN_HTML,     new ColumnWidth(10));
+		m_columnWidths.put(FolderColumn.COLUMN_LOCATION, new ColumnWidth(30));
+		m_columnWidths.put(FolderColumn.COLUMN_NUMBER,   new ColumnWidth( 5));
+		m_columnWidths.put(FolderColumn.COLUMN_RATING,   new ColumnWidth(10));
+		m_columnWidths.put(FolderColumn.COLUMN_SIZE,     new ColumnWidth( 8));
+		m_columnWidths.put(FolderColumn.COLUMN_STATE,    new ColumnWidth( 8));
+		m_columnWidths.put(FolderColumn.COLUMN_RATING,   new ColumnWidth(10));
+		m_columnWidths.put(FolderColumn.COLUMN_TITLE,    new ColumnWidth(28));
 
 		// ...and then add the widths for everything else.
-		m_columnWidths.put(ColumnWidth.COLUMN_SELECT,   new ColumnWidth(40, Unit.PX));
-		m_columnWidths.put(ColumnWidth.COLUMN_PIN,      new ColumnWidth(40, Unit.PX));
+		m_columnWidths.put(FolderColumn.COLUMN_SELECT,   new ColumnWidth(40, Unit.PX));
+		m_columnWidths.put(FolderColumn.COLUMN_PIN,      new ColumnWidth(40, Unit.PX));
 
 		// Finally, let the view's that extend this do what ever they
 		// need to these widths for their own purposes.
@@ -973,7 +965,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 
 		// For a floating table layout, the only column whose width we
 		// explicitly set is the title.
-		m_columnWidths.put(ColumnWidth.COLUMN_TITLE, new ColumnWidth(100, Unit.PCT));
+		m_columnWidths.put(FolderColumn.COLUMN_TITLE, new ColumnWidth(100, Unit.PCT));
 		
 		// Finally, let the view's that extend this do what ever they
 		// need to these widths for their own purposes.
@@ -1009,7 +1001,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// a download link for? 
 			VibeColumn<FolderRow, ?> column;
 			String cName = fc.getColumnEleName();
-			if (isColumnDownload(cName)) {
+			if (FolderColumn.isColumnDownload(cName)) {
 				// Yes!  Create a DownloadColumn for it.
 				column = new DownloadColumn<FolderRow>(fc) {
 					@Override
@@ -1026,7 +1018,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			
 			// No, this column doesn't show a download link!  Does it
 			// show presence?
-			else if (isColumnPresence(cName) || isColumnFullName(cName)) {
+			else if (FolderColumn.isColumnPresence(cName) || FolderColumn.isColumnFullName(cName)) {
 				// Yes!  Create a PresenceColumn for it.
 				column = new PresenceColumn<FolderRow>(fc, showProfileEntryForPresenceWithNoWS()) {
 					@Override
@@ -1038,7 +1030,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 
 			// No, this column doesn't show presence either!  Does it
 			// show a rating?
-			else if (isColumnRating(cName)) {
+			else if (FolderColumn.isColumnRating(cName)) {
 				// Yes!  Create a RatingColumn for it.
 				column = new RatingColumn<FolderRow>(fc) {
 					@Override
@@ -1057,7 +1049,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			
 			// No, this column doesn't show a rating either!  Does it
 			// show an entry title?
-			else if (isColumnTitle(cName)) {
+			else if (FolderColumn.isColumnTitle(cName)) {
 				// Yes!  Create a EntryTitleColumn for it.
 				column = new EntryTitleColumn<FolderRow>(fc) {
 					@Override
@@ -1087,7 +1079,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			
 			// No, this column doesn't show an entry title either!
 			// Does it show a view link?
-			else if (isColumnView(cName)) {
+			else if (FolderColumn.isColumnView(cName)) {
 				// Yes!  Create a ViewColumn for it.
 				column = new ViewColumn<FolderRow>(fc) {
 					@Override
@@ -1099,7 +1091,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			
 			// No, this column doesn't show a view link either!  Is it
 			// a custom column?
-			else if (isColumnCustom(fc)) {
+			else if (FolderColumn.isColumnCustom(fc)) {
 				// Yes!  Create a CustomColumn for it.
 				column = new CustomColumn<FolderRow>(fc) {
 					@Override
@@ -1126,7 +1118,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			
 			// No, this column doesn't show an assignment either!  Is
 			// it a collection of task folders?
-			else if (isColumnTaskFolders(cName)) {
+			else if (FolderColumn.isColumnTaskFolders(cName)) {
 				// Yes!  Create an TaskFolderColumn for it.
 				column = new TaskFolderColumn<FolderRow>(fc) {
 					@Override
@@ -1138,7 +1130,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 
 			// No, this column isn't a collection of task folders
 			// either!  Is it an HTML description column?
-			else if (isColumnDescriptionHtml(cName)) {
+			else if (FolderColumn.isColumnDescriptionHtml(cName)) {
 				// Yes!  Create a DescriptionHtmlColumn for it.
 				column = new DescriptionHtmlColumn<FolderRow>(fc) {
 					@Override
@@ -1150,7 +1142,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			
 			// No, this column isn't an HTML description column either!
 			// Is it the signer of a guest book?
-			else if (isColumnGuest(cName)) {
+			else if (FolderColumn.isColumnGuest(cName)) {
 				// Yes!  Create a GuestColumn for it.
 				column = new GuestColumn<FolderRow>(fc) {
 					@Override
@@ -1162,7 +1154,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			
 			// No, this column isn't signer of a guest book either!  Is
 			// it an email address?
-			else if (isColumnEmailAddress(cName)) {
+			else if (FolderColumn.isColumnEmailAddress(cName)) {
 				// Yes!  Create a EmailAddressColumn for it.
 				column = new EmailAddressColumn<FolderRow>(fc) {
 					@Override
@@ -2177,14 +2169,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * column's name.
 	 */
 	private void setColumnStyles(Column<FolderRow, ?> column, String columnName, int colIndex) {
-		if (!(isColumnTitle(columnName))) {
+		if (!(FolderColumn.isColumnTitle(columnName))) {
 			column.setCellStyleNames("gwtUI_nowrap");
 		}
 	    StringBuffer styles = new StringBuffer(STYLE_COL_BASE);
 	    styles.append(" ");
 	    styles.append(STYLE_COL_BASE);
 	    styles.append("-");
-	    styles.append(columnName.equals(ColumnWidth.COLUMN_SELECT) ? STYLE_COL_SELECT : columnName);
+	    styles.append(columnName.equals(FolderColumn.COLUMN_SELECT) ? STYLE_COL_SELECT : columnName);
 	    m_dataTable.addColumnStyleName(colIndex, styles.toString());
 	}
 

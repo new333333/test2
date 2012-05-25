@@ -1360,6 +1360,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Event_Duration(String days);
 	String vibeDataTable_Event_Start();
 	String vibeDataTable_GuestbookInternalErrorOverrideMissing();
+	String vibeDataTable_InternalError_UnexpectedRowCount(int rowsRequested, int rowsRead);
 	String vibeDataTable_MemberCount(String count);
 	String vibeDataTable_Pin();
 	String vibeDataTable_Select();

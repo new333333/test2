@@ -570,7 +570,7 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 		
 		// Create a caption for the column.
 		Widget captionWidget;
-		if (cName.equals(ColumnWidth.COLUMN_PIN)) {
+		if (cName.equals(FolderColumn.COLUMN_PIN)) {
 			Image columnCaption = new Image(m_images.grayPin());
 			columnCaption.addStyleName("vibe-sizeColumnsDlg-colCaptionImg");
 			columnCaption.setTitle(m_messages.vibeDataTable_Alt_PinHeader());

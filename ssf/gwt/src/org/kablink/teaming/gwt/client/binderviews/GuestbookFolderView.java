@@ -38,6 +38,7 @@ import java.util.Map;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSignGuestbookUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
@@ -87,10 +88,10 @@ public class GuestbookFolderView extends DataTableFolderViewBase {
 	 */
 	@Override
 	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
-		columnWidths.put(ColumnWidth.COLUMN_GUEST,            new ColumnWidth(15));
-		columnWidths.put(ColumnWidth.COLUMN_TITLE,            new ColumnWidth(20));
-		columnWidths.put(ColumnWidth.COLUMN_DATE,             new ColumnWidth(10));
-		columnWidths.put(ColumnWidth.COLUMN_DESCRIPTION_HTML, new ColumnWidth(55));
+		columnWidths.put(FolderColumn.COLUMN_GUEST,            new ColumnWidth(15));
+		columnWidths.put(FolderColumn.COLUMN_TITLE,            new ColumnWidth(20));
+		columnWidths.put(FolderColumn.COLUMN_DATE,             new ColumnWidth(10));
+		columnWidths.put(FolderColumn.COLUMN_DESCRIPTION_HTML, new ColumnWidth(55));
 	}
 
 	/**
@@ -100,8 +101,8 @@ public class GuestbookFolderView extends DataTableFolderViewBase {
 	 */
 	@Override
 	protected void adjustFloatColumnWidths(Map<String, ColumnWidth> columnWidths) {
-		columnWidths.remove(ColumnWidth.COLUMN_TITLE);
-		columnWidths.put(   ColumnWidth.COLUMN_DESCRIPTION_HTML, new ColumnWidth(100, Unit.PCT));
+		columnWidths.remove(FolderColumn.COLUMN_TITLE);
+		columnWidths.put(   FolderColumn.COLUMN_DESCRIPTION_HTML, new ColumnWidth(100, Unit.PCT));
 	}
 
 	/**
