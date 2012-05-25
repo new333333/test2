@@ -2087,6 +2087,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case SET_ENTRIES_PIN_STATE:
+		{
+			SetEntriesPinStateCmd sepsCmd = ((SetEntriesPinStateCmd) cmd);
+			Boolean result = GwtServerHelper.setEntriesPinState( this, getRequest( ri ), sepsCmd.getEntryIds(), sepsCmd.getPinned() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
 		case SET_SEEN:
 		{
 			List<Long> entryIds = ((SetSeenCmd) cmd).getEntryIds();

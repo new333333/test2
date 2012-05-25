@@ -55,7 +55,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
-import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -71,8 +70,6 @@ import com.google.gwt.user.client.ui.CheckBox;
  * @author drfoster@novell.com
  */
 public class TrashView extends DataTableFolderViewBase {
-	private SpinnerPopup m_busySpinner;
-	
 	/*
 	 * Class constructor.
 	 * 
@@ -194,17 +191,6 @@ public class TrashView extends DataTableFolderViewBase {
 		});
 	}
 
-	/*
-	 * If a busy spinner exists, hide it.
-	 */
-	private void hideBusySpinner() {
-		// If we have a busy spinner...
-		if (null != m_busySpinner) {
-			// ...make sure that it's hidden.
-			m_busySpinner.hide();
-		}
-	}
-
 	/**
 	 * Returns true for panels that are to be included and false
 	 * otherwise.
@@ -281,21 +267,6 @@ public class TrashView extends DataTableFolderViewBase {
 		// Nothing to do.
 	}
 
-	/*
-	 * Shows a busy spinner animation while a trash operation is going
-	 * on.
-	 */
-	private void showBusySpinner() {
-		// If we haven't created a busy spinner yet...
-		if (null == m_busySpinner) {
-			// ...create one now...
-			m_busySpinner = new SpinnerPopup();
-		}
-
-		// ...and show it.
-		m_busySpinner.center();
-	}
-	
 	/**
 	 * Purges all the entries from the trash.
 	 * 

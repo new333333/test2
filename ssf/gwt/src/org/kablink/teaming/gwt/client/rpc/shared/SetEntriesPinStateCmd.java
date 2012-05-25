@@ -33,16 +33,20 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.util.EntityId;
+
 
 /**
  * This class holds all of the information necessary to execute the
- * 'save folder pinning state' command.
+ * 'set entry pin state' command.
  * 
  * @author drfoster@novell.com
  */
-public class SaveFolderPinningStateCmd extends VibeRpcCmd {
-	private boolean	m_viewPinnedEntries;	// true -> Pinned entries are being viewed.  false -> They're not.
-	private Long	m_folderId;				// The ID of the folder whose pinning state is being saved.
+public class SetEntriesPinStateCmd extends VibeRpcCmd {
+	private boolean			m_pinned;	// true -> Pin the entries in the list.  false -> Unpin them.
+	private List<EntityId>	m_entryIds;	// The EntityId's of the entries to pin/unpin.
 	
 	/**
 	 * Class constructor.
@@ -50,7 +54,7 @@ public class SaveFolderPinningStateCmd extends VibeRpcCmd {
 	 * For GWT serialization, must have a zero parameter
 	 * constructor.
 	 */
-	public SaveFolderPinningStateCmd() {
+	public SetEntriesPinStateCmd() {
 		// Initialize the super class.
 		super();		
 	}
@@ -58,16 +62,16 @@ public class SaveFolderPinningStateCmd extends VibeRpcCmd {
 	/**
 	 * Class constructor.
 	 * 
-	 * @param folderId
-	 * @param viewPinnedEntries
+	 * @param entryIds
+	 * @param pinned
 	 */
-	public SaveFolderPinningStateCmd(Long folderId, boolean viewPinnedEntries) {
+	public SetEntriesPinStateCmd(List<EntityId> entryIds, boolean pinned) {
 		// Initialize this object...
 		this();		
 		
 		// ...and store the parameters.
-		setFolderId(         folderId         );
-		setViewPinnedEntries(viewPinnedEntries);
+		setEntryIds(entryIds);
+		setPinned(  pinned  );
 	}
 	
 	/**
@@ -75,16 +79,16 @@ public class SaveFolderPinningStateCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public boolean getViewPinnedEntries() {return m_viewPinnedEntries;}	
-	public Long    getFolderId()          {return m_folderId;         }
+	public boolean        getPinned()   {return m_pinned;  }
+	public List<EntityId> getEntryIds() {return m_entryIds;} 
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setViewPinnedEntries(boolean viewPinnedEntries) {m_viewPinnedEntries = viewPinnedEntries;}
-	public void setFolderId(         Long    folderId)          {m_folderId          = folderId;         }
+	public void setPinned(  boolean        pinned)   {m_pinned   = pinned;  }
+	public void setEntryIds(List<EntityId> entryIds) {m_entryIds = entryIds;} 
 	
 	/**
 	 * Returns the command's enumeration value.
@@ -95,6 +99,6 @@ public class SaveFolderPinningStateCmd extends VibeRpcCmd {
 	 */
 	@Override
 	public int getCmdType() {
-		return VibeRpcCmdType.SAVE_FOLDER_PINNING_STATE.ordinal();
+		return VibeRpcCmdType.SET_ENTRIES_PIN_STATE.ordinal();
 	}
 }

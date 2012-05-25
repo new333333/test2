@@ -746,7 +746,7 @@ public class GwtServerHelper {
 		if (m_logger.isDebugEnabled()) {
 			// ...dump the search filter XML.
 			m_logger.debug("GwtServerHelper.addQuickFilterToSearch( '" + quickFilter + "'):  Search Filter:");
-			m_logger.debug("\n" + GwtServerHelper.getXmlString(sfDoc));
+			m_logger.debug("\n" + getXmlString(sfDoc));
 		}
 	}
 	
@@ -1424,7 +1424,7 @@ public class GwtServerHelper {
 		}
 		catch( Exception ex)
 		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
+			throw getGwtTeamingException( ex );
 		}
 		
 		return newGroup;
@@ -1501,7 +1501,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw getGwtTeamingException(ex);
 		}
 	}
 
@@ -1534,7 +1534,7 @@ public class GwtServerHelper {
 	   			}
 	   			catch ( Exception ex )
 	   			{
-	   				throw GwtServerHelper.getGwtTeamingException( ex );
+	   				throw getGwtTeamingException( ex );
 	   			} 
 	   		}
 		}
@@ -2783,7 +2783,7 @@ public class GwtServerHelper {
 		}
 		catch ( Exception ex )
 		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
+			throw getGwtTeamingException( ex );
 		} 
 		
 		return reply;
@@ -3949,7 +3949,7 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static String getDateTimeString(Date date, int dateStyle, int timeStyle) {
-		User user = GwtServerHelper.getCurrentUser();
+		User user = getCurrentUser();
 		
 		DateFormat df = DateFormat.getDateTimeInstance(dateStyle, timeStyle, user.getLocale());
 		df.setTimeZone(user.getTimeZone());
@@ -3972,7 +3972,7 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static String getDateString(Date date, int dateStyle) {
-		User user = GwtServerHelper.getCurrentUser();
+		User user = getCurrentUser();
 		
 		DateFormat df = DateFormat.getDateInstance(dateStyle, user.getLocale());
 		df.setTimeZone(user.getTimeZone());
@@ -4264,7 +4264,7 @@ public class GwtServerHelper {
 		}
 		catch (Exception ex)
 		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
+			throw getGwtTeamingException( ex );
 		}
 		
 		return totalNumberOfMembers;
@@ -4825,7 +4825,7 @@ public class GwtServerHelper {
 		}
 		catch (Exception ex)
 		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
+			throw getGwtTeamingException( ex );
 		}
 		
 		m_logger.debug( "number of users in the group: " + String.valueOf( count ) );
@@ -4988,18 +4988,18 @@ public class GwtServerHelper {
 						user = (User) nextManager;
 						principalInfo.setPresenceUserWSId( user.getWorkspaceId() );
 
-						if ( GwtServerHelper.isPresenceEnabled() )
-						     presenceInfo = GwtServerHelper.getPresenceInfo( user );
+						if ( isPresenceEnabled() )
+						     presenceInfo = getPresenceInfo( user );
 						else
 							presenceInfo = null;
 						if ( null == presenceInfo )
 						{
-							presenceInfo = GwtServerHelper.getPresenceInfoDefault();
+							presenceInfo = getPresenceInfoDefault();
 						}
 						if ( presenceInfo != null )
 						{
 							principalInfo.setPresence( presenceInfo );
-							principalInfo.setPresenceDude( GwtServerHelper.getPresenceDude( presenceInfo ) );
+							principalInfo.setPresenceDude( getPresenceDude( presenceInfo ) );
 						}
 
 						projectInfo.addManager( principalInfo );
@@ -5795,7 +5795,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw getGwtTeamingException(ex);
 		}		
 	}
 	
@@ -6258,7 +6258,7 @@ public class GwtServerHelper {
 				}
 	   			catch ( Exception ex )
 	   			{
-	   				throw GwtServerHelper.getGwtTeamingException( ex );
+	   				throw getGwtTeamingException( ex );
 	   			}
 	   			finally
 	   			{
@@ -6675,6 +6675,7 @@ public class GwtServerHelper {
 		case SAVE_SEARCH:
 		case SAVE_TAG_SORT_ORDER:
 		case SAVE_WHATS_NEW_SETTINGS:
+		case SET_ENTRIES_PIN_STATE:
 		case SET_SEEN:
 		case SET_UNSEEN:
 		case TEST_GROUP_MEMBERSHIP_LDAP_QUERY:
@@ -6785,7 +6786,8 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static Boolean pinEntry(AllModulesInjected bs, HttpServletRequest request, Long folderId, Long entryId) throws GwtTeamingException {
-		return setEntryPinState(bs, request, folderId, entryId, true);
+		EntityId eid = new EntityId(folderId, entryId, EntityId.FOLDER_ENTRY);
+		return setEntryPinState(bs, request, eid, true);
 	}
 	
 	/**
@@ -6833,7 +6835,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw getGwtTeamingException(ex);
 		}
 	}
 	
@@ -6985,7 +6987,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw getGwtTeamingException(ex);
 		}
 	}
 
@@ -7003,7 +7005,7 @@ public class GwtServerHelper {
 	 */
 	public static Boolean saveFolderSort(AllModulesInjected bs, Long binderId, String sortKey, boolean sortAscending) throws GwtTeamingException {
 		try {
-			Long          userId = GwtServerHelper.getCurrentUser().getId();
+			Long          userId = getCurrentUser().getId();
 			ProfileModule pm     = bs.getProfileModule();
 			pm.setUserProperty(userId, binderId, ObjectKeys.SEARCH_SORT_BY,                      sortKey       );
 			pm.setUserProperty(userId, binderId, ObjectKeys.SEARCH_SORT_DESCEND, String.valueOf(!sortAscending));
@@ -7015,7 +7017,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw getGwtTeamingException(ex);
 		}
 	}
 
@@ -7189,9 +7191,9 @@ public class GwtServerHelper {
 	 */
 	public static void setAssignmentInfoPresence(AssignmentInfo ai, Map<Long, GwtPresenceInfo> presenceMap) {
 		GwtPresenceInfo pi = presenceMap.get(ai.getId());
-		if (null == pi) pi = GwtServerHelper.getPresenceInfoDefault();
+		if (null == pi) pi = getPresenceInfoDefault();
 		ai.setPresence(pi);
-		ai.setPresenceDude(GwtServerHelper.getPresenceDude(pi));
+		ai.setPresenceDude(getPresenceDude(pi));
 	}
 
 	/**
@@ -7206,63 +7208,68 @@ public class GwtServerHelper {
 		ai.setPresenceUserWSId(presenceUserWSId);
 	}
 
-	/**
+	/*
 	 * Sets an entry's pin state.
 	 */
-	private static Boolean setEntryPinState(AllModulesInjected bs, HttpServletRequest request, Long folderId, Long entryId, boolean pin) throws GwtTeamingException {
+	private static Boolean setEntryPinState(AllModulesInjected bs, HttpServletRequest request, EntityId entityId, boolean pin) throws GwtTeamingException {
 		try {
-			// If we weren't given a folder ID...
-			if (null == folderId) {
-				// ...extract it from the entry.
-				FolderEntry fe = bs.getFolderModule().getEntry(null, entryId);
-				folderId = fe.getParentBinder().getId();
-			}
-
-			// Read the user's folder properties for the folder.
-			Long userId = getCurrentUser().getId();
-			ProfileModule pm = bs.getProfileModule();
-			UserProperties userFolderProperties = pm.getUserProperties(userId, folderId);
-			Map properties = userFolderProperties.getProperties();
-
-			// Parse the pinned entries from it.
-			String pinnedEntries;
-			if (properties.containsKey(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES))
-			     pinnedEntries = (String)properties.get(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES);
-			else pinnedEntries = "";
-			List<Long> peList = new ArrayList<Long>();
-			String[] peArray = pinnedEntries.split(",");
-			for (int i = 0; i < peArray.length; i += 1) {
-				String pe = peArray[i];
-				if (MiscUtil.hasString(pe)) {
-					peList.add(Long.valueOf(peArray[i]));
+			// Is the entity an entry?
+			if (entityId.isEntry()) {
+				// Yes!  If it doesn't contain a folder ID...
+				Long folderId = entityId.getBinderId();
+				Long entryId  = entityId.getEntityId();
+				if (null == folderId) {
+					// ...extract it from the entry.
+					FolderEntry fe = bs.getFolderModule().getEntry(null, entryId);
+					folderId = fe.getParentBinder().getId();
 				}
-			}
-			
-			// Add (pin)/remove (unpin) the entry as requested.
-			boolean isPinned = peList.contains(entryId);
-			if (pin != isPinned) {
-				if (pin)
-				     peList.add(   entryId);
-				else peList.remove(entryId);
-			}
-			
-			// Scan the entries in the pinned list.
-			StringBuffer finalPinnedEntries = new StringBuffer("");
-			SortedSet<FolderEntry> pinnedFolderEntriesSet = bs.getFolderModule().getEntries(peList);
-			for (FolderEntry entry:  pinnedFolderEntriesSet) {
-				// Is the entry still viable in this folder?
-				if (entry.getParentBinder().getId().equals(folderId) && (!(entry.isPreDeleted()))) {
-					// Yes!  Add it to the final pinned entries string.
-					if (0 < finalPinnedEntries.length()) {
-						finalPinnedEntries.append(",");
+	
+				// Read the user's folder properties for the folder.
+				Long userId = getCurrentUser().getId();
+				ProfileModule pm = bs.getProfileModule();
+				UserProperties userFolderProperties = pm.getUserProperties(userId, folderId);
+				Map properties = userFolderProperties.getProperties();
+	
+				// Parse the pinned entries from it.
+				String pinnedEntries;
+				if (properties.containsKey(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES))
+				     pinnedEntries = (String)properties.get(ObjectKeys.USER_PROPERTY_PINNED_ENTRIES);
+				else pinnedEntries = "";
+				List<Long> peList = new ArrayList<Long>();
+				String[] peArray = pinnedEntries.split(",");
+				for (int i = 0; i < peArray.length; i += 1) {
+					String pe = peArray[i];
+					if (MiscUtil.hasString(pe)) {
+						peList.add(Long.valueOf(peArray[i]));
 					}
-					finalPinnedEntries.append(entry.getId().toString());
 				}
+				
+				// Add (pin)/remove (unpin) the entry as requested.
+				boolean isPinned = peList.contains(entryId);
+				if (pin != isPinned) {
+					if (pin)
+					     peList.add(   entryId);
+					else peList.remove(entryId);
+				}
+				
+				// Scan the entries in the pinned list.
+				StringBuffer finalPinnedEntries = new StringBuffer("");
+				SortedSet<FolderEntry> pinnedFolderEntriesSet = bs.getFolderModule().getEntries(peList);
+				for (FolderEntry entry:  pinnedFolderEntriesSet) {
+					// Is the entry still viable in this folder?
+					if (entry.getParentBinder().getId().equals(folderId) && (!(entry.isPreDeleted()))) {
+						// Yes!  Add it to the final pinned entries string.
+						if (0 < finalPinnedEntries.length()) {
+							finalPinnedEntries.append(",");
+						}
+						finalPinnedEntries.append(entry.getId().toString());
+					}
+				}
+				
+				// Write the final pinned entries list to the user's folder
+				// properties.
+				pm.setUserProperty(userId, folderId, ObjectKeys.USER_PROPERTY_PINNED_ENTRIES, finalPinnedEntries.toString());
 			}
-			
-			// Write the final pinned entries list to the user's folder
-			// properties.
-			pm.setUserProperty(userId, folderId, ObjectKeys.USER_PROPERTY_PINNED_ENTRIES, finalPinnedEntries.toString());
 
 			// If we get here, setting the pin state was successful!
 			// Return true.
@@ -7270,8 +7277,31 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException(ex);
+			throw getGwtTeamingException(ex);
 		}		
+	}
+	
+	/**
+	 * Sets the pin state of the given entries.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param entryIds
+	 * @param pinned
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean setEntriesPinState(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entryIds, boolean pinned) throws GwtTeamingException {
+		// Scan the EntityId's we were given...
+		for (EntityId entryId:  entryIds) {
+			// ...and pin/unpin each.
+		    setEntryPinState(bs, request, entryId, pinned);
+		}
+
+		// If we get here, we did what we came to do!  Return true.
+		return Boolean.TRUE;
 	}
 	
 	/*
@@ -7512,7 +7542,7 @@ public class GwtServerHelper {
 			}
 			catch (Exception ex)
 			{
-				throw GwtServerHelper.getGwtTeamingException( ex );
+				throw getGwtTeamingException( ex );
 			}
 		}
 		else
@@ -7520,7 +7550,7 @@ public class GwtServerHelper {
 			GwtTeamingException ex;
 			
 			// No, throw an exception
-			ex = GwtServerHelper.getGwtTeamingException();
+			ex = getGwtTeamingException();
 			ex.setExceptionType( ExceptionType.LDAP_GUID_NOT_CONFIGURED );
 			throw ex;
 		}
@@ -7539,7 +7569,8 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static Boolean unpinEntry(AllModulesInjected bs, HttpServletRequest request, Long folderId, Long entryId) throws GwtTeamingException {
-		return setEntryPinState(bs, request, folderId, entryId, false);
+		EntityId eid = new EntityId(folderId, entryId, EntityId.FOLDER_ENTRY);
+		return setEntryPinState(bs, request, eid, false);
 	}
 	
 	/**

@@ -53,6 +53,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.Scheduler;
@@ -79,10 +80,12 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	private BinderInfo							m_folderInfo;					// A BinderInfo object that describes the folder being viewed.
 	private boolean								m_allowColumnSizing;			// true -> Add the column sizing entry menu item.  false -> Don't.
 	private boolean								m_viewReady;					// Set true once the view and all its components are ready.
+	private boolean								m_pinning;						//
 	private CalendarDisplayDataProvider			m_calendarDisplayDataProvider;	// A CalendarDisplayDataProvider to use to obtain a CalendarDisplayDataRpcResponseData object.
 	private FolderDisplayDataRpcResponseData	m_folderDisplayData;			// Various pieces of display information about the folder (sorting, page size, column widths, ...) 
 	private int									m_readyComponents;				// Tracks items as they become ready.
 	private List<Widget>						m_verticalPanels;				// Tracks the widgets added as vertical panels.
+	private SpinnerPopup						m_busySpinner;					//
 	private String								m_styleBase;					// Base name for the view specific styles to use for this view.
 	private VibeFlowPanel						m_flowPanel;					// The flow panel used to hold the view specific content of the view.
 	private VibeFlowPanel						m_verticalFlowPanel;			// The flow panel that holds all the components of the view, both common and view specific, that flow vertically down the view.
@@ -160,6 +163,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * @return
 	 */
 	final public BinderInfo                       getFolderInfo()        {return m_folderInfo;                         }	// The binder being viewed.
+	final public boolean                          isPinning()            {return m_pinning;                            }	//
 	final public boolean                          isProfilesRootWS()     {return m_folderInfo.isBinderProfilesRootWS();}	//
 	final public boolean                          isTrash()              {return m_folderInfo.isBinderTrash();         }	//
 	final public FolderDisplayDataRpcResponseData getFolderDisplayData() {return m_folderDisplayData;                  }	//
@@ -338,6 +342,17 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	}
 	
 	/**
+	 * If a busy spinner exists, hide it.
+	 */
+	final public void hideBusySpinner() {
+		// If we have a busy spinner...
+		if (null != m_busySpinner) {
+			// ...make sure that it's hidden.
+			m_busySpinner.hide();
+		}
+	}
+
+	/**
 	 * Returns true if a panel should be loaded and false otherwise.
 	 *
 	 * Classes that extend this class can override this method to
@@ -437,6 +452,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 					// Store the core folder display data and tell the view
 					// to construct itself.
 					m_folderDisplayData = ((FolderDisplayDataRpcResponseData) response.getResponseData());
+					m_pinning           = m_folderDisplayData.getViewPinnedEntries();
 					loadPart2Async();
 				}
 			});
@@ -915,6 +931,29 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 */
 	public void setCalendarDisplayDataProvider(CalendarDisplayDataProvider calendarDisplayDataProvider) {
 		m_calendarDisplayDataProvider = calendarDisplayDataProvider;
+	}
+
+	/**
+	 * Sets the current pinning state.
+	 * 
+	 * @param pinning
+	 */
+	public void setPinning(boolean pinning) {
+		m_pinning = pinning;
+	}
+	
+	/**
+	 * Shows a busy spinner animation while an operation is going on.
+	 */
+	final public void showBusySpinner() {
+		// If we haven't created a busy spinner yet...
+		if (null == m_busySpinner) {
+			// ...create one now...
+			m_busySpinner = new SpinnerPopup();
+		}
+
+		// ...and show it.
+		m_busySpinner.center();
 	}
 	
 	/**
