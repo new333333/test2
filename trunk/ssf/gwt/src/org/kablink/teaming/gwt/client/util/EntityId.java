@@ -175,6 +175,22 @@ public class EntityId implements IsSerializable {
 		}
 		return reply;
 	}
+
+	/**
+	 * Returns true if this EntityId matches the given EntityId.
+	 * 
+	 * @param entityId
+	 * 
+	 * @return
+	 */
+	public boolean equalsEntityId(EntityId entityId) {
+		boolean reply =
+			(getEntityId().equals(  entityId.getEntityId()) &&
+			 getBinderId().equals(  entityId.getBinderId()) &&
+			 getEntityType().equals(entityId.getEntityType()));
+		
+		return reply;
+	}
 	
 	/**
 	 * Returns a List<Long> of the IDs of the entries from a List<EntityId>.

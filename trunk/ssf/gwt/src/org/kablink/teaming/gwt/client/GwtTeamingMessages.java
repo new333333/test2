@@ -448,6 +448,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveTaskStatus();
 	String rpcFailure_SaveWhatsNewShowSetting();
 	String rpcFailure_Search();
+	String rpcFailure_SetEntriesPinState();
 	String rpcFailure_SetSeen();
 	String rpcFailure_SetStatus();
 	String rpcFailure_SetUnseen();
@@ -1347,6 +1348,8 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_Unread();
 	String vibeDataTable_Alt_PinEntry();
 	String vibeDataTable_Alt_PinHeader();
+	String vibeDataTable_Alt_PinHeader_PinAll();
+	String vibeDataTable_Alt_PinHeader_UnpinAll();
 	String vibeDataTable_Alt_StarGold();
 	String vibeDataTable_Alt_StarGray();
 	String vibeDataTable_Alt_UnpinEntry();

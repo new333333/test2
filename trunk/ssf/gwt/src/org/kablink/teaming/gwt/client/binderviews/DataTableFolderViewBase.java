@@ -107,6 +107,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderRowsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderPinningStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SetEntriesPinStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -149,8 +150,8 @@ import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.Header;
 import com.google.gwt.user.cellview.client.RowStyles;
-import com.google.gwt.user.cellview.client.SafeHtmlHeader;
 import com.google.gwt.user.cellview.client.SimplePager;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
@@ -216,6 +217,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	// The following controls whether the display data read from the
 	// server is dumped as part of the content of the view.
 	private final static boolean DUMP_DISPLAY_DATA	= false;
+	
+	// The following is used as the ID on the <IMG> containing the
+	// pin header.
+	private final static String PIN_HEADER_IMG_ID	= "pinHeaderImg";
 	
 	// The following are used to construct the style names applied
 	// to the columns and rows of the data table.
@@ -473,7 +478,52 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						resetViewAsync();
 					}
 				});
-			} 
+			}
+			
+			else if (column instanceof EntryPinColumn) {
+				// Toggle the state of the pin on the header.
+				final boolean pinning = (!(isPinning()));
+				setPinning(pinning);
+				String imgTitle;
+				String imgUrl;
+				if (pinning)
+				     {imgUrl = m_images.orangePin().getSafeUri().asString(); imgTitle = m_messages.vibeDataTable_Alt_PinHeader_UnpinAll();}
+				else {imgUrl = m_images.grayPin().getSafeUri().asString();   imgTitle = m_messages.vibeDataTable_Alt_PinHeader_PinAll();  }
+				Element img = DOM.getElementById(PIN_HEADER_IMG_ID);
+				img.setAttribute("src",   imgUrl  );
+				img.setAttribute("title", imgTitle);
+
+				// Are there any entries (i.e., not binders) in the
+				// data table?
+				final List<EntityId> pinnedEntityIds = getAllPinnedEntityIds(!pinning);
+				if ((null != pinnedEntityIds) && (!(pinnedEntityIds.isEmpty()))) {
+					// Yes!  Pin/unpin them.
+				    showBusySpinner();
+					final SetEntriesPinStateCmd cmd = new SetEntriesPinStateCmd(pinnedEntityIds, pinning);
+					GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+						@Override
+						public void onFailure(Throwable caught) {
+							hideBusySpinner();
+							GwtClientHelper.handleGwtRPCFailure(
+								caught,
+								GwtTeaming.getMessages().rpcFailure_SetEntriesPinState());
+						}
+
+						@Override
+						public void onSuccess(VibeRpcResponse result) {
+							// Store the pin changes in the rows...
+							for (EntityId entryId:  pinnedEntityIds) {
+								getRowByEntityId(entryId).setPinned(pinning);
+							}
+							
+							// ...and reset the view to redisplay things
+							// ...with changes.
+							hideBusySpinner();
+							resetViewAsync();
+						}
+					});
+				}
+			}
 		}
 	}
 
@@ -572,12 +622,18 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	private void addPinColumn(final FolderRowSelectionModel selectionModel, int colIndex, double pctTotal) {
 		// Define the pin header...
+		String imgTitle;
+		String imgUrl;
+		if (isPinning())
+	         {imgUrl = m_images.orangePin().getSafeUri().asString(); imgTitle = m_messages.vibeDataTable_Alt_PinHeader_UnpinAll();}
+		else {imgUrl = m_images.grayPin().getSafeUri().asString();   imgTitle = m_messages.vibeDataTable_Alt_PinHeader_PinAll();  }
+		Image i = new Image();
+		i.setUrl(  imgUrl  );
+		i.setTitle(imgTitle);
+		i.getElement().setId(PIN_HEADER_IMG_ID);
 		VibeFlowPanel fp = new VibeFlowPanel();
-		Image i = new Image(m_images.grayPin());
-		i.setTitle(m_messages.vibeDataTable_Alt_PinHeader());
 		fp.add(i);
-		SafeHtml rendered = SafeHtmlUtils.fromTrustedString(fp.getElement().getInnerHTML());
-		final SafeHtmlHeader pinHeader = new SafeHtmlHeader(rendered);
+		SafeHtml pinHtml = SafeHtmlUtils.fromTrustedString(fp.getElement().getInnerHTML());
 
 		// ...define a column for it...
 		EntryPinColumn<FolderRow> column = new EntryPinColumn<FolderRow>() {
@@ -598,9 +654,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		};
 		
 		// ...and connect it all together.
-	    m_dataTable.addColumn(column, pinHeader);
-	    setColumnStyles(column, FolderColumn.COLUMN_PIN, colIndex        );
-	    setColumnWidth(         FolderColumn.COLUMN_PIN, column, pctTotal);
+		column.setSortable(   true                                             );
+	    m_dataTable.addColumn(column, pinHtml                                  );
+	    setColumnStyles(      column, FolderColumn.COLUMN_PIN, colIndex        );
+	    setColumnWidth(               FolderColumn.COLUMN_PIN, column, pctTotal);
 	}
 	
 	/*
@@ -799,6 +856,34 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private boolean canSelectEntries() {
 		return true;
 	}
+
+	/*
+	 * Returns a List<EntityIds> of the EntityId's of all the entries
+	 * (excluding binders) from the data table whose pinned state
+	 * matches the given boolean.
+	 */
+	private List<EntityId> getAllPinnedEntityIds(boolean pinned) {
+		// Are there any rows in the table?
+		List<EntityId>  reply      = new ArrayList<EntityId>();
+		List<FolderRow> folderRows = m_dataTable.getVisibleItems();
+		if (null != folderRows) {
+			// Yes!  Scan them
+			for (FolderRow fr : folderRows) {
+				// Is this row an entry that matches the requested
+				// pinned state?
+				EntityId rowEID = fr.getEntityId();
+				if (rowEID.isEntry() && (fr.getPinned() == pinned)) {
+					// Yes!  Add its entity ID to the List<EntityId>.
+					reply.add(rowEID);
+				}
+			}
+		}
+		
+		// If we get here, reply refers to List<EntityId> of the
+		// EntityId's of the entries from the data table that match the
+		// given pinned state.  Return it.
+		return reply;
+	}
 	
 	/*
 	 * Returns the index of a named FolderColumn from a
@@ -867,6 +952,28 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	protected Widget getEmptyTableWidget() {
 		return new Label(m_messages.vibeDataTable_Empty());
+	}
+	
+	/*
+	 * Returns the FolderRow for the given entity ID.
+	 */
+	private FolderRow getRowByEntityId(EntityId entityId) {
+		// Are there any rows in the table?
+		List<FolderRow> rows  = m_dataTable.getVisibleItems();
+		if (null != rows) {
+			// Yes!  Scan them
+			for (FolderRow row : rows) {
+				// Is this row an entry?
+				EntityId rowEID = row.getEntityId();
+				if (rowEID.equalsEntityId(entityId)) {
+					return row;
+				}
+			}
+		}
+		
+		// If we get here, we couldn't find the row in question.
+		// Return null.
+		return null;
 	}
 	
 	/**
@@ -975,7 +1082,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	/*
 	 * Initializes the columns in the data table.
 	 */
-	private void initTableColumns(final FolderRowSelectionModel selectionModel, FolderRowSortHandler sortHandler) {
+	private void initTableColumns(final FolderRowSelectionModel selectionModel) {
 		// Clear the data table's column sort list.
 		ColumnSortList csl = m_dataTable.getColumnSortList();
 		csl.clear();
@@ -2020,7 +2127,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Synchronously populates the data table view given the available
 	 * data.
 	 */
-	private void populateView() {		
+	private void populateView() {
 		// If we're supposed to dump the display data we're building this on...
 		VibeVerticalPanel vp;
 		if (DUMP_DISPLAY_DATA) {
@@ -2077,7 +2184,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	    m_dataTable.setSelectionModel(selectionModel, DefaultSelectionEventManager.<FolderRow> createCheckboxManager());
 
 	    // Initialize the table's columns.
-	    initTableColumns(selectionModel, sortHandler);
+	    initTableColumns(selectionModel);
 	    
 	    // Add the provider that supplies FolderRow's for the table.
 		FolderRowAsyncProvider folderRowProvider = new FolderRowAsyncProvider(m_dataTable, keyProvider);

@@ -1289,7 +1289,7 @@ public class GwtUIHelper {
 		model.put("productName", productName);
 			
 		// Put out the main help URL for Vibe.
-		model.put(WebKeys.URL_HELPURL, GwtUIHelper.getHelpUrl());
+		model.put(WebKeys.URL_HELPURL, getHelpUrl());
 
 		// Put out the ID of the top Vibe workspace.
 		String topWSId = getTopWSIdSafely(bs);
