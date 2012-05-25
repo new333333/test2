@@ -1054,6 +1054,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
   		if (wEntry.getWorkflowChange() != null) processChangeLog(entry, ChangeLog.STARTWORKFLOW);
   		if (options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
   		indexEntry(entry);
+  		getRssModule().updateRssFeed(entry); 
      }
      //***********************************************************************************************************
      @Override
@@ -1066,6 +1067,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
   		getWorkflowModule().deleteEntryWorkflow(wEntry, definition);
   		processChangeLog(entry, ChangeLog.ENDWORKFLOW);
    		indexEntry(entry);
+   		getRssModule().updateRssFeed(entry); 
      }
    //***********************************************************************************************************
     @Override
