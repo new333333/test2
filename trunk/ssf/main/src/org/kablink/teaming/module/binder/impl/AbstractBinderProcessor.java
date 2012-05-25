@@ -1845,7 +1845,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
     public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries) {
     	//call overloaded methods
-    	IndexErrors errors = loadIndexTreeIncremental(binder);   
+    	IndexErrors errors = loadIndexTreeIncremental(binder, includeEntries);   
    		return errors;
     }
     
@@ -1914,7 +1914,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
    	}
 
-   	private IndexErrors loadIndexTreeIncremental(Binder binder) {
+   	private IndexErrors loadIndexTreeIncremental(Binder binder, boolean includeEntries) {
 		IndexErrors errors = new IndexErrors();
 		// load the binder
 		Map params = new HashMap();
@@ -1938,9 +1938,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			IndexErrors binderErrors = null;
 			if (processor instanceof AbstractEntryProcessor) {
 				binderErrors = ((AbstractEntryProcessor) processor)
-						.indexBinderIncremental(b, true, false, tags);
+						.indexBinderIncremental(b, includeEntries, false, tags);
 			} else {
-				binderErrors = processor.indexBinder(b, true, false, tags);
+				binderErrors = processor.indexBinder(b, includeEntries, false, tags);
 			}
 			errors.add(binderErrors);
 			getCoreDao().evict(tags);
