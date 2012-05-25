@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
- * 
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ *
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
  * obtain a copy of the CPAL at http://www.opensource.org/licenses/cpal_1.0. The
@@ -8,17 +8,17 @@
  * have been added to cover use of software over a computer network and provide
  * for limited attribution for the Original Developer. In addition, Exhibit A has
  * been modified to be consistent with Exhibit B.
- * 
+ *
  * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT
  * WARRANTY OF ANY KIND, either express or implied. See the CPAL for the specific
  * language governing rights and limitations under the CPAL.
- * 
+ *
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
  * (c) 1998-2009 Novell, Inc. All Rights Reserved.
- * 
+ *
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -26,56 +26,47 @@
  * Display of Attribution Information is required in Larger Works which are
  * defined in the CPAL as a work which combines Covered Code or portions thereof
  * with code not governed by the terms of the CPAL.
- * 
+ *
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.rest.v1.model;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @author jong
- *
+ * User: david
+ * Date: 5/23/12
+ * Time: 4:45 PM
  */
-@XmlRootElement (name="history_stamp")
-public class HistoryStamp {
+@XmlRootElement
+public class StringIdLinkPair {
+    private String id;
+    private String link;
 
-	private LongIdLinkPair principal;
-	private Calendar date;
-	
-	private HistoryStamp() {}
-	
-	public HistoryStamp(LongIdLinkPair principal, Calendar date) {
-		this.principal = principal;
-		this.date = date;
-	}
+    public StringIdLinkPair() {
+    }
 
-	public HistoryStamp(LongIdLinkPair principal, Date date) {
-		this.principal = principal;
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		this.date = cal;
-	}
+    public StringIdLinkPair(String id, String link) {
+        this.id = id;
+        this.link = link;
+    }
 
-    @XmlElement(name="principal")
-	public LongIdLinkPair getPrincipal() {
-		return principal;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setPrincipal(LongIdLinkPair principal) {
-		this.principal = principal;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public Calendar getDate() {
-		return date;
-	}
+    @XmlElement(name="href")
+    public String getLink() {
+        return link;
+    }
 
-	public void setDate(Calendar date) {
-		this.date = date;
-	}
+    public void setLink(String link) {
+        this.link = link;
+    }
 }

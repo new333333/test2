@@ -34,8 +34,10 @@ package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.dom4j.Element;
 import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
+import org.kablink.teaming.rest.v1.model.DefinitionBrief;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
-import org.kablink.teaming.rest.v1.model.IdLinkPair;
+import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
+import org.kablink.teaming.rest.v1.model.StringIdLinkPair;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
@@ -56,22 +58,25 @@ abstract public class DefinableEntityBriefBuilder {
         model.setTitle((String) entry.get(Constants.TITLE_FIELD));
         model.setEntityType((String) entry.get(Constants.ENTITY_FIELD));
         model.setFamily((String) entry.get(Constants.FAMILY_FIELD));
-        model.setDefinitionId((String) entry.get(Constants.COMMAND_DEFINITION_FIELD));
-        model.setDefinitionType(Integer.valueOf((String) entry.get(Constants.DEFINITION_TYPE_FIELD)));
+        String defid = (String) entry.get(Constants.COMMAND_DEFINITION_FIELD);
+        if (defid!=null) {
+            model.setDefinition(new StringIdLinkPair(defid,
+                    LinkUriUtil.getDefinitionLinkUri(defid)));
+        }
 
         Long parentBinderId = getLong(entry, parentBinderField);
         if (parentBinderId!=null) {
-            model.setParentBinder(new IdLinkPair(parentBinderId, LinkUriUtil.getBinderLinkUri(parentBinderId)));
+            model.setParentBinder(new LongIdLinkPair(parentBinderId, LinkUriUtil.getBinderLinkUri(parentBinderId)));
         }
 
         Long creator = Long.valueOf((String) entry.get(Constants.CREATORID_FIELD));
         model.setCreation(
-                new HistoryStamp(new IdLinkPair(creator, LinkUriUtil.getUserLinkUri(creator)),
+                new HistoryStamp(new LongIdLinkPair(creator, LinkUriUtil.getUserLinkUri(creator)),
                         (Date) entry.get(Constants.CREATION_DATE_FIELD)));
 
         Long modifier = Long.valueOf((String) entry.get(Constants.MODIFICATIONID_FIELD));
         model.setModification(
-                new HistoryStamp(new IdLinkPair(modifier, LinkUriUtil.getUserLinkUri(modifier)),
+                new HistoryStamp(new LongIdLinkPair(modifier, LinkUriUtil.getUserLinkUri(modifier)),
                         (Date) entry.get(Constants.MODIFICATION_DATE_FIELD)));
     }
 

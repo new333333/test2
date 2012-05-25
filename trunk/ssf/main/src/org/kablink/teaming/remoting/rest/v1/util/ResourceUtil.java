@@ -35,14 +35,14 @@ package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.rest.v1.model.*;
-import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.PermaLinkUtil;
-import org.kablink.teaming.web.util.WebUrlUtil;
+import org.kablink.util.search.Constants;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -76,12 +76,12 @@ public class ResourceUtil {
     public static FileProperties buildFileProperties(FileIndexData fa) {
         FileProperties fp = new FileProperties();
         fp.setId(fa.getId());
-        fp.setEntry(new IdLinkPair(fa.getOwningEntityId(), LinkUriUtil.getUserLinkUri(fa.getOwningEntityId())));
-        fp.setBinder(new IdLinkPair(fa.getBinderId(), LinkUriUtil.getBinderLinkUri(fa.getBinderId())));
+        fp.setEntry(new LongIdLinkPair(fa.getOwningEntityId(), LinkUriUtil.getUserLinkUri(fa.getOwningEntityId())));
+        fp.setBinder(new LongIdLinkPair(fa.getBinderId(), LinkUriUtil.getBinderLinkUri(fa.getBinderId())));
         fp.setName(fa.getName());
-        fp.setCreation(new HistoryStamp(new IdLinkPair(fa.getCreatorId(), LinkUriUtil.getUserLinkUri(fa.getCreatorId())),
+        fp.setCreation(new HistoryStamp(new LongIdLinkPair(fa.getCreatorId(), LinkUriUtil.getUserLinkUri(fa.getCreatorId())),
                                         fa.getCreatedDate()));
-        fp.setModification(new HistoryStamp(new IdLinkPair(fa.getModifierId(), LinkUriUtil.getUserLinkUri(fa.getModifierId())),
+        fp.setModification(new HistoryStamp(new LongIdLinkPair(fa.getModifierId(), LinkUriUtil.getUserLinkUri(fa.getModifierId())),
                                             fa.getModifiedDate()));
         fp.setLength(fa.getSize());
         LinkUriUtil.populateFileLinks(fp);
@@ -94,9 +94,9 @@ public class ResourceUtil {
         Long modifierId = fa.getModification().getPrincipal().getId();
         FileProperties fp = new FileProperties(fa.getId(),
       				fa.getFileItem().getName(),
-      				new HistoryStamp(new IdLinkPair(creatorId, LinkUriUtil.getUserLinkUri(creatorId)),
+      				new HistoryStamp(new LongIdLinkPair(creatorId, LinkUriUtil.getUserLinkUri(creatorId)),
                               fa.getCreation().getDate()),
-      				new HistoryStamp(new IdLinkPair(modifierId, LinkUriUtil.getUserLinkUri(modifierId)),
+      				new HistoryStamp(new LongIdLinkPair(modifierId, LinkUriUtil.getUserLinkUri(modifierId)),
                               fa.getModification().getDate()),
       				fa.getFileItem().getLength(),
       				fa.getHighestVersionNumber(),
@@ -107,9 +107,9 @@ public class ResourceUtil {
       				(fl != null && fl.getOwner() != null)? fl.getOwner().getId():null,
       				(fl!= null)? fl.getExpirationDate():null);
         Long entryId = fa.getOwner().getEntity().getId();
-        fp.setEntry(new IdLinkPair(entryId, LinkUriUtil.getFolderEntryLinkUri(entryId)));
+        fp.setEntry(new LongIdLinkPair(entryId, LinkUriUtil.getFolderEntryLinkUri(entryId)));
         Long binderId = fa.getOwner().getEntity().getParentBinder().getId();
-        fp.setBinder(new IdLinkPair(binderId, LinkUriUtil.getBinderLinkUri(binderId)));
+        fp.setBinder(new LongIdLinkPair(binderId, LinkUriUtil.getBinderLinkUri(binderId)));
         LinkUriUtil.populateFileLinks(fp);
         return fp;
     }
@@ -122,11 +122,9 @@ public class ResourceUtil {
         model.setFamily(binder.getFamily());
         model.setLibrary(binder.getLibrary());
         model.setMirrored(binder.getMirrored());
-        model.setDefinitionType(binder.getDefinitionType());
         model.setPath(binder.getPath());
         model.setCreation(buildHistoryStamp(binder.getCreation()));
         model.setModification(buildHistoryStamp(binder.getModification()));
-        model.setDefinitionType(binder.getDefinitionType());
         model.setLink(LinkUriUtil.getBinderLinkUri(model));
         LinkUriUtil.populateBinderLinks(model, model.isWorkspace(), model.isFolder());
         return model;
@@ -175,13 +173,13 @@ public class ResourceUtil {
         model.setSkypeId(user.getSkypeId());
         model.setTwitterId(user.getTwitterId());
         if (user.getMiniBlogId()!=null) {
-            model.setMiniBlog(new IdLinkPair(user.getMiniBlogId(), LinkUriUtil.getFolderLinkUri(user.getMiniBlogId())));
+            model.setMiniBlog(new LongIdLinkPair(user.getMiniBlogId(), LinkUriUtil.getFolderLinkUri(user.getMiniBlogId())));
         }
         model.setDiskQuota(user.getDiskQuota());
         model.setFileSizeLimit(user.getFileSizeLimit());
         model.setDiskSpaceUsed(user.getDiskSpaceUsed());
         if (user.getWorkspaceId()!=null) {
-            model.setWorkspace(new IdLinkPair(user.getWorkspaceId(), LinkUriUtil.getWorkspaceLinkUri(user.getWorkspaceId())));
+            model.setWorkspace(new LongIdLinkPair(user.getWorkspaceId(), LinkUriUtil.getWorkspaceLinkUri(user.getWorkspaceId())));
         }
 
         if (user.getId().equals(RequestContextHolder.getRequestContext().getUserId())) {
@@ -226,8 +224,8 @@ public class ResourceUtil {
         Long modifierId = va.getModification().getPrincipal().getId();
         FileVersionProperties props = new FileVersionProperties(
                 va.getId(),
-                new HistoryStamp(new IdLinkPair(creatorId, LinkUriUtil.getUserLinkUri(creatorId)), va.getCreation().getDate()),
-                new HistoryStamp(new IdLinkPair(modifierId, LinkUriUtil.getUserLinkUri(modifierId)), va.getModification().getDate()),
+                new HistoryStamp(new LongIdLinkPair(creatorId, LinkUriUtil.getUserLinkUri(creatorId)), va.getCreation().getDate()),
+                new HistoryStamp(new LongIdLinkPair(modifierId, LinkUriUtil.getUserLinkUri(modifierId)), va.getModification().getDate()),
                 Long.valueOf(va.getFileItem().getLength()),
                 Integer.valueOf(va.getVersionNumber()),
                 Integer.valueOf(va.getMajorVersion()),
@@ -244,11 +242,11 @@ public class ResourceUtil {
 
         if (entity.getParentBinder() != null) {
             Long binderId = entity.getParentBinder().getId();
-            model.setParentBinder(new IdLinkPair(binderId, LinkUriUtil.getBinderLinkUri(binderId)));
+            model.setParentBinder(new LongIdLinkPair(binderId, LinkUriUtil.getBinderLinkUri(binderId)));
         }
 
         if(entity.getEntryDefId() != null)
-            model.setDefinitionId(entity.getEntryDefId());
+            model.setDefinition(new StringIdLinkPair(entity.getEntryDefId(), LinkUriUtil.getDefinitionLinkUri(entity.getEntryDefId())));
 
         model.setTitle(entity.getTitle());
 
@@ -336,13 +334,14 @@ public class ResourceUtil {
         model.setIcon(LinkUriUtil.buildIconLinkUri(binder.getIconName()));
         model.setLibrary(binder.isLibrary());
         model.setMirrored(binder.isMirrored());
-        model.setDefinitionType(binder.getDefinitionType());
+        if(binder.getEntryDefId() != null)
+            model.setDefinition(new StringIdLinkPair(binder.getEntryDefId(), LinkUriUtil.getDefinitionLinkUri(binder.getEntryDefId())));
         model.setPath(binder.getPathName());
         if(binder.getCreation() != null) {
             model.setCreation(buildHistoryStamp(binder.getCreation()));
         }
         if(binder.getModification() != null) {
-            model.setDefinitionType(binder.getDefinitionType());
+            model.setModification(buildHistoryStamp(binder.getModification()));
         }
         model.setLink(LinkUriUtil.getBinderLinkUri(model));
         LinkUriUtil.populateBinderLinks(model, model.isWorkspace(), model.isFolder());
@@ -357,12 +356,12 @@ public class ResourceUtil {
 
     private static HistoryStamp buildHistoryStamp(org.kablink.teaming.domain.HistoryStampBrief historyStamp) {
         Long userId = historyStamp.getPrincipalId();
-        return new HistoryStamp(new IdLinkPair(userId, LinkUriUtil.getUserLinkUri(userId)), historyStamp.getDate());
+        return new HistoryStamp(new LongIdLinkPair(userId, LinkUriUtil.getUserLinkUri(userId)), historyStamp.getDate());
     }
 
     private static HistoryStamp buildHistoryStamp(org.kablink.teaming.domain.HistoryStamp historyStamp) {
         Long userId = historyStamp.getPrincipal().getId();
-        return new HistoryStamp(new IdLinkPair(userId, LinkUriUtil.getUserLinkUri(userId)), historyStamp.getDate());
+        return new HistoryStamp(new LongIdLinkPair(userId, LinkUriUtil.getUserLinkUri(userId)), historyStamp.getDate());
     }
 
     private static PrincipalBrief buildPrincipalBrief(org.kablink.teaming.domain.HistoryStampBrief historyStamp) {
@@ -391,6 +390,17 @@ public class ResourceUtil {
         Description model = new Description();
         model.setText(description.getText());
         model.setFormat(description.getFormat());
+        return model;
+    }
+
+    public static DefinitionBrief buildDefinitionBrief(Definition def) {
+        DefinitionBrief model = new DefinitionBrief();
+        model.setId(def.getId());
+        model.setInternalId(def.getInternalId());
+        model.setName(def.getName());
+        model.setTitle(def.getTitle());
+        model.setType(def.getType());
+        model.setLink(LinkUriUtil.getDefinitionLinkUri(model.getId()));
         return model;
     }
 }
