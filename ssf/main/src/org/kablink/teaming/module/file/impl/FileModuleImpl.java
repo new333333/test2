@@ -71,7 +71,6 @@ import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -133,15 +132,12 @@ import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.FilePathUtil;
 import org.kablink.teaming.util.FileStore;
 import org.kablink.teaming.util.FileUploadItem;
-import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.web.util.MiscUtil;
-import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.KeyValuePair;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -151,9 +147,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.sun.corba.se.impl.orbutil.closure.Constant;
 
 
 /**
@@ -1257,21 +1250,37 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
    				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_ATTACHMENT))
      		);
 		// We use search engine to get the list of file names in the specified folder.
-		QueryBuilder qb = new QueryBuilder(true, false);
-    	org.dom4j.Document qTree = crit.toQuery(); //save for debug
-		SearchObject so = qb.buildQuery(qTree);   	
-   	
-    	// create Lucene query    	
-    	Query soQuery = so.getLuceneQuery();
-    	    	
-    	if(logger.isDebugEnabled()) {
-    		logger.debug("Query is: " + qTree.asXML());
-    		logger.debug("Query is: " + soQuery.toString());
-    	}
-    	
-    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
-        
-    	Hits hits = null;
+        return getChildrenFileDataFromIndex(crit);
+	}
+
+	public Map<String,FileIndexData> getChildrenFileDataFromIndexRecursively(Long binderId) {
+		// look for the specific binder id
+    	// look only for attachments
+    	Criteria crit = new Criteria()
+    	    .add(conjunction()
+    			.add(eq(Constants.ENTRY_ANCESTRY, binderId.toString()))
+   				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_ATTACHMENT))
+     		);
+		// We use search engine to get the list of file names in the specified folder.
+        return getChildrenFileDataFromIndex(crit);
+	}
+
+    private Map<String, FileIndexData> getChildrenFileDataFromIndex(Criteria crit) {
+        QueryBuilder qb = new QueryBuilder(true, false);
+        org.dom4j.Document qTree = crit.toQuery(); //save for debug
+        SearchObject so = qb.buildQuery(qTree);
+
+        // create Lucene query
+        Query soQuery = so.getLuceneQuery();
+
+        if(logger.isDebugEnabled()) {
+            logger.debug("Query is: " + qTree.asXML());
+            logger.debug("Query is: " + soQuery.toString());
+        }
+
+        LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
+
+        Hits hits = null;
         try {
 	        hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
 	        		so.getAclQueryStr(), Constants.SEARCH_MODE_NORMAL, soQuery, null, 0, Integer.MAX_VALUE);
@@ -1279,7 +1288,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         finally {
             luceneSession.close();
         }
-    	
+
         Map<String,FileIndexData> result = new HashMap<String,FileIndexData>();
         int count = hits.length();
         org.apache.lucene.document.Document doc;
@@ -1297,11 +1306,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         		}
         	}
         }
-        
-        return result;
-	}
 
-	public Long deleteAgedFileVersions(DefinableEntity entity, Date agingDate) {
+        return result;
+    }
+
+    public Long deleteAgedFileVersions(DefinableEntity entity, Date agingDate) {
 		Binder binder = entity.getParentBinder();
 		Date now = new Date();
 		if (entity.getEntityType().equals(EntityType.folder) || entity.getEntityType().equals(EntityType.workspace)) {

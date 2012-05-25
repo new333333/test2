@@ -4,12 +4,14 @@ import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderTree;
+import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchResultTree;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
@@ -57,6 +59,30 @@ public class AbstractBinderResource extends AbstractResource {
 	public BinderTree getSubBinderTree(@PathParam("id") long id) {
         return getSubBinderTree(id, null);
 	}
+
+	// Read entries
+	@GET
+	@Path("files")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	public SearchResultList<FileProperties> getFiles(@PathParam("id") long id,
+                                                  @QueryParam("recursive") @DefaultValue("false") boolean recursive) {
+        return getSubFiles(id, recursive);
+	}
+
+    protected SearchResultList<FileProperties> getSubFiles(long id, boolean recursive) {
+        _getBinder(id);
+        Map<String,FileIndexData> files = (recursive) ?
+                getFileModule().getChildrenFileDataFromIndexRecursively(id) : getFileModule().getChildrenFileDataFromIndex(id);
+        SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
+        results.setFirst(0);
+        results.setCount(files.size());
+        results.setTotal(files.size());
+        for (FileIndexData file : files.values()) {
+            results.append(ResourceUtil.buildFileProperties(file));
+        }
+
+        return results;
+    }
 
     protected SearchResultList<BinderBrief> getSubBinders(long id, SearchFilter filter) {
         org.kablink.teaming.domain.Binder workspace = _getBinder(id);

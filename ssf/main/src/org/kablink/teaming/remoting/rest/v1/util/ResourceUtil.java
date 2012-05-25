@@ -274,6 +274,7 @@ public class ResourceUtil {
         if(def != null) {
             model.setFamily(DefinitionUtils.getFamily(def));
         }
+        model.setIcon(LinkUriUtil.buildIconLinkUri(entity.getIconName()));
         model.setPermaLink(PermaLinkUtil.getPermalink(entity));
         if (includeAttachments) {
             Set<Attachment> attachments = entity.getAttachments();
@@ -332,6 +333,7 @@ public class ResourceUtil {
         if(def != null) {
             model.setFamily(DefinitionUtils.getFamily(def));
         }
+        model.setIcon(LinkUriUtil.buildIconLinkUri(binder.getIconName()));
         model.setLibrary(binder.isLibrary());
         model.setMirrored(binder.isMirrored());
         model.setDefinitionType(binder.getDefinitionType());

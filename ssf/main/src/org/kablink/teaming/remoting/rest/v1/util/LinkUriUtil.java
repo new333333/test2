@@ -32,11 +32,14 @@
  */
 package org.kablink.teaming.remoting.rest.v1.util;
 
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.rest.v1.model.BaseRestObject;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
 import org.kablink.teaming.rest.v1.model.FolderEntryBrief;
+import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.MiscUtil;
 
 /**
  * User: david
@@ -107,13 +110,15 @@ public class LinkUriUtil {
 
     public static void populateBinderLinks(BaseRestObject model, boolean isWorkspace, boolean isFolder) {
         model.addAdditionalLink("child_binders", model.getLink() + "/binders");
-        model.addAdditionalLink("child_folders", model.getLink() + "/folders");
+        model.addAdditionalLink("child_binder_tree", model.getLink() + "/binder_tree");
+        model.addAdditionalLink("child_files", model.getLink() + "/files");
         if (isWorkspace) {
             model.addAdditionalLink("child_workspaces", model.getLink() + "/workspaces");
+            model.addAdditionalLink("child_folders", model.getLink() + "/folders");
         }
         if (isFolder) {
             model.addAdditionalLink("child_entries", model.getLink() + "/entries");
-            model.addAdditionalLink("child_files", model.getLink() + "/files");
+            model.addAdditionalLink("child_folders", model.getLink() + "/folders");
         }
     }
 
@@ -134,5 +139,15 @@ public class LinkUriUtil {
         fp.addAdditionalLink("status", baseUrl + "/status");
         fp.addAdditionalLink("current", baseUrl + "/current");
         fp.addAdditionalLink("file_metadata", "/file/" + fp.getId() + "/metadata");
+    }
+
+    public static String buildIconLinkUri(String iconName) {
+        if (iconName==null) {
+            return null;
+        }
+        org.kablink.teaming.domain.User user = RequestContextHolder.getRequestContext().getUser();
+        String colorTheme = user.getTheme();
+        if (colorTheme == null || colorTheme.equals("")) colorTheme = WebKeys.THEME_IC_ICE_BLUE;
+        return "/" + MiscUtil.getStaticPath() + "i/" + colorTheme + iconName;
     }
 }
