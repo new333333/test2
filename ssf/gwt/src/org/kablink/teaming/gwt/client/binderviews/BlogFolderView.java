@@ -36,6 +36,8 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.BlogArchiveFolder;
+import org.kablink.teaming.gwt.client.BlogArchiveMonth;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.BlogArchiveFolderSelectedEvent;
@@ -82,6 +84,9 @@ public class BlogFolderView extends FolderViewBase
 		QuickFilterEvent.Handler
 {
 	private static final int LIST_MIN_HEIGHT = 150;
+
+	private String m_binderId;
+	private String m_binderTitle;
 	
 	private List<HandlerRegistration> m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private ActivityStreamCtrl m_activityStreamCtrl;
@@ -108,6 +113,9 @@ public class BlogFolderView extends FolderViewBase
 	{
 		// Simply initialize the super class.
 		super( folderInfo, viewReady, "vibe-blogFolder", false );
+		
+		m_binderId = folderInfo.getBinderId();
+		m_binderTitle = folderInfo.getBinderTitle();
 	}
 	
 	/**
@@ -254,7 +262,30 @@ public class BlogFolderView extends FolderViewBase
 	@Override
 	public void onBlogArchiveFolderSelected( BlogArchiveFolderSelectedEvent event )
 	{
-		Window.alert( "month selected: " + event.getMonth().getName() + "  folder: " + event.getFolder().getName() );
+		final BlogArchiveMonth month;
+		final BlogArchiveFolder folder;
+		
+		// Get the month/year and the folder that was selected.
+		month = event.getMonth();
+		folder = event.getFolder();
+		if ( month != null && folder != null )
+		{
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute() 
+				{
+					// Find all the blog entries in the folder we are working with that
+					// were created in the given month and year.
+					m_binderId = folder.getFolderId().toString();
+					m_binderTitle = folder.getName();
+					searchForBlogEntries( month.getCreationStartTime(), month.getCreationEndTime() );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
 	}
 	
 	/**
@@ -266,7 +297,34 @@ public class BlogFolderView extends FolderViewBase
 	@Override
 	public void onBlogArchiveMonthSelected( BlogArchiveMonthSelectedEvent event )
 	{
-		Window.alert( "month selected: " + event.getMonth().getName() );
+		final BlogArchiveMonth month;
+		
+		// Get the month that was selected.
+		month = event.getMonth();
+		
+		if ( month != null )
+		{
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute() 
+				{
+					BinderInfo binderInfo;
+					
+					// Get the binder info for the binder that this view is dealing with.
+					binderInfo = getFolderInfo();
+					m_binderId = binderInfo.getBinderId();
+					m_binderTitle = binderInfo.getBinderTitle();
+
+					// Find all the blog entries in the folder we are working with that
+					// were created in the given month and year.
+					searchForBlogEntries( month.getCreationStartTime(), month.getCreationEndTime() );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
 	}
 	
 	/**
@@ -420,12 +478,17 @@ public class BlogFolderView extends FolderViewBase
 	 */
 	private void searchForBlogEntries()
 	{
+		searchForBlogEntries( null, null );
+	}
+	
+	/**
+	 * Do a search for blog entries
+	 */
+	private void searchForBlogEntries( Long creationStartTime, Long creationEndTime )
+	{
 		if ( m_activityStreamCtrl != null )
 		{
 			ActivityStreamInfo asi;
-			BinderInfo binderInfo;
-	
-			binderInfo = getFolderInfo();
 			
 			// Create the SpecificFolderData that will be used to search the blog
 			// folder we are working with.
@@ -438,13 +501,21 @@ public class BlogFolderView extends FolderViewBase
 				specificFolderData.setReturnComments( false );
 				specificFolderData.setQuickFilter( m_quickFilter );
 				
+				// Was a creation start/end time specified?
+				if ( creationStartTime != null && creationEndTime != null )
+				{
+					// Yes
+					specificFolderData.setCreationStartTime( creationStartTime );
+					specificFolderData.setCreationEndTime( creationEndTime );
+				}
+				
 				m_activityStreamCtrl.setSpecificFolderData( specificFolderData );
 			}
 			
 			asi = new ActivityStreamInfo();
 			asi.setActivityStream( ActivityStream.SPECIFIC_FOLDER );
-			asi.setBinderId( binderInfo.getBinderId());
-			asi.setTitle( binderInfo.getBinderTitle() );
+			asi.setBinderId( m_binderId );
+			asi.setTitle( m_binderTitle );
 	
 			m_activityStreamCtrl.setActivityStream( asi, ActivityStreamDataType.ALL );
 		}

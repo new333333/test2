@@ -1039,6 +1039,9 @@ public class GwtActivityStreamHelper {
 	 * the search for activity stream data.
 	 */
 	private static Document buildSearchQuery(AllModulesInjected bs, Long sfId, SpecificFolderData sfData, String lastActivityStart, String lastActivityEnd) {
+		Long creationStartTime;
+		Long creationEndTime;
+
 		// Create a SearchFilter for the search query.
 		SearchFilter sf = new SearchFilter(true);
 
@@ -1059,6 +1062,25 @@ public class GwtActivityStreamHelper {
 				// Yes!  Add them to the search filter.
 				sf.appendFilter(searchFilters);
 			}
+		}
+		
+		// Do we have a creation start/end time/
+		creationStartTime = sfData.getCreationStartTime();
+		creationEndTime = sfData.getCreationEndTime();
+		if ( creationStartTime != null && creationEndTime != null ) 
+		{
+			String startDate;
+			String endDate;
+			Date date;
+			DateTimeFormatter fmt;
+			
+			// Yes, Add it to the filter.
+			fmt = DateTimeFormat.forPattern( "yyyy-MM-dd HH:mm" ).withZone( DateTimeZone.forTimeZone( GwtServerHelper.getCurrentUser().getTimeZone() ) );
+			date = new Date( creationStartTime.longValue() );
+			startDate = fmt.print( new DateTime( date ) );
+			date = new Date( creationEndTime.longValue() );
+			endDate = fmt.print( new DateTime( date ) );
+			sf.addCreationDateRange( startDate, endDate );
 		}
 
 		// If we get here, sf refers to a SearchFilter object

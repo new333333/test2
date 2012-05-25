@@ -47,6 +47,10 @@ public class BlogArchiveMonth
 	implements IsSerializable
 {
 	private String m_name;
+	private Integer m_month;
+	private Integer m_year;
+	private Long m_creationEndTime;
+	private Long m_creationStartTime;
 	private int m_numEntries;	// Number of blog entries in this month
 	private ArrayList<BlogArchiveFolder> m_listOfFolders;	// List of folders that have blog entries for this month
 	
@@ -59,6 +63,10 @@ public class BlogArchiveMonth
 	public BlogArchiveMonth()
 	{
 		m_name = null;
+		m_month = null;
+		m_year = null;
+		m_creationEndTime = null;
+		m_creationStartTime = null;
 		m_numEntries = 0;
 		m_listOfFolders = new ArrayList<BlogArchiveFolder>();
 		m_isMonthOpen = false;
@@ -78,6 +86,30 @@ public class BlogArchiveMonth
 	public ArrayList<BlogArchiveFolder> getFolders()
 	{
 		return m_listOfFolders;
+	}
+	
+	/**
+	 * 
+	 */
+	public Long getCreationEndTime()
+	{
+		return m_creationEndTime;
+	}
+	
+	/**
+	 * 
+	 */
+	public Long getCreationStartTime()
+	{
+		return m_creationStartTime;
+	}
+	
+	/**
+	 * 
+	 */
+	public Integer getMonthOfYear()
+	{
+		return m_month;
 	}
 	
 	/**
@@ -105,6 +137,14 @@ public class BlogArchiveMonth
 	}
 	
 	/**
+	 * 
+	 */
+	public Integer getYear()
+	{
+		return m_year;
+	}
+	
+	/**
 	 * Increment the number of blog entries that exist for this month.
 	 */
 	public int incNumBlogEntries()
@@ -112,6 +152,22 @@ public class BlogArchiveMonth
 		++m_numEntries;
 		
 		return m_numEntries;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCreationEndTime( Long endTime )
+	{
+		m_creationEndTime = endTime;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCreationStartTime( Long startTime )
+	{
+		m_creationStartTime = startTime;
 	}
 	
 	/**
@@ -133,6 +189,14 @@ public class BlogArchiveMonth
 	/**
 	 * 
 	 */
+	public void setMonthOfYear( Integer month )
+	{
+		m_month = month;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setName( String name )
 	{
 		m_name = name;
@@ -144,5 +208,13 @@ public class BlogArchiveMonth
 	public void setNumEntries( int numEntries )
 	{
 		m_numEntries = numEntries;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setYear( Integer year )
+	{
+		m_year = year;
 	}
 }
