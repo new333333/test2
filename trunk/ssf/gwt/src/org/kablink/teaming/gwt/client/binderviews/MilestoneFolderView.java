@@ -79,11 +79,11 @@ public class MilestoneFolderView extends DataTableFolderViewBase {
 	 */
 	@Override
 	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
-		columnWidths.put(ColumnWidth.COLUMN_TITLE,       new ColumnWidth(40));
-		columnWidths.put(ColumnWidth.COLUMN_RESPONSIBLE, new ColumnWidth(20));
-		columnWidths.put(ColumnWidth.COLUMN_TASKS,       new ColumnWidth(20));
-		columnWidths.put(ColumnWidth.COLUMN_STATUS,      new ColumnWidth( 5));
-		columnWidths.put(ColumnWidth.COLUMN_DUE_DATE,    new ColumnWidth(15));
+		columnWidths.put(FolderColumn.COLUMN_TITLE,       new ColumnWidth(40));
+		columnWidths.put(FolderColumn.COLUMN_RESPONSIBLE, new ColumnWidth(20));
+		columnWidths.put(FolderColumn.COLUMN_TASKS,       new ColumnWidth(20));
+		columnWidths.put(FolderColumn.COLUMN_STATUS,      new ColumnWidth( 5));
+		columnWidths.put(FolderColumn.COLUMN_DUE_DATE,    new ColumnWidth(15));
 	}
 
 	/**

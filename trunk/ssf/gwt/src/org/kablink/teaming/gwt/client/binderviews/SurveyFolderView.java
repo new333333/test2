@@ -79,9 +79,9 @@ public class SurveyFolderView extends DataTableFolderViewBase {
 	 */
 	@Override
 	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
-		columnWidths.put(ColumnWidth.COLUMN_TITLE,    new ColumnWidth(70));
-		columnWidths.put(ColumnWidth.COLUMN_AUTHOR,   new ColumnWidth(15));
-		columnWidths.put(ColumnWidth.COLUMN_DUE_DATE, new ColumnWidth(15));
+		columnWidths.put(FolderColumn.COLUMN_TITLE,    new ColumnWidth(70));
+		columnWidths.put(FolderColumn.COLUMN_AUTHOR,   new ColumnWidth(15));
+		columnWidths.put(FolderColumn.COLUMN_DUE_DATE, new ColumnWidth(15));
 	}
 
 	/**

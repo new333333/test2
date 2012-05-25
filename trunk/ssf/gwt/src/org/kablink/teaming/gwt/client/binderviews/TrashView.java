@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
@@ -96,8 +97,8 @@ public class TrashView extends DataTableFolderViewBase {
 	 */
 	@Override
 	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
-		columnWidths.put(ColumnWidth.COLUMN_AUTHOR, new ColumnWidth(20));
-		columnWidths.put(ColumnWidth.COLUMN_TITLE,  new ColumnWidth(27));
+		columnWidths.put(FolderColumn.COLUMN_AUTHOR, new ColumnWidth(20));
+		columnWidths.put(FolderColumn.COLUMN_TITLE,  new ColumnWidth(27));
 	}
 
 	/**
