@@ -34,9 +34,12 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.BlogArchiveFolder;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogArchiveMonth;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.BlogArchiveFolderSelectedEvent;
+import org.kablink.teaming.gwt.client.event.BlogArchiveMonthSelectedEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBlogArchiveInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -50,6 +53,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -61,6 +65,9 @@ public class BlogArchiveCtrl extends VibeWidget
 {
 	private Long m_folderId;
 	private FlexTable m_table;
+	private BlogArchiveInfo m_blogArchiveInfo;
+	private ClickHandler m_monthClickHandler;
+	private ClickHandler m_folderClickHandler;
 	
 	
 	/**
@@ -70,6 +77,68 @@ public class BlogArchiveCtrl extends VibeWidget
 	{
 		void onSuccess( BlogArchiveCtrl baCtrl );
 		void onUnavailable();
+	}
+	
+	/**
+	 * 
+	 */
+	private class MonthInlineLabel extends InlineLabel
+	{
+		private BlogArchiveMonth m_month;
+		
+		/**
+		 * 
+		 */
+		public MonthInlineLabel( String text, BlogArchiveMonth month )
+		{
+			super( text );
+			
+			m_month = month;
+		}
+		
+		/**
+		 * 
+		 */
+		public BlogArchiveMonth getMonth()
+		{
+			return m_month;
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private class FolderInlineLabel extends InlineLabel
+	{
+		private BlogArchiveMonth m_month;
+		private BlogArchiveFolder m_folder;
+		
+		/**
+		 * 
+		 */
+		public FolderInlineLabel( String text, BlogArchiveMonth month, BlogArchiveFolder folder )
+		{
+			super( text );
+			
+			m_month = month;
+			m_folder = folder;
+		}
+		
+		/**
+		 * 
+		 */
+		public BlogArchiveFolder getFolder()
+		{
+			return m_folder;
+		}
+		
+		/**
+		 * 
+		 */
+		public BlogArchiveMonth getMonth()
+		{
+			return m_month;
+		}
 	}
 
 
@@ -92,6 +161,76 @@ public class BlogArchiveCtrl extends VibeWidget
 		m_table.setWidget( 0, 0, label );
 		
 		mainPanel.add( m_table );
+		
+		// Create a click handler that will be used for every month
+		m_monthClickHandler = new ClickHandler()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onClick( ClickEvent event )
+			{
+				Object src;
+				
+				// Get the month the user clicked on.
+				src = event.getSource();
+				if ( src != null && src instanceof MonthInlineLabel )
+				{
+					Scheduler.ScheduledCommand cmd;
+					MonthInlineLabel label;
+					final BlogArchiveMonth month;
+					
+					label = (MonthInlineLabel) src;
+					month = label.getMonth();
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							handleClickOnMonth( month );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			}
+		};
+		
+		// Create a click handler that will be used for every folder
+		m_folderClickHandler = new ClickHandler()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onClick( ClickEvent event )
+			{
+				Object src;
+				
+				// Get the folder the user clicked on.
+				src = event.getSource();
+				if ( src != null && src instanceof FolderInlineLabel )
+				{
+					Scheduler.ScheduledCommand cmd;
+					FolderInlineLabel label;
+					final BlogArchiveFolder folder;
+					final BlogArchiveMonth month;
+					
+					label = (FolderInlineLabel) src;
+					folder = label.getFolder();
+					month = label.getMonth();
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							handleClickOnFolder( month, folder );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			}
+		};
 		
 		initWidget( mainPanel );
 	}
@@ -119,39 +258,82 @@ public class BlogArchiveCtrl extends VibeWidget
 	}
 	
 	/**
+	 * Add the given folder to the display.
+	 */
+	private void addArchiveFolder( int row, BlogArchiveMonth month, BlogArchiveFolder folder )
+	{
+		if ( month != null && folder != null )
+		{
+			FolderInlineLabel folderLabel;
+			
+			row = m_table.insertRow( row );
+
+			// Insert this folder into the given row.
+			folderLabel = new FolderInlineLabel( folder.getName(), month, folder );
+			folderLabel.addStyleName( "blogArchiveCtrlFolderLabel" );
+			m_table.setWidget( row, 0, folderLabel );
+			
+			// Add the number of blog entries to the table.
+			m_table.setText( row, 1, "(" + String.valueOf( folder.getNumEntries() ) + ")" );
+			
+			folderLabel.addClickHandler( m_folderClickHandler );
+		}
+	}
+	
+	/**
 	 * Add the given month to the list of months
 	 */
-	private void addArchiveMonth( final BlogArchiveMonth month )
+	private void addArchiveMonth( BlogArchiveMonth month )
 	{
 		if ( month != null )
 		{
-			InlineLabel monthLabel;
+			MonthInlineLabel monthLabel;
 			int row;
-			ClickHandler clickHandler;
 			
-			row = m_table.getRowCount() + 1;
+			row = m_table.getRowCount();
 			
 			// Add the name of the month to the list.
-			monthLabel = new InlineLabel( month.getName() );
+			monthLabel = new MonthInlineLabel( month.getName(), month );
 			monthLabel.addStyleName( "blogArchiveCtrlMonthLabel" );
 			m_table.setWidget( row, 0, monthLabel );
 			
 			// Add the number of blog entries to the list.
 			m_table.setText( row, 1, "(" + String.valueOf( month.getNumEntries() ) + ")" );
 			
-			// Add a click handler to the name of the month
-			clickHandler = new ClickHandler()
+			monthLabel.addClickHandler( m_monthClickHandler );
+		}
+	}
+	
+	/**
+	 * Close the given month by not showing the folders that have blog entries for the
+	 * given month.
+	 */
+	private void closeMonth( BlogArchiveMonth month )
+	{
+		if ( month != null )
+		{
+			int row;
+			
+			// Find the row this month lives in.
+			row = findMonth( month );
+			if ( row != -1 )
 			{
-				/**
-				 * 
-				 */
-				@Override
-				public void onClick( ClickEvent event )
+				ArrayList<BlogArchiveFolder> listOfFolders;
+				
+				listOfFolders = month.getFolders();
+				if ( listOfFolders != null )
 				{
-					Window.alert( month.getName() );
+					int i;
+					
+					// Remove the folders from the table we added for this month.
+					for (i = 0; i < listOfFolders.size(); ++i)
+					{
+						m_table.removeRow( row + 1 );
+					}
+
+					month.setIsMonthOpen( false );
 				}
-			};
-			monthLabel.addClickHandler( clickHandler );
+			}
 		}
 	}
 	
@@ -179,7 +361,85 @@ public class BlogArchiveCtrl extends VibeWidget
 			}
 		} );
 	}
+	
+	/**
+	 * Find the given month in the table displays the list of the months
+	 */
+	private int findMonth( BlogArchiveMonth month )
+	{
+		int i;
+		String name;
+		
+		name = month.getName();
+		
+		// Spin through the table that displays the list of months
+		for (i = 0; i < m_table.getRowCount(); ++i)
+		{
+			Widget widget;
+			
+			widget = m_table.getWidget( i, 0 );
+			if ( widget instanceof MonthInlineLabel )
+			{
+				String text;
+				MonthInlineLabel label;
+				
+				// Get the text that is displayed in this row.
+				label = (MonthInlineLabel) widget;
+				text = label.getText();
+				
+				// Is this the month we are looking for?
+				if ( text != null && text.equalsIgnoreCase( name ) )
+				{
+					// Yes
+					return i;
+				}
+			}
+		}
+		
+		// If we get here we did not find the month.  This should never happen.
+		return -1;
+	}
 
+	/**
+	 * 
+	 */
+	private void handleClickOnFolder( BlogArchiveMonth month, BlogArchiveFolder folder )
+	{
+		BlogArchiveFolderSelectedEvent event;
+
+		// Fire the BlogArchiveFolderSelectedEvent so interested parties will know
+		// that the given folder was selected.
+		event = new BlogArchiveFolderSelectedEvent( month, folder );
+		GwtTeaming.fireEvent( event );
+	}
+	
+	/**
+	 * Open or close the given month.
+	 */
+	private void handleClickOnMonth( BlogArchiveMonth month )
+	{
+		if ( month != null )
+		{
+			if ( month.getIsMonthOpen() )
+			{
+				closeMonth( month );
+			}
+			else
+			{
+				openMonth( month );
+			}
+			
+			// Fire the BlogArchiveMonthSelectedEvent so interested parties will know
+			// that this month was selected.
+			{
+				BlogArchiveMonthSelectedEvent event;
+				
+				event = new BlogArchiveMonthSelectedEvent( month );
+				GwtTeaming.fireEvent( event );
+			}
+		}
+	}
+	
 	/**
 	 * Initialize this control for the given blog folder
 	 */
@@ -211,11 +471,9 @@ public class BlogArchiveCtrl extends VibeWidget
 			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
-				final BlogArchiveInfo info;
-
-				info = (BlogArchiveInfo) response.getResponseData();
+				m_blogArchiveInfo = (BlogArchiveInfo) response.getResponseData();
 				
-				if ( info != null )
+				if ( m_blogArchiveInfo != null )
 				{
 					Scheduler.ScheduledCommand schCmd;
 
@@ -225,7 +483,7 @@ public class BlogArchiveCtrl extends VibeWidget
 						public void execute()
 						{
 							// Add the archive information to this control.
-							addArchiveInfo( info );
+							addArchiveInfo( m_blogArchiveInfo );
 						}
 					};
 					Scheduler.get().scheduleDeferred( schCmd );
@@ -236,5 +494,41 @@ public class BlogArchiveCtrl extends VibeWidget
 		// Issue an rpc request to get the archive information for this blog folder.
 		cmd = new GetBlogArchiveInfoCmd( m_folderId );
 		GwtClientHelper.executeCommand( cmd, callback );
+	}
+	
+	/**
+	 * For the given month show the folders that have blog entries
+	 */
+	private void openMonth( BlogArchiveMonth month )
+	{
+		int row;
+		
+		// Find the given month in the table that holds the months
+		row = findMonth( month );
+		
+		// Did we find the month?
+		if ( row != -1 )
+		{
+			ArrayList<BlogArchiveFolder> listOfFolders;
+			
+			// Yes
+			// Get the list of folders that have blog entries for the given month.
+			listOfFolders = month.getFolders();
+			
+			if ( listOfFolders != null )
+			{
+				// We want the first folder inserted after the month
+				++row;
+				
+				for (BlogArchiveFolder nextFolder : listOfFolders)
+				{
+					addArchiveFolder( row, month, nextFolder );
+					++row;
+				}
+
+				// Mark this month as open.
+				month.setIsMonthOpen( true );
+			}
+		}
 	}
 }

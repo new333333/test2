@@ -236,6 +236,24 @@ public class EventHelper {
 				}
 				break;
 			
+			case BLOG_ARCHIVE_FOLDER_SELECTED:
+				// A BlogArchiveFolderSelectedEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof BlogArchiveFolderSelectedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = BlogArchiveFolderSelectedEvent.registerEvent( eventBus, ((BlogArchiveFolderSelectedEvent.Handler) eventHandler) );
+				}
+				break;
+			
+			case BLOG_ARCHIVE_MONTH_SELECTED:
+				// A BlogArchiveMonthSelectedEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof BlogArchiveMonthSelectedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = BlogArchiveMonthSelectedEvent.registerEvent( eventBus, ((BlogArchiveMonthSelectedEvent.Handler) eventHandler) );
+				}
+				break;
+			
 			case BROWSE_HIERARCHY:
 				// An BrowseHierarchyEvent!  Can the event handler we
 				// were given handle that?
@@ -1650,7 +1668,10 @@ public class EventHelper {
 			case ADMINISTRATION:                    	hasHandler = (eventHandler instanceof AdministrationEvent.Handler);                break;
 			case ADMINISTRATION_EXIT:               	hasHandler = (eventHandler instanceof AdministrationExitEvent.Handler);            break;
 			case ADMINISTRATION_UPGRADE_CHECK:      	hasHandler = (eventHandler instanceof AdministrationUpgradeCheckEvent.Handler);    break;
-			
+
+			case BLOG_ARCHIVE_FOLDER_SELECTED:          hasHandler = (eventHandler instanceof BlogArchiveFolderSelectedEvent.Handler);     break;
+			case BLOG_ARCHIVE_MONTH_SELECTED:           hasHandler = (eventHandler instanceof BlogArchiveMonthSelectedEvent.Handler);      break;
+
 			case BROWSE_HIERARCHY:                  	hasHandler = (eventHandler instanceof BrowseHierarchyEvent.Handler);               break;
 			case BROWSE_HIERARCHY_EXIT:             	hasHandler = (eventHandler instanceof BrowseHierarchyExitEvent.Handler);           break;
 			
