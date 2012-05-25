@@ -1279,14 +1279,10 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	private Query makeAccessibleFoldersAclQuery(Query aclQuery) {
 		TermQuery tq = new TermQuery(new Term(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER));
 		
-		if(!(aclQuery instanceof BooleanQuery)) {
-			BooleanQuery bq = new BooleanQuery();
-			bq.add(aclQuery, BooleanClause.Occur.MUST);
-			aclQuery = bq;
-		}
+		BooleanQuery bq = new BooleanQuery();
+		bq.add(tq, BooleanClause.Occur.MUST);
+		bq.add(aclQuery, BooleanClause.Occur.MUST);
 		
-		((BooleanQuery)aclQuery).add(tq, BooleanClause.Occur.MUST);
-		
-		return aclQuery;
+		return bq;
 	}
 }
