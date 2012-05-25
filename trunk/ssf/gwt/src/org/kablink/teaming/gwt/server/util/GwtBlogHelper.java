@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -185,6 +186,30 @@ public class GwtBlogHelper
 
 						archiveMonth = new BlogArchiveMonth();
 						archiveMonth.setName( monthName );
+						archiveMonth.setMonthOfYear( Integer.valueOf( m ) );
+						archiveMonth.setYear( Integer.valueOf( year ) );
+						
+						// Set the creation start/end time for this month.  It can be
+						// used to search for entries created in this month.
+						{
+							Calendar startDate;
+							Long startTimeInMillis;
+							Long endTimeInMillis;
+							
+							// Yes
+							startDate = Calendar.getInstance();
+							startDate.set( Calendar.MONTH, archiveMonth.getMonthOfYear() );
+							startDate.set( Calendar.DAY_OF_MONTH, 1 );
+							startDate.set( Calendar.YEAR, archiveMonth.getYear() );
+							startTimeInMillis = new Long( startDate.getTimeInMillis() );
+							
+							// Add 1 month to the start time minus 1 second.
+							startDate.add( Calendar.MONTH, 1 );
+							endTimeInMillis = new Long( startDate.getTimeInMillis() - 1000 );
+							
+							archiveMonth.setCreationStartTime( startTimeInMillis );
+							archiveMonth.setCreationEndTime( endTimeInMillis );
+						}
 						
 						monthHits.put( yearMonth, archiveMonth );
 					}
