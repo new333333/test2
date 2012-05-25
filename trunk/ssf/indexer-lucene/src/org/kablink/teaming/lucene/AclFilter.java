@@ -40,7 +40,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.FieldCache;
 import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.FilteredDocIdSet;
 import org.kablink.util.search.Constants;
 
 /**
@@ -66,8 +65,9 @@ public class AclFilter extends Filter {
 	public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
 		final long[] entryAclParentIds = FieldCache.DEFAULT.getLongs(reader, Constants.ENTRY_ACL_PARENT_ID_FIELD);
 		
-		return new FilteredDocIdSet(aclInheritingEntriesPermissibleAclFilter.getDocIdSet(reader)) {
-
+		final DocIdSet innerSet = aclInheritingEntriesPermissibleAclFilter.getDocIdSet(reader);
+		
+		return new NullSafeFilteredDocIdSet(innerSet, accessibleFolderIds, entryAclParentIds) {
 			@Override
 			protected boolean match(int docid) throws IOException {
 				long entryAclParentId = entryAclParentIds[docid];
@@ -87,8 +87,7 @@ public class AclFilter extends Filter {
 					// has already validated this doc, so simply pass it on.
 					return true;
 				}
-			}
-			
+			}			
 		};
 	}
 

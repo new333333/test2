@@ -683,20 +683,20 @@ public class EntityIndexUtils {
     }
 
     private static void addDefaultEntryAcls(Document doc, Binder binder, Entry entry) {
+    	boolean personal = Utils.isWorkareaInProfilesTree(binder);
+		//get default entry access
+		doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
+		if (!personal) {
+			doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_GLOBAL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
+		}
+    }
+
+    private static void markEntryAsInheritingAcls(Document doc, Binder binder, Entry entry) {
     	if(entry instanceof FolderEntry) {
     		doc.add(new NumericField(Constants.ENTRY_ACL_PARENT_ID_FIELD).setLongValue(binder.getId().longValue()));
     	}
-    	else {
-    		// I don't think this code block can ever get executed, but...
-	    	boolean personal = Utils.isWorkareaInProfilesTree(binder);
-			//get default entry access
-			doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
-			if (!personal) {
-				doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_GLOBAL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
-			}
-    	}
     }
-
+    
     //Add acl fields for binder for storage in search engine
     private static void addBinderAcls(Document doc, Binder binder) {
     	addBinderAcls(doc, binder, false);
@@ -836,6 +836,8 @@ public class EntityIndexUtils {
 	       		for(String acl:acls) {
 	       			doc.add(new Field(Constants.ENTRY_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 	       		}
+	       		//add binder access
+	    		addBinderAcls(doc, binder);
        		} else {
 	       		//add entry access. 
 	       		if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop()) {
@@ -849,17 +851,19 @@ public class EntityIndexUtils {
 	       			for(String acl:acls) {
 	       				doc.add(new Field(Constants.ENTRY_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 	       			}
+	           		//add binder access
+	        		addBinderAcls(doc, binder);
 	       		} else if (((Entry)entry).hasEntryAcl()) {
 	    			//The entry has its own ACL specified
 	       			addEntryAcls(doc, binder, (Entry)entry);
-	    		} else if (!wEntry.hasAclSet() && !((Entry)entry).hasEntryAcl()) {
+	           		//add binder access
+	        		addBinderAcls(doc, binder);
+	    		} else {
+	    			// The entry has neither workflow ACL nor its own ACL.
 	    			//The entry is using the folder's ACL
-	    			addDefaultEntryAcls(doc, binder, (Entry)entry);
+	    			markEntryAsInheritingAcls(doc, binder, (Entry)entry);
 	    		}
        		}
-       		//add binder access
-    		addBinderAcls(doc, binder);
-
     	} else if (entry instanceof FolderEntry) {
     		//(This case may no longer be valid now that workflow is included in the Kablink build)
        		// Add the Entry_ACL field
@@ -869,12 +873,11 @@ public class EntityIndexUtils {
        		}
     		if (((Entry)entry).hasEntryAcl()) {
     			addEntryAcls(doc, binder, (Entry)entry);
+           		//add binder access
+        		addBinderAcls(doc, binder);
     		} else {
-    			addDefaultEntryAcls(doc, binder, (Entry)entry);
+    			markEntryAsInheritingAcls(doc, binder, (Entry)entry);
     		}
-       		//add binder access
-    		addBinderAcls(doc, binder);
-
     	} else if (entry instanceof User) {
             // Add the Entry_ACL field
     		String[] acls = StringUtil.split(getUserEntryAccess((User)entry), " ");
