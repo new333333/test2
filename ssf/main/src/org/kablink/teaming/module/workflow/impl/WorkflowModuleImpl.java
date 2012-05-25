@@ -83,7 +83,9 @@ import org.kablink.teaming.jobs.WorkflowTimeout;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.rss.RssModule;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
@@ -93,6 +95,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.VibeRuntimeException;
 import org.kablink.util.api.ApiErrorCode;
@@ -111,6 +114,10 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	}
 	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
 		this.transactionTemplate = transactionTemplate;
+	}
+	protected RssModule getRssModule() {
+		// Can't use IoC due to circular dependency
+		return (RssModule) SpringContextUtil.getBean("rssModule");
 	}
 
    /**
@@ -902,13 +909,14 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
     	wfEntry.startWorkflowStateLoopDetector();
 		boolean changed = WorkflowProcessUtils.processConditions(wfEntry, false, false);
 		wfEntry.stopWorkflowStateLoopDetector();
+		Entry entry = (Entry)wfEntry;
 		if (changed) {
-			Entry entry = (Entry)wfEntry;
 			EntryProcessor processor = loadEntryProcessor(entry.getParentBinder());
 			entry.incrLogVersion();
 			processor.processChangeLog(entry, ChangeLog.RESTOREENTRY);
 			processor.indexEntry(entry);
 		}
+		getRssModule().updateRssFeed(entry); 
 		WorkflowProcessUtils.resumeTimers(wfEntry);
     }
 	
@@ -923,8 +931,8 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			entry.incrLogVersion();
 			processor.processChangeLog(entry, ChangeLog.WORKFLOWTIMEOUT);
 			processor.indexEntry(entry);
+			getRssModule().updateRssFeed(entry); 
 		}
-	
     }
 	
 	private EntryProcessor loadEntryProcessor(Binder binder) {

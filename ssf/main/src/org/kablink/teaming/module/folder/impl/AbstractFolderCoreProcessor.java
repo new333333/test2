@@ -561,7 +561,22 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	    		//See if the entry definition type has an associated workflow
 	    		if (entry.getEntryDefId() != null) {
 	    			Definition wfDef = (Definition)workflowAssociations.get(entry.getEntryDefId());
-	    			if (wfDef != null)	getWorkflowModule().addEntryWorkflow((WorkflowSupport)entry, entry.getEntityIdentifier(), wfDef, null);
+	    			if (wfDef != null) {
+	    				//Before starting this, make sure it isn't the same as one we aren't supposed to start
+	    				boolean found = false;
+	    				Set<WorkflowState> workflowStates = source.getWorkflowStates();
+	    				for (WorkflowState state : workflowStates) {
+	    					Definition def = state.getDefinition();
+	    					if (def.getId().equals(wfDef.getId())) {
+	    						found = true;
+	    						break;
+	    					}
+	    				}
+	    				if (!found) {
+	    					//It is OK to start this workflow
+	    					getWorkflowModule().addEntryWorkflow((WorkflowSupport)entry, entry.getEntityIdentifier(), wfDef, null);
+	    				}
+	    			}
 	    		}
 	    	}
 		}

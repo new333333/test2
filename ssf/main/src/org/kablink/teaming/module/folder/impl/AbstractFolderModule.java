@@ -118,6 +118,7 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.rss.RssModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
@@ -196,6 +197,11 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	protected AdminModule getAdminModule() {
 		// Can't use IoC due to circular dependency
 		return (AdminModule) SpringContextUtil.getBean("adminModule");
+	}
+	
+	protected RssModule getRssModule() {
+		// Can't use IoC due to circular dependency
+		return (RssModule) SpringContextUtil.getBean("rssModule");
 	}
 	
 	private TransactionTemplate transactionTemplate;
@@ -852,6 +858,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         	if (reindex) {
 		        // ...re-index the entry.
         		processor.indexEntry(entry);
+        		getRssModule().updateRssFeed(entry); 
         	}
         }
     }
@@ -900,6 +907,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         	if (reindex) {
         		processor.indexEntry(entry);
         	}
+        	getRssModule().updateRssFeed(entry); 
         }
     }
     

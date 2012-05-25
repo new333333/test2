@@ -195,8 +195,11 @@ public class EnterExitEvent extends AbstractActionHandler {
 		   					moveEntry(item, executionContext, entry, ws);
 		   				}
 		   			} else if ("copyEntry".equals(name)) {
+		   				String startWorkflow = DefinitionUtils.getPropertyValue(item, "startWorkflow");
 		   				Boolean copyNotAllowed = (Boolean)executionContext.getContextInstance().getTransientVariable(WorkflowModule.DISALLOW_COPY);
-		   				if (copyNotAllowed == null || !copyNotAllowed) {
+		   				if ((startWorkflow != null && startWorkflow.equals(ObjectKeys.WORKFLOW_START_WORKFLOW_NO_START)) || 
+		   						copyNotAllowed == null || !copyNotAllowed) {
+		   					//It is OK to do the copy. If the workflow isn't being started, no copy loop will occur
 		   					copyEntry(item, executionContext, entry, ws);
 		   				}
 		   			} else if ("startParallelThread".equals(name)) {
