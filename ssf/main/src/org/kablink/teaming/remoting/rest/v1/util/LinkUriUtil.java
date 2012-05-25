@@ -150,4 +150,8 @@ public class LinkUriUtil {
         if (colorTheme == null || colorTheme.equals("")) colorTheme = WebKeys.THEME_IC_ICE_BLUE;
         return "/" + MiscUtil.getStaticPath() + "i/" + colorTheme + iconName;
     }
+
+    public static String getDefinitionLinkUri(String id) {
+        return "/definition/" + id;
+    }
 }

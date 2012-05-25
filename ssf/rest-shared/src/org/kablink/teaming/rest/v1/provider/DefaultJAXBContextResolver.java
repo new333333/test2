@@ -63,6 +63,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
     		BinderBrief.class,
     		BinderQuotasConfig.class,
     		BinderTree.class,
+    		DefinitionBrief.class,
     		Description.class,
     		DiskQuotasConfig.class,
     		ErrorInfo.class,

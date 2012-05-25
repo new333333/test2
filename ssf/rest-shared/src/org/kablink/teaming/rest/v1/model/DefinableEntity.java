@@ -42,8 +42,8 @@ import javax.xml.bind.annotation.XmlElementWrapper;
  */
 public abstract class DefinableEntity extends BaseRestObject {
     private Long id;
-   	private IdLinkPair parentBinder;
-   	private String definitionId;
+   	private LongIdLinkPair parentBinder;
+   	private StringIdLinkPair definition;
    	private String title;
     private String icon;
    	private Description description;
@@ -74,13 +74,13 @@ public abstract class DefinableEntity extends BaseRestObject {
         this.creation = creation;
     }
 
-    @XmlElement(name="definition_id")
-    public String getDefinitionId() {
-        return definitionId;
+    @XmlElement(name="definition")
+    public StringIdLinkPair getDefinition() {
+        return definition;
     }
 
-    public void setDefinitionId(String definitionId) {
-        this.definitionId = definitionId;
+    public void setDefinition(StringIdLinkPair definition) {
+        this.definition = definition;
     }
 
     @XmlElement(name="description")
@@ -145,11 +145,11 @@ public abstract class DefinableEntity extends BaseRestObject {
     }
 
     @XmlElement(name="parent_binder")
-    public IdLinkPair getParentBinder() {
+    public LongIdLinkPair getParentBinder() {
         return parentBinder;
     }
 
-    public void setParentBinder(IdLinkPair parentBinder) {
+    public void setParentBinder(LongIdLinkPair parentBinder) {
         this.parentBinder = parentBinder;
     }
 

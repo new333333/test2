@@ -9,10 +9,9 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public abstract class DefinableEntityBrief extends BaseRestObject {
     private Long id;
-   	private IdLinkPair parentBinder;
+   	private LongIdLinkPair parentBinder;
    	private String title;
-    private String definitionId;
-    private Integer definitionType; // Shows what kind binder this is, that is, whether workspace or folder. Corresponds to the constants in Definition.java
+    private StringIdLinkPair definition;
    	private String entityType;
    	private String family;
     private String icon;
@@ -77,30 +76,21 @@ public abstract class DefinableEntityBrief extends BaseRestObject {
     }
 
     @XmlElement(name = "parent_binder")
-    public IdLinkPair getParentBinder() {
+    public LongIdLinkPair getParentBinder() {
         return parentBinder;
     }
 
-    public void setParentBinder(IdLinkPair parentBinder) {
+    public void setParentBinder(LongIdLinkPair parentBinder) {
         this.parentBinder = parentBinder;
     }
 
-    @XmlElement(name = "definition_id")
-    public String getDefinitionId() {
-        return definitionId;
+    @XmlElement(name = "definition")
+    public StringIdLinkPair getDefinition() {
+        return definition;
     }
 
-    public void setDefinitionId(String definitionId) {
-        this.definitionId = definitionId;
-    }
-
-    @XmlElement(name="definition_type")
-    public Integer getDefinitionType() {
-        return definitionType;
-    }
-
-    public void setDefinitionType(Integer definitionType) {
-        this.definitionType = definitionType;
+    public void setDefinition(StringIdLinkPair definition) {
+        this.definition = definition;
     }
 
     public String getTitle() {

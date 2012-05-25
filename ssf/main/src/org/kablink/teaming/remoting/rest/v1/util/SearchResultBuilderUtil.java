@@ -1,18 +1,10 @@
 package org.kablink.teaming.remoting.rest.v1.util;
 
-import org.dom4j.Document;
-import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
-import org.kablink.teaming.rest.v1.model.HistoryStamp;
-import org.kablink.teaming.rest.v1.model.IdLinkPair;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchResultTree;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
-import org.kablink.util.Validator;
-import org.kablink.util.search.Constants;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
