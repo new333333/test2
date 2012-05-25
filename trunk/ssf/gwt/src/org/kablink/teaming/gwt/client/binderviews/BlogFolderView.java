@@ -38,6 +38,8 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.event.BlogArchiveFolderSelectedEvent;
+import org.kablink.teaming.gwt.client.event.BlogArchiveMonthSelectedEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
@@ -74,6 +76,8 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class BlogFolderView extends FolderViewBase
 	implements
 	// Event handlers implemented by this class.
+		BlogArchiveFolderSelectedEvent.Handler,
+		BlogArchiveMonthSelectedEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
 		QuickFilterEvent.Handler
 {
@@ -88,6 +92,8 @@ public class BlogFolderView extends FolderViewBase
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[]
     {
+		TeamingEvents.BLOG_ARCHIVE_FOLDER_SELECTED,
+		TeamingEvents.BLOG_ARCHIVE_MONTH_SELECTED,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.QUICK_FILTER
 	};
@@ -237,6 +243,30 @@ public class BlogFolderView extends FolderViewBase
 		// Let the widget attach and then register our event handlers.
 		super.onAttach();
 		registerEvents();
+	}
+	
+	/**
+	 * Handles the BlogArchiveFolderSelectedEvent received by this class.
+	 * 
+	 * Implements the BlogArchiveFolderSelectedEvent.onBlogArchiveFolderSelectedEvent() method.
+	 * 
+	 */
+	@Override
+	public void onBlogArchiveFolderSelected( BlogArchiveFolderSelectedEvent event )
+	{
+		Window.alert( "month selected: " + event.getMonth().getName() + "  folder: " + event.getFolder().getName() );
+	}
+	
+	/**
+	 * Handles the BlogArchiveMonthSelectedEvent received by this class.
+	 * 
+	 * Implements the BlogArchiveMonthSelectedEvent.onBlogArchiveMonthSelectedEvent() method.
+	 * 
+	 */
+	@Override
+	public void onBlogArchiveMonthSelected( BlogArchiveMonthSelectedEvent event )
+	{
+		Window.alert( "month selected: " + event.getMonth().getName() );
 	}
 	
 	/**

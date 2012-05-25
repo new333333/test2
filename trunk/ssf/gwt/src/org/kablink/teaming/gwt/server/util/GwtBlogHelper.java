@@ -213,7 +213,7 @@ public class GwtBlogHelper
 								
 								archiveFolder = new BlogArchiveFolder();
 								archiveFolder.setFolderId( Long.valueOf( entryBinderId ) );
-								archiveFolder.setName( subFolder.getName() );
+								archiveFolder.setName( subFolder.getTitle() );
 
 								folderHits.put( monthFolder, archiveFolder );
 								

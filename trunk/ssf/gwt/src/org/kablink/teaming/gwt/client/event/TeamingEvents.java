@@ -54,6 +54,9 @@ public enum TeamingEvents implements IsSerializable {
 	ADMINISTRATION_EXIT,				// Exits  administration mode.
 	ADMINISTRATION_UPGRADE_CHECK,		// Tell the administration control to check for upgrade tasks that need to be performed.
 	
+	BLOG_ARCHIVE_FOLDER_SELECTED,		// The user selected a folder in the blog archive control
+	BLOG_ARCHIVE_MONTH_SELECTED,		// The user selected a month in the blog archive control
+	
 	BROWSE_HIERARCHY,					// Browse Vibe OnPrem's hierarchy (i.e., the bread crumb tree.) 
 	BROWSE_HIERARCHY_EXIT,				// Exits the bread crumb browser, if open.
 

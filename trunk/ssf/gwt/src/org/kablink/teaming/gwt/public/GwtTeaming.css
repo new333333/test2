@@ -3725,12 +3725,18 @@ td.datePickerMonth {
 	-webkit-border-radius: 5px;
 }
 
+.blogArchiveCtrlFolderLabel
+{
+	color: #135C8F;
+	margin-left: 12px;
+}
+
 .blogArchiveCtrlMonthLabel
 {
 	color: #135C8F;
 }
 
-.blogArchiveCtrlMonthLabel:hover
+.blogArchiveCtrlMonthLabel:hover, .blogArchiveCtrlFolderLabel:hover
 {
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;

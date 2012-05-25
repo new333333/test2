@@ -50,6 +50,9 @@ public class BlogArchiveMonth
 	private int m_numEntries;	// Number of blog entries in this month
 	private ArrayList<BlogArchiveFolder> m_listOfFolders;	// List of folders that have blog entries for this month
 	
+	// The following data members are UI specific.
+	transient private boolean m_isMonthOpen;
+	
 	/**
 	 * 
 	 */
@@ -58,6 +61,7 @@ public class BlogArchiveMonth
 		m_name = null;
 		m_numEntries = 0;
 		m_listOfFolders = new ArrayList<BlogArchiveFolder>();
+		m_isMonthOpen = false;
 	}
 	
 	/**
@@ -93,6 +97,14 @@ public class BlogArchiveMonth
 	}
 	
 	/**
+	 * 
+	 */
+	public boolean getIsMonthOpen()
+	{
+		return m_isMonthOpen;
+	}
+	
+	/**
 	 * Increment the number of blog entries that exist for this month.
 	 */
 	public int incNumBlogEntries()
@@ -108,6 +120,14 @@ public class BlogArchiveMonth
 	public void setFolders( ArrayList<BlogArchiveFolder> listOfFolders )
 	{
 		m_listOfFolders = listOfFolders;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setIsMonthOpen( boolean isOpen )
+	{
+		m_isMonthOpen = isOpen;
 	}
 	
 	/**
