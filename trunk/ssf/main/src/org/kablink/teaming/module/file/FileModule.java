@@ -467,6 +467,18 @@ public interface FileModule {
 	 * @return
 	 */
 	public Map<String,FileIndexData> getChildrenFileDataFromIndex(Long binderId);
+
+    /**
+   	 * Returns a map of names of the files contained in the specified binder or any subbinder
+   	 * to its <code>FileIndexData</code> objects encapsulating more detailed information
+   	 * about files obtained from the Lucene index.
+   	 * It is important for the efficiency reason that the requested data be obtainable
+   	 * entirely from the Lucene index without querying the database.
+   	 *
+   	 * @param binderId
+   	 * @return
+   	 */
+    public Map<String,FileIndexData> getChildrenFileDataFromIndexRecursively(Long binderId);
 	
 	/**
 	 * Get a file attachment from the fileId.

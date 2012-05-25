@@ -37,8 +37,16 @@ import org.apache.commons.logging.LogFactory;
 
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 
-public abstract class AbstractResource extends AbstractAllModulesInjected {
-	
-	protected Log logger = LogFactory.getLog(getClass());
+import javax.servlet.ServletContext;
 
+public abstract class AbstractResource extends AbstractAllModulesInjected {
+
+    @javax.ws.rs.core.Context
+    ServletContext context;
+
+    protected Log logger = LogFactory.getLog(getClass());
+
+    protected ServletContext getServletContext() {
+        return context;
+    }
 }

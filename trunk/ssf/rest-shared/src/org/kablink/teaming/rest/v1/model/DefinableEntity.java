@@ -45,6 +45,7 @@ public abstract class DefinableEntity extends BaseRestObject {
    	private IdLinkPair parentBinder;
    	private String definitionId;
    	private String title;
+    private String icon;
    	private Description description;
    	private AverageRating averageRating;
    	private HistoryStamp creation;
@@ -116,6 +117,15 @@ public abstract class DefinableEntity extends BaseRestObject {
 
     public void setFamily(String family) {
         this.family = family;
+    }
+
+    @XmlElement(name="icon_href")
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     public Long getId() {

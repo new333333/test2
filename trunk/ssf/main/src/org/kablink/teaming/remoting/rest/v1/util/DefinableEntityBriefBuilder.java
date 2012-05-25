@@ -75,33 +75,6 @@ abstract public class DefinableEntityBriefBuilder {
                         (Date) entry.get(Constants.MODIFICATION_DATE_FIELD)));
     }
 
-    public void populateDefinableEntityBrief(DefinableEntityBrief model, Element elem, String parentBinderField) {
-        String binderIdStr = (String) elem.attributeValue(Constants.DOCID_FIELD);
-        Long binderId = (binderIdStr != null)? Long.valueOf(binderIdStr) : null;
-
-        model.setId(binderId);
-        model.setTitle((String) elem.attributeValue(Constants.TITLE_FIELD));
-        model.setEntityType((String) elem.attributeValue(Constants.ENTITY_FIELD));
-        model.setFamily((String) elem.attributeValue(Constants.FAMILY_FIELD));
-        model.setDefinitionId((String) elem.attributeValue(Constants.COMMAND_DEFINITION_FIELD));
-        model.setDefinitionType(Integer.valueOf((String) elem.attributeValue(Constants.DEFINITION_TYPE_FIELD)));
-
-        Long parentBinderId = getLong(elem, parentBinderField);
-        if (parentBinderId!=null) {
-            model.setParentBinder(new IdLinkPair(parentBinderId, LinkUriUtil.getBinderLinkUri(parentBinderId)));
-        }
-
-//        Long creator = Long.valueOf((String) elem.attributeValue(Constants.CREATORID_FIELD));
-//        model.setCreation(
-//                new HistoryStamp(new IdLinkPair(creator, LinkUriUtil.getUserLinkUri(creator)),
-//                        (Date) elem.attributeValue(Constants.CREATION_DATE_FIELD)));
-//
-//        Long modifier = Long.valueOf((String) elem.attributeValue(Constants.MODIFICATIONID_FIELD));
-//        model.setModification(
-//                new HistoryStamp(new IdLinkPair(modifier, LinkUriUtil.getUserLinkUri(modifier)),
-//                        (Date) elem.attributeValue(Constants.MODIFICATION_DATE_FIELD)));
-    }
-
     public static Boolean getBoolean(Map entry, String fieldName) {
         Boolean value = null;
         String libraryStr = (String) entry.get(fieldName);

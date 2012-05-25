@@ -15,6 +15,7 @@ public abstract class DefinableEntityBrief extends BaseRestObject {
     private Integer definitionType; // Shows what kind binder this is, that is, whether workspace or folder. Corresponds to the constants in Definition.java
    	private String entityType;
    	private String family;
+    private String icon;
     private HistoryStamp creation;
    	private HistoryStamp modification;
 
@@ -48,6 +49,15 @@ public abstract class DefinableEntityBrief extends BaseRestObject {
 
     public void setFamily(String family) {
         this.family = family;
+    }
+
+    @XmlElement(name = "icon_href")
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     public Long getId() {
