@@ -190,36 +190,49 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		try {
 			final List<Workspace> companies = getTopWorkspacesFromEachZone();
 			final String zoneName = SZoneConfig.getDefaultZoneName();
-			//only execting one
+
 			if (companies.size() == 0) {
 				addZone(zoneName, null);
  			} else {
         		for (int i=0; i<companies.size(); ++i) {
         			final Workspace zone = (Workspace)companies.get(i);
- //       			if (zone.getName().equals(zoneName)) {
-        				getTransactionTemplate().execute(new TransactionCallback() {
-        					public Object doInTransaction(TransactionStatus status) {
-        						upgradeZoneTx(zone);
-        						return null;
-        					}
-        				});
+        			try {
+	    				getTransactionTemplate().execute(new TransactionCallback() {
+	    					public Object doInTransaction(TransactionStatus status) {
+	    						upgradeZoneTx(zone);
+	    						return null;
+	    					}
+	    				});
         			}
-//        		}
+        			catch(Exception e) {
+        				logger.warn("Failed to upgrade zone " + zone.getZoneId(), e);
+        			}
+        		}
 				//make sure zone is setup correctly
 				getTransactionTemplate().execute(new TransactionCallback() {
-	        	public Object doInTransaction(TransactionStatus status) {
-	        		for (int i=0; i<companies.size(); ++i) {
-	        			Workspace zone = (Workspace)companies.get(i);
-	        			if (zone.isDeleted()) continue;
-	        			validateZoneTx(zone);
-	    	        }
-		        	return null;
-	        	}
+		        	public Object doInTransaction(TransactionStatus status) {
+		        		for (int i=0; i<companies.size(); ++i) {
+		        			Workspace zone = (Workspace)companies.get(i);
+		        			try {
+			        			if (zone.isDeleted()) continue;
+			        			validateZoneTx(zone);
+		        			}
+		        			catch(Exception e) {
+		        				logger.warn("Failed to validate zone " + zone.getZoneId(), e);
+		        			}
+		    	        }
+			        	return null;
+		        	}
 				});
     			for (ZoneSchedule zoneM:startupModules) {
 	        		for (int i=0; i<companies.size(); ++i) {
 	        			Workspace zone = (Workspace)companies.get(i);
-	        			zoneM.startScheduledJobs(zone);
+	        			try {
+	        				zoneM.startScheduledJobs(zone);
+	        			}
+	        			catch(Exception e) {
+	        				logger.warn("Failed to start scheduled jobs for zone " + zone.getZoneId(), e);
+	        			}
 	        		}
     			}
  			
