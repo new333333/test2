@@ -68,6 +68,7 @@ import org.kablink.teaming.domain.WorkflowHistory;
 import org.kablink.teaming.domain.WorkflowStateHistory;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.extension.ZoneClassManager;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.jobs.ZoneSchedule;
@@ -187,7 +188,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			closeSession = true;
 		}
 		try {
-			final List companies = getCoreDao().findCompanies();
+			final List<Workspace> companies = getTopWorkspacesFromEachZone();
 			final String zoneName = SZoneConfig.getDefaultZoneName();
 			//only execting one
 			if (companies.size() == 0) {
@@ -1574,4 +1575,28 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		if (forceTemplatesWarning)   pm.setUserProperty(           superUId, ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES,       null);
 		if (forceVersionReset)       getBinderModule().setProperty(topWSId,  ObjectKeys.BINDER_PROPERTY_UPGRADE_VERSION,       null);
 	}
+	
+	private List<Workspace> getTopWorkspacesFromEachZone() {
+		List<Workspace> companies = getCoreDao().findCompanies();
+		
+		List<ZoneInfo> zoneInfos = getZoneInfos();
+		
+		List<Workspace> results = new ArrayList<Workspace>();
+		
+		for(Workspace top:companies) {
+			boolean found = false;
+			for(ZoneInfo zoneInfo:zoneInfos) {
+				if(top.getZoneId().equals(zoneInfo.getZoneId())) {
+					results.add(top);
+					found = true;
+					break;
+				}
+			}
+			if(!found)
+				logger.warn("Zone " + top.getZoneId() + " appears to be broken. Skipping it from loading.");
+		}
+		
+		return results;
+	}
+
 }
