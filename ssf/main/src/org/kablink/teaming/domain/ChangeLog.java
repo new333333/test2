@@ -92,7 +92,8 @@ public class ChangeLog extends ZonedObject {
 	protected String userName;
 	protected Long userId;
 	protected Date operationDate;
-	protected String xmlString=null;
+	protected String xmlStrDeprecated=null; // This is old field that maps to uncompressed lob column in the database
+	protected String xmlStr=null; // This is new field that maps to compressed blob column in the database
 	protected Document document=null;
 	protected Long entityId;
 	protected String entityType;
@@ -101,7 +102,8 @@ public class ChangeLog extends ZonedObject {
 	protected String docNumber;
 	protected String owningBinderKey;  //used for queries
 	
-	public ChangeLog() {
+	// For use by Hibernate only
+	private ChangeLog() {
 	}
 	public ChangeLog(DefinableEntity entity, String operation) {
 		this(entity, operation, (Principal)null);
@@ -290,24 +292,36 @@ public class ChangeLog extends ZonedObject {
 		return root;
 	}
 	
-    /**
-     * Return the XML document as a string.
-     * @hibernate.property type="org.springframework.orm.hibernate3.support.ClobStringType"
-     */
-    public String getXmlString() {
-    	if ((xmlString == null) && (document != null)) {
+	// For use by Hibernate only
+    private String getXmlOld() {
+    	// Return the same value so that Hibernate won't unnecessarily try to update old change log records
+    	// created prior to our recent change incorporating data compression.
+    	return xmlStrDeprecated;
+    }
+ 
+	// For use by Hibernate only
+    private String getXmlNew() {
+    	// If XML document is present, serialize it into the new field.
+    	if ((xmlStr == null) && (document != null)) {
     		try {
-    			xmlString = XmlFileUtil.writeString(document, OutputFormat.createCompactFormat());
+    			xmlStr = XmlFileUtil.writeString(document, OutputFormat.createCompactFormat());
              } catch (Exception ex) {
             	 throw new IllegalArgumentException(ex.getLocalizedMessage());
              }	
     	}
-    	return xmlString;
+    	return xmlStr;
     }
- 
-    protected void setXmlString(String xmlString) {
-        this.xmlString=xmlString;
+    
+	// For use by Hibernate only
+    private void setXmlOld(String xmlStrDeprecated) {
+        this.xmlStrDeprecated=xmlStrDeprecated;
     }
+    
+	// For use by Hibernate only
+    private void setXmlNew(String xmlStr) {
+        this.xmlStr=xmlStr;
+    }
+    
     public String getXmlNoHeader() {
     	String xml = null;
     	if (document == null) getDocument();
@@ -323,16 +337,26 @@ public class ChangeLog extends ZonedObject {
     	return xml;
     }
  
+    // Used by application
     public Document getDocument() {
-    	if (document != null) return document;
-    	if (xmlString == null) return null;
-    	try {
-    		document = XmlFileUtil.generateXMLFromString(xmlString);
-        } catch (Exception ex) {
-        	throw new IllegalArgumentException(ex.getLocalizedMessage());
-       }
+    	if (document != null) 
+    		return document;
+    	
+    	if (xmlStr != null) {
+	    	try {
+	    		document = XmlFileUtil.generateXMLFromString(xmlStr);
+	        } catch (Exception ex) {
+	        	throw new IllegalArgumentException(ex.getLocalizedMessage());
+	        }
+    	}
+    	else if (xmlStrDeprecated != null) {
+	    	try {
+	    		document = XmlFileUtil.generateXMLFromString(xmlStrDeprecated);
+	        } catch (Exception ex) {
+	        	throw new IllegalArgumentException(ex.getLocalizedMessage());
+	        }
+    	}
         return document;
     }
-
 
 }

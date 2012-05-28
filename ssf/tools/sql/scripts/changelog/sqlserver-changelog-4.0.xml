@@ -29,4 +29,12 @@
             <column name="templateOwningBinderId"/>
         </createIndex>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="5">
+        <comment>XML document stored as compressed bytes</comment>
+        <addColumn tableName="SS_ChangeLogs">
+            <column name="xmlBytes" type="image">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
