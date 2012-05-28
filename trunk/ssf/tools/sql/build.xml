@@ -24,6 +24,7 @@
 	
 	<!-- This overrides the imported definition -->
 	<path id="project.classpath">
+		<pathelement location="${project.dir}/tools/kablink-teaming-tools.jar"/>
 		<fileset dir="${project.dir}/lib">
 			<include name="*.jar" />
 			<exclude name="gwt-servlet.jar" />
@@ -551,6 +552,8 @@
 			
 		<property name="changelog.file" value="scripts/changelog/${database.type}-changelog-master.xml"/>
 
+		<mkdir dir="${sql.output.temp.dir}"/>
+		
 		<property name="output.file" value="${sql.output.temp.dir}/${database.type}-update.sql"/>
 
 			<changeLogSync
