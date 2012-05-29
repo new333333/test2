@@ -47,13 +47,13 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class CalendarDisplayDataRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private CalendarDayView	m_dayView;				// Day view:  1 day, 3 days, 5 days, 1 week, 2 weeks or 1 month.
-	private CalendarHours	m_hours;				//
-	private CalendarShow	m_show;					//
-	private Date			m_firstDay;				//
-	private int				m_weekFirstDay;			//
-	private int				m_workDayStart;			//
-	private String			m_displayDate;			// The date to display in the navigation bar corresponding to the selected view.
+	private CalendarDayView	m_dayView;		// Day view:  1 day, 3 days, 5 days, 1 week, 2 weeks or 1 month.
+	private CalendarHours	m_hours;		//
+	private CalendarShow	m_show;			//
+	private Date			m_firstDay;		//
+	private int				m_weekFirstDay;	//
+	private int				m_workDayStart;	//
+	private String			m_displayDate;	// The date to display in the navigation bar corresponding to the selected view.
 	
 	/**
 	 * Constructor method.

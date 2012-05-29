@@ -483,6 +483,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_BreadCrumbPanel();
 	String codeSplitFailure_CalendarFolderView();
 	String codeSplitFailure_CalendarNavigationPanel();
+	String codeSplitFailure_CalendarSettingsDlg();
 	String codeSplitFailure_ChangeEntryTypesDlg();
 	String codeSplitFailure_ChildBindersWidget();
 	String codeSplitFailure_ClipboardDlg();
@@ -758,6 +759,18 @@ public interface GwtTeamingMessages extends Messages
 	String addNewFolderDlgError_NoName();
 	String addNewFolderDlgHeader();
 	String addNewFolderDlgName();
+
+	// Strings used by the 'Calendar Settings' dialog.
+	String calendarSettingsDlg_Day_Sunday();
+	String calendarSettingsDlg_Day_Monday();
+	String calendarSettingsDlg_Day_Tuesday();
+	String calendarSettingsDlg_Day_Wednesday();
+	String calendarSettingsDlg_Day_Thursday();
+	String calendarSettingsDlg_Day_Friday();
+	String calendarSettingsDlg_Day_Saturday();
+	String calendarSettingsDlg_Header();
+	String calendarSettingsDlg_Label_WeekStartsOn();
+	String calendarSettingsDlg_Label_WorkDayStartsAt();
 
 	// Strings used in the workspace tree control.
 	String treeAltEntry();
