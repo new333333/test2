@@ -328,7 +328,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						// Yes!  This should only happen with pinned
 						// entries.  Assert that's the case...
 						GwtClientHelper.debugAssert(
-							getFolderDisplayData().getViewPinnedEntries(),
+							isPinning(),
 							m_messages.vibeDataTable_InternalError_UnexpectedRowCount(
 								rowsRequested,
 								rowsRead));
@@ -953,8 +953,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	protected Widget getEmptyTableWidget() {
 		return
 			new Label(
-				getFolderDisplayData().getViewPinnedEntries() ?
-					m_messages.vibeDataTable_Empty_Pinning()  :
+				isPinning()                                  ?
+					m_messages.vibeDataTable_Empty_Pinning() :
 					m_messages.vibeDataTable_Empty());
 	}
 	
@@ -2070,7 +2070,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Save the toggled pinning state for the folder.
-			final SaveFolderPinningStateCmd cmd = new SaveFolderPinningStateCmd(getFolderId(), (!(getFolderDisplayData().getViewPinnedEntries())));
+			final SaveFolderPinningStateCmd cmd = new SaveFolderPinningStateCmd(getFolderId(), (!(isPinning())));
 			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable caught) {
