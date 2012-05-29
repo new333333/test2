@@ -61,6 +61,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CalendarDayView;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.widgets.CalendarSettingsDlg;
+import org.kablink.teaming.gwt.client.widgets.CalendarSettingsDlg.CalendarSettingsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.VibeCalendar;
 
 import com.bradrydzewski.gwt.calendar.client.CalendarFormat;
@@ -96,6 +98,7 @@ public class CalendarFolderView extends FolderViewBase
 {
 	private AddFilesDlg							m_addFilesDlg;				//
 	private CalendarDisplayDataRpcResponseData	m_calendarDisplayData;		//
+	private CalendarSettingsDlg					m_calendarSettingsDlg;		//
 	private List<HandlerRegistration>			m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private String								m_quickFilter;				// Any quick filter that's active.
 	private VibeCalendar						m_calendar;					// The calendar widget contained in the view.
@@ -385,9 +388,31 @@ public class CalendarFolderView extends FolderViewBase
 	public void onCalendarSettings(CalendarSettingsEvent event) {
 		// Is the event targeted to this folder?
 		if (event.getFolderId().equals(getFolderId())) {
-			// Yes!
-//!			...this needs to be implemented...
-			Window.alert("CalendarFolderView.onCalendarSettings():  ...this needs to be implemented...");
+			// Yes!  Have we instantiated a calendar settings dialog
+			// yet?
+			if (null == m_calendarSettingsDlg) {
+				// No!  Instantiate one now.
+				CalendarSettingsDlg.createAsync(new CalendarSettingsDlgClient() {			
+					@Override
+					public void onUnavailable() {
+						// Nothing to do.  Error handled in
+						// asynchronous provider.
+					}
+					
+					@Override
+					public void onSuccess(final CalendarSettingsDlg csDlg) {
+						// ...and show it.
+						m_calendarSettingsDlg = csDlg;
+						showCalendarSettingsDlgAsync();
+					}
+				});
+			}
+			
+			else {
+				// Yes, we've instantiated a calendar settings dialog
+				// already! Simply show it.
+				showCalendarSettingsDlgAsync();
+			}
 		}
 	}
 	
@@ -700,6 +725,26 @@ public class CalendarFolderView extends FolderViewBase
 			m_addFilesDlg,
 			getFolderInfo(),
 			getEntryMenuPanel().getAddFilesMenuItem());
+	}
+	
+	/*
+	 * Asynchronously shows the calendar settings dialog.
+	 */
+	private void showCalendarSettingsDlgAsync() {
+		ScheduledCommand doShow = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showCalendarSettingsDlgNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doShow);
+	}
+	
+	/*
+	 * Synchronously shows the calendar settings dialog.
+	 */
+	private void showCalendarSettingsDlgNow() {
+		CalendarSettingsDlg.initAndShow(m_calendarSettingsDlg, getFolderId(), m_calendarDisplayData);
 	}
 	
 	/*

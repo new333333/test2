@@ -37,7 +37,6 @@ import org.kablink.teaming.gwt.client.util.VibeProduct;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
-
 /**
  * This class wraps a JavaScript object that holds information about
  * the request we are working with.
@@ -241,7 +240,7 @@ public class RequestInfo extends JavaScriptObject
 	 * 
 	 * @return
 	 */
-	public final native String getTimeSone()
+	public final native String getTimeZone()
 	/*-{
 		return this.timeZone;
 	}-*/;
