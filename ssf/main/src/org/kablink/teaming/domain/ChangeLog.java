@@ -293,7 +293,7 @@ public class ChangeLog extends ZonedObject {
 	}
 	
 	// For use by Hibernate only
-    private String getXmStrDeprecated() {
+    private String getXmlStrDeprecated() {
     	// Return the same value so that Hibernate won't unnecessarily try to update old change log records
     	// created prior to our recent change incorporating data compression.
     	return xmlStrDeprecated;
