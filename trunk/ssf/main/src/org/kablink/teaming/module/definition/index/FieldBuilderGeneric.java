@@ -38,6 +38,7 @@ import java.util.Map;
 import org.apache.lucene.document.Field;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.util.search.Constants;
+import org.kablink.util.search.FieldFactory;
 
 public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 	
@@ -51,7 +52,7 @@ public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 			if(getSortFieldName(dataElemName) != null && 
 					!getSearchFieldName(dataElemName).equals(getSortFieldName(dataElemName))) {
 				// This data element requires a separate sort field.
-				sortField = new Field(getSortFieldName(dataElemName), strToIndex.toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+				sortField = FieldFactory.createStoredNotAnalyzedNoNorms(getSortFieldName(dataElemName), strToIndex.toLowerCase());
 			}
 			// Handle optional allText field.
            	Field allTextField = null;

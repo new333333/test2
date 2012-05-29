@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.Map;
 
 import org.apache.lucene.document.Field;
+import org.kablink.util.search.FieldFactory;
 
 public class FieldBuilderTeamlist extends AbstractFieldBuilder {
 
@@ -51,7 +52,7 @@ public class FieldBuilderTeamlist extends AbstractFieldBuilder {
         int i = 0;
         for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
 	        val = Long.valueOf(((String)it.next()).trim());
-	        field = new Field(fieldName, val.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+	        field = FieldFactory.createStoredNotAnalyzedNoNorms(fieldName, val.toString());
 	        fields[i] = field;
         }
         
