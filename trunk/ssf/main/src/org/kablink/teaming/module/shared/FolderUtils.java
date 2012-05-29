@@ -635,10 +635,7 @@ public class FolderUtils {
 	}
 	
 	public static void inheritAll(Long folderId) {
-		getBinderModule().setDefinitionsInherited(folderId, true);
-		getBinderModule().setBinderVersionsInherited(folderId, true);
-		getBinderModule().setBinderFileEncryptionInherited(folderId, true);
-		getBinderModule().setTeamMembershipInherited(folderId, true);
+        BinderUtils.inheritAll(folderId);
 	}
 
 	private static FolderModule getFolderModule() {

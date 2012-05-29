@@ -38,6 +38,7 @@ import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
 import org.kablink.teaming.rest.v1.model.FolderEntryBrief;
+import org.kablink.teaming.rest.v1.model.TemplateBrief;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
 
@@ -153,5 +154,9 @@ public class LinkUriUtil {
 
     public static String getDefinitionLinkUri(String id) {
         return "/definition/" + id;
+    }
+
+    public static String getTemplateLinkUri(TemplateBrief model) {
+        return "/template/" + model.getId();
     }
 }

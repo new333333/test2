@@ -85,6 +85,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             SearchResultTree.class,
             SearchResultTreeNode.class,
             TeamBrief.class,
+            TemplateBrief.class,
             User.class,
             UserBrief.class,
             Workspace.class,

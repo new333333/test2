@@ -66,6 +66,7 @@ public class MiscResource extends AbstractResource {
         obj.addAdditionalLink("definitions", "/definition");
         obj.addAdditionalLink("release_info", "/release_info");
         obj.addAdditionalLink("self", "/self");
+        obj.addAdditionalLink("templates", "/templates");
         obj.addAdditionalLink("users", "/users");
         obj.addAdditionalLink("zone_config", "/zone_config");
    		return obj;
