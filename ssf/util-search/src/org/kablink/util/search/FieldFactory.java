@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,54 +30,32 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.module.definition.index;
-
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Map;
+package org.kablink.util.search;
 
 import org.apache.lucene.document.Field;
-import org.kablink.util.search.FieldFactory;
+import org.apache.lucene.document.Field.Store;
 
-public class FieldBuilderUserlist extends AbstractFieldBuilder {
+/**
+ * @author jong
+ *
+ */
+public class FieldFactory {
 
-    protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-        // This default radio implementation ignores args.  
-        
-        Field[] fields = new Field[dataElemValue.size()];
-        String fieldName = getSearchFieldName(dataElemName);
-       
-        Long val;
-        Field field;
-        int i = 0;
-        for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
-	        val = Long.valueOf((String)it.next());
-	        field = FieldFactory.createStoredNotAnalyzedNoNorms(fieldName, val.toString());
-	        fields[i] = field;
-        }
-        
-        return fields;
-    }
-
-	@Override
-	public String getSearchFieldName(String dataElemName) {
-		return dataElemName;
+	public static Field createAnalyzedNoNorms(String name, String value, Store store) {
+		Field field = new Field(name, value, store, Field.Index.ANALYZED_NO_NORMS);
+		field.setOmitTermFreqAndPositions(true);
+		return field;
 	}
 
-	@Override
-	public String getSortFieldName(String dataElemName) {
-		// Since this data element is multi-valued, it can't be used for sorting.
-		return null;
+	public static Field createStoredNotAnalyzedNoNorms(String name, String value) {
+		Field field = new Field(name, value, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+		field.setOmitTermFreqAndPositions(true);
+		return field;
 	}
 
-	@Override
-	public Field.Index getFieldIndex() {
-		return Field.Index.NOT_ANALYZED_NO_NORMS;
+	public static Field createNotStoredNotAnalyzedNoNorms(String name, String value) {
+		Field field = new Field(name, value, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
+		field.setOmitTermFreqAndPositions(true);
+		return field;
 	}
-
-	@Override
-	public Field.Store getFieldStore() {
-		return Field.Store.YES;
-	}
-
 }

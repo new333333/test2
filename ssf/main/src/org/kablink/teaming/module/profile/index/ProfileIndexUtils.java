@@ -41,6 +41,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+import org.kablink.util.search.FieldFactory;
 
 import static org.kablink.util.search.Constants.*;
 /**
@@ -53,42 +54,42 @@ import static org.kablink.util.search.Constants.*;
 public class ProfileIndexUtils {
 	  public static void addName(Document doc, User user, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
-        Field docNumField = new Field(LOGINNAME_FIELD, user.getName(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(LOGINNAME_FIELD, user.getName());
         doc.add(docNumField);
     }    
     public static void addName(Document doc, Group user, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
-        Field docNumField = new Field(GROUPNAME_FIELD, user.getName(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(GROUPNAME_FIELD, user.getName());
         doc.add(docNumField);
     }      
     public static void addName(Document doc, Application application, boolean fieldsOnly) {
-        Field docNumField = new Field(APPLICATION_NAME_FIELD, application.getName(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(APPLICATION_NAME_FIELD, application.getName());
         doc.add(docNumField);
     }    
     public static void addName(Document doc, ApplicationGroup appGroup, boolean fieldsOnly) {
-        Field docNumField = new Field(APPLICATION_GROUPNAME_FIELD, appGroup.getName(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(APPLICATION_GROUPNAME_FIELD, appGroup.getName());
         doc.add(docNumField);
     }      
 
     public static void addWorkspaceId(Document doc, User user) {
     	if (user.getWorkspaceId() != null) {
-    		Field workspaceIdField = new Field(WORKSPACE_ID_FIELD, user.getWorkspaceId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+    		Field workspaceIdField = FieldFactory.createStoredNotAnalyzedNoNorms(WORKSPACE_ID_FIELD, user.getWorkspaceId().toString());
     		doc.add(workspaceIdField);
     	}
     }      
     public static void addReservedId(Document doc, Principal principal, boolean fieldsOnly) {
     	if (Validator.isNotNull(principal.getInternalId())) {
-    		Field docNumField =  new Field(RESERVEDID_FIELD, principal.getInternalId(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+    		Field docNumField =  FieldFactory.createStoredNotAnalyzedNoNorms(RESERVEDID_FIELD, principal.getInternalId());
     		doc.add(docNumField);
     	}
     } 
     public static void addPersonFlag(Document doc, User user) {
-        Field docNumField = new Field(PERSONFLAG_FIELD, String.valueOf(user.isPerson()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(PERSONFLAG_FIELD, String.valueOf(user.isPerson()));
         doc.add(docNumField);
     }
     
     public static void addDynamic(Document doc, Group group, boolean fieldsOnly) {
-    	Field dynamicField = new Field(IS_GROUP_DYNAMIC_FIELD, (group.isDynamic() ? Constants.TRUE : Constants.FALSE), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+    	Field dynamicField = FieldFactory.createStoredNotAnalyzedNoNorms(IS_GROUP_DYNAMIC_FIELD, (group.isDynamic() ? Constants.TRUE : Constants.FALSE));
     	doc.add(dynamicField);
     }
 }

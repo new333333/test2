@@ -38,6 +38,7 @@ import java.util.Set;
 
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Field;
+import org.kablink.util.search.FieldFactory;
 
 public class FieldBuilderDate extends AbstractFieldBuilder {
     
@@ -47,7 +48,7 @@ public class FieldBuilderDate extends AbstractFieldBuilder {
             return new Field[0];
         }
         else {
-            Field field = new Field(getSearchFieldName(dataElemName), DateTools.dateToString(val,getResolution(args)),Field.Store.YES,Field.Index.NOT_ANALYZED_NO_NORMS);
+            Field field = FieldFactory.createStoredNotAnalyzedNoNorms(getSearchFieldName(dataElemName), DateTools.dateToString(val,getResolution(args)));
             return new Field[] {field};
         }
     }

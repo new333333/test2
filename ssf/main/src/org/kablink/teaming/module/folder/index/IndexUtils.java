@@ -41,6 +41,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.util.search.FieldFactory;
 
 import static org.kablink.util.search.Constants.*;
 /**
@@ -58,40 +59,40 @@ public class IndexUtils  {
 		if (modDate == null) modDate= entry.getModification().getDate();
 		if (modDate == null) modDate= entry.getCreation().getDate();
     	if (modDate != null ) {
-        	Field modificationDateField = new Field(LASTACTIVITY_FIELD, DateTools.dateToString(modDate,DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        	Field modificationDateField = FieldFactory.createStoredNotAnalyzedNoNorms(LASTACTIVITY_FIELD, DateTools.dateToString(modDate,DateTools.Resolution.SECOND));
         	doc.add(modificationDateField);        
             // index the YYYYMMDD string
             String dayString = EntityIndexUtils.formatDayString(modDate);
-            Field modificationDayField = new Field(LASTACTIVITY_DAY_FIELD, dayString, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+            Field modificationDayField = FieldFactory.createStoredNotAnalyzedNoNorms(LASTACTIVITY_DAY_FIELD, dayString);
             doc.add(modificationDayField);
             // index the YYYYMM string
             String yearMonthString = dayString.substring(0,6);
-            Field modificationYearMonthField = new Field(LASTACTIVITY_YEAR_MONTH_FIELD, yearMonthString, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+            Field modificationYearMonthField = FieldFactory.createStoredNotAnalyzedNoNorms(LASTACTIVITY_YEAR_MONTH_FIELD, yearMonthString);
             doc.add(modificationYearMonthField);
             // index the YYYY string
             String yearString = dayString.substring(0,4);
-            Field modificationYearField = new Field(LASTACTIVITY_YEAR_FIELD, yearString, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+            Field modificationYearField = FieldFactory.createStoredNotAnalyzedNoNorms(LASTACTIVITY_YEAR_FIELD, yearString);
             doc.add(modificationYearField);   	}
     } 
 
 
     public static void addDocNumber(Document doc, FolderEntry entry, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
-        Field docNumField = new Field(DOCNUMBER_FIELD, entry.getDocNumber(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(DOCNUMBER_FIELD, entry.getDocNumber());
         doc.add(docNumField);
     }    
     public static void addTotalReplyCount(Document doc, FolderEntry entry, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
     	//NumericField countNumField = new NumericField(TOTALREPLYCOUNT_FIELD, Field.Store.YES, true);
     	//countNumField.setIntValue(entry.getTotalReplyCount());
-    	Field countNumField1 = new Field(TOTALREPLYCOUNT_FIELD, getTotalReplyCountPadded(entry.getTotalReplyCount()), Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
+    	Field countNumField1 = FieldFactory.createNotStoredNotAnalyzedNoNorms(TOTALREPLYCOUNT_FIELD, getTotalReplyCountPadded(entry.getTotalReplyCount()));
     	Field countNumField2 = new Field(TOTALREPLYCOUNT_FIELD, String.valueOf(entry.getTotalReplyCount()), Field.Store.YES, Field.Index.NO);
         doc.add(countNumField1);
         doc.add(countNumField2);
     }    
     public static void addSortNumber(Document doc, FolderEntry entry, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
-        Field docNumField = new Field(SORTNUMBER_FIELD, entry.getHKey().getSortKey(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(SORTNUMBER_FIELD, entry.getHKey().getSortKey());
         doc.add(docNumField);
     } 
     public static void addFolderId(Document doc, Folder folder, boolean fieldsOnly) {
@@ -99,14 +100,14 @@ public class IndexUtils  {
     	//Add the top folder id to the document in the index
         Folder topFolder = folder.getTopFolder();
         if (topFolder == null) topFolder = folder;
-        Field topFolderField = new Field(TOP_FOLDERID_FIELD, topFolder.getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        Field topFolderField = FieldFactory.createStoredNotAnalyzedNoNorms(TOP_FOLDERID_FIELD, topFolder.getId().toString());
         doc.add(topFolderField);
     }   
     
     public static void addReservedByPrincipalId(Document doc, FolderEntry entry, boolean fieldsOnly) {
     	//Add the id of the reserver
         if (entry.getReservation() != null && entry.getReservation().getPrincipal() != null) {
-        	Field reservedByIdField = new Field(RESERVEDBYID_FIELD, entry.getReservation().getPrincipal().getId().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+        	Field reservedByIdField = FieldFactory.createStoredNotAnalyzedNoNorms(RESERVEDBYID_FIELD, entry.getReservation().getPrincipal().getId().toString());
         	doc.add(reservedByIdField);
         }
     }   

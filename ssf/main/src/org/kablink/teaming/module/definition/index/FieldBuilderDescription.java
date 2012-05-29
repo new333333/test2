@@ -41,6 +41,7 @@ import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.Html;
 import org.kablink.util.search.Constants;
+import org.kablink.util.search.FieldFactory;
 
 public class FieldBuilderDescription extends AbstractFieldBuilder {
     
@@ -85,7 +86,7 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
         	// later release.
         	Field descField = new Field(Constants.DESC_FIELD, text, Field.Store.YES, Field.Index.NO); 
         	Field descTextField = new Field(Constants.DESC_TEXT_FIELD, strippedText, Field.Store.NO, Field.Index.ANALYZED); 
-        	Field descFormatField = new Field(Constants.DESC_FORMAT_FIELD, String.valueOf(val.getFormat()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS); 
+        	Field descFormatField = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.DESC_FORMAT_FIELD, String.valueOf(val.getFormat())); 
          	if (isFieldsOnly(args)) {
          		return new Field[] {descField, descTextField, descFormatField};
          	} else {

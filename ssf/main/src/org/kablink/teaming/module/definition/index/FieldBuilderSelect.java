@@ -41,6 +41,7 @@ import org.dom4j.Element;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.search.BasicIndexUtils;
+import org.kablink.util.search.FieldFactory;
 
 public abstract class FieldBuilderSelect extends AbstractFieldBuilder {
 
@@ -76,14 +77,14 @@ public abstract class FieldBuilderSelect extends AbstractFieldBuilder {
         int i = 1;
         for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
             val = (String) it.next();
-	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+	        field = FieldFactory.createStoredNotAnalyzedNoNorms(fieldName, val);
 	        fields[i] = field;
         }
         
         fieldName = DefinitionModule.CAPTION_FIELD_PREFIX + fieldName;
         for(Iterator it = dataElemValueCaptions.iterator(); it.hasNext(); i++) {
             val = (String) it.next();
-	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+	        field = FieldFactory.createStoredNotAnalyzedNoNorms(fieldName, val);
 	        fields[i] = field;
 	        // Do NOT include translated text for the selection into the all text field. See bug#682072 
 	        //allText += " " + getNltTagInAllLanguages(val);
