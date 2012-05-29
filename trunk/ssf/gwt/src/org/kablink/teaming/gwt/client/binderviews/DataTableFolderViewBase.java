@@ -951,7 +951,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * @return
 	 */
 	protected Widget getEmptyTableWidget() {
-		return new Label(m_messages.vibeDataTable_Empty());
+		return
+			new Label(
+				getFolderDisplayData().getViewPinnedEntries() ?
+					m_messages.vibeDataTable_Empty_Pinning()  :
+					m_messages.vibeDataTable_Empty());
 	}
 	
 	/*
