@@ -1358,6 +1358,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Download();
 	String vibeDataTable_Error_MirroredDriverNotConfigured();
 	String vibeDataTable_Empty();
+	String vibeDataTable_Empty_Pinning();
 	String vibeDataTable_Event_AllDay();
 	String vibeDataTable_Event_End();
 	String vibeDataTable_Event_Duration(String days);
