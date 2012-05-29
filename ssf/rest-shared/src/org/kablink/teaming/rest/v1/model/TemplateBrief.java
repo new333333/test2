@@ -30,29 +30,25 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.remoting.rest.v1.resource;
+package org.kablink.teaming.rest.v1.model;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+public class TemplateBrief extends DefinableEntityBrief {
 
-import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.util.AbstractAllModulesInjected;
+	private String internalId;
+	private String name;
 
-import javax.servlet.ServletContext;
+	public TemplateBrief() {}
 
-public abstract class AbstractResource extends AbstractAllModulesInjected {
-
-    @javax.ws.rs.core.Context
-    ServletContext context;
-
-    protected Log logger = LogFactory.getLog(getClass());
-
-    protected ServletContext getServletContext() {
-        return context;
-    }
-
-    protected Long getLoggedInUserId() {
-        return RequestContextHolder.getRequestContext().getUserId();
-    }
-
+	public String getInternalId() {
+		return internalId;
+	}
+	public void setInternalId(String internalId) {
+		this.internalId = internalId;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 }

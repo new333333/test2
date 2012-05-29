@@ -34,13 +34,22 @@
 package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.Attachment;
-import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.rest.v1.model.*;
+import org.kablink.teaming.rest.v1.model.AverageRating;
+import org.kablink.teaming.rest.v1.model.Binder;
+import org.kablink.teaming.rest.v1.model.DefinableEntity;
+import org.kablink.teaming.rest.v1.model.Description;
+import org.kablink.teaming.rest.v1.model.Entry;
+import org.kablink.teaming.rest.v1.model.Folder;
+import org.kablink.teaming.rest.v1.model.FolderEntry;
+import org.kablink.teaming.rest.v1.model.HistoryStamp;
+import org.kablink.teaming.rest.v1.model.Principal;
+import org.kablink.teaming.rest.v1.model.User;
+import org.kablink.teaming.rest.v1.model.Workspace;
+import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.search.Constants;
 
@@ -324,6 +333,16 @@ public class ResourceUtil {
     }
 
     private static void populateBinderBrief(BinderBrief model, org.kablink.teaming.domain.Binder binder) {
+        populateDefinableEntityBrief(model, binder);
+        model.setIcon(LinkUriUtil.buildIconLinkUri(binder.getIconName()));
+        model.setLibrary(binder.isLibrary());
+        model.setMirrored(binder.isMirrored());
+        model.setPath(binder.getPathName());
+        model.setLink(LinkUriUtil.getBinderLinkUri(model));
+        LinkUriUtil.populateBinderLinks(model, model.isWorkspace(), model.isFolder());
+    }
+
+    private static void populateDefinableEntityBrief(DefinableEntityBrief model, org.kablink.teaming.domain.DefinableEntity binder) {
         model.setId(binder.getId());
         model.setTitle(binder.getTitle());
         model.setEntityType(binder.getEntityType().toString());
@@ -331,20 +350,15 @@ public class ResourceUtil {
         if(def != null) {
             model.setFamily(DefinitionUtils.getFamily(def));
         }
-        model.setIcon(LinkUriUtil.buildIconLinkUri(binder.getIconName()));
-        model.setLibrary(binder.isLibrary());
-        model.setMirrored(binder.isMirrored());
+        //model.setIcon(LinkUriUtil.buildIconLinkUri(binder.getIconName()));
         if(binder.getEntryDefId() != null)
             model.setDefinition(new StringIdLinkPair(binder.getEntryDefId(), LinkUriUtil.getDefinitionLinkUri(binder.getEntryDefId())));
-        model.setPath(binder.getPathName());
         if(binder.getCreation() != null) {
             model.setCreation(buildHistoryStamp(binder.getCreation()));
         }
         if(binder.getModification() != null) {
             model.setModification(buildHistoryStamp(binder.getModification()));
         }
-        model.setLink(LinkUriUtil.getBinderLinkUri(model));
-        LinkUriUtil.populateBinderLinks(model, model.isWorkspace(), model.isFolder());
     }
 
     private static AverageRating buildAverageRating(org.kablink.teaming.domain.AverageRating rating){
@@ -402,5 +416,15 @@ public class ResourceUtil {
         model.setType(def.getType());
         model.setLink(LinkUriUtil.getDefinitionLinkUri(model.getId()));
         return model;
+    }
+
+    public static TemplateBrief buildTemplateBrief(TemplateBinder template) {
+        TemplateBrief model = new TemplateBrief();
+        populateDefinableEntityBrief(model, template);
+        model.setInternalId(template.getInternalId());
+        model.setName(template.getName());
+        model.setLink(LinkUriUtil.getTemplateLinkUri(model));
+        return model;
+
     }
 }

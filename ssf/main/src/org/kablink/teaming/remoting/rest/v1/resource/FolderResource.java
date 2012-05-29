@@ -35,8 +35,10 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -46,7 +48,13 @@ import javax.ws.rs.core.MediaType;
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.TemplateBinder;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
@@ -72,6 +80,21 @@ public class FolderResource extends AbstractBinderResource {
         return getSubBinders(id, filter);
 	}
 	
+    @POST
+   	@Path("folders")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+   	public org.kablink.teaming.rest.v1.model.Binder createSubFolder(@PathParam("id") long id, org.kablink.teaming.rest.v1.model.Binder binder, @QueryParam("template") Long templateId)
+               throws WriteFilesException, WriteEntryDataException {
+        if (templateId!=null) {
+            TemplateBinder template = getTemplateModule().getTemplate(templateId);
+            if (EntityIdentifier.EntityType.folder != template.getEntityType()) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The specified 'template' parameter must be a folder template.");
+            }
+        }
+        return createBinder(id, binder, templateId);
+    }
+
 	// Read entries
 	@GET
 	@Path("entries")
@@ -105,7 +128,10 @@ public class FolderResource extends AbstractBinderResource {
         try{
             org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(id);
             if (binder instanceof org.kablink.teaming.domain.Folder) {
-                return (org.kablink.teaming.domain.Folder) binder;
+                Folder folder = (Folder) binder;
+                if (!folder.isPreDeleted()) {
+                    return folder;
+                }
             }
         } catch (NoBinderByTheIdException e) {
             // Throw exception below.

@@ -1,27 +1,30 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
-import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.TitleException;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileIndexData;
+import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.shared.BinderUtils;
+import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderTree;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
-import org.kablink.teaming.rest.v1.model.SearchResultTree;
-import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.search.filter.SearchFilter;
-import org.kablink.teaming.web.tree.WebSvcTreeHelper;
-import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.util.api.ApiErrorCode;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -39,11 +42,15 @@ public class AbstractBinderResource extends AbstractResource {
 
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public org.kablink.teaming.rest.v1.model.Binder getBinder(@PathParam("id") long id,
+    public Binder getBinder(@PathParam("id") long id,
                                                               @QueryParam("include_attachments") @DefaultValue("false") boolean includeAttachments) {
         return ResourceUtil.buildBinder(_getBinder(id), includeAttachments);
     }
 
+    @DELETE
+    public void deleteBinder(@PathParam("id") long id) {
+        _deleteBinder(id);
+    }
 
     // Read all subbinders
 	@GET
@@ -51,6 +58,15 @@ public class AbstractBinderResource extends AbstractResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<BinderBrief> getSubBinders(@PathParam("id") long id) {
         return getSubBinders(id, null);
+	}
+
+	@POST
+	@Path("binders")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	public Binder createSubBinder(@PathParam("id") long id, Binder binder, @QueryParam("template") Long templateId)
+            throws WriteFilesException, WriteEntryDataException {
+        return createBinder(id, binder, templateId);
 	}
 
 	@GET
@@ -68,6 +84,20 @@ public class AbstractBinderResource extends AbstractResource {
                                                   @QueryParam("recursive") @DefaultValue("false") boolean recursive) {
         return getSubFiles(id, recursive);
 	}
+
+    protected Binder createBinder(long parentId, Binder newBinder, Long templateId) throws WriteFilesException, WriteEntryDataException {
+        _getBinder(parentId);
+        if (newBinder.getTitle()==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No binder title was supplied in the POST data.");
+        }
+        org.kablink.teaming.domain.Binder binder = BinderUtils.createBinder(parentId, newBinder.getTitle(), null, templateId);
+        return ResourceUtil.buildBinder(binder, true);
+    }
+
+    protected void _deleteBinder(long id) {
+        _getBinder(id);
+        getBinderModule().preDeleteBinder(id, getLoggedInUserId());
+    }
 
     protected SearchResultList<FileProperties> getSubFiles(long id, boolean recursive) {
         _getBinder(id);
@@ -109,7 +139,7 @@ public class AbstractBinderResource extends AbstractResource {
         return results;
     }
 
-    protected Binder _getBinder(long id) {
+    protected org.kablink.teaming.domain.Binder _getBinder(long id) {
         try{
             return getBinderModule().getBinder(id);
         } catch (NoBinderByTheIdException e) {

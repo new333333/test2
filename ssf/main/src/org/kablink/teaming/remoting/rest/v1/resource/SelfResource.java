@@ -60,21 +60,21 @@ public class SelfResource extends AbstractUserResource {
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public User getSelf(@QueryParam("include_attachments") @DefaultValue("false") boolean includeAttachments) {
-        return getUser(RequestContextHolder.getRequestContext().getUserId(), includeAttachments);
+        return getUser(getLoggedInUserId(), includeAttachments);
     }
 
     @GET
     @Path("/favorites")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<BinderBrief> getFavorites() {
-        return getFavorites(RequestContextHolder.getRequestContext().getUserId());
+        return getFavorites(getLoggedInUserId());
     }
 
     @GET
     @Path("/teams")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<TeamBrief> getTeams() {
-        return getTeams(RequestContextHolder.getRequestContext().getUserId());
+        return getTeams(getLoggedInUserId());
     }
 
     @GET
