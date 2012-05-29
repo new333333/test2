@@ -709,7 +709,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Loads the EntryMenuPanel.
 	 */
 	private void loadPart7Now() {
-		EntryMenuPanel.createAsync(this, m_folderInfo, m_folderDisplayData.getViewPinnedEntries(), m_allowColumnSizing, this, new ToolPanelClient() {			
+		EntryMenuPanel.createAsync(this, m_folderInfo, isPinning(), m_allowColumnSizing, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
