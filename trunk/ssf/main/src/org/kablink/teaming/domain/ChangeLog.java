@@ -293,14 +293,14 @@ public class ChangeLog extends ZonedObject {
 	}
 	
 	// For use by Hibernate only
-    private String getXmlOld() {
+    private String getXmStrDeprecated() {
     	// Return the same value so that Hibernate won't unnecessarily try to update old change log records
     	// created prior to our recent change incorporating data compression.
     	return xmlStrDeprecated;
     }
  
 	// For use by Hibernate only
-    private String getXmlNew() {
+    private String getXmlStr() {
     	// If XML document is present, serialize it into the new field.
     	if ((xmlStr == null) && (document != null)) {
     		try {
@@ -313,12 +313,12 @@ public class ChangeLog extends ZonedObject {
     }
     
 	// For use by Hibernate only
-    private void setXmlOld(String xmlStrDeprecated) {
+    private void setXmlStrDeprecated(String xmlStrDeprecated) {
         this.xmlStrDeprecated=xmlStrDeprecated;
     }
     
 	// For use by Hibernate only
-    private void setXmlNew(String xmlStr) {
+    private void setXmlStr(String xmlStr) {
         this.xmlStr=xmlStr;
     }
     
