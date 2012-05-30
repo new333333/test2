@@ -35,10 +35,15 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.remoting.ws.model.Timestamp;
+import org.kablink.teaming.rest.v1.model.DefinableEntity;
+import org.kablink.teaming.rest.v1.model.HistoryStamp;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 
 import javax.servlet.ServletContext;
+import java.util.Map;
 
 public abstract class AbstractResource extends AbstractAllModulesInjected {
 
@@ -54,5 +59,23 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     protected Long getLoggedInUserId() {
         return RequestContextHolder.getRequestContext().getUserId();
     }
+
+    protected void populateTimestamps(Map options, DefinableEntity entry)
+   	{
+   		HistoryStamp creation = entry.getCreation();
+   		if(creation != null) {
+   			if(creation.getPrincipal() != null)
+   				options.put(ObjectKeys.INPUT_OPTION_CREATION_ID, creation.getPrincipal().getId());
+   			if(creation.getDate() != null)
+   				options.put(ObjectKeys.INPUT_OPTION_CREATION_DATE, creation.getDate());
+   		}
+   		HistoryStamp modification = entry.getModification();
+   		if(modification != null) {
+            if(modification.getPrincipal() != null)
+                options.put(ObjectKeys.INPUT_OPTION_CREATION_ID, modification.getPrincipal().getId());
+   			if(modification.getDate() != null)
+   				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modification.getDate());
+   		}
+   	}
 
 }

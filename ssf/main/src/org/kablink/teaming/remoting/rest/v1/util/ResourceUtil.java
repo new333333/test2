@@ -74,6 +74,19 @@ public class ResourceUtil {
    		return cal;
    	}
 
+    public static FolderEntryBrief buildFolderEntryBrief(org.kablink.teaming.domain.FolderEntry entry) {
+        FolderEntryBrief model = new FolderEntryBrief();
+        populateDefinableEntityBrief(model, entry);
+        model.setDocLevel(entry.getDocLevel());
+        model.setDocNumber(entry.getDocNumber());
+        List<String> filenames = new ArrayList<String>();
+        for (FileAttachment attach : entry.getFileAttachments()) {
+            filenames.add(attach.getName());
+        }
+        model.setFileNames(filenames.toArray(new String[filenames.size()]));
+        return model;
+    }
+
     public static FolderEntry buildFolderEntry(org.kablink.teaming.domain.FolderEntry entry, boolean includeAttachments) {
         FolderEntry model = new FolderEntry();
         populateEntry(model, entry, includeAttachments);
