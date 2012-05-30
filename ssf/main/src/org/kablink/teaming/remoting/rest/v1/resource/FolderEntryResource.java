@@ -45,7 +45,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import com.sun.jersey.spi.resource.Singleton;
@@ -55,22 +54,25 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
-import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
-import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
+import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.rest.v1.model.BaseFileProperties;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FolderEntry;
 
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
-import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.teaming.rest.v1.model.SearchResultTree;
+import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
+import org.kablink.teaming.util.SimpleProfiler;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Path("/v1/folder_entry/{id}")
@@ -92,9 +94,18 @@ public class FolderEntryResource extends AbstractFileResource {
 
     // Update folder entry
 	@PUT
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public Response putFolderEntry(@PathParam("id") long id) {
-		return null;
+	public FolderEntry putFolderEntry(@PathParam("id") long id, FolderEntry entry)
+            throws WriteFilesException, WriteEntryDataException {
+        SimpleProfiler.start("folderService_modifyEntry");
+        HashMap options = new HashMap();
+        populateTimestamps(options, entry);
+        getFolderModule().modifyEntry(null, id, new RestModelInputData(entry), null, null, null, options);
+        // Read it back from the database
+        org.kablink.teaming.domain.Entry dEntry = getFolderModule().getEntry(null, id);
+        SimpleProfiler.stop("folderService_modifyEntry");
+        return ResourceUtil.buildFolderEntry((org.kablink.teaming.domain.FolderEntry) dEntry, true);
 	}
 
 	// Delete folder entry
@@ -187,11 +198,63 @@ public class FolderEntryResource extends AbstractFileResource {
         getFolderModule().unreserveEntry(null, id);
     }
 
+    @GET
+    @Path("reply_tree")
+    public SearchResultTree<FolderEntry> getReplyTree(@PathParam("id") Long id) {
+        org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
+        SearchResultTree<FolderEntry> tree = new SearchResultTree<FolderEntry>();
+        populateReplies(entry, tree);
+        return tree;
+    }
+
+    @GET
+    @Path("replies")
+    public SearchResultList<FolderEntry> getReplies(@PathParam("id") Long id) {
+        org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
+        List replies = entry.getReplies();
+        SearchResultList<FolderEntry> results = new SearchResultList<FolderEntry>();
+        for (Object o : replies) {
+            org.kablink.teaming.domain.FolderEntry reply = (org.kablink.teaming.domain.FolderEntry) o;
+            if (!reply.isPreDeleted()) {
+                results.append(ResourceUtil.buildFolderEntry(reply, false));
+            }
+        }
+        return results;
+    }
+
+    @POST
+    @Path("replies")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public FolderEntry addReply(@PathParam("id") Long id,
+                                FolderEntry entry) throws WriteFilesException, WriteEntryDataException {
+        org.kablink.teaming.domain.FolderEntry parent = _getFolderEntry(id);
+        String defId = null;
+        if (entry.getDefinition()!=null) {
+            defId = entry.getDefinition().getId();
+        }
+        Map options = new HashMap();
+      	populateTimestamps(options, entry);
+        org.kablink.teaming.domain.FolderEntry newEntry = getFolderModule().addReply(null, id, defId, new RestModelInputData(entry), null, options);
+        return ResourceUtil.buildFolderEntry(newEntry, false);
+    }
+
     @POST
    	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
    	public FileProperties postAttachment_ApplicationFormUrlencoded(@PathParam("id") String id) {
    		throw new UnsupportedMediaTypeException("'" + MediaType.APPLICATION_FORM_URLENCODED + "' format is not supported by this method. Use '" + MediaType.MULTIPART_FORM_DATA + "' or raw type");
    	}
+
+    private void populateReplies(org.kablink.teaming.domain.FolderEntry entry, SearchResultTreeNode<FolderEntry> node) {
+        List replies = entry.getReplies();
+        for (Object o : replies) {
+            org.kablink.teaming.domain.FolderEntry reply = (org.kablink.teaming.domain.FolderEntry) o;
+            if (!reply.isPreDeleted()) {
+                SearchResultTreeNode<FolderEntry> childNode = node.addChild(ResourceUtil.buildFolderEntry(reply, false));
+                populateReplies(reply, childNode);
+            }
+        }
+    }
 
     private org.kablink.teaming.domain.FolderEntry _getFolderEntry(long id) {
         org.kablink.teaming.domain.FolderEntry hEntry = getFolderModule().getEntry(null, id);
