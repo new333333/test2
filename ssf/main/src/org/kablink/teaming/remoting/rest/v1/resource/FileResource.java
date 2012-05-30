@@ -39,6 +39,7 @@ import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FileUtils;
+import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
@@ -51,6 +52,7 @@ import org.kablink.util.api.ApiErrorCode;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -76,17 +78,22 @@ public class FileResource extends AbstractFileResource {
     @POST
    	@Consumes(MediaType.MULTIPART_FORM_DATA)
    	public FileProperties writeFileContentById_MultipartFormData(@PathParam("id") String fileId,
-   			@QueryParam("dataName") String dataName,
-   			@QueryParam("modDate") String modDateISO8601,
-   			@QueryParam("lastVersionNumber") Integer lastVersionNumber,
-   			@QueryParam("lastMajorVersionNumber") Integer lastMajorVersionNumber,
-   			@QueryParam("lastMinorVersionNumber") Integer lastMinorVersionNumber,
+   			@QueryParam("data_name") String dataName,
+   			@QueryParam("mod_date") String modDateISO8601,
+   			@QueryParam("force_overwrite") @DefaultValue("false") boolean forceOverwrite,
+   			@QueryParam("last_version") Integer lastVersionNumber,
+   			@QueryParam("last_major_version") Integer lastMajorVersionNumber,
+   			@QueryParam("last_minor_version") Integer lastMinorVersionNumber,
                @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
+        if (!forceOverwrite && lastVersionNumber==null && (lastMajorVersionNumber==null || lastMinorVersionNumber==null)) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "You must specify one of the following query parameters: force_overwrite, last_version, or last_major_version and last_minor_version.");
+        }
    		FileAttachment fa = findFileAttachment(fileId);
    		DefinableEntity entity = fa.getOwner().getEntity();
    		InputStream is = getInputStreamFromMultipartFormdata(request);
    		try {
-   			return writeFileContentByName(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName(), dataName, modDateISO8601, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber, request, is);
+   			return updateExistingFileContent(entity, fa, dataName, modDateISO8601, forceOverwrite,
+                       lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber, is);
    		}
    		finally {
    			try {
@@ -98,17 +105,22 @@ public class FileResource extends AbstractFileResource {
 
    	@POST
    	public FileProperties writeFileContentById_Raw(@PathParam("id") String fileId,
-   			@QueryParam("dataName") String dataName,
-   			@QueryParam("modDate") String modDateISO8601,
-   			@QueryParam("lastVersionNumber") Integer lastVersionNumber,
-   			@QueryParam("lastMajorVersionNumber") Integer lastMajorVersionNumber,
-   			@QueryParam("lastMinorVersionNumber") Integer lastMinorVersionNumber,
+               @QueryParam("data_name") String dataName,
+               @QueryParam("mod_date") String modDateISO8601,
+               @QueryParam("force_overwrite") @DefaultValue("false") boolean forceOverwrite,
+               @QueryParam("last_version") Integer lastVersionNumber,
+               @QueryParam("last_major_version") Integer lastMajorVersionNumber,
+               @QueryParam("last_minor_version") Integer lastMinorVersionNumber,
                @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
+        if (!forceOverwrite && lastVersionNumber==null && (lastMajorVersionNumber==null || lastMinorVersionNumber==null)) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "You must specify one of the following query parameters: force_overwrite, last_version, or last_major_version and last_minor_version.");
+        }
    		FileAttachment fa = findFileAttachment(fileId);
    		DefinableEntity entity = fa.getOwner().getEntity();
    		InputStream is = getRawInputStream(request);
    		try {
-   			return writeFileContentByName(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName(), dataName, modDateISO8601, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber, request, is);
+            return updateExistingFileContent(entity, fa, dataName, modDateISO8601, forceOverwrite,
+                    lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber, is);
    		}
    		finally {
    			try {

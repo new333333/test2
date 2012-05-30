@@ -1,6 +1,5 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
-import com.sun.jersey.api.core.InjectParam;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
@@ -17,23 +16,22 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFileByTheIdException;
+import org.kablink.teaming.domain.NoFileByTheNameException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoPrincipalByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
-import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
-import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
+import org.kablink.teaming.remoting.rest.v1.exc.InternalServerErrorException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
+import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
@@ -44,6 +42,7 @@ import org.kablink.util.api.ApiErrorCode;
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,102 +66,93 @@ abstract public class AbstractFileResource extends AbstractResource {
         }
     }
 
+    protected FileProperties writeNewFileContent(
+            EntityIdentifier.EntityType entityType,
+            long entityId,
+            String filename,
+            String dataName,
+            String modDateISO8601,
+            InputStream is) throws WriteFilesException, WriteEntryDataException {
+        if (filename==null || filename.length()==0) {
+            throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "The file_name query parameter must be specified.");
+        }
+        Date modDate = dateFromISO8601(modDateISO8601);
+        DefinableEntity entity = findDefinableEntity(entityType.name(), entityId);
+        FileAttachment fa = entity.getFileAttachment(filename);
+        if (fa!=null) {
+            throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file named " + filename + " already exists in the " + entityType + ".");
+        }
+        modifyDefinableEntityWithFile(entity, dataName, filename, is, modDate);
+        fa = entity.getFileAttachment(filename);
+        return ResourceUtil.buildFileProperties(fa);
+    }
+
+    protected FileProperties updateExistingFileContent(
+            DefinableEntity entity,
+            FileAttachment attachment,
+            String dataName,
+            String modDateISO8601,
+            boolean forceOverwrite,
+            Integer lastVersionNumber,
+            Integer lastMajorVersionNumber,
+            Integer lastMinorVersionNumber,
+            InputStream is)
+            throws WriteFilesException, WriteEntryDataException {
+        Date modDate = dateFromISO8601(modDateISO8601);
+        boolean allowOverwrite = forceOverwrite;
+        if (!allowOverwrite) {
+            if (lastVersionNumber==null && (lastMajorVersionNumber==null || lastMinorVersionNumber==null)) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "You must specify one of: lastVersionNumber, lastMajorVersionNumber and lastMinorVersionNumber, or forceOverwrite.");
+            }
+        }
+        if (forceOverwrite || FileUtils.matchesTopMostVersion(attachment, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber)) {
+            modifyDefinableEntityWithFile(entity, dataName, attachment.getFileItem().getName(), is, modDate);
+        } else {
+            throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file");
+        }
+        return ResourceUtil.buildFileProperties(attachment);
+    }
+
     protected FileProperties writeFileContentByName(
             String entityType,
             long entityId,
             String filename,
             String dataName,
             String modDateISO8601,
+            Boolean update,
             Integer lastVersionNumber,
             Integer lastMajorVersionNumber,
             Integer lastMinorVersionNumber,
-            HttpServletRequest request,
             InputStream is)
             throws WriteFilesException, WriteEntryDataException {
-        EntityIdentifier.EntityType et = entityTypeFromString(entityType);
-        FileAttachment fa;
-        boolean result = true;
         Date modDate = dateFromISO8601(modDateISO8601);
-        if (et == EntityIdentifier.EntityType.folderEntry) {
-            FolderEntry entry = getFolderModule().getEntry(null, entityId);
-            fa = entry.getFileAttachment(filename);
-            if (fa != null) {
-                result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-                if (result) {
-                    FileUtils.modifyFolderEntryWithFile(entry, dataName, filename, is, modDate);
-                }
-            } else {
-                result = validateArgumentsForNewFile(lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-                if (result) {
-                    FileUtils.modifyFolderEntryWithFile(entry, dataName, filename, is, modDate);
-                    fa = entry.getFileAttachment(filename);
-                }
+        DefinableEntity entity = findDefinableEntity(entityType, entityId);
+        FileAttachment fa = entity.getFileAttachment(filename);
+        if (fa != null) {
+            if (update!=null && !update) {
+                throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file named " + filename + " already exists in the " + entityType + ".");
             }
-        } else if (et == EntityIdentifier.EntityType.user) {
-            Principal user = getProfileModule().getEntry(entityId);
-            if (!(user instanceof User))
-                throw new BadRequestException(ApiErrorCode.NOT_USER, "Entity ID '" + entityId + "' does not represent a user");
-            fa = user.getFileAttachment(filename);
-            if (fa != null) {
-                result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-                if (result) {
-                    FileUtils.modifyPrincipalWithFile(user, dataName, filename, is, modDate);
-                }
+            if (FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber)) {
+                modifyDefinableEntityWithFile(entity, dataName, filename, is, modDate);
             } else {
-                result = validateArgumentsForNewFile(lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-                if (result) {
-                    FileUtils.modifyPrincipalWithFile(user, dataName, filename, is, modDate);
-                    fa = user.getFileAttachment(filename);
-                }
-            }
-        } else if (et == EntityIdentifier.EntityType.group) {
-            Principal group = getProfileModule().getEntry(entityId);
-            if (!(group instanceof Group))
-                throw new BadRequestException(ApiErrorCode.NOT_GROUP, "Entity ID '" + entityId + "' does not represent a group");
-            fa = group.getFileAttachment(filename);
-            if (fa != null) {
-                result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-                if (result) {
-                    FileUtils.modifyPrincipalWithFile(group, dataName, filename, is, modDate);
-                }
-            } else {
-                result = validateArgumentsForNewFile(lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-                if (result) {
-                    FileUtils.modifyPrincipalWithFile(group, dataName, filename, is, modDate);
-                    fa = group.getFileAttachment(filename);
-                }
-            }
-        } else if (et == EntityIdentifier.EntityType.workspace || et == EntityIdentifier.EntityType.folder || et == EntityIdentifier.EntityType.profiles) {
-            Binder binder = getBinderModule().getBinder(entityId);
-            fa = binder.getFileAttachment(filename);
-            if (fa != null) {
-                result = FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-                if (result) {
-                    // Ignore modDate param, since it isn't applicable in this case.
-                    FileUtils.modifyBinderWithFile(binder, dataName, filename, is);
-                }
-            } else {
-                result = validateArgumentsForNewFile(lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-                if (result) {
-                    FileUtils.modifyBinderWithFile(binder, dataName, filename, is);
-                    fa = binder.getFileAttachment(filename);
-                }
+                throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file");
             }
         } else {
-            throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + entityType + "' is unknown or not supported by this method");
+            if (update!=null && update) {
+                throw new NoFileByTheNameException(filename);
+            }
+            validateArgumentsForNewFile(lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+            modifyDefinableEntityWithFile(entity, dataName, filename, is, modDate);
+            fa = entity.getFileAttachment(filename);
         }
-        if (result)
-            return ResourceUtil.buildFileProperties(fa);
-        else
-            throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file");
+        return ResourceUtil.buildFileProperties(fa);
     }
 
-    protected boolean validateArgumentsForNewFile(Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
+    protected void validateArgumentsForNewFile(Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
         // These arguments should not be specified when creating a new file.
         if (lastVersionNumber == null && lastMajorVersionNumber == null && lastMinorVersionNumber == null)
-            return true;
-        else
-            return false;
+            return;
+        throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Cannot specify lastVersionNumber, lastMajorVersionNumber or lastMinorVersionNumber for a new file.");
     }
 
     protected EntityIdentifier.EntityType entityTypeFromString(String entityTypeStr)
@@ -209,6 +199,12 @@ abstract public class AbstractFileResource extends AbstractResource {
 
     protected InputStream getRawInputStream(HttpServletRequest request)
             throws UncheckedIOException {
+        if (request.getContentType().equals(MediaType.APPLICATION_FORM_URLENCODED)) {
+            throw new UnsupportedMediaTypeException(MediaType.APPLICATION_FORM_URLENCODED + " is not a supported media type.");
+        }
+        if (request.getContentType().equals(MediaType.MULTIPART_FORM_DATA)) {
+            throw new UnsupportedMediaTypeException(MediaType.MULTIPART_FORM_DATA + " is not a supported media type.");
+        }
         try {
             return request.getInputStream();
         } catch (IOException e) {
@@ -350,6 +346,18 @@ abstract public class AbstractFileResource extends AbstractResource {
             throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + entityType + "' is unknown or not supported by this method");
         }
         return entity;
+    }
+
+    protected void modifyDefinableEntityWithFile(DefinableEntity entity, String dataName, String filename, InputStream is, Date modDate) throws WriteFilesException, WriteEntryDataException {
+        if (entity instanceof FolderEntry) {
+            FileUtils.modifyFolderEntryWithFile((FolderEntry) entity, dataName, filename, is, modDate);
+        } else if (entity instanceof Principal) {
+            FileUtils.modifyPrincipalWithFile((Principal) entity, dataName, filename, is, modDate);
+        } else if (entity instanceof Binder) {
+            FileUtils.modifyBinderWithFile((Binder) entity, dataName, filename, is);
+        } else {
+            throw new InternalServerErrorException(ApiErrorCode.SERVER_ERROR, "Don't know how to save file in entity of type: " + entity.getClass().getName());
+        }
     }
 
     protected List<FileVersionProperties> fileVersionsFromFileAttachment(FileAttachment fa) {

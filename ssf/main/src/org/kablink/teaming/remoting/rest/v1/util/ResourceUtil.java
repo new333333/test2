@@ -84,6 +84,7 @@ public class ResourceUtil {
             filenames.add(attach.getName());
         }
         model.setFileNames(filenames.toArray(new String[filenames.size()]));
+        LinkUriUtil.populateFolderEntryLinks(model, model.getId());
         return model;
     }
 
@@ -92,6 +93,7 @@ public class ResourceUtil {
         populateEntry(model, entry, includeAttachments);
         model.setDocLevel(entry.getDocLevel());
         model.setDocNumber(entry.getDocNumber());
+        LinkUriUtil.populateFolderEntryLinks(model, model.getId());
         return model;
     }
 
