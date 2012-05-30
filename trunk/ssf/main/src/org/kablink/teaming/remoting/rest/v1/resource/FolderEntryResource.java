@@ -59,11 +59,14 @@ import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
+import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.BaseFileProperties;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FolderEntry;
 
+import org.kablink.teaming.rest.v1.model.HistoryStamp;
+import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 
 import java.io.IOException;
@@ -160,6 +163,28 @@ public class FolderEntryResource extends AbstractFileResource {
             }
             catch(IOException ignore) {}
         }
+    }
+
+    @GET
+    @Path("reservation")
+    public HistoryStamp getReservation(@PathParam("id") Long id) {
+        org.kablink.teaming.domain.FolderEntry hEntry = _getFolderEntry(id);
+        org.kablink.teaming.domain.HistoryStamp reservation = hEntry.getReservation();
+        return ResourceUtil.buildHistoryStamp(reservation);
+    }
+
+    @PUT
+    @Path("reservation")
+    public HistoryStamp reserve(@PathParam("id") Long id) {
+        _getFolderEntry(id);
+        org.kablink.teaming.domain.HistoryStamp reservation = getFolderModule().reserveEntry(null, id);
+        return ResourceUtil.buildHistoryStamp(reservation);
+    }
+
+    @DELETE
+    @Path("reservation")
+    public void unreserve(@PathParam("id") Long id) {
+        getFolderModule().unreserveEntry(null, id);
     }
 
     @POST

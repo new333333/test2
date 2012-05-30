@@ -45,6 +45,7 @@ import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
@@ -542,7 +543,7 @@ public interface FolderModule {
      * @throws ReservedByAnotherUserException
      * @throws FilesLockedByOtherUsersException
      */
-    public void reserveEntry(Long folderId, Long entryId)
+    public HistoryStamp reserveEntry(Long folderId, Long entryId)
     	throws AccessControlException, ReservedByAnotherUserException,
     	FilesLockedByOtherUsersException;
     

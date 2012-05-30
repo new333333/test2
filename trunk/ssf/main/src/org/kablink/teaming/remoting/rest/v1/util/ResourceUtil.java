@@ -51,7 +51,6 @@ import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.Workspace;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.web.util.PermaLinkUtil;
-import org.kablink.util.search.Constants;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -93,6 +92,7 @@ public class ResourceUtil {
         populateEntry(model, entry, includeAttachments);
         model.setDocLevel(entry.getDocLevel());
         model.setDocNumber(entry.getDocNumber());
+        model.setReservation(buildHistoryStamp(entry.getReservation()));
         LinkUriUtil.populateFolderEntryLinks(model, model.getId());
         return model;
     }
@@ -388,7 +388,10 @@ public class ResourceUtil {
         return new HistoryStamp(new LongIdLinkPair(userId, LinkUriUtil.getUserLinkUri(userId)), historyStamp.getDate());
     }
 
-    private static HistoryStamp buildHistoryStamp(org.kablink.teaming.domain.HistoryStamp historyStamp) {
+    public static HistoryStamp buildHistoryStamp(org.kablink.teaming.domain.HistoryStamp historyStamp) {
+        if (historyStamp==null) {
+            return null;
+        }
         Long userId = historyStamp.getPrincipal().getId();
         return new HistoryStamp(new LongIdLinkPair(userId, LinkUriUtil.getUserLinkUri(userId)), historyStamp.getDate());
     }

@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class FolderEntry extends Entry {
     private String docNumber;
    	private int docLevel;
+    private HistoryStamp reservation;
 
     @XmlElement(name = "doc_level")
     public int getDocLevel() {
@@ -57,5 +58,13 @@ public class FolderEntry extends Entry {
 
     public void setDocNumber(String docNumber) {
         this.docNumber = docNumber;
+    }
+
+    public HistoryStamp getReservation() {
+        return reservation;
+    }
+
+    public void setReservation(HistoryStamp reservation) {
+        this.reservation = reservation;
     }
 }

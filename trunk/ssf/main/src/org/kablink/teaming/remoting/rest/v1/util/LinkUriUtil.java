@@ -113,6 +113,9 @@ public class LinkUriUtil {
     public static void populateFolderEntryLinks(BaseRestObject model, Long id) {
         model.setLink(getFolderEntryLinkUri(id));
         model.addAdditionalLink("files", model.getLink() + "/files");
+        model.addAdditionalLink("reservation", model.getLink() + "/reservation");
+        model.addAdditionalLink("replies", model.getLink() + "/replies");
+        model.addAdditionalLink("tags", model.getLink() + "/tags");
     }
 
     public static void populateBinderLinks(BaseRestObject model, boolean isWorkspace, boolean isFolder) {
