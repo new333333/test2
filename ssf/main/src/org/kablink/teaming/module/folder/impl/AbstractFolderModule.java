@@ -1203,7 +1203,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	
 
     //inside write transaction    
-    public void reserveEntry(Long folderId, Long entryId)
+    public HistoryStamp reserveEntry(Long folderId, Long entryId)
 	throws AccessControlException, ReservedByAnotherUserException,
 	FilesLockedByOtherUsersException {
     	// Because I don't expect customers to override or extend this 
@@ -1243,6 +1243,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     			// or there are no effective locks at all.
     			// Proceed and reserve the entry.
     			entry.setReservation(user);
+                reservation = entry.getReservation();
     	 	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
     		} else { // One or more lock is held by someone else.
     			// Build error information.
@@ -1266,6 +1267,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     			throw new ReservedByAnotherUserException(entry);
     		}
     	}
+        return reservation;
     }
     
     //inside write transaction    
