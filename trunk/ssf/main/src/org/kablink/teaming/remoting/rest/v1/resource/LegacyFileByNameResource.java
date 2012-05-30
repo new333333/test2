@@ -74,8 +74,8 @@ public class LegacyFileByNameResource extends AbstractFileResource {
 		InputStream is = getInputStreamFromMultipartFormdata(request);
 		try {
 			return new LegacyFileProperties(
-                    writeFileContentByName(entityType, entityId, filename, dataName, modDateISO8601, lastVersionNumber,
-                            lastMajorVersionNumber, lastMinorVersionNumber, request, is));
+                    writeFileContentByName(entityType, entityId, filename, dataName, modDateISO8601, null, lastVersionNumber,
+                            lastMajorVersionNumber, lastMinorVersionNumber, is));
 		}
 		finally {
 			try {
@@ -99,8 +99,8 @@ public class LegacyFileByNameResource extends AbstractFileResource {
 		InputStream is = getRawInputStream(request);
 		try {
 			return new LegacyFileProperties(
-                    writeFileContentByName(entityType, entityId, filename, dataName, modDateISO8601, lastVersionNumber,
-                            lastMajorVersionNumber, lastMinorVersionNumber, request, is));
+                    writeFileContentByName(entityType, entityId, filename, dataName, modDateISO8601, null, lastVersionNumber,
+                            lastMajorVersionNumber, lastMinorVersionNumber, is));
 		}
 		finally {
 			try {

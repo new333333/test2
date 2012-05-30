@@ -21,7 +21,7 @@ public class FolderEntryBriefBuilder extends DefinableEntityBriefBuilder impleme
         model.setDocNumber((String) entry.get(Constants.DOCNUMBER_FIELD));
         model.setDocLevel((new HKey((String) entry.get(Constants.SORTNUMBER_FIELD))).getLevel());
         model.setFileNames(getValueAsStringArray(entry.get(Constants.FILENAME_FIELD)));
-        model.setLink(LinkUriUtil.getFolderEntryLinkUri(model));
+        LinkUriUtil.populateFolderEntryLinks(model, model.getId());
         return model;
     }
 

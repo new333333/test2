@@ -37,6 +37,7 @@ import org.kablink.teaming.rest.v1.model.BaseRestObject;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
+import org.kablink.teaming.rest.v1.model.FolderEntry;
 import org.kablink.teaming.rest.v1.model.FolderEntryBrief;
 import org.kablink.teaming.rest.v1.model.TemplateBrief;
 import org.kablink.teaming.web.WebKeys;
@@ -107,6 +108,11 @@ public class LinkUriUtil {
 
     public static String getFileVersionBaseLinkUri(FileVersionProperties fp) {
         return "/file_version/" + fp.getId();
+    }
+
+    public static void populateFolderEntryLinks(BaseRestObject model, Long id) {
+        model.setLink(getFolderEntryLinkUri(id));
+        model.addAdditionalLink("files", model.getLink() + "/files");
     }
 
     public static void populateBinderLinks(BaseRestObject model, boolean isWorkspace, boolean isFolder) {

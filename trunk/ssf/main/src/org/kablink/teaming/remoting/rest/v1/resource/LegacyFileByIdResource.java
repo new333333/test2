@@ -69,13 +69,14 @@ public class LegacyFileByIdResource extends AbstractFileResource {
 			@QueryParam("lastMajorVersionNumber") Integer lastMajorVersionNumber,
 			@QueryParam("lastMinorVersionNumber") Integer lastMinorVersionNumber,
             @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
+        boolean forceOverwrite = (lastVersionNumber==null && lastMajorVersionNumber==null && lastMinorVersionNumber==null);
 		FileAttachment fa = findFileAttachment(fileId);
 		DefinableEntity entity = fa.getOwner().getEntity();
 		InputStream is = getInputStreamFromMultipartFormdata(request);
 		try {
 			return new LegacyFileProperties(
-                    writeFileContentByName(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName(), dataName,
-                            modDateISO8601, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber, request, is));
+                    updateExistingFileContent(entity, fa, dataName, modDateISO8601, forceOverwrite, lastVersionNumber,
+                            lastMajorVersionNumber, lastMinorVersionNumber, is));
 		}
 		finally {
 			try {
@@ -93,13 +94,14 @@ public class LegacyFileByIdResource extends AbstractFileResource {
 			@QueryParam("lastMajorVersionNumber") Integer lastMajorVersionNumber,
 			@QueryParam("lastMinorVersionNumber") Integer lastMinorVersionNumber,
             @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
+        boolean forceOverwrite = (lastVersionNumber==null && lastMajorVersionNumber==null && lastMinorVersionNumber==null);
 		FileAttachment fa = findFileAttachment(fileId);
 		DefinableEntity entity = fa.getOwner().getEntity();
 		InputStream is = getRawInputStream(request);
 		try {
 			return new LegacyFileProperties(
-                    writeFileContentByName(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName(), dataName,
-                            modDateISO8601, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber, request, is));
+                    updateExistingFileContent(entity, fa, dataName, modDateISO8601, forceOverwrite, lastVersionNumber,
+                            lastMajorVersionNumber, lastMinorVersionNumber, is));
 		}
 		finally {
 			try {
