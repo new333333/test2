@@ -322,6 +322,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetBinderOwnerAvatarUrl();
 	String rpcFailure_GetBinderStats();
 	String rpcFailure_GetCalendarDisplayData();
+	String rpcFailure_GetCalendarNextPreviousPeroid();
 	String rpcFailure_GetClipboardTeamUsers();
 	String rpcFailure_GetClipboardUsers();
 	String rpcFailure_GetClipboardUsersFromList();
@@ -427,6 +428,8 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveBinderRegionState();
 	String rpcFailure_SaveCalendarDayView();
 	String rpcFailure_SaveCalendarHours();
+	String rpcFailure_SaveCalendarSettings();
+	String rpcFailure_SaveCalendarShow();
 	String rpcFailure_SaveClipboardUsers();
 	String rpcFailure_SaveColumnWidths();
 	String rpcFailure_SaveEmailNotificationInfo();
