@@ -263,58 +263,23 @@ abstract public class AbstractFileResource extends AbstractResource {
     protected void deleteFile(String entityType, long entityId, String filename)
             throws WriteFilesException, WriteEntryDataException, BadRequestException {
         EntityIdentifier.EntityType et = entityTypeFromString(entityType);
-        FileAttachment fa;
-        if (et == EntityIdentifier.EntityType.folderEntry) {
-            try {
-                FolderEntry entry = getFolderModule().getEntry(null, entityId);
-                fa = entry.getFileAttachment(filename);
-                if (fa != null)
-                    FolderUtils.deleteFileInFolderEntry(entry, fa);
-            } catch (NoFolderEntryByTheIdException e) {
-                // The specified entry no longer exists. This is OK for delete request.
-            }
-        } else if (et == EntityIdentifier.EntityType.user) {
-            try {
-                Principal user = getProfileModule().getEntry(entityId);
-                if (!(user instanceof User))
-                    throw new BadRequestException(ApiErrorCode.NOT_USER, "Entity ID '" + entityId + "' does not represent a user");
-                fa = user.getFileAttachment(filename);
-                if (fa != null) {
-                    List deletes = new ArrayList();
-                    deletes.add(fa.getId());
-                    getProfileModule().modifyEntry(entityId, new EmptyInputData(), null, deletes, null, null);
-                }
-            } catch (NoPrincipalByTheIdException e) {
-                // The specified user no longer exists. This is OK for delete request.
-            }
-        } else if (et == EntityIdentifier.EntityType.group) {
-            try {
-                Principal group = getProfileModule().getEntry(entityId);
-                if (!(group instanceof User))
-                    throw new BadRequestException(ApiErrorCode.NOT_GROUP, "Entity ID '" + entityId + "' does not represent a group");
-                fa = group.getFileAttachment(filename);
-                if (fa != null) {
-                    List deletes = new ArrayList();
-                    deletes.add(fa.getId());
-                    getProfileModule().modifyEntry(entityId, new EmptyInputData(), null, deletes, null, null);
-                }
-            } catch (NoPrincipalByTheIdException e) {
-                // The specified user no longer exists. This is OK for delete request.
-            }
-        } else if (et == EntityIdentifier.EntityType.workspace || et == EntityIdentifier.EntityType.folder || et == EntityIdentifier.EntityType.profiles) {
-            try {
-                Binder binder = getBinderModule().getBinder(entityId);
-                fa = binder.getFileAttachment(filename);
-                if (fa != null) {
-                    List deletes = new ArrayList();
-                    deletes.add(fa.getId());
-                    getBinderModule().modifyBinder(entityId, new EmptyInputData(), null, deletes, null);
-                }
-            } catch (NoBinderByTheIdException e) {
-                // The specified binder no longer exists. This is OK for delete request.
-            }
+        DefinableEntity entity = findDefinableEntity(entityType, entityId);
+        FileAttachment fa = entity.getFileAttachment(filename);
+        if (fa==null) {
+            throw new NoFileByTheNameException(filename);
+        }
+        if (entity instanceof FolderEntry) {
+            FolderUtils.deleteFileInFolderEntry((FolderEntry) entity, fa);
+        } else if (entity instanceof Principal) {
+            List deletes = new ArrayList();
+            deletes.add(fa.getId());
+            getProfileModule().modifyEntry(entityId, new EmptyInputData(), null, deletes, null, null);
+        } else if (entity instanceof Binder) {
+            List deletes = new ArrayList();
+            deletes.add(fa.getId());
+            getBinderModule().modifyBinder(entityId, new EmptyInputData(), null, deletes, null);
         } else {
-            throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + entityType + "' is unknown or not supported by this method");
+            throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + entity.getClass().getName() + "' is unknown or not supported by this method");
         }
     }
 
