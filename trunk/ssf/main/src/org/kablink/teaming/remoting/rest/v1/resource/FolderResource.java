@@ -48,6 +48,7 @@ import javax.ws.rs.core.MediaType;
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
@@ -55,14 +56,18 @@ import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
+import org.kablink.teaming.remoting.rest.v1.exc.InternalServerErrorException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
+import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
+import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
-import org.kablink.teaming.rest.v1.model.FileProperties;
+import org.kablink.teaming.rest.v1.model.FolderEntry;
 import org.kablink.teaming.rest.v1.model.FolderEntryBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.search.filter.SearchFilter;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.api.ApiErrorCode;
 
 @Path("/v1/folder/{id}")
@@ -101,23 +106,71 @@ public class FolderResource extends AbstractBinderResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<FolderEntryBrief> getFolderEntries(@PathParam("id") long id,
                                                             @QueryParam("first") Integer offset,
-                                                            @QueryParam("count") Integer maxCount) {
-        _getFolder(id);
-
-        Map<String, Object> options = new HashMap<String, Object>();
-        if (offset!=null) {
-            options.put(ObjectKeys.SEARCH_OFFSET, offset);
+                                                            @QueryParam("count") Integer maxCount,
+                                                            @QueryParam("file_name") String fileName) {
+        SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>();
+        Folder folder = _getFolder(id);
+        if (fileName!=null) {
+            if (folder.isLibrary()) {
+                org.kablink.teaming.domain.FolderEntry folderEntry = getFolderModule().getLibraryFolderEntryByFileName(folder, fileName);
+                if (folderEntry!=null) {
+                    results.append(ResourceUtil.buildFolderEntryBrief(folderEntry));
+                }
+            } else {
+                throw new InternalServerErrorException(ApiErrorCode.NOT_SUPPORTED, "Searching for folder entries with file names is only supported on library folders.");
+            }
         } else {
-            offset = 0;
+            Map<String, Object> options = new HashMap<String, Object>();
+            if (offset!=null) {
+                options.put(ObjectKeys.SEARCH_OFFSET, offset);
+            } else {
+                offset = 0;
+            }
+            if (maxCount!=null) {
+                options.put(ObjectKeys.SEARCH_MAX_HITS, maxCount);
+            }
+            Map resultMap = getFolderModule().getEntries(id, options);
+            results.setFirst(offset);
+            SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(), resultMap, "/folder/" + id + "/entries", offset);
         }
-        if (maxCount!=null) {
-            options.put(ObjectKeys.SEARCH_MAX_HITS, maxCount);
-        }
-        Map resultMap = getFolderModule().getEntries(id, options);
-        SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(), resultMap, "/folder/" + id + "/entries", offset);
 		return results;
 	}
+
+    @POST
+   	@Path("entries")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+   	public FolderEntry createFolderEntry(@PathParam("id") long id,
+                                         @QueryParam("file_entry") @DefaultValue("false") boolean fileEntry,
+                                         FolderEntry entry) throws WriteFilesException, WriteEntryDataException {
+        Folder folder = _getFolder(id);
+
+        String defId;
+        if (entry.getDefinition()==null) {
+            Definition def;
+            if (fileEntry) {
+                def = folder.getDefaultFileEntryDef();
+            } else {
+                def = folder.getDefaultEntryDef();
+            }
+            if  (def!=null) {
+                defId = def.getId();
+            } else {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No definition was supplied in the POST data.");
+            }
+        } else {
+            defId = entry.getDefinition().getId();
+        }
+        if (defId==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No definition id was supplied in the POST data.");
+        }
+        SimpleProfiler.start("REST_folder_createFolderEntry");
+        HashMap options = new HashMap();
+        populateTimestamps(options, entry);
+        org.kablink.teaming.domain.FolderEntry result = getFolderModule().addEntry(id, defId, new RestModelInputData(entry), null, options);
+        SimpleProfiler.stop("REST_folder_createFolderEntry");
+        return ResourceUtil.buildFolderEntry(result, true);
+    }
 
     @Override
     protected Binder _getBinder(long id) {
