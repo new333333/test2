@@ -41,6 +41,10 @@ public class FolderEntry extends Entry {
     private String docNumber;
    	private int docLevel;
     private HistoryStamp reservation;
+    private int replyCount;
+    private int totalReplyCount;
+    private LongIdLinkPair parentEntry;
+    private LongIdLinkPair topEntry;
 
     @XmlElement(name = "doc_level")
     public int getDocLevel() {
@@ -66,5 +70,41 @@ public class FolderEntry extends Entry {
 
     public void setReservation(HistoryStamp reservation) {
         this.reservation = reservation;
+    }
+
+    @XmlElement(name = "reply_count")
+    public int getReplyCount() {
+        return replyCount;
+    }
+
+    public void setReplyCount(int replyCount) {
+        this.replyCount = replyCount;
+    }
+
+    @XmlElement(name = "total_reply_count")
+    public int getTotalReplyCount() {
+        return totalReplyCount;
+    }
+
+    public void setTotalReplyCount(int totalReplyCount) {
+        this.totalReplyCount = totalReplyCount;
+    }
+
+    @XmlElement(name = "parent_entry")
+    public LongIdLinkPair getParentEntry() {
+        return parentEntry;
+    }
+
+    public void setParentEntry(LongIdLinkPair parentEntry) {
+        this.parentEntry = parentEntry;
+    }
+
+    @XmlElement(name = "top_entry")
+    public LongIdLinkPair getTopEntry() {
+        return topEntry;
+    }
+
+    public void setTopEntry(LongIdLinkPair topEntry) {
+        this.topEntry = topEntry;
     }
 }

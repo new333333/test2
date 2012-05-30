@@ -115,6 +115,7 @@ public class LinkUriUtil {
         model.addAdditionalLink("files", model.getLink() + "/files");
         model.addAdditionalLink("reservation", model.getLink() + "/reservation");
         model.addAdditionalLink("replies", model.getLink() + "/replies");
+        model.addAdditionalLink("reply_tree", model.getLink() + "/reply_tree");
         model.addAdditionalLink("tags", model.getLink() + "/tags");
     }
 

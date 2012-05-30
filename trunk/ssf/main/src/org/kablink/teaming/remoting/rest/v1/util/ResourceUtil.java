@@ -93,6 +93,16 @@ public class ResourceUtil {
         model.setDocLevel(entry.getDocLevel());
         model.setDocNumber(entry.getDocNumber());
         model.setReservation(buildHistoryStamp(entry.getReservation()));
+        model.setReplyCount(entry.getReplyCount());
+        model.setTotalReplyCount(entry.getTotalReplyCount());
+        org.kablink.teaming.domain.FolderEntry parent = entry.getParentEntry();
+        if (parent!=null) {
+            model.setParentEntry(new LongIdLinkPair(parent.getId(), LinkUriUtil.getFolderEntryLinkUri(parent.getId())));
+        }
+        org.kablink.teaming.domain.FolderEntry top = entry.getTopEntry();
+        if (top!=null) {
+            model.setTopEntry(new LongIdLinkPair(top.getId(), LinkUriUtil.getFolderEntryLinkUri(top.getId())));
+        }
         LinkUriUtil.populateFolderEntryLinks(model, model.getId());
         return model;
     }

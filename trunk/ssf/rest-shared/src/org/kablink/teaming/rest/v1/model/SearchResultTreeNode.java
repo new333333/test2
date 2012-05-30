@@ -65,11 +65,16 @@ public class SearchResultTreeNode<T> {
         this.children = children;
     }
 
-    public void addChild(SearchResultTreeNode<T> child) {
+    public SearchResultTreeNode<T> addChild(T child) {
+        return addChild(new SearchResultTreeNode<T>(child));
+    }
+
+    public SearchResultTreeNode<T> addChild(SearchResultTreeNode<T> child) {
         if (children==null) {
             children = new ArrayList<SearchResultTreeNode<T>>();
         }
         children.add(child);
+        return child;
     }
 
     @XmlElement(name="item")
