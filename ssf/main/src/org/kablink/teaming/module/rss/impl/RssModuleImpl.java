@@ -54,6 +54,8 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -688,6 +690,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		// add the sort field (by descending age)
 		sortFields[0] = new SortField(sortBy, sortType, descend);
 		so.setSortBy(sortFields);
+		combineAclClausesWithQuery(so);
 		return so;
 
 	}
@@ -905,6 +908,21 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		public boolean isErrors() {
 			if (errorCount > 0) return true;
 			return false;
+		}
+	}
+
+	private void combineAclClausesWithQuery(SearchObject so) {
+		// Note: This directly modifies in place the query object associated with the SearchObject.
+		String acls = so.getAclQueryStr();
+		if (acls != null && acls.length() != 0) {
+			Query top = so.getLuceneQuery();
+			if(!(top instanceof BooleanQuery)) {
+				BooleanQuery bq = new BooleanQuery();
+				bq.add(top, BooleanClause.Occur.MUST);
+				top = bq;
+			}
+			((BooleanQuery) top).add(so.parseQueryStringWSA(acls), BooleanClause.Occur.MUST);
+			so.setLuceneQuery(top);
 		}
 	}
 
