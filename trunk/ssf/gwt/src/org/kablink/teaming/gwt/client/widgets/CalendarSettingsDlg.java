@@ -37,7 +37,10 @@ import java.util.Date;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarSettingsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
@@ -47,6 +50,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -66,7 +70,6 @@ public class CalendarSettingsDlg extends DlgBox implements EditSuccessfulHandler
 	private GwtTeamingMessages					m_messages;				// Access to Vibe's messages.
 	private ListBox								m_weekStartList;		//
 	private ListBox								m_workDayStartList;		//
-	@SuppressWarnings("unused")
 	private Long								m_folderId;				// The calendar folder whose settings are being configured.
 	private String[]							m_weekDays;				//
 	private String[]							m_workHours;			//
@@ -140,7 +143,8 @@ public class CalendarSettingsDlg extends DlgBox implements EditSuccessfulHandler
 	 */
 	@Override
 	public boolean editSuccessful(Object callbackData) {
-//!		...this needs to be implemented...
+		// Save the calendar settings.
+		saveCalendarSettingsAsync();
 		
 		// Always return false to leave the dialog open.  If it's
 		// contents validate and the folder gets created, the dialog
@@ -268,6 +272,66 @@ public class CalendarSettingsDlg extends DlgBox implements EditSuccessfulHandler
 		populateDlgAsync();
 	}
 
+	/*
+	 * Asynchronously saves the calendar settings.
+	 */
+	private void saveCalendarSettingsAsync() {
+		ScheduledCommand doSave = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				saveCalendarSettingsNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doSave);
+	}
+	
+	/*
+	 * Synchronously saves the calendar settings.
+	 */
+	private void saveCalendarSettingsNow() {
+		// What week starting day was selected?
+		int si = m_weekStartList.getSelectedIndex();
+		int weekStart = Integer.parseInt(m_weekStartList.getValue(si));
+		if (weekStart == m_calendarDisplayData.getWeekFirstDay()) {
+			weekStart = (-1);
+		}
+
+		// What work day starting hour was selected?
+		si = m_workDayStartList.getSelectedIndex();
+		int workDayStart = Integer.parseInt(m_workDayStartList.getValue(si));
+		if (workDayStart == m_calendarDisplayData.getWorkDayStart()) {
+			workDayStart = (-1);
+		}
+
+		// Did the user change their current settings?
+		if (((-1) == weekStart) && ((-1) == workDayStart)) {
+			// No!  Then we don't have to save anything.  SImply hide
+			// the dialog and bail.
+			hide();
+			return;
+		}
+
+		// Can we save the calendar settings?
+		GwtClientHelper.executeCommand(
+				new SaveCalendarSettingsCmd(m_folderId, weekStart, workDayStart),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_SaveCalendarSettings());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Yes!  Hide the dialog an put the new calendar
+				// settings into affect...
+				hide();
+				FullUIReloadEvent.fireOne();
+			}
+		});
+	}
+	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
 	/* the calendar settings dialog and perform some operation on    */

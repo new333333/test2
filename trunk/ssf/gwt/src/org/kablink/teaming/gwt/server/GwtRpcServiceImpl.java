@@ -628,11 +628,23 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_CALENDAR_DISPLAY_DATA:
 		{
-			GetCalendarDisplayDataCmd gfddCmd = ((GetCalendarDisplayDataCmd) cmd);
+			GetCalendarDisplayDataCmd gcddCmd = ((GetCalendarDisplayDataCmd) cmd);
 			CalendarDisplayDataRpcResponseData responseData = GwtViewHelper.getCalendarDisplayData(
 				this,
 				getRequest( ri ),
-				gfddCmd.getFolderInfo() );
+				gcddCmd.getFolderInfo() );
+			return new VibeRpcResponse( responseData );
+		}
+		
+		case GET_CALENDAR_NEXT_PREVIOUS_PERIOD:
+		{
+			GetCalendarNextPreviousPeriodCmd gcnppCmd = ((GetCalendarNextPreviousPeriodCmd) cmd);
+			CalendarDisplayDataRpcResponseData responseData = GwtViewHelper.getCalendarNextPreviousPeriod(
+				this,
+				getRequest( ri ),
+				gcnppCmd.getFolderId(),
+				gcnppCmd.getCalendarDisplayData(),
+				gcnppCmd.getNext() );
 			return new VibeRpcResponse( responseData );
 		}
 		
@@ -1893,6 +1905,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			SaveCalendarHoursCmd schCmd = ((SaveCalendarHoursCmd) cmd);
 			CalendarDisplayDataRpcResponseData result = GwtViewHelper.saveCalendarHours( this, getRequest( ri ), schCmd.getFolderInfo(), schCmd.getHours() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case SAVE_CALENDAR_SETTINGS:
+		{
+			SaveCalendarSettingsCmd scsCmd = ((SaveCalendarSettingsCmd) cmd);
+			Boolean result = GwtViewHelper.saveCalendarSettings( this, getRequest( ri ), scsCmd.getFolderId(), scsCmd.getWeekStart(), scsCmd.getWorkDayStart() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
+		case SAVE_CALENDAR_SHOW:
+		{
+			SaveCalendarShowCmd scsCmd = ((SaveCalendarShowCmd) cmd);
+			CalendarDisplayDataRpcResponseData result = GwtViewHelper.saveCalendarShow( this, getRequest( ri ), scsCmd.getFolderInfo(), scsCmd.getShow() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}

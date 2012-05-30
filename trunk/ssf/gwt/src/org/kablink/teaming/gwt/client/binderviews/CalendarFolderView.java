@@ -50,13 +50,16 @@ import org.kablink.teaming.gwt.client.event.CalendarShowEvent;
 import org.kablink.teaming.gwt.client.event.CalendarViewDaysEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarDisplayDataCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarNextPreviousPeriodCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarDayViewCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarHoursCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarShowCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CalendarDayView;
@@ -144,6 +147,50 @@ public class CalendarFolderView extends FolderViewBase
 		loadPart1Async();
 	}
 
+	/*
+	 * Asynchronously loads the display data for the next/previous
+	 * period.
+	 */
+	private void doCalendarNextPreviousPeriodAsync(final boolean next) {
+		Scheduler.ScheduledCommand doNextPreviousPeriod = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				doCalendarNextPreviousPeriodNow(next);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doNextPreviousPeriod);
+	}
+	
+	/*
+	 * Synchronously loads the display data for the next/previous
+	 * period.
+	 */
+	private void doCalendarNextPreviousPeriodNow(boolean next) {
+		GwtClientHelper.executeCommand(
+				new GetCalendarNextPreviousPeriodCmd(getFolderInfo().getBinderIdAsLong(), m_calendarDisplayData, next),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetCalendarNextPreviousPeroid());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Yes!  Put the new calendar display data into
+				// affect...
+				m_calendarDisplayData = ((CalendarDisplayDataRpcResponseData) response.getResponseData());
+				GwtTeaming.fireEvent(new CalendarChangedEvent(getFolderId(), m_calendarDisplayData));
+
+				// ...and repopulate the view.
+				setCalendarDisplay();
+				m_calendar.clearAppointments();
+				populateCalendarEventsAsync();
+			}
+		});
+	}
+	
 	/**
 	 * Returns the CalendarDisplayDataRpcResponseData used by this view.
 	 * 
@@ -354,9 +401,8 @@ public class CalendarFolderView extends FolderViewBase
 	public void onCalendarNextPeriod(CalendarNextPeriodEvent event) {
 		// Is the event targeted to this folder?
 		if (event.getFolderId().equals(getFolderId())) {
-			// Yes!
-//!			...this needs to be implemented...
-			Window.alert("CalendarFolderView.onCalendarNextPeriod():  ...this needs to be implemented...");
+			// Yes!  Load the display data for the next period.
+			doCalendarNextPreviousPeriodAsync(true);	// true -> Next period.
 		}
 	}
 	
@@ -371,9 +417,8 @@ public class CalendarFolderView extends FolderViewBase
 	public void onCalendarPreviousPeriod(CalendarPreviousPeriodEvent event) {
 		// Is the event targeted to this folder?
 		if (event.getFolderId().equals(getFolderId())) {
-			// Yes!
-//!			...this needs to be implemented...
-			Window.alert("CalendarFolderView.onCalendarPreviousPeriod():  ...this needs to be implemented...");
+			// Yes!  Load the display data for the previous period.
+			doCalendarNextPreviousPeriodAsync(false);	// false -> Previous period.
 		}
 	}
 	
@@ -427,9 +472,27 @@ public class CalendarFolderView extends FolderViewBase
 	public void onCalendarShow(CalendarShowEvent event) {
 		// Is the event targeted to this folder?
 		if (event.getFolderId().equals(getFolderId())) {
-			// Yes!
-//!			...this needs to be implemented...
-			Window.alert("CalendarFolderView.onCalendarShow():  ...this needs to be implemented...");
+			// Yes!  Can we can save the show setting on the server?
+			GwtClientHelper.executeCommand(
+					new SaveCalendarShowCmd(getFolderInfo(), event.getShow()),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_SaveCalendarShow());
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Yes!  Put the new calendar display data into
+					// affect.  Note that we refresh the full UI
+					// here and not just the calendar.  We do this so
+					// that the entry menu, ... also get updated to
+					// reflect the change.
+					FullUIReloadEvent.fireOne();
+				}
+			});
 		}
 	}
 	

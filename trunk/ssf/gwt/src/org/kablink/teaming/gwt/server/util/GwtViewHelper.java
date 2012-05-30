@@ -271,7 +271,7 @@ public class GwtViewHelper {
 	/*
 	 * Returns the date string to display on a calendar's navigation bar.
 	 */
-	private static String buildCalendarDateDisplay(User user, Calendar startDay, Calendar firstDay, CalendarDayView dayView, int weekFirstDay) {
+	private static String buildCalendarDateDisplay(User user, Calendar firstDay, Calendar startDay, CalendarDayView dayView, int weekFirstDay) {
 		String		firstDayToShow = GwtServerHelper.getDateString(firstDay.getTime(), DateFormat.MEDIUM);
 		String		reply;
 		switch (dayView) {
@@ -1447,6 +1447,8 @@ public class GwtViewHelper {
 	 * @param folderInfo
 	 * 
 	 * @return
+	 * 
+	 * @throws GwtTeamingException
 	 */
 	public static CalendarDisplayDataRpcResponseData getCalendarDisplayData(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) throws GwtTeamingException {
 		try {
@@ -1504,13 +1506,14 @@ public class GwtViewHelper {
 
 			// What should the calendar display for the date on the
 			// navigation bar?
-			String displayDate = buildCalendarDateDisplay(user, startDay, firstDay, dayView, weekFirstDay);
+			String displayDate = buildCalendarDateDisplay(user, firstDay, startDay, dayView, weekFirstDay);
 			
 			// Finally, use the data we obtained to create a
 			// CalendarDisplayDataRpcResponseData and return that. 
 			return
 				new CalendarDisplayDataRpcResponseData(
 					firstDay.getTime(),
+					startDay.getTime(),
 					dayView,
 					hours,
 					show,
@@ -1524,6 +1527,75 @@ public class GwtViewHelper {
 			// that.
 			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
 			     m_logger.debug("GwtViewHelper.getCalendarDisplayData( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
+	/**
+	 * Modifies the given CalendarDisplayDataRpcResponseData to the
+	 * next or previous time period and returns it.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * @param calendarDisplayData
+	 * @param next
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static CalendarDisplayDataRpcResponseData getCalendarNextPreviousPeriod(AllModulesInjected bs, HttpServletRequest request, Long folderId, CalendarDisplayDataRpcResponseData calendarDisplayData, boolean next) throws GwtTeamingException {
+		try {
+			// Calculate the increment to use for the next/previous
+			// period...
+			int unit = (-1);
+			int incr = (-1);
+			switch (calendarDisplayData.getDayView()) {
+			case ONE_DAY:     unit = Calendar.DAY_OF_YEAR;  incr = 1; break;
+			case THREE_DAYS:  unit = Calendar.DAY_OF_YEAR;  incr = 3; break;
+			case FIVE_DAYS:
+			case WEEK:        unit = Calendar.WEEK_OF_YEAR; incr = 1; break;
+			case TWO_WEEKS:   unit = Calendar.WEEK_OF_YEAR; incr = 2; break;
+			case MONTH:       unit = Calendar.MONTH;        incr = 1; break;
+			}
+			if (!next) {
+				incr = (-incr);
+			}
+
+			// ...add the increment to the first and start days in the
+			// ...given display data...
+			GregorianCalendar firstDay = new GregorianCalendar();
+			firstDay.setTime(calendarDisplayData.getFirstDay());
+			firstDay.add(unit, incr);
+			
+			GregorianCalendar startDay = new GregorianCalendar();
+			startDay.setTime(calendarDisplayData.getStartDay());
+			startDay.add(unit, incr);
+
+			// ...and modify the CalendarDisplayDataRpcResponseData
+			// ...with these values.
+			calendarDisplayData.setFirstDay(firstDay.getTime());
+			calendarDisplayData.setStartDay(startDay.getTime());
+			calendarDisplayData.setDisplayDate(
+				buildCalendarDateDisplay(
+					GwtServerHelper.getCurrentUser(),
+					firstDay,
+					startDay,
+					calendarDisplayData.getDayView(),
+					calendarDisplayData.getWeekFirstDay()));
+
+			// Finally, return the modified
+			// CalendarDisplayDataRpcResponseData. 
+			return calendarDisplayData;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getCalendarNextPreviousPeroid( SOURCE EXCEPTION ):  ", e);
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
@@ -3359,34 +3431,52 @@ public class GwtViewHelper {
 	 * Returns the first day of the week for the current user.
 	 */
 	private static int getWeekFirstDay(ProfileModule pm) {
-		int weekFirstDay = CalendarHelper.getFirstDayOfWeek();
+		int reply;
 		
-		User user = GwtServerHelper.getCurrentUser();
-		UserProperties userProperties = pm.getUserProperties(user.getId());
-
-		Integer weekFirstDayOld = ((Integer) userProperties.getProperty(ObjectKeys.USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK));
-		if ((null == weekFirstDayOld) || (weekFirstDay != weekFirstDayOld)) {
-			pm.setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK, weekFirstDay);
+		// Does the user have a week start day saved in their
+		// preferences?
+		Long    userId    = GwtServerHelper.getCurrentUser().getId();
+		Integer weekStart = ((Integer) pm.getUserProperties(userId).getProperty(ObjectKeys.USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK));
+		if (null == weekStart) {
+			// No!  Use an appropriate default.
+			reply = CalendarHelper.getFirstDayOfWeek();
+			pm.setUserProperty(userId, ObjectKeys.USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK, new Integer(reply));
 		}
 		
-		return weekFirstDay;
+		else {
+			// Yes, the user has a setting saved!  Use it.
+			reply = weekStart;
+		}
+
+		// If we get here, reply contains the week start day for the
+		// current user.  Return it.
+		return reply;
 	}
 
 	/*
 	 * Returns the time the work day starts for the current user.
 	 */
 	private static int getWorkDayStart(ProfileModule pm) {
-		int workDayStart = 6;
-				
-		User			user           = GwtServerHelper.getCurrentUser();
-		UserProperties	userProperties = pm.getUserProperties(user.getId());
+		int reply;
 
-		Integer workDayStartOld = ((Integer) userProperties.getProperty(ObjectKeys.USER_PROPERTY_CALENDAR_WORK_DAY_START));
-		if ((null == workDayStartOld) || (workDayStart != workDayStartOld)) {
-			pm.setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_CALENDAR_WORK_DAY_START, workDayStart);
+		// Does the user have a work day start hour saved in their
+		// preferences?
+		Long userId = GwtServerHelper.getCurrentUser().getId();
+		Integer workDayStart = ((Integer) pm.getUserProperties(userId).getProperty(ObjectKeys.USER_PROPERTY_CALENDAR_WORK_DAY_START));
+		if (null == workDayStart) {
+			// No!  Use an appropriate default.
+			reply = 6;
+			pm.setUserProperty(userId, ObjectKeys.USER_PROPERTY_CALENDAR_WORK_DAY_START, new Integer(reply));
 		}
 		
-		return workDayStart;
+		else {
+			// Yes, the user has a setting saved.  Use it.
+			reply = workDayStart;
+		}
+
+		// If we get here, reply contains the work day start hour for
+		// the current user.  Return it.
+		return reply;
 	}
 	
 	/*
@@ -3881,7 +3971,7 @@ public class GwtViewHelper {
 	}
 	
 	/**
-	 * Saves a user's CalendarHour selection and returns the
+	 * Saves a user's CalendarHours selection and returns the
 	 * appropriate CalendarDisplayDataRpcResponseData based on the
 	 * change.
 	 * 
@@ -3920,7 +4010,99 @@ public class GwtViewHelper {
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
 	}
+
+	/**
+	 * Saves a user's calendar setting selections.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * @param weekStart
+	 * @param workDayStart
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean saveCalendarSettings(AllModulesInjected bs, HttpServletRequest request, Long folderId, int weekStart, int workDayStart) throws GwtTeamingException {
+		try {
+			// If we have a week starting day to save...
+			Long userId = GwtServerHelper.getCurrentUser().getId();
+			ProfileModule pm = bs.getProfileModule();
+			if ((-1) != weekStart) {
+				// ...save it.
+				pm.setUserProperty(userId, ObjectKeys.USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK, new Integer(weekStart));
+			}
+
+			// If we have a work day start hour to save...
+			if ((-1) != workDayStart) {
+				// ...save it.
+				pm.setUserProperty(userId, ObjectKeys.USER_PROPERTY_CALENDAR_WORK_DAY_START, new Integer(workDayStart));
+			}
+
+			// We always return true.
+			return Boolean.TRUE;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.saveCalendarSettings( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
 	
+	/**
+	 * Saves a user's CalendarShow selection and returns the
+	 * appropriate CalendarDisplayDataRpcResponseData based on the
+	 * change.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderInfo
+	 * @param show
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static CalendarDisplayDataRpcResponseData saveCalendarShow(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, CalendarShow show) throws GwtTeamingException {
+		try {
+			// Map the show setting to the appropriate mode and event
+			// types...
+			ModeType mode;
+			String eventType;
+			switch (show) {
+			default:
+			case PHYSICAL_EVENTS:       mode = ModeType.PHYSICAL; eventType = EventsViewHelper.EVENT_TYPE_EVENT;    break;
+			case PHYSICAL_BY_ACTIVITY:  mode = ModeType.PHYSICAL; eventType = EventsViewHelper.EVENT_TYPE_ACTIVITY; break;
+			case PHYSICAL_BY_CREATION:  mode = ModeType.PHYSICAL; eventType = EventsViewHelper.EVENT_TYPE_CREATION; break;
+			case VIRTUAL:               mode = ModeType.VIRTUAL;  eventType = EventsViewHelper.EVENT_TYPE_VIRTUAL;  break;
+			}
+			
+			// ...and store them.
+			Long userId   = GwtServerHelper.getCurrentUser().getId();
+			Long folderId = folderInfo.getBinderIdAsLong();
+			ListFolderHelper.setFolderModeType(          bs, userId, folderId, mode     );
+			EventsViewHelper.setCalendarDisplayEventType(bs, userId, folderId, eventType);			
+			
+			// Return a CalendarDisplayDataRpcData with the changes.
+			CalendarDisplayDataRpcResponseData reply = getCalendarDisplayData(bs, request, folderInfo);
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.saveCalendarShow( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+
 	/**
 	 * Stores the column widths for a user on a folder.
 	 * 
