@@ -951,6 +951,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         deleteBinder_indexDel(binder, ctx);
         SimpleProfiler.stop("deleteBinder_indexDel");
      
+        SimpleProfiler.start("deleteBinder_deleteRssFeed");
+        doRssDelete(binder);
+        SimpleProfiler.stop("deleteBinder_deleteRssFeed");
+     
         //SimpleProfiler.done(logger);
     }
     //inside write transaction    
@@ -1064,6 +1068,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	if (!checkMoveBinderQuota(source, destination)) {
     		throw new NotSupportedException("errorcode.notsupported.moveBinderDestinationQuota", new String[] {destination.getPathName()});
     	}
+    	
+ 		//Clear the RSS feed of the original source binder before it is moved
+ 		doRssUpdate(source);
+
         final Map ctx = new HashMap();
         if (options != null) ctx.putAll(options);
      	moveBinder_setCtx(source, destination, ctx);
@@ -1073,7 +1081,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	moveBinder_postMove(source, destination, resourcePathAffected, ctx);
     	
  		moveBinder_index(source, ctx);
-
+ 		
+ 		//Clear the RSS feed of its new destination after the move
+ 		doRssUpdate(source);
     }
     
     //Check to see if destination folder has enough quota
@@ -1822,6 +1832,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		executeUpdateQuery(crit, field, value);
      }
     
+    private void doRssDelete(Binder binder) {
+  		// Delete the rss index
+    	this.getRssModule().deleteRssFeed(binder);
+     }
+ 
     private void doRssUpdate(Binder binder) {
   		// Delete the rss index since it's invalid once you change the acls
     	this.getRssModule().deleteRssFeed(binder);
