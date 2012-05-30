@@ -362,7 +362,7 @@ public class EventHelper {
 			
 		} else {
 			// No, we are showing physical events!
-			String filterName = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterNameField, "");
+			String filterName = ((null == request) ? "" : PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterNameField, ""));
 			searchFilter = new SearchFilter();
 			searchFilter.addFilterName(filterName);
 

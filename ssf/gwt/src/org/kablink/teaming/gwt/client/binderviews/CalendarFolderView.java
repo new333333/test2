@@ -54,7 +54,9 @@ import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.CalendarAppointmentsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarAppointmentsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarDisplayDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarNextPreviousPeriodCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarDayViewCmd;
@@ -62,12 +64,15 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarHoursCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarShowCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.CalendarAppointment;
+import org.kablink.teaming.gwt.client.util.CalendarAttendee;
 import org.kablink.teaming.gwt.client.util.CalendarDayView;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.CalendarSettingsDlg;
 import org.kablink.teaming.gwt.client.widgets.CalendarSettingsDlg.CalendarSettingsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.VibeCalendar;
 
+import com.bradrydzewski.gwt.calendar.client.Appointment;
 import com.bradrydzewski.gwt.calendar.client.CalendarFormat;
 import com.bradrydzewski.gwt.calendar.client.CalendarSettings;
 import com.bradrydzewski.gwt.calendar.client.CalendarViews;
@@ -99,6 +104,7 @@ public class CalendarFolderView extends FolderViewBase
 		InvokeDropBoxEvent.Handler,
 		QuickFilterEvent.Handler
 {
+	private ArrayList<Appointment>				m_appointments;				//
 	private AddFilesDlg							m_addFilesDlg;				//
 	private CalendarDisplayDataRpcResponseData	m_calendarDisplayData;		//
 	private CalendarSettingsDlg					m_calendarSettingsDlg;		//
@@ -646,7 +652,26 @@ public class CalendarFolderView extends FolderViewBase
 	 * Synchronously populates the the calendar's events.
 	 */
 	private void populateCalendarEventsNow() {
-//!		...this needs to be implemented...
+		// Can we read the appointments for the calendar based on the
+		// current calendar display data?
+		GwtClientHelper.executeCommand(
+				new GetCalendarAppointmentsCmd(getFolderInfo().getBinderIdAsLong(), m_calendarDisplayData),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetCalendarAppointments());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Yes!  Add the appointments to the calendar.
+				CalendarAppointmentsRpcResponseData responseData = ((CalendarAppointmentsRpcResponseData) response.getResponseData());
+				m_appointments = responseData.getAppointments();
+				m_calendar.addAppointments(m_appointments);
+			}
+		});
 	}
 	
 	/*

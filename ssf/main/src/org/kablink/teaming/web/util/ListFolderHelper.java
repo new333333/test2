@@ -412,7 +412,7 @@ public class ListFolderHelper {
 	public static Map getSearchFilter(AllModulesInjected bs, RenderRequest request, Binder binder, UserProperties userFolderProperties, boolean searchTrash) {
 		Map result = new HashMap();
 		result.put(ObjectKeys.SEARCH_SEARCH_FILTER, BinderHelper.getSearchFilter(bs, binder, userFolderProperties));
-		String searchTitle = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TITLE, "");
+		String searchTitle = ((null == request) ? "" : PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TITLE, ""));
 		if (!searchTitle.equals("")) {
 			result.put(ObjectKeys.SEARCH_TITLE, searchTitle);
 		}

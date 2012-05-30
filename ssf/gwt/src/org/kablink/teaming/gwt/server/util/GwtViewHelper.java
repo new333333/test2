@@ -45,6 +45,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -62,11 +63,14 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.document.DateTools;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.calendar.AbstractIntervalView;
 import org.kablink.teaming.calendar.EventsViewHelper;
+import org.kablink.teaming.calendar.OneMonthView;
 import org.kablink.teaming.calendar.EventsViewHelper.Grid;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -95,6 +99,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.rpc.shared.AvatarInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.CalendarAppointmentsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ColumnWidthsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData;
@@ -1433,6 +1438,162 @@ public class GwtViewHelper {
 			// that.
 			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
 			     m_logger.debug("GwtViewHelper.getBinderRegionState( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+
+	/**
+	 * Returns a List<CalendarAppointment> of the appointments in the
+	 * calendar based on the given calendar display data.
+	 * 
+	 * Note:  The logic used by this method is based of that used in
+	 *    AjaxController.ajaxFindCalendarEvents()
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * @param cdd
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	@SuppressWarnings("unchecked")
+	public static CalendarAppointmentsRpcResponseData getCalendarAppointments(AllModulesInjected bs, HttpServletRequest request, Long folderId, CalendarDisplayDataRpcResponseData cdd) throws GwtTeamingException {
+		try {
+			// Access the objects we'll need to process the
+			// appointments from this folder.
+			Folder			folder               = bs.getFolderModule().getFolder(folderId);
+			User			user                 = GwtServerHelper.getCurrentUser();
+			Long			userId               = user.getId();
+			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(userId, folderId);
+
+			// Setup the search options to return up to 10,000 items...
+			Map options = new HashMap();
+			options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
+
+			// ...we'll read appointments spanning 1 month...
+			List intervals = new ArrayList();
+			AbstractIntervalView calendarViewRangeDates = new OneMonthView(cdd.getFirstDay(), cdd.getWeekFirstDay());
+			intervals.add(calendarViewRangeDates.getVisibleIntervalRaw());
+	       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, intervals);
+
+	       	// ...add any specific start/end dates we need to read...
+	       	String start = DateTools.dateToString(calendarViewRangeDates.getVisibleStart(), DateTools.Resolution.SECOND);
+	       	String end   = DateTools.dateToString(calendarViewRangeDates.getVisibleEnd(),   DateTools.Resolution.SECOND);
+	       	CalendarShow show = cdd.getShow();
+	       	if (show.equals(CalendarShow.PHYSICAL_BY_ACTIVITY)) {
+		       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, start);
+		       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END,   end  );
+	       	}
+	       	else if (show.equals(CalendarShow.PHYSICAL_BY_CREATION)) {
+		       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, start);
+		       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END,   end  );
+	       	}
+	       	
+	       	// ...add in any search filter...
+			options.putAll(ListFolderHelper.getSearchFilter(bs, null, folder, userFolderProperties));
+			
+			// ...and if the list is filtered...
+			Document baseFilter = ((Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER));
+			boolean  filtered   = (null != baseFilter); 
+			if (filtered) {
+				// ...and the filter is for trashed items...
+				Element preDeletedOnlyTerm = (Element)baseFilter.getRootElement().selectSingleNode("//filterTerms/filterTerm[@preDeletedOnly='true']");
+				if (preDeletedOnlyTerm != null) {
+					// ...maintain the search for trashed items.
+					options.put(ObjectKeys.SEARCH_PRE_DELETED, Boolean.TRUE);
+				}
+			}
+			
+			// Are we searching with a filter for physical events? 
+			List<Map> events;
+			BinderModule bm = bs.getBinderModule();
+			boolean virtual = show.equals(CalendarShow.VIRTUAL);
+			if ((!virtual) && filtered) {
+				// Yes!  Simply perform the search using the filter.
+				Map retMap = bm.executeSearchQuery(baseFilter, Constants.SEARCH_MODE_NORMAL, options);
+				events = ((List) retMap.get(ObjectKeys.SEARCH_ENTRIES));
+			}
+			
+			else {
+				// No, we aren't searching with a filter for physical
+				// events!  Is it a search for virtual events using a
+				// filter?
+				if (virtual && filtered) {
+					// Yes!  Instead of searching the current binder,
+					// which the filter should have been setup for, we
+					// need to search the entire tree.  Adjust the
+					// filter accordingly.
+					Element foldersListFilterTerm = ((Element) baseFilter.getRootElement().selectSingleNode("//filterTerms/filterTerm[@filterType='foldersList']"));
+					Element filterFolderId        = ((Element) baseFilter.getRootElement().selectSingleNode("//filterTerms/filterTerm[@filterType='foldersList']/filterFolderId"));
+					if ((null != foldersListFilterTerm) && (null != filterFolderId)) {
+						foldersListFilterTerm.addAttribute("filterType", "ancestriesList");
+						filterFolderId.setText(String.valueOf(bs.getWorkspaceModule().getTopWorkspace().getId()));
+					}
+				}
+
+				// Perform the search using any filter.
+				List<String> folderIds = new ArrayList<String>();
+				folderIds.add(String.valueOf(folderId));
+				ModeType modeType = (virtual ? ModeType.VIRTUAL : ModeType.PHYSICAL); 
+				Document searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, null, modeType, folderIds, folder, SearchUtils.AssigneeType.CALENDAR);
+				Map retMap = bm.executeSearchQuery(searchFilter, Constants.SEARCH_MODE_NORMAL, options);
+				events = ((List) retMap.get(ObjectKeys.SEARCH_ENTRIES));
+
+				// Was the search for virtual events?
+				if (virtual) {
+					// Yes!  Are there any task events matching the
+					// search criteria?
+					searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, null, modeType, folderIds, folder, SearchUtils.AssigneeType.TASK);
+					retMap = bm.executeSearchQuery(searchFilter, Constants.SEARCH_MODE_NORMAL, options);
+					List<Map> tasks = ((List) retMap.get(ObjectKeys.SEARCH_ENTRIES));
+					if ((null != tasks) && (!(tasks.isEmpty()))) {
+						// Yes!  Build a list of event entry IDs we're
+						// already tracking.
+						Set eventIds = new HashSet();
+						for (Map event:  events) {
+							String docId = ((String) event.get(Constants.DOCID_FIELD));
+							eventIds.add(docId);
+						}
+						
+						// Scan the task entries we just read.
+						for (Map task:  tasks) {
+							// Are we tracking an event with this
+							// task's ID?
+							String docId = ((String) task.get(Constants.DOCID_FIELD));
+							if (!(eventIds.contains(docId))) {
+								// No!  Add the task to the event
+								// list. 
+								events.add(task);
+							}
+						}
+					}
+				}
+			}
+			
+			// Do we have any events?
+			CalendarAppointmentsRpcResponseData reply = new CalendarAppointmentsRpcResponseData();
+			if ((null != events) && (!(events.isEmpty()))) {
+				// Yes!  We need to construct Appointment's for each.
+				// Scan the events
+				for (@SuppressWarnings("unused") Map event:  events) {
+//!					...this needs to be implemented...					
+				}
+			}
+
+			// If we get here, reply refers to a
+			// CalendarAppointmentsRpcRequestData containing the
+			// appointments to be shown.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getCalendarAppointments( SOURCE EXCEPTION ):  ", e);
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}

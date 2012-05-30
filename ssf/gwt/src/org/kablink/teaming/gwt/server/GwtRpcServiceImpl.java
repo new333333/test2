@@ -626,6 +626,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_CALENDAR_APPOINTMENTS:
+		{
+			GetCalendarAppointmentsCmd gcaCmd = ((GetCalendarAppointmentsCmd) cmd);
+			CalendarAppointmentsRpcResponseData responseData = GwtViewHelper.getCalendarAppointments(
+				this,
+				getRequest( ri ),
+				gcaCmd.getFolderId(),
+				gcaCmd.getCalendarDisplayData() );
+			return new VibeRpcResponse( responseData );
+		}
+		
 		case GET_CALENDAR_DISPLAY_DATA:
 		{
 			GetCalendarDisplayDataCmd gcddCmd = ((GetCalendarDisplayDataCmd) cmd);

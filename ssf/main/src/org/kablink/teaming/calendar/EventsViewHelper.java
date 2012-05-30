@@ -236,7 +236,15 @@ public class EventsViewHelper {
 		return results;
 	}	
 
-	private static List getCalendarEventsBeans(List searchResults,
+	/**
+	 * 
+	 * @param searchResults
+	 * @param viewRangeDates
+	 * @param onlyTrueEvents
+	 * 
+	 * @return
+	 */
+	public static List getCalendarEventsBeans(List searchResults,
 			AbstractIntervalView viewRangeDates, boolean onlyTrueEvents) {
 		
 		List result = new ArrayList();
