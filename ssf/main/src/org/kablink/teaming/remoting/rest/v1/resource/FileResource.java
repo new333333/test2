@@ -52,6 +52,7 @@ import org.kablink.util.api.ApiErrorCode;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -143,6 +144,13 @@ public class FileResource extends AbstractFileResource {
    		DefinableEntity entity = fa.getOwner().getEntity();
    		return readFileContent(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName(), getIfModifiedSinceDate(request));
    	}
+
+    @DELETE
+    public void deleteFileContent(@PathParam("id") String fileId) throws WriteFilesException, WriteEntryDataException {
+        FileAttachment fa = findFileAttachment(fileId);
+        DefinableEntity entity = fa.getOwner().getEntity();
+        deleteFile(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName());
+    }
 
     @GET
     @Path("/metadata")
