@@ -438,6 +438,9 @@ public class QueryBuilder {
 		Query query = null;
 
 		String fieldName = element.attributeValue(FIELD_NAME_ATTRIBUTE);
+		// Deal with deprecated _allText field
+		if(Constants.ALL_TEXT_FIELD_DEPRECATED.equals(fieldName)) 
+			fieldName = null;
 		String exactPhrase = element.attributeValue(EXACT_PHRASE_ATTRIBUTE);
 
 		// Make exactphrase=true as the default.
@@ -466,6 +469,7 @@ public class QueryBuilder {
 					queryStr = fieldName + ":(" + text + ")";
 				else
 					queryStr = text;
+				queryStr = queryStr.replaceAll("_allText:", "");
 				query = so.parseQueryString(queryStr);
 			}
 		}
