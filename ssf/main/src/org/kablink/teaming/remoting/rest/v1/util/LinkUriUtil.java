@@ -73,9 +73,9 @@ public class LinkUriUtil {
     }
 
     public static String getBinderLinkUri(BinderBrief binder) {
-        if ("folder".equals(binder.getEntityType())) {
+        if (binder.isFolder()) {
             return getFolderLinkUri(binder.getId());
-        } else if ("workspace".equals(binder.getEntityType())) {
+        } else if (binder.isWorkspace()) {
             return getWorkspaceLinkUri(binder.getId());
         }
         return getBinderLinkUri(binder.getId());
@@ -108,27 +108,42 @@ public class LinkUriUtil {
         return "/file_version/" + fp.getId();
     }
 
+    public static void populateDefinableEntityLinks(BaseRestObject model) {
+        model.addAdditionalLink("attachments", model.getLink() + "/attachments");
+    }
+
     public static void populateFolderEntryLinks(BaseRestObject model, Long id) {
         model.setLink(getFolderEntryLinkUri(id));
-        model.addAdditionalLink("files", model.getLink() + "/files");
+        populateDefinableEntityLinks(model);
         model.addAdditionalLink("reservation", model.getLink() + "/reservation");
         model.addAdditionalLink("replies", model.getLink() + "/replies");
         model.addAdditionalLink("reply_tree", model.getLink() + "/reply_tree");
         model.addAdditionalLink("tags", model.getLink() + "/tags");
     }
 
-    public static void populateBinderLinks(BaseRestObject model, boolean isWorkspace, boolean isFolder) {
+    public static void populateUserLinks(BaseRestObject model) {
+        populateDefinableEntityLinks(model);
+        model.addAdditionalLink("favorites", model.getLink() + "/favorites");
+        model.addAdditionalLink("teams", model.getLink() + "/teams");
+    }
+
+    public static void populateBinderLinks(BaseRestObject model) {
+        populateDefinableEntityLinks(model);
         model.addAdditionalLink("child_binders", model.getLink() + "/binders");
         model.addAdditionalLink("child_binder_tree", model.getLink() + "/binder_tree");
         model.addAdditionalLink("child_files", model.getLink() + "/files");
-        if (isWorkspace) {
-            model.addAdditionalLink("child_workspaces", model.getLink() + "/workspaces");
-            model.addAdditionalLink("child_folders", model.getLink() + "/folders");
-        }
-        if (isFolder) {
-            model.addAdditionalLink("child_entries", model.getLink() + "/entries");
-            model.addAdditionalLink("child_folders", model.getLink() + "/folders");
-        }
+    }
+
+    public static void populateWorkspaceLinks(BaseRestObject model) {
+        populateBinderLinks(model);
+        model.addAdditionalLink("child_workspaces", model.getLink() + "/workspaces");
+        model.addAdditionalLink("child_folders", model.getLink() + "/folders");
+    }
+
+    public static void populateFolderLinks(BaseRestObject model) {
+        populateBinderLinks(model);
+        model.addAdditionalLink("child_entries", model.getLink() + "/entries");
+        model.addAdditionalLink("child_folders", model.getLink() + "/folders");
     }
 
     public static void populateFileLinks(FileProperties fp) {

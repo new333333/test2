@@ -137,4 +137,9 @@ public class WorkspaceResource extends AbstractBinderResource {
         }
         throw new NotFoundException(ApiErrorCode.WORKSPACE_NOT_FOUND, "NOT FOUND");
     }
+
+    @Override
+    EntityIdentifier.EntityType _getEntityType() {
+        return EntityIdentifier.EntityType.workspace;
+    }
 }

@@ -33,12 +33,37 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
+import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
+import org.kablink.teaming.rest.v1.model.Binder;
+import org.kablink.util.api.ApiErrorCode;
+
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 @Path("/v1/binder/{id}")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class BinderResource extends AbstractBinderResource {
+public class BinderResource extends AbstractResource {
+    @GET
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public Binder getBinder(@PathParam("id") long id,
+                            @QueryParam("include_attachments") @DefaultValue("false") boolean includeAttachments) {
+        return ResourceUtil.buildBinder(_getBinder(id), includeAttachments);
+    }
+
+    protected org.kablink.teaming.domain.Binder _getBinder(long id) {
+        try{
+            return getBinderModule().getBinder(id);
+        } catch (NoBinderByTheIdException e) {
+            // Throw exception below.
+        }
+        throw new NotFoundException(ApiErrorCode.BINDER_NOT_FOUND, "NOT FOUND");
+    }
 }

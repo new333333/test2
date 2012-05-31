@@ -52,7 +52,11 @@ public class BinderBriefBuilder extends DefinableEntityBriefBuilder implements S
         binder.setLibrary(getBoolean(entry, Constants.IS_LIBRARY_FIELD));
         binder.setMirrored(getBoolean(entry, Constants.IS_MIRRORED_FIELD));
         binder.setLink(LinkUriUtil.getBinderLinkUri(binder));
-        LinkUriUtil.populateBinderLinks(binder, binder.isWorkspace(), binder.isFolder());
+        if (binder.isFolder()) {
+            LinkUriUtil.populateFolderLinks(binder);
+        } else if (binder.isWorkspace()) {
+            LinkUriUtil.populateWorkspaceLinks(binder);
+        }
         return binder;
     }
 

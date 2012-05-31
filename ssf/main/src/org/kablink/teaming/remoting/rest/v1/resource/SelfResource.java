@@ -35,6 +35,8 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
@@ -47,6 +49,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * User: david
@@ -56,25 +59,47 @@ import javax.ws.rs.core.MediaType;
 @Path("/v1/self")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class SelfResource extends AbstractUserResource {
+public class SelfResource extends AbstractResource {
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public User getSelf(@QueryParam("include_attachments") @DefaultValue("false") boolean includeAttachments) {
-        return getUser(getLoggedInUserId(), includeAttachments);
+        Long userId = getLoggedInUserId();
+        // Retrieve the raw entry.
+        Principal entry = getProfileModule().getEntry(userId);
+
+        if(!(entry instanceof org.kablink.teaming.domain.User))
+            throw new IllegalArgumentException(userId + " does not represent an user. It is " + entry.getClass().getSimpleName());
+
+        User user = ResourceUtil.buildUser((org.kablink.teaming.domain.User) entry, includeAttachments);
+        user.setLink("/self");
+        user.addAdditionalLink("roots", "/self/roots");
+        return user;
     }
 
     @GET
     @Path("/favorites")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<BinderBrief> getFavorites() {
-        return getFavorites(getLoggedInUserId());
+        Long userId = getLoggedInUserId();
+        List<Binder> binders = getProfileModule().getUserFavorites(userId);
+        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
+        for (Binder binder : binders) {
+            results.append(ResourceUtil.buildBinderBrief(binder));
+        }
+        return results;
     }
 
     @GET
     @Path("/teams")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<TeamBrief> getTeams() {
-        return getTeams(getLoggedInUserId());
+        Long userId = getLoggedInUserId();
+        List<TeamInfo> binders = getProfileModule().getUserTeams(userId);
+        SearchResultList<TeamBrief> results = new SearchResultList<TeamBrief>();
+        for (TeamInfo binder : binders) {
+            results.append(ResourceUtil.buildTeamBrief(binder));
+        }
+        return results;
     }
 
     @GET

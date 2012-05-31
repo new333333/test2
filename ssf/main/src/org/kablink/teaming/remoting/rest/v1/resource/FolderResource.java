@@ -191,4 +191,9 @@ public class FolderResource extends AbstractBinderResource {
         }
         throw new NotFoundException(ApiErrorCode.FOLDER_NOT_FOUND, "NOT FOUND");
     }
+
+    @Override
+    EntityIdentifier.EntityType _getEntityType() {
+        return EntityIdentifier.EntityType.folder;
+    }
 }

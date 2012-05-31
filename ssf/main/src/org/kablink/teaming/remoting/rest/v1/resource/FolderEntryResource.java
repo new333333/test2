@@ -48,20 +48,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 import com.sun.jersey.spi.resource.Singleton;
-import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoTagByTheIdException;
-import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.rest.v1.model.Tag;
-import org.kablink.teaming.rest.v1.model.BaseFileProperties;
-import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FolderEntry;
 
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
@@ -70,18 +64,15 @@ import org.kablink.teaming.rest.v1.model.SearchResultTree;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.util.SimpleProfiler;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Path("/v1/folder_entry/{id}")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class FolderEntryResource extends AbstractFileResource {
+public class FolderEntryResource extends AbstractDefinableEntityResource {
 		
 	@Context UriInfo uriInfo;
 	
@@ -117,67 +108,6 @@ public class FolderEntryResource extends AbstractFileResource {
         org.kablink.teaming.domain.FolderEntry folderEntry = _getFolderEntry(id);
         getFolderModule().preDeleteEntry(folderEntry.getParentBinder().getId(), id, getLoggedInUserId());
 	}
-
-    @GET
-    @Path("files")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public SearchResultList<BaseFileProperties> getAttachments(@PathParam("id") long id) {
-        org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
-
-        Set<Attachment> attachments = entry.getAttachments();
-        SearchResultList<BaseFileProperties> props = new SearchResultList<BaseFileProperties>();
-        for (Attachment attachment : attachments) {
-            if (attachment instanceof VersionAttachment) {
-                props.append(ResourceUtil.fileVersionFromFileAttachment((VersionAttachment) attachment));
-            } else if (attachment instanceof FileAttachment) {
-                props.append(ResourceUtil.buildFileProperties((FileAttachment) attachment));
-            }
-        }
-		return props;
-    }
-
-    @POST
-    @Path("files")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public FileProperties postAttachment_Multipart(@PathParam("id") long id,
-                               @QueryParam("file_name") String fileName,
-                               @QueryParam("data_name") String dataName,
-       			               @QueryParam("mod_date") String modDateISO8601,
-                               @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
-        //TODO: make sure a file with that name doesn't exist
-        InputStream is = getInputStreamFromMultipartFormdata(request);
-        try {
-            return writeNewFileContent(EntityIdentifier.EntityType.folderEntry, id, fileName, dataName, modDateISO8601, is);
-        }
-        finally {
-            try {
-                is.close();
-            }
-            catch(IOException ignore) {}
-        }
-    }
-
-    @POST
-    @Path("files")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public FileProperties postAttachment_Raw(@PathParam("id") long id,
-                               @QueryParam("file_name") String fileName,
-                               @QueryParam("data_name") String dataName,
-       			               @QueryParam("mod_date") String modDateISO8601,
-                               @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
-        //TODO: make sure a file with that name doesn't exist
-        InputStream is = getRawInputStream(request);
-        try {
-            return writeNewFileContent(EntityIdentifier.EntityType.folderEntry, id, fileName, dataName, modDateISO8601, is);
-        }
-        finally {
-            try {
-                is.close();
-            }
-            catch(IOException ignore) {}
-        }
-    }
 
     @GET
     @Path("reservation")
@@ -241,12 +171,6 @@ public class FolderEntryResource extends AbstractFileResource {
         org.kablink.teaming.domain.FolderEntry newEntry = getFolderModule().addReply(null, id, defId, new RestModelInputData(entry), null, options);
         return ResourceUtil.buildFolderEntry(newEntry, false);
     }
-
-    @POST
-   	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-   	public FileProperties postAttachment_ApplicationFormUrlencoded(@PathParam("id") String id) {
-   		throw new UnsupportedMediaTypeException("'" + MediaType.APPLICATION_FORM_URLENCODED + "' format is not supported by this method. Use '" + MediaType.MULTIPART_FORM_DATA + "' or raw type");
-   	}
 
     @GET
     @Path("tags")
@@ -312,4 +236,8 @@ public class FolderEntryResource extends AbstractFileResource {
         return hEntry;
     }
 
+    @Override
+    EntityIdentifier.EntityType _getEntityType() {
+        return EntityIdentifier.EntityType.folderEntry;
+    }
 }

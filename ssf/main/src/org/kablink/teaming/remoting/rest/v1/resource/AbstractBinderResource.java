@@ -1,6 +1,7 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
@@ -38,12 +39,12 @@ import java.util.Map;
  * Date: 5/21/12
  * Time: 2:08 PM
  */
-public class AbstractBinderResource extends AbstractResource {
+abstract public class AbstractBinderResource extends AbstractDefinableEntityResource {
 
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Binder getBinder(@PathParam("id") long id,
-                                                              @QueryParam("include_attachments") @DefaultValue("false") boolean includeAttachments) {
+                            @QueryParam("include_attachments") @DefaultValue("false") boolean includeAttachments) {
         return ResourceUtil.buildBinder(_getBinder(id), includeAttachments);
     }
 
