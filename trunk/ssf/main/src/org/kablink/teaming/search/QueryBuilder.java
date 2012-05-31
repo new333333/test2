@@ -439,7 +439,7 @@ public class QueryBuilder {
 
 		String fieldName = element.attributeValue(FIELD_NAME_ATTRIBUTE);
 		// Deal with deprecated _allText field
-		if(Constants.ALL_TEXT_FIELD_DEPRECATED.equals(fieldName)) 
+		if("_allText".equals(fieldName)) 
 			fieldName = null;
 		String exactPhrase = element.attributeValue(EXACT_PHRASE_ATTRIBUTE);
 
