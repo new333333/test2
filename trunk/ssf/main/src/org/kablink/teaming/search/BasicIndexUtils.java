@@ -147,8 +147,8 @@ public class BasicIndexUtils {
         doc.add(contents);
     }
     
-    public static  Field allTextField(String text) {
-        return new Field(ALL_TEXT_FIELD, text, Field.Store.NO, Field.Index.ANALYZED);
+    public static  Field generalTextField(String text) {
+        return new Field(GENERAL_TEXT_FIELD, text, Field.Store.NO, Field.Index.ANALYZED);
     }   
    
     public static String buildAclTag(String tag, String aclId)

@@ -87,12 +87,8 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
         	Field descField = new Field(Constants.DESC_FIELD, text, Field.Store.YES, Field.Index.NO); 
         	Field descTextField = new Field(Constants.DESC_TEXT_FIELD, strippedText, Field.Store.NO, Field.Index.ANALYZED); 
         	Field descFormatField = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.DESC_FORMAT_FIELD, String.valueOf(val.getFormat())); 
-         	if (isFieldsOnly(args)) {
-         		return new Field[] {descField, descTextField, descFormatField};
-         	} else {
-        		Field allTextField = BasicIndexUtils.allTextField(strippedText);
-         		return new Field[] {allTextField, descField, descTextField, descFormatField};
-         	}
+        	// For the built-in description field, avoid indexing the same text twice. So don't add it in the catch-all field.
+     		return new Field[] {descField, descTextField, descFormatField};
         }
         else {
         	// This is a custom description element.
@@ -104,8 +100,8 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
          	if (isFieldsOnly(args)) {
          		return new Field[] {descField, descTextField};
          	} else {
-        		Field allTextField = BasicIndexUtils.allTextField(strippedText);
-         		return new Field[] {allTextField, descField, descTextField};
+        		Field generalTextField = BasicIndexUtils.generalTextField(strippedText);
+         		return new Field[] {generalTextField, descField, descTextField};
          	}
         }
     }

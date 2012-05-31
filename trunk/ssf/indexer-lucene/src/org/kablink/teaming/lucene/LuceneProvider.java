@@ -79,6 +79,7 @@ import org.kablink.util.EventsStatistics;
 import org.kablink.util.PropsUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+import org.kablink.util.search.QueryParserFactory;
 
 public class LuceneProvider extends IndexSupport implements LuceneProviderMBean {
 	
@@ -120,7 +121,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	private QueryParser getQueryParserWithWSA() {
 		QueryParser qp = queryParserWithWSA.get();
 		if(qp == null) {
-			qp =  new QueryParser(Version.LUCENE_34, Constants.ALL_TEXT_FIELD, new WhitespaceAnalyzer());
+			qp =  QueryParserFactory.createQueryParser(new WhitespaceAnalyzer());
 			queryParserWithWSA.set(qp);
 		}
 		return qp;
@@ -400,12 +401,17 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	}
 	
 	private String getTastingText(Document doc) {
-		String text = getTastingTextFromAllTextField(doc);
-		if (text == null || text.length() == 0) {
-			Fieldable title = doc.getFieldable(Constants.TITLE_FIELD);
-			if (title != null) 
-				text = title.stringValue();
+		String text = null;
+		Fieldable title = doc.getFieldable(Constants.TITLE_FIELD);
+		if (title != null) 
+			text = title.stringValue();
+		if(text == null || text.length() == 0) {
+			Fieldable desc = doc.getFieldable(Constants.DESC_TEXT_FIELD);
+			if(desc != null)
+				text = desc.stringValue();
 		}
+		if(text == null || text.length() == 0)
+			text = getTastingTextFromGeneralTextField(doc);
 		if(text == null)
 			text = "";
 		if (text.length()> 1024) 
@@ -414,12 +420,12 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			return text;
 	}
 	
-	private String getTastingTextFromAllTextField(Document doc) {
+	private String getTastingTextFromGeneralTextField(Document doc) {
 		StringBuilder sb = new StringBuilder();
-		Fieldable[] allTextFields = doc.getFieldables(Constants.ALL_TEXT_FIELD);
+		Fieldable[] generalTextFields = doc.getFieldables(Constants.GENERAL_TEXT_FIELD);
 		String piece;
-		for(Fieldable allTextField:allTextFields) {
-			piece = allTextField.stringValue();
+		for(Fieldable generalTextField:generalTextFields) {
+			piece = generalTextField.stringValue();
 			if(piece != null && piece.length()>0) {
 				if(sb.length() > 0)
 					sb.append(" ");
@@ -437,7 +443,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			return getDefaultAnalyzer();
 		} else if (language.equalsIgnoreCase(LanguageTaster.CJK)) {
 			PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(VibeIndexAnalyzer.getInstance());
-			retAnalyzer.addAnalyzer(Constants.ALL_TEXT_FIELD, new ChineseAnalyzer());
+			retAnalyzer.addAnalyzer(Constants.GENERAL_TEXT_FIELD, new ChineseAnalyzer());
 			retAnalyzer.addAnalyzer(Constants.DESC_TEXT_FIELD, new ChineseAnalyzer());
 			retAnalyzer.addAnalyzer(Constants.TITLE_FIELD, new ChineseAnalyzer());
 			return retAnalyzer;

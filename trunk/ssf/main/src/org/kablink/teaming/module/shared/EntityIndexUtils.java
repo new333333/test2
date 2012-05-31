@@ -112,10 +112,7 @@ public class EntityIndexUtils {
     		title = title.trim();
             
             if(title.length() > 0) {
-            	if (!fieldsOnly) {
-            		Field allTextField = BasicIndexUtils.allTextField(title);
-            		doc.add(allTextField);
-            	}
+            	// For the built-in title field, avoid indexing the same text twice. So don't add it in the catch-all field.
             	// Bug 740533 - Store original title rather than trimmed one in the title field
             	Field titleField = new Field(Constants.TITLE_FIELD, entry.getTitle(), Field.Store.YES, Field.Index.ANALYZED);
     	        Field sortTitleField = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.SORT_TITLE_FIELD, title.toLowerCase());
@@ -418,9 +415,9 @@ public class EntityIndexUtils {
     				doc.add(workflowStateField);
     				doc.add(workflowStateCaptionField);
     				
-    				//Add the caption to the allText field
-    				Field allTextField = BasicIndexUtils.allTextField(workflowCaption);
-            		doc.add(allTextField);
+    				//Add the caption to the generalText field
+    				Field generalTextField = BasicIndexUtils.generalTextField(workflowCaption);
+            		doc.add(generalTextField);
    				
     				Definition def = ws.getDefinition();
     				if (def != null) {
@@ -971,7 +968,7 @@ public class EntityIndexUtils {
     		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.TAG_FIELD, it));
     	
     	if (!fieldsOnly) {
-    		tagField = BasicIndexUtils.allTextField(indexableTags);
+    		tagField = BasicIndexUtils.generalTextField(indexableTags);
     		doc.add(tagField);
     	}
     	
@@ -1077,11 +1074,11 @@ public class EntityIndexUtils {
     	return zeros.substring(0, leadingZeros) + number;
     }
     
-    // in the _allText field for this attachment, just add the contents of
+    // in the _generalText field for this attachment, just add the contents of
     // the file attachment, it's name, and it's creator/modifier
-    public static Document addFileAttachmentAllText(Document doc) {
+    public static Document addFileAttachmentGeneralText(Document doc) {
        	String text = "";
-       	doc.removeFields(Constants.ALL_TEXT_FIELD);
+       	doc.removeFields(Constants.GENERAL_TEXT_FIELD);
        	// just in case there wasn't any text from the converted file 
        	// i.e. the file didn't really exist
        	try {
@@ -1092,8 +1089,8 @@ public class EntityIndexUtils {
        	text += " " + doc.getFieldable(Constants.FILE_DESCRIPTION_FIELD).stringValue();
        	text += " " + doc.getFieldable(Constants.MODIFICATION_NAME_FIELD).stringValue();
        	text += " " + doc.getFieldable(Constants.CREATOR_NAME_FIELD).stringValue();
-       	Field allText = new Field(Constants.ALL_TEXT_FIELD, text, Field.Store.NO, Field.Index.ANALYZED);
-       	doc.add(allText);
+       	Field generalText = BasicIndexUtils.generalTextField(text);
+       	doc.add(generalText);
        	return doc;
     }
 

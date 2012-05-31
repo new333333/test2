@@ -2332,8 +2332,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         if (tags == null) tags =  getCoreDao().loadAllTagsByEntity(entity.getEntityIdentifier());
         EntityIndexUtils.addTags(indexDoc, entity, tags, true);
         
-        //needs to be last item cause removes extraneous alltext fields
-   		EntityIndexUtils.addFileAttachmentAllText(indexDoc);
+        //needs to be last item cause removes extraneous generaltext fields
+   		EntityIndexUtils.addFileAttachmentGeneralText(indexDoc);
    
     }
     

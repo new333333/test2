@@ -52,6 +52,7 @@ import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.search.Constants;
+import org.kablink.util.search.QueryParserFactory;
 
 
 public class SearchObject {
@@ -95,10 +96,10 @@ public class SearchObject {
 				pfAnalyzer.addAnalyzer(Constants.TITLE_FIELD, analyzer);
 				analyzer = pfAnalyzer;
 			}	
-			QueryParser qp = new QueryParser(Version.LUCENE_34, Constants.ALL_TEXT_FIELD, analyzer);
+			QueryParser qp =  QueryParserFactory.createQueryParser(analyzer);
 			qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 			queryParser.set(qp);
-			qp = new QueryParser(Version.LUCENE_34, Constants.ALL_TEXT_FIELD, new WhitespaceAnalyzer());
+			qp =  QueryParserFactory.createQueryParser(new WhitespaceAnalyzer());
 			queryParserWSA.set(qp);
 		}
 	}
@@ -181,7 +182,7 @@ public class SearchObject {
 		else if (lang.equalsIgnoreCase(LanguageTaster.CJK)) {
 			if (queryParserCJK.get() == null) {
 				logger.debug("QueryParser instantiating new CJK QP");
-				QueryParser qp = new QueryParser(Version.LUCENE_34, Constants.ALL_TEXT_FIELD, getCJKAnalyzer());
+				QueryParser qp =  QueryParserFactory.createQueryParser(getCJKAnalyzer());
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserCJK.set(qp);
 				return qp;
@@ -202,7 +203,7 @@ public class SearchObject {
 						logger.error("Could not initialize arabic analyzer class: " + e.toString());
 					}
 				}
-				QueryParser qp = new QueryParser(Version.LUCENE_34, Constants.ALL_TEXT_FIELD, analyzer);
+				QueryParser qp =  QueryParserFactory.createQueryParser(analyzer);
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserARABIC.set(qp);
 				return qp;
@@ -223,7 +224,7 @@ public class SearchObject {
 						logger.error("Could not initialize hebrew analyzer class: " + e.toString());
 					}
 				}
-				QueryParser qp = new QueryParser(Version.LUCENE_34, Constants.ALL_TEXT_FIELD, analyzer);
+				QueryParser qp =  QueryParserFactory.createQueryParser(analyzer);
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserHEBREW.set(qp);
 				return qp;
@@ -248,7 +249,7 @@ public class SearchObject {
 	
 	private Analyzer getCJKAnalyzer() {
 		PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(new NullAnalyzer());
-		retAnalyzer.addAnalyzer(Constants.ALL_TEXT_FIELD, new ChineseAnalyzer());
+		retAnalyzer.addAnalyzer(Constants.GENERAL_TEXT_FIELD, new ChineseAnalyzer());
 		retAnalyzer.addAnalyzer(Constants.TITLE_FIELD, new ChineseAnalyzer());
 		retAnalyzer.addAnalyzer(Constants.DESC_TEXT_FIELD, new ChineseAnalyzer());
 		return retAnalyzer;

@@ -54,20 +54,20 @@ public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 				// This data element requires a separate sort field.
 				sortField = FieldFactory.createStoredNotAnalyzedNoNorms(getSortFieldName(dataElemName), strToIndex.toLowerCase());
 			}
-			// Handle optional allText field.
-           	Field allTextField = null;
+			// Handle optional generalText field.
+           	Field generalTextField = null;
            	if (!isFieldsOnly(args))
-           		allTextField =  BasicIndexUtils.allTextField(strToIndex);
+           		generalTextField =  BasicIndexUtils.generalTextField(strToIndex);
            	// Put them together.
            	if(sortField != null) {
-           		if(allTextField != null)
-           			return new Field[] {field, sortField, allTextField};
+           		if(generalTextField != null)
+           			return new Field[] {field, sortField, generalTextField};
            		else
            			return new Field[] {field, sortField};
            	}
            	else {
-           		if(allTextField != null)
-           			return new Field[] {field, allTextField};
+           		if(generalTextField != null)
+           			return new Field[] {field, generalTextField};
            		else
            			return new Field[] {field};
            	}

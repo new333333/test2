@@ -72,7 +72,7 @@ public abstract class FieldBuilderSelect extends AbstractFieldBuilder {
         String fieldName = getSearchFieldName(dataElemName);
        
         String val;
-        String allText = "";
+        String generalText = "";
         Field field;
         int i = 1;
         for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
@@ -87,12 +87,12 @@ public abstract class FieldBuilderSelect extends AbstractFieldBuilder {
 	        field = FieldFactory.createStoredNotAnalyzedNoNorms(fieldName, val);
 	        fields[i] = field;
 	        // Do NOT include translated text for the selection into the all text field. See bug#682072 
-	        //allText += " " + getNltTagInAllLanguages(val);
+	        //generalText += " " + getNltTagInAllLanguages(val);
         }
         
-        //Build the allText field
-        Field allTextField = BasicIndexUtils.allTextField(allText);
-        fields[0] = allTextField;
+        //Build the generalText field
+        Field generalTextField = BasicIndexUtils.generalTextField(generalText);
+        fields[0] = generalTextField;
         
         return fields;
     }
