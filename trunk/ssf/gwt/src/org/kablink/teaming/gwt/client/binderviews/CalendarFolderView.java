@@ -669,7 +669,9 @@ public class CalendarFolderView extends FolderViewBase
 				// Yes!  Add the appointments to the calendar.
 				CalendarAppointmentsRpcResponseData responseData = ((CalendarAppointmentsRpcResponseData) response.getResponseData());
 				m_appointments = responseData.getAppointments();
+				m_calendar.suspendLayout();
 				m_calendar.addAppointments(m_appointments);
+				m_calendar.resumeLayout();
 			}
 		});
 	}

@@ -182,6 +182,11 @@
 		.vibe-discussionFolderDataTable {}
 		.vibe-discussionFolderFlowPanel {}
 	/* ...End:  Discussion folder view styles. */
+	
+	/* ...Start:  Calendar folder view styles. */
+		.vibe-calendarFolder-appointment {}
+		.vibe-calendarFolder             {}
+	/* ...End:  Calendar folder view styles. */
 
 	/* ...Start:  File folder view styles. */
 		.vibe-fileFolderDataTable {}

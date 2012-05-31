@@ -658,18 +658,6 @@ public class GwtServerHelper {
 		// Nothing to do.
 	}
 
-	/*
-	 * Converts a String to a Long, if possible, and adds it as the ID
-	 * of an AssignmentInfo to a List<AssignmentInfo>.
-	 */
-	private static void addAIFromStringToList(String s, List<AssignmentInfo> l, AssigneeType assigneeType) {
-		try {
-			Long lVal = Long.parseLong(s);
-			l.add(AssignmentInfo.construct(lVal, assigneeType));
-		}
-		catch (NumberFormatException nfe) {/* Ignored. */}
-	}
-
 	/**
 	 * Add a tag to the given binder.
 	 */
@@ -2786,57 +2774,6 @@ public class GwtServerHelper {
 			throw getGwtTeamingException( ex );
 		} 
 		
-		return reply;
-	}
-	
-	/**
-	 * Reads a List<AssignmentInfo> from a Map.
-	 * 
-	 * @param m
-	 * @param key
-	 * @param assigneeType
-	 * 
-	 * @return
-	 */
-	public static List<AssignmentInfo> getAssignmentInfoListFromEntryMap(Map m, String key, AssigneeType assigneeType) {
-		// Is there value for the key?
-		List<AssignmentInfo> reply = new ArrayList<AssignmentInfo>();
-		Object o = m.get(key);
-		if (null != o) {
-			// Yes!  Is the value is a String?
-			if (o instanceof String) {
-				// Yes!  Use it as Long to create an AssignmentInfo to
-				// add to the List<AssignmentInfo>. 
-				addAIFromStringToList(((String) o), reply, assigneeType);
-			}
-
-			// No, the value isn't a String!  Is it a String[]?
-			else if (o instanceof String[]) {
-				// Yes!  Scan them and use each as Long to create an
-				// AssignmentInfo to add to the List<AssignmentInfo>. 
-				String[] strLs = ((String[]) o);
-				int c = strLs.length;
-				for (int i = 0; i < c; i += 1) {
-					addAIFromStringToList(strLs[i], reply, assigneeType);
-				}
-			}
-
-			// No, the value isn't a String[] either!  Is it a
-			// SearchFieldResult?
-			else if (o instanceof SearchFieldResult) {
-				// Yes!  Scan the value set from it and use each as
-				// Long to create an AssignmentInfo to add to the
-				// List<AssignmentInfo>. 
-				SearchFieldResult sfr = ((SearchFieldResult) m.get(key));
-				Set<String> strLs = ((Set<String>) sfr.getValueSet());
-				for (String strL:  strLs) {
-					addAIFromStringToList(strL, reply, assigneeType);
-				}
-			}
-		}
-		
-		// If we get here, reply refers to the List<AssignmentInfo> of
-		// values from the Map.  Return it.
 		return reply;
 	}
 	
@@ -7152,66 +7089,6 @@ public class GwtServerHelper {
 		return Boolean.TRUE;
 	}
 	
-	/**
-	 * Stores the membership count of an AssignmentInfo based on Map
-	 * lookup using its ID.
-	 * 
-	 * @param ai
-	 * @param countMap
-	 * 
-	 * @return
-	 */
-	public static void setAssignmentInfoMembers(AssignmentInfo ai, Map<Long, Integer> countMap) {
-		Integer count = countMap.get(ai.getId());
-		ai.setMembers((null == count) ? 0 : count.intValue());
-	}
-
-	/**
-	 * Stores the title of an AssignmentInfo based on Map lookup using
-	 * its ID.
-	 * 
-	 * Returns true if a title was stored and false otherwise.
-	 * 
-	 * @param ai
-	 * @param titleMap
-	 * 
-	 * @return
-	 */
-	public static boolean setAssignmentInfoTitle(AssignmentInfo ai, Map<Long, String> titleMap) {
-		String title = titleMap.get(ai.getId());
-		boolean reply = MiscUtil.hasString(title);
-		if (reply) {
-			ai.setTitle(title);
-		}
-		return reply;
-	}
-
-	/**
-	 * Stores a GwtPresenceInfo of an AssignmentInfo based on Map
-	 * lookup using its ID.
-	 * 
-	 * @param ai
-	 * @param presenceMap
-	 */
-	public static void setAssignmentInfoPresence(AssignmentInfo ai, Map<Long, GwtPresenceInfo> presenceMap) {
-		GwtPresenceInfo pi = presenceMap.get(ai.getId());
-		if (null == pi) pi = getPresenceInfoDefault();
-		ai.setPresence(pi);
-		ai.setPresenceDude(getPresenceDude(pi));
-	}
-
-	/**
-	 * Stores a user's workspace ID of an AssignmentInfo based on a Map
-	 * lookup using its ID.
-	 * 
-	 * @param ai
-	 * @param presenceUserWSIdsMap
-	 */
-	public static void setAssignmentInfoPresenceUserWSId(AssignmentInfo ai, Map<Long, Long> presenceUserWSIdsMap) {
-		Long presenceUserWSId = presenceUserWSIdsMap.get(ai.getId());
-		ai.setPresenceUserWSId(presenceUserWSId);
-	}
-
 	/*
 	 * Sets an entry's pin state.
 	 */

@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.server.util;
 
 import java.net.URI;
@@ -67,6 +66,7 @@ import org.apache.lucene.document.DateTools;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.AbstractIntervalView;
 import org.kablink.teaming.calendar.EventsViewHelper;
@@ -81,7 +81,6 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SeenMap;
@@ -183,6 +182,9 @@ import org.kablink.teaming.web.util.TrashHelper.TrashEntry;
 import org.kablink.teaming.web.util.TrashHelper.TrashResponse;
 import org.kablink.util.Html;
 import org.kablink.util.search.Constants;
+
+import com.bradrydzewski.gwt.calendar.client.Appointment;
+import com.bradrydzewski.gwt.calendar.client.AppointmentStyle;
 
 /**
  * Helper methods for the GWT binder views.
@@ -305,11 +307,10 @@ public class GwtViewHelper {
 	}
 	
 	/*
-	 * When initially built, the AssignmentInfo's in the
-	 * List<AssignmentInfo>'s only contain the assignee IDs.  We need
-	 * to complete them with each assignee's title, ...
+	 * When initially built, the AssignmentInfo's in the folder rows
+	 * only contain the assignee IDs.  We need to complete them with
+	 * each assignee's title, ...
 	 */
-	@SuppressWarnings("unchecked")
 	private static void completeAIs(AllModulesInjected bs, List<FolderRow> folderRows) {
 		// If we don't have any FolderRows's to complete...
 		if ((null == folderRows) || folderRows.isEmpty()) {
@@ -369,53 +370,30 @@ public class GwtViewHelper {
 			return;
 		}
 
-		// Construct Maps, mapping the principal IDs to their titles
-		// and membership counts.
-		Map<Long, String>          principalTitles   = new HashMap<Long, String>();
-		Map<Long, Integer>         groupCounts       = new HashMap<Long, Integer>();
-		Map<Long, GwtPresenceInfo> userPresence      = new HashMap<Long, GwtPresenceInfo>();
-		Map<Long, Long>            presenceUserWSIds = new HashMap<Long, Long>();
-		boolean                    isPresenceEnabled = GwtServerHelper.isPresenceEnabled();
-		if (hasPrincipals) {
-			List principals = null;
-			try {principals = ResolveIds.getPrincipals(principalIds, false);}
-			catch (Exception ex) {/* Ignored. */}
-			if ((null != principals) && (!(principals.isEmpty()))) {
-				for (Object o:  principals) {
-					Principal p = ((Principal) o);
-					Long pId = p.getId();
-					boolean isUser = (p instanceof UserPrincipal);
-					principalTitles.put(pId, p.getTitle());					
-					if (p instanceof GroupPrincipal) {
-						groupCounts.put(pId, GwtServerHelper.getGroupCount((GroupPrincipal) p));						
-					}
-					else if (isUser) {
-						User user = ((User) p);
-						presenceUserWSIds.put(pId, user.getWorkspaceId());
-						if (isPresenceEnabled) {
-							userPresence.put(pId, GwtServerHelper.getPresenceInfo(user));
-						}
-					}
-				}
-			}
-		}
-		
-		// Construct Maps, mapping the team IDs to their titles and
-		// membership counts.
-		Map<Long, String>  teamTitles = new HashMap<Long, String>();
-		Map<Long, Integer> teamCounts = new HashMap<Long, Integer>();
-		if (hasTeams) {
-			SortedSet<Binder> binders = null;
-			try {binders = bs.getBinderModule().getBinders(teamIds);}
-			catch (Exception ex) {/* Ignored. */}
-			if ((null != binders) && (!(binders.isEmpty()))) {
-				for (Binder b:  binders) {
-					Long bId = b.getId();
-					teamTitles.put(bId, b.getTitle());
-					teamCounts.put(bId, GwtServerHelper.getTeamCount(bs, b));
-				}
-			}
-		}
+		// Construct Maps, mapping the IDs to their titles, membership
+		// counts, ...
+		Map<Long, String>			principalEMAs     = new HashMap<Long, String>();
+		Map<Long, String>			principalTitles   = new HashMap<Long, String>();
+		Map<Long, Integer>			groupCounts       = new HashMap<Long, Integer>();
+		Map<Long, GwtPresenceInfo>	userPresence      = new HashMap<Long, GwtPresenceInfo>();
+		Map<Long, Long>				presenceUserWSIds = new HashMap<Long, Long>();
+		Map<Long, String>			teamTitles        = new HashMap<Long, String>();
+		Map<Long, Integer>			teamCounts        = new HashMap<Long, Integer>();
+		GwtEventHelper.readEventStuffFromDB(
+			// Uses these...
+			bs,
+			principalIds,
+			teamIds,
+
+			// ...to complete these.
+			principalEMAs,
+			principalTitles,
+			groupCounts,
+			userPresence,
+			presenceUserWSIds,
+			
+			teamTitles,
+			teamCounts);
 		
 		// Scan the List<FolderRow>'s again...
 		for (FolderRow fr:  folderRows) {
@@ -455,6 +433,132 @@ public class GwtViewHelper {
 			Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  comparator);
 			Collections.sort(getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            comparator);
 		}
+	}
+
+	/*
+	 * When initially built, the AssignmentInfo's in the appointments
+	 * only contain the assignee IDs.  We need to complete them with
+	 * each assignee's title, ...
+	 */
+	private static void completeAIs(AllModulesInjected bs, ArrayList<Appointment> appointments) {
+		// If we don't have any appointments to complete...
+		if ((null == appointments) || appointments.isEmpty()) {
+			// ..bail.
+			return;
+		}
+		
+		// Allocate List<Long>'s to track the assignees that need to be
+		// completed.
+		List<Long> principalIds = new ArrayList<Long>();
+		List<Long> teamIds      = new ArrayList<Long>();
+
+		// Scan the List<Appointment>.
+		for (Appointment a:  appointments) {
+			// Scan this Appointment's individual attendees...
+			CalendarAppointment ca = ((CalendarAppointment) a);
+			for (AssignmentInfo ai:  ca.getVibeAttendees()) {
+				// ...tracking each unique ID.
+				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+			}
+			
+			// Scan this Appointment's group attendees...
+			for (AssignmentInfo ai:  ca.getVibeAttendeeGroups()) {
+				// ...tracking each unique ID.
+				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+			}
+			
+			// Scan this Appointment's team attendees...
+			for (AssignmentInfo ai:  ca.getVibeAttendeeTeams()) {
+				// ...tracking each unique ID.
+				MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
+			}
+		}
+		
+		// If we don't have any assignees to complete...
+		boolean hasPrincipals = (!(principalIds.isEmpty()));
+		boolean hasTeams      = (!(teamIds.isEmpty()));		
+		if ((!hasPrincipals) && (!hasTeams)) {
+			// ...bail.
+			return;
+		}
+
+		// Construct Maps, mapping the IDs to their titles, membership
+		// counts, ...
+		Map<Long, String>			principalEMAs     = new HashMap<Long, String>();
+		Map<Long, String>			principalTitles   = new HashMap<Long, String>();
+		Map<Long, Integer>			groupCounts       = new HashMap<Long, Integer>();
+		Map<Long, GwtPresenceInfo>	userPresence      = new HashMap<Long, GwtPresenceInfo>();
+		Map<Long, Long>				presenceUserWSIds = new HashMap<Long, Long>();
+		Map<Long, String>			teamTitles        = new HashMap<Long, String>();
+		Map<Long, Integer>			teamCounts        = new HashMap<Long, Integer>();
+		GwtEventHelper.readEventStuffFromDB(
+			// Uses these...
+			bs,
+			principalIds,
+			teamIds,
+
+			// ...to complete these.
+			principalEMAs,
+			principalTitles,
+			groupCounts,
+			userPresence,
+			presenceUserWSIds,
+			
+			teamTitles,
+			teamCounts);
+		
+		// Scan the List<Appointment> again.
+		for (Appointment a:  appointments) {
+			// The removeList is used to handle cases where an ID could
+			// not be resolved (e.g., an 'Assigned To' user has been
+			// deleted.)
+			List<AssignmentInfo> removeList = new ArrayList<AssignmentInfo>();
+			
+			// Scan this Appointment's individual assignees again...
+			CalendarAppointment ca = ((CalendarAppointment) a);
+			for (AssignmentInfo ai:  ca.getVibeAttendees()) {
+				// ...setting each one's title.
+				if (GwtEventHelper.setAssignmentInfoTitle(           ai, principalTitles )) {
+					GwtEventHelper.setAssignmentInfoEmailAddress(    ai, principalEMAs    );
+					GwtEventHelper.setAssignmentInfoPresence(        ai, userPresence     );
+					GwtEventHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
+				}
+				else {
+					removeList.add(ai);
+				}
+			}
+			GwtServerHelper.removeUnresolvedAssignees(ca.getVibeAttendees(), removeList);
+			
+			// Scan this Appointment's group assignees again...
+			for (AssignmentInfo ai:  ca.getVibeAttendeeGroups()) {
+				// ...setting each one's title and membership count.
+				if (GwtEventHelper.setAssignmentInfoTitle(  ai, principalTitles)) {
+					GwtEventHelper.setAssignmentInfoMembers(ai, groupCounts     );
+					ai.setPresenceDude("pics/group_icon_small.png");
+				}
+				else {
+					removeList.add(ai);
+				}
+			}
+			GwtServerHelper.removeUnresolvedAssignees(ca.getVibeAttendeeGroups(), removeList);
+			
+			// Scan this Appointment's team assignees again...
+			for (AssignmentInfo ai:  ca.getVibeAttendeeTeams()) {
+				// ...setting each one's title and membership count.
+				if (GwtEventHelper.setAssignmentInfoTitle(  ai, teamTitles)) {
+					GwtEventHelper.setAssignmentInfoMembers(ai, teamCounts );
+					ai.setPresenceDude("pics/team_16.png");
+				}
+				else {
+					removeList.add(ai);
+				}
+			}
+			GwtServerHelper.removeUnresolvedAssignees(ca.getVibeAttendeeTeams(), removeList);
+		}
+
+		// Finally, use the AssignmentInfo's in the appointments to
+		// construct the attendee list for the appointment.
+		GwtCalendarHelper.buildCalendarAttendeesFromVibeAttendees(appointments);
 	}
 	
 	/**
@@ -860,7 +964,7 @@ public class GwtViewHelper {
 		}
 		
 		// Are there any assignments for the given column search key?
-		List<AssignmentInfo> addList = GwtServerHelper.getAssignmentInfoListFromEntryMap(entryMap, csk, assigneeType);
+		List<AssignmentInfo> addList = GwtEventHelper.getAssignmentInfoListFromEntryMap(entryMap, csk, assigneeType);
 		if ((null != addList) && (!(addList.isEmpty()))) {
 			// Yes!  Copy them into the assignment list we were given.
 			for (AssignmentInfo ai:  addList) {
@@ -951,8 +1055,8 @@ public class GwtViewHelper {
 			}
 			
 			// ...and setting each one's title and membership count.
-			if (GwtServerHelper.setAssignmentInfoTitle(  ai, principalTitles)) {
-				GwtServerHelper.setAssignmentInfoMembers(ai, groupCounts     );
+			if (GwtEventHelper.setAssignmentInfoTitle(  ai, principalTitles)) {
+				GwtEventHelper.setAssignmentInfoMembers(ai, groupCounts     );
 				ai.setPresenceDude("pics/group_icon_small.png");
 			}
 			else {
@@ -985,8 +1089,8 @@ public class GwtViewHelper {
 			}
 			
 			// ...and setting each one's title and membership count.
-			if (GwtServerHelper.setAssignmentInfoTitle(  ai, teamTitles)) {
-				GwtServerHelper.setAssignmentInfoMembers(ai, teamCounts );
+			if (GwtEventHelper.setAssignmentInfoTitle(  ai, teamTitles)) {
+				GwtEventHelper.setAssignmentInfoMembers(ai, teamCounts );
 				ai.setPresenceDude("pics/team_16.png");
 			}
 			else {
@@ -1019,9 +1123,9 @@ public class GwtViewHelper {
 			}
 			
 			// ...and setting each one's title.
-			if (GwtServerHelper.setAssignmentInfoTitle(           ai, principalTitles )) {
-				GwtServerHelper.setAssignmentInfoPresence(        ai, userPresence     );
-				GwtServerHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
+			if (GwtEventHelper.setAssignmentInfoTitle(           ai, principalTitles )) {
+				GwtEventHelper.setAssignmentInfoPresence(        ai, userPresence     );
+				GwtEventHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
 			}
 			else {
 				removeList.add(ai);
@@ -1582,24 +1686,65 @@ public class GwtViewHelper {
 				// Yes!  We need to construct Appointment's for each.
 				// Scan the events
 				for (Map event:  events) {
-					// Create a CalendarAppointment for this event.
+					// Create a base CalendarAppointment for this event
+					// and added it to the response data.
 					CalendarAppointment appointment = new CalendarAppointment();
 					reply.addAppointment(appointment);
 
-					// Set the appointment's title.
-					String value= GwtServerHelper.getStringFromEntryMap(event, Constants.TITLE_FIELD);
-					appointment.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
+					// Set whether this is an all day appointment.
+					String tz = GwtEventHelper.getStringFromEntryMapRaw(event, GwtEventHelper.buildAppointmentEventFieldName(Constants.EVENT_FIELD_TIME_ZONE_ID));
+					boolean allDayEvent = (!(MiscUtil.hasString(tz)));
+					appointment.setAllDay(allDayEvent);
 
+					// Set appointment's attendees.
+					GwtCalendarHelper.setVibeAttendees(     appointment, GwtEventHelper.getAssignmentInfoListFromEntryMap(event, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME,        AssigneeType.INDIVIDUAL));
+					GwtCalendarHelper.setVibeAttendeeGroups(appointment, GwtEventHelper.getAssignmentInfoListFromEntryMap(event, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME, AssigneeType.GROUP     ));
+					GwtCalendarHelper.setVibeAttendeeTeams( appointment, GwtEventHelper.getAssignmentInfoListFromEntryMap(event, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME,  AssigneeType.TEAM      ));
+					
+					// Set the appointment's created by.
+					appointment.setCreatedBy(GwtEventHelper.getStringFromEntryMapRaw(event, Constants.CREATOR_TITLE_FIELD));
+					
+					// Set the appointment's custom style.
+//!					appointment.setCustomStyle("vibe-calendarFolder-appointment");
+										
 					// Set the appointment's description.
-					value = getEntryDescriptionFromMap(request, event);
+					String value = getEntryDescriptionFromMap(request, event);
 					if ((Description.FORMAT_HTML == getEntryDescFormatFromEM(event)) && MiscUtil.hasString(value)) {
 						value = Html.stripHtml(value);
 					}
 					appointment.setDescription(value);
 					
+					// Set the appointment's end date.
+					appointment.setEnd(GwtEventHelper.getDateFromEntryMap(event, GwtEventHelper.buildAppointmentEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE)));
+										
+					// Set the appointment's ID.
+					Long eventId = GwtEventHelper.getLongFromEntryMap(event, Constants.DOCID_FIELD);
+					appointment.setId(String.valueOf(eventId));
+										
+					// Set the appointment's location.
 //!					...this needs to be implemented...					
+										
+					// Set the appointment's start date.
+					appointment.setStart(GwtEventHelper.getDateFromEntryMap(event, GwtEventHelper.buildAppointmentEventFieldName(Constants.EVENT_FIELD_LOGICAL_START_DATE)));
+										
+					// Set the appointment's style.
+//!					...this needs to be implemented...					
+					appointment.setStyle(AppointmentStyle.BLUE);
+										
+					// Set the appointment's title.
+					value= GwtServerHelper.getStringFromEntryMap(event, Constants.TITLE_FIELD);
+					appointment.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
 				}
 			}
+
+			// At this point, the CalendarAppointment's in the response
+			// data are not complete.  They're missing things like the
+			// details about the appointements's attendees.  Complete
+			// their content.  Note that we do this AFTER collecting
+			// data from the search index so that we only have to
+			// perform a single DB read for each type of information we
+			// need to complete the CalendarAppointment's details.
+			completeAIs(bs, reply.getAppointments());
 
 			// If we get here, reply refers to a
 			// CalendarAppointmentsRpcRequestData containing the
@@ -2549,7 +2694,7 @@ public class GwtViewHelper {
 								// Yes!  Read its
 								// List<AssignmentInfo>'s.
 								AssigneeType ait = AssignmentInfo.getColumnAssigneeType(csk);
-								List<AssignmentInfo> assignmentList = GwtServerHelper.getAssignmentInfoListFromEntryMap(entryMap, csk, ait);
+								List<AssignmentInfo> assignmentList = GwtEventHelper.getAssignmentInfoListFromEntryMap(entryMap, csk, ait);
 								
 								// Is this column for an individual
 								// assignee?
