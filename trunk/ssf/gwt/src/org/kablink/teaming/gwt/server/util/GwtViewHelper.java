@@ -78,6 +78,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.GroupPrincipal;
@@ -118,6 +119,7 @@ import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.CalendarAppointment;
 import org.kablink.teaming.gwt.client.util.CalendarDayView;
 import org.kablink.teaming.gwt.client.util.CalendarHours;
 import org.kablink.teaming.gwt.client.util.CalendarShow;
@@ -179,6 +181,7 @@ import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.teaming.web.util.TrashHelper.TrashEntry;
 import org.kablink.teaming.web.util.TrashHelper.TrashResponse;
+import org.kablink.util.Html;
 import org.kablink.util.search.Constants;
 
 /**
@@ -1578,7 +1581,22 @@ public class GwtViewHelper {
 			if ((null != events) && (!(events.isEmpty()))) {
 				// Yes!  We need to construct Appointment's for each.
 				// Scan the events
-				for (@SuppressWarnings("unused") Map event:  events) {
+				for (Map event:  events) {
+					// Create a CalendarAppointment for this event.
+					CalendarAppointment appointment = new CalendarAppointment();
+					reply.addAppointment(appointment);
+
+					// Set the appointment's title.
+					String value= GwtServerHelper.getStringFromEntryMap(event, Constants.TITLE_FIELD);
+					appointment.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
+
+					// Set the appointment's description.
+					value = getEntryDescriptionFromMap(request, event);
+					if ((Description.FORMAT_HTML == getEntryDescFormatFromEM(event)) && MiscUtil.hasString(value)) {
+						value = Html.stripHtml(value);
+					}
+					appointment.setDescription(value);
+					
 //!					...this needs to be implemented...					
 				}
 			}
@@ -1814,10 +1832,27 @@ public class GwtViewHelper {
 	}
 	
 	/*
+	 * Returns the format of an entry description from a search results
+	 * Map.
+	 */
+	@SuppressWarnings("unchecked")
+	private static int getEntryDescFormatFromEM(Map em) {
+		int reply = Description.FORMAT_HTML;
+		String descFmt = GwtServerHelper.getStringFromEntryMap(em, Constants.DESC_FORMAT_FIELD);
+		if (MiscUtil.hasString(descFmt)) {
+			try {
+				reply = Integer.parseInt(descFmt);
+			}
+			catch (Exception ex) {}
+		}
+		return reply;
+	}
+	
+	/*
 	 * Returns the entry description from a search results Map.
 	 */
 	@SuppressWarnings("unchecked")
-	public static String getEntryDescriptionFromMap(HttpServletRequest httpReq, Map entryMap) {
+	private static String getEntryDescriptionFromMap(HttpServletRequest httpReq, Map entryMap) {
 		String reply = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DESC_FIELD);
 		if (MiscUtil.hasString(reply)) {
 			reply = MarkupUtil.markupStringReplacement(null, null, httpReq, null, entryMap, reply, WebKeys.MARKUP_VIEW, false);

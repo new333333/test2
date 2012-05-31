@@ -103,6 +103,7 @@ public class CalendarAppointmentsRpcResponseData implements IsSerializable, Vibe
 	 * @param appointment
 	 */
 	public void addAppointment(Appointment appointment) {
+		validateAppointments();
 		m_appointments.add(appointment);
 	}
 	
