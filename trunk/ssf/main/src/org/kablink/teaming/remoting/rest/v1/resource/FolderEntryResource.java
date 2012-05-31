@@ -52,6 +52,7 @@ import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
+import org.kablink.teaming.domain.NoTagByTheIdException;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -271,6 +272,25 @@ public class FolderEntryResource extends AbstractFileResource {
             results.append(ResourceUtil.buildTag(tg));
         }
         return results;
+    }
+
+    @GET
+    @Path("tag/{tagId}")
+    public Tag getTag(@PathParam("id") Long id, @PathParam("tagId") String tagId) {
+        org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
+        Collection<org.kablink.teaming.domain.Tag> tags = getFolderModule().getTags(entry);
+        for (org.kablink.teaming.domain.Tag tag : tags) {
+            if (tag.getId().equals(tagId)) {
+                return ResourceUtil.buildTag(tag);
+            }
+        }
+        throw new NoTagByTheIdException(tagId);
+    }
+
+    @DELETE
+    @Path("tag/{tagId}")
+    public void deleteTag(@PathParam("id") Long id, @PathParam("tagId") String tagId) {
+        getFolderModule().deleteTag(null, id, tagId);
     }
 
     private void populateReplies(org.kablink.teaming.domain.FolderEntry entry, SearchResultTreeNode<FolderEntry> node) {
