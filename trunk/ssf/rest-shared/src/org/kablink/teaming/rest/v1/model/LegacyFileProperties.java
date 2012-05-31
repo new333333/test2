@@ -69,8 +69,8 @@ public class LegacyFileProperties {
         minorVersion = fp.getMinorVersion();
         note = fp.getNote();
         status = fp.getStatus();
-        if (fp.getEntry()!=null) {
-            entryId = fp.getEntry().getId();
+        if (fp.getOwningEntity()!=null) {
+            entryId = fp.getOwningEntity().getId();
         }
         if (fp.getBinder()!=null) {
             binderId = fp.getBinder().getId();

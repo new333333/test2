@@ -42,7 +42,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="file")
 public class FileProperties extends BaseFileProperties {
 
-    private LongIdLinkPair entry;
+    private EntityId owningEntity;
     private LongIdLinkPair binder;
 	private String name;
 	private Long lockedBy;
@@ -74,13 +74,13 @@ public class FileProperties extends BaseFileProperties {
 		}
 	}
 
-    @XmlElement(name="entry")
-    public LongIdLinkPair getEntry() {
-        return entry;
+    @XmlElement(name="owning_entity")
+    public EntityId getOwningEntity() {
+        return owningEntity;
     }
 
-    public void setEntry(LongIdLinkPair entry) {
-        this.entry = entry;
+    public void setOwningEntity(EntityId owningEntity) {
+        this.owningEntity = owningEntity;
     }
 
     @XmlElement(name="parent_binder")
