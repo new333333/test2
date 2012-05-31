@@ -420,7 +420,7 @@ public class TeamingServiceClientWithStub {
 		
 		// Search for all folder entries and replies with the word "test" in any text field.
     	Criteria crit = new Criteria()
-			.add(eq(Constants.ALL_TEXT_FIELD, "test"));
+			.add(eq("", "test"));
 	
 		FolderEntryCollection coll = stub.search_getFolderEntries(null, crit.toQuery().asXML(), 0, -1);
     	FolderEntryBrief[] entries = coll.getEntries();

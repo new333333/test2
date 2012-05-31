@@ -109,7 +109,7 @@ public class Constants {
 	public static final String PRE_DELETED_FROM_FIELD = "_preDeletedFrom";
 	public static final String ATTACHMENT_TYPE_FIELD = "_attType";
 	public static final String THIS_CLASS_FIELD = "_class";
-	public static final String ALL_TEXT_FIELD = "_allText";
+	public static final String ALL_TEXT_FIELD_DEPRECATED = "_allText"; // This field is deprecated as of Vibe 4.0 and should be no longer used.
 	public static final String TEMP_FILE_CONTENTS_FIELD = "_fileContents";
 	public static final String ENTRY_ACL_FIELD = "_entryAcl";
 	public static final String FOLDER_ACL_FIELD = "_folderAcl";
@@ -266,8 +266,9 @@ public class Constants {
 	public static final String IS_MIRRORED_FIELD = "_isMirrored";
 	public static final String TASK_COMPLETED_DATE_FIELD = "_taskCompleted";
 	public static final String IS_GROUP_DYNAMIC_FIELD = "_isGroupDynamic";
-	public static final String ENTRY_ACL_PARENT_ID_FIELD = "_entryAclParentId"; // This numeric field is only used for entries that inherit ACLs from parent folders
+	public static final String ENTRY_ACL_PARENT_ID_FIELD = "_entryAclParentId"; // This numeric field is only used for entries that inherit ACLs from parent folders.
 	public static final String FOLDER_ID_FIELD = "_folderId"; // This numeric field contains folder ID. Used only for folders.
+	public static final String GENERAL_TEXT_FIELD = "_generalText"; // This field contains textual representation of all field values except for title and description fields.
 
 
 	public Constants() {

@@ -454,8 +454,11 @@ public class QueryBuilder {
 			return null;
 		if (child.getName().equalsIgnoreCase(FIELD_TERMS_ELEMENT)) {
 			if (exact) {
+				// For exact match, it makes no sense to provide a term without
+				// specifying a field name. But when it happens, I guess we want
+				// to default it to "some" field rather than throwing an error.
 				if(fieldName == null || fieldName.equals(""))
-					fieldName = Constants.ALL_TEXT_FIELD;
+					fieldName = Constants.GENERAL_TEXT_FIELD;
 				query = new TermQuery(new Term(fieldName, text));
 			} else {
 				String queryStr;
