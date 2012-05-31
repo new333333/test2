@@ -111,7 +111,7 @@ public class ResourceUtil {
     public static FileProperties buildFileProperties(FileIndexData fa) {
         FileProperties fp = new FileProperties();
         fp.setId(fa.getId());
-        fp.setEntry(new LongIdLinkPair(fa.getOwningEntityId(), LinkUriUtil.getUserLinkUri(fa.getOwningEntityId())));
+        fp.setOwningEntity(buildEntityId(fa.getOwningEntityType(), fa.getOwningEntityId()));
         fp.setBinder(new LongIdLinkPair(fa.getBinderId(), LinkUriUtil.getBinderLinkUri(fa.getBinderId())));
         fp.setName(fa.getName());
         fp.setCreation(new HistoryStamp(new LongIdLinkPair(fa.getCreatorId(), LinkUriUtil.getUserLinkUri(fa.getCreatorId())),
@@ -141,9 +141,9 @@ public class ResourceUtil {
       				fa.getFileStatus(),
       				(fl != null && fl.getOwner() != null)? fl.getOwner().getId():null,
       				(fl!= null)? fl.getExpirationDate():null);
-        Long entryId = fa.getOwner().getEntity().getId();
-        fp.setEntry(new LongIdLinkPair(entryId, LinkUriUtil.getFolderEntryLinkUri(entryId)));
-        Long binderId = fa.getOwner().getEntity().getParentBinder().getId();
+        org.kablink.teaming.domain.DefinableEntity entity = fa.getOwner().getEntity();
+        fp.setOwningEntity(buildEntityId(entity.getEntityType(), entity.getId()));
+        Long binderId = entity.getParentBinder().getId();
         fp.setBinder(new LongIdLinkPair(binderId, LinkUriUtil.getBinderLinkUri(binderId)));
         LinkUriUtil.populateFileLinks(fp);
         return fp;
@@ -278,20 +278,13 @@ public class ResourceUtil {
         model.setName(tag.getName());
         model.setPublic(tag.isPublic());
         EntityIdentifier entityIdentifier = tag.getEntityIdentifier();
-        String entityLink = null;
-        EntityIdentifier.EntityType entityType = entityIdentifier.getEntityType();
-        if (entityType==EntityIdentifier.EntityType.folderEntry) {
-            entityLink = LinkUriUtil.getFolderEntryLinkUri(entityIdentifier.getEntityId());
-        } else if (entityType==EntityIdentifier.EntityType.user) {
-            entityLink = LinkUriUtil.getUserLinkUri(entityIdentifier.getEntityId());
-        } else if (entityType==EntityIdentifier.EntityType.workspace) {
-            entityLink = LinkUriUtil.getWorkspaceLinkUri(entityIdentifier.getEntityId());
-        } else if (entityType==EntityIdentifier.EntityType.folder) {
-            entityLink = LinkUriUtil.getFolderLinkUri(entityIdentifier.getEntityId());
-        }
-        model.setEntity(new EntityId(entityIdentifier.getEntityId(), entityType.name(), entityLink));
+        model.setEntity(buildEntityId(entityIdentifier.getEntityType(), entityIdentifier.getEntityId()));
         model.setLink(LinkUriUtil.getTagLinkUri(model));
         return model;
+    }
+
+    public static EntityId buildEntityId(EntityIdentifier.EntityType type, Long id) {
+        return new EntityId(id, type.name(), LinkUriUtil.getDefinableEntityLinkUri(type, id));
     }
 
     private static void populateDefinableEntity(DefinableEntity model, org.kablink.teaming.domain.DefinableEntity entity, boolean includeAttachments) {

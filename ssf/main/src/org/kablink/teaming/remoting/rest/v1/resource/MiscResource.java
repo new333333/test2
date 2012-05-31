@@ -63,7 +63,7 @@ public class MiscResource extends AbstractResource {
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
    	public RootRestObject getRootObject() {
         RootRestObject obj = new RootRestObject();
-        obj.addAdditionalLink("definitions", "/definition");
+        obj.addAdditionalLink("definitions", "/definitions");
         obj.addAdditionalLink("release_info", "/release_info");
         obj.addAdditionalLink("self", "/self");
         obj.addAdditionalLink("templates", "/templates");
