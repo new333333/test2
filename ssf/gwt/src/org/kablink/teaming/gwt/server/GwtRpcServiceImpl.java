@@ -1624,7 +1624,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			binderId = ((GetViewFolderEntryUrlCmd) cmd).getBinderId();
 			entryId = ((GetViewFolderEntryUrlCmd) cmd).getEntryId();
-			result = getViewFolderEntryUrl( ri, binderId, entryId );
+			result = GwtServerHelper.getViewFolderEntryUrl( this, getRequest( ri ), binderId, entryId );
 			responseData = new StringRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -3218,7 +3218,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				}
 				
 				// Create a url that can be used to view this entry.
-				url = getViewFolderEntryUrl( ri, parentBinderId, entryIdL );
+				url = GwtServerHelper.getViewFolderEntryUrl( this, getRequest( ri ), parentBinderId, entryIdL );
 				folderEntry.setViewEntryUrl( url );
 				
 				// Get the entry's author information
@@ -3386,39 +3386,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return GwtServerHelper.getViewFileUrl( getRequest( ri ), vfi );
 	}// end getViewFileUrl()
 	
-	/**
-	 * Return a base view folder entry URL that can be used directly in the
-	 * content panel.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * @param entryId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	private String getViewFolderEntryUrl( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
-		try {
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL( getRequest( ri ), "ss_forum", true );
-			adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY );
-			if ( binderId == null )
-			{
-				FolderEntry entry;
-				
-				entry = getFolderModule().getEntry( null, entryId );
-				binderId = entry.getParentBinder().getId();
-			}
-			adapterUrl.setParameter( WebKeys.URL_BINDER_ID, String.valueOf( binderId ) );
-			adapterUrl.setParameter( WebKeys.URL_ENTRY_ID,  String.valueOf( entryId  ) );			
-			return adapterUrl.toString();
-		}
-		catch ( Exception ex )
-		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
-		}		
-	}
-
 	/*
 	 * Return a list of comments for the given entry.
 	 */
