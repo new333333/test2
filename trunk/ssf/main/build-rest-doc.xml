@@ -7,9 +7,9 @@
         <fileset dir="${enunciate.home}/lib">
             <include name="*.jar"/>
             <exclude name="enunciate-c-*.jar"/>
-            <exclude name="enunciate-csharp-*.jar"/>
-            <exclude name="enunciate-java-client-*.jar"/>
-            <exclude name="enunciate-obj-c-*.jar"/>
+            <!--<exclude name="enunciate-csharp-*.jar"/>-->
+            <!--<exclude name="enunciate-java-client-*.jar"/>-->
+            <!--<exclude name="enunciate-obj-c-*.jar"/>-->
             <exclude name="enunciate-ruby-*.jar"/>
           </fileset>
         <fileset dir="${java.home}">

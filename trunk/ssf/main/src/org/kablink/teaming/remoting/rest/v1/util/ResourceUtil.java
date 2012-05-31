@@ -161,7 +161,11 @@ public class ResourceUtil {
         model.setCreation(buildHistoryStamp(binder.getCreation()));
         model.setModification(buildHistoryStamp(binder.getModification()));
         model.setLink(LinkUriUtil.getBinderLinkUri(model));
-        LinkUriUtil.populateBinderLinks(model, model.isWorkspace(), model.isFolder());
+        if (model.isFolder()) {
+            LinkUriUtil.populateFolderLinks(model);
+        } else if (model.isWorkspace()) {
+            LinkUriUtil.populateWorkspaceLinks(model);
+        }
         return model;
     }
 
@@ -217,12 +221,7 @@ public class ResourceUtil {
             model.setWorkspace(new LongIdLinkPair(user.getWorkspaceId(), LinkUriUtil.getWorkspaceLinkUri(user.getWorkspaceId())));
         }
 
-        if (user.getId().equals(RequestContextHolder.getRequestContext().getUserId())) {
-            model.setLink("/self");
-            model.addAdditionalLink("roots", model.getLink() + "/roots");
-        }
-        model.addAdditionalLink("favorites", model.getLink() + "/favorites");
-        model.addAdditionalLink("teams", model.getLink() + "/teams");
+        LinkUriUtil.populateUserLinks(model);
 
         return model;
     }
@@ -360,7 +359,11 @@ public class ResourceUtil {
             model.setFamily(DefinitionUtils.getFamily(def));
         }
         model.setLink(LinkUriUtil.getBinderLinkUri(binder));
-        LinkUriUtil.populateBinderLinks(model, model instanceof Workspace, model instanceof Folder);
+        if (model instanceof Folder) {
+            LinkUriUtil.populateFolderLinks(model);
+        } else if (model instanceof Workspace) {
+            LinkUriUtil.populateWorkspaceLinks(model);
+        }
     }
 
     private static void populateWorkspace(Workspace model, org.kablink.teaming.domain.Workspace workspace, boolean includeAttachments) {
@@ -380,7 +383,11 @@ public class ResourceUtil {
         model.setMirrored(binder.isMirrored());
         model.setPath(binder.getPathName());
         model.setLink(LinkUriUtil.getBinderLinkUri(model));
-        LinkUriUtil.populateBinderLinks(model, model.isWorkspace(), model.isFolder());
+        if (model.isFolder()) {
+            LinkUriUtil.populateFolderLinks(model);
+        } else if (model.isWorkspace()) {
+            LinkUriUtil.populateWorkspaceLinks(model);
+        }
     }
 
     private static void populateDefinableEntityBrief(DefinableEntityBrief model, org.kablink.teaming.domain.DefinableEntity binder) {
@@ -420,28 +427,6 @@ public class ResourceUtil {
         }
         Long userId = historyStamp.getPrincipal().getId();
         return new HistoryStamp(new LongIdLinkPair(userId, LinkUriUtil.getUserLinkUri(userId)), historyStamp.getDate());
-    }
-
-    private static PrincipalBrief buildPrincipalBrief(org.kablink.teaming.domain.HistoryStampBrief historyStamp) {
-        PrincipalBrief model = new PrincipalBrief();
-        model.setId(historyStamp.getPrincipalId());
-        model.setName(historyStamp.getPrincipalName());
-        String link = LinkUriUtil.getUserLinkUri(historyStamp.getPrincipalId());
-        if (link!=null) {
-            model.setLink(link);
-        }
-       return model;
-    }
-
-    private static PrincipalBrief buildPrincipalBrief(org.kablink.teaming.domain.Principal principal) {
-        PrincipalBrief model = new PrincipalBrief();
-        model.setId(principal.getId());
-        model.setName(principal.getName());
-        String link = LinkUriUtil.getPrincipalLinkUri(principal);
-        if (link!=null) {
-            model.setLink(link);
-        }
-       return model;
     }
 
     private static Description buildDescription(org.kablink.teaming.domain.Description description){

@@ -33,6 +33,11 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.TeamInfo;
+import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
@@ -45,6 +50,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * User: david
@@ -54,28 +60,46 @@ import javax.ws.rs.core.MediaType;
 @Path("/v1/user/{id}")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class UserResource extends AbstractUserResource {
+public class UserResource extends AbstractDefinableEntityResource {
     @Override
+    protected EntityIdentifier.EntityType _getEntityType() {
+        return EntityIdentifier.EntityType.user;
+    }
+
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public User getUser(@PathParam("id") long userId,
                         @QueryParam("include_attachments") @DefaultValue("false") boolean includeAttachments) {
-        return super.getUser(userId, includeAttachments);
+        // Retrieve the raw entry.
+        Principal entry = getProfileModule().getEntry(userId);
+
+        if(!(entry instanceof org.kablink.teaming.domain.User))
+            throw new IllegalArgumentException(userId + " does not represent an user. It is " + entry.getClass().getSimpleName());
+
+        return ResourceUtil.buildUser((org.kablink.teaming.domain.User) entry, includeAttachments);
     }
 
-    @Override
     @GET
     @Path("/teams")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<TeamBrief> getTeams(@PathParam("id") long userId) {
-        return super.getTeams(userId);
+        List<TeamInfo> binders = getProfileModule().getUserTeams(userId);
+        SearchResultList<TeamBrief> results = new SearchResultList<TeamBrief>();
+        for (TeamInfo binder : binders) {
+            results.append(ResourceUtil.buildTeamBrief(binder));
+        }
+        return results;
     }
 
-    @Override
     @GET
     @Path("/favorites")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<BinderBrief> getFavorites(@PathParam("id") long userId) {
-        return super.getFavorites(userId);
+        List<Binder> binders = getProfileModule().getUserFavorites(userId);
+        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
+        for (Binder binder : binders) {
+            results.append(ResourceUtil.buildBinderBrief(binder));
+        }
+        return results;
     }
 }

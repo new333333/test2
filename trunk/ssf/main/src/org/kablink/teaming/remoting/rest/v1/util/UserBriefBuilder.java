@@ -50,6 +50,7 @@ public class UserBriefBuilder extends DefinableEntityBriefBuilder implements Sea
         populateDefinableEntityBrief(user, entry, Constants.BINDER_ID_FIELD);
         user.setName((String) entry.get(Constants.LOGINNAME_FIELD));
         user.setLink(LinkUriUtil.getUserLinkUri(user.getId()));
+        LinkUriUtil.populateUserLinks(user);
         return user;
     }
 
