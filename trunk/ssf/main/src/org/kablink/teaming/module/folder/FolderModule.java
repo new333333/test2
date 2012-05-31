@@ -569,7 +569,7 @@ public interface FolderModule {
      * @param community
      * @throws AccessControlException
      */
-	public void setTag(Long binderId, Long entryId, String tag, boolean community) 
+	public Tag [] setTag(Long binderId, Long entryId, String tag, boolean community)
 		throws AccessControlException;
 	/**
 	 * Rate a folderEntry

@@ -47,6 +47,7 @@ import org.kablink.teaming.rest.v1.model.Folder;
 import org.kablink.teaming.rest.v1.model.FolderEntry;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
 import org.kablink.teaming.rest.v1.model.Principal;
+import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.Workspace;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
@@ -270,6 +271,28 @@ public class ResourceUtil {
         LinkUriUtil.populateFileVersionLinks(props);
         return props;
 	}
+
+    public static Tag buildTag(org.kablink.teaming.domain.Tag tag) {
+        Tag model = new Tag();
+        model.setId(tag.getId());
+        model.setName(tag.getName());
+        model.setPublic(tag.isPublic());
+        EntityIdentifier entityIdentifier = tag.getEntityIdentifier();
+        String entityLink = null;
+        EntityIdentifier.EntityType entityType = entityIdentifier.getEntityType();
+        if (entityType==EntityIdentifier.EntityType.folderEntry) {
+            entityLink = LinkUriUtil.getFolderEntryLinkUri(entityIdentifier.getEntityId());
+        } else if (entityType==EntityIdentifier.EntityType.user) {
+            entityLink = LinkUriUtil.getUserLinkUri(entityIdentifier.getEntityId());
+        } else if (entityType==EntityIdentifier.EntityType.workspace) {
+            entityLink = LinkUriUtil.getWorkspaceLinkUri(entityIdentifier.getEntityId());
+        } else if (entityType==EntityIdentifier.EntityType.folder) {
+            entityLink = LinkUriUtil.getFolderLinkUri(entityIdentifier.getEntityId());
+        }
+        model.setEntity(new EntityId(entityIdentifier.getEntityId(), entityType.name(), entityLink));
+        model.setLink(LinkUriUtil.getTagLinkUri(model));
+        return model;
+    }
 
     private static void populateDefinableEntity(DefinableEntity model, org.kablink.teaming.domain.DefinableEntity entity, boolean includeAttachments) {
         model.setId(entity.getId());

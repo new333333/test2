@@ -58,6 +58,7 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
+import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.rest.v1.model.BaseFileProperties;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FolderEntry;
@@ -70,6 +71,7 @@ import org.kablink.teaming.util.SimpleProfiler;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -244,6 +246,32 @@ public class FolderEntryResource extends AbstractFileResource {
    	public FileProperties postAttachment_ApplicationFormUrlencoded(@PathParam("id") String id) {
    		throw new UnsupportedMediaTypeException("'" + MediaType.APPLICATION_FORM_URLENCODED + "' format is not supported by this method. Use '" + MediaType.MULTIPART_FORM_DATA + "' or raw type");
    	}
+
+    @GET
+    @Path("tags")
+    public SearchResultList<Tag> getTags(@PathParam("id") Long id) {
+        org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
+        Collection<org.kablink.teaming.domain.Tag> tags = getFolderModule().getTags(entry);
+        SearchResultList<Tag> results = new SearchResultList<Tag>();
+        for (org.kablink.teaming.domain.Tag tag : tags) {
+            results.append(ResourceUtil.buildTag(tag));
+        }
+        return results;
+    }
+
+    @POST
+    @Path("tags")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public SearchResultList<Tag> addTag(@PathParam("id") Long id, Tag tag) {
+        _getFolderEntry(id);
+        org.kablink.teaming.domain.Tag[] tags = getFolderModule().setTag(null, id, tag.getName(), tag.isPublic());
+        SearchResultList<Tag> results = new SearchResultList<Tag>();
+        for (org.kablink.teaming.domain.Tag tg : tags) {
+            results.append(ResourceUtil.buildTag(tg));
+        }
+        return results;
+    }
 
     private void populateReplies(org.kablink.teaming.domain.FolderEntry entry, SearchResultTreeNode<FolderEntry> node) {
         List replies = entry.getReplies();
