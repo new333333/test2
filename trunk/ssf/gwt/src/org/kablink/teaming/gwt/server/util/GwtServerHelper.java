@@ -5737,6 +5737,36 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return a base view folder entry URL that can be used directly in the
+	 * content panel.
+	 * 
+	 * @param bs
+	 * @param ri
+	 * @param binderId
+	 * @param entryId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static String getViewFolderEntryUrl(AllModulesInjected bs, HttpServletRequest request, Long binderId, Long entryId) throws GwtTeamingException {
+		try {
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+			if (null == binderId) {
+				FolderEntry entry = bs.getFolderModule().getEntry(null, entryId);
+				binderId = entry.getParentBinder().getId();
+			}
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, String.valueOf(binderId));
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID,  String.valueOf(entryId ));			
+			return adapterUrl.toString();
+		}
+		catch (Exception ex) {
+			throw getGwtTeamingException(ex);
+		}		
+	}
+
+	/**
 	 * Return the "show setting" (show all or show unread) for the "What's new" page.
 	 */
 	public static ActivityStreamDataType getWhatsNewShowSetting( UserProperties userProperties )
@@ -6952,7 +6982,7 @@ public class GwtServerHelper {
 			pm.setUserProperty(userId, binderId, ObjectKeys.SEARCH_SORT_DESCEND, String.valueOf(!sortAscending));
 			
 			if (m_logger.isDebugEnabled()) {
-				m_logger.debug("GwtTaskHelper.saveFolderSort( Stored folder sort for binder ):  Binder:  " + binderId.longValue() + ", Sort Key:  '" + sortKey + "', Sort Ascending:  " + sortAscending);
+				m_logger.debug("GwtServerHelper.saveFolderSort( Stored folder sort for binder ):  Binder:  " + binderId.longValue() + ", Sort Key:  '" + sortKey + "', Sort Ascending:  " + sortAscending);
 			}
 			return Boolean.FALSE;
 		}

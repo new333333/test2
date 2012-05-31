@@ -1465,6 +1465,7 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used by the operations against selected entries.
 	String deleteFolderEntriesError();
+	String deleteFolderEntryError();
 	String deleteTasksError();
 	String purgeFolderEntriesError();
 	String purgeTasksError();
@@ -1580,6 +1581,7 @@ public interface GwtTeamingMessages extends Messages
 	String calendarNav_Alt_ViewWorkWeek();
 	String calendarNav_Hours_FullDay();
 	String calendarNav_Hours_WorkDay();
+	String calendarViewConfirmDeleteEntry();
 
 	// Strings used by the 'Progress' dialog.
 	String progressDlgConfirmCancel();

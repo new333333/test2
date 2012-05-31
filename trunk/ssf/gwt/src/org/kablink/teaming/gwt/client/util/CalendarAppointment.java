@@ -51,6 +51,7 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	private List<AssignmentInfo>	m_vibeAttendees;		//
 	private List<AssignmentInfo>	m_vibeAttendeeGroups;	//
 	private List<AssignmentInfo>	m_vibeAttendeeTeams;	//
+	private Long					m_folderId;				//
 	
 	/**
 	 * Constructor method.
@@ -76,6 +77,7 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	public List<AssignmentInfo> getVibeAttendees()      {return m_vibeAttendees;     }
 	public List<AssignmentInfo> getVibeAttendeeGroups() {return m_vibeAttendeeGroups;}
 	public List<AssignmentInfo> getVibeAttendeeTeams()  {return m_vibeAttendeeTeams; }
+	public Long                 getFolderId()           {return m_folderId;          }
 	
 	/**
 	 * Set'er methods.
@@ -85,6 +87,7 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	public void setVibeAttendees(     List<AssignmentInfo> vibeAttendees)      {m_vibeAttendees      = vibeAttendees;     }
 	public void setVibeAttendeeGroups(List<AssignmentInfo> vibeAttendeeGroups) {m_vibeAttendeeGroups = vibeAttendeeGroups;}
 	public void setVibeAttendeeTeams( List<AssignmentInfo> vibeAttendeeTeams)  {m_vibeAttendeeTeams  = vibeAttendeeTeams; }
+	public void setFolderId(          Long                 folderId)           {m_folderId           = folderId;          }
 
 	/**
 	 * Add'er methods

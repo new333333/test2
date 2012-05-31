@@ -30,14 +30,16 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
+import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
 import org.kablink.teaming.gwt.client.event.CalendarChangedEvent;
@@ -56,30 +58,49 @@ import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarAppointmentsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteFolderEntriesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarAppointmentsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarDisplayDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarNextPreviousPeriodCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarDayViewCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarHoursCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarShowCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CalendarAppointment;
 import org.kablink.teaming.gwt.client.util.CalendarAttendee;
 import org.kablink.teaming.gwt.client.util.CalendarDayView;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.CalendarSettingsDlg;
 import org.kablink.teaming.gwt.client.widgets.CalendarSettingsDlg.CalendarSettingsDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 import org.kablink.teaming.gwt.client.widgets.VibeCalendar;
 
 import com.bradrydzewski.gwt.calendar.client.Appointment;
 import com.bradrydzewski.gwt.calendar.client.CalendarFormat;
 import com.bradrydzewski.gwt.calendar.client.CalendarSettings;
 import com.bradrydzewski.gwt.calendar.client.CalendarViews;
+import com.bradrydzewski.gwt.calendar.client.event.DateRequestEvent;
+import com.bradrydzewski.gwt.calendar.client.event.DateRequestHandler;
+import com.bradrydzewski.gwt.calendar.client.event.DeleteEvent;
+import com.bradrydzewski.gwt.calendar.client.event.DeleteHandler;
+import com.bradrydzewski.gwt.calendar.client.event.TimeBlockClickEvent;
+import com.bradrydzewski.gwt.calendar.client.event.TimeBlockClickHandler;
+import com.bradrydzewski.gwt.calendar.client.event.UpdateEvent;
+import com.bradrydzewski.gwt.calendar.client.event.UpdateHandler;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.logical.shared.OpenEvent;
+import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -143,6 +164,62 @@ public class CalendarFolderView extends FolderViewBase
 		setCalendarDisplayDataProvider(this);
 	}
 	
+	/*
+	 * Attaches the event handlers to the calendar widget.
+	 */
+	private void attachEventHandlers() {
+		// Add a date request handler...
+		m_calendar.addDateRequestHandler(new DateRequestHandler<Date>() {
+			@Override
+			public void onDateRequested(DateRequestEvent<Date> event) {
+				// ...that...
+//!				...this needs to be implemented...
+				Window.alert("CalendarFolderView.onDateRequested():  ...this needs to be implemented...");
+			}
+		});
+		
+		// Add a delete handler...
+		m_calendar.addDeleteHandler(new DeleteHandler<Appointment>() {
+			@Override
+			public void onDelete(DeleteEvent<Appointment> event) {
+				// ...that requests the selected appointment be
+				// ...deleted.
+				doDeleteEntryAsync((CalendarAppointment) event.getTarget());
+				event.setCancelled(true);
+			}
+		});
+		
+		// Add an open handler...
+		m_calendar.addOpenHandler(new OpenHandler<Appointment>() {
+			@Override
+			public void onOpen(OpenEvent<Appointment> event) {
+				// ...that runs the entry viewer on the appointment.
+				doViewEntryAsync((CalendarAppointment) event.getTarget());
+			}
+		});
+
+		// Add a time block click handler...
+		m_calendar.addTimeBlockClickHandler(new TimeBlockClickHandler<Date>() {
+			@Override
+			public void onTimeBlockClick(TimeBlockClickEvent<Date> event) {
+				// ...that...
+//!				...this needs to be implemented...
+				Window.alert("CalendarFolderView.onTimeBlockClick():  ...this needs to be implemented...");
+			}
+		});
+		
+		// Add an update handler...
+		m_calendar.addUpdateHandler(new UpdateHandler<Appointment>() {
+			@Override
+			public void onUpdate(UpdateEvent<Appointment> event) {
+				// ...that...
+//!				...this needs to be implemented...
+				Window.alert("CalendarFolderView.onUpdate():  ...this needs to be implemented...");
+				event.setCancelled(true);
+			}
+		});
+	}
+	
 	/**
 	 * Called to construct the view.
 	 * 
@@ -193,6 +270,138 @@ public class CalendarFolderView extends FolderViewBase
 				setCalendarDisplay();
 				m_calendar.clearAppointments();
 				populateCalendarEventsAsync();
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously deletes the given appointment.
+	 */
+	private void doDeleteEntryAsync(final CalendarAppointment appointment) {
+		Scheduler.ScheduledCommand doDelete = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				doDeleteEntryNow(appointment);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doDelete);
+	}
+	
+	/*
+	 * Synchronously deletes the given appointment.
+	 */
+	private void doDeleteEntryNow(final CalendarAppointment appointment) {
+		// Construct a List<EntityId> describing the entry to be
+		// deleted.
+		Long     folderId =                appointment.getFolderId();
+		Long     entryId  = Long.parseLong(appointment.getId());
+		EntityId eid      = new EntityId(folderId, entryId, EntityId.FOLDER_ENTRY);
+		final List<EntityId> deleteList = new ArrayList<EntityId>();
+		deleteList.add(eid);
+		
+		// Is the user sure they want to delete the appointment?
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes, the user is sure!  Can we delete
+							// the appointment?
+							GwtClientHelper.executeCommand(
+									new DeleteFolderEntriesCmd(deleteList),
+									new AsyncCallback<VibeRpcResponse>() {
+								@Override
+								public void onFailure(Throwable t) {
+									// No!  Tell the user about the RPC
+									// failure.
+									GwtClientHelper.handleGwtRPCFailure(
+										t,
+										m_messages.rpcFailure_DeleteFolderEntries());
+								}
+
+								@Override
+								public void onSuccess(VibeRpcResponse response) {
+									// Perhaps!  Did we get any errors?
+									ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
+									List<String> errors = responseData.getErrorList();
+									if ((null != errors) && (!(errors.isEmpty()))) {
+										// Yes!  Display them.
+										GwtClientHelper.displayMultipleErrors(
+											m_messages.deleteFolderEntryError(),
+											errors);
+									}
+									
+									else {
+										// No error!  Remove the
+										// appointment from the
+										// calendar.
+										m_calendar.suspendLayout();
+										m_calendar.removeAppointment(appointment);
+										m_calendar.resumeLayout();
+									}
+								}
+							});
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					m_messages.calendarViewConfirmDeleteEntry());
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously runs the entry viewer on the given appointment.
+	 */
+	private void doViewEntryAsync(final CalendarAppointment appointment) {
+		Scheduler.ScheduledCommand doView = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				doViewEntryNow(appointment);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doView);
+	}
+	
+	/*
+	 * Synchronously runs the entry viewer on the given appointment.
+	 */
+	private void doViewEntryNow(CalendarAppointment appointment) {
+		final Long folderId =                appointment.getFolderId();
+		final Long entryId  = Long.parseLong(appointment.getId());
+		
+		GetViewFolderEntryUrlCmd cmd = new GetViewFolderEntryUrlCmd(folderId, entryId);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
+					String.valueOf(entryId));
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				String viewFolderEntryUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
+				GwtClientHelper.jsShowForumEntry(viewFolderEntryUrl);
 			}
 		});
 	}
@@ -325,6 +534,7 @@ public class CalendarFolderView extends FolderViewBase
 	private void loadPart2Now() {
 		// Create the Calendar widget for the view and populate it.
 		m_calendar = new VibeCalendar();
+		attachEventHandlers();
 		setCalendarDisplay();
 		populateViewAsync();
 	}

@@ -1717,9 +1717,12 @@ public class GwtViewHelper {
 					// Set the appointment's end date.
 					appointment.setEnd(GwtEventHelper.getDateFromEntryMap(event, GwtEventHelper.buildAppointmentEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE)));
 										
-					// Set the appointment's ID.
+					// Set the appointment's IDs.
 					Long eventId = GwtEventHelper.getLongFromEntryMap(event, Constants.DOCID_FIELD);
 					appointment.setId(String.valueOf(eventId));
+					
+					Long eventFolderId = GwtEventHelper.getLongFromEntryMap(event, Constants.BINDER_ID_FIELD);
+					appointment.setFolderId(eventFolderId);
 										
 					// Set the appointment's location.
 //!					...this needs to be implemented...					
