@@ -33,6 +33,7 @@
 package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.rest.v1.model.BaseRestObject;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
@@ -55,52 +56,48 @@ public class LinkUriUtil {
     }
 
     public static String getFolderLinkUri(Long id) {
-        return "/folder/" + id;
+        return getDefinableEntityLinkUri(EntityIdentifier.EntityType.folder, id);
     }
 
     public static String getWorkspaceLinkUri(Long id) {
-        return "/workspace/" + id;
+        return getDefinableEntityLinkUri(EntityIdentifier.EntityType.workspace, id);
     }
 
     public static String getBinderLinkUri(org.kablink.teaming.domain.Binder binder) {
         if (binder instanceof org.kablink.teaming.domain.Folder) {
-            return "/folder/" + binder.getId();
+            return getFolderLinkUri(binder.getId());
         } else if (binder instanceof org.kablink.teaming.domain.Workspace) {
-            return "/workspace/" + binder.getId();
+            return getWorkspaceLinkUri(binder.getId());
         }
-        return "/binder/" + binder.getId();
+        return getBinderLinkUri(binder.getId());
     }
 
     public static String getBinderLinkUri(BinderBrief binder) {
         if ("folder".equals(binder.getEntityType())) {
-            return "/folder/" + binder.getId();
+            return getFolderLinkUri(binder.getId());
         } else if ("workspace".equals(binder.getEntityType())) {
-            return "/workspace/" + binder.getId();
+            return getWorkspaceLinkUri(binder.getId());
         }
-        return "/binder/" + binder.getId();
+        return getBinderLinkUri(binder.getId());
     }
 
     public static String getPrincipalLinkUri(org.kablink.teaming.domain.Principal principal) {
         if (principal instanceof org.kablink.teaming.domain.UserPrincipal) {
-            return "/user/" + principal.getId();
+            return getUserLinkUri(principal.getId());
         }
         return null;
     }
 
-    public static String getFolderEntryLinkUri(FolderEntryBrief entry) {
-        return "/folder_entry/" + entry.getId();
-    }
-
     public static String getFolderEntryLinkUri(Long id) {
-        return "/folder_entry/" + id;
+        return getDefinableEntityLinkUri(EntityIdentifier.EntityType.folderEntry, id);
     }
 
     public static String getUserLinkUri(Long id) {
-        return "/user/" + id;
+        return getDefinableEntityLinkUri(EntityIdentifier.EntityType.user, id);
     }
 
     public static String getFilePropertiesLinkUri(FileProperties fp) {
-        return "/file/" + fp.getId() + "/metadata";
+        return getFileBaseLinkUri(fp) + "/metadata";
     }
 
     public static String getFileBaseLinkUri(FileProperties fp) {
@@ -172,6 +169,26 @@ public class LinkUriUtil {
     }
 
     public static String getTagLinkUri(Tag model) {
-        return "/tag/" + model.getId();
+        EntityIdentifier.EntityType type = EntityIdentifier.EntityType.valueOf(model.getEntity().getType());
+        String baseEntityUri = getDefinableEntityLinkUri(type, model.getEntity().getId());
+        if (baseEntityUri!=null) {
+            return baseEntityUri + "/tag/" + model.getId();
+        }
+        return null;
+    }
+
+    public static String getDefinableEntityLinkUri(EntityIdentifier.EntityType type, Long id) {
+        if (type==EntityIdentifier.EntityType.folderEntry) {
+            return "/folder_entry/" + id;
+        } else if (type==EntityIdentifier.EntityType.folder) {
+            return "/folder/" + id;
+        } else if (type==EntityIdentifier.EntityType.group) {
+            return "/group/" + id;
+        } else if (type==EntityIdentifier.EntityType.user) {
+            return "/user/" + id;
+        } else if (type==EntityIdentifier.EntityType.workspace) {
+            return "/workspace/" + id;
+        }
+        return null;
     }
 }
