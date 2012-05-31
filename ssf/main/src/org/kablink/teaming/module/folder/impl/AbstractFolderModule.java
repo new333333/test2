@@ -1075,16 +1075,18 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	}
 	
     //inside write transaction    
-	public void setTag(Long binderId, Long entryId, String newTag, boolean community) {
+	public Tag [] setTag(Long binderId, Long entryId, String newTag, boolean community) {
 		//read access checked by getEntry
 		FolderEntry entry = getEntry(binderId, entryId);
 		if (community) checkAccess(entry, FolderOperation.manageTag);
-		if (Validator.isNull(newTag)) return;
+		if (Validator.isNull(newTag)) return null;
 		Collection<String> newTags = TagUtil.buildTags(newTag);		
-		if (newTags.size() == 0) return;
+		if (newTags.size() == 0) return null;
 		User user = RequestContextHolder.getRequestContext().getUser();
 		EntityIdentifier uei = user.getEntityIdentifier();
 		EntityIdentifier eei = entry.getEntityIdentifier();
+        Tag [] tags = new Tag[newTags.size()];
+        int i=0;
 		for (String tagName:newTags) {
 			Tag tag = new Tag();
 			//community tags belong to the binder - don't care who created it
@@ -1093,8 +1095,10 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		    tag.setPublic(community);
 		   	tag.setName(tagName);
 			getCoreDao().save(tag);
+            tags[i++] = tag;
 	   	}
  	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
+        return tags;
 	}
 	
     //inside write transaction    
