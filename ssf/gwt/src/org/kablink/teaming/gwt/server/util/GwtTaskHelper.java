@@ -33,7 +33,6 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -52,12 +51,13 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTimeZone;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.dao.ProfileDao;
@@ -107,7 +107,6 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.DateComparer;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
@@ -338,17 +337,9 @@ public class GwtTaskHelper {
 	 * duration field.
 	 */
 	private static String buildDurationFieldName(String fieldName) {
-		return (buildEventFieldName(Constants.EVENT_FIELD_DURATION) + BasicIndexUtils.DELIMITER + fieldName);
+		return (GwtEventHelper.buildTaskEventFieldName(Constants.EVENT_FIELD_DURATION) + BasicIndexUtils.DELIMITER + fieldName);
 	}
 	
-	/*
-	 * Generates a search index field name reference for an event
-	 * field.
-	 */
-	private static String buildEventFieldName(String fieldName) {
-		return (Constants.EVENT_FIELD_START_END + BasicIndexUtils.DELIMITER + fieldName);
-	}
-
 	/*
 	 * Clears the flags from a binder telling us we've got a change
 	 * pending.
@@ -390,7 +381,6 @@ public class GwtTaskHelper {
 	 * only contain the assignee IDs.  We need to complete them with
 	 * each assignee's title.
 	 */
-	@SuppressWarnings("unchecked")
 	private static void completeAIs(AllModulesInjected bs, List<TaskInfo> tasks) {
 		// If we don't have any TaskInfo's to complete...
 		if ((null == tasks) || tasks.isEmpty()) {
@@ -431,54 +421,31 @@ public class GwtTaskHelper {
 			// ...bail.
 			return;
 		}
-
-		// Construct Maps, mapping the principal IDs to their titles
-		// and membership counts.
-		Map<Long, String>          principalTitles   = new HashMap<Long, String>();
-		Map<Long, Integer>         groupCounts       = new HashMap<Long, Integer>();
-		Map<Long, GwtPresenceInfo> userPresence      = new HashMap<Long, GwtPresenceInfo>();
-		Map<Long, Long>            presenceUserWSIds = new HashMap<Long, Long>();
-		boolean                    isPresenceEnabled = GwtServerHelper.isPresenceEnabled();
-		if (hasPrincipals) {
-			List principals = null;
-			try {principals = ResolveIds.getPrincipals(principalIds);}
-			catch (Exception ex) {/* Ignored. */}
-			if ((null != principals) && (!(principals.isEmpty()))) {
-				for (Object o:  principals) {
-					Principal p = ((Principal) o);
-					Long pId = p.getId();
-					boolean isUser = (p instanceof UserPrincipal);
-					principalTitles.put(pId, p.getTitle());					
-					if (p instanceof GroupPrincipal) {
-						groupCounts.put(pId, GwtServerHelper.getGroupCount((GroupPrincipal) p));						
-					}
-					else if (isUser) {
-						User user = ((User) p);
-						presenceUserWSIds.put(pId, user.getWorkspaceId());
-						if (isPresenceEnabled) {
-							userPresence.put(pId, GwtServerHelper.getPresenceInfo(user));
-						}
-					}
-				}
-			}
-		}
 		
-		// Construct Maps, mapping the team IDs to their titles and
-		// membership counts.
-		Map<Long, String>  teamTitles = new HashMap<Long, String>();
-		Map<Long, Integer> teamCounts = new HashMap<Long, Integer>();
-		if (hasTeams) {
-			SortedSet<Binder> binders = null;
-			try {binders = bs.getBinderModule().getBinders(teamIds);}
-			catch (Exception ex) {/* Ignored. */}
-			if ((null != binders) && (!(binders.isEmpty()))) {
-				for (Binder b:  binders) {
-					Long bId = b.getId();
-					teamTitles.put(bId, b.getTitle());
-					teamCounts.put(bId, GwtServerHelper.getTeamCount(bs, b));
-				}
-			}
-		}
+		// Construct Maps, mapping the IDs to their titles, membership
+		// counts, ...
+		Map<Long, String>			principalEMAs     = new HashMap<Long, String>();
+		Map<Long, String>			principalTitles   = new HashMap<Long, String>();
+		Map<Long, Integer>			groupCounts       = new HashMap<Long, Integer>();
+		Map<Long, GwtPresenceInfo>	userPresence      = new HashMap<Long, GwtPresenceInfo>();
+		Map<Long, Long>				presenceUserWSIds = new HashMap<Long, Long>();
+		Map<Long, String>			teamTitles        = new HashMap<Long, String>();
+		Map<Long, Integer>			teamCounts        = new HashMap<Long, Integer>();
+		GwtEventHelper.readEventStuffFromDB(
+			// Uses these...
+			bs,
+			principalIds,
+			teamIds,
+
+			// ...to complete these.
+			principalEMAs,
+			principalTitles,
+			groupCounts,
+			userPresence,
+			presenceUserWSIds,
+			
+			teamTitles,
+			teamCounts);
 		
 		// Scan the List<TaskInfo> again.
 		for (TaskInfo ti:  tasks) {
@@ -490,9 +457,10 @@ public class GwtTaskHelper {
 			// Scan this TaskInfo's individual assignees again...
 			for (AssignmentInfo ai:  ti.getAssignments()) {
 				// ...setting each one's title.
-				if (GwtServerHelper.setAssignmentInfoTitle(           ai, principalTitles )) {
-					GwtServerHelper.setAssignmentInfoPresence(        ai, userPresence     );
-					GwtServerHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
+				if (GwtEventHelper.setAssignmentInfoTitle(           ai, principalTitles )) {
+					GwtEventHelper.setAssignmentInfoEmailAddress(    ai, principalEMAs    );
+					GwtEventHelper.setAssignmentInfoPresence(        ai, userPresence     );
+					GwtEventHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
 				}
 				else {
 					removeList.add(ai);
@@ -503,8 +471,8 @@ public class GwtTaskHelper {
 			// Scan this TaskInfo's group assignees again...
 			for (AssignmentInfo ai:  ti.getAssignmentGroups()) {
 				// ...setting each one's title and membership count.
-				if (GwtServerHelper.setAssignmentInfoTitle(  ai, principalTitles)) {
-					GwtServerHelper.setAssignmentInfoMembers(ai, groupCounts     );
+				if (GwtEventHelper.setAssignmentInfoTitle(  ai, principalTitles)) {
+					GwtEventHelper.setAssignmentInfoMembers(ai, groupCounts     );
 					ai.setPresenceDude("pics/group_icon_small.png");
 				}
 				else {
@@ -516,8 +484,8 @@ public class GwtTaskHelper {
 			// Scan this TaskInfo's team assignees again...
 			for (AssignmentInfo ai:  ti.getAssignmentTeams()) {
 				// ...setting each one's title and membership count.
-				if (GwtServerHelper.setAssignmentInfoTitle(  ai, teamTitles)) {
-					GwtServerHelper.setAssignmentInfoMembers(ai, teamCounts );
+				if (GwtEventHelper.setAssignmentInfoTitle(  ai, teamTitles)) {
+					GwtEventHelper.setAssignmentInfoMembers(ai, teamCounts );
 					ai.setPresenceDude("pics/team_16.png");
 				}
 				else {
@@ -605,6 +573,7 @@ public class GwtTaskHelper {
 		Map<Long, GwtPresenceInfo> presenceInfo      = new HashMap<Long, GwtPresenceInfo>();
 		Map<Long, Integer>         groupCounts       = new HashMap<Long, Integer>();
 		Map<Long, Long>            presenceUserWSIds = new HashMap<Long, Long>();
+		Map<Long, String>          principalEMAs     = new HashMap<Long, String>();
 		Map<Long, String>          principalTitles   = new HashMap<Long, String>();
 		Map<Long, User>            users             = new HashMap<Long, User>();
 		if (!(assigneeIds.isEmpty())) {
@@ -629,6 +598,10 @@ public class GwtTaskHelper {
 						if (isPresenceEnabled) {
 							presenceInfo.put(pId, GwtServerHelper.getPresenceInfo(user));
 						}
+						String ema = user.getEmailAddress();
+						if (MiscUtil.hasString(ema)) {
+							principalEMAs.put(pId, ema);
+						}
 					}
 				}
 			}
@@ -641,17 +614,18 @@ public class GwtTaskHelper {
 			Long aiId = ai.getId();
 			if (null != users.get(aiId)) {
 				// Yes!  Set its title and presence information.
-				GwtServerHelper.setAssignmentInfoTitle(           ai, principalTitles  );
-				GwtServerHelper.setAssignmentInfoPresence(        ai, presenceInfo     );
-				GwtServerHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
+				GwtEventHelper.setAssignmentInfoTitle(           ai, principalTitles  );
+				GwtEventHelper.setAssignmentInfoEmailAddress(    ai, principalEMAs    );
+				GwtEventHelper.setAssignmentInfoPresence(        ai, presenceInfo     );
+				GwtEventHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
 			}
 			
 			// No, this assignment isn't that of a user!  Is it that
 			// of a group?
 			else if (null != groups.get(aiId)) {
 				// Yes!  Set its title and membership count.
-				GwtServerHelper.setAssignmentInfoTitle(  ai, principalTitles);
-				GwtServerHelper.setAssignmentInfoMembers(ai, groupCounts    );
+				GwtEventHelper.setAssignmentInfoTitle(  ai, principalTitles);
+				GwtEventHelper.setAssignmentInfoMembers(ai, groupCounts    );
 				ai.setPresenceDude("pics/group_icon_small.png");
 			}
 			
@@ -984,62 +958,37 @@ public class GwtTaskHelper {
 	}
 	
 	/*
-	 * Reads a Date from a Map.
-	 */
-	@SuppressWarnings("unchecked")
-	private static Date getDateFromMap(Map m, String key) {
-		Date reply;
-		
-		Object data = m.get(key);
-		if (data instanceof Date) {
-			reply = ((Date) data);
-		}
-		else if (data instanceof String) {
-			try {
-				reply = DateTools.stringToDate((String) data);
-			}
-			catch (ParseException pe) {
-				reply = null;
-			}
-		}
-		else {
-			reply = null;
-		}
-		return reply;
-	}
-
-	/*
 	 * Reads an event from a map.
 	 */
 	@SuppressWarnings("unchecked")
-	private static TaskEvent getEventFromMap(Map m, boolean clientBundle) {
+	private static TaskEvent getTaskEventFromEntryMap(Map m, boolean clientBundle) {
 		TaskEvent reply = new TaskEvent();
 
 		// Extract the event's 'All Day Event' flag from the Map.
-		String tz = getStringFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_TIME_ZONE_ID));
+		String tz = GwtEventHelper.getStringFromEntryMapRaw(m, GwtEventHelper.buildTaskEventFieldName(Constants.EVENT_FIELD_TIME_ZONE_ID));
 		boolean allDayEvent = (!(MiscUtil.hasString(tz)));
 		reply.setAllDayEvent(allDayEvent);
 
 		// Are we reading the information for the client?
-		TaskDate calcEnd = getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_CALC_END_DATE), allDayEvent, true);
+		TaskDate calcEnd = getTaskDateFromEntryMap(m, GwtEventHelper.buildTaskEventFieldName(Constants.EVENT_FIELD_CALC_END_DATE), allDayEvent, true);
 		if (!clientBundle) {
 			// No!  Extract the event's actual and calculated start and
 			// end dates.
 			ServerDates sd = new ServerDates();
-			sd.setActualStart(getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_START_DATE     ), allDayEvent, true));
-			sd.setActualEnd(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_END_DATE       ), allDayEvent, true));
-			sd.setCalcStart(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_CALC_START_DATE), allDayEvent, true));
+			sd.setActualStart(getTaskDateFromEntryMap(m, GwtEventHelper.buildTaskEventFieldName(Constants.EVENT_FIELD_START_DATE     ), allDayEvent, true));
+			sd.setActualEnd(  getTaskDateFromEntryMap(m, GwtEventHelper.buildTaskEventFieldName(Constants.EVENT_FIELD_END_DATE       ), allDayEvent, true));
+			sd.setCalcStart(  getTaskDateFromEntryMap(m, GwtEventHelper.buildTaskEventFieldName(Constants.EVENT_FIELD_CALC_START_DATE), allDayEvent, true));
 			sd.setCalcEnd(    calcEnd                                                                                );
 			reply.setServerData(sd);
 		}
 		
 		// Extract the event's actual start and end...
-		reply.setActualStart(getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_START_DATE), allDayEvent, false ));		
-		reply.setActualEnd(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_END_DATE  ), allDayEvent, false ));
+		reply.setActualStart(getTaskDateFromEntryMap(m, GwtEventHelper.buildTaskEventFieldName(Constants.EVENT_FIELD_START_DATE), allDayEvent, false ));		
+		reply.setActualEnd(  getTaskDateFromEntryMap(m, GwtEventHelper.buildTaskEventFieldName(Constants.EVENT_FIELD_END_DATE  ), allDayEvent, false ));
 		
 		// ...extract the event's logical start and end...
-		reply.setLogicalStart(getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_START_DATE), allDayEvent, false ));		
-		reply.setLogicalEnd(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE  ), allDayEvent, false ));
+		reply.setLogicalStart(getTaskDateFromEntryMap(m, GwtEventHelper.buildTaskEventFieldName(Constants.EVENT_FIELD_LOGICAL_START_DATE), allDayEvent, false ));		
+		reply.setLogicalEnd(  getTaskDateFromEntryMap(m, GwtEventHelper.buildTaskEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE  ), allDayEvent, false ));
 		
 		// ...pass through an indicator of whether it's using a
 		// ...calculated end date...
@@ -1047,11 +996,11 @@ public class GwtTaskHelper {
 
 		// ...and extract the event's duration fields from the Map.
 		TaskDuration taskDuration = new TaskDuration();
-		taskDuration.setSeconds(getIntFromMap(m, buildDurationFieldName(Constants.DURATION_FIELD_SECONDS)));
-		taskDuration.setMinutes(getIntFromMap(m, buildDurationFieldName(Constants.DURATION_FIELD_MINUTES)));
-		taskDuration.setHours(  getIntFromMap(m, buildDurationFieldName(Constants.DURATION_FIELD_HOURS  )));
-		taskDuration.setDays(   getIntFromMap(m, buildDurationFieldName(Constants.DURATION_FIELD_DAYS   )));
-		taskDuration.setWeeks(  getIntFromMap(m, buildDurationFieldName(Constants.DURATION_FIELD_WEEKS  )));
+		taskDuration.setSeconds(GwtEventHelper.getIntFromEntryMap(m, buildDurationFieldName(Constants.DURATION_FIELD_SECONDS)));
+		taskDuration.setMinutes(GwtEventHelper.getIntFromEntryMap(m, buildDurationFieldName(Constants.DURATION_FIELD_MINUTES)));
+		taskDuration.setHours(  GwtEventHelper.getIntFromEntryMap(m, buildDurationFieldName(Constants.DURATION_FIELD_HOURS  )));
+		taskDuration.setDays(   GwtEventHelper.getIntFromEntryMap(m, buildDurationFieldName(Constants.DURATION_FIELD_DAYS   )));
+		taskDuration.setWeeks(  GwtEventHelper.getIntFromEntryMap(m, buildDurationFieldName(Constants.DURATION_FIELD_WEEKS  )));
 		reply.setDuration(taskDuration);
 
 		// If we get here, reply refers to the TaskEvent object
@@ -1109,53 +1058,6 @@ public class GwtTaskHelper {
 		catch (Exception ex) {
 			throw GwtServerHelper.getGwtTeamingException(ex);
 		}
-	}
-
-	/*
-	 * Reads an integer from a Map.
-	 */
-	@SuppressWarnings("unchecked")
-	private static int getIntFromMap(Map m, String key) {
-		int reply = 0;
-		String i = getStringFromMap(m, key);
-		if (0 < i.length()) {
-			reply = Integer.parseInt(i);
-		}
-		return reply;
-	}
-	
-	/*
-	 * Reads a Long from a Map.
-	 */
-	@SuppressWarnings("unchecked")
-	private static Long getLongFromMap(Map m, String key) {
-		Long reply = null;
-		String l = getStringFromMap(m, key);
-		if (0 < l.length()) {
-			reply = Long.parseLong(l);
-		}
-		return reply;
-	}
-	
-	/*
-	 * Reads a date from a Map and determines if it's overdue.
-	 */
-	@SuppressWarnings("unchecked")
-	private static boolean getOverdueFromMap(Map m, String key) {
-		Date endDate = getDateFromMap(m, key);
-		return ((null == endDate) ? false : DateComparer.isOverdue(endDate));
-	}
-	
-	/*
-	 * Reads a String from a Map.
-	 */
-	@SuppressWarnings("unchecked")
-	private static String getStringFromMap(Map m, String key) {
-		String reply = ((String) m.get(key));
-		if (null == reply) {
-			reply = "";
-		}
-		return reply;
 	}
 
 	/**
@@ -1260,51 +1162,44 @@ public class GwtTaskHelper {
 			}
 			
 			// Scan the task entries that we read.
-			seenMap = ami.getProfileModule().getUserSeenMap( null );
-			for (Map taskEntry:  taskEntriesList)
-			{			
-				EntityId taskId;
-				String title;
-				String desc;
-				TaskInfo ti;
+			seenMap = ami.getProfileModule().getUserSeenMap(null);
+			for (Map taskEntry:  taskEntriesList) {			
+				TaskInfo ti = new TaskInfo();
 				
-				ti = new TaskInfo();
-
-				ti.setOverdue( getOverdueFromMap( taskEntry, buildEventFieldName( Constants.EVENT_FIELD_LOGICAL_END_DATE ) ) );
-				ti.setEvent( getEventFromMap( taskEntry, clientBundle ) );
-				ti.setStatus( getStringFromMap( taskEntry, TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME ) );
-				ti.setCompleted( getStringFromMap( taskEntry, TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME ) );
-				ti.setSeen( seenMap.checkIfSeen( taskEntry ) );
-				ti.setEntityType( getStringFromMap( taskEntry, Constants.ENTITY_FIELD ) );
-				ti.setPriority( getStringFromMap( taskEntry, TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME ) );
-				ti.setAssignments( GwtServerHelper.getAssignmentInfoListFromEntryMap( taskEntry, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME, AssigneeType.INDIVIDUAL ) );
-				ti.setAssignmentGroups( GwtServerHelper.getAssignmentInfoListFromEntryMap( taskEntry, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME, AssigneeType.GROUP ) );
-				ti.setAssignmentTeams( GwtServerHelper.getAssignmentInfoListFromEntryMap( taskEntry, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME, AssigneeType.TEAM ) );
+				ti.setOverdue(         GwtEventHelper.getOverdueFromEntryMap(           taskEntry, GwtEventHelper.buildTaskEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE) ));
+				ti.setEvent(                          getTaskEventFromEntryMap(         taskEntry, clientBundle                                                                   ));
+				ti.setStatus(          GwtEventHelper.getStringFromEntryMapRaw(         taskEntry, TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME                                    ));
+				ti.setCompleted(       GwtEventHelper.getStringFromEntryMapRaw(         taskEntry, TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME                                 ));
+				ti.setSeen(                   seenMap.checkIfSeen(                      taskEntry                                                                                 ));
+				ti.setEntityType(      GwtEventHelper.getStringFromEntryMapRaw(         taskEntry, Constants.ENTITY_FIELD                                                         ));
+				ti.setPriority(        GwtEventHelper.getStringFromEntryMapRaw(         taskEntry, TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME                                  ));
+				ti.setAssignments(     GwtEventHelper.getAssignmentInfoListFromEntryMap(taskEntry, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,        AssigneeType.INDIVIDUAL));
+				ti.setAssignmentGroups(GwtEventHelper.getAssignmentInfoListFromEntryMap(taskEntry, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME, AssigneeType.GROUP     ));
+				ti.setAssignmentTeams( GwtEventHelper.getAssignmentInfoListFromEntryMap(taskEntry, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME,  AssigneeType.TEAM      ));
 				
-				title = getStringFromMap( taskEntry, Constants.TITLE_FIELD );
-				if ( !(MiscUtil.hasString( title )) )
-				{
+				String title = GwtEventHelper.getStringFromEntryMapRaw(taskEntry, Constants.TITLE_FIELD);
+				if (!(MiscUtil.hasString(title))) {
 					title = ("--" + NLT.get("entry.noTitle") + "--");
 				}
 				ti.setTitle(title);
 				
-				desc = getStringFromMap( taskEntry, Constants.DESC_FIELD );
-				ti.setDesc( desc );
+				String desc = GwtEventHelper.getStringFromEntryMapRaw(taskEntry, Constants.DESC_FIELD);
+				ti.setDesc(desc);
 				
-				taskId = new EntityId(
-					getLongFromMap(taskEntry, Constants.BINDER_ID_FIELD),
-					getLongFromMap(taskEntry, Constants.DOCID_FIELD    ),
+				EntityId taskId = new EntityId(
+					GwtEventHelper.getLongFromEntryMap(taskEntry, Constants.BINDER_ID_FIELD),
+					GwtEventHelper.getLongFromEntryMap(taskEntry, Constants.DOCID_FIELD    ),
 					EntityId.FOLDER_ENTRY);
-				ti.setTaskId( taskId );
+				ti.setTaskId(taskId);
 
 				ti.setCompletedDate(
-					getTaskDateFromMap(
+					getTaskDateFromEntryMap(
 						taskEntry,
 						Constants.TASK_COMPLETED_DATE_FIELD,
 						ti.getEvent().getAllDayEvent(),
 						false));	// false -> Don't return a null entry.
 				
-				reply.add( ti );
+				reply.add(ti);
 			}
 
 			// At this point, the TaskInfo's in the List<TaskInfo> are not
@@ -1457,9 +1352,9 @@ public class GwtTaskHelper {
 	 * Reads a Date from a Map and constructs a TaskDate from it.
 	 */
 	@SuppressWarnings("unchecked")
-	private static TaskDate getTaskDateFromMap(Map m, String key, boolean allDayEvent, boolean nullIfNotThere) {
+	private static TaskDate getTaskDateFromEntryMap(Map m, String key, boolean allDayEvent, boolean nullIfNotThere) {
 		TaskDate reply;
-		Date date = getDateFromMap(m, key);
+		Date date = GwtEventHelper.getDateFromEntryMap(m, key);
 		if ((null == date) && nullIfNotThere) {
 			reply = null;
 		}
@@ -2054,41 +1949,41 @@ public class GwtTaskHelper {
 		for (Map taskEntry:  taskEntriesList) {			
 			TaskInfo ti = new TaskInfo();
 			
-			ti.setOverdue(                         getOverdueFromMap(                taskEntry, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE)                    ));
-			ti.setEvent(                           getEventFromMap(                  taskEntry, clientBundle                                                                   ));
-			ti.setStatus(                          getStringFromMap(                 taskEntry, TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME                                    ));
-			ti.setCompleted(                       getStringFromMap(                 taskEntry, TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME                                 ));
-			ti.setSeen(                            seenMap.checkIfSeen(              taskEntry                                                                                 ));
-			ti.setEntityType(                      getStringFromMap(                 taskEntry, Constants.ENTITY_FIELD                                                         ));
-			ti.setPriority(                        getStringFromMap(                 taskEntry, TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME                                  ));
-			ti.setAssignments(     GwtServerHelper.getAssignmentInfoListFromEntryMap(taskEntry, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,        AssigneeType.INDIVIDUAL));
-			ti.setAssignmentGroups(GwtServerHelper.getAssignmentInfoListFromEntryMap(taskEntry, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME, AssigneeType.GROUP     ));
-			ti.setAssignmentTeams( GwtServerHelper.getAssignmentInfoListFromEntryMap(taskEntry, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME,  AssigneeType.TEAM      ));
+			ti.setOverdue(         GwtEventHelper.getOverdueFromEntryMap(           taskEntry, GwtEventHelper.buildTaskEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE) ));
+			ti.setEvent(                          getTaskEventFromEntryMap(         taskEntry, clientBundle                                                                   ));
+			ti.setStatus(          GwtEventHelper.getStringFromEntryMapRaw(         taskEntry, TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME                                    ));
+			ti.setCompleted(       GwtEventHelper.getStringFromEntryMapRaw(         taskEntry, TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME                                 ));
+			ti.setSeen(                   seenMap.checkIfSeen(                      taskEntry                                                                                 ));
+			ti.setEntityType(      GwtEventHelper.getStringFromEntryMapRaw(         taskEntry, Constants.ENTITY_FIELD                                                         ));
+			ti.setPriority(        GwtEventHelper.getStringFromEntryMapRaw(         taskEntry, TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME                                  ));
+			ti.setAssignments(     GwtEventHelper.getAssignmentInfoListFromEntryMap(taskEntry, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,        AssigneeType.INDIVIDUAL));
+			ti.setAssignmentGroups(GwtEventHelper.getAssignmentInfoListFromEntryMap(taskEntry, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME, AssigneeType.GROUP     ));
+			ti.setAssignmentTeams( GwtEventHelper.getAssignmentInfoListFromEntryMap(taskEntry, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME,  AssigneeType.TEAM      ));
 			
-			String title = getStringFromMap(taskEntry, Constants.TITLE_FIELD);
+			String title = GwtEventHelper.getStringFromEntryMapRaw(taskEntry, Constants.TITLE_FIELD);
 			if (!(MiscUtil.hasString(title))) {
 				title = ("--" + NLT.get("entry.noTitle") + "--");
 			}
 			ti.setTitle(title);
 			
-			String desc = getStringFromMap( taskEntry, Constants.DESC_FIELD );
+			String desc = GwtEventHelper.getStringFromEntryMapRaw( taskEntry, Constants.DESC_FIELD );
 			ti.setDesc( desc );
 			
 			EntityId taskId = new EntityId(
-				getLongFromMap(taskEntry, Constants.BINDER_ID_FIELD),
-				getLongFromMap(taskEntry, Constants.DOCID_FIELD    ),
+				GwtEventHelper.getLongFromEntryMap(taskEntry, Constants.BINDER_ID_FIELD),
+				GwtEventHelper.getLongFromEntryMap(taskEntry, Constants.DOCID_FIELD    ),
 				EntityId.FOLDER_ENTRY);
 			ti.setTaskId(taskId);
 
 			ti.setCompletedDate(
-				getTaskDateFromMap(
+				getTaskDateFromEntryMap(
 					taskEntry,
 					Constants.TASK_COMPLETED_DATE_FIELD,
 					ti.getEvent().getAllDayEvent(),
 					false));	// false -> Don't return a null entry.
 			
-			ti.setCreatorId( getLongFromMap(taskEntry, Constants.CREATORID_FIELD)     );
-			ti.setModifierId(getLongFromMap(taskEntry, Constants.MODIFICATIONID_FIELD));
+			ti.setCreatorId( GwtEventHelper.getLongFromEntryMap(taskEntry, Constants.CREATORID_FIELD)     );
+			ti.setModifierId(GwtEventHelper.getLongFromEntryMap(taskEntry, Constants.MODIFICATIONID_FIELD));
 			
 			reply.add(ti);
 		}

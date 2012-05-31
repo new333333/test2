@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.util;
 
 import com.bradrydzewski.gwt.calendar.client.Attendee;
+import com.bradrydzewski.gwt.calendar.client.Attending;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -44,6 +45,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 @SuppressWarnings("serial")
 public class CalendarAttendee extends Attendee implements IsSerializable {
+	private AssignmentInfo	m_vibeAttendee;	//
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -54,16 +57,37 @@ public class CalendarAttendee extends Attendee implements IsSerializable {
 		// Initialize the super class.
 		super();
 	}
+
+	/**
+	 * Constructor method.
+	 * 
+	 * @param vibeAttendee
+	 */
+	public CalendarAttendee(AssignmentInfo vibeAttendee) {
+		// Initialize this object...
+		this();
+		
+		// ...store the parameter...
+		setVibeAttendee(vibeAttendee);
+		
+		// ...and initialize everything else.
+		setAttending(Attending.Yes       );
+		setEmail(    vibeAttendee.getEmailAddress());
+		setImageUrl( vibeAttendee.getPresenceDude());
+		setName(     vibeAttendee.getTitle()       );
+	}
 	
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
+	public AssignmentInfo getVibeAttendee() {return m_vibeAttendee;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
+	public void setVibeAttendee(AssignmentInfo vibeAttendee) {m_vibeAttendee = vibeAttendee;}
 }
