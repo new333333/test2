@@ -33,14 +33,19 @@
 package org.kablink.util.search;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.util.Version;
 
 /**
  * @author jong
+ *
  */
 public class QueryParserFactory {
+
+	private static final String[] fields = new String[] {Constants.TITLE_FIELD, Constants.DESC_TEXT_FIELD, Constants.GENERAL_TEXT_FIELD};
+	
 	public static QueryParser createQueryParser(Analyzer analyzer) {
-		return new QueryParser(Version.LUCENE_34, "_allText", analyzer);
+		return new MultiFieldQueryParser(Version.LUCENE_34, fields, analyzer);
 	}
 }
