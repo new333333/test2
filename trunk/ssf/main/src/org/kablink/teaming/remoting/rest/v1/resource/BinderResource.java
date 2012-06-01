@@ -51,6 +51,12 @@ import javax.ws.rs.core.MediaType;
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class BinderResource extends AbstractResource {
+    /**
+     * Returns the Binder with the specified ID.
+     * @param id    The ID of the binder to return.
+     * @param includeAttachments    Configures whether attachments should be included in the returned Binder object.
+     * @return  Returns a subclass of Binder.
+     */
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Binder getBinder(@PathParam("id") long id,
