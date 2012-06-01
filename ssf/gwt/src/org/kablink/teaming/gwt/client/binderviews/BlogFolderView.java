@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
+import org.kablink.teaming.gwt.client.event.SetFolderSortEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
@@ -89,7 +90,8 @@ public class BlogFolderView extends FolderViewBase
 		BlogArchiveFolderSelectedEvent.Handler,
 		BlogArchiveMonthSelectedEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
-		QuickFilterEvent.Handler
+		QuickFilterEvent.Handler,
+		SetFolderSortEvent.Handler
 {
 	private static final int LIST_MIN_HEIGHT = 150;
 
@@ -108,7 +110,8 @@ public class BlogFolderView extends FolderViewBase
 		TeamingEvents.BLOG_ARCHIVE_FOLDER_SELECTED,
 		TeamingEvents.BLOG_ARCHIVE_MONTH_SELECTED,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
-		TeamingEvents.QUICK_FILTER
+		TeamingEvents.QUICK_FILTER,
+		TeamingEvents.SET_FOLDER_SORT
 	};
 	
 	/**
@@ -479,6 +482,25 @@ public class BlogFolderView extends FolderViewBase
 			// Yes.  Search for blog entries using the quick filter.
 			m_quickFilter = event.getQuickFilter();
 			searchForBlogEntries();
+		}
+	}
+
+	/**
+	 * Handles SetFolderSortEvent's received by this class.
+	 * 
+	 * Implements the SetFolderSortEvent.Handler.onSetFolderSort() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSetFolderSort( SetFolderSortEvent event )
+	{
+		// Is the event is targeted to the folder we're viewing?
+		if ( event.getFolderId().equals( getFolderInfo().getBinderIdAsLong() ) )
+		{
+			// Yes.  Put the filter into affect.
+//!			...this needs to be implemented...
+			Window.alert("BlogFolderView.onSetFolderSort( sortKey:  '" + event.getSortKey() + "', sortDescending:  '" + event.getSortDescending() + "' ):  ...this needs to be implemented...");
 		}
 	}
 

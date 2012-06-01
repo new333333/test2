@@ -62,6 +62,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.DeleteFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarAppointmentsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarDisplayDataCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarDisplayDateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarNextPreviousPeriodCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarDayViewCmd;
@@ -172,9 +173,12 @@ public class CalendarFolderView extends FolderViewBase
 		m_calendar.addDateRequestHandler(new DateRequestHandler<Date>() {
 			@Override
 			public void onDateRequested(DateRequestEvent<Date> event) {
-				// ...that...
-//!				...this needs to be implemented...
-				Window.alert("CalendarFolderView.onDateRequested():  ...this needs to be implemented...");
+				// ...that switches to day view on the given date.
+				GwtTeaming.fireEvent(
+					new CalendarViewDaysEvent(
+						getFolderInfo().getBinderIdAsLong(),
+						CalendarDayView.ONE_DAY,
+						event.getTarget()));
 			}
 		});
 		
@@ -563,8 +567,31 @@ public class CalendarFolderView extends FolderViewBase
 		// Is the event targeted to this folder?
 		if (event.getFolderId().equals(getFolderId())) {
 			// Yes!  Tell the calendar to goto the requested date.
-			m_calendar.setDate(event.getDate());
-			GwtTeaming.fireEvent(new CalendarChangedEvent(getFolderId(), m_calendarDisplayData));
+			m_calendarDisplayData.setFirstDay(event.getDate());
+			m_calendarDisplayData.setStartDay(event.getDate());
+			GwtClientHelper.executeCommand(
+					new GetCalendarDisplayDateCmd(getFolderInfo().getBinderIdAsLong(), m_calendarDisplayData),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_SaveCalendarHours());
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Yes!  Put the new calendar display data into
+					// affect...
+					m_calendarDisplayData = ((CalendarDisplayDataRpcResponseData) response.getResponseData());
+					GwtTeaming.fireEvent(new CalendarChangedEvent(getFolderId(), m_calendarDisplayData));
+
+					// ...and repopulate the view.
+					setCalendarDisplay();
+					m_calendar.clearAppointments();
+					populateCalendarEventsAsync();
+				}
+			});
 		}
 	}
 	
@@ -725,7 +752,7 @@ public class CalendarFolderView extends FolderViewBase
 		if (event.getFolderId().equals(getFolderId())) {
 			// Yes!  Can we can save the view setting on the server?
 			GwtClientHelper.executeCommand(
-					new SaveCalendarDayViewCmd(getFolderInfo(), event.getDayView()),
+					new SaveCalendarDayViewCmd(getFolderInfo(), event.getDayView(), event.getDate()),
 					new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {

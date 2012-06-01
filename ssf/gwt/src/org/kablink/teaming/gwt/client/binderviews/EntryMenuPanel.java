@@ -56,6 +56,7 @@ import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedUserWorkspacesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedUsersEvent;
+import org.kablink.teaming.gwt.client.event.SetFolderSortEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -739,6 +740,12 @@ public class EntryMenuPanel extends ToolPanelBase {
 					case INVOKE_ADD_NEW_FOLDER:
 						String folderTemplateId = simpleTBI.getQualifierValue("folderTemplateId");
 						event = new InvokeAddNewFolderEvent(folderId, Long.parseLong(folderTemplateId));
+						break;
+						
+					case SET_FOLDER_SORT:
+						String sortKey        = simpleTBI.getQualifierValue("sortKey"       );
+						String sortDescending = simpleTBI.getQualifierValue("sortDescending");
+						event = new SetFolderSortEvent(folderId, sortKey, Boolean.parseBoolean(sortDescending));
 						break;
 						
 					case UNDEFINED:

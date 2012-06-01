@@ -279,24 +279,6 @@ public class GwtViewHelper {
 	}
 	
 	/*
-	 * Returns the date string to display on a calendar's navigation bar.
-	 */
-	private static String buildCalendarDateDisplay(User user, Calendar firstDay, Calendar startDay, CalendarDayView dayView, int weekFirstDay) {
-		String		firstDayToShow = GwtServerHelper.getDateString(firstDay.getTime(), DateFormat.MEDIUM);
-		String		reply;
-		switch (dayView) {
-		default:
-		case MONTH:      reply = (NLT.get(EventsViewHelper.monthNames[startDay.get(Calendar.MONTH)]) + ", " + String.valueOf(startDay.get(Calendar.YEAR)));                 break;
-		case ONE_DAY:    reply =                           GwtServerHelper.getDateString(startDay.getTime(),                                     DateFormat.MEDIUM);  break;
-		case THREE_DAYS: reply = (firstDayToShow + " - " + GwtServerHelper.getDateString(getLastDayToShow(user, firstDay, +  3).getTime(), DateFormat.MEDIUM)); break; 
-		case FIVE_DAYS:  reply = (firstDayToShow + " - " + GwtServerHelper.getDateString(getLastDayToShow(user, firstDay, +  5).getTime(), DateFormat.MEDIUM)); break;
-		case WEEK:       reply = (firstDayToShow + " - " + GwtServerHelper.getDateString(getLastDayToShow(user, firstDay, +  7).getTime(), DateFormat.MEDIUM)); break;
-		case TWO_WEEKS:  reply = (firstDayToShow + " - " + GwtServerHelper.getDateString(getLastDayToShow(user, firstDay, + 14).getTime(), DateFormat.MEDIUM)); break;
-		}
-		return reply;
-	}
-	
-	/*
 	 * Extracts the ID's of the entry contributors and adds them to the
 	 * contributor ID's list if they're not already there. 
 	 */
@@ -1831,10 +1813,6 @@ public class GwtViewHelper {
 				else if (showType.equals(EventsViewHelper.EVENT_TYPE_VIRTUAL))  show = CalendarShow.VIRTUAL;
 			}
 
-			// What should the calendar display for the date on the
-			// navigation bar?
-			String displayDate = buildCalendarDateDisplay(user, firstDay, startDay, dayView, weekFirstDay);
-			
 			// Finally, use the data we obtained to create a
 			// CalendarDisplayDataRpcResponseData and return that. 
 			return
@@ -1846,7 +1824,12 @@ public class GwtViewHelper {
 					show,
 					weekFirstDay,
 					workDayStart,
-					displayDate);
+					GwtCalendarHelper.buildCalendarDateDisplay(
+						user,
+						firstDay,
+						startDay,
+						dayView,
+						weekFirstDay));
 		}
 		
 		catch (Exception e) {
@@ -1854,6 +1837,39 @@ public class GwtViewHelper {
 			// that.
 			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
 			     m_logger.debug("GwtViewHelper.getCalendarDisplayData( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
+	/**
+	 * Reads the current user's display data for a calendar and returns
+	 * it as a CalendarDisplayDataRpcResponseData.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * @param calendarDisplayData
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static CalendarDisplayDataRpcResponseData getCalendarDisplayDate(AllModulesInjected bs, HttpServletRequest request, Long folderId, CalendarDisplayDataRpcResponseData calendarDisplayData) throws GwtTeamingException {
+		try {
+			GwtCalendarHelper.setCalendarDisplayDataDates(
+				calendarDisplayData,
+				calendarDisplayData.getFirstDay(),
+				calendarDisplayData.getStartDay());
+			
+			return calendarDisplayData;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getCalendarDisplayDate( SOURCE EXCEPTION ):  ", e);
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
@@ -1903,15 +1919,10 @@ public class GwtViewHelper {
 
 			// ...and modify the CalendarDisplayDataRpcResponseData
 			// ...with these values.
-			calendarDisplayData.setFirstDay(firstDay.getTime());
-			calendarDisplayData.setStartDay(startDay.getTime());
-			calendarDisplayData.setDisplayDate(
-				buildCalendarDateDisplay(
-					GwtServerHelper.getCurrentUser(),
-					firstDay,
-					startDay,
-					calendarDisplayData.getDayView(),
-					calendarDisplayData.getWeekFirstDay()));
+			GwtCalendarHelper.setCalendarDisplayDataDates(
+				calendarDisplayData,
+				firstDay.getTime(),
+				startDay.getTime());
 
 			// Finally, return the modified
 			// CalendarDisplayDataRpcResponseData. 
@@ -3279,16 +3290,6 @@ public class GwtViewHelper {
 	}
 
 	/*
-	 * Returns a last date given a first day and a number of days.
-	 */
-	private static Calendar getLastDayToShow(User user, Calendar firstDay, int days) {
-		Calendar lastDay = new GregorianCalendar(user.getTimeZone(), user.getLocale());
-		lastDay.setTime(firstDay.getTime());
-		lastDay.set(Calendar.DAY_OF_YEAR, lastDay.get(Calendar.DAY_OF_YEAR) + (days - 1));
-		return lastDay;
-	}
-	
-	/*
 	 * Returns a List<Long> of the entity ID's of the entries that are
 	 * pinned in the given folder. 
 	 */
@@ -4274,12 +4275,13 @@ public class GwtViewHelper {
 	 * @param request
 	 * @param folderInfo
 	 * @param dayView
+	 * @param date
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static CalendarDisplayDataRpcResponseData saveCalendarDayView(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, CalendarDayView dayView) throws GwtTeamingException {
+	public static CalendarDisplayDataRpcResponseData saveCalendarDayView(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, CalendarDayView dayView, Date date) throws GwtTeamingException {
 		try {
 			// Store the new day view...
 			String gridType;
@@ -4301,6 +4303,9 @@ public class GwtViewHelper {
 			// ...and return a CalendarDisplayDataRpcData with the
 			// ...changes.
 			CalendarDisplayDataRpcResponseData reply = getCalendarDisplayData(bs, request, folderInfo);
+			if (null != date) {
+				GwtCalendarHelper.setCalendarDisplayDataDates(reply, date, date);
+			}
 			return reply;
 		}
 		

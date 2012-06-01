@@ -32,60 +32,38 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.Date;
-
-import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.CalendarDayView;
-
 /**
  * This class holds all of the information necessary to execute the
- * 'Save Calendar Day View' command.
+ * 'Get Calendar Display Date' command.
  * 
  * @author drfoster@novell.com
  */
-public class SaveCalendarDayViewCmd extends VibeRpcCmd {
-	private BinderInfo		m_folderInfo;	//
-	private Date			m_date;			//
-	private CalendarDayView m_dayView;		//
+public class GetCalendarDisplayDateCmd extends VibeRpcCmd {
+	private CalendarDisplayDataRpcResponseData	m_calendarDisplayData;	//
+	private Long								m_folderId;				//
 	
 	/**
 	 * Constructor method.
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public SaveCalendarDayViewCmd() {
-		// Initialize the super class.
+	public GetCalendarDisplayDateCmd() {
 		super();
 	}
 	
 	/**
 	 * Constructor method
 	 * 
-	 * @param folderInfo
-	 * @param dayView
+	 * @param folderId
+	 * @param calendarDisplayData
 	 */
-	public SaveCalendarDayViewCmd(BinderInfo folderInfo, CalendarDayView dayView) {
+	public GetCalendarDisplayDateCmd(Long folderId, CalendarDisplayDataRpcResponseData calendarDisplayData) {
 		// Initialize this object...
 		this();
 
 		// ...and save the parameters.
-		setFolderInfo(folderInfo);
-		setDayView(   dayView   );
-	}
-	
-	/**
-	 * Constructor method
-	 * 
-	 * @param folderInfo
-	 * @param dayView
-	 * @param date
-	 */
-	public SaveCalendarDayViewCmd(BinderInfo folderInfo, CalendarDayView dayView, Date date) {
-		// Initialize this object...
-		this(folderInfo, dayView);
-
-		// ...and save the additional parameter.
-		setDate(date);
+		setFolderId(           folderId           );
+		setCalendarDisplayData(calendarDisplayData);
 	}
 	
 	/**
@@ -93,18 +71,16 @@ public class SaveCalendarDayViewCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public BinderInfo      getFolderInfo() {return m_folderInfo;}
-	public CalendarDayView getDayView()    {return m_dayView;   }
-	public Date            getDate()       {return m_date;      }
+	public CalendarDisplayDataRpcResponseData getCalendarDisplayData() {return m_calendarDisplayData;}
+	public Long                               getFolderId()            {return m_folderId;           }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderInfo(BinderInfo      folderInfo) {m_folderInfo = folderInfo;}
-	public void setDayView(   CalendarDayView dayView)    {m_dayView    = dayView;   }
-	public void setDate(      Date            date)       {m_date       = date;      }
+	public void setCalendarDisplayData(CalendarDisplayDataRpcResponseData calendarDisplayData) {m_calendarDisplayData = calendarDisplayData;}
+	public void setFolderId(           Long                               folderId)            {m_folderId            = folderId;           }
 	
 	/**
 	 * Returns the command's enumeration value.
@@ -115,6 +91,6 @@ public class SaveCalendarDayViewCmd extends VibeRpcCmd {
 	 */
 	@Override
 	public int getCmdType() {
-		return VibeRpcCmdType.SAVE_CALENDAR_DAY_VIEW.ordinal();
+		return VibeRpcCmdType.GET_CALENDAR_DISPLAY_DATE.ordinal();
 	}
 }
