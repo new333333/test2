@@ -60,6 +60,12 @@ import java.util.List;
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class SelfResource extends AbstractResource {
+
+    /**
+     * Gets the User object representing the authenticated user.
+     * @param includeAttachments    Configures whether attachments should be included in the returned User object.
+     * @return  Returns the authenticated User object
+     */
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public User getSelf(@QueryParam("include_attachments") @DefaultValue("false") boolean includeAttachments) {
@@ -76,6 +82,10 @@ public class SelfResource extends AbstractResource {
         return user;
     }
 
+    /**
+     * Returns the authenticated user's favorite binders
+     * @return Returns a list of BinderBrief objects.
+     */
     @GET
     @Path("/favorites")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -89,6 +99,10 @@ public class SelfResource extends AbstractResource {
         return results;
     }
 
+    /**
+     * Returns the teams that the authenticated user is a member of.
+     * @return Returns a list of BinderBrief objects.
+     */
     @GET
     @Path("/teams")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -102,6 +116,12 @@ public class SelfResource extends AbstractResource {
         return results;
     }
 
+    /**
+     * Returns a list of virtual workspace roots for the authenticated user.  This is useful for displaying
+     * starting points for browsing different parts of the workspace hierarchy.
+     * @deprecated  This operation is temporary and is very likely to change.
+     * @return Returns a list of BinderBrief objects.
+     */
     @GET
     @Path("/roots")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })

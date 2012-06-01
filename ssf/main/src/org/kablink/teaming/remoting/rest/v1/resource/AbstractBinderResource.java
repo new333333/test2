@@ -41,6 +41,12 @@ import java.util.Map;
  */
 abstract public class AbstractBinderResource extends AbstractDefinableEntityResource {
 
+    /**
+     * Returns the binder with the specified ID.
+     * @param id    The ID of the binder to return.
+     * @param includeAttachments    Configures whether attachments should be included in the returned binder object.
+     * @return  Returns a subclass of Binder.
+     */
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Binder getBinder(@PathParam("id") long id,
@@ -48,12 +54,20 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return ResourceUtil.buildBinder(_getBinder(id), includeAttachments);
     }
 
+    /**
+     * Deletes the specifed binder object.  The binder is moved into the Trash, not permanently deleted.
+     * @param id    The ID of the binder to delete.
+     */
     @DELETE
     public void deleteBinder(@PathParam("id") long id) {
         _deleteBinder(id);
     }
 
-    // Read all subbinders
+    /**
+     * Gets a list of child binders contained in the specified binder.
+     * @param id The id of the parent binder
+     * @return Returns a list of BinderBrief objects.
+     */
 	@GET
 	@Path("binders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -61,6 +75,15 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return getSubBinders(id, null);
 	}
 
+    /**
+     * Creates a new binder as a child of the specified binder.
+     * @param id    The id of the binder where the new binder will be created.
+     * @param binder    An object containing the information about the binder to be created.  Requires the <code>title</code>
+     *                  property to be set.  All other binder properties are ignored.
+     * @param templateId    Optional template ID defining the type of binder to create.  If no template is specified, the
+     *                      new parent binder is used to determine the type of binder to create.
+     * @return Returns a Binder object representing the newly created binder.
+     */
 	@POST
 	@Path("binders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
