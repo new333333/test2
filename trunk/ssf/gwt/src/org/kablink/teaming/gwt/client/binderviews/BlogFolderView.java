@@ -42,15 +42,22 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.BlogArchiveFolderSelectedEvent;
 import org.kablink.teaming.gwt.client.event.BlogArchiveMonthSelectedEvent;
+import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu.ActionMenuItem;
@@ -65,6 +72,7 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -203,6 +211,71 @@ public class BlogFolderView extends FolderViewBase
 	}
 
 	/**
+	 * Fire the ContextChangedEvent to let everyone know we are working with the given folder.
+	 */
+	private void fireContextChangedEvent()
+	{
+		if ( m_binderId != null )
+		{
+			GetBinderPermalinkCmd cmd;
+			AsyncCallback<VibeRpcResponse> callback;
+			
+			callback = new AsyncCallback<VibeRpcResponse>()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onFailure(Throwable t)
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
+						m_binderId );
+				}
+				
+				/**
+				 * 
+				 */
+				@Override
+				public void onSuccess(  VibeRpcResponse response )
+				{
+					Scheduler.ScheduledCommand cmd;
+					StringRpcResponseData responseData;
+					final String binderPermalink;
+
+					responseData = (StringRpcResponseData) response.getResponseData();
+					binderPermalink = responseData.getStringValue();
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							ContextChangedEvent event;
+							OnSelectBinderInfo osBinderInfo;
+							
+							osBinderInfo = new OnSelectBinderInfo(
+													m_binderId,
+													binderPermalink,
+													false,
+													Instigator.CONTENT_AREA_CHANGED );
+							
+							event = new ContextChangedEvent( osBinderInfo );
+							GwtTeaming.fireEvent( event );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+			
+			// Issue an rpc request to get the binder's permalink
+			cmd = new GetBinderPermalinkCmd( m_binderId );
+			GwtClientHelper.executeCommand( cmd, callback );
+		}
+	}
+	
+	/**
 	 * Returns true for panels that are to be included and false
 	 * otherwise.
 	 * 
@@ -281,6 +354,11 @@ public class BlogFolderView extends FolderViewBase
 					// were created in the given month and year.
 					m_binderId = folder.getFolderId().toString();
 					m_binderTitle = folder.getName();
+
+					// Fire the ContextChangedEvent to notify all interested parties that we
+					// should be working with the selected month.
+					fireContextChangedEvent();
+					
 					searchForBlogEntries( month.getCreationStartTime(), month.getCreationEndTime() );
 				}
 			};
@@ -318,6 +396,11 @@ public class BlogFolderView extends FolderViewBase
 					m_binderId = binderInfo.getBinderId();
 					m_binderTitle = binderInfo.getBinderTitle();
 
+					
+					// Fire the ContextChangedEvent to notify all interested parties that we
+					// should be working with the selected month.
+					fireContextChangedEvent();
+					
 					// Find all the blog entries in the folder we are working with that
 					// were created in the given month and year.
 					searchForBlogEntries( month.getCreationStartTime(), month.getCreationEndTime() );

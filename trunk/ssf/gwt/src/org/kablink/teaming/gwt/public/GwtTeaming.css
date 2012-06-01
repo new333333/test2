@@ -3723,6 +3723,7 @@ td.datePickerMonth {
 
 
 /* Styles used with the blog archive control */
+
 .blogArchiveCtrlMainPanel
 {
 	background-color: #EBF5F5;
@@ -3754,6 +3755,13 @@ td.datePickerMonth {
 	-webkit-border-radius: 5px;
 }
 
+.blogArchiveCtrlSelected
+{
+	background: none repeat scroll 0 0 #FFFFFF;
+    border-radius: 3px 3px 3px 3px;
+    font-weight: bold;
+}
+
 .blogArchiveCtrlTitle
 {
 	color: #666666;
@@ -3762,4 +3770,5 @@ td.datePickerMonth {
 	font-weight: bold;
 	padding-bottom: 12px;
 }
+
 /* End */
