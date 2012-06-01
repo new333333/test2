@@ -68,6 +68,7 @@ public class BlogArchiveCtrl extends VibeWidget
 	private BlogArchiveInfo m_blogArchiveInfo;
 	private ClickHandler m_monthClickHandler;
 	private ClickHandler m_folderClickHandler;
+	private InlineLabel m_selectedLabel;	// Holds the month or folder label last selected.
 	
 	
 	/**
@@ -78,6 +79,7 @@ public class BlogArchiveCtrl extends VibeWidget
 		void onSuccess( BlogArchiveCtrl baCtrl );
 		void onUnavailable();
 	}
+	
 	
 	/**
 	 * 
@@ -150,6 +152,8 @@ public class BlogArchiveCtrl extends VibeWidget
 		VibeFlowPanel mainPanel;
 		InlineLabel label;
 		
+		m_selectedLabel = null;
+		
 		mainPanel = new VibeFlowPanel();
 		mainPanel.addStyleName( "blogArchiveCtrlMainPanel" );
 		
@@ -181,7 +185,16 @@ public class BlogArchiveCtrl extends VibeWidget
 					MonthInlineLabel label;
 					final BlogArchiveMonth month;
 					
+					// Is a month or folder currently selected?
+					if ( m_selectedLabel != null )
+					{
+						// Yes, remove the "selected" style from the label.
+						m_selectedLabel.removeStyleName( "blogArchiveCtrlSelected" );
+					}
+					
 					label = (MonthInlineLabel) src;
+					m_selectedLabel = label;
+					m_selectedLabel.addStyleName( "blogArchiveCtrlSelected" );
 					month = label.getMonth();
 					cmd = new Scheduler.ScheduledCommand()
 					{
@@ -216,7 +229,16 @@ public class BlogArchiveCtrl extends VibeWidget
 					final BlogArchiveFolder folder;
 					final BlogArchiveMonth month;
 					
+					// Is a month or folder currently selected?
+					if ( m_selectedLabel != null )
+					{
+						// Yes, remove the "selected" style from the label.
+						m_selectedLabel.removeStyleName( "blogArchiveCtrlSelected" );
+					}
+					
 					label = (FolderInlineLabel) src;
+					m_selectedLabel = label;
+					m_selectedLabel.addStyleName( "blogArchiveCtrlSelected" );
 					folder = label.getFolder();
 					month = label.getMonth();
 					cmd = new Scheduler.ScheduledCommand()
