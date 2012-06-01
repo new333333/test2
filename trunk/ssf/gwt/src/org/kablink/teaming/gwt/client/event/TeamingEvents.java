@@ -223,6 +223,7 @@ public enum TeamingEvents implements IsSerializable {
 	PURGE_SELECTED_ENTRIES,				// Deletes and Immediately Purges the Selected Entries.
 	PURGE_SELECTED_USER_WORKSPACES,		// Purges the Selected User Workspaces.
 	PURGE_SELECTED_USERS,				// Purges the Selected User Workspaces and User Objects.
+	SET_FOLDER_SORT,					// Sets a folder sort options.
 	SHARE_SELECTED_ENTRIES,				// Shares the Selected Entries.
 	SUBSCRIBE_SELECTED_ENTRIES,			// Subscribes the Current User to the Selected Entries.
 	UNLOCK_SELECTED_ENTRIES,			// Unlocks the Selected Entries.

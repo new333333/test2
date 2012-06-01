@@ -30,99 +30,89 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.event;
 
-import java.util.Date;
-
-import org.kablink.teaming.gwt.client.util.CalendarDayView;
+import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The CalendarViewDaysEvent tells the calendar to change is selected
- * days view.
+ * The SetFolderSortEvent is set a folder's sort criteria.
  * 
  * @author drfoster@novell.com
  */
-public class CalendarViewDaysEvent extends VibeEventBase<CalendarViewDaysEvent.Handler> {
-	public static Type<Handler> TYPE = new Type<Handler>();
+public class SetFolderSortEvent extends VibeEventBase<SetFolderSortEvent.Handler> {
+    public static Type<Handler> TYPE = new Type<Handler>();
 
-	private CalendarDayView	m_dayView;	//
-	private Date			m_date;		//
-	private Long			m_folderId;	//
+    public boolean	m_sortDescending;	//
+    public Long		m_folderId;			// The ID of the binder to create the new folder in.
+    public String	m_sortKey;			//
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onCalendarViewDays(CalendarViewDaysEvent event);
+		void onSetFolderSort(SetFolderSortEvent event);
 	}
 	
 	/**
-	 * Constructor method.
+	 * Class constructor.
 	 */
-	public CalendarViewDaysEvent() {
+	public SetFolderSortEvent() {
 		// Initialize the super class.
 		super();
 	}
-	
+
 	/**
-	 * Constructor method.
+	 * Class constructor.
 	 * 
 	 * @param folderId
-	 * @param dayView
+	 * @param sortKey
+	 * @param sortDescending
 	 */
-	public CalendarViewDaysEvent(Long folderId, CalendarDayView dayView) {
+	public SetFolderSortEvent(Long folderId, String sortKey, boolean sortDescending) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
-		setFolderId(folderId);
-		setDayView( dayView );
+		setFolderId(      folderId      );
+		setSortKey(       sortKey       );
+		setSortDescending(sortDescending);
 	}
-	
-	/**
-	 * Constructor method.
-	 * 
-	 * @param folderId
-	 * @param dayView
-	 * @param date
-	 */
-	public CalendarViewDaysEvent(Long folderId, CalendarDayView dayView, Date date) {
-		// Initialize this object...
-		this(folderId, dayView);
-		
-		// ...and store the additional parameter.
-		setDate(date);
-	}
-	
+
 	/**
 	 * Dispatches this event when one is triggered.
-	 *
+	 * 
 	 * Implements GwtEvent.dispatch()
 	 * 
 	 * @param handler
 	 */
-	@Override
-	protected void dispatch(Handler handler) {
-		handler.onCalendarViewDays(this);
-	}
+    @Override
+    protected void dispatch(Handler handler) {
+        handler.onSetFolderSort(this);
+    }
 	
 	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new SetFolderSortEvent());
+	}
+    
+	/**
 	 * Returns the GwtEvent.Type of this event.
-	 * 
+	 *
 	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
-	@Override
-	public Type<Handler> getAssociatedType() {
-		return TYPE;
-	}
-
+    @Override
+    public Type<Handler> getAssociatedType() {
+        return TYPE;
+    }
+    
 	/**
 	 * Returns the TeamingEvents enumeration value corresponding to
 	 * this event.
@@ -133,27 +123,9 @@ public class CalendarViewDaysEvent extends VibeEventBase<CalendarViewDaysEvent.H
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.CALENDAR_VIEW_DAYS;
+		return TeamingEvents.SET_FOLDER_SORT;
 	}
 		
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public CalendarDayView getDayView()  {return m_dayView; }
-	public Date            getDate()     {return m_date;    }
-	public Long            getFolderId() {return m_folderId;}
-
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setDayView( CalendarDayView dayView)  {m_dayView  = dayView; }
-	public void setDate(    Date            date)     {m_date     = date;    }
-	public void setFolderId(Long            folderId) {m_folderId = folderId;}
-
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
@@ -166,4 +138,22 @@ public class CalendarViewDaysEvent extends VibeEventBase<CalendarViewDaysEvent.H
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
 	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public boolean getSortDescending() {return m_sortDescending;}
+	public Long    getFolderId()       {return m_folderId;      }
+	public String  getSortKey()        {return m_sortKey;       }
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setSortDescending(boolean sortDescending) {m_sortDescending = sortDescending;}
+	public void setFolderId(      Long    folderId)       {m_folderId       = folderId;      }
+	public void setSortKey(       String  sortKey)        {m_sortKey        = sortKey;       }
 }

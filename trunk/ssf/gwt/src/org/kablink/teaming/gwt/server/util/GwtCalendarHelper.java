@@ -32,14 +32,23 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.kablink.teaming.calendar.EventsViewHelper;
+import org.kablink.teaming.domain.User;
+import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.CalendarAppointment;
 import org.kablink.teaming.gwt.client.util.CalendarAttendee;
+import org.kablink.teaming.gwt.client.util.CalendarDayView;
+import org.kablink.teaming.util.NLT;
 
 import com.bradrydzewski.gwt.calendar.client.Appointment;
 import com.bradrydzewski.gwt.calendar.client.Attendee;
@@ -107,6 +116,69 @@ public class GwtCalendarHelper {
 			// ...appointment.
 			attendees.add(new CalendarAttendee(ai));
 		}
+	}
+
+	/**
+	 * Returns the date string to display on a calendar's navigation bar.
+	 * 
+	 * @param user
+	 * @param firstDay
+	 * @param startDay
+	 * @param dayView
+	 * @param weekFirstDay
+	 * 
+	 * @return
+	 */
+	public static String buildCalendarDateDisplay(User user, Calendar firstDay, Calendar startDay, CalendarDayView dayView, int weekFirstDay) {
+		String		firstDayToShow = GwtServerHelper.getDateString(firstDay.getTime(), DateFormat.MEDIUM);
+		String		reply;
+		switch (dayView) {
+		default:
+		case MONTH:      reply = (NLT.get(EventsViewHelper.monthNames[startDay.get(Calendar.MONTH)]) + ", " + String.valueOf(startDay.get(Calendar.YEAR)));     break;
+		case ONE_DAY:    reply =                           GwtServerHelper.getDateString(startDay.getTime(),                               DateFormat.MEDIUM);  break;
+		case THREE_DAYS: reply = (firstDayToShow + " - " + GwtServerHelper.getDateString(getLastDayToShow(user, firstDay, +  3).getTime(), DateFormat.MEDIUM)); break; 
+		case FIVE_DAYS:  reply = (firstDayToShow + " - " + GwtServerHelper.getDateString(getLastDayToShow(user, firstDay, +  5).getTime(), DateFormat.MEDIUM)); break;
+		case WEEK:       reply = (firstDayToShow + " - " + GwtServerHelper.getDateString(getLastDayToShow(user, firstDay, +  7).getTime(), DateFormat.MEDIUM)); break;
+		case TWO_WEEKS:  reply = (firstDayToShow + " - " + GwtServerHelper.getDateString(getLastDayToShow(user, firstDay, + 14).getTime(), DateFormat.MEDIUM)); break;
+		}
+		return reply;
+	}
+	
+	/*
+	 * Returns a last date given a first day and a number of days.
+	 */
+	private static Calendar getLastDayToShow(User user, Calendar firstDay, int days) {
+		Calendar lastDay = new GregorianCalendar(user.getTimeZone(), user.getLocale());
+		lastDay.setTime(firstDay.getTime());
+		lastDay.set(Calendar.DAY_OF_YEAR, lastDay.get(Calendar.DAY_OF_YEAR) + (days - 1));
+		return lastDay;
+	}
+
+	/**
+	 * Sets the display dates in a CalendarDisplayDataRpcData object.
+	 * 
+	 * @param reply
+	 * @param firstDate
+	 * @param startDate
+	 */
+	public static void setCalendarDisplayDataDates(CalendarDisplayDataRpcResponseData reply, Date firstDate, Date startDate) {
+		GregorianCalendar firstDay = new GregorianCalendar();
+		firstDay.setTime(firstDate);
+		
+		GregorianCalendar startDay = new GregorianCalendar();
+		startDay.setTime(startDate);
+
+		// ...and modify the CalendarDisplayDataRpcResponseData
+		// ...with these values.
+		reply.setFirstDay(firstDay.getTime());
+		reply.setStartDay(startDay.getTime());
+		reply.setDisplayDate(
+			buildCalendarDateDisplay(
+				GwtServerHelper.getCurrentUser(),
+				firstDay,
+				startDay,
+				reply.getDayView(),
+				reply.getWeekFirstDay()));
 	}
 	
 	/**

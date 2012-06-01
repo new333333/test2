@@ -1011,6 +1011,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case SET_FOLDER_SORT:
+				// A SetFolderSortEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof SetFolderSortEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SetFolderSortEvent.registerEvent(eventBus, ((SetFolderSortEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case SHARE_SELECTED_ENTRIES:
 				// A ShareSelectedEntriesEvent!  Can the event handler
 				// we were given handle that?
@@ -1839,6 +1848,7 @@ public class EventHelper {
 			case PURGE_SELECTED_ENTRIES:                hasHandler = (eventHandler instanceof PurgeSelectedEntriesEvent.Handler);          break;
 			case PURGE_SELECTED_USER_WORKSPACES:        hasHandler = (eventHandler instanceof PurgeSelectedUserWorkspacesEvent.Handler);   break;
 			case PURGE_SELECTED_USERS:                  hasHandler = (eventHandler instanceof PurgeSelectedUsersEvent.Handler);            break;
+			case SET_FOLDER_SORT:                       hasHandler = (eventHandler instanceof SetFolderSortEvent.Handler);                 break;
 			case SHARE_SELECTED_ENTRIES:                hasHandler = (eventHandler instanceof ShareSelectedEntriesEvent.Handler);          break;
 			case SUBSCRIBE_SELECTED_ENTRIES:            hasHandler = (eventHandler instanceof SubscribeSelectedEntriesEvent.Handler);      break;
 			case UNLOCK_SELECTED_ENTRIES:               hasHandler = (eventHandler instanceof UnlockSelectedEntriesEvent.Handler);         break;

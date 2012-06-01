@@ -838,23 +838,16 @@ public class GwtMenuHelper {
 		
 		// Number.
 		ToolbarItem sortByTBI;
-		AdaptedPortletURL url;
-		String folderIdS = String.valueOf(folderId);
 		if (so.contains("number")) {
-			url = createActionUrl(request);
-			url.setParameter(WebKeys.ACTION,              WebKeys.ACTION_VIEW_FOLDER_LISTING     );
-			url.setParameter(WebKeys.URL_OPERATION,       WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
-			url.setParameter(WebKeys.URL_BINDER_ID,       folderIdS                              );
-			url.setParameter(WebKeys.FOLDER_SORT_BY,      Constants.DOCID_FIELD                  );
-			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true"                                 );
 			String nltTag;
 			if (isPhotoAlbum)
 			     nltTag = "folder.column.CreationDate";
 			else nltTag = "folder.column.Number";
 			
 			sortByTBI = new ToolbarItem("sortby");
-			markTBITitle(sortByTBI, nltTag);
-			markTBIUrl(  sortByTBI, url   );
+			markTBITitle(sortByTBI, nltTag                       );
+			markTBIEvent(sortByTBI, TeamingEvents.SET_FOLDER_SORT);
+			markTBISort( sortByTBI, Constants.DOCID_FIELD, true  );
 			if (searchSortBy.equals(Constants.DOCID_FIELD)) {
 				markTBIDefault(sortByTBI);
 			}
@@ -863,16 +856,10 @@ public class GwtMenuHelper {
 		
 		// Title.
 		if (so.contains("title")) {
-			url = createActionUrl(request);
-			url.setParameter(WebKeys.ACTION,              WebKeys.ACTION_VIEW_FOLDER_LISTING     );
-			url.setParameter(WebKeys.URL_OPERATION,       WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
-			url.setParameter(WebKeys.URL_BINDER_ID,       folderIdS                              );
-			url.setParameter(WebKeys.FOLDER_SORT_BY,      Constants.SORT_TITLE_FIELD             );
-			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false"                                );
-			
 			sortByTBI = new ToolbarItem("sortby");
-			markTBITitle(sortByTBI, "folder.column.Title");
-			markTBIUrl(  sortByTBI, url                  );
+			markTBITitle(sortByTBI, "folder.column.Title"            );
+			markTBIEvent(sortByTBI, TeamingEvents.SET_FOLDER_SORT    );
+			markTBISort( sortByTBI, Constants.SORT_TITLE_FIELD, false);
 			if (searchSortBy.equals(Constants.SORT_TITLE_FIELD)) {
 				markTBIDefault(sortByTBI);
 			}
@@ -881,16 +868,10 @@ public class GwtMenuHelper {
 		
 		// State.
 		if (so.contains("state")) {
-			url = createActionUrl(request);
-			url.setParameter(WebKeys.ACTION,              WebKeys.ACTION_VIEW_FOLDER_LISTING     );
-			url.setParameter(WebKeys.URL_OPERATION,       WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
-			url.setParameter(WebKeys.URL_BINDER_ID,       folderIdS                              );
-			url.setParameter(WebKeys.FOLDER_SORT_BY,      Constants.WORKFLOW_STATE_CAPTION_FIELD );
-			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false"                                );
-			
 			sortByTBI = new ToolbarItem("sortby");
-			markTBITitle(sortByTBI, "folder.column.State");
-			markTBIUrl(  sortByTBI, url                  );
+			markTBITitle(sortByTBI, "folder.column.State"                        );
+			markTBIEvent(sortByTBI, TeamingEvents.SET_FOLDER_SORT                );
+			markTBISort( sortByTBI, Constants.WORKFLOW_STATE_CAPTION_FIELD, false);
 			if (searchSortBy.equals(Constants.WORKFLOW_STATE_CAPTION_FIELD)) {
 				markTBIDefault(sortByTBI);
 			}
@@ -899,16 +880,10 @@ public class GwtMenuHelper {
 		
 		// Author.
 		if (so.contains("author")) {
-			url = createActionUrl(request);
-			url.setParameter(WebKeys.ACTION,              WebKeys.ACTION_VIEW_FOLDER_LISTING     );
-			url.setParameter(WebKeys.URL_OPERATION,       WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
-			url.setParameter(WebKeys.URL_BINDER_ID,       folderIdS                              );
-			url.setParameter(WebKeys.FOLDER_SORT_BY,      Constants.CREATOR_TITLE_FIELD          );
-			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false"                                );
-			
 			sortByTBI = new ToolbarItem("sortby");
-			markTBITitle(sortByTBI, "folder.column.Author");
-			markTBIUrl(  sortByTBI, url                   );
+			markTBITitle(sortByTBI, "folder.column.Author"              );
+			markTBIEvent(sortByTBI, TeamingEvents.SET_FOLDER_SORT       );
+			markTBISort( sortByTBI, Constants.CREATOR_TITLE_FIELD, false);
 			if (searchSortBy.equals(Constants.CREATOR_TITLE_FIELD)) {
 				markTBIDefault(sortByTBI);
 			}
@@ -917,16 +892,10 @@ public class GwtMenuHelper {
 		
 		// Last activity date.
 		if (so.contains("activity")) {
-			url = createActionUrl(request);
-			url.setParameter(WebKeys.ACTION,              WebKeys.ACTION_VIEW_FOLDER_LISTING     );
-			url.setParameter(WebKeys.URL_OPERATION,       WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
-			url.setParameter(WebKeys.URL_BINDER_ID,       folderIdS                              );
-			url.setParameter(WebKeys.FOLDER_SORT_BY,      Constants.LASTACTIVITY_FIELD           );
-			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true"                                 );
-			
 			sortByTBI = new ToolbarItem("sortby");
-			markTBITitle(sortByTBI, "folder.column.LastActivity");
-			markTBIUrl(  sortByTBI, url                         );
+			markTBITitle(sortByTBI, "folder.column.LastActivity"      );
+			markTBIEvent(sortByTBI, TeamingEvents.SET_FOLDER_SORT     );
+			markTBISort( sortByTBI, Constants.LASTACTIVITY_FIELD, true);
 			if (searchSortBy.equals(Constants.LASTACTIVITY_FIELD)) {
 				markTBIDefault(sortByTBI);
 			}
@@ -935,16 +904,10 @@ public class GwtMenuHelper {
 		
 		// Rating.
 		if (so.contains("rating")) {
-			url = createActionUrl(request);
-			url.setParameter(WebKeys.ACTION,              WebKeys.ACTION_VIEW_FOLDER_LISTING     );
-			url.setParameter(WebKeys.URL_OPERATION,       WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
-			url.setParameter(WebKeys.URL_BINDER_ID,       folderIdS                              );
-			url.setParameter(WebKeys.FOLDER_SORT_BY,      Constants.RATING_FIELD                 );
-			url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true"                                 );
-			
 			sortByTBI = new ToolbarItem("sortby");
-			markTBITitle(sortByTBI, "folder.column.Rating");
-			markTBIUrl(  sortByTBI, url                   );
+			markTBITitle(sortByTBI, "folder.column.Rating"       );
+			markTBIEvent(sortByTBI, TeamingEvents.SET_FOLDER_SORT);
+			markTBISort( sortByTBI, Constants.RATING_FIELD, true );
 			if (searchSortBy.equals(Constants.RATING_FIELD)) {
 				markTBIDefault(sortByTBI);
 			}
@@ -2428,6 +2391,14 @@ public class GwtMenuHelper {
 	 */
 	private static void markTBISelected(ToolbarItem tbi) {
 		tbi.addQualifier(WebKeys.TOOLBAR_MENU_SELECTED, "true");
+	}
+	
+	/*
+	 * Marks a ToolbarItem with a sort information.
+	 */
+	private static void markTBISort(ToolbarItem tbi, String sortKey, boolean sortDescending) {
+		tbi.addQualifier("sortKey",                       sortKey        );
+		tbi.addQualifier("sortDescending", String.valueOf(sortDescending));
 	}
 	
 	/*
