@@ -230,13 +230,6 @@ public class GwtTaskHelper {
 	}
 	
 	/*
-	 * Generates a String to write to the log for a boolean.
-	 */
-	private static String buildDumpString(String label, boolean v) {
-		return (label + ": " + String.valueOf(v));
-	}
-
-	/*
 	 * Generates a String to write to the log for a TaskDate.
 	 */
 	private static String buildDumpString(String label, TaskDate date) {
@@ -259,75 +252,24 @@ public class GwtTaskHelper {
 	}
 	
 	/*
-	 * Generates a String to write to the log for an integer.
-	 */
-	private static String buildDumpString(String label, int v) {
-		return (label + ": " + String.valueOf(v));
-	}
-	
-	/*
-	 * Generates a String to write to the log for a Long.
-	 */
-	private static String buildDumpString(String label, Long v) {
-		return (label + ": " + ((null == v) ? "null" : String.valueOf(v)));
-	}
-	
-	/*
-	 * Generates a String to write to the log for a List<AssignmentInfo>.
-	 */
-	private static String buildDumpString(String label, List<AssignmentInfo> v, boolean teamOrGroup) {
-		if (null == v) {
-			v = new ArrayList<AssignmentInfo>();
-		}
-		
-		StringBuffer buf = new StringBuffer(label);
-		buf.append(": ");
-		if (v.isEmpty()) {
-			buf.append("EMPTY");
-		}
-		else {
-			int c = 0;
-			for (AssignmentInfo ai: v) {
-				if (0 < c++) {
-					buf.append(", ");
-				}
-				buf.append(String.valueOf(ai.getId()));
-				buf.append("(" + ai.getTitle());
-				if (teamOrGroup)
-				     buf.append(":" + String.valueOf(ai.getMembers()));
-				else buf.append(":" + ai.getPresence().getStatusText());
-				buf.append(":" + ai.getPresenceDude() + ")");
-			}
-		}
-		return buf.toString();
-	}
-	
-	/*
-	 * Generates a String to write to the log for a String.
-	 */
-	private static String buildDumpString(String label, String v) {
-		return (label + ": '" + ((null == v) ? "null" : v) + "'");
-	}
-
-	/*
 	 * Generates a String to write to the log for a TaskEvent.
 	 */
 	private static String buildDumpString(String label, TaskEvent event) {
 		StringBuffer buf = new StringBuffer(label);
 		
-		buf.append(buildDumpString("Actual Start",    event.getActualStart()));
-		buf.append(buildDumpString(", Actual End",    event.getActualEnd()));
-		buf.append(buildDumpString(", Logical Start", event.getLogicalStart()));
-		buf.append(buildDumpString(", Logical End",   event.getLogicalEnd()));
-		buf.append(buildDumpString(", All Day",       event.getAllDayEvent()));
+		buf.append(               buildDumpString("Actual Start",    event.getActualStart()));
+		buf.append(               buildDumpString(", Actual End",    event.getActualEnd()));
+		buf.append(               buildDumpString(", Logical Start", event.getLogicalStart()));
+		buf.append(               buildDumpString(", Logical End",   event.getLogicalEnd()));
+		buf.append(GwtEventHelper.buildDumpString(", All Day",       event.getAllDayEvent()));
 		
 		TaskDuration taskDuration = event.getDuration();
-		buf.append(buildDumpString(", Duration:S", taskDuration.getSeconds()));
-		buf.append(buildDumpString(", M",          taskDuration.getMinutes()));
-		buf.append(buildDumpString(", H",          taskDuration.getHours()));
-		buf.append(buildDumpString(", D",          taskDuration.getDays()));
-		buf.append(buildDumpString(", W",          taskDuration.getWeeks()));
-		buf.append(buildDumpString(", Interval",   taskDuration.getInterval()));
+		buf.append(GwtEventHelper.buildDumpString(", Duration:S", taskDuration.getSeconds()));
+		buf.append(GwtEventHelper.buildDumpString(", M",          taskDuration.getMinutes()));
+		buf.append(GwtEventHelper.buildDumpString(", H",          taskDuration.getHours()));
+		buf.append(GwtEventHelper.buildDumpString(", D",          taskDuration.getDays()));
+		buf.append(GwtEventHelper.buildDumpString(", W",          taskDuration.getWeeks()));
+		buf.append(GwtEventHelper.buildDumpString(", Interval",   taskDuration.getInterval()));
 		
 		return buf.toString();
 	}
@@ -773,24 +715,24 @@ public class GwtTaskHelper {
 		m_logger.debug("GwtTaskHelper.dumpTaskInfoList( START: " + String.valueOf(tasks.size()) + " )");
 		for (TaskInfo ti:  tasks) {
 			StringBuffer buf = new StringBuffer("");
-			buf.append(buildDumpString("\n\tTask ID",            ti.getTaskId().getEntityId()   ));
-			buf.append(buildDumpString("\n\t\tBinder ID",        ti.getTaskId().getBinderId()   ));
-			buf.append(buildDumpString("\n\t\tCanModify",        ti.getCanModify()              ));
-			buf.append(buildDumpString("\n\t\tCanPurge",         ti.getCanPurge()               ));
-			buf.append(buildDumpString("\n\t\tCanTrash",         ti.getCanTrash()               ));
-			buf.append(buildDumpString("\n\t\tSeen",             ti.getSeen()                   ));
-			buf.append(buildDumpString("\n\t\tAssignments",      ti.getAssignments(),      false));
-			buf.append(buildDumpString("\n\t\tAssignmentGroups", ti.getAssignmentGroups(), true ));
-			buf.append(buildDumpString("\n\t\tAssignmentTeams",  ti.getAssignmentTeams(),  true ));
-			buf.append(buildDumpString("\n\t\tLocation",         ti.getLocation()               ));
-			buf.append(buildDumpString("\n\t\tCompleted",        ti.getCompleted()              ));
-			buf.append(buildDumpString("\n\t\t\tDate",           ti.getCompletedDate()          ));
-			buf.append(buildDumpString("\n\t\tEntityType",       ti.getEntityType()             ));
-			buf.append(buildDumpString("\n\t\tPriority",         ti.getPriority()               ));
-			buf.append(buildDumpString("\n\t\tTitle",            ti.getTitle()                  ));
-			buf.append(buildDumpString("\n\t\tStatus",           ti.getStatus()                 ));
-			buf.append(buildDumpString("\n\t\tOverdue",          ti.getOverdue()                ));
-			buf.append(buildDumpString("\n\t\tEvent: ",          ti.getEvent()                  ));
+			buf.append(GwtEventHelper.buildDumpString("\n\tTask ID",            ti.getTaskId().getEntityId()   ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tBinder ID",        ti.getTaskId().getBinderId()   ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tCanModify",        ti.getCanModify()              ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tCanPurge",         ti.getCanPurge()               ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tCanTrash",         ti.getCanTrash()               ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tSeen",             ti.getSeen()                   ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tAssignments",      ti.getAssignments(),      false));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tAssignmentGroups", ti.getAssignmentGroups(), true ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tAssignmentTeams",  ti.getAssignmentTeams(),  true ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tLocation",         ti.getLocation()               ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tCompleted",        ti.getCompleted()              ));
+			buf.append(               buildDumpString("\n\t\t\tDate",           ti.getCompletedDate()          ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tEntityType",       ti.getEntityType()             ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tPriority",         ti.getPriority()               ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tTitle",            ti.getTitle()                  ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tStatus",           ti.getStatus()                 ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tOverdue",          ti.getOverdue()                ));
+			buf.append(               buildDumpString("\n\t\tEvent: ",          ti.getEvent()                  ));
 			m_logger.debug("GwtTaskHelper.dumpTaskInfoList()" + buf.toString());
 		}
 		m_logger.debug("GwtTaskHelper.dumpTaskInfoList( END )");

@@ -833,8 +833,9 @@ public class GwtMenuHelper {
 		}
 		
 		ToolbarItem displayStylesTBI = new ToolbarItem("2_display_styles");
-		markTBITitle(displayStylesTBI, "toolbar.folder_sortBy");
-		entryToolbar.addNestedItem(displayStylesTBI);
+		markTBITitle(              displayStylesTBI, "toolbar.folder_sortBy");
+		markTBIContentsSelectable( displayStylesTBI                         );
+		entryToolbar.addNestedItem(displayStylesTBI                         );
 		
 		// Number.
 		ToolbarItem sortByTBI;
@@ -849,7 +850,7 @@ public class GwtMenuHelper {
 			markTBIEvent(sortByTBI, TeamingEvents.SET_FOLDER_SORT);
 			markTBISort( sortByTBI, Constants.DOCID_FIELD, true  );
 			if (searchSortBy.equals(Constants.DOCID_FIELD)) {
-				markTBIDefault(sortByTBI);
+				markTBISelected(sortByTBI);
 			}
 			displayStylesTBI.addNestedItem(sortByTBI);
 		}
@@ -861,7 +862,7 @@ public class GwtMenuHelper {
 			markTBIEvent(sortByTBI, TeamingEvents.SET_FOLDER_SORT    );
 			markTBISort( sortByTBI, Constants.SORT_TITLE_FIELD, false);
 			if (searchSortBy.equals(Constants.SORT_TITLE_FIELD)) {
-				markTBIDefault(sortByTBI);
+				markTBISelected(sortByTBI);
 			}
 			displayStylesTBI.addNestedItem(sortByTBI);
 		}
@@ -873,7 +874,7 @@ public class GwtMenuHelper {
 			markTBIEvent(sortByTBI, TeamingEvents.SET_FOLDER_SORT                );
 			markTBISort( sortByTBI, Constants.WORKFLOW_STATE_CAPTION_FIELD, false);
 			if (searchSortBy.equals(Constants.WORKFLOW_STATE_CAPTION_FIELD)) {
-				markTBIDefault(sortByTBI);
+				markTBISelected(sortByTBI);
 			}
 			displayStylesTBI.addNestedItem(sortByTBI);
 		}
@@ -885,7 +886,7 @@ public class GwtMenuHelper {
 			markTBIEvent(sortByTBI, TeamingEvents.SET_FOLDER_SORT       );
 			markTBISort( sortByTBI, Constants.CREATOR_TITLE_FIELD, false);
 			if (searchSortBy.equals(Constants.CREATOR_TITLE_FIELD)) {
-				markTBIDefault(sortByTBI);
+				markTBISelected(sortByTBI);
 			}
 			displayStylesTBI.addNestedItem(sortByTBI);
 		}
@@ -897,7 +898,7 @@ public class GwtMenuHelper {
 			markTBIEvent(sortByTBI, TeamingEvents.SET_FOLDER_SORT     );
 			markTBISort( sortByTBI, Constants.LASTACTIVITY_FIELD, true);
 			if (searchSortBy.equals(Constants.LASTACTIVITY_FIELD)) {
-				markTBIDefault(sortByTBI);
+				markTBISelected(sortByTBI);
 			}
 			displayStylesTBI.addNestedItem(sortByTBI);
 		}
@@ -909,7 +910,7 @@ public class GwtMenuHelper {
 			markTBIEvent(sortByTBI, TeamingEvents.SET_FOLDER_SORT);
 			markTBISort( sortByTBI, Constants.RATING_FIELD, true );
 			if (searchSortBy.equals(Constants.RATING_FIELD)) {
-				markTBIDefault(sortByTBI);
+				markTBISelected(sortByTBI);
 			}
 			displayStylesTBI.addNestedItem(sortByTBI);
 		}

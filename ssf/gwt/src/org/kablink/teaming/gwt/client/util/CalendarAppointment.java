@@ -51,6 +51,8 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	private List<AssignmentInfo>	m_vibeAttendees;		//
 	private List<AssignmentInfo>	m_vibeAttendeeGroups;	//
 	private List<AssignmentInfo>	m_vibeAttendeeTeams;	//
+	
+	private boolean					m_isTask;				//
 	private Long					m_folderId;				//
 	
 	/**
@@ -62,6 +64,19 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	public CalendarAppointment() {
 		// Initialize the super class.
 		super();
+	}
+
+	/**
+	 * Constructor method.
+	 * 
+	 * @param isTask
+	 */
+	public CalendarAppointment(boolean isTask) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameter.
+		setIsTask(isTask);
 	}
 
 	/**
@@ -77,7 +92,9 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	public List<AssignmentInfo> getVibeAttendees()      {return m_vibeAttendees;     }
 	public List<AssignmentInfo> getVibeAttendeeGroups() {return m_vibeAttendeeGroups;}
 	public List<AssignmentInfo> getVibeAttendeeTeams()  {return m_vibeAttendeeTeams; }
-	public Long                 getFolderId()           {return m_folderId;          }
+	
+	public boolean isTask()      {return m_isTask;  }
+	public Long    getFolderId() {return m_folderId;}
 	
 	/**
 	 * Set'er methods.
@@ -87,7 +104,9 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	public void setVibeAttendees(     List<AssignmentInfo> vibeAttendees)      {m_vibeAttendees      = vibeAttendees;     }
 	public void setVibeAttendeeGroups(List<AssignmentInfo> vibeAttendeeGroups) {m_vibeAttendeeGroups = vibeAttendeeGroups;}
 	public void setVibeAttendeeTeams( List<AssignmentInfo> vibeAttendeeTeams)  {m_vibeAttendeeTeams  = vibeAttendeeTeams; }
-	public void setFolderId(          Long                 folderId)           {m_folderId           = folderId;          }
+	
+	public void setIsTask(  boolean isTask)   {m_isTask   = isTask;  }
+	public void setFolderId(Long    folderId) {m_folderId = folderId;}
 
 	/**
 	 * Add'er methods

@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -100,6 +101,114 @@ public class GwtEventHelper {
 		return buildEventFieldName("event", fieldName);
 	}
 	
+	/**
+	 * Generates a String to write to the log for a boolean.
+	 * 
+	 * @param label
+	 * @param v
+	 * 
+	 * @return
+	 */
+	public static String buildDumpString(String label, boolean v) {
+		return (label + ": " + String.valueOf(v));
+	}
+
+	/**
+	 * Generates a String to write to the log for a Date.
+	 * 
+	 * @param label
+	 * @param v
+	 * 
+	 * @return
+	 */
+	public static String buildDumpString(String label, Date v) {
+		String dateS;
+		if (null == v) {
+			dateS = "null";
+		}
+		
+		else {
+			User user = GwtServerHelper.getCurrentUser();			
+			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, user.getLocale());
+			df.setTimeZone(user.getTimeZone());			
+			dateS = df.format(v);
+		}
+		
+		return (label + ": " + dateS);
+	}
+
+	/**
+	 * Generates a String to write to the log for an integer.
+	 * 
+	 * @param label
+	 * @param v
+	 * 
+	 * @return
+	 */
+	public static String buildDumpString(String label, int v) {
+		return (label + ": " + String.valueOf(v));
+	}
+	
+	/**
+	 * Generates a String to write to the log for a Long.
+	 * 
+	 * @param label
+	 * @param v
+	 * 
+	 * @return
+	 */
+	public static String buildDumpString(String label, Long v) {
+		return (label + ": " + ((null == v) ? "null" : String.valueOf(v)));
+	}
+	
+	/**
+	 * Generates a String to write to the log for a List<AssignmentInfo>.
+	 * 
+	 * @param label
+	 * @param v
+	 * @param teeamOrGroup
+	 * 
+	 * @return
+	 */
+	public static String buildDumpString(String label, List<AssignmentInfo> v, boolean teamOrGroup) {
+		if (null == v) {
+			v = new ArrayList<AssignmentInfo>();
+		}
+		
+		StringBuffer buf = new StringBuffer(label);
+		buf.append(": ");
+		if (v.isEmpty()) {
+			buf.append("EMPTY");
+		}
+		else {
+			int c = 0;
+			for (AssignmentInfo ai: v) {
+				if (0 < c++) {
+					buf.append(", ");
+				}
+				buf.append(String.valueOf(ai.getId()));
+				buf.append("(" + ai.getTitle());
+				if (teamOrGroup)
+				     buf.append(":" + String.valueOf(ai.getMembers()));
+				else buf.append(":" + ai.getPresence().getStatusText());
+				buf.append(":" + ai.getPresenceDude() + ")");
+			}
+		}
+		return buf.toString();
+	}
+	
+	/**
+	 * Generates a String to write to the log for a String.
+	 * 
+	 * @param label
+	 * @param v
+	 * 
+	 * @return
+	 */
+	public static String buildDumpString(String label, String v) {
+		return (label + ": '" + ((null == v) ? "null" : v) + "'");
+	}
+
 	/**
 	 * Generates a search index field name reference for an event
 	 * field.
@@ -181,6 +290,7 @@ public class GwtEventHelper {
 	 * 
 	 * @param m
 	 * @param key
+	 * @param adjustToMidnight
 	 * 
 	 * @return
 	 */
@@ -203,6 +313,7 @@ public class GwtEventHelper {
 		else {
 			reply = null;
 		}
+		
 		return reply;
 	}
 
