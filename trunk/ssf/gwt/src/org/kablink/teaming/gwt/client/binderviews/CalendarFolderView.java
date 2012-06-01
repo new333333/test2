@@ -357,6 +357,9 @@ public class CalendarFolderView extends FolderViewBase
 										m_calendar.suspendLayout();
 										m_calendar.removeAppointment(appointment);
 										m_calendar.resumeLayout();
+										if (CalendarDayView.ONE_DAY.equals(m_calendarDisplayData.getDayView())) {
+											m_calendar.scrollToHour(m_calendarDisplayData.getWorkDayStart());
+										}
 									}
 								}
 							});
@@ -909,6 +912,9 @@ public class CalendarFolderView extends FolderViewBase
 				m_calendar.suspendLayout();
 				m_calendar.addAppointments(m_appointments);
 				m_calendar.resumeLayout();
+				if (CalendarDayView.ONE_DAY.equals(m_calendarDisplayData.getDayView())) {
+					m_calendar.scrollToHour(m_calendarDisplayData.getWorkDayStart());
+				}
 			}
 		});
 	}

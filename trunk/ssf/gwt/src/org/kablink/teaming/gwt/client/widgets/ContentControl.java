@@ -149,8 +149,6 @@ public class ContentControl extends Composite
 		ShowTeamWSEvent.Handler,
 		ShowTrashEvent.Handler
 {
-	private final static boolean SHOW_NEW_CALENDAR_VIEW = false;	// false until I get it all working!
-	
 	private boolean m_contentInGWT;
 	private boolean m_isAdminContent;
 	private boolean m_isDebugUI;
@@ -612,11 +610,8 @@ public class ContentControl extends Composite
 						switch ( ft )
 						{
 						case CALENDAR:
-							if ( SHOW_NEW_CALENDAR_VIEW ) {
-								GwtTeaming.fireEvent( new ShowCalendarFolderEvent( bi, viewReady ) );
-								m_contentInGWT = true;
-							}
-							
+							GwtTeaming.fireEvent( new ShowCalendarFolderEvent( bi, viewReady ) );
+							m_contentInGWT = true;
 							break;
 	
 							

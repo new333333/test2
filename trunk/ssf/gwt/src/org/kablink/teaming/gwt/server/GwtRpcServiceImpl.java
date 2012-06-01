@@ -142,6 +142,7 @@ import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
 import org.kablink.teaming.gwt.server.util.GwtBlogHelper;
+import org.kablink.teaming.gwt.server.util.GwtCalendarHelper;
 import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
 import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
@@ -629,7 +630,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_CALENDAR_APPOINTMENTS:
 		{
 			GetCalendarAppointmentsCmd gcaCmd = ((GetCalendarAppointmentsCmd) cmd);
-			CalendarAppointmentsRpcResponseData responseData = GwtViewHelper.getCalendarAppointments(
+			CalendarAppointmentsRpcResponseData responseData = GwtCalendarHelper.getCalendarAppointments(
 				this,
 				getRequest( ri ),
 				gcaCmd.getFolderId(),
@@ -640,7 +641,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_CALENDAR_DISPLAY_DATA:
 		{
 			GetCalendarDisplayDataCmd gcddCmd = ((GetCalendarDisplayDataCmd) cmd);
-			CalendarDisplayDataRpcResponseData responseData = GwtViewHelper.getCalendarDisplayData(
+			CalendarDisplayDataRpcResponseData responseData = GwtCalendarHelper.getCalendarDisplayData(
 				this,
 				getRequest( ri ),
 				gcddCmd.getFolderInfo() );
@@ -650,7 +651,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_CALENDAR_DISPLAY_DATE:
 		{
 			GetCalendarDisplayDateCmd gcddCmd = ((GetCalendarDisplayDateCmd) cmd);
-			CalendarDisplayDataRpcResponseData responseData = GwtViewHelper.getCalendarDisplayDate(
+			CalendarDisplayDataRpcResponseData responseData = GwtCalendarHelper.getCalendarDisplayDate(
 				this,
 				getRequest( ri ),
 				gcddCmd.getFolderId(),
@@ -661,7 +662,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_CALENDAR_NEXT_PREVIOUS_PERIOD:
 		{
 			GetCalendarNextPreviousPeriodCmd gcnppCmd = ((GetCalendarNextPreviousPeriodCmd) cmd);
-			CalendarDisplayDataRpcResponseData responseData = GwtViewHelper.getCalendarNextPreviousPeriod(
+			CalendarDisplayDataRpcResponseData responseData = GwtCalendarHelper.getCalendarNextPreviousPeriod(
 				this,
 				getRequest( ri ),
 				gcnppCmd.getFolderId(),
@@ -1918,7 +1919,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_CALENDAR_DAY_VIEW:
 		{
 			SaveCalendarDayViewCmd scdvCmd = ((SaveCalendarDayViewCmd) cmd);
-			CalendarDisplayDataRpcResponseData result = GwtViewHelper.saveCalendarDayView(
+			CalendarDisplayDataRpcResponseData result = GwtCalendarHelper.saveCalendarDayView(
 				this,
 				getRequest( ri ),
 				scdvCmd.getFolderInfo(),
@@ -1931,7 +1932,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_CALENDAR_HOURS:
 		{
 			SaveCalendarHoursCmd schCmd = ((SaveCalendarHoursCmd) cmd);
-			CalendarDisplayDataRpcResponseData result = GwtViewHelper.saveCalendarHours( this, getRequest( ri ), schCmd.getFolderInfo(), schCmd.getHours() );
+			CalendarDisplayDataRpcResponseData result = GwtCalendarHelper.saveCalendarHours( this, getRequest( ri ), schCmd.getFolderInfo(), schCmd.getHours() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -1939,7 +1940,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_CALENDAR_SETTINGS:
 		{
 			SaveCalendarSettingsCmd scsCmd = ((SaveCalendarSettingsCmd) cmd);
-			Boolean result = GwtViewHelper.saveCalendarSettings( this, getRequest( ri ), scsCmd.getFolderId(), scsCmd.getWeekStart(), scsCmd.getWorkDayStart() );
+			Boolean result = GwtCalendarHelper.saveCalendarSettings( this, getRequest( ri ), scsCmd.getFolderId(), scsCmd.getWeekStart(), scsCmd.getWorkDayStart() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
@@ -1947,7 +1948,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_CALENDAR_SHOW:
 		{
 			SaveCalendarShowCmd scsCmd = ((SaveCalendarShowCmd) cmd);
-			CalendarDisplayDataRpcResponseData result = GwtViewHelper.saveCalendarShow( this, getRequest( ri ), scsCmd.getFolderInfo(), scsCmd.getShow() );
+			CalendarDisplayDataRpcResponseData result = GwtCalendarHelper.saveCalendarShow( this, getRequest( ri ), scsCmd.getFolderInfo(), scsCmd.getShow() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
