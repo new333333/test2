@@ -177,6 +177,7 @@ public class TeamingServiceClientWithStub {
 		//addBlogEntryWithAttachment();
 		
 		//getTopWorkspaceIdRepeatedlyUsingMultipleThreads();
+
 	}
 	
 	public static void addMicroBlog() throws Exception {
@@ -404,7 +405,7 @@ public class TeamingServiceClientWithStub {
 		
 		// Search for all folder entries with the word "test" in entry title.
     	Criteria crit = new Criteria()
-			.add(eq(Constants.TITLE_FIELD, "test"))
+			.add(like(Constants.TITLE_FIELD, "test"))
 			.add(eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY));
 	
 		FolderEntryCollection coll = stub.search_getFolderEntries(null, crit.toQuery().asXML(), 0, -1);
@@ -420,7 +421,7 @@ public class TeamingServiceClientWithStub {
 		
 		// Search for all folder entries and replies with the word "test" in any text field.
     	Criteria crit = new Criteria()
-			.add(eq("", "test"));
+			.add(like(null, "test"));
 	
 		FolderEntryCollection coll = stub.search_getFolderEntries(null, crit.toQuery().asXML(), 0, -1);
     	FolderEntryBrief[] entries = coll.getEntries();
