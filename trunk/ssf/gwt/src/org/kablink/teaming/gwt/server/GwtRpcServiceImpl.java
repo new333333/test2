@@ -2269,6 +2269,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case UPDATE_CALENDAR_EVENT:
+		{
+			UpdateCalendarEventCmd uceCmd = ((UpdateCalendarEventCmd) cmd);
+			Boolean result = GwtCalendarHelper.updateCalendarEvent( this, getRequest( ri ), uceCmd.getFolderId(), uceCmd.getEvent() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			return response;
+		}
+		
 		case UPDATE_BINDER_TAGS:
 		{
 			UpdateBinderTagsCmd ubtCmd;

@@ -323,7 +323,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetBinderStats();
 	String rpcFailure_GetCalendarAppointments();
 	String rpcFailure_GetCalendarDisplayData();
-	String rpcFailure_GetCalendarNextPreviousPeroid();
+	String rpcFailure_GetCalendarNextPreviousPeriod();
 	String rpcFailure_GetClipboardTeamUsers();
 	String rpcFailure_GetClipboardUsers();
 	String rpcFailure_GetClipboardUsersFromList();
@@ -472,6 +472,9 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_UntrackingPerson();
 	String rpcFailure_UpdateCalculatedDatesBinder();
 	String rpcFailure_UpdateCalculatedDatesTask();
+	String rpcFailure_UpdateCalendarEvent();
+	String rpcFailure_UpdateCalendarEventAppointment();
+	String rpcFailure_UpdateCalendarEventTask();
 	String rpcFailure_UpdateFavorites();
 
 	// Strings used to describe various split point load failures.

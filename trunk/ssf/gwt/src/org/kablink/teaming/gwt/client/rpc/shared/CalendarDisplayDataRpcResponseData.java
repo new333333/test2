@@ -58,6 +58,7 @@ public class CalendarDisplayDataRpcResponseData implements IsSerializable, VibeR
 	private Date			m_startDay;				// The start day the calendar view is based on.
 	private int				m_weekFirstDay;			// The week start day (Saturday, Sunday or Monday.)
 	private int				m_workDayStart;			// The hour the work day starts (12am, 1am, ... 12pm.)
+	private String			m_addEntryUrl;			// The URL to use to add a default entry to the folder.
 	private String			m_displayDate;			// The date to display in the navigation bar corresponding to the selected view.
 	
 	/**
@@ -80,9 +81,10 @@ public class CalendarDisplayDataRpcResponseData implements IsSerializable, VibeR
 	 * @param show
 	 * @param weekFirstDay
 	 * @param workDayStart
+	 * @param addEntryUrl
 	 * @param displayDate
 	 */
-	public CalendarDisplayDataRpcResponseData(Date firstDay, Date startDay, CalendarDayView dayView, CalendarHours hours, CalendarShow show, int weekFirstDay, int workDayStart, String displayDate) {
+	public CalendarDisplayDataRpcResponseData(Date firstDay, Date startDay, CalendarDayView dayView, CalendarHours hours, CalendarShow show, int weekFirstDay, int workDayStart, String addEntryUrl, String displayDate) {
 		// Initialize this object...
 		this();
 		
@@ -94,6 +96,7 @@ public class CalendarDisplayDataRpcResponseData implements IsSerializable, VibeR
 		setShow(        show        );
 		setWeekFirstDay(weekFirstDay);
 		setWorkDayStart(workDayStart);
+		setAddEntryUrl( addEntryUrl );
 		setDisplayDate( displayDate );
 	}
 	
@@ -113,6 +116,7 @@ public class CalendarDisplayDataRpcResponseData implements IsSerializable, VibeR
 	public Date            getStartDay()       {return m_startDay;         }
 	public int             getWeekFirstDay()   {return m_weekFirstDay;     }
 	public int             getWorkDayStart()   {return m_workDayStart;     }
+	public String          getAddEntryUrl()    {return m_addEntryUrl;      }
 	public String          getDisplayDate()    {return m_displayDate;      }
 
 	/**
@@ -131,5 +135,6 @@ public class CalendarDisplayDataRpcResponseData implements IsSerializable, VibeR
 	public void setStartDay(         Date            startDay)          {m_startDay          = startDay;         }
 	public void setWeekFirstDay(     int             weekFirstDay)      {m_weekFirstDay      = weekFirstDay;     }
 	public void setWorkDayStart(     int             workDayStart)      {m_workDayStart      = workDayStart;     }
+	public void setAddEntryUrl(      String          addEntryUrl)       {m_addEntryUrl       = addEntryUrl;      }
 	public void setDisplayDate(      String          displayDate)       {m_displayDate       = displayDate;      }
 }
