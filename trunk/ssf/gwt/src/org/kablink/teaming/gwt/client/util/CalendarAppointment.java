@@ -52,7 +52,13 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	private List<AssignmentInfo>	m_vibeAttendeeGroups;	//
 	private List<AssignmentInfo>	m_vibeAttendeeTeams;	//
 	
+	private boolean					m_canModify;			//
+	private boolean					m_canPurge;				//
+	private boolean					m_canTrash;				//
 	private boolean					m_isTask;				//
+	private boolean					m_seen;					//
+	private Long					m_creatorId;			//
+	private Long					m_entryId;				//
 	private Long					m_folderId;				//
 	
 	/**
@@ -93,8 +99,14 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	public List<AssignmentInfo> getVibeAttendeeGroups() {return m_vibeAttendeeGroups;}
 	public List<AssignmentInfo> getVibeAttendeeTeams()  {return m_vibeAttendeeTeams; }
 	
-	public boolean isTask()      {return m_isTask;  }
-	public Long    getFolderId() {return m_folderId;}
+	public boolean canModify()    {return m_canModify;}
+	public boolean canPurge()     {return m_canPurge; }
+	public boolean canTrash()     {return m_canTrash; }
+	public boolean isTask()       {return m_isTask;   }
+	public boolean isSeen()       {return m_seen;     }
+	public Long    getCreatorId() {return m_creatorId;}
+	public Long    getEntryId()   {return m_entryId;  }
+	public Long    getFolderId()  {return m_folderId; }
 	
 	/**
 	 * Set'er methods.
@@ -105,8 +117,14 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	public void setVibeAttendeeGroups(List<AssignmentInfo> vibeAttendeeGroups) {m_vibeAttendeeGroups = vibeAttendeeGroups;}
 	public void setVibeAttendeeTeams( List<AssignmentInfo> vibeAttendeeTeams)  {m_vibeAttendeeTeams  = vibeAttendeeTeams; }
 	
-	public void setIsTask(  boolean isTask)   {m_isTask   = isTask;  }
-	public void setFolderId(Long    folderId) {m_folderId = folderId;}
+	public void setCanModify(boolean canModify) {m_canModify = canModify;}
+	public void setCanPurge( boolean canPurge)  {m_canPurge  = canPurge; }
+	public void setCanTrash( boolean canTrash)  {m_canTrash  = canTrash; }
+	public void setIsTask(   boolean isTask)    {m_isTask    = isTask;   }
+	public void setSeen(     boolean seen)      {m_seen      = seen;     }
+	public void setCreatorId(Long    creatorId) {m_creatorId = creatorId;}
+	public void setEntryId(  Long    entryId)   {m_entryId   = entryId;  }
+	public void setFolderId( Long    folderId)  {m_folderId  = folderId; }
 
 	/**
 	 * Add'er methods

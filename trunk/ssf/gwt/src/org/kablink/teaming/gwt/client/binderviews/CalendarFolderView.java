@@ -182,12 +182,21 @@ public class CalendarFolderView extends FolderViewBase
 			}
 		});
 		
-		// Add a delete handler...
+		// Add a delete handler.
 		m_calendar.addDeleteHandler(new DeleteHandler<Appointment>() {
 			@Override
 			public void onDelete(DeleteEvent<Appointment> event) {
-				// ...that requests the selected appointment be
-				// ...deleted.
+				// Does the user have rights to delete this event?
+				CalendarAppointment ca = ((CalendarAppointment) event.getTarget());
+				if (!(ca.canTrash())) {
+					// No!  Tell them about the problem and cancel the
+					// event.
+					GwtClientHelper.deferredAlert(m_messages.calendarView_Error_CantTrash());
+					event.setCancelled(true);
+					return;					
+				}
+				
+				// Delete the selected appointment.
 				doDeleteEntryAsync((CalendarAppointment) event.getTarget());
 				event.setCancelled(true);
 			}
@@ -202,21 +211,48 @@ public class CalendarFolderView extends FolderViewBase
 			}
 		});
 
-		// Add a time block click handler...
+		// Add a time block click handler.
 		m_calendar.addTimeBlockClickHandler(new TimeBlockClickHandler<Date>() {
 			@Override
 			public void onTimeBlockClick(TimeBlockClickEvent<Date> event) {
-				// ...that...
+				// Does the user have rights to add entries to this
+				// folder?
+				if (!(m_calendarDisplayData.canAddFolderEntry())) {
+					// No!  Tell them about the problem and bail.
+					GwtClientHelper.deferredAlert(m_messages.calendarView_Error_CantAdd());
+					return;					
+				}
+				
+				// Create an appointment at the given time.
 //!				...this needs to be implemented...
 				Window.alert("CalendarFolderView.onTimeBlockClick():  ...this needs to be implemented...");
 			}
 		});
 		
-		// Add an update handler...
+		// Add an update handler.
 		m_calendar.addUpdateHandler(new UpdateHandler<Appointment>() {
 			@Override
 			public void onUpdate(UpdateEvent<Appointment> event) {
-				// ...that...
+				// Are we showing events by date?
+				if (m_calendarDisplayData.getShow().isPhysicalByDate()) {
+					// Yes!  Then we don't support drag an drop.  Tell
+					// the user about the problem and cancel the event.
+					GwtClientHelper.deferredAlert(m_messages.calendarView_Error_CantUpdateWhenViewByDate());
+					event.setCancelled(true);
+					return;					
+				}
+
+				// Does the user have rights to modify this event?
+				CalendarAppointment ca = ((CalendarAppointment) event.getTarget());
+				if (!(ca.canModify())) {
+					// No!  Tell them about the problem and cancel the
+					// event.
+					GwtClientHelper.deferredAlert(m_messages.calendarView_Error_CantModify());
+					event.setCancelled(true);
+					return;					
+				}
+				
+				// Update the given event.
 //!				...this needs to be implemented...
 				Window.alert("CalendarFolderView.onUpdate():  ...this needs to be implemented...");
 				event.setCancelled(true);
@@ -297,8 +333,8 @@ public class CalendarFolderView extends FolderViewBase
 	private void doDeleteEntryNow(final CalendarAppointment appointment) {
 		// Construct a List<EntityId> describing the entry to be
 		// deleted.
-		Long     folderId =                appointment.getFolderId();
-		Long     entryId  = Long.parseLong(appointment.getId());
+		Long     folderId = appointment.getFolderId();
+		Long     entryId  = appointment.getEntryId();
 		EntityId eid      = new EntityId(folderId, entryId, EntityId.FOLDER_ENTRY);
 		final List<EntityId> deleteList = new ArrayList<EntityId>();
 		deleteList.add(eid);
@@ -370,7 +406,7 @@ public class CalendarFolderView extends FolderViewBase
 							// No, they're not sure!
 						}
 					},
-					m_messages.calendarViewConfirmDeleteEntry());
+					m_messages.calendarView_Confirm_DeleteEntry());
 			}
 		});
 	}
@@ -392,8 +428,8 @@ public class CalendarFolderView extends FolderViewBase
 	 * Synchronously runs the entry viewer on the given appointment.
 	 */
 	private void doViewEntryNow(CalendarAppointment appointment) {
-		final Long folderId =                appointment.getFolderId();
-		final Long entryId  = Long.parseLong(appointment.getId());
+		final Long folderId = appointment.getFolderId();
+		final Long entryId  = appointment.getEntryId();
 		
 		GetViewFolderEntryUrlCmd cmd = new GetViewFolderEntryUrlCmd(folderId, entryId);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {

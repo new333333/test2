@@ -1581,7 +1581,11 @@ public interface GwtTeamingMessages extends Messages
 	String calendarNav_Alt_ViewWorkWeek();
 	String calendarNav_Hours_FullDay();
 	String calendarNav_Hours_WorkDay();
-	String calendarViewConfirmDeleteEntry();
+	String calendarView_Confirm_DeleteEntry();
+	String calendarView_Error_CantAdd();
+	String calendarView_Error_CantModify();
+	String calendarView_Error_CantTrash();
+	String calendarView_Error_CantUpdateWhenViewByDate();
 
 	// Strings used by the 'Progress' dialog.
 	String progressDlgConfirmCancel();

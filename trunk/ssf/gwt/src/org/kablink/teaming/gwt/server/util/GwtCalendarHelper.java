@@ -42,6 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -60,6 +61,8 @@ import org.kablink.teaming.calendar.OneMonthView;
 import org.kablink.teaming.calendar.EventsViewHelper.Grid;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -75,6 +78,9 @@ import org.kablink.teaming.gwt.client.util.CalendarHours;
 import org.kablink.teaming.gwt.client.util.CalendarShow;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.task.TaskHelper;
@@ -391,18 +397,67 @@ public class GwtCalendarHelper {
 			buf.append(GwtEventHelper.buildDumpString("\n\t\tDescription: ",  ca.getDescription()              ));
 			buf.append(GwtEventHelper.buildDumpString("\n\t\tStart",          ca.getStart()                    ));
 			buf.append(GwtEventHelper.buildDumpString("\n\t\tEnd",            ca.getEnd()                      ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tCreator: ",      ca.getCreatedBy()                ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\t\tCreator ID: ", ca.getCreatorId()                ));
 			buf.append(GwtEventHelper.buildDumpString("\n\t\tIsTask",         ca.isTask()                      ));
 			buf.append(GwtEventHelper.buildDumpString("\n\t\tIsAllDay",       ca.isAllDay()                    ));
 			buf.append(GwtEventHelper.buildDumpString("\n\t\tAttendees",      ca.getVibeAttendees(),      false));
 			buf.append(GwtEventHelper.buildDumpString("\n\t\tAttendeeGroups", ca.getVibeAttendeeGroups(), true ));
 			buf.append(GwtEventHelper.buildDumpString("\n\t\tAttendeeTeams",  ca.getVibeAttendeeTeams(),  true ));
-//			buf.append(               buildDumpString("\n\t\tCanModify",      ca.getCanModify()                ));
-//			buf.append(               buildDumpString("\n\t\tCanPurge",       ca.getCanPurge()                 ));
-//			buf.append(               buildDumpString("\n\t\tCanTrash",       ca.getCanTrash()                 ));
-//			buf.append(               buildDumpString("\n\t\tSeen",           ca.getSeen()                     ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tCanModify",      ca.canModify()                   ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tCanPurge",       ca.canPurge()                    ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tCanTrash",       ca.canTrash()                    ));
+			buf.append(GwtEventHelper.buildDumpString("\n\t\tSeen",           ca.isSeen()                      ));
 			m_logger.debug("GwtCalendarHelper.dumpAssignmentList()" + buf.toString());
 		}
 		m_logger.debug("GwtCalendarHelper.dumpAssignmentList( END )");
+	}
+
+	/*
+	 * Scans the List<Appointment> and sets the access rights for the
+	 * current user for each appointment.
+	 */
+	private static void fixupAppointments(AllModulesInjected bs, List<Appointment> appointments) {
+		// If we don't have any Appointment's to complete...
+		if ((null == appointments) || appointments.isEmpty()) {
+			// ..bail.
+			return;
+		}
+
+		// Collect the entry IDs of the appointments from the
+		//List<Appointment>.
+		List<Long> entryIds  = new ArrayList<Long>();
+		for (Appointment appointment:  appointments) {
+			entryIds.add(((CalendarAppointment) appointment).getEntryId());
+		}
+		
+		try {
+			// Read the FolderEntry's for the appointments...
+			FolderModule fm = bs.getFolderModule();
+			SortedSet<FolderEntry> entries = fm.getEntries(entryIds);
+			
+			// ...mapping each FolderEntry to its ID.
+			Map<Long, FolderEntry> entryMap = new HashMap<Long, FolderEntry>();
+			for (FolderEntry entry: entries) {
+				entryMap.put(entry.getId(), entry);
+			}
+
+			// Scan the List<Appointment> again.
+			for (Appointment appointment:  appointments) {
+				// Do we have the FolderEntry for this appointment?
+				CalendarAppointment ca = ((CalendarAppointment) appointment);
+				FolderEntry entry = entryMap.get(ca.getEntryId());
+				if (null != entry) {
+					// Yes!  Store the user's rights to that
+					// FolderEntry.
+					ca.setCanModify(fm.testAccess(entry, FolderOperation.modifyEntry   ));
+					ca.setCanPurge( fm.testAccess(entry, FolderOperation.deleteEntry   ));
+					ca.setCanTrash( fm.testAccess(entry, FolderOperation.preDeleteEntry));
+				}
+			}
+		}
+		
+		catch (Exception ex) {/* Ignored. */}
 	}
 
 	/**
@@ -445,11 +500,14 @@ public class GwtCalendarHelper {
 	       	String start = DateTools.dateToString(calendarViewRangeDates.getVisibleStart(), DateTools.Resolution.SECOND);
 	       	String end   = DateTools.dateToString(calendarViewRangeDates.getVisibleEnd(),   DateTools.Resolution.SECOND);
 	       	CalendarShow show = cdd.getShow();
-	       	if (show.equals(CalendarShow.PHYSICAL_BY_ACTIVITY)) {
+	       	boolean physicalByActivity = show.equals(CalendarShow.PHYSICAL_BY_ACTIVITY);
+	       	boolean physicalByCreation = show.equals(CalendarShow.PHYSICAL_BY_CREATION);
+	       	boolean physicalByDate     = (physicalByActivity || physicalByCreation);
+	       	if (physicalByActivity) {
 		       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, start);
 		       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END,   end  );
 	       	}
-	       	else if (show.equals(CalendarShow.PHYSICAL_BY_CREATION)) {
+	       	else if (physicalByCreation) {
 		       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, start);
 		       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END,   end  );
 	       	}
@@ -542,6 +600,7 @@ public class GwtCalendarHelper {
 			if ((null != events) && (!(events.isEmpty()))) {
 				// Yes!  We need to construct Appointment's for each.
 				// Scan the events
+				SeenMap seenMap = bs.getProfileModule().getUserSeenMap(null);
 				Map<Long, AppointmentStyle> binderColorMap = new HashMap<Long, AppointmentStyle>();
 				int nextColor = 0;
 				for (Map event:  events) {
@@ -571,14 +630,22 @@ public class GwtCalendarHelper {
 					CalendarAppointment appointment = new CalendarAppointment(isTask);
 					reply.addAppointment(appointment);
 
-					// Set whether this is an all day appointment.
-					String tz = GwtEventHelper.getStringFromEntryMapRaw(
-						event,
-						GwtEventHelper.buildEventFieldName(
-							fieldName,
-							Constants.EVENT_FIELD_TIME_ZONE_ID));
-					boolean allDay = (!(MiscUtil.hasString(tz)));
-					appointment.setAllDay(allDay);
+					boolean allDay;
+					if (!physicalByDate) {
+						// Set whether this is an all day appointment.
+						String tz = GwtEventHelper.getStringFromEntryMapRaw(
+							event,
+							GwtEventHelper.buildEventFieldName(
+								fieldName,
+								Constants.EVENT_FIELD_TIME_ZONE_ID));
+						allDay = (!(MiscUtil.hasString(tz)));
+						appointment.setAllDay(allDay);
+					}
+					else {
+						// When viewing by date, we never treat things
+						// as an all day event.
+						allDay = false;
+					}
 
 					// Set appointment's attendees.
 					setVibeAttendees(     appointment, GwtEventHelper.getAssignmentInfoListFromEntryMap(event, attrIndividuals, AssigneeType.INDIVIDUAL));
@@ -587,6 +654,7 @@ public class GwtCalendarHelper {
 					
 					// Set the appointment's created by.
 					appointment.setCreatedBy(GwtEventHelper.getStringFromEntryMapRaw(event, Constants.CREATOR_TITLE_FIELD));
+					appointment.setCreatorId(GwtEventHelper.getLongFromEntryMap(     event, Constants.CREATORID_FIELD    ));
 					
 					// Set the appointment's description.
 					String value = GwtViewHelper.getEntryDescriptionFromMap(request, event);
@@ -595,42 +663,61 @@ public class GwtCalendarHelper {
 					}
 					appointment.setDescription(value);
 					
-					// Set the appointment's end date.
-					Date endDate = GwtEventHelper.getDateFromEntryMap(
-						event,
-						GwtEventHelper.buildEventFieldName(
-							fieldName,
-							Constants.EVENT_FIELD_LOGICAL_END_DATE));
-					if (null != endDate) {
-						if (allDay) {
-							endDate = adjustDateForAllDay(
-								endDate,
-								user.getTimeZone().getOffset(
-									endDate.getTime()));
+					// Are we viewing physical events by a date?
+					if (physicalByDate) {
+						// Yes!  Can we get the appropriate date?
+						String field = (physicalByActivity ? Constants.LASTACTIVITY_FIELD : Constants.CREATION_DATE_FIELD);
+						Date date = GwtEventHelper.getDateFromEntryMap(event, field);
+						if (null != date) {
+							// Yes!  Use it as the start and end dates
+							// of the event.
+							appointment.setEnd(  date);
+							appointment.setStart(date);
 						}
-						appointment.setEnd(endDate);
+					}
+					else {
+						// No, we aren't viewing physical events by a
+						// date!  Set the appointment's end date.
+						Date endDate = GwtEventHelper.getDateFromEntryMap(
+							event,
+							GwtEventHelper.buildEventFieldName(
+								fieldName,
+								Constants.EVENT_FIELD_LOGICAL_END_DATE));
+						if (null != endDate) {
+							if (allDay) {
+								endDate = adjustDateForAllDay(
+									endDate,
+									user.getTimeZone().getOffset(
+										endDate.getTime()));
+							}
+							appointment.setEnd(endDate);
+						}
+						
+						// Set the appointment's start date.
+						Date startDay = GwtEventHelper.getDateFromEntryMap(
+							event,
+							GwtEventHelper.buildEventFieldName(
+								fieldName,
+								Constants.EVENT_FIELD_LOGICAL_START_DATE));
+						if (null != startDay) {
+							if (allDay) {
+								startDay = adjustDateForAllDay(
+									startDay,
+									user.getTimeZone().getOffset(
+										startDay.getTime()));
+							}
+							appointment.setStart(startDay);
+						}
 					}
 										
 					// Set the appointment's IDs.
 					Long eventFolderId = GwtEventHelper.getLongFromEntryMap(event, Constants.BINDER_ID_FIELD);
-					appointment.setFolderId(eventFolderId);
-					appointment.setId(      eventId      );
-										
-					// Set the appointment's start date.
-					Date startDay = GwtEventHelper.getDateFromEntryMap(
-						event,
-						GwtEventHelper.buildEventFieldName(
-							fieldName,
-							Constants.EVENT_FIELD_LOGICAL_START_DATE));
-					if (null != startDay) {
-						if (allDay) {
-							startDay = adjustDateForAllDay(
-								startDay,
-								user.getTimeZone().getOffset(
-									startDay.getTime()));
-						}
-						appointment.setStart(startDay);
-					}
+					appointment.setFolderId(              eventFolderId);
+					appointment.setEntryId(Long.parseLong(eventId     ));
+					appointment.setId(                    eventId      );
+
+					// Set the appointment's seen flag.
+					appointment.setSeen(seenMap.checkIfSeen(event));
 										
 					// Set the appointment's style.
 					AppointmentStyle thisColor = binderColorMap.get(eventFolderId);
@@ -657,6 +744,10 @@ public class GwtCalendarHelper {
 			// perform a single DB read for each type of information we
 			// need to complete the CalendarAppointment's details.
 			completeAIs(bs, reply.getAppointments());
+			
+			// Walk the appointments one more time performing any
+			// remaining fixups on each as necessary.
+			fixupAppointments(bs, reply.getAppointments());
 			
 			if (m_logger.isDebugEnabled()) {
 				m_logger.debug("GwtCalendarHelper.getCalendarAppointments( Read ArrayList<Appointment> for binder ): " + String.valueOf(folderId));
@@ -722,7 +813,7 @@ public class GwtCalendarHelper {
 					}
 				}
 			}
-
+			
 			// What day to we start viewing the calendar at.
 			Calendar startDay = new GregorianCalendar(user.getTimeZone(), user.getLocale());
 			Date cachedStartDay = loadCalendarStartDayFromCache(request, folderId);
@@ -749,8 +840,8 @@ public class GwtCalendarHelper {
 				else if (showType.equals(EventsViewHelper.EVENT_TYPE_VIRTUAL))  show = CalendarShow.VIRTUAL;
 			}
 
-			// Finally, use the data we obtained to create a
-			// CalendarDisplayDataRpcResponseData and return that.
+			// Use the data we obtained to create a
+			// CalendarDisplayDataRpcResponseData.
 			CalendarDisplayDataRpcResponseData reply =
 				new CalendarDisplayDataRpcResponseData(
 					firstDay.getTime(),
@@ -766,8 +857,19 @@ public class GwtCalendarHelper {
 						startDay,
 						dayView,
 						weekFirstDay));
-			
 			cacheCalendarStartDay(request, reply.getStartDay(), folderId);
+
+			// Store the user's rights to the folder.
+			BinderModule bm     = bs.getBinderModule();
+			FolderModule fm     = bs.getFolderModule();
+			Folder       folder = fm.getFolder(folderId);
+			reply.setCanAddFolderEntry(fm.testAccess(folder, FolderOperation.addEntry       ));
+			reply.setCanModifyFolder(  bm.testAccess(folder, BinderOperation.modifyBinder   ));
+			reply.setCanPurgeFolder(   bm.testAccess(folder, BinderOperation.deleteBinder   ));
+			reply.setCanTrashFolder(   bm.testAccess(folder, BinderOperation.preDeleteBinder));
+
+			// Return the CalendarDisplayDataRpcResponseData that we
+			// just constructed.
 			return reply;
 		}
 		
