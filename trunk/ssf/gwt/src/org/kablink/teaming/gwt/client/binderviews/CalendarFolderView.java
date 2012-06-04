@@ -54,6 +54,7 @@ import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
+import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -224,9 +225,9 @@ public class CalendarFolderView extends FolderViewBase
 					GwtClientHelper.deferredAlert(m_messages.calendarView_Error_CantAdd());
 					return;					
 				}
-				
-//!				...this needs to be implemented...
-				Window.alert("CalendarFolderView.onTimeBlockClick():  ...this needs to be implemented...");
+
+				// Launch the URL to add a new appointment.
+				doAddAppointmentAsync(event.getTarget());
 			}
 		});
 		
@@ -299,6 +300,38 @@ public class CalendarFolderView extends FolderViewBase
 		loadPart1Async();
 	}
 
+	/*
+	 * Asynchronously launches a URL to add a new appointment to the
+	 * folder.
+	 */
+	private void doAddAppointmentAsync(final Date date) {
+		Scheduler.ScheduledCommand doAdd = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				doAddAppointmentNow(date);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doAdd);
+	}
+
+	/*
+	 * Synchronously launches a URL to add a new appointment to the
+	 * folder.
+	 */
+	@SuppressWarnings("deprecation")
+	private void doAddAppointmentNow(Date date) {
+		StringBuffer addEntryUrl = new StringBuffer(m_calendarDisplayData.getAddEntryUrl());
+		addEntryUrl.append("&year=");       addEntryUrl.append(String.valueOf(date.getYear() + 1900));
+		addEntryUrl.append("&month=");      addEntryUrl.append(String.valueOf(date.getMonth()      ));
+		addEntryUrl.append("&dayOfMonth="); addEntryUrl.append(String.valueOf(date.getDate()       ));
+		if (CalendarDayView.MONTH == m_calendarDisplayData.getDayView()) {
+			date = new Date();
+		}
+		addEntryUrl.append("&time="); addEntryUrl.append(String.valueOf(date.getHours()  ));
+		addEntryUrl.append(":");      addEntryUrl.append(String.valueOf(date.getMinutes()));
+		GwtTeaming.fireEvent(new GotoContentUrlEvent(addEntryUrl.toString()));
+	}
+	
 	/*
 	 * Asynchronously loads the display data for the next/previous
 	 * period.

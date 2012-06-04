@@ -112,6 +112,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 	private BinderInfo						m_binderInfo;				//
 	private boolean							m_includeColumnResizer;		//
 	private boolean							m_isIE;						//
+	private boolean							m_panelInitialized;			// Set true after the panel has completed initializing.
 	private boolean							m_viewingPinnedEntries;		//
 	private List<ToolbarItem>				m_configureToolbarItems;	//
 	private List<ToolbarItem>				m_toolbarIems;				//
@@ -354,9 +355,12 @@ public class EntryMenuPanel extends ToolPanelBase {
 			renderDefinedFiltering();
 		}
 		
-		// Finally, tell who's using this tool panel that it's ready to
-		// go.
-		toolPanelReady();
+		// Finally, if we're not simply resetting the tool panel...
+		if (!m_panelInitialized) {
+			// ...tell who's using it that it's ready to go.
+			toolPanelReady();
+			m_panelInitialized = true;
+		}
 	}
 
 	/*
