@@ -65,4 +65,14 @@ public enum CalendarShow implements IsSerializable {
 		}
 		return event;
 	}
+
+	/**
+	 * Returns true if this CalendarShow value is a physical by date
+	 * show and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isPhysicalByDate() {
+		return (this.equals(PHYSICAL_BY_ACTIVITY) || this.equals(PHYSICAL_BY_CREATION));
+	}
 }

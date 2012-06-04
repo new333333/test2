@@ -47,14 +47,18 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class CalendarDisplayDataRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private CalendarDayView	m_dayView;		// Day view:  1 day, 3 days, 5 days, 1 week, 2 weeks or 1 month.
-	private CalendarHours	m_hours;		// The hours mode selection:  Work Day vs. Full Day.
-	private CalendarShow	m_show;			// The events to be shown:  Virtual, From Folder (all), From Folder (by creation), From Folder (by activity.)
-	private Date			m_firstDay;		// The first day being show.
-	private Date			m_startDay;		// The start day the calendar view is based on.
-	private int				m_weekFirstDay;	// The week start day (Saturday, Sunday or Monday.)
-	private int				m_workDayStart;	// The hour the work day starts (12am, 1am, ... 12pm.)
-	private String			m_displayDate;	// The date to display in the navigation bar corresponding to the selected view.
+	private boolean			m_canAddFolderEntry;	//
+	private boolean			m_canModifyFolder;		//
+	private boolean			m_canPurgeFolder;		//
+	private boolean			m_canTrashFolder;		//
+	private CalendarDayView	m_dayView;				// Day view:  1 day, 3 days, 5 days, 1 week, 2 weeks or 1 month.
+	private CalendarHours	m_hours;				// The hours mode selection:  Work Day vs. Full Day.
+	private CalendarShow	m_show;					// The events to be shown:  Virtual, From Folder (all), From Folder (by creation), From Folder (by activity.)
+	private Date			m_firstDay;				// The first day being show.
+	private Date			m_startDay;				// The start day the calendar view is based on.
+	private int				m_weekFirstDay;			// The week start day (Saturday, Sunday or Monday.)
+	private int				m_workDayStart;			// The hour the work day starts (12am, 1am, ... 12pm.)
+	private String			m_displayDate;			// The date to display in the navigation bar corresponding to the selected view.
 	
 	/**
 	 * Constructor method.
@@ -98,26 +102,34 @@ public class CalendarDisplayDataRpcResponseData implements IsSerializable, VibeR
 	 * 
 	 * @return
 	 */
-	public CalendarDayView getDayView()      {return m_dayView;     }
-	public CalendarHours   getHours()        {return m_hours;       }
-	public CalendarShow    getShow()         {return m_show;        }
-	public Date            getFirstDay()     {return m_firstDay;    }
-	public Date            getStartDay()     {return m_startDay;    }
-	public int             getWeekFirstDay() {return m_weekFirstDay;}
-	public int             getWorkDayStart() {return m_workDayStart;}
-	public String          getDisplayDate()  {return m_displayDate; }
+	public boolean         canAddFolderEntry() {return m_canAddFolderEntry;}
+	public boolean         canModifyFolder()   {return m_canModifyFolder  ;}
+	public boolean         canPurgeFolder()    {return m_canPurgeFolder;   }
+	public boolean         canTrashFolder()    {return m_canTrashFolder;   }
+	public CalendarDayView getDayView()        {return m_dayView;          }
+	public CalendarHours   getHours()          {return m_hours;            }
+	public CalendarShow    getShow()           {return m_show;             }
+	public Date            getFirstDay()       {return m_firstDay;         }
+	public Date            getStartDay()       {return m_startDay;         }
+	public int             getWeekFirstDay()   {return m_weekFirstDay;     }
+	public int             getWorkDayStart()   {return m_workDayStart;     }
+	public String          getDisplayDate()    {return m_displayDate;      }
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setDayView(     CalendarDayView dayView)      {m_dayView      = dayView;     }
-	public void setHours(       CalendarHours   hours)        {m_hours        = hours;       }
-	public void setShow(        CalendarShow    show)         {m_show         = show;        }
-	public void setFirstDay(    Date            firstDay)     {m_firstDay     = firstDay;    }
-	public void setStartDay(    Date            startDay)     {m_startDay     = startDay;    }
-	public void setWeekFirstDay(int             weekFirstDay) {m_weekFirstDay = weekFirstDay;}
-	public void setWorkDayStart(int             workDayStart) {m_workDayStart = workDayStart;}
-	public void setDisplayDate( String          displayDate)  {m_displayDate  = displayDate; }
+	public void setCanAddFolderEntry(boolean         canAddFolderEntry) {m_canAddFolderEntry = canAddFolderEntry;}
+	public void setCanModifyFolder(  boolean         canModifyFolder)   {m_canModifyFolder   = canModifyFolder;  }
+	public void setCanPurgeFolder(   boolean         canPurgeFolder)    {m_canPurgeFolder    = canPurgeFolder;   }
+	public void setCanTrashFolder(   boolean         canTrashFolder)    {m_canTrashFolder    = canTrashFolder;   }
+	public void setDayView(          CalendarDayView dayView)           {m_dayView           = dayView;          }
+	public void setHours(            CalendarHours   hours)             {m_hours             = hours;            }
+	public void setShow(             CalendarShow    show)              {m_show              = show;             }
+	public void setFirstDay(         Date            firstDay)          {m_firstDay          = firstDay;         }
+	public void setStartDay(         Date            startDay)          {m_startDay          = startDay;         }
+	public void setWeekFirstDay(     int             weekFirstDay)      {m_weekFirstDay      = weekFirstDay;     }
+	public void setWorkDayStart(     int             workDayStart)      {m_workDayStart      = workDayStart;     }
+	public void setDisplayDate(      String          displayDate)       {m_displayDate       = displayDate;      }
 }
