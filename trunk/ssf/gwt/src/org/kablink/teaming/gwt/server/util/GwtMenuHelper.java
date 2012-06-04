@@ -1854,6 +1854,7 @@ public class GwtMenuHelper {
 		if (reply) {
 			reply =
 				((viewType.equals(Definition.VIEW_STYLE_BLOG)       ||
+				  viewType.equals(Definition.VIEW_STYLE_CALENDAR)   ||
 				  viewType.equals(Definition.VIEW_STYLE_DISCUSSION) ||
 				  viewType.equals(Definition.VIEW_STYLE_TABLE)      ||
 				  viewType.equals(Definition.VIEW_STYLE_FILE)       ||
@@ -1887,6 +1888,7 @@ public class GwtMenuHelper {
 		if (reply) {
 			reply =
 				((viewType.equals(Definition.VIEW_STYLE_BLOG)       ||
+				  viewType.equals(Definition.VIEW_STYLE_CALENDAR)   ||
 				  viewType.equals(Definition.VIEW_STYLE_DISCUSSION) ||
 				  viewType.equals(Definition.VIEW_STYLE_TABLE)      ||
 				  viewType.equals(Definition.VIEW_STYLE_FILE)       ||
@@ -2020,18 +2022,16 @@ public class GwtMenuHelper {
 						}
 					}
 		
+					// Construct the various items that appear in the
+					// more drop down.
+					constructEntryMoreItems(entryToolbar, bs, request, folderId, viewType, folder);
+					
 					// Are we working on a calendar folder?
 					boolean isCalendar = (FolderType.CALENDAR == folderInfo.getFolderType());
 					if (isCalendar) {
 						// Yes!  Construct the various items that
 						// appear in the view drop down.
 						constructEntryViewCalendarItems(entryToolbar, bs, request, folderId, viewType, folder);
-					}
-					else {
-						// No, we are working on something other than a
-						// calendar folder!  Construct the various
-						// items that appear in the more drop down.
-						constructEntryMoreItems(entryToolbar, bs, request, folderId, viewType, folder);
 					}
 				}
 			}
