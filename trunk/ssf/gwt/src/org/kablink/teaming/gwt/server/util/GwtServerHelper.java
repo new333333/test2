@@ -129,6 +129,7 @@ import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.FolderSortSetting;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.MilestoneStats;
@@ -3977,6 +3978,52 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Get the folder sort settings on the specified binder.
+	 * 
+	 */
+	public static FolderSortSetting getFolderSortSetting( AllModulesInjected ami, Long binderId ) throws GwtTeamingException 
+	{
+		try 
+		{
+			Long userId;
+			ProfileModule pm;
+			UserProperties userFolderProperties;
+			Map properties;
+			FolderSortSetting folderSortSetting;
+			
+			folderSortSetting = new FolderSortSetting();
+
+			userId = getCurrentUser().getId();
+			pm = ami.getProfileModule();
+			
+			userFolderProperties = pm.getUserProperties( userId, binderId );
+			properties = userFolderProperties.getProperties();
+			
+			if ( properties.containsKey( ObjectKeys.SEARCH_SORT_BY ) )
+				folderSortSetting.setSortKey( (String)properties.get( ObjectKeys.SEARCH_SORT_BY ) );
+			
+			if ( properties.containsKey( ObjectKeys.SEARCH_SORT_DESCEND ) )
+			{
+				String value;
+				
+				value = (String) properties.get( ObjectKeys.SEARCH_SORT_DESCEND );
+				folderSortSetting.setSortDescending( Boolean.valueOf( value ).booleanValue() );
+			}
+			
+			if ( m_logger.isDebugEnabled() )
+			{
+				m_logger.debug( "GwtServerHelper.getFolderSortSetting( Retrieved folder sort for binder ):  Binder:  " + binderId.longValue() + ", Sort Key:  '" + folderSortSetting.getSortKey() + "', Sort Descending:  " + folderSortSetting.getSortDescending() );
+			}
+			
+			return folderSortSetting;
+		}
+		catch ( Exception ex )
+		{
+			throw getGwtTeamingException(ex);
+		}
+	}
+
+	/**
 	 * Returns the FolderType of a folder.
 	 *
 	 * @param bs
@@ -6544,6 +6591,7 @@ public class GwtServerHelper {
 		case GET_FOLDER_DISPLAY_DATA:
 		case GET_FOLDER_ENTRIES:
 		case GET_FOLDER_ROWS:
+		case GET_FOLDER_SORT_SETTING:
 		case GET_FOLDER_TOOLBAR_ITEMS:
 		case GET_FOOTER_TOOLBAR_ITEMS:
 		case GET_GROUP_ASSIGNEE_MEMBERSHIP:
