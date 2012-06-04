@@ -114,7 +114,7 @@ public class EntityIndexUtils {
             if(title.length() > 0) {
             	// For the built-in title field, avoid indexing the same text twice. So don't add it in the catch-all field.
             	// Bug 740533 - Store original title rather than trimmed one in the title field
-            	Field titleField = new Field(Constants.TITLE_FIELD, entry.getTitle(), Field.Store.YES, Field.Index.ANALYZED);
+            	Field titleField = FieldFactory.createTitle(entry.getTitle());
     	        Field sortTitleField = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.SORT_TITLE_FIELD, title.toLowerCase());
     	        Field title1Field = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.TITLE1_FIELD, title.substring(0, 1));
     	        doc.add(titleField);

@@ -276,4 +276,12 @@ public class PropsUtil {
 		return teamingLocale;
 	}
 
+	public static float getFloat(String key, float defValue) {
+		String val = get(key);
+		if(val == null)
+			return defValue;
+		else
+			return Float.parseFloat(val);		
+	}	
+
 }
