@@ -32,31 +32,13 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * User: david
- * Date: 5/23/12
- * Time: 4:45 PM
+ * Date: 5/18/12
+ * Time: 1:10 PM
  */
-@XmlRootElement
-public class StringIdLinkPair extends BaseRestObject {
-    private String id;
-
-    public StringIdLinkPair() {
-    }
-
-    public StringIdLinkPair(String id, String link) {
-        super(link);
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
+@XmlRootElement (name="application_brief")
+public class ApplicationBrief extends PrincipalBrief {
 }

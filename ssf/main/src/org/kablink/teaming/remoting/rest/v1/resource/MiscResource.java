@@ -33,10 +33,13 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -44,15 +47,24 @@ import javax.ws.rs.core.UriInfo;
 
 import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.spi.resource.Singleton;
+import org.dom4j.Document;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
+import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
+import org.kablink.teaming.rest.v1.model.BaseRestObject;
+import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.ReleaseInfo;
 import org.kablink.teaming.rest.v1.model.RootRestObject;
+import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.util.search.Constants;
 
 import java.io.InputStream;
+import java.util.Map;
 
 @Path("/v1")
 @Singleton
@@ -64,6 +76,10 @@ public class MiscResource extends AbstractResource {
    	public RootRestObject getRootObject() {
         RootRestObject obj = new RootRestObject();
         obj.addAdditionalLink("definitions", "/definitions");
+        obj.addAdditionalLink("folders", "/folders");
+        obj.addAdditionalLink("folder_operations", "/folders/operations");
+        obj.addAdditionalLink("folder_entries", "/folder_entries");
+        obj.addAdditionalLink("folder_entry_operations", "/folder_entries/operations");
         obj.addAdditionalLink("release_info", "/release_info");
         obj.addAdditionalLink("self", "/self");
         obj.addAdditionalLink("templates", "/templates");
@@ -108,4 +124,17 @@ public class MiscResource extends AbstractResource {
             return Response.status(404).build();
         }
     }
+
+    @POST
+    @Path("/legacy_query")
+   	public SearchResultList<BaseRestObject> legacySearch(@Context HttpServletRequest request,
+                                                         @QueryParam("first") @DefaultValue("0") Integer offset,
+                                                         @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+           String query = getRawInputStreamAsString(request);
+           Document queryDoc = buildQueryDocument(query, null);
+           Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+           SearchResultList<BaseRestObject> results = new SearchResultList<BaseRestObject>(offset);
+           SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(), resultsMap, "/legacy_query", offset);
+           return results;
+   	}
 }

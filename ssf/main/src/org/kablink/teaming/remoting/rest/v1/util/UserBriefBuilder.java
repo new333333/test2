@@ -44,11 +44,10 @@ import java.util.Map;
  * Date: 5/18/12
  * Time: 1:07 PM
  */
-public class UserBriefBuilder extends DefinableEntityBriefBuilder implements SearchResultBuilder<UserBrief> {
+public class UserBriefBuilder extends PrincipalBriefBuilder implements SearchResultBuilder<UserBrief> {
     public UserBrief build(Map entry) {
         UserBrief user = new UserBrief();
-        populateDefinableEntityBrief(user, entry, Constants.BINDER_ID_FIELD);
-        user.setName((String) entry.get(Constants.LOGINNAME_FIELD));
+        populatePrincipalBrief(user, entry);
         user.setLink(LinkUriUtil.getUserLinkUri(user.getId()));
         LinkUriUtil.populateUserLinks(user);
         return user;

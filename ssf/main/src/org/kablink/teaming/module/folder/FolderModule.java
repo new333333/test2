@@ -77,36 +77,51 @@ public interface FolderModule {
 	//if not listed, you have the entry and the operation only needs read access
    public enum FolderOperation {
 	   // Core operations
-	   readEntry,
-	   addEntry,
-	   addEntryWorkflow,
-	   addReply,
-	   copyEntry,
-	   preDeleteEntry,
-	   restoreEntry,
-	   deleteEntry,
-	   changeEntryType,
-	   deleteEntryWorkflow,
-	   manageEmail,
-	   manageTag,
-	   modifyEntry,
-	   modifyEntryFields,
-	   moveEntry,
-	   report,
-	   reserveEntry,
-	   overrideReserveEntry,
-	   synchronize,
-	   scheduleSynchronization,
-	   changeEntryTimestamps,
-	   entryOwnerSetAcl,
-	   setEntryAcl,
-	   updateModificationStamp,
+	   readEntry(false, true),
+	   addEntry(true, false),
+	   addEntryWorkflow(false, true),
+	   addReply(false, true),
+	   copyEntry(false, true),
+	   preDeleteEntry(false, true),
+	   restoreEntry(false, true),
+	   deleteEntry(false, true),
+	   changeEntryType(false, true),
+	   deleteEntryWorkflow(false, true),
+	   manageEmail(true, false),
+	   manageTag(false, true),
+	   modifyEntry(false, true),
+	   modifyEntryFields(false, true),
+	   moveEntry(false, true),
+	   report(true, true),
+	   reserveEntry(false, true),
+	   overrideReserveEntry(false, true),
+	   synchronize(true, false),
+	   scheduleSynchronization(true, false),
+	   changeEntryTimestamps(true, false),
+	   entryOwnerSetAcl(true, false),
+	   setEntryAcl(true, false),
+	   updateModificationStamp(false, true),
 	   
 	   // Derived operations - The following three operations are derived from core operations for the purpose of added convenience
-	   addFile,
-	   modifyFile, 
-	   deleteFile 
-   }
+	   addFile(true, false),
+	   modifyFile(false, true),
+	   deleteFile(false, true);
+       private boolean appliesToFolders;
+       private boolean appliesToEntries;
+
+       private FolderOperation(boolean appliesToFolders, boolean appliesToEntries) {
+           this.appliesToFolders = appliesToFolders;
+           this.appliesToEntries = appliesToEntries;
+       }
+
+       public boolean appliesToFolders() {
+           return appliesToFolders;
+       }
+
+       public boolean appliesToEntries() {
+           return appliesToEntries;
+       }
+    }
  
    /**
     * Create an <code>FolderEntry</code> from the input data and add it to the specified

@@ -58,6 +58,8 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
     private final Set<Class> types;
     
     public static final Class[] cTypes = {
+            ApplicationBrief.class,
+            ApplicationGroupBrief.class,
             AverageRating.class,
     		Binder.class,
     		BinderBrief.class,
@@ -74,11 +76,14 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             FolderEntry.class,
             FolderEntryBrief.class,
             FsaConfig.class,
+            GroupBrief.class,
     		HistoryStamp.class,
     		LegacyFileProperties.class,
     		LegacyHistoryStamp.class,
     		Link.class,
     		Locale.class,
+    		Operation.class,
+    		Permission.class,
     		PrincipalBrief.class,
             ReleaseInfo.class,
             RootRestObject.class,

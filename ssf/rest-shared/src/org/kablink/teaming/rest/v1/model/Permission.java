@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -41,22 +40,40 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Time: 4:45 PM
  */
 @XmlRootElement
-public class StringIdLinkPair extends BaseRestObject {
-    private String id;
+public class Permission {
+    private EntityId entity;
+    private Boolean permission;
+    private Boolean found;
 
-    public StringIdLinkPair() {
+    public Permission() {
     }
 
-    public StringIdLinkPair(String id, String link) {
-        super(link);
-        this.id = id;
+    public Permission(EntityId entity, Boolean permission) {
+        this.entity = entity;
+        this.permission = permission;
     }
 
-    public String getId() {
-        return id;
+    public EntityId getEntity() {
+        return entity;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setEntity(EntityId entity) {
+        this.entity = entity;
+    }
+
+    public Boolean getPermission() {
+        return permission;
+    }
+
+    public void setPermission(Boolean permission) {
+        this.permission = permission;
+    }
+
+    public Boolean getFound() {
+        return found;
+    }
+
+    public void setFound(Boolean found) {
+        this.found = found;
     }
 }

@@ -34,6 +34,8 @@ package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.rest.v1.model.BaseRestObject;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
@@ -181,6 +183,18 @@ public class LinkUriUtil {
 
     public static String getTemplateLinkUri(TemplateBrief model) {
         return "/template/" + model.getId();
+    }
+
+    public static String getFolderOperationLinkUri(BinderModule.BinderOperation operation) {
+        return "/folders/operation/" + operation.name();
+    }
+
+    public static String getFolderOperationLinkUri(FolderModule.FolderOperation operation) {
+        return "/folders/operation/" + operation.name();
+    }
+
+    public static String getFolderEntryOperationLinkUri(FolderModule.FolderOperation operation) {
+        return "/folder_entries/operation/" + operation.name();
     }
 
     public static String getTagLinkUri(Tag model) {
