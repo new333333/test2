@@ -552,13 +552,14 @@ public class EventsViewHelper {
 		Map grids = null;
 		if      (null != ps) grids = ((Map) ps.getAttribute(WebKeys.CALENDAR_CURRENT_GRID, PortletSession.APPLICATION_SCOPE));
 		else if (null != hs) grids = ((Map) hs.getAttribute(WebKeys.CALENDAR_CURRENT_GRID                                  ));
-		if (grids == null) {
+		if (null == grids) {
 			grids = new HashMap();
 		}
 		grids.put(stickyComponentId, new Grid(gridType, gridSize));
 		
 		if      (null != ps) ps.setAttribute(WebKeys.CALENDAR_CURRENT_GRID, grids, PortletSession.APPLICATION_SCOPE);
 		else if (null != hs) hs.setAttribute(WebKeys.CALENDAR_CURRENT_GRID, grids                                  );
+		
 		return grids;
 	}
 	
@@ -574,12 +575,13 @@ public class EventsViewHelper {
 		Map grids = null;
 		if      (null != ps) grids = ((Map) ps.getAttribute(WebKeys.CALENDAR_CURRENT_GRID, PortletSession.APPLICATION_SCOPE));
 		else if (null != hs) grids = ((Map) hs.getAttribute(WebKeys.CALENDAR_CURRENT_GRID                                  ));
-		if (grids != null && grids.containsKey(stickyComponentId)) {
-			return (Grid)grids.get(stickyComponentId);
+		if ((null != grids) && grids.containsKey(stickyComponentId)) {
+			return ((Grid) grids.get(stickyComponentId));
 		}
-		grids = (Map)userProperties.getProperty(WebKeys.CALENDAR_CURRENT_GRID);
-		if (grids != null && grids.containsKey(stickyComponentId)) {
-			return (Grid)grids.get(stickyComponentId);
+		
+		grids = ((Map) userProperties.getProperty(WebKeys.CALENDAR_CURRENT_GRID));
+		if ((null != grids) && grids.containsKey(stickyComponentId)) {
+			return ((Grid) grids.get(stickyComponentId));
 		}
 	
 		return null;
