@@ -194,6 +194,7 @@ public class ActivityStreamData implements IsSerializable {
 		public void setReturnComments(            boolean returnComments            ) {m_returnComments             = returnComments;            }
 		public void setQuickFilter(               String  quickFilter               ) {m_quickFilter                = quickFilter;               }
 		public void setSortDescending(            boolean sortDescending            ) {m_sortDescending             = sortDescending;            }
+		public void setSortKey(					  String sortKey					) {m_sortKey					= sortKey;					 }
 	}
 	
 	/**

@@ -48,7 +48,10 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.SetFolderSortEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderSortSettingRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderSortSettingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData;
@@ -183,8 +186,9 @@ public class BlogFolderView extends FolderViewBase
 				
 				table.setWidget( 0, 0, asCtrl );
 
-				// Search for blog entries
-				searchForBlogEntries();
+				// Issue an rpc request to get the folder's sort setting.  After we get
+				// the sort setting we will search for blog entries in this folder.
+				getFolderSortSetting();
 				
 				// Call viewReady() when we are finished constructing everything.
 				viewReady();
@@ -276,6 +280,59 @@ public class BlogFolderView extends FolderViewBase
 			cmd = new GetBinderPermalinkCmd( m_binderId );
 			GwtClientHelper.executeCommand( cmd, callback );
 		}
+	}
+
+	/**
+	 * Issue an rpc request to get the sort setting for this folder.  After we get
+	 * the sort setting we will search for blog entries.
+	 */
+	private void getFolderSortSetting()
+	{
+		GetFolderSortSettingCmd cmd;
+		AsyncCallback<VibeRpcResponse> callback;
+		
+		callback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onFailure(Throwable t)
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetFolderSortSetting(),
+					m_binderId );
+			}
+			
+			/**
+			 * 
+			 */
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				Scheduler.ScheduledCommand cmd;
+				final GetFolderSortSettingRpcResponseData responseData;
+
+				responseData = (GetFolderSortSettingRpcResponseData) response.getResponseData();
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						// Search for blog entries in the given folder using the sort
+						// setting we just read.
+						searchForBlogEntries( responseData.getSortKey(), responseData.getSortDescending() );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		};
+		
+		// Issue an rpc request to get the folder's sort setting
+		cmd = new GetFolderSortSettingCmd( getFolderId() );
+		GwtClientHelper.executeCommand( cmd, callback );
 	}
 	
 	/**
@@ -498,9 +555,41 @@ public class BlogFolderView extends FolderViewBase
 		// Is the event is targeted to the folder we're viewing?
 		if ( event.getFolderId().equals( getFolderInfo().getBinderIdAsLong() ) )
 		{
-			// Yes.  Put the filter into affect.
-//!			...this needs to be implemented...
-			Window.alert("BlogFolderView.onSetFolderSort( sortKey:  '" + event.getSortKey() + "', sortDescending:  '" + event.getSortDescending() + "' ):  ...this needs to be implemented...");
+			String sortBy;
+			boolean sortDescending;
+			
+			// Yes.
+			sortBy = event.getSortKey();
+			sortDescending = event.getSortDescending();
+			
+			// Put the filter into affect.
+			searchForBlogEntries( sortBy, Boolean.valueOf( sortDescending ) );
+			
+			// Save the sort setting on the folder
+			{
+				AsyncCallback<VibeRpcResponse> callback;
+				SaveFolderSortCmd cmd;
+				
+				callback = new AsyncCallback<VibeRpcResponse>()
+				{
+					@Override
+					public void onFailure( Throwable caught )
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+							caught,
+							GwtTeaming.getMessages().rpcFailure_SaveFolderSort());
+					}
+		
+					@Override
+					public void onSuccess( VibeRpcResponse result )
+					{
+						getEntryMenuPanel().resetPanel();
+					}
+				};
+ 
+				cmd = new SaveFolderSortCmd( getFolderId(), sortBy, (!sortDescending) );
+				GwtClientHelper.executeCommand( cmd, callback );
+			}
 		}
 	}
 
@@ -579,17 +668,37 @@ public class BlogFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Do a search for blog entries
+	 * Do a search for blog entries using the given sort key
 	 */
-	private void searchForBlogEntries()
+	private void searchForBlogEntries( String sortKey, Boolean sortDescending )
 	{
-		searchForBlogEntries( null, null );
+		searchForBlogEntries( sortKey, sortDescending, null, null );
+	}
+	
+	/**
+	 * Do a search for blog entries using the given creation start/end times.
+	 */
+	private void searchForBlogEntries( Long creationStartTime, Long creationEndTime )
+	{
+		searchForBlogEntries( null, null, creationStartTime, creationEndTime );
 	}
 	
 	/**
 	 * Do a search for blog entries
 	 */
-	private void searchForBlogEntries( Long creationStartTime, Long creationEndTime )
+	private void searchForBlogEntries()
+	{
+		searchForBlogEntries( null, null, null, null );
+	}
+	
+	/**
+	 * Do a search for blog entries
+	 */
+	private void searchForBlogEntries(
+								String sortKey, 
+								Boolean sortDescending, 
+								Long creationStartTime, 
+								Long creationEndTime )
 	{
 		if ( m_activityStreamCtrl != null )
 		{
@@ -605,6 +714,17 @@ public class BlogFolderView extends FolderViewBase
 				specificFolderData.setForcePlainTextDescriptions( false );
 				specificFolderData.setReturnComments( false );
 				specificFolderData.setQuickFilter( m_quickFilter );
+				
+				// Was a sort key specified?
+				if ( sortKey != null && sortKey.length() > 0 )
+				{
+					// Yes
+					specificFolderData.setSortKey( sortKey );
+					if ( sortDescending != null )
+					{
+						specificFolderData.setSortDescending( sortDescending.booleanValue() );
+					}
+				}
 				
 				// Was a creation start/end time specified?
 				if ( creationStartTime != null && creationEndTime != null )

@@ -118,6 +118,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.FolderSortSetting;
 import org.kablink.teaming.gwt.client.util.ProjectInfo;
 import org.kablink.teaming.gwt.client.util.TagSortOrder;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
@@ -975,6 +976,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				gfrCmd.getLength(),
 				gfrCmd.getQuickFilter() );
 			return new VibeRpcResponse( responseData );
+		}
+		
+		case GET_FOLDER_SORT_SETTING:
+		{
+			GetFolderSortSettingCmd gfssCmd;
+			FolderSortSetting folderSortSetting;
+			GetFolderSortSettingRpcResponseData responseData;
+			
+			gfssCmd = (GetFolderSortSettingCmd) cmd;
+			folderSortSetting = getFolderSortSetting( gfssCmd.getBinderId() );
+			responseData = new GetFolderSortSettingRpcResponseData( folderSortSetting );
+			response = new VibeRpcResponse( responseData );
+			return response;
+	
 		}
 		
 		case GET_FOLDER_TOOLBAR_ITEMS:
@@ -3652,6 +3667,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		
 		return entries;
+	}
+	
+	/**
+	 * Return the sort setting for the given folder
+	 */
+	private FolderSortSetting getFolderSortSetting( Long binderId ) throws GwtTeamingException 
+	{
+		SimpleProfiler.start( "GwtRpcServiceImpl.getFolderSortSetting()" );
+		try 
+		{
+			return GwtServerHelper.getFolderSortSetting( this, binderId );
+		}
+		finally 
+		{
+			SimpleProfiler.stop( "GwtRpcServiceImpl.getFolderSortSetting()" );
+		}
 	}
 	
 	/*
