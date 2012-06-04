@@ -116,6 +116,7 @@ public class Constants {
 	public static final String FOLDER_CONDITION_ACL_FIELD = "_folderConditionAcl";
 	public static final String CONDITION_ACL_PREFIX = "c";
 	public static final String ENTITY_TYPE_FOLDER = "folder";
+	public static final String ENTITY_TYPE_WORKSPACE = "workspace";
 	public static final String ENTITY_TYPE_FOLDER_ENTRY = "folderEntry";
 	public static final String BINDER_OWNER_ACL_FIELD = "_bOwnerAcl";
 	public static final String ENTRY_OWNER_ACL_FIELD = "_eOwnerAcl";

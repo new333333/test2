@@ -32,17 +32,46 @@
  */
 package org.kablink.teaming.remoting.rest.v1.resource;
 
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.dom.DOMDocument;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
+import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.ws.model.Timestamp;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
+import org.kablink.teaming.util.stringcheck.StringCheckUtil;
+import org.kablink.util.api.ApiErrorCode;
+import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Criterion;
+import org.kablink.util.search.Restrictions;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.util.Iterator;
 import java.util.Map;
 
 public abstract class AbstractResource extends AbstractAllModulesInjected {
@@ -58,6 +87,68 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     protected Long getLoggedInUserId() {
         return RequestContextHolder.getRequestContext().getUserId();
+    }
+
+    protected Document getDocument(String xml) {
+   		// Parse XML string into a document tree.
+   		try {
+            if (xml==null || xml.length()==0) {
+                return DocumentHelper.createDocument(DocumentHelper.createElement("QUERY"));
+            }
+   			return DocumentHelper.parseText(xml);
+   		} catch (DocumentException e) {
+   			throw new BadRequestException(ApiErrorCode.BAD_INPUT, "POST body did not contain valid XML: " + e.getLocalizedMessage());
+   		}
+   	}
+
+    protected InputStream getInputStreamFromMultipartFormdata(HttpServletRequest request)
+            throws WebApplicationException, UncheckedIOException {
+        InputStream is;
+        try {
+            ServletFileUpload sfu = new ServletFileUpload(new DiskFileItemFactory());
+            FileItemIterator fii = sfu.getItemIterator(request);
+            if (fii.hasNext()) {
+                FileItemStream item = fii.next();
+                is = item.openStream();
+            } else {
+                throw new BadRequestException(ApiErrorCode.MISSING_MULTIPART_FORM_DATA, "Missing form data");
+            }
+        } catch (FileUploadException e) {
+            logger.warn("Received bad multipart form data", e);
+            throw new BadRequestException(ApiErrorCode.BAD_MULTIPART_FORM_DATA, "Received bad multipart form data");
+        } catch (IOException e) {
+            logger.error("Error reading multipart form data", e);
+            throw new UncheckedIOException(e);
+        }
+        return is;
+    }
+
+    protected String getRawInputStreamAsString(HttpServletRequest request) {
+        InputStream is = getRawInputStream(request);
+        try {
+            return IOUtils.toString(is, "UTF-8");
+        } catch (IOException e) {
+            logger.error("Error reading data", e);
+            throw new UncheckedIOException(e);
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
+    }
+
+    protected InputStream getRawInputStream(HttpServletRequest request)
+            throws UncheckedIOException {
+        if (MediaType.APPLICATION_FORM_URLENCODED.equals(request.getContentType())) {
+            throw new UnsupportedMediaTypeException(MediaType.APPLICATION_FORM_URLENCODED + " is not a supported media type.");
+        }
+        if (MediaType.MULTIPART_FORM_DATA.equals(request.getContentType())) {
+            throw new UnsupportedMediaTypeException(MediaType.MULTIPART_FORM_DATA + " is not a supported media type.");
+        }
+        try {
+            return request.getInputStream();
+        } catch (IOException e) {
+            logger.error("Error reading data", e);
+            throw new UncheckedIOException(e);
+        }
     }
 
     protected void populateTimestamps(Map options, DefinableEntity entry)
@@ -78,4 +169,52 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
    		}
    	}
 
+    protected Criterion buildEntriesCriterion() {
+        return Restrictions.conjunction()
+        			.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
+        			.add(Restrictions.in(Constants.ENTRY_TYPE_FIELD, new String[]{Constants.ENTRY_TYPE_ENTRY, Constants.ENTRY_TYPE_REPLY}));
+    }
+
+    protected Criterion buildFoldersCriterion() {
+        return Restrictions.conjunction()
+        			.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER))
+        			.add(Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER));
+    }
+
+    protected Criterion buildWorkspacesCriterion() {
+        return Restrictions.conjunction()
+        			.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER))
+        			.add(Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_WORKSPACE));
+    }
+
+    protected Criterion buildBindersCriterion() {
+        return Restrictions.conjunction()
+        			.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
+    }
+
+    protected Document buildQueryDocument(String query, Criterion additionalCriteria) {
+        query = StringCheckUtil.check(query);
+
+        Document queryDoc = getDocument(query);
+        if (additionalCriteria!=null) {
+            Element queryRoot = queryDoc.getRootElement();
+
+            // Find the root junction element
+            Iterator it = queryRoot.selectNodes("AND|OR|NOT").iterator();
+
+            Element implicit = additionalCriteria.toQuery(queryRoot);
+
+            // Add the user supplied query criteria into our implicit AND
+            while(it.hasNext()) {
+                implicit.add(((Element)it.next()).detach());
+            }
+
+            // Add the SORTBY back to the end of the document
+            it = queryRoot.selectNodes("SORTBY").iterator();
+            while(it.hasNext()) {
+                queryRoot.add(((Element)it.next()).detach());
+            }
+        }
+        return queryDoc;
+    }
 }

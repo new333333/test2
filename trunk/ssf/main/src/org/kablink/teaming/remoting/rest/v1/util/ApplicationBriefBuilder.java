@@ -30,33 +30,35 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.rest.v1.model;
+package org.kablink.teaming.remoting.rest.v1.util;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.kablink.teaming.rest.v1.model.ApplicationBrief;
+import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
+
+import java.util.Map;
 
 /**
  * User: david
- * Date: 5/23/12
- * Time: 4:45 PM
+ * Date: 5/18/12
+ * Time: 1:07 PM
  */
-@XmlRootElement
-public class StringIdLinkPair extends BaseRestObject {
-    private String id;
-
-    public StringIdLinkPair() {
+public class ApplicationBriefBuilder extends PrincipalBriefBuilder implements SearchResultBuilder<ApplicationBrief> {
+    public ApplicationBrief build(Map entry) {
+        ApplicationBrief user = new ApplicationBrief();
+        populatePrincipalBrief(user, entry);
+        return user;
     }
 
-    public StringIdLinkPair(String id, String link) {
-        super(link);
-        this.id = id;
+    public Object getId(ApplicationBrief obj) {
+        return obj.getId();
     }
 
-    public String getId() {
-        return id;
+
+    public Object getParentId(ApplicationBrief obj) {
+        return obj.getParentBinder().getId();
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public SearchResultTreeNode<ApplicationBrief> factoryTreeNode(ApplicationBrief obj) {
+        return null;
     }
 }

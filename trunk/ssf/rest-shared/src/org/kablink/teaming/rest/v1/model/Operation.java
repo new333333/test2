@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -41,22 +40,22 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Time: 4:45 PM
  */
 @XmlRootElement
-public class StringIdLinkPair extends BaseRestObject {
-    private String id;
+public class Operation extends BaseRestObject {
+    private String name;
 
-    public StringIdLinkPair() {
+    public Operation() {
     }
 
-    public StringIdLinkPair(String id, String link) {
+    public Operation(String name, String link) {
         super(link);
-        this.id = id;
+        this.name = name;
     }
 
-    public String getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setName(String name) {
+        this.name = name;
     }
 }

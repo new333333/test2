@@ -33,10 +33,11 @@
 
 package org.kablink.teaming.remoting.rest.v1.util;
 
-import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.*;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.FileIndexData;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.rest.v1.model.AverageRating;
 import org.kablink.teaming.rest.v1.model.Binder;
@@ -456,4 +457,23 @@ public class ResourceUtil {
         return model;
 
     }
+
+    public static Operation buildFolderOperation(BinderModule.BinderOperation operation) {
+        Operation model = new Operation(operation.name(), LinkUriUtil.getFolderOperationLinkUri(operation));
+        model.addAdditionalLink("permissions", model.getLink() + "/permissions");
+        return model;
+    }
+
+    public static Operation buildFolderOperation(FolderModule.FolderOperation operation) {
+        Operation model = new Operation(operation.name(), LinkUriUtil.getFolderOperationLinkUri(operation));
+        model.addAdditionalLink("permissions", model.getLink() + "/permissions");
+        return model;
+    }
+
+    public static Operation buildFolderEntryOperation(FolderModule.FolderOperation operation) {
+        Operation model = new Operation(operation.name(), LinkUriUtil.getFolderEntryOperationLinkUri(operation));
+        model.addAdditionalLink("permissions", model.getLink() + "/permissions");
+        return model;
+    }
+
 }

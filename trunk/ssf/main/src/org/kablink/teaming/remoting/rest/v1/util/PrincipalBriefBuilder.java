@@ -30,33 +30,24 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.rest.v1.model;
+package org.kablink.teaming.remoting.rest.v1.util;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
+import org.kablink.teaming.rest.v1.model.PrincipalBrief;
+import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
+import org.kablink.teaming.rest.v1.model.UserBrief;
+import org.kablink.util.search.Constants;
+
+import java.util.Map;
 
 /**
  * User: david
- * Date: 5/23/12
- * Time: 4:45 PM
+ * Date: 5/18/12
+ * Time: 1:07 PM
  */
-@XmlRootElement
-public class StringIdLinkPair extends BaseRestObject {
-    private String id;
-
-    public StringIdLinkPair() {
-    }
-
-    public StringIdLinkPair(String id, String link) {
-        super(link);
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+public abstract class PrincipalBriefBuilder extends DefinableEntityBriefBuilder {
+    public void populatePrincipalBrief(PrincipalBrief model, Map entry) {
+        populateDefinableEntityBrief(model, entry, Constants.BINDER_ID_FIELD);
+        model.setName((String) entry.get(Constants.LOGINNAME_FIELD));
     }
 }

@@ -1,24 +1,15 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
-import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
-import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFileByTheIdException;
 import org.kablink.teaming.domain.NoFileByTheNameException;
-import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
-import org.kablink.teaming.domain.NoPrincipalByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
@@ -31,7 +22,6 @@ import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.exc.InternalServerErrorException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
-import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
@@ -41,10 +31,7 @@ import org.kablink.util.api.ApiErrorCode;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
@@ -173,44 +160,6 @@ abstract public class AbstractFileResource extends AbstractResource {
             throw new NoFileByTheIdException(fileId, "The specified file ID represents a file version rather than a file");
         else
             return fa;
-    }
-
-    protected InputStream getInputStreamFromMultipartFormdata(HttpServletRequest request)
-            throws WebApplicationException, UncheckedIOException {
-        InputStream is;
-        try {
-            ServletFileUpload sfu = new ServletFileUpload(new DiskFileItemFactory());
-            FileItemIterator fii = sfu.getItemIterator(request);
-            if (fii.hasNext()) {
-                FileItemStream item = fii.next();
-                is = item.openStream();
-            } else {
-                throw new BadRequestException(ApiErrorCode.MISSING_MULTIPART_FORM_DATA, "Missing form data");
-            }
-        } catch (FileUploadException e) {
-            logger.warn("Received bad multipart form data", e);
-            throw new BadRequestException(ApiErrorCode.BAD_MULTIPART_FORM_DATA, "Received bad multipart form data");
-        } catch (IOException e) {
-            logger.error("Error reading multipart form data", e);
-            throw new UncheckedIOException(e);
-        }
-        return is;
-    }
-
-    protected InputStream getRawInputStream(HttpServletRequest request)
-            throws UncheckedIOException {
-        if (request.getContentType().equals(MediaType.APPLICATION_FORM_URLENCODED)) {
-            throw new UnsupportedMediaTypeException(MediaType.APPLICATION_FORM_URLENCODED + " is not a supported media type.");
-        }
-        if (request.getContentType().equals(MediaType.MULTIPART_FORM_DATA)) {
-            throw new UnsupportedMediaTypeException(MediaType.MULTIPART_FORM_DATA + " is not a supported media type.");
-        }
-        try {
-            return request.getInputStream();
-        } catch (IOException e) {
-            logger.error("Error reading data", e);
-            throw new UncheckedIOException(e);
-        }
     }
 
     protected FileAttachment getFileAttachment(DefinableEntity entity, String filename)
