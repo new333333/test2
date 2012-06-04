@@ -59,6 +59,8 @@ import org.kablink.teaming.calendar.AbstractIntervalView;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.calendar.OneMonthView;
 import org.kablink.teaming.calendar.EventsViewHelper.Grid;
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -83,6 +85,7 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.SearchUtils;
+import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.CalendarHelper;
@@ -765,7 +768,7 @@ public class GwtCalendarHelper {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
 			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtServerHelpergetCalendarAppointments( SOURCE EXCEPTION ):  ", e);
+			     m_logger.debug("GwtCalendarHelper.getCalendarAppointments( SOURCE EXCEPTION ):  ", e);
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
@@ -783,10 +786,14 @@ public class GwtCalendarHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
+	@SuppressWarnings("unchecked")
 	public static CalendarDisplayDataRpcResponseData getCalendarDisplayData(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) throws GwtTeamingException {
 		try {
+			BinderModule	bm = bs.getBinderModule();
+			FolderModule	fm = bs.getFolderModule();
+			ProfileModule	pm = bs.getProfileModule();
+			
 			Long			folderId       = folderInfo.getBinderIdAsLong();
-			ProfileModule	pm             = bs.getProfileModule();
 			User			user           = GwtServerHelper.getCurrentUser();
 			UserProperties	userProperties = bs.getProfileModule().getUserProperties(user.getId());
 
@@ -844,6 +851,26 @@ public class GwtCalendarHelper {
 				else if (showType.equals(EventsViewHelper.EVENT_TYPE_VIRTUAL))  show = CalendarShow.VIRTUAL;
 			}
 
+			// Generate a URL to use to add an entry of the default
+			// type to this folder.
+			AdaptedPortletURL addEntryUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			addEntryUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
+			addEntryUrl.setParameter(WebKeys.URL_BINDER_ID, String.valueOf(folderId));
+			Folder folder = fm.getFolder(folderId);
+			List defaultEntryDefs = folder.getEntryDefinitions();
+			int defaultEntryDefsCount = ((null == defaultEntryDefs) ? 0 : defaultEntryDefs.size());
+			if (0 < defaultEntryDefsCount) {
+				int	defaultEntryDefIndex = ListFolderHelper.getDefaultFolderEntryDefinitionIndex(
+					user.getId(),
+					pm,
+					folder,
+					defaultEntryDefs);
+
+				addEntryUrl.setParameter(
+					WebKeys.URL_ENTRY_TYPE,
+					((Definition) defaultEntryDefs.get(defaultEntryDefIndex)).getId());
+			}
+			
 			// Use the data we obtained to create a
 			// CalendarDisplayDataRpcResponseData.
 			CalendarDisplayDataRpcResponseData reply =
@@ -855,6 +882,7 @@ public class GwtCalendarHelper {
 					show,
 					weekFirstDay,
 					workDayStart,
+					addEntryUrl.toString(),
 					buildCalendarDateDisplay(
 						user,
 						firstDay,
@@ -864,9 +892,6 @@ public class GwtCalendarHelper {
 			cacheCalendarStartDay(request, reply.getStartDay(), folderId);
 
 			// Store the user's rights to the folder.
-			BinderModule bm     = bs.getBinderModule();
-			FolderModule fm     = bs.getFolderModule();
-			Folder       folder = fm.getFolder(folderId);
 			reply.setCanAddFolderEntry(fm.testAccess(folder, FolderOperation.addEntry       ));
 			reply.setCanModifyFolder(  bm.testAccess(folder, BinderOperation.modifyBinder   ));
 			reply.setCanPurgeFolder(   bm.testAccess(folder, BinderOperation.deleteBinder   ));
@@ -881,7 +906,7 @@ public class GwtCalendarHelper {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
 			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtServerHelpergetCalendarDisplayData( SOURCE EXCEPTION ):  ", e);
+			     m_logger.debug("GwtCalendarHelper.getCalendarDisplayData( SOURCE EXCEPTION ):  ", e);
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
@@ -915,7 +940,7 @@ public class GwtCalendarHelper {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
 			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtServerHelpergetCalendarDisplayDate( SOURCE EXCEPTION ):  ", e);
+			     m_logger.debug("GwtCalendarHelper.getCalendarDisplayDate( SOURCE EXCEPTION ):  ", e);
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
@@ -980,7 +1005,7 @@ public class GwtCalendarHelper {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
 			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtServerHelpergetCalendarNextPreviousPeroid( SOURCE EXCEPTION ):  ", e);
+			     m_logger.debug("GwtCalendarHelper.getCalendarNextPreviousPeroid( SOURCE EXCEPTION ):  ", e);
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
@@ -1188,7 +1213,7 @@ public class GwtCalendarHelper {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
 			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtServerHelpersaveCalendarDayView( SOURCE EXCEPTION ):  ", e);
+			     m_logger.debug("GwtCalendarHelper.saveCalendarDayView( SOURCE EXCEPTION ):  ", e);
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
@@ -1230,7 +1255,7 @@ public class GwtCalendarHelper {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
 			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtServerHelpersaveCalendarHours( SOURCE EXCEPTION ):  ", e);
+			     m_logger.debug("GwtCalendarHelper.saveCalendarHours( SOURCE EXCEPTION ):  ", e);
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
@@ -1273,7 +1298,7 @@ public class GwtCalendarHelper {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
 			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
-			     m_logger.debug("GwtServerHelpersaveCalendarSettings( SOURCE EXCEPTION ):  ", e);
+			     m_logger.debug("GwtCalendarHelper.saveCalendarSettings( SOURCE EXCEPTION ):  ", e);
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
@@ -1388,5 +1413,34 @@ public class GwtCalendarHelper {
 	public static void setVibeAttendeeTeams(CalendarAppointment appointment, List<AssignmentInfo> vibeAttendeeTeams) {
 		// Store the Vibe attendees.
 		appointment.setVibeAttendeeTeams(vibeAttendeeTeams);
+	}
+	
+	/**
+	 * Updates an event's dates based on the appointment being dragged
+	 * and dropped in the calendar folder..
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * @param event
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean updateCalendarEvent(AllModulesInjected bs, HttpServletRequest request, Long folderId, CalendarAppointment event) throws GwtTeamingException {
+		try {
+//!			...this needs to be implemented...
+			return Boolean.TRUE;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtCalendarHelper.updateCalendarEvent( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
 	}
 }

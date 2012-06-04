@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.event.CalendarPreviousPeriodEvent;
 import org.kablink.teaming.gwt.client.event.CalendarSettingsEvent;
 import org.kablink.teaming.gwt.client.event.CalendarShowEvent;
 import org.kablink.teaming.gwt.client.event.CalendarViewDaysEvent;
+import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
@@ -69,6 +70,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarDayViewCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarHoursCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarShowCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.UpdateCalendarEventCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CalendarAppointment;
@@ -223,7 +225,6 @@ public class CalendarFolderView extends FolderViewBase
 					return;					
 				}
 				
-				// Create an appointment at the given time.
 //!				...this needs to be implemented...
 				Window.alert("CalendarFolderView.onTimeBlockClick():  ...this needs to be implemented...");
 			}
@@ -243,7 +244,7 @@ public class CalendarFolderView extends FolderViewBase
 				}
 
 				// Does the user have rights to modify this event?
-				CalendarAppointment ca = ((CalendarAppointment) event.getTarget());
+				final CalendarAppointment ca = ((CalendarAppointment) event.getTarget());
 				if (!(ca.canModify())) {
 					// No!  Tell them about the problem and cancel the
 					// event.
@@ -252,7 +253,35 @@ public class CalendarFolderView extends FolderViewBase
 					return;					
 				}
 				
-				// Update the given event.
+				// Can we update the given event?
+				GwtClientHelper.executeCommand(
+						new UpdateCalendarEventCmd(getFolderInfo().getBinderIdAsLong(), ca),
+						new AsyncCallback<VibeRpcResponse>() {
+					@Override
+					public void onFailure(Throwable t) {
+						// No!  Tell the user about the problem...
+						GwtClientHelper.handleGwtRPCFailure(
+							t,
+							m_messages.rpcFailure_UpdateCalendarEvent(),
+							(ca.isTask()                                        ?
+								m_messages.rpcFailure_UpdateCalendarEventTask() :
+								m_messages.rpcFailure_UpdateCalendarEventAppointment()));
+						
+						// ...and repopulate the view to get back what
+						// ...was displayed.
+						setCalendarDisplay();
+						m_calendar.clearAppointments();
+						populateCalendarEventsAsync();
+					}
+					
+					@Override
+					public void onSuccess(VibeRpcResponse response) {
+						// Yes, the event has been updated!  Nothing
+						// more to do as the drag and drop will have
+						// already positioned it correctly.
+					}
+				});
+				
 //!				...this needs to be implemented...
 				Window.alert("CalendarFolderView.onUpdate():  ...this needs to be implemented...");
 				event.setCancelled(true);
@@ -296,7 +325,7 @@ public class CalendarFolderView extends FolderViewBase
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
-					m_messages.rpcFailure_GetCalendarNextPreviousPeroid());
+					m_messages.rpcFailure_GetCalendarNextPreviousPeriod());
 			}
 			
 			@Override
@@ -827,9 +856,33 @@ public class CalendarFolderView extends FolderViewBase
 	public void onContributorIdsRequest(ContributorIdsRequestEvent event) {
 		// Is the event targeted to this folder?
 		if (event.getBinderId().equals(getFolderId())) {
-			// Yes!
-//!			...this needs to be implemented...
-			Window.alert("CalendarFolderView.onContributorIdsRequest():  ...this needs to be implemented...");
+			// Yes!  Do we have any events being displayed in the
+			// calendar?
+			List<Appointment> appointments = m_calendar.getAppointments();
+			if ((null != appointments) && (!(appointments.isEmpty()))) {
+				// Yes!  Collect the contributor IDs from the
+				// appointments...
+				final List<Long> contributorIds = new ArrayList<Long>();
+				for (Appointment appointment:  appointments) {
+					Long contributorId = ((CalendarAppointment) appointment).getCreatorId();
+					if (!(contributorIds.contains(contributorId))) {
+						contributorIds.add(contributorId);
+					}
+				}
+				
+				// ...and asynchronously fire the corresponding reply
+				// ...event with the contributor IDs.
+				ScheduledCommand doReply = new ScheduledCommand() {
+					@Override
+					public void execute() {
+						GwtTeaming.fireEvent(
+							new ContributorIdsReplyEvent(
+								getFolderId(),
+								contributorIds));
+					}
+				};
+				Scheduler.get().scheduleDeferred(doReply);
+			}
 		}
 	}
 	
@@ -1064,7 +1117,7 @@ public class CalendarFolderView extends FolderViewBase
 
 		// Put the first day of the week into affect.
 		CalendarFormat cf = CalendarFormat.INSTANCE;
-		cf.setFirstDayOfWeek(m_calendarDisplayData.getWeekFirstDay());
+		cf.setFirstDayOfWeek(m_calendarDisplayData.getWeekFirstDay() - 1);
 		
 		// Calculate the view and days...
 		int days = (-1);

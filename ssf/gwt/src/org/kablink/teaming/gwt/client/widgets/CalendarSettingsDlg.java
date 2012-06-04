@@ -210,14 +210,14 @@ public class CalendarSettingsDlg extends DlgBox implements EditSuccessfulHandler
 		grid.setWidget(0, 0, il);
 		m_weekStartList = new ListBox(false);
 		m_weekStartList.addStyleName("vibe-calendarSettingsDlg-list");
-		m_weekStartList.addItem(m_weekDays[6], "6");
-		m_weekStartList.addItem(m_weekDays[0], "0");
-		m_weekStartList.addItem(m_weekDays[1], "1");
+		m_weekStartList.addItem(m_weekDays[6], "7");
+		m_weekStartList.addItem(m_weekDays[0], "1");
+		m_weekStartList.addItem(m_weekDays[1], "2");
 		int si;
 		switch (m_calendarDisplayData.getWeekFirstDay()) {
-		case 6:  si = 0;    break;
-		case 0:  si = 1;    break;
-		case 1:  si = 2;    break;
+		case 7:  si = 0;    break;
+		case 1:  si = 1;    break;
+		case 2:  si = 2;    break;
 		default: si = (-1); break;
 		}
 		if ((-1) != si) {
