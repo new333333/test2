@@ -812,6 +812,9 @@ public class GwtCalendarHelper {
 					case 14:  dayView = CalendarDayView.TWO_WEEKS;  break;
 					}
 				}
+				else if (gridType.equals(EventsViewHelper.GRID_MONTH)) {
+					gridSize = (-1);
+				}
 			}
 			
 			// What day to we start viewing the calendar at.
