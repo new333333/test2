@@ -87,6 +87,7 @@ import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.CalendarHelper;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -1148,6 +1149,7 @@ public class GwtCalendarHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
+	@SuppressWarnings("unchecked")
 	public static CalendarDisplayDataRpcResponseData saveCalendarDayView(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, CalendarDayView dayView, Date date) throws GwtTeamingException {
 		try {
 			// Store the new day view...
@@ -1164,8 +1166,12 @@ public class GwtCalendarHelper {
 			}
 
 			User			user           = GwtServerHelper.getCurrentUser();
-			UserProperties	userProperties = bs.getProfileModule().getUserProperties(user.getId());
-			EventsViewHelper.setCalendarGrid(request, userProperties, (folderInfo.getBinderId() + "_"), gridType, gridSize);
+			Long			userId         = user.getId();
+			UserProperties	userProperties = bs.getProfileModule().getUserProperties(userId);
+			Map				grids          = EventsViewHelper.setCalendarGrid(request, userProperties, (folderInfo.getBinderId() + "_"), gridType, gridSize);
+			if (!(user.isShared())) {
+				bs.getProfileModule().setUserProperty(user.getId(), WebKeys.CALENDAR_CURRENT_GRID, grids);
+			}
 			
 			// ...and return a CalendarDisplayDataRpcData with the
 			// ...changes.
