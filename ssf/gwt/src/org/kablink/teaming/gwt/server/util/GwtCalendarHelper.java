@@ -59,7 +59,6 @@ import org.kablink.teaming.calendar.AbstractIntervalView;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.calendar.OneMonthView;
 import org.kablink.teaming.calendar.EventsViewHelper.Grid;
-import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Folder;
