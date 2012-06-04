@@ -35,6 +35,8 @@ package org.kablink.util.search;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
 
+import org.kablink.util.PropsUtil;
+
 /**
  * @author jong
  *
@@ -56,6 +58,13 @@ public class FieldFactory {
 	public static Field createNotStoredNotAnalyzedNoNorms(String name, String value) {
 		Field field = new Field(name, value, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
 		field.setOmitTermFreqAndPositions(true);
+		return field;
+	}
+	
+	public static Field createTitle(String value) {
+		Field field = new Field(Constants.TITLE_FIELD, value, Field.Store.YES, Field.Index.ANALYZED);
+		float boost = PropsUtil.getFloat("lucene.index.field.boost.title", 10.0f);
+		field.setBoost(boost);
 		return field;
 	}
 }
