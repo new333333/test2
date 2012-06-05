@@ -57,9 +57,8 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	private boolean					m_canTrash;				//
 	private boolean					m_isTask;				//
 	private boolean					m_seen;					//
+	private EntityId				m_entityId;				//
 	private Long					m_creatorId;			//
-	private Long					m_entryId;				//
-	private Long					m_folderId;				//
 	
 	/**
 	 * Constructor method.
@@ -99,24 +98,16 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	public List<AssignmentInfo> getVibeAttendeeGroups() {return m_vibeAttendeeGroups;}
 	public List<AssignmentInfo> getVibeAttendeeTeams()  {return m_vibeAttendeeTeams; }
 	
-	public boolean canModify()    {return m_canModify;}
-	public boolean canPurge()     {return m_canPurge; }
-	public boolean canTrash()     {return m_canTrash; }
-	public boolean isTask()       {return m_isTask;   }
-	public boolean isSeen()       {return m_seen;     }
-	public Long    getCreatorId() {return m_creatorId;}
-	public Long    getEntryId()   {return m_entryId;  }
-	public Long    getFolderId()  {return m_folderId; }
+	public boolean  canModify()    {return m_canModify;                                             }
+	public boolean  canPurge()     {return m_canPurge;                                              }
+	public boolean  canTrash()     {return m_canTrash;                                              }
+	public boolean  isTask()       {return m_isTask;                                                }
+	public boolean  isSeen()       {return m_seen;                                                  }
+	public EntityId getEntityId()  {return m_entityId;                                              }
+	public Long     getCreatorId() {return m_creatorId;                                             }
+	public Long     getFolderId()  {return ((null == m_entityId) ? null : m_entityId.getBinderId());}
+	public Long     getEntryId()   {return ((null == m_entityId) ? null : m_entityId.getEntityId());}
 
-	/**
-	 * Returns an EntityId describing this appointment.
-	 * 
-	 * @return
-	 */
-	public EntityId getEntityId() {
-		return new EntityId(m_folderId, m_entryId, EntityId.FOLDER_ENTRY);
-	}
-	
 	/**
 	 * Set'er methods.
 	 * 
@@ -126,15 +117,27 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	public void setVibeAttendeeGroups(List<AssignmentInfo> vibeAttendeeGroups) {m_vibeAttendeeGroups = vibeAttendeeGroups;}
 	public void setVibeAttendeeTeams( List<AssignmentInfo> vibeAttendeeTeams)  {m_vibeAttendeeTeams  = vibeAttendeeTeams; }
 	
-	public void setCanModify(boolean canModify) {m_canModify = canModify;}
-	public void setCanPurge( boolean canPurge)  {m_canPurge  = canPurge; }
-	public void setCanTrash( boolean canTrash)  {m_canTrash  = canTrash; }
-	public void setIsTask(   boolean isTask)    {m_isTask    = isTask;   }
-	public void setSeen(     boolean seen)      {m_seen      = seen;     }
-	public void setCreatorId(Long    creatorId) {m_creatorId = creatorId;}
-	public void setEntryId(  Long    entryId)   {m_entryId   = entryId;  }
-	public void setFolderId( Long    folderId)  {m_folderId  = folderId; }
+	public void setCanModify(boolean  canModify) {m_canModify = canModify;}
+	public void setCanPurge( boolean  canPurge)  {m_canPurge  = canPurge; }
+	public void setCanTrash( boolean  canTrash)  {m_canTrash  = canTrash; }
+	public void setIsTask(   boolean  isTask)    {m_isTask    = isTask;   }
+	public void setSeen(     boolean  seen)      {m_seen      = seen;     }
+	public void setEntityId( EntityId entityId)  {m_entityId  = entityId; }
+	public void setCreatorId(Long     creatorId) {m_creatorId = creatorId;}
 
+	/**
+	 * Returns the EntityId of the appointment in a List<EntityId>.
+	 * 
+	 * @return
+	 */
+	public List<EntityId> getEntityIdAsList() {
+		List<EntityId> reply = new ArrayList<EntityId>();
+		if (null != m_entityId) {
+			reply.add(m_entityId);
+		}
+		return reply;
+	}
+	
 	/**
 	 * Add'er methods
 	 * 

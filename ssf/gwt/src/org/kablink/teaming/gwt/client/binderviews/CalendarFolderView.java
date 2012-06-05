@@ -342,10 +342,6 @@ public class CalendarFolderView extends FolderViewBase
 						// already positioned it correctly.
 					}
 				});
-				
-//!				...this needs to be implemented...
-				Window.alert("CalendarFolderView.onUpdate():  ...this needs to be implemented...");
-				event.setCancelled(true);
 			}
 		});
 	}
@@ -453,14 +449,6 @@ public class CalendarFolderView extends FolderViewBase
 	 * Synchronously deletes the given appointment.
 	 */
 	private void doDeleteEntryNow(final CalendarAppointment appointment) {
-		// Construct a List<EntityId> describing the entry to be
-		// deleted.
-		Long     folderId = appointment.getFolderId();
-		Long     entryId  = appointment.getEntryId();
-		EntityId eid      = new EntityId(folderId, entryId, EntityId.FOLDER_ENTRY);
-		final List<EntityId> deleteList = new ArrayList<EntityId>();
-		deleteList.add(eid);
-		
 		// Is the user sure they want to delete the appointment?
 		ConfirmDlg.createAsync(new ConfirmDlgClient() {
 			@Override
@@ -485,7 +473,7 @@ public class CalendarFolderView extends FolderViewBase
 							// Yes, the user is sure!  Can we delete
 							// the appointment?
 							GwtClientHelper.executeCommand(
-									new DeleteFolderEntriesCmd(deleteList),
+									new DeleteFolderEntriesCmd(appointment.getEntityIdAsList()),
 									new AsyncCallback<VibeRpcResponse>() {
 								@Override
 								public void onFailure(Throwable t) {
@@ -550,14 +538,6 @@ public class CalendarFolderView extends FolderViewBase
 	 * Synchronously purges the given appointment.
 	 */
 	private void doPurgeEntryNow(final CalendarAppointment appointment) {
-		// Construct a List<EntityId> describing the entry to be
-		// purged.
-		Long     folderId = appointment.getFolderId();
-		Long     entryId  = appointment.getEntryId();
-		EntityId eid      = new EntityId(folderId, entryId, EntityId.FOLDER_ENTRY);
-		final List<EntityId> purgeList = new ArrayList<EntityId>();
-		purgeList.add(eid);
-		
 		// Is the user sure they want to purge the appointment?
 		ConfirmDlg.createAsync(new ConfirmDlgClient() {
 			@Override
@@ -582,7 +562,7 @@ public class CalendarFolderView extends FolderViewBase
 							// Yes, the user is sure!  Can we purge
 							// the appointment?
 							GwtClientHelper.executeCommand(
-									new PurgeFolderEntriesCmd(purgeList, false),
+									new PurgeFolderEntriesCmd(appointment.getEntityIdAsList(), false),
 									new AsyncCallback<VibeRpcResponse>() {
 								@Override
 								public void onFailure(Throwable t) {
@@ -712,10 +692,10 @@ public class CalendarFolderView extends FolderViewBase
 	 * Returns a List<EntityId> that contains the selected entity.
 	 */
 	private List<EntityId> getSelectedEntityIds() {
-		List<EntityId> reply = new ArrayList<EntityId>();
-		if (null != m_selectedEvent) {
-			reply.add(m_selectedEvent.getEntityId());
-		}
+		List<EntityId> reply;
+		if (null != m_selectedEvent)
+		     reply = m_selectedEvent.getEntityIdAsList();
+		else reply = new ArrayList<EntityId>();
 		return reply;
 	}
 	

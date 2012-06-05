@@ -59,8 +59,10 @@ import org.kablink.teaming.calendar.AbstractIntervalView;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.calendar.OneMonthView;
 import org.kablink.teaming.calendar.EventsViewHelper.Grid;
+import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.SeenMap;
@@ -78,11 +80,13 @@ import org.kablink.teaming.gwt.client.util.CalendarDayView;
 import org.kablink.teaming.gwt.client.util.CalendarHours;
 import org.kablink.teaming.gwt.client.util.CalendarShow;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.task.TaskHelper;
@@ -431,7 +435,7 @@ public class GwtCalendarHelper {
 		//List<Appointment>.
 		List<Long> entryIds  = new ArrayList<Long>();
 		for (Appointment appointment:  appointments) {
-			entryIds.add(((CalendarAppointment) appointment).getEntryId());
+			entryIds.add(((CalendarAppointment) appointment).getEntityId().getEntityId());
 		}
 		
 		try {
@@ -449,7 +453,7 @@ public class GwtCalendarHelper {
 			for (Appointment appointment:  appointments) {
 				// Do we have the FolderEntry for this appointment?
 				CalendarAppointment ca = ((CalendarAppointment) appointment);
-				FolderEntry entry = entryMap.get(ca.getEntryId());
+				FolderEntry entry = entryMap.get(ca.getEntityId().getEntityId());
 				if (null != entry) {
 					// Yes!  Store the user's rights to that
 					// FolderEntry.
@@ -536,7 +540,6 @@ public class GwtCalendarHelper {
 			List<Map> events;
 			BinderModule bm = bs.getBinderModule();
 			boolean virtual = show.equals(CalendarShow.VIRTUAL);
-			Set<String> taskIds = new HashSet();
 			if ((!virtual) && filtered) {
 				// Yes!  Simply perform the search using the filter.
 				Map retMap = bm.executeSearchQuery(baseFilter, Constants.SEARCH_MODE_NORMAL, options);
@@ -589,7 +592,6 @@ public class GwtCalendarHelper {
 							// Are we tracking an event with this
 							// task's ID?
 							String docId = ((String) task.get(Constants.DOCID_FIELD));
-							taskIds.add(docId);
 							if (!(appointmentIds.contains(docId))) {
 								// No!  Add the task to the event
 								// list. 
@@ -611,23 +613,21 @@ public class GwtCalendarHelper {
 				for (Map event:  events) {
 					// What attributes do we use for accessing
 					// information about this event?
+					String  fieldName = GwtEventHelper.getStringFromEntryMapRaw(event, (Constants.EVENT_FIELD + "0"));
+					boolean isTask    = fieldName.equals(Constants.EVENT_FIELD_START_END);
+					
 					String  attrGroups;
 					String  attrIndividuals;
 					String  attrTeams;
-					String  fieldName;
-					String  eventId = GwtEventHelper.getStringFromEntryMapRaw(event, Constants.DOCID_FIELD);
-					boolean isTask  = taskIds.contains(eventId);
 					if (isTask) {
 						attrGroups      = TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME;
 						attrIndividuals = TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME;
 						attrTeams       = TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME;
-						fieldName       = Constants.EVENT_FIELD_START_END;
 					}
 					else {
 						attrGroups      = EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME;
 						attrIndividuals = EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME;
 						attrTeams       = EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME;
-						fieldName       = "event";
 					}
 					
 					// Create a base CalendarAppointment for this event
@@ -716,10 +716,10 @@ public class GwtCalendarHelper {
 					}
 										
 					// Set the appointment's IDs.
-					Long eventFolderId = GwtEventHelper.getLongFromEntryMap(event, Constants.BINDER_ID_FIELD);
-					appointment.setFolderId(              eventFolderId);
-					appointment.setEntryId(Long.parseLong(eventId     ));
-					appointment.setId(                    eventId      );
+					Long   eventFolderId = GwtEventHelper.getLongFromEntryMap(     event, Constants.BINDER_ID_FIELD);
+					String eventId       = GwtEventHelper.getStringFromEntryMapRaw(event, Constants.DOCID_FIELD    );
+					appointment.setEntityId(new EntityId(eventFolderId, Long.parseLong(eventId), EntityId.FOLDER_ENTRY));
+					appointment.setId(eventId);
 
 					// Set the appointment's seen flag.
 					appointment.setSeen(seenMap.checkIfSeen(event));
@@ -1422,16 +1422,56 @@ public class GwtCalendarHelper {
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param folderId
+	 * @param folderIdFromView
 	 * @param event
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static Boolean updateCalendarEvent(AllModulesInjected bs, HttpServletRequest request, Long folderId, CalendarAppointment event) throws GwtTeamingException {
+	@SuppressWarnings("unchecked")
+	public static Boolean updateCalendarEvent(AllModulesInjected bs, HttpServletRequest request, Long folderIdFromView, CalendarAppointment event) throws GwtTeamingException {
 		try {
-//!			...this needs to be implemented...
+			// Read the FolderEntry...
+			Long folderId = event.getFolderId();
+			Long entryId  = event.getEntryId();
+			FolderModule fm = bs.getFolderModule();
+			FolderEntry  fe = fm.getEntry(folderId, entryId);
+			
+			// ...and the Event from it.
+			String attr = (event.isTask() ? TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME : "event");
+			CustomAttribute customAttribute = fe.getCustomAttribute(attr);
+			Event dbEvent = ((Event) customAttribute.getValue());
+			if (null == dbEvent) {
+				dbEvent = new Event();
+			}
+
+			// Store the new start...
+			GregorianCalendar gc = new GregorianCalendar();
+			gc.setTime(event.getStart());
+			dbEvent.setDtStart(gc);
+
+			// ...and end dates.
+			gc = new GregorianCalendar();
+			gc.setTime(event.getEnd());
+			dbEvent.setDtEnd(gc);
+
+			// Has the user already seen this event?
+			ProfileModule pm = bs.getProfileModule();
+			boolean eventSeen = pm.getUserSeenMap(null).checkIfSeen(fe);
+			
+			Map formData = new HashMap(); 
+			formData.put(attr, dbEvent);
+			fm.modifyEntry(folderId, entryId, new MapInputData(formData), null, null, null, null);
+			
+			// If the user had seen the event before the update...
+			if (eventSeen) {
+				// ...maintain its seen state.
+				pm.setSeen(null, fe);
+			}
+
+			// We always return true.  Failure conditions will throw an
+			// exception.
 			return Boolean.TRUE;
 		}
 		
