@@ -474,13 +474,14 @@ public class GwtCalendarHelper {
 	 * @param request
 	 * @param folderId
 	 * @param cdd
+	 * @param quickFilter
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-	public static CalendarAppointmentsRpcResponseData getCalendarAppointments(AllModulesInjected bs, HttpServletRequest request, Long folderId, CalendarDisplayDataRpcResponseData cdd) throws GwtTeamingException {
+	public static CalendarAppointmentsRpcResponseData getCalendarAppointments(AllModulesInjected bs, HttpServletRequest request, Long folderId, CalendarDisplayDataRpcResponseData cdd, String quickFilter) throws GwtTeamingException {
 		try {
 			// Access the objects we'll need to process the
 			// appointments from this folder.
@@ -517,6 +518,7 @@ public class GwtCalendarHelper {
 	       	
 	       	// ...add in any search filter...
 			options.putAll(ListFolderHelper.getSearchFilter(bs, null, folder, userFolderProperties));
+			GwtServerHelper.addQuickFilterToSearch(options, quickFilter);
 			
 			// ...and if the list is filtered...
 			Document baseFilter = ((Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER));

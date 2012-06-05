@@ -39,7 +39,6 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
-import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
 import org.kablink.teaming.gwt.client.event.CalendarChangedEvent;
@@ -51,7 +50,6 @@ import org.kablink.teaming.gwt.client.event.CalendarSettingsEvent;
 import org.kablink.teaming.gwt.client.event.CalendarShowEvent;
 import org.kablink.teaming.gwt.client.event.CalendarViewDaysEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
-import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent.Handler;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
@@ -88,7 +86,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.UpdateCalendarEventCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CalendarAppointment;
-import org.kablink.teaming.gwt.client.util.CalendarAttendee;
 import org.kablink.teaming.gwt.client.util.CalendarDayView;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -129,7 +126,6 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * 
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
 public class CalendarFolderView extends FolderViewBase
 	implements CalendarDisplayDataProvider,
 		// Event handlers implemented by this class.
@@ -1418,7 +1414,7 @@ public class CalendarFolderView extends FolderViewBase
 		// Can we read the appointments for the calendar based on the
 		// current calendar display data?
 		GwtClientHelper.executeCommand(
-				new GetCalendarAppointmentsCmd(getFolderInfo().getBinderIdAsLong(), m_calendarDisplayData),
+				new GetCalendarAppointmentsCmd(getFolderInfo().getBinderIdAsLong(), m_calendarDisplayData, m_quickFilter),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {

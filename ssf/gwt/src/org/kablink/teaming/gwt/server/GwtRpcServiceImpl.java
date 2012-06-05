@@ -635,7 +635,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				this,
 				getRequest( ri ),
 				gcaCmd.getFolderId(),
-				gcaCmd.getCalendarDisplayData() );
+				gcaCmd.getCalendarDisplayData(),
+				gcaCmd.getQuickFilter() );
 			return new VibeRpcResponse( responseData );
 		}
 		
