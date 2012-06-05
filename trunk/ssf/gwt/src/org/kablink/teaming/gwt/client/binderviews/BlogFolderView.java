@@ -583,7 +583,11 @@ public class BlogFolderView extends FolderViewBase
 					@Override
 					public void onSuccess( VibeRpcResponse result )
 					{
-						getEntryMenuPanel().resetPanel();
+						EntryMenuPanel emp = getEntryMenuPanel();
+						if ( null != emp )
+						{
+							emp.resetPanel();
+						}
 					}
 				};
  
