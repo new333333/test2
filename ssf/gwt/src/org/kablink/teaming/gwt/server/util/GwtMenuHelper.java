@@ -1850,21 +1850,15 @@ public class GwtMenuHelper {
 	 * delete and purge operations and false otherwise.
 	 */
 	private static boolean folderSupportsDeleteAndPurge(Folder folder, String viewType) {
-		boolean reply = ((null != folder) && MiscUtil.hasString(viewType));
-		if (reply) {
-			reply =
-				((viewType.equals(Definition.VIEW_STYLE_BLOG)       ||
-				  viewType.equals(Definition.VIEW_STYLE_CALENDAR)   ||
-				  viewType.equals(Definition.VIEW_STYLE_DISCUSSION) ||
-				  viewType.equals(Definition.VIEW_STYLE_TABLE)      ||
-				  viewType.equals(Definition.VIEW_STYLE_FILE)       ||
-				  viewType.equals(Definition.VIEW_STYLE_GUESTBOOK)  ||
-				  viewType.equals(Definition.VIEW_STYLE_MILESTONE)  ||
-				  viewType.equals(Definition.VIEW_STYLE_MINIBLOG)   ||
-				  viewType.equals(Definition.VIEW_STYLE_SURVEY)     ||
-				  viewType.equals(Definition.VIEW_STYLE_TASK)));
-		}
-		return reply;
+		return folderSupportsSelection(folder, viewType);
+	}
+	
+	/*
+	 * Returns true if a folder (including its view type) supports
+	 * the operations in the 'More' entry menu and false otherwise.
+	 */
+	private static boolean folderSupportsMore(Folder folder, String viewType) {
+		return folderSupportsSelection(folder, viewType);
 	}
 	
 	/*
@@ -1881,9 +1875,9 @@ public class GwtMenuHelper {
 	
 	/*
 	 * Returns true if a folder (including its view type) supports
-	 * share operations and false otherwise.
+	 * operations that involve selecting items and false otherwise.
 	 */
-	private static boolean folderSupportsShare(Folder folder, String viewType) {
+	private static boolean folderSupportsSelection(Folder folder, String viewType) {
 		boolean reply = ((null != folder) && MiscUtil.hasString(viewType));
 		if (reply) {
 			reply =
@@ -1899,6 +1893,14 @@ public class GwtMenuHelper {
 				  viewType.equals(Definition.VIEW_STYLE_TASK)));
 		}
 		return reply;
+	}
+	
+	/*
+	 * Returns true if a folder (including its view type) supports
+	 * share operations and false otherwise.
+	 */
+	private static boolean folderSupportsShare(Folder folder, String viewType) {
+		return folderSupportsSelection(folder, viewType);
 	}
 	
 	/*
@@ -2021,10 +2023,14 @@ public class GwtMenuHelper {
 							}
 						}
 					}
-		
-					// Construct the various items that appear in the
-					// more drop down.
-					constructEntryMoreItems(entryToolbar, bs, request, folderId, viewType, folder);
+
+					// If the folder supports operations from the
+					// 'More' drop down...
+					if (folderSupportsMore(folder, viewType)) {
+						// ...construct the various items that appear
+						// ...in it.
+						constructEntryMoreItems(entryToolbar, bs, request, folderId, viewType, folder);
+					}
 					
 					// Are we working on a calendar folder?
 					boolean isCalendar = (FolderType.CALENDAR == folderInfo.getFolderType());

@@ -1472,6 +1472,7 @@ public interface GwtTeamingMessages extends Messages
 	String deleteFolderEntryError();
 	String deleteTasksError();
 	String purgeFolderEntriesError();
+	String purgeFolderEntryError();
 	String purgeTasksError();
 	
 	// Strings used by the operations against selected users.
@@ -1586,8 +1587,11 @@ public interface GwtTeamingMessages extends Messages
 	String calendarNav_Hours_FullDay();
 	String calendarNav_Hours_WorkDay();
 	String calendarView_Confirm_DeleteEntry();
+	String calendarView_Confirm_PurgeEntry();
 	String calendarView_Error_CantAdd();
+	String calendarView_Error_CantClickCreateWhenViewByDate();
 	String calendarView_Error_CantModify();
+	String calendarView_Error_CantPurge();
 	String calendarView_Error_CantTrash();
 	String calendarView_Error_CantUpdateWhenViewByDate();
 
