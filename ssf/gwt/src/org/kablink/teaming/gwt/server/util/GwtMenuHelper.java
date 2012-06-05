@@ -388,9 +388,9 @@ public class GwtMenuHelper {
 			markTBITitle(addTBI, "toolbar.new");
 			entryToolbar.addNestedItem(addTBI);
 			
-			// Does the user have rights add a new sub-folder to this
-			// folder?
-			if (bm.testAccess(folder, BinderOperation.addFolder)) {
+			// Is this a non-blog folder that user has rights add a new
+			// sub-folder to?
+			if ((!(isViewBlog(viewType))) && bm.testAccess(folder, BinderOperation.addFolder)) {
 				// Yes!  Can we access any folder templates?
 				List<TemplateBinder> folderTemplates = tm.getTemplates(Definition.FOLDER_VIEW);
 				folderTemplates.addAll(tm.getTemplates(Definition.FOLDER_VIEW, folder, true));
@@ -428,7 +428,7 @@ public class GwtMenuHelper {
 			
 			// Does this folder have more than one entry definition or
 			// is for other than a guest book folder?
-			if ((1 < defaultEntryDefs) || (!hasVT) || (!(viewType.equals(Definition.VIEW_STYLE_GUESTBOOK)))) {
+			if ((1 < defaultEntryDefs) || (!hasVT) || (!(isViewGuestBook(viewType)))) {
 				// Yes!  Added items for each entry type.  (Note that
 				// we skip this on guest books because they get their
 				// own 'Sign the Guest Book' top level menu item.)
@@ -466,25 +466,7 @@ public class GwtMenuHelper {
 		}
 
 		if (hasVT) {
-			if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
-				if (bm.testAccess(folder, BinderOperation.addFolder)) {
-					TemplateBinder blogTemplate = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_BLOG);
-					if (blogTemplate != null) {
-						url = createActionUrl(request);
-						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
-		        		url.setParameter(WebKeys.URL_BINDER_ID, getFolderSetFolderId(bs, folder, viewType).toString());
-						url.setParameter(WebKeys.URL_TEMPLATE_NAME, ObjectKeys.DEFAULT_TEMPLATE_NAME_BLOG);
-						
-						ToolbarItem addTBI = new ToolbarItem("1_add_folder");
-						markTBITitle(addTBI, "toolbar.menu.add_blog_folder");
-						markTBIPopup(addTBI                                );
-						markTBIUrl(  addTBI, url                           );
-						entryToolbar.addNestedItem(addTBI);
-					}
-				}
-			}
-			
-			else if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
+			if (isViewPhotoAlbum(viewType)) {
 				if (bm.testAccess(folder, BinderOperation.addFolder)) {
 					TemplateBinder photoTemplate = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_PHOTO);
 					if (photoTemplate != null) {
@@ -823,7 +805,7 @@ public class GwtMenuHelper {
 		String searchSortBy = ((String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY));
 		if (searchSortBy == null) searchSortBy = "";
 		String[] sortOptions;
-		boolean isPhotoAlbum = viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM);
+		boolean isPhotoAlbum = isViewPhotoAlbum(viewType);
 		if (isPhotoAlbum)
 		     sortOptions = new String[] {"number", "title",                    "activity"};	// For photo album.
 		else sortOptions = new String[] {"number", "title", "state", "author", "activity"};	// For blog.
@@ -1881,8 +1863,7 @@ public class GwtMenuHelper {
 		boolean reply = ((null != folder) && MiscUtil.hasString(viewType));
 		if (reply) {
 			reply =
-				((viewType.equals(Definition.VIEW_STYLE_BLOG)       ||
-				  viewType.equals(Definition.VIEW_STYLE_CALENDAR)   ||
+				((viewType.equals(Definition.VIEW_STYLE_CALENDAR)   ||
 				  viewType.equals(Definition.VIEW_STYLE_DISCUSSION) ||
 				  viewType.equals(Definition.VIEW_STYLE_TABLE)      ||
 				  viewType.equals(Definition.VIEW_STYLE_FILE)       ||
@@ -1990,7 +1971,7 @@ public class GwtMenuHelper {
 					// Can the user can add entries to the folder?
 					if (addAllowed) {				
 						// Yes!  If the folder is a guest book...
-						if (hasVT && viewType.equals(Definition.VIEW_STYLE_GUESTBOOK)) {
+						if (hasVT && isViewGuestBook(viewType)) {
 							// ...construct a sign the guest book item.
 							constructEntrySignTheGuestbookItem(entryToolbar, bs, request, folder);
 						}
@@ -2007,7 +1988,7 @@ public class GwtMenuHelper {
 					// Can we determine the folder's view type?
 					if (hasVT) {
 						// Yes!  Is it a blog or photo album?
-						if (viewType.equals(Definition.VIEW_STYLE_BLOG)|| viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
+						if (isViewBlog(viewType)|| isViewPhotoAlbum(viewType)) {
 							// Yes!  Add the necessary 'sort by' items. 
 							constructEntrySortByItems(entryToolbar, bs, request, viewType, folder);
 						}
@@ -2331,6 +2312,28 @@ public class GwtMenuHelper {
 				MiscUtil.hasString(folder.getResourceDriverName()));	// ...and the resource driver is configured.
 	}
 
+	/*
+	 * Returns true if a view type is a blog and false otherwise.
+	 */
+	private static boolean isViewBlog(String viewType) {
+		return MiscUtil.hasString(viewType) && viewType.equals(Definition.VIEW_STYLE_BLOG);
+	}
+	
+	/*
+	 * Returns true if a view type is a guest book and false otherwise.
+	 */
+	private static boolean isViewGuestBook(String viewType) {
+		return MiscUtil.hasString(viewType) && viewType.equals(Definition.VIEW_STYLE_GUESTBOOK);
+	}
+	
+	/*
+	 * Returns true if a view type is a photo album and false
+	 * otherwise.
+	 */
+	private static boolean isViewPhotoAlbum(String viewType) {
+		return MiscUtil.hasString(viewType) && viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM);
+	}
+	
 	/*
 	 * Marks a ToolbarItem as needing to calendar show mode.
 	 */
