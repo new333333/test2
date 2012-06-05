@@ -79,6 +79,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarDisplayDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarDisplayDateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarNextPreviousPeriodCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.PurgeFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarDayViewCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarHoursCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarShowCmd;
@@ -156,9 +157,9 @@ public class CalendarFolderView extends FolderViewBase
 {
 	private ArrayList<Appointment>				m_appointments;				//
 	private AddFilesDlg							m_addFilesDlg;				//
+	private CalendarAppointment					m_selectedEvent;			//
 	private CalendarDisplayDataRpcResponseData	m_calendarDisplayData;		//
 	private CalendarSettingsDlg					m_calendarSettingsDlg;		//
-	private EntityId							m_selectedEvent;			//
 	private List<HandlerRegistration>			m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private String								m_quickFilter;				// Any quick filter that's active.
 	private VibeCalendar						m_calendar;					// The calendar widget contained in the view.
@@ -256,21 +257,14 @@ public class CalendarFolderView extends FolderViewBase
 			@Override
 			public void onSelection(SelectionEvent<Appointment> event) {
 				// ...that tracks the selected item.
-				CalendarAppointment ca = ((CalendarAppointment) event.getSelectedItem());
-				m_selectedEvent        =
-					((null == ca) ?
-						null      :
-						new EntityId(
-							ca.getFolderId(),
-							ca.getEntryId(),
-							EntityId.FOLDER_ENTRY));
+				m_selectedEvent = ((CalendarAppointment) event.getSelectedItem());
 				
 				// If we have an entry menu...
 				EntryMenuPanel emp = getEntryMenuPanel();
 				if (null != emp) {
 					// ...tell it to update the state of its items that
 					// ...require entries be available.
-					EntryMenuPanel.setEntriesSelected(emp, (null != ca));
+					EntryMenuPanel.setEntriesSelected(emp, (null != m_selectedEvent));
 				}
 			}
 		});
@@ -279,6 +273,15 @@ public class CalendarFolderView extends FolderViewBase
 		m_calendar.addTimeBlockClickHandler(new TimeBlockClickHandler<Date>() {
 			@Override
 			public void onTimeBlockClick(TimeBlockClickEvent<Date> event) {
+				// Are we showing events by date?
+				if (m_calendarDisplayData.getShow().isPhysicalByDate()) {
+					// Yes!  Then we don't support clicking on a date
+					// to create a new appointment.  Tell the user
+					// about the problem and bail.
+					GwtClientHelper.deferredAlert(m_messages.calendarView_Error_CantClickCreateWhenViewByDate());
+					return;					
+				}
+
 				// Does the user have rights to add entries to this
 				// folder?
 				if (!(m_calendarDisplayData.canAddFolderEntry())) {
@@ -535,6 +538,103 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/*
+	 * Asynchronously purges the given appointment.
+	 */
+	private void doPurgeEntryAsync(final CalendarAppointment appointment) {
+		Scheduler.ScheduledCommand doPurge = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				doPurgeEntryNow(appointment);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doPurge);
+	}
+	
+	/*
+	 * Synchronously purges the given appointment.
+	 */
+	private void doPurgeEntryNow(final CalendarAppointment appointment) {
+		// Construct a List<EntityId> describing the entry to be
+		// purged.
+		Long     folderId = appointment.getFolderId();
+		Long     entryId  = appointment.getEntryId();
+		EntityId eid      = new EntityId(folderId, entryId, EntityId.FOLDER_ENTRY);
+		final List<EntityId> purgeList = new ArrayList<EntityId>();
+		purgeList.add(eid);
+		
+		// Is the user sure they want to purge the appointment?
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes, the user is sure!  Can we purge
+							// the appointment?
+							GwtClientHelper.executeCommand(
+									new PurgeFolderEntriesCmd(purgeList, false),
+									new AsyncCallback<VibeRpcResponse>() {
+								@Override
+								public void onFailure(Throwable t) {
+									// No!  Tell the user about the RPC
+									// failure.
+									GwtClientHelper.handleGwtRPCFailure(
+										t,
+										m_messages.rpcFailure_PurgeFolderEntries());
+								}
+
+								@Override
+								public void onSuccess(VibeRpcResponse response) {
+									// Perhaps!  Did we get any errors?
+									ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
+									List<String> errors = responseData.getErrorList();
+									if ((null != errors) && (!(errors.isEmpty()))) {
+										// Yes!  Display them.
+										GwtClientHelper.displayMultipleErrors(
+											m_messages.purgeFolderEntryError(),
+											errors);
+									}
+									
+									else {
+										// No error!  Remove the
+										// appointment from the
+										// calendar.
+										m_calendar.suspendLayout();
+										m_calendar.removeAppointment(appointment);
+										m_calendar.resumeLayout();
+										if (CalendarDayView.ONE_DAY.equals(m_calendarDisplayData.getDayView())) {
+											m_calendar.scrollToHour(m_calendarDisplayData.getWorkDayStart());
+										}
+									}
+								}
+							});
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					m_messages.calendarView_Confirm_PurgeEntry());
+			}
+		});
+	}
+	
+	/*
 	 * Asynchronously runs the entry viewer on the given appointment.
 	 */
 	private void doViewEntryAsync(final CalendarAppointment appointment) {
@@ -618,7 +718,7 @@ public class CalendarFolderView extends FolderViewBase
 	private List<EntityId> getSelectedEntityIds() {
 		List<EntityId> reply = new ArrayList<EntityId>();
 		if (null != m_selectedEvent) {
-			reply.add(m_selectedEvent);
+			reply.add(m_selectedEvent.getEntityId());
 		}
 		return reply;
 	}
@@ -1038,12 +1138,26 @@ public class CalendarFolderView extends FolderViewBase
 	 */
 	@Override
 	public void onDeleteSelectedEntries(DeleteSelectedEntriesEvent event) {
+		// If we don't have an event selected...
+		if (null == m_selectedEvent) {
+			// ...bail.
+			return;
+		}
+		
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Delete the selected event.
-//!			...this needs to be implemented...
-			Window.alert("CalendarFolderView.onDeleteSelectedEntries():  ...this needs to be implemented...");
+			// Does the user have rights to delete this event?
+			if (!(m_selectedEvent.canTrash())) {
+				// No!  Tell them about the problem and cancel the
+				// event.
+				GwtClientHelper.deferredAlert(m_messages.calendarView_Error_CantTrash());
+				return;					
+			}
+			
+			// Delete the selected appointment.
+			doDeleteEntryAsync(m_selectedEvent);
 		}
 	}
 	
@@ -1187,12 +1301,26 @@ public class CalendarFolderView extends FolderViewBase
 	 */
 	@Override
 	public void onPurgeSelectedEntries(PurgeSelectedEntriesEvent event) {
+		// If we don't have an event selected...
+		if (null == m_selectedEvent) {
+			// ...bail.
+			return;
+		}
+		
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Purge the selected event.
-//!			...this needs to be implemented...
-			Window.alert("CalendarFolderView.onPurgeSelectedEntries():  ...this needs to be implemented...");
+			// Yes!  Purge the selected event.  Does the user have
+			// rights to purge this event?
+			if (!(m_selectedEvent.canPurge())) {
+				// No!  Tell them about the problem and cancel the
+				// event.
+				GwtClientHelper.deferredAlert(m_messages.calendarView_Error_CantPurge());
+				return;					
+			}
+			
+			// Purge the selected appointment.
+			doPurgeEntryAsync(m_selectedEvent);
 		}
 	}
 	

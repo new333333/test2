@@ -107,6 +107,15 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	public Long    getCreatorId() {return m_creatorId;}
 	public Long    getEntryId()   {return m_entryId;  }
 	public Long    getFolderId()  {return m_folderId; }
+
+	/**
+	 * Returns an EntityId describing this appointment.
+	 * 
+	 * @return
+	 */
+	public EntityId getEntityId() {
+		return new EntityId(m_folderId, m_entryId, EntityId.FOLDER_ENTRY);
+	}
 	
 	/**
 	 * Set'er methods.
