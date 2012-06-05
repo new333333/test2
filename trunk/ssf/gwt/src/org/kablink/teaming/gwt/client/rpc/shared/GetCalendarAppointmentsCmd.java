@@ -41,6 +41,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 public class GetCalendarAppointmentsCmd extends VibeRpcCmd {
 	private CalendarDisplayDataRpcResponseData	m_calendarDisplayData;	//
 	private Long								m_folderId;				//
+	private String								m_quickFilter;			//
 	
 	/**
 	 * Constructor method.
@@ -56,14 +57,16 @@ public class GetCalendarAppointmentsCmd extends VibeRpcCmd {
 	 * 
 	 * @param folderId
 	 * @param calendarDisplayData
+	 * @param quickFilter
 	 */
-	public GetCalendarAppointmentsCmd(Long folderId, CalendarDisplayDataRpcResponseData calendarDisplayData) {
+	public GetCalendarAppointmentsCmd(Long folderId, CalendarDisplayDataRpcResponseData calendarDisplayData, String quickFilter) {
 		// Initialize this object...
 		this();
 
 		// ...and save the parameters.
 		setFolderId(           folderId           );
 		setCalendarDisplayData(calendarDisplayData);
+		setQuickFilter(        quickFilter        );
 	}
 	
 	/**
@@ -73,6 +76,7 @@ public class GetCalendarAppointmentsCmd extends VibeRpcCmd {
 	 */
 	public CalendarDisplayDataRpcResponseData getCalendarDisplayData() {return m_calendarDisplayData;}
 	public Long                               getFolderId()            {return m_folderId;           }
+	public String                             getQuickFilter()         {return m_quickFilter;        }
 	
 	/**
 	 * Set'er methods.
@@ -81,6 +85,7 @@ public class GetCalendarAppointmentsCmd extends VibeRpcCmd {
 	 */
 	public void setCalendarDisplayData(CalendarDisplayDataRpcResponseData calendarDisplayData) {m_calendarDisplayData = calendarDisplayData;}
 	public void setFolderId(           Long                               folderId)            {m_folderId            = folderId;           }
+	public void setQuickFilter(        String                             quickFilter)         {m_quickFilter         = quickFilter;        }
 	
 	/**
 	 * Returns the command's enumeration value.
