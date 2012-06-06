@@ -40,12 +40,14 @@ import org.kablink.teaming.rest.v1.model.BaseRestObject;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
-import org.kablink.teaming.rest.v1.model.FolderEntry;
-import org.kablink.teaming.rest.v1.model.FolderEntryBrief;
 import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.rest.v1.model.TemplateBrief;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.util.search.Constants;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * User: david
@@ -53,6 +55,19 @@ import org.kablink.teaming.web.util.MiscUtil;
  * Time: 9:11 AM
  */
 public class LinkUriUtil {
+    private static Map<String, String> defaultIconByEntityType = new HashMap<String, String>() {
+        {
+            put(Constants.ENTITY_TYPE_WORKSPACE, "/icons/workspace.png");
+            put(Constants.ENTITY_TYPE_FOLDER, "/icons/folder.png");
+            put(Constants.ENTRY_TYPE_USER, "/icons/User_16.png");
+            put(Constants.ENTRY_TYPE_GROUP, null);
+            put(Constants.ENTRY_TYPE_ENTRY, null);
+            put(Constants.ENTRY_TYPE_REPLY, null);
+            put(Constants.ENTRY_TYPE_APPLICATION, null);
+            put(Constants.ENTRY_TYPE_APPLICATION_GROUP, null);
+        }
+    };
+
     public static String getBinderLinkUri(Long id) {
         return "/binder/" + id;
     }
@@ -167,9 +182,20 @@ public class LinkUriUtil {
         fp.addAdditionalLink("file_metadata", "/file/" + fp.getId() + "/metadata");
     }
 
+    public static String getIconLinkUri(String iconName, String entityType) {
+        String uri = buildIconLinkUri(iconName);
+        if (uri==null) {
+            uri = buildIconLinkUri(defaultIconByEntityType.get(entityType));
+        }
+        return uri;
+    }
+
     public static String buildIconLinkUri(String iconName) {
-        if (iconName==null) {
+        if (iconName==null || iconName.length()==0) {
             return null;
+        }
+        if (!iconName.startsWith("/")) {
+            iconName = "/" + iconName;
         }
         org.kablink.teaming.domain.User user = RequestContextHolder.getRequestContext().getUser();
         String colorTheme = user.getTheme();

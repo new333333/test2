@@ -264,6 +264,7 @@ public class Constants {
 	public static final String PERSONFLAG_FIELD = "_isPerson";
 	public static final String IS_LIBRARY_FIELD = "_isLibrary";
 	public static final String IS_MIRRORED_FIELD = "_isMirrored";
+	public static final String ICON_NAME_FIELD = "_iconName";
 	public static final String TASK_COMPLETED_DATE_FIELD = "_taskCompleted";
 	public static final String IS_GROUP_DYNAMIC_FIELD = "_isGroupDynamic";
 	public static final String ENTRY_ACL_PARENT_ID_FIELD = "_entryAclParentId"; // This numeric field is only used for entries that inherit ACLs from parent folders.

@@ -40,7 +40,6 @@ import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
-import org.kablink.teaming.rest.v1.model.FolderEntry;
 import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.util.DateUtil;
 import org.kablink.teaming.util.InvokeUtil;

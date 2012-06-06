@@ -322,7 +322,7 @@ public class ResourceUtil {
         if(def != null) {
             model.setFamily(DefinitionUtils.getFamily(def));
         }
-        model.setIcon(LinkUriUtil.buildIconLinkUri(entity.getIconName()));
+        model.setIcon(LinkUriUtil.getIconLinkUri(entity.getIconName(), model.getEntityType()));
         model.setPermaLink(PermaLinkUtil.getPermalink(entity));
         if (includeAttachments) {
             Set<Attachment> attachments = entity.getAttachments();
@@ -379,7 +379,7 @@ public class ResourceUtil {
 
     private static void populateBinderBrief(BinderBrief model, org.kablink.teaming.domain.Binder binder) {
         populateDefinableEntityBrief(model, binder);
-        model.setIcon(LinkUriUtil.buildIconLinkUri(binder.getIconName()));
+        model.setIcon(LinkUriUtil.getIconLinkUri(binder.getIconName(), model.getEntityType()));
         model.setLibrary(binder.isLibrary());
         model.setMirrored(binder.isMirrored());
         model.setPath(binder.getPathName());
