@@ -407,6 +407,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case DELETE_ENTRY:
+				// A DeleteEntryEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof DeleteEntryEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = DeleteEntryEvent.registerEvent( eventBus, ((DeleteEntryEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case DELETE_SELECTED_ENTRIES:
 				// A DeleteSelectedEntriesEvent!  Can the event handler
 				// we were given handle that?
@@ -1700,6 +1709,8 @@ public class EventHelper {
 			case CONTRIBUTOR_IDS_REPLY:                 hasHandler = (eventHandler instanceof ContributorIdsReplyEvent.Handler);           break;
 			case CONTRIBUTOR_IDS_REQUEST:               hasHandler = (eventHandler instanceof ContributorIdsRequestEvent.Handler);         break;
 			
+			case DELETE_ENTRY:                   		hasHandler = (eventHandler instanceof DeleteEntryEvent.Handler);                   break;
+
 			case EDIT_CURRENT_BINDER_BRANDING:      	hasHandler = (eventHandler instanceof EditCurrentBinderBrandingEvent.Handler);     break;
 			case EDIT_PERSONAL_PREFERENCES:         	hasHandler = (eventHandler instanceof EditPersonalPreferencesEvent.Handler);       break;
 			case EDIT_SITE_BRANDING:                	hasHandler = (eventHandler instanceof EditSiteBrandingEvent.Handler);              break;

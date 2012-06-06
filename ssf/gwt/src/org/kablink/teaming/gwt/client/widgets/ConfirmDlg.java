@@ -218,7 +218,8 @@ public class ConfirmDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 		m_vp.clear();
 
 		// Add a label with the base confirmation message.
-		Label l = new Label(m_confirmationMsg);
+		Label l = new Label();
+		l.getElement().setInnerHTML( m_confirmationMsg );
 		l.addStyleName("vibe-confirmDlg-confirmationTxt");
 		m_vp.add(l);
 

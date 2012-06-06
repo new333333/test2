@@ -38,6 +38,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.DeleteEntryEvent;
 import org.kablink.teaming.gwt.client.event.InvokeReplyEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendToFriendEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareEvent;
@@ -73,6 +74,7 @@ public class ActionsPopupMenu extends PopupMenu
 {
 	public enum ActionMenuItem
 	{
+		DELETE,
 		MARK_READ,
 		MARK_UNREAD,
 		REPLY,
@@ -90,6 +92,7 @@ public class ActionsPopupMenu extends PopupMenu
 	private VibeMenuItem m_tagMenuItem;
 	private VibeMenuItem m_markReadMenuItem;
 	private VibeMenuItem m_markUnreadMenuItem;
+	private VibeMenuItem m_deleteMenuItem;
 	private AsyncCallback<VibeRpcResponse> m_checkRightsCallback = null;
 	private List<EventValidation> m_eventValidations;
 	private ActivityStreamUIEntry m_entry;
@@ -115,6 +118,11 @@ public class ActionsPopupMenu extends PopupMenu
 			{
 				switch (menuItem)
 				{
+				case DELETE:
+					// Create the "Delete" menu item.
+					m_deleteMenuItem = addMenuItem( new DeleteEntryEvent(), null, messages.deleteEntry() );
+					break;
+					
 				case MARK_READ:
 					// Create the "Mark read" menu item.
 					m_markReadMenuItem = addMenuItem( new MarkEntryReadEvent(), null, messages.markRead() );
@@ -265,6 +273,11 @@ public class ActionsPopupMenu extends PopupMenu
 										if ( m_tagMenuItem != null )
 											m_tagMenuItem.setVisible( false );
 										break;
+									
+									case DELETE_ENTRY:
+										if ( m_deleteMenuItem != null )
+											m_deleteMenuItem.setVisible( false );
+										break;
 									}
 								}
 							}
@@ -372,6 +385,14 @@ public class ActionsPopupMenu extends PopupMenu
 			tag.setUIEntry( entry );
 
 			m_tagMenuItem.setVisible( true );
+		}
+		
+		if ( m_deleteMenuItem != null )
+		{
+			DeleteEntryEvent tag = ((DeleteEntryEvent) m_deleteMenuItem.getEvent());
+			tag.setUIEntry( entry );
+
+			m_deleteMenuItem.setVisible( true );
 		}
 		
 		if ( m_markReadMenuItem != null )
