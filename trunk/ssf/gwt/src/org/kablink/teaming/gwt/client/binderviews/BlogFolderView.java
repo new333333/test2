@@ -147,6 +147,7 @@ public class BlogFolderView extends FolderViewBase
 										ActionMenuItem.SEND_TO_FRIEND,
 										ActionMenuItem.SUBSCRIBE,
 										ActionMenuItem.TAG,
+										ActionMenuItem.DELETE,
 										ActionMenuItem.SEPARATOR,
 										ActionMenuItem.MARK_READ,
 										ActionMenuItem.MARK_UNREAD };

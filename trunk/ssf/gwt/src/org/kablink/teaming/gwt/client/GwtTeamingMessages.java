@@ -1039,6 +1039,7 @@ public interface GwtTeamingMessages extends Messages
 	// The following strings are used in the activity stream control.
 	String actionsLabel();
 	String autoRefreshIsPaused();
+	String confirmDeleteEntry();
 	String followedPeople();
 	String followedPlaces();
 	String hideComments();
@@ -1131,6 +1132,7 @@ public interface GwtTeamingMessages extends Messages
 	String hoverWorkspaceTrash();
 
 	// The following strings are used in the "Actions" popup menu.
+	String deleteEntry();
 	String markRead();
 	String markUnread();
 	String reply();

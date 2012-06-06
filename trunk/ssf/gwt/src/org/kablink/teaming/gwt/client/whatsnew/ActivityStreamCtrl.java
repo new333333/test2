@@ -44,6 +44,7 @@ import java.util.Set;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.DeleteEntryEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeReplyEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendToFriendEvent;
@@ -70,7 +71,10 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.SubscribeToEntryDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
@@ -122,6 +126,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	// Event handlers implemented by this class.
 		ActivityStreamEvent.Handler,
 		ActivityStreamExitEvent.Handler,
+		DeleteEntryEvent.Handler,
 		InvokeReplyEvent.Handler,
 		InvokeSendToFriendEvent.Handler,
 		InvokeShareEvent.Handler,
@@ -197,6 +202,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 		// Activity stream events.
 		TeamingEvents.ACTIVITY_STREAM,
 		TeamingEvents.ACTIVITY_STREAM_EXIT,
+		
+		// Delete events
+		TeamingEvents.DELETE_ENTRY,
 		
 		// Invoke events.
 		TeamingEvents.INVOKE_REPLY,
@@ -2197,6 +2205,63 @@ public class ActivityStreamCtrl extends ResizeComposite
 		
 		hide();
 	}// end onActivityStreamExit()
+
+	/**
+	 * Handles DeleteEntryEvent's received by this class.
+	 * 
+	 * Implements the DeleteEntryEvent.Handler.onDeleteEntry() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onDeleteEntry( DeleteEntryEvent event )
+	{
+		final ActivityStreamUIEntry uiEntry = event.getUIEntry();
+		if ( null != uiEntry )
+		{
+			// Ask the user if they really want to delete this entry
+			ConfirmDlg.createAsync( new ConfirmDlgClient()
+			{
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( ConfirmDlg cDlg )
+				{
+					ConfirmDlg.initAndShow(
+						cDlg,
+						new ConfirmCallback() 
+						{
+							@Override
+							public void dialogReady() 
+							{
+								// Ignored.  We don't really care when the dialog is ready.
+							}
+
+							@Override
+							public void accepted() 
+							{
+								// Yes, they're sure!
+								// Issue an rpc request to delete this entry
+								uiEntry.deleteEntry();
+							}
+
+							@Override
+							public void rejected() 
+							{
+								// No, they're not sure!
+							}
+						},
+						GwtTeaming.getMessages().confirmDeleteEntry() );
+				}
+			});
+		
+		}
+	}
+	
 
 	/**
 	 * Called when widget is detached from the document.

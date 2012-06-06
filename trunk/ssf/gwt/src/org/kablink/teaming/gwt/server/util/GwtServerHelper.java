@@ -7622,6 +7622,10 @@ public class GwtServerHelper {
 					
 					switch (teamingEvent)
 					{
+						case DELETE_ENTRY:
+							folderModule.checkAccess( folderEntry, FolderOperation.deleteEntry );
+							break;
+						
 						case INVOKE_REPLY:
 							folderModule.checkAccess( folderEntry, FolderOperation.addReply );
 							break;

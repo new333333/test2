@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.event.MarkEntryReadEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
@@ -526,6 +527,49 @@ public abstract class ActivityStreamUIEntry extends Composite
 		addAdditionalHeaderUI( titlePanel );
 		
 		return headerPanel;
+	}
+	
+	
+	/**
+	 * Issue an rpc request to delete this entry
+	 */
+	public void deleteEntry()
+	{
+		DeleteFolderEntriesCmd cmd;
+		EntityId entityId;
+		
+		entityId = getEntryEntityId();
+		
+		// Issue an ajax request to delete this entry
+		cmd = new DeleteFolderEntriesCmd( entityId );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable caught )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_DeleteFolderEntries(),
+					m_entryId );
+			}
+
+			@Override
+			public void onSuccess( VibeRpcResponse result )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						// Hide this entry
+						setVisible( false );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}			
+		} );
 	}
 	
 	
