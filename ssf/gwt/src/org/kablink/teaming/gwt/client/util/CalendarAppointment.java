@@ -71,8 +71,11 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	 * requirements.
 	 */
 	public CalendarAppointment() {
-		// Initialize the super class.
+		// Initialize the super class...
 		super();
+		
+		// ...and initialize everything else.
+		setRecurrenceIndex(-1);
 	}
 
 	/**
@@ -102,18 +105,19 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	public List<AssignmentInfo> getVibeAttendeeGroups() {return m_vibeAttendeeGroups;}
 	public List<AssignmentInfo> getVibeAttendeeTeams()  {return m_vibeAttendeeTeams; }
 	
-	public boolean            canModify()          {return m_canModify;                                             }
-	public boolean            canPurge()           {return m_canPurge;                                              }
-	public boolean            canTrash()           {return m_canTrash;                                              }
-	public boolean            isTask()             {return m_isTask;                                                }
-	public boolean            isSeen()             {return m_seen;                                                  }
-	public boolean            isRecurrent()        {return ((null != m_recurrence) && m_recurrence.isRecurrent());  }
-	public CalendarRecurrence getRecurrence()      {return m_recurrence;                                            }
-	public EntityId           getEntityId()        {return m_entityId;                                              }
-	public int                getRecurrenceIndex() {return m_recurrenceIndex;                                       }
-	public Long               getCreatorId()       {return m_creatorId;                                             }
-	public Long               getFolderId()        {return ((null == m_entityId) ? null : m_entityId.getBinderId());}
-	public Long               getEntryId()         {return ((null == m_entityId) ? null : m_entityId.getEntityId());}
+	public boolean            canModify()           {return m_canModify;                                             }
+	public boolean            canPurge()            {return m_canPurge;                                              }
+	public boolean            canTrash()            {return m_canTrash;                                              }
+	public boolean            isTask()              {return m_isTask;                                                }
+	public boolean            isSeen()              {return m_seen;                                                  }
+	public boolean            isRecurrent()         {return ((null != m_recurrence) && m_recurrence.isRecurrent());  }
+	public boolean            isRecurrentInstance() {return (0 <= m_recurrenceIndex);                                }
+	public CalendarRecurrence getRecurrence()       {return m_recurrence;                                            }
+	public EntityId           getEntityId()         {return m_entityId;                                              }
+	public int                getRecurrenceIndex()  {return m_recurrenceIndex;                                       }
+	public Long               getCreatorId()        {return m_creatorId;                                             }
+	public Long               getFolderId()         {return ((null == m_entityId) ? null : m_entityId.getBinderId());}
+	public Long               getEntryId()          {return ((null == m_entityId) ? null : m_entityId.getEntityId());}
 
 	/**
 	 * Set'er methods.
