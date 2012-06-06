@@ -58,6 +58,7 @@ abstract public class DefinableEntityBriefBuilder {
         model.setTitle((String) entry.get(Constants.TITLE_FIELD));
         model.setEntityType((String) entry.get(Constants.ENTITY_FIELD));
         model.setFamily((String) entry.get(Constants.FAMILY_FIELD));
+        model.setIcon(LinkUriUtil.getIconLinkUri((String) entry.get(Constants.ICON_NAME_FIELD), model.getEntityType()));
         String defid = (String) entry.get(Constants.COMMAND_DEFINITION_FIELD);
         if (defid!=null) {
             model.setDefinition(new StringIdLinkPair(defid,

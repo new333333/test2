@@ -2397,6 +2397,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         if (entity instanceof Binder) {
             //Add binder path
         	EntityIndexUtils.addBinderPath(indexDoc, (Binder) entity, fieldsOnly);
+        	EntityIndexUtils.addBinderIconName(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderIsLibrary(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderIsMirrored(indexDoc, (Binder) entity, fieldsOnly);
         }

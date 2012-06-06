@@ -1110,6 +1110,11 @@ public class EntityIndexUtils {
     	}
     }
 
+    public static void addBinderIconName(Document doc, Binder binder, boolean fieldsOnly) {
+		Field path = FieldFactory.createStoredNotAnalyzedNoNorms(ICON_NAME_FIELD, binder.getIconName());
+		doc.add(path);
+    }
+
     public static void addBinderPath(Document doc, Binder binder, boolean fieldsOnly) {
 		Field path = FieldFactory.createStoredNotAnalyzedNoNorms(ENTITY_PATH, binder.getPathName());
 		doc.add(path);
