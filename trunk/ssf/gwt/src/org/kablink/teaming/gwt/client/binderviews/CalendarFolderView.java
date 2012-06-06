@@ -351,9 +351,7 @@ public class CalendarFolderView extends FolderViewBase
 						
 						// ...and repopulate the view to get back what
 						// ...was displayed.
-						setCalendarDisplay();
-						m_calendar.clearAppointments();
-						populateCalendarEventsAsync();
+						doFullCalendarRefreshAsync();
 					}
 					
 					@Override
@@ -364,9 +362,7 @@ public class CalendarFolderView extends FolderViewBase
 						if (isRecurrentInstance) {
 							// Yes!  Repopulate the view so that all
 							// recurrences get updated too.
-							setCalendarDisplay();
-							m_calendar.clearAppointments();
-							populateCalendarEventsAsync();
+							doFullCalendarRefreshAsync();
 						}
 						
 						// Otherwise, there's nothing more to do as the
@@ -457,9 +453,7 @@ public class CalendarFolderView extends FolderViewBase
 				GwtTeaming.fireEvent(new CalendarChangedEvent(getFolderId(), m_calendarDisplayData));
 
 				// ...and repopulate the view.
-				setCalendarDisplay();
-				m_calendar.clearAppointments();
-				populateCalendarEventsAsync();
+				doFullCalendarRefreshAsync();
 			}
 		});
 	}
@@ -529,14 +523,23 @@ public class CalendarFolderView extends FolderViewBase
 									}
 									
 									else {
-										// No error!  Remove the
-										// appointment from the
-										// calendar.
-										m_calendar.suspendLayout();
-										m_calendar.removeAppointment(appointment);
-										m_calendar.resumeLayout();
-										if (CalendarDayView.ONE_DAY.equals(m_calendarDisplayData.getDayView())) {
-											m_calendar.scrollToHour(m_calendarDisplayData.getWorkDayStart());
+										// No error!  If this is a
+										// recurrent instance...
+										if (appointment.isRecurrentInstance()) {
+											// ...force the calendar to
+											// ...refresh.
+											doFullCalendarRefreshAsync();
+										}
+										else {
+											// ...otherwise, remove the
+											// ...appointment from the
+											// ...calendar.
+											m_calendar.suspendLayout();
+											m_calendar.removeAppointment(appointment);
+											m_calendar.resumeLayout();
+											if (CalendarDayView.ONE_DAY.equals(m_calendarDisplayData.getDayView())) {
+												m_calendar.scrollToHour(m_calendarDisplayData.getWorkDayStart());
+											}
 										}
 									}
 								}
@@ -551,6 +554,28 @@ public class CalendarFolderView extends FolderViewBase
 					m_messages.calendarView_Confirm_DeleteEntry());
 			}
 		});
+	}
+	
+	/*
+	 * Asynchronously refreshes the full contents of the calendar.
+	 */
+	private void doFullCalendarRefreshAsync() {
+		Scheduler.ScheduledCommand doRefresh = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				doFullCalendarRefreshNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doRefresh);
+	}
+	
+	/*
+	 * Synchronously refreshes the full contents of the calendar.
+	 */
+	private void doFullCalendarRefreshNow() {
+		setCalendarDisplay();
+		m_calendar.clearAppointments();
+		populateCalendarEventsAsync();
 	}
 	
 	/*
@@ -618,14 +643,24 @@ public class CalendarFolderView extends FolderViewBase
 									}
 									
 									else {
-										// No error!  Remove the
-										// appointment from the
-										// calendar.
-										m_calendar.suspendLayout();
-										m_calendar.removeAppointment(appointment);
-										m_calendar.resumeLayout();
-										if (CalendarDayView.ONE_DAY.equals(m_calendarDisplayData.getDayView())) {
-											m_calendar.scrollToHour(m_calendarDisplayData.getWorkDayStart());
+										// No error!  If this is a
+										// recurrent instance...
+										if (appointment.isRecurrentInstance()) {
+											// ...force the calendar to
+											// ...refresh.
+											doFullCalendarRefreshAsync();
+										}
+										
+										else {
+											// ...otherwise, remove the
+											// ...appointment from the
+											// ...calendar.
+											m_calendar.suspendLayout();
+											m_calendar.removeAppointment(appointment);
+											m_calendar.resumeLayout();
+											if (CalendarDayView.ONE_DAY.equals(m_calendarDisplayData.getDayView())) {
+												m_calendar.scrollToHour(m_calendarDisplayData.getWorkDayStart());
+											}
 										}
 									}
 								}
@@ -914,9 +949,7 @@ public class CalendarFolderView extends FolderViewBase
 					GwtTeaming.fireEvent(new CalendarChangedEvent(getFolderId(), m_calendarDisplayData));
 
 					// ...and repopulate the view.
-					setCalendarDisplay();
-					m_calendar.clearAppointments();
-					populateCalendarEventsAsync();
+					doFullCalendarRefreshAsync();
 				}
 			});
 		}
@@ -952,9 +985,7 @@ public class CalendarFolderView extends FolderViewBase
 					GwtTeaming.fireEvent(new CalendarChangedEvent(getFolderId(), m_calendarDisplayData));
 
 					// ...and repopulate the view.
-					setCalendarDisplay();
-					m_calendar.clearAppointments();
-					populateCalendarEventsAsync();
+					doFullCalendarRefreshAsync();
 				}
 			});
 		}
@@ -1096,9 +1127,7 @@ public class CalendarFolderView extends FolderViewBase
 					GwtTeaming.fireEvent(new CalendarChangedEvent(getFolderId(), m_calendarDisplayData));
 
 					// ...and repopulate the view.
-					setCalendarDisplay();
-					m_calendar.clearAppointments();
-					populateCalendarEventsAsync();
+					doFullCalendarRefreshAsync();
 				}
 			});
 		}
@@ -1392,8 +1421,7 @@ public class CalendarFolderView extends FolderViewBase
 			// Yes!  Track the current quick filter and force the
 			// calendar to refresh with it.
 			m_quickFilter = event.getQuickFilter();
-			m_calendar.clearAppointments();
-			populateCalendarEventsAsync();
+			doFullCalendarRefreshAsync();
 		}
 	}
 
