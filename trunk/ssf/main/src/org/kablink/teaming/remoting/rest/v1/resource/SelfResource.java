@@ -37,6 +37,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TeamInfo;
+import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
@@ -127,7 +128,10 @@ public class SelfResource extends AbstractResource {
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<BinderBrief> getRoots() {
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
-        results.appendAll(new BinderBrief[] {getFakeMyWorkspace(), getFakeMyTeams(), getFakeMyFavorites()});
+        results.appendAll(new BinderBrief[] {
+                getFakeMyWorkspace(), getFakeMyTeams(), getFakeMyFavorites(),
+                ResourceUtil.buildBinderBrief(getBinderModule().getBinder(getWorkspaceModule().getTopWorkspaceId()))
+        });
         return results;
     }
 
@@ -144,6 +148,7 @@ public class SelfResource extends AbstractResource {
         BinderBrief binder = new BinderBrief();
         //TODO: localize
         binder.setTitle("My Teams");
+        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace_team.png"));
         binder.addAdditionalLink("child_binders", "/self/teams");
         return binder;
     }
@@ -152,6 +157,7 @@ public class SelfResource extends AbstractResource {
         BinderBrief binder = new BinderBrief();
         //TODO: localize
         binder.setTitle("My Favorites");
+        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace_star.png"));
         binder.addAdditionalLink("child_binders", "/self/favorites");
         return binder;
     }
