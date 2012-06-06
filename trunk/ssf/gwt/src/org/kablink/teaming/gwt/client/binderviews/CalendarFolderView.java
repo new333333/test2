@@ -314,6 +314,27 @@ public class CalendarFolderView extends FolderViewBase
 					return;					
 				}
 				
+				// Is this an instance of a recurrent event?
+				int ri = ca.getRecurrenceIndex();
+				final boolean isRecurrentInstance = (0 <= ri);
+				if (isRecurrentInstance) {
+					// Yes  Regardless of what else we do, cancel the
+					// event.  They either can't drag and drop it or
+					// we'll do a full refresh when they do.
+					event.setCancelled(true);
+					
+					
+					// Is this the second or later in a sequence of
+					// recurrent events?
+					if (0 < ri) {
+						// Yes!  Then we don't support drag an drop on
+						// it.  Tell the user about the problem and
+						// bail.
+						GwtClientHelper.deferredAlert(m_messages.calendarView_Error_CantUpdateRecurrence());
+						return;					
+					}
+				}
+
 				// Can we update the given event?
 				GwtClientHelper.executeCommand(
 						new UpdateCalendarEventCmd(getFolderInfo().getBinderIdAsLong(), ca),
@@ -337,9 +358,20 @@ public class CalendarFolderView extends FolderViewBase
 					
 					@Override
 					public void onSuccess(VibeRpcResponse response) {
-						// Yes, the event has been updated!  Nothing
-						// more to do as the drag and drop will have
-						// already positioned it correctly.
+						// Yes, the event has been updated!  Is it an
+						// instance of a recurrent event that we just
+						// updated?
+						if (isRecurrentInstance) {
+							// Yes!  Repopulate the view so that all
+							// recurrences get updated too.
+							setCalendarDisplay();
+							m_calendar.clearAppointments();
+							populateCalendarEventsAsync();
+						}
+						
+						// Otherwise, there's nothing more to do as the
+						// drag and drop will have positioned the event
+						// correctly.
 					}
 				});
 			}
@@ -647,7 +679,53 @@ public class CalendarFolderView extends FolderViewBase
 			}
 		});
 	}
-	
+
+	/*
+	 * Walks an appointment list and expands recurrent appointments
+	 * into individual appointment object for each recurrence.
+	 */
+	private static ArrayList<Appointment> expandRecurrentAppointments(List<Appointment> appointments) {
+		// Allocate a list of appointments that we'll return.
+		ArrayList<Appointment> reply = new ArrayList<Appointment>();
+
+		// We're we given any appointments to expand?
+		if ((null != appointments) && (!(appointments.isEmpty()))) {
+			// Yes!  Scan them.
+			for (Appointment appointment:  appointments) {
+				// Is this appointment recurrent?
+				CalendarAppointment ca = ((CalendarAppointment) appointment);
+				if (ca.isRecurrent()) {
+					// Yes!  Expand each recurrence into its own
+					// appointment object.  Note that we append
+					// an indication of the recurrence instance in
+					// event's title.
+					List<Date[]> recurrenceDates = ca.getRecurrence().getRecurrenceDates();
+					int recurrenceIndex = 0;
+					for (Date[] dates:  recurrenceDates) {
+						CalendarAppointment caClone = ca.cloneAppointment();
+						caClone.setRecurrence(     null                                              );
+						caClone.setRecurrenceIndex(recurrenceIndex++                                 );
+						caClone.setStart(          dates[0]                                          );
+						caClone.setEnd(            dates[1]                                          );
+						caClone.setTitle(          caClone.getTitle() + " (#" + recurrenceIndex + ")");
+						reply.add(                 caClone                                           );
+					}
+				}
+				
+				else {
+					// No, this appointment isn't recurrent!  Simply
+					// add it to the reply list.
+					ca.setRecurrenceIndex(-1);
+					reply.add(ca);
+				}
+			}
+		}
+
+		// If we get here, reply refers to the expanded list of
+		// appointments.  Return it.
+		return reply;
+	}
+
 	/**
 	 * Returns the CalendarDisplayDataRpcResponseData used by this view.
 	 * 
@@ -1407,7 +1485,7 @@ public class CalendarFolderView extends FolderViewBase
 			public void onSuccess(VibeRpcResponse response) {
 				// Yes!  Add the appointments to the calendar.
 				CalendarAppointmentsRpcResponseData responseData = ((CalendarAppointmentsRpcResponseData) response.getResponseData());
-				m_appointments = responseData.getAppointments();
+				m_appointments = expandRecurrentAppointments(responseData.getAppointments());
 				m_calendar.suspendLayout();
 				m_calendar.addAppointments(m_appointments);
 				m_calendar.resumeLayout();
