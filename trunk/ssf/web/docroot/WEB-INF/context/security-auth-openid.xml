@@ -20,8 +20,42 @@
 		<property name="filterProcessesUrl" value="/s/portalLogout"/>
     </bean>
 
-    <security:http realm="Vibe" authentication-manager-ref="_authenticationManager">
-		<security:custom-filter position="LOGOUT_FILTER" ref="_logoutFilter"/>
+    <bean id="authenticationProcessingFilter" class="org.springframework.security.openid.OpenIDAuthenticationFilter">
+		<property name="authenticationManager" ref="_authenticationManager"/>
+		<!--<property name="filterProcessesUrl" value="/s/portalLogin"/>-->
+		<property name="filterProcessesUrl" value="/j_spring_openid_security_check"/>
+		<property name="authenticationSuccessHandler" ref="authenticationSuccessHandler" />
+		<property name="authenticationFailureHandler" ref="authenticationFailureHandler" />
+		<property name="sessionAuthenticationStrategy" ref="sessionAuthenticationStrategy" />
+    </bean>
+
+	<bean id="sessionAuthenticationStrategy" class="org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy">
+	    <property name="alwaysCreateSession"><value>true</value></property>
+	    <property name="migrateSessionAttributes"><value>false</value></property>
+	</bean>
+    
+    <bean id="authenticationSuccessHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler" >
+		<property name="defaultTargetUrl" value="/a/"/>    
+    </bean>
+    
+    <bean id="authenticationFailureHandler" class="org.kablink.teaming.spring.security.SimpleUrlAuthenticationFailureHandler">
+		<property name="defaultFailureUrl" value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>
+    </bean>
+
+    <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+    	<property name="loginFormUrl" value="/spring_security_login"/>    	
+    </bean>
+    
+    <bean id="loginPageGeneratingFilter" class="org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter" >
+    	<constructor-arg>
+    		<ref bean="authenticationProcessingFilter"/>
+    	</constructor-arg>
+    </bean>
+
+    <security:http realm="Vibe" entry-point-ref="authenticationProcessingFilterEntryPoint" authentication-manager-ref="_authenticationManager">
+        <security:custom-filter position="FORM_LOGIN_FILTER" ref="authenticationProcessingFilter"/>
+        <security:custom-filter after="FORM_LOGIN_FILTER" ref="loginPageGeneratingFilter"/>
+        <security:custom-filter position="LOGOUT_FILTER" ref="_logoutFilter"/>
 		
         <security:session-management session-fixation-protection="newSession" />
         
@@ -29,11 +63,11 @@
         
         <security:anonymous enabled="false" />
 
-        <security:openid-login/>
+        <!--<security:openid-login/>-->
     </security:http>
         
     <security:user-service>
-    	<security:user name="http://jonghak.kim.myopenid.com/" password="notused" authorities="IS_AUTHENTICATED_FULLY"/>
+    	<security:user name="http://jongkim32.myopenid.com/" password="notused" authorities="IS_AUTHENTICATED_FULLY"/>
     </security:user-service>
         
 </beans>
