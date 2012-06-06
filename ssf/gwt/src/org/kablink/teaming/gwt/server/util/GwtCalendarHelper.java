@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -78,6 +79,7 @@ import org.kablink.teaming.gwt.client.util.CalendarAppointment;
 import org.kablink.teaming.gwt.client.util.CalendarAttendee;
 import org.kablink.teaming.gwt.client.util.CalendarDayView;
 import org.kablink.teaming.gwt.client.util.CalendarHours;
+import org.kablink.teaming.gwt.client.util.CalendarRecurrence;
 import org.kablink.teaming.gwt.client.util.CalendarShow;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -152,6 +154,58 @@ public class GwtCalendarHelper {
 		// Nothing to do.
 	}
 
+	/*
+	 * Adds a recurrence to an appointment based on an event.
+	 */
+	@SuppressWarnings("unchecked")
+	private static CalendarRecurrence getRecurrenceFromEntryMap(Map m, String key) {
+		// Does the map contain any recurrence dates?
+		String recurrenceDates = GwtEventHelper.getStringFromEntryMapRaw(m, key);
+		if (!(MiscUtil.hasString(recurrenceDates))) {
+			// No!  Bail.
+			return null;
+		}
+
+		// Did the dates contain any date ranges?
+		String[] dateRanges = recurrenceDates.split(",");
+		if ((null == dateRanges) || (0 == dateRanges.length)){
+			// No!  Bail.
+			return null;
+		}
+
+		// Scan the date ranges.
+		CalendarRecurrence reply = new CalendarRecurrence();
+		for (String dateRange:  dateRanges) {
+			// Does this date range contain exactly 2 dates?
+			String[] dates = dateRange.split(" ");
+			if ((null != dates) && (2 == dates.length)) {
+				try {
+					// Yes!  Parse it and add it to the recurrence
+					// object.
+					Date startDate = DateTools.stringToDate(dates[0]);
+					Date endDate   = DateTools.stringToDate(dates[1]);
+					if ((null != startDate) && (null != endDate)) {
+						reply.addRecurrence(startDate, endDate);
+					}
+				}
+				catch (ParseException pe) {
+					// Ignore.
+				}
+			}
+		}
+		
+		// Do we any dates in the recurrence object?
+		if (!(reply.isRecurrent())) {
+			// No!  Bail. 
+			return null;
+		}
+
+		// If we get here, reply refers to the recurrence object
+		// containing the recurrence dates from the entry map.  Return
+		// it.
+		return reply;
+	}
+	
 	/*
 	 * Hack to get around the fact that all day events in Vibe do not
 	 * factor in a timezone where the gwt-cal calendar widget DOES.
@@ -240,7 +294,7 @@ public class GwtCalendarHelper {
 		}
 		return reply;
 	}
-	
+
 	/*
 	 * Stores a calendar start day in the session cache.
 	 */
@@ -421,8 +475,11 @@ public class GwtCalendarHelper {
 	}
 
 	/*
-	 * Scans the List<Appointment> and sets the access rights for the
-	 * current user for each appointment.
+	 * Scans the List<Appointment> and does the following:
+	 * 1) Sets the access rights for the current user for each
+	 *    appointment; and
+	 * 2) Validates that any recurrence information stored on the
+	 *    appointment should be there.
 	 */
 	private static void fixupAppointments(AllModulesInjected bs, List<Appointment> appointments) {
 		// If we don't have any Appointment's to complete...
@@ -460,6 +517,16 @@ public class GwtCalendarHelper {
 					ca.setCanModify(fm.testAccess(entry, FolderOperation.modifyEntry   ));
 					ca.setCanPurge( fm.testAccess(entry, FolderOperation.deleteEntry   ));
 					ca.setCanTrash( fm.testAccess(entry, FolderOperation.preDeleteEntry));
+
+					// If the entry is not a recurrent event...
+					String attr = (ca.isTask() ? TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME : "event");
+					CustomAttribute customAttribute = entry.getCustomAttribute(attr);
+					Event dbEvent = ((Event) customAttribute.getValue());
+					if ((null == dbEvent) || (Event.NO_RECURRENCE == dbEvent.getFrequency())) {
+						// ...make sure we're not tracking any
+						// ...recurrence information for it.
+						ca.setRecurrence(null);
+					}
 				}
 			}
 		}
@@ -738,6 +805,18 @@ public class GwtCalendarHelper {
 					// Set the appointment's title.
 					value= GwtServerHelper.getStringFromEntryMap(event, Constants.TITLE_FIELD);
 					appointment.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
+
+					// Does the entry have any recurrence dates?
+					CalendarRecurrence cr = getRecurrenceFromEntryMap(
+						event,
+						GwtEventHelper.buildEventFieldName(
+								fieldName,
+								Constants.EVENT_RECURRENCE_DATES_FIELD));
+					
+					if ((null != cr) && cr.isRecurrent()) {
+						// Yes!  Add them to the appointment.
+						appointment.setRecurrence(cr);
+					}
 				}
 			}
 
