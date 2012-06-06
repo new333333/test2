@@ -315,9 +315,7 @@ public class CalendarFolderView extends FolderViewBase
 				}
 				
 				// Is this an instance of a recurrent event?
-				int ri = ca.getRecurrenceIndex();
-				final boolean isRecurrentInstance = (0 <= ri);
-				if (isRecurrentInstance) {
+				if (ca.isRecurrentInstance()) {
 					// Yes  Regardless of what else we do, cancel the
 					// event.  They either can't drag and drop it or
 					// we'll do a full refresh when they do.
@@ -326,7 +324,7 @@ public class CalendarFolderView extends FolderViewBase
 					
 					// Is this the second or later in a sequence of
 					// recurrent events?
-					if (0 < ri) {
+					if (0 < ca.getRecurrenceIndex()) {
 						// Yes!  Then we don't support drag an drop on
 						// it.  Tell the user about the problem and
 						// bail.
@@ -359,7 +357,7 @@ public class CalendarFolderView extends FolderViewBase
 						// Yes, the event has been updated!  Is it an
 						// instance of a recurrent event that we just
 						// updated?
-						if (isRecurrentInstance) {
+						if (ca.isRecurrentInstance()) {
 							// Yes!  Repopulate the view so that all
 							// recurrences get updated too.
 							doFullCalendarRefreshAsync();
