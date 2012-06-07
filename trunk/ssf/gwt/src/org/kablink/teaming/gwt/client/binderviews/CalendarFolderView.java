@@ -94,6 +94,7 @@ import org.kablink.teaming.gwt.client.widgets.CalendarSettingsDlg.CalendarSettin
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
+import org.kablink.teaming.gwt.client.widgets.HoverHintPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeCalendar;
 
 import com.bradrydzewski.gwt.calendar.client.Appointment;
@@ -104,6 +105,8 @@ import com.bradrydzewski.gwt.calendar.client.event.DateRequestEvent;
 import com.bradrydzewski.gwt.calendar.client.event.DateRequestHandler;
 import com.bradrydzewski.gwt.calendar.client.event.DeleteEvent;
 import com.bradrydzewski.gwt.calendar.client.event.DeleteHandler;
+import com.bradrydzewski.gwt.calendar.client.event.MouseOverEvent;
+import com.bradrydzewski.gwt.calendar.client.event.MouseOverHandler;
 import com.bradrydzewski.gwt.calendar.client.event.TimeBlockClickEvent;
 import com.bradrydzewski.gwt.calendar.client.event.TimeBlockClickHandler;
 import com.bradrydzewski.gwt.calendar.client.event.UpdateEvent;
@@ -113,6 +116,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -156,6 +160,7 @@ public class CalendarFolderView extends FolderViewBase
 	private CalendarAppointment					m_selectedEvent;			//
 	private CalendarDisplayDataRpcResponseData	m_calendarDisplayData;		//
 	private CalendarSettingsDlg					m_calendarSettingsDlg;		//
+	private HoverHintPopup						m_hoverHintPopup;			//
 	private List<HandlerRegistration>			m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private String								m_quickFilter;				// Any quick filter that's active.
 	private VibeCalendar						m_calendar;					// The calendar widget contained in the view.
@@ -236,6 +241,37 @@ public class CalendarFolderView extends FolderViewBase
 				// Delete the selected appointment.
 				doDeleteEntryAsync((CalendarAppointment) event.getTarget());
 				event.setCancelled(true);
+			}
+		});
+
+		// Add a mouse over handler.
+		m_calendar.addMouseOverHandler(new MouseOverHandler<Appointment>() {
+			@Override
+			public void onMouseOver(MouseOverEvent<Appointment> event) {
+				// Does the appointment have a description?
+				CalendarAppointment ca = ((CalendarAppointment) event.getTarget());
+				String caDesc = ca.getDescriptionHtml();
+				if (!(GwtClientHelper.hasString(caDesc))) {
+					caDesc = ca.getDescription();
+				}
+				if (GwtClientHelper.hasString(caDesc)) {
+					// Yes!  If we haven't created a hover hint popup
+					// to show descriptions in yet...
+					if (null == m_hoverHintPopup) {
+						// ...create one now...
+						m_hoverHintPopup = new HoverHintPopup();
+					}
+					
+					// ...and show it with the description HTML.
+					m_hoverHintPopup.setHoverText(caDesc);
+					m_hoverHintPopup.showHintRelativeTo((Element) event.getElement());
+				}
+				
+				else if (null != m_hoverHintPopup) {
+					// Hovering over any other appointment will hide an
+					// existing hover hint.
+					m_hoverHintPopup.hide();
+				}
 			}
 		});
 		
