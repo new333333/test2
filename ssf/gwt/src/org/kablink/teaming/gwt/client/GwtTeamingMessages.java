@@ -488,6 +488,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_BinderOwnerAvatarPanel();
 	String codeSplitFailure_BlogArchiveCtrl();
 	String codeSplitFailure_BlogFolderView();
+	String codeSplitFailure_BlogGlobalTagsCtrl();
 	String codeSplitFailure_BreadCrumbPanel();
 	String codeSplitFailure_CalendarFolderView();
 	String codeSplitFailure_CalendarNavigationPanel();
@@ -1672,5 +1673,8 @@ public interface GwtTeamingMessages extends Messages
 	
 	// String used in the blog archive control
 	String blogArchiveTitle();
+	
+	// Strings used in the blog global tags contro.
+	String blogGlobalTagsTitle();
 	
 }// end GwtTeamingMessages

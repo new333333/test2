@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+import org.kablink.teaming.gwt.client.util.TagInfo;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -50,6 +51,7 @@ public class BlogArchiveInfo
 {
 	private Long m_folderId;	// Id of the blog folder we are working with
 	private ArrayList<BlogArchiveMonth> m_listOfMonths;	// List of months that have blog entries.
+	private ArrayList<TagInfo> m_listOfGlobalTags;		// List of global tags that are on the blog entries for the given folder
 	
 	/**
 	 * 
@@ -58,6 +60,15 @@ public class BlogArchiveInfo
 	{
 		m_folderId = null;
 		m_listOfMonths = new ArrayList<BlogArchiveMonth>();
+		m_listOfGlobalTags = new ArrayList<TagInfo>();
+	}
+	
+	/**
+	 * Add a global tag to our list.
+	 */
+	public void addGlobalTag( TagInfo tagInfo )
+	{
+		m_listOfGlobalTags.add( tagInfo );
 	}
 	
 	/**
@@ -74,6 +85,14 @@ public class BlogArchiveInfo
 	public Long getFolderId()
 	{
 		return m_folderId;
+	}
+	
+	/**
+	 * Return the list of global tags.
+	 */
+	public ArrayList<TagInfo> getListOfGlobalTags()
+	{
+		return m_listOfGlobalTags;
 	}
 	
 	/**

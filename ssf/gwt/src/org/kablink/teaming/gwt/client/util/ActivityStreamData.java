@@ -159,6 +159,7 @@ public class ActivityStreamData implements IsSerializable {
 		private String	m_sortKey                    = "_lastActivity";	// Default:  Constants.LASTACTIVITY_FIELD.
 		private Long	m_creationStartTime			 = null;
 		private Long	m_creationEndTime			 = null;
+		private TagInfo m_globalTagInfo				 = null;
 
 		/**
 		 * Constructor method.
@@ -179,6 +180,7 @@ public class ActivityStreamData implements IsSerializable {
 		public boolean isSortDescending()             {return m_sortDescending;            }
 		public Long	   getCreationEndTime()		  	  {return m_creationEndTime;		   }
 		public Long	   getCreationStartTime()		  {return m_creationStartTime;		   }
+		public TagInfo getGlobalTagInfo()			  {return m_globalTagInfo;			   }
 		public String  getQuickFilter()               {return m_quickFilter;               }
 		public String  getSortKey()                   {return m_sortKey;                   }
 		
@@ -191,6 +193,7 @@ public class ActivityStreamData implements IsSerializable {
 		public void setCreationEndTime(	  	  	  Long creationEndTime				) {m_creationEndTime			= creationEndTime;			 }
 		public void setCreationStartTime(		  Long creationStartTime			) {m_creationStartTime			= creationStartTime;		 }
 		public void setForcePlainTextDescriptions(boolean forcePlainTextDescriptions) {m_forcePlainTextDescriptions = forcePlainTextDescriptions;}
+		public void setGlobalTagInfo(			  TagInfo tagInfo					) {m_globalTagInfo				= tagInfo;					 }
 		public void setReturnComments(            boolean returnComments            ) {m_returnComments             = returnComments;            }
 		public void setQuickFilter(               String  quickFilter               ) {m_quickFilter                = quickFilter;               }
 		public void setSortDescending(            boolean sortDescending            ) {m_sortDescending             = sortDescending;            }

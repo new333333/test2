@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.event.BlogArchiveMonthSelectedEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBlogArchiveInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.widgets.BlogGlobalTagsCtrl.BlogGlobalTagsCtrlClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -66,6 +67,7 @@ public class BlogArchiveCtrl extends VibeWidget
 	private Long m_folderId;
 	private FlexTable m_table;
 	private BlogArchiveInfo m_blogArchiveInfo;
+	private BlogGlobalTagsCtrl m_globalTagsCtrl;
 	private ClickHandler m_monthClickHandler;
 	private ClickHandler m_folderClickHandler;
 	private InlineLabel m_selectedLabel;	// Holds the month or folder label last selected.
@@ -149,7 +151,7 @@ public class BlogArchiveCtrl extends VibeWidget
 	 */
 	private BlogArchiveCtrl()
 	{
-		VibeFlowPanel mainPanel;
+		final VibeFlowPanel mainPanel;
 		InlineLabel label;
 		
 		m_selectedLabel = null;
@@ -166,6 +168,28 @@ public class BlogArchiveCtrl extends VibeWidget
 		
 		mainPanel.add( m_table );
 		
+		// Add the Global tags control
+		{
+			BlogGlobalTagsCtrl.createAsync( new BlogGlobalTagsCtrlClient()
+			{
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in the asyncronous provider.
+				}
+				
+				@Override
+				public void onSuccess( BlogGlobalTagsCtrl bgtCtrl )
+				{
+					// Add some space between the archive control and the global tags contro.
+					bgtCtrl.addStyleName( "margintop3" );
+					
+					m_globalTagsCtrl = bgtCtrl;
+					mainPanel.add( bgtCtrl );
+				}
+			} );
+		}
+
 		// Create a click handler that will be used for every month
 		m_monthClickHandler = new ClickHandler()
 		{
@@ -506,6 +530,9 @@ public class BlogArchiveCtrl extends VibeWidget
 						{
 							// Add the archive information to this control.
 							addArchiveInfo( m_blogArchiveInfo );
+							
+							// Add the Global tags information
+							m_globalTagsCtrl.init( m_blogArchiveInfo.getListOfGlobalTags() );
 						}
 					};
 					Scheduler.get().scheduleDeferred( schCmd );
