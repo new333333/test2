@@ -516,6 +516,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
      */
     public CustomAttribute getCustomAttribute(String name) {
     	return (CustomAttribute)getCustomAttributes().get(name);
+
    }
     /**
      * Retrieve <code>CustomAttibute</code> by its id.

@@ -35,6 +35,7 @@ package org.kablink.teaming.remoting.rest.v1.provider;
 import org.codehaus.jackson.map.AnnotationIntrospector;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.codehaus.jackson.map.introspect.JacksonAnnotationIntrospector;
 import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
 
 import javax.ws.rs.ext.ContextResolver;
@@ -54,15 +55,19 @@ public class DefaultObjectMapperContextResolver implements ContextResolver<Objec
     public DefaultObjectMapperContextResolver() throws Exception {
         this.objectMapper = new ObjectMapper();
         AnnotationIntrospector jaxb = new JaxbAnnotationIntrospector();
+        AnnotationIntrospector jackson = new JacksonAnnotationIntrospector();
+
+        // make de/serializer use JAXB annotations first, then jackson ones
+        AnnotationIntrospector pair = new AnnotationIntrospector.Pair(jaxb, jackson);
         this.objectMapper.setSerializationConfig(
                 this.objectMapper.getSerializationConfig()
                         .withSerializationInclusion(JsonSerialize.Inclusion.NON_NULL)
                         .withDateFormat(new CustomDateFormat())
-                        .withAnnotationIntrospector(jaxb));
+                        .withAnnotationIntrospector(pair));
         this.objectMapper.setDeserializationConfig(
                 this.objectMapper.getDeserializationConfig()
                         .withDateFormat(new CustomDateFormat())
-                        .withAnnotationIntrospector(jaxb));
+                        .withAnnotationIntrospector(pair));
     }
 
     public ObjectMapper getContext(Class<?> aClass) {

@@ -33,12 +33,15 @@
 
 package org.kablink.teaming.rest.v1.model;
 
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+
 import javax.xml.bind.annotation.XmlElement;
 
 /**
  * @author jong
  *
  */
+@JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@type")
 public abstract class BaseFileProperties extends BaseRestObject {
 
 	private String id;

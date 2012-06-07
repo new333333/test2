@@ -34,6 +34,7 @@ package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.List;
 
 /**
  * User: david
@@ -55,6 +56,7 @@ public abstract class DefinableEntity extends BaseRestObject {
    	private String entityType;
    	private String family;
     private BaseFileProperties [] attachments;
+    private CustomField [] customFields;
 
     @XmlElement(name="average_rating")
     public AverageRating getAverageRating() {
@@ -179,5 +181,15 @@ public abstract class DefinableEntity extends BaseRestObject {
 
     public void setAttachments(BaseFileProperties[] attachments) {
         this.attachments = attachments;
+    }
+
+    @XmlElementWrapper(name="custom_fields")
+    @XmlElement(name = "field")
+    public CustomField [] getCustomFields() {
+        return customFields;
+    }
+
+    public void setCustomFields(CustomField [] customFields) {
+        this.customFields = customFields;
     }
 }
