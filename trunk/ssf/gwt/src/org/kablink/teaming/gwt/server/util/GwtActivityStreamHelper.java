@@ -75,6 +75,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
+import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper.GwtServerProfiler;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -1041,6 +1042,7 @@ public class GwtActivityStreamHelper {
 	private static Document buildSearchQuery(AllModulesInjected bs, Long sfId, SpecificFolderData sfData, String lastActivityStart, String lastActivityEnd) {
 		Long creationStartTime;
 		Long creationEndTime;
+		TagInfo globalTagInfo;
 
 		// Create a SearchFilter for the search query.
 		SearchFilter sf = new SearchFilter(true);
@@ -1081,6 +1083,14 @@ public class GwtActivityStreamHelper {
 			date = new Date( creationEndTime.longValue() );
 			endDate = fmt.print( new DateTime( date ) );
 			sf.addCreationDateRange( startDate, endDate );
+		}
+		
+		// Do we have a global tag?
+		globalTagInfo = sfData.getGlobalTagInfo();
+		if ( globalTagInfo != null )
+		{
+			// Yes, add it to the filter.
+			sf.addCommunityTag( globalTagInfo.getTagSearchText() );
 		}
 
 		// If we get here, sf refers to a SearchFilter object
