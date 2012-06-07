@@ -166,7 +166,7 @@ public class GwtCalendarHelper {
 			return null;
 		}
 
-		// Did the dates contain any date ranges?
+		// Do the dates contain any date ranges?
 		String[] dateRanges = recurrenceDates.split(",");
 		if ((null == dateRanges) || (0 == dateRanges.length)){
 			// No!  Bail.
@@ -180,7 +180,7 @@ public class GwtCalendarHelper {
 			String[] dates = dateRange.split(" ");
 			if ((null != dates) && (2 == dates.length)) {
 				try {
-					// Yes!  Parse it and add it to the recurrence
+					// Yes!  Parse them and add them to the recurrence
 					// object.
 					Date startDate = DateTools.stringToDate(dates[0]);
 					Date endDate   = DateTools.stringToDate(dates[1]);
@@ -194,7 +194,7 @@ public class GwtCalendarHelper {
 			}
 		}
 		
-		// Do we any dates in the recurrence object?
+		// Do we have any dates in the recurrence object?
 		if (!(reply.isRecurrent())) {
 			// No!  Bail. 
 			return null;
@@ -525,7 +525,7 @@ public class GwtCalendarHelper {
 					if ((null == dbEvent) || (Event.NO_RECURRENCE == dbEvent.getFrequency())) {
 						// ...make sure we're not tracking any
 						// ...recurrence information for it.
-						ca.setRecurrence(null);
+						ca.setServerRecurrence(null);
 					}
 				}
 			}
@@ -810,12 +810,12 @@ public class GwtCalendarHelper {
 					CalendarRecurrence cr = getRecurrenceFromEntryMap(
 						event,
 						GwtEventHelper.buildEventFieldName(
-								fieldName,
-								Constants.EVENT_RECURRENCE_DATES_FIELD));
+							fieldName,
+							Constants.EVENT_RECURRENCE_DATES_FIELD));
 					
 					if ((null != cr) && cr.isRecurrent()) {
 						// Yes!  Add them to the appointment.
-						appointment.setRecurrence(cr);
+						appointment.setServerRecurrence(cr);
 					}
 				}
 			}

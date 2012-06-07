@@ -315,7 +315,7 @@ public class CalendarFolderView extends FolderViewBase
 				}
 				
 				// Is this an instance of a recurrent event?
-				if (ca.isRecurrentInstance()) {
+				if (ca.isClientRecurrentInstance()) {
 					// Yes  Regardless of what else we do, cancel the
 					// event.  They either can't drag and drop it or
 					// we'll do a full refresh when they do.
@@ -324,7 +324,7 @@ public class CalendarFolderView extends FolderViewBase
 					
 					// Is this the second or later in a sequence of
 					// recurrent events?
-					if (0 < ca.getRecurrenceIndex()) {
+					if (0 < ca.getClientRecurrenceIndex()) {
 						// Yes!  Then we don't support drag an drop on
 						// it.  Tell the user about the problem and
 						// bail.
@@ -357,7 +357,7 @@ public class CalendarFolderView extends FolderViewBase
 						// Yes, the event has been updated!  Is it an
 						// instance of a recurrent event that we just
 						// updated?
-						if (ca.isRecurrentInstance()) {
+						if (ca.isClientRecurrentInstance()) {
 							// Yes!  Repopulate the view so that all
 							// recurrences get updated too.
 							doFullCalendarRefreshAsync();
@@ -523,7 +523,7 @@ public class CalendarFolderView extends FolderViewBase
 									else {
 										// No error!  If this is a
 										// recurrent instance...
-										if (appointment.isRecurrentInstance()) {
+										if (appointment.isClientRecurrentInstance()) {
 											// ...force the calendar to
 											// ...refresh.
 											doFullCalendarRefreshAsync();
@@ -643,7 +643,7 @@ public class CalendarFolderView extends FolderViewBase
 									else {
 										// No error!  If this is a
 										// recurrent instance...
-										if (appointment.isRecurrentInstance()) {
+										if (appointment.isClientRecurrentInstance()) {
 											// ...force the calendar to
 											// ...refresh.
 											doFullCalendarRefreshAsync();
@@ -727,28 +727,29 @@ public class CalendarFolderView extends FolderViewBase
 			for (Appointment appointment:  appointments) {
 				// Is this appointment recurrent?
 				CalendarAppointment ca = ((CalendarAppointment) appointment);
-				if (ca.isRecurrent()) {
+				if (ca.isServerRecurrent()) {
 					// Yes!  Expand each recurrence into its own
 					// appointment object.  Note that we append
 					// an indication of the recurrence instance in
 					// event's title.
-					List<Date[]> recurrenceDates = ca.getRecurrence().getRecurrenceDates();
-					int recurrenceIndex = 0;
+					List<Date[]> recurrenceDates = ca.getServerRecurrence().getRecurrenceDates();
+					int count = recurrenceDates.size();
+					int index = 0;
 					for (Date[] dates:  recurrenceDates) {
 						CalendarAppointment caClone = ca.cloneAppointment();
-						caClone.setRecurrence(     null                                              );
-						caClone.setRecurrenceIndex(recurrenceIndex++                                 );
-						caClone.setStart(          dates[0]                                          );
-						caClone.setEnd(            dates[1]                                          );
-						caClone.setTitle(          caClone.getTitle() + " (#" + recurrenceIndex + ")");
-						reply.add(                 caClone                                           );
+						caClone.setServerRecurrence(     null                                                                       );
+						caClone.setClientRecurrenceIndex(index++                                                                    );
+						caClone.setStart(                dates[0]                                                                   );
+						caClone.setEnd(                  dates[1]                                                                   );
+						caClone.setTitle(                caClone.getTitle() + " " + m_messages.calendarView_Recurrence(index, count));
+						reply.add(                       caClone                                                                    );
 					}
 				}
 				
 				else {
 					// No, this appointment isn't recurrent!  Simply
 					// add it to the reply list.
-					ca.setRecurrenceIndex(-1);
+					ca.setClientRecurrenceIndex(-1);
 					reply.add(ca);
 				}
 			}

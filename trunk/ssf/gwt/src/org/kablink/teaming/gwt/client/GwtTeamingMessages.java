@@ -1597,6 +1597,7 @@ public interface GwtTeamingMessages extends Messages
 	String calendarView_Error_CantTrash();
 	String calendarView_Error_CantUpdateRecurrence();
 	String calendarView_Error_CantUpdateWhenViewByDate();
+	String calendarView_Recurrence(int index, int total);
 
 	// Strings used by the 'Progress' dialog.
 	String progressDlgConfirmCancel();
