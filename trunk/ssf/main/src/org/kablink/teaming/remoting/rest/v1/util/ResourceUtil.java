@@ -35,6 +35,7 @@ package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -52,12 +53,23 @@ import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.Workspace;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
+import org.kablink.teaming.util.InvokeUtil;
+import org.kablink.teaming.util.ObjectPropertyNotFoundException;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.dom4j.Element;
+import org.kablink.util.Validator;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -68,6 +80,13 @@ import java.util.Set;
  *
  */
 public class ResourceUtil {
+    private static DefinitionModule definitionModule;
+    private static Set<String> ignoredCustomFields = new HashSet<String>() {
+        {
+            add("description");
+            add("ss_attachFile");
+        }
+    };
 
     public static Calendar toCalendar(Date date) {
    		Calendar cal = Calendar.getInstance();
@@ -337,6 +356,55 @@ public class ResourceUtil {
             }
             model.setAttachments(props.toArray(new BaseFileProperties[props.size()]));
         }
+
+        populateCustomFields(model, entity);
+    }
+
+    private static void populateCustomFields(final DefinableEntity model, final org.kablink.teaming.domain.DefinableEntity entity) {
+        final Map<String, CustomField> fields = new LinkedHashMap<String, CustomField>();
+        DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
+            public void visit(Element entryElement, Element flagElement, Map args) {
+                if (flagElement.attributeValue("apply").equals("true")) {
+                    String fieldBuilder = flagElement.attributeValue("elementBuilder");
+                    String typeValue = entryElement.attributeValue("name");
+                    String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");
+                    if (Validator.isNull(nameValue)) {nameValue = typeValue;}
+                    if (!ignoredCustomFields.contains(nameValue)) {
+                        CustomField field = new CustomField(nameValue, typeValue);
+                        CustomAttribute attribute = entity.getCustomAttribute(nameValue);
+                        if (attribute!=null) {
+                            Object value = attribute.getRawValue();
+                            if (value instanceof Collection) {
+                                field.setValues(((Collection) value).toArray());
+                            } else {
+                                field.setValue(value);
+                            }
+                        } else {
+                            try {
+                                Object value = InvokeUtil.invokeGetter(entity, nameValue);
+                                if (value!=null) {
+                                    field.setValue(value);
+                                }
+                            } catch (ObjectPropertyNotFoundException ex) {
+                                // Ignore
+                            }
+                        }
+                        fields.put(field.getName(), field);
+                    }
+                }
+            }
+            public String getFlagElementName() { return "webService"; }
+        };
+
+        getDefinitionModule().walkDefinition(entity, visitor, null);
+
+        List<CustomField> fieldList = new ArrayList<CustomField>(fields.values());
+        Collections.sort(fieldList, new Comparator<CustomField>() {
+            public int compare(CustomField o1, CustomField o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        model.setCustomFields(fieldList.toArray(new CustomField[fieldList.size()]));
     }
 
     private static void populateEntry(Entry model, org.kablink.teaming.domain.Entry entry, boolean includeAttachments) {
@@ -476,4 +544,10 @@ public class ResourceUtil {
         return model;
     }
 
+
+    public static DefinitionModule getDefinitionModule() {
+   		if(definitionModule == null)
+   			definitionModule = (DefinitionModule) SpringContextUtil.getBean("definitionModule");
+   		return definitionModule;
+   	}
 }
