@@ -181,7 +181,7 @@ public class BlogArchiveCtrl extends VibeWidget
 				@Override
 				public void onSuccess( BlogGlobalTagsCtrl bgtCtrl )
 				{
-					// Add some space between the archive control and the global tags contro.
+					// Add some space between the archive control and the global tags control.
 					bgtCtrl.addStyleName( "margintop3" );
 					
 					m_globalTagsCtrl = bgtCtrl;
@@ -453,6 +453,9 @@ public class BlogArchiveCtrl extends VibeWidget
 	{
 		BlogArchiveFolderSelectedEvent event;
 
+		// Clear any global tag that is selected.
+		m_globalTagsCtrl.clearSelectedTags();
+		
 		// Fire the BlogArchiveFolderSelectedEvent so interested parties will know
 		// that the given folder was selected.
 		event = new BlogArchiveFolderSelectedEvent( month, folder );
@@ -474,6 +477,9 @@ public class BlogArchiveCtrl extends VibeWidget
 			{
 				openMonth( month );
 			}
+			
+			// Clear any global tag that is selected.
+			m_globalTagsCtrl.clearSelectedTags();
 			
 			// Fire the BlogArchiveMonthSelectedEvent so interested parties will know
 			// that this month was selected.

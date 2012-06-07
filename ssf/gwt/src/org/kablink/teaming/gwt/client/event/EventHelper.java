@@ -263,6 +263,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case BLOG_PAGE_SELECTED:
+				// A BlogPageSelectedEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof BlogPageSelectedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = BlogPageSelectedEvent.registerEvent( eventBus, ((BlogPageSelectedEvent.Handler) eventHandler) );
+				}
+				break;
+			
 			case BROWSE_HIERARCHY:
 				// An BrowseHierarchyEvent!  Can the event handler we
 				// were given handle that?
@@ -1699,6 +1708,7 @@ public class EventHelper {
 			case BLOG_ARCHIVE_FOLDER_SELECTED:          hasHandler = (eventHandler instanceof BlogArchiveFolderSelectedEvent.Handler);     break;
 			case BLOG_ARCHIVE_MONTH_SELECTED:           hasHandler = (eventHandler instanceof BlogArchiveMonthSelectedEvent.Handler);      break;
 			case BLOG_GLOBAL_TAG_SELECTED:           	hasHandler = (eventHandler instanceof BlogGlobalTagSelectedEvent.Handler);         break;
+			case BLOG_PAGE_SELECTED:           			hasHandler = (eventHandler instanceof BlogPageSelectedEvent.Handler);         	   break;
 
 			case BROWSE_HIERARCHY:                  	hasHandler = (eventHandler instanceof BrowseHierarchyEvent.Handler);               break;
 			case BROWSE_HIERARCHY_EXIT:             	hasHandler = (eventHandler instanceof BrowseHierarchyExitEvent.Handler);           break;

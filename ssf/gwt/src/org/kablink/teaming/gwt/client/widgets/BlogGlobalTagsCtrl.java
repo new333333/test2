@@ -142,7 +142,7 @@ public class BlogGlobalTagsCtrl extends VibeWidget
 					if ( m_selectedTagLabel != null )
 					{
 						// Yes, remove the "selected" style from the label.
-						m_selectedTagLabel.removeStyleName( "blogGlobalTagsCtrlSelected" );
+						clearSelectedTags();
 					}
 					
 					label = (GlobalTagInlineLabel) src;
@@ -184,6 +184,19 @@ public class BlogGlobalTagsCtrl extends VibeWidget
 			m_table.setWidget( row, 0, label );
 		}
 	}
+	
+	/**
+	 * Unselect any selected tags.
+	 */
+	public void clearSelectedTags()
+	{
+		if ( m_selectedTagLabel != null )
+		{
+			m_selectedTagLabel.removeStyleName( "blogGlobalTagsCtrlSelected" );
+			m_selectedTagLabel = null;
+		}
+	}
+
 	
 	/**
 	 * Loads the BlogGlobalTagsCtrl split point and returns an instance of it via the callback.

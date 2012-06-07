@@ -70,6 +70,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
+import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtAttachment;
@@ -717,6 +718,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			gbaiCmd = (GetBlogArchiveInfoCmd) cmd;
 			info = GwtBlogHelper.getBlogArchiveInfo( this, gbaiCmd.getFolderId() );
 			response = new VibeRpcResponse( info );
+			return response;
+		}
+		
+		case GET_BLOG_PAGES:
+		{
+			GetBlogPagesCmd gbpCmd;
+			BlogPages blogPages;
+			
+			gbpCmd = (GetBlogPagesCmd) cmd;
+			blogPages = GwtBlogHelper.getBlogPages( this, gbpCmd.getFolderId() );
+			response = new VibeRpcResponse( blogPages );
 			return response;
 		}
 		

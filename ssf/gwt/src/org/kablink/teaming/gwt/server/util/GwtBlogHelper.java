@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,10 +50,13 @@ import org.dom4j.Element;
 
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.gwt.client.BlogArchiveFolder;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogArchiveMonth;
+import org.kablink.teaming.gwt.client.BlogPage;
+import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
@@ -63,7 +67,11 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Order;
+import org.kablink.util.search.Restrictions;
 
 
 
@@ -331,6 +339,89 @@ public class GwtBlogHelper
 		}
 		
 		return info;
+	}
+	
+	/**
+	 * Return a list of all the "pages" (folders) that are found in the given blog folder.
+	 */
+	public static BlogPages getBlogPages( AllModulesInjected ami, Long folderId )
+	{
+		BlogPages blogPages;
+		
+		blogPages = new BlogPages();
+		
+		try
+		{
+			Folder folder;
+			Binder topFolder;
+
+			folder = ami.getFolderModule().getFolder( folderId );
+
+			// Get the "top" blog folder
+	    	topFolder = getTopBlogFolder( ami, folder );
+	    	if ( topFolder == null )
+	    		topFolder = folder;
+
+	    	blogPages.setTopFolderId( topFolder.getId() );
+	    	
+	    	// This code was copied from ListFolderHelper.buildBlogPageBeans() and then tweaked.
+	    	{
+	    		List folderIds;
+	    		Criteria crit;
+	    		Map binderMap;
+	    		List binderMapList; 
+	    		List binderIdList;
+	          	SortedSet binderList;
+
+	    		// Get a list of all the binders that are descendants of the top folder.
+	    		folderIds = new ArrayList();
+	    		folderIds.add( topFolder.getId().toString() );
+	    		crit = new Criteria();
+	    		crit = crit.add( Restrictions.in( Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER} ) );
+	    		crit.add( Restrictions.in( Constants.ENTRY_ANCESTRY, folderIds ) );
+	    		crit.addOrder( Order.asc( Constants.SORT_TITLE_FIELD ) );
+	    		binderMap = ami.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+
+	    		binderMapList = (List)binderMap.get( ObjectKeys.SEARCH_ENTRIES ); 
+	    		binderIdList = new ArrayList();
+
+	          	for (Iterator iter=binderMapList.iterator(); iter.hasNext();)
+	          	{
+	          		Map entryMap = (Map) iter.next();
+	          		binderIdList.add( new Long((String)entryMap.get("_docId")) );
+	          	}
+	          	
+	          	binderList = ami.getBinderModule().getBinders( binderIdList );
+	            for (Iterator iter=binderList.iterator(); iter.hasNext();)
+	            {
+	         		Binder nextBinder;
+
+	         		nextBinder = (Binder)iter.next();
+	          		if ( nextBinder.isDeleted() )
+	          			continue;
+	          		
+	          		if ( nextBinder.getEntityType().equals( EntityIdentifier.EntityType.folder ) )
+	          		{
+	          			BlogPage blogPage;
+	          			String url;
+	          			
+	          			blogPage = new BlogPage();
+	          			blogPage.setFolderId( nextBinder.getId().toString() );
+	          			blogPage.setFolderName( nextBinder.getTitle() );
+	          			url = PermaLinkUtil.getPermalink( nextBinder );
+	          			blogPage.setViewFolderUrl( url );
+	          			
+	          			blogPages.addPage( blogPage );
+	          		}
+	    		}
+	    	}
+		}
+		catch (AccessControlException acEx)
+		{
+			// The user doesn't have rights to see the folder.
+		}
+		
+		return blogPages;
 	}
 	
 	/**
