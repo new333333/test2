@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.BlogArchiveFolderSelectedEvent;
 import org.kablink.teaming.gwt.client.event.BlogArchiveMonthSelectedEvent;
+import org.kablink.teaming.gwt.client.event.BlogGlobalTagSelectedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -62,6 +63,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu.ActionMenuItem;
@@ -69,6 +71,7 @@ import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStream
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 import org.kablink.teaming.gwt.client.widgets.BlogArchiveCtrl;
 import org.kablink.teaming.gwt.client.widgets.BlogArchiveCtrl.BlogArchiveCtrlClient;
+import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import com.google.gwt.core.client.GWT;
@@ -92,6 +95,7 @@ public class BlogFolderView extends FolderViewBase
 	// Event handlers implemented by this class.
 		BlogArchiveFolderSelectedEvent.Handler,
 		BlogArchiveMonthSelectedEvent.Handler,
+		BlogGlobalTagSelectedEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
 		QuickFilterEvent.Handler,
 		SetFolderSortEvent.Handler
@@ -112,6 +116,7 @@ public class BlogFolderView extends FolderViewBase
     {
 		TeamingEvents.BLOG_ARCHIVE_FOLDER_SELECTED,
 		TeamingEvents.BLOG_ARCHIVE_MONTH_SELECTED,
+		TeamingEvents.BLOG_GLOBAL_TAG_SELECTED,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.QUICK_FILTER,
 		TeamingEvents.SET_FOLDER_SORT
@@ -141,6 +146,7 @@ public class BlogFolderView extends FolderViewBase
 	public void constructView()
 	{
 		final FlexTable table;
+		final VibeFlowPanel rightPanel;
 		FlexCellFormatter cellFormatter;
 		ActionsPopupMenu actionsMenu;
 		ActionMenuItem[] menuItems = {  ActionMenuItem.REPLY,
@@ -190,11 +196,13 @@ public class BlogFolderView extends FolderViewBase
 				// Issue an rpc request to get the folder's sort setting.  After we get
 				// the sort setting we will search for blog entries in this folder.
 				getFolderSortSetting();
-				
-				// Call viewReady() when we are finished constructing everything.
-				viewReady();
 			}
 		} );
+		
+		// Create a panel for the Archive control and the global tags control to live in.
+		rightPanel = new VibeFlowPanel();
+		rightPanel.addStyleName( "blogFolderViewRightPanel" );
+		table.setWidget( 0, 1, rightPanel );
 		
 		// Add the Archive control
 		{
@@ -210,11 +218,14 @@ public class BlogFolderView extends FolderViewBase
 				public void onSuccess( BlogArchiveCtrl baCtrl )
 				{
 					baCtrl.init( getFolderId() );
-					table.setWidget( 0, 1, baCtrl );
+					rightPanel.add( baCtrl );
+					
+					// Call viewReady() when we are finished constructing everything.
+					viewReady();
 				}
 			} );
 		}
-
+		
 		getFlowPanel().add( table );
 	}
 
@@ -472,6 +483,38 @@ public class BlogFolderView extends FolderViewBase
 	}
 	
 	/**
+	 * Handles the BlogGlobalTagSelectedEvent received by this class.
+	 * 
+	 * Implements the BlogGlobalTagSelectedEvent.onBlogGlobalTagSelectedEvent() method.
+	 * 
+	 */
+	@Override
+	public void onBlogGlobalTagSelected( BlogGlobalTagSelectedEvent event )
+	{
+		final TagInfo tagInfo;
+		
+		// Get the tag that was selected.
+		tagInfo = event.getTagInfo();
+		
+		if ( tagInfo != null )
+		{
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute() 
+				{
+					// Find all the blog entries in the folder we are working with that
+					// have the selected tag.
+					searchForBlogEntries( tagInfo );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}
+	
+	/**
 	 * Handles ContributorIdsRequestEvent's received by this class.
 	 * 
 	 * Implements the ContributorIdsRequestEvent.Handler.onContributorIdsRequest() method.
@@ -673,11 +716,19 @@ public class BlogFolderView extends FolderViewBase
 	}
 	
 	/**
+	 * Do a search for blog entries
+	 */
+	private void searchForBlogEntries()
+	{
+		searchForBlogEntries( null, null, null, null, null );
+	}
+
+	/**
 	 * Do a search for blog entries using the given sort key
 	 */
 	private void searchForBlogEntries( String sortKey, Boolean sortDescending )
 	{
-		searchForBlogEntries( sortKey, sortDescending, null, null );
+		searchForBlogEntries( sortKey, sortDescending, null, null, null );
 	}
 	
 	/**
@@ -685,15 +736,15 @@ public class BlogFolderView extends FolderViewBase
 	 */
 	private void searchForBlogEntries( Long creationStartTime, Long creationEndTime )
 	{
-		searchForBlogEntries( null, null, creationStartTime, creationEndTime );
+		searchForBlogEntries( null, null, creationStartTime, creationEndTime, null );
 	}
 	
 	/**
-	 * Do a search for blog entries
+	 * Do a search for blog entries that have the given global tag.
 	 */
-	private void searchForBlogEntries()
+	private void searchForBlogEntries( TagInfo tagInfo )
 	{
-		searchForBlogEntries( null, null, null, null );
+		searchForBlogEntries( null, null, null, null, tagInfo );
 	}
 	
 	/**
@@ -703,7 +754,8 @@ public class BlogFolderView extends FolderViewBase
 								String sortKey, 
 								Boolean sortDescending, 
 								Long creationStartTime, 
-								Long creationEndTime )
+								Long creationEndTime,
+								TagInfo tagInfo )
 	{
 		if ( m_activityStreamCtrl != null )
 		{
@@ -737,6 +789,13 @@ public class BlogFolderView extends FolderViewBase
 					// Yes
 					specificFolderData.setCreationStartTime( creationStartTime );
 					specificFolderData.setCreationEndTime( creationEndTime );
+				}
+				
+				// Was a global tag specified?
+				if ( tagInfo != null )
+				{
+					// Yes
+					specificFolderData.setGlobalTagInfo( tagInfo );
 				}
 				
 				m_activityStreamCtrl.setSpecificFolderData( specificFolderData );

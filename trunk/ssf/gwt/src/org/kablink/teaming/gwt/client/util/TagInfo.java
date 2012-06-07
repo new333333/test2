@@ -50,6 +50,12 @@ public class TagInfo implements IsSerializable {
 	private String  m_tagName;						//
 	private TagType m_tagType = TagType.UNKNOWN;	//
 	
+	// The following data members are only valid when the TagInfo object was created via
+	// a request to get archive information.
+	private int		m_searchResultsCnt;
+	private int		m_searchResultsRating;
+	private String	m_searchText;
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -57,6 +63,9 @@ public class TagInfo implements IsSerializable {
 	 */
 	public TagInfo() {
 		// Nothing to do.
+		m_searchResultsCnt = 0;
+		m_searchResultsRating = 0;
+		m_searchText = null;
 	}
 
 	/**
@@ -69,6 +78,30 @@ public class TagInfo implements IsSerializable {
 	public String  getTagName()        {return m_tagName;       }
 	public String  getTagOwnerEntity() {return m_tagOwnerEntity;}
 	public TagType getTagType()        {return m_tagType;       }
+	
+	/**
+	 * 
+	 */
+	public int getTagSearchResultsCount()
+	{
+		return m_searchResultsCnt;
+	}
+	
+	/**
+	 * 
+	 */
+	public int getTagSearchResultsRating()
+	{
+		return m_searchResultsRating;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getTagSearchText()
+	{
+		return m_searchText;
+	}
 	
 	/**
 	 * Returns true of this tag defines a community tag and false
@@ -124,6 +157,30 @@ public class TagInfo implements IsSerializable {
 	 */
 	public void setTagOwnerEntity(String tagOwnerEntity) {
 		m_tagOwnerEntity = tagOwnerEntity;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setTagSearchResultsCount( int cnt )
+	{
+		m_searchResultsCnt = cnt;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setTagSearchResultsRating( int rating )
+	{
+		m_searchResultsRating = rating;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setTagSearchText( String text )
+	{
+		m_searchText = text;
 	}
 	
 	/**

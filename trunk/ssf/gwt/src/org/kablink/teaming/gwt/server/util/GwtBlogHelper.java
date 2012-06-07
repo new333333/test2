@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -52,12 +53,14 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.gwt.client.BlogArchiveFolder;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogArchiveMonth;
+import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.util.search.Constants;
@@ -265,6 +268,61 @@ public class GwtBlogHelper
 			for (Map.Entry<String, BlogArchiveMonth> nextEntry : monthHits.entrySet() )
 			{
 				info.addMonth( nextEntry.getValue() );
+			}
+			
+			// Add information about the global tags that exist on the blog entries
+			if ( entries != null )
+			{
+				List entryCommunityTags;
+				int intMaxHitsForCommunityTags;
+				int intMaxHits;
+				int i;
+
+				entryCommunityTags = new ArrayList();
+				entryCommunityTags = BinderHelper.sortCommunityTags( entries );
+				
+				// Gather up information about each global tag.
+				intMaxHitsForCommunityTags = BinderHelper.getMaxHitsPerTag( entryCommunityTags );
+				intMaxHits = intMaxHitsForCommunityTags;
+				entryCommunityTags = BinderHelper.rateCommunityTags( entryCommunityTags, intMaxHits );
+				entryCommunityTags = BinderHelper.determineSignBeforeTag( entryCommunityTags, "" );
+				
+				// Add each tag to the archive info.  entryCommunityTags is a list of Maps.
+				// Each Map holds a key/value pair.  The following is an example of what the map
+				// looks like:
+				// {ssTagSign=+, ssTagSearchText=cbug, searchResultsRatingCSS=ss_largeprint, ssTag=cbug, searchResultsCount=2, searchResultsRating=66}
+				for (i = 0; i < entryCommunityTags.size(); ++i)
+				{
+					TagInfo tagInfo;
+					Map tagMap;
+					String tagName;
+					String tagSearchText;
+					Integer tagCnt;
+					Integer tagRating;
+					
+					tagMap = (Map) entryCommunityTags.get( i );
+					tagName = (String) tagMap.get( WebKeys.TAG_NAME );
+					tagCnt = (Integer) tagMap.get( WebKeys.SEARCH_RESULTS_COUNT );
+					tagRating = (Integer) tagMap.get( WebKeys.SEARCH_RESULTS_RATING );
+					tagSearchText = (String) tagMap.get( WebKeys.TAG_SEARCH_TEXT );
+					
+					if ( tagName != null )
+					{
+						tagInfo = new TagInfo();
+						tagInfo.setTagName( tagName );
+						
+						if ( tagCnt != null )
+							tagInfo.setTagSearchResultsCount( tagCnt );
+						
+						if ( tagRating != null )
+							tagInfo.setTagSearchResultsRating( tagRating );
+						
+						if ( tagSearchText != null )
+							tagInfo.setTagSearchText( tagSearchText );
+						
+						info.addGlobalTag( tagInfo );
+					}
+				}
 			}
 		}
 		catch (AccessControlException acEx)

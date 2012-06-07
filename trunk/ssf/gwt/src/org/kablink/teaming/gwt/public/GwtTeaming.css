@@ -3720,17 +3720,29 @@ td.datePickerMonth {
 	.vibe-eventButton-widgetTextHover    {background: #81B2BD url(images/slice_blend_teal_27.png) repeat-x !important; color: #FFFFFF !important;}
 /* ...End:  Event button styles. */
 
+/*
+ * Styles used with the blog folder view
+ */
 
-
-/* Styles used with the blog archive control */
-
-.blogArchiveCtrlMainPanel
+.blogFolderViewRightPanel
 {
 	background-color: #EBF5F5;
 	margin-top: 8px;
 	padding: 10px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
+}
+
+/* End */
+ 
+
+
+/*
+ * Styles used with the blog archive control
+ */
+
+.blogArchiveCtrlMainPanel
+{
 }
 
 .blogArchiveCtrlFolderLabel
@@ -3772,3 +3784,42 @@ td.datePickerMonth {
 }
 
 /* End */
+
+
+/**
+ * Styles used with the blog global tags control
+ */
+ 
+ .blogGlobalTagsCtrlTitle
+ {
+	color: #666666;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 13px !important;
+	font-weight: bold;
+	padding-bottom: 12px;
+ }
+ 
+ .blogGlobalTagsCtrlTagLabel
+ {
+	color: #135C8F;
+ }
+ 
+ .blogGlobalTagsCtrlTagLabel:hover
+ {
+	background: url(images/blends/teal_slice.png) repeat-x;
+	background-position:center;
+	cursor: pointer;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 12px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+ 
+.blogGlobalTagsCtrlSelected
+{
+	background: none repeat scroll 0 0 #FFFFFF;
+    border-radius: 3px 3px 3px 3px;
+    font-weight: bold;
+}
+
+ /* End */
