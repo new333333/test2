@@ -190,10 +190,8 @@ public class AddFolderController extends SAbstractController {
 				Binder newBinder = null;
 				if (newBinderId != null) newBinder = getBinderModule().getBinder(newBinderId);
 				
-				if (newBinder != null) {
-					//Inherit team members
-					getBinderModule().setTeamMembershipInherited(newBinderId, true);
-				}
+				//Note, by default team membership is inherited. 
+				//This is initialized as such during the creation of the folder
 			}
 			if (newBinderId != null) {
 				if (isShortForm) {
