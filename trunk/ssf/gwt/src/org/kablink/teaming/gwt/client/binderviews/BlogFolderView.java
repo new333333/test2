@@ -38,11 +38,13 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.BlogArchiveFolder;
 import org.kablink.teaming.gwt.client.BlogArchiveMonth;
+import org.kablink.teaming.gwt.client.BlogPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.BlogArchiveFolderSelectedEvent;
 import org.kablink.teaming.gwt.client.event.BlogArchiveMonthSelectedEvent;
 import org.kablink.teaming.gwt.client.event.BlogGlobalTagSelectedEvent;
+import org.kablink.teaming.gwt.client.event.BlogPageSelectedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -70,7 +72,9 @@ import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu.ActionMenuItem;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 import org.kablink.teaming.gwt.client.widgets.BlogArchiveCtrl;
+import org.kablink.teaming.gwt.client.widgets.BlogPageCtrl;
 import org.kablink.teaming.gwt.client.widgets.BlogArchiveCtrl.BlogArchiveCtrlClient;
+import org.kablink.teaming.gwt.client.widgets.BlogPageCtrl.BlogPageCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
@@ -96,6 +100,7 @@ public class BlogFolderView extends FolderViewBase
 		BlogArchiveFolderSelectedEvent.Handler,
 		BlogArchiveMonthSelectedEvent.Handler,
 		BlogGlobalTagSelectedEvent.Handler,
+		BlogPageSelectedEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
 		QuickFilterEvent.Handler,
 		SetFolderSortEvent.Handler
@@ -117,6 +122,7 @@ public class BlogFolderView extends FolderViewBase
 		TeamingEvents.BLOG_ARCHIVE_FOLDER_SELECTED,
 		TeamingEvents.BLOG_ARCHIVE_MONTH_SELECTED,
 		TeamingEvents.BLOG_GLOBAL_TAG_SELECTED,
+		TeamingEvents.BLOG_PAGE_SELECTED,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.QUICK_FILTER,
 		TeamingEvents.SET_FOLDER_SORT
@@ -204,27 +210,45 @@ public class BlogFolderView extends FolderViewBase
 		rightPanel.addStyleName( "blogFolderViewRightPanel" );
 		table.setWidget( 0, 1, rightPanel );
 		
-		// Add the Archive control
+		// Add the Blog page control.
+		BlogPageCtrl.createAsync( new BlogPageCtrlClient()
 		{
-			BlogArchiveCtrl.createAsync( new BlogArchiveCtrlClient()
+			@Override
+			public void onUnavailable()
 			{
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in the asyncronous provider.
-				}
+				// Nothing to do.  Error handled in the asyncronous provider.
+			}
+			
+			@Override
+			public void onSuccess( BlogPageCtrl bpCtrl )
+			{
+				bpCtrl.init( getFolderId() );
+				rightPanel.add( bpCtrl );
+			}
+		} );
+		
+		// Add the Archive control
+		BlogArchiveCtrl.createAsync( new BlogArchiveCtrlClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in the asyncronous provider.
+			}
+			
+			@Override
+			public void onSuccess( BlogArchiveCtrl baCtrl )
+			{
+				baCtrl.init( getFolderId() );
+				rightPanel.add( baCtrl );
+
+				// Add some space between the blog pages control and the archive control.
+				baCtrl.addStyleName( "margintop3" );
 				
-				@Override
-				public void onSuccess( BlogArchiveCtrl baCtrl )
-				{
-					baCtrl.init( getFolderId() );
-					rightPanel.add( baCtrl );
-					
-					// Call viewReady() when we are finished constructing everything.
-					viewReady();
-				}
-			} );
-		}
+				// Call viewReady() when we are finished constructing everything.
+				viewReady();
+			}
+		} );
 		
 		getFlowPanel().add( table );
 	}
@@ -508,6 +532,43 @@ public class BlogFolderView extends FolderViewBase
 					// Find all the blog entries in the folder we are working with that
 					// have the selected tag.
 					searchForBlogEntries( tagInfo );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}
+	
+	/**
+	 * Handles the BlogPageSelectedEvent received by this class.
+	 * 
+	 * Implements the BlogPageSelectedEvent.onBlogPageSelectedEvent() method.
+	 * 
+	 */
+	@Override
+	public void onBlogPageSelected( BlogPageSelectedEvent event )
+	{
+		final BlogPage blogPage;
+		
+		// Get the selected blog page.
+		blogPage = event.getBlogPage();
+		if ( blogPage != null )
+		{
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute() 
+				{
+					// Find all the blog entries in the selected blog folder
+					m_binderId = blogPage.getFolderId();
+					m_binderTitle = blogPage.getFolderName();
+
+					// Fire the ContextChangedEvent to notify all interested parties that we
+					// should be working with the selected blog page.
+					fireContextChangedEvent();
+					
+					searchForBlogEntries();
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );

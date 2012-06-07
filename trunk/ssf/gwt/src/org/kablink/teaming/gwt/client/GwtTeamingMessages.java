@@ -291,7 +291,6 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_AddFavorite();
 	String rpcFailure_AddFavoriteLimitExceeded();
 	String rpcFailure_AddNewFolder();
-	String rpcFailure_GetBlogArchiveInfo();
 	String rpcFailure_CanManagePublicTags();
 	String rpcFailure_CanModifyBinder();
 	String rpcFailure_ChangeEntryTypes();
@@ -321,6 +320,8 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetBinderFilters();
 	String rpcFailure_GetBinderOwnerAvatarUrl();
 	String rpcFailure_GetBinderStats();
+	String rpcFailure_GetBlogArchiveInfo();
+	String rpcFailure_GetBlogPages();
 	String rpcFailure_GetCalendarAppointments();
 	String rpcFailure_GetCalendarDisplayData();
 	String rpcFailure_GetCalendarNextPreviousPeriod();
@@ -489,6 +490,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_BlogArchiveCtrl();
 	String codeSplitFailure_BlogFolderView();
 	String codeSplitFailure_BlogGlobalTagsCtrl();
+	String codeSplitFailure_BlogPageCtrl();
 	String codeSplitFailure_BreadCrumbPanel();
 	String codeSplitFailure_CalendarFolderView();
 	String codeSplitFailure_CalendarNavigationPanel();
@@ -1674,7 +1676,10 @@ public interface GwtTeamingMessages extends Messages
 	// String used in the blog archive control
 	String blogArchiveTitle();
 	
-	// Strings used in the blog global tags contro.
+	// Strings used in the blog global tags control.
 	String blogGlobalTagsTitle();
+	
+	// Strings used in the blog page control.
+	String blogPageCtrl_selectPageLabel();
 	
 }// end GwtTeamingMessages
