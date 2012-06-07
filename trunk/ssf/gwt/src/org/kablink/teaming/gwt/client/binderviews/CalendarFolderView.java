@@ -305,6 +305,13 @@ public class CalendarFolderView extends FolderViewBase
 		m_calendar.addTimeBlockClickHandler(new TimeBlockClickHandler<Date>() {
 			@Override
 			public void onTimeBlockClick(TimeBlockClickEvent<Date> event) {
+				// If there's an appointment selected...
+				if (m_calendar.hasAppointmentSelected()) {
+					// ...simply clear the selection and bail.
+					clearSelection();
+					return;
+				}
+				
 				// Are we showing events by date?
 				if (m_calendarDisplayData.getShow().isPhysicalByDate()) {
 					// Yes!  Then we don't support clicking on a date
@@ -406,6 +413,20 @@ public class CalendarFolderView extends FolderViewBase
 				});
 			}
 		});
+	}
+
+	/*
+	 * Clears any currently selected appointment.
+	 */
+	private void clearSelection() {
+		// If the calendar has an appointment selected...
+		if (m_calendar.hasAppointmentSelected()) {
+			// ...clear the selection.
+			m_calendar.suspendLayout();
+			m_calendar.resetSelectedAppointment();
+			m_calendar.fireSelectionEvent(null);
+			m_calendar.resumeLayout();
+		}
 	}
 	
 	/**

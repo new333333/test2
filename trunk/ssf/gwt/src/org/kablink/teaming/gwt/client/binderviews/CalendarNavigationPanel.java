@@ -58,6 +58,7 @@ import org.kablink.teaming.gwt.client.util.CalendarHours;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.EventButton;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+import org.kablink.teaming.gwt.client.widgets.VibeHorizontalPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -69,6 +70,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RequiresResize;
@@ -92,7 +95,7 @@ public class CalendarNavigationPanel extends ToolPanelBase
 	private CalendarDisplayDataProvider			m_calendarDisplayDataProvider;	//
 	private CalendarDisplayDataRpcResponseData	m_calendarDisplayData;			//
 	private List<HandlerRegistration>			m_registeredEventHandlers;		// Event handlers that are currently registered.
-	private VibeFlowPanel						m_fp;							// The panel holding the content.
+	private VibeHorizontalPanel					m_hp;							// The panel holding the content.
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -119,12 +122,29 @@ public class CalendarNavigationPanel extends ToolPanelBase
 		m_isIE = GwtClientHelper.jsIsIE();
 		
 		// ...and construct the panel.
-		m_fp = new VibeFlowPanel();
-		m_fp.addStyleName("vibe-binderViewTools vibe-calNav-panel");
-		initWidget(m_fp);
+		m_hp = new VibeHorizontalPanel("100%", null);
+		m_hp.addStyleName("vibe-binderViewTools vibe-calNav-panel");
+		initWidget(m_hp);
 		loadPart1Async();
 	}
 
+	/*
+	 * Adds a widget to a horizontal panel with middle vertical
+	 * alignment. 
+	 */
+	private void addHPCellVMiddle(VibeHorizontalPanel hp, Widget w, HasHorizontalAlignment.HorizontalAlignmentConstant rac) {
+		hp.add(w);
+		hp.setCellVerticalAlignment(w, HasVerticalAlignment.ALIGN_MIDDLE);
+		if (null != rac) {
+			hp.setCellHorizontalAlignment(w, rac);
+		}
+	}
+	
+	private void addHPCellVMiddle(VibeHorizontalPanel hp, Widget w) {
+		// Always use the initial form of the method.
+		addHPCellVMiddle(hp, w, null);
+	}
+	
 	/*
 	 * Returns a widget with the date/date range.
 	 */
@@ -528,12 +548,22 @@ public class CalendarNavigationPanel extends ToolPanelBase
 	 */
 	private void renderCalendarNavigationNow() {
 		// Add the various calendar navigation widgets.
-		m_fp.add(buildHoursMenu()       );
-		m_fp.add(buildPeriodNavigation());
-		m_fp.add(buildDateDisplay()     );
-		m_fp.add(buildDateNavigation()  );
-		m_fp.add(buildDaysSelection()   );
-		m_fp.add(buildSettings()        );
+		VibeFlowPanel leftPanel = new VibeFlowPanel();
+		leftPanel.addStyleName(buildDisplayStyle("vibe-calNav-panelLeft"));
+		VibeHorizontalPanel leftHP = new VibeHorizontalPanel(null, null);
+		leftHP.addStyleName("vibe-calNav-panelLeftHP");
+		leftPanel.add(leftHP);
+		addHPCellVMiddle(m_hp,   leftHP                 );
+		addHPCellVMiddle(leftHP, buildHoursMenu()       );
+		addHPCellVMiddle(leftHP, buildPeriodNavigation());
+		addHPCellVMiddle(leftHP, buildDateDisplay()     );
+		
+		VibeFlowPanel rightPanel = new VibeFlowPanel();
+		rightPanel.addStyleName(buildDisplayStyle("vibe-calNav-panelRight"));
+		addHPCellVMiddle(m_hp, rightPanel, HasHorizontalAlignment.ALIGN_RIGHT);
+		rightPanel.add(buildDateNavigation());
+		rightPanel.add(buildDaysSelection() );
+		rightPanel.add(buildSettings()      );
 		
 		// Finally, if we haven't told it yet...
 		if (!m_toolPanelReady) {
@@ -572,7 +602,7 @@ public class CalendarNavigationPanel extends ToolPanelBase
 	public void resetPanel() {
 		// Simply render the calendar navigation panel (again, if its
 		// already been rendered.)
-		m_fp.clear();
+		m_hp.clear();
 		renderCalendarNavigationAsync();
 	}
 	
