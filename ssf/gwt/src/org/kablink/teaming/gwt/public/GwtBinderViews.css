@@ -36,16 +36,19 @@
 	/* ...Start:  Calendar navigation panel styles. */
 		.vibe-calNav-date           {color: white; font-weight: bold; font-size: 14px; font-family: Arial, Helvetica, sans-serif;}
 		.vibe-calNav-dateNavPanel   {padding: 0 10px;}
-		.vibe-calNav-datePanel      {width: 200px; padding: 0 10px;}
+		.vibe-calNav-datePanel      {padding: 0 10px;}
 		.vibe-calNav-datePicker     {}
 		.vibe-calNav-daysSelImg     {width: 25px; height: 25px; margin: 0 2px 0 0; border: 0px; vertical-align: middle;}
 		.vibe-calNav-daysSelPanel   {margin: 0px; padding: 0px; padding-left: 8px; vertical-align: middle;}
 		.vibe-calNav-hoursMenu      {vertical-align: middle; background: transparent !important; padding: 0px !important;}
 		.vibe-calNav-hoursMenuPanel {margin: 0px; padding: 0px; vertical-align: middle;}
-		.vibe-calNav-panel          {background-color: #C4C4C4; margin: 0px; padding: 10px; overflow: hidden; white-space: nowrap; -moz-border-radius: 0px !important; -webkit-border-radius: 0px  !important;}
+		.vibe-calNav-panel          {background-color: #C4C4C4; margin: 0px; padding: 10px; display: table; table-layout: fixed; overflow: hidden; white-space: nowrap; -moz-border-radius: 0px !important; -webkit-border-radius: 0px  !important;}
+		.vibe-calNav-panelLeft      {}
+		.vibe-calNav-panelLeftHP    {}
+		.vibe-calNav-panelRight     {}
 		.vibe-calNav-periodNavPanel {margin: 0px; padding: 0px; vertical-align: middle;}
-		.vibe-calNav-settingsPanel  {margin: 0px; padding: 0px; padding-left: 15px; vertical-align: middle;}
-		.vibe-calNav-separator      {border-left: 1px dotted #FFFFFF; margin: 0px 5px 0px 5px; padding: 0px; width: 0px; vertical-align: middle; white-space: nowrap;}
+		.vibe-calNav-settingsPanel  {margin: 0px; padding: 0px; padding-left: 3px; vertical-align: middle;}
+		.vibe-calNav-separator      {border-left: 1px dotted #FFFFFF; margin: 0px 5px 0px 5px; padding: 0px; width: 1px; vertical-align: middle; white-space: nowrap;}
 		.vibe-calNav-today          {padding-left: 2px;}
 	/* ...End:  Calendar navigation panel styles. */
 
