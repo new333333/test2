@@ -49,20 +49,20 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 @SuppressWarnings("serial")
 public class CalendarAppointment extends Appointment implements IsSerializable {
-	private List<AssignmentInfo>	m_vibeAttendees;		//
-	private List<AssignmentInfo>	m_vibeAttendeeGroups;	//
-	private List<AssignmentInfo>	m_vibeAttendeeTeams;	//
+	private List<AssignmentInfo>	m_vibeAttendees;			//
+	private List<AssignmentInfo>	m_vibeAttendeeGroups;		//
+	private List<AssignmentInfo>	m_vibeAttendeeTeams;		//
 	
-	private boolean					m_canModify;			//
-	private boolean					m_canPurge;				//
-	private boolean					m_canTrash;				//
-	private boolean					m_isTask;				//
-	private boolean					m_seen;					//
-	private CalendarRecurrence		m_recurrence;			//
-	private EntityId				m_entityId;				//
-	private Long					m_creatorId;			//
+	private boolean					m_canModify;				//
+	private boolean					m_canPurge;					//
+	private boolean					m_canTrash;					//
+	private boolean					m_isTask;					//
+	private boolean					m_seen;						//
+	private EntityId				m_entityId;					//
+	private Long					m_creatorId;				//
 	
-	private transient int			m_recurrenceIndex;		// Client side only.  (-1) if not involved in a recurrence.  Otherwise, 0 based index into the recurrences.
+	private CalendarRecurrence		m_serverRecurrence;			//
+	private int						m_clientRecurrenceIndex;	// Client side only.  (-1) if not involved in a recurrence.  Otherwise, 0 based index into the recurrences.
 	
 	/**
 	 * Constructor method.
@@ -75,7 +75,7 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 		super();
 		
 		// ...and initialize everything else.
-		setRecurrenceIndex(-1);
+		setClientRecurrenceIndex(-1);
 	}
 
 	/**
@@ -105,19 +105,19 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	public List<AssignmentInfo> getVibeAttendeeGroups() {return m_vibeAttendeeGroups;}
 	public List<AssignmentInfo> getVibeAttendeeTeams()  {return m_vibeAttendeeTeams; }
 	
-	public boolean            canModify()           {return m_canModify;                                             }
-	public boolean            canPurge()            {return m_canPurge;                                              }
-	public boolean            canTrash()            {return m_canTrash;                                              }
-	public boolean            isTask()              {return m_isTask;                                                }
-	public boolean            isSeen()              {return m_seen;                                                  }
-	public boolean            isRecurrent()         {return ((null != m_recurrence) && m_recurrence.isRecurrent());  }
-	public boolean            isRecurrentInstance() {return (0 <= m_recurrenceIndex);                                }
-	public CalendarRecurrence getRecurrence()       {return m_recurrence;                                            }
-	public EntityId           getEntityId()         {return m_entityId;                                              }
-	public int                getRecurrenceIndex()  {return m_recurrenceIndex;                                       }
-	public Long               getCreatorId()        {return m_creatorId;                                             }
-	public Long               getFolderId()         {return ((null == m_entityId) ? null : m_entityId.getBinderId());}
-	public Long               getEntryId()          {return ((null == m_entityId) ? null : m_entityId.getEntityId());}
+	public boolean            canModify()                 {return m_canModify;                                                         }
+	public boolean            canPurge()                  {return m_canPurge;                                                          }
+	public boolean            canTrash()                  {return m_canTrash;                                                          }
+	public boolean            isTask()                    {return m_isTask;                                                            }
+	public boolean            isSeen()                    {return m_seen;                                                              }
+	public boolean            isServerRecurrent()         {return ((null != m_serverRecurrence) && m_serverRecurrence.isRecurrent());  }
+	public boolean            isClientRecurrentInstance() {return (0 <= m_clientRecurrenceIndex);                                      }
+	public CalendarRecurrence getServerRecurrence()       {return m_serverRecurrence;                                                  }
+	public EntityId           getEntityId()               {return m_entityId;                                                          }
+	public int                getClientRecurrenceIndex()  {return m_clientRecurrenceIndex;                                             }
+	public Long               getCreatorId()              {return m_creatorId;                                                         }
+	public Long               getFolderId()               {return ((null == m_entityId) ? null : m_entityId.getBinderId());            }
+	public Long               getEntryId()                {return ((null == m_entityId) ? null : m_entityId.getEntityId());            }
 
 	/**
 	 * Set'er methods.
@@ -128,15 +128,15 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	public void setVibeAttendeeGroups(List<AssignmentInfo> vibeAttendeeGroups) {m_vibeAttendeeGroups = vibeAttendeeGroups;}
 	public void setVibeAttendeeTeams( List<AssignmentInfo> vibeAttendeeTeams)  {m_vibeAttendeeTeams  = vibeAttendeeTeams; }
 	
-	public void setCanModify(      boolean            canModify)       {m_canModify       = canModify;      }
-	public void setCanPurge(       boolean            canPurge)        {m_canPurge        = canPurge;       }
-	public void setCanTrash(       boolean            canTrash)        {m_canTrash        = canTrash;       }
-	public void setIsTask(         boolean            isTask)          {m_isTask          = isTask;         }
-	public void setSeen(           boolean            seen)            {m_seen            = seen;           }
-	public void setRecurrence(     CalendarRecurrence recurrence)      {m_recurrence      = recurrence;     }
-	public void setRecurrenceIndex(int                recurrenceIndex) {m_recurrenceIndex = recurrenceIndex;}
-	public void setEntityId(       EntityId           entityId)        {m_entityId        = entityId;       }
-	public void setCreatorId(      Long               creatorId)       {m_creatorId       = creatorId;      }
+	public void setCanModify(            boolean            canModify)             {m_canModify             = canModify;            }
+	public void setCanPurge(             boolean            canPurge)              {m_canPurge              = canPurge;             }
+	public void setCanTrash(             boolean            canTrash)              {m_canTrash              = canTrash;             }
+	public void setIsTask(               boolean            isTask)                {m_isTask                = isTask;               }
+	public void setSeen(                 boolean            seen)                  {m_seen                  = seen;                 }
+	public void setServerRecurrence(     CalendarRecurrence serverRecurrence)      {m_serverRecurrence      = serverRecurrence;     }
+	public void setClientRecurrenceIndex(int                clientRecurrenceIndex) {m_clientRecurrenceIndex = clientRecurrenceIndex;}
+	public void setEntityId(             EntityId           entityId)              {m_entityId              = entityId;             }
+	public void setCreatorId(            Long               creatorId)             {m_creatorId             = creatorId;            }
 
 	/**
 	 * Returns the EntityId of the appointment in a List<EntityId>.
@@ -191,18 +191,18 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
         reply.setCustomStyle(            getCustomStyle());
 		
 		// ...clone our extended CalendarAppointment information...
-		reply.setVibeAttendees(     getVibeAttendees()     );
-		reply.setVibeAttendeeGroups(getVibeAttendeeGroups());
-		reply.setVibeAttendeeTeams( getVibeAttendeeTeams() );
-		reply.setCanModify(         canModify()            );
-		reply.setCanPurge(          canPurge()             );
-		reply.setCanTrash(          canTrash()             );
-		reply.setIsTask(            isTask()               );
-		reply.setSeen(              isSeen()               );
-		reply.setRecurrence(        getRecurrence()        );
-		reply.setRecurrenceIndex(   getRecurrenceIndex()   );
-		reply.setEntityId(          getEntityId()          );
-		reply.setCreatorId(         getCreatorId()         );
+		reply.setVibeAttendees(        getVibeAttendees()        );
+		reply.setVibeAttendeeGroups(   getVibeAttendeeGroups()   );
+		reply.setVibeAttendeeTeams(    getVibeAttendeeTeams()    );
+		reply.setCanModify(            canModify()               );
+		reply.setCanPurge(             canPurge()                );
+		reply.setCanTrash(             canTrash()                );
+		reply.setIsTask(               isTask()                  );
+		reply.setSeen(                 isSeen()                  );
+		reply.setServerRecurrence(     getServerRecurrence()     );
+		reply.setClientRecurrenceIndex(getClientRecurrenceIndex());
+		reply.setEntityId(             getEntityId()             );
+		reply.setCreatorId(            getCreatorId()            );
 
 		// ...and return the clone.
 		return reply;
