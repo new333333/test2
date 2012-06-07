@@ -731,6 +731,7 @@ public class GwtCalendarHelper {
 					// Set the appointment's description.
 					String value = GwtViewHelper.getEntryDescriptionFromMap(request, event);
 					if ((Description.FORMAT_HTML == getEntryDescFormatFromEM(event)) && MiscUtil.hasString(value)) {
+						appointment.setDescriptionHtml(value);
 						value = Html.stripHtml(value);
 					}
 					appointment.setDescription(value);

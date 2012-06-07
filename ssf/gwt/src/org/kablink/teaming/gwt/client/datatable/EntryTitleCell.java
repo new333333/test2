@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.widgets.HoverHintPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -62,7 +63,6 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.TeamingPopupPanel;
 
 /**
  * Data table cell that represents an entry's title.
@@ -70,8 +70,7 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
  * @author drfoster@novell.com
  */
 public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
-	private InlineLabel			m_titleHintLabel;	//
-	private TeamingPopupPanel	m_titleHintPanel;	//
+	private HoverHintPopup	m_hoverHintPopup;	//
 	
 	/**
 	 * Constructor method.
@@ -249,21 +248,18 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			if (GwtClientHelper.hasString(description)) {
 				// ...and we haven't create a popup panel for the hover
 				// ...HTML yet...
-				if (null == m_titleHintPanel) {
+				if (null == m_hoverHintPopup) {
 					// ...create it now...
-					m_titleHintPanel = new TeamingPopupPanel(false, false);
-					m_titleHintPanel.removeStyleName("gwt-PopupPanel");
-					m_titleHintPanel.addStyleName("vibe-dataTableLink-hoverHint");
-					m_titleHintLabel = new InlineLabel();
-					m_titleHintLabel.removeStyleName("gwt-InlineLabel");
-					m_titleHintLabel.addStyleName("vibe-dataTableLink-hoverHintLabel");
-					m_titleHintPanel.setWidget(m_titleHintLabel);
+					m_hoverHintPopup = new HoverHintPopup();
 				}
 				
 				// ...and show it with the description HTML.
-				m_titleHintLabel.getElement().setInnerHTML(description);
-				m_titleHintPanel.setPopupPosition((eventTarget.getAbsoluteLeft() + 0), (eventTarget.getAbsoluteBottom() + 8));	// 20,12:  Same as JSP way of showing these hints.
-				m_titleHintPanel.show();
+				m_hoverHintPopup.setHoverText(description);
+				m_hoverHintPopup.showHintRelativeTo(eventTarget);
+			}
+			
+			else if (null != m_hoverHintPopup) {
+				m_hoverHintPopup.hide();
 			}
     	}
     	
@@ -272,9 +268,9 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			eventTarget.removeClassName("vibe-dataTableLink-hover");
 			
 			// ...and if there's a title hint panel...
-			if (null != m_titleHintPanel) {
+			if (null != m_hoverHintPopup) {
 				// ...make sure it's hidden.
-				m_titleHintPanel.hide();
+				m_hoverHintPopup.hide();
 			}
     	}
     }

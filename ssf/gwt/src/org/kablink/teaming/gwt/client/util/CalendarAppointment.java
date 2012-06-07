@@ -60,6 +60,7 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	private boolean					m_seen;						//
 	private EntityId				m_entityId;					//
 	private Long					m_creatorId;				//
+	private String					m_descriptionHtml;			//
 	
 	private CalendarRecurrence		m_serverRecurrence;			//
 	private int						m_clientRecurrenceIndex;	// Client side only.  (-1) if not involved in a recurrence.  Otherwise, 0 based index into the recurrences.
@@ -118,6 +119,7 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	public Long               getCreatorId()              {return m_creatorId;                                                         }
 	public Long               getFolderId()               {return ((null == m_entityId) ? null : m_entityId.getBinderId());            }
 	public Long               getEntryId()                {return ((null == m_entityId) ? null : m_entityId.getEntityId());            }
+	public String             getDescriptionHtml()        {return m_descriptionHtml;                                                   }
 
 	/**
 	 * Set'er methods.
@@ -137,6 +139,7 @@ public class CalendarAppointment extends Appointment implements IsSerializable {
 	public void setClientRecurrenceIndex(int                clientRecurrenceIndex) {m_clientRecurrenceIndex = clientRecurrenceIndex;}
 	public void setEntityId(             EntityId           entityId)              {m_entityId              = entityId;             }
 	public void setCreatorId(            Long               creatorId)             {m_creatorId             = creatorId;            }
+	public void setDescriptionHtml(      String             descriptionHtml)       {m_descriptionHtml       = descriptionHtml;      }
 
 	/**
 	 * Returns the EntityId of the appointment in a List<EntityId>.
