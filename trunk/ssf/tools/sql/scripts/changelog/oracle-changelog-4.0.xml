@@ -37,4 +37,12 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="6">
+        <comment>Identity source type for provisioned users</comment>
+        <addColumn tableName="SS_PRINCIPALS">
+            <column name="IDENTITYSOURCE" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
