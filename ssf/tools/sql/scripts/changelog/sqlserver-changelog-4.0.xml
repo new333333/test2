@@ -45,4 +45,24 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet author="peter" context="schema" id="7">
+        <createTable tableName="SS_ResourceDriver">
+            <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_ResourceDriver"/>
+            </column>
+            <column name="zoneId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="NVARCHAR(64)"/>
+            <column name="type" type="NVARCHAR(64)"/>
+            <column name="readonly" type="TINYINT"/>
+            <column name="synchTopDelete" type="TINYINT"/>
+            <column name="putRequiresContentLength" type="TINYINT"/>
+            <column name="allowSelfSignedCertificate" type="TINYINT"/>
+            <column name="hostUrl" type="NVARCHAR(255)"/>
+            <column name="rootPath" type="NVARCHAR(1024)"/>
+            <column name="accountName" type="NVARCHAR(255)"/>
+            <column name="password" type="NVARCHAR(255)"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

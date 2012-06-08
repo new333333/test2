@@ -65,6 +65,7 @@ public enum AdminAction implements IsSerializable
 	MANAGE_GROUPS( "Manage groups" ),
 	MANAGE_LICENSE( "Manage license" ),
 	MANAGE_QUOTAS( "Manage quotas" ),
+	MANAGE_RESOURCE_DRIVERS( "Manage resource drivers" ),
 	MANAGE_USER_ACCOUNTS( "Manage user accounts" ),
 	MANAGE_WORKSPACE_AND_FOLDER_TEMPLATES( "Manage workspace and folder templates" ),
 	MANAGE_ZONES( "Manage zones" ),
