@@ -38,6 +38,7 @@ import org.kablink.teaming.rest.v1.model.DefinitionBrief;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
 import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
 import org.kablink.teaming.rest.v1.model.StringIdLinkPair;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
@@ -59,6 +60,7 @@ abstract public class DefinableEntityBriefBuilder {
         model.setEntityType((String) entry.get(Constants.ENTITY_FIELD));
         model.setFamily((String) entry.get(Constants.FAMILY_FIELD));
         model.setIcon(LinkUriUtil.getIconLinkUri((String) entry.get(Constants.ICON_NAME_FIELD), model.getEntityType()));
+        model.setPermaLink(PermaLinkUtil.getPermalink(entry));
         String defid = (String) entry.get(Constants.COMMAND_DEFINITION_FIELD);
         if (defid!=null) {
             model.setDefinition(new StringIdLinkPair(defid,

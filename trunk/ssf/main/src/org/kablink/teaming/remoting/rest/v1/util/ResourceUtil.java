@@ -467,7 +467,7 @@ public class ResourceUtil {
         if(def != null) {
             model.setFamily(DefinitionUtils.getFamily(def));
         }
-        //model.setIcon(LinkUriUtil.buildIconLinkUri(binder.getIconName()));
+        model.setPermaLink(PermaLinkUtil.getPermalink(binder));
         if(binder.getEntryDefId() != null)
             model.setDefinition(new StringIdLinkPair(binder.getEntryDefId(), LinkUriUtil.getDefinitionLinkUri(binder.getEntryDefId())));
         if(binder.getCreation() != null) {
