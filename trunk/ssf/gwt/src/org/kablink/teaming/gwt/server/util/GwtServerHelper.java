@@ -2141,6 +2141,28 @@ public class GwtServerHelper {
 			}
 			catch(AccessControlException e) {}
 
+			// Does the user have rights to "Manage resource drivers"?
+			try
+			{
+				if ( adminModule.testAccess( AdminOperation.manageFunction ) &&
+						LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder"))
+				{
+					// Yes
+					title = NLT.get( "administration.manage.resourceDrivers" );
+
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_RESOURCE_DRIVERS );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_RESOURCE_DRIVERS );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
+			}
+			catch(AccessControlException e) {}
+
 			// Does the user have rights to "Manage workspace and folder templates"?
 			if ( adminModule.testAccess( AdminOperation.manageTemplate ) )
 			{

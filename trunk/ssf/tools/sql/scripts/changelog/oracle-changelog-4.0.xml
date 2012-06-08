@@ -45,4 +45,24 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet author="peter" context="schema" id="7">
+        <createTable tableName="SS_ResourceDriver">
+            <column name="ID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_RESOURCEDRIVER"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="TYPE" type="VARCHAR2(64 CHAR)"/>
+            <column name="READONLY" type="NUMBER(1,0)"/>
+            <column name="SYNCHTOPDELETE" type="NUMBER(1,0)"/>
+            <column name="PUTREQUIRESCONTENTLENGTH" type="NUMBER(1,0)"/>
+            <column name="ALLOWSELFSIGNEDCERTIFICATE" type="NUMBER(1,0)"/>
+            <column name="HOSTURL" type="VARCHAR2(255)"/>
+            <column name="ROOTPATH" type="VARCHAR2(1024)"/>
+            <column name="ACCOUNTNAME" type="VARCHAR2(255 CHAR)"/>
+            <column name="PASSWORD" type="VARCHAR2(255 CHAR)"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

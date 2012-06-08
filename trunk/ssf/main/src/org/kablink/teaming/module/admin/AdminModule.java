@@ -80,6 +80,7 @@ public interface AdminModule {
 		manageIndex,
 		manageFunctionCondition,
 		manageRuntime,
+		manageResourceDrivers,
 		manageFileSynchApp
 	}
 	/**

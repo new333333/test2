@@ -72,6 +72,7 @@
 	    <mapping resource="org/kablink/teaming/domain/PostingDef.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Principal.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Ratings.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/ResourceDriver.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/SeenMap.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/SharedEntity.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/SimpleName.hbm.xml"/>
