@@ -16,6 +16,16 @@
          In all other situations, the default authentication option based on form-based login
          must be used instead. -->
          
+	<bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
+		<constructor-arg>
+		    <list>
+		        <!-- Authentication provider for internal users (LDAP, local) -->
+		        <ref bean="authenticationModule"/>
+		    </list>
+		</constructor-arg>
+		<property name="authenticator"><value>web</value></property>
+	</bean>
+
     <bean id="_logoutFilter" class="org.kablink.teaming.spring.security.LogoutFilter" depends-on="sPropsUtil">
 		<constructor-arg value="/bitbucket"/>
 		<constructor-arg>
