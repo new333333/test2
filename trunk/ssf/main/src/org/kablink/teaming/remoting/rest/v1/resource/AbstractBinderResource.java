@@ -71,8 +71,10 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 	@GET
 	@Path("binders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResultList<BinderBrief> getSubBinders(@PathParam("id") long id) {
-        return getSubBinders(id, null);
+	public SearchResultList<BinderBrief> getSubBinders(@PathParam("id") long id,
+			@QueryParam("first") Integer offset,
+			@QueryParam("count") Integer maxCount) {
+        return getSubBinders(id, null, offset, maxCount, null);
 	}
 
     /**
@@ -105,8 +107,10 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 	@Path("files")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<FileProperties> getFiles(@PathParam("id") long id,
-                                                  @QueryParam("recursive") @DefaultValue("false") boolean recursive) {
-        return getSubFiles(id, recursive);
+                                                  @QueryParam("recursive") @DefaultValue("false") boolean recursive,
+                                                  @QueryParam("first") Integer offset,
+                                                  @QueryParam("count") Integer maxCount) {
+        return getSubFiles(id, recursive, offset, maxCount, null);
 	}
 
     protected Binder createBinder(long parentId, Binder newBinder, Long templateId) throws WriteFilesException, WriteEntryDataException {
@@ -123,7 +127,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         getBinderModule().preDeleteBinder(id, getLoggedInUserId());
     }
 
-    protected SearchResultList<FileProperties> getSubFiles(long id, boolean recursive) {
+    protected SearchResultList<FileProperties> getSubFiles(long id, boolean recursive, Integer offset, Integer maxCount, String nextUrl) {
         _getBinder(id);
         Map<String,FileIndexData> files = (recursive) ?
                 getFileModule().getChildrenFileDataFromIndexRecursively(id) : getFileModule().getChildrenFileDataFromIndex(id);
@@ -138,15 +142,23 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return results;
     }
 
-    protected SearchResultList<BinderBrief> getSubBinders(long id, SearchFilter filter) {
+    protected SearchResultList<BinderBrief> getSubBinders(long id, SearchFilter filter, Integer offset, Integer maxCount, String nextUrl) {
         org.kablink.teaming.domain.Binder workspace = _getBinder(id);
         Map<String, Object> options = new HashMap<String, Object>();
         if (filter!=null) {
             options.put( ObjectKeys.SEARCH_SEARCH_FILTER, filter.getFilter() );
         }
+        if (offset!=null) {
+            options.put(ObjectKeys.SEARCH_OFFSET, offset);
+        } else {
+            offset = 0;
+        }
+        if (maxCount!=null) {
+            options.put(ObjectKeys.SEARCH_MAX_HITS, maxCount);
+        }
         Map resultMap = getBinderModule().getBinders(workspace, options);
-        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultMap);
+        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultMap, nextUrl, offset);
         return results;
     }
 
