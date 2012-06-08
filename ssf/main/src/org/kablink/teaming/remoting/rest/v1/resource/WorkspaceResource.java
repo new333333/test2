@@ -71,10 +71,12 @@ public class WorkspaceResource extends AbstractBinderResource {
 	@GET
 	@Path("workspaces")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResultList<BinderBrief> getSubWorkspaces(@PathParam("id") long id) {
+	public SearchResultList<BinderBrief> getSubWorkspaces(@PathParam("id") long id,
+			@QueryParam("first") Integer offset,
+			@QueryParam("count") Integer maxCount) {
         SearchFilter filter = new SearchFilter();
         filter.addWorkspaceFilter("");
-        return getSubBinders(id, filter);
+        return getSubBinders(id, filter, offset, maxCount, "/workspace/" + id + "/workspaces");
 	}
 
     @POST
@@ -96,10 +98,12 @@ public class WorkspaceResource extends AbstractBinderResource {
 	@GET
 	@Path("folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResultList<BinderBrief> getSubFolders(@PathParam("id") long id) {
+	public SearchResultList<BinderBrief> getSubFolders(@PathParam("id") long id,
+			@QueryParam("first") Integer offset,
+			@QueryParam("count") Integer maxCount) {
         SearchFilter filter = new SearchFilter();
         filter.addFolderFilter("");
-        return getSubBinders(id, filter);
+        return getSubBinders(id, filter, offset, maxCount, "/workspace/" + id + "/folders");
 	}
 
     @POST
