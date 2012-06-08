@@ -33,6 +33,7 @@
 package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.util.search.Constants;
 
@@ -65,7 +66,8 @@ public class BinderBriefBuilder extends DefinableEntityBriefBuilder implements S
     }
 
     public Object getParentId(BinderBrief obj) {
-        return obj.getParentBinder().getId();
+        LongIdLinkPair parent = obj.getParentBinder();
+        return parent==null ? null : parent.getId();
     }
 
     public SearchResultTreeNode<BinderBrief> factoryTreeNode(BinderBrief binder) {

@@ -44,17 +44,17 @@ import java.util.List;
 public abstract class DefinableEntity extends BaseRestObject {
     private Long id;
    	private LongIdLinkPair parentBinder;
-   	private StringIdLinkPair definition;
    	private String title;
+    private StringIdLinkPair definition;
+    private String entityType;
+    private String family;
     private String icon;
+    private String permaLink;
+    private HistoryStamp creation;
+    private HistoryStamp modification;
    	private Description description;
    	private AverageRating averageRating;
-   	private HistoryStamp creation;
-   	private HistoryStamp modification;
    	private boolean eventAsIcalString;
-    private String permaLink;
-   	private String entityType;
-   	private String family;
     private BaseFileProperties [] attachments;
     private CustomField [] customFields;
 

@@ -15,6 +15,7 @@ public abstract class DefinableEntityBrief extends BaseRestObject {
    	private String entityType;
    	private String family;
     private String icon;
+    private String permaLink;
     private HistoryStamp creation;
    	private HistoryStamp modification;
 
@@ -99,5 +100,14 @@ public abstract class DefinableEntityBrief extends BaseRestObject {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    @XmlElement(name="permalink")
+    public String getPermaLink() {
+        return permaLink;
+    }
+
+    public void setPermaLink(String permaLink) {
+        this.permaLink = permaLink;
     }
 }
