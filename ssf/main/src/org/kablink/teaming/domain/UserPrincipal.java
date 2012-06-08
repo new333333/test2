@@ -33,13 +33,8 @@
 package org.kablink.teaming.domain;
 
 public abstract class UserPrincipal extends Principal {
-	public static final String IDENTITY_SOURCE_LOCAL = "local";
-	public static final String IDENTITY_SOURCE_LDAP = "ldap";
-	public static final String IDENTITY_SOURCE_OPENID = "openid";
-	
 	protected Long diskQuota;
 	protected Long fileSizeLimit;
-    protected String identitySource;
 	
 	/**
      * @hibernate.property
@@ -68,11 +63,4 @@ public abstract class UserPrincipal extends Principal {
 		this.fileSizeLimit = fileSizeLimit;
 	}
 	
-	public String getIdentitySource() {
-		return identitySource;
-	}
-	
-	public void setIdentitySource(String identitySource) {
-		this.identitySource = identitySource;
-	}
 }

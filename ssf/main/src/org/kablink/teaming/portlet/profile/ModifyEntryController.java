@@ -49,6 +49,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
@@ -256,7 +257,7 @@ public class ModifyEntryController extends SAbstractController {
 			}
 			
 			// Was this Principal sync'd from an ldap source?
-			if ( !entry.isLocal() )
+			if((entry instanceof User) && !(((User)entry).getIdentitySource() == User.IDENTITY_SOURCE_LOCAL))
 			{
 				// Yes, don't let the user change the password.
 				readOnly.put( "password", Boolean.TRUE );

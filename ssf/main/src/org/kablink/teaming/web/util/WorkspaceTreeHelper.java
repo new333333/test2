@@ -76,6 +76,7 @@ import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
@@ -992,12 +993,14 @@ public class WorkspaceTreeHelper {
 				showModifyProfileMenu = true;
 			}
 		
-			if ((owner.isActive() || (owner.isLocal() && owner.isDisabled())) && 
+			if ((owner.isActive() || 
+					(((owner instanceof User) && ((User)owner).getIdentitySource()==User.IDENTITY_SOURCE_LOCAL) 
+							&& owner.isDisabled())) && 
 					bs.getProfileModule().testAccess(owner, ProfileOperation.deleteEntry)) {
 				//Don't let a user delete his or her own account
 				if (!owner.getId().equals(user.getId())) {
 					showDeleteProfileMenu = true;
-					if (owner.isLocal()) {
+					if ((owner instanceof User) && ((User)owner).getIdentitySource()==User.IDENTITY_SOURCE_LOCAL) {
 						//showDisableProfileMenu = true;
 					}
 				}

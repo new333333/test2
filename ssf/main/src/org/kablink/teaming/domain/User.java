@@ -55,8 +55,13 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.util.Validator;
 
 public class User extends UserPrincipal implements IndividualPrincipal {
-	private final static int	WORK_DAY_START_DEFAULT	= 8;	// Original default was 6 in ss_calendar.js.
+	// Internal identity sources (that is, within corporate firewall)
+	public static final int IDENTITY_SOURCE_LOCAL = 1;
+	public static final int IDENTITY_SOURCE_LDAP = 2;
+	// External identity sources (that is, outside of corporate firewall)
+	public static final int IDENTITY_SOURCE_OPENID = 11;
 	
+	private final static int	WORK_DAY_START_DEFAULT	= 8;	// Original default was 6 in ss_calendar.js.
 	
     protected String firstName="";//set by hibernate access="field"
     protected String middleName="";//set by hibernate access="field"
@@ -80,6 +85,15 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected Long maxGroupsQuota;
     protected Long maxGroupsFileSizeLimit;
     private SortedSet groupNames; // sorted set of group names; this field is computed
+    protected Integer identitySource; // could be null
+
+    public static User create(int identitySource) {
+    	User u = new User();
+    	u.setIdentitySource(identitySource);
+    	return u;
+    }
+    
+    // For user by Hibernate only
 	public User() {
     }
 	public EntityIdentifier.EntityType getEntityType() {
@@ -542,4 +556,22 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 		
 		return reply;
     }
+    
+	public int getIdentitySource() {
+		if(identitySource == null) {
+			// This means that this object was created by Hibernate for a user principal
+			// record in the database representing either local or LDAP identity.
+			if (isLocal())
+				return IDENTITY_SOURCE_LOCAL;
+			else
+				return IDENTITY_SOURCE_LDAP;
+		}
+		else {
+			return identitySource;
+		}
+	}
+	
+	public void setIdentitySource(int identitySource) {
+		this.identitySource = identitySource;
+	}
 }

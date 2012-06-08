@@ -275,7 +275,7 @@ public abstract class Principal extends Entry implements IPrincipal {
      * This method will return true if this object is a "local" principal.  In other words, this
      * object was not sync'd from an ldap source.
      */
-    public boolean isLocal()
+    protected boolean isLocal()
     {
     	String		tmpName;
     	String		tmpForeignName;
