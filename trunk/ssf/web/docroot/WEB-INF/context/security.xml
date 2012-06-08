@@ -17,15 +17,6 @@
 		<security:custom-filter position="FIRST"/>
 	</bean>-->
 	
-	<bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
-		<constructor-arg>
-		    <list>
-		        <ref bean="authenticationModule"/>
-		    </list>
-		</constructor-arg>
-		<property name="authenticator"><value>web</value></property>
-	</bean>
-	    
 	<bean id="_anonymousProcessingFilter"
 	      class="org.kablink.teaming.spring.security.ZoneAwareAnonymousProcessingFilter">
 		<property name="key" value="thisIsIgnored"/>
@@ -41,7 +32,7 @@
 			</bean>
 		</property>
 	</bean>
-
+	
     <security:http pattern="/ws/**" security="none" />
     <security:http pattern="/rss/**" security="none" />
     <security:http pattern="/atom/**" security="none" />

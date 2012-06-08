@@ -8,15 +8,18 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 	    
-    <!-- ============================== Preemptive authentication using HTTP BASIC authorization header  ============================ -->
-
-	<bean id="basicProcessingFilter" class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">
-		<property name="authenticationManager" ref="_authenticationManager"/>
-		<property name="ignoreFailure"><value>true</value></property>
-	</bean>
-
     <!-- ============================== Form-based authentication ============================ -->
     
+	<bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
+		<constructor-arg>
+		    <list>
+		        <!-- Authentication provider for internal users (LDAP, local) -->
+		        <ref bean="authenticationModule"/>
+		    </list>
+		</constructor-arg>
+		<property name="authenticator"><value>web</value></property>
+	</bean>
+
     <import resource="security-auth-form-common.xml"/>
         
     <bean id="_logoutFilter" class="org.kablink.teaming.spring.security.LogoutFilter" depends-on="sPropsUtil">
@@ -31,7 +34,7 @@
 
     <security:http entry-point-ref="authenticationProcessingFilterEntryPoint" authentication-manager-ref="_authenticationManager">
     	<security:custom-filter position="FORM_LOGIN_FILTER" ref="authenticationProcessingFilter"/>
-		<security:custom-filter before="FORM_LOGIN_FILTER" ref="basicProcessingFilter"/>
+    	
 		<security:custom-filter position="LOGOUT_FILTER" ref="_logoutFilter"/>
 		
         <security:session-management session-fixation-protection="newSession" />
