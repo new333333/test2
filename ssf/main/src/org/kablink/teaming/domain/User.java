@@ -86,16 +86,16 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected Long maxGroupsFileSizeLimit;
     private SortedSet groupNames; // sorted set of group names; this field is computed
     protected Integer identitySource; // could be null
-
-    public static User create(int identitySource) {
-    	User u = new User();
-    	u.setIdentitySource(identitySource);
-    	return u;
-    }
     
-    // For user by Hibernate only
-	public User() {
+    // For use by Hibernate only
+	protected User() {
     }
+	
+	// For use by application
+	public User(int identitySource) {
+		setIdentitySource(identitySource);
+	}
+	
 	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.user;
 	}

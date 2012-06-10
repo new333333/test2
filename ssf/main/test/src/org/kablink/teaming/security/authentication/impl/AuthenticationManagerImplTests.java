@@ -62,9 +62,10 @@ public class AuthenticationManagerImplTests extends AbstractTransactionalDataSou
 		// Set up mock object and control
 		profileDaoControl = MockControl.createControl(ProfileDao.class);
 		profileDaoMock = (ProfileDao) profileDaoControl.getMock();
-		user = new User();
+		user = new User(User.IDENTITY_SOURCE_LOCAL);
 //		user.setZoneName("testZone");
 		user.setName("testUser");
+		user.setForeignName("testUser");
 		
 		// Set up the actual object that we are testing.
 		authMgr = new AuthenticationManagerImpl();

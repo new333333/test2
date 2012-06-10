@@ -116,6 +116,7 @@ import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
+import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.AccessControlException;
@@ -126,6 +127,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
@@ -1069,7 +1071,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
        List<String> deleteNames = new ArrayList();
 	   Definition defaultUserDef = binder.getDefaultEntryDef();		
 	   if (defaultUserDef == null) {
-		   User temp = new User();
+		   // This user object is only used temporarily, so it doesn't really matter which identity source we set it to.
+		   User temp = new User(User.IDENTITY_SOURCE_LOCAL);
 		   getDefinitionModule().setDefaultEntryDefinition(temp);
 		   defaultUserDef = getDefinitionModule().getDefinition(temp.getEntryDefId());
 	   }
@@ -1695,6 +1698,18 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		return (User) addIndividualPrincipal(definitionId, inputData, fileItems, options, User.class);
 	}
 	//NO transaction
+	public User addUser(InputDataAccessor inputData)
+				throws AccessControlException, WriteFilesException, WriteEntryDataException {
+		ProfileBinder binder = this.getProfileBinder();
+		List defaultEntryDefinitions = binder.getEntryDefinitions();
+		String definitionId = null;
+		if (!defaultEntryDefinitions.isEmpty()) {
+			Definition def = (Definition) defaultEntryDefinitions.get(0);
+			definitionId = def.getId();
+		}
+		return this.addUser(definitionId, inputData, new HashMap(), null);
+	}
+	//NO transaction
 	public Application addApplication(String definitionId, 
 			InputDataAccessor inputData, Map fileItems, Map options) 
 	throws AccessControlException, WriteFilesException, WriteEntryDataException {
@@ -1742,6 +1757,27 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
             if (clazz.equals(User.class))  //only do this for users not applications (maybe later;-)
             {
                 List<Element> groups  = SZoneConfig.getElements("defaultGroupsOnAcctCreation/group");
+                if (!groups.isEmpty()) {
+                    for (Element elem: groups) {  //loop through all returned group names from properties file
+                        try {
+                            Group group = this.getGroup(elem.attributeValue("name"));
+                            if (group!=null){ //make sure it finds the group.  what to do if it doesn't?
+                                Map updates = new HashMap();
+                                List members = new ArrayList(group.getMembers());
+                                members.add((UserPrincipal)newEntry);
+                                updates.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, members);
+                                this.modifyEntry(group.getId(), new MapInputData(updates));
+                            }
+                        }catch (Exception e) {
+                            //Do nothing.  User just won't exist in a group that was wrong anyway.
+                            //won't completely abandon creation though.  Some may be defined correctly.
+                            //Should log it.
+                            logger.warn("Warning: User could not be added to default group.  Please check that " +
+                            "the defined group in the properties file matches the one in the running system: ", e);
+                        }
+                    }
+                }
+                groups  = SZoneConfig.getElements("defaultGroupsOnExtAcctCreation/group");
                 if (!groups.isEmpty()) {
                     for (Element elem: groups) {  //loop through all returned group names from properties file
                         try {

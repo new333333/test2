@@ -62,6 +62,10 @@
 			Example format.
 			<group name="registered_user" />
 		</defaultGroupsOnAcctCreation>
+		<defaultGroupsOnExtAcctCreation>
+			Example format.
+			<group name="external_users" />
+		</defaultGroupsOnAcctCreation>
 		<xssConfiguration>
 			<trustedUsers>
 				Example format.

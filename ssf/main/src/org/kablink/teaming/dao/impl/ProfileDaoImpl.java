@@ -1997,7 +1997,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 	
 	private Principal makeItFake(Principal p) {
-		User u = new User();
+		User u = new User(User.IDENTITY_SOURCE_LOCAL);
 		u.setId(p.getId());
 		u.setZoneId(p.getZoneId());
 		u.setParentBinder(p.getParentBinder());
