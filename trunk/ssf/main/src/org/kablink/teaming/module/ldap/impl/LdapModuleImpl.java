@@ -3185,7 +3185,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		//get default definition to use
 		Definition userDef = pf.getDefaultEntryDef();		
 		if (userDef == null) {
-			User temp = new User();
+			User temp = new User(User.IDENTITY_SOURCE_LDAP);
 			getDefinitionModule().setDefaultEntryDefinition(temp);
 			userDef = getDefinitionModule().getDefinition(temp.getEntryDefId());
 		}

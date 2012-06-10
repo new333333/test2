@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.module.binder.impl;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -400,7 +401,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
     protected Entry addEntry_create(Definition def, Class clazz, Map ctx)  {
     	try {
-    		Entry entry = (Entry)clazz.newInstance();
+    		Constructor<Entry> c = clazz.getDeclaredConstructor();
+    		c.setAccessible(true);
+    		Entry entry = (Entry) c.newInstance();
            	entry.setEntryDef(def);
         	if (def != null) {
         		entry.setDefinitionType(new Integer(def.getType()));

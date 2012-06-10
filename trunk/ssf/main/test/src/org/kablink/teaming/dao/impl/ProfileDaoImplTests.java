@@ -325,7 +325,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 	}
 
 	private User createBaseUser(Workspace top, String name) {
-		User user = new User();
+		User user = new User(User.IDENTITY_SOURCE_LOCAL);
 		user.setZoneId(top.getZoneId());
 		user.setName(name);
 		user.setForeignName(name);

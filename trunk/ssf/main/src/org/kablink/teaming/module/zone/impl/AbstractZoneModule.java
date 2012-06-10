@@ -856,7 +856,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		profiles.setFunctionMembershipInherited(false);
 
     		//build user
-    		User user = new User();
+    		User user = new User(User.IDENTITY_SOURCE_LOCAL);
     		user.setName(zoneAdminName);
     		user.setPassword(zoneAdminName);
     		user.setLastName(zoneAdminName);
@@ -1090,7 +1090,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	}
 	private User addReservedUser(Binder parent, HistoryStamp stamp, String name, String password, String title, String id) {
 		
-		User user = new User();
+		User user = new User(User.IDENTITY_SOURCE_LOCAL);
 		user.setName(name);
 		if(password != null) // optional field
 			user.setPassword(password);

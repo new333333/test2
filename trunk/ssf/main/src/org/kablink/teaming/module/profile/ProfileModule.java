@@ -109,6 +109,9 @@ public interface ProfileModule {
 	 public User addUser(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
 		throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	 
+	 public User addUser(InputDataAccessor inputData)
+				throws AccessControlException, WriteFilesException, WriteEntryDataException;
+	 
 	 /**
 	  * Add a user workspace from the user workspace template
 	  * @param user

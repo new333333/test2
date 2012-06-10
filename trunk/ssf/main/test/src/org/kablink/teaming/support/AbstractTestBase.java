@@ -125,7 +125,7 @@ public abstract class AbstractTestBase extends AbstractTransactionalDataSourceSp
 			group.setParentBinder(profiles);
 			cdi.save(group);
 			
-			User user = new User();
+			User user = new User(User.IDENTITY_SOURCE_LOCAL);
 			user.setName(adminUser);
 			user.setForeignName(adminUser);
 			user.setZoneId(top.getId());

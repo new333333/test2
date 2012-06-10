@@ -413,6 +413,11 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     		if (inputData.exists(ObjectKeys.FIELD_USER_TWITTERID) && !entryData.containsKey(ObjectKeys.FIELD_USER_TWITTERID)) {
     			entryData.put(ObjectKeys.FIELD_USER_TWITTERID, inputData.getSingleValue(ObjectKeys.FIELD_USER_TWITTERID));
     		}
+    		if (inputData.exists(ObjectKeys.FIELD_USER_IDENTITY_SOURCE) && !entryData.containsKey(ObjectKeys.FIELD_USER_IDENTITY_SOURCE)) {
+    			String s = inputData.getSingleValue(ObjectKeys.FIELD_USER_IDENTITY_SOURCE);
+    			if(s != null && s.length() > 0)
+    				entryData.put(ObjectKeys.FIELD_USER_IDENTITY_SOURCE, Integer.valueOf(s));
+    		}
     	} else if(entry instanceof Application) {
         	if (inputData.exists(ObjectKeys.FIELD_APPLICATION_POST_URL) && !entryData.containsKey(ObjectKeys.FIELD_APPLICATION_POST_URL)) {
     			entryData.put(ObjectKeys.FIELD_APPLICATION_POST_URL, inputData.getSingleValue(ObjectKeys.FIELD_APPLICATION_POST_URL));
@@ -746,6 +751,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	        			Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	   	        
 	        			Entry entry = syncNewEntry_create(definition, clazz, ctx);
+	        				        			
 	        			//	need to set entry/binder information before generating file attachments
 	        			//	Attachments/Events need binder info for AnyOwner
 	        			syncNewEntry_fillIn(binder, entry, inputData, entryData, ctx);

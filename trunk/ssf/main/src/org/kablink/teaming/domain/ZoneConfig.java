@@ -58,6 +58,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Integer fsaSynchInterval;
 	private String fsaAutoUpdateUrl;
 	private Long fsaMaxFileSize;
+	private OpenIDConfig openidConfig;
 
 	public ZoneConfig()
 	{
@@ -272,5 +273,12 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	public void setFsaMaxFileSize(long fsaMaxFileSize) {
 		// In this version of Vibe, this field is NOT persisted to database. So, this method shouldn't be used.
 		this.fsaMaxFileSize = fsaMaxFileSize;
+	}
+	
+	public OpenIDConfig getOpenidConfig() {
+		return openidConfig;
+	}
+	public void setOpenidConfig(OpenIDConfig openidConfig) {
+		this.openidConfig = openidConfig;
 	}
 }
