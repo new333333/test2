@@ -10,18 +10,6 @@
 	    
     <!-- ============================== OpenID authentication ============================ -->
     
-	<bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
-		<constructor-arg>
-		    <list>
-		        <!-- Authentication provider for internal users (LDAP, local) -->
-		        <ref bean="authenticationModule"/>
-		        <!-- Authentication provider for external users authenticated via OpenID -->
-		        <ref bean="openidAuthenticationProvider"/>
-		    </list>
-		</constructor-arg>
-		<property name="authenticator"><value>web</value></property>
-	</bean>
-	    
     <bean id="_logoutFilter" class="org.kablink.teaming.spring.security.LogoutFilter" depends-on="sPropsUtil">
 		<constructor-arg value="/redirect/vibe?user.logout=true"/>
 		<constructor-arg>
@@ -39,35 +27,6 @@
 		<property name="authenticationSuccessHandler" ref="authenticationSuccessHandler" />
 		<property name="authenticationFailureHandler" ref="authenticationFailureHandler" />
 		<property name="sessionAuthenticationStrategy" ref="sessionAuthenticationStrategy" />
-    </bean>
-
-	<bean id="sessionAuthenticationStrategy" class="org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy">
-	    <property name="alwaysCreateSession"><value>true</value></property>
-	    <property name="migrateSessionAttributes"><value>false</value></property>
-	</bean>
-    
-    <bean id="authenticationSuccessHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler" >
-		<property name="defaultTargetUrl" value="/a/"/>    
-    </bean>
-    
-    <bean id="authenticationFailureHandler" class="org.kablink.teaming.spring.security.SimpleUrlAuthenticationFailureHandler">
-		<property name="defaultFailureUrl" value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>
-    </bean>
-
-    <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
-    	<property name="loginFormUrl" value="/spring_security_login"/>    	
-    </bean>
-    
-    <bean id="loginPageGeneratingFilter" class="org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter" >
-    	<constructor-arg>
-    		<ref bean="authenticationProcessingFilter"/>
-    	</constructor-arg>
-    </bean>
-
-	<bean id="openidAuthenticationProvider" class="org.springframework.security.openid.OpenIDAuthenticationProvider">
-	    <property name="authenticationUserDetailsService">
-	    	<bean class="org.kablink.teaming.asmodule.spring.security.userdetails.OpenIDAuthenticationUserDetailsService"/>
-	    </property>
 	    <property name="consumer">
 	    	<bean class="org.springframework.security.openid.OpenID4JavaConsumer">
 		        <constructor-arg>
@@ -127,7 +86,30 @@
 		        </constructor-arg>
 	    	</bean>
 	    </property>
+    </bean>
+
+	<bean id="sessionAuthenticationStrategy" class="org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy">
+	    <property name="alwaysCreateSession"><value>true</value></property>
+	    <property name="migrateSessionAttributes"><value>false</value></property>
 	</bean>
+    
+    <bean id="authenticationSuccessHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler" >
+		<property name="defaultTargetUrl" value="/a/"/>    
+    </bean>
+    
+    <bean id="authenticationFailureHandler" class="org.kablink.teaming.spring.security.SimpleUrlAuthenticationFailureHandler">
+		<property name="defaultFailureUrl" value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>
+    </bean>
+
+    <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+    	<property name="loginFormUrl" value="/spring_security_login"/>    	
+    </bean>
+    
+    <bean id="loginPageGeneratingFilter" class="org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter" >
+    	<constructor-arg>
+    		<ref bean="authenticationProcessingFilter"/>
+    	</constructor-arg>
+    </bean>
 
     <security:http realm="Vibe" entry-point-ref="authenticationProcessingFilterEntryPoint" authentication-manager-ref="_authenticationManager">
         <security:custom-filter position="FORM_LOGIN_FILTER" ref="authenticationProcessingFilter"/>

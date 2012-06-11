@@ -17,6 +17,16 @@
 		<security:custom-filter position="FIRST"/>
 	</bean>-->
 	
+	<bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
+		<constructor-arg>
+		    <list>
+                <!-- Vibe's custom authentication provider -->
+		        <ref bean="authenticationModule"/>
+		    </list>
+		</constructor-arg>
+		<property name="authenticator"><value>web</value></property>
+	</bean>
+
 	<bean id="_anonymousProcessingFilter"
 	      class="org.kablink.teaming.spring.security.ZoneAwareAnonymousProcessingFilter">
 		<property name="key" value="thisIsIgnored"/>
