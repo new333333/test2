@@ -10,16 +10,6 @@
 	    
     <!-- ============================== Pre-authentication using cookie ============================ -->
 
-	<bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
-		<constructor-arg>
-		    <list>
-		        <!-- Authentication provider for internal users (LDAP, local) -->
-		        <ref bean="authenticationModule"/>
-		    </list>
-		</constructor-arg>
-		<property name="authenticator"><value>web</value></property>
-	</bean>
-
     <bean id="requestCookiePreAuthenticatedProcessingFilter" class="org.kablink.teaming.asmodule.spring.security.preauth.RequestCookiePreAuthenticatedProcessingFilter">
 		<property name="authenticationManager" ref="_authenticationManager"/>
 		<property name="continueFilterChainOnUnsuccessfulAuthentication"><value>false</value></property>

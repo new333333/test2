@@ -10,16 +10,6 @@
 	    
     <!-- ============================== Form-based authentication ============================ -->
     
-	<bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
-		<constructor-arg>
-		    <list>
-		        <!-- Authentication provider for internal users (LDAP, local) -->
-		        <ref bean="authenticationModule"/>
-		    </list>
-		</constructor-arg>
-		<property name="authenticator"><value>web</value></property>
-	</bean>
-
     <import resource="security-auth-form-common.xml"/>
         
     <bean id="_logoutFilter" class="org.kablink.teaming.spring.security.LogoutFilter" depends-on="sPropsUtil">
