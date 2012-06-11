@@ -342,10 +342,11 @@ public class LoginFilter  implements Filter {
 		Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
 		HomePageConfig homePageConfig = getZoneModule().getZoneConfig(zoneId).getHomePageConfig();
 		if (WebHelper.isGuestLoggedIn(req) && homePageConfig != null) {
+			// Do we have a guest default home page?
 			Long binderId = homePageConfig.getDefaultGuestHomePageId();
-			if (binderId == null) binderId = homePageConfig.getDefaultHomePageId();
-			if (binderId != null) {
-				// See if guest has access to the default home page.
+			if ( binderId != null )
+			{
+				// Yes, does guest have access to it?
 				try
 				{
 					String url = null;
@@ -370,6 +371,8 @@ public class LoginFilter  implements Filter {
 													callback,
 													WebHelper.getRequiredZoneName( req ),
 													WebHelper.getRequiredUserId( req ) );
+					
+					// If we get here guest has access to the guest default home page.
 					if ( url != null )
 						return url;
 				}
@@ -379,6 +382,12 @@ public class LoginFilter  implements Filter {
 				}
 				
 				// If we get here, guest does not have access to the default home page.
+			}
+
+			// Do we have a default home page for the logged in user?
+			binderId = homePageConfig.getDefaultHomePageId();
+			if (binderId != null) {
+				return PermaLinkUtil.getPermalink( req, binderId, EntityType.folder);
 			}
 		} else if (!WebHelper.isGuestLoggedIn(req)) {
 			//This user is logged in. Look for a default home page
