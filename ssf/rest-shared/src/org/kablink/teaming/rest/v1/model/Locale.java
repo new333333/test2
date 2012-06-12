@@ -33,6 +33,7 @@
 package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * User: david
@@ -58,5 +59,13 @@ public class Locale {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    @XmlTransient
+    public String getCode() {
+        if (this.country==null) {
+            return this.language;
+        }
+        return this.language + "_" + this.country;
     }
 }

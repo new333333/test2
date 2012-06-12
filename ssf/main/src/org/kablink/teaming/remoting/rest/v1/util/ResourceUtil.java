@@ -84,7 +84,16 @@ public class ResourceUtil {
     private static Set<String> ignoredCustomFields = new HashSet<String>() {
         {
             add("description");
+            add("emailAddress");
+            add("firstName");
+            add("lastName");
+            add("middleName");
+            add("name");
+            add("phone");
+            add("skypeId");
             add("ss_attachFile");
+            add("timeZone");
+            add("title");
         }
     };
 

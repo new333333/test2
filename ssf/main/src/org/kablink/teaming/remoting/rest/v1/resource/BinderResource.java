@@ -60,7 +60,7 @@ public class BinderResource extends AbstractResource {
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Binder getBinder(@PathParam("id") long id,
-                            @QueryParam("include_attachments") @DefaultValue("false") boolean includeAttachments) {
+                            @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
         return ResourceUtil.buildBinder(_getBinder(id), includeAttachments);
     }
 

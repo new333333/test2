@@ -69,7 +69,7 @@ public class SelfResource extends AbstractResource {
      */
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public User getSelf(@QueryParam("include_attachments") @DefaultValue("false") boolean includeAttachments) {
+    public User getSelf(@QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
         Long userId = getLoggedInUserId();
         // Retrieve the raw entry.
         Principal entry = getProfileModule().getEntry(userId);
