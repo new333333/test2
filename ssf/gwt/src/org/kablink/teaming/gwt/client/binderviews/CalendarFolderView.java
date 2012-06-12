@@ -165,6 +165,8 @@ public class CalendarFolderView extends FolderViewBase
 	private String								m_quickFilter;				// Any quick filter that's active.
 	private VibeCalendar						m_calendar;					// The calendar widget contained in the view.
 
+	private static int MINIMUM_CALENDAR_HEIGHT	= 250;
+	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
@@ -871,6 +873,31 @@ public class CalendarFolderView extends FolderViewBase
 		return reply;
 	}
 	
+	/**
+	 * Returns the minimum height to used for a folder view's content.
+	 * 
+	 * Overrides the FolderViewBase.getMinimumContentHeight() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getMinimumContentHeight() {
+		return MINIMUM_CALENDAR_HEIGHT;
+	}
+
+	/**
+	 * Returns the adjustment to used for a folder view's content so
+	 * that it doesn't get a vertical scroll bar.
+	 * 
+	 * Overrides the FolderViewBase.getNoVScrollAdjustment() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getNoVScrollAdjustment() {
+		return (super.getNoVScrollAdjustment() + 10);
+	}
+
 	/**
 	 * Returns true for panels that are to be included and false
 	 * otherwise.
@@ -1659,11 +1686,12 @@ public class CalendarFolderView extends FolderViewBase
 
 		// What's the optimum height for the calendar so we don't get a
 		// vertical scroll bar?
-		int cHeight = (((viewHeight - cTop) - totalBelow) - (NO_VSCROLL_ADJUST + 10));
-		if (MINIMUM_CONTENT_HEIGHT > cHeight) {
+		int cHeight   = (((viewHeight - cTop) - totalBelow) - getNoVScrollAdjustment());
+		int minHeight = getMinimumContentHeight();
+		if (minHeight > cHeight) {
 			// Too small!  Use the minimum even though this will turn
 			// on the vertical scroll bar.
-			cHeight = MINIMUM_CONTENT_HEIGHT;
+			cHeight = minHeight;
 		}
 		
 		// Set the height of the calendar.

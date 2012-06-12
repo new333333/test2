@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.ArrayList;
@@ -1875,11 +1874,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 
 		// What's the optimum height for the data table so we don't get
 		// a vertical scroll bar?
-		int dataTableHeight = (((viewHeight - dtTop) - totalBelow) - NO_VSCROLL_ADJUST);
-		if (MINIMUM_CONTENT_HEIGHT > dataTableHeight) {
+		int dataTableHeight = (((viewHeight - dtTop) - totalBelow) - getNoVScrollAdjustment());
+		int minHeight       = getMinimumContentHeight();
+		if (minHeight > dataTableHeight) {
 			// Too small!  Use the minimum even though this will turn
 			// on the vertical scroll bar.
-			dataTableHeight = MINIMUM_CONTENT_HEIGHT;
+			dataTableHeight = minHeight;
 		}
 		
 		// Set the height of the data table.

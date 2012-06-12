@@ -635,11 +635,12 @@ public class TaskListing extends Composite implements TaskProvider {
 
 		// What's the optimum height for the task listing so we don't
 		// get a vertical scroll bar?
-		int tlHeight = (((viewHeight - tlDivTop) - totalBelow) - (TaskFolderView.NO_VSCROLL_ADJUST + 10));
-		if (TaskFolderView.MINIMUM_CONTENT_HEIGHT > tlHeight) {
+		int tlHeight  = (((viewHeight - tlDivTop) - totalBelow) - m_taskFolderView.getNoVScrollAdjustment());
+		int minHeight = m_taskFolderView.getMinimumContentHeight();
+		if (minHeight > tlHeight) {
 			// Too small!  Use the minimum even though this will turn
 			// on the vertical scroll bar.
-			tlHeight = TaskFolderView.MINIMUM_CONTENT_HEIGHT;
+			tlHeight = minHeight;
 		}
 		
 		// Set the height of the taskListing.

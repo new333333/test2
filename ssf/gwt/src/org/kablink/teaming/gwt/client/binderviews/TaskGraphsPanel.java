@@ -393,7 +393,7 @@ public class TaskGraphsPanel extends ToolPanelBase
 	private void renderTaskGraphsNow() {
 		// Pull the current task list from the task provider and use
 		// them to calculate the counts...
-		m_taskStats = new TaskStats(m_taskProvider.getTasks());
+		m_taskStats = new TaskStats((null == m_taskProvider) ? null : m_taskProvider.getTasks());
 
 		// ...render the task graphs...
 		m_fp.clear();
