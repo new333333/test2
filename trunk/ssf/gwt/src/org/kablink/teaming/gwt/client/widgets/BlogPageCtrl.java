@@ -33,11 +33,17 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.kablink.teaming.gwt.client.BlogArchiveFolder;
+import org.kablink.teaming.gwt.client.BlogArchiveMonth;
 import org.kablink.teaming.gwt.client.BlogPage;
 import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.BlogArchiveFolderSelectedEvent;
 import org.kablink.teaming.gwt.client.event.BlogPageSelectedEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBlogPagesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -51,6 +57,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
 /**
@@ -60,11 +67,23 @@ import com.google.gwt.user.client.ui.ListBox;
  *
  */
 public class BlogPageCtrl extends VibeWidget
+	implements
+		// Event handlers implemented by this class.
+		BlogArchiveFolderSelectedEvent.Handler
 {
+	private List<HandlerRegistration> m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private Long m_defaultFolderId;
 	private ListBox m_listbox;
 	private ArrayList<BlogPage> m_listOfBlogPages;
 	
+	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[]
+    {
+		TeamingEvents.BLOG_ARCHIVE_FOLDER_SELECTED
+	};
 	
 	/**
 	 * Callback interface to interact with the blog page control asynchronously after it loads. 
@@ -264,6 +283,96 @@ public class BlogPageCtrl extends VibeWidget
 	}
 	
 	/**
+	 * Called when the blog folder view is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach()
+	{
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Handles the BlogArchiveFolderSelectedEvent received by this class.
+	 * 
+	 * Implements the BlogArchiveFolderSelectedEvent.onBlogArchiveFolderSelectedEvent() method.
+	 * 
+	 */
+	@Override
+	public void onBlogArchiveFolderSelected( BlogArchiveFolderSelectedEvent event )
+	{
+		BlogArchiveMonth month;
+		final BlogArchiveFolder folder;
+		
+		// Get the month/year and the folder that was selected.
+		month = event.getMonth();
+		folder = event.getFolder();
+		if ( month != null && folder != null )
+		{
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute() 
+				{
+					Long folderId;
+					
+					folderId = folder.getFolderId();
+					if ( folderId != null )
+					{
+						// Select the given folder in our list of blog pages
+						GwtClientHelper.selectListboxItemByValue( m_listbox, folderId.toString() );
+					}
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}
+	
+	/**
+	 * Called when the blog folder view is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach()
+	{
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
+	
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents()
+	{
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if ( null == m_registeredEventHandlers )
+		{
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if ( m_registeredEventHandlers.isEmpty() )
+		{
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+										GwtTeaming.getEventBus(),
+										m_registeredEvents,
+										this,
+										m_registeredEventHandlers );
+		}
+	}
+
+	/**
 	 * Select the blog page in the listbox that is the default blog page.
 	 */
 	private void selectDefaultPageInListbox()
@@ -271,6 +380,19 @@ public class BlogPageCtrl extends VibeWidget
 		if ( m_defaultFolderId != null )
 		{
 			GwtClientHelper.selectListboxItemByValue( m_listbox, m_defaultFolderId.toString() );
+		}
+	}
+
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents()
+	{
+		// If we have a non-empty list of registered events...
+		if ( null != m_registeredEventHandlers && !m_registeredEventHandlers.isEmpty() )
+		{
+			// ...unregister them.  (Note that this will also empty the list.)
+			EventHelper.unregisterEventHandlers( m_registeredEventHandlers );
 		}
 	}
 }

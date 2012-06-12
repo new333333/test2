@@ -209,12 +209,8 @@ public class BlogArchiveCtrl extends VibeWidget
 					MonthInlineLabel label;
 					final BlogArchiveMonth month;
 					
-					// Is a month or folder currently selected?
-					if ( m_selectedLabel != null )
-					{
-						// Yes, remove the "selected" style from the label.
-						m_selectedLabel.removeStyleName( "blogArchiveCtrlSelected" );
-					}
+					// Clear any selected month or folder
+					clearCurrentSelection();
 					
 					label = (MonthInlineLabel) src;
 					m_selectedLabel = label;
@@ -253,12 +249,8 @@ public class BlogArchiveCtrl extends VibeWidget
 					final BlogArchiveFolder folder;
 					final BlogArchiveMonth month;
 					
-					// Is a month or folder currently selected?
-					if ( m_selectedLabel != null )
-					{
-						// Yes, remove the "selected" style from the label.
-						m_selectedLabel.removeStyleName( "blogArchiveCtrlSelected" );
-					}
+					// Clear any selected month or folder
+					clearCurrentSelection();
 					
 					label = (FolderInlineLabel) src;
 					m_selectedLabel = label;
@@ -348,6 +340,32 @@ public class BlogArchiveCtrl extends VibeWidget
 			
 			monthLabel.addClickHandler( m_monthClickHandler );
 		}
+	}
+	
+	/**
+	 * If a month or folder is selected, deselect it. 
+	 */
+	private void clearCurrentSelection()
+	{
+		// Is a month or folder currently selected?
+		if ( m_selectedLabel != null )
+		{
+			// Yes, remove the "selected" style from the label.
+			m_selectedLabel.removeStyleName( "blogArchiveCtrlSelected" );
+		}
+	}
+	
+	/**
+	 * Clear all selections, selected month or folder or tag
+	 */
+	public void clearAllSelections()
+	{
+		// Clear current selection of a month or folder
+		clearCurrentSelection();
+		
+		// Clear any global tag that is selected.
+		m_globalTagsCtrl.clearSelectedTags();
+		
 	}
 	
 	/**
