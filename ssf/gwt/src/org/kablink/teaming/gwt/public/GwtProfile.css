@@ -7,6 +7,7 @@ top:25px;
 
 .profileSection  {
 -moz-border-radius:5px 5px 5px 5px;
+border-radius:5px 5px 5px 5px;
 background:none repeat scroll 0 0 #FFFFFF;
 padding-bottom:1em;
 position:relative;
@@ -21,6 +22,7 @@ margin-bottom:0.5em;
 padding:5px;
 cursor: pointer;
 -moz-border-radius: 5px 5px 0px 0px;
+border-radius: 5px 5px 0px 0px;
 -webkit-border-radius: 5px 5px 0px 0px;
 position:relative;
 }
@@ -231,6 +233,7 @@ margin-left:1em;
 	background: #949494;
 	padding: 2px 6px;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
 	}
 
@@ -240,6 +243,7 @@ margin-left:1em;
 	background: #85BCC3 url(images/header_blend_teal_bg.png) repeat-x scroll center bottom;
 	padding: 2px 6px;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
 	}
 
@@ -283,6 +287,7 @@ width: 520px;
 	width: 500px;
 	margin-top: 4px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 .user_status_textAmount {
@@ -346,12 +351,14 @@ top: 0px;
 	display:block;
 	text-align: center;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;	
 }
 .profile-action a:hover {
 	color: #135c8f;
 	border: 1px solid #91daf2;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;	
 }
 * html .profile-action a {width:100%;}
@@ -369,6 +376,7 @@ letter-spacing: 0.1em !important;
 color: #5691a6;
 background: #cce9ee;
 -moz-border-radius: 3px;
+border-radius: 3px;
 -webkit-border-radius: 3px;
 padding: 3px;
 }
@@ -383,6 +391,7 @@ margin: 0;
 color: #5691a6;
 background: #cce9ee;
 -moz-border-radius: 3px;
+border-radius: 3px;
 -webkit-border-radius: 3px;
 }
 .profile-edit-button:hover, .profile-save-button:hover, .profile-cancel-button:hover {
@@ -397,6 +406,7 @@ font-weight:bold;
 margin:0.3em 0;
 padding:0.12em 0.8em;
 -moz-border-radius: 3px;
+border-radius: 3px;
 -webkit-border-radius: 3px;
 }
 .profile-save-button, .profile-edit-button, .profile-cancel-button {
@@ -469,6 +479,8 @@ position: relative;
 background:none repeat scroll 0 0 #FFFFFF;
 -moz-border-radius-topleft:5px;
 -moz-border-radius-topright:5px;
+border-top-left-radius:5px;
+border-top-right-radius:5px;
 -webkit-border-top-left-radius: 5px;
 -webkit-border-top-right-radius: 5px;
 }

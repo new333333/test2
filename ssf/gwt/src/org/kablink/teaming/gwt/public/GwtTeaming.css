@@ -28,6 +28,7 @@
 	top: 8px !important;
 	background: #fff;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -48,6 +49,7 @@
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -90,6 +92,7 @@
 	top: 25px;
 	z-index: 100;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -105,6 +108,7 @@
 	top: 150px;
 	z-index: 100;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -117,6 +121,8 @@
 	width: 100%;
 	-moz-border-radius-bottomleft: 5px;
 	-moz-border-radius-bottomright: 5px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
 	-webkit-border-bottom-left-radius: 5px;
 	-webkit-border-bottom-right-radius: 5px;
 }
@@ -192,6 +198,7 @@
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 .activityStreamHover span {
@@ -303,6 +310,7 @@
 	background-position:center;
 	cursor: pointer;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -339,6 +347,8 @@
 	padding-left: 55px;
 	-moz-border-radius-bottomleft: 3px;
 	-moz-border-radius-bottomright: 3px;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
 	-webkit-border-bottom-left-radius: 3px;
 	-webkit-border-bottom-right-radius: 3px;
 }
@@ -542,6 +552,7 @@
 	border-width: 1px;
 	padding: 5px 10px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 	z-index: 1100;
 }
@@ -620,6 +631,7 @@ a, a:visited, a:hover {
 	background: #E6F2F7;
 	color: #3E6978;
 	-moz-border-radius: 3px;
+	border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 
@@ -635,6 +647,7 @@ a, a:visited, a:hover {
 	width: 300px;
 	z-index: 100;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -650,6 +663,8 @@ a, a:visited, a:hover {
 	width: 100%;
 	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 }
@@ -678,6 +693,7 @@ a, a:visited, a:hover {
 	top: 8px;
 	background-color:#fff;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -847,6 +863,7 @@ body, table td, select
 	padding: 5px 10px;
 	margin: 5px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -952,6 +969,7 @@ body, table td, select
 	top: 25px;
 	z-index: 100;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -1085,6 +1103,7 @@ body, table td, select
 	padding: 0 0 8px;
 	width: 230px !important;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 	overflow: auto;
 }
@@ -1123,6 +1142,8 @@ body, table td, select
 	padding: 5px;
 	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 }
@@ -1133,6 +1154,7 @@ body, table td, select
 .workspaceTreeControlHeader_closeButton
 {
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
 	background: url(images/slice_blend_teal_27.png) repeat-x scroll 0 0 #81B2Bd;
 	border: 1px solid #60919C;
@@ -1165,11 +1187,13 @@ body, table td, select
 	color: #5691a6;
 	background: #cce9ee;
 	-moz-border-radius: 3px;
+	border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 .workspaceTreeControlRowSelected
 {
 	-moz-border-radius: 3px;
+	border-radius: 3px;
 	-webkit-border-radius: 3px;
 	background: #fff;
 	font-weight: bold;
@@ -1595,6 +1619,7 @@ body, table td, select
 	top: 8px !important;
 	background-color:#fff;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -1602,6 +1627,7 @@ body, table td, select
 {
 	border-width: 0px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -1649,6 +1675,8 @@ body, table td, select
 	border-top: 1px solid #808384;
 	-moz-border-radius-bottomleft: 3px;
 	-moz-border-radius-bottomright: 3px;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
 	-webkit-border-bottom-left-radius: 3px;
 	-webkit-border-bottom-right-radius: 3px;
 }
@@ -1776,6 +1804,8 @@ body, table td, select
 	border-top: 1px solid #808384;
 	-moz-border-radius-bottomleft: 3px;
 	-moz-border-radius-bottomright: 3px;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
 	-webkit-border-bottom-left-radius: 3px;
 	-webkit-border-bottom-right-radius: 3px;	
 }
@@ -1977,6 +2007,7 @@ body, table td, select
 	background: url(images/teal_slice.png) repeat-x center;
 	background-position:center;
 	-moz-border-radius: 3px;
+	border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 
@@ -2223,6 +2254,7 @@ body, table td, select
 	padding: 2px 8px;
 	text-decoration: none;
     -moz-border-radius: 5px;
+    border-radius: 5px;
     -webkit-border-radius: 5px;
 }
 
@@ -2307,6 +2339,7 @@ body, table td, select
   	white-space: nowrap;
 	border: 0px;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
     text-align: center !important;
 	}
@@ -2318,6 +2351,7 @@ body, table td, select
 	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 	background: -webkit-gradient(
@@ -2328,6 +2362,7 @@ body, table td, select
 		color-stop(0.53, #D5EDF1),
 		color-stop(1, #C8E4E9));
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
 
@@ -2335,6 +2370,7 @@ body, table td, select
 	color: #1f1f1f;
 	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
 	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+	background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
 	background-color: transparent;
 	border: 1px solid #B8B8B8;
 	font-weight: normal !important;
@@ -2345,6 +2381,7 @@ body, table td, select
 	text-decoration:none;	
 	cursor: pointer !important;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
 .gwt-Button:hover {
@@ -2377,6 +2414,7 @@ body, table td, select
 	background: url(images/trans30_black.png) repeat;
 	padding: 6px;
 	-moz-border-radius: 6px;
+	border-radius: 6px;
 	-webkit-border-radius: 6px;
 	z-index: 1001;
 }
@@ -2394,6 +2432,7 @@ body, table td, select
 {
 	background-color: #f6f6f6;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -2414,6 +2453,8 @@ body, table td, select
 	vertical-align: middle;
 	-moz-border-radius-bottomleft: 3px;
 	-moz-border-radius-bottomright: 3px;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
 	-webkit-border-bottom-left-radius: 3px;
 	-webkit-border-bottom-right-radius: 3px;
 }
@@ -2428,6 +2469,8 @@ body, table td, select
 	padding: 5px;
 	-moz-border-radius-topleft: 3px;
 	-moz-border-radius-topright: 3px;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
 	-webkit-border-top-left-radius: 3px;
 	-webkit-border-top-right-radius: 3px;
 }
@@ -2456,23 +2499,28 @@ body, table td, select
 .roundcorner
 {
 	-moz-border-radius: 10px;
+	border-radius: 10px;
 	-webkit-border-radius: 10px;
 }
 .roundcornerSM
 {
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 .roundcornerSM-bottom
 {
 	-moz-border-radius-bottomleft: 5px;
 	-moz-border-radius-bottomright: 5px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
 	-webkit-border-bottom-left-radius: 5px;
 	-webkit-border-bottom-right-radius: 5px;
 }
 .roundcornerLG
 {
 	-moz-border-radius: 40px;
+	border-radius: 40px;
 	-webkit-border-radius: 40px;
 }
 
@@ -2481,6 +2529,7 @@ body, table td, select
 .btn-bg1
 {
 	-moz-border-radius:15px;
+	border-radius:15px;
 	-webkit-border-radius: 15px;
 	background:url("images/putty_blend2.png") repeat-x scroll center bottom #FFFFFF;
 	border:1px solid #c4c4c4;
@@ -2550,6 +2599,8 @@ a.ss_new_thread {
 	background:none repeat scroll 0 0 #FFFFFF;
 	-moz-border-radius-topleft:5px;
 	-moz-border-radius-topright:5px;
+	border-top-left-radius:5px;
+	border-top-right-radius:5px;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 }
@@ -2631,6 +2682,7 @@ a.ss_new_thread {
 }
 .qView-action  {
 	-moz-border-radius:15px;
+	border-radius:15px;
 	-webkit-border-radius: 15px;
 	background:url("images/putty_blend2.png") repeat-x scroll center bottom #FFFFFF;
 	border:1px solid #c4c4c4;
@@ -2647,6 +2699,7 @@ a.ss_new_thread {
 }
 .qView-action-following  {
 	-moz-border-radius:15px;
+	border-radius:15px;
 	-webkit-border-radius: 15px;
 	background:url("images/putty_blend4.png") repeat-x scroll center bottom #FFFFFF;
 	border:1px solid #b8b8b8;
@@ -2792,6 +2845,7 @@ top:100px;
 	padding: 0px 5px 1px 5px;
 	border: 1px solid #CCC;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
 .gwtTaskFilter_toolbar
@@ -2852,6 +2906,7 @@ top:100px;
 {
 	background: #cce9ee;
 	-moz-border-radius: 3px;
+	border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 .gwtTaskTools_Span
@@ -2927,6 +2982,7 @@ top:100px;
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 .gwtTaskList_calculatedDate
@@ -2969,6 +3025,7 @@ top:100px;
 	top: 50px;
 	z-index: 100;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 .gwtTaskList_showGroupList
@@ -2998,6 +3055,8 @@ top:100px;
 	border-bottom: 0px solid #f6f6f6;
 	-moz-border-radius-bottomleft: 5px;
 	-moz-border-radius-bottomright: 5px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
 	-webkit-border-bottom-left-radius: 5px;
 	-webkit-border-bottom-right-radius: 5px;
 }
@@ -3038,6 +3097,7 @@ top:100px;
 	padding: 0px 5px 1px 5px;
 	border: 1px solid #ccc;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
 .dialog .gwtTaskList_objlist-filter
@@ -3049,6 +3109,7 @@ top:100px;
 	padding: 0px 5px 1px 5px;
 	border: 1px solid #ccc;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
 }	
 .gwtTaskList_objlist2 tr.entry-menu td
@@ -3195,6 +3256,7 @@ a.gwtTaskList_task-icon:hover
 {
 	background: #cce9ee;
 	-moz-border-radius: 3px;
+	border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 .gwtTaskList_task-nameAnchor, .gwtTaskList_task-nameAnchor:visited
@@ -3205,6 +3267,7 @@ a.gwtTaskList_task-icon:hover
 {
 	background: #cce9ee;
 	-moz-border-radius: 3px;
+	border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 .gwtTaskList_task-nameCell
@@ -3242,6 +3305,7 @@ a.gwtTaskList_task-icon:hover
 {
 	background: #cce9ee;
 	-moz-border-radius: 3px;
+	border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 /* End:  GWT Task Folder Listing styles. */
@@ -3299,6 +3363,7 @@ a.gwtTaskList_task-icon:hover
 	padding: 6px;
 	background: url(images/trans30_black.png) repeat;
 	-moz-border-radius: 4px;
+	border-radius: 4px;
 	-webkit-border-radius: 4px;
 	}
 .dateBoxPopup
@@ -3339,7 +3404,7 @@ td.datePickerMonth {
 
 /* Start:  Cliboard dialog styles. */
 	.vibe-cbDlg_Anchor          {color: #135c8f; text-decoration: none;}
-	.vibe-cbDlg_Anchor:hover    {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-cbDlg_Anchor:hover    {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-cbDlg_Checkbox        {margin-left: 5px;}
 	.vibe-cbDlg_ClearAll        {margin-left: 10px;}
 	.vibe-cbDlg_Grid            {margin: 20px 10px 10px 20px;}
@@ -3356,13 +3421,13 @@ td.datePickerMonth {
 
 /* Start:  Email notification dialog styles. */
 	.vibe-emailNotifDlg_BannerHelp       {margin-left: 10px;}
-	.vibe-emailNotifDlg_BannerHelp:hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-emailNotifDlg_BannerHelp:hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-emailNotifDlg_BannerLabel      {}
 	.vibe-emailNotifDlg_BannerPanel      {display: block; white-space: nowrap;}
 	.vibe-emailNotifDlg_Content          {margin: 20px 10px 10px 20px;}
 	.vibe-emailNotifDlg_FooterCheck      {}
 	.vibe-emailNotifDlg_FooterHelp       {margin-left: 10px;}
-	.vibe-emailNotifDlg_FooterHelp:hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-emailNotifDlg_FooterHelp:hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-emailNotifDlg_FooterLabel      {}
 	.vibe-emailNotifDlg_FooterPanel      {display: block; white-space: nowrap; margin-top: 15px; margin-bottom: 10px;}
 	.vibe-emailNotifDlg_Digest           {}
@@ -3596,6 +3661,7 @@ td.datePickerMonth {
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -3665,6 +3731,7 @@ td.datePickerMonth {
 	background-color: #EDEDED;
 	border-radius: 0px 3px 3px 3px;
 	-moz-border-radius: 0px 3px 3px 3px;
+	border-radius: 0px 3px 3px 3px;
 }
  
 .vibt-tabPanel .gwt-TabBarItem-wrapper
@@ -3677,6 +3744,7 @@ td.datePickerMonth {
 	background: none repeat scroll 0 0 #949494;
 	color: white;
 	-moz-border-radius: 3px;
+	border-radius: 3px;
 	border-radius: 3px;
 	font-weight: normal;
 	padding: 3px 10px;
@@ -3695,12 +3763,14 @@ td.datePickerMonth {
 	background: none repeat scroll 0 0 #EDEDED;
 	background: -webkit-gradient(linear, 0% 100%, 0% 0, from(#EDEDED), to(#f6f6f6) );
 	background: -moz-linear-gradient(center top, #FAFAFA, #EDEDED) repeat scroll 0 0 transparent;
+	background: linear-gradient(center top, #FAFAFA, #EDEDED) repeat scroll 0 0 transparent;
 	cursor: default;
 	padding: 3px 10px;
 	color: black;
 	font-weight: bold;
-	border-radius: 3px 3px 0px 0px;
 	-moz-border-radius: 3px 3px 0px 0px;
+	border-radius: 3px 3px 0px 0px;
+	-webkit-border-radius: 0px 3px 3px 3px;
 	border-bottom: 3px solid #EDEDED;
 }
  
@@ -3715,7 +3785,7 @@ td.datePickerMonth {
 	.vibe-eventButton-widgetAnchor       {background: none !important;}
    a.vibe-eventButton-widgetAnchor:hover {background: none !important;}
 	.vibe-eventButton-widgetImage        {margin-left: 3px; vertical-align: middle;}
-	.vibe-eventButton-widgetText         {background: none repeat scroll 0 0 #949494 !important; color: #FFFFFF !important; font-size: .7em; padding: 2px 12px; text-decoration: none; -moz-border-radius: 15px; -webkit-border-radius: 15px;}
+	.vibe-eventButton-widgetText         {background: none repeat scroll 0 0 #949494 !important; color: #FFFFFF !important; font-size: .7em; padding: 2px 12px; text-decoration: none; -moz-border-radius: 15px; border-radius: 15px; -webkit-border-radius: 15px;}
 	.vibe-eventButton-widgetTextDisabled {background: none repeat scroll 0 0 #B8B8B8 !important; color: #EDEDED !important;}
 	.vibe-eventButton-widgetTextHover    {background: #81B2BD url(images/slice_blend_teal_27.png) repeat-x !important; color: #FFFFFF !important;}
 /* ...End:  Event button styles. */
@@ -3730,6 +3800,7 @@ td.datePickerMonth {
 	margin-top: 8px;
 	padding: 10px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -3764,6 +3835,7 @@ td.datePickerMonth {
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 12px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -3783,7 +3855,7 @@ td.datePickerMonth {
 	padding-bottom: 12px;
 }
 
-.vibe-hoverHint      {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d2d5d1; margin:2px; padding: 10px; background-color: #f6f6f6; width: auto; -moz-border-radius: 6px; -webkit-border-radius: 6px; }
+.vibe-hoverHint      {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d2d5d1; margin:2px; padding: 10px; background-color: #f6f6f6; width: auto; -moz-border-radius: 6px; border-radius: 6px; -webkit-border-radius: 6px; }
 .vibe-hoverHintLabel {font-family: Arial, Helvetica, sans-serif; font-weight: inherit; font-size: 12px; background-color: transparent; color: #1f1f1f; line-height: 1.4em;}
 
 /* End */
@@ -3815,6 +3887,7 @@ td.datePickerMonth {
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 12px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
  
