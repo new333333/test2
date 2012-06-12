@@ -248,29 +248,32 @@ public class CalendarFolderView extends FolderViewBase
 		m_calendar.addMouseOverHandler(new MouseOverHandler<Appointment>() {
 			@Override
 			public void onMouseOver(MouseOverEvent<Appointment> event) {
-				// Does the appointment have a description?
-				CalendarAppointment ca = ((CalendarAppointment) event.getTarget());
-				String caDesc = ca.getDescriptionHtml();
-				if (!(GwtClientHelper.hasString(caDesc))) {
-					caDesc = ca.getDescription();
-				}
-				if (GwtClientHelper.hasString(caDesc)) {
-					// Yes!  If we haven't created a hover hint popup
-					// to show descriptions in yet...
-					if (null == m_hoverHintPopup) {
-						// ...create one now...
-						m_hoverHintPopup = new HoverHintPopup();
+				// Does the current day view support hover hints?
+				if (viewSupportsHoverHints()) {
+					// Yes!  Does the appointment have a description?
+					CalendarAppointment ca = ((CalendarAppointment) event.getTarget());
+					String caDesc = ca.getDescriptionHtml();
+					if (!(GwtClientHelper.hasString(caDesc))) {
+						caDesc = ca.getDescription();
+					}
+					if (GwtClientHelper.hasString(caDesc)) {
+						// Yes!  If we haven't created a hover hint
+						// popup to show descriptions in yet...
+						if (null == m_hoverHintPopup) {
+							// ...create one now...
+							m_hoverHintPopup = new HoverHintPopup();
+						}
+						
+						// ...and show it with the description HTML.
+						m_hoverHintPopup.setHoverText(caDesc);
+						m_hoverHintPopup.showHintRelativeTo((Element) event.getElement());
 					}
 					
-					// ...and show it with the description HTML.
-					m_hoverHintPopup.setHoverText(caDesc);
-					m_hoverHintPopup.showHintRelativeTo((Element) event.getElement());
-				}
-				
-				else if (null != m_hoverHintPopup) {
-					// Hovering over any other appointment will hide an
-					// existing hover hint.
-					m_hoverHintPopup.hide();
+					else if (null != m_hoverHintPopup) {
+						// Hovering over any other appointment will
+						// hide an existing hover hint.
+						m_hoverHintPopup.hide();
+					}
 				}
 			}
 		});
@@ -1751,6 +1754,19 @@ public class CalendarFolderView extends FolderViewBase
 			// ...list.)
 			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
 		}
+	}
+
+	/*
+	 * Returns true if the current view mode supports hover hints and
+	 * false otherwise.
+	 */
+	private boolean viewSupportsHoverHints() {
+		boolean reply;
+		switch (m_calendarDisplayData.getDayView()) {
+		default:     reply = false; break;
+		case MONTH:  reply = true;  break;
+		}
+		return reply;
 	}
 	
 	/**
