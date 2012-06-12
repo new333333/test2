@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.ArrayList;
@@ -112,8 +111,8 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	public final static int VIEW_CONTENT_PANEL_INDEX		= 8;
 	public final static int FOOTER_PANEL_INDEX				= 9;
 
-	public final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of a the data table widget.
-	public final static int NO_VSCROLL_ADJUST			=  20;	// Height adjustment required so there's no vertical scroll bar by default.
+	private final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of a the data table widget.
+	private final static int NO_VSCROLL_ADJUST			=  20;	// Height adjustment required so there's no vertical scroll bar by default.
 
 	/*
 	 * Enumeration that identifies the various optional panels that
@@ -318,6 +317,29 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 		
 		// If we get here, a footer panel isn't defined.  Return null.
 		return null;
+	}
+	
+	/**
+	 * Returns the minimum height to used for a folder view's content.
+	 * 
+	 * Classes that extend this can override as needed.
+	 * 
+	 * @return
+	 */
+	public int getMinimumContentHeight() {
+		return MINIMUM_CONTENT_HEIGHT;
+	}
+
+	/**
+	 * Returns the adjustment to used for a folder view's content so
+	 * that it doesn't get a vertical scroll bar.
+	 * 
+	 * Classes that extend this can override as needed.
+	 * 
+	 * @return
+	 */
+	public int getNoVScrollAdjustment() {
+		return NO_VSCROLL_ADJUST;
 	}
 
 	/**

@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.ArrayList;
@@ -124,6 +123,19 @@ public class TaskFolderView extends FolderViewBase
 	@Override
 	public void constructView() {
 		loadPart1Async();
+	}
+
+	/**
+	 * Returns the adjustment to used for a folder view's content so
+	 * that it doesn't get a vertical scroll bar.
+	 * 
+	 * Overrides the FolderViewBase.getNoVScrollAdjustment() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getNoVScrollAdjustment() {
+		return (super.getNoVScrollAdjustment() + 10);
 	}
 
 	/**
