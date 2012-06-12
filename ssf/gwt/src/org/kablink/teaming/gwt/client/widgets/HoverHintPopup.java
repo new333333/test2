@@ -43,6 +43,11 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
  */
 public class HoverHintPopup extends TeamingPopupPanel {
 	private InlineLabel m_hoverHintLabel;	//
+
+	// The following are used to control the offset from the
+	// relative-to widget that the hover hint is placed.
+	private static final int BOTTOM_OFFSET	=  3;
+	private static final int LEFT_OFFSET	= 30;
 	
 	/**
 	 * Constructor method.
@@ -77,7 +82,10 @@ public class HoverHintPopup extends TeamingPopupPanel {
 	 * @param element
 	 */
 	public void showHintRelativeTo(Element element) {
-		setPopupPosition((element.getAbsoluteLeft() + 0), (element.getAbsoluteBottom() + 8));	// 20,12:  Same as JSP way of showing these hints.
+		setPopupPosition(
+			(element.getAbsoluteLeft()   + LEFT_OFFSET),
+			(element.getAbsoluteBottom() + BOTTOM_OFFSET));
+		
 		show();
 	}
 }
