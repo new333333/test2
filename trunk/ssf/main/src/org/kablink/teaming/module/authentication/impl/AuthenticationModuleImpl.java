@@ -43,7 +43,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
-import org.kablink.teaming.asmodule.spring.security.providers.OpenIDAuthenticationProvider;
 import org.kablink.teaming.asmodule.spring.security.userdetails.OpenIDAuthenticationUserDetailsService;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContext;
@@ -61,6 +60,7 @@ import org.kablink.teaming.spring.security.ldap.LdapAuthenticationProvider;
 import org.kablink.teaming.spring.security.ldap.PreAuthenticatedAuthenticator;
 import org.kablink.teaming.spring.security.ldap.PreAuthenticatedFilterBasedLdapUserSearch;
 import org.kablink.teaming.spring.security.ldap.PreAuthenticatedLdapAuthenticationProvider;
+import org.kablink.teaming.spring.security.providers.OpenIDAuthenticationProvider;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
@@ -524,15 +524,11 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 						// synchronization.
 						SimpleProfiler
 								.start("4-AuthenticationManagerUtil.authenticate1");
-						AuthenticationManagerUtil
-								.authenticate(
-										getZoneModule()
-												.getZoneNameByVirtualHost(
-														ZoneContextHolder
-																.getServerName()),
-										loginName, (String) result
-												.getCredentials(), (Map) result
-												.getPrincipal(),
+						AuthenticationManagerUtil.authenticate(
+										getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
+										loginName, 
+										(String) result.getCredentials(), 
+										(Map) result.getPrincipal(),
 										getAuthenticator());
 						SimpleProfiler
 								.stop("4-AuthenticationManagerUtil.authenticate1");
@@ -541,16 +537,13 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 						// synchronization but merely to log the authenticator.
 						SimpleProfiler
 								.start("4-AuthenticationManagerUtil.authenticate2");
-						AuthenticationManagerUtil
-								.authenticate(
-										getZoneModule()
-												.getZoneNameByVirtualHost(
-														ZoneContextHolder
-																.getServerName()),
-										loginName, (String) result
-												.getCredentials(), false,
-										false, true, (Map) result
-												.getPrincipal(),
+						AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
+										loginName, 
+										(String) result.getCredentials(), 
+										false,
+										false, 
+										true, 
+										(Map) result.getPrincipal(),
 										getAuthenticator());
 						SimpleProfiler
 								.stop("4-AuthenticationManagerUtil.authenticate2");
@@ -704,7 +697,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		if (exc != null) {
 			throw exc;
 		} else {
-			// This means that we don't have any external authenticators while
+			// This means that we don't have any LDAP authenticators while
 			// local login is at the same time disallowed.
 			// Clearly a major configuration error which should not (and can
 			// not) occur.
