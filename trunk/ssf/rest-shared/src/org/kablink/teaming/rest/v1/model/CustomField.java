@@ -35,6 +35,7 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.Date;
 
 /**
@@ -106,6 +107,11 @@ public class CustomField {
                 this.values[i] = objectOrNullIfInvalid(values[i]);
             }
         }
+    }
+
+    @XmlTransient
+    public boolean isMultiValued() {
+        return this.values!=null;
     }
 
     private Object objectOrNullIfInvalid(Object value) {

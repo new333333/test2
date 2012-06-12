@@ -37,14 +37,19 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TeamInfo;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
+import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -69,14 +74,16 @@ public class UserResource extends AbstractDefinableEntityResource {
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public User getUser(@PathParam("id") long userId,
-                        @QueryParam("include_attachments") @DefaultValue("false") boolean includeAttachments) {
-        // Retrieve the raw entry.
-        Principal entry = getProfileModule().getEntry(userId);
+                        @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
+        return ResourceUtil.buildUser(_getUser(userId), includeAttachments);
+    }
 
-        if(!(entry instanceof org.kablink.teaming.domain.User))
-            throw new IllegalArgumentException(userId + " does not represent an user. It is " + entry.getClass().getSimpleName());
-
-        return ResourceUtil.buildUser((org.kablink.teaming.domain.User) entry, includeAttachments);
+    @PUT
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public void updateUser(@PathParam("id") long id, User user)
+            throws WriteFilesException, WriteEntryDataException {
+        _getUser(id);
+        getProfileModule().modifyEntry(id, new RestModelInputData(user));
     }
 
     @GET
@@ -101,5 +108,13 @@ public class UserResource extends AbstractDefinableEntityResource {
             results.append(ResourceUtil.buildBinderBrief(binder));
         }
         return results;
+    }
+
+    private org.kablink.teaming.domain.User _getUser(long userId) {
+        Principal entry = getProfileModule().getEntry(userId);
+
+        if(!(entry instanceof org.kablink.teaming.domain.User))
+            throw new IllegalArgumentException(userId + " does not represent an user. It is " + entry.getClass().getSimpleName());
+        return (org.kablink.teaming.domain.User) entry;
     }
 }

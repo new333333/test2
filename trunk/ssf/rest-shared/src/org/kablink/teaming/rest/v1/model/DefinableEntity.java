@@ -192,4 +192,15 @@ public abstract class DefinableEntity extends BaseRestObject {
     public void setCustomFields(CustomField [] customFields) {
         this.customFields = customFields;
     }
+
+    public CustomField findField(String name) {
+        if (this.customFields!=null) {
+            for (CustomField field : this.customFields) {
+                if (name.equals(field.getName())) {
+                    return field;
+                }
+            }
+        }
+        return null;
+    }
 }

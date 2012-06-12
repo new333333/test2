@@ -169,7 +169,7 @@ public class FolderEntryResource extends AbstractDefinableEntityResource {
         Map options = new HashMap();
       	populateTimestamps(options, entry);
         org.kablink.teaming.domain.FolderEntry newEntry = getFolderModule().addReply(null, id, defId, new RestModelInputData(entry), null, options);
-        return ResourceUtil.buildFolderEntry(newEntry, false);
+        return ResourceUtil.buildFolderEntry(newEntry, true);
     }
 
     @GET
