@@ -30,57 +30,27 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.asmodule.spring.security.userdetails;
+package org.kablink.teaming.spring.security.userdetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.openid.OpenIDAuthenticationToken;
 
 /**
  * @author jong
  *
  */
-public class OpenIDUserDetails implements UserDetails {
+public class OpenIDAuthenticationUserDetailsService  implements AuthenticationUserDetailsService<OpenIDAuthenticationToken> {
 
-	private static final long serialVersionUID = 1L;
-	
-	String username;
-	String password;
-	Collection<? extends GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-
-	public OpenIDUserDetails(String username, String password) {
-		this.username = username;
-		this.password = password;
-	}
-	
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return authorities; 
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public boolean isAccountNonExpired() {
-		return true;
-	}
-
-	public boolean isAccountNonLocked() {
-		return true;
-	}
-
-	public boolean isCredentialsNonExpired() {
-		return true;
-	}
-
-	public boolean isEnabled() {
-		return true;
+	/* (non-Javadoc)
+	 * @see org.springframework.security.core.userdetails.AuthenticationUserDetailsService#loadUserDetails(org.springframework.security.core.Authentication)
+	 */
+	@Override
+	public UserDetails loadUserDetails(OpenIDAuthenticationToken token)
+			throws UsernameNotFoundException {
+		System.out.println(token.getName());
+		return new OpenIDUserDetails(token.getName(), null);
 	}
 
 }
