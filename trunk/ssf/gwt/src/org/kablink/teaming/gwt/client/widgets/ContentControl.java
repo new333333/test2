@@ -109,7 +109,6 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.FrameElement;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -617,19 +616,8 @@ public class ContentControl extends Composite
 							
 						case BLOG:
 						{
-							boolean showNew = false;
-							
-							if ( m_isDebugLP )
-							{
-								if ( Window.confirm( "Show new blog folder?" ) )
-									showNew = true;
-							}
-
-							if ( showNew )
-							{
-								GwtTeaming.fireEvent( new ShowBlogFolderEvent( bi, viewReady ) );
-								m_contentInGWT = true;
-							}
+							GwtTeaming.fireEvent( new ShowBlogFolderEvent( bi, viewReady ) );
+							m_contentInGWT = true;
 							break;
 						}
 							
