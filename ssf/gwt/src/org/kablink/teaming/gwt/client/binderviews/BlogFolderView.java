@@ -112,6 +112,7 @@ public class BlogFolderView extends FolderViewBase
 	
 	private List<HandlerRegistration> m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private ActivityStreamCtrl m_activityStreamCtrl;
+	private BlogArchiveCtrl m_archiveCtrl;
 	private String m_quickFilter;
 
 	// The following defines the TeamingEvents that are handled by
@@ -239,6 +240,7 @@ public class BlogFolderView extends FolderViewBase
 			@Override
 			public void onSuccess( BlogArchiveCtrl baCtrl )
 			{
+				m_archiveCtrl = baCtrl;
 				baCtrl.init( getFolderId() );
 				rightPanel.add( baCtrl );
 
@@ -560,7 +562,6 @@ public class BlogFolderView extends FolderViewBase
 				@Override
 				public void execute() 
 				{
-					// Find all the blog entries in the selected blog folder
 					m_binderId = blogPage.getFolderId();
 					m_binderTitle = blogPage.getFolderName();
 
@@ -568,7 +569,12 @@ public class BlogFolderView extends FolderViewBase
 					// should be working with the selected blog page.
 					fireContextChangedEvent();
 					
+					// Find all the blog entries in the selected blog folder
 					searchForBlogEntries();
+					
+					// Tell the archive control to clear any selected month/folder/tag
+					if ( m_archiveCtrl != null )
+						m_archiveCtrl.clearAllSelections();
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
