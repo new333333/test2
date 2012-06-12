@@ -9,6 +9,7 @@
 		display: block;
 		padding: 5px;
 		-moz-border-radius: 5px;
+		border-radius: 5px;
 		-webkit-border-radius: 5px;
 	}
 /* End:  Generic binder view tools styles. */
@@ -42,7 +43,7 @@
 		.vibe-calNav-daysSelPanel   {margin: 0px; padding: 0px; padding-left: 8px; vertical-align: middle;}
 		.vibe-calNav-hoursMenu      {vertical-align: middle; background: transparent !important; padding: 0px !important;}
 		.vibe-calNav-hoursMenuPanel {margin: 0px; padding: 0px; vertical-align: middle;}
-		.vibe-calNav-panel          {background-color: #C4C4C4; margin: 0px; padding: 10px; display: table; table-layout: fixed; overflow: hidden; white-space: nowrap; -moz-border-radius: 0px !important; -webkit-border-radius: 0px  !important;}
+		.vibe-calNav-panel          {background-color: #C4C4C4; margin: 0px; padding: 10px; display: table; table-layout: fixed; overflow: hidden; white-space: nowrap; -moz-border-radius: 0px !important; border-radius: 0px !important; -webkit-border-radius: 0px  !important;}
 		.vibe-calNav-panelLeft      {}
 		.vibe-calNav-panelLeftHP    {}
 		.vibe-calNav-panelRight     {}
@@ -69,15 +70,15 @@
 		.vibe-entryMenu-filtersPanel        {vertical-align: top; padding-right: 8px; margin-top: 6px;}
 		.vibe-entryMenu-grid                {padding: 0px !important; background-color: #ededed; display: table; table-layout: fixed;}
 		.vibe-entryMenu-quickFilters-filter {}
-		.vibe-entryMenu-quickFilters-panel  {vertical-align: top; padding: 0 0 0 5px; margin-top: 3px; border-left: none; height: 19px; white-space: nowrap; background-color: #fff; border: 1px solid #b8b8b8; -moz-border-radius: 15px; -webkit-border-radius: 15px;}
+		.vibe-entryMenu-quickFilters-panel  {vertical-align: top; padding: 0 0 0 5px; margin-top: 3px; border-left: none; height: 19px; white-space: nowrap; background-color: #fff; border: 1px solid #b8b8b8; -moz-border-radius: 15px; border-radius: 15px; -webkit-border-radius: 15px;}
 		.vibe-entryMenu-rightPanel          {padding-right: 5px; margin-right: 3px;}
 /* ...End:  Entry menu panel styles. */
 	
 	/* ...Start:  Filter panel styles. */
 		.vibe-filterAnchor                 {cursor: pointer;}
-		.vibe-filterAnchor-hover           {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-filterAnchor-hover           {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 		.vibe-filterAnchorLabel            {font-size: 12px; white-space: nowrap;}
-		.vibe-filterAnchorLabel-current    {color: white !important; font-weight: bold !important; background-color: #81b2bd; padding: 2px 5px; -moz-border-radius: 3px; -webkit-border-radius: 3px;}
+		.vibe-filterAnchorLabel-current    {color: white !important; font-weight: bold !important; background-color: #81b2bd; padding: 2px 5px; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
 		.vibe-filterAnchorLabel-notcurrent {font-weight: normal !important; padding: 2px 5px;}
 		.vibe-filterEditPanel              {font-size: 11px !important;}
 		.vibe-filterEditLabel              {font-size: 11px; white-space: nowrap;}
@@ -96,7 +97,7 @@
 	/* ...Start:  Footer panel styles. */
 		.vibe-footerPanel                       {padding-top: 5px !important;}
 		.vibe-footerAnchor                      {cursor: pointer; color: #666;}
-		.vibe-footerAnchor-hover                {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-footerAnchor-hover                {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 		.vibe-footerAnchorLabel                 {font-size: small;}
 		.vibe-footerAnchorPanel                 {text-align: center;}
 		.vibe-footerDataCloser                  {text-align: right;}
@@ -108,11 +109,11 @@
 		.vibe-footerDataLinksGrid               {width: 100%; background: #cecece; border-spacing: 0px;}
 		.vibe-footerDataLinksInput              {width: 100%; background-color: #cecece; overflow: hidden; padding: 0px !important; border: 0px;}
 		.vibe-footerDataLinksOpenerAnchor       {cursor: pointer; color: #666; text-decoration: none;}
-		.vibe-footerDataLinksOpenerAnchor-hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-footerDataLinksOpenerAnchor-hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 		.vibe-footerDataLinksOpenerLabel        {}
 		.vibe-footerDataLinksPanel              {padding: 10px;}
 		.vibe-footerDataLinksText               {}
-		.vibe-footerDataPanel                   {background-color: #eaebe8; padding: 10px; margin: 20px; display: block; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-footerDataPanel                   {background-color: #eaebe8; padding: 10px; margin: 20px; display: block; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	/* ...End:  Footer panel styles. */
 	
 	/* ...Start:  Generic folder view styles. */
@@ -148,7 +149,7 @@
 		.vibe-dataTableCustom-string              {}
 		.vibe-dataTableDescription-html           {white-space: normal;}
 		.vibe-dataTableDescription-span           {white-space: normal;}
-		.vibe-dataTableEMA-hover                  {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-dataTableEMA-hover                  {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 		.vibe-dataTableEMA-title                  {cursor: pointer; color: #135c8f !important; padding: 2px;}
 		.vibe-dataTableEMA-titleNoLink            {color: #353838 !important; padding: 2px;}
 		.vibe-dataTableEntity-Marker              {display: inline; cursor: pointer;}
@@ -166,7 +167,7 @@
 		.vibe-dataTableGuest-infoPhone            {display: block;}
 		.vibe-dataTableGuest-infoTextEMA          {display: block;}
 		.vibe-dataTableGuest-infoTitle            {display: block;}
-		.vibe-dataTableLink-hover                 {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-dataTableLink-hover                 {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 		.vibe-dataTablePresence-control           {}
 		.vibe-dataTablePresence-label             {display: inline; font-weight: bold; padding-left: 2px !important;}
 		.vibe-dataTablePresence-disabled          {color: #c4c4c4;}
@@ -236,7 +237,7 @@
 	/* ...Start:  Task graphs panel styles. */
 		.vibe-taskGraphsExpander        {display: block;}
 		.vibe-taskGraphsExpanderA       {text-decoration: none; cursor: pointer;}
-		.vibe-taskGraphsExpanderA-hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-taskGraphsExpanderA-hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 		.vibe-taskGraphsExpanderImg     {}
 		.vibe-taskGraphsGrid            {}
 		.vibe-taskGraphsHidden          {visibility: hidden; display:none;}

@@ -3,6 +3,7 @@
 	position: relative;
 	background-color:#fff;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -30,6 +31,7 @@
 	background: transparent;
 	margin: 6px;
 	-moz-border-radius: 6px;
+	border-radius: 6px;
 	-webkit-border-radius: 6px;
 }
 
@@ -52,6 +54,7 @@
   padding: 5px;
   margin-bottom: 2px;
   -moz-border-radius: 6px;
+  border-radius: 6px;
   -webkit-border-radius: 6px;
 }
 
@@ -103,6 +106,7 @@
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -148,6 +152,7 @@
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -203,6 +208,7 @@
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -269,6 +275,7 @@
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -347,6 +354,7 @@
 	letter-spacing: 0.03em;
 	padding: 2px 8px;
     -moz-border-radius: 5px;
+    border-radius: 5px;
     -webkit-border-radius: 5px;
 }
 
@@ -356,6 +364,7 @@
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -375,6 +384,7 @@
 	letter-spacing: 0.03em;
 	padding: 2px 8px;
     -moz-border-radius: 5px;
+    border-radius: 5px;
     -webkit-border-radius: 5px;
 }
 
@@ -384,6 +394,7 @@
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -399,6 +410,7 @@
 .listWidgetMainPanel
 {
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -474,6 +486,7 @@
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -541,6 +554,7 @@
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -562,6 +576,7 @@
 	padding: 2px 8px;
 	text-decoration: none;
     -moz-border-radius: 5px;
+    border-radius: 5px;
     -webkit-border-radius: 5px;
 }
 
@@ -571,6 +586,7 @@
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -590,6 +606,7 @@
 	letter-spacing: 0.03em;
 	padding: 2px 8px;
     -moz-border-radius: 5px;
+	border-radius: 5px;
     -webkit-border-radius: 5px;
 }
 
@@ -599,6 +616,7 @@
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
