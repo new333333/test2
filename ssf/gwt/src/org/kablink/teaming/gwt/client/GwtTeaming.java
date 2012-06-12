@@ -466,7 +466,7 @@ public class GwtTeaming implements EntryPoint
 	 */
 	private static native RequestInfo jsGetRequestInfo() /*-{
 		// Return a reference to the JavaScript variable called, m_requestInfo.
-		return $wnd.m_requestInfo;
+		return $wnd.top.m_requestInfo;
 	}-*/;
 
 }// end GwtTeaming
