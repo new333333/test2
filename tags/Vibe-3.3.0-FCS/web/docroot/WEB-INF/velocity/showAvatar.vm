@@ -1,0 +1,80 @@
+#*
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
+ * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
+ * http://www.opensource.org/licenses/cpal_1.0. The CPAL is based on the Mozilla Public License Version 1.1
+ * but Sections 14 and 15 have been added to cover use of software over a computer network and provide for
+ * limited attribution for the Original Developer. In addition, Exhibit A has been modified to be
+ * consistent with Exhibit B.
+ * 
+ * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND,
+ * either express or implied. See the CPAL for the specific language governing rights and limitations
+ * under the CPAL.
+ * 
+ * The Original Code is ICEcore. The Original Developer is SiteScape, Inc. All portions of the code
+ * written by SiteScape, Inc. are Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * 
+ * 
+ * Attribution Information
+ * Attribution Copyright Notice: Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * Attribution Phrase (not exceeding 10 words): [Powered by ICEcore]
+ * Attribution URL: [www.icecore.com]
+ * Graphic Image as provided in the Covered Code [web/docroot/images/pics/powered_by_icecore.png].
+ * Display of Attribution Information is required in Larger Works which are defined in the CPAL as a
+ * work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
+ * 
+ * 
+ * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
+ * are trademarks of SiteScape, Inc.
+ *#
+#if ($ssVisitor.getParam("org.kablink.teaming.notify.params.showAvatar"))
+  <div 
+#if ($ssVisitor.getParam("org.kablink.teaming.notify.params.showAvatarNew"))
+  class="e-user-avatar e-user-avatar-new"
+#else
+  class="e-user-avatar"
+#end
+  >
+   <table width="100%" cellspacing="0" cellpadding="0">
+    <tr>
+     #if ($ssVisitor.getParam('ssReplyTo'))
+      <td width="80%" valign="top">
+     #else
+      <td width="90%" valign="top">
+     #end
+      <div class="e-mail-head">
+      	#if ($ssVisitor.isAvatarShown())
+          #if (!$creatorImage.isEmpty())
+          	#ss_printLn("$creatorImage")
+          #end
+          #if ($creatorImage.isEmpty())
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADrCAIAAACjAk5RAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAADJhJREFUeNrsXetSGksYRNiQGIyQYFVeIM+bJ/QBcjGiGCCixtOhTyYbQLxkwelvun9QlFbp7kxPd8997+PHjy3DaBptF4FhYhkyqPb29vjtw4cPLg7jH3F8fGzFMmyFhollGCaWsf3wnr4YxpORWGTFMmyFhollmFiGYWIZ7hUa7hUahq3QMLEMZyxnLMMZy7AVGiaWYTSXsVbd0TCsWIaJZZhYxgbc3t66EB6RsYzNZCLqP2QqXcqmjqr/E8sDpJul6PZv3MuhvRoKLNj0slasZVbVvyQy3cW5tT9MSlYsvUysP2z4+fPnKoeeFqfS31li2FrrtBWG9Tv85ObmZtXpmvpf/EzcarfbdSWzFQah1BJ7klZtu6/Hf4Fyx2en0wnfkqtCKHVXAN8Bpdb+u/YCgbkV1gpZf1SjtfnpGYHn4Zd40hXfCsmn3djck7nFyGUrlAGqDXk8CVW2D1nXLRNLSavybwBRdStUxiKTbhZQmdGjuDLOB6iCsBkrfwfcoFuRgnwoBU4mqPjY1K2AGUu6rbDrR7kSfX48PKoAQT7GuHwcxVIJ7Ju5JdowwhIrRq3g+a+vr4V6HpF7heomuLaTmDxRt1cYQbG0xhceyC1pW5cfbqBWRYom9SAvneIjECsSq8JwSzVjMVqFibp3GWK73dYKWxEyFos+8GYsdhJFw5YqsShXsbf4pQRpK9xdiasPhz6KW50FJCpI2wqjZvYNrchWuKPwUQirdKOkmBWyM1gUsVq1LRj515GqFXL7VOzO4AZi2Qrtg81zS8wKV0Usfx8s7SChen5X6bwrKRbLtMDjqdJWW6EhobZoKZfGLTmdVuoVrt0jX5Qb4jPzjWKSvcKSj4ZjX9i9QmMriiXUHRYbIC1ZtBKxci4E36Wj6oYqEVMsvBfOrdQ3zLayrFiOWQ7vDlg1btkKbYXbHXTIs76EVzc4ZknM7dgK9axQQrnFVjcEPiH9sXkg83IQUyyLlkoJiIX3dLNDmUE+/7stVCehLVoqJ7O1FVttyT7IKy3yf1S94QYTyxlrW3JVbMbKPw8IzxUWrlgqj+opHUnFanlKxwGrTOmyYimhPp9jxWr4oYvdqFNvXR7Hsm41/O4qC/3EJqELOW9tcwlIiJaYYukenWgrzBdorFdXVwUeNbMU3jXWY0n0ClmaYNV8Pi+ZWK3sdxeK9QrxuHDAHz9+XF9fFz7iwDO68xctAcVKcgV4KAvEgmx3u90XL15kOGKspFiccuZR+q3iwTY2m80y78S0hQrUcpVE63KBnFuahhV6lnCpQCBXIBbcsNPpZFV3YlbY8gz0OkNkis+zWDQUi5dg4dMxa0m3cqs7PcWqqsqiJQSZcSxeVOQK2yASeVlh5s/3pwWI7E7ZMaWyVfG2UAlyo6b5JKEFbaFCtGKtFki23JJZmuzkvpoN2FPOqlj0liYLbQLeWWnk3JuRWTZjK1yuuarK8ByH9DCVUEp1eK/7IOdznLGaES0TizUFuep2u5RwZ6zInaAdF0V3gZxbmtKGVQ6+l3wiSEpXr169yvOgLEnFQlGymRaerlAIL1++zFy/lfpZIBYKlEtyS05X+/v7nJLPWlZXRSxngFUo0/l8XnK6yl+uWnJnN0C0wK0yB7SE5KoltxOaCaPM7iFeGVqF2C7RrsSOiuTAILhV2gbDulzlTCzhu3RALDRcCTsoVq70FOv29hYxq9frXV1dTSaTVhmnGrE5vX79Ov/12cKKxZh1eHiIgi5EtChXEp3BNcMNWhEepsDv0+k09tYdDjGgFWkN4IlZ4Sq3YIWz2Swqt1JmZ7rKv47Els2sfQGELZQ4ScaDaILlrRSt3rx5IzffoKpYrd8bWcEtMGyywOXlZRhuUZIPDg7qJmjF2t07gFWoAI7u8Mi/ANxig+n3+2w2in0UsbnCtbrFIILGDVaNx2N1YuF10FTAKmhVWtUuVzvyk25p0yZXKQUYOMUrgFJJq0TXzQaZzeX4FhfVxAjs6i1EOLyvGiKqBKKFCK87k8ixUKG0fld4j6NYHIDo9XqoGN1GwsWMKvfzxlesNPqAWoGPiIpWzttvClWsumjBDXWXL79YIMBGt2hLMdN8rWLFcLeI6MBVWCusuwn66tPpVG5pfID1sQGtsF49im7IJhFmRX9AYqVxB7kaqhaIYR3RrDCFFbjhZDIRutywfs6qrTBfN0R+R16Re+wwB5/IT0KvIk1L01aEFCvF9gB1ETNjsZIy3ym14eGdsbIWLa1+e/1RnbGyhta15MHWVQdULMpVuvJe6LHrF4mLVkdkxeK71e8wUkG67NPhPWsfBLG0rDDS9cSRrVCLWADv5N3f3/eymUzfjayCaAnVDe+9/v79e4z9tzGtkLai1SukfU+n09FodHl5aSvMkVWQK+6Nlnt4PDlEq9vtcimp17znRSywStdQ0B4uLi7UDzsJNVdI44MJomLALdHuFRvGeDx+tYD3FeYS2+fzOZq73CDWEremC2R7SX2J4R2KJTfQsEosNA+ELd1hrVDhnbMiNwuovwt7iJPJJPNbvooI73gr1Af66gGIBUC0EBYhWlas55crdKnC3FtB0QK4m02igmJuWGUrB8KcHEnRUmwqoawQDoj2LeodG7qHSPFyTSWOFaLo0bKRdmMErEQsRMbxePx6gfxXWge0QiaSSMeQJm5BsUajkdbQQztSy9btQ21+NU7yaBmivBWyMwhWnZ2dcYdqKxx4lj1eEN3DXq8ncUlTpV7iXMhwenqKco8nV/U3hWjxHlBOIOauWKtcy7lw6yrFtA6DOD8/h1aFWdS7wRDxpiDWcDhM5zTle4u9UMm2fq9kB4fgfRAq8InHFaUtLoFBx4c2g0zv3r3jnU3OWE8Up/SdfOL0GQIHyMTJ5tg3NK0WC5rTyckJXvzo6CidqJNP3WWdscik5HecpQGf4HooVnxXX7zQiG6RW/VLBmyF93TxeHMJAA7R8gCeV1uC5T2klFAyo9EIBfL27dvDw8MMj2vLiFgUJw5H8cYlNEr8hPpkPi1xCw0PHWEwDK0O9OKmsXw88fkzFknDLXXj8ZgRintsTKB7myKKi9xCnE+3zz0jvbLIWClCIZKDUoxQsUcNtiRdsEUUXb/fHwwGmdx0vwvFWu3isZfHxemcrEC5lBzJ/13yuawDAgbdSjeH7X6sa3eKlbp4PPvlegEaH12P08ZOUY1IF8oWTRQNFdKF4PWM591X225JHB9nDmDnjj0+BvNEOzOjqQLnCB+Lejgc1qVL1QrrUy7kDd4NrQfKxPCUxjPNp23TCyV/cnKCT45HpHsJts2w5q0wmR3nW5LTsQGZSbunFxr22dkZmjRSLLjFe9F2dq9Y1Uj74OA4+MTJu+R3Tk7PLl1o2+QWPBHcQrTnLZvb7jY+bnXD2vUFXJSd+OTxzNzohU9GLlQTNAzqxQHV+i0YjWtY9YQH5UgBFxcwP+GheWaQ+ZQtt+q5HrXWX4C3aD9PeK+rFCyP4+NpPtjzd4rdxjQoDW5xVKKpq1YeF95JKTDpfAHw3SMF0uB+cS5DglIMh0Nkr2av8akeSCl4M4XKEhWMXhyVODo6GgwGDR71dqcV1jcpfPv2jQs1PTEcclQCLsTsBXoh1KcFXk8g2YOsEEz6+vUrGM2DmqxSgenFeENuodv47+MRdxILXT9oFVlloSqh28jUxcFIJPo0F/Q0c1xjhRygwl+nA1qoyqEX6h0xmiNeiFxI9HTGpSWEG6h2jxXCBMGqi4sLa1WB4xGpwwjROjg46PV6oBcPcn74ItU1xOIcEw8LcFmX3GHkIUq8YBv0AslANQ563ZvAlq+2BqvG4zEy+2w2c/lavdJ4E1gB0QKx4I9I99Cw+g6O1UBVLbEKDP38+TP+ik3QaP29FS/NZ8PNoF4I+PjkKvs7rZDrD8/Pz8Eq+KBZZdzFMC7bRN8O6gNucW/javaq0j4+DllRq9wTNDYzjPdJXS7w/v17SFd9rcQvYoF9kDhoFUgHobNWGQ9PYCAPxAiqBG4NBgPY4h9iffr0id6JX7i8jMfSC9LFAQRQaDgcQpiY6KvT01O6oe3PeDK9eIkGN/P1er1Op1OZUkYjtsj9Ml++fOn3+78il1llNEWvm5sbKBaPea5cIkaz0sUhexPLaH4wAp9tl4WxDZhYhollmFiGiWUYJpZhYhkmlmGYWIaJZZhYhmFiGSaWYWIZhollmFiGiWUYJpZhYhkmlmGYWIaJZZhYhmFiGSaWYWIZhollmFiGiWUYJpZhYhkmlmGYWIaJZZhYhmFiGSaWYWIZxqPx5zju4+NjF4dhxTJMLKM8/CfAABj+Ni46rRQGAAAAAElFTkSuQmCC" 
+            />
+          #end
+        #end
+        
+	    #if ($ssVisitor.Entity.Creation.Principal)
+	      #ss_getUserLink($ssVisitor.Entity.Creation.Principal)&nbsp;
+	    #end		
+        <span style="#ss_eDate()">$ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Creation.Date})</span>
+      </div>
+     </td>
+
+	 #if ($ssVisitor.getParam('ssReplyTo'))
+	  <td width="10%" align="right" valign="top">
+	    <div style="white-space:nowrap;padding-top:10px;">
+		  <a href="mailto:${ssVisitor.getParam('ssReplyTo')}?subject=RE: DocId:${ssVisitor.Entity.ParentBinder.Id}:${ssVisitor.Entity.Id}"
+			class="actionbut">${ssVisitor.getNLT("mail.reply")}</a>
+		</div>
+	  </td>
+	 #end
+
+     <td width="10%" align="right" valign="top">
+	  <div style="white-space:nowrap;padding-top:10px;">
+	    <a href="$ssVisitor.getPermaLink($ssVisitor.Entity)" 
+	      class="actionbut">${ssVisitor.getNLT("email.visitMessage")}</a>
+	  </div>
+	 </td>
+    </tr>
+   </table>
+  </div>
+#end 

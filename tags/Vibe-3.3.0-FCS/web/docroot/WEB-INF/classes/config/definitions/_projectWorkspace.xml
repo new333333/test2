@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_projectWorkspace" caption="__project_management" type="8" nextId="27" definitionType="8" databaseId="402881831317fb620113180363870017"> 
+  <item name="workspaceForm" caption="__workspace_form" type="form" id="1"> 
+    <properties/>  
+    <item name="title" caption="__title" type="data" id="2"> 
+      <properties> 
+        <property name="name" value="title"/>  
+        <property name="caption" value="__title"/>  
+        <property name="width" value="60"/>  
+        <property name="generated" value=""/>  
+        <property name="itemSource" value=""/> 
+      </properties> 
+    </item>  
+    <item name="description" caption="__description" type="data" id="3"> 
+      <properties> 
+        <property name="name" value="description"/>  
+        <property name="caption" value="__description"/>  
+        <property name="height" value=""/>  
+        <property name="required" value=""/> 
+      </properties> 
+    </item>  
+    <item name="fieldset" caption="__fieldset" category="generalLayout" id="7"> 
+      <properties> 
+        <property name="legend" value="__project_info"/> 
+      </properties>  
+      <item name="user_list" caption="__user_list" type="data" category="commonEntryData" id="8"> 
+        <properties> 
+          <property name="name" value="manager"/>  
+          <property name="caption" value="__project_manager"/>  
+          <property name="required" value="false"/> 
+        </properties> 
+      </item>  
+      <item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" id="9"> 
+        <properties> 
+          <property name="name" value="status"/>  
+          <property name="caption" value="__project_status"/>  
+          <property name="multipleAllowed" value="false"/>  
+          <property name="size" value=""/>  
+          <property name="required" value="false"/> 
+        </properties>  
+        <item name="selectboxSelection" caption="__selection" id="19"> 
+          <properties> 
+            <property name="name" value="open"/>  
+            <property name="caption" value="__project_status_open"/>  
+            <property name="default" value="true"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="20"> 
+          <properties> 
+            <property name="name" value="cancelled"/>  
+            <property name="caption" value="__project_status_cancelled"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="21"> 
+          <properties> 
+            <property name="name" value="closed"/>  
+            <property name="caption" value="__project_status_closed"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item> 
+      </item>  
+      <item name="user_list" caption="__user_list" type="data" category="commonEntryData" id="10"> 
+        <properties> 
+          <property name="name" value="assignment"/>  
+          <property name="caption" value="__project_assignment"/>  
+          <property name="required" value="false"/> 
+        </properties> 
+      </item>  
+      <item name="date_time" caption="__date_time" type="data" category="commonEntryData" id="11"> 
+        <properties> 
+          <property name="name" value="due_date"/>  
+          <property name="caption" value="__project_due_date"/>  
+          <property name="required" value="false"/> 
+        </properties> 
+      </item> 
+    </item>  
+    <item name="workspaceIcon" caption="__icon" type="data" id="4"> 
+      <properties> 
+        <property name="name" value="iconName"/>  
+        <property name="caption" value="__icon"/> 
+      </properties> 
+    </item>  
+    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="26"> 
+      <properties>
+        <property name="caption" value="__attach_files"/>
+        <property name="name" value="ss_attachFile"/>
+        <property name="width" value="60"/>
+        <property name="number" value=""/>
+        <property name="storage" value="simpleFileRepository"/>
+        <property name="hide" value="false"/>
+      </properties>
+    </item> 
+  </item>  
+  <item name="workspaceView" caption="__workspace_view" id="5"> 
+    <properties> 
+      <property name="type" value="project"/> 
+    </properties>  
+    <item name="workspaceTitleView" caption="__title" category="workspaceViewData" display="view" id="24"> 
+      <item name="workspaceTitleDescriptionView" caption="__description" category="folderViewData" display="view" id="25"> 
+        <properties> 
+          <property name="caption" value="__description"/> 
+        </properties> 
+      </item> 
+    </item>  
+    <item name="dashboardCanvas" caption="__dashboard_canvas" id="6"> 
+      <properties> 
+        <property name="caption" value="__dashboard_canvas"/> 
+      </properties> 
+    </item>  
+    <item name="fieldsetView" caption="__fieldset" category="generalViewLayout" id="15"> 
+      <properties> 
+        <property name="legend" value="__project_info"/> 
+      </properties>  
+      <item name="workspaceDataItem" type="dataView" caption="__workspace_data_item" category="workspaceViewData" id="16" formItem="selectbox"> 
+        <properties> 
+          <property name="name" value="status"/>  
+          <property name="caption" value="__project_status"/> 
+        </properties> 
+      </item>  
+      <item name="workspaceDataItem" type="dataView" caption="__workspace_data_item" category="workspaceViewData" id="17" formItem="user_list"> 
+        <properties> 
+          <property name="name" value="manager"/>  
+          <property name="caption" value="__project_manager"/> 
+        </properties> 
+      </item>  
+      <item name="workspaceDataItem" type="dataView" caption="__workspace_data_item" category="workspaceViewData" id="18" formItem="date_time"> 
+        <properties> 
+          <property name="name" value="due_date"/>  
+          <property name="caption" value="__project_due_date"/> 
+        </properties> 
+      </item> 
+    </item> 
+  </item>  
+  <properties> 
+    <property name="name" value="_projectWorkspace"/>  
+    <property name="caption" value="__project_management"/>  
+    <property name="icon" value="/icons/workspace_project_manage.png"/> 
+  </properties>  
+  <export-mappings/>
+</definition>

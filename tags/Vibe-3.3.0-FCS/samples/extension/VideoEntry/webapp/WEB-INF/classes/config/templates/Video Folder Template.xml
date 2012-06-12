@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://kablink.org/template http://kablink.org/template-0.1" type="5">
+  <attribute name="templateTitle" type="string">Video Folder</attribute>
+  <attribute name="templateDescription" type="description">Creates a folder for sharing Flash videos.</attribute>
+  <attribute name="title" type="string">Videos</attribute>
+  <attribute name="description" type="description">A folder for sharing videos</attribute>
+  <attribute name="iconName" type="string">/icons/folder_blue_camera.gif</attribute>
+  <attribute name="name" type="string">Video Folder Template</attribute>
+  <property name="library">true</property>
+  <property name="uniqueTitle">true</property>
+  <property name="inheritFunctionMembership">true</property>
+  <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
+  <definition name="VideoFolder" databaseId="ff8081811b3ca719011b3cace9e6000f"/>
+  <definition name="VideoEntry" databaseId="ff8081811b3ca719011b3cad27610010"/>
+</template>

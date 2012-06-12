@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:padding="10px" 
+              >
+    <TextView android:id="@+id/siteLabel"
+    		  android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/siteSelect"
+              android:layout_marginBottom="2dip"
+              />
+
+  <ScrollView
+	    android:id="@+id/scrollTable"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:background="#FFFFFF"
+	    android:layout_below="@+id/siteLabel">
+            
+	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/siteListTable"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:background="#0033FF"
+	    android:padding="4dip"
+	    android:stretchColumns="*"
+	    android:layout_weight="1"
+	    >
+
+	</TableLayout>
+
+  </ScrollView>
+  
+    <LinearLayout
+         android:id="@+id/buttons"
+         android:orientation="horizontal"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+	     android:gravity="center"
+         android:layout_alignParentBottom="true">
+
+      <Button android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/cancelButton"
+            android:layout_marginLeft="20dip"
+            android:text="@string/menu_cancel"
+            android:layout_below="@+id/scrollTable"
+            />
+    </LinearLayout>
+
+  
+</RelativeLayout>
