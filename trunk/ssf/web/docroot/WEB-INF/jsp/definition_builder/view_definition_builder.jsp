@@ -706,10 +706,10 @@ function ss_saveUserGroupResults(s) {
 				request.setAttribute("definitionEntry", new FolderEntry());
 			} else if (configElementProfile != null) {
 				configElement = configElementProfile;
-				request.setAttribute("definitionEntry", new User());
+				request.setAttribute("definitionEntry", new User(User.IDENTITY_SOURCE_LOCAL));
 			} else if (configElementProfiles != null) {
 				configElement = configElementProfiles;
-				request.setAttribute("definitionEntry", new User());
+				request.setAttribute("definitionEntry", new User(User.IDENTITY_SOURCE_LOCAL));
 			} else if (configElementFolder != null) {
 				configElement = configElementFolder;
 				request.setAttribute("definitionEntry", new Folder());
