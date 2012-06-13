@@ -59,12 +59,15 @@ public class OpenIDAuthenticationUserDetailsService implements AuthenticationUse
 	@Override
 	public UserDetails loadUserDetails(OpenIDAuthenticationToken token)
 			throws UsernameNotFoundException {
-		String emailAddress = "";
+		String emailAddress = ""; //$$$ retrieve email address
 		
 		if(emailAddress == null)
 			throw new UsernameNotFoundException("User " + token.getName() + " has no email address");
 
 		String username = USERNAME_PREFIX + emailAddress.toLowerCase();
+		
+		//return new OpenIDUserDetails(username, null)
+		
 		
 		String zoneName = getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName());
 

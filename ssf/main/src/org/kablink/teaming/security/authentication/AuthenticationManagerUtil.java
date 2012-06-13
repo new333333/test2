@@ -58,6 +58,8 @@ public class AuthenticationManagerUtil {
 		}, zoneName);
 	}
 
+	// Use the above method instead
+	@Deprecated
 	public static User authenticate(final String zoneName,
 			final String username, final String password,
 			final Map updates, final String authenticatorName)
