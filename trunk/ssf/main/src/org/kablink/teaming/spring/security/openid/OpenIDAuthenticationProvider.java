@@ -32,9 +32,6 @@
  */
 package org.kablink.teaming.spring.security.openid;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-
 /**
  * @author jong
  *
