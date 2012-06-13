@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_user" caption="__definition_default_user" type="7" nextId="140" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007"> 
+<definition name="_user" caption="__definition_default_user" type="7" nextId="142" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007"> 
   <item name="profileEntryForm" caption="__profile_entry_form_definition" type="form" id="1" display="form"> 
     <properties/>  
     <item name="profileEntryFormForm" caption="__form" id="2" display="form"> 
@@ -139,14 +139,14 @@
         <properties> 
           <property name="caption" value="__profile_heading_Contact_div"/> 
         </properties>  
-        <item name="profilePhone" caption="__phone" type="data" dataType="phone" category="profileEntryData" display="form" id="138">
-          <properties>
-            <property name="caption" value="__phone"/>
-            <property name="name" value="phone"/>
-            <property name="width" value=""/>
-            <property name="required" value="false"/>
-          </properties>
-        </item>
+        <item name="profilePhone" caption="__phone" type="data" dataType="phone" category="profileEntryData" display="form" id="138"> 
+          <properties> 
+            <property name="caption" value="__phone"/>  
+            <property name="name" value="phone"/>  
+            <property name="width" value=""/>  
+            <property name="required" value="false"/> 
+          </properties> 
+        </item>  
         <item name="profileWorkPhone" caption="__workPhone" type="data" id="44"> 
           <properties> 
             <property name="caption" value="__workPhone"/>  
@@ -382,6 +382,12 @@
       <properties> 
         <property name="caption" value="__profile_heading_Personal_div"/> 
       </properties>  
+      <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" id="140" formItem="profileName">
+        <properties>
+          <property name="caption" value="__profile_name"/>
+          <property name="name" value="name"/>
+        </properties>
+      </item>
       <item name="profileJobTitle" caption="__jobTitle" type="data" id="65"> 
         <properties> 
           <property name="caption" value="__jobTitle"/>  
@@ -411,12 +417,12 @@
       <properties> 
         <property name="caption" value="__profile_heading_Contact_div"/> 
       </properties>  
-      <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" id="139" formItem="profilePhone">
-        <properties>
-          <property name="caption" value="__phone"/>
-          <property name="name" value="phone"/>
-        </properties>
-      </item>
+      <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" id="139" formItem="profilePhone"> 
+        <properties> 
+          <property name="caption" value="__phone"/>  
+          <property name="name" value="phone"/> 
+        </properties> 
+      </item>  
       <item name="profileWorkPhone" caption="__workPhone" type="data" id="69"> 
         <properties> 
           <property name="caption" value="__workPhone"/>  
@@ -576,15 +582,22 @@
           <property name="name" value="picture"/> 
         </properties> 
       </item>  
-      <properties> 
-        <property name="_elements" value="workPhone"/>  
-        <property name="_elements" value="mobilePhone"/>  
-        <property name="_elements" value="emailAddress"/>  
-        <property name="_elements" value="mobileEmailAddress"/>  
-        <property name="_elements" value="txtEmailAddress"/>  
-        <property name="_elements" value="instantMessageID"/>  
-        <property name="_elements" value="skypeId"/> 
-      </properties> 
+      <properties>
+        <property name="_elements" value="name"/>
+        <property name="_elements" value="workPhone"/>
+        <property name="_elements" value="mobilePhone"/>
+        <property name="_elements" value="emailAddress"/>
+        <property name="_elements" value="mobileEmailAddress"/>
+        <property name="_elements" value="txtEmailAddress"/>
+        <property name="_elements" value="instantMessageID"/>
+        <property name="_elements" value="skypeId"/>
+      </properties>
+      <operations>
+        <operation name="addOption" caption="__add"/>
+        <operation name="copyItem" caption="__copy"/>
+        <operation name="modifyItem" caption="__modify"/>
+        <operation name="moveItem" caption="__move"/>
+      </operations>
     </item> 
   </item>  
   <export-mappings/>

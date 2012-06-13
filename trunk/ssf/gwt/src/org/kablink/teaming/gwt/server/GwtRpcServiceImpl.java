@@ -118,6 +118,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderStats;
+import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderSortSetting;
 import org.kablink.teaming.gwt.client.util.ProjectInfo;
@@ -141,6 +142,7 @@ import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
+import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
 import org.kablink.teaming.gwt.server.util.GwtBlogHelper;
@@ -4575,7 +4577,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		else {
 			// Yes, we can access the Binder!  Access the Binder's
 			// nearest containing Workspace...
-			ArrayList<Long> bindersList = new ArrayList<Long>();
+			List<Long> bindersList = new ArrayList<Long>();
 			while (true)
 			{
 				bindersList.add( 0, binder.getId() );
@@ -4726,15 +4728,26 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				}
 			}
 			
-			// ...build the TreeInfo for the request Binder...
+			// ...and build the TreeInfo for the requested Binder.
 			reply = GwtServerHelper.buildTreeInfoFromBinder(
 				getRequest( ri ),
 				this,
 				binderWS,
 				expandedBindersList );
+
+			// Is the root binder a user workspace?
+			BinderInfo bi = reply.getBinderInfo();
+			if ((BinderType.WORKSPACE == bi.getBinderType()) && (WorkspaceType.USER == bi.getWorkspaceType())) {
+				// Yes!  Can we get the title for the owner?
+				String title = BinderHelper.getUserWorkspaceOwnerTitle(bi.getBinderIdAsLong());
+				if (MiscUtil.hasString(title)) {
+					// Yes!  Store it in the root TreeInfo.
+					reply.setBinderTitle(title);
+				}
+			}
 	
 	
-			// ...and if the Binder supports Trash access...
+			// If the Binder supports Trash access...
 			boolean allowTrash = TrashHelper.allowUserTrashAccess( GwtServerHelper.getCurrentUser() );
 			if ( allowTrash && ( !(binder.isMirrored()) ) )
 			{
