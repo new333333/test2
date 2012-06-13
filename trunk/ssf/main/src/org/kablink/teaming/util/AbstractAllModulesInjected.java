@@ -48,6 +48,7 @@ import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
+import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.rss.RssModule;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workflow.WorkflowModule;
@@ -70,6 +71,7 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	private BinderModule binderModule;
 	private LdapModule ldapModule;
 	private ReportModule reportModule;
+	private ResourceDriverModule resourceDriverModule;
 	private FileModule fileModule;
 	private ConvertedFileModule convertedFileModule;
 	private DashboardModule dashboardModule;
@@ -217,6 +219,16 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 		if(reportModule == null)
 			reportModule = (ReportModule) SpringContextUtil.getBean("reportModule");
 		return reportModule;
+	}
+	
+	public void setResourceDriverModule(ResourceDriverModule resourceDriverModule) {
+		this.resourceDriverModule = resourceDriverModule;
+	}
+	
+	public ResourceDriverModule getResourceDriverModule() {
+		if(resourceDriverModule == null)
+			resourceDriverModule = (ResourceDriverModule) SpringContextUtil.getBean("resourceDriverModule");
+		return resourceDriverModule;
 	}
 	
 	public ConferencingModule getConferencingModule() {

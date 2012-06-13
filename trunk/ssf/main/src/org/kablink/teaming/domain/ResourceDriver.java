@@ -32,11 +32,17 @@
  */
 package org.kablink.teaming.domain;
 
-public class ResourceDriver extends ZonedObject {
+import java.util.Set;
 
-	private Long resourceId; // This is primary key
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.security.function.WorkArea;
+
+public class ResourceDriver extends ZonedObject implements WorkArea {
+
+	private Long id; // This is primary key
 	private String name;
-	private String type;
+	private DriverType driverType;
+	private Integer type;
 	private Boolean readOnly;
 	private Boolean synchTopDelete;
 	private Boolean putRequiresContentLength;
@@ -46,16 +52,33 @@ public class ResourceDriver extends ZonedObject {
 	private String accountName;
 	private String password; //set by hibernate access="field" type="encrypted"
 		
+	public enum DriverType {
+		filesystem (0),
+		webdav (1);
+		int dtValue;
+		DriverType(int dtValue) {
+			this.dtValue = dtValue;
+		}
+		public int getValue() {return dtValue;}
+		public static DriverType valueOf(int type) {
+			switch (type) {
+			case 0: return DriverType.filesystem;
+			case 1: return DriverType.webdav;
+			default: return DriverType.filesystem;
+			}
+		}
+	};
+
 	public void setZoneId(Long zoneId) {
 		this.zoneId = zoneId;
 	}
 
-	public Long getResourceId() {
-		return resourceId;
+	public Long getId() {
+		return id;
 	}
 
-	public void setResourceId(Long resourceId) {
-		this.resourceId = resourceId;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getName() {
@@ -66,14 +89,26 @@ public class ResourceDriver extends ZonedObject {
 		this.name = name;
 	}
 
-	public String getType() {
-		return type;
+	protected int getType() {
+		return driverType.getValue();
 	}
-
-	public void setType(String type) {
-		this.type = type;
+	protected void setType(int type) {
+		for (DriverType dT : driverType.values()) {
+			if (type == dT.getValue()) {
+				driverType=dT;
+				break;
+			}
+		}
+		this.type = driverType.getValue();
 	}
-
+	
+	public DriverType getDriverType() {
+		return this.driverType;
+	}
+	public void setDriverType(DriverType type) {
+		this.driverType = type;
+	}
+	
 	public Boolean getReadOnly() {
 		return readOnly;
 	}
@@ -137,5 +172,69 @@ public class ResourceDriver extends ZonedObject {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	//Workarea implementation
+	@Override
+	public Long getWorkAreaId() {
+		return this.id;
+	}
+
+	@Override
+	public String getWorkAreaType() {
+		return null;
+	}
+
+	@Override
+	public WorkArea getParentWorkArea() {
+		return null;
+	}
+
+	@Override
+	public boolean isFunctionMembershipInheritanceSupported() {
+		return false;
+	}
+
+	@Override
+	public boolean isFunctionMembershipInherited() {
+		return false;
+	}
+
+	@Override
+	public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
+	}
+
+	@Override
+	public Long getOwnerId() {
+		return null;
+	}
+
+	@Override
+	public Principal getOwner() {
+		return null;
+	}
+
+	@Override
+	public void setOwner(Principal owner) {
+	}
+
+	@Override
+	public boolean isTeamMembershipInherited() {
+		return false;
+	}
+
+	@Override
+	public Set<Long> getTeamMemberIds() {
+		return null;
+	}
+
+	@Override
+	public void setTeamMemberIds(Set<Long> memberIds) {
+	}
+
+	@Override
+	public Set<Long> getChildWorkAreas() {
+		return null;
+	}
+	
 	
 }
