@@ -198,9 +198,7 @@ public class LinkUriUtil {
             iconName = "/" + iconName;
         }
         org.kablink.teaming.domain.User user = RequestContextHolder.getRequestContext().getUser();
-        String colorTheme = user.getTheme();
-        if (colorTheme == null || colorTheme.equals("")) colorTheme = WebKeys.THEME_IC_ICE_BLUE;
-        return "/" + MiscUtil.getStaticPath() + "i/" + colorTheme + iconName;
+        return "/" + MiscUtil.getStaticPath() + "images/" + iconName;
     }
 
     public static String getDefinitionLinkUri(String id) {

@@ -458,17 +458,6 @@ public class ViewEntryController extends  SAbstractController {
 				model.put(WebKeys.FOLDER_ACTIONS_TOOLBAR,  folderActionsToolbar.getToolbar());
 			}
 			
-			//Color themes (removed for now)
-			if (0 == 1 && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-				Map qualifiers = new HashMap();
-				qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
-						NLT.get("ui.availableThemeIds") + "', '" +
-						NLT.get("ui.availableThemeNames") + "', '" +
-						NLT.get("sidebar.themeChange") + "'); return false;");
-				model.put(WebKeys.TOOLBAR_THEME_IDS, NLT.get("ui.availableThemeIds"));
-				model.put(WebKeys.TOOLBAR_THEME_NAMES, NLT.get("ui.availableThemeNames"));
-			}
-			
 			//Build the navigation beans
 			Folder folder = (Folder)fe.getParentBinder();
 			BinderHelper.buildNavigationLinkBeans(this, folder, model);

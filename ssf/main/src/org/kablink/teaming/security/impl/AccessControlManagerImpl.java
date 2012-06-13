@@ -142,6 +142,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		this.authenticationModule = authenticationModule;
 	}
 	protected AuthenticationModule getAuthenticationModule() {
+		authenticationModule = (AuthenticationModule) SpringContextUtil.getBean("authenticationModule");
 		return authenticationModule;
 	}
     public Set getWorkAreaAccessControl(WorkArea workArea, WorkAreaOperation workAreaOperation) {
@@ -207,6 +208,14 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			if (user.isDisabled() || user.isDeleted()) {
 				//Whatever the operation, deny it if the user account is disabled or deleted
 				return false;
+			}
+			if (user.isShared()) {
+				//This is the "guest" account. Make sure guest access is enabled
+				AuthenticationConfig config = getAuthenticationModule().getAuthenticationConfigForZone(zoneId);
+				if (!config.isAllowAnonymousAccess()) {
+					//Guest access is not enabled, disallow access to everything
+					return false;
+				}
 			}
 			if (!workAreaOperation.equals(WorkAreaOperation.READ_ENTRIES) && 
 					!workAreaOperation.equals(WorkAreaOperation.VIEW_BINDER_TITLE) && 
