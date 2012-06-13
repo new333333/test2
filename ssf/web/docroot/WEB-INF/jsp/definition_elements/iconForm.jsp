@@ -34,6 +34,7 @@
 %>
 <% //Icon form element %>
 <%@ page import="org.kablink.teaming.util.SPropsUtil" %>
+<%@ page import="org.kablink.teaming.util.Utils" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="ss_fieldModifyDisabled" value=""/>
 <c:set var="ss_fieldModifyStyle" value=""/>
@@ -68,6 +69,7 @@
 		String iconListValue = iconList[i].trim();
 		if (iconListValue.equals("")) continue;
 		if (iconListValue.startsWith("/")) iconListValue = iconListValue.substring(1, iconListValue.length());
+		iconListValue = Utils.getIconNameTranslated(iconListValue);
 		String checked = "";
 		if (iconValue.equals(iconListValue)) {
 			checked = " checked=\"checked\"";

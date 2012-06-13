@@ -724,4 +724,10 @@ public class Utils {
 		return binder;
 	}
 	
+	//Routine to translate an old incon name into a new one (.gif --> .png)
+	public static String getIconNameTranslated(String iconName) {
+		//This will be changed to translate .gif into .png after the .png files are made
+		return iconName;
+	}
+	
 }
