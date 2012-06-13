@@ -5,9 +5,14 @@
     <typedef name="encrypted" class="org.jasypt.hibernate.type.EncryptedStringType">
       <param name="encryptorRegisteredName">hibernateStringEncryptor</param>
     </typedef>
-  <class dynamic-update="true" lazy="false" table="SS_ResourceDriver" name="org.kablink.teaming.domain.ResourceDriver">
+  <class dynamic-update="true" lazy="false" table="SS_ResourceDriver" 
+  		name="org.kablink.teaming.domain.ResourceDriver">
     <!--<cache usage="read-write"/>-->
-    <id unsaved-value="null" name="resourceId" type="long"/>
+    <id unsaved-value="null" name="id" type="long">
+      <generator class="native">
+      	<param name="sequence">ss_resource_driver_id_sequence</param>
+      </generator>
+    </id>
     <property name="zoneId" not-null="true"/>
     <property name="name"/>
     <property name="type"/>

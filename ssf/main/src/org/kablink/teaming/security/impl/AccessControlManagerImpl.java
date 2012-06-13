@@ -45,10 +45,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Application;
+import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FolderEntry;
@@ -56,6 +58,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.license.LicenseManager;
+import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
@@ -85,6 +88,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     private CoreDao coreDao;
     private ProfileDao profileDao;
     private LicenseManager licenseManager;
+    private AuthenticationModule authenticationModule;
     private Map synchAgentRights;
     private Map synchAgentTokenBoostRights;
     
@@ -133,6 +137,12 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 	}
 	protected LicenseManager getLicenseManager() {
 		return licenseManager;
+	}
+	public void setAuthenticationModule(AuthenticationModule authenticationModule) {
+		this.authenticationModule = authenticationModule;
+	}
+	protected AuthenticationModule getAuthenticationModule() {
+		return authenticationModule;
 	}
     public Set getWorkAreaAccessControl(WorkArea workArea, WorkAreaOperation workAreaOperation) {
          if(workArea.isFunctionMembershipInherited()) {
@@ -197,6 +207,14 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			if (user.isDisabled() || user.isDeleted()) {
 				//Whatever the operation, deny it if the user account is disabled or deleted
 				return false;
+			}
+			if (user.isShared()) {
+				//This is the "guest" account. Make sure guest access is enabled
+				AuthenticationConfig config = getAuthenticationModule().getAuthenticationConfigForZone(zoneId);
+				if (!config.isAllowAnonymousAccess()) {
+					//Guest access is not enabled, disallow access to everything
+					return false;
+				}
 			}
 			if (!workAreaOperation.equals(WorkAreaOperation.READ_ENTRIES) && 
 					!workAreaOperation.equals(WorkAreaOperation.VIEW_BINDER_TITLE) && 

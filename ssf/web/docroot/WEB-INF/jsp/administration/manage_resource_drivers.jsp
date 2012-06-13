@@ -151,7 +151,6 @@ function ss_showModifyDiv(id) {
 	<td valign="middle">
 	  <select name="driverType" id="driverType">
 	    <option value="filesystem" selected><ssf:nlt tag="administration.resourceDrivers.type.filesystem"/></option>
-	    <option value="sharepoint"><ssf:nlt tag="administration.resourceDrivers.type.sharepoint"/></option>
 	    <option value="slide"><ssf:nlt tag="administration.resourceDrivers.type.slide"/></option>
 	  </select>
 	</td>

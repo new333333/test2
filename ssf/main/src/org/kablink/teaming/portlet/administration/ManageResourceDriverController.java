@@ -49,6 +49,8 @@ import javax.portlet.RenderResponse;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ResourceDriver;
+import org.kablink.teaming.domain.ResourceDriver.DriverType;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.Utils;
@@ -73,11 +75,13 @@ public class ManageResourceDriverController extends SAbstractController {
 				
 				} else if (formData.containsKey("addBtn")) {
 					String name = PortletRequestUtils.getStringParameter(request, "driverName");
-					String type = PortletRequestUtils.getStringParameter(request, "driverType");
+					int type = PortletRequestUtils.getIntParameter(request, "driverType", 0);
+					Map options = new HashMap();
 					Set<Long> groupIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addedGroups"));
 					Set<Long> userIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addedUsers"));
 					
 					//Add this resource driver
+					getResourceDriverModule().addResourceDriver(name, DriverType.valueOf(type), options);
 				
 				} else {
 					//See if a selected driver needs to be modified
