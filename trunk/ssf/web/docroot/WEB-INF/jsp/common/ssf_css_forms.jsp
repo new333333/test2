@@ -416,7 +416,7 @@ fieldset a:hover {
   	color: #333;
 	}	
 .ss_list-style-image_miniblog {
-	list-style-image: url(/ssf/i/icwg/pics/blog/chatballoon.png)!important;
+	list-style-image: url(<html:imagesPath/>pics/blog/chatballoon.png)!important;
 	padding-top: 10px;
   	color: #555;
 	}

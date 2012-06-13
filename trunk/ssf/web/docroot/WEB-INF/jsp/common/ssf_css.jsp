@@ -72,31 +72,10 @@ boolean isIE6 = BrowserSniffer.is_ie_6(request);
 <%@ page contentType="text/css" %>
 </c:if>
 <%
-//Color themes: 
-//    icib - ICEcore Icy Blue  (default, fallback)
-//    iccg - ICEcore Cool Green
-//    icwg - ICEcore Wintry Gray
-//    cust - Custom
+//Color themes: Color themes are no longer available
 %>
 
-<c:set var="ss_color_theme" value="icib" scope="request"/>
-<c:if test="${!empty ssCssTheme}">
-  <c:set var="ss_color_theme" value="${ssCssTheme}" scope="request"/>
-</c:if>
-<c:choose>
- <c:when test="${ss_color_theme == 'iccg'}">
-  <jsp:include page="/WEB-INF/jsp/common/css_theme_defaultgreen.jsp" />
- </c:when>
- <c:when test="${ss_color_theme == 'icwg'}">
-  <jsp:include page="/WEB-INF/jsp/common/css_theme_defaultgray.jsp" />
- </c:when>
- <c:when test="${ss_color_theme == 'cust'}">
-  <jsp:include page="/WEB-INF/jsp/common/css_theme_cust.jsp" />
- </c:when>
- <c:otherwise>
-  <jsp:include page="/WEB-INF/jsp/common/css_theme_defaultblue.jsp" />
- </c:otherwise>
-</c:choose>
+<jsp:include page="/WEB-INF/jsp/common/css_theme_defaultblue.jsp" />
 <c:if test="${empty ss_skipCssStyles || ss_skipCssStyles != true}">
 .ss_portlet_style {
 <c:if test="${!empty ss_portlet_style_background_color}">

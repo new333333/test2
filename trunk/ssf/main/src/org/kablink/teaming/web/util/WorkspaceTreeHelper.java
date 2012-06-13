@@ -1238,18 +1238,6 @@ public class WorkspaceTreeHelper {
 			model.put(WebKeys.TOOLBAR_MOBILE_UI_URL, url.toString());
 		}
 
-		//Color themes (removed for now)
-		if (0 == 1 && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-			qualifiers = new HashMap();
-			qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
-					NLT.get("ui.availableThemeIds") + "', '" +
-					NLT.get("ui.availableThemeNames") + "', '" +
-					NLT.get("sidebar.themeChange") + "'); return false;");
-			//footerToolbar.addToolbarMenu("themeChanger", NLT.get("toolbar.menu.changeUiTheme"), "javascript: ;", qualifiers);
-			model.put(WebKeys.TOOLBAR_THEME_IDS, NLT.get("ui.availableThemeIds"));
-			model.put(WebKeys.TOOLBAR_THEME_NAMES, NLT.get("ui.availableThemeNames"));
-		}
-
 		//Set up the whatsNewToolbar links
 		//What's new
         //What's new is not available to the guest user

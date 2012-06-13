@@ -2426,18 +2426,6 @@ public class ListFolderHelper {
 					adapterUrl.toString(), qualifiers);
         }
 
-		//Color themes (removed for now)
-		if (0 == 1 && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-			qualifiers = new HashMap();
-			qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
-					NLT.get("ui.availableThemeIds") + "', '" +
-					NLT.get("ui.availableThemeNames") + "', '" +
-					NLT.get("sidebar.themeChange") + "'); return false;");
-			//footerToolbar.addToolbarMenu("themeChanger", NLT.get("toolbar.menu.changeUiTheme"), "javascript: ;", qualifiers);
-			model.put(WebKeys.TOOLBAR_THEME_IDS, NLT.get("ui.availableThemeIds"));
-			model.put(WebKeys.TOOLBAR_THEME_NAMES, NLT.get("ui.availableThemeNames"));
-		}
-		
 		// GWT UI.  Note that these need to be last in the toolbar
 		// building sequence because they access things in the
 		// model to construct toolbars specific to the GWT UI.

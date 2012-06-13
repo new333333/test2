@@ -62,6 +62,7 @@
 <ul class="ss_icon_list" style="display:inline;">
 <%
 	String iconValue = (String)request.getAttribute("iconValue");
+	if (iconValue.startsWith("/")) iconValue = iconValue.substring(1, iconValue.length());
 	String iconListPath = (String)request.getAttribute("iconListPath");
 	String[] iconList = SPropsUtil.getCombinedPropertyList(iconListPath, ObjectKeys.CUSTOM_PROPERTY_PREFIX);
 	if (iconValue == null) iconValue = "";
