@@ -208,14 +208,6 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				//Whatever the operation, deny it if the user account is disabled or deleted
 				return false;
 			}
-			if (user.isShared()) {
-				//This is the "guest" account. Make sure guest access is enabled
-				AuthenticationConfig config = getAuthenticationModule().getAuthenticationConfigForZone(zoneId);
-				if (!config.isAllowAnonymousAccess()) {
-					//Guest access is not enabled, disallow access to everything
-					return false;
-				}
-			}
 			if (!workAreaOperation.equals(WorkAreaOperation.READ_ENTRIES) && 
 					!workAreaOperation.equals(WorkAreaOperation.VIEW_BINDER_TITLE) && 
 					!getLicenseManager().validLicense())return false;
