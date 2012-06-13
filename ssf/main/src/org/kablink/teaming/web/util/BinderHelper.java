@@ -4891,6 +4891,36 @@ public class BinderHelper {
     	}
     }
 	
+    /**
+     * Returns the title from a user workspace's owner.  If the title
+     * can't be determined, null is returned.
+     * 
+     * @param wsId
+     * 
+     * @return
+     */
+	public static String getUserWorkspaceOwnerTitle(Long wsId) {
+		// Is the binder the guest user's workspace?
+		String title = null;
+		if (isBinderGuestWorkspaceId(wsId)) {
+			// Yes!  Access the guest user.
+			title = getProfileModule().getGuestUser().getTitle();
+		}
+		
+		else {
+			// No, it's not the guest user's workspace!  Access
+			// the owner.
+			Binder wsBinder = getBinderModule().getBinder(wsId);
+			if ((null != wsBinder) && (wsBinder instanceof Workspace)) {
+				Principal owner = wsBinder.getOwner();
+				if (null != owner) {
+					title = owner.getTitle();
+				}
+			}
+		}
+		return title;
+	}
+	
 	/**
 	 * Returns true if a binder is the current user's workspace and
 	 * false otherwise.
