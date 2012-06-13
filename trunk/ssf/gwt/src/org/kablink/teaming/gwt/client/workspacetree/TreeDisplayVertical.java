@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -53,6 +53,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
+import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -84,7 +85,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-
 /**
  * Class used to drive the display of the WorkspaceTreeControl,
  * typically used for Teaming's sidebar.
@@ -98,11 +98,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	private FlowPanel				m_rootPanel;				// The top level FlowPanel containing the sidebar tree's contents.
 	private HashMap<String,Integer> m_renderDepths;				// A map of the depths the Binder's are are displayed at.
 	private long 					m_selectedBinderId;			// The ID of the currently selected binder.
-
-	// The follow controls the height and width of the images displayed
-	// by this object.
-	private final static int BINDER_HEIGHT_INT = 16; private final static int AS_BINDER_HEIGHT_INT = 1;
-	private final static int BINDER_WIDTH_INT  = 16; private final static int AS_BINDER_WIDTH_INT  = 1; 
 
 	// The following are used for widget IDs assigned to various
 	// objects in a running WorkspaceTreeControl.
@@ -436,7 +431,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			if (hasBusyTI()) {
 				// Yes!  Restore its default image.
 				TreeInfo busyTI = getBusyTI();
-				setBinderImageResource(busyTI, getBinderImgWidth(busyTI), getBinderImgHeight(busyTI));
+				setBinderImageResource(busyTI, BinderIconSize.SMALL);
 			}
 			
 			else {
@@ -697,12 +692,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		}
 	}
 
-	/*
-	 * Returns various height and widths to use from binder images.
-	 */
-	private int getBinderImgHeight(TreeInfo ti) {return (ti.isActivityStream() ? AS_BINDER_HEIGHT_INT : BINDER_HEIGHT_INT);}
-	private int getBinderImgWidth( TreeInfo ti) {return (ti.isActivityStream() ? AS_BINDER_WIDTH_INT : BINDER_WIDTH_INT);}
-	
 	/*
 	 * Returns the style to use for the mouse over cursor for a given
 	 * TreeInfo.
@@ -992,7 +981,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorGrid.setCellPadding(0);
 		Image binderImg = new Image();
 		ti.setBinderUIImage(binderImg);
-		setBinderImageResource(ti, getBinderImgWidth(ti), getBinderImgHeight(ti));
+		setBinderImageResource(ti, BinderIconSize.SMALL);
 		binderImg.addStyleName("workspaceTreeBinderImg");
 		setWidgetHover(binderImg, ti.getBinderHoverImage());
 		selectorGrid.setWidget(0, 0, binderImg);
@@ -1002,7 +991,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorGrid.setWidget(0, 2, new Label("\u00A0"));
 		selectorGrid.getCellFormatter().setWidth(0, 2, "100%");
 		int width = (SELECTOR_GRID_WIDTH - (SELECTOR_GRID_DEPTH_OFFSET * renderDepth));
-		if (getBinderImgWidth(ti) > width) {
+		if (ti.getBinderIconWidth(BinderIconSize.SMALL) > width) {
 			width = SELECTOR_GRID_WIDTH;
 		}
 		selectorGrid.setWidth(String.valueOf(width) + "px");

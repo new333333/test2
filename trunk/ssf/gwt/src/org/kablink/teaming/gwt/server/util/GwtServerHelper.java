@@ -124,6 +124,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.gwt.client.util.BinderFilter;
+import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.BinderType;
@@ -920,7 +921,6 @@ public class GwtServerHelper {
 			 trashBI.setFolderType(   FolderType.TRASH   );
 		else trashBI.setWorkspaceType(WorkspaceType.TRASH);
 		trashTI.setBinderExpanded(false);
-		trashTI.setBinderIconName(null);
 		trashTI.setBinderTitle(NLT.get("profile.abv.element.trash"));
 		String trashUrl = GwtUIHelper.getTrashPermalink(trashTI.getBinderPermalink());
 		trashTI.setBinderPermalink(     trashUrl);
@@ -1045,7 +1045,10 @@ public class GwtServerHelper {
 		String binderPermalink = PermaLinkUtil.getPermalink(request, binder);
 		reply.setBinderPermalink(binderPermalink);
 		reply.setBinderTrashPermalink(GwtUIHelper.getTrashPermalink(binderPermalink));
-		reply.setBinderIconName(binder.getIconName());
+		reply.setBinderIcon(binder.getIconName(), BinderIconSize.SMALL);
+//!		...this needs to be implemented...
+//!		reply.setBinderIcon(binder.getIconName(...), BinderIconSize.MEDIUM);	// Fix when APIs for getting medium...
+//!		reply.setBinderIcon(binder.getIconName(...), BinderIconSize.LARGE );	// ...and large icons are there.
 
 		// When requested to do so...
 		if (mergeUsersExpansions) {

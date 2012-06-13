@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -47,7 +47,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
  * Class used to communicate workspace tree information between the
  * client (i.e., the WorkspaceTreeControl) and the server (i.e.,
@@ -63,10 +62,10 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	private int				m_binderChildren;
 	private String			m_binderHover = "";
 	private String			m_binderHoverImage;
-	private String			m_binderIconName;
 	private String			m_binderTitle          = "";
 	private String			m_binderPermalink      = "";
 	private String			m_binderTrashPermalink = "";
+	private String[]		m_binderIcons          = new String[BinderIconSize.UNDEFINED.ordinal()];
 
 	// The following are only used for TreeInfo's associated with
 	// activity streams.
@@ -87,14 +86,15 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	// Binder's original image while it displays a spinning wheel
 	// during a context load.
 	private transient Object m_binderUIImg;
-		
+	
 	/**
 	 * Constructor method.
 	 * 
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public TreeInfo() {
-		// Nothing to do.
+		// Initialize the super class.
+		super();
 	}
 
 	/**
@@ -123,15 +123,17 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 		TreeInfo reply = new TreeInfo();
 
 		// ...copy the information from this TreeInfo...
-		reply.setActivityStream(      isActivityStream()                               );
-		reply.setActivityStreamEvent( getActivityStreamEvent(), getActivityStreamInfo());
-		reply.setBinderExpanded(      isBinderExpanded()                               );
-		reply.setBinderHover(         getBinderHover()                                 );
-		reply.setBinderIconName(      getBinderIconName()                              );
-		reply.setBinderInfo(          getBinderInfo().copyBinderInfo()                 );
-		reply.setBinderPermalink(     getBinderPermalink()                             );
-		reply.setBinderTitle(         getBinderTitle()                                 );
-		reply.setBinderTrashPermalink(getBinderTrashPermalink()                        );
+		reply.setActivityStream(      isActivityStream()                                         );
+		reply.setActivityStreamEvent( getActivityStreamEvent(), getActivityStreamInfo()          );
+		reply.setBinderExpanded(      isBinderExpanded()                                         );
+		reply.setBinderHover(         getBinderHover()                                           );
+		reply.setBinderIcon(          getBinderIcon(BinderIconSize.SMALL),  BinderIconSize.SMALL );
+		reply.setBinderIcon(          getBinderIcon(BinderIconSize.MEDIUM), BinderIconSize.MEDIUM);
+		reply.setBinderIcon(          getBinderIcon(BinderIconSize.LARGE),  BinderIconSize.LARGE );
+		reply.setBinderInfo(          getBinderInfo().copyBinderInfo()                           );
+		reply.setBinderPermalink(     getBinderPermalink()                                       );
+		reply.setBinderTitle(         getBinderTitle()                                           );
+		reply.setBinderTrashPermalink(getBinderTrashPermalink()                                  );
 		
 		// ...store an empty child Binder's List<TreeInfo>...
 		reply.setChildBindersList(new ArrayList<TreeInfo>());
@@ -388,15 +390,58 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	}
 
 	/**
-	 * Returns the name of the Binder icon for the Binder corresponding
-	 * to this TreeInfo object.
+	 * Returns the name of the icons for the Binder corresponding to
+	 * this TreeInfo.
+	 *
+	 * @param iconSize
 	 * 
 	 * @return
 	 */
-	public String getBinderIconName() {
-		return m_binderIconName;
+	public String getBinderIcon(BinderIconSize iconSize) {
+		String reply = m_binderIcons[iconSize.ordinal()];
+		if ((null == reply) && (BinderIconSize.SMALL != iconSize)) {
+			if (BinderIconSize.LARGE == iconSize) {
+				reply = m_binderIcons[BinderIconSize.MEDIUM.ordinal()];
+			}
+			if (null == reply) {
+				reply = m_binderIcons[BinderIconSize.SMALL.ordinal()];
+			}
+		}
+		return reply; 
 	}
 
+	/**
+	 * Returns the height to display the binder image for a given
+	 * TreeInfo.
+	 * 
+	 * @param iconSize
+	 * 
+	 * @return
+	 */
+	public int getBinderIconHeight(BinderIconSize iconSize) {
+		int reply;
+		if (isActivityStream())
+		     reply = BinderIconSize.AS_BINDER_HEIGHT_INT;
+		else reply = iconSize.getBinderIconHeight();
+		return reply;
+	}
+	
+	/**
+	 * Returns the width to display the binder image for a given
+	 * TreeInfo.
+	 * 
+	 * @param iconSize
+	 * 
+	 * @return
+	 */
+	public int getBinderIconWidth(BinderIconSize iconSize) {
+		int reply;
+		if (isActivityStream())
+		     reply  = BinderIconSize.AS_BINDER_WIDTH_INT;
+		else reply = iconSize.getBinderIconWidth();
+		return reply;
+	}
+	
 	/**
 	 * Returns the GWT ImageResource of the image to display next to
 	 * the Binder.
@@ -716,13 +761,12 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	}
 	
 	/**
-	 * Stores the name of the icon for the Binder.
+	 * Stores the names of the icons for the Binder.
 	 * 
-	 * @param binderIconName
+	 * @param binderIcon
 	 */
-	public void setBinderIconName(String binderIconName) {
-		m_binderIconName = binderIconName;
-		
+	public void setBinderIcon(String binderIcon, BinderIconSize size) {
+		m_binderIcons[size.ordinal()] = binderIcon;
 	}
 
 	/**
