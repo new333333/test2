@@ -291,6 +291,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_AddFavorite();
 	String rpcFailure_AddFavoriteLimitExceeded();
 	String rpcFailure_AddNewFolder();
+	String rpcFailure_CanAddFolder();
 	String rpcFailure_CanManagePublicTags();
 	String rpcFailure_CanModifyBinder();
 	String rpcFailure_ChangeEntryTypes();
@@ -1680,6 +1681,7 @@ public interface GwtTeamingMessages extends Messages
 	String blogGlobalTagsTitle();
 	
 	// Strings used in the blog page control.
+	String blogPageCtrl_newPageLabel();
 	String blogPageCtrl_selectPageLabel();
 	
 }// end GwtTeamingMessages

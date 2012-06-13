@@ -231,6 +231,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case CAN_ADD_FOLDER:
+		{
+			CanAddFolderCmd cafCmd;
+			BooleanRpcResponseData responseData;
+			Boolean result;
+			
+			cafCmd = (CanAddFolderCmd) cmd;
+			result = GwtServerHelper.canAddFolder( this, cafCmd.getBinderId() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case CAN_MODIFY_BINDER:
 		{
 			CanModifyBinderCmd cmbCmd;

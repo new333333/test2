@@ -44,6 +44,8 @@ import org.kablink.teaming.gwt.client.event.BlogArchiveFolderSelectedEvent;
 import org.kablink.teaming.gwt.client.event.BlogPageSelectedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.CanAddFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBlogPagesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -53,8 +55,12 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -74,6 +80,7 @@ public class BlogPageCtrl extends VibeWidget
 	private List<HandlerRegistration> m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private Long m_defaultFolderId;
 	private ListBox m_listbox;
+	private InlineLabel m_newPageLink;
 	private ArrayList<BlogPage> m_listOfBlogPages;
 	
 	
@@ -134,6 +141,41 @@ public class BlogPageCtrl extends VibeWidget
 		} );
 		mainPanel.add( m_listbox );
 		
+		// Add a "New page" link
+		{
+			FlowPanel panel;
+			
+			panel = new FlowPanel();
+			panel.addStyleName( "paddingTop8px" );
+			m_newPageLink = new InlineLabel( GwtTeaming.getMessages().blogPageCtrl_newPageLabel() );
+			m_newPageLink.addStyleName( "blogPageCtrl_newPageLink" );
+			m_newPageLink.setVisible( false );
+			m_newPageLink.addClickHandler( new ClickHandler()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							handleClickOnNewPageLink();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			
+			panel.add( m_newPageLink );
+			mainPanel.add( panel );
+		}
+		
 		initWidget( mainPanel );
 	}
 	
@@ -155,18 +197,101 @@ public class BlogPageCtrl extends VibeWidget
 	{
 		if ( pages != null )
 		{
+			BlogPage topMostBlogPage;
+			
 			// Get the list of pages
 			m_listOfBlogPages = pages.getPages();
+			
+			// Get the top-most blog page.
+			topMostBlogPage = getTopMostBlogPage( pages );
+			
+			// Add the top-most blog page as the first entry in the listbox
+			if ( topMostBlogPage != null )
+			{
+				addPage( topMostBlogPage );
+			}
+			
 			if ( m_listOfBlogPages != null )
 			{
 				for (BlogPage nextPage : m_listOfBlogPages)
 				{
-					addPage( nextPage );
+					// Is this page the top-most blog page?
+					if ( nextPage != topMostBlogPage )
+					{
+						// No, add it.
+						addPage( nextPage );
+					}
 				}
 				
 				// Select the default blog page
 				selectDefaultPageInListbox();
 			}
+		}
+	}
+
+	/**
+	 * Issue an rpc request to see if the user has rights to create a folder within the
+	 * give folder.  If they don't, hide the "New page" link. 
+	 */
+	private void checkNewPageRights( final String folderId )
+	{
+		if ( folderId != null )
+		{
+			CanAddFolderCmd cmd;
+			
+			// Issue a command to see if the user has rights to add a page to this blog.
+			// If they have rights we will show the "New page" link.  Otherwise, we will
+			// hide that link.
+			cmd = new CanAddFolderCmd( folderId );
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_CanAddFolder(),
+						folderId );
+				}
+				
+				/**
+				 * 
+				 */
+				@Override
+				public void onSuccess( VibeRpcResponse response )
+				{
+					BooleanRpcResponseData responseData;
+					Boolean result;
+
+					// Hide the "New blog page" link.
+					m_newPageLink.setVisible( false );
+					
+					// Does the user have rights to add a blog page?
+					responseData = (BooleanRpcResponseData) response.getResponseData();
+					result = responseData.getBooleanValue();
+					if ( result == Boolean.TRUE )
+					{
+						Scheduler.ScheduledCommand scCmd;
+						
+						// Yes, show the "New blog page" link
+						scCmd = new Scheduler.ScheduledCommand()
+						{
+							/**
+							 * 
+							 */
+							@Override
+							public void execute()
+							{
+								m_newPageLink.setVisible( true );
+							}
+						};
+						Scheduler.get().scheduleDeferred( scCmd );
+					}
+				}
+			});
 		}
 	}
 
@@ -196,32 +321,113 @@ public class BlogPageCtrl extends VibeWidget
 	}
 	
 	/**
-	 * This method gets called when the user selects a blog page.
+	 * This method returns the blog page that is currently selected in the listbox.
 	 */
-	private void handleBlogPageSelected()
+	private BlogPage getSelectedBlogPage()
 	{
 		int index;
 		
 		index = m_listbox.getSelectedIndex();
-		if ( index != -1 && index < m_listOfBlogPages.size() )
+		if ( index != -1 && m_listOfBlogPages != null && index < m_listOfBlogPages.size() )
 		{
-			BlogPage selectedPage;
+			String selectedFolderId;
 			
-			// Get the selected blog page
-			selectedPage = m_listOfBlogPages.get( index );
-			
-			if ( selectedPage != null )
+			// Get the folder id from the listbox.
+			selectedFolderId = m_listbox.getValue( index );
+			if ( selectedFolderId != null )
 			{
-				// Fire the BlogPageSelectedEvent so interested parties will know
-				// that this page was selected.
+				// Find the blog page with the given folder id.
+				for (BlogPage nextBlogPage : m_listOfBlogPages)
 				{
-					BlogPageSelectedEvent event;
+					String nextFolderId;
 					
-					event = new BlogPageSelectedEvent( selectedPage );
-					GwtTeaming.fireEvent( event );
+					// Is this the selected blog page?
+					nextFolderId = nextBlogPage.getFolderId();
+					if ( nextFolderId != null && nextFolderId.equalsIgnoreCase( selectedFolderId ) )
+					{
+						// Yes
+						return nextBlogPage;
+					}
 				}
 			}
 		}
+		
+		// If we get here, we did not find the selected blog page.
+		// This should never happen.
+		return null;
+	}
+	
+	/**
+	 * Find the top-most blog page.
+	 */
+	private BlogPage getTopMostBlogPage( BlogPages pages )
+	{
+		if ( pages != null )
+		{
+			ArrayList<BlogPage> listOfBlogPages;
+			Long topMostFolderId;
+
+			topMostFolderId = pages.getTopFolderId();
+
+			// Get the list of pages
+			listOfBlogPages = pages.getPages();
+			
+			if ( listOfBlogPages != null && topMostFolderId != null )
+			{
+				String topMostFolderIdS;
+				
+				topMostFolderIdS = topMostFolderId.toString();
+
+				for (BlogPage nextPage : listOfBlogPages)
+				{
+					String nextFolderId;
+					
+					// Is this page the top-most blog page?
+					nextFolderId = nextPage.getFolderId();
+					if ( nextFolderId != null && nextFolderId.equalsIgnoreCase( topMostFolderIdS ) )
+					{
+						// Yes
+						return nextPage;
+					}
+				}
+			}
+		}
+
+		// If we get here we did not find the top-most blog page.
+		// This should never happen.
+		return null;
+	}
+
+	/**
+	 * This method gets called when the user selects a blog page.
+	 */
+	private void handleBlogPageSelected()
+	{
+		BlogPage selectedPage;
+		
+		// Get the selected blog page
+		selectedPage = getSelectedBlogPage();
+		
+		if ( selectedPage != null )
+		{
+			// Fire the BlogPageSelectedEvent so interested parties will know
+			// that this page was selected.
+			{
+				BlogPageSelectedEvent event;
+				
+				event = new BlogPageSelectedEvent( selectedPage );
+				GwtTeaming.fireEvent( event );
+			}
+		}
+	}
+	
+	/**
+	 * This gets called when the user clicks on the "new blog page" link.  We will invoke the
+	 * "new folder" dialog
+	 */
+	private void handleClickOnNewPageLink()
+	{
+		Window.alert( "Not yet implemented" );
 	}
 	
 	/**
@@ -268,8 +474,17 @@ public class BlogPageCtrl extends VibeWidget
 						@Override
 						public void execute()
 						{
+							Long topFolderId;
+							
 							// Add the pages to this control
 							addPages( pages );
+
+							// See if the user has rights to create a new blog page.
+							// We check the rights on the top-most folder because that is
+							// where new blog folders will be created.
+							topFolderId = pages.getTopFolderId();
+							if ( topFolderId != null )
+								checkNewPageRights( topFolderId.toString() );
 						}
 					};
 					Scheduler.get().scheduleDeferred( schCmd );

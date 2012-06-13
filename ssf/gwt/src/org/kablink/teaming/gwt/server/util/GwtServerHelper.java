@@ -1126,6 +1126,34 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * See if the user has rights to add a folder to the given binder.
+	 */
+	public static Boolean canAddFolder( AllModulesInjected bs, String binderId )
+	{
+		try
+		{
+			Binder binder;
+			boolean results;
+			
+			binder = bs.getBinderModule().getBinder( Long.parseLong( binderId ) );
+			results = bs.getBinderModule().testAccess( binder, BinderOperation.addFolder );
+			return new Boolean( results );
+		}
+		catch (NoFolderEntryByTheIdException nbEx)
+		{
+		}
+		catch (AccessControlException acEx)
+		{
+		}
+		catch (Exception e)
+		{
+		}
+		
+		// If we get here the user does not have rights to modify the binder.
+		return Boolean.FALSE;
+	}
+	
+	/**
 	 * See if the user has rights to manage personal tags on the given binder.
 	 */
 	public static Boolean canManagePersonalBinderTags( AllModulesInjected bs, String binderId )
@@ -6554,6 +6582,7 @@ public class GwtServerHelper {
 		// The following commands do not require XSS checks.
 		case ADD_FAVORITE:
 		case ADD_NEW_FOLDER:
+		case CAN_ADD_FOLDER:
 		case CAN_MODIFY_BINDER:
 		case CHANGE_ENTRY_TYPES:
 		case COLLAPSE_SUBTASKS:
