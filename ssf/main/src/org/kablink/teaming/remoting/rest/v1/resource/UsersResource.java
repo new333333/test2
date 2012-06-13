@@ -35,6 +35,7 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -45,12 +46,22 @@ import javax.ws.rs.core.MediaType;
 import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.shared.ChainedInputData;
+import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
+import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
+import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UserBriefBuilder;
+import org.kablink.teaming.remoting.ws.util.ModelInputData;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.UserBrief;
 import org.kablink.teaming.search.filter.SearchFilter;
+import org.kablink.util.api.ApiErrorCode;
 
 @Path("/v1/users")
 @Singleton
@@ -86,8 +97,26 @@ public class UsersResource extends AbstractResource {
 	
 	// Create a new user.
 	@POST
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public void createUser() {		
+	public User createUser(User user, @QueryParam ("password") String password)
+            throws WriteFilesException, WriteEntryDataException {
+        if (user.getName()==null || user.getName().length()==0) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No name specified for the user to be created.");
+        }
 		// optionally accept initial password
+        ChainedInputData inputData = new ChainedInputData();
+        inputData.addAccessor(new RestModelInputData(user));
+        if(password != null) {
+            Map passwordMap = new HashMap();
+            passwordMap.put("password", password);
+            inputData.addAccessor(new MapInputData(passwordMap));
+        }
+        String defId = null;
+        if (user.getDefinition()!=null) {
+            defId = user.getDefinition().getId();
+        }
+
+        return ResourceUtil.buildUser(getProfileModule().addUser(defId, inputData, null, null), true);
 	}
 }

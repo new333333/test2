@@ -102,6 +102,7 @@ import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -247,9 +248,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		ex.setEntityId(null);
         	}
         	throw ex;
+        } catch (DataIntegrityViolationException e) {
+            if (newEntry != null && newEntry.getId()!=null) {
+           		deleteEntry(binder, newEntry, false, new HashMap());
+           	}
+            throw new DataIntegrityViolationException(e.getLocalizedMessage(), e);
         } catch(Exception ex) {
         	entryDataErrors.addProblem(new Problem(Problem.GENERAL_PROBLEM, ex));
-        	if (newEntry != null) {
+        	if (newEntry != null && newEntry.getId()!=null) {
         		deleteEntry(binder, newEntry, false, new HashMap());
         	}
         	throw new WriteEntryDataException(entryDataErrors);
@@ -259,7 +265,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         }
     }
 
-    protected void addEntry_setCtx(Binder binder, Map ctx) {    	
+    protected void addEntry_setCtx(Binder binder, Map ctx) {
     }
 
     
