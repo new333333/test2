@@ -30,37 +30,15 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.spring.security.openid;
 
-package org.kablink.teaming.domain;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * @author jong
  *
  */
-public class OpenIDConfig {
-	private Boolean openidEnabled;
-	private Boolean openidSelfProvisioningEnabled;
-	
-	public boolean getOpenidEnabled() {
-		if(openidEnabled == null)
-			return true; // OpenID is enabled by default
-		else 
-			return openidEnabled.booleanValue();
-	}
-	public void setOpenidEnabled(boolean openidEnabled) {
-		this.openidEnabled = openidEnabled;
-	}
-	
-	public boolean getOpenidSelfProvisioningEnabled() {
-		if(openidSelfProvisioningEnabled == null)
-			return false; // OpenID self provisioning is disabled by default
-		else
-			return openidSelfProvisioningEnabled.booleanValue();
-	}
-	public void setOpenidSelfProvisioningEnabled(
-			boolean openidSelfProvisioningEnabled) {
-		this.openidSelfProvisioningEnabled = openidSelfProvisioningEnabled;
-	}
+public class OpenIDAuthenticationProvider extends org.springframework.security.openid.OpenIDAuthenticationProvider {
 
-	
 }

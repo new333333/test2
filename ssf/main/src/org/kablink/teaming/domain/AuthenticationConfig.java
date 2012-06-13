@@ -39,6 +39,9 @@ public class AuthenticationConfig  {
 	private boolean allowSelfRegistration = false;
 	private Long lastUpdate;
 	
+	private Boolean openidEnabled; // OpenID authentication enabled
+	private Boolean openidSelfProvisioningEnabled; // OpenID self-provisioning enabled
+	
 	public AuthenticationConfig()
 	{
 		lastUpdate = new Long(System.currentTimeMillis());
@@ -72,4 +75,26 @@ public class AuthenticationConfig  {
 	{
 		setLastUpdate(System.currentTimeMillis());
 	}
+	
+	public boolean getOpenidEnabled() {
+		if(openidEnabled == null)
+			return true; // OpenID is enabled by default
+		else 
+			return openidEnabled.booleanValue();
+	}
+	public void setOpenidEnabled(boolean openidEnabled) {
+		this.openidEnabled = openidEnabled;
+	}
+	
+	public boolean getOpenidSelfProvisioningEnabled() {
+		if(openidSelfProvisioningEnabled == null)
+			return false; // OpenID self provisioning is disabled by default
+		else
+			return openidSelfProvisioningEnabled.booleanValue();
+	}
+	public void setOpenidSelfProvisioningEnabled(
+			boolean openidSelfProvisioningEnabled) {
+		this.openidSelfProvisioningEnabled = openidSelfProvisioningEnabled;
+	}
+
 }

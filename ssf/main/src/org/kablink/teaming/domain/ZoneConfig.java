@@ -58,7 +58,6 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Integer fsaSynchInterval;
 	private String fsaAutoUpdateUrl;
 	private Long fsaMaxFileSize;
-	private OpenIDConfig openidConfig;
 
 	public ZoneConfig()
 	{
@@ -275,10 +274,4 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 		this.fsaMaxFileSize = fsaMaxFileSize;
 	}
 	
-	public OpenIDConfig getOpenidConfig() {
-		return openidConfig;
-	}
-	public void setOpenidConfig(OpenIDConfig openidConfig) {
-		this.openidConfig = openidConfig;
-	}
 }
