@@ -105,6 +105,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.gwt.client.util.BinderFilter;
+import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
@@ -1131,8 +1132,11 @@ public class GwtViewHelper {
 				// Do we have the Binder for this row?
 				Binder binder = binderMap.get(fr.getEntityId().getEntityId());
 				if (null != binder) {
-					// Yes!  Store its icon name...
-					fr.setBinderIconName(binder.getIconName());
+					// Yes!  Store its icon names...
+					fr.setBinderIcon(binder.getIconName(), BinderIconSize.SMALL);
+//!					...this needs to be implemented...
+//!					fr.setBinderIcon(binder.getIconName(...), BinderIconSize.MEDIUM);	// Fix when APIs for getting medium...
+//!					fr.setBinderIcon(binder.getIconName(...), BinderIconSize.LARGE );	// ...and large icons are there.
 
 					// ...and the user's rights to that Binder.
 					fr.setCanModify(bm.testAccess(binder, BinderOperation.modifyBinder   ));

@@ -109,6 +109,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetEntriesPinStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
+import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -1166,20 +1167,28 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					public EntryTitleInfo getValue(FolderRow fr) {
 						EntryTitleInfo reply = fr.getColumnValueAsEntryTitle(fc);
 						if ((null != reply) && fr.isBinder()) {
+							// Create the binder's Image widget...
 							Image binderImg = new Image();
-							String binderIconName = fr.getBinderIconName();
-							if (GwtClientHelper.hasString(binderIconName)) {
+							binderImg.getElement().setAttribute("align", "absmiddle");
+
+							// ...store the URL in the Image...
+							String binderIcon = fr.getBinderIcon(BinderIconSize.MEDIUM);
+							if (GwtClientHelper.hasString(binderIcon)) {
 								String imagesPath = GwtClientHelper.getRequestInfo().getImagesPath();
-								if (binderIconName.startsWith("/"))
-								     binderImg.setUrl(imagesPath + binderIconName.substring(1));
-								else binderImg.setUrl(imagesPath + binderIconName);
+								if (binderIcon.startsWith("/"))
+								     binderImg.setUrl(imagesPath + binderIcon.substring(1));
+								else binderImg.setUrl(imagesPath + binderIcon);
 							}
-							
 							else {
 								ImageResource binderImgRes = GwtTeaming.getFilrImageBundle().folder();
 								binderImg.setUrl(binderImgRes.getSafeUri());
 							}
-							binderImg.getElement().setAttribute("align", "absmiddle");
+
+							// ...apply any scaling to the Image...
+							int width  = BinderIconSize.MEDIUM.getBinderIconWidth();  if ((-1) != width)  binderImg.setWidth( width  + "px");
+							int height = BinderIconSize.MEDIUM.getBinderIconHeight(); if ((-1) != height) binderImg.setHeight(height + "px");
+
+							// ...and store the Image in the reply.
 							reply.setClientBinderImage(binderImg);
 						}
 						return reply;

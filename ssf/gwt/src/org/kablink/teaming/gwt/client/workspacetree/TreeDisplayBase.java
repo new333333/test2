@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
+import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
@@ -58,7 +59,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
-
 
 /**
  * Base class used to drive the display of the various instantiations
@@ -269,7 +269,7 @@ public abstract class TreeDisplayBase {
 		else reply = ti.getBinderHover();
 		return reply;
 	}
-	
+
 	/**
 	 * Returns access to the Filr image bundle.
 	 *  
@@ -394,38 +394,44 @@ public abstract class TreeDisplayBase {
 	 * Sets the image resource on a binder image based on its TreeInfo.
 	 * 
 	 * @param ti
-	 * @param width
-	 * @param height
+	 * @param iconSize
 	 */
-	public void setBinderImageResource(TreeInfo ti, int width, int height, ImageResource defaultImg) {
+	public void setBinderImageResource(TreeInfo ti, BinderIconSize iconSize, ImageResource defaultImg) {
+		// Do we have an Image widget to store the image resource in?
 		Image binderImg = ((Image) ti.getBinderUIImage());
 		if (null != binderImg) {
-			String binderIconName = ti.getBinderIconName();
-			if (GwtClientHelper.hasString(binderIconName)) {
-				if (binderIconName.startsWith("/"))
-				     binderImg.setUrl(getImagesPath() + binderIconName.substring(1));
-				else binderImg.setUrl(getImagesPath() + binderIconName);
+			// Yes!  Does the TreeInfo have the name of an icon to use?
+			String binderIcon = ti.getBinderIcon(iconSize);
+			if (GwtClientHelper.hasString(binderIcon)) {
+				// Yes!  Set its URL into the Image.
+				if (binderIcon.startsWith("/"))
+				     binderImg.setUrl(getImagesPath() + binderIcon.substring(1));
+				else binderImg.setUrl(getImagesPath() + binderIcon);
 			}
 			
 			else {
+				// No, the TreeInfo doesn't have the name of an icon to
+				// use!  Does it have an ImageResource to use?
 				ImageResource binderImgRes = ti.getBinderImage();
 				if (null == binderImgRes) {
+					// No!  Use the default ImageResource.
 					binderImgRes = defaultImg;
 				}
+				
+				// We always display images via their URL so that they
+				// can be scaled when necessary. 
 				binderImg.setUrl(binderImgRes.getSafeUri());
-				binderImg.setVisibleRect(
-					0,
-					0,
-					width,
-					height);
 			}
-			binderImg.setWidth( width  + "px");
-			binderImg.setHeight(height + "px");
+
+			// Apply any scaling specified to the image.
+			int width  = ti.getBinderIconWidth( iconSize); if ((-1) != width)  binderImg.setWidth( width  + "px");
+			int height = ti.getBinderIconHeight(iconSize); if ((-1) != height) binderImg.setHeight(height + "px");
 		}
 	}
 	
-	public void setBinderImageResource(TreeInfo ti, int width, int height) {
-		setBinderImageResource(ti, width, height, getImages().spacer_1px());
+	public void setBinderImageResource(TreeInfo ti, BinderIconSize iconSize) {
+		// Always use the initial form of the method.
+		setBinderImageResource(ti, iconSize, getImages().spacer_1px());
 	}
 		
 	/**

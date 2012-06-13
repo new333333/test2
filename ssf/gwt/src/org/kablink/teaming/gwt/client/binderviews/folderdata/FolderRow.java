@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
+import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -73,7 +74,7 @@ public class FolderRow implements IsSerializable {
 	private Map<String, List<TaskFolderInfo>>	m_rowTaskFolderInfos;	// A map of column names to List<TaskFolderInfo>'s                possibly stored for a column.
 	private Map<String, ViewFileInfo>			m_rowViewFiles;			// A map of column names to ViewFileInfo's                        possibly stored for a column.
 	private Map<String, String>					m_rowStrings;			// A map of column names to String values                         possible stored for a column.
-	private String								m_binderIconName;		// Only when the entity type is 'folder' or 'workspace'.
+	private String[]							m_binderIcons = new String[BinderIconSize.UNDEFINED.ordinal()];
 	
 	/**
 	 * Constructor method.
@@ -123,18 +124,38 @@ public class FolderRow implements IsSerializable {
 	public Map<String, List<TaskFolderInfo>> getRowTaskFolderInfoListsMap() {validateMapTaskFolders();      return m_rowTaskFolderInfos; } 
 	public Map<String, ViewFileInfo>         getRowViewFilesMap()           {validateMapViews();            return m_rowViewFiles;       } 
 	public Map<String, String>               getRowStringsMap()             {validateMapStrings();          return m_rowStrings;         }
-	public String                            getBinderIconName()            {                               return m_binderIconName;     }
+	
+	/**
+	 * Returns the name of the icons for the Binder corresponding to
+	 * this FolderRow.
+	 *
+	 * @param iconSize
+	 * 
+	 * @return
+	 */
+	public String getBinderIcon(BinderIconSize iconSize) {
+		String reply = m_binderIcons[iconSize.ordinal()];
+		if ((null == reply) && (BinderIconSize.SMALL != iconSize)) {
+			if (BinderIconSize.LARGE == iconSize) {
+				reply = m_binderIcons[BinderIconSize.MEDIUM.ordinal()];
+			}
+			if (null == reply) {
+				reply = m_binderIcons[BinderIconSize.SMALL.ordinal()];
+			}
+		}
+		return reply; 
+	}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setCanModify(     boolean canModify)      {m_canModify      = canModify;     }
-	public void setCanPurge(      boolean canPurge)       {m_canPurge       = canPurge;      }
-	public void setCanTrash(      boolean canTrash)       {m_canTrash       = canTrash;      }
-	public void setPinned(        boolean pinned)         {m_pinned         = pinned;        }
-	public void setBinderIconName(String  binderIconName) {m_binderIconName = binderIconName;}
+	public void setCanModify( boolean canModify)                       {m_canModify                   = canModify; }
+	public void setCanPurge(  boolean canPurge)                        {m_canPurge                    = canPurge;  }
+	public void setCanTrash(  boolean canTrash)                        {m_canTrash                    = canTrash;  }
+	public void setPinned(    boolean pinned)                          {m_pinned                      = pinned;    }
+	public void setBinderIcon(String  binderIcon, BinderIconSize size) {m_binderIcons[size.ordinal()] = binderIcon;}
 	
 	/**
 	 * Stores the value for a specific column.

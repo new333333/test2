@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.event.TreeNodeExpandedEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.ExpandHorizontalBucketCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalNodeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -67,7 +68,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
-
 
 /**
  * Class used to drive the display of the WorkspaceTreeControl,
@@ -522,7 +522,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			binderImg.addStyleName("breadCrumb_ContentTail_Img");
 			binderImg.getElement().setAttribute("align", "absmiddle");
 			ti.setBinderUIImage(binderImg);
-			setBinderImageResource(ti, 30, 30, getFilrImages().folder());
+			setBinderImageResource(ti, BinderIconSize.LARGE, getFilrImages().folder());
 
 			// ...finally, tie it all together and add it to the root
 			// ...panel.
