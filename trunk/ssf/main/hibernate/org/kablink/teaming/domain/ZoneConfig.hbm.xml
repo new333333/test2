@@ -40,8 +40,6 @@
  		 <property name="allowAnonymousAccess"/>
 	     <property name="allowSelfRegistration"/>
     	 <property name="lastUpdate"/>
-    </component>
-     <component name="openidConfig" class="org.kablink.teaming.domain.OpenIDConfig">
  		 <property name="openidEnabled" access="field"/>
  		 <property name="openidSelfProvisioningEnabled" access="field"/>
     </component>

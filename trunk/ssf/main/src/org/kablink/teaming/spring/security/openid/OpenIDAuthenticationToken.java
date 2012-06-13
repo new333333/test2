@@ -30,55 +30,55 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.spring.security.providers;
 
-import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
-import org.kablink.teaming.dao.CoreDao;
-import org.kablink.teaming.domain.ZoneConfig;
-import org.kablink.teaming.module.zone.ZoneModule;
+package org.kablink.teaming.spring.security.openid;
+
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.openid.OpenIDAttribute;
+import org.springframework.security.openid.OpenIDAuthenticationStatus;
 
 /**
  * @author jong
  *
  */
-public class OpenIDAuthenticationProvider extends org.springframework.security.openid.OpenIDAuthenticationProvider {
+public class OpenIDAuthenticationToken extends org.springframework.security.openid.OpenIDAuthenticationToken {
 
-	private CoreDao coreDao;
-	private ZoneModule zoneModule;
+	private static final long serialVersionUID = 1L;
+
+	private String vibeUsername;
 	
-	@Override
-    public boolean supports(Class<?> authentication) {
-		if(super.supports(authentication)) {
-			return getZoneConfig().getOpenidConfig().getOpenidEnabled();
-		}
-		else {
-			return false;
-		}
-    }
-
-	private ZoneConfig getZoneConfig() {
-		// Do NOT expect RequestContext to be present at this point, because authentication has not happened yet.
-		// Instead, rely on more raw information to obtain zone id.
-		Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
-
-		return coreDao.loadZoneConfig(zoneId);
+	/**
+	 * @param status
+	 * @param identityUrl
+	 * @param message
+	 * @param attributes
+	 */
+	public OpenIDAuthenticationToken(OpenIDAuthenticationStatus status,
+			String identityUrl, String message, List<OpenIDAttribute> attributes) {
+		super(status, identityUrl, message, attributes);
 	}
 
-	public CoreDao getCoreDao() {
-		return coreDao;
+	/**
+	 * @param principal
+	 * @param authorities
+	 * @param identityUrl
+	 * @param attributes
+	 */
+	public OpenIDAuthenticationToken(Object principal,
+			Collection<? extends GrantedAuthority> authorities,
+			String identityUrl, List<OpenIDAttribute> attributes) {
+		super(principal, authorities, identityUrl, attributes);
 	}
 
-	public void setCoreDao(CoreDao coreDao) {
-		this.coreDao = coreDao;
+	public String getVibeUsername() {
+		return vibeUsername;
 	}
 
-	public ZoneModule getZoneModule() {
-		return zoneModule;
+	public void setVibeUsername(String vibeUsername) {
+		this.vibeUsername = vibeUsername;
 	}
 
-	public void setZoneModule(ZoneModule zoneModule) {
-		this.zoneModule = zoneModule;
-	}
-
-	
 }
