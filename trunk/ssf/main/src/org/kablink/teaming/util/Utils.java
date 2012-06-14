@@ -724,10 +724,24 @@ public class Utils {
 		return binder;
 	}
 	
-	//Routine to translate an old incon name into a new one (.gif --> .png)
+	//Routine to translate an old icon name into a new one (.gif --> .png)
 	public static String getIconNameTranslated(String iconName) {
 		//This will be changed to translate .gif into .png after the .png files are made
 		return iconName;
+	}
+	
+	//Routine to translate an old icon name into a new one (.gif --> .png)
+	public static String getIconNameTranslated(String iconName, IconSize size) {
+		//This will be changed to translate .gif into .png after the .png files are made
+		String name = getIconNameTranslated(iconName);
+		int i = name.lastIndexOf(".");
+		if (i >= 0) {
+			String root = iconName.substring(0, i);
+			String ext = iconName.substring(i, iconName.length());
+			return root + size.toString() + ext;
+		} else {
+			return iconName + size;
+		}
 	}
 	
 }

@@ -48,6 +48,7 @@ import org.kablink.teaming.comparator.FileAttachmentComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.util.CollectionUtil;
+import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.web.util.WebHelper;
@@ -219,6 +220,9 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
      */
     public String getIconName() {
     	return Utils.getIconNameTranslated(this.iconName);
+    }
+    public String getIconName(IconSize size) {
+    	return Utils.getIconNameTranslated(this.iconName, size);
     }
     public void setIconName(String iconName) {
     	this.iconName = iconName;
