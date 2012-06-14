@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.resources.client.ClientBundle;
@@ -45,22 +44,62 @@ import com.google.gwt.resources.client.ImageResource.RepeatStyle;
  */
 public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/filespace_34.png")
+	@Source("org/kablink/teaming/gwt/public/images/Filr/filespace.png")
 	public ImageResource fileSpace();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder_36.png")
+	@Source("org/kablink/teaming/gwt/public/images/Filr/filespace_36.png")
+	public ImageResource fileSpace_medium();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/filespace_48.png")
+	public ImageResource fileSpace_large();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder.png")
 	public ImageResource folder();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder_shared_36.png")
+	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder_36.png")
+	public ImageResource folder_medium();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder_48.png")
+	public ImageResource folder_large();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder_shared.png")
 	public ImageResource folderShared();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/myfiles_56.png")
+	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder_shared_36.png")
+	public ImageResource folderShared_medium();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder_shared_48.png")
+	public ImageResource folderShared_large();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/myfiles.png")
 	public ImageResource myFiles();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/shared_34.png")
+	@Source("org/kablink/teaming/gwt/public/images/Filr/myfiles_36.png")
+	public ImageResource myFiles_medium();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/myfiles_48.png")
+	public ImageResource myFiles_large();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/shared.png")
 	public ImageResource shared();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/shared_36.png")
+	public ImageResource shared_medium();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/shared_48.png")
+	public ImageResource shared_large();
 }
