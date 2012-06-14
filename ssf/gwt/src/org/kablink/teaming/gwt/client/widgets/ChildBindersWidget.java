@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
@@ -41,7 +42,6 @@ import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetListOfChildBindersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetListOfChildBindersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -837,7 +837,7 @@ public class ChildBindersWidget extends ToolPanelBase
 		String imgName;
 
 		// Do we have the name of the image for this workspace?
-		imgName = treeInfo.getBinderIcon(BinderIconSize.SMALL);
+		imgName = treeInfo.getBinderIcon(GwtConstants.CHILD_BINDERS_WIDGET_ICON_SIZE);
 		if ( GwtClientHelper.hasString( imgName ) )
 		{
 			// Yes
@@ -845,7 +845,7 @@ public class ChildBindersWidget extends ToolPanelBase
 		}
 		else
 		{
-			wsImg = new Image( treeInfo.getBinderImage() );
+			wsImg = new Image( treeInfo.getBinderImage(GwtConstants.CHILD_BINDERS_WIDGET_ICON_SIZE) );
 		}
 		
 		return wsImg;

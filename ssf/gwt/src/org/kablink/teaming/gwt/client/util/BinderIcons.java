@@ -53,6 +53,15 @@ public class BinderIcons implements IsSerializable {
 	}
 	
 	/**
+	 * Clears the binder icons being tracked in this BinderIcons.
+	 */
+	public void clearBinderIcons() {
+		for (int i = 0; i < m_binderIcons.length; i += 1) {
+			m_binderIcons[i] = null;
+		}
+	}
+	
+	/**
 	 * Returns the name of the icons for the Binder corresponding to
 	 * this TreeInfo.
 	 *

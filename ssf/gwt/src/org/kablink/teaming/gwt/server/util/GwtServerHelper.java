@@ -912,8 +912,9 @@ public class GwtServerHelper {
 	public static void addTrashFolder(AllModulesInjected bs, TreeInfo ti, Binder binder) {
 		// Find the TreeInfo in question and copy it so we can make a
 		// trash TreeInfo out of it.
-		TreeInfo binderTI = TreeInfo.findBinderTI(ti, String.valueOf(binder.getId()));
-		TreeInfo trashTI = binderTI.copyBaseTI();
+		TreeInfo binderTI  = TreeInfo.findBinderTI(ti, String.valueOf(binder.getId()));
+		TreeInfo trashTI   = binderTI.copyBaseTI();
+		trashTI.clearBinderIcons();
 		BinderInfo trashBI = trashTI.getBinderInfo();
 		
 		// Change the copy to a trash TreeInfo.

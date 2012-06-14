@@ -98,6 +98,13 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	}
 
 	/**
+	 * Clears the binder icons being tracked in this TreeInfo.
+	 */
+	public void clearBinderIcons() {
+		m_binderIcons.clearBinderIcons();
+	}
+	
+	/**
 	 * Clears the list of children for this TreeInfo's Binder.
 	 */
 	public void clearChildBindersList() {
@@ -436,10 +443,27 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	/**
 	 * Returns the GWT ImageResource of the image to display next to
 	 * the Binder.
+	 *
+	 * @param iconSize
 	 * 
 	 * @return
 	 */
-	public ImageResource getBinderImage() {
+	public ImageResource getBinderImage(BinderIconSize iconSize) {
+		ImageResource reply;
+		switch (iconSize) {
+		default:
+		case SMALL:   reply = getBinderImageSmall();  break;
+		case MEDIUM:  reply = getBinderImageMedium(); break;
+		case LARGE:   reply = getBinderImageLarge();  break;
+		}
+		return reply;
+	}
+	
+	/*
+	 * Returns the GWT ImageResource of the image to display next to
+	 * the Binder when a small image is requested.
+	 */
+	private ImageResource getBinderImageSmall() {
 		ImageResource reply = null;
 		GwtTeamingWorkspaceTreeImageBundle images = GwtTeaming.getWorkspaceTreeImageBundle();
 		if (isBucket()) {
@@ -489,6 +513,132 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 				
 				if (null == reply) {
 					reply = images.workspace_generic();
+				}
+				
+				break;
+			}
+		}
+		
+		return reply;
+	}
+	
+	/*
+	 * Returns the GWT ImageResource of the image to display next to
+	 * the Binder when a medium image is requested.
+	 */
+	private ImageResource getBinderImageMedium() {
+		ImageResource reply = null;
+		GwtTeamingWorkspaceTreeImageBundle images = GwtTeaming.getWorkspaceTreeImageBundle();
+		if (isBucket()) {
+			reply = images.bucket();
+		}
+		
+		else {
+			switch (m_binderInfo.getBinderType()) {
+			case FOLDER:
+				switch (m_binderInfo.getFolderType()) {
+				case BLOG:         reply = images.folder_comment_medium();   break;
+				case CALENDAR:     reply = images.folder_calendar_medium();  break;
+				case DISCUSSION:   reply = images.folder_comment_medium();   break;
+				case FILE:         reply = images.folder_file_medium();      break;
+				case GUESTBOOK:    reply = images.folder_guestbook_medium(); break;
+				case MILESTONE:    reply = images.folder_milestone_medium(); break;
+				case MINIBLOG:     reply = images.folder_comment_medium();   break;
+				case MIRROREDFILE: reply = images.folder_file_medium();      break;
+				case PHOTOALBUM:   reply = images.folder_photo_medium();     break;
+				case SURVEY:       reply = images.folder_survey_medium();    break;
+				case TASK:         reply = images.folder_task_medium();      break;
+				case TRASH:        reply = images.folder_trash_medium();     break;
+				case WIKI:         reply = images.folder_wiki_medium();      break;
+				case OTHER:                                                  break;
+				}
+				
+				if (null == reply) {
+					reply = images.folder_generic_medium();
+				}
+				
+				break;
+				
+			case WORKSPACE:
+				switch (m_binderInfo.getWorkspaceType()) {
+				case DISCUSSIONS:         reply = images.workspace_discussions_medium();        break;
+				case GLOBAL_ROOT:         reply = images.workspace_global_root_medium();        break;
+				case LANDING_PAGE:        reply = images.workspace_landing_page_medium();       break;
+				case PROFILE_ROOT:        reply = images.workspace_profile_root_medium();       break;
+				case PROJECT_MANAGEMENT:  reply = images.workspace_project_management_medium(); break;
+				case TEAM:                reply = images.workspace_team_medium();               break;
+				case TEAM_ROOT:           reply = images.workspace_team_root_medium();          break;
+				case TOP:                 reply = images.workspace_top_medium();                break;
+				case TRASH:               reply = images.workspace_trash_medium();              break;
+				case USER:                reply = images.workspace_personal_medium();           break;
+				case OTHER:                                                                     break;
+				}
+				
+				if (null == reply) {
+					reply = images.workspace_generic_medium();
+				}
+				
+				break;
+			}
+		}
+		
+		return reply;
+	}
+	
+	/*
+	 * Returns the GWT ImageResource of the image to display next to
+	 * the Binder when a large image is requested.
+	 */
+	private ImageResource getBinderImageLarge() {
+		ImageResource reply = null;
+		GwtTeamingWorkspaceTreeImageBundle images = GwtTeaming.getWorkspaceTreeImageBundle();
+		if (isBucket()) {
+			reply = images.bucket();
+		}
+		
+		else {
+			switch (m_binderInfo.getBinderType()) {
+			case FOLDER:
+				switch (m_binderInfo.getFolderType()) {
+				case BLOG:         reply = images.folder_comment_large();   break;
+				case CALENDAR:     reply = images.folder_calendar_large();  break;
+				case DISCUSSION:   reply = images.folder_comment_large();   break;
+				case FILE:         reply = images.folder_file_large();      break;
+				case GUESTBOOK:    reply = images.folder_guestbook_large(); break;
+				case MILESTONE:    reply = images.folder_milestone_large(); break;
+				case MINIBLOG:     reply = images.folder_comment_large();   break;
+				case MIRROREDFILE: reply = images.folder_file_large();      break;
+				case PHOTOALBUM:   reply = images.folder_photo_large();     break;
+				case SURVEY:       reply = images.folder_survey_large();    break;
+				case TASK:         reply = images.folder_task_large();      break;
+				case TRASH:        reply = images.folder_trash_large();     break;
+				case WIKI:         reply = images.folder_wiki_large();      break;
+				case OTHER:                                                 break;
+				}
+				
+				if (null == reply) {
+					reply = images.folder_generic_large();
+				}
+				
+				break;
+				
+			case WORKSPACE:
+				switch (m_binderInfo.getWorkspaceType()) {
+				case DISCUSSIONS:         reply = images.workspace_discussions_large();        break;
+				case GLOBAL_ROOT:         reply = images.workspace_global_root_large();        break;
+				case LANDING_PAGE:        reply = images.workspace_landing_page_large();       break;
+				case PROFILE_ROOT:        reply = images.workspace_profile_root_large();       break;
+				case PROJECT_MANAGEMENT:  reply = images.workspace_project_management_large(); break;
+				case TEAM:                reply = images.workspace_team_large();               break;
+				case TEAM_ROOT:           reply = images.workspace_team_root_large();          break;
+				case TOP:                 reply = images.workspace_top_large();                break;
+				case TRASH:               reply = images.workspace_trash_large();              break;
+				case USER:                reply = images.workspace_personal_large();           break;
+				case OTHER:                                                                    break;
+				}
+				
+				if (null == reply) {
+					reply = images.workspace_generic_large();
 				}
 				
 				break;

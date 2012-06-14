@@ -54,11 +54,11 @@ public enum BinderIconSize implements IsSerializable {
 	public final static int BINDER_HEIGHT_SMALL_INT		= (-1);	// (-1) -> No vertical   scaling.  The native height is used.
 	public final static int BINDER_WIDTH_SMALL_INT		= (-1);	// (-1) -> No horizontal scaling.  The native width  is used.
 	
-	public final static int BINDER_HEIGHT_MEDIUM_INT	= (-1);	// (-1) -> No vertical   scaling.  The native height is used.
-	public final static int BINDER_WIDTH_MEDIUM_INT		= (-1); // (-1) -> No horizontal scaling.  The native width  is used.
+	public final static int BINDER_HEIGHT_MEDIUM_INT	= 36;
+	public final static int BINDER_WIDTH_MEDIUM_INT		= 36;
 	
-	public final static int BINDER_HEIGHT_LARGE_INT		= 30;
-	public final static int BINDER_WIDTH_LARGE_INT		= 30;
+	public final static int BINDER_HEIGHT_LARGE_INT		= 48;
+	public final static int BINDER_WIDTH_LARGE_INT		= 48;
 	
 	/**
 	 * Converts the ordinal value of a BinderIconSize to its
