@@ -67,7 +67,7 @@ public class OpenIDAuthenticationUserDetailsService implements AuthenticationUse
 	@Override
 	public UserDetails loadUserDetails(OpenIDAuthenticationToken token)
 			throws UsernameNotFoundException {
-		System.out.println(token.getName());
+		System.out.println(token.getName());//$$$
 
 		Map<String, String> vibeAttributes = convertOpenIDAttributesToVibeAttributes(token.getAttributes());
 		
@@ -83,8 +83,7 @@ public class OpenIDAuthenticationUserDetailsService implements AuthenticationUse
 		
 		UserDetails details = new SsfContextMapper.SsfUserDetails(emailAddress, vibeAttributes);
 
-		
-		return new OpenIDUserDetails(token.getName(), null);
+		return details;
 	}
 	
 	private Map convertOpenIDAttributesToVibeAttributes(List<OpenIDAttribute> attributes) {

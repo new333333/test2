@@ -80,6 +80,15 @@
 		                                </bean>
 		                            </list>
 		                        </entry>		             
+		                        <entry key=".*">
+		                            <list>
+		                                <bean class="org.springframework.security.openid.OpenIDAttribute">
+		                                	<constructor-arg value="email"/>
+		                                	<constructor-arg value="http://axschema.org/contact/email"/>
+		                                	<property name="required"><value>true</value></property>
+		                                </bean>
+		                            </list>
+		                        </entry>
 		                    </map>
 		                </constructor-arg>
 		            </bean>
