@@ -57,6 +57,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	private List<TreeInfo>	m_childBindersAL = new ArrayList<TreeInfo>();
+	private BinderIcons		m_binderIcons    = new BinderIcons();
 	private BinderInfo		m_binderInfo     = new BinderInfo();
 	private boolean			m_binderExpanded;
 	private int				m_binderChildren;
@@ -65,7 +66,6 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	private String			m_binderTitle          = "";
 	private String			m_binderPermalink      = "";
 	private String			m_binderTrashPermalink = "";
-	private String[]		m_binderIcons          = new String[BinderIconSize.UNDEFINED.ordinal()];
 
 	// The following are only used for TreeInfo's associated with
 	// activity streams.
@@ -398,16 +398,7 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	 * @return
 	 */
 	public String getBinderIcon(BinderIconSize iconSize) {
-		String reply = m_binderIcons[iconSize.ordinal()];
-		if ((null == reply) && (BinderIconSize.SMALL != iconSize)) {
-			if (BinderIconSize.LARGE == iconSize) {
-				reply = m_binderIcons[BinderIconSize.MEDIUM.ordinal()];
-			}
-			if (null == reply) {
-				reply = m_binderIcons[BinderIconSize.SMALL.ordinal()];
-			}
-		}
-		return reply; 
+		return m_binderIcons.getBinderIcon(iconSize);
 	}
 
 	/**
@@ -764,9 +755,10 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	 * Stores the names of the icons for the Binder.
 	 * 
 	 * @param binderIcon
+	 * @param iconSize
 	 */
-	public void setBinderIcon(String binderIcon, BinderIconSize size) {
-		m_binderIcons[size.ordinal()] = binderIcon;
+	public void setBinderIcon(String binderIcon, BinderIconSize iconSize) {
+		m_binderIcons.setBinderIcon(binderIcon, iconSize);
 	}
 
 	/**

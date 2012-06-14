@@ -38,6 +38,7 @@ import java.util.Map;
 
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
+import org.kablink.teaming.gwt.client.util.BinderIcons;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -56,6 +57,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class FolderRow implements IsSerializable {
+	private BinderIcons							m_binderIcons = new BinderIcons();
 	private boolean								m_canModify;			//
 	private boolean								m_canPurge;				//
 	private boolean								m_canTrash;				//
@@ -74,7 +76,6 @@ public class FolderRow implements IsSerializable {
 	private Map<String, List<TaskFolderInfo>>	m_rowTaskFolderInfos;	// A map of column names to List<TaskFolderInfo>'s                possibly stored for a column.
 	private Map<String, ViewFileInfo>			m_rowViewFiles;			// A map of column names to ViewFileInfo's                        possibly stored for a column.
 	private Map<String, String>					m_rowStrings;			// A map of column names to String values                         possible stored for a column.
-	private String[]							m_binderIcons = new String[BinderIconSize.UNDEFINED.ordinal()];
 	
 	/**
 	 * Constructor method.
@@ -106,56 +107,36 @@ public class FolderRow implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean                           getCanModify()                 {                               return m_canModify;          }
-	public boolean                           getCanPurge()                  {                               return m_canPurge;           }
-	public boolean                           getCanTrash()                  {                               return m_canTrash;           }
-	public boolean                           getPinned()                    {                               return m_pinned;             }
-	public EntityId                          getEntityId()                  {                               return m_entityId;           }
-	public List<FolderColumn>                getColumns()                   {                               return m_columns;            }
-	public Map<String, Boolean>              getRowOverdueDates()           {validateMapOverdueDates();     return m_rowOverdueDates;    }
-	public Map<String, DescriptionHtml>      getRowDescriptionHtmlMap()     {validateMapDescriptionHtmls(); return m_rowDescriptionHtmls;}
-	public Map<String, EmailAddressInfo>     getRowEmailAddressMap()        {validateMapEmailAddresses();   return m_rowEmailAddresses;  }
-	public Map<String, EntryEventInfo>       getRowEntryEventMap()          {validateMapEvents();           return m_rowEntryEvents;     }
-	public Map<String, EntryLinkInfo>        getRowEntryLinkMap()           {validateMapLinks();            return m_rowEntryLinks;      }
-	public Map<String, EntryTitleInfo>       getRowEntryTitlesMap()         {validateMapTitles();           return m_rowEntryTitles;     }
-	public Map<String, GuestInfo>            getRowGuestsMap()              {validateMapGuests();           return m_rowGuests;          }
-	public Map<String, List<AssignmentInfo>> getRowAssigneeInfoListsMap()   {validateMapAssignees();        return m_rowAssigneeInfos;   }
-	public Map<String, PrincipalInfo>        getRowPrincipalsMap()          {validateMapPrincipals();       return m_rowPrincipals;      }
-	public Map<String, List<TaskFolderInfo>> getRowTaskFolderInfoListsMap() {validateMapTaskFolders();      return m_rowTaskFolderInfos; } 
-	public Map<String, ViewFileInfo>         getRowViewFilesMap()           {validateMapViews();            return m_rowViewFiles;       } 
-	public Map<String, String>               getRowStringsMap()             {validateMapStrings();          return m_rowStrings;         }
-	
-	/**
-	 * Returns the name of the icons for the Binder corresponding to
-	 * this FolderRow.
-	 *
-	 * @param iconSize
-	 * 
-	 * @return
-	 */
-	public String getBinderIcon(BinderIconSize iconSize) {
-		String reply = m_binderIcons[iconSize.ordinal()];
-		if ((null == reply) && (BinderIconSize.SMALL != iconSize)) {
-			if (BinderIconSize.LARGE == iconSize) {
-				reply = m_binderIcons[BinderIconSize.MEDIUM.ordinal()];
-			}
-			if (null == reply) {
-				reply = m_binderIcons[BinderIconSize.SMALL.ordinal()];
-			}
-		}
-		return reply; 
-	}
+	public boolean                           getCanModify()                         {                               return m_canModify;          }
+	public boolean                           getCanPurge()                          {                               return m_canPurge;           }
+	public boolean                           getCanTrash()                          {                               return m_canTrash;           }
+	public boolean                           getPinned()                            {                               return m_pinned;             }
+	public EntityId                          getEntityId()                          {                               return m_entityId;           }
+	public List<FolderColumn>                getColumns()                           {                               return m_columns;            }
+	public Map<String, Boolean>              getRowOverdueDates()                   {validateMapOverdueDates();     return m_rowOverdueDates;    }
+	public Map<String, DescriptionHtml>      getRowDescriptionHtmlMap()             {validateMapDescriptionHtmls(); return m_rowDescriptionHtmls;}
+	public Map<String, EmailAddressInfo>     getRowEmailAddressMap()                {validateMapEmailAddresses();   return m_rowEmailAddresses;  }
+	public Map<String, EntryEventInfo>       getRowEntryEventMap()                  {validateMapEvents();           return m_rowEntryEvents;     }
+	public Map<String, EntryLinkInfo>        getRowEntryLinkMap()                   {validateMapLinks();            return m_rowEntryLinks;      }
+	public Map<String, EntryTitleInfo>       getRowEntryTitlesMap()                 {validateMapTitles();           return m_rowEntryTitles;     }
+	public Map<String, GuestInfo>            getRowGuestsMap()                      {validateMapGuests();           return m_rowGuests;          }
+	public Map<String, List<AssignmentInfo>> getRowAssigneeInfoListsMap()           {validateMapAssignees();        return m_rowAssigneeInfos;   }
+	public Map<String, PrincipalInfo>        getRowPrincipalsMap()                  {validateMapPrincipals();       return m_rowPrincipals;      }
+	public Map<String, List<TaskFolderInfo>> getRowTaskFolderInfoListsMap()         {validateMapTaskFolders();      return m_rowTaskFolderInfos; } 
+	public Map<String, ViewFileInfo>         getRowViewFilesMap()                   {validateMapViews();            return m_rowViewFiles;       } 
+	public Map<String, String>               getRowStringsMap()                     {validateMapStrings();          return m_rowStrings;         }
+	public String                            getBinderIcon(BinderIconSize iconSize) {return m_binderIcons.getBinderIcon(iconSize);               }
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setCanModify( boolean canModify)                       {m_canModify                   = canModify; }
-	public void setCanPurge(  boolean canPurge)                        {m_canPurge                    = canPurge;  }
-	public void setCanTrash(  boolean canTrash)                        {m_canTrash                    = canTrash;  }
-	public void setPinned(    boolean pinned)                          {m_pinned                      = pinned;    }
-	public void setBinderIcon(String  binderIcon, BinderIconSize size) {m_binderIcons[size.ordinal()] = binderIcon;}
+	public void setCanModify( boolean canModify)                           {m_canModify = canModify;                          }
+	public void setCanPurge(  boolean canPurge)                            {m_canPurge  = canPurge;                           }
+	public void setCanTrash(  boolean canTrash)                            {m_canTrash  = canTrash;                           }
+	public void setPinned(    boolean pinned)                              {m_pinned    = pinned;                             }
+	public void setBinderIcon(String  binderIcon, BinderIconSize iconSize) {m_binderIcons.setBinderIcon(binderIcon, iconSize);}
 	
 	/**
 	 * Stores the value for a specific column.
