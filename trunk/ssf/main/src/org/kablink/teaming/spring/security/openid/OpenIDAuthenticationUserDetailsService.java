@@ -32,17 +32,23 @@
  */
 package org.kablink.teaming.spring.security.openid;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.domain.NoUserByTheNameException;
-import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.spring.security.SsfContextMapper;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.openid.OpenIDAttribute;
 import org.springframework.security.openid.OpenIDAuthenticationToken;
 
 /**
@@ -50,8 +56,10 @@ import org.springframework.security.openid.OpenIDAuthenticationToken;
  *
  */
 public class OpenIDAuthenticationUserDetailsService implements AuthenticationUserDetailsService<OpenIDAuthenticationToken> {
-
-	private static final String USERNAME_PREFIX = "..vibe..";
+	
+	private static Log logger = LogFactory.getLog(OpenIDAuthenticationUserDetailsService.class);
+	
+	private static Map attributeMapping = null;
 	
 	/* (non-Javadoc)
 	 * @see org.springframework.security.core.userdetails.AuthenticationUserDetailsService#loadUserDetails(org.springframework.security.core.Authentication)
@@ -59,39 +67,36 @@ public class OpenIDAuthenticationUserDetailsService implements AuthenticationUse
 	@Override
 	public UserDetails loadUserDetails(OpenIDAuthenticationToken token)
 			throws UsernameNotFoundException {
-		String emailAddress = ""; //$$$ retrieve email address
-		
-		if(emailAddress == null)
-			throw new UsernameNotFoundException("User " + token.getName() + " has no email address");
+		System.out.println(token.getName());
 
-		String username = USERNAME_PREFIX + emailAddress.toLowerCase();
+		Map<String, String> vibeAttributes = convertOpenIDAttributesToVibeAttributes(token.getAttributes());
 		
-		//return new OpenIDUserDetails(username, null)
+		String emailAddress = vibeAttributes.get("emailAddress");
 		
+		if(logger.isDebugEnabled())
+			logger.debug("Processing OpenID identity [" + token.getName() + "] with email address [" + emailAddress + "]");
+		
+		if(emailAddress == null || emailAddress.isEmpty())
+			throw new UsernameNotFoundException("User " + token.getName() + " has no email address");
 		
 		String zoneName = getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName());
+		
+		UserDetails details = new SsfContextMapper.SsfUserDetails(emailAddress, vibeAttributes);
 
-		User user;
-		try {
-			user = getProfileDao().findUserByName(username, zoneName);
-			
-			// The authenticated user exists in Vibe.
-			return new OpenIDUserDetails(username, null);
-		}
-		catch(NoUserByTheNameException e) {
-			// The authenticated user does not exist in Vibe.
-			Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
-			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
-			if(zoneConfig.getAuthenticationConfig().getOpenidSelfProvisioningEnabled()) {
-				
-			}
-		}
 		
-		
-		System.out.println(token.getName());
 		return new OpenIDUserDetails(token.getName(), null);
 	}
-
+	
+	private Map convertOpenIDAttributesToVibeAttributes(List<OpenIDAttribute> attributes) {
+		Map vibeAttributes = new HashMap();
+		Map mapping = getAttributeMapping();
+		for(OpenIDAttribute openidAttribute:attributes) {
+			if(mapping.containsKey(openidAttribute.getName()) && openidAttribute.getCount() > 0)
+				vibeAttributes.put(mapping.get(openidAttribute.getName()), openidAttribute.getValues().get(0));
+		}
+		return vibeAttributes;
+	}
+	
 	private ProfileDao getProfileDao() {
 		return (ProfileDao) SpringContextUtil.getBean("profileDao");
 	}
@@ -102,5 +107,20 @@ public class OpenIDAuthenticationUserDetailsService implements AuthenticationUse
 	
 	private CoreDao getCoreDao() {
 		return (CoreDao) SpringContextUtil.getBean("coreDao");
+	}
+	
+	private Map getAttributeMapping() {
+		if(attributeMapping == null) {
+			int count = SPropsUtil.getInt("openid.attribute.mapping.count", 0);
+			Map map = new HashMap(count);
+			String key, value;
+			for(int i = 0; i < count; i++) {
+				key = SPropsUtil.getString("openid.attribute.mapping." + i + ".from");
+				value = SPropsUtil.getString("openid.attribute.mapping." + i + ".to");
+				map.put(key, value);
+			}
+			attributeMapping = map;
+		}
+		return attributeMapping;
 	}
 }

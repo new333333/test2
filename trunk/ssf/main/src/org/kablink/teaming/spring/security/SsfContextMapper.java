@@ -108,6 +108,11 @@ public class SsfContextMapper  implements UserDetailsContextMapper {
 			this.authorities = new ArrayList<GrantedAuthority>();
 		}
 
+		public SsfUserDetails(String username, Map<String, String> attributes) {
+			this.username = username;
+			this.putAll(attributes);
+		}
+		
 		public Collection<? extends GrantedAuthority> 	getAuthorities() {
 			 	return authorities;
 		}
