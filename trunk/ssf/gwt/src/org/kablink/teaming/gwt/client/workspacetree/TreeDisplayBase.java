@@ -412,7 +412,7 @@ public abstract class TreeDisplayBase {
 			else {
 				// No, the TreeInfo doesn't have the name of an icon to
 				// use!  Does it have an ImageResource to use?
-				ImageResource binderImgRes = ti.getBinderImage();
+				ImageResource binderImgRes = ti.getBinderImage(iconSize);
 				if (null == binderImgRes) {
 					// No!  Use the default ImageResource.
 					binderImgRes = defaultImg;

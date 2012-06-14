@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,6 +31,8 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.gwt.client;
+
+import org.kablink.teaming.gwt.client.util.BinderIconSize;
 
 
 /**
@@ -46,6 +48,14 @@ public class GwtConstants {
 	
 	public static final double	HEADER_HEIGHT			= 200;		// Default height of the header       panel.
 	public static final double	SIDEBAR_TREE_WIDTH		= 246;		// Default width  of the sidebar tree panel.
+
+	// THe following are used to control the icon sizes displayed in
+	// various places within the Vibe UI.
+	public static final BinderIconSize	BINDER_BREADCRUMB_ICON_SIZE		= BinderIconSize.MEDIUM;
+	public static final BinderIconSize	CHILD_BINDERS_WIDGET_ICON_SIZE	= BinderIconSize.SMALL;
+	public static final BinderIconSize	DIALOG_CAPTION_ICON_SIZE		= BinderIconSize.LARGE;
+	public static final BinderIconSize	LISTVIEW_ICON_SIZE				= BinderIconSize.SMALL;
+	public static final BinderIconSize	SIDEBAR_TREE_ICON_SIZE			= BinderIconSize.SMALL;
 	
 	/*
 	 * Constructor method. 

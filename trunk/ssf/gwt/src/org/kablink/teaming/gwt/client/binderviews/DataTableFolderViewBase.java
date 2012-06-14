@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
@@ -109,7 +110,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetEntriesPinStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
-import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -1172,7 +1172,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 							binderImg.getElement().setAttribute("align", "absmiddle");
 
 							// ...store the URL in the Image...
-							String binderIcon = fr.getBinderIcon(BinderIconSize.MEDIUM);
+							String binderIcon = fr.getBinderIcon(GwtConstants.LISTVIEW_ICON_SIZE);
 							if (GwtClientHelper.hasString(binderIcon)) {
 								String imagesPath = GwtClientHelper.getRequestInfo().getImagesPath();
 								if (binderIcon.startsWith("/"))
@@ -1185,8 +1185,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 							}
 
 							// ...apply any scaling to the Image...
-							int width  = BinderIconSize.MEDIUM.getBinderIconWidth();  if ((-1) != width)  binderImg.setWidth( width  + "px");
-							int height = BinderIconSize.MEDIUM.getBinderIconHeight(); if ((-1) != height) binderImg.setHeight(height + "px");
+							int width  = GwtConstants.LISTVIEW_ICON_SIZE.getBinderIconWidth();  if ((-1) != width)  binderImg.setWidth( width  + "px");
+							int height = GwtConstants.LISTVIEW_ICON_SIZE.getBinderIconHeight(); if ((-1) != height) binderImg.setHeight(height + "px");
 
 							// ...and store the Image in the reply.
 							reply.setClientBinderImage(binderImg);

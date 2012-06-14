@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.workspacetree;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
@@ -53,7 +54,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
-import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -431,7 +431,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			if (hasBusyTI()) {
 				// Yes!  Restore its default image.
 				TreeInfo busyTI = getBusyTI();
-				setBinderImageResource(busyTI, BinderIconSize.SMALL);
+				setBinderImageResource(busyTI, GwtConstants.SIDEBAR_TREE_ICON_SIZE);
 			}
 			
 			else {
@@ -981,7 +981,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorGrid.setCellPadding(0);
 		Image binderImg = new Image();
 		ti.setBinderUIImage(binderImg);
-		setBinderImageResource(ti, BinderIconSize.SMALL);
+		setBinderImageResource(ti, GwtConstants.SIDEBAR_TREE_ICON_SIZE);
 		binderImg.addStyleName("workspaceTreeBinderImg");
 		setWidgetHover(binderImg, ti.getBinderHoverImage());
 		selectorGrid.setWidget(0, 0, binderImg);
@@ -991,7 +991,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorGrid.setWidget(0, 2, new Label("\u00A0"));
 		selectorGrid.getCellFormatter().setWidth(0, 2, "100%");
 		int width = (SELECTOR_GRID_WIDTH - (SELECTOR_GRID_DEPTH_OFFSET * renderDepth));
-		if (ti.getBinderIconWidth(BinderIconSize.SMALL) > width) {
+		if (ti.getBinderIconWidth(GwtConstants.SIDEBAR_TREE_ICON_SIZE) > width) {
 			width = SELECTOR_GRID_WIDTH;
 		}
 		selectorGrid.setWidth(String.valueOf(width) + "px");

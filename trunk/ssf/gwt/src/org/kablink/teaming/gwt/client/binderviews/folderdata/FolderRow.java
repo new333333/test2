@@ -139,6 +139,13 @@ public class FolderRow implements IsSerializable {
 	public void setBinderIcon(String  binderIcon, BinderIconSize iconSize) {m_binderIcons.setBinderIcon(binderIcon, iconSize);}
 	
 	/**
+	 * Clears the binder icons being tracked in this TreeInfo.
+	 */
+	public void clearBinderIcons() {
+		m_binderIcons.clearBinderIcons();
+	}
+	
+	/**
 	 * Stores the value for a specific column.
 	 * 
 	 * @param fc
