@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -50,17 +51,18 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 /**
  * Class used to communicate workspace tree information between the
  * client (i.e., the WorkspaceTreeControl) and the server (i.e.,
- * GwtRpcServiceImpl.getTreeInfo().)
+ * GwtRpcServiceImpl.)
  * 
  * @author drfoster@novell.com
- *
  */
 public class TreeInfo implements IsSerializable, VibeRpcResponseData {
-	private List<TreeInfo>	m_childBindersAL = new ArrayList<TreeInfo>();
-	private BinderIcons		m_binderIcons    = new BinderIcons();
-	private BinderInfo		m_binderInfo     = new BinderInfo();
+	private List<TreeInfo>	m_collectionsList;
+	private List<TreeInfo>	m_childBindersList = new ArrayList<TreeInfo>();
+	private BinderIcons		m_binderIcons      = new BinderIcons();
+	private BinderInfo		m_binderInfo       = new BinderInfo();
 	private boolean			m_binderExpanded;
 	private int				m_binderChildren;
+	private int				m_binderCollections;
 	private String			m_binderHover = "";
 	private String			m_binderHoverImage;
 	private String			m_binderTitle          = "";
@@ -95,6 +97,34 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	public TreeInfo() {
 		// Initialize the super class.
 		super();
+	}
+
+	/**
+	 * Stores a TreeInfo to the child Binder's contained in
+	 * this TreeInfo.
+	 * 
+	 * @param childBinder
+	 */
+	public void addChildBinder(TreeInfo childBinder) {
+		if (null == m_childBindersList) {
+			m_childBindersList = new ArrayList<TreeInfo>();
+		}
+		m_childBindersList.add(childBinder);
+		updateChildBindersCount();
+	}
+
+	/**
+	 * Stores a TreeInfo in the collection Binder's contained in
+	 * this TreeInfo.
+	 * 
+	 * @param collection
+	 */
+	public void addCollection(TreeInfo collection) {
+		if (null == m_collectionsList) {
+			m_collectionsList = new ArrayList<TreeInfo>();
+		}
+		m_collectionsList.add(collection);
+		updateCollectionsCount();
 	}
 
 	/**
@@ -142,9 +172,6 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 		reply.setBinderTitle(         getBinderTitle()                                           );
 		reply.setBinderTrashPermalink(getBinderTrashPermalink()                                  );
 		
-		// ...store an empty child Binder's List<TreeInfo>...
-		reply.setChildBindersList(new ArrayList<TreeInfo>());
-
 		// ...and return it.
 		return reply;
 	}
@@ -319,6 +346,16 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	}
 
 	/**
+	 * Returns the number of collections in the Binder corresponding to
+	 * this TreeInfo object.
+	 * 
+	 * @return
+	 */
+	public int getBinderCollections() {
+		return m_binderCollections;
+	}
+
+	/**
 	 * Returns the hover text, if any of the Binder corresponding to
 	 * this TreeInfo object.
 	 * 
@@ -465,54 +502,68 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	 */
 	private ImageResource getBinderImageSmall() {
 		ImageResource reply = null;
-		GwtTeamingWorkspaceTreeImageBundle images = GwtTeaming.getWorkspaceTreeImageBundle();
+		GwtTeamingFilrImageBundle			filrImages   = GwtTeaming.getFilrImageBundle();
+		GwtTeamingWorkspaceTreeImageBundle	wsTreeImages = GwtTeaming.getWorkspaceTreeImageBundle();
 		if (isBucket()) {
-			reply = images.bucket();
+			reply = wsTreeImages.bucket();
 		}
 		
 		else {
 			switch (m_binderInfo.getBinderType()) {
-			case FOLDER:
-				switch (m_binderInfo.getFolderType()) {
-				case BLOG:         reply = images.folder_comment();   break;
-				case CALENDAR:     reply = images.folder_calendar();  break;
-				case DISCUSSION:   reply = images.folder_comment();   break;
-				case FILE:         reply = images.folder_file();      break;
-				case GUESTBOOK:    reply = images.folder_guestbook(); break;
-				case MILESTONE:    reply = images.folder_milestone(); break;
-				case MINIBLOG:     reply = images.folder_comment();   break;
-				case MIRROREDFILE: reply = images.folder_file();      break;
-				case PHOTOALBUM:   reply = images.folder_photo();     break;
-				case SURVEY:       reply = images.folder_survey();    break;
-				case TASK:         reply = images.folder_task();      break;
-				case TRASH:        reply = images.folder_trash();     break;
-				case WIKI:         reply = images.folder_wiki();      break;
-				case OTHER:                                           break;
+			case COLLECTION:
+				switch (m_binderInfo.getCollectionType()) {
+				case FILESPACES:  reply = filrImages.fileSpace(); break;
+				case MYFILES:     reply = filrImages.myFiles();   break;
+				case SHARED:      reply = filrImages.shared();    break;
 				}
 				
 				if (null == reply) {
-					reply = images.folder_generic();
+					reply = null;
+				}
+				
+				break;
+				
+			case FOLDER:
+				switch (m_binderInfo.getFolderType()) {
+				case BLOG:         reply = wsTreeImages.folder_comment();   break;
+				case CALENDAR:     reply = wsTreeImages.folder_calendar();  break;
+				case DISCUSSION:   reply = wsTreeImages.folder_comment();   break;
+				case FILE:         reply = wsTreeImages.folder_file();      break;
+				case GUESTBOOK:    reply = wsTreeImages.folder_guestbook(); break;
+				case MILESTONE:    reply = wsTreeImages.folder_milestone(); break;
+				case MINIBLOG:     reply = wsTreeImages.folder_comment();   break;
+				case MIRROREDFILE: reply = wsTreeImages.folder_file();      break;
+				case PHOTOALBUM:   reply = wsTreeImages.folder_photo();     break;
+				case SURVEY:       reply = wsTreeImages.folder_survey();    break;
+				case TASK:         reply = wsTreeImages.folder_task();      break;
+				case TRASH:        reply = wsTreeImages.folder_trash();     break;
+				case WIKI:         reply = wsTreeImages.folder_wiki();      break;
+				case OTHER:                                                 break;
+				}
+				
+				if (null == reply) {
+					reply = wsTreeImages.folder_generic();
 				}
 				
 				break;
 				
 			case WORKSPACE:
 				switch (m_binderInfo.getWorkspaceType()) {
-				case DISCUSSIONS:         reply = images.workspace_discussions();        break;
-				case GLOBAL_ROOT:         reply = images.workspace_global_root();        break;
-				case LANDING_PAGE:        reply = images.workspace_landing_page();       break;
-				case PROFILE_ROOT:        reply = images.workspace_profile_root();       break;
-				case PROJECT_MANAGEMENT:  reply = images.workspace_project_management(); break;
-				case TEAM:                reply = images.workspace_team();               break;
-				case TEAM_ROOT:           reply = images.workspace_team_root();          break;
-				case TOP:                 reply = images.workspace_top();                break;
-				case TRASH:               reply = images.workspace_trash();              break;
-				case USER:                reply = images.workspace_personal();           break;
-				case OTHER:                                                                                                break;
+				case DISCUSSIONS:         reply = wsTreeImages.workspace_discussions();        break;
+				case GLOBAL_ROOT:         reply = wsTreeImages.workspace_global_root();        break;
+				case LANDING_PAGE:        reply = wsTreeImages.workspace_landing_page();       break;
+				case PROFILE_ROOT:        reply = wsTreeImages.workspace_profile_root();       break;
+				case PROJECT_MANAGEMENT:  reply = wsTreeImages.workspace_project_management(); break;
+				case TEAM:                reply = wsTreeImages.workspace_team();               break;
+				case TEAM_ROOT:           reply = wsTreeImages.workspace_team_root();          break;
+				case TOP:                 reply = wsTreeImages.workspace_top();                break;
+				case TRASH:               reply = wsTreeImages.workspace_trash();              break;
+				case USER:                reply = wsTreeImages.workspace_personal();           break;
+				case OTHER:                                                                    break;
 				}
 				
 				if (null == reply) {
-					reply = images.workspace_generic();
+					reply = wsTreeImages.workspace_generic();
 				}
 				
 				break;
@@ -528,54 +579,68 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	 */
 	private ImageResource getBinderImageMedium() {
 		ImageResource reply = null;
-		GwtTeamingWorkspaceTreeImageBundle images = GwtTeaming.getWorkspaceTreeImageBundle();
+		GwtTeamingFilrImageBundle			filrImages   = GwtTeaming.getFilrImageBundle();
+		GwtTeamingWorkspaceTreeImageBundle	wsTreeImages = GwtTeaming.getWorkspaceTreeImageBundle();
 		if (isBucket()) {
-			reply = images.bucket();
+			reply = wsTreeImages.bucket();
 		}
 		
 		else {
 			switch (m_binderInfo.getBinderType()) {
-			case FOLDER:
-				switch (m_binderInfo.getFolderType()) {
-				case BLOG:         reply = images.folder_comment_medium();   break;
-				case CALENDAR:     reply = images.folder_calendar_medium();  break;
-				case DISCUSSION:   reply = images.folder_comment_medium();   break;
-				case FILE:         reply = images.folder_file_medium();      break;
-				case GUESTBOOK:    reply = images.folder_guestbook_medium(); break;
-				case MILESTONE:    reply = images.folder_milestone_medium(); break;
-				case MINIBLOG:     reply = images.folder_comment_medium();   break;
-				case MIRROREDFILE: reply = images.folder_file_medium();      break;
-				case PHOTOALBUM:   reply = images.folder_photo_medium();     break;
-				case SURVEY:       reply = images.folder_survey_medium();    break;
-				case TASK:         reply = images.folder_task_medium();      break;
-				case TRASH:        reply = images.folder_trash_medium();     break;
-				case WIKI:         reply = images.folder_wiki_medium();      break;
-				case OTHER:                                                  break;
+			case COLLECTION:
+				switch (m_binderInfo.getCollectionType()) {
+				case FILESPACES:  reply = filrImages.fileSpace_medium(); break;
+				case MYFILES:     reply = filrImages.myFiles_medium();   break;
+				case SHARED:      reply = filrImages.shared_medium();    break;
 				}
 				
 				if (null == reply) {
-					reply = images.folder_generic_medium();
+					reply = null;
+				}
+				
+				break;
+				
+			case FOLDER:
+				switch (m_binderInfo.getFolderType()) {
+				case BLOG:         reply = wsTreeImages.folder_comment_medium();   break;
+				case CALENDAR:     reply = wsTreeImages.folder_calendar_medium();  break;
+				case DISCUSSION:   reply = wsTreeImages.folder_comment_medium();   break;
+				case FILE:         reply = wsTreeImages.folder_file_medium();      break;
+				case GUESTBOOK:    reply = wsTreeImages.folder_guestbook_medium(); break;
+				case MILESTONE:    reply = wsTreeImages.folder_milestone_medium(); break;
+				case MINIBLOG:     reply = wsTreeImages.folder_comment_medium();   break;
+				case MIRROREDFILE: reply = wsTreeImages.folder_file_medium();      break;
+				case PHOTOALBUM:   reply = wsTreeImages.folder_photo_medium();     break;
+				case SURVEY:       reply = wsTreeImages.folder_survey_medium();    break;
+				case TASK:         reply = wsTreeImages.folder_task_medium();      break;
+				case TRASH:        reply = wsTreeImages.folder_trash_medium();     break;
+				case WIKI:         reply = wsTreeImages.folder_wiki_medium();      break;
+				case OTHER:                                                        break;
+				}
+				
+				if (null == reply) {
+					reply = wsTreeImages.folder_generic_medium();
 				}
 				
 				break;
 				
 			case WORKSPACE:
 				switch (m_binderInfo.getWorkspaceType()) {
-				case DISCUSSIONS:         reply = images.workspace_discussions_medium();        break;
-				case GLOBAL_ROOT:         reply = images.workspace_global_root_medium();        break;
-				case LANDING_PAGE:        reply = images.workspace_landing_page_medium();       break;
-				case PROFILE_ROOT:        reply = images.workspace_profile_root_medium();       break;
-				case PROJECT_MANAGEMENT:  reply = images.workspace_project_management_medium(); break;
-				case TEAM:                reply = images.workspace_team_medium();               break;
-				case TEAM_ROOT:           reply = images.workspace_team_root_medium();          break;
-				case TOP:                 reply = images.workspace_top_medium();                break;
-				case TRASH:               reply = images.workspace_trash_medium();              break;
-				case USER:                reply = images.workspace_personal_medium();           break;
-				case OTHER:                                                                     break;
+				case DISCUSSIONS:         reply = wsTreeImages.workspace_discussions_medium();        break;
+				case GLOBAL_ROOT:         reply = wsTreeImages.workspace_global_root_medium();        break;
+				case LANDING_PAGE:        reply = wsTreeImages.workspace_landing_page_medium();       break;
+				case PROFILE_ROOT:        reply = wsTreeImages.workspace_profile_root_medium();       break;
+				case PROJECT_MANAGEMENT:  reply = wsTreeImages.workspace_project_management_medium(); break;
+				case TEAM:                reply = wsTreeImages.workspace_team_medium();               break;
+				case TEAM_ROOT:           reply = wsTreeImages.workspace_team_root_medium();          break;
+				case TOP:                 reply = wsTreeImages.workspace_top_medium();                break;
+				case TRASH:               reply = wsTreeImages.workspace_trash_medium();              break;
+				case USER:                reply = wsTreeImages.workspace_personal_medium();           break;
+				case OTHER:                                                                           break;
 				}
 				
 				if (null == reply) {
-					reply = images.workspace_generic_medium();
+					reply = wsTreeImages.workspace_generic_medium();
 				}
 				
 				break;
@@ -591,54 +656,68 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	 */
 	private ImageResource getBinderImageLarge() {
 		ImageResource reply = null;
-		GwtTeamingWorkspaceTreeImageBundle images = GwtTeaming.getWorkspaceTreeImageBundle();
+		GwtTeamingFilrImageBundle			filrImages   = GwtTeaming.getFilrImageBundle();
+		GwtTeamingWorkspaceTreeImageBundle	wsTreeImages = GwtTeaming.getWorkspaceTreeImageBundle();
 		if (isBucket()) {
-			reply = images.bucket();
+			reply = wsTreeImages.bucket();
 		}
 		
 		else {
 			switch (m_binderInfo.getBinderType()) {
-			case FOLDER:
-				switch (m_binderInfo.getFolderType()) {
-				case BLOG:         reply = images.folder_comment_large();   break;
-				case CALENDAR:     reply = images.folder_calendar_large();  break;
-				case DISCUSSION:   reply = images.folder_comment_large();   break;
-				case FILE:         reply = images.folder_file_large();      break;
-				case GUESTBOOK:    reply = images.folder_guestbook_large(); break;
-				case MILESTONE:    reply = images.folder_milestone_large(); break;
-				case MINIBLOG:     reply = images.folder_comment_large();   break;
-				case MIRROREDFILE: reply = images.folder_file_large();      break;
-				case PHOTOALBUM:   reply = images.folder_photo_large();     break;
-				case SURVEY:       reply = images.folder_survey_large();    break;
-				case TASK:         reply = images.folder_task_large();      break;
-				case TRASH:        reply = images.folder_trash_large();     break;
-				case WIKI:         reply = images.folder_wiki_large();      break;
-				case OTHER:                                                 break;
+			case COLLECTION:
+				switch (m_binderInfo.getCollectionType()) {
+				case FILESPACES:  reply = filrImages.fileSpace_large(); break;
+				case MYFILES:     reply = filrImages.myFiles_large();   break;
+				case SHARED:      reply = filrImages.shared_large();    break;
 				}
 				
 				if (null == reply) {
-					reply = images.folder_generic_large();
+					reply = null;
+				}
+				
+				break;
+				
+			case FOLDER:
+				switch (m_binderInfo.getFolderType()) {
+				case BLOG:         reply = wsTreeImages.folder_comment_large();   break;
+				case CALENDAR:     reply = wsTreeImages.folder_calendar_large();  break;
+				case DISCUSSION:   reply = wsTreeImages.folder_comment_large();   break;
+				case FILE:         reply = wsTreeImages.folder_file_large();      break;
+				case GUESTBOOK:    reply = wsTreeImages.folder_guestbook_large(); break;
+				case MILESTONE:    reply = wsTreeImages.folder_milestone_large(); break;
+				case MINIBLOG:     reply = wsTreeImages.folder_comment_large();   break;
+				case MIRROREDFILE: reply = wsTreeImages.folder_file_large();      break;
+				case PHOTOALBUM:   reply = wsTreeImages.folder_photo_large();     break;
+				case SURVEY:       reply = wsTreeImages.folder_survey_large();    break;
+				case TASK:         reply = wsTreeImages.folder_task_large();      break;
+				case TRASH:        reply = wsTreeImages.folder_trash_large();     break;
+				case WIKI:         reply = wsTreeImages.folder_wiki_large();      break;
+				case OTHER:                                                       break;
+				}
+				
+				if (null == reply) {
+					reply = wsTreeImages.folder_generic_large();
 				}
 				
 				break;
 				
 			case WORKSPACE:
 				switch (m_binderInfo.getWorkspaceType()) {
-				case DISCUSSIONS:         reply = images.workspace_discussions_large();        break;
-				case GLOBAL_ROOT:         reply = images.workspace_global_root_large();        break;
-				case LANDING_PAGE:        reply = images.workspace_landing_page_large();       break;
-				case PROFILE_ROOT:        reply = images.workspace_profile_root_large();       break;
-				case PROJECT_MANAGEMENT:  reply = images.workspace_project_management_large(); break;
-				case TEAM:                reply = images.workspace_team_large();               break;
-				case TEAM_ROOT:           reply = images.workspace_team_root_large();          break;
-				case TOP:                 reply = images.workspace_top_large();                break;
-				case TRASH:               reply = images.workspace_trash_large();              break;
-				case USER:                reply = images.workspace_personal_large();           break;
-				case OTHER:                                                                    break;
+				case DISCUSSIONS:         reply = wsTreeImages.workspace_discussions_large();        break;
+				case GLOBAL_ROOT:         reply = wsTreeImages.workspace_global_root_large();        break;
+				case LANDING_PAGE:        reply = wsTreeImages.workspace_landing_page_large();       break;
+				case PROFILE_ROOT:        reply = wsTreeImages.workspace_profile_root_large();       break;
+				case PROJECT_MANAGEMENT:  reply = wsTreeImages.workspace_project_management_large(); break;
+				case TEAM:                reply = wsTreeImages.workspace_team_large();               break;
+				case TEAM_ROOT:           reply = wsTreeImages.workspace_team_root_large();          break;
+				case TOP:                 reply = wsTreeImages.workspace_top_large();                break;
+				case TRASH:               reply = wsTreeImages.workspace_trash_large();              break;
+				case USER:                reply = wsTreeImages.workspace_personal_large();           break;
+				case OTHER:                                                                          break;
 				}
 				
 				if (null == reply) {
-					reply = images.workspace_generic_large();
+					reply = wsTreeImages.workspace_generic_large();
 				}
 				
 				break;
@@ -755,7 +834,16 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	 * @return
 	 */
 	public List<TreeInfo> getChildBindersList() {
-		return m_childBindersAL;
+		return m_childBindersList;
+	}
+	
+	/**
+	 * Returns the List<TreeInfo> of the collection point Binder's.
+	 * 
+	 * @return
+	 */
+	public List<TreeInfo> getCollectionsList() {
+		return m_collectionsList;
 	}
 	
 	/**
@@ -883,6 +971,15 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	}
 	
 	/**
+	 * Store a count of the collections of a Binder.
+	 * 
+	 * @param binderCollections
+	 */
+	public void setBinderCollections(int binderCollections) {
+		m_binderCollections = binderCollections;
+	}
+	
+	/**
 	 * Stores a Binder's hover text in this TreeInfo object.
 	 * 
 	 * @param binderHover
@@ -982,8 +1079,19 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	 * @param childBindersList
 	 */
 	public void setChildBindersList(List<TreeInfo> childBindersList) {
-		m_childBindersAL = childBindersList;
+		m_childBindersList = childBindersList;
 		updateChildBindersCount();
+	}
+
+	/**
+	 * Stores a List<TreeInfo> of the collection Binder's contained in
+	 * this TreeInfo.
+	 * 
+	 * @param collectionsAL
+	 */
+	public void setCollectionsList(List<TreeInfo> collectionsAL) {
+		m_collectionsList = collectionsAL;
+		updateCollectionsCount();
 	}
 
 	/**
@@ -1000,9 +1108,17 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	
 	/**
 	 * Updates the m_binderChildren data member based on what's
-	 * currently contained in the m_childBindersAL ArrayList.
+	 * currently contained in the m_childBindersList ArrayList.
 	 */
 	public void updateChildBindersCount() {
-		m_binderChildren = ((null == m_childBindersAL) ? 0 : m_childBindersAL.size());
+		m_binderChildren = ((null == m_childBindersList) ? 0 : m_childBindersList.size());
+	}
+	
+	/**
+	 * Updates the m_binderCollections data member based on what's
+	 * currently contained in the m_collectionsList ArrayList.
+	 */
+	public void updateCollectionsCount() {
+		m_binderCollections = ((null == m_collectionsList) ? 0 : m_collectionsList.size());
 	}
 }

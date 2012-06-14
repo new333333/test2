@@ -35,24 +35,16 @@ package org.kablink.teaming.gwt.client.util;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Enumeration used to communicate the type of a workspace between the
+ * Enumeration used to communicate the type of a collection between the
  * client and the server as part of a GWT RPC command.
  * 
  * @author drfoster@novell.com
  */
-public enum WorkspaceType implements IsSerializable {
-	DISCUSSIONS,
-	GLOBAL_ROOT,
-	LANDING_PAGE,
-	PROFILE_ROOT,
-	PROJECT_MANAGEMENT,
-	TEAM,
-	TEAM_ROOT,
-	TOP,
-	TRASH,
-	USER,
-	WORKSPACE,
+public enum CollectionType implements IsSerializable {
+	FILESPACES,
+	MYFILES,
+	SHARED,
 	
 	OTHER,
-	NOT_A_WORKSPACE,
+	NOT_A_COLLECTION,
 }
