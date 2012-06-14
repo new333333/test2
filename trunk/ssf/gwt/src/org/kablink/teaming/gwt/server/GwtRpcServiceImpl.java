@@ -188,8 +188,10 @@ import org.kablink.teaming.web.util.WorkspaceTreeHelper;
 import org.kablink.util.search.Constants;
 
 /**
+ * Collection of methods used to implement the various GWT RPC
+ * commands.
  * 
- * @author jwootton
+ * @author jwootton@novell.com
  */
 public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	implements GwtRpcService
@@ -4702,7 +4704,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	private TreeInfo getVerticalTree( HttpRequestInfo ri, String binderIdS )
+	private TreeInfo getVerticalTree( HttpRequestInfo ri, String binderIdS ) throws GwtTeamingException
 	{
 		Binder binder;
 		TreeInfo reply;
@@ -4768,6 +4770,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				GwtServerHelper.addTrashFolder( this, reply, binder );
 			}
 		}
+
+		// Finally, add the TreeInfo's for the collections we display
+		// at the top of the tree.
+		GwtServerHelper.addCollections( this, getRequest( ri ), reply );
 		
 		// If we get here, reply refers to the TreeInfo for the Binder
 		// requested.  Return it.

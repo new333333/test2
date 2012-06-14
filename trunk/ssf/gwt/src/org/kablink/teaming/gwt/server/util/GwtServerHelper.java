@@ -128,6 +128,7 @@ import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderSortSetting;
@@ -674,6 +675,87 @@ public class GwtServerHelper {
 		binderId = binder.getId();
 		tagName = tagInfo.getTagName();
 		bm.setTag( binderId, tagName, community );
+	}
+	
+	/**
+	 * Adds TreeInfo's for the collections we display at the top
+	 * workspace tree.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param ti
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static void addCollections(AllModulesInjected bs, HttpServletRequest request, TreeInfo ti) throws GwtTeamingException {
+		// Can we access the current user's workspace?
+		User		user     = getCurrentUser();
+		Long		userWSId = user.getWorkspaceId();
+		Workspace	userWS;
+		try {
+			userWS = bs.getWorkspaceModule().getWorkspace(userWSId);
+		}
+		
+		catch (Exception e) {
+			// No!  If this is the guest user...
+			if (user.isShared()) {
+				// ...simply ignore the error and bail.
+				return;
+			}
+			
+			// For all other users, convert this to a
+			// GwtTeamingExcepton and throw that.
+			throw getGwtTeamingException(e);
+		}
+		
+		// If we get here, we have access to the user's workspace!  Add
+		// TreeInfo's for the various collections. 
+		addCollection(bs, request, userWS, ti, CollectionType.MYFILES   );
+		addCollection(bs, request, userWS, ti, CollectionType.SHARED    );
+		addCollection(bs, request, userWS, ti, CollectionType.FILESPACES);
+	}
+	
+	/*
+	 * Adds a TreeInfo for one of the collections we display at the top
+	 * workspace tree.
+	 */
+	private static void addCollection(AllModulesInjected bs, HttpServletRequest request, Workspace userWS, TreeInfo ti, CollectionType ct) throws GwtTeamingException {
+		try {
+			// Get the string to use for the title of this collection.
+			String titleKey;
+			switch (ct) {
+			default:
+			case MYFILES:     titleKey = "collection.myFiles";    break;
+			case FILESPACES:  titleKey = "collection.fileSpaces"; break;
+			case SHARED:      titleKey = "collection.shared";     break;
+			}
+			String title = NLT.get(titleKey);
+			
+			// Allocate a TreeInfo for the collection's information...
+			TreeInfo collectionTI = new TreeInfo();
+	
+			// ...add a BinderInfo to the TreeInfo...
+			BinderInfo bi = new BinderInfo();
+			bi.setCollectionType(ct);
+			bi.setBinderId(userWS.getId());
+			bi.setBinderTitle(title);
+			collectionTI.setBinderInfo(bi);
+	
+			// ...store the collection's title...
+			collectionTI.setBinderTitle(title);
+	
+			// ...store the various required links...
+			String wsPL = PermaLinkUtil.getPermalink(request, userWS);
+			collectionTI.setBinderPermalink(wsPL);
+			collectionTI.setBinderTrashPermalink(GwtUIHelper.getTrashPermalink(wsPL));
+			
+			// ...and add the collection TreeInfo to the collection list.
+			ti.addCollection(collectionTI);
+		}
+		
+		catch (Exception e) {
+			throw getGwtTeamingException(e);
+		}
 	}
 	
 	/**
