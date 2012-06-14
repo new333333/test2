@@ -65,10 +65,7 @@ public class ContainerFilter implements ContainerRequestFilter, ContainerRespons
 		
 		// Set up request context
 		setupRequestContext(request);
-		
-		// Set up Hibernate session
-		setupHibernateSession(request);
-		
+
 		// Resolve request context
 		resolveRequestContext(request);
 		
@@ -78,9 +75,6 @@ public class ContainerFilter implements ContainerRequestFilter, ContainerRespons
 	@Override
 	public ContainerResponse filter(ContainerRequest request,
 			ContainerResponse response) {
-		// Tear down Hibernate session
-		teardownHibernateSession(request);
-		
 		// Clear request context
 		clearRequestContext(request);
 		
@@ -111,21 +105,6 @@ public class ContainerFilter implements ContainerRequestFilter, ContainerRespons
 	
 	private void clearRequestContext(ContainerRequest request) {
 		RequestContextHolder.clear();
-	}
-	
-	private void setupHibernateSession(ContainerRequest request) {
-		// NOTE: This could be problematic if a single request from client ever results in a chained 
-		// invocation of more than one methods on resource(s). If such case is a possibility, we need
-		// to create session conditionally (i.e., only when SessionUtil.sessionActive() returns false) 
-		// so that the thread of execution can share a single Hibernate session. 
-		if(SessionUtil.sessionActive())
-			logger.warn("We've got an active Hibernate session for " + request.toString());
-		else 
-			SessionUtil.sessionStartup();
-	}
-	
-	private void teardownHibernateSession(ContainerRequest request) {
-		SessionUtil.sessionStop();
 	}
 	
 	private void traceRequest(ContainerRequest request) {
