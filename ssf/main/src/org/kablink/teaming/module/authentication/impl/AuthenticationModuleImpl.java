@@ -59,8 +59,6 @@ import org.kablink.teaming.spring.security.ldap.LdapAuthenticationProvider;
 import org.kablink.teaming.spring.security.ldap.PreAuthenticatedAuthenticator;
 import org.kablink.teaming.spring.security.ldap.PreAuthenticatedFilterBasedLdapUserSearch;
 import org.kablink.teaming.spring.security.ldap.PreAuthenticatedLdapAuthenticationProvider;
-import org.kablink.teaming.spring.security.openid.OpenIDAuthenticationProvider;
-import org.kablink.teaming.spring.security.openid.OpenIDAuthenticationToken;
 import org.kablink.teaming.spring.security.openid.OpenIDAuthenticationUserDetailsService;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
@@ -84,6 +82,8 @@ import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.ldap.authentication.BindAuthenticator;
+import org.springframework.security.openid.OpenIDAuthenticationProvider;
+import org.springframework.security.openid.OpenIDAuthenticationToken;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -91,7 +91,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		implements AuthenticationProvider, InitializingBean {
 	protected Log logger = LogFactory.getLog(getClass());
 
-	protected Map<Long, ProviderManager> externalAuthenticators = null;
+	protected Map<Long, ProviderManager> nonLocalAuthenticators = null;
 
 	protected Map<Long, ZoneAwareLocalAuthenticationProvider> localProviders = null;
 	protected ConcurrentHashMap<Long, Long> lastUpdates = null;
@@ -100,7 +100,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	protected boolean authenticateLdapMatchingUsersUsingLdapOnly = true;
 	
 	public AuthenticationModuleImpl() throws ClassNotFoundException {
-		externalAuthenticators = new HashMap<Long, ProviderManager>();
+		nonLocalAuthenticators = new HashMap<Long, ProviderManager>();
 		localProviders = new HashMap<Long, ZoneAwareLocalAuthenticationProvider>();
 		lastUpdates = new ConcurrentHashMap<Long, Long>();
 	}
@@ -113,7 +113,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	protected void addZone(ZoneConfig zoneConfig) throws Exception
 	{
 		String zoneName = getZoneModule().getZoneInfo(zoneConfig.getZoneId()).getZoneName();
-		if(externalAuthenticators.containsKey(zoneConfig.getZoneId())) {
+		if(nonLocalAuthenticators.containsKey(zoneConfig.getZoneId())) {
 			logger.error("Duplicate zone added to AuthenticationModule: " + zoneConfig.getZoneId() + " " + zoneName);
 			throw new Exception("Duplicate zone added to AuthenticationModule");
 		}
@@ -122,7 +122,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		ZoneAwareLocalAuthenticationProvider localProvider = newZoneAwareLocalAuthenticationProviderInstance(zoneName);
 		localProviders.put(zoneConfig.getZoneId(), localProvider);
 		
-		externalAuthenticators.put(zoneConfig.getZoneId(), null);
+		nonLocalAuthenticators.put(zoneConfig.getZoneId(), null);
 		
 		rebuildProvidersForZone(zoneConfig);
 	}
@@ -135,8 +135,8 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	
 	protected void removeZone(Long zoneId)
 	{
-		if(externalAuthenticators.containsKey(zoneId)) {
-			externalAuthenticators.remove(zoneId);
+		if(nonLocalAuthenticators.containsKey(zoneId)) {
+			nonLocalAuthenticators.remove(zoneId);
 			localProviders.remove(zoneId);
 			lastUpdates.remove(zoneId);
 		}
@@ -147,7 +147,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		try {
 			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
 			synchronized(this) {
-				if(!externalAuthenticators.containsKey(zoneId)) {
+				if(!nonLocalAuthenticators.containsKey(zoneId)) {
 					addZone(zoneConfig);
 				}
 			}
@@ -169,7 +169,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	}
 	
 	protected void rebuildProvidersForZone(ZoneConfig zoneConfig) throws Exception {
-		ProviderManager pm = externalAuthenticators.get(zoneConfig.getZoneId());
+		ProviderManager pm = nonLocalAuthenticators.get(zoneConfig.getZoneId());
 		List<AuthenticationProvider> providers = createProvidersForZone(zoneConfig.getZoneId());
 		if(providers.size() > 0) { // we've got external authenticators such as LDAP
 			if(pm != null) {
@@ -178,12 +178,12 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 			else {
 				pm = new ProviderManager();
 				pm.setProviders(providers);
-				externalAuthenticators.put(zoneConfig.getZoneId(), pm);
+				nonLocalAuthenticators.put(zoneConfig.getZoneId(), pm);
 			}
 		}
 		else { // no external authenticators
 			if(pm != null)
-				externalAuthenticators.put(zoneConfig.getZoneId(), null);
+				nonLocalAuthenticators.put(zoneConfig.getZoneId(), null);
 		}
 		lastUpdates.put(zoneConfig.getZoneId(), zoneConfig.getAuthenticationConfig().getLastUpdate());
 	}
@@ -435,11 +435,8 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     		throw new AuthenticationServiceException("Unable to configure authentication for zone " + zone, e);
     	}
 
-    	if(externalAuthenticators.containsKey(zone)) {
-    		// Don't allow anyone to log in without specifying a password (to prevent successful
-    		// authentication on an account that has no password).
-    		if(authentication.getCredentials() == null || authentication.getCredentials().equals(""))
-    			throw new BadCredentialsException("Password is required");
+    	if(nonLocalAuthenticators.containsKey(zone)) {
+    		checkPasswordRequirement(authentication);
     		
        		Authentication result = null;
        		
@@ -460,10 +457,6 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	     				// Integrated Windows Authentication through integration with IIS
 	     				PreAuthenticatedAuthenticationToken preAuth = (PreAuthenticatedAuthenticationToken) result;
 	     				loginName = WindowsUtil.getSamaccountname((String) result.getName());
-	     			}
-	     			else if(result instanceof OpenIDAuthenticationToken) {
-	     				// OpenID authentication
-	     				loginName = ((OpenIDAuthenticationToken)result).getVibeUsername();
 	     			}
 	     			else {
 	     				loginName = (String) result.getName();
@@ -585,8 +578,8 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     		logger.error("Unable to configure authentication for zone " + zone, e);
     		throw new AuthenticationServiceException("Unable to configure authentication for zone " + zone, e);
     	}
-		if (externalAuthenticators.containsKey(zone)) {
-			ProviderManager pm = externalAuthenticators.get(zone);
+		if (nonLocalAuthenticators.containsKey(zone)) {
+			ProviderManager pm = nonLocalAuthenticators.get(zone);
 			if(pm != null) {
 				for (Object o : pm.getProviders()) {
 					AuthenticationProvider p = (AuthenticationProvider) o;
@@ -602,7 +595,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 
 	private Authentication performAuthentication(Long zoneId, Authentication authentication) throws AuthenticationException {
 		AuthenticationException exc = null;
-		ProviderManager pm = externalAuthenticators.get(zoneId);
+		ProviderManager pm = nonLocalAuthenticators.get(zoneId);
 		boolean mustSkipLocalAuthentication = false;
 		if(pm != null) {
 			try {
@@ -631,4 +624,15 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 			throw new UsernameNotFoundException("No such account " + authentication.getName());
 		}
 	}
+	
+	private void checkPasswordRequirement(Authentication authentication) {
+		if(authentication instanceof OpenIDAuthenticationToken)
+			return;
+		
+		// Don't allow anyone to log in without specifying a password (to prevent successful
+		// authentication on an account that has no password).
+		if(authentication.getCredentials() == null || authentication.getCredentials().equals(""))
+			throw new BadCredentialsException("Password is required");
+	}
+	
 }
