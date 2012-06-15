@@ -76,6 +76,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             FolderEntry.class,
             FolderEntryBrief.class,
             FsaConfig.class,
+            Group.class,
             GroupBrief.class,
     		HistoryStamp.class,
     		LegacyFileProperties.class,

@@ -47,6 +47,7 @@ import org.kablink.teaming.rest.v1.model.Description;
 import org.kablink.teaming.rest.v1.model.Entry;
 import org.kablink.teaming.rest.v1.model.Folder;
 import org.kablink.teaming.rest.v1.model.FolderEntry;
+import org.kablink.teaming.rest.v1.model.Group;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
 import org.kablink.teaming.rest.v1.model.Principal;
 import org.kablink.teaming.rest.v1.model.Tag;
@@ -144,9 +145,9 @@ public class ResourceUtil {
         fp.setBinder(new LongIdLinkPair(fa.getBinderId(), LinkUriUtil.getBinderLinkUri(fa.getBinderId())));
         fp.setName(fa.getName());
         fp.setCreation(new HistoryStamp(new LongIdLinkPair(fa.getCreatorId(), LinkUriUtil.getUserLinkUri(fa.getCreatorId())),
-                                        fa.getCreatedDate()));
+                fa.getCreatedDate()));
         fp.setModification(new HistoryStamp(new LongIdLinkPair(fa.getModifierId(), LinkUriUtil.getUserLinkUri(fa.getModifierId())),
-                                            fa.getModifiedDate()));
+                fa.getModifiedDate()));
         fp.setLength(fa.getSize());
         LinkUriUtil.populateFileLinks(fp);
         return fp;
@@ -202,7 +203,7 @@ public class ResourceUtil {
         Binder model;
         if (binder instanceof org.kablink.teaming.domain.Folder) {
             model = new Folder();
-            populateFolder((Folder)model, (org.kablink.teaming.domain.Folder)binder, includeAttachments);
+            populateFolder((Folder) model, (org.kablink.teaming.domain.Folder) binder, includeAttachments);
         } else if (binder instanceof org.kablink.teaming.domain.Workspace) {
             model = new Workspace();
             populateWorkspace((Workspace)model, (org.kablink.teaming.domain.Workspace)binder, includeAttachments);
@@ -249,6 +250,15 @@ public class ResourceUtil {
         if (user.getWorkspaceId()!=null) {
             model.setWorkspace(new LongIdLinkPair(user.getWorkspaceId(), LinkUriUtil.getWorkspaceLinkUri(user.getWorkspaceId())));
         }
+
+        LinkUriUtil.populateUserLinks(model);
+
+        return model;
+    }
+
+    public static Group buildGroup(org.kablink.teaming.domain.Group group, boolean includeAttachments) {
+        Group model = new Group();
+        populatePrincipal(model, group, includeAttachments);
 
         LinkUriUtil.populateUserLinks(model);
 
