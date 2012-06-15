@@ -57,6 +57,7 @@ public enum TeamingEvents implements IsSerializable {
 	BLOG_ARCHIVE_FOLDER_SELECTED,		// The user selected a folder in the blog archive control
 	BLOG_ARCHIVE_MONTH_SELECTED,		// The user selected a month in the blog archive control
 	BLOG_GLOBAL_TAG_SELECTED,			// The user selected a tag in the blog tag control
+	BLOG_PAGE_CREATED,					// The user created a blog page.
 	BLOG_PAGE_SELECTED,					// The user selected a blog page in the blog page control
 	
 	BROWSE_HIERARCHY,					// Browse Vibe OnPrem's hierarchy (i.e., the bread crumb tree.) 

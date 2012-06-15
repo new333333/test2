@@ -75,6 +75,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SeenMap;
+import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
@@ -91,6 +92,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.AvatarInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ColumnWidthsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.CreateFolderRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData.EntryType;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
@@ -215,16 +217,20 @@ public class GwtViewHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData addNewFolder( AllModulesInjected bs, HttpServletRequest request, Long binderId, Long folderTemplateId, String folderName) throws GwtTeamingException {
+	public static CreateFolderRpcResponseData addNewFolder( AllModulesInjected bs, HttpServletRequest request, Long binderId, Long folderTemplateId, String folderName) throws GwtTeamingException {
 		try {
-			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+			// Allocate a response we can return.
+			CreateFolderRpcResponseData reply = new CreateFolderRpcResponseData(new ArrayList<String>());
 
 			try {
 				// Can we create the new folder?
 				final BinderModule bm = bs.getBinderModule();
 				final Long newId = bs.getTemplateModule().addBinder(folderTemplateId, binderId, folderName, null).getId();
 				if (bm.getBinder(newId) != null) {
+					
+					reply.setFolderId(newId);
+					reply.setFolderName(folderName);
+					
 					RunWithTemplate.runWith(new RunWithCallback() {
 						@Override
 						public Object runWith() {
@@ -240,6 +246,7 @@ public class GwtViewHelper {
 				String messageKey;
 				if      (e instanceof AccessControlException) messageKey = "addNewFolderError.AccssControlException";
 				else if (e instanceof WriteFilesException)    messageKey = "addNewFolderError.WriteFilesException";
+				else if (e instanceof TitleException)		  messageKey = "addNewFolderError.TitleException";
 				else                                          messageKey = "addNewFolderError.OtherException";
 				reply.addError(NLT.get(messageKey, new String[]{folderName}));
 			}

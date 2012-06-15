@@ -52,12 +52,14 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.gwt.client.BlogArchiveFolder;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogArchiveMonth;
 import org.kablink.teaming.gwt.client.BlogPage;
 import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.util.TagInfo;
+import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
@@ -354,6 +356,7 @@ public class GwtBlogHelper
 		{
 			Folder folder;
 			Binder topFolder;
+			Long folderTemplateId;
 
 			folder = ami.getFolderModule().getFolder( folderId );
 
@@ -363,6 +366,10 @@ public class GwtBlogHelper
 	    		topFolder = folder;
 
 	    	blogPages.setTopFolderId( topFolder.getId() );
+	    	
+	    	// Get the id of the folder template of the top-most folder
+	    	folderTemplateId = getFolderTemplateId( ami, topFolder );
+	    	blogPages.setFolderTemplateId( folderTemplateId );
 	    	
 	    	// This code was copied from ListFolderHelper.buildBlogPageBeans() and then tweaked.
 	    	{
@@ -422,6 +429,60 @@ public class GwtBlogHelper
 		}
 		
 		return blogPages;
+	}
+	
+	/**
+	 * Get the id of the folder template for the given folder
+	 */
+	private static Long getFolderTemplateId( AllModulesInjected ami, Binder binder )
+	{
+		Long folderTemplateId;
+		TemplateModule templateMod;
+		List<TemplateBinder> folderTemplates;
+		
+		if ( ami == null || binder == null )
+			return null;
+		
+		folderTemplateId = null;
+		templateMod = ami.getTemplateModule();
+		
+		folderTemplates = templateMod.getTemplates( Definition.FOLDER_VIEW );
+		folderTemplates.addAll( templateMod.getTemplates( Definition.FOLDER_VIEW, binder, true ) );
+		if ( folderTemplates.isEmpty() )
+		{
+			folderTemplates.add( templateMod.addDefaultTemplate( Definition.FOLDER_VIEW ) );
+		}
+
+		// Do we have any templates?
+		if ( folderTemplates != null && folderTemplates.size() > 0 )
+		{
+			String folderEntryDefId;
+
+			// Yes
+			folderEntryDefId = binder.getEntryDefId();
+
+			// Find the template that goes with the given binder.
+			for (TemplateBinder templateBinder:  folderTemplates)
+			{
+				// Is this the template for this folder?
+				if ( templateBinder.getEntryDefId().equals( folderEntryDefId ) )
+				{
+					// Yes!  Save its ID.
+					folderTemplateId = templateBinder.getId();
+					break;
+				}
+			}
+
+			// Did we find the template ID for the folder?
+			if ( folderTemplateId == null )
+			{
+				// No
+				// Default to the first one in the list.
+				folderTemplateId = folderTemplates.get( 0 ).getId();
+			}
+		}
+		
+		return folderTemplateId;
 	}
 	
 	/**

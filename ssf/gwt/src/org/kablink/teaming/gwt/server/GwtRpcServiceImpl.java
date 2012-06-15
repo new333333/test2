@@ -228,7 +228,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case ADD_NEW_FOLDER:
 		{
 			AddNewFolderCmd afCmd = ((AddNewFolderCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.addNewFolder( this, getRequest( ri ), afCmd.getBinderId(), afCmd.getFolderTemplateId(), afCmd.getFolderName() );
+			CreateFolderRpcResponseData responseData = GwtViewHelper.addNewFolder( this, getRequest( ri ), afCmd.getBinderId(), afCmd.getFolderTemplateId(), afCmd.getFolderName() ); 
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

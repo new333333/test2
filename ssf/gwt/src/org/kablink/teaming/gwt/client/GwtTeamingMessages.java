@@ -298,6 +298,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CheckForActivityStreamChanges();
 	String rpcFailure_CollapseSubtasks();
 	String rpcFailure_CopyEntries();
+	String rpcFailure_CreateBlogPage();
 	String rpcFailure_CreateGroup();
 	String rpcFailure_CreateGroupAlreadyExists();
 	String rpcFailure_DeleteFolderEntries();
@@ -501,6 +502,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ClipboardDlg();
 	String codeSplitFailure_ConfirmDlg();
 	String codeSplitFailure_ContentControl();
+	String codeSplitFailure_CreateBlogPageDlg();
 	String codeSplitFailure_CopyMoveEntriesDlg();
 	String codeSplitFailure_DescriptionPanel();
 	String codeSplitFailure_DiscussionFolderView();
@@ -1684,5 +1686,11 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the blog page control.
 	String blogPageCtrl_newPageLabel();
 	String blogPageCtrl_selectPageLabel();
-	
+
+	// Strings used in the "Add blog page" dialog
+	String createBlogPageDlg_caption();
+	String createBlogPageDlg_createFailed();
+	String createBlogPageDlg_newPageNameLabel();
+	String createBlogPageDlg_noNameSpecified();
+
 }// end GwtTeamingMessages
