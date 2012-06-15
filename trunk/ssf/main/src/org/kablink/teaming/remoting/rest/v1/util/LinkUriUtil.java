@@ -99,8 +99,10 @@ public class LinkUriUtil {
     }
 
     public static String getPrincipalLinkUri(org.kablink.teaming.domain.Principal principal) {
-        if (principal instanceof org.kablink.teaming.domain.UserPrincipal) {
+        if (principal instanceof org.kablink.teaming.domain.User) {
             return getUserLinkUri(principal.getId());
+        } else if (principal instanceof org.kablink.teaming.domain.Group) {
+            return getGroupLinkUri(principal.getId());
         }
         return null;
     }
@@ -111,6 +113,10 @@ public class LinkUriUtil {
 
     public static String getUserLinkUri(Long id) {
         return getDefinableEntityLinkUri(EntityIdentifier.EntityType.user, id);
+    }
+
+    public static String getGroupLinkUri(Long id) {
+        return getDefinableEntityLinkUri(EntityIdentifier.EntityType.group, id);
     }
 
     public static String getFilePropertiesLinkUri(FileProperties fp) {
@@ -142,6 +148,10 @@ public class LinkUriUtil {
         populateDefinableEntityLinks(model);
         model.addAdditionalLink("favorites", model.getLink() + "/favorites");
         model.addAdditionalLink("teams", model.getLink() + "/teams");
+    }
+
+    public static void populateGroupLinks(BaseRestObject model) {
+        populateDefinableEntityLinks(model);
     }
 
     public static void populateBinderLinks(BaseRestObject model) {
