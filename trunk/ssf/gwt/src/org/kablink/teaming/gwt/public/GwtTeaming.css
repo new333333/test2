@@ -1070,33 +1070,21 @@ body, table td, select
 }
 
 /* Styles used by the WorkspaceTreeControl. */
-.workspaceTreeBinderAnchor
-{
-	color: #414648; /* dark grey */
-	text-decoration: none;
-	font-family: Arial,Helvetica,sans-serif;
-	font-size: .9em;
-}
-.workspaceTreeBinderAnchor:hover 
-{
-	color: #135c8f; /* anchor blue */
-}
+.workspaceTreeBinderAnchor            {color: #414648; text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-size: .9em;}
+.workspaceTreeBinderAnchor_collection {}
 
-.workspaceTreeBinderExpanderImg
-{
-	cursor: pointer;
-	margin-top: 4px;
-	margin-left: 2px;
-}
-.workspaceTreeBinderImg
-{
-	padding-right: 2px;
-}
-.workspaceTreeBinderSelected
-{
-	color: #5691a6;
-	padding-left: 2px;
-}
+.workspaceTreeBinderAnchor:hover            {color: #135c8f;}
+.workspaceTreeBinderAnchor_collection:hover {}
+
+.workspaceTreeBinderExpanderImg            {cursor: pointer; margin-top: 4px; margin-left: 2px;}
+.workspaceTreeBinderExpanderImg_collection {}
+
+.workspaceTreeBinderImg            {padding-right: 2px;}
+.workspaceTreeBinderImg_collection {}
+
+.workspaceTreeBinderSelected            {color: #5691a6; padding-left: 2px;}
+.workspaceTreeBinderSelected_collection {}
+
 .workspaceTreeControl
 {
 	background-color: #EAEBE8;
@@ -1107,10 +1095,12 @@ body, table td, select
 	-webkit-border-radius: 5px;
 	overflow: auto;
 }
-.workspaceTreeControlBody
-{
-	padding-top: 5px;
-}
+
+.workspaceTreeControlBody            {padding-top: 10px;}
+.workspaceTreeControlBody_collection {background-color: white !important; padding-top: 10px; padding-bottom: 10px; border-bottom: 1px solid #E0E0E0; width: 230px !important;}
+
+.workspaceTreeControlTreeHeader {color: #666; font-size: .8em; margin-top: 0em; padding-top: 6px; padding-bottom: 3px; padding-right: 0px; padding-left: 20px; border-bottom: 0px; text-transform: uppercase; letter-spacing: 2px; white-space: nowrap;}
+
 .workspaceTreeControlHeader .workspaceTreeBinderSelected
 {
 	color: #fff;
@@ -1173,31 +1163,17 @@ body, table td, select
 	background: #85BCC3 url(images/header_blend_grey_bg.png) repeat-x scroll center bottom;
 	cursor: pointer;
 }
-.workspaceTreeControlRow
-{
-	padding: 2px;
-	margin-bottom: 1px;
-}
-.workspaceTreeControlRow:hover a
-{
-	color: #135c8f;
-}
-.workspaceTreeControlRowHover
-{
-	color: #5691a6;
-	background: #cce9ee;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
-	-webkit-border-radius: 3px;
-}
-.workspaceTreeControlRowSelected
-{
-	-moz-border-radius: 3px;
-	border-radius: 3px;
-	-webkit-border-radius: 3px;
-	background: #fff;
-	font-weight: bold;
-}
+.workspaceTreeControlRow            {padding: 2px; margin-bottom: 1px;}
+.workspaceTreeControlRow_collection {}
+
+.workspaceTreeControlRow:hover            a {color: #135c8f;}
+.workspaceTreeControlRow_collection:hover a {} 
+
+.workspaceTreeControlRowHover            {color: #5691a6; background: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
+.workspaceTreeControlRowHover_collection {}
+
+.workspaceTreeControlRowSelected            {-moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; background: #fff; font-weight: bold;}
+.workspaceTreeControlRowSelected_collection {background: #F6F6F6 !important;}
 
 
 /* */

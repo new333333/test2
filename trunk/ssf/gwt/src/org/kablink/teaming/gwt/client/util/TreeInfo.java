@@ -223,6 +223,49 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	
 	/**
 	 * Returns the TreeInfo from another TreeInfo that references a
+	 * collection type.
+	 * 
+	 * @param ti
+	 * @param ct
+	 * 
+	 * @return
+	 */
+	public static TreeInfo findCollectionTI(TreeInfo ti, CollectionType ct) {
+		// If the TreeInfo is in activity stream mode...
+		if (ti.isActivityStream()) {
+			// ...we can never find the binder in question.
+			return null;
+		}
+		
+		// If this TreeInfo is for the binder in question...
+		BinderInfo bi = ti.getBinderInfo();
+		if (bi.isBinderCollection() && ct.equals(bi.getCollectionType())) {
+			// ...return it.
+			return ti;
+		}
+
+		// Otherwise, if the TreeInfo has child Binder's...
+		List<TreeInfo> collectionsList = ti.getCollectionsList();
+		if ((null != collectionsList) && (0 < collectionsList.size())) {
+			// ...scan them...
+			for (TreeInfo collectionTI: collectionsList) {
+				// ...and if one of them references the collection in
+				// ...question...
+				TreeInfo reply = findCollectionTI(collectionTI, ct);
+				if (null != reply) {
+					// ...return it.
+					return reply;
+				}
+			}
+		}
+
+		// If we get here, the collection was nowhere to be found in
+		// the TreeInfo.  Return null.
+		return null;
+	}
+
+	/**
+	 * Returns the TreeInfo from another TreeInfo that references a
 	 * specific Binder ID.
 	 * 
 	 * @param ti

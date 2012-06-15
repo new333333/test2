@@ -150,6 +150,7 @@ public enum TeamingEvents implements IsSerializable {
 	
 	SHOW_BLOG_FOLDER,					// Show a blog folder.
 	SHOW_CALENDAR_FOLDER,				// Shows a calendar folder.
+	SHOW_COLLECTION,					// Shows a collection.
 	SHOW_CONTENT_CONTROL,				// Shows the ContentControl.
 	SHOW_DISCUSSION_FOLDER,				// Shows a discussion folder.
 	SHOW_DISCUSSION_WORKSPACE,			// Shows a discussion workspace.

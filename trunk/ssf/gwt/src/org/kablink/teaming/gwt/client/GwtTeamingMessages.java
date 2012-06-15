@@ -795,6 +795,7 @@ public interface GwtTeamingMessages extends Messages
 	String treePreviousFolder();
 	String treeSiteWide();
 	String treeTrash();
+	String treeWSAndFolders();
 	
 	// Strings used in the "Add File Attachment" dialog.
 	String addFileAttachmentDlgHeader();

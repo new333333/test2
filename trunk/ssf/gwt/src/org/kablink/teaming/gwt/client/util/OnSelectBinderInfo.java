@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,20 +34,19 @@ package org.kablink.teaming.gwt.client.util;
 
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 
-
 /**
- * Class used to communicate information about a selected binder
- * between the WorkspaceTreeControl and its registered ActionHandler's.
+ * Class used to communicate information about context selection.
  * 
  * @author drfoster@novell.com
  */
 public class OnSelectBinderInfo {
-	private boolean m_forceSidebarReload;	// true -> Regardless of the instigator, force the sidebar tree to reload.
-	private boolean m_isPermalinkUrl;
-	private boolean m_isTrash;
-	private Instigator m_instigator = Instigator.UNKNOWN;
-	private Long m_binderId;
-	private String m_binderUrl;
+	private boolean			m_forceSidebarReload;	// true -> Regardless of the instigator, force the sidebar tree to reload.
+	private boolean			m_isPermalinkUrl;		//
+	private boolean			m_isTrash;				//
+	private CollectionType	m_collectionType;		//
+	private Instigator		m_instigator;			//
+	private Long			m_binderId;				//
+	private String			m_binderUrl;			//
 
 	// Various marker strings used to recognize the format of a URL.
 	private final static String GWT_MARKER = "seen_by_gwt";
@@ -117,11 +116,14 @@ public class OnSelectBinderInfo {
 	 * @param instigator
 	 */
 	public OnSelectBinderInfo(Long binderId, String binderUrl, boolean isTrash, Instigator instigator) {
-		// Simply store the parameters.
+		// Store the parameters...
 		setBinderId(binderId);
 		setBinderUrl(binderUrl);
-		m_isTrash = isTrash;
+		m_isTrash    = isTrash;
 		m_instigator = instigator;
+		
+		// ...and initialize everything else.
+		m_collectionType = CollectionType.NOT_A_COLLECTION;
 	}
 
 	/*
@@ -135,6 +137,15 @@ public class OnSelectBinderInfo {
 			// ...add a GWT marker.
 			m_binderUrl = GwtClientHelper.appendUrlParam(m_binderUrl, GWT_MARKER, "1");
 		}
+	}
+
+	/**
+	 * Returns the collection type from this OnSelectBinderInfo object.
+	 * 
+	 * @return
+	 */
+	public CollectionType getCollectionType() {
+		return m_collectionType;
 	}
 	
 	/**
@@ -173,6 +184,17 @@ public class OnSelectBinderInfo {
 	public Instigator getInstigator() {
 		return m_instigator;
 	}
+	
+	/**
+	 * Returns true if this OnSelectBinderInfo refers to a collection
+	 * and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isCollection() {
+		return (CollectionType.NOT_A_COLLECTION != m_collectionType);
+	}
+	
 	/**
 	 * Returns true if the Binder URL is a permalink and false
 	 * otherwise.
@@ -190,6 +212,15 @@ public class OnSelectBinderInfo {
 	 */
 	public boolean isTrash() {
 		return m_isTrash;
+	}
+
+	/**
+	 * Stores a CollectionType in this OnSelectBinderInfo.
+	 * 
+	 * @param collectionType
+	 */
+	public void setCollectionType(CollectionType collectionType) {
+		m_collectionType = collectionType;
 	}
 	
 	/*

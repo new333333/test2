@@ -65,6 +65,7 @@ import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
 import org.kablink.teaming.gwt.client.event.ShowBlogFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowCalendarFolderEvent;
+import org.kablink.teaming.gwt.client.event.ShowCollectionEvent;
 import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
 import org.kablink.teaming.gwt.client.event.ShowDiscussionFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowDiscussionWSEvent;
@@ -109,6 +110,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.FrameElement;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -129,6 +131,7 @@ public class ContentControl extends Composite
 		GotoUrlEvent.Handler,
 		ShowBlogFolderEvent.Handler,
 		ShowCalendarFolderEvent.Handler,
+		ShowCollectionEvent.Handler,
 		ShowDiscussionFolderEvent.Handler,
 		ShowDiscussionWSEvent.Handler,
 		ShowFileFolderEvent.Handler,
@@ -169,6 +172,7 @@ public class ContentControl extends Composite
 		// Show events.
 		TeamingEvents.SHOW_BLOG_FOLDER,
 		TeamingEvents.SHOW_CALENDAR_FOLDER,
+		TeamingEvents.SHOW_COLLECTION,
 		TeamingEvents.SHOW_DISCUSSION_FOLDER,
 		TeamingEvents.SHOW_DISCUSSION_WORKSPACE,
 		TeamingEvents.SHOW_FILE_FOLDER,
@@ -589,13 +593,16 @@ public class ContentControl extends Composite
 						public void viewReady()
 						{
 							GwtClientHelper.jsSetMainTitle(bi.getBinderTitle());
-							GwtTeaming.fireEvent(
-								new ContextChangedEvent(
-									new OnSelectBinderInfo(
-										bi.getBinderId(),
-										url,
-										bi.isBinderTrash(),
-										Instigator.CONTENT_AREA_CHANGED ) ) );
+							OnSelectBinderInfo osbi = new OnSelectBinderInfo(
+								bi.getBinderId(),
+								url,
+								bi.isBinderTrash(),
+								Instigator.CONTENT_AREA_CHANGED );
+							if ( bi.isBinderCollection() )
+							{
+								osbi.setCollectionType( bi.getCollectionType() );
+							}
+							GwtTeaming.fireEvent( new ContextChangedEvent( osbi ));
 						}//end viewReady()
 					};
 					
@@ -603,6 +610,12 @@ public class ContentControl extends Composite
 					BinderType bt = bi.getBinderType();
 					switch ( bt )
 					{
+					case COLLECTION:
+						GwtTeaming.fireEvent( new ShowCollectionEvent( bi, viewReady ) );
+//!						m_contentInGWT = true;
+						break;
+						
+						
 					case FOLDER:
 						// What type of folder is it?
 						FolderType ft = bi.getFolderType();
@@ -1011,6 +1024,33 @@ public class ContentControl extends Composite
 			}// end onSuccess()
 		});
 	}// end onShowCalendarFolder()
+	
+	/**
+	 * Handles ShowCollectionEvent's received by this class.
+	 * 
+	 * Implements the ShowCollectionEvent.Handler.onShowCollection() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowCollection( final ShowCollectionEvent event )
+	{
+//!		...this needs to be implemented...
+		GwtClientHelper.deferredAlert( "ContentControl.onShowCollection( Collection:  '" + event.getBinderInfo().getCollectionType().name() + "' ):  ...this needs to be implemented..." );
+
+//!		// Wait a little and call the event's viewReady().  This will
+//!		// send the correct OnSelectBinderInfo to the sidebar tree to
+//!		// get the selection to appear on the collection.
+//!		//
+//!		// Remove once the collection view has been implemented. 
+		Timer viewReadyTimer = new Timer() {
+			@Override
+			public void run() {
+				event.getViewReady().viewReady();
+			}
+		};
+		viewReadyTimer.schedule(2500);
+	}// end onShowCollection()
 	
 	/**
 	 * Handles ShowDiscussionFolderEvent's received by this class.

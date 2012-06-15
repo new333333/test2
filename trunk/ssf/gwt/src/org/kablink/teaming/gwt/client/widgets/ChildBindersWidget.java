@@ -845,7 +845,20 @@ public class ChildBindersWidget extends ToolPanelBase
 		}
 		else
 		{
-			wsImg = new Image( treeInfo.getBinderImage(GwtConstants.CHILD_BINDERS_WIDGET_ICON_SIZE) );
+			// Using a URL here allows for the image to be scaled.
+			wsImg = new Image( treeInfo.getBinderImage( GwtConstants.CHILD_BINDERS_WIDGET_ICON_SIZE ).getSafeUri() );
+		}
+
+		// Scale the image, as necessary.
+		int width  = GwtConstants.CHILD_BINDERS_WIDGET_ICON_SIZE.getBinderIconWidth();
+		if ( (-1) != width )
+		{
+			wsImg.setWidth( width + "px" );
+		}
+		int height = GwtConstants.CHILD_BINDERS_WIDGET_ICON_SIZE.getBinderIconHeight();
+		if ( (-1) != height )
+		{
+			wsImg.setHeight( height + "px" );
 		}
 		
 		return wsImg;

@@ -108,6 +108,7 @@ import org.kablink.teaming.gwt.client.util.BinderFilter;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -3184,6 +3185,14 @@ public class GwtViewHelper {
 			return false;
 		}
 		vi.setViewType(ViewType.BINDER);
+		if (bi.isBinderWorkspace()) {
+			String showCollection = getQueryParameterString(nvMap, WebKeys.URL_SHOW_COLLECTION);
+			if (MiscUtil.hasString(showCollection)) {
+				bi = GwtServerHelper.buildCollectionBI(
+					CollectionType.valueOf(showCollection),
+					GwtServerHelper.getCurrentUser().getWorkspaceId());
+			}
+		}
 		vi.setBinderInfo(bi);
 
 		// Do we need to check for a show trash flag?

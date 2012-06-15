@@ -243,6 +243,7 @@ public class WebKeys {
 	public static final String URL_SEND_MAIL_LOCATION = "sendMailLocation";
 	public static final String URL_SEEN_BY_GWT = "seen_by_gwt";
     public static final String URL_SHOW_TRASH="showTrash";
+    public static final String URL_SHOW_COLLECTION="showCollection";
 	public static final String URL_START_DATE = "ss_startDate";
 	public static final String URL_STATUS_TICKET_ID = "ss_statusId";
 	public static final String URL_STATUS_WINDOW = "statusWindow";
