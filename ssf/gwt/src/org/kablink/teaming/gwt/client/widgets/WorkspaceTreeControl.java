@@ -72,9 +72,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
 
-
 /**
- * This widget will display the WorkspaceTree control.
+ * This widget will display a workspace tree control.
  * 
  * @author drfoster@novell.com
  */
@@ -595,16 +594,14 @@ public class WorkspaceTreeControl extends ResizeComposite
 		
 		// Are we starting up showing what's new?
 		if (GwtClientHelper.getRequestInfo().isShowWhatsNewOnLogin()) {
-			GetDefaultActivityStreamCmd cmd;
-			
 			// Yes!  Then we enter activity stream mode by
 			// default.  Tell the menu about the context...
 			m_mainPage.setMenuContext(selectedBinderId, false, "");
 			
 			// ...and enter activity stream mode.
 			m_treeDisplay.setRenderContext(selectedBinderId, mainPanel);
-			cmd = new GetDefaultActivityStreamCmd( selectedBinderId );
-			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+			GetDefaultActivityStreamCmd cmd = new GetDefaultActivityStreamCmd(selectedBinderId);
+			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
 					// If we couldn't get it, handle the
@@ -622,15 +619,10 @@ public class WorkspaceTreeControl extends ResizeComposite
 				
 				@Override
 				public void onSuccess(VibeRpcResponse response) {
-					ActivityStreamInfo asi = null;
-					
-					if (null != response.getResponseData()) {
-						asi = (ActivityStreamInfo) response.getResponseData();
-					}
-					
 					// If the user doesn't have a default
 					// saved or the default saved is
 					// current binder...
+					ActivityStreamInfo asi = ((ActivityStreamInfo) response.getResponseData());
 					if ((null == asi) || (ActivityStream.CURRENT_BINDER == asi.getActivityStream())) {
 						// ...default to site wide.
 						asi = new ActivityStreamInfo();

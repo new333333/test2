@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.workspacetree;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -54,6 +55,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -81,6 +83,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -104,6 +107,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	private final static String EXTENSION_ID_BASE					= "workspaceTreeBinder_";
 	private final static String EXTENSION_ID_ACTIVITY_STREAM_BASE	= (EXTENSION_ID_BASE + "ActivityStream_");
 	private final static String EXTENSION_ID_BUCKET_BASE			= (EXTENSION_ID_BASE + "Bucket_");
+	private final static String EXTENSION_ID_COLLECTION_BASE		= (EXTENSION_ID_BASE + "Collection_");
 	private final static String EXTENSION_ID_SELECTOR_ANCHOR		= "selectorAnchor_";
 	private final static String EXTENSION_ID_SELECTOR_BASE			= (EXTENSION_ID_BASE + "Selector_");
 	private final static String EXTENSION_ID_SELECTOR_ID			= (EXTENSION_ID_BASE + "SelectorId");
@@ -221,13 +225,11 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				}
 				
 				else {
-					PersistNodeCollapseCmd cmd;
-					
 					// No, we aren't showing an expanded bucket or
 					// activity stream!  We must be showing a normal
 					// row.  Can we mark the row as being closed?
-					cmd = new PersistNodeCollapseCmd( m_ti.getBinderInfo().getBinderId() );
-					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+					PersistNodeCollapseCmd cmd = new PersistNodeCollapseCmd(m_ti.getBinderInfo().getBinderId());
+					GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 						@Override
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
@@ -251,11 +253,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				// No, we aren't collapsing it!  We must be expanding
 				// it.  Are we showing a collapsed bucket?
 				if (m_ti.isBucket()) {
-					ExpandVerticalBucketCmd cmd;
-					
 					// Yes!  Expand it.
-					cmd = new ExpandVerticalBucketCmd( m_ti.getBucketInfo() );
-					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+					ExpandVerticalBucketCmd cmd = new ExpandVerticalBucketCmd(m_ti.getBucketInfo());
+					GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 						@Override
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
@@ -265,13 +265,11 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 						
 						@Override
 						public void onSuccess(VibeRpcResponse response) {
-							TreeInfo expandedTI;
-							
 							// Yes!  Update the TreeInfo, and if
 							// there are any expanded rows, render
 							// them and change the row's Anchor
 							// Image to a tree_closer.
-							expandedTI = (TreeInfo) response.getResponseData();
+							TreeInfo expandedTI = ((TreeInfo) response.getResponseData());
 							doExpandRowAsync(expandedTI);
 						}
 					});
@@ -290,7 +288,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					// No, we aren't showing a collapsed activity
 					// stream either!  We must be showing a normal row.
 					// Can we mark the row as being opened?
-					PersistNodeExpandCmd cmd = new PersistNodeExpandCmd( m_ti.getBinderInfo().getBinderId() );
+					PersistNodeExpandCmd cmd = new PersistNodeExpandCmd(m_ti.getBinderInfo().getBinderId());
 					GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 						@Override
 						public void onFailure(Throwable t) {
@@ -309,12 +307,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 							ScheduledCommand getVNode = new ScheduledCommand() {
 								@Override
 								public void execute() {
-									GetVerticalNodeCmd cmd;
-									
 									// Can we get a TreeInfo for the
 									// expansion?
-									cmd = new GetVerticalNodeCmd( m_ti.getBinderInfo().getBinderId() );
-									GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+									GetVerticalNodeCmd cmd = new GetVerticalNodeCmd(m_ti.getBinderInfo().getBinderId());
+									GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 										@Override
 										public void onFailure(Throwable t) {
 											GwtClientHelper.handleGwtRPCFailure(
@@ -325,15 +321,13 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 										
 										@Override
 										public void onSuccess(VibeRpcResponse response) {
-											TreeInfo expandedTI;
-											
 											// Yes!  Update the
 											// TreeInfo, and if there
 											// are any expanded rows,
 											// render them and change
 											// the row's Anchor Image
 											// to a tree_closer.
-											expandedTI = (TreeInfo) response.getResponseData();
+											TreeInfo expandedTI = ((TreeInfo) response.getResponseData());
 											doExpandRowAsync(expandedTI);
 										}
 									});
@@ -351,16 +345,18 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Inner class used to handle mouse events for a Binder selector.  
 	 */
 	private static class BinderSelectorMouseHandler implements MouseOverHandler, MouseOutHandler {
-		private String m_selectorGridId;
+		private boolean	m_isBinderCollection;	//
+		private String	m_selectorGridId;		//
 		
 		/**
 		 * Class constructor.
 		 * 
 		 * @param selectorGridId
 		 */
-		BinderSelectorMouseHandler(String selectorGridId) {
+		BinderSelectorMouseHandler(String selectorGridId, boolean isBinderCollection) {
 			// Simply store the parameters.
-			m_selectorGridId = selectorGridId;
+			m_selectorGridId     = selectorGridId;
+			m_isBinderCollection = isBinderCollection;
 		}
 		
 		/**
@@ -373,6 +369,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// Simply remove the hover style.
 			Element selectorPanel_New = Document.get().getElementById(m_selectorGridId);
 			selectorPanel_New.removeClassName("workspaceTreeControlRowHover");
+			if (m_isBinderCollection) {
+				selectorPanel_New.removeClassName("workspaceTreeControlRowHover_collection");
+			}
 		}
 		
 		/**
@@ -385,6 +384,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// Simply add the hover style.
 			Element selectorPanel_New = Document.get().getElementById(m_selectorGridId);
 			selectorPanel_New.addClassName("workspaceTreeControlRowHover");
+			if (m_isBinderCollection) {
+				selectorPanel_New.addClassName("workspaceTreeControlRowHover_collection");
+			}
+
 		}
 	}
 
@@ -520,6 +523,24 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		return closePBAnchor;
 	}
 	
+	/*
+	 * Constructs a string that can be used for style of an element.
+	 */
+	private static String buildElementStyle(boolean isBinderCollection, String baseStyle) {
+		if (isBinderCollection) {
+			if (null == baseStyle) {
+				baseStyle = "";
+			}
+			baseStyle += (" " + baseStyle + "_collection");
+		}
+		return baseStyle;
+	}
+	
+	private static String buildElementStyle(TreeInfo ti, String baseStyle) {
+		// Always use the initial form of the method.
+		return buildElementStyle(ti.getBinderInfo().isBinderCollection(), baseStyle);
+	}
+	
 	/**
 	 * Returns an OnSelectBinderInfo object that corresponds to a
 	 * TreeInfo object.
@@ -536,7 +557,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		OnSelectBinderInfo reply = new OnSelectBinderInfo(ti, Instigator.SIDEBAR_TREE_SELECT);
 		
 		// Is this TreeInfo object the trash Binder?
-		if (ti.getBinderInfo().isBinderTrash()) {
+		BinderInfo bi = ti.getBinderInfo();
+		if (bi.isBinderTrash()) {
 			// Yes!  Is there another Binder selected?
 			String selectedId = Document.get().getElementById(EXTENSION_ID_SELECTOR_ID).getAttribute("value");
 			if (GwtClientHelper.hasString(selectedId)) {
@@ -548,6 +570,13 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				String trashPermalink = selectedElement.getAttribute(EXTENSION_ID_TRASH_PERMALINK);
 				reply.setBinderUrl(trashPermalink);
 			}
+		}
+
+		// Does this TreeInfo object refer to a collection?
+		if (bi.isBinderCollection()) {
+			// Yes!  Store the collection type in the
+			// OnSelectBinderInfo.
+			reply.setCollectionType(bi.getCollectionType());
 		}
 		
 		// If we get here, reply refers to the OnSelectBinderInfo
@@ -594,19 +623,17 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// No, we aren't in activity stream mode!  Build a TreeInfo
 			// for the activity streams...
 			final String selectedBinderId = String.valueOf(m_selectedBinderId);
-			GetVerticalActivityStreamsTreeCmd cmd;
-			
-			cmd = new GetVerticalActivityStreamsTreeCmd( selectedBinderId );
-			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+			GetVerticalActivityStreamsTreeCmd cmd = new GetVerticalActivityStreamsTreeCmd(selectedBinderId);
+			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
-					GwtClientHelper.handleGwtRPCFailure( t, GwtTeaming.getMessages().rpcFailure_GetActivityStreamsTree(), selectedBinderId);
+					GwtClientHelper.handleGwtRPCFailure(t, GwtTeaming.getMessages().rpcFailure_GetActivityStreamsTree(), selectedBinderId);
 				}
 
 				@Override
 				public void onSuccess(VibeRpcResponse response) {
 					// ...and put it into effect.
-					TreeInfo ti = (TreeInfo) response.getResponseData();
+					TreeInfo ti = ((TreeInfo) response.getResponseData());
 					enterActivityStreamModeAsync(ti, defaultASI);
 				}
 			});
@@ -732,10 +759,11 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	private static String getSelectorId(TreeInfo ti) {
 		String idBase;
-		if      (ti.isBucket())                      idBase = EXTENSION_ID_BUCKET_BASE;
-		else if (ti.isActivityStream())              idBase = EXTENSION_ID_ACTIVITY_STREAM_BASE;
-		else if (ti.getBinderInfo().isBinderTrash()) idBase = EXTENSION_ID_TRASH_BASE;
-		else                                         idBase = EXTENSION_ID_SELECTOR_BASE;
+		if      (ti.isBucket())                           idBase =  EXTENSION_ID_BUCKET_BASE;
+		else if (ti.isActivityStream())                   idBase =  EXTENSION_ID_ACTIVITY_STREAM_BASE;
+		else if (ti.getBinderInfo().isBinderTrash())      idBase =  EXTENSION_ID_TRASH_BASE;
+		else if (ti.getBinderInfo().isBinderCollection()) idBase = (EXTENSION_ID_COLLECTION_BASE + ti.getBinderInfo().getCollectionType().name() + "_");
+		else                                              idBase =  EXTENSION_ID_SELECTOR_BASE;
 		return (idBase + getSelectorIdAppendage(ti));
 	}
 
@@ -794,7 +822,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		if (ti.isBucket()) {
 			// Yes!  Generate the appropriate widgets. 
 			FlowPanel selectorPanel = new FlowPanel();
-			selectorPanel.addStyleName("workspaceTreeBinderAnchor gwtUI_nowrap");
+			selectorPanel.addStyleName(buildElementStyle(ti, "workspaceTreeBinderAnchor") + " " + "gwtUI_nowrap");
 			if (boldIt) {
 				selectorPanel.addStyleName("bold");
 			}
@@ -809,7 +837,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// No, it's not a bucket!  Generate a simple Label for it.
 			Label selectorLabel = new Label(ti.getBinderTitle());
 			selectorLabel.setWordWrap(false);
-			selectorLabel.addStyleName("workspaceTreeBinderAnchor");
+			selectorLabel.addStyleName(buildElementStyle(ti, "workspaceTreeBinderAnchor"));
 			if (boldIt) {
 				selectorLabel.addStyleName("bold");
 			}
@@ -926,20 +954,55 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			m_rootPanel.add(rootWidget);
 		}
 
+		List<TreeInfo> tiList = rootTI.getCollectionsList();
+//!		boolean hasCollections = ((null != tiList) && (!(tiList.isEmpty())));
+		boolean	hasCollections = false;
+		
 		// ...its content panel...
 		Grid grid = new Grid();
 		grid.setCellSpacing(0);
 		grid.setCellPadding(0);
 		grid.resizeColumns(2);
-		grid.addStyleName("workspaceTreeControlBody");
 		m_rootPanel.add(grid);
-		
-		// ...and if there are any rows to display...
-		for (Iterator<TreeInfo> tii = rootTI.getChildBindersList().iterator(); tii.hasNext(); ) {
-			// ...render them.
-			int row = grid.getRowCount();
-			grid.insertRow(row);
-			renderRow(grid, row, tii.next(), 0);
+
+		// ...if there are any collection point rows to display...
+		if (hasCollections) {
+			grid.addStyleName("workspaceTreeControlBody_collection");
+			for (TreeInfo ti:  tiList) {
+				// ...render them...
+				int row = grid.getRowCount();
+				grid.insertRow(row);
+				renderRow(grid, row, ti, 0);
+			}
+		}
+
+		// ...and if we're not in Vibe Lite mode...
+//!		if (!(GwtClientHelper.getRequestInfo().isVibeLite())) {
+		if (true) {
+			// ...and if there are any rows to display...
+			tiList = rootTI.getChildBindersList();
+			if ((null != tiList) && (!(tiList.isEmpty()))) {
+				if (hasCollections) {
+					grid = new Grid();
+					grid.setCellSpacing(0);
+					grid.setCellPadding(0);
+					grid.resizeColumns(2);
+					m_rootPanel.add(grid);
+					
+					grid.insertRow(0);
+					InlineLabel il = new InlineLabel(getMessages().treeWSAndFolders());
+					il.addStyleName("workspaceTreeControlTreeHeader");
+					grid.setWidget(0, 1, il);
+				}
+				grid.addStyleName("workspaceTreeControlBody");
+				
+				for (TreeInfo ti:  tiList) {
+					// ...render them.
+					int row = grid.getRowCount();
+					grid.insertRow(row);
+					renderRow(grid, row, ti, 0);
+				}
+			}
 		}
 	}
 	
@@ -959,7 +1022,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// Yes!  Put an expander Anchor to allow expanding and
 			// collapsing of its contents.
 			expanderImg = new Image(expanderImgRes);
-			expanderImg.addStyleName("workspaceTreeBinderExpanderImg");
+			expanderImg.addStyleName(buildElementStyle(ti, "workspaceTreeBinderExpanderImg"));
 			Anchor expanderA = new Anchor();
 			expanderA.getElement().appendChild(expanderImg.getElement());
 			expanderA.addClickHandler(new BinderExpander(ti, grid, row, expanderImg));
@@ -970,7 +1033,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// the expander.
 			expanderImgRes = getImages().spacer_1px();
 			expanderImg = new Image(expanderImgRes);
-			expanderImg.setWidth(EXPANDER_WIDTH);
+			expanderImg.setWidth( EXPANDER_WIDTH );
 			expanderImg.setHeight(EXPANDER_HEIGHT);
 			expanderWidget = expanderImg;
 		}
@@ -982,7 +1045,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		Image binderImg = new Image();
 		ti.setBinderUIImage(binderImg);
 		setBinderImageResource(ti, GwtConstants.SIDEBAR_TREE_ICON_SIZE);
-		binderImg.addStyleName("workspaceTreeBinderImg");
+		binderImg.addStyleName(buildElementStyle(ti, "workspaceTreeBinderImg"));
 		setWidgetHover(binderImg, ti.getBinderHoverImage());
 		selectorGrid.setWidget(0, 0, binderImg);
 		Widget selectorLabel = getSelectorLabel(ti, (ti.isActivityStream() && (0 == renderDepth)));
@@ -1002,7 +1065,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		String selectorId = getSelectorId(ti);
 		String selectorGridId = (EXTENSION_ID_SELECTOR_ANCHOR + selectorId);
 		selectorGrid.getElement().setId(selectorGridId);
-		selectorGrid.addStyleName("workspaceTreeControlRow");
+		selectorGrid.addStyleName(buildElementStyle(ti, "workspaceTreeControlRow"));
 		selectorGrid.addStyleName(getCursorStyle(ti));
 
 		// Add the row to the Grid.
@@ -1017,7 +1080,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		
 		// Install a mouse handler on the selector Anchor so that we
 		// can manage hover overs on them.
-		BinderSelectorMouseHandler bsmh = new BinderSelectorMouseHandler(selectorGridId);
+		BinderSelectorMouseHandler bsmh = new BinderSelectorMouseHandler(selectorGridId, ti.getBinderInfo().isBinderCollection());
 		selectorA.addMouseOverHandler(bsmh);
 		selectorA.addMouseOutHandler( bsmh);
 		
@@ -1121,10 +1184,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			}
 			String selectedId_New = getSelectorId(ti);
 			Element selectorLabel_New = Document.get().getElementById(selectedId_New);
-			selectorLabel_New.addClassName("workspaceTreeBinderSelected");
+			selectorLabel_New.addClassName(buildElementStyle(ti, "workspaceTreeBinderSelected"));
 			Element selectorPanel_New = Document.get().getElementById(EXTENSION_ID_SELECTOR_ANCHOR + selectedId_New);
 			if (null != selectorPanel_New) {
-				selectorPanel_New.addClassName("workspaceTreeControlRowSelected");
+				selectorPanel_New.addClassName(buildElementStyle(ti, "workspaceTreeControlRowSelected"));
 			}
 
 			// ...mark any previous selection as not being selected...
@@ -1133,12 +1196,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			if (GwtClientHelper.hasString(selectedId_Old) && (!(selectedId_Old.equals(selectedId_New)))) {
 				Element selectorLabel_Old = Document.get().getElementById(selectedId_Old);
 				if (null != selectorLabel_Old) {
-					selectorLabel_Old.removeClassName("workspaceTreeBinderSelected");
+					selectorLabel_Old.removeClassName("workspaceTreeBinderSelected"           );
+					selectorLabel_Old.removeClassName("workspaceTreeBinderSelected_collection");
 				}
 				
 				Element selectorPanel_Old = Document.get().getElementById(EXTENSION_ID_SELECTOR_ANCHOR + selectedId_Old);
 				if (null != selectorPanel_Old) {
-					selectorPanel_Old.removeClassName("workspaceTreeControlRowSelected");
+					selectorPanel_Old.removeClassName("workspaceTreeControlRowSelected"           );
+					selectorPanel_Old.removeClassName("workspaceTreeControlRowSelected_collection");
 				}
 			}
 			
@@ -1161,11 +1226,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * selects a binder.
 	 */
 	private void reRootTree(final String newRootBinderId, final Long selectedBinderId, final ExitMode exitingActivityStreamMode) {
-		GetVerticalTreeCmd cmd;
-		
 		// Read the TreeInfo for the selected Binder.
-		cmd = new GetVerticalTreeCmd( newRootBinderId );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+		GetVerticalTreeCmd cmd = new GetVerticalTreeCmd(newRootBinderId);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
@@ -1176,11 +1239,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response)  {
-				TreeInfo rootTI;
-				
 				// Re-root the tree asynchronously so that we release
 				// the AJAX request ASAP.
-				rootTI = (TreeInfo) response.getResponseData();
+				TreeInfo rootTI = ((TreeInfo) response.getResponseData());
 				reRootTreeAsync(
 					newRootBinderId,
 					selectedBinderId,
@@ -1274,6 +1335,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// ...we don't change anything.
 			return;
 		}
+
+		// If the selection is for a collection...
+		if (binderInfo.isCollection()) {
+			// ...select it.
+			TreeInfo targetTI = TreeInfo.findCollectionTI(getRootTreeInfo(), binderInfo.getCollectionType());
+			selectBinder(targetTI);
+			return;
+		}
 		
 		// Is the requested Binder available in those we've already
 		// got loaded?
@@ -1293,14 +1362,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				break;
 
 			default:
-				GetRootWorkspaceIdCmd cmd;
-				
 				// Yes, the request should cause the tree to be
 				// re-rooted!  (It may be coming from the bread crumbs
 				// or some other unknown source.)  What's the ID if the
 				// selected Binder's root workspace?
-				cmd = new GetRootWorkspaceIdCmd( binderId );
-				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+				GetRootWorkspaceIdCmd cmd = new GetRootWorkspaceIdCmd(binderId);
+				GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 					@Override
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
@@ -1312,13 +1379,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					
 					@Override
 					public void onSuccess(VibeRpcResponse response)  {
-						String rootWorkspaceId;
-						StringRpcResponseData responseData;
-						
 						// Asynchronously perform the selection so that
 						// we release the AJAX request ASAP.
-						responseData = (StringRpcResponseData) response.getResponseData();
-						rootWorkspaceId = responseData.getStringValue();
+						StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+						String rootWorkspaceId = responseData.getStringValue();
 						selectRootWorkspaceIdAsync(
 							binderId,
 							forceReload,

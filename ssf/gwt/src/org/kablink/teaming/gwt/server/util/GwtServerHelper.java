@@ -721,32 +721,19 @@ public class GwtServerHelper {
 	 */
 	private static void addCollection(AllModulesInjected bs, HttpServletRequest request, Workspace userWS, TreeInfo ti, CollectionType ct) throws GwtTeamingException {
 		try {
-			// Get the string to use for the title of this collection.
-			String titleKey;
-			switch (ct) {
-			default:
-			case MYFILES:     titleKey = "collection.myFiles";    break;
-			case FILESPACES:  titleKey = "collection.fileSpaces"; break;
-			case SHARED:      titleKey = "collection.shared";     break;
-			}
-			String title = NLT.get(titleKey);
-			
 			// Allocate a TreeInfo for the collection's information...
 			TreeInfo collectionTI = new TreeInfo();
 	
 			// ...add a BinderInfo to the TreeInfo...
-			BinderInfo bi = new BinderInfo();
-			bi.setCollectionType(ct);
-			bi.setBinderId(userWS.getId());
-			bi.setBinderTitle(title);
+			BinderInfo bi = buildCollectionBI(ct, userWS.getId());
 			collectionTI.setBinderInfo(bi);
 	
 			// ...store the collection's title...
-			collectionTI.setBinderTitle(title);
+			collectionTI.setBinderTitle(bi.getBinderTitle());
 	
 			// ...store the various required links...
 			String wsPL = PermaLinkUtil.getPermalink(request, userWS);
-			collectionTI.setBinderPermalink(wsPL);
+			collectionTI.setBinderPermalink(GwtUIHelper.appendUrlParam(wsPL, WebKeys.URL_SHOW_COLLECTION, ct.name()));
 			collectionTI.setBinderTrashPermalink(GwtUIHelper.getTrashPermalink(wsPL));
 			
 			// ...and add the collection TreeInfo to the collection list.
@@ -1098,6 +1085,36 @@ public class GwtServerHelper {
 		finally {
 			gsp.end();
 		}
+	}
+
+	/**
+	 * Constructs and returns a BinderInfo for a collection.
+	 * 
+	 * @param ct
+	 * @param userWSId
+	 * 
+	 * @return
+	 */
+	public static BinderInfo buildCollectionBI(CollectionType ct, Long userWSId) {
+		// Get the string to use for the title of this collection.
+		String titleKey;
+		switch (ct) {
+		default:
+		case MYFILES:     titleKey = "collection.myFiles";    break;
+		case FILESPACES:  titleKey = "collection.fileSpaces"; break;
+		case SHARED:      titleKey = "collection.shared";     break;
+		}
+		String title = NLT.get(titleKey);
+		
+		// Construct a BinderInfo to return...
+		BinderInfo bi = new BinderInfo();
+		bi.setBinderType(BinderType.COLLECTION);
+		bi.setCollectionType(ct);
+		bi.setBinderId(userWSId);
+		bi.setBinderTitle(title);
+		
+		// ...and return it.
+		return bi;
 	}
 	
 	/**
