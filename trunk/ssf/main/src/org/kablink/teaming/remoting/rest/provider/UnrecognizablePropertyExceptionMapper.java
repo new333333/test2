@@ -15,7 +15,7 @@
  *
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  *
  * Attribution Information:
  * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
@@ -30,53 +30,25 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.rest.v1.model;
+package org.kablink.teaming.remoting.rest.provider;
 
-import javax.xml.bind.annotation.XmlElement;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.exc.UnrecognizedPropertyException;
+import org.kablink.teaming.rest.v1.model.ErrorInfo;
+import org.kablink.util.api.ApiErrorCode;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 /**
  * User: david
- * Date: 5/16/12
- * Time: 4:02 PM
+ * Date: 6/13/12
+ * Time: 10:06 AM
  */
-public abstract class Principal extends Entry {
-    private String emailAddress;
-   	private boolean disabled;
-   	private boolean reserved;
-   	private String name;
-
-    @XmlElement(name="disabled")
-    public boolean isDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
-    }
-
-    @XmlElement(name="email")
-    public String getEmailAddress() {
-        return emailAddress;
-    }
-
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
-    }
-
-    @XmlElement(name="name", required = true)
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isReserved() {
-        return reserved;
-    }
-
-    public void setReserved(boolean reserved) {
-        this.reserved = reserved;
+@Provider
+public class UnrecognizablePropertyExceptionMapper implements ExceptionMapper<UnrecognizedPropertyException> {
+    public Response toResponse(UnrecognizedPropertyException e) {
+        return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorInfo(ApiErrorCode.BAD_INPUT.name(), e.getLocalizedMessage())).build();
     }
 }

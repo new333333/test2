@@ -44,9 +44,10 @@ import java.util.Map;
  */
 public class GroupBriefBuilder extends PrincipalBriefBuilder implements SearchResultBuilder<GroupBrief> {
     public GroupBrief build(Map entry) {
-        GroupBrief user = new GroupBrief();
-        populatePrincipalBrief(user, entry);
-        return user;
+        GroupBrief group = new GroupBrief();
+        populatePrincipalBrief(group, entry);
+        group.setLink(LinkUriUtil.getGroupLinkUri(group.getId()));
+        return group;
     }
 
     public Object getId(GroupBrief obj) {

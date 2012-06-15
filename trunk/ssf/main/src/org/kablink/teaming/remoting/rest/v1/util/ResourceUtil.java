@@ -260,7 +260,7 @@ public class ResourceUtil {
         Group model = new Group();
         populatePrincipal(model, group, includeAttachments);
 
-        LinkUriUtil.populateUserLinks(model);
+        LinkUriUtil.populateGroupLinks(model);
 
         return model;
     }
