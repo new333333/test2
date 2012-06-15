@@ -39,7 +39,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.AddNewFolderCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.CreateFolderRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -139,7 +139,7 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 			public void onSuccess(VibeRpcResponse response) {
 				// Perhaps!  Were there any errors returned from the
 				// add?
-				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
+				CreateFolderRpcResponseData responseData = ((CreateFolderRpcResponseData) response.getResponseData());
 				List<String> errors = responseData.getErrorList();
 				if ((null != errors) && (0 < errors.size())) {
 					// Yes!  Display them.

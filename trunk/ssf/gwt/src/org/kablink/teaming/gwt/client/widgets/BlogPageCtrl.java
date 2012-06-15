@@ -41,6 +41,8 @@ import org.kablink.teaming.gwt.client.BlogPage;
 import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.BlogArchiveFolderSelectedEvent;
+import org.kablink.teaming.gwt.client.event.BlogArchiveMonthSelectedEvent;
+import org.kablink.teaming.gwt.client.event.BlogPageCreatedEvent;
 import org.kablink.teaming.gwt.client.event.BlogPageSelectedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -49,10 +51,12 @@ import org.kablink.teaming.gwt.client.rpc.shared.CanAddFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBlogPagesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.widgets.CreateBlogPageDlg.CreateBlogPageDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -75,21 +79,27 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class BlogPageCtrl extends VibeWidget
 	implements
 		// Event handlers implemented by this class.
-		BlogArchiveFolderSelectedEvent.Handler
+		BlogArchiveFolderSelectedEvent.Handler,
+		BlogArchiveMonthSelectedEvent.Handler,
+		BlogPageCreatedEvent.Handler
 {
 	private List<HandlerRegistration> m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private Long m_defaultFolderId;
 	private ListBox m_listbox;
 	private InlineLabel m_newPageLink;
+	private BlogPages m_blogPages;
 	private ArrayList<BlogPage> m_listOfBlogPages;
-	
+	private BlogPage m_topMostBlogPage;
+	private CreateBlogPageDlg m_createBlogPageDlg;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[]
     {
-		TeamingEvents.BLOG_ARCHIVE_FOLDER_SELECTED
+		TeamingEvents.BLOG_ARCHIVE_FOLDER_SELECTED,
+		TeamingEvents.BLOG_ARCHIVE_MONTH_SELECTED,
+		TeamingEvents.BLOG_PAGE_CREATED
 	};
 	
 	/**
@@ -109,6 +119,9 @@ public class BlogPageCtrl extends VibeWidget
 	{
 		VibeFlowPanel mainPanel;
 		Label label;
+		
+		m_topMostBlogPage = null;
+		m_createBlogPageDlg = null;
 		
 		mainPanel = new VibeFlowPanel();
 		mainPanel.addStyleName( "blogPageCtrl_mainPanel" );
@@ -180,6 +193,27 @@ public class BlogPageCtrl extends VibeWidget
 	}
 	
 	/**
+	 * Add this newly created blog page to our listbox and select it.
+	 */
+	private void addNewPage( Long folderId, String pageName )
+	{
+		BlogPage blogPage;
+		
+		blogPage = new BlogPage();
+		blogPage.setFolderName( pageName );
+		blogPage.setFolderId( folderId.toString() );
+		
+		m_listOfBlogPages.add( blogPage );
+		
+		// Add the page to our listbox.
+		addPage( blogPage );
+		
+		// Select the new page.
+		GwtClientHelper.selectListboxItemByValue( m_listbox, blogPage.getFolderId() );
+		handleBlogPageSelected();
+	}
+	
+	/**
 	 * Add the given page to this control.
 	 */
 	private void addPage( BlogPage page )
@@ -189,26 +223,27 @@ public class BlogPageCtrl extends VibeWidget
 			m_listbox.addItem( page.getFolderName(), page.getFolderId() );
 		}
 	}
-	
+
 	/**
 	 * Add the given blog pages to this control
 	 */
 	private void addPages( BlogPages pages )
 	{
+		m_blogPages = pages;
+		m_topMostBlogPage = null;
+		
 		if ( pages != null )
 		{
-			BlogPage topMostBlogPage;
-			
 			// Get the list of pages
-			m_listOfBlogPages = pages.getPages();
+			m_listOfBlogPages = new ArrayList<BlogPage>( pages.getPages() );
 			
 			// Get the top-most blog page.
-			topMostBlogPage = getTopMostBlogPage( pages );
+			m_topMostBlogPage = getTopMostBlogPage( pages );
 			
 			// Add the top-most blog page as the first entry in the listbox
-			if ( topMostBlogPage != null )
+			if ( m_topMostBlogPage != null )
 			{
-				addPage( topMostBlogPage );
+				addPage( m_topMostBlogPage );
 			}
 			
 			if ( m_listOfBlogPages != null )
@@ -216,7 +251,7 @@ public class BlogPageCtrl extends VibeWidget
 				for (BlogPage nextPage : m_listOfBlogPages)
 				{
 					// Is this page the top-most blog page?
-					if ( nextPage != topMostBlogPage )
+					if ( nextPage != m_topMostBlogPage )
 					{
 						// No, add it.
 						addPage( nextPage );
@@ -427,7 +462,8 @@ public class BlogPageCtrl extends VibeWidget
 	 */
 	private void handleClickOnNewPageLink()
 	{
-		Window.alert( "Not yet implemented" );
+		// Invoke the add folder dialog.
+		invokeNewBlogPageDlg();
 	}
 	
 	/**
@@ -496,6 +532,67 @@ public class BlogPageCtrl extends VibeWidget
 		cmd = new GetBlogPagesCmd( m_defaultFolderId );
 		GwtClientHelper.executeCommand( cmd, callback );
 	}
+
+	/**
+	 * Invoke the "add blog page" dialog
+	 */
+	private void invokeNewBlogPageDlg()
+	{
+		// Do we have the top-most blog page.
+		if ( m_topMostBlogPage != null )
+		{
+			// Yes
+			// Do we already have a "new blog page" dialog?
+			if ( m_createBlogPageDlg == null )
+			{
+				String topMostFolderId;
+		
+				// No
+				// Invoke the "add folder" dialog.  It will create the new blog folder
+				// in the top-most blog folder.
+				topMostFolderId = m_topMostBlogPage.getFolderId();
+				if ( topMostFolderId != null )
+				{
+					final Long binderId;
+					
+					binderId = Long.valueOf( topMostFolderId );
+	
+					CreateBlogPageDlg.createAsync( true, true, new CreateBlogPageDlgClient()
+					{			
+						@Override
+						public void onUnavailable()
+						{
+							// Nothing to do.  Error handled in asynchronous provider.
+						}
+						
+						@Override
+						public void onSuccess( CreateBlogPageDlg cbpDlg )
+						{
+							ScheduledCommand cmd;
+							
+							m_createBlogPageDlg = cbpDlg;
+							
+							cmd = new ScheduledCommand()
+							{
+								@Override
+								public void execute()
+								{
+									m_createBlogPageDlg.init( binderId, m_blogPages.getFolderTemplateId() );
+									m_createBlogPageDlg.show( true );
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+					});
+				}
+			}
+			else
+			{
+				// Yes, show it.
+				m_createBlogPageDlg.show( true );
+			}
+		}
+	}
 	
 	/**
 	 * Called when the blog folder view is attached.
@@ -542,6 +639,64 @@ public class BlogPageCtrl extends VibeWidget
 						// Select the given folder in our list of blog pages
 						GwtClientHelper.selectListboxItemByValue( m_listbox, folderId.toString() );
 					}
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}
+	
+	/**
+	 * Handles the BlogArchiveMonthSelectedEvent received by this class.
+	 * 
+	 * Implements the BlogArchiveMonthSelectedEvent.onBlogArchiveMonthSelectedEvent() method.
+	 * 
+	 */
+	@Override
+	public void onBlogArchiveMonthSelected( BlogArchiveMonthSelectedEvent event )
+	{
+		Scheduler.ScheduledCommand cmd;
+
+		// A month was selected in the archive control.  If we have a default folder id
+		// select it.
+		if ( m_defaultFolderId != null )
+		{
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute() 
+				{
+					// Select the default blog page
+					GwtClientHelper.selectListboxItemByValue( m_listbox, m_defaultFolderId.toString() );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}
+	
+	/**
+	 * Handles the BlogPageCreatedEvent received by this class.
+	 * 
+	 * Implements the BlogPageCreatedEvent.onBlogPageCreated() method.
+	 */
+	@Override
+	public void onBlogPageCreated( BlogPageCreatedEvent event )
+	{
+		final Long folderId;
+		final String pageName;
+		
+		folderId = event.getFolderId();
+		pageName = event.getPageName();
+		if ( folderId != null && pageName != null && pageName.length() > 0 )
+		{
+			Scheduler.ScheduledCommand cmd;
+			
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute() 
+				{
+					// Add the newly created page to the listbox.
+					addNewPage( folderId, pageName );
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );

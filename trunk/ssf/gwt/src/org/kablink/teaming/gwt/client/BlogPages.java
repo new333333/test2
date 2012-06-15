@@ -48,7 +48,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class BlogPages
 	implements IsSerializable, VibeRpcResponseData
 {
-	private Long m_topFolderId;		// Id of the "top" blog folder
+	private Long m_topFolderId;			// Id of the "top" blog folder
+	private Long m_folderTemplateId;	// Id of the folder template of the top-most folder.
 	private ArrayList<BlogPage> m_blogPages;
 	
 	/**
@@ -57,6 +58,7 @@ public class BlogPages
 	public BlogPages()
 	{
 		m_topFolderId = null;
+		m_folderTemplateId = null;
 		m_blogPages = new ArrayList<BlogPage>();
 	}
 
@@ -79,9 +81,25 @@ public class BlogPages
 	/**
 	 * 
 	 */
+	public Long getFolderTemplateId()
+	{
+		return m_folderTemplateId;
+	}
+	
+	/**
+	 * 
+	 */
 	public Long getTopFolderId()
 	{
 		return m_topFolderId;
+	}
+
+	/**
+	 * 
+	 */
+	public void setFolderTemplateId( Long folderTemplateId )
+	{
+		m_folderTemplateId = folderTemplateId;
 	}
 	
 	/**

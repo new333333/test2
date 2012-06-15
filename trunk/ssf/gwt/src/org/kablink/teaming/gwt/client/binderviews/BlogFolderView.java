@@ -44,10 +44,12 @@ import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.BlogArchiveFolderSelectedEvent;
 import org.kablink.teaming.gwt.client.event.BlogArchiveMonthSelectedEvent;
 import org.kablink.teaming.gwt.client.event.BlogGlobalTagSelectedEvent;
+import org.kablink.teaming.gwt.client.event.BlogPageCreatedEvent;
 import org.kablink.teaming.gwt.client.event.BlogPageSelectedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.SetFolderSortEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -100,6 +102,7 @@ public class BlogFolderView extends FolderViewBase
 		BlogArchiveFolderSelectedEvent.Handler,
 		BlogArchiveMonthSelectedEvent.Handler,
 		BlogGlobalTagSelectedEvent.Handler,
+		BlogPageCreatedEvent.Handler,
 		BlogPageSelectedEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
 		QuickFilterEvent.Handler,
@@ -123,6 +126,7 @@ public class BlogFolderView extends FolderViewBase
 		TeamingEvents.BLOG_ARCHIVE_FOLDER_SELECTED,
 		TeamingEvents.BLOG_ARCHIVE_MONTH_SELECTED,
 		TeamingEvents.BLOG_GLOBAL_TAG_SELECTED,
+		TeamingEvents.BLOG_PAGE_CREATED,
 		TeamingEvents.BLOG_PAGE_SELECTED,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.QUICK_FILTER,
@@ -258,7 +262,7 @@ public class BlogFolderView extends FolderViewBase
 	/**
 	 * Fire the ContextChangedEvent to let everyone know we are working with the given folder.
 	 */
-	private void fireContextChangedEvent()
+	private void fireContextChangedEvent( final boolean reloadSidebar )
 	{
 		if ( m_binderId != null )
 		{
@@ -305,7 +309,10 @@ public class BlogFolderView extends FolderViewBase
 													binderPermalink,
 													false,
 													Instigator.CONTENT_AREA_CHANGED );
+							osBinderInfo.setForceSidebarReload( reloadSidebar );
 							
+							// Tell the side-bar to refresh so it picks up the new folder
+							// and selects it.
 							event = new ContextChangedEvent( osBinderInfo );
 							GwtTeaming.fireEvent( event );
 						}
@@ -455,7 +462,7 @@ public class BlogFolderView extends FolderViewBase
 
 					// Fire the ContextChangedEvent to notify all interested parties that we
 					// should be working with the selected month.
-					fireContextChangedEvent();
+					fireContextChangedEvent( false );
 					
 					searchForBlogEntries( month.getCreationStartTime(), month.getCreationEndTime() );
 				}
@@ -494,10 +501,9 @@ public class BlogFolderView extends FolderViewBase
 					m_binderId = binderInfo.getBinderId();
 					m_binderTitle = binderInfo.getBinderTitle();
 
-					
 					// Fire the ContextChangedEvent to notify all interested parties that we
 					// should be working with the selected month.
-					fireContextChangedEvent();
+					fireContextChangedEvent( false );
 					
 					// Find all the blog entries in the folder we are working with that
 					// were created in the given month and year.
@@ -541,6 +547,39 @@ public class BlogFolderView extends FolderViewBase
 	}
 	
 	/**
+	 * Handles the BlogPageCreatedEvent received by this class.
+	 * 
+	 * Implements the BlogPageCreatedEvent.onBlogPageCreatedEvent() method.
+	 * 
+	 */
+	@Override
+	public void onBlogPageCreated( BlogPageCreatedEvent event )
+	{
+		final Long folderId;
+		
+		// Get the id of the newly created blog page
+		folderId = event.getFolderId();
+		if ( folderId != null )
+		{
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute() 
+				{
+					m_binderId = folderId.toString();
+
+					// Fire the ContextChangedEvent to notify all interested parties that we
+					// should be working with the selected blog page.
+					fireContextChangedEvent( true );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+	}
+	
+	/**
 	 * Handles the BlogPageSelectedEvent received by this class.
 	 * 
 	 * Implements the BlogPageSelectedEvent.onBlogPageSelectedEvent() method.
@@ -567,7 +606,7 @@ public class BlogFolderView extends FolderViewBase
 
 					// Fire the ContextChangedEvent to notify all interested parties that we
 					// should be working with the selected blog page.
-					fireContextChangedEvent();
+					fireContextChangedEvent( false );
 					
 					// Find all the blog entries in the selected blog folder
 					searchForBlogEntries();
