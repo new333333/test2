@@ -4769,12 +4769,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				// ...add a TreeInfo to the reply's children for it.
 				GwtServerHelper.addTrashFolder( this, reply, binder );
 			}
+			
+			// Finally, if we're rooted on the current user's workspace...
+			if (binderWS.getId().equals(GwtServerHelper.getCurrentUser().getWorkspaceId())) {
+				// ...add the TreeInfo's for the collections we display
+				// ...at the top of the tree.
+				GwtServerHelper.addCollections( this, getRequest( ri ), reply );
+			}
 		}
 
-		// Finally, add the TreeInfo's for the collections we display
-		// at the top of the tree.
-		GwtServerHelper.addCollections( this, getRequest( ri ), reply );
-		
 		// If we get here, reply refers to the TreeInfo for the Binder
 		// requested.  Return it.
 		return reply;

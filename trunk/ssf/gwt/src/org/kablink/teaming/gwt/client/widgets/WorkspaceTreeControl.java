@@ -466,8 +466,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 	 * @param event
 	 */
 	@Override
-	public void onChangeContext(final ChangeContextEvent event)
-	{
+	public void onChangeContext(final ChangeContextEvent event) {
 		if (isSidebarTree()) {
 			OnSelectBinderInfo osbInfo = event.getOnSelectBinderInfo();
 			if (GwtClientHelper.validateOSBI(osbInfo, false)) {

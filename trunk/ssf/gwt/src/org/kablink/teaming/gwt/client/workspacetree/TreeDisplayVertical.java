@@ -958,50 +958,53 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 //!		boolean hasCollections = ((null != tiList) && (!(tiList.isEmpty())));
 		boolean	hasCollections = false;
 		
-		// ...its content panel...
+		// ...and its initial content grid.
 		Grid grid = new Grid();
 		grid.setCellSpacing(0);
 		grid.setCellPadding(0);
 		grid.resizeColumns(2);
 		m_rootPanel.add(grid);
 
-		// ...if there are any collection point rows to display...
+		// Are there are any collection rows to display?
 		if (hasCollections) {
+			// Yes!  Render them.
 			grid.addStyleName("workspaceTreeControlBody_collection");
 			for (TreeInfo ti:  tiList) {
-				// ...render them...
 				int row = grid.getRowCount();
 				grid.insertRow(row);
 				renderRow(grid, row, ti, 0);
 			}
 		}
 
-		// ...and if we're not in Vibe Lite mode...
-//!		if (!(GwtClientHelper.getRequestInfo().isVibeLite())) {
-		if (true) {
-			// ...and if there are any rows to display...
-			tiList = rootTI.getChildBindersList();
-			if ((null != tiList) && (!(tiList.isEmpty()))) {
-				if (hasCollections) {
-					grid = new Grid();
-					grid.setCellSpacing(0);
-					grid.setCellPadding(0);
-					grid.resizeColumns(2);
-					m_rootPanel.add(grid);
-					
-					grid.insertRow(0);
-					InlineLabel il = new InlineLabel(getMessages().treeWSAndFolders());
-					il.addStyleName("workspaceTreeControlTreeHeader");
-					grid.setWidget(0, 1, il);
-				}
-				grid.addStyleName("workspaceTreeControlBody");
-				
-				for (TreeInfo ti:  tiList) {
-					// ...render them.
-					int row = grid.getRowCount();
-					grid.insertRow(row);
-					renderRow(grid, row, ti, 0);
-				}
+		// Are there are any child binder rows to display?
+		tiList = rootTI.getChildBindersList();
+		if ((null != tiList) && (!(tiList.isEmpty()))) {
+			// Yes!  Did we display collection rows?
+			if (hasCollections) {
+				// Yes!  Create a new grid for the child binder rows as
+				// they require different styling.
+				grid = new Grid();
+				grid.setCellSpacing(0);
+				grid.setCellPadding(0);
+				grid.resizeColumns(2);
+				m_rootPanel.add(grid);
+			}
+			grid.addStyleName("workspaceTreeControlBody");
+
+			// If we're not display activity streams...
+			if (!isAS) {
+				// ...insert a header above the child binders.
+				grid.insertRow(0);
+				InlineLabel il = new InlineLabel(getMessages().treeWSAndFolders());
+				il.addStyleName("workspaceTreeControlTreeHeader");
+				grid.setWidget(0, 1, il);
+			}
+			
+			// Finally, render the child binders.
+			for (TreeInfo ti:  tiList) {
+				int row = grid.getRowCount();
+				grid.insertRow(row);
+				renderRow(grid, row, ti, 0);
 			}
 		}
 	}
@@ -1347,11 +1350,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// Is the requested Binder available in those we've already
 		// got loaded?
 		Instigator instigator = binderInfo.getInstigator();
-		final boolean forceReload = (binderInfo.getForceSidebarReload() || (Instigator.FORCE_SIDEBAR_RELOAD == instigator));
 		final String binderId = String.valueOf(binderInfo.getBinderId());
 		final TreeInfo targetTI = TreeInfo.findBinderTI(getRootTreeInfo(), binderId);
 		if (null != targetTI) {
 			// Yes!  Should the request cause the tree to be re-rooted?
+			final boolean forceReload =
+				(binderInfo.getForceSidebarReload() ||
+				(Instigator.FORCE_SIDEBAR_RELOAD == instigator));
+			
 			switch (instigator) {
 			case CONTENT_AREA_CHANGED:
 			case FORCE_SIDEBAR_RELOAD:
