@@ -43,7 +43,8 @@ import org.kablink.teaming.util.SpringContextUtil;
 
 public class AuthenticationManagerUtil {
 
-	public static User authenticate(final String zoneName,
+	public static User authenticate(final Integer identitySource,
+			final String zoneName,
 			final String username, final String password,
 			final boolean createUser, final boolean passwordAutoSynch,
 			final boolean ignorePassword, final Map updates,
@@ -71,7 +72,7 @@ public class AuthenticationManagerUtil {
 		boolean createUser = 
 			SPropsUtil.getBoolean("portal.user.auto.create", true);
 		
-		return authenticate(zoneName, username, password, createUser, passwordAutoSynch, ignorePassword, updates, authenticatorName);
+		return authenticate(null, zoneName, username, password, createUser, passwordAutoSynch, ignorePassword, updates, authenticatorName);
 	}
 	
 	public static User authenticate(final String zoneName,

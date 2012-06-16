@@ -79,8 +79,6 @@ public class OpenIDAuthenticationUserDetailsService implements AuthenticationUse
 		if(emailAddress == null || emailAddress.isEmpty())
 			throw new UsernameNotFoundException("User " + token.getName() + " has no email address");
 		
-		String zoneName = getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName());
-		
 		UserDetails details = new SsfContextMapper.SsfUserDetails(emailAddress, vibeAttributes);
 
 		return details;
