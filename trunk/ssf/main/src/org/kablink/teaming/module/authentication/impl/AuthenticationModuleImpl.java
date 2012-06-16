@@ -49,9 +49,11 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LoginInfo;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
+import org.kablink.teaming.spring.security.LocalAuthentication;
 import org.kablink.teaming.spring.security.SsfContextMapper;
 import org.kablink.teaming.spring.security.SynchNotifiableAuthentication;
 import org.kablink.teaming.spring.security.ZoneAwareLocalAuthenticationProvider;
@@ -451,27 +453,32 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	     			result = performAuthentication(zone, authentication);
 	     			SimpleProfiler.stop( "3-authenticators.get(zone).authenticate(authentication)" );
 	     			
-	     			String loginName;
+	     			String loginName = getLoginName(result);
 	     			
-	     			if(result instanceof PreAuthenticatedAuthenticationToken) {
-	     				// Integrated Windows Authentication through integration with IIS
-	     				PreAuthenticatedAuthenticationToken preAuth = (PreAuthenticatedAuthenticationToken) result;
-	     				loginName = WindowsUtil.getSamaccountname((String) result.getName());
-	     			}
-	     			else {
-	     				loginName = (String) result.getName();
-	     			}
+	     			int identitySource = getIdentitySource(result);
 	     			
 	     			if(SPropsUtil.getBoolean("authenticator.synch." + getAuthenticator(), false)) {
-		     			// This is not used for authentication but for synchronization.
+		     			// This is not used for authentication but for profile synchronization.
 		     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate1" );
+		     			// Get default settings
 		     			boolean passwordAutoSynch = 
 		     					SPropsUtil.getBoolean("portal.password.auto.synchronize", false);
-		     				boolean ignorePassword =
+		     			boolean ignorePassword =
 		     					SPropsUtil.getBoolean("portal.password.ignore", true);
-		     				boolean createUser = 
+		     			boolean createUser = 
 		     					SPropsUtil.getBoolean("portal.user.auto.create", true);
-		    			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
+		     			if(identitySource == User.IDENTITY_SOURCE_OPENID) {
+		     				// Override the above default settings which apply only to local and LDAP users.
+		     				passwordAutoSynch = false;
+		     				ignorePassword = true;
+		     				ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zone);
+		     				if(zoneConfig.getAuthenticationConfig().getOpenidSelfProvisioningEnabled())
+		     					createUser = true;
+		     				else
+		     					createUser = false;
+		     			}
+		    			AuthenticationManagerUtil.authenticate(identitySource, 
+		    					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
 		    					loginName, 
 		    					(String) result.getCredentials(),
 		    					createUser,
@@ -482,9 +489,10 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		     			SimpleProfiler.stop( "4-AuthenticationManagerUtil.authenticate1" );
 	     			}
 	     			else {
-	        			// This is not used for authentication or synchronization but merely to log the authenticator.
+	        			// This is not used for authentication or profile synchronization but merely to log the authenticator.
 		     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate2" );
-	        			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
+	        			AuthenticationManagerUtil.authenticate(identitySource,
+	        					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
 	        					loginName, 
 	        					(String) result.getCredentials(),
 	        					false, 
@@ -515,16 +523,20 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	    		}
         	}
         	else { // Yes, system account
-     			// Do not try ldap authentication. Authenticate against Teaming db.
+     			// Do not try non-local authentication. Authenticate only against local users.
      			SimpleProfiler.start( "3a-system account: localProviders.get(zone).authenticate(authentication)" );
     			result = localProviders.get(zone).authenticate(authentication);
      			SimpleProfiler.stop( "3a-system account: localProviders.get(zone).authenticate(authentication)" );
 
-    			// This is not used for authentication or synchronization but merely to log the authenticator.
+    			// This is not used for authentication or profile synchronization but merely to log the authenticator.
      			SimpleProfiler.start( "4a-system account: AuthenticationManagerUtil.authenticate()" );
-    			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
-    					(String) result.getName(), (String) result.getCredentials(),
-    					false, false, true, 
+    			AuthenticationManagerUtil.authenticate(User.IDENTITY_SOURCE_LOCAL,
+    					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
+    					(String) result.getName(), 
+    					(String) result.getCredentials(),
+    					false, 
+    					false, 
+    					true, 
     					(Map) result.getPrincipal(), getAuthenticator());			
      			SimpleProfiler.stop( "4a-system account: AuthenticationManagerUtil.authenticate()" );
 
@@ -543,6 +555,28 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		if(authenticator == null)
 			authenticator = LoginInfo.AUTHENTICATOR_UNKNOWN;
 		return authenticator;
+	}
+	
+	private int getIdentitySource(Authentication authentication) {
+		if(authentication instanceof LocalAuthentication)
+			return User.IDENTITY_SOURCE_LOCAL;
+		else if(authentication instanceof OpenIDAuthenticationToken)
+			return User.IDENTITY_SOURCE_OPENID;
+		else
+			return User.IDENTITY_SOURCE_LDAP;
+	}
+	
+	private String getLoginName(Authentication result) {
+		String loginName;
+		if(result instanceof PreAuthenticatedAuthenticationToken) {
+			// Integrated Windows Authentication through integration with IIS
+			PreAuthenticatedAuthenticationToken preAuth = (PreAuthenticatedAuthenticationToken) result;
+			loginName = WindowsUtil.getSamaccountname((String) result.getName());
+		}
+		else {
+			loginName = (String) result.getName();
+		}
+		return loginName;
 	}
 	
 	/**

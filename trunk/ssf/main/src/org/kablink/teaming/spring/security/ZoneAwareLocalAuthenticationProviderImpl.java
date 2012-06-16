@@ -69,9 +69,15 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 
 	protected Authentication doAuthenticate(Authentication authentication) throws AuthenticationException {
 		try {
-			User user = AuthenticationManagerUtil.authenticate(zoneName,
-					(String) authentication.getName(), (String) authentication.getCredentials(),
-					false, false, false, new HashMap(), null);
+			User user = AuthenticationManagerUtil.authenticate(User.IDENTITY_SOURCE_LOCAL,
+					zoneName,
+					(String) authentication.getName(), 
+					(String) authentication.getCredentials(),
+					false, 
+					false, 
+					false, 
+					new HashMap(), 
+					null);
 
 			return outputAuthentication(authentication, user, null);
 		} catch(PasswordDoesNotMatchException e) {
@@ -95,7 +101,7 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 		return new SynchNotifiableAuthenticationImpl(principal, credentials, authorities);
 	}
 	
-	public static class SynchNotifiableAuthenticationImpl extends UsernamePasswordAuthenticationToken implements SynchNotifiableAuthentication {
+	public static class SynchNotifiableAuthenticationImpl extends UsernamePasswordAuthenticationToken implements LocalAuthentication, SynchNotifiableAuthentication {
 	    public SynchNotifiableAuthenticationImpl(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities) {
 	    	super(principal, credentials, authorities);
 	    }
