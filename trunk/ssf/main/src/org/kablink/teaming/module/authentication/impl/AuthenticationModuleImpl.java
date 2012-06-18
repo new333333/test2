@@ -53,7 +53,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
-import org.kablink.teaming.spring.security.LocalAuthentication;
+import org.kablink.teaming.spring.security.IdentitySourceObtainable;
 import org.kablink.teaming.spring.security.SsfContextMapper;
 import org.kablink.teaming.spring.security.SynchNotifiableAuthentication;
 import org.kablink.teaming.spring.security.ZoneAwareLocalAuthenticationProvider;
@@ -467,7 +467,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		     					SPropsUtil.getBoolean("portal.password.ignore", true);
 		     			boolean createUser = 
 		     					SPropsUtil.getBoolean("portal.user.auto.create", true);
-		     			if(identitySource == User.IDENTITY_SOURCE_OPENID) {
+		     			if(identitySource == User.IDENTITY_SOURCE_EXTERNAL) {
 		     				// Override the above default settings which apply only to local and LDAP users.
 		     				passwordAutoSynch = false;
 		     				ignorePassword = true;
@@ -558,12 +558,22 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	}
 	
 	private int getIdentitySource(Authentication authentication) {
-		if(authentication instanceof LocalAuthentication)
-			return User.IDENTITY_SOURCE_LOCAL;
-		else if(authentication instanceof OpenIDAuthenticationToken)
-			return User.IDENTITY_SOURCE_OPENID;
-		else
+		if(authentication instanceof IdentitySourceObtainable) {
+			// With local authentication, authentication is made against Vibe database, and therefore
+			// identity source is always obtainable.
+			// With LDAP authentication, identity source is obtainable only if the authentication
+			// was made against Vibe database which can happen when the LDAP server is down.
+			return ((IdentitySourceObtainable)authentication).getIdentitySource();
+		}
+		else if(authentication instanceof OpenIDAuthenticationToken) {
+			// When authentication is done by OpenID provider, the identity source is always OpenID.
+			return User.IDENTITY_SOURCE_EXTERNAL;
+		}
+		else {
+			// The authentication was not done against Vibe database or OpenID provider. 
+			// This should mean that the identy source is LDAP.
 			return User.IDENTITY_SOURCE_LDAP;
+		}
 	}
 	
 	private String getLoginName(Authentication result) {

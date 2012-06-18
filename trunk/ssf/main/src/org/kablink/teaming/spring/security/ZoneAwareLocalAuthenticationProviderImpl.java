@@ -98,13 +98,23 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 	
 	protected UsernamePasswordAuthenticationToken newUsernamePasswordAuthenticationToken
 	(User user, Object extraInfo, Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities) {
-		return new SynchNotifiableAuthenticationImpl(principal, credentials, authorities);
+		return new SynchNotifiableAuthenticationImpl(principal, credentials, authorities, user);
 	}
 	
-	public static class SynchNotifiableAuthenticationImpl extends UsernamePasswordAuthenticationToken implements LocalAuthentication, SynchNotifiableAuthentication {
-	    public SynchNotifiableAuthenticationImpl(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities) {
+	public static class SynchNotifiableAuthenticationImpl extends UsernamePasswordAuthenticationToken implements IdentitySourceObtainable, SynchNotifiableAuthentication {
+		User user;
+	    public SynchNotifiableAuthenticationImpl(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities, User user) {
 	    	super(principal, credentials, authorities);
+	    	this.user = user;
 	    }
 		public void synchDone() {}
+		
+		/* (non-Javadoc)
+		 * @see org.kablink.teaming.spring.security.IdentitySourceObtainable#getIdentitySource()
+		 */
+		@Override
+		public int getIdentitySource() {
+			return user.getIdentitySource();
+		}
 	}
 }

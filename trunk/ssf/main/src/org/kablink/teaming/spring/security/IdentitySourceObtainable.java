@@ -38,6 +38,7 @@ package org.kablink.teaming.spring.security;
  * @author jong
  *
  */
-public interface LocalAuthentication {
+public interface IdentitySourceObtainable {
 
+	public int getIdentitySource();
 }

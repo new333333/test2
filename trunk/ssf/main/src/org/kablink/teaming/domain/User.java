@@ -56,10 +56,12 @@ import org.kablink.util.Validator;
 
 public class User extends UserPrincipal implements IndividualPrincipal {
 	// Internal identity sources (that is, within corporate firewall)
+	// Vibe local database
 	public static final int IDENTITY_SOURCE_LOCAL = 1;
+	// LDAP is external to Vibe, but internal to corporate firewall.
 	public static final int IDENTITY_SOURCE_LDAP = 2;
 	// External identity sources (that is, outside of corporate firewall)
-	public static final int IDENTITY_SOURCE_OPENID = 11;
+	public static final int IDENTITY_SOURCE_EXTERNAL = 11;
 	
 	private final static int	WORK_DAY_START_DEFAULT	= 8;	// Original default was 6 in ss_calendar.js.
 	
@@ -498,10 +500,19 @@ public class User extends UserPrincipal implements IndividualPrincipal {
         if(groupNames == null) {
     		SortedSet names = new TreeSet();
     		addGroupNames(this, names);
-    		if (!isShared()) names.add("allUsers");
+    		if (!isShared()) {
+    			if(isExternalUser())
+    				names.add("allExtUsers");
+    			else
+    				names.add("allUsers");
+    		}
     		groupNames = names;
     	}
     	return groupNames;
+    }
+    
+    public boolean isExternalUser() {
+    	return (identitySource == IDENTITY_SOURCE_EXTERNAL);
     }
     
     private void addGroupNames(UserPrincipal principal, SortedSet names) {

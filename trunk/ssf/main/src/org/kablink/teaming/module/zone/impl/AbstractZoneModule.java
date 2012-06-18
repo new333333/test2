@@ -795,6 +795,16 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zone.getId());
 			getProfileModule().indexEntry(g);
 		}
+		//make sure allExtUsers exists
+		try {
+			getProfileDao().getReservedGroup(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID, zone.getId());
+		} catch (NoGroupByTheNameException nu) {
+			//need to add it
+			Group g = addAllExtUserGroup(superU.getParentBinder(), new HistoryStamp(superU));
+			//	updates cache
+			getProfileDao().getReservedGroup(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID, zone.getId());
+			getProfileModule().indexEntry(g);
+		}
 		//make sure allApplications exists
 		try {
 			getProfileDao().getReservedApplicationGroup(ObjectKeys.ALL_APPLICATIONS_GROUP_INTERNALID, zone.getId());
@@ -892,6 +902,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			HistoryStamp stamp = new HistoryStamp(user);
     		//add reserved group for use in import templates
     		Group group = addAllUserGroup(profiles, stamp);
+    		Group extGroup = addAllExtUserGroup(profiles, stamp);
     		ApplicationGroup applicationGroup = addAllApplicationGroup(profiles, stamp);
 	
     		Function readRole = addEntryReadRole(top);
@@ -948,13 +959,15 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		teamRoot.setFunctionMembershipInherited(false);
     		
     		
-    		//setup allUsers & allApplications access
+    		//setup allUsers & allExtUsers & allApplications access
     		List members = new ArrayList();
     		members.add(group.getId());
+    		members.add(extGroup.getId());
     		members.add(applicationGroup.getId());
-    		//all users and all applications visitors at top
+    		//all users and all ext users and all applications visitors at top
     		addMembership(top, visitorsRole, top, members);
     		// all users participants at top
+    		members.remove(extGroup.getId());
     		members.remove(applicationGroup.getId());
     		addMembership(top, participantsRole, top, members);
     		// all users visitors at profiles
@@ -1067,6 +1080,21 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		group.setZoneId(parent.getZoneId());
 		group.setParentBinder(parent);
 		group.setInternalId(ObjectKeys.ALL_USERS_GROUP_INTERNALID);
+		getDefinitionModule().setDefaultEntryDefinition(group);
+		getCoreDao().save(group);
+		group.setCreation(stamp);
+		group.setModification(stamp);
+		return group;
+	}
+    private Group addAllExtUserGroup(Binder parent, HistoryStamp stamp) {
+		//build allExtUsers group
+		Group group = new Group();
+		group.setName("allExtUsers");
+		group.setForeignName(group.getName());
+		group.setTitle(NLT.get("administration.initial.group.allextuser.title", group.getName()));
+		group.setZoneId(parent.getZoneId());
+		group.setParentBinder(parent);
+		group.setInternalId(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID);
 		getDefinitionModule().setDefaultEntryDefinition(group);
 		getCoreDao().save(group);
 		group.setCreation(stamp);

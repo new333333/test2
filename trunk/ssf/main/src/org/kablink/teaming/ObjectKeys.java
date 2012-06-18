@@ -117,6 +117,8 @@ public interface ObjectKeys {
 	public static final String GLOBAL_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b000a";
 	//reserverd internalids for alluser group
 	public static final String ALL_USERS_GROUP_INTERNALID="402883b90d0de1f3010d0df5582b0006";
+	//reserverd internalids for allextuser group
+	public static final String ALL_EXT_USERS_GROUP_INTERNALID="402883b90d0de1f3010d0df5582b0022";
 	//reserverd internalId user posting agent
 	public static final String ANONYMOUS_POSTING_USER_INTERNALID="402883b90d0de1f3010d0df5582b0008";
 	//super user bypasses all acl and operation checks

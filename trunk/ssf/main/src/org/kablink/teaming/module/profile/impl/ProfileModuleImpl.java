@@ -1588,7 +1588,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	
     //NO transaction
-	public User addUserFromPortal(String userName, String password, Map updates, Map options) {
+	public User addUserFromPortal(int identitySource, String userName, String password, Map updates, Map options) {
 		if(updates == null)
 			updates = new HashMap();
 		
@@ -1609,12 +1609,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 					.getProcessor(profiles, profiles.getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
 			Map newUpdates = new HashMap(updates);
 			newUpdates.put(ObjectKeys.FIELD_PRINCIPAL_NAME, userName);
+			newUpdates.put(ObjectKeys.FIELD_USER_IDENTITY_SOURCE, Integer.valueOf(identitySource));
 			if (Validator.isNotNull(password)) newUpdates.put(ObjectKeys.FIELD_USER_PASSWORD, password);
 			//get default definition to use
 			Definition userDef = profiles.getDefaultEntryDef();		
 			if (userDef == null) userDef = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_ENTRY_VIEW);
 			List<InputDataAccessor>accessors = new ArrayList();
 			accessors.add(new MapInputData(newUpdates));
+		
 			User user = (User)processor.syncNewEntries(profiles, userDef, User.class, accessors, options, null).get(0);
 			// flush user before adding workspace
 			IndexSynchronizationManager.applyChanges();
