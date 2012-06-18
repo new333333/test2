@@ -241,6 +241,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			if (closeSession) SessionUtil.sessionStop();
 		}
 
+		// At this point we must flush out any indexing changes that might have occurred
+		// before clearing the context.
+		IndexSynchronizationManager.applyChanges();
+		
  		RequestContextHolder.clear();
  		
  		DefinitionCache.clear();
