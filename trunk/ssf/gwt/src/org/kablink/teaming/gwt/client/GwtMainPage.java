@@ -73,7 +73,6 @@ import org.kablink.teaming.gwt.client.event.SearchSimpleEvent;
 import org.kablink.teaming.gwt.client.event.SearchTagEvent;
 import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
-import org.kablink.teaming.gwt.client.event.SidebarReloadEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.SizeChangedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -193,7 +192,6 @@ public class GwtMainPage extends ResizeComposite
 		SearchTagEvent.Handler,
 		ShowContentControlEvent.Handler,
 		SidebarHideEvent.Handler,
-		SidebarReloadEvent.Handler,
 		SidebarShowEvent.Handler,
 		SizeChangedEvent.Handler,
 		TrackCurrentBinderEvent.Handler,
@@ -297,7 +295,6 @@ public class GwtMainPage extends ResizeComposite
 		
 		// Sidebar events.
 		TeamingEvents.SIDEBAR_HIDE,
-		TeamingEvents.SIDEBAR_RELOAD,
 		TeamingEvents.SIDEBAR_SHOW,
 		
 		// Sizing events.
@@ -970,9 +967,9 @@ public class GwtMainPage extends ResizeComposite
 		
 		jsFixupGwtMainTitle();
 		
-		final boolean forceSidebarReload = m_requestInfo.forceSidebarReload();
-		if (forceSidebarReload) {
-			m_requestInfo.clearSidebarReload();
+		final boolean refreshSidebarTree = m_requestInfo.isRefreshSidebarTree();
+		if (refreshSidebarTree) {
+			m_requestInfo.clearRefreshSidebarTree();
 		}
 
 		// If we're in a search panel, we always show the root
@@ -1012,8 +1009,8 @@ public class GwtMainPage extends ResizeComposite
 					instigator );
 				if (GwtClientHelper.validateOSBI(osbInfo))
 				{
-					if (forceSidebarReload) {
-						osbInfo.setForceSidebarReload(forceSidebarReload);
+					if (refreshSidebarTree) {
+						osbInfo.setRefreshSidebarTree(refreshSidebarTree);
 					}
 					GwtTeaming.fireEvent( new ContextChangedEvent( osbInfo ) );
 				}
@@ -2103,6 +2100,7 @@ public class GwtMainPage extends ResizeComposite
 	public void onGotoMyWorkspace( GotoMyWorkspaceEvent event )
 	{
 		m_contentLayoutPanel.showContentControl();
+		m_requestInfo.setRerootSidebarTree();
 		gotoUrlAsync( m_requestInfo.getMyWorkspaceUrl() );
 	}// end onGotoMyWorkspace()
 	
@@ -2545,19 +2543,6 @@ public class GwtMainPage extends ResizeComposite
 		
 		onResize();
 	}// end onSidebarHide()
-	
-	/**
-	 * Handles SidebarReloadEvent's received by this class.
-	 * 
-	 * Implements the SidebarReloadEvent.Handler.onSidebarReload() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onSidebarReload( SidebarReloadEvent event )
-	{
-		contextLoaded(m_selectedBinderId, Instigator.FORCE_SIDEBAR_RELOAD);
-	}// end onSidebarReload()
 	
 	/**
 	 * Handles SidebarShowEvent's received by this class.

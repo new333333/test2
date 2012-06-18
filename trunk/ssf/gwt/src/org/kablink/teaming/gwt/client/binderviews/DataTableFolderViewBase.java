@@ -1461,7 +1461,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				@Override
 				public void operationCanceled() {
 					if (deletingBinders) {
-						GwtClientHelper.getRequestInfo().setSidebarReload();
+						GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
 						FullUIReloadEvent.fireOne();
 					}
 					else {
@@ -1472,7 +1472,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				@Override
 				public void operationComplete() {
 					if (deletingBinders) {
-						GwtClientHelper.getRequestInfo().setSidebarReload();
+						GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
 						FullUIReloadEvent.fireOne();
 					}
 					else {
@@ -1768,7 +1768,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				@Override
 				public void operationCanceled() {
 					if (purgingBinders) {
-						GwtClientHelper.getRequestInfo().setSidebarReload();
+						GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
 						FullUIReloadEvent.fireOne();
 					}
 					else {
@@ -1779,7 +1779,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				@Override
 				public void operationComplete() {
 					if (purgingBinders) {
-						GwtClientHelper.getRequestInfo().setSidebarReload();
+						GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
 						FullUIReloadEvent.fireOne();
 					}
 					else {

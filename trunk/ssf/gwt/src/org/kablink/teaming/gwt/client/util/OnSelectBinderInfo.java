@@ -40,7 +40,7 @@ import org.kablink.teaming.gwt.client.util.TreeInfo;
  * @author drfoster@novell.com
  */
 public class OnSelectBinderInfo {
-	private boolean			m_forceSidebarReload;	// true -> Regardless of the instigator, force the sidebar tree to reload.
+	private boolean			m_refreshSidebarTree;	// true -> Regardless of the instigator, force the sidebar tree to refresh.
 	private boolean			m_isPermalinkUrl;		//
 	private boolean			m_isTrash;				//
 	private CollectionType	m_collectionType;		//
@@ -58,10 +58,10 @@ public class OnSelectBinderInfo {
 		BREADCRUMB_TREE_SELECT,			// A binder in the bread crumb tree was selected. 
 		CONTENT_AREA_CHANGED,			// The content of the content area changed.
 		FAVORITE_SELECT,				// A favorite was selected from the My Favorites menu.
-		FORCE_SIDEBAR_RELOAD,			// Forces the sidebar to reload.
 		FORCE_FULL_RELOAD,				// Forces the full UI to reload.
 		GOTO_CONTENT_URL,				// User clicked on something that loads some URL into the content frame.
 		PROFILE_QUICK_VIEW_SELECT,		// The workspace or profile button in the quick view dialog was selected.
+		REFRESH_SIDEBAR_TREE,			// Forces the sidebar tree to refresh.
 		RECENT_PLACE_SELECT,			// A recent place was selected from the Recent Places menu.
 		SEARCH_SELECT,					// A link from the search options dialog search results was selected.
 		SIDEBAR_TREE_SELECT,			// A binder in the sidebar tree was select.
@@ -167,13 +167,13 @@ public class OnSelectBinderInfo {
 	}
 
 	/**
-	 * Returns the true if the sidebar should be forced to reload
+	 * Returns the true if the sidebar should be refreshed
 	 * regardless of the instigator and false otherwise.
 	 * 
 	 * @return
 	 */
-	public boolean getForceSidebarReload() {
-		return m_forceSidebarReload;
+	public boolean isRefreshSidebarTree() {
+		return m_refreshSidebarTree;
 	}
 	
 	/**
@@ -244,12 +244,12 @@ public class OnSelectBinderInfo {
 
 	/**
 	 * Stores a true/false flag indicating whether the sidebar should
-	 * be forced to reload regardless of the instigator.
+	 * be refreshed regardless of the instigator.
 	 * 
-	 * @param forceSidebarReload
+	 * @param refreshSidebarTree
 	 */
-	public void setForceSidebarReload(boolean forceSidebarReload) {
-		m_forceSidebarReload = forceSidebarReload;
+	public void setRefreshSidebarTree(boolean refreshSidebarTree) {
+		m_refreshSidebarTree = refreshSidebarTree;
 	}
 	
 	/**

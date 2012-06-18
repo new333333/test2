@@ -61,7 +61,6 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 
-
 /**
  * Implements Vibe's add new folder dialog.
  *  
@@ -149,7 +148,7 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 				else {
 					// No, there weren't any errors!  Force things to
 					// refresh...
-					GwtClientHelper.getRequestInfo().setSidebarReload();
+					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
 					GwtTeaming.fireEvent(new FullUIReloadEvent());
 					
 					// ...and close the dialog.

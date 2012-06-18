@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
@@ -84,6 +86,13 @@ public class RefreshSidebarTreeEvent extends VibeEventBase<RefreshSidebarTreeEve
 		handler.onRefreshSidebarTree(this);
 	}
 	
+	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new RefreshSidebarTreeEvent());
+	}
+
 	/**
 	 * Returns the GwtEvent.Type of this event.
 	 *
