@@ -959,15 +959,13 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		teamRoot.setFunctionMembershipInherited(false);
     		
     		
-    		//setup allUsers & allExtUsers & allApplications access
+    		//setup allUsers & allApplications access
     		List members = new ArrayList();
     		members.add(group.getId());
-    		members.add(extGroup.getId());
     		members.add(applicationGroup.getId());
-    		//all users and all ext users and all applications visitors at top
+    		//all users and all applications visitors at top
     		addMembership(top, visitorsRole, top, members);
     		// all users participants at top
-    		members.remove(extGroup.getId());
     		members.remove(applicationGroup.getId());
     		addMembership(top, participantsRole, top, members);
     		// all users visitors at profiles
