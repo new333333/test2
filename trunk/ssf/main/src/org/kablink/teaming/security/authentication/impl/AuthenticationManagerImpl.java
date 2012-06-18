@@ -142,6 +142,10 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		return processorManager;
 	}
 
+	public void setProcessorManager(ProcessorManager processorManager) {
+		this.processorManager = processorManager;
+	}
+
 	/**
      * Called after bean is initialized.  
      */
