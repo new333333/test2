@@ -36,7 +36,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <script type="text/javascript">
 if (window.top.ss_gotoContentUrl) {
-	window.top.m_requestInfo.forceSidebarReload = true;
+	window.top.m_requestInfo.refreshSidebarTree = true;
 	window.top.ss_gotoContentUrl("${ss_reloadUrl}");
 }
 else {

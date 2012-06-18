@@ -107,7 +107,6 @@ public class EventHelper {
 		case SEARCH_ADVANCED:                   	reply = new SearchAdvancedEvent();                break;
 		case SHOW_CONTENT_CONTROL:                 	reply = new ShowContentControlEvent();            break;
 		case SIDEBAR_HIDE:                      	reply = new SidebarHideEvent();                   break;
-		case SIDEBAR_RELOAD:                    	reply = new SidebarReloadEvent();                 break;
 		case SIDEBAR_SHOW:                      	reply = new SidebarShowEvent();                   break;
 		case SIZE_CHANGED:                      	reply = new SizeChangedEvent();                   break;
 		case TASK_DELETE:                       	reply = new TaskDeleteEvent();                    break;
@@ -1292,15 +1291,6 @@ public class EventHelper {
 				}
 				break;
 			
-			case SIDEBAR_RELOAD:
-				// A SidebarReloadEvent!  Can the event handler we were
-				// given handle that?
-				if (eventHandler instanceof SidebarReloadEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = SidebarReloadEvent.registerEvent(eventBus, ((SidebarReloadEvent.Handler) eventHandler));
-				}
-				break;
-			
 			case SIDEBAR_SHOW:
 				// A SidebarShowEvent!  Can the event handler we were
 				// given handle that?
@@ -1830,9 +1820,6 @@ public class EventHelper {
 			
 			case QUICK_FILTER:                 	        hasHandler = (eventHandler instanceof QuickFilterEvent.Handler);                   break;
 			
-			case REFRESH_SIDEBAR_TREE:                 	hasHandler = (eventHandler instanceof RefreshSidebarTreeEvent.Handler);            break;
-			case REROOT_SIDEBAR_TREE:                 	hasHandler = (eventHandler instanceof RerootSidebarTreeEvent.Handler);             break;
-			
 			case SEARCH_ADVANCED:						hasHandler = (eventHandler instanceof SearchAdvancedEvent.Handler);                break;
 			case SEARCH_FIND_RESULTS:               	hasHandler = (eventHandler instanceof SearchFindResultsEvent.Handler);             break;
 			case SEARCH_RECENT_PLACE:               	hasHandler = (eventHandler instanceof SearchRecentPlaceEvent.Handler);             break;
@@ -1863,8 +1850,9 @@ public class EventHelper {
 			case SHOW_TEAM_WORKSPACE:					hasHandler = (eventHandler instanceof ShowTeamWSEvent.Handler);			   		   break;
 			case SHOW_TRASH:						    hasHandler = (eventHandler instanceof ShowTrashEvent.Handler);		               break;
 			
+			case REFRESH_SIDEBAR_TREE:                 	hasHandler = (eventHandler instanceof RefreshSidebarTreeEvent.Handler);            break;
+			case REROOT_SIDEBAR_TREE:                 	hasHandler = (eventHandler instanceof RerootSidebarTreeEvent.Handler);             break;
 			case SIDEBAR_HIDE:                      	hasHandler = (eventHandler instanceof SidebarHideEvent.Handler);                   break;
-			case SIDEBAR_RELOAD:                    	hasHandler = (eventHandler instanceof SidebarReloadEvent.Handler);                 break;
 			case SIDEBAR_SHOW:                      	hasHandler = (eventHandler instanceof SidebarShowEvent.Handler);                   break;
 			
 			case SIZE_CHANGED:                      	hasHandler = (eventHandler instanceof SizeChangedEvent.Handler);                   break;

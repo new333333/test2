@@ -42,7 +42,7 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
-import org.kablink.teaming.gwt.client.event.SidebarReloadEvent;
+import org.kablink.teaming.gwt.client.event.RefreshSidebarTreeEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TrashPurgeAllCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.TrashPurgeSelectedEntriesCmd;
@@ -239,7 +239,7 @@ public class TrashView extends DataTableFolderViewBase {
 	private void reloadUINow(boolean reloadSidebar) {
 		FullUIReloadEvent.fireOne();
 		if (reloadSidebar) {
-			SidebarReloadEvent.fireOne();
+			RefreshSidebarTreeEvent.fireOne();
 		}
 	}
 

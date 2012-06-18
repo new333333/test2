@@ -346,7 +346,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 						// ...copy of just entries as there's generally
 						// ...nothing showing that needs to be changed.
 						if (copyMovedBinders) {
-							GwtClientHelper.getRequestInfo().setSidebarReload();
+							GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
 						}
 						FullUIReloadEvent.fireOne();
 					}

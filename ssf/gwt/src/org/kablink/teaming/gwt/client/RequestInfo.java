@@ -468,24 +468,45 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
-	 * Returns true if we should false the sidebar to reload regardless
-	 * of an operation and false otherwise.
+	 * Returns true if we should reload the sidebar regardless of an
+	 * operation and false otherwise.
 	 * 
 	 * @return
 	 */
-	public final native boolean forceSidebarReload()
+	public final native boolean isRefreshSidebarTree()
 	/*-{
-		return this.getBFromS( this.forceSidebarReload );
+		return this.getBFromS( this.refreshSidebarTree );
 	}-*/;
 	
-	public final native void    clearSidebarReload()
+	public final native void clearRefreshSidebarTree()
 	/*-{
-		this.forceSidebarReload = 'false';
+		this.refreshSidebarTree = 'false';
 	}-*/;
 	
-	public final native void    setSidebarReload()
+	public final native void setRefreshSidebarTree()
 	/*-{
-		this.forceSidebarReload = 'true';
+		this.refreshSidebarTree = 'true';
+	}-*/;
+
+	/**
+	 * Returns true if we should re-root the sidebar regardless of an
+	 * operation and false otherwise.
+	 * 
+	 * @return
+	 */
+	public final native boolean isRerootSidebarTree()
+	/*-{
+		return this.getBFromS( this.rerootSidebarTree );
+	}-*/;
+	
+	public final native void clearRerootSidebarTree()
+	/*-{
+		this.rerootSidebarTree = 'false';
+	}-*/;
+	
+	public final native void setRerootSidebarTree()
+	/*-{
+		this.rerootSidebarTree = 'true';
 	}-*/;
 
 	/**

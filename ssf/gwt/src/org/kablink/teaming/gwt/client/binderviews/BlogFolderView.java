@@ -49,7 +49,6 @@ import org.kablink.teaming.gwt.client.event.BlogPageSelectedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.SetFolderSortEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -262,7 +261,7 @@ public class BlogFolderView extends FolderViewBase
 	/**
 	 * Fire the ContextChangedEvent to let everyone know we are working with the given folder.
 	 */
-	private void fireContextChangedEvent( final boolean reloadSidebar )
+	private void fireContextChangedEvent( final boolean refreshSidebarTree )
 	{
 		if ( m_binderId != null )
 		{
@@ -309,7 +308,7 @@ public class BlogFolderView extends FolderViewBase
 													binderPermalink,
 													false,
 													Instigator.CONTENT_AREA_CHANGED );
-							osBinderInfo.setForceSidebarReload( reloadSidebar );
+							osBinderInfo.setRefreshSidebarTree( refreshSidebarTree );
 							
 							// Tell the side-bar to refresh so it picks up the new folder
 							// and selects it.

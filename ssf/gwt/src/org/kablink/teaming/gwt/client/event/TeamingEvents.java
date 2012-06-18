@@ -170,8 +170,9 @@ public enum TeamingEvents implements IsSerializable {
 	SHOW_TEAM_WORKSPACE,				// Shows a team workspace.
 	SHOW_TRASH,							// Shows a trash view.
 	
+	REFRESH_SIDEBAR_TREE,				// Refreshes the sidebar tree content maintaining its current root and selected binder.
+	REROOT_SIDEBAR_TREE,				// Re-roots the sidebar tree to the currently selected binder.
 	SIDEBAR_HIDE,						// Hides the left navigation panel.
-	SIDEBAR_RELOAD,						// Tells the left navigation panel to reload itself.
 	SIDEBAR_SHOW,						// Shows the left navigation panel.
 	
 	SIZE_CHANGED,						// The size of something changed.
@@ -227,8 +228,6 @@ public enum TeamingEvents implements IsSerializable {
 	PURGE_SELECTED_ENTRIES,				// Deletes and Immediately Purges the Selected Entries.
 	PURGE_SELECTED_USER_WORKSPACES,		// Purges the Selected User Workspaces.
 	PURGE_SELECTED_USERS,				// Purges the Selected User Workspaces and User Objects.
-	REFRESH_SIDEBAR_TREE,				// Refreshes the sidebar tree content maintaining its current root and selected binder.
-	REROOT_SIDEBAR_TREE,				// Re-roots the sidebar tree to the currently selected binder.
 	SET_FOLDER_SORT,					// Sets a folder sort options.
 	SHARE_SELECTED_ENTRIES,				// Shares the Selected Entries.
 	SUBSCRIBE_SELECTED_ENTRIES,			// Subscribes the Current User to the Selected Entries.
