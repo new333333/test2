@@ -38,7 +38,7 @@ import java.util.Map;
 import org.kablink.teaming.domain.User;
 public interface AuthenticationManager {
 
-	public User authenticate(String zoneName, String username, String password,
+	public User authenticate(Integer identitySource, String zoneName, String username, String password,
 			boolean createUser, boolean passwordAutoSynch, boolean ignorePassword, 
 			Map updates, String authenticatorName)
 		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException;

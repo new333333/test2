@@ -149,7 +149,7 @@ public interface ProfileModule {
 	 * @param options - additional processing options or null
 	 * @return created user object
 	 */
-	public User addUserFromPortal(String userName, String password, Map updates, Map options);
+	public User addUserFromPortal(int identitySource, String userName, String password, Map updates, Map options);
 	/**
 	 * Check access to a binder, throwing an exception if access is denied
 	 * @param user

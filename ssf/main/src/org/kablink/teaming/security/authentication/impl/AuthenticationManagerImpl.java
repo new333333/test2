@@ -38,6 +38,7 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
@@ -47,10 +48,14 @@ import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.modelprocessor.ProcessorManager;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.report.ReportModule;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.zone.ZoneException;
 import org.kablink.teaming.security.authentication.AuthenticationException;
 import org.kablink.teaming.security.authentication.AuthenticationManager;
@@ -64,6 +69,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -78,6 +84,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	private String[] userModify;
 	private ReportModule reportModule;
 	private LdapModule ldapModule;
+	private ProcessorManager processorManager;
 
 	protected CoreDao getCoreDao() {
 		return coreDao;
@@ -131,6 +138,10 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		this.ldapModule = ldapModule;
 	}
 
+	protected ProcessorManager getProcessorManager() {
+		return processorManager;
+	}
+
 	/**
      * Called after bean is initialized.  
      */
@@ -138,7 +149,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		userModify = SPropsUtil.getStringArray("portal.user.auto.synchronize", ",");
  	}
  	
-	public User authenticate(String zoneName, String userName, String password,
+ 	@Override
+	public User authenticate(Integer identitySource, String zoneName, String userName, String password,
 			boolean createUser, boolean passwordAutoSynch, boolean ignorePassword, 
 			Map updates, String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException, UserMismatchException
@@ -159,21 +171,30 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			if (!hadSession)
 				SessionUtil.sessionStartup();	
 			
-			user = doAuthenticate(zoneName, userName, password, passwordAutoSynch, ignorePassword);
+			if(isExternalUser(identitySource))
+				user = doAuthenticateExternalUser(zoneName, userName);
+			else 
+				user = doAuthenticateInternalUser(zoneName, userName, password, passwordAutoSynch, ignorePassword);
 			//Make sure this user account hasn't been disabled
 			if (!user.isActive() && !MiscUtil.isSystemUserAccount( userName )) {
 				//This account is not active
 				throw new UserAccountNotActiveException(NLT.get("error.accountNotActive"));
 			}
-			if (updates != null && !updates.isEmpty()) {
-   				// We don't want to sync ldap attributes if the user is one of the 5
-   				// system user accounts, "admin", "guest", "_postingAgent", "_jobProcessingAgent" and "_synchronizationAgent".
-   				// Is the user a system user account?
-   				if ( !MiscUtil.isSystemUserAccount( userName ) )
-   				{
-   					// No
-   					syncUser = true;
-   				}
+			if (updates != null && !updates.isEmpty()) { // There are some update data
+				if(identitySource != null) {
+					if(identitySource.intValue() == User.IDENTITY_SOURCE_LDAP || identitySource.intValue() == User.IDENTITY_SOURCE_EXTERNAL)
+						syncUser = true;
+				}
+				else { // This means either LDAP or LOCAL. We have to fall back to the old mechanism for making determination.
+	   				// We don't want to sync ldap attributes if the user is one of the 5
+	   				// system user accounts, "admin", "guest", "_postingAgent", "_jobProcessingAgent" and "_synchronizationAgent".
+	   				// Is the user a system user account?
+	   				if ( !MiscUtil.isSystemUserAccount( userName ) )
+	   				{
+	   					// No
+	   					syncUser = true;
+	   				}					
+				}
 			}
 			if (user.getWorkspaceId() == null)
 				getProfileModule().addUserWorkspace(user, null);
@@ -183,7 +204,14 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		} 
 		catch (UserDoesNotExistException nu) {
  			if (createUser) {
- 				user=getProfileModule().addUserFromPortal(userName, password, updates, null);
+ 				user=getProfileModule().addUserFromPortal(
+ 						// It is NOT possible for system to authenticate a local user against Vibe database 
+ 						// unless the user record already exists in the database. So, if the authentication
+ 						// has already succeeded without the corresponding user record being found in the database,
+ 						// it means that the identity source is anything but local. So we can safely assume
+ 						// that it is LDAP.
+ 						(identitySource != null)? identitySource.intValue():User.IDENTITY_SOURCE_LDAP,
+ 						userName, password, updates, null);
  				if(user == null)
  					throw nu;
 
@@ -203,15 +231,24 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		// Do we need to sync attributes from the ldap directory into Teaming for this user?
 		if ( syncUser && user != null )
 		{
-			// Yes
-			try
-			{
-				// The Teaming user name and the ldap user name may not be the same name.
-				ldapModule.syncUser( user.getName(), userName );
+			if(identitySource != null && identitySource.intValue() == User.IDENTITY_SOURCE_EXTERNAL) {
+		 		ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
+		            	user.getParentBinder(), ProfileCoreProcessor.PROCESSOR_KEY);
+		 		// Make sure foreign name is identical to name.
+				updates.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, user.getName());
+		 		processor.syncEntry(user, new MapInputData(StringCheckUtil.check(updates)), null);
 			}
-			catch (NamingException ex)
-			{
-				// Nothing to do.
+			else {
+				// Yes
+				try
+				{
+					// The Teaming user name and the ldap user name may not be the same name.
+					ldapModule.syncUser( user.getName(), userName );
+				}
+				catch (NamingException ex)
+				{
+					// Nothing to do.
+				}
 			}
 		}
 		
@@ -219,6 +256,18 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		return user;
 	}
 
+ 	private boolean isExternalUser(Integer identitySource) {
+ 		if(identitySource != null) {
+ 			if(identitySource.intValue() == User.IDENTITY_SOURCE_EXTERNAL)
+ 				return true;
+ 			else
+ 				return false;
+ 		}
+ 		else { // This means either LDAP or LOCAL
+ 			return false;
+ 		}
+ 	}
+ 	
 	public User authenticate(String zoneName, String username, String password,
 			boolean passwordAutoSynch, boolean ignorePassword, String authenticatorName)
 		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException, UserMismatchException {
@@ -227,7 +276,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		boolean hadSession = SessionUtil.sessionActive();
 		try {
 			if (!hadSession) SessionUtil.sessionStartup();	
-			user = doAuthenticate(zoneName, username, password, passwordAutoSynch, ignorePassword);
+			user = doAuthenticateInternalUser(zoneName, username, password, passwordAutoSynch, ignorePassword);
 			if(authenticatorName != null)
 				getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
 		} finally {
@@ -248,7 +297,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	 * @throws UserDoesNotExistException
 	 * @throws UserAccountNotActiveException
 	 */
-	protected User doAuthenticate(String zoneName, String username, String password,
+	protected User doAuthenticateInternalUser(String zoneName, String username, String password,
 				boolean passwordAutoSynch, boolean ignorePassword)
 			throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException, UserMismatchException {
 		User user = null;
@@ -395,6 +444,33 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
     	}
    		
 		SimpleProfiler.stop( "3x-AuthenticationManagerImpl.doAuthenticate()" );
+		return user;
+	}
+
+	protected User doAuthenticateExternalUser(String zoneName, String username) {
+		User user = null;
+		try {
+			user = getProfileDao().findUserByName(username, zoneName);
+		} catch (NoWorkspaceByTheNameException e) {
+     		if (user == null) {
+    			throw new UserDoesNotExistException("Unrecognized user [" 
+     						+ zoneName + "," + username + "]", e);
+    		}
+    	} catch (NoUserByTheNameException e) {
+			try {
+				// Try to find the user even if disabled or deleted
+				user = getProfileDao().findUserByNameDeadOrAlive( username, zoneName );
+				throw new UserAccountNotActiveException("User account disabled or deleted [" 
+						+ zoneName + "," + username + "]", e);
+
+			} catch (NoUserByTheNameException ex) {
+				throw new UserDoesNotExistException("Unrecognized user [" 
+						+ zoneName + "," + username + "]", e);
+			}
+    	} catch (UserAccountNotActiveException e) {
+			throw new UserAccountNotActiveException("User account disabled or deleted [" 
+						+ zoneName + "," + username + "]", e);
+    	}
 		return user;
 	}
 

@@ -52,7 +52,8 @@ public class AuthenticationManagerUtil {
 			throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException {
 		return (User) RunasTemplate.runasAdmin(new RunasCallback() {
 			public Object doAs() {
-				return getAuthenticationManager().authenticate(zoneName,
+				return getAuthenticationManager().authenticate(identitySource,
+						zoneName,
 						username, password, createUser, passwordAutoSynch,
 						ignorePassword, updates, authenticatorName);
 			}

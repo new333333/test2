@@ -59,7 +59,7 @@ public class OpenIDAuthenticationUserDetailsService implements AuthenticationUse
 	
 	private static Log logger = LogFactory.getLog(OpenIDAuthenticationUserDetailsService.class);
 	
-	private static Map attributeMapping = null;
+	private static Map<String,String> attributeMapping = null;
 	
 	/* (non-Javadoc)
 	 * @see org.springframework.security.core.userdetails.AuthenticationUserDetailsService#loadUserDetails(org.springframework.security.core.Authentication)
@@ -84,12 +84,18 @@ public class OpenIDAuthenticationUserDetailsService implements AuthenticationUse
 		return details;
 	}
 	
-	private Map convertOpenIDAttributesToVibeAttributes(List<OpenIDAttribute> attributes) {
-		Map vibeAttributes = new HashMap();
-		Map mapping = getAttributeMapping();
+	private Map<String,String> convertOpenIDAttributesToVibeAttributes(List<OpenIDAttribute> attributes) {
+		Map<String,String> vibeAttributes = new HashMap<String,String>();
+		Map<String,String> mapping = getAttributeMapping();
 		for(OpenIDAttribute openidAttribute:attributes) {
-			if(mapping.containsKey(openidAttribute.getName()) && openidAttribute.getCount() > 0)
-				vibeAttributes.put(mapping.get(openidAttribute.getName()), openidAttribute.getValues().get(0));
+			if(mapping.containsKey(openidAttribute.getName()) && openidAttribute.getCount() > 0) {
+				String vibeAttributeName = mapping.get(openidAttribute.getName());
+				String vibeAttributeValue = openidAttribute.getValues().get(0);
+				// Normalize email address to lower case.
+				if(vibeAttributeName.equals("emailAddress"))
+					vibeAttributeValue = vibeAttributeValue.toLowerCase();
+				vibeAttributes.put(vibeAttributeName, vibeAttributeValue);
+			}
 		}
 		return vibeAttributes;
 	}
@@ -106,10 +112,10 @@ public class OpenIDAuthenticationUserDetailsService implements AuthenticationUse
 		return (CoreDao) SpringContextUtil.getBean("coreDao");
 	}
 	
-	private Map getAttributeMapping() {
+	private Map<String,String> getAttributeMapping() {
 		if(attributeMapping == null) {
 			int count = SPropsUtil.getInt("openid.attribute.mapping.count", 0);
-			Map map = new HashMap(count);
+			Map<String,String> map = new HashMap<String,String>(count);
 			String key, value;
 			for(int i = 0; i < count; i++) {
 				key = SPropsUtil.getString("openid.attribute.mapping." + i + ".from");
