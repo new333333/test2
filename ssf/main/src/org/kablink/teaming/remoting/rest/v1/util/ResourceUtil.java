@@ -106,7 +106,7 @@ public class ResourceUtil {
 
     public static FolderEntryBrief buildFolderEntryBrief(org.kablink.teaming.domain.FolderEntry entry) {
         FolderEntryBrief model = new FolderEntryBrief();
-        populateDefinableEntityBrief(model, entry);
+        populateEntryBrief(model, entry);
         model.setDocLevel(entry.getDocLevel());
         model.setDocNumber(entry.getDocNumber());
         List<String> filenames = new ArrayList<String>();
@@ -217,6 +217,45 @@ public class ResourceUtil {
     public static BinderBrief buildBinderBrief(org.kablink.teaming.domain.Binder binder) {
         BinderBrief model = new BinderBrief();
         populateBinderBrief(model, binder);
+        return model;
+    }
+
+    public static GroupMember buildGroupMember(long groupId, org.kablink.teaming.domain.Principal principal) {
+        GroupMember model = new GroupMember();
+        model.setPrincipal(buildPrincipalBrief(principal));
+        model.setLink(LinkUriUtil.getGroupMemberLinkUri(groupId, model.getPrincipal().getId()));
+        return model;
+    }
+
+    public static PrincipalBrief buildPrincipalBrief(org.kablink.teaming.domain.Principal principal) {
+        if (principal instanceof org.kablink.teaming.domain.User) {
+            return buildUserBrief((org.kablink.teaming.domain.User) principal);
+        } else if (principal instanceof org.kablink.teaming.domain.Group) {
+            return buildGroupBrief((org.kablink.teaming.domain.Group) principal);
+        } else if (principal instanceof UserPrincipal) {
+            EntityIdentifier.EntityType entityType = principal.getEntityType();
+            if (entityType==EntityIdentifier.EntityType.user) {
+                return buildUserBrief((UserPrincipal) principal);
+            } else if (entityType==EntityIdentifier.EntityType.group) {
+                return buildGroupBrief((UserPrincipal) principal);
+            }
+        }
+        return null;
+    }
+
+    public static UserBrief buildUserBrief(org.kablink.teaming.domain.UserPrincipal user) {
+        UserBrief model = new UserBrief();
+        populatePrincipalBrief(model, user);
+        model.setLink(LinkUriUtil.getUserLinkUri(model.getId()));
+        LinkUriUtil.populateUserLinks(model);
+        return model;
+    }
+
+    public static GroupBrief buildGroupBrief(org.kablink.teaming.domain.UserPrincipal group) {
+        GroupBrief model = new GroupBrief();
+        populatePrincipalBrief(model, group);
+        model.setLink(LinkUriUtil.getGroupLinkUri(model.getId()));
+        LinkUriUtil.populateGroupLinks(model);
         return model;
     }
 
@@ -430,6 +469,12 @@ public class ResourceUtil {
         populateDefinableEntity(model, entry, includeAttachments);
     }
 
+    private static void populatePrincipalBrief(PrincipalBrief model, org.kablink.teaming.domain.Principal principal) {
+        populateEntryBrief(model, principal);
+        model.setName(principal.getName());
+        model.setEmailAddress(principal.getEmailAddress());
+    }
+
     private static void populatePrincipal(Principal model, org.kablink.teaming.domain.Principal principal, boolean includeAttachments) {
         populateEntry(model, principal, includeAttachments);
         model.setEmailAddress(principal.getEmailAddress());
@@ -476,6 +521,10 @@ public class ResourceUtil {
         } else if (model.isWorkspace()) {
             LinkUriUtil.populateWorkspaceLinks(model);
         }
+    }
+
+    private static void populateEntryBrief(EntryBrief model, org.kablink.teaming.domain.Entry entry) {
+        populateDefinableEntityBrief(model, entry);
     }
 
     private static void populateDefinableEntityBrief(DefinableEntityBrief model, org.kablink.teaming.domain.DefinableEntity binder) {

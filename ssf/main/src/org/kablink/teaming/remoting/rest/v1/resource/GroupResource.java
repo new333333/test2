@@ -33,25 +33,31 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.NoGroupByTheIdException;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
+import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
+import org.kablink.teaming.remoting.ws.RemotingException;
 import org.kablink.teaming.rest.v1.model.Group;
+import org.kablink.teaming.rest.v1.model.GroupMember;
+import org.kablink.teaming.rest.v1.model.PrincipalBrief;
+import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.util.api.ApiErrorCode;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * User: david
@@ -61,7 +67,7 @@ import javax.ws.rs.core.MediaType;
 @Path("/v1/group/{id}")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class GroupResource extends AbstractDefinableEntityResource {
+public class GroupResource extends AbstractPrincipalResource{
     @Override
     protected EntityIdentifier.EntityType _getEntityType() {
         return EntityIdentifier.EntityType.group;
@@ -80,6 +86,60 @@ public class GroupResource extends AbstractDefinableEntityResource {
             throws WriteFilesException, WriteEntryDataException {
         _getGroup(id);
         getProfileModule().modifyEntry(id, new RestModelInputData(group));
+    }
+
+    @GET
+    @Path("/members")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<GroupMember> getMembers(@PathParam("id") long id,
+                                                       @QueryParam("first") @DefaultValue("0") int offset,
+                                                       @QueryParam("count") @DefaultValue("-1") int maxCount) {
+        org.kablink.teaming.domain.Group group = _getGroup(id);
+        List members = group.getMembers();
+        int length = members.size();
+        if(maxCount > 0)
+            length = Math.min(length - offset, maxCount);
+        if(length < 0)
+            length = 0;
+        SearchResultList<GroupMember> results = new SearchResultList<GroupMember>(offset);
+        for(int i=0; i<length; ++i) {
+            Principal member = (Principal) members.get(offset+i);
+            results.append(ResourceUtil.buildGroupMember(id, member));
+        }
+        results.setTotal(members.size());
+        results.setNextIfNecessary(LinkUriUtil.getGroupLinkUri(id) + "/members");
+        return results;
+    }
+
+    @POST
+    @Path("/members")
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public void addMembers(@PathParam("id") long id, PrincipalBrief principal)
+            throws WriteFilesException, WriteEntryDataException {
+        if (principal ==null || principal.getId()==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No user or group id was supplied in the POST data.");
+        }
+        org.kablink.teaming.domain.Group group = _getGroup(id);
+        UserPrincipal member = (UserPrincipal)getProfileModule().getEntry(principal.getId());
+
+        Map updates = new HashMap();
+        List members = new ArrayList(group.getMembers());
+        members.add(member);
+        updates.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, members);
+        getProfileModule().modifyEntry(group.getId(), new MapInputData(updates));
+    }
+
+    @DELETE
+    @Path("/member/{memberId}")
+    public void removeMember(@PathParam("id") long id, @PathParam("memberId") long memberId) throws WriteFilesException, WriteEntryDataException {
+        org.kablink.teaming.domain.Group group = _getGroup(id);
+        Principal member = getProfileModule().getEntry(memberId);
+        Map updates = new HashMap();
+        List members = new ArrayList(group.getMembers());
+        members.remove(member);
+        updates.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, members);
+        getProfileModule().modifyEntry(group.getId(), new MapInputData(updates));
     }
 
     private org.kablink.teaming.domain.Group _getGroup(long id) {

@@ -60,11 +60,6 @@ public class SearchResultBuilderUtil {
                 }
             }
         }
-        if (nextUrl!=null) {
-            offset = offset + results.getCount();
-            if (offset<results.getTotal()) {
-                results.setNext(nextUrl + "?first=" + offset + "&count=" + results.getCount());
-            }
-        }
+        results.setNextIfNecessary(nextUrl);
     }
 }
