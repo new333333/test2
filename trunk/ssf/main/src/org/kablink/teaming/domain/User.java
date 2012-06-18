@@ -512,7 +512,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     }
     
     public boolean isExternalUser() {
-    	return (identitySource == IDENTITY_SOURCE_EXTERNAL);
+    	return (identitySource != null && identitySource.intValue() == IDENTITY_SOURCE_EXTERNAL);
     }
     
     private void addGroupNames(UserPrincipal principal, SortedSet names) {
