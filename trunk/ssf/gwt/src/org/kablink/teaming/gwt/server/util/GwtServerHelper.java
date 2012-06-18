@@ -2884,11 +2884,6 @@ public class GwtServerHelper {
 		    	field.addAttribute( Constants.FIELD_NAME_ATTRIBUTE, Constants.GROUPNAME_FIELD );
 		    	child = field.addElement( Constants.FIELD_TERMS_ELEMENT );
 		    	child.setText( "allUsers" );
-				rootElement = searchFilter.addElement( Constants.NOT_ELEMENT );
-				field = rootElement.addElement( Constants.FIELD_ELEMENT );
-		    	field.addAttribute( Constants.FIELD_NAME_ATTRIBUTE, Constants.GROUPNAME_FIELD );
-		    	child = field.addElement( Constants.FIELD_TERMS_ELEMENT );
-		    	child.setText( "allExtUsers" );
 		    	options.put( ObjectKeys.SEARCH_FILTER_AND, searchFilter );
 			}
 	
