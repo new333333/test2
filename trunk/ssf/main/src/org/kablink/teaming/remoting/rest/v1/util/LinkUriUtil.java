@@ -152,6 +152,7 @@ public class LinkUriUtil {
 
     public static void populateGroupLinks(BaseRestObject model) {
         populateDefinableEntityLinks(model);
+        model.addAdditionalLink("members", model.getLink() + "/members");
     }
 
     public static void populateBinderLinks(BaseRestObject model) {
@@ -207,8 +208,7 @@ public class LinkUriUtil {
         if (!iconName.startsWith("/")) {
             iconName = "/" + iconName;
         }
-        org.kablink.teaming.domain.User user = RequestContextHolder.getRequestContext().getUser();
-        return "/" + MiscUtil.getStaticPath() + "images/" + iconName;
+        return "/" + MiscUtil.getStaticPath() + "images" + iconName;
     }
 
     public static String getDefinitionLinkUri(String id) {
@@ -253,5 +253,9 @@ public class LinkUriUtil {
             return "/workspace/" + id;
         }
         return null;
+    }
+
+    public static String getGroupMemberLinkUri(long groupId, Long memberId) {
+        return getGroupLinkUri(groupId) + "/member/" + memberId;
     }
 }

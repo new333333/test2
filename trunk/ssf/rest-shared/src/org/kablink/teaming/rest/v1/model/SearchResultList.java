@@ -35,6 +35,7 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -90,6 +91,16 @@ public class SearchResultList<T> {
 
     public void setNext(String next) {
         this.next = next;
+    }
+
+    @XmlTransient
+    public void setNextIfNecessary(String nextUrl) {
+        if (nextUrl!=null) {
+            int offset = first + count;
+            if (offset<total) {
+                setNext(nextUrl + "?first=" + offset + "&count=" + count);
+            }
+        }
     }
 
     @XmlElementWrapper(name = "items")

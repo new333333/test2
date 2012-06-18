@@ -15,7 +15,7 @@
  *
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  *
  * Attribution Information:
  * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
@@ -30,37 +30,24 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.remoting.rest.v1.util;
+package org.kablink.teaming.remoting.rest.provider;
 
-import org.kablink.teaming.rest.v1.model.GroupBrief;
-import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
+import org.kablink.teaming.rest.v1.model.ErrorInfo;
+import org.kablink.util.api.ApiErrorCode;
 
-import java.util.Map;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 /**
  * User: david
- * Date: 5/18/12
- * Time: 1:07 PM
+ * Date: 6/14/12
+ * Time: 8:29 AM
  */
-public class GroupBriefBuilder extends PrincipalBriefBuilder implements SearchResultBuilder<GroupBrief> {
-    public GroupBrief build(Map entry) {
-        GroupBrief group = new GroupBrief();
-        populatePrincipalBrief(group, entry);
-        group.setLink(LinkUriUtil.getGroupLinkUri(group.getId()));
-        LinkUriUtil.populateGroupLinks(group);
-        return group;
-    }
-
-    public Object getId(GroupBrief obj) {
-        return obj.getId();
-    }
-
-
-    public Object getParentId(GroupBrief obj) {
-        return obj.getParentBinder().getId();
-    }
-
-    public SearchResultTreeNode<GroupBrief> factoryTreeNode(GroupBrief obj) {
-        return null;
-    }
+@Provider
+public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
+	public Response toResponse(WebApplicationException ex) {
+        return ex.getResponse();
+	}
 }

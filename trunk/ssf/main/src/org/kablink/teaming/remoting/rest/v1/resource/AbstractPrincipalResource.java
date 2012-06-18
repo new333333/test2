@@ -30,37 +30,12 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.remoting.rest.v1.util;
-
-import org.kablink.teaming.rest.v1.model.GroupBrief;
-import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
-
-import java.util.Map;
+package org.kablink.teaming.remoting.rest.v1.resource;
 
 /**
  * User: david
- * Date: 5/18/12
- * Time: 1:07 PM
+ * Date: 6/18/12
+ * Time: 1:47 PM
  */
-public class GroupBriefBuilder extends PrincipalBriefBuilder implements SearchResultBuilder<GroupBrief> {
-    public GroupBrief build(Map entry) {
-        GroupBrief group = new GroupBrief();
-        populatePrincipalBrief(group, entry);
-        group.setLink(LinkUriUtil.getGroupLinkUri(group.getId()));
-        LinkUriUtil.populateGroupLinks(group);
-        return group;
-    }
-
-    public Object getId(GroupBrief obj) {
-        return obj.getId();
-    }
-
-
-    public Object getParentId(GroupBrief obj) {
-        return obj.getParentBinder().getId();
-    }
-
-    public SearchResultTreeNode<GroupBrief> factoryTreeNode(GroupBrief obj) {
-        return null;
-    }
+abstract public class AbstractPrincipalResource extends AbstractDefinableEntityResource {
 }

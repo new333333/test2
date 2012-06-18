@@ -35,15 +35,13 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
-import org.kablink.teaming.rest.v1.model.BinderBrief;
-import org.kablink.teaming.rest.v1.model.SearchResultList;
-import org.kablink.teaming.rest.v1.model.TeamBrief;
+import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.rest.v1.model.User;
 
 import javax.ws.rs.Consumes;
@@ -65,7 +63,7 @@ import java.util.List;
 @Path("/v1/user/{id}")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class UserResource extends AbstractDefinableEntityResource {
+public class UserResource extends AbstractPrincipalResource {
     @Override
     protected EntityIdentifier.EntityType _getEntityType() {
         return EntityIdentifier.EntityType.user;
@@ -90,9 +88,9 @@ public class UserResource extends AbstractDefinableEntityResource {
     @Path("/teams")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<TeamBrief> getTeams(@PathParam("id") long userId) {
-        List<TeamInfo> binders = getProfileModule().getUserTeams(userId);
+        List<org.kablink.teaming.domain.TeamInfo> binders = getProfileModule().getUserTeams(userId);
         SearchResultList<TeamBrief> results = new SearchResultList<TeamBrief>();
-        for (TeamInfo binder : binders) {
+        for (org.kablink.teaming.domain.TeamInfo binder : binders) {
             results.append(ResourceUtil.buildTeamBrief(binder));
         }
         return results;
@@ -106,6 +104,19 @@ public class UserResource extends AbstractDefinableEntityResource {
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
         for (Binder binder : binders) {
             results.append(ResourceUtil.buildBinderBrief(binder));
+        }
+        return results;
+    }
+
+    @GET
+    @Path("/groups")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<GroupBrief> getGroups(@PathParam("id") long id) {
+        _getUser(id);
+        List<Group> groups = getProfileModule().getUserGroups(id);
+        SearchResultList<GroupBrief> results = new SearchResultList<GroupBrief>();
+        for (Group group : groups) {
+            results.append(ResourceUtil.buildGroupBrief(group));
         }
         return results;
     }

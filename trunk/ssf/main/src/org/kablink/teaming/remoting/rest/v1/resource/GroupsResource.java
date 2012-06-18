@@ -63,7 +63,7 @@ public class GroupsResource extends AbstractResource {
         Map<String, Object> options = new HashMap<String, Object>();
         SearchFilter searchTermFilter = new SearchFilter();
         if (name!=null) {
-            searchTermFilter.addLoginNameFilter(name);
+            searchTermFilter.addGroupNameFilter(name);
             options.put( ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter() );
         }
         if (offset!=null) {
