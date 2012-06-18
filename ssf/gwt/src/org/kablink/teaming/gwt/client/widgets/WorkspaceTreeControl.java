@@ -41,6 +41,8 @@ import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.RefreshSidebarTreeEvent;
+import org.kablink.teaming.gwt.client.event.RerootSidebarTreeEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -85,6 +87,8 @@ public class WorkspaceTreeControl extends ResizeComposite
 		ActivityStreamExitEvent.Handler,
 		ChangeContextEvent.Handler,
 		ContextChangedEvent.Handler,
+		RefreshSidebarTreeEvent.Handler,
+		RerootSidebarTreeEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
 {	
@@ -108,6 +112,8 @@ public class WorkspaceTreeControl extends ResizeComposite
 		TeamingEvents.CONTEXT_CHANGED,
 		
 		// Sidebar events.
+		TeamingEvents.REFRESH_SIDEBAR_TREE,
+		TeamingEvents.REROOT_SIDEBAR_TREE,
 		TeamingEvents.SIDEBAR_HIDE,
 		TeamingEvents.SIDEBAR_SHOW,
 	};
@@ -472,6 +478,38 @@ public class WorkspaceTreeControl extends ResizeComposite
 			if (GwtClientHelper.validateOSBI(osbInfo, false)) {
 				showBinderBusy(osbInfo);
 			}
+		}
+	}
+	
+	/**
+	 * Handles RefreshSidebarTreeEvent's received by this class.
+	 * 
+	 * Implements the RefreshSidebarTreeEvent.Handler.onRefreshSidebarTree() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onRefreshSidebarTree(RefreshSidebarTreeEvent event) {
+		// If this is a sidebar tree...
+		if (isSidebarTree()) {
+			// ...tell it to refresh.
+			m_treeDisplay.refreshSidebarTree();
+		}
+	}
+	
+	/**
+	 * Handles RerootSidebarTreeEvent's received by this class.
+	 * 
+	 * Implements the RerootSidebarTreeEvent.Handler.onRerootSidebarTree() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onRerootSidebarTree(RerootSidebarTreeEvent event) {
+		// If this is a sidebar tree...
+		if (isSidebarTree()) {
+			// ...tell it to re-root.
+			m_treeDisplay.rerootSidebarTree();
 		}
 	}
 	

@@ -93,7 +93,6 @@ import com.google.gwt.user.client.ui.Widget;
  * typically used for Teaming's sidebar.
  * 
  * @author drfoster@novell.com
- *
  */
 public class TreeDisplayVertical extends TreeDisplayBase {
 	private ActivityStreamInfo		m_selectedActivityStream;	// When displaying activity streams, the ActivityStream info of the selected activity stream.  null if no activity stream is currently selected.
@@ -892,6 +891,34 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		}
 		
 		return reply;
+	}
+
+	/**
+	 * Tells a sidebar tree implementation to refresh itself
+	 * maintaining its current context and selected binder.
+	 * 
+	 * Implements the TreeDisplayBase.rerootSidebarTree() method.
+	 */
+	@Override
+	public void refreshSidebarTree() {
+		// Simply reload the tree.
+		reloadTree();
+	}
+
+	/**
+	 * Tells a sidebar tree implementation to re-root itself
+	 * to its currently selected binder.
+	 * 
+	 * Implements the TreeDisplayBase.rerootSidebarTree() method.
+	 */
+	@Override
+	public void rerootSidebarTree() {
+		// Re-root the tree at the currently selected binder.
+		reRootTree(
+			String.valueOf(
+				m_selectedBinderId),
+			m_selectedBinderId,
+			ExitMode.SIMPLE_EXIT);
 	}
 
 	/**
