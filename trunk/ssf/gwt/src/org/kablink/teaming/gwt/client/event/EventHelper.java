@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.event;
 
 import java.util.List;
@@ -41,7 +40,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import com.google.gwt.user.client.Window;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
-
 
 /**
  * Helper methods to facilitate dealing with client side GWT events.
@@ -104,6 +102,8 @@ public class EventHelper {
 		case MASTHEAD_SHOW:                     	reply = new MastheadShowEvent();                  break;
 		case MENU_HIDE:								reply = new MenuHideEvent();					  break;
 		case MENU_SHOW:								reply = new MenuShowEvent();					  break;
+		case REFRESH_SIDEBAR_TREE:					reply = new RefreshSidebarTreeEvent();			  break;
+		case REROOT_SIDEBAR_TREE:					reply = new RerootSidebarTreeEvent();			  break;
 		case SEARCH_ADVANCED:                   	reply = new SearchAdvancedEvent();                break;
 		case SHOW_CONTENT_CONTROL:                 	reply = new ShowContentControlEvent();            break;
 		case SIDEBAR_HIDE:                      	reply = new SidebarHideEvent();                   break;
@@ -993,6 +993,24 @@ public class EventHelper {
 				}
 				break;
 			
+			case REFRESH_SIDEBAR_TREE:
+				// A RefreshSidebarTreeEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof RefreshSidebarTreeEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = RefreshSidebarTreeEvent.registerEvent(eventBus, ((RefreshSidebarTreeEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case REROOT_SIDEBAR_TREE:
+				// A RerootSidebarTreeEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof RerootSidebarTreeEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = RerootSidebarTreeEvent.registerEvent(eventBus, ((RerootSidebarTreeEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case SEARCH_ADVANCED:
 				// A SearchAdvancedEvent!  Can the event handler we
 				// were given handle that?
@@ -1811,6 +1829,9 @@ public class EventHelper {
 			case MARK_ENTRY_UNREAD:                 	hasHandler = (eventHandler instanceof MarkEntryUnreadEvent.Handler);               break;
 			
 			case QUICK_FILTER:                 	        hasHandler = (eventHandler instanceof QuickFilterEvent.Handler);                   break;
+			
+			case REFRESH_SIDEBAR_TREE:                 	hasHandler = (eventHandler instanceof RefreshSidebarTreeEvent.Handler);            break;
+			case REROOT_SIDEBAR_TREE:                 	hasHandler = (eventHandler instanceof RerootSidebarTreeEvent.Handler);             break;
 			
 			case SEARCH_ADVANCED:						hasHandler = (eventHandler instanceof SearchAdvancedEvent.Handler);                break;
 			case SEARCH_FIND_RESULTS:               	hasHandler = (eventHandler instanceof SearchFindResultsEvent.Handler);             break;

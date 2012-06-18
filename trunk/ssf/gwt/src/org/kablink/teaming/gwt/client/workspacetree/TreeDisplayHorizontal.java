@@ -74,7 +74,6 @@ import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
  * typically used for Teaming's bread crumbs.
  * 
  * @author drfoster@novell.com
- *
  */
 public class TreeDisplayHorizontal extends TreeDisplayBase {
 	private FlowPanel	m_rootPanel;	//
@@ -162,7 +161,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
-								GwtTeaming.getMessages().rpcFailure_ExpandBucket());
+								getMessages().rpcFailure_ExpandBucket());
 						}
 						
 						@Override
@@ -190,7 +189,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
-								GwtTeaming.getMessages().rpcFailure_GetTree(),
+								getMessages().rpcFailure_GetTree(),
 								m_ti.getBinderInfo().getBinderId());
 						}
 						
@@ -384,6 +383,32 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		return false;
 	}
 	
+	/**
+	 * Tells a sidebar tree implementation to refresh itself
+	 * maintaining its current context and selected binder.
+	 * 
+	 * Should never be called in a horizontal tree implementation.
+	 * 
+	 * Implements the TreeDisplayBase.rerootSidebarTree() method.
+	 */
+	@Override
+	public void refreshSidebarTree() {
+		GwtClientHelper.deferredAlert(getMessages().treeInternalErrorRefreshNotSidebar());
+	}
+
+	/**
+	 * Tells a sidebar tree implementation to re-root itself
+	 * to its currently selected binder.
+	 * 
+	 * Should never be called in a horizontal tree implementation.
+	 * 
+	 * Implements the TreeDisplayBase.rerootSidebarTree() method.
+	 */
+	@Override
+	public void rerootSidebarTree() {
+		GwtClientHelper.deferredAlert(getMessages().treeInternalErrorRerootNotSidebar());
+	}
+
 	/**
 	 * Called to render the information in a TreeInfo object into a
 	 * FlowPanel.

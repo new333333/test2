@@ -65,7 +65,6 @@ import com.google.gwt.user.client.ui.Widget;
  * of a WorkspaceTreeControl,
  * 
  * @author drfoster@novell.com
- *
  */
 public abstract class TreeDisplayBase {
 	private List<TreeInfo>			m_rootTIList;	// The root TreeInfo object being displayed.
@@ -170,6 +169,8 @@ public abstract class TreeDisplayBase {
 	abstract OnSelectBinderInfo buildOnSelectBinderInfo(TreeInfo ti);
 	abstract void selectBinder(TreeInfo ti);
 	public abstract boolean isInActivityStreamMode();
+	public abstract void    refreshSidebarTree();
+	public abstract void    rerootSidebarTree();
 	public abstract void    render(          String selectedBinderId, FlowPanel targetPanel);
 	public abstract void    setRenderContext(String selectedBinderId, FlowPanel targetPanel);
 	public abstract void    setSelectedBinder(OnSelectBinderInfo binderInfo);
@@ -370,7 +371,7 @@ public abstract class TreeDisplayBase {
 	final public boolean isTrash() {
 		return m_wsTree.isTrash();
 	}
-	
+
 	/**
 	 * Called to reset the main menu context to that previously loaded.
 	 */

@@ -794,6 +794,8 @@ public interface GwtTeamingMessages extends Messages
 	String treeCloseActivityStreams();
 	String treeCloseActivityStreamsHint();
 	String treeCloseBreadCrumbs();
+	String treeInternalErrorRefreshNotSidebar();
+	String treeInternalErrorRerootNotSidebar();
 	String treePreviousFolder();
 	String treeSiteWide();
 	String treeTrash();
