@@ -349,39 +349,44 @@ public class LoginFilter  implements Filter {
 			Long binderId = homePageConfig.getDefaultGuestHomePageId();
 			if ( binderId != null )
 			{
-				// Yes, does guest have access to it?
-				try
+				// Yes
+				// Is guest access turned on?
+				if ( guestAccessAllowed() == true )
 				{
-					String url = null;
-					RunasCallback callback;
-					final Long defaultBinderId;
-					
-					defaultBinderId = binderId;
-					callback = new RunasCallback()
+					// No, does guest have access to the guest default landing page?
+					try
 					{
-						public Object doAs()
+						String url = null;
+						RunasCallback callback;
+						final Long defaultBinderId;
+						
+						defaultBinderId = binderId;
+						callback = new RunasCallback()
 						{
-							@SuppressWarnings("unused")
-							Binder binder;
-							
-							binder = getBinderModule().getBinder( defaultBinderId );
-							
-							// If we get here, guest as access to the default home page.
-							return PermaLinkUtil.getPermalink( req, defaultBinderId, EntityType.folder);
-						}
-					};
-					url = (String) RunasTemplate.runas(
-													callback,
-													WebHelper.getRequiredZoneName( req ),
-													WebHelper.getRequiredUserId( req ) );
-					
-					// If we get here guest has access to the guest default home page.
-					if ( url != null )
-						return url;
-				}
-				catch (Exception ex)
-				{
-					// Nothing to do
+							public Object doAs()
+							{
+								@SuppressWarnings("unused")
+								Binder binder;
+								
+								binder = getBinderModule().getBinder( defaultBinderId );
+								
+								// If we get here, guest as access to the default home page.
+								return PermaLinkUtil.getPermalink( req, defaultBinderId, EntityType.folder);
+							}
+						};
+						url = (String) RunasTemplate.runas(
+														callback,
+														WebHelper.getRequiredZoneName( req ),
+														WebHelper.getRequiredUserId( req ) );
+						
+						// If we get here guest has access to the guest default home page.
+						if ( url != null )
+							return url;
+					}
+					catch (Exception ex)
+					{
+						// Nothing to do
+					}
 				}
 				
 				// If we get here, guest does not have access to the default home page.
