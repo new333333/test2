@@ -39,10 +39,12 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.rest.v1.model.User;
+import org.kablink.util.api.ApiErrorCode;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -60,7 +62,7 @@ import java.util.List;
  * Date: 5/18/12
  * Time: 11:46 AM
  */
-@Path("/v1/user/{id}")
+@Path("/v1/user")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class UserResource extends AbstractPrincipalResource {
@@ -71,12 +73,24 @@ public class UserResource extends AbstractPrincipalResource {
 
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public User getUser(@QueryParam("name") String name,
+                        @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
+        if (name==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing name query parameter.");
+        }
+        return ResourceUtil.buildUser(getProfileModule().getUser(name), includeAttachments);
+    }
+
+    @GET
+    @Path("/{id}")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public User getUser(@PathParam("id") long userId,
                         @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
         return ResourceUtil.buildUser(_getUser(userId), includeAttachments);
     }
 
     @PUT
+    @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public void updateUser(@PathParam("id") long id, User user)
             throws WriteFilesException, WriteEntryDataException {
@@ -85,7 +99,7 @@ public class UserResource extends AbstractPrincipalResource {
     }
 
     @GET
-    @Path("/teams")
+    @Path("/{id}/teams")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<TeamBrief> getTeams(@PathParam("id") long userId) {
         List<org.kablink.teaming.domain.TeamInfo> binders = getProfileModule().getUserTeams(userId);
@@ -97,7 +111,7 @@ public class UserResource extends AbstractPrincipalResource {
     }
 
     @GET
-    @Path("/favorites")
+    @Path("/{id}/favorites")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<BinderBrief> getFavorites(@PathParam("id") long userId) {
         List<Binder> binders = getProfileModule().getUserFavorites(userId);
@@ -109,7 +123,7 @@ public class UserResource extends AbstractPrincipalResource {
     }
 
     @GET
-    @Path("/groups")
+    @Path("/{id}/groups")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<GroupBrief> getGroups(@PathParam("id") long id) {
         _getUser(id);
