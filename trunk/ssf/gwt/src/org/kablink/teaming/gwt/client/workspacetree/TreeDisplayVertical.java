@@ -1030,7 +1030,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				grid.insertRow(0);
 				InlineLabel il = new InlineLabel(getMessages().treeWSAndFolders());
 				il.addStyleName("workspaceTreeControlTreeHeader");
-				grid.setWidget(0, 1, il);
+				grid.setWidget(0, 0, il);
+				GwtClientHelper.setGridColSpan(grid, 0, 0, 2);
 			}
 			
 			// Finally, render the child binders.
