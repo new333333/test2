@@ -632,6 +632,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case HIDE_ACCESSORIES:
+				// A HideAccessoriesEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof HideAccessoriesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = HideAccessoriesEvent.registerEvent(eventBus, ((HideAccessoriesEvent.Handler) eventHandler) );
+				}
+				break;
+			
 			case INVOKE_ABOUT:
 				// An InvokeAboutEvent!  Can the event handler we were
 				// given handle that?
@@ -902,6 +911,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case RESET_ENTRY_MENU:
+				// A ResetEntryMenuEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ResetEntryMenuEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ResetEntryMenuEvent.registerEvent(eventBus, ((ResetEntryMenuEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case MARK_ENTRY_READ:
 				// An MarkEntryReadEvent!  Can the event handler we
 				// were given handle that?
@@ -1079,6 +1097,15 @@ public class EventHelper {
 				if (eventHandler instanceof ShareSelectedEntriesEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = ShareSelectedEntriesEvent.registerEvent(eventBus, ((ShareSelectedEntriesEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case SHOW_ACCESSORIES:
+				// A ShowAccessoriesEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ShowAccessoriesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShowAccessoriesEvent.registerEvent(eventBus, ((ShowAccessoriesEvent.Handler) eventHandler) );
 				}
 				break;
 			
@@ -1820,6 +1847,8 @@ public class EventHelper {
 			
 			case QUICK_FILTER:                 	        hasHandler = (eventHandler instanceof QuickFilterEvent.Handler);                   break;
 			
+			case RESET_ENTRY_MENU:                   	hasHandler = (eventHandler instanceof ResetEntryMenuEvent.Handler);                break;
+			
 			case SEARCH_ADVANCED:						hasHandler = (eventHandler instanceof SearchAdvancedEvent.Handler);                break;
 			case SEARCH_FIND_RESULTS:               	hasHandler = (eventHandler instanceof SearchFindResultsEvent.Handler);             break;
 			case SEARCH_RECENT_PLACE:               	hasHandler = (eventHandler instanceof SearchRecentPlaceEvent.Handler);             break;
@@ -1849,6 +1878,9 @@ public class EventHelper {
 			case SHOW_TEAM_ROOT_WORKSPACE:				hasHandler = (eventHandler instanceof ShowTeamRootWSEvent.Handler);			   	   break;
 			case SHOW_TEAM_WORKSPACE:					hasHandler = (eventHandler instanceof ShowTeamWSEvent.Handler);			   		   break;
 			case SHOW_TRASH:						    hasHandler = (eventHandler instanceof ShowTrashEvent.Handler);		               break;
+			
+			case HIDE_ACCESSORIES:						hasHandler = (eventHandler instanceof HideAccessoriesEvent.Handler);		   	   break;
+			case SHOW_ACCESSORIES:						hasHandler = (eventHandler instanceof ShowAccessoriesEvent.Handler);		   	   break;
 			
 			case REFRESH_SIDEBAR_TREE:                 	hasHandler = (eventHandler instanceof RefreshSidebarTreeEvent.Handler);            break;
 			case REROOT_SIDEBAR_TREE:                 	hasHandler = (eventHandler instanceof RerootSidebarTreeEvent.Handler);             break;

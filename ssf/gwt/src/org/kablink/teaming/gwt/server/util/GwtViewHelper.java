@@ -860,6 +860,58 @@ public class GwtViewHelper {
 		}
 	}
 	
+	/**
+	 * Return true of the accessory panel should be visible on the
+	 * given binder and false otherwise.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	@SuppressWarnings("unchecked")
+	public static Boolean getAccessoryStatus(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
+		try {
+			Binder			binder               = bs.getBinderModule().getBinder(binderId);
+			User			user                 = GwtServerHelper.getCurrentUser();
+			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
+			
+			// Has the user saved the status of the accessories panel
+			// on this binder?
+			Boolean accessoryStatus = ((Boolean) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_BINDER_SHOW_ACCESSORIES));
+			if (null == accessoryStatus) {
+				// No!  If they have any accessories defined, we show
+				// the panel.
+				UserProperties	userProperties = bs.getProfileModule().getUserProperties(user.getId());
+				Map<String, Object> model = new HashMap<String,Object>();
+				DashboardHelper.getDashboardMap(binder, userProperties.getProperties(), model);
+				Map ssDashboard = ((Map) model.get(WebKeys.DASHBOARD));
+				accessoryStatus = DashboardHelper.checkIfAnyContentExists(ssDashboard);
+
+				// Save this status so we don't have to read the
+				// accessories again.
+				saveAccessoryStatus(bs, request, binderId, accessoryStatus);
+			}
+			
+			// If we get here, accessoryStatus contains true if we
+			// should show the accessory panel and false otherwise.
+			// Return it.
+			return accessoryStatus;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getAccessoryStatus( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
 	/*
 	 * Returns the days duration value if only days were found. 
 	 * Otherwise returns -1.
@@ -3595,6 +3647,42 @@ public class GwtViewHelper {
 			// that.
 			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
 			     m_logger.debug("GwtViewHelper.unlockEntries( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
+	/**
+	 * Saves whether the accessory panel should be visible on the
+	 * given binder.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * @param showAccessoryPanel
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean saveAccessoryStatus(AllModulesInjected bs, HttpServletRequest request, Long binderId, boolean showAccessoryPanel) throws GwtTeamingException {
+		try {
+			// Save the accessory status...
+			bs.getProfileModule().setUserProperty(
+				GwtServerHelper.getCurrentUser().getId(),
+				binderId,
+				ObjectKeys.USER_PROPERTY_BINDER_SHOW_ACCESSORIES,
+				new Boolean(showAccessoryPanel));
+			
+			// ...and return true.
+			return Boolean.TRUE;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.saveAccessoryStatus( SOURCE EXCEPTION ):  ", e);
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}

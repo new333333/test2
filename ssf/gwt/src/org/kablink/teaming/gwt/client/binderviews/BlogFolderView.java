@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
+import org.kablink.teaming.gwt.client.event.ResetEntryMenuEvent;
 import org.kablink.teaming.gwt.client.event.SetFolderSortEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderSortSettingRpcResponseData;
@@ -736,11 +737,7 @@ public class BlogFolderView extends FolderViewBase
 					@Override
 					public void onSuccess( VibeRpcResponse result )
 					{
-						EntryMenuPanel emp = getEntryMenuPanel();
-						if ( null != emp )
-						{
-							emp.resetPanel();
-						}
+						GwtTeaming.fireEvent( new ResetEntryMenuEvent( Long.valueOf( m_binderId ) ) );
 					}
 				};
  

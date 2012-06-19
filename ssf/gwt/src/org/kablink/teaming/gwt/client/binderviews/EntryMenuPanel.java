@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -45,6 +46,7 @@ import org.kablink.teaming.gwt.client.event.DisableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
+import org.kablink.teaming.gwt.client.event.HideAccessoriesEvent;
 import org.kablink.teaming.gwt.client.event.InvokeAddNewFolderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
@@ -56,7 +58,9 @@ import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedUserWorkspacesEvent;
 import org.kablink.teaming.gwt.client.event.PurgeSelectedUsersEvent;
+import org.kablink.teaming.gwt.client.event.ResetEntryMenuEvent;
 import org.kablink.teaming.gwt.client.event.SetFolderSortEvent;
+import org.kablink.teaming.gwt.client.event.ShowAccessoriesEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -100,6 +104,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RequiresResize;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
 /**
@@ -107,13 +112,18 @@ import com.google.gwt.user.client.ui.RequiresResize;
  * 
  * @author drfoster@novell.com
  */
-public class EntryMenuPanel extends ToolPanelBase {
+public class EntryMenuPanel extends ToolPanelBase
+	implements
+	// Event handlers implemented by this class.
+		ResetEntryMenuEvent.Handler
+{
 	private BinderFiltersRpcResponseData	m_binderFilters;			//
 	private BinderInfo						m_binderInfo;				//
 	private boolean							m_includeColumnResizer;		//
 	private boolean							m_isIE;						//
 	private boolean							m_panelInitialized;			// Set true after the panel has completed initializing.
 	private boolean							m_viewingPinnedEntries;		//
+	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private List<ToolbarItem>				m_configureToolbarItems;	//
 	private List<ToolbarItem>				m_toolbarIems;				//
 	private VibeFlexTable					m_grid;						//
@@ -130,6 +140,13 @@ public class EntryMenuPanel extends ToolPanelBase {
 	private VibeMenuItem					m_trashPurgeSelectedMenu;	//
 	private VibeMenuItem					m_trashRestoreAllMenu;		//
 	private VibeMenuItem					m_trashRestoreSelectedMenu;	//
+	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.RESET_ENTRY_MENU,
+	};
 	
 	/*
 	 * Constructor method.
@@ -363,6 +380,69 @@ public class EntryMenuPanel extends ToolPanelBase {
 		}
 	}
 
+	/**
+	 * Called when the accessories panel is attached to the document.
+	 * 
+	 * Overrides Widget.onAttach()
+	 */
+	@Override
+	public void onAttach() {
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Called when the accessories panel is detached from the document.
+	 * 
+	 * Overrides Widget.onDetach()
+	 */
+	@Override
+	public void onDetach() {
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
+	
+	/**
+	 * Handles ResetEntryMenuEvent's received by this class.
+	 * 
+	 * Implements the ResetEntryMenuEvent.Handler.onResetEntryMenu()
+	 * method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onResetEntryMenu(ResetEntryMenuEvent event) {
+		Long binderId = event.getBinderId();
+		if (binderId.equals(m_binderInfo.getBinderIdAsLong())) {
+			resetPanel();
+		}
+	}
+	
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents() {
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if (null == m_registeredEventHandlers) {
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if (m_registeredEventHandlers.isEmpty()) {
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				m_registeredEvents,
+				this,
+				m_registeredEventHandlers);
+		}
+	}
+	
 	/*
 	 * Renders any configure toolbar items applicable to the current
 	 * binder.
@@ -717,6 +797,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 					case DELETE_SELECTED_USER_WORKSPACES:     event = new DeleteSelectedUserWorkspacesEvent(  folderId   ); break;
 					case DISABLE_SELECTED_USERS:              event = new DisableSelectedUsersEvent(          folderId   ); break;
 					case ENABLE_SELECTED_USERS:               event = new EnableSelectedUsersEvent(           folderId   ); break;
+					case HIDE_ACCESSORIES:                    event = new HideAccessoriesEvent(               folderId   ); break;
 					case INVOKE_COLUMN_RESIZER:               event = new InvokeColumnResizerEvent(           folderId   ); break;
 					case INVOKE_DROPBOX:                      event = new InvokeDropBoxEvent(                 folderId   ); break;
 					case INVOKE_SIGN_GUESTBOOK:               event = new InvokeSignGuestbookEvent(           folderId   ); break;
@@ -728,6 +809,7 @@ public class EntryMenuPanel extends ToolPanelBase {
 					case PURGE_SELECTED_ENTRIES:              event = new PurgeSelectedEntriesEvent(          folderId   ); break;
 					case PURGE_SELECTED_USER_WORKSPACES:      event = new PurgeSelectedUserWorkspacesEvent(   folderId   ); break;
 					case PURGE_SELECTED_USERS:                event = new PurgeSelectedUsersEvent(            folderId   ); break;
+					case SHOW_ACCESSORIES:                    event = new ShowAccessoriesEvent(               folderId   ); break;
 					case SHARE_SELECTED_ENTRIES:              event = new ShareSelectedEntriesEvent(          folderId   ); break;
 					case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      folderId   ); break;
 					case TRASH_PURGE_ALL:                     event = new TrashPurgeAllEvent(                 folderId   ); break;
@@ -956,6 +1038,18 @@ public class EntryMenuPanel extends ToolPanelBase {
 			}
 		}
 		return reply;
+	}
+	
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents() {
+		// If we have a non-empty list of registered events...
+		if ((null != m_registeredEventHandlers) && (!(m_registeredEventHandlers.isEmpty()))) {
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+		}
 	}
 	
 	

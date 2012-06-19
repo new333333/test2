@@ -481,6 +481,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case GET_ACCESSORY_STATUS:
+		{
+			GetAccessoryStatusCmd gasCmd = ((GetAccessoryStatusCmd) cmd);
+			Boolean responseData = GwtViewHelper.getAccessoryStatus(
+				this,
+				getRequest( ri ),
+				gasCmd.getBinderId() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( responseData ) );
+			return response;
+		}
+		
 		case GET_ACTIVITY_STREAM_DATA:
 		{
 			GetActivityStreamDataCmd gasdCmd = ((GetActivityStreamDataCmd) cmd);
@@ -1933,6 +1944,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					ri, reCmd.getEntryId(), reCmd.getTitle(), reCmd.getDescription() );
 			ActivityStreamEntryRpcResponseData responseData = new ActivityStreamEntryRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case SAVE_ACCESSORY_STATUS:
+		{
+			SaveAccessoryStatusCmd sasCmd = ((SaveAccessoryStatusCmd) cmd);
+			Boolean responseData = GwtViewHelper.saveAccessoryStatus(
+				this,
+				getRequest( ri ),
+				sasCmd.getBinderId(),
+				sasCmd.getShowAccessoryPanel() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( responseData ) );
 			return response;
 		}
 		

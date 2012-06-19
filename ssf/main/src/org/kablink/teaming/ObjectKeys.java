@@ -36,7 +36,6 @@ package org.kablink.teaming;
  * Defines symbols that the core is aware of.
  * 
  * @author Jong Kim
- *
  */
 public interface ObjectKeys {
 	
@@ -447,6 +446,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_APPCONFIGS = "userAppConfigs";
     public static final String USER_PROPERTY_FAVORITES = "userFavorites";
     public static final String USER_PROPERTY_FOLDER_COLUMNS = "userFolderColumns";
+    public static final String USER_PROPERTY_BINDER_SHOW_ACCESSORIES = "userBinderShowAccessories";
     public static final String USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER = "userFolderColumnSortOrder";
     public static final String USER_PROPERTY_FOLDER_COLUMN_TITLES = "userFolderColumnTitles";
     public static final String USER_PROPERTY_MOBILE_BINDER_IDS = "userMobileBinderIds";

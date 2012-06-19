@@ -127,6 +127,7 @@ public class GwtMenuHelper {
 	private final static String CATEGORIES				= "categories";
 	private final static String CLIPBOARD				= "clipboard";
 	private final static String CONFIGURATION			= "configuration";
+	private final static String CONFIGURE_ACCESSORIES	= "configureAccessories";
 	private final static String CONFIGURE_COLUMNS		= "configureColumns";
 	private final static String CONFIGURE_DEFINITIONS	= "configureDefinitions";
 	private final static String CONFIGURE_EMAIL			= "configEmail";
@@ -345,6 +346,34 @@ public class GwtMenuHelper {
 		// If we get here, reply refers to the ToolbarItem requested.
 		// Return it.
 		return reply;
+	}
+	
+	/*
+	 * Constructs a ToolbarItem to configure the accessories panel.
+	 */
+	private static void constructEntryConfigureAccessories(AllModulesInjected bs, HttpServletRequest request, Binder binder, List<ToolbarItem> configureToolbarItems) {
+		// Can the user configure accessories on this binder?
+		String viewType = DefinitionUtils.getViewType(binder);
+		if ((!(isViewBlog(viewType))) && (!(isViewMiniBlog(viewType)))) {
+			// Yes!  Create a configure accessories ToolbarItem.
+			boolean hideAccessories;
+			try                 {hideAccessories = GwtViewHelper.getAccessoryStatus(bs, request, binder.getId());}
+			catch (Exception e) {hideAccessories = false;}
+			String titleKey;
+			TeamingEvents event;
+			if (hideAccessories) {
+				titleKey = "misc.hideAccessories";
+				event    = TeamingEvents.HIDE_ACCESSORIES;
+			}
+			else {
+				titleKey = "misc.showAccessories";
+				event    = TeamingEvents.SHOW_ACCESSORIES;
+			}
+			ToolbarItem accTBI = new ToolbarItem(CONFIGURE_ACCESSORIES);
+			markTBITitle(accTBI, titleKey);
+			markTBIEvent(accTBI, event   );
+			configureToolbarItems.add(accTBI);
+		}
 	}
 	
 	/*
@@ -1940,7 +1969,8 @@ public class GwtMenuHelper {
 			constructEntryPinnedItem(entryToolbar, bs, request, viewType, folder);
 
 			// Are we returning the toolbar items for a trash view?
-			if (folderInfo.isBinderTrash()) {
+			boolean isBinderTrash = folderInfo.isBinderTrash();
+			if (isBinderTrash) {
 				// Yes!  Construct the items for viewing the trash.
 				constructEntryTrashItems(entryToolbar, bs, request, binder);
 			}
@@ -1998,7 +2028,7 @@ public class GwtMenuHelper {
 						if (addAllowed && SsfsUtil.supportApplets(request)) {
 							// Yes!  Is it other than a mini-blog or a mirrored
 							// file that can't be written to?
-							if ((!(viewType.equals(Definition.VIEW_STYLE_MINIBLOG))) && ((!(folder.isMirrored())) || isFolderWritableMirrored(folder))) {
+							if ((!(isViewMiniBlog(viewType))) && ((!(folder.isMirrored())) || isFolderWritableMirrored(folder))) {
 								// Yes!  The the 'drop box' item.
 								constructEntryDropBoxItem(entryToolbar, bs, request, viewType, folder);
 							}
@@ -2023,6 +2053,18 @@ public class GwtMenuHelper {
 				}
 			}
 			
+			// Are we returning the toolbar items for other than a
+			// trash view?
+			if (!isBinderTrash) {
+				// Yes!  Add the configure accessories item to the
+				// toolbar.
+				constructEntryConfigureAccessories(
+					bs,
+					request,
+					binder,
+					configureToolbarItems);
+			}
+
 			// If the binder supports column configuration...
 			ToolbarItem configureColumns = constructEntryConfigureColumsItem(binder);
 			if (null != configureColumns) {
@@ -2324,6 +2366,13 @@ public class GwtMenuHelper {
 	 */
 	private static boolean isViewGuestBook(String viewType) {
 		return MiscUtil.hasString(viewType) && viewType.equals(Definition.VIEW_STYLE_GUESTBOOK);
+	}
+	
+	/*
+	 * Returns true if a view type is a mini blog and false otherwise.
+	 */
+	private static boolean isViewMiniBlog(String viewType) {
+		return MiscUtil.hasString(viewType) && viewType.equals(Definition.VIEW_STYLE_MINIBLOG);
 	}
 	
 	/*
