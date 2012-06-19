@@ -43,6 +43,7 @@ import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.spring.security.SsfContextMapper;
+import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
@@ -61,6 +62,8 @@ public class OpenIDAuthenticationUserDetailsService implements AuthenticationUse
 	
 	private static Map<String,String> attributeMapping = null;
 	
+	private static AttributesPostProcessing attributesPostProcessing;
+	
 	/* (non-Javadoc)
 	 * @see org.springframework.security.core.userdetails.AuthenticationUserDetailsService#loadUserDetails(org.springframework.security.core.Authentication)
 	 */
@@ -70,6 +73,8 @@ public class OpenIDAuthenticationUserDetailsService implements AuthenticationUse
 		System.out.println(token.getName());//$$$
 
 		Map<String, String> vibeAttributes = convertOpenIDAttributesToVibeAttributes(token.getAttributes());
+		
+		getAttributesPostProcessing().postProcess(token.getAttributes(), vibeAttributes);
 		
 		String emailAddress = vibeAttributes.get("emailAddress");
 		
@@ -83,7 +88,7 @@ public class OpenIDAuthenticationUserDetailsService implements AuthenticationUse
 
 		return details;
 	}
-	
+
 	private Map<String,String> convertOpenIDAttributesToVibeAttributes(List<OpenIDAttribute> attributes) {
 		Map<String,String> vibeAttributes = new HashMap<String,String>();
 		Map<String,String> mapping = getAttributeMapping();
@@ -126,4 +131,14 @@ public class OpenIDAuthenticationUserDetailsService implements AuthenticationUse
 		}
 		return attributeMapping;
 	}
+	
+    private AttributesPostProcessing getAttributesPostProcessing() {
+    	if(attributesPostProcessing == null) {
+    		String className = SPropsUtil.getString("openid.attribute.mapping.postprocessing.class", 
+    				"org.kablink.teaming.spring.security.openid.DefaultAttributesPostProcessing");
+    		attributesPostProcessing = (AttributesPostProcessing) ReflectHelper.getInstance(className);
+    	}
+    	return attributesPostProcessing;
+    }
+
 }
