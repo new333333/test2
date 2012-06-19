@@ -154,7 +154,9 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 
 /**
- * This widget will display the main Teaming page
+ * This widget will display the main Vibe page.
+ * 
+ * @author jwootton@novell.com
  */
 public class GwtMainPage extends ResizeComposite
 	implements
@@ -967,11 +969,6 @@ public class GwtMainPage extends ResizeComposite
 		
 		jsFixupGwtMainTitle();
 		
-		final boolean refreshSidebarTree = m_requestInfo.isRefreshSidebarTree();
-		if (refreshSidebarTree) {
-			m_requestInfo.clearRefreshSidebarTree();
-		}
-
 		// If we're in a search panel, we always show the root
 		// workspace in the sidebar tree.  That's the way it worked
 		// in the JSP based UI so I kept that functionality intact.
@@ -1009,9 +1006,6 @@ public class GwtMainPage extends ResizeComposite
 					instigator );
 				if (GwtClientHelper.validateOSBI(osbInfo))
 				{
-					if (refreshSidebarTree) {
-						osbInfo.setRefreshSidebarTree(refreshSidebarTree);
-					}
 					GwtTeaming.fireEvent( new ContextChangedEvent( osbInfo ) );
 				}
 			}// end onSuccess()

@@ -308,7 +308,11 @@ public class BlogFolderView extends FolderViewBase
 													binderPermalink,
 													false,
 													Instigator.CONTENT_AREA_CHANGED );
-							osBinderInfo.setRefreshSidebarTree( refreshSidebarTree );
+
+							if ( refreshSidebarTree )
+							{
+								GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+							}
 							
 							// Tell the side-bar to refresh so it picks up the new folder
 							// and selects it.
