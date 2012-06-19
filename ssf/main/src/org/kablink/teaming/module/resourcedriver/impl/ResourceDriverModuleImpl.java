@@ -33,9 +33,14 @@
 package org.kablink.teaming.module.resourcedriver.impl;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.dom4j.Document;
+import org.kablink.teaming.NotSupportedException;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
@@ -43,21 +48,85 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.HistoryStamp;
-import org.kablink.teaming.domain.ResourceDriver;
-import org.kablink.teaming.domain.ResourceDriver.DriverType;
+import org.kablink.teaming.domain.ResourceDriverConfig;
+import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.fi.connection.ResourceDriverManager;
+import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.definition.DefinitionModule.DefinitionOperation;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.Function;
+import org.kablink.teaming.security.function.FunctionManager;
+import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
+import org.kablink.teaming.security.function.WorkAreaFunctionMembershipManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 
 
 public class ResourceDriverModuleImpl extends CommonDependencyInjection implements ResourceDriverModule {
+	
+    private FunctionManager functionManager;
+    private WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
+    private ResourceDriverManager resourceDriverManager;
+
+    public FunctionManager getFunctionManager() {
+    	if (functionManager == null) {
+    		functionManager = (FunctionManager) SpringContextUtil.getBean("functionManager");
+    	}
+		return functionManager;
+    }
+    public void setFunctionManager(FunctionManager functionManager) {
+        this.functionManager = functionManager;
+    }
+    
+    public WorkAreaFunctionMembershipManager getWorkAreaFunctionMembershipManager() {
+    	if (workAreaFunctionMembershipManager == null) {
+    		workAreaFunctionMembershipManager = (WorkAreaFunctionMembershipManager) SpringContextUtil.getBean("workAreaFunctionMembershipManager");
+    	}
+		return workAreaFunctionMembershipManager;
+    }
+    public void setWorkAreaFunctionMembershipManager(WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager) {
+        this.workAreaFunctionMembershipManager = workAreaFunctionMembershipManager;
+    }
+    public ResourceDriverManager getResourceDriverManager() {
+    	if (resourceDriverManager == null) {
+    		resourceDriverManager = (ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager");
+    	}
+		return resourceDriverManager;
+    }
 
 	@Override
-	public boolean testAccess(ResourceDriver resourceDriver, ResourceDriverOperation operation) {
+	public boolean testAccess(ResourceDriverOperation operation) {
+		try {
+			checkAccess(operation);
+			return true;
+		} catch(AccessControlException ace) {}
+		return false;
+	}
+
+	@Override
+	public void checkAccess(ResourceDriverOperation operation)
+			throws AccessControlException {
+		switch (operation) {
+		case manageResourceDrivers:
+			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+			if (getAccessControlManager().testOperation(zoneConfig, WorkAreaOperation.MANAGE_RESOURCE_DRIVERS)) {
+				return;
+			}
+			getAccessControlManager().checkOperation(zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION);
+			break;
+		default:
+			throw new NotSupportedException(operation.toString(),
+					"checkAccess");
+		}
+	}
+	
+	@Override
+	public boolean testAccess(ResourceDriverConfig resourceDriver, ResourceDriverOperation operation) {
 		try {
 			checkAccess(resourceDriver, operation);
 			return true;
@@ -66,26 +135,76 @@ public class ResourceDriverModuleImpl extends CommonDependencyInjection implemen
 	}
 
 	@Override
-	public void checkAccess(ResourceDriver resourceDriver, ResourceDriverOperation operation)
+	public void checkAccess(ResourceDriverConfig resourceDriver, ResourceDriverOperation operation)
 			throws AccessControlException {
-		if (getAccessControlManager().testOperation(resourceDriver, WorkAreaOperation.MANAGE_RESOURCE_DRIVERS)) {
-			return;
+		switch (operation) {
+		case createFilespace:
+			if (getAccessControlManager().testOperation(resourceDriver, WorkAreaOperation.CREATE_FILESPACE)) {
+				return;
+			}
+			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+			getAccessControlManager().checkOperation(zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION);
+			break;
+		default:
+			throw new NotSupportedException(operation.toString(),
+					"checkAccess");
 		}
-		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-		getAccessControlManager().checkOperation(zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION);
 	}
 	
-	public ResourceDriver addResourceDriver(String name, DriverType type, Map options) 
+	public ResourceDriverConfig addResourceDriver(String name, DriverType type, String rootPath,
+			Set<Long> memberIds, Map options) 
  			throws AccessControlException {
-		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-		getAccessControlManager().checkOperation(zoneConfig, WorkAreaOperation.MANAGE_RESOURCE_DRIVERS);
-
-	   	ResourceDriver newResourceDriver = new ResourceDriver();
+		//Check that the user has the right to do this operation
+		checkAccess(ResourceDriverOperation.manageResourceDrivers);
+		
+	   	//Create the new resource driver
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		ResourceDriverConfig newResourceDriver = new ResourceDriverConfig();
 	   	newResourceDriver.setName(name);
 	   	newResourceDriver.setDriverType(type);
-	   	newResourceDriver.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
+	   	newResourceDriver.setZoneId(zoneId);
+	   	newResourceDriver.setRootPath(rootPath);
+	   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_READ_ONLY)) {
+	   		newResourceDriver.setReadOnly((Boolean)options.get(ObjectKeys.RESOURCE_DRIVER_READ_ONLY));
+	   	}
+	   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_HOST_URL)) {
+	   		newResourceDriver.setHostUrl((String)options.get(ObjectKeys.RESOURCE_DRIVER_HOST_URL));
+	   	}
+	   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_ALLOW_SELF_SIGNED_CERTIFICATE)) {
+	   		newResourceDriver.setAllowSelfSignedCertificate((Boolean)options.get(ObjectKeys.RESOURCE_DRIVER_ALLOW_SELF_SIGNED_CERTIFICATE));
+	   	}
+	   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE)) {
+	   		newResourceDriver.setSynchTopDelete((Boolean)options.get(ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE));
+	   	}
+	   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH)) {
+	   		newResourceDriver.setPutRequiresContentLength((Boolean)options.get(ObjectKeys.RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH));
+	   	}
 		getCoreDao().save(newResourceDriver);
+		
+		//Set up the access controls for this new resource driver
+		List functions = getFunctionManager().findFunctions(zoneId);
+		Function manageResourceDriversFunction = null;
+		for (int i = 0; i < functions.size(); i++) {
+			Function function = (Function)functions.get(i);
+			if (function.getInternalId() != null && 
+					ObjectKeys.FUNCTION_MANAGE_RESOURCE_DRIVERS_INTERNALID.equals(function.getInternalId())) {
+				//We have found the pseudo role
+				manageResourceDriversFunction = function;
+				break;
+			}
+		}
+		
+		WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
+		membership.setZoneId(zoneId);
+		membership.setWorkAreaId(newResourceDriver.getWorkAreaId());
+		membership.setWorkAreaType(newResourceDriver.getWorkAreaType());
+		membership.setFunctionId(manageResourceDriversFunction.getId());
+		membership.setMemberIds(memberIds);
+		getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);
+
+		//Add this new resource driver to the list of drivers
+		getResourceDriverManager().resetResourceDriverList();
+		
 		return newResourceDriver;
 	}
-
 }

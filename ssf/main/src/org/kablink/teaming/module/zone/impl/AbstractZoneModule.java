@@ -618,6 +618,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			if(synchAgent != null)
 				setTokenRequesterInitialMembership(zoneConfig, synchAgent);
 		}
+		
+		//In general, make sure all of the global functions are there
+		//This call only adds roles that aren't there
+		List ids = new ArrayList();
+		addGlobalFunctions(zoneConfig, ids);
+
   	}
  	/**
  	 * Fix up duplicate definitions.  1.0 allowed definitions with the same name
@@ -842,6 +848,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		if (!SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
 			WorkAreaOperation.deleteInstance("viewBinderTitle");
 		}
+		
+		//Make sure resource driver map is initialized
+		getResourceDriverManager().resetResourceDriverList();
 
 	}
 
@@ -1540,7 +1549,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getFunctionManager().addFunction(function);
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
-			
+		
 		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_OVERRIDE_ONLY_SEE_GROUP_MEMBERS_INTERNALID)) {
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());
@@ -1548,6 +1557,19 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
 			function.setInternalId(ObjectKeys.FUNCTION_OVERRIDE_ONLY_SEE_GROUP_MEMBERS_INTERNALID);
 			function.addOperation(WorkAreaOperation.OVERRIDE_ONLY_SEE_GROUP_MEMBERS);
+			function.setZoneWide(true);
+			//generate functionId
+			getFunctionManager().addFunction(function);
+			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		}
+		
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_MANAGE_RESOURCE_DRIVERS_INTERNALID)) {
+			function = new Function();
+			function.setZoneId(zoneConfig.getZoneId());
+			function.setName(ObjectKeys.ROLE_MANAGE_RESOURCE_DRIVERS);
+			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
+			function.setInternalId(ObjectKeys.FUNCTION_MANAGE_RESOURCE_DRIVERS_INTERNALID);
+			function.addOperation(WorkAreaOperation.MANAGE_RESOURCE_DRIVERS);
 			function.setZoneWide(true);
 			//generate functionId
 			getFunctionManager().addFunction(function);

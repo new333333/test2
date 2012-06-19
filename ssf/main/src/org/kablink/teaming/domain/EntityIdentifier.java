@@ -59,7 +59,8 @@ public class EntityIdentifier implements Comparable<EntityIdentifier> {
 		dashboard (7),
 		application (8),
 		applicationGroup (9),
-		zone(10);
+		zone (10),
+		resourceDriver (11);
 		int dbValue;
 		EntityType(int dbValue) {
 			this.dbValue = dbValue;
@@ -89,6 +90,7 @@ public class EntityIdentifier implements Comparable<EntityIdentifier> {
 			case 8: return EntityType.application;
 			case 9: return EntityType.applicationGroup;
 			case 10: return EntityType.zone;
+			case 11: return EntityType.resourceDriver;
 			default: return EntityType.none;
 			}
 		}

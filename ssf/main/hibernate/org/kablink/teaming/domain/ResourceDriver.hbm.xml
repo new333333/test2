@@ -6,7 +6,7 @@
       <param name="encryptorRegisteredName">hibernateStringEncryptor</param>
     </typedef>
   <class dynamic-update="true" lazy="false" table="SS_ResourceDriver" 
-  		name="org.kablink.teaming.domain.ResourceDriver">
+  		name="org.kablink.teaming.domain.ResourceDriverConfig">
     <!--<cache usage="read-write"/>-->
     <id unsaved-value="null" name="id" type="long">
       <generator class="native">

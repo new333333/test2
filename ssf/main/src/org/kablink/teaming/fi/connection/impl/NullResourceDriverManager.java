@@ -51,6 +51,10 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 	public List<ResourceDriver> getAllowedResourceDrivers() {
 		return new ArrayList<ResourceDriver>();
 	}
+	public List<ResourceDriver> getAllResourceDrivers() {
+		return new ArrayList<ResourceDriver>();
+	}
+	public void resetResourceDriverList() {}
 
 	public String normalizedResourcePath(String driverName, String parentResourcePath, String resourceName) throws FIException {
 		return null;

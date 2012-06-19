@@ -155,9 +155,51 @@ function ss_showModifyDiv(id) {
 	  </select>
 	</td>
 	</tr>		
+
+	<tr>
+	<td valign="middle">
+	  <label for="rootPath">
+	    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.rootpath"/></span>
+	  </label>
+	</td>
+	<td valign="middle">
+	  <input type="text" class="ss_text" size="70" name="rootPath" id="rootPath" maxlength="64">
+	</td>
+	</tr>		
+
+	<tr>
+	<td valign="middle" colspan="2">
+	  <input type="checkbox" class="ss_text" size="70" name="readonly" id="readonly">
+	  <label for="readonly">
+	    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.readonly"/></span>
+	  </label>
+	</td>
+	</tr>		
+
+	<tr>
+	<td valign="middle" style="padding-top:20px;">
+	  <label for="hostUrl">
+	    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.hostUrl"/></span>
+	    <span class="ss_smallprint">(<ssf:nlt tag="administration.resourceDrivers.webdavOnly"/>)</span>
+	  </label>
+	</td>
+	<td valign="middle" style="padding-top:20px;">
+	  <input type="text" class="ss_text" size="70" name="hostUrl" id="hostUrl" maxlength="64">
+	</td>
+	</tr>
+
+	<tr>
+	<td valign="middle" colspan="2">
+	  <input type="checkbox" class="ss_text" size="70" name="allowSelfSignedCertificate" id="allowSelfSignedCertificate">
+	  <label for="allowSelfSignedCertificate">
+	    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.allowSelfSignedCertificate"/></span>
+	    <span class="ss_smallprint">(<ssf:nlt tag="administration.resourceDrivers.webdavOnly"/>)</span>
+	  </label>
+	</td>
+	</tr>		
 	</table>
 	
-	<div style="margin: 10px">
+	<div style="margin:10px; padding-top:20px;">
 	  <span><ssf:nlt tag="administration.resourceDrivers.allowedUsersAndGroups"/></span>
 	
 	<div style="padding-left:20px;">

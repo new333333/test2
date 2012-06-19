@@ -41,6 +41,8 @@ import org.kablink.teaming.fi.FIException;
 public interface ResourceDriverManager {
 
 	public List<ResourceDriver> getAllowedResourceDrivers();
+	public List<ResourceDriver> getAllResourceDrivers();
+	public void resetResourceDriverList();
 	
 	public ResourceDriver getDriver(String driverName) throws FIException;
 
