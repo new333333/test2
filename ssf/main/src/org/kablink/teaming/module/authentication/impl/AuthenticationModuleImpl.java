@@ -53,6 +53,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
+import org.kablink.teaming.security.authentication.UserDoesNotExistException;
 import org.kablink.teaming.spring.security.IdentitySourceObtainable;
 import org.kablink.teaming.spring.security.SsfContextMapper;
 import org.kablink.teaming.spring.security.SynchNotifiableAuthentication;
@@ -71,6 +72,7 @@ import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.WindowsUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
+import org.kablink.teaming.module.authentication.UserAccountNotProvisionedException;
 import org.kablink.teaming.module.authentication.UserIdNotActiveException;
 import org.kablink.teaming.module.authentication.UserIdNotUniqueException;
 import org.springframework.beans.factory.InitializingBean;
@@ -445,6 +447,8 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
         	// Are we dealing with one of Teaming's system accounts such as "admin" or "guest"?
         	if ( !MiscUtil.isSystemUserAccount( authentication.getName() ) )
         	{
+        		int identitySource = -1;
+        		
         		// No, try to do an ldap authentication.
         		// This will also try local authentication as fallback, if configured to do so.
 	    		try {
@@ -455,11 +459,9 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	     			
 	     			String loginName = getLoginName(result);
 	     			
-	     			int identitySource = getIdentitySource(result);
+	     			identitySource = getIdentitySource(result);
 	     			
 	     			if(SPropsUtil.getBoolean("authenticator.synch." + getAuthenticator(), false)) {
-		     			// This is not used for authentication but for profile synchronization.
-		     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate1" );
 		     			// Get default settings
 		     			boolean passwordAutoSynch = 
 		     					SPropsUtil.getBoolean("portal.password.auto.synchronize", false);
@@ -477,6 +479,8 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		     				else
 		     					createUser = false;
 		     			}
+		     			// This is not used for authentication but for profile synchronization.
+		     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate1" );
 		    			AuthenticationManagerUtil.authenticate(identitySource, 
 		    					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
 		    					loginName, 
@@ -509,6 +513,9 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	    			exc = e;
 	    		} catch(UserAccountNotActiveException e) {
 	    			exc = new UserIdNotActiveException(e.getMessage());
+	    		} catch(UserDoesNotExistException e) {
+	    			if(identitySource == User.IDENTITY_SOURCE_EXTERNAL)
+	    				exc = new UserAccountNotProvisionedException(e.getMessage());
 	    		}
 	    		catch ( IncorrectResultSizeDataAccessException irsdaEx )
 	    		{

@@ -212,8 +212,9 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
  						// It is NOT possible for system to authenticate a local user against Vibe database 
  						// unless the user record already exists in the database. So, if the authentication
  						// has already succeeded without the corresponding user record being found in the database,
- 						// it means that the identity source is anything but local. So we can safely assume
- 						// that it is LDAP.
+ 						// it means that the identity source is anything but local. So, if identitySource is
+ 						// unspecified (i.e., null), then we can safely conclude that the identity source
+ 						// must be LDAP.
  						(identitySource != null)? identitySource.intValue():User.IDENTITY_SOURCE_LDAP,
  						userName, password, updates, null);
  				if(user == null)
