@@ -141,6 +141,11 @@ public interface ObjectKeys {
 	public static final String FUNCTION_ONLY_SEE_GROUP_MEMBERS_INTERNALID="402883b90d0de1f3010d0df5582b0020";
 	//reserved id for _overrideOnlySeeGroupMembers pseudo role  
 	public static final String FUNCTION_OVERRIDE_ONLY_SEE_GROUP_MEMBERS_INTERNALID="402883b90d0de1f3010d0df5582b0021";
+	//reserved id for _manageResourceDrivers pseudo role  
+	public static final String FUNCTION_MANAGE_RESOURCE_DRIVERS_INTERNALID="402883b90d0de1f3010d0df5582b0022";
+	//reserved id for _createFileSpaces pseudo role  
+	public static final String FUNCTION_CREATE_FILESPACES_INTERNALID="402883b90d0de1f3010d0df5582b0023";
+	
 	//reserved id put in acls/membership to indicate owner of object has access
 	//search engine stores the ownerId of the entity in place of this
 	public static final Long OWNER_USER_ID = Long.valueOf(-1);
@@ -219,6 +224,7 @@ public interface ObjectKeys {
     public static final String ROLE_TOKEN_REQUESTER="__role.tokenRequester";
     public static final String ROLE_ONLY_SEE_GROUP_MEMBERS="__role.onlySeeGroupMembers";
     public static final String ROLE_OVERRIDE_ONLY_SEE_GROUP_MEMBERS="__role.overrideOnlySeeGroupMembers";
+    public static final String ROLE_MANAGE_RESOURCE_DRIVERS="__role.manageResourceDrivers";
     //map keys from admin/sendMail
     public static final String SENDMAIL_ERRORS="errors";
     public static final String SENDMAIL_DISTRIBUTION="distributionList";
@@ -401,7 +407,14 @@ public interface ObjectKeys {
     //file repository
     public static final String FI_ADAPTER = "fiAdapter";
 	public static final String PI_SYNCH_TO_SOURCE = "_synchToSource";
-    
+	
+	//Resource Drivers
+	public static final String RESOURCE_DRIVER_READ_ONLY = "readonly";
+	public static final String RESOURCE_DRIVER_SYNCH_TOP_DELETE = "synchTopDelete";
+	public static final String RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH = "putRequiresContentLength";
+	public static final String RESOURCE_DRIVER_ALLOW_SELF_SIGNED_CERTIFICATE = "allowSelfSignedCertificate";
+	public static final String RESOURCE_DRIVER_HOST_URL = "hostUrl";
+	
     //User and Principal objects
     public static final int USER_STATUS_DATABASE_FIELD_LENGTH = 256;
 

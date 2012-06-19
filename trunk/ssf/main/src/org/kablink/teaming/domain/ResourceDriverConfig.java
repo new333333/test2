@@ -37,7 +37,7 @@ import java.util.Set;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.security.function.WorkArea;
 
-public class ResourceDriver extends ZonedObject implements WorkArea {
+public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 
 	private Long id; // This is primary key
 	private String name;
@@ -181,7 +181,7 @@ public class ResourceDriver extends ZonedObject implements WorkArea {
 
 	@Override
 	public String getWorkAreaType() {
-		return null;
+		return EntityIdentifier.EntityType.resourceDriver.name();
 	}
 
 	@Override

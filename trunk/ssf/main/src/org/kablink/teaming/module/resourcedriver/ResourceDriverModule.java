@@ -34,14 +34,15 @@ package org.kablink.teaming.module.resourcedriver;
 
 import java.io.InputStream;
 import java.util.Map;
+import java.util.Set;
 
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.ResourceDriver;
-import org.kablink.teaming.domain.ResourceDriver.DriverType;
+import org.kablink.teaming.domain.ResourceDriverConfig;
+import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -63,16 +64,25 @@ public interface ResourceDriverModule {
 	
 	public enum ResourceDriverOperation {
 		manageResourceDrivers,
+		createFilespace
 	}
 
 	/**
-	 * The method name to be called is used as the operation.   This
-	 * allows the resourceDriverModule to check for multiple rights or change requirments in the future.
+	 * This call checks the zone level access for resource drivers.
 	 * @param operation
 	 * @return
 	 */
-   	public boolean testAccess(ResourceDriver resourceDriver, ResourceDriverOperation operation);
-   	public void checkAccess(ResourceDriver resourceDriver, ResourceDriverOperation operation) throws AccessControlException;
+   	public boolean testAccess(ResourceDriverOperation operation);
+   	public void checkAccess(ResourceDriverOperation operation) throws AccessControlException;
+
+	/**
+	 * This call checks the access rights for a specific resource driver
+	 * @param resourceDriver
+	 * @param operation
+	 * @return
+	 */
+public boolean testAccess(ResourceDriverConfig resourceDriver, ResourceDriverOperation operation);
+   	public void checkAccess(ResourceDriverConfig resourceDriver, ResourceDriverOperation operation) throws AccessControlException;
 
     /**
      * Create a <code>ResourceDriver</code> 
@@ -82,6 +92,7 @@ public interface ResourceDriverModule {
      * @param options
      * @throws AccessControlException
      */
-      public ResourceDriver addResourceDriver(String name, DriverType type, Map options) 
+      public ResourceDriverConfig addResourceDriver(String name, DriverType type, String rootPath,
+    		  Set<Long> memberIds, Map options) 
      	throws AccessControlException;
 }

@@ -49,8 +49,8 @@ import javax.portlet.RenderResponse;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.ResourceDriver;
-import org.kablink.teaming.domain.ResourceDriver.DriverType;
+import org.kablink.teaming.domain.ResourceDriverConfig;
+import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.Utils;
@@ -76,12 +76,36 @@ public class ManageResourceDriverController extends SAbstractController {
 				} else if (formData.containsKey("addBtn")) {
 					String name = PortletRequestUtils.getStringParameter(request, "driverName");
 					int type = PortletRequestUtils.getIntParameter(request, "driverType", 0);
+					String rootPath = PortletRequestUtils.getStringParameter(request, "rootPath");
 					Map options = new HashMap();
+					
+					//Is this Read Only?
+					Boolean readonly = PortletRequestUtils.getBooleanParameter(request, "readonly", Boolean.FALSE);
+					options.put(ObjectKeys.RESOURCE_DRIVER_READ_ONLY, readonly);
+					
+					//Is there a Host URL (WebDAV only)
+					String hostUrl = PortletRequestUtils.getStringParameter(request, "hostUrl", "");
+					options.put(ObjectKeys.RESOURCE_DRIVER_HOST_URL, hostUrl);
+					
+					//Allow self signed certificates? (WebDAV only)
+					Boolean allowSelfSignedCertificate = PortletRequestUtils.getBooleanParameter(request, "allowSelfSignedCertificate", Boolean.FALSE);
+					options.put(ObjectKeys.RESOURCE_DRIVER_ALLOW_SELF_SIGNED_CERTIFICATE, allowSelfSignedCertificate);
+					
+					//Always prevent the top level folder from being deleted
+					//  This is forced so that the folder could not accidentally be deleted if the 
+					//  external disk was offline
+					options.put(ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE, Boolean.FALSE);
+					
+					//Get who is allowed to manage this 
 					Set<Long> groupIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addedGroups"));
 					Set<Long> userIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addedUsers"));
+					Set<Long> memberIds = new HashSet<Long>();
+					memberIds.addAll(userIds);
+					memberIds.addAll(groupIds);
 					
 					//Add this resource driver
-					getResourceDriverModule().addResourceDriver(name, DriverType.valueOf(type), options);
+					getResourceDriverModule().addResourceDriver(name, DriverType.valueOf(type), 
+							rootPath, memberIds, options);
 				
 				} else {
 					//See if a selected driver needs to be modified
