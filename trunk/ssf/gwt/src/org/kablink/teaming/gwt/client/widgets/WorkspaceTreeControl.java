@@ -444,14 +444,9 @@ public class WorkspaceTreeControl extends ResizeComposite
 		if (isSidebarTree()) {
 			OnSelectBinderInfo osbInfo = event.getOnSelectBinderInfo();
 			if (GwtClientHelper.validateOSBI(osbInfo, false)) {
-				if (getRequestInfo().isRefreshSidebarTree()) {
-					osbInfo.setRefreshSidebarTree(true);
-					getRequestInfo().clearRefreshSidebarTree();
-				}
 				Instigator instigator = osbInfo.getInstigator();
-				if ((Instigator.SIDEBAR_TREE_SELECT  != instigator) ||
-				    (Instigator.REFRESH_SIDEBAR_TREE == instigator) ||
-				     osbInfo.isRefreshSidebarTree())
+				if ((Instigator.SIDEBAR_TREE_SELECT != instigator) ||
+					getRequestInfo().isRefreshSidebarTree())
 				{
 					// Tell the WorkspaceTreeControl to change contexts.
 					setSelectedBinder(osbInfo);

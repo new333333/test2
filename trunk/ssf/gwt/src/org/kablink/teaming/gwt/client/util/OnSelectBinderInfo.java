@@ -40,13 +40,12 @@ import org.kablink.teaming.gwt.client.util.TreeInfo;
  * @author drfoster@novell.com
  */
 public class OnSelectBinderInfo {
-	private boolean			m_refreshSidebarTree;	// true -> Regardless of the instigator, force the sidebar tree to refresh.
-	private boolean			m_isPermalinkUrl;		//
-	private boolean			m_isTrash;				//
-	private CollectionType	m_collectionType;		//
-	private Instigator		m_instigator;			//
-	private Long			m_binderId;				//
-	private String			m_binderUrl;			//
+	private boolean			m_isPermalinkUrl;	//
+	private boolean			m_isTrash;			//
+	private CollectionType	m_collectionType;	//
+	private Instigator		m_instigator;		//
+	private Long			m_binderId;			//
+	private String			m_binderUrl;		//
 
 	// Various marker strings used to recognize the format of a URL.
 	private final static String GWT_MARKER = "seen_by_gwt";
@@ -61,7 +60,6 @@ public class OnSelectBinderInfo {
 		FORCE_FULL_RELOAD,				// Forces the full UI to reload.
 		GOTO_CONTENT_URL,				// User clicked on something that loads some URL into the content frame.
 		PROFILE_QUICK_VIEW_SELECT,		// The workspace or profile button in the quick view dialog was selected.
-		REFRESH_SIDEBAR_TREE,			// Forces the sidebar tree to refresh.
 		RECENT_PLACE_SELECT,			// A recent place was selected from the Recent Places menu.
 		SEARCH_SELECT,					// A link from the search options dialog search results was selected.
 		SIDEBAR_TREE_SELECT,			// A binder in the sidebar tree was select.
@@ -73,17 +71,17 @@ public class OnSelectBinderInfo {
 	}
 
 	/**
-	 * Constructor method.  (1 of 4)
+	 * Class constructor.
 	 * 
 	 * @param ti
 	 */
 	public OnSelectBinderInfo(TreeInfo ti, Instigator instigator) {
 		// Always use the final form of the constructor.
-		this(Long.parseLong(ti.getBinderInfo().getBinderId()), ti.getBinderPermalink(), ti.getBinderInfo().isBinderTrash(), instigator);
+		this(Long.valueOf(ti.getBinderInfo().getBinderId()), ti.getBinderPermalink(), ti.getBinderInfo().isBinderTrash(), instigator);
 	}
 
 	/**
-	 * Constructor method.  (2 of 4)
+	 * Class constructor.
 	 * 
 	 * @param binderId
 	 * @param binderUrl
@@ -92,11 +90,11 @@ public class OnSelectBinderInfo {
 	 */
 	public OnSelectBinderInfo(String binderId, String binderUrl, boolean isTrash, Instigator instigator) {
 		// Always use the final form of the constructor.
-		this(Long.parseLong(binderId), binderUrl, isTrash, instigator);
+		this(Long.valueOf(binderId), binderUrl, isTrash, instigator);
 	}
 	
 	/**
-	 * Constructor method.  (3 of 4)
+	 * Class constructor.
 	 * 
 	 * @param binderUrl
 	 * @param isTrash
@@ -108,7 +106,7 @@ public class OnSelectBinderInfo {
 	}
 	
 	/**
-	 * Constructor method.  (4 of 4)
+	 * Class constructor.
 	 * 
 	 * @param binderId
 	 * @param binderUrl
@@ -166,16 +164,6 @@ public class OnSelectBinderInfo {
 		return m_binderUrl;
 	}
 
-	/**
-	 * Returns the true if the sidebar should be refreshed
-	 * regardless of the instigator and false otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isRefreshSidebarTree() {
-		return m_refreshSidebarTree;
-	}
-	
 	/**
 	 * Returns the instigator of the Binder selection, if known.
 	 * 
@@ -242,16 +230,6 @@ public class OnSelectBinderInfo {
 		}
 	}
 
-	/**
-	 * Stores a true/false flag indicating whether the sidebar should
-	 * be refreshed regardless of the instigator.
-	 * 
-	 * @param refreshSidebarTree
-	 */
-	public void setRefreshSidebarTree(boolean refreshSidebarTree) {
-		m_refreshSidebarTree = refreshSidebarTree;
-	}
-	
 	/**
 	 * Store an instigator for the binder selection.
 	 * 
