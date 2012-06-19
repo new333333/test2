@@ -2198,6 +2198,11 @@ public class GwtServerHelper {
 				// Parse the branding and replace any markup with the appropriate url.  For example,
 				// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
 				branding = MarkupUtil.markupStringReplacement( null, null, request, null, brandingSourceBinder, branding, "view" );
+				
+				// Remove mce_src as an attribute from all <img> tags.  See bug 766415.
+				// There was a bug that caused the mce_src attribute to be included in the <img>
+				// tag and written to the db.  We want to remove it.
+				branding = MarkupUtil.removeMceSrc( branding );
 	
 				brandingData.setBranding( branding );
 				

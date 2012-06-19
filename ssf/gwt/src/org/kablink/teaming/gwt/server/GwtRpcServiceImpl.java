@@ -4519,6 +4519,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				branding = brandingData.getBranding();
 				if ( branding == null )
 					branding = "";
+			
+				// Remove mce_src as an attribute from all <img> tags.  See bug 766415.
+				// There was a bug that caused the mce_src attribute to be included in the <img>
+				// tag and written to the db.  We want to remove it.
+				branding = MarkupUtil.removeMceSrc( branding );
+	
 				hashMap.put( "branding", branding );
 
 				// Add the exteneded branding data to the map.
