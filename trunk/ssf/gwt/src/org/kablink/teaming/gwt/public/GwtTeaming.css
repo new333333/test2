@@ -17,6 +17,7 @@
 .displayBlock       { display: block;        }
 .displayInline      { display: inline;       }
 .displayInlineBlock { display: inline-block; }
+.displayNone        { display: none;         }
 
 .vibe-verticalScroll {overflow-y: auto;}
 

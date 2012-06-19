@@ -41,7 +41,6 @@ import org.kablink.teaming.gwt.client.MainContentLayoutPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
 
-
 /**
  * Base class that binder views MUST extend so that they'll say when
  * the view is ready to be used.

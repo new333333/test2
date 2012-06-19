@@ -313,6 +313,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_ExpandBucket();
 	String rpcFailure_ExpandSubtasks();
 	String rpcFailure_FolderDoesNotExist();
+	String rpcFailure_GetAccessoryStatus();
 	String rpcFailure_GetActivityStreamParams();
 	String rpcFailure_GetActivityStreamsTree();
 	String rpcFailure_GetAddMeetingUrl();
@@ -430,6 +431,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_RemoveFavorite();
 	String rpcFailure_RemoveSavedSearch();
 	String rpcFailure_ReplyToEntry();
+	String rpcFailure_SaveAccessoryStatus();
 	String rpcFailure_SaveBinderRegionState();
 	String rpcFailure_SaveCalendarDayView();
 	String rpcFailure_SaveCalendarHours();

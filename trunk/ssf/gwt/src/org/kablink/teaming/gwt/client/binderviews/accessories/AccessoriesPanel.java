@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,10 +41,16 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.HideAccessoriesEvent;
 import org.kablink.teaming.gwt.client.event.JspLayoutChangedEvent;
+import org.kablink.teaming.gwt.client.event.ResetEntryMenuEvent;
+import org.kablink.teaming.gwt.client.event.ShowAccessoriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetAccessoryStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveAccessoryStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -61,7 +67,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
-
 /**
  * Class used for the content of the accessories in the binder views.  
  * 
@@ -70,8 +75,11 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class AccessoriesPanel extends ToolPanelBase
 	implements
 	// Event handlers implemented by this class.
-		JspLayoutChangedEvent.Handler
+		HideAccessoriesEvent.Handler,
+		JspLayoutChangedEvent.Handler,
+		ShowAccessoriesEvent.Handler
 {
+	private boolean						m_notifyOnReady;			// true -> Notify the container when this panel is ready.  false -> Don't.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private VibeFlowPanel				m_fp;						// The panel holding the AccessoryPanel's contents.
 	private String						m_binderId;					//
@@ -81,7 +89,9 @@ public class AccessoriesPanel extends ToolPanelBase
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.HIDE_ACCESSORIES,
 		TeamingEvents.JSP_LAYOUT_CHANGED,
+		TeamingEvents.SHOW_ACCESSORIES,
 	};
 
 	/*
@@ -95,31 +105,89 @@ public class AccessoriesPanel extends ToolPanelBase
 		// Initialize the super class...
 		super(containerResizer, binderInfo, toolPanelReady);
 		
+		// ...initialize any other data members...
+		m_notifyOnReady = true;
+		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
 		m_fp.addStyleName("vibe-binderViewTools vibe-accessoriesPanel");
 
 		initWidget(m_fp);
-		loadAccessoriesMapAsync();
+		loadPart1Async();
 	}
 
 	/*
-	 * Asynchronously construct's the contents of the accessories panel
+	 * Asynchronously loads the next part of the accessories panel.
 	 */
-	private void loadAccessoriesMapAsync() {
-		ScheduledCommand constructAccessories = new ScheduledCommand() {
+	private void loadPart1Async() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				loadAccessoriesMapNow();
+				loadPart1Now();
 			}
 		};
-		Scheduler.get().scheduleDeferred(constructAccessories);
+		Scheduler.get().scheduleDeferred(doLoad);
 	}
 	
 	/*
-	 * Synchronously construct's the contents of the accessories panel
+	 * Synchronously loads the next part of the accessories panel.
 	 */
-	private void loadAccessoriesMapNow() {
+	private void loadPart1Now() {
+		GwtClientHelper.executeCommand(
+				new GetAccessoryStatusCmd(m_binderInfo.getBinderIdAsLong()),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetAccessoryStatus());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Is the accessory panel supposed to be visible?
+				BooleanRpcResponseData responseData = ((BooleanRpcResponseData) response.getResponseData());
+				if (responseData.getBooleanValue()) {
+					// Yes!  Continue loading it.
+					m_fp.removeStyleName("displayNone");
+					loadPart2Async();
+				}
+				
+				else {
+					// No, the accessory panel is not supposed to be
+					// visible!  Hide it and tell the panel container
+					// that we're ready...
+					m_fp.clear();
+					m_fp.addStyleName("displayNone");
+					
+					// ...and if we need to...
+					if (m_notifyOnReady) {
+						// ...tell our container that we're ready.
+						toolPanelReady();
+						m_notifyOnReady = false;
+					}
+				}
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously loads the next part of the accessories panel.
+	 */
+	private void loadPart2Async() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart2Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously loads the next part of the accessories panel.
+	 */
+	private void loadPart2Now() {
 		final Long binderId = m_binderInfo.getBinderIdAsLong();
 		m_binderId = String.valueOf(binderId);
 		Map<String,Object> model = new HashMap<String,Object>();
@@ -140,24 +208,43 @@ public class AccessoriesPanel extends ToolPanelBase
 				// Store the accessory panel HTML and continue loading.
 				JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
 				m_html = responseData.getHtml();
-				loadAccessoryAsync();
+				loadPart3Async();
 			}
 		});
 	}
 	
 	/*
-	 * Asynchronously construct's the contents of the entry menu panel.
+	 * Asynchronously loads the next part of the accessories panel.
 	 */
-	private void loadAccessoryAsync() {
+	private void loadPart3Async() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart3Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
+	}
+	
+	/*
+	 * Synchronously loads the next part of the accessories panel.
+	 */
+	private void loadPart3Now() {
 		if (m_html != null && !m_html.equals("")) {
 			HTMLPanel hp = new HTMLPanel(m_html);
 			m_fp.add(hp);
 			
-			//Make sure any javascript inside the accessory panel gets executes as needed
+			// Make sure any JavaScript inside the accessory panel gets
+			// executed as needed.
 			GwtClientHelper.jsExecuteJavaScript( hp.getElement() );
 		}
-		//signal that we are done
-		toolPanelReady();
+		
+		// ...and if we need to...
+		if (m_notifyOnReady) {
+			// ...tell our container that we're ready.
+			toolPanelReady();
+			m_notifyOnReady = false;
+		}
 	}
 	
 	/**
@@ -186,6 +273,46 @@ public class AccessoriesPanel extends ToolPanelBase
 		});
 	}
 
+	/*
+	 * Asynchronously causes the the accessories panel to be hidden.
+	 */
+	private void hideAccessoriesAsync() {
+		ScheduledCommand doHide = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				hideAccessoriesNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doHide);
+	}
+	
+	/*
+	 * Synchronously causes the the accessories panel to be hidden.
+	 */
+	private void hideAccessoriesNow() {
+		final Long binderId = m_binderInfo.getBinderIdAsLong();
+		GwtClientHelper.executeCommand(
+				new SaveAccessoryStatusCmd(binderId, false),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_SaveAccessoryStatus());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Hide the accessories...
+				m_fp.clear();
+				m_fp.addStyleName("displayNone");
+				
+				// ...and reset the entry menu to reflect the change.
+				GwtTeaming.fireEvent(new ResetEntryMenuEvent(binderId));
+			}
+		});
+	}
+	
 	/**
 	 * Called when the accessories panel is attached to the document.
 	 * 
@@ -212,6 +339,22 @@ public class AccessoriesPanel extends ToolPanelBase
 	}
 	
 	/**
+	 * Handles HideAccessoriesEvent's received by this class.
+	 * 
+	 * Implements the HideAccessoriesEvent.Handler.onHideAccessories()
+	 * method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onHideAccessories(HideAccessoriesEvent event) {
+		Long binderId = event.getBinderId();
+		if (binderId.equals(m_binderInfo.getBinderIdAsLong())) {
+			hideAccessoriesAsync();
+		}
+	}
+	
+	/**
 	 * Handles JspLayoutChangedEvent's received by this class.
 	 * 
 	 * Implements the JspLayoutChangedEvent.Handler.onJspLayoutChanged()
@@ -230,6 +373,22 @@ public class AccessoriesPanel extends ToolPanelBase
 				}
 			};
 			Scheduler.get().scheduleDeferred(doResize);
+		}
+	}
+	
+	/**
+	 * Handles ShowAccessoriesEvent's received by this class.
+	 * 
+	 * Implements the ShowAccessoriesEvent.Handler.onShowAccessories()
+	 * method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowAccessories(ShowAccessoriesEvent event) {
+		Long binderId = event.getBinderId();
+		if (binderId.equals(m_binderInfo.getBinderIdAsLong())) {
+			showAccessoriesAsync();
 		}
 	}
 	
@@ -264,6 +423,47 @@ public class AccessoriesPanel extends ToolPanelBase
 				this,
 				m_registeredEventHandlers);
 		}
+	}
+	
+	/*
+	 * Asynchronously causes the the accessories panel to be shown.
+	 */
+	private void showAccessoriesAsync() {
+		ScheduledCommand doShow = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showAccessoriesNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doShow);
+	}
+	
+	/*
+	 * Synchronously causes the the accessories panel to be shown.
+	 */
+	private void showAccessoriesNow() {
+		final Long binderId = m_binderInfo.getBinderIdAsLong();
+		GwtClientHelper.executeCommand(
+				new SaveAccessoryStatusCmd(binderId, true),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetAccessoryStatus());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Yes!  Clear and reload the panel...
+				m_fp.clear();
+				m_fp.removeStyleName("displayNone");
+				loadPart2Async();
+				
+				// ...and reset the entry menu to reflect the change.
+				GwtTeaming.fireEvent(new ResetEntryMenuEvent(binderId));
+			}
+		});
 	}
 	
 	/*
