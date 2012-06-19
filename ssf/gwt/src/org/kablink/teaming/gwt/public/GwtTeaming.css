@@ -14,10 +14,11 @@
 .gray8 { color: #e0e0e0 !important;}
 .gray9 { color: #ededed !important;}
 
-.displayBlock       { display: block;        }
-.displayInline      { display: inline;       }
-.displayInlineBlock { display: inline-block; }
-.displayNone        { display: none;         }
+.displayBlock       { display: block;          }
+.displayInline      { display: inline;         }
+.displayInlineBlock { display: inline-block;   }
+.displayNone        { display: none;           }
+.displayNone2       { display: none !important;}
 
 .vibe-verticalScroll {overflow-y: auto;}
 

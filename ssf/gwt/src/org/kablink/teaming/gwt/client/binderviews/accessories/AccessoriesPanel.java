@@ -149,7 +149,7 @@ public class AccessoriesPanel extends ToolPanelBase
 				BooleanRpcResponseData responseData = ((BooleanRpcResponseData) response.getResponseData());
 				if (responseData.getBooleanValue()) {
 					// Yes!  Continue loading it.
-					m_fp.removeStyleName("displayNone");
+					m_fp.removeStyleName("displayNone2");
 					loadPart2Async();
 				}
 				
@@ -158,7 +158,7 @@ public class AccessoriesPanel extends ToolPanelBase
 					// visible!  Hide it and tell the panel container
 					// that we're ready...
 					m_fp.clear();
-					m_fp.addStyleName("displayNone");
+					m_fp.addStyleName("displayNone2");
 					
 					// ...and if we need to...
 					if (m_notifyOnReady) {
