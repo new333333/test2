@@ -35,9 +35,9 @@ package org.kablink.teaming.spring.security.openid;
 import java.util.List;
 import java.util.Map;
 
+import org.kablink.util.StringUtil;
+import org.kablink.util.Validator;
 import org.springframework.security.openid.OpenIDAttribute;
-
-import com.liferay.util.Validator;
 
 /**
  * @author jong
@@ -53,14 +53,18 @@ public class DefaultAttributesPostProcessing implements AttributesPostProcessing
 		for(String vibeAttrName:vibeAttributes.keySet()) {
 			if(vibeAttrName.equals("title")) {
 				// Vibe does not allow modifying title directly on user object.
-				// So let's see if there's something we can do about it.
+				// So let's see if there's something useful we can do with it before discarding it.
 				String lastName = vibeAttributes.get("lastName");
-				if(Validator.isNotNull(lastName)) {
-					
+				if(Validator.isNull(lastName)) {
+					// Last name is not supplied. Let's use (portion of) the title as the last name.
+					String[] parts = StringUtil.split(vibeAttributes.get("title"));
+					if(parts.length > 0) {
+						// Use the last token of the title as the user's last name. If this default behavior
+						// needs to be altered, write a custom class and specify it in ssf-ext.properties file.
+						vibeAttributes.put("lastName", parts[parts.length-1]);
+					}
 				}
-				else {
-					
-				}
+				vibeAttributes.remove("title");
 			}
 		}
 	}
