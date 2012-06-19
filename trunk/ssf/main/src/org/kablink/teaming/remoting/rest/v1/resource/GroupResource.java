@@ -64,7 +64,7 @@ import java.util.Map;
  * Date: 5/18/12
  * Time: 11:46 AM
  */
-@Path("/v1/group/{id}")
+@Path("/v1/group")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class GroupResource extends AbstractPrincipalResource{
@@ -75,12 +75,24 @@ public class GroupResource extends AbstractPrincipalResource{
 
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public Group getGroup(@QueryParam("name") String name,
+                          @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
+        if (name==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing name query parameter.");
+        }
+        return ResourceUtil.buildGroup(getProfileModule().getGroup(name), includeAttachments);
+    }
+
+    @GET
+    @Path("/{id}")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Group getGroup(@PathParam("id") long id,
                         @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
         return ResourceUtil.buildGroup(_getGroup(id), includeAttachments);
     }
 
     @PUT
+    @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public void updateGroup(@PathParam("id") long id, Group group)
             throws WriteFilesException, WriteEntryDataException {
@@ -89,7 +101,7 @@ public class GroupResource extends AbstractPrincipalResource{
     }
 
     @GET
-    @Path("/members")
+    @Path("/{id}/members")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<GroupMember> getMembers(@PathParam("id") long id,
                                                        @QueryParam("first") @DefaultValue("0") int offset,
@@ -112,7 +124,7 @@ public class GroupResource extends AbstractPrincipalResource{
     }
 
     @POST
-    @Path("/members")
+    @Path("/{id}/members")
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public void addMembers(@PathParam("id") long id, PrincipalBrief principal)
@@ -131,7 +143,7 @@ public class GroupResource extends AbstractPrincipalResource{
     }
 
     @DELETE
-    @Path("/member/{memberId}")
+    @Path("/{id}/member/{memberId}")
     public void removeMember(@PathParam("id") long id, @PathParam("memberId") long memberId) throws WriteFilesException, WriteEntryDataException {
         org.kablink.teaming.domain.Group group = _getGroup(id);
         Principal member = getProfileModule().getEntry(memberId);
