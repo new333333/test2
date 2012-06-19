@@ -100,6 +100,7 @@ import org.springframework.web.multipart.MultipartFile;
 @SuppressWarnings({"unchecked","unused"})
 public class MarkupUtil {
 	protected static Log logger = LogFactory.getLog(MarkupUtil.class);
+	protected final static Pattern mceSrcPattern = Pattern.compile( "(mce_src=\")([^\"]*)(\")", Pattern.CASE_INSENSITIVE );
 	//From Doc: All of the state involved in performing a match resides in the matcher, so many matchers can share the same pattern. 
 	// Fix for bug 727558, uploadImagePattern was changed to be case insensitive.  In IE, the tinyMCE editor is adding <IMG instead of the normal <img
 	// the Pattern.CASE_INSENSITIVE parameter was added to all the Patter.compile() calls.  Some of these calls
@@ -1831,5 +1832,41 @@ public class MarkupUtil {
 				}
 			}
 		}
+	}
+
+	/**
+	 * There was a bug where the mce_src attribute was being included as part of the <img> tag
+	 * in the branding html.  This method will remove the mc_src attribute.
+	 * The html looked like the following:
+	 * 	<img 
+			width="77" 
+			height="100" 
+			class=" ss_addimage " 
+			style="width: 77px; height: 100px;" 
+			alt=" " 
+			mce_src="http://jwootton4.provo.novell.com:8080/ssf/s/viewFile?&amp;fileId=7-two.png_1814782083072314018.tmp" 
+			src="http://jwootton4.provo.novell.com:8080/ssf/s/readFile/workspace/2401/ff8080823800299b013800aa55c6004b/1340040959000/last/two.png"
+			 _moz_resizing="true">
+
+	 */
+	public static String removeMceSrc( String html )
+	{
+		String retValue = null;
+		
+		if ( html != null )
+		{
+			Matcher matcher;
+			
+			//retValue = html.replaceAll( "(mce_src=\")([^\"]*)(\")", "" );
+			matcher = mceSrcPattern.matcher( html );
+			if ( matcher != null )
+			{
+				//logger.info( "html: " + html );
+				retValue = matcher.replaceAll( "" );
+				//logger.info( "retValue: " + retValue );
+			}
+		}
+		
+		return retValue;
 	}
 }
