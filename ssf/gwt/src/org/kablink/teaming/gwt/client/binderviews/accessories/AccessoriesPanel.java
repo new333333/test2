@@ -54,6 +54,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveAccessoryStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -133,6 +134,15 @@ public class AccessoriesPanel extends ToolPanelBase
 	 * Synchronously loads the next part of the accessories panel.
 	 */
 	private void loadPart1Now() {
+		// For non-folder binders...
+		if (BinderType.FOLDER != m_binderInfo.getBinderType()) {
+			// ...we always show the accessories panel when included in
+			// ...the view.
+			showAccessoryPanel();
+			loadPart2Async();
+			return;
+		}
+		
 		GwtClientHelper.executeCommand(
 				new GetAccessoryStatusCmd(m_binderInfo.getBinderIdAsLong()),
 				new AsyncCallback<VibeRpcResponse>() {
@@ -148,8 +158,9 @@ public class AccessoriesPanel extends ToolPanelBase
 				// Is the accessory panel supposed to be visible?
 				BooleanRpcResponseData responseData = ((BooleanRpcResponseData) response.getResponseData());
 				if (responseData.getBooleanValue()) {
-					// Yes!  Continue loading it.
-					m_fp.removeStyleName("displayNone2");
+					// Yes!  Ensure it's visible and continue loading
+					// it.
+					showAccessoryPanel();
 					loadPart2Async();
 				}
 				
@@ -158,7 +169,7 @@ public class AccessoriesPanel extends ToolPanelBase
 					// visible!  Hide it and tell the panel container
 					// that we're ready...
 					m_fp.clear();
-					m_fp.addStyleName("displayNone2");
+					hideAccessoryPanel();
 					
 					// ...and if we need to...
 					if (m_notifyOnReady) {
@@ -305,12 +316,19 @@ public class AccessoriesPanel extends ToolPanelBase
 			public void onSuccess(VibeRpcResponse response) {
 				// Hide the accessories...
 				m_fp.clear();
-				m_fp.addStyleName("displayNone2");
+				hideAccessoryPanel();
 				
 				// ...and reset the entry menu to reflect the change.
 				GwtTeaming.fireEvent(new ResetEntryMenuEvent(binderId));
 			}
 		});
+	}
+	
+	/*
+	 * Ensures that the accessory panel is note visible.
+	 */
+	private void hideAccessoryPanel() {
+		m_fp.addStyleName("displayNone2");
 	}
 	
 	/**
@@ -457,13 +475,20 @@ public class AccessoriesPanel extends ToolPanelBase
 			public void onSuccess(VibeRpcResponse response) {
 				// Yes!  Clear and reload the panel...
 				m_fp.clear();
-				m_fp.removeStyleName("displayNone2");
+				showAccessoryPanel();
 				loadPart2Async();
 				
 				// ...and reset the entry menu to reflect the change.
 				GwtTeaming.fireEvent(new ResetEntryMenuEvent(binderId));
 			}
 		});
+	}
+
+	/*
+	 * Ensures that the accessory panel is visible.
+	 */
+	private void showAccessoryPanel() {
+		m_fp.removeStyleName("displayNone2");
 	}
 	
 	/*
