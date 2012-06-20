@@ -58,6 +58,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.security.function.Condition;
@@ -465,5 +466,5 @@ public class WorkAreaHelper {
 		model.put(WebKeys.FUNCTION_CONDITIONS, conditions);
 		Binder topBinder = bs.getWorkspaceModule().getTopWorkspace();
 	}
-	
+		
 }

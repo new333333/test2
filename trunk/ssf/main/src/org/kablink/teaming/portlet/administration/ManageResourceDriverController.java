@@ -48,12 +48,18 @@ import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
+import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.resourcedriver.RDException;
+import org.kablink.teaming.security.function.Function;
+import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
@@ -174,6 +180,38 @@ public class ManageResourceDriverController extends SAbstractController {
 		//Get a list of the currently defines Filesace Roots
 		List<ResourceDriverConfig> drivers = getResourceDriverModule().getAllResourceDriverConfigs();
 		model.put(WebKeys.FILESPACE_ROOTS, drivers);
+		
+		Map<String,Map<String,Set<Principal>>> functionMap = new HashMap<String,Map<String,Set<Principal>>>();
+		List<Function> functions = getAdminModule().getFunctions(ObjectKeys.ROLE_TYPE_ZONE);
+		for (ResourceDriverConfig driver : drivers) {
+			List<WorkAreaFunctionMembership> memberships = getAdminModule().getWorkAreaFunctionMemberships(driver);
+			WorkAreaFunctionMembership membership = null;
+			for (Function f : functions) {
+				if (ObjectKeys.FUNCTION_MANAGE_RESOURCE_DRIVERS_INTERNALID.equals(f.getInternalId())) {
+					for (WorkAreaFunctionMembership m : memberships) {
+						if (f.getId().equals(m.getFunctionId())) {
+							membership = m;
+							break;
+						}
+					}
+				}
+			}
+			Set<Principal> users = new HashSet<Principal>();
+			Set<Principal> groups = new HashSet<Principal>();
+			List<Principal> members = ResolveIds.getPrincipals(membership.getMemberIds());
+			for (Principal p : members) {
+				if (p instanceof User) {
+					users.add(p);
+				} else if (p instanceof Group) {
+					groups.add(p);
+				}
+			}
+			Map<String,Set<Principal>> ugSets = new HashMap<String,Set<Principal>>();
+			ugSets.put("users", users);
+			ugSets.put("groups", groups);
+			functionMap.put(driver.getName(), ugSets);
+		}
+		model.put(WebKeys.FUNCTION_MAP, functionMap);
 
 		return new ModelAndView(WebKeys.VIEW_ADMIN_MANAGE_RESOURCE_DRIVERS, model);
 

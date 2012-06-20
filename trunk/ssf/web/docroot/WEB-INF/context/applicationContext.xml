@@ -530,7 +530,7 @@
 		<property name="profileDao"><ref bean="profileDao"/></property>
 	</bean>
 	-->
-	
+
 	<bean id="aclManager" class="org.kablink.teaming.security.acl.impl.AclManagerImpl">
 	</bean>
 
@@ -909,6 +909,8 @@
 			<bean class="org.kablink.teaming.module.resourcedriver.impl.ResourceDriverModuleImpl" depends-on="sPropsUtil">
 				<property name="coreDao"><ref bean="coreDao"/></property>
 				<property name="accessControlManager"><ref bean="accessControlManager"/></property>
+				<property name="functionManager"><ref bean="functionManager"/></property>
+				<property name="workAreaFunctionMembershipManager"><ref bean="workAreaFunctionMembershipManager"/></property>
 			</bean>
 		</property>
 		<property name="transactionAttributes">
