@@ -39,8 +39,11 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TreeNodeCollapsedEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeExpandedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
@@ -51,6 +54,8 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
@@ -158,28 +163,65 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * Synchronously construct's the contents of the panel.
 	 */
 	private void loadPart1Now() {
-		WorkspaceTreeControl.createAsync(
-				GwtTeaming.getMainPage(),
-				m_binderInfo.getBinderId(),
-				m_binderInfo.isBinderTrash(),
-				TreeMode.HORIZONTAL_BINDER,
-				new WorkspaceTreeControlClient() {				
-			@Override
-			public void onUnavailable() {
-				// Nothing to do other than tell our container that
-				// we're ready.  The error is handled in the
-				// asynchronous provider.
-				toolPanelReady();
+		// Are we displaying a bread crumb panel for a collection?
+		if (m_binderInfo.isBinderCollection()) {
+			// Yes!  We don't need a tree, just the image and title.
+			// Create the panel for it...
+			VibeFlowPanel fp = new VibeFlowPanel();
+			fp.addStyleName("vibe-breadCrumbCollection-panel");
+
+			// ...create the image...
+			TreeInfo ti = new TreeInfo();
+			ti.setBinderInfo(m_binderInfo);
+			Image i = GwtClientHelper.buildImage(ti.getBinderImage(GwtConstants.BINDER_BREADCRUMB_ICON_SIZE).getSafeUri().asString());
+			i.addStyleName("vibe-breadCrumbCollection-image");
+			int width  = GwtConstants.BINDER_BREADCRUMB_ICON_SIZE.getBinderIconWidth();
+			if ((-1) != width) {
+				i.setWidth(width + "px");
 			}
-			
-			@Override
-			public void onSuccess(WorkspaceTreeControl wsTreeCtrl) {
-				// Add the tree to the panel and tell our container
-				// that we're ready.
-				m_fp.add(wsTreeCtrl);
-				toolPanelReady();
+			int height = GwtConstants.BINDER_BREADCRUMB_ICON_SIZE.getBinderIconHeight();
+			if ((-1) != height) {
+				i.setHeight(height + "px");
 			}
-		});
+			fp.add(i);
+
+			// ...create the title label...
+			InlineLabel il = new InlineLabel(m_binderInfo.getBinderTitle());
+			il.addStyleName("vibe-breadCrumbCollection-label");
+			fp.add(il);
+
+			// ...tie it all together and tell our container that we're
+			// ...ready.
+			m_fp.add(fp);
+			toolPanelReady();
+		}
+		
+		else {
+			// No, we aren't displaying a bread crumb panel for a
+			// collection!  We need the full bread crumb tree.
+			WorkspaceTreeControl.createAsync(
+					GwtTeaming.getMainPage(),
+					m_binderInfo.getBinderId(),
+					m_binderInfo.isBinderTrash(),
+					TreeMode.HORIZONTAL_BINDER,
+					new WorkspaceTreeControlClient() {				
+				@Override
+				public void onUnavailable() {
+					// Nothing to do other than tell our container that
+					// we're ready.  The error is handled in the
+					// asynchronous provider.
+					toolPanelReady();
+				}
+				
+				@Override
+				public void onSuccess(WorkspaceTreeControl wsTreeCtrl) {
+					// Add the tree to the panel and tell our container
+					// that we're ready.
+					m_fp.add(wsTreeCtrl);
+					toolPanelReady();
+				}
+			});
+		}
 	}
 	
 	/**

@@ -20,6 +20,10 @@
 	/* ...End:  Accessory styles. */
 	
 	/* ...Start:  Bread crumb panel styles. */
+		.vibe-breadCrumbCollection-image {vertical-align: middle; margin-right: 5px;}
+		.vibe-breadCrumbCollection-label {font-size: 1.5em; color: #5691A6; padding: 0px 10px 2px 0px; white-space: nowrap;}
+		.vibe-breadCrumbCollection-panel {display: inline; white-space: nowrap;}
+		
 		.vibe-breadCrumbPanel {width: 1%;}
 	/* ...End:  Bread crumb panel styles. */
 	
@@ -180,16 +184,21 @@
 		.vibe-dataTableTaskFolder-statsStatusBar  {width: 150px;}
 	/* ...End:  Data table cell styles. */
 
-	/* ...Start:  Discussion folder view styles. */
-		.vibe-discussionFolderDataTable {}
-		.vibe-discussionFolderFlowPanel {}
-	/* ...End:  Discussion folder view styles. */
-	
 	/* ...Start:  Calendar folder view styles. */
 		.vibe-calendarFolder-appointment {}
 		.vibe-calendarFolder             {}
 	/* ...End:  Calendar folder view styles. */
 
+	/* ...Start:  Collection view styles. */
+		.vibe-collectionDataTable {}
+		.vibe-collectionFlowPanel {}
+	/* ...End:  Discussion folder view styles. */
+	
+	/* ...Start:  Discussion folder view styles. */
+		.vibe-discussionFolderDataTable {}
+		.vibe-discussionFolderFlowPanel {}
+	/* ...End:  Discussion folder view styles. */
+	
 	/* ...Start:  File folder view styles. */
 		.vibe-fileFolderDataTable {}
 		.vibe-fileFolderFlowPanel {}
