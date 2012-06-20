@@ -4294,6 +4294,13 @@ function ss_hideComponentCallback(s, data) {
 	ss_callDashboardEvent(data.componentId, "onAfterHide");
 }
 function ss_deleteComponentCallback() {
+	if (window.top.ss_getUrlFromContentHistory) {
+		var url = window.top.ss_getUrlFromContentHistory(0);
+		if (url && (0 < url.length)) {
+			setTimeout(window.top.ss_gotoContentUrl(url), 100);
+			return;
+		}
+	}
 	setTimeout("document.location.reload();", 100);
 }
 function ss_confirmDeleteComponent(obj, componentId, divId, divId2, idStr, namespace, scope) {
