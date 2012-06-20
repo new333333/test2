@@ -305,7 +305,7 @@ public class AccessoriesPanel extends ToolPanelBase
 			public void onSuccess(VibeRpcResponse response) {
 				// Hide the accessories...
 				m_fp.clear();
-				m_fp.addStyleName("displayNone");
+				m_fp.addStyleName("displayNone2");
 				
 				// ...and reset the entry menu to reflect the change.
 				GwtTeaming.fireEvent(new ResetEntryMenuEvent(binderId));
@@ -457,7 +457,7 @@ public class AccessoriesPanel extends ToolPanelBase
 			public void onSuccess(VibeRpcResponse response) {
 				// Yes!  Clear and reload the panel...
 				m_fp.clear();
-				m_fp.removeStyleName("displayNone");
+				m_fp.removeStyleName("displayNone2");
 				loadPart2Async();
 				
 				// ...and reset the entry menu to reflect the change.
