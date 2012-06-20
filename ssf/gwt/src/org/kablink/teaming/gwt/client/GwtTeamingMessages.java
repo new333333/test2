@@ -502,6 +502,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ChangeEntryTypesDlg();
 	String codeSplitFailure_ChildBindersWidget();
 	String codeSplitFailure_ClipboardDlg();
+	String codeSplitFailure_CollectionView();
 	String codeSplitFailure_ConfirmDlg();
 	String codeSplitFailure_ContentControl();
 	String codeSplitFailure_CreateBlogPageDlg();

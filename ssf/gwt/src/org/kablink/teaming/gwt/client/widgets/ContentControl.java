@@ -38,6 +38,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.BlogFolderView;
 import org.kablink.teaming.gwt.client.binderviews.CalendarFolderView;
+import org.kablink.teaming.gwt.client.binderviews.CollectionView;
 import org.kablink.teaming.gwt.client.binderviews.DiscussionFolderView;
 import org.kablink.teaming.gwt.client.binderviews.DiscussionWSView;
 import org.kablink.teaming.gwt.client.binderviews.FileFolderView;
@@ -110,7 +111,6 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.FrameElement;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -151,6 +151,10 @@ public class ContentControl extends Composite
 		ShowTeamWSEvent.Handler,
 		ShowTrashEvent.Handler
 {
+	//!	DRF:  false until I get collections working.
+	//! 	Used here and in TreeDisplayVertical.java.
+	public final static boolean SHOW_COLLECTION_VIEW = false; 
+	
 	private boolean m_contentInGWT;
 	private boolean m_isAdminContent;
 	private boolean m_isDebugUI;
@@ -611,8 +615,11 @@ public class ContentControl extends Composite
 					switch ( bt )
 					{
 					case COLLECTION:
-						GwtTeaming.fireEvent( new ShowCollectionEvent( bi, viewReady ) );
-//!						m_contentInGWT = true;
+						if ( SHOW_COLLECTION_VIEW )
+						{
+							GwtTeaming.fireEvent( new ShowCollectionEvent( bi, viewReady ) );
+							m_contentInGWT = true;
+						}
 						break;
 						
 						
@@ -1035,21 +1042,25 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowCollection( final ShowCollectionEvent event )
 	{
-//!		...this needs to be implemented...
-		GwtClientHelper.deferredAlert( "ContentControl.onShowCollection( Collection:  '" + event.getBinderInfo().getCollectionType().name() + "' ):  ...this needs to be implemented..." );
-
-//!		// Wait a little and call the event's viewReady().  This will
-//!		// send the correct OnSelectBinderInfo to the sidebar tree to
-//!		// get the selection to appear on the collection.
-//!		//
-//!		// Remove once the collection view has been implemented. 
-		Timer viewReadyTimer = new Timer() {
+		// Create a CollectionView widget for the selected BinderInfo.
+		CollectionView.createAsync(
+				event.getBinderInfo(),
+				event.getViewReady(),
+				new ViewClient()
+		{
 			@Override
-			public void run() {
-				event.getViewReady().viewReady();
-			}
-		};
-		viewReadyTimer.schedule(2500);
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}// end onUnavailable()
+
+			@Override
+			public void onSuccess( ViewBase cView )
+			{
+				cView.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( cView );
+			}// end onSuccess()
+		});
 	}// end onShowCollection()
 	
 	/**

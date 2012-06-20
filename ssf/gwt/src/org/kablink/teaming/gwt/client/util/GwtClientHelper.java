@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.util;
 
 import java.util.Date;
@@ -180,16 +179,41 @@ public class GwtClientHelper {
 	 */
 	public static Image buildImage(ImageResource res, String title) {
 		Image reply = new Image(res);
-		reply.getElement().setAttribute("align", "absmiddle");
-		if (hasString(title)) {
-			reply.setTitle(title);
-		}
+		buildImageImpl(reply, title);
 		return reply;
 	}
 	
 	public static Image buildImage(ImageResource res) {
 		return buildImage(res, null);
 	}
+	
+	/**
+	 * Returns a base Image widget.
+	 * 
+	 * @param resUrl
+	 * @param title
+	 */
+	public static Image buildImage(String resUrl, String title) {
+		Image reply = new Image();
+		reply.setUrl(resUrl);
+		buildImageImpl(reply, title);
+		return reply;
+	}
+	
+	public static Image buildImage(String resUrl) {
+		return buildImage(resUrl, null);
+	}
+	
+	/*
+	 * Returns a base Image widget.
+	 */
+	private static void buildImageImpl(Image img, String title) {
+		img.getElement().setAttribute("align", "absmiddle");
+		if (hasString(title)) {
+			img.setTitle(title);
+		}
+	}
+	
 
 	/**
 	 * If we're in debug UI mode, displays an alert.
@@ -481,7 +505,7 @@ public class GwtClientHelper {
 					
 				case GROUP_ALREADY_EXISTS:
 					displayAlert = true;
-					cause = patchMessage( messages.rpcFailure_CreateGroupAlreadyExists(), patches );
+					cause = patchMessage(messages.rpcFailure_CreateGroupAlreadyExists(), patches);
 					break;
 					
 				case LDAP_GUID_NOT_CONFIGURED:

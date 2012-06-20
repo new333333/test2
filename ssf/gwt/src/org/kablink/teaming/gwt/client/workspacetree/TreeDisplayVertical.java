@@ -61,6 +61,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
+import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
 import com.google.gwt.core.client.Scheduler;
@@ -997,8 +998,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		}
 
 		List<TreeInfo> tiList = rootTI.getCollectionsList();
-//!		boolean hasCollections = ((null != tiList) && (!(tiList.isEmpty())));
-		boolean	hasCollections = false;
+		boolean hasCollections;
+		if (ContentControl.SHOW_COLLECTION_VIEW)
+		     hasCollections = ((null != tiList) && (!(tiList.isEmpty())));
+		else hasCollections = false;
 		
 		// ...and its initial content grid.
 		FlexTable grid = new FlexTable();
