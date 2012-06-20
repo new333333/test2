@@ -97,11 +97,11 @@ public class ManageResourceDriverController extends SAbstractController {
 					Boolean readonly = PortletRequestUtils.getBooleanParameter(request, "readonly", Boolean.FALSE);
 					options.put(ObjectKeys.RESOURCE_DRIVER_READ_ONLY, readonly);
 					
-					//Is there a Host URL (WebDAV only)
+					//Is there a Host URL 
 					String hostUrl = PortletRequestUtils.getStringParameter(request, "hostUrl", "");
 					options.put(ObjectKeys.RESOURCE_DRIVER_HOST_URL, hostUrl);
 					
-					//Allow self signed certificates? (WebDAV only)
+					//Allow self signed certificates? 
 					Boolean allowSelfSignedCertificate = PortletRequestUtils.getBooleanParameter(request, "allowSelfSignedCertificate", Boolean.FALSE);
 					options.put(ObjectKeys.RESOURCE_DRIVER_ALLOW_SELF_SIGNED_CERTIFICATE, allowSelfSignedCertificate);
 					
@@ -109,6 +109,16 @@ public class ManageResourceDriverController extends SAbstractController {
 					//  This is forced so that the folder could not accidentally be deleted if the 
 					//  external disk was offline
 					options.put(ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE, Boolean.FALSE);
+					
+					//Is there an account name 
+					String accountName = PortletRequestUtils.getStringParameter(request, "accountName", "");
+					options.put(ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, accountName);
+					
+					//Is there a password 
+					String password = PortletRequestUtils.getStringParameter(request, "password", "");
+					if (!password.equals("")) {
+						options.put(ObjectKeys.RESOURCE_DRIVER_PASSWORD, password);
+					}
 					
 					//Get who is allowed to manage this 
 					Set<Long> groupIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addedGroups"));
@@ -136,11 +146,11 @@ public class ManageResourceDriverController extends SAbstractController {
 					Boolean readonly = PortletRequestUtils.getBooleanParameter(request, "readonly", Boolean.FALSE);
 					options.put(ObjectKeys.RESOURCE_DRIVER_READ_ONLY, readonly);
 					
-					//Is there a Host URL (WebDAV only)
+					//Is there a Host URL 
 					String hostUrl = PortletRequestUtils.getStringParameter(request, "hostUrl", "");
 					options.put(ObjectKeys.RESOURCE_DRIVER_HOST_URL, hostUrl);
 					
-					//Allow self signed certificates? (WebDAV only)
+					//Allow self signed certificates? 
 					Boolean allowSelfSignedCertificate = PortletRequestUtils.getBooleanParameter(request, "allowSelfSignedCertificate", Boolean.FALSE);
 					options.put(ObjectKeys.RESOURCE_DRIVER_ALLOW_SELF_SIGNED_CERTIFICATE, allowSelfSignedCertificate);
 					
@@ -148,6 +158,17 @@ public class ManageResourceDriverController extends SAbstractController {
 					//  This is forced so that the folder could not accidentally be deleted if the 
 					//  external disk was offline
 					options.put(ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE, Boolean.FALSE);
+					
+					//Is there an account name 
+					String accountName = PortletRequestUtils.getStringParameter(request, "accountName", "");
+					options.put(ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, accountName);
+					
+					//Is there a password 
+					String password = PortletRequestUtils.getStringParameter(request, "password", "");
+					boolean changePassword = PortletRequestUtils.getBooleanParameter(request, "changePassword", Boolean.FALSE);
+					if (changePassword) {
+						options.put(ObjectKeys.RESOURCE_DRIVER_PASSWORD, password);
+					}
 					
 					//Get who is allowed to manage this 
 					Set<Long> groupIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addedGroups"));

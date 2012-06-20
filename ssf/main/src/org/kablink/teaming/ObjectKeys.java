@@ -413,6 +413,8 @@ public interface ObjectKeys {
 	public static final String RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH = "putRequiresContentLength";
 	public static final String RESOURCE_DRIVER_ALLOW_SELF_SIGNED_CERTIFICATE = "allowSelfSignedCertificate";
 	public static final String RESOURCE_DRIVER_HOST_URL = "hostUrl";
+	public static final String RESOURCE_DRIVER_ACCOUNT_NAME = "accountName";
+	public static final String RESOURCE_DRIVER_PASSWORD = "password";
 	
     //User and Principal objects
     public static final int USER_STATUS_DATABASE_FIELD_LENGTH = 256;

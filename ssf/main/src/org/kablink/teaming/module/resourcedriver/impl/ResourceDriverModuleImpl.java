@@ -213,6 +213,12 @@ public class ResourceDriverModuleImpl extends CommonDependencyInjection implemen
 			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH)) {
 			   		newResourceDriver.setPutRequiresContentLength((Boolean)options.get(ObjectKeys.RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH));
 			   	}
+			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME)) {
+			   		newResourceDriver.setAccountName((String)options.get(ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME));
+			   	}
+			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_PASSWORD)) {
+			   		newResourceDriver.setPassword((String)options.get(ObjectKeys.RESOURCE_DRIVER_PASSWORD));
+			   	}
 				getCoreDao().save(newResourceDriver);
 				
 				//Set up the access controls for this new resource driver
@@ -283,6 +289,12 @@ public class ResourceDriverModuleImpl extends CommonDependencyInjection implemen
 			   	}
 			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH)) {
 			   		rdc.setPutRequiresContentLength((Boolean)options.get(ObjectKeys.RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH));
+			   	}
+			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME)) {
+			   		rdc.setAccountName((String)options.get(ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME));
+			   	}
+			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_PASSWORD)) {
+			   		rdc.setPassword((String)options.get(ObjectKeys.RESOURCE_DRIVER_PASSWORD));
 			   	}
 				getCoreDao().save(rdc);
     			return null;
