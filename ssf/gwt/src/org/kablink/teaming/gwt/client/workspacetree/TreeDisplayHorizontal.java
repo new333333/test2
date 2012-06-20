@@ -59,8 +59,8 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
@@ -85,7 +85,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * expansion widgets.
 	 */
 	private class BinderExpander implements ClickHandler {
-		private Grid		m_nodeGrid;		//
+		private FlexTable	m_nodeGrid;		//
 		private Image		m_expanderImg;	//
 		private TreeInfo	m_ti;			//
 
@@ -96,8 +96,11 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		 * @param nodeGrid
 		 * @param expanderImg
 		 */
-		BinderExpander(TreeInfo ti, Grid nodeGrid, Image expanderImg) {
-			// Simply store the parameters.
+		BinderExpander(TreeInfo ti, FlexTable nodeGrid, Image expanderImg) {
+			// Initialize the super class...
+			super();
+			
+			// ...and store the parameters.
 			m_ti          = ti;
 			m_nodeGrid    = nodeGrid;
 			m_expanderImg = expanderImg;
@@ -210,7 +213,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	}
 	
 	/**
-	 * Constructor method.
+	 * Class constructor.
 	 * 
 	 * @param wsTree
 	 * @param rootTIList
@@ -236,9 +239,9 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	}
 
 	/*
-	 * Removes the widgets from a node's Grid.
+	 * Removes the widgets from a node's FlexTable.
 	 */
-	private void clearNode(Grid nodeGrid) {
+	private void clearNode(FlexTable nodeGrid) {
 		nodeGrid.remove(nodeGrid.getWidget(0, 0));
 		nodeGrid.remove(nodeGrid.getWidget(0, 1));
 	}
@@ -281,10 +284,10 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	}
 	
 	/*
-	 * Creates a Grid for use as an individual node in the tree.
+	 * Creates a FlexTable for use as an individual node in the tree.
 	 */
-	private Grid createGrid(int rows, int columns, String style) {
-		Grid reply = new Grid(rows, columns);
+	private FlexTable createGrid(int rows, int columns, String style) {
+		FlexTable reply = new FlexTable();
 		reply.setCellSpacing(0);
 		reply.setCellPadding(0);
 		if (GwtClientHelper.hasString(style)) {
@@ -427,10 +430,10 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			m_rootPanel.add(createClosePanel());
 		}
 		
-		// ...create a Grid for the content...
+		// ...create a FlexTable for the content...
 		List<TreeInfo> rootTIList = getRootTreeInfoList();
 		int count = rootTIList.size();
-		Grid contentGrid = createGrid(
+		FlexTable contentGrid = createGrid(
 			1,
 			count,
 			("breadCrumb_Content " +
@@ -441,8 +444,8 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 
 		// ...scan the TreeInfo's...
 		for (int i = 0; i < count; i += 1) {
-			// ...and display each into the content Grid.
-			Grid nodeGrid = createGrid(1, 2, "breadCrumb_ContentNode");
+			// ...and display each into the content FlexTable.
+			FlexTable nodeGrid = createGrid(1, 2, "breadCrumb_ContentNode");
 			nodeGrid.getElement().setAttribute(GRID_DEPTH_ATTRIBUTE, "0");
 			contentGrid.setWidget(0, i, nodeGrid);
 			TreeInfo ti = rootTIList.get(i);
@@ -454,7 +457,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	/*
 	 * Renders a TreeInfo into the next position in a HorizontalPanel.
 	 */
-	private void renderNode(TreeInfo ti, Grid nodeGrid) {
+	private void renderNode(TreeInfo ti, FlexTable nodeGrid) {
 		int depth = Integer.parseInt(nodeGrid.getElement().getAttribute(GRID_DEPTH_ATTRIBUTE));
 		Widget selectorLabel      = getSelectorLabel(ti, (0 == depth));
 		String selectorLabelStyle = selectorLabel.getStyleName();
@@ -559,7 +562,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		else {
 			// No, we aren't rendering the tail node in a binder bread
 			// crumb tree!  Simply add the expander and selector to the
-			// Grid.
+			// FlexTable.
 			nodeGrid.setWidget(0, 0, expanderWidget);
 			nodeGrid.setWidget(0, 1, selectorA     );
 		}
@@ -574,7 +577,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			vp.add(w);
 			nodeGrid.setWidget(0, 1, vp);
 			for (TreeInfo tii:  ti.getChildBindersList()) {
-				Grid expansionGrid = createGrid(1, 2, "breadCrumb_ContentNode");
+				FlexTable expansionGrid = createGrid(1, 2, "breadCrumb_ContentNode");
 				expansionGrid.getElement().setAttribute(GRID_DEPTH_ATTRIBUTE, String.valueOf(depth + 1));
 				vp.add(expansionGrid);
 				tii.setRootTail(false);	// Nested node -> Can never be a root tail.
@@ -584,9 +587,9 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	}
 
 	/*
-	 * Clears and re-renders a TreeInfo object into a node's Grid.
+	 * Clears and re-renders a TreeInfo object into a node's FlexTable.
 	 */
-	private void reRenderNode(TreeInfo ti, Grid nodeGrid) {
+	private void reRenderNode(TreeInfo ti, FlexTable nodeGrid) {
 		clearNode(nodeGrid);
 		renderNode(ti, nodeGrid);
 	}

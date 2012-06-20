@@ -1087,11 +1087,13 @@ body, table td, select
 .workspaceTreeBinderSelected            {color: #5691a6; padding-left: 2px;}
 .workspaceTreeBinderSelected_collection {}
 
+/* Must match the definition of GwtConstants.WORKSPACE_TREE_WIDTH. */
+.workspaceTreeWidth {width: 250px !important;}
+
 .workspaceTreeControl
 {
 	background-color: #EAEBE8;
 	padding: 0 0 8px;
-	width: 230px !important;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -1099,7 +1101,7 @@ body, table td, select
 }
 
 .workspaceTreeControlBody            {padding-top: 10px;}
-.workspaceTreeControlBody_collection {background-color: white !important; padding-top: 10px; padding-bottom: 10px; border-bottom: 1px solid #E0E0E0; width: 230px !important;}
+.workspaceTreeControlBody_collection {background-color: white !important; padding-top: 10px; padding-bottom: 10px; border-bottom: 1px solid #E0E0E0;}
 
 .workspaceTreeControlTreeHeader {color: #666; font-size: .8em; margin-top: 0em; padding-top: 6px; padding-bottom: 3px; padding-right: 0px; padding-left: 20px; border-bottom: 0px; text-transform: uppercase; letter-spacing: 2px; white-space: nowrap;}
 

@@ -236,7 +236,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 				m_verticalTreeRegisteredEvents,
 				this);
 
-			mainPanel.addStyleName("workspaceTreeControl");
+			mainPanel.addStyleName("workspaceTreeControl workspaceTreeWidth");
 			GetVerticalTreeCmd cmd = new GetVerticalTreeCmd( selectedBinderId );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
