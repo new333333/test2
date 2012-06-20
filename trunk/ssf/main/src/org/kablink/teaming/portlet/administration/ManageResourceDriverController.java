@@ -52,6 +52,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
+import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
@@ -69,13 +70,20 @@ public class ManageResourceDriverController extends SAbstractController {
 		Map formData = request.getParameterMap();
 		getAdminModule().checkAccess(AdminOperation.manageResourceDrivers);
 		if ((formData.containsKey("okBtn") || formData.containsKey("addBtn") || 
+				formData.containsKey("modifyBtn") || 
 				formData.containsKey("deleteBtn")) && WebHelper.isMethodPost(request)) {
 			if (getAdminModule().testAccess(AdminOperation.manageResourceDrivers)) {
 				if (formData.containsKey("deleteBtn")) {
-				
+					String name = PortletRequestUtils.getStringParameter(request, "nameToModify");
+					//Delete this resource driver
+					try {
+						getResourceDriverModule().deleteResourceDriver(name);
+					} catch(RDException rde) {
+			    		response.setRenderParameter(WebKeys.ERROR_MESSAGE, rde.getMessage());
+					}
 				} else if (formData.containsKey("addBtn")) {
 					String name = PortletRequestUtils.getStringParameter(request, "driverName");
-					int type = PortletRequestUtils.getIntParameter(request, "driverType", 0);
+					String driverType = PortletRequestUtils.getStringParameter(request, "driverType", DriverType.filesystem.name());
 					String rootPath = PortletRequestUtils.getStringParameter(request, "rootPath");
 					Map options = new HashMap();
 					
@@ -104,13 +112,51 @@ public class ManageResourceDriverController extends SAbstractController {
 					memberIds.addAll(groupIds);
 					
 					//Add this resource driver
-					getResourceDriverModule().addResourceDriver(name, DriverType.valueOf(type), 
+					try {
+						getResourceDriverModule().addResourceDriver(name, DriverType.valueOf(driverType), 
 							rootPath, memberIds, options);
+					} catch(RDException rde) {
+			    		response.setRenderParameter(WebKeys.ERROR_MESSAGE, rde.getMessage());
+					}
 				
-				} else {
+				} else if (formData.containsKey("modifyBtn")) {
 					//See if a selected driver needs to be modified
-				}
+					String name = PortletRequestUtils.getStringParameter(request, "nameToModify");
+					String driverType = PortletRequestUtils.getStringParameter(request, "driverType", DriverType.filesystem.name());
+					String rootPath = PortletRequestUtils.getStringParameter(request, "rootPath");
+					Map options = new HashMap();
+					
+					//Is this Read Only?
+					Boolean readonly = PortletRequestUtils.getBooleanParameter(request, "readonly", Boolean.FALSE);
+					options.put(ObjectKeys.RESOURCE_DRIVER_READ_ONLY, readonly);
+					
+					//Is there a Host URL (WebDAV only)
+					String hostUrl = PortletRequestUtils.getStringParameter(request, "hostUrl", "");
+					options.put(ObjectKeys.RESOURCE_DRIVER_HOST_URL, hostUrl);
+					
+					//Allow self signed certificates? (WebDAV only)
+					Boolean allowSelfSignedCertificate = PortletRequestUtils.getBooleanParameter(request, "allowSelfSignedCertificate", Boolean.FALSE);
+					options.put(ObjectKeys.RESOURCE_DRIVER_ALLOW_SELF_SIGNED_CERTIFICATE, allowSelfSignedCertificate);
+					
+					//Always prevent the top level folder from being deleted
+					//  This is forced so that the folder could not accidentally be deleted if the 
+					//  external disk was offline
+					options.put(ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE, Boolean.FALSE);
+					
+					//Get who is allowed to manage this 
+					Set<Long> groupIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addedGroups"));
+					Set<Long> userIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addedUsers"));
+					Set<Long> memberIds = new HashSet<Long>();
+					memberIds.addAll(userIds);
+					memberIds.addAll(groupIds);
 
+					try {
+						getResourceDriverModule().modifyResourceDriver(name, DriverType.valueOf(driverType), 
+							rootPath, memberIds, options);
+					} catch(RDException rde) {
+			    		response.setRenderParameter(WebKeys.ERROR_MESSAGE, rde.getMessage());
+					}
+				}
 			}
 
 		} else {
@@ -121,12 +167,13 @@ public class ManageResourceDriverController extends SAbstractController {
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
+		model.put(WebKeys.ERROR_MESSAGE, request.getParameter(WebKeys.ERROR_MESSAGE));
 		Map formData = request.getParameterMap();
 		getAdminModule().checkAccess(AdminOperation.manageFunction);
-
-		if (formData.containsKey("okBtn")) {
-			//return new ModelAndView("forum/close_window", model);
-		}
+		
+		//Get a list of the currently defines Filesace Roots
+		List<ResourceDriverConfig> drivers = getResourceDriverModule().getAllResourceDriverConfigs();
+		model.put(WebKeys.FILESPACE_ROOTS, drivers);
 
 		return new ModelAndView(WebKeys.VIEW_ADMIN_MANAGE_RESOURCE_DRIVERS, model);
 

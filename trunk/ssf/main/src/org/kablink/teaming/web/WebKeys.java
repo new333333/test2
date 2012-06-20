@@ -949,6 +949,7 @@ public class WebKeys {
     public static final String FILE_VERSION_MAXIMUM_AGE = "ss_fileVersionMaximumAge";
     public static final String FILE_NAME = "ss_fileName";
     public static final String FILE_SIZE_LIMIT_USER_DEFAULT = "ss_fileSizeLimitUserDefault";
+    public static final String FILESPACE_ROOTS = "ss_filespaceRoots";
     public static final String FILE_VIEW_TYPE_ATTACHMENT_FILE = "ss_viewAttachmentFile";
     public static final String FILE_VIEW_TYPE_SCALED = "scaled";
     public static final String FILE_VIEW_TYPE_THUMBNAIL = "thumbnail";

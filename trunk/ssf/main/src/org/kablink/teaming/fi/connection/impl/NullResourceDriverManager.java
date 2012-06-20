@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.UncheckedIOException;
+import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
@@ -53,6 +54,9 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 	}
 	public List<ResourceDriver> getAllResourceDrivers() {
 		return new ArrayList<ResourceDriver>();
+	}
+	public List<ResourceDriverConfig> getAllResourceDriverConfigs() {
+		return new ArrayList<ResourceDriverConfig>();
 	}
 	public void resetResourceDriverList() {}
 
@@ -81,6 +85,9 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 	}
 
 	public ResourceDriver getDriver(String driverName) throws FIException {
+		return null;
+	}
+	public ResourceDriverConfig getDriverConfig(String driverName) {
 		return null;
 	}
 
