@@ -48,11 +48,11 @@ public enum BinderIconSize implements IsSerializable {
 	
 	// The following are used as the height and width of the displayed
 	// binder images.
-	public final static int AS_BINDER_HEIGHT_INT		= 1;
-	public final static int AS_BINDER_WIDTH_INT			= 1;
+	public final static int AS_BINDER_HEIGHT_INT		=  1;
+	public final static int AS_BINDER_WIDTH_INT			=  1;
 	
-	public final static int BINDER_HEIGHT_SMALL_INT		= 16;	// (-1) -> No vertical   scaling.  The native height is used.
-	public final static int BINDER_WIDTH_SMALL_INT		= 16;	// (-1) -> No horizontal scaling.  The native width  is used.
+	public final static int BINDER_HEIGHT_SMALL_INT		= 25;	// (-1) -> No vertical   scaling.  The native height is used.
+	public final static int BINDER_WIDTH_SMALL_INT		= 25;	// (-1) -> No horizontal scaling.  The native width  is used.
 	
 	public final static int BINDER_HEIGHT_MEDIUM_INT	= 36;
 	public final static int BINDER_WIDTH_MEDIUM_INT		= 36;

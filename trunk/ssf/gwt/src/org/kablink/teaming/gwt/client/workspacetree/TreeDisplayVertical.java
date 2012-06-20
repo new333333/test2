@@ -33,7 +33,6 @@
 package org.kablink.teaming.gwt.client.workspacetree;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtConstants;
@@ -79,7 +78,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Hidden;
@@ -117,7 +116,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	// The following controls the grid size and nested offsets for the
 	// WorkspaceTreeControl.
 	private final static int SELECTOR_GRID_DEPTH_OFFSET	=  18;	// Based on empirical evidence.
-	private final static int SELECTOR_GRID_WIDTH        = 208;	// Based on the width of 230 in the workspaceTreeControl style
+	private final static int SELECTOR_GRID_WIDTH_ADJUST	=  22;	// Based on empirical evidence (expander image and spacing.)
+	private final static int SELECTOR_GRID_WIDTH        = (GwtConstants.WORKSPACE_TREE_WIDTH - SELECTOR_GRID_WIDTH_ADJUST);
 
 	// The following defines the maximum amount of time we wait to
 	// process the completion event for a context switch.  If we exceed
@@ -129,10 +129,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * expansion widgets.
 	 */
 	private class BinderExpander implements ClickHandler {
-		private Grid m_grid;
-		private Image m_expanderImg;
-		private int m_gridRow;
-		private TreeInfo m_ti;
+		private FlexTable	m_grid;			//
+		private Image		m_expanderImg;	//
+		private int			m_gridRow;		//
+		private TreeInfo	m_ti;			//
 
 		/**
 		 * Class constructor.
@@ -142,11 +142,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * @param gridRow
 		 * @param expanderImg
 		 */
-		BinderExpander(TreeInfo ti, Grid grid, int gridRow, Image expanderImg) {
-			// Simply store the parameters.
-			m_ti = ti;
-			m_grid = grid;
-			m_gridRow = gridRow;
+		BinderExpander(TreeInfo ti, FlexTable grid, int gridRow, Image expanderImg) {
+			// Initialize the super class...
+			super();
+			
+			// ...and store the parameters.
+			m_ti          = ti;
+			m_grid        = grid;
+			m_gridRow     = gridRow;
 			m_expanderImg = expanderImg;
 		}
 
@@ -354,9 +357,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * @param selectorGridId
 		 */
 		BinderSelectorMouseHandler(String selectorGridId, boolean isBinderCollection) {
-			// Simply store the parameters.
-			m_selectorGridId     = selectorGridId;
-			m_isBinderCollection = isBinderCollection;
+			// Initialize the super class...
+			super();
+			
+			// ...and store the parameters.
+			m_selectorGridId      = selectorGridId;
+			m_isBinderCollection  = isBinderCollection;
 		}
 		
 		/**
@@ -403,6 +409,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * Class constructor.
 		 */
 		public BusyInfo() {
+			// Initialize the super class.
+			super();
+			
 			// Setup a timer to wait for the the busy state to clear.
 			// If we exceed the timeout, we simply clear the busy
 			// state.
@@ -414,9 +423,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 
 					// ...if we're in UI debug mode, display an alert
 					// ...about the problem.
-//!					GwtClientHelper.debugAlert(
-//!						"Rats!  I hate it when this happens.  We've entered an endless busy state with a sidebar tree spinner.\n\n" +
-//!						"That means that somewhere along the way, we failed to process the completion event for a context switch.");
+//#					GwtClientHelper.debugAlert(
+//#						"Rats!  I hate it when this happens.  We've entered an endless busy state with a sidebar tree spinner.\n\n" +
+//#						"That means that somewhere along the way, we failed to process the completion event for a context switch.");
 				}
 			};
 			m_maxBusyDurationTimer.schedule(MAX_BUSY_DURATION);
@@ -483,7 +492,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	}
 	
 	/**
-	 * Constructor method.
+	 * Class constructor.
 	 * 
 	 * @param wsTree
 	 * @param rootTI
@@ -494,7 +503,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		
 		// ...and initialize everything else.
 		m_selectedBinderId = (-1L);
-		m_renderDepths = new HashMap<String,Integer>();
+		m_renderDepths     = new HashMap<String,Integer>();
 	}
 
 	/*
@@ -695,9 +704,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	}
 	
 	/*
-	 * Removes the widgets from a Grid row.
+	 * Removes the widgets from a FlexTable row.
 	 */
-	private static void clearRow(Grid grid, int row) {
+	private static void clearRow(FlexTable grid, int row) {
 		grid.remove(grid.getWidget(row, 0));
 		grid.remove(grid.getWidget(row, 1));
 	}
@@ -951,7 +960,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// Create the WorkspaceTree control's header...
 		TreeInfo rootTI = getRootTreeInfo();
 		boolean isAS = rootTI.isActivityStream();
-		Grid selectorGrid = new Grid(1, (isAS ? 4 : 3));
+		FlexTable selectorGrid = new FlexTable();
 		String styles = "workspaceTreeControlHeader workspaceTreeControlHeader_base ";
 		if (isAS)
 		     styles += "workspaceTreeControlHeader_as";
@@ -992,20 +1001,17 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		boolean	hasCollections = false;
 		
 		// ...and its initial content grid.
-		Grid grid = new Grid();
+		FlexTable grid = new FlexTable();
 		grid.setCellSpacing(0);
 		grid.setCellPadding(0);
-		grid.resizeColumns(2);
 		m_rootPanel.add(grid);
 
 		// Are there are any collection rows to display?
 		if (hasCollections) {
 			// Yes!  Render them.
-			grid.addStyleName("workspaceTreeControlBody_collection");
+			grid.addStyleName("workspaceTreeControlBody_collection workspaceTreeWidth");
 			for (TreeInfo ti:  tiList) {
-				int row = grid.getRowCount();
-				grid.insertRow(row);
-				renderRow(grid, row, ti, 0);
+				renderRow(grid, grid.getRowCount(), ti, 0);
 			}
 		}
 
@@ -1016,10 +1022,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			if (hasCollections) {
 				// Yes!  Create a new grid for the child binder rows as
 				// they require different styling.
-				grid = new Grid();
+				grid = new FlexTable();
 				grid.setCellSpacing(0);
 				grid.setCellPadding(0);
-				grid.resizeColumns(2);
 				m_rootPanel.add(grid);
 			}
 			grid.addStyleName("workspaceTreeControlBody");
@@ -1031,14 +1036,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				InlineLabel il = new InlineLabel(getMessages().treeWSAndFolders());
 				il.addStyleName("workspaceTreeControlTreeHeader");
 				grid.setWidget(0, 0, il);
-				GwtClientHelper.setGridColSpan(grid, 0, 0, 2);
+				grid.getFlexCellFormatter().setColSpan(0, 0, 2);
 			}
 			
 			// Finally, render the child binders.
 			for (TreeInfo ti:  tiList) {
-				int row = grid.getRowCount();
-				grid.insertRow(row);
-				renderRow(grid, row, ti, 0);
+				renderRow(grid, grid.getRowCount(), ti, 0);
 			}
 		}
 	}
@@ -1046,7 +1049,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	/*
 	 * Called to render an individual row in the WorkspaceTree control.
 	 */
-	private void renderRow(Grid grid, int row, TreeInfo ti, int renderDepth, boolean reRenderToCollapse) {
+	private void renderRow(FlexTable grid, int row, TreeInfo ti, int renderDepth, boolean reRenderToCollapse) {
 		// Store the depth at which we're rendering this Binder.
 		setRenderDepth(ti, renderDepth);
 		
@@ -1076,7 +1079,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		}
 
 		// Generate the widgets to select the Binder.
-		Grid selectorGrid = new Grid(1, 3);
+		FlexTable selectorGrid = new FlexTable();
 		selectorGrid.setCellSpacing(0);
 		selectorGrid.setCellPadding(0);
 		Image binderImg = new Image();
@@ -1105,7 +1108,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorGrid.addStyleName(buildElementStyle(ti, "workspaceTreeControlRow"));
 		selectorGrid.addStyleName(getCursorStyle(ti));
 
-		// Add the row to the Grid.
+		// Add the row to the FlexTable.
 		grid.setWidget(row, 0, expanderWidget);
 		grid.setWidget(row, 1, selectorA);
 
@@ -1138,31 +1141,32 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				Widget w = grid.getWidget(row, 1);
 				grid.remove(w);
 				vp.add(w);
-				Grid expansionGrid = new Grid();
+				FlexTable expansionGrid = new FlexTable();
 				expansionGrid.setCellSpacing(0);
 				expansionGrid.setCellPadding(0);
-				expansionGrid.resizeColumns(2);
 				vp.add(expansionGrid);
 				grid.setWidget(row, 1, vp);
-				for (Iterator<TreeInfo> tii = ti.getChildBindersList().iterator(); tii.hasNext(); ) {
-					int expansionRow = expansionGrid.getRowCount();
-					expansionGrid.insertRow(expansionRow);
-					renderRow(expansionGrid, expansionRow, tii.next(), (renderDepth + 1));
+				for (TreeInfo tiScan:  ti.getChildBindersList()) {
+					renderRow(
+						expansionGrid,
+						expansionGrid.getRowCount(),
+						tiScan,
+						(renderDepth + 1));
 				}
 				expanderImg.setResource(getImages().tree_closer());
 			}
 		}
 	}
 	
-	private void renderRow(Grid grid, int row, TreeInfo ti, int renderDepth) {
+	private void renderRow(FlexTable grid, int row, TreeInfo ti, int renderDepth) {
 		// Always use the initial form of the method.
 		renderRow(grid, row, ti, renderDepth, false);	// false -> Not in process of collapsing a row.
 	}
 
 	/*
-	 * Clears and re-renders a TreeInfo object into a Grid row.
+	 * Clears and re-renders a TreeInfo object into a FlexTable row.
 	 */
-	private void reRenderRow(Grid grid, int row, TreeInfo ti, boolean reRenderToCollapse) {
+	private void reRenderRow(FlexTable grid, int row, TreeInfo ti, boolean reRenderToCollapse) {
 		clearRow(grid, row);
 		renderRow(grid, row, ti, getRenderDepth(ti), reRenderToCollapse);
 	}
