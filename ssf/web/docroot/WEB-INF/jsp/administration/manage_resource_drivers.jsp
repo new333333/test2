@@ -34,6 +34,7 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
+<%@ page import="org.kablink.teaming.domain.Principal" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.manage.resourceDrivers") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
@@ -142,6 +143,8 @@ function ss_showModifyDiv(id) {
 <c:set var="buttonText"><ssf:nlt tag="button.add"/></c:set>
 <c:set var="deleteButtonName" value=""/>
 <c:set var="formAction"><ssf:url action="manage_resource_drivers" actionUrl="true"/></c:set>
+<c:set var="resourceDriverGroups" value=""/>
+<c:set var="resourceDriverUsers" value=""/>
 <%@ include file="/WEB-INF/jsp/administration/manage_resource_drivers_form.jsp" %>
 </ssf:expandableArea>
 		
@@ -157,7 +160,9 @@ function ss_showModifyDiv(id) {
 	  <c:set var="buttonText"><ssf:nlt tag="button.modify"/></c:set>
 	  <c:set var="deleteButtonName" value="deleteBtn"/>
 	  <c:set var="formAction"><ssf:url action="manage_resource_drivers" actionUrl="true"><ssf:param
-	  name="nameToModify" value="${fsr.name}"/></ssf:url></c:set>
+	    name="nameToModify" value="${fsr.name}"/></ssf:url></c:set>
+	  <c:set var="resourceDriverGroups" value="${ssFunctionMap[fsr.name]['groups']}"/>
+	  <c:set var="resourceDriverUsers" value="${ssFunctionMap[fsr.name]['users']}"/>
       <%@ include file="/WEB-INF/jsp/administration/manage_resource_drivers_form.jsp" %>	
     </ssf:expandableArea>
 </c:forEach>

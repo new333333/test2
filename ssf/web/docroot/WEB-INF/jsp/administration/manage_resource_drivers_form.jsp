@@ -135,89 +135,19 @@
 	<div class="ss_entryContent">
 	 	<span class="ss_labelAbove"><ssf:nlt tag="administration.resourceDrivers.addGroup" /></span>
 		<ssf:find formName="${formName}" formElement="addedGroups" 
-		type="group" width="150px" />
+		type="group" userList="${resourceDriverGroups}" width="150px" />
 	</div>
 	
 	<% /* User selection. */ %>
 	<div class="ss_entryContent">
 		<span class="ss_labelAbove"><ssf:nlt tag="administration.resourceDrivers.addUser" /></span>
 		<ssf:find formName="${formName}" formElement="addedUsers" type="user" 
-		userList="<%= new java.util.HashSet() %>" width="150px" />
+		userList="${resourceDriverUsers}" width="150px" />
 	</div>
-
 
 	</div>
 	</div>
 	
-	<c:if test="${!empty ss_resourceDriverGroups}">
-	  <table class="objlist" width="100%">
-		<tr class="title ends">
-		  <td colspan="5"><ssf:nlt tag="administration.resourceDrivers.currentSettingsGroups" /></td>
-		</tr>  
-	    <tr class="columnhead">
-	      <td class="leftend"><ssf:nlt tag="button.delete"/></td>
-	      <td><ssf:nlt tag="userlist.groupName"/></td>
-	      <td><ssf:nlt tag="userlist.groupTitle"/></td>
-	      <td class="rightend" width="100%">&nbsp;</td>
-	    </tr>
-	    <c:forEach var="group" items="${ss_resourceDriverGroups}">
-	      <tr class="regrow">
-	        <td class="leftend">
-	          <input type="checkbox" name="deleteGroup_${group.id}" />
-	        </td>
-	        <td>
-	          ${group.name}
-	        </td>
-	        <td>
-	          ${group.title}
-	        </td>
-	        <td class="rightend">&nbsp;
-	        </td>
-	      </tr>
-	    </c:forEach>
-		  <tr class="footrow ends">
-		    <td colspan="6" style="padding: 3px;">
-				<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>"
-		  			title="<ssf:escapeQuotes><ssf:nlt tag="administration.resourceDrivers.deleteSelectedGroups"/></ssf:escapeQuotes>"/>
-			</td>
-		  </tr>		
-	  </table>
-	</c:if>
-
-	<c:if test="${!empty ss_resourceDriverUsers}">
-	  <table class="objlist" width="100%">
-	  	<tr class="title ends">
-		  <td colspan="6"><ssf:nlt tag="administration.quotas.currentSettingsUser" /></td>
-	    <tr class="columnhead">
-	      <td class="leftend"><ssf:nlt tag="button.delete"/></td>
-	      <td><ssf:nlt tag="profile.element.title"/></td>
-	      <td><ssf:nlt tag="profile.element.name"/></td>
-	      <td class="rightend" width="100%">&nbsp;</td>
-	    </tr>
-	    <c:forEach var="user" items="${ss_resourceDriverUsers}">
-	      <tr class="regrow">
-	        <td class="leftend">
-	          <input type="checkbox" name="deleteUser_${user.id}" />
-	        </td>
-	        <td>
-	          ${user.title}
-	        </td>
-	        <td>
-	          <ssf:userName user="${user}"/>
-	        </td>
-	        <td class="rightend">&nbsp;</td>
-	      </tr>
-	    </c:forEach>
-		  <tr class="footrow ends">
-		    <td colspan="6" style="padding: 3px;">
-    <input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>"
-		  title="<ssf:escapeQuotes><ssf:nlt tag="administration.resourceDrivers.deleteSelectedUsers"/></ssf:escapeQuotes>"/>
-
-			</td>
-		  </tr>
-	  </table>
-	</c:if>
-
 	<input type="submit" class="ss_submit" name="${buttonName}" value="${buttonText}">
 	<c:if test="${!empty deleteButtonName}">
 	  <input type="submit" class="ss_submit" name="${deleteButtonName}" style="margin-left:20px;"

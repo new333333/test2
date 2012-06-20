@@ -67,7 +67,6 @@ import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembershipManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.springframework.transaction.TransactionStatus;
@@ -286,8 +285,31 @@ public class ResourceDriverModuleImpl extends CommonDependencyInjection implemen
 			   		rdc.setPutRequiresContentLength((Boolean)options.get(ObjectKeys.RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH));
 			   	}
 				getCoreDao().save(rdc);
+    			return null;
+    		}
+    	});
+    	SimpleProfiler.stop("modifyResourceDriverConfig");
 				
-				//Set up the access controls for this new resource driver
+    	SimpleProfiler.start("deleteResourceDriverConfigAcl");
+    	// 	The following part requires update database transaction.
+    	getTransactionTemplate().execute(new TransactionCallback() {
+    		@Override
+			public Object doInTransaction(TransactionStatus status) {
+    	     	//Delete the membership ACL to this driver config object
+    	    	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(
+    	    			RequestContextHolder.getRequestContext().getZoneId(), rdc);
+
+    			return null;
+    		}
+    	});
+    	SimpleProfiler.stop("deleteResourceDriverConfigAcl");
+
+    	SimpleProfiler.start("addResourceDriverConfigAcl");
+    	// 	The following part requires update database transaction.
+    	getTransactionTemplate().execute(new TransactionCallback() {
+    		@Override
+			public Object doInTransaction(TransactionStatus status) {
+				//Then add in the new ACL
 				Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 				List functions = getFunctionManager().findFunctions(zoneId);
 				Function manageResourceDriversFunction = null;
@@ -300,8 +322,7 @@ public class ResourceDriverModuleImpl extends CommonDependencyInjection implemen
 						break;
 					}
 				}
-				
-				if (manageResourceDriversFunction != null) {
+    	    	if (manageResourceDriversFunction != null) {
 					WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
 					membership.setZoneId(zoneId);
 					membership.setWorkAreaId(rdc.getWorkAreaId());
@@ -313,7 +334,7 @@ public class ResourceDriverModuleImpl extends CommonDependencyInjection implemen
     			return null;
     		}
     	});
-    	SimpleProfiler.stop("modifyResourceDriverConfig");
+    	SimpleProfiler.stop("addResourceDriverConfigAcl");
 		
 
 		//Add this new resource driver to the list of drivers
