@@ -61,6 +61,10 @@
 	<%	} %>
 	
 	}// end handleCloseBtn()
+	
+	function confirmDelete() {
+		return confirm("<ssf:nlt tag="administration.resourceDrivers.confirmDelete"/>");
+	}
 </script>
 
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
@@ -102,6 +106,14 @@ function ss_showModifyDiv(id) {
 <div class="ss_style ss_portlet">
 <ssf:form titleTag="administration.manage.resourceDrivers">
 
+<c:if test="${!empty ss_errorMessage}">
+<br/>
+<div class="ss_labelLeftError">
+<span><c:out value="${ss_errorMessage}"/></span>
+</div>
+<br/>
+</c:if>
+
 <div style="padding:10px;" id="ss_manageResourceDrivers">
 
 <c:if test="${!empty ssException}">
@@ -126,180 +138,30 @@ function ss_showModifyDiv(id) {
 	</div>
 		
 <ssf:expandableArea title='<%= NLT.get("administration.resourceDrivers.add") %>'>
-<div style="padding:0px 20px;">
-<fieldset>
-<form class="ss_style ss_form" method="post" 
-	action="<ssf:url action="manage_resource_drivers" actionUrl="true"/>">
-	<table cellspacing="6" cellpadding="4">
-	<tr>
-	<td valign="middle">
-	  <label for="driverName">
-	    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.name"/></span>
-	  </label>
-	</td>
-	<td valign="middle">
-	  <input type="text" class="ss_text" size="70" name="driverName" id="driverName" maxlength="64">
-	</td>
-	</tr>
-
-	<tr>
-	<td valign="middle">
-	  <label for="driverType">
-	    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.type"/></span>
-	  </label>
-	</td>
-	<td valign="middle">
-	  <select name="driverType" id="driverType">
-	    <option value="filesystem" selected><ssf:nlt tag="administration.resourceDrivers.type.filesystem"/></option>
-	    <option value="slide"><ssf:nlt tag="administration.resourceDrivers.type.slide"/></option>
-	  </select>
-	</td>
-	</tr>		
-
-	<tr>
-	<td valign="middle">
-	  <label for="rootPath">
-	    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.rootpath"/></span>
-	  </label>
-	</td>
-	<td valign="middle">
-	  <input type="text" class="ss_text" size="70" name="rootPath" id="rootPath" maxlength="64">
-	</td>
-	</tr>		
-
-	<tr>
-	<td valign="middle" colspan="2">
-	  <input type="checkbox" class="ss_text" size="70" name="readonly" id="readonly">
-	  <label for="readonly">
-	    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.readonly"/></span>
-	  </label>
-	</td>
-	</tr>		
-
-	<tr>
-	<td valign="middle" style="padding-top:20px;">
-	  <label for="hostUrl">
-	    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.hostUrl"/></span>
-	    <span class="ss_smallprint">(<ssf:nlt tag="administration.resourceDrivers.webdavOnly"/>)</span>
-	  </label>
-	</td>
-	<td valign="middle" style="padding-top:20px;">
-	  <input type="text" class="ss_text" size="70" name="hostUrl" id="hostUrl" maxlength="64">
-	</td>
-	</tr>
-
-	<tr>
-	<td valign="middle" colspan="2">
-	  <input type="checkbox" class="ss_text" size="70" name="allowSelfSignedCertificate" id="allowSelfSignedCertificate">
-	  <label for="allowSelfSignedCertificate">
-	    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.allowSelfSignedCertificate"/></span>
-	    <span class="ss_smallprint">(<ssf:nlt tag="administration.resourceDrivers.webdavOnly"/>)</span>
-	  </label>
-	</td>
-	</tr>		
-	</table>
-	
-	<div style="margin:10px; padding-top:20px;">
-	  <span><ssf:nlt tag="administration.resourceDrivers.allowedUsersAndGroups"/></span>
-	
-	<div style="padding-left:20px;">
-	<% /* Group selection. */ %>
-	<div class="ss_entryContent">
-	 	<span class="ss_labelAbove"><ssf:nlt tag="administration.resourceDrivers.addGroup" /></span>
-		<ssf:find formName="${formName}" formElement="addedGroups" 
-		type="group" width="150px" />
-	</div>
-	
-	<% /* User selection. */ %>
-	<div class="ss_entryContent">
-		<span class="ss_labelAbove"><ssf:nlt tag="administration.resourceDrivers.addUser" /></span>
-		<ssf:find formName="${formName}" formElement="addedUsers" type="user" 
-		userList="<%= new java.util.HashSet() %>" width="150px" />
-	</div>
-
-
-	</div>
-	</div>
-	
-	<br/>
-	<br/>
-	
-	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add"/>">
-</form>
-</fieldset>
-</div>
+<c:set var="buttonName" value="addBtn"/>
+<c:set var="buttonText"><ssf:nlt tag="button.add"/></c:set>
+<c:set var="deleteButtonName" value=""/>
+<c:set var="formAction"><ssf:url action="manage_resource_drivers" actionUrl="true"/></c:set>
+<%@ include file="/WEB-INF/jsp/administration/manage_resource_drivers_form.jsp" %>
 </ssf:expandableArea>
 		
-<br/>			
 
-	<c:if test="${!empty ss_resourceDriverGroups}">
-	  <table class="objlist" width="100%">
-		<tr class="title ends">
-		  <td colspan="5"><ssf:nlt tag="administration.resourceDrivers.currentSettingsGroups" /></td>
-		</tr>  
-	    <tr class="columnhead">
-	      <td class="leftend"><ssf:nlt tag="button.delete"/></td>
-	      <td><ssf:nlt tag="userlist.groupName"/></td>
-	      <td><ssf:nlt tag="userlist.groupTitle"/></td>
-	      <td class="rightend" width="100%">&nbsp;</td>
-	    </tr>
-	    <c:forEach var="group" items="${ss_resourceDriverGroups}">
-	      <tr class="regrow">
-	        <td class="leftend">
-	          <input type="checkbox" name="deleteGroup_${group.id}" />
-	        </td>
-	        <td>
-	          ${group.name}
-	        </td>
-	        <td>
-	          ${group.title}
-	        </td>
-	        <td class="rightend">&nbsp;
-	        </td>
-	      </tr>
-	    </c:forEach>
-		  <tr class="footrow ends">
-		    <td colspan="6" style="padding: 3px;">
-				<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>"
-		  			title="<ssf:escapeQuotes><ssf:nlt tag="administration.resourceDrivers.deleteSelectedGroups"/></ssf:escapeQuotes>"/>
-			</td>
-		  </tr>		
-	  </table>
-	</c:if>
+<br>
+<hr>
+<br>
+<h3><ssf:nlt tag="administration.resourceDrivers.currentResourceDrivers"/></h3>
 
-	<c:if test="${!empty ss_resourceDriverUsers}">
-	  <table class="objlist" width="100%">
-	  	<tr class="title ends">
-		  <td colspan="6"><ssf:nlt tag="administration.quotas.currentSettingsUser" /></td>
-	    <tr class="columnhead">
-	      <td class="leftend"><ssf:nlt tag="button.delete"/></td>
-	      <td><ssf:nlt tag="profile.element.title"/></td>
-	      <td><ssf:nlt tag="profile.element.name"/></td>
-	      <td class="rightend" width="100%">&nbsp;</td>
-	    </tr>
-	    <c:forEach var="user" items="${ss_resourceDriverUsers}">
-	      <tr class="regrow">
-	        <td class="leftend">
-	          <input type="checkbox" name="deleteUser_${user.id}" />
-	        </td>
-	        <td>
-	          ${user.title}
-	        </td>
-	        <td>
-	          <ssf:userName user="${user}"/>
-	        </td>
-	        <td class="rightend">&nbsp;</td>
-	      </tr>
-	    </c:forEach>
-		  <tr class="footrow ends">
-		    <td colspan="6" style="padding: 3px;">
-    <input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>"
-		  title="<ssf:escapeQuotes><ssf:nlt tag="administration.resourceDrivers.deleteSelectedUsers"/></ssf:escapeQuotes>"/>
-
-			</td>
-		  </tr>
-	  </table>
-	</c:if>
+<c:forEach var="fsr" items="${ss_filespaceRoots}">
+    <ssf:expandableArea title="${fsr.name}">
+	  <c:set var="buttonName" value="modifyBtn"/>
+	  <c:set var="buttonText"><ssf:nlt tag="button.modify"/></c:set>
+	  <c:set var="deleteButtonName" value="deleteBtn"/>
+	  <c:set var="formAction"><ssf:url action="manage_resource_drivers" actionUrl="true"><ssf:param
+	  name="nameToModify" value="${fsr.name}"/></ssf:url></c:set>
+      <%@ include file="/WEB-INF/jsp/administration/manage_resource_drivers_form.jsp" %>	
+    </ssf:expandableArea>
+</c:forEach>
+	
 
 
   <div style="padding: 10px 0px;">

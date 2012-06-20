@@ -33,6 +33,7 @@
 package org.kablink.teaming.module.resourcedriver;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -81,9 +82,15 @@ public interface ResourceDriverModule {
 	 * @param operation
 	 * @return
 	 */
-public boolean testAccess(ResourceDriverConfig resourceDriver, ResourceDriverOperation operation);
+   	public boolean testAccess(ResourceDriverConfig resourceDriver, ResourceDriverOperation operation);
    	public void checkAccess(ResourceDriverConfig resourceDriver, ResourceDriverOperation operation) throws AccessControlException;
 
+    /**
+     * Get all <code>ResourceDriverConfig</code> 
+     * 
+     */
+   	public List<ResourceDriverConfig> getAllResourceDriverConfigs();
+   	
     /**
      * Create a <code>ResourceDriver</code> 
      * 
@@ -94,5 +101,30 @@ public boolean testAccess(ResourceDriverConfig resourceDriver, ResourceDriverOpe
      */
       public ResourceDriverConfig addResourceDriver(String name, DriverType type, String rootPath,
     		  Set<Long> memberIds, Map options) 
-     	throws AccessControlException;
+     	throws AccessControlException, RDException;
+   	
+      /**
+       * Create a <code>ResourceDriver</code> 
+       * 
+       * @param driverName
+       * @param driverType
+       * @param options
+       * @throws AccessControlException
+       * returns null if driver not found
+       */
+        public ResourceDriverConfig modifyResourceDriver(String name, DriverType type, String rootPath,
+      		  Set<Long> memberIds, Map options) 
+       	throws AccessControlException, RDException;
+     	
+        /**
+         * Create a <code>ResourceDriver</code> 
+         * 
+         * @param driverName
+         * @param driverType
+         * @param options
+         * @throws AccessControlException
+         * returns null if driver not found
+         */
+          public void deleteResourceDriver(String name) 
+         	throws AccessControlException, RDException;
 }

@@ -35,6 +35,7 @@ package org.kablink.teaming.fi.connection;
 import java.util.List;
 
 import org.kablink.teaming.UncheckedIOException;
+import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.fi.FIException;
 
 
@@ -42,9 +43,11 @@ public interface ResourceDriverManager {
 
 	public List<ResourceDriver> getAllowedResourceDrivers();
 	public List<ResourceDriver> getAllResourceDrivers();
+	public List<ResourceDriverConfig> getAllResourceDriverConfigs();
 	public void resetResourceDriverList();
 	
 	public ResourceDriver getDriver(String driverName) throws FIException;
+	public ResourceDriverConfig getDriverConfig(String driverName);
 
 	public ResourceSession getSession(String driverName)
 	throws FIException, UncheckedIOException;
