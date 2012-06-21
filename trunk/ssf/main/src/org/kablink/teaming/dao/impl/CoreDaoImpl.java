@@ -2686,7 +2686,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 								.add(Restrictions.ge("pathName", pathName.toLowerCase()))
 								.add(Restrictions.le("pathName", pathName.toUpperCase()))
 								.setCacheable(isBinderQueryCacheable());
-								return crit.list();				        		
+								return crit.list();
 				        	}
 				        	else {
 				        		Query q = session.createQuery("from org.kablink.teaming.domain.Binder x where lower(x.pathName)=:pathName and x.zoneId=:zoneId");
@@ -2697,11 +2697,32 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 				        	}
 		               }
 		            }
-				);				
+				);
     	}
     	finally {
     		end(begin, "loadBindersByPathName()");
-    	}	        
+    	}
+	}
+
+	public Binder loadBinderByParentAndName(final Long parentBinderId, final String title, final Long zoneId) {
+		long begin = System.nanoTime();
+		try {
+			return (Binder)getHibernateTemplate().execute(
+				    new HibernateCallback() {
+				        public Object doInHibernate(Session session) throws HibernateException {
+                            Query q = session.createQuery("from org.kablink.teaming.domain.Binder x where x.parentBinder.id=:parentId and lower(x.title)=:title and x.zoneId=:zoneId");
+                            q.setParameter("parentId", parentBinderId)
+                            .setParameter("title", title.toLowerCase())
+                            .setParameter("zoneId", zoneId)
+                            .setCacheable(isBinderQueryCacheable());
+                            return q.uniqueResult();
+		               }
+		            }
+				);
+    	}
+    	finally {
+    		end(begin, "loadBindersByPathName()");
+    	}
 	}
 
 	private LibraryEntry loadLibraryEntry(LibraryEntry le) {

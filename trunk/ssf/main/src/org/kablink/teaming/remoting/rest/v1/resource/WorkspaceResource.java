@@ -33,7 +33,6 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -43,33 +42,39 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import com.sun.jersey.spi.resource.Singleton;
-import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.NoBinderByTheIdException;
-import org.kablink.teaming.domain.TemplateBinder;
+import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
+import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
-import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.Folder;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.Workspace;
 import org.kablink.teaming.search.filter.SearchFilter;
-import org.kablink.teaming.util.Constants;
 import org.kablink.util.api.ApiErrorCode;
 
-@Path("/v1/workspace/{id}")
+@Path("/v1/workspace")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class WorkspaceResource extends AbstractBinderResource {
 	// TODO $$$ Get top workspace ID
 	//public long binder_getTopWorkspaceId(String accessToken);
+
+    @GET
+    public Workspace getWorkspace(@QueryParam("parent") long parentId, @QueryParam("name") String name) {
+        org.kablink.teaming.domain.Workspace parent = _getWorkspace(parentId);
+        Binder binder = getBinderModule().getBinderByParentAndTitle(parentId, name);
+        if (binder instanceof org.kablink.teaming.domain.Workspace) {
+            return (Workspace) ResourceUtil.buildBinder(binder, true);
+        }
+        throw new NoWorkspaceByTheNameException(name);
+    }
 	
 	// Read subworkspaces
 	@GET
-	@Path("workspaces")
+	@Path("{id}/workspaces")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<BinderBrief> getSubWorkspaces(@PathParam("id") long id,
 			@QueryParam("first") Integer offset,
@@ -80,10 +85,10 @@ public class WorkspaceResource extends AbstractBinderResource {
 	}
 
     @POST
-   	@Path("workspaces")
+   	@Path("{id}/workspaces")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-   	public org.kablink.teaming.rest.v1.model.Workspace createSubWorkspace(@PathParam("id") long id, org.kablink.teaming.rest.v1.model.Binder binder, @QueryParam("template") Long templateId)
+   	public org.kablink.teaming.rest.v1.model.Workspace createSubWorkspace(@PathParam("id") long id, org.kablink.teaming.rest.v1.model.Workspace workspace, @QueryParam("template") Long templateId)
                throws WriteFilesException, WriteEntryDataException {
         if (templateId!=null) {
             TemplateBinder template = getTemplateModule().getTemplate(templateId);
@@ -91,12 +96,12 @@ public class WorkspaceResource extends AbstractBinderResource {
                 throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The specified 'template' parameter must be a workspace template.");
             }
         }
-        return (Workspace) createBinder(id, binder, templateId);
+        return (Workspace) createBinder(id, workspace, templateId);
     }
 
     // Read subfolders
 	@GET
-	@Path("folders")
+	@Path("{id}/folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<BinderBrief> getSubFolders(@PathParam("id") long id,
 			@QueryParam("first") Integer offset,
@@ -107,7 +112,7 @@ public class WorkspaceResource extends AbstractBinderResource {
 	}
 
     @POST
-   	@Path("folders")
+   	@Path("{id}/folders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
    	public org.kablink.teaming.rest.v1.model.Folder createSubFolder(@PathParam("id") long id, org.kablink.teaming.rest.v1.model.Binder binder, @QueryParam("template") Long templateId)
