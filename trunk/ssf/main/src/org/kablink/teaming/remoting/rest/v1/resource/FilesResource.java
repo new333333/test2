@@ -72,10 +72,10 @@ import java.util.List;
  * Date: 5/22/12
  * Time: 11:02 AM
  */
-@Path("/v1/file/{id}")
+@Path("/v1/files/{id}")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class FileResource extends AbstractFileResource {
+public class FilesResource extends AbstractFileResource {
     @POST
    	@Consumes(MediaType.MULTIPART_FORM_DATA)
    	public FileProperties writeFileContentById_MultipartFormData(@PathParam("id") String fileId,

@@ -33,12 +33,16 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -46,6 +50,11 @@ import javax.ws.rs.core.MediaType;
 import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -57,7 +66,10 @@ import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UserBriefBuilder;
 import org.kablink.teaming.remoting.ws.util.ModelInputData;
+import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.GroupBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.UserBrief;
 import org.kablink.teaming.search.filter.SearchFilter;
@@ -66,7 +78,7 @@ import org.kablink.util.api.ApiErrorCode;
 @Path("/v1/users")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class UsersResource extends AbstractResource {
+public class UsersResource extends AbstractPrincipalResource {
 	// Get all users
 	@GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -119,4 +131,83 @@ public class UsersResource extends AbstractResource {
 
         return ResourceUtil.buildUser(getProfileModule().addUser(defId, inputData, null, null), true);
 	}
+
+    @GET
+    @Path("/name/{name}")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public User getUser(@PathParam("name") String name,
+                        @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
+        if (name==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing name query parameter.");
+        }
+        return ResourceUtil.buildUser(getProfileModule().getUser(name), includeAttachments);
+    }
+
+    @GET
+    @Path("/{id}")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public User getUser(@PathParam("id") long userId,
+                        @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
+        return ResourceUtil.buildUser(_getUser(userId), includeAttachments);
+    }
+
+    @PUT
+    @Path("/{id}")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public void updateUser(@PathParam("id") long id, User user)
+            throws WriteFilesException, WriteEntryDataException {
+        _getUser(id);
+        getProfileModule().modifyEntry(id, new RestModelInputData(user));
+    }
+
+    @GET
+    @Path("/{id}/teams")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<TeamBrief> getTeams(@PathParam("id") long userId) {
+        List<TeamInfo> binders = getProfileModule().getUserTeams(userId);
+        SearchResultList<TeamBrief> results = new SearchResultList<TeamBrief>();
+        for (org.kablink.teaming.domain.TeamInfo binder : binders) {
+            results.append(ResourceUtil.buildTeamBrief(binder));
+        }
+        return results;
+    }
+
+    @GET
+    @Path("/{id}/favorites")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<BinderBrief> getFavorites(@PathParam("id") long userId) {
+        List<Binder> binders = getProfileModule().getUserFavorites(userId);
+        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
+        for (Binder binder : binders) {
+            results.append(ResourceUtil.buildBinderBrief(binder));
+        }
+        return results;
+    }
+
+    @GET
+    @Path("/{id}/groups")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<GroupBrief> getGroups(@PathParam("id") long id) {
+        _getUser(id);
+        List<Group> groups = getProfileModule().getUserGroups(id);
+        SearchResultList<GroupBrief> results = new SearchResultList<GroupBrief>();
+        for (Group group : groups) {
+            results.append(ResourceUtil.buildGroupBrief(group));
+        }
+        return results;
+    }
+
+    private org.kablink.teaming.domain.User _getUser(long userId) {
+        Principal entry = getProfileModule().getEntry(userId);
+
+        if(!(entry instanceof org.kablink.teaming.domain.User))
+            throw new IllegalArgumentException(userId + " does not represent an user. It is " + entry.getClass().getSimpleName());
+        return (org.kablink.teaming.domain.User) entry;
+    }
+
+    @Override
+    protected EntityIdentifier.EntityType _getEntityType() {
+        return EntityIdentifier.EntityType.user;
+    }
+
 }

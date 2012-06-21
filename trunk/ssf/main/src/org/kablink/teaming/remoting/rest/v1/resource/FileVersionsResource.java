@@ -57,10 +57,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("/v1/file_version/{id}")
+@Path("/v1/file_versions/{id}")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class FileVersionResource extends AbstractFileResource {
+public class FileVersionsResource extends AbstractFileResource {
 
 	// Read file version content
 	@GET

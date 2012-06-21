@@ -41,7 +41,7 @@ import java.util.Map;
  * Date: 5/21/12
  * Time: 2:08 PM
  */
-abstract public class AbstractBinderResource extends AbstractDefinableEntityResource {
+abstract public class AbstractBinderResource extends AbstractDefinableEntitiesResource {
 
     /**
      * Returns the binder with the specified ID.
