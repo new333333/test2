@@ -315,6 +315,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						// ...require entries be available.
 						EntryMenuPanel.setEntriesAvailable(emp, false);
 					}
+
+					// ...and display a now items message.
+					List<FolderRow> folderRows = new ArrayList<FolderRow>();
+					m_vdt.setRowData( 0, folderRows);
+					m_vdt.setRowCount(0            );
+					postProcessRowDataAsync(folderRows);
 				}
 				
 				@Override

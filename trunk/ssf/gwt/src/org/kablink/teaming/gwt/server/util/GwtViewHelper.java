@@ -147,7 +147,6 @@ import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.DateComparer;
-import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
@@ -1043,7 +1042,9 @@ public class GwtViewHelper {
 	private static void fixupFCs(List<FolderColumn> fcList, boolean isTrash) {
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
-			if      (colName.equals("author"))          {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
+//!			...this needs to be implemented...
+			if      (colName.equals("access"))          {fc.setColumnSearchKey("access");                                                                                   }
+			else if (colName.equals("author"))          {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
 			else if (colName.equals("comments"))        {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                            }
 			else if (colName.equals("date"))            {fc.setColumnSearchKey(Constants.LASTACTIVITY_FIELD);                                                               }
 			else if (colName.equals("description"))     {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                       }
@@ -1051,6 +1052,7 @@ public class GwtViewHelper {
 			else if (colName.equals("download"))        {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                   }
 			else if (colName.equals("dueDate"))         {fc.setColumnSearchKey(Constants.DUE_DATE_FIELD);                                                                   }
 			else if (colName.equals("emailAddress"))    {fc.setColumnSearchKey(Constants.EMAIL_FIELD);                                                                      }
+			else if (colName.equals("family"))          {fc.setColumnSearchKey(Constants.FAMILY_FIELD);                                                                     }
 			else if (colName.equals("fullName"))        {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);    }
 			else if (colName.equals("guest"))           {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
 			else if (colName.equals("html"))            {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                    }
@@ -1059,7 +1061,9 @@ public class GwtViewHelper {
 			else if (colName.equals("number"))          {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);    }
 			else if (colName.equals("rating"))          {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                     }
 			else if (colName.equals("responsible"))     {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                }
+			else if (colName.equals("rights"))          {fc.setColumnSearchKey("rights");                                                                                   }
 			else if (colName.equals("size"))            {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                  }
+			else if (colName.equals("sharedBy"))        {fc.setColumnSearchKey("sharedBy");                                                                                 }
 			else if (colName.equals("state"))           {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD); fc.setColumnSortKey(Constants.WORKFLOW_STATE_FIELD);}
 			else if (colName.equals("status"))          {fc.setColumnSearchKey(Constants.STATUS_FIELD);                                                                     }
 			else if (colName.equals("tasks"))           {fc.setColumnSearchKey(Constants.TASKS_FIELD);                                                                      }
@@ -1622,7 +1626,8 @@ public class GwtViewHelper {
 
 			// Are we showing the trash on this folder?
 			String baseNameKey;
-			boolean isTrash = folderInfo.isBinderTrash();
+			boolean isCollection = folderInfo.isBinderCollection();
+			boolean isTrash      = folderInfo.isBinderTrash();
 			if (isTrash) {
 				// Yes!  The columns in a trash view are not
 				// configurable.  Use the default trash columns.
@@ -1638,9 +1643,24 @@ public class GwtViewHelper {
 				columnNames = getColumnsLHMFromAS(new String[]{"fullName", "emailAddress", "loginId"});
 			}
 			
+			// No, we aren't showing the root profiles binder
+			// either!  Are we viewing a collection?
+			else if (isCollection) {
+				// Yes!
+				baseNameKey = "collections.column.";
+				String[] columns;
+				switch (folderInfo.getCollectionType()) {
+				default:
+				case FILESPACES:  baseNameKey += "filespaces."; columns = new String[]{"title", "rights", "description"}; break;
+				case MYFILES:     baseNameKey += "myfiles.";    columns = new String[]{"title", "family", "date"};        break;
+				case SHARED:      baseNameKey += "shared.";     columns = new String[]{"title", "access", "sharedBy"};    break;
+				}
+				columnNames = getColumnsLHMFromAS(columns);
+			}
+			
 			else {
-				// No, we aren't showing the root profiles binder
-				// either!  If we weren't given a folder...
+				// No, we aren't viewing a collection either!  If we
+				// weren't given a folder...
 				if (null == folder) {
 					// ...we can't do anything with it.
             		throw
@@ -1799,7 +1819,7 @@ public class GwtViewHelper {
 			fixupFCs(fcList, isTrash);
 			
 
-			if (includeConfigurationInfo && (!isTrash)) {
+			if (includeConfigurationInfo && (!isTrash) && (!isCollection)) {
 				//Build a list of all possible columns
 				Map<String,Definition> entryDefs = DefinitionHelper.getEntryDefsAsMap(((Folder) bs.getBinderModule().getBinder(folderId)));
 				for (Definition def :  entryDefs.values()) {
@@ -1812,30 +1832,26 @@ public class GwtViewHelper {
 						String caption = (String)((Map)me.getValue()).get("caption");
 						String colName = def.getId()+","+type+","+eleName+","+caption;
 						if (!columnsAll.contains(colName)) {
-							if (type.equals("selectbox") ||
-									type.equals("selectbox") ||
-									type.equals("radio") ||
-									type.equals("checkbox") ||
-									type.equals("date") ||
-									type.equals("date_time") ||
-									type.equals("event") ||
-									type.equals("text") ||
-									type.equals("number") ||
-									type.equals("url") ||
-									type.equals("hidden") ||
-									type.equals("user_list") ||
+							if (type.equals(    "selectbox"        ) ||
+									type.equals("radio"            ) ||
+									type.equals("checkbox"         ) ||
+									type.equals("date"             ) ||
+									type.equals("date_time"        ) ||
+									type.equals("event"            ) ||
+									type.equals("text"             ) ||
+									type.equals("number"           ) ||
+									type.equals("url"              ) ||
+									type.equals("hidden"           ) ||
+									type.equals("user_list"        ) ||
 									type.equals("userListSelectbox")) {
 								FolderColumn fc = new FolderColumn(colName);
 								fc.setColumnDefId(def.getId());
 								fc.setColumnType(type);
 								// Is this column to be shown?
 								String columnValue = ((String) columnNames.get(colName));
-								if (!(MiscUtil.hasString(columnValue))) {
-									// No!  
-									fc.setColumnIsShown(Boolean.FALSE);
-								} else {
-									fc.setColumnIsShown(Boolean.TRUE);
-								}
+								if (!(MiscUtil.hasString(columnValue)))
+								     fc.setColumnIsShown(Boolean.FALSE);
+								else fc.setColumnIsShown(Boolean.TRUE );
 			
 								// Is there a custom title for this column?
 								String colTitleDefault = (String)((Map)me.getValue()).get("caption");
@@ -1847,15 +1863,15 @@ public class GwtViewHelper {
 								}
 								fc.setColumnDefaultTitle(colTitleDefault);
 								String colTitle = (String) columnTitles.get(colName);
-								if (!(MiscUtil.hasString(colTitle))) {
-									// There is no custom title,  use the default.
-									colTitle = colTitleDefault;
-								} else {
-									fc.setColumnCustomTitle(colTitle);
-								}
+								if (!(MiscUtil.hasString(colTitle)))
+								     // There is no custom title,  use the default.
+								     colTitle = colTitleDefault;
+								else fc.setColumnCustomTitle(colTitle);
 								fc.setColumnTitle(colTitle);
 			
-								// Add a FolderColumn for this to the list of all columns if it isn't already there.
+								// Add a FolderColumn for this to the
+								// list of all columns if it isn't
+								// already there.
 								fcListAll.add(fc);
 								columnsAll.add(colName);
 							}

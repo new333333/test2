@@ -115,9 +115,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.MenuBar;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
-
 
 /**
  * This widget will display Vibe's main menu control.
@@ -348,7 +346,6 @@ public class MainMenuControl extends Composite
 		// ...add the search widgets to the right end of the menu...
 		m_searchPanel = new SearchMenuPanel();
 		menuPanel.add(m_searchPanel);
-		final MainMenuControl mainMenu = this;
 		m_soButton = new MenuBarButton(m_images.searchOptions(), m_messages.mainMenuAltSearchOptions(), new Command() {
 			@Override
 			public void execute() {
@@ -384,14 +381,7 @@ public class MainMenuControl extends Composite
 								// Position and show the popup as per
 								// the position of the search panel on
 								// the menu.
-								m_soPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-									@Override
-									public void setPosition(int offsetWidth, int offsetHeight) {
-										int soPopupLeft = ((m_soButton.getAbsoluteLeft() + m_soButton.getOffsetWidth()) - offsetWidth);
-										int soPopupTop  = mainMenu.getParent().getElement().getAbsoluteBottom();
-										m_soPopup.setPopupPosition(soPopupLeft, soPopupTop);
-									}
-								});
+								m_soPopup.showRelativeTo(m_soButton);
 							}
 						};
 						Scheduler.get().scheduleDeferred(doShow);
