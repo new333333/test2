@@ -37,5 +37,5 @@ package org.kablink.teaming.remoting.rest.v1.resource;
  * Date: 6/18/12
  * Time: 1:47 PM
  */
-abstract public class AbstractPrincipalResource extends AbstractDefinableEntitiesResource {
+abstract public class AbstractPrincipalResource extends AbstractDefinableEntityResource {
 }

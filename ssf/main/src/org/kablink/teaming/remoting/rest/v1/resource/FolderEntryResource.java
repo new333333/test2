@@ -79,7 +79,7 @@ import java.util.Map;
 @Path("/v1/folder_entries")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class FolderEntriesResource extends AbstractDefinableEntitiesResource {
+public class FolderEntryResource extends AbstractDefinableEntityResource {
 
 	@POST
     @Path("/legacy_query")

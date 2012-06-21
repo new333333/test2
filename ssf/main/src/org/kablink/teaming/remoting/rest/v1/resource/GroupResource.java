@@ -57,7 +57,7 @@ import java.util.Map;
 @Path("/v1/groups")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class GroupsResource extends AbstractPrincipalResource {
+public class GroupResource extends AbstractPrincipalResource {
 	// Get all users
 	@GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
