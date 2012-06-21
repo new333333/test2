@@ -1580,9 +1580,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				ti = TreeInfo.findBinderTrash(rootTI);
 			}
 			if (null == ti) {
-				Long binderId = osbInfo.getBinderId();
-				if (null != binderId) {
-					ti = TreeInfo.findBinderTI(rootTI, binderId.toString());
+				if (osbInfo.isCollection()) {
+					ti = TreeInfo.findCollectionTI(rootTI, osbInfo.getCollectionType());
+				}
+				else {
+					Long binderId = osbInfo.getBinderId();
+					if (null != binderId) {
+						ti = TreeInfo.findBinderTI(rootTI, binderId.toString());
+					}
 				}
 			}
 			Image binderImg;
