@@ -180,7 +180,7 @@ public class LinkUriUtil {
         fp.addAdditionalLink("content", baseUrl);
         fp.addAdditionalLink("major_version", baseUrl + "/major_version");
         fp.addAdditionalLink("versions", baseUrl + "/versions");
-        fp.addAdditionalLink("current_version", baseUrl + "/version/current");
+        fp.addAdditionalLink("current_version", baseUrl + "/versions/current");
     }
 
     public static void populateFileVersionLinks(FileVersionProperties fp) {
