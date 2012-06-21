@@ -4079,8 +4079,20 @@ public class GwtServerHelper {
 			membershipIds = new HashSet<Long>();
 			
 			// Capture the current membership of the group before it gets modified
-			currentMembers = new ArrayList<Principal>( group.getMembers() );
-			m_logger.debug( "GwtServerHelper.modifyGroup(), number of members in current group membership: " + String.valueOf( currentMembers.size() ) );
+			{
+				ArrayList<Principal> tmpMembers;
+				
+				// It seems that group.getMembers() changed and is returning a list of
+				// UserPrincipal objects instead of a list of User and Group objects.
+				// This is causing problems when we re-index.  See bug 768094.
+				currentMembers = new ArrayList<Principal>();
+				tmpMembers = new ArrayList<Principal>( group.getMembers() );
+				for (Principal nextMember : tmpMembers)
+				{
+					currentMembers.add( ami.getProfileModule().getEntry( nextMember.getId() ) );
+				}
+				m_logger.debug( "GwtServerHelper.modifyGroup(), number of members in current group membership: " + String.valueOf( currentMembers.size() ) );
+			}
 			
 			// Is the group membership dynamic?
 			if ( isMembershipDynamic )
