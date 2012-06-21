@@ -44,7 +44,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class DefinitionBrief extends BaseRestObject {
     private String id;
    	private String internalId;
-   	private int type;
+   	private Integer type;
    	private String name;
    	private String title;
 
@@ -90,11 +90,11 @@ public class DefinitionBrief extends BaseRestObject {
         this.title = title;
     }
 
-    public int getType() {
+    public Integer getType() {
         return type;
     }
 
-    public void setType(int type) {
+    public void setType(Integer type) {
         this.type = type;
     }
 }

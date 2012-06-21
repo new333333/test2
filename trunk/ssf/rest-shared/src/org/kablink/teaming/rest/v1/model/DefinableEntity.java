@@ -54,7 +54,7 @@ public abstract class DefinableEntity extends BaseRestObject {
     private HistoryStamp modification;
    	private Description description;
    	private AverageRating averageRating;
-   	private boolean eventAsIcalString;
+   	private Boolean eventAsIcalString;
     private BaseFileProperties [] attachments;
     private CustomField [] customFields;
 
@@ -104,11 +104,11 @@ public abstract class DefinableEntity extends BaseRestObject {
     }
 
     @XmlElement(name="event_as_ical_string")
-    public boolean isEventAsIcalString() {
+    public Boolean isEventAsIcalString() {
         return eventAsIcalString;
     }
 
-    public void setEventAsIcalString(boolean eventAsIcalString) {
+    public void setEventAsIcalString(Boolean eventAsIcalString) {
         this.eventAsIcalString = eventAsIcalString;
     }
 

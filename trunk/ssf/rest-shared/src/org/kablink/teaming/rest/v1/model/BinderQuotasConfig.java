@@ -42,34 +42,34 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="binder_quotas")
 public class BinderQuotasConfig {
-    private boolean initialized;
-   	private boolean enabled;
-   	private boolean allowOwner;
+    private Boolean initialized;
+   	private Boolean enabled;
+   	private Boolean allowOwner;
 
     @XmlElement(name="allow_owner")
-    public boolean isAllowOwner() {
+    public Boolean isAllowOwner() {
         return allowOwner;
     }
 
-    public void setAllowOwner(boolean allowOwner) {
+    public void setAllowOwner(Boolean allowOwner) {
         this.allowOwner = allowOwner;
     }
 
     @XmlElement(name="enabled")
-    public boolean isEnabled() {
+    public Boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
     @XmlElement(name="initialized")
-    public boolean isInitialized() {
+    public Boolean isInitialized() {
         return initialized;
     }
 
-    public void setInitialized(boolean initialized) {
+    public void setInitialized(Boolean initialized) {
         this.initialized = initialized;
     }
 }

@@ -42,34 +42,34 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "disk_quotas_config")
 public class DiskQuotasConfig {
-    private boolean enabled;
-   	private int userDefault;
-   	private int highwaterPercentage;
+    private Boolean enabled;
+   	private Integer userDefault;
+   	private Integer highwaterPercentage;
 
     @XmlElement(name="enabled")
-    public boolean isEnabled() {
+    public Boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
     @XmlElement(name="highwater_percentage")
-    public int getHighwaterPercentage() {
+    public Integer getHighwaterPercentage() {
         return highwaterPercentage;
     }
 
-    public void setHighwaterPercentage(int highwaterPercentage) {
+    public void setHighwaterPercentage(Integer highwaterPercentage) {
         this.highwaterPercentage = highwaterPercentage;
     }
 
     @XmlElement(name="user_default")
-    public int getUserDefault() {
+    public Integer getUserDefault() {
         return userDefault;
     }
 
-    public void setUserDefault(int userDefault) {
+    public void setUserDefault(Integer userDefault) {
         this.userDefault = userDefault;
     }
 }
