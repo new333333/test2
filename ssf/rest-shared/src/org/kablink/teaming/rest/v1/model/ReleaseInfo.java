@@ -40,10 +40,10 @@ import java.util.Calendar;
 public class ReleaseInfo extends BaseRestObject {
     private String productName;
    	private String productVersion;
-   	private int buildNumber;
+   	private Integer buildNumber;
    	private Calendar buildDate;
    	private Calendar serverStartTime;
-   	private boolean licenseRequiredEdition;
+   	private Boolean licenseRequiredEdition;
    	private String contentVersion;
 
     @XmlElement(name="build_date")
@@ -52,7 +52,7 @@ public class ReleaseInfo extends BaseRestObject {
     }
 
     @XmlElement(name="build_number")
-    public int getBuildNumber() {
+    public Integer getBuildNumber() {
         return buildNumber;
     }
 
@@ -62,7 +62,7 @@ public class ReleaseInfo extends BaseRestObject {
     }
 
     @XmlElement(name="licensed_edition")
-    public boolean isLicenseRequiredEdition() {
+    public Boolean isLicenseRequiredEdition() {
         return licenseRequiredEdition;
     }
 
@@ -85,7 +85,7 @@ public class ReleaseInfo extends BaseRestObject {
         this.buildDate = buildDate;
     }
 
-    public void setBuildNumber(int buildNumber) {
+    public void setBuildNumber(Integer buildNumber) {
         this.buildNumber = buildNumber;
     }
 
@@ -93,7 +93,7 @@ public class ReleaseInfo extends BaseRestObject {
         this.contentVersion = contentVersion;
     }
 
-    public void setLicenseRequiredEdition(boolean licenseRequiredEdition) {
+    public void setLicenseRequiredEdition(Boolean licenseRequiredEdition) {
         this.licenseRequiredEdition = licenseRequiredEdition;
     }
 

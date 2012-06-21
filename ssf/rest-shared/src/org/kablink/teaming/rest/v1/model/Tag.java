@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Tag extends BaseRestObject {
 	protected String id;
 	protected String name="";
-	protected boolean isPublic=false;
+	protected Boolean isPublic=false;
 	private EntityId entity;
 	
    public String getId() {
@@ -62,10 +62,10 @@ public class Tag extends BaseRestObject {
 	    this.name = name;
 	}	
 
-	public boolean isPublic() {
+	public Boolean isPublic() {
 		return isPublic;
 	}
-	public void setPublic(boolean isPublic) {
+	public void setPublic(Boolean isPublic) {
 		this.isPublic = isPublic;
 	}
 	

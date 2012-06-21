@@ -39,19 +39,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement (name="folder_entry")
 public class FolderEntry extends Entry {
     private String docNumber;
-   	private int docLevel;
+   	private Integer docLevel;
     private HistoryStamp reservation;
-    private int replyCount;
-    private int totalReplyCount;
+    private Integer replyCount;
+    private Integer totalReplyCount;
     private LongIdLinkPair parentEntry;
     private LongIdLinkPair topEntry;
 
     @XmlElement(name = "doc_level")
-    public int getDocLevel() {
+    public Integer getDocLevel() {
         return docLevel;
     }
 
-    public void setDocLevel(int docLevel) {
+    public void setDocLevel(Integer docLevel) {
         this.docLevel = docLevel;
     }
 
@@ -73,20 +73,20 @@ public class FolderEntry extends Entry {
     }
 
     @XmlElement(name = "reply_count")
-    public int getReplyCount() {
+    public Integer getReplyCount() {
         return replyCount;
     }
 
-    public void setReplyCount(int replyCount) {
+    public void setReplyCount(Integer replyCount) {
         this.replyCount = replyCount;
     }
 
     @XmlElement(name = "total_reply_count")
-    public int getTotalReplyCount() {
+    public Integer getTotalReplyCount() {
         return totalReplyCount;
     }
 
-    public void setTotalReplyCount(int totalReplyCount) {
+    public void setTotalReplyCount(Integer totalReplyCount) {
         this.totalReplyCount = totalReplyCount;
     }
 

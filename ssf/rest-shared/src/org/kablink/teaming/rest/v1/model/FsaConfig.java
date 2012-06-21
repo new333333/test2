@@ -42,10 +42,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "fsa_config")
 public class FsaConfig {
-    private boolean enabled;
-   	private int syncInterval;
+    private Boolean enabled;
+   	private Integer syncInterval;
    	private String autoUpdateUrl;
-   	private long maxFileSize;
+   	private Long maxFileSize;
 
     @XmlElement(name="auto_update_url")
     public String getAutoUpdateUrl() {
@@ -57,29 +57,29 @@ public class FsaConfig {
     }
 
     @XmlElement(name="enabled")
-    public boolean isEnabled() {
+    public Boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
     @XmlElement(name="max_file_size")
-    public long getMaxFileSize() {
+    public Long getMaxFileSize() {
         return maxFileSize;
     }
 
-    public void setMaxFileSize(long maxFileSize) {
+    public void setMaxFileSize(Long maxFileSize) {
         this.maxFileSize = maxFileSize;
     }
 
     @XmlElement(name="sync_interval")
-    public int getSyncInterval() {
+    public Integer getSyncInterval() {
         return syncInterval;
     }
 
-    public void setSyncInterval(int syncInterval) {
+    public void setSyncInterval(Integer syncInterval) {
         this.syncInterval = syncInterval;
     }
 }

@@ -12,15 +12,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class FolderEntryBrief extends EntryBrief {
    	private String docNumber;
-   	private int docLevel;
+   	private Integer docLevel;
     private String[] fileNames;
 
     @XmlElement(name = "doc_level")
-    public int getDocLevel() {
+    public Integer getDocLevel() {
         return docLevel;
     }
 
-    public void setDocLevel(int docLevel) {
+    public void setDocLevel(Integer docLevel) {
         this.docLevel = docLevel;
     }
 

@@ -45,7 +45,7 @@ public class ZoneConfig extends BaseRestObject {
     private BinderQuotasConfig binderQuotasConfig;
     private DiskQuotasConfig diskQuotasConfig;
     private FsaConfig fsaConfig;
-   	private boolean mobileAccessEnabled;
+   	private Boolean mobileAccessEnabled;
    	private Long fileSizeLimitUserDefault;
    	private Long fileVersionsMaxAge;
 
@@ -92,11 +92,11 @@ public class ZoneConfig extends BaseRestObject {
         this.fileVersionsMaxAge = fileVersionsMaxAge;
     }
 
-    public boolean isMobileAccessEnabled() {
+    public Boolean isMobileAccessEnabled() {
         return mobileAccessEnabled;
     }
 
-    public void setMobileAccessEnabled(boolean mobileAccessEnabled) {
+    public void setMobileAccessEnabled(Boolean mobileAccessEnabled) {
         this.mobileAccessEnabled = mobileAccessEnabled;
     }
 }

@@ -42,13 +42,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement (name="description")
 public class Description {
     private String text;
-    private int format;
+    private Integer format;
 
-    public int getFormat() {
+    public Integer getFormat() {
         return format;
     }
 
-    public void setFormat(int format) {
+    public void setFormat(Integer format) {
         this.format = format;
     }
 

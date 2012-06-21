@@ -41,16 +41,16 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public abstract class Principal extends Entry {
     private String emailAddress;
-   	private boolean disabled;
-   	private boolean reserved;
+   	private Boolean disabled;
+   	private Boolean reserved;
    	private String name;
 
     @XmlElement(name="disabled")
-    public boolean isDisabled() {
+    public Boolean isDisabled() {
         return disabled;
     }
 
-    public void setDisabled(boolean disabled) {
+    public void setDisabled(Boolean disabled) {
         this.disabled = disabled;
     }
 
@@ -72,11 +72,11 @@ public abstract class Principal extends Entry {
         this.name = name;
     }
 
-    public boolean isReserved() {
+    public Boolean isReserved() {
         return reserved;
     }
 
-    public void setReserved(boolean reserved) {
+    public void setReserved(Boolean reserved) {
         this.reserved = reserved;
     }
 }
