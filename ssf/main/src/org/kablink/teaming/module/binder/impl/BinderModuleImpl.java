@@ -1647,7 +1647,29 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return null;
 	}
 
-	public SortedSet<Principal> getTeamMembers(Binder binder,
+    public Binder getBinderByParentAndTitle(Long parentBinderId, String title) throws AccessControlException {
+        Binder binder = getCoreDao().loadBinderByParentAndName(parentBinderId, title,
+                RequestContextHolder.getRequestContext().getZoneId());
+        if (binder!=null) {
+            if (binder.isDeleted() || (binder instanceof Folder && ((Folder)binder).isPreDeleted())
+                    || (binder instanceof Workspace && ((Workspace)binder).isPreDeleted())) {
+                binder = null;
+            } else {
+                try {
+                    getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+                } catch(AccessControlException ace) {
+                    try {
+                        getAccessControlManager().checkOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
+                    } catch(AccessControlException ace2) {
+                        throw ace;
+                    }
+                }
+            }
+        }
+        return binder;
+    }
+
+    public SortedSet<Principal> getTeamMembers(Binder binder,
 			boolean explodeGroups) {
 		// If have binder , can read so no more access checking is needed
 		Set ids = binder.getTeamMemberIds();

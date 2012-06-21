@@ -251,4 +251,6 @@ public interface CoreDao {
 
 	public List<Binder> loadBindersByPathName(final String pathName, final Long zoneId);
 
+    public Binder loadBinderByParentAndName(final Long parentBinderId, final String title, final Long zoneId);
+
 }

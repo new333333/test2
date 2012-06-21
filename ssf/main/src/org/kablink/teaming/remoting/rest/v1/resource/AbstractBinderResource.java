@@ -50,6 +50,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
      * @return  Returns a subclass of Binder.
      */
     @GET
+    @Path("{id}")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Binder getBinder(@PathParam("id") long id,
                             @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
@@ -57,6 +58,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     }
 
     @PUT
+    @Path("{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public void updateBinder(@PathParam("id") long id, Binder binder)
             throws WriteFilesException, WriteEntryDataException {
@@ -70,6 +72,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
      * @param id    The ID of the binder to delete.
      */
     @DELETE
+    @Path("{id}")
     public void deleteBinder(@PathParam("id") long id) {
         _deleteBinder(id);
     }
@@ -80,7 +83,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
      * @return Returns a list of BinderBrief objects.
      */
 	@GET
-	@Path("binders")
+	@Path("{id}/binders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<BinderBrief> getSubBinders(@PathParam("id") long id,
 			@QueryParam("first") Integer offset,
@@ -98,7 +101,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
      * @return Returns a Binder object representing the newly created binder.
      */
 	@POST
-	@Path("binders")
+	@Path("{id}/binders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public Binder createSubBinder(@PathParam("id") long id, Binder binder, @QueryParam("template") Long templateId)
@@ -107,7 +110,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 	}
 
 	@GET
-	@Path("binder_tree")
+	@Path("{id}/binder_tree")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public BinderTree getSubBinderTree(@PathParam("id") long id) {
         return getSubBinderTree(id, null);
@@ -115,7 +118,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 
 	// Read entries
 	@GET
-	@Path("files")
+	@Path("{id}/files")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<FileProperties> getFiles(@PathParam("id") long id,
                                                   @QueryParam("recursive") @DefaultValue("false") boolean recursive,

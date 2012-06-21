@@ -70,14 +70,14 @@ import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.api.ApiErrorCode;
 
-@Path("/v1/folder/{id}")
+@Path("/v1/folder")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class FolderResource extends AbstractBinderResource {
 
 	// Read sub-folders
 	@GET
-	@Path("folders")
+	@Path("{id}/folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<BinderBrief> getSubFolders(@PathParam("id") long id,
 			@QueryParam("first") Integer offset,
@@ -88,7 +88,7 @@ public class FolderResource extends AbstractBinderResource {
 	}
 	
     @POST
-   	@Path("folders")
+   	@Path("{id}/folders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
    	public org.kablink.teaming.rest.v1.model.Binder createSubFolder(@PathParam("id") long id, org.kablink.teaming.rest.v1.model.Binder binder, @QueryParam("template") Long templateId)
@@ -104,7 +104,7 @@ public class FolderResource extends AbstractBinderResource {
 
 	// Read entries
 	@GET
-	@Path("entries")
+	@Path("{id}/entries")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<FolderEntryBrief> getFolderEntries(@PathParam("id") long id,
                                                             @QueryParam("first") Integer offset,
@@ -139,7 +139,7 @@ public class FolderResource extends AbstractBinderResource {
 	}
 
     @POST
-   	@Path("entries")
+   	@Path("{id}/entries")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
    	public FolderEntry createFolderEntry(@PathParam("id") long id,
