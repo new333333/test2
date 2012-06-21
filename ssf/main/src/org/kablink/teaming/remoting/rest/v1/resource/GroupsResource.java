@@ -34,6 +34,7 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.ChainedInputData;
@@ -41,18 +42,22 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.util.*;
 import org.kablink.teaming.rest.v1.model.*;
+import org.kablink.teaming.rest.v1.model.Group;
+import org.kablink.teaming.rest.v1.model.Principal;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.util.api.ApiErrorCode;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Path("/v1/groups")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class GroupsResource extends AbstractResource {
+public class GroupsResource extends AbstractPrincipalResource {
 	// Get all users
 	@GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -94,4 +99,99 @@ public class GroupsResource extends AbstractResource {
 
         return ResourceUtil.buildGroup(getProfileModule().addGroup(defId, new RestModelInputData(group), null, null), true);
 	}
+
+    @GET
+    @Path("/name/{name}")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public Group getGroup(@PathParam("name") String name,
+                          @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
+        if (name==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing name query parameter.");
+        }
+        return ResourceUtil.buildGroup(getProfileModule().getGroup(name), includeAttachments);
+    }
+
+    @GET
+    @Path("/{id}")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public Group getGroup(@PathParam("id") long id,
+                        @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
+        return ResourceUtil.buildGroup(_getGroup(id), includeAttachments);
+    }
+
+    @PUT
+    @Path("/{id}")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public void updateGroup(@PathParam("id") long id, Group group)
+            throws WriteFilesException, WriteEntryDataException {
+        _getGroup(id);
+        getProfileModule().modifyEntry(id, new RestModelInputData(group));
+    }
+
+    @GET
+    @Path("/{id}/members")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<GroupMember> getMembers(@PathParam("id") long id,
+                                                       @QueryParam("first") @DefaultValue("0") int offset,
+                                                       @QueryParam("count") @DefaultValue("-1") int maxCount) {
+        org.kablink.teaming.domain.Group group = _getGroup(id);
+        List members = group.getMembers();
+        int length = members.size();
+        if(maxCount > 0)
+            length = Math.min(length - offset, maxCount);
+        if(length < 0)
+            length = 0;
+        SearchResultList<GroupMember> results = new SearchResultList<GroupMember>(offset);
+        for(int i=0; i<length; ++i) {
+            org.kablink.teaming.domain.Principal member = (org.kablink.teaming.domain.Principal) members.get(offset+i);
+            results.append(ResourceUtil.buildGroupMember(id, member));
+        }
+        results.setTotal(members.size());
+        results.setNextIfNecessary(LinkUriUtil.getGroupLinkUri(id) + "/members");
+        return results;
+    }
+
+    @POST
+    @Path("/{id}/members")
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public void addMembers(@PathParam("id") long id, PrincipalBrief principal)
+            throws WriteFilesException, WriteEntryDataException {
+        if (principal ==null || principal.getId()==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No user or group id was supplied in the POST data.");
+        }
+        org.kablink.teaming.domain.Group group = _getGroup(id);
+        UserPrincipal member = (UserPrincipal)getProfileModule().getEntry(principal.getId());
+
+        Map updates = new HashMap();
+        List members = new ArrayList(group.getMembers());
+        members.add(member);
+        updates.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, members);
+        getProfileModule().modifyEntry(group.getId(), new MapInputData(updates));
+    }
+
+    @DELETE
+    @Path("/{id}/members/{memberId}")
+    public void removeMember(@PathParam("id") long id, @PathParam("memberId") long memberId) throws WriteFilesException, WriteEntryDataException {
+        org.kablink.teaming.domain.Group group = _getGroup(id);
+        org.kablink.teaming.domain.Principal member = getProfileModule().getEntry(memberId);
+        Map updates = new HashMap();
+        List members = new ArrayList(group.getMembers());
+        members.remove(member);
+        updates.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, members);
+        getProfileModule().modifyEntry(group.getId(), new MapInputData(updates));
+    }
+
+    @Override
+    protected EntityIdentifier.EntityType _getEntityType() {
+        return EntityIdentifier.EntityType.group;
+    }
+
+    private org.kablink.teaming.domain.Group _getGroup(long id) {
+        org.kablink.teaming.domain.Principal entry = getProfileModule().getEntry(id);
+
+        if(!(entry instanceof org.kablink.teaming.domain.Group))
+            throw new NoGroupByTheIdException(id);
+        return (org.kablink.teaming.domain.Group) entry;
+    }
 }

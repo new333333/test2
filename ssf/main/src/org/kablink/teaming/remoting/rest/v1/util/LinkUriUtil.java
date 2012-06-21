@@ -69,7 +69,7 @@ public class LinkUriUtil {
     };
 
     public static String getBinderLinkUri(Long id) {
-        return "/binder/" + id;
+        return "/binders/" + id;
     }
 
     public static String getFolderLinkUri(Long id) {
@@ -124,11 +124,11 @@ public class LinkUriUtil {
     }
 
     public static String getFileBaseLinkUri(FileProperties fp) {
-        return "/file/" + fp.getId();
+        return "/files/" + fp.getId();
     }
 
     public static String getFileVersionBaseLinkUri(FileVersionProperties fp) {
-        return "/file_version/" + fp.getId();
+        return "/file_versions/" + fp.getId();
     }
 
     public static void populateDefinableEntityLinks(BaseRestObject model) {
@@ -190,7 +190,7 @@ public class LinkUriUtil {
         fp.addAdditionalLink("note", baseUrl + "/note");
         fp.addAdditionalLink("status", baseUrl + "/status");
         fp.addAdditionalLink("current", baseUrl + "/current");
-        fp.addAdditionalLink("file_metadata", "/file/" + fp.getId() + "/metadata");
+        fp.addAdditionalLink("file_metadata", "/files/" + fp.getId() + "/metadata");
     }
 
     public static String getIconLinkUri(String iconName, String entityType) {
@@ -212,23 +212,23 @@ public class LinkUriUtil {
     }
 
     public static String getDefinitionLinkUri(String id) {
-        return "/definition/" + id;
+        return "/definitions/" + id;
     }
 
     public static String getTemplateLinkUri(TemplateBrief model) {
-        return "/template/" + model.getId();
+        return "/templates/" + model.getId();
     }
 
     public static String getFolderOperationLinkUri(BinderModule.BinderOperation operation) {
-        return "/folders/operation/" + operation.name();
+        return "/folders/operations/" + operation.name();
     }
 
     public static String getFolderOperationLinkUri(FolderModule.FolderOperation operation) {
-        return "/folders/operation/" + operation.name();
+        return "/folders/operations/" + operation.name();
     }
 
     public static String getFolderEntryOperationLinkUri(FolderModule.FolderOperation operation) {
-        return "/folder_entries/operation/" + operation.name();
+        return "/folder_entries/operations/" + operation.name();
     }
 
     public static String getTagLinkUri(Tag model) {
@@ -242,20 +242,20 @@ public class LinkUriUtil {
 
     public static String getDefinableEntityLinkUri(EntityIdentifier.EntityType type, Long id) {
         if (type==EntityIdentifier.EntityType.folderEntry) {
-            return "/folder_entry/" + id;
+            return "/folder_entries/" + id;
         } else if (type==EntityIdentifier.EntityType.folder) {
-            return "/folder/" + id;
+            return "/folders/" + id;
         } else if (type==EntityIdentifier.EntityType.group) {
-            return "/group/" + id;
+            return "/groups/" + id;
         } else if (type==EntityIdentifier.EntityType.user) {
-            return "/user/" + id;
+            return "/users/" + id;
         } else if (type==EntityIdentifier.EntityType.workspace) {
-            return "/workspace/" + id;
+            return "/workspaces/" + id;
         }
         return null;
     }
 
     public static String getGroupMemberLinkUri(long groupId, Long memberId) {
-        return getGroupLinkUri(groupId) + "/member/" + memberId;
+        return getGroupLinkUri(groupId) + "/members/" + memberId;
     }
 }

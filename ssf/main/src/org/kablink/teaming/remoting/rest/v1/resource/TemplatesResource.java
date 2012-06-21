@@ -40,6 +40,7 @@ import org.kablink.teaming.rest.v1.model.TemplateBrief;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
@@ -61,5 +62,11 @@ public class TemplatesResource extends AbstractResource {
             results.append(ResourceUtil.buildTemplateBrief(template));
         }
         return results;
+    }
+
+    @GET
+    @Path("/{id}")
+    public TemplateBrief getTemplate(@PathParam("id") Long id) {
+        return ResourceUtil.buildTemplateBrief(getTemplateModule().getTemplate(id));
     }
 }

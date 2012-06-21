@@ -60,7 +60,7 @@ import java.util.Map;
 @Path("/v1/binders")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class BindersResource extends AbstractDefinableEntitiesResource {
+public class BindersResource extends AbstractResource {
     @POST
     @Path("/legacy_query")
    	public SearchResultList<BinderBrief> getWorkspaces(@Context HttpServletRequest request,
@@ -73,4 +73,27 @@ public class BindersResource extends AbstractDefinableEntitiesResource {
            SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultsMap, "/binders/legacy_query", offset);
            return results;
    	}
+
+    /**
+     * Returns the Binder with the specified ID.
+     * @param id    The ID of the binder to return.
+     * @param includeAttachments    Configures whether attachments should be included in the returned Binder object.
+     * @return  Returns a subclass of Binder.
+     */
+    @GET
+    @Path("{id}")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public Binder getBinder(@PathParam("id") long id,
+                            @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
+        return ResourceUtil.buildBinder(_getBinder(id), includeAttachments);
+    }
+
+    protected org.kablink.teaming.domain.Binder _getBinder(long id) {
+        try{
+            return getBinderModule().getBinder(id);
+        } catch (NoBinderByTheIdException e) {
+            // Throw exception below.
+        }
+        throw new NotFoundException(ApiErrorCode.BINDER_NOT_FOUND, "NOT FOUND");
+    }
 }
