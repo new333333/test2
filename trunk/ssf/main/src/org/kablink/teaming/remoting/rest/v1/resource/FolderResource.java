@@ -82,7 +82,7 @@ import java.util.Map;
 @Path("/v1/folders")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class FoldersResource extends AbstractBinderResource {
+public class FolderResource extends AbstractBinderResource {
 
 	// Read sub-folders
 	@GET

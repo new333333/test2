@@ -78,7 +78,7 @@ import org.kablink.util.api.ApiErrorCode;
 @Path("/v1/users")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class UsersResource extends AbstractPrincipalResource {
+public class UserResource extends AbstractPrincipalResource {
 	// Get all users
 	@GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})

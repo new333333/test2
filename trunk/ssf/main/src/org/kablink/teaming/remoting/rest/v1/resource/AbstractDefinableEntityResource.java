@@ -73,7 +73,7 @@ import java.util.Set;
  * Date: 6/1/12
  * Time: 11:11 AM
  */
-public abstract class AbstractDefinableEntitiesResource extends AbstractFileResource {
+public abstract class AbstractDefinableEntityResource extends AbstractFileResource {
     @GET
     @Path("{id}/attachments")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})

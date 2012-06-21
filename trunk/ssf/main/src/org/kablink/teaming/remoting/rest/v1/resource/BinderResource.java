@@ -60,7 +60,7 @@ import java.util.Map;
 @Path("/v1/binders")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class BindersResource extends AbstractResource {
+public class BinderResource extends AbstractResource {
     @POST
     @Path("/legacy_query")
    	public SearchResultList<BinderBrief> getWorkspaces(@Context HttpServletRequest request,

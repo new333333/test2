@@ -1,9 +1,7 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
-import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -41,7 +39,7 @@ import java.util.Map;
  * Date: 5/21/12
  * Time: 2:08 PM
  */
-abstract public class AbstractBinderResource extends AbstractDefinableEntitiesResource {
+abstract public class AbstractBinderResource extends AbstractDefinableEntityResource {
 
     /**
      * Returns the binder with the specified ID.

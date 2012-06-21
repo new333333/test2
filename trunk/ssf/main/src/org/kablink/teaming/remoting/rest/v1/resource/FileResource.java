@@ -75,7 +75,7 @@ import java.util.List;
 @Path("/v1/files/{id}")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class FilesResource extends AbstractFileResource {
+public class FileResource extends AbstractFileResource {
     @POST
    	@Consumes(MediaType.MULTIPART_FORM_DATA)
    	public FileProperties writeFileContentById_MultipartFormData(@PathParam("id") String fileId,

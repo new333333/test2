@@ -33,10 +33,10 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
-import org.kablink.teaming.domain.TemplateBinder;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
+import org.kablink.teaming.rest.v1.model.DefinitionBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
-import org.kablink.teaming.rest.v1.model.TemplateBrief;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -47,26 +47,29 @@ import java.util.List;
 
 /**
  * User: david
- * Date: 5/29/12
- * Time: 11:49 AM
+ * Date: 5/25/12
+ * Time: 12:22 PM
  */
-@Path("/v1/templates")
+@Path("/v1/definitions")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class TemplatesResource extends AbstractResource {
+public class DefinitionResource extends AbstractResource {
     @GET
-    public SearchResultList<TemplateBrief> getTemplates() {
-        List<TemplateBinder> templates = getTemplateModule().getTemplates();
-        SearchResultList<TemplateBrief> results = new SearchResultList<TemplateBrief>();
-        for (TemplateBinder template : templates) {
-            results.append(ResourceUtil.buildTemplateBrief(template));
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public SearchResultList<DefinitionBrief> getDefinitions() {
+        List<Definition> defs = getDefinitionModule().getDefinitions(null, Boolean.TRUE);
+        SearchResultList<DefinitionBrief> results = new SearchResultList<DefinitionBrief>();
+        for (Definition def : defs) {
+            results.append(ResourceUtil.buildDefinitionBrief(def));
         }
         return results;
     }
 
     @GET
-    @Path("/{id}")
-    public TemplateBrief getTemplate(@PathParam("id") Long id) {
-        return ResourceUtil.buildTemplateBrief(getTemplateModule().getTemplate(id));
+    @Path("{id}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public DefinitionBrief getDefinitions(@PathParam("id") String id) {
+        Definition def = getDefinitionModule().getDefinition(id);
+        return ResourceUtil.buildDefinitionBrief(def);
     }
 }
