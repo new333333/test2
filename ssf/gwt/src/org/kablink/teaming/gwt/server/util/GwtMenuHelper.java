@@ -73,6 +73,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsRpcRespons
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CalendarShow;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -349,48 +350,49 @@ public class GwtMenuHelper {
 	}
 	
 	/*
-	 * Constructs a ToolbarItem to configure the accessories panel.
+	 * Constructs a ToolbarItem for adding a new file folder the
+	 * workspace.
 	 */
-	private static void constructEntryConfigureAccessories(AllModulesInjected bs, HttpServletRequest request, Binder binder, List<ToolbarItem> configureToolbarItems) {
-		// Can the user configure accessories on this binder?
-		String viewType = DefinitionUtils.getViewType(binder);
-		if ((!(isViewBlog(viewType))) && (!(isViewMiniBlog(viewType)))) {
-			// Yes!  Create a configure accessories ToolbarItem.
-			boolean hideAccessories;
-			try                 {hideAccessories = GwtViewHelper.getAccessoryStatus(bs, request, binder.getId());}
-			catch (Exception e) {hideAccessories = false;}
-			String titleKey;
-			TeamingEvents event;
-			if (hideAccessories) {
-				titleKey = "misc.hideAccessories";
-				event    = TeamingEvents.HIDE_ACCESSORIES;
+	private static void constructEntryAddFileFolderItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws) {
+		// Can the user add a folder to this workspace?
+		if (bs.getBinderModule().testAccess(ws, BinderOperation.addFolder)) {
+			// Yes!  Can we access any folder templates?
+			TemplateModule tm = bs.getTemplateModule();
+			List<TemplateBinder> folderTemplates = tm.getTemplates(Definition.FOLDER_VIEW);
+			folderTemplates.addAll(tm.getTemplates(Definition.FOLDER_VIEW, ws, true));
+			if (folderTemplates.isEmpty()) {
+				folderTemplates.add(tm.addDefaultTemplate(Definition.FOLDER_VIEW));
 			}
-			else {
-				titleKey = "misc.showAccessories";
-				event    = TeamingEvents.SHOW_ACCESSORIES;
+			if ((null != folderTemplates) && (0 < folderTemplates.size())) {
+				// Yes!  Scan them.
+				Long folderTemplateId = null;
+				for (TemplateBinder tb:  folderTemplates) {
+					// Yes!  Is this template for a file folder?
+					String tbFamily = BinderHelper.getFamilyNameFromDef(tb.getEntryDef());
+					if (MiscUtil.hasString(tbFamily) && tbFamily.equalsIgnoreCase(Definition.FAMILY_FILE)) {
+						// Yes!  Save its ID.
+						folderTemplateId = tb.getId();
+						break;
+					}
+				}
+
+				// Did we find the template ID for a file folder?
+				if (null != folderTemplateId) {
+					// Yes!  Use the information we've got to add a
+					// ToolbarItem to add a new folder.
+					ToolbarItem addTBI = new ToolbarItem("1_add");
+					markTBITitle(addTBI, "toolbar.new");
+				
+					ToolbarItem addFolderTBI = new ToolbarItem(ADD_FOLDER);
+					markTBITitle(           addFolderTBI, "toolbar.menu.addFolder"           );
+					markTBIEvent(           addFolderTBI, TeamingEvents.INVOKE_ADD_NEW_FOLDER);
+					markTBIFolderTemplateId(addFolderTBI, folderTemplateId                   );
+					addTBI.addNestedItem(addFolderTBI);
+					
+					entryToolbar.addNestedItem(addTBI);
+				}
 			}
-			ToolbarItem accTBI = new ToolbarItem(CONFIGURE_ACCESSORIES);
-			markTBITitle(accTBI, titleKey);
-			markTBIEvent(accTBI, event   );
-			configureToolbarItems.add(accTBI);
 		}
-	}
-	
-	/*
-	 * Constructs a ToolbarItem for the add files applet.
-	 * 
-	 * At the point this gets called, we know the following:
-	 * 1. The user has rights to add entries to the folder;
-	 * 2. Applets are supported;
-	 * 3. The folder is not a mini-blog; and
-	 * 4. The folder is not a mirror file folder or it's a configured,
-	 *    writable mirrored file folder. 
-	 */
-	private static void constructEntryDropBoxItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
-		ToolbarItem dropBoxTBI = new ToolbarItem("dropBox");
-		markTBITitle(dropBoxTBI, "toolbar.menu.dropBox.dialog");
-		markTBIEvent(dropBoxTBI, TeamingEvents.INVOKE_DROPBOX);
-		entryToolbar.addNestedItem(dropBoxTBI);
 	}
 	
 	/*
@@ -534,6 +536,51 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Constructs a ToolbarItem to configure the accessories panel.
+	 */
+	private static void constructEntryConfigureAccessories(AllModulesInjected bs, HttpServletRequest request, Binder binder, List<ToolbarItem> configureToolbarItems) {
+		// Can the user configure accessories on this binder?
+		String viewType = DefinitionUtils.getViewType(binder);
+		if ((!(isViewBlog(viewType))) && (!(isViewMiniBlog(viewType)))) {
+			// Yes!  Create a configure accessories ToolbarItem.
+			boolean hideAccessories;
+			try                 {hideAccessories = GwtViewHelper.getAccessoryStatus(bs, request, binder.getId());}
+			catch (Exception e) {hideAccessories = false;}
+			String titleKey;
+			TeamingEvents event;
+			if (hideAccessories) {
+				titleKey = "misc.hideAccessories";
+				event    = TeamingEvents.HIDE_ACCESSORIES;
+			}
+			else {
+				titleKey = "misc.showAccessories";
+				event    = TeamingEvents.SHOW_ACCESSORIES;
+			}
+			ToolbarItem accTBI = new ToolbarItem(CONFIGURE_ACCESSORIES);
+			markTBITitle(accTBI, titleKey);
+			markTBIEvent(accTBI, event   );
+			configureToolbarItems.add(accTBI);
+		}
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for the add files applet.
+	 * 
+	 * At the point this gets called, we know the following:
+	 * 1. The user has rights to add entries to the folder;
+	 * 2. Applets are supported;
+	 * 3. The folder is not a mini-blog; and
+	 * 4. The folder is not a mirror file folder or it's a configured,
+	 *    writable mirrored file folder. 
+	 */
+	private static void constructEntryDropBoxItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
+		ToolbarItem dropBoxTBI = new ToolbarItem("dropBox");
+		markTBITitle(dropBoxTBI, "toolbar.menu.dropBox.dialog");
+		markTBIEvent(dropBoxTBI, TeamingEvents.INVOKE_DROPBOX);
+		entryToolbar.addNestedItem(dropBoxTBI);
+	}
+	
+	/*
 	 * Constructs a ToolbarItem to run the configure columns dialog.
 	 */
 	private static ToolbarItem constructEntryConfigureColumsItem(Binder binder) {
@@ -564,13 +611,32 @@ public class GwtMenuHelper {
 				// ...and for which the user has rights to do it...
 				if (bm.testAccess(folder, BinderOperation.deleteEntries)) {
 					// ...add a Delete item.
-					ToolbarItem deleteTBI = new ToolbarItem("1_deleteSelected");
-					markTBITitle(deleteTBI, "toolbar.delete");
-					markTBIEvent(deleteTBI, TeamingEvents.DELETE_SELECTED_ENTRIES);
-					entryToolbar.addNestedItem(deleteTBI);
+					constructEntryDeleteItem(entryToolbar);
 				}
 			}
 		}
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for deleting the selected entries.
+	 */
+	private static void constructEntryDeleteItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws) {
+		// If the user has rights to do it...
+		if ((null == ws) || bs.getBinderModule().testAccess(ws, BinderOperation.deleteBinder)) {
+			// ...add a Delete item.
+			constructEntryDeleteItem(entryToolbar);
+		}
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for deleting the selected entries.
+	 */
+	private static void constructEntryDeleteItem(ToolbarItem entryToolbar) {
+		// Add a Delete item.
+		ToolbarItem deleteTBI = new ToolbarItem("1_deleteSelected");
+		markTBITitle(deleteTBI, "toolbar.delete");
+		markTBIEvent(deleteTBI, TeamingEvents.DELETE_SELECTED_ENTRIES);
+		entryToolbar.addNestedItem(deleteTBI);
 	}
 	
 	/*
@@ -590,9 +656,10 @@ public class GwtMenuHelper {
 	 *		Subscribe...
 	 *		Access Control... (Future)
 	 */
-	private static void constructEntryMoreItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Long folderId, String viewType, Folder folder) {
-		User    user    = GwtServerHelper.getCurrentUser();
-		boolean isGuest = ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
+	private static void constructEntryMoreItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Long folderId, String viewType, Folder folder, Workspace ws) {
+		User    user     = GwtServerHelper.getCurrentUser();
+		boolean isGuest  = ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
+		boolean isFolder = (null != folder);
 		
 		// Create the more toolbar item...
 		ToolbarItem moreTBI = new ToolbarItem("1_more");
@@ -610,56 +677,69 @@ public class GwtMenuHelper {
 		markTBIEvent(tbi, TeamingEvents.MOVE_SELECTED_ENTRIES);
 		moreTBI.addNestedItem(tbi);
 		
-		// ...for the view types that support it...
-		if (MiscUtil.hasString(viewType)) {
-			BinderModule bm = bs.getBinderModule();
-			if (folderSupportsDeleteAndPurge(folder, viewType)) {
-				// ...and for which the user has rights to do it...
-				if (bm.testAccess(folder, BinderOperation.deleteEntries)) {
-					// ...add the Purge item...
-					tbi = new ToolbarItem("1_purgeSelected");
-					markTBITitle(tbi, "toolbar.purge");
-					markTBIEvent(tbi, TeamingEvents.PURGE_SELECTED_ENTRIES);
-					moreTBI.addNestedItem(tbi);
+		BinderModule bm = bs.getBinderModule();
+		if (isFolder) {
+			// ...for the view types that support it...
+			if (MiscUtil.hasString(viewType)) {
+				if (folderSupportsDeleteAndPurge(folder, viewType)) {
+					// ...and for which the user has rights to do it...
+					if (bm.testAccess(folder, BinderOperation.deleteEntries)) {
+						// ...add the Purge item...
+						constructEntryMorePurgeItem(moreTBI);
+					}
 				}
 			}
 		}
+		else {
+			// ...and for which the user has rights to do it...
+			if ((null == ws) || bm.testAccess(ws, BinderOperation.deleteBinder)) {
+				// ...add the Purge item...
+				constructEntryMorePurgeItem(moreTBI);
+			}
+		}
 
-		// ...add the lock item....
-		tbi = new ToolbarItem("1_lockSelected");
-		markTBITitle(tbi, "toolbar.lock");
-		markTBIEvent(tbi, TeamingEvents.LOCK_SELECTED_ENTRIES);
-		moreTBI.addNestedItem(tbi);
-		
-		// ...add the unlock item....
-		tbi = new ToolbarItem("1_unlockSelected");
-		markTBITitle(tbi, "toolbar.unlock");
-		markTBIEvent(tbi, TeamingEvents.UNLOCK_SELECTED_ENTRIES);
-		moreTBI.addNestedItem(tbi);
-		
-		// ...if the user is not the Guest user...
-		if (!isGuest) {
-			// ...add the mark read....
-			tbi = new ToolbarItem("1_markReadSelected");
-			markTBITitle(tbi, "toolbar.markRead");
-			markTBIEvent(tbi, TeamingEvents.MARK_READ_SELECTED_ENTRIES);
+		// ...for folders...
+		if (isFolder) {
+			// ...add the lock item....
+			tbi = new ToolbarItem("1_lockSelected");
+			markTBITitle(tbi, "toolbar.lock");
+			markTBIEvent(tbi, TeamingEvents.LOCK_SELECTED_ENTRIES);
 			moreTBI.addNestedItem(tbi);
 			
-			// ...and the mark unread items....
-			tbi = new ToolbarItem("1_markUnreadSelected");
-			markTBITitle(tbi, "toolbar.markUnread");
-			markTBIEvent(tbi, TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES);
+			// ...add the unlock item....
+			tbi = new ToolbarItem("1_unlockSelected");
+			markTBITitle(tbi, "toolbar.unlock");
+			markTBIEvent(tbi, TeamingEvents.UNLOCK_SELECTED_ENTRIES);
 			moreTBI.addNestedItem(tbi);
+			
+			// ...if the user is not the Guest user...
+			if (!isGuest) {
+				// ...add the mark read....
+				tbi = new ToolbarItem("1_markReadSelected");
+				markTBITitle(tbi, "toolbar.markRead");
+				markTBIEvent(tbi, TeamingEvents.MARK_READ_SELECTED_ENTRIES);
+				moreTBI.addNestedItem(tbi);
+				
+				// ...and the mark unread items....
+				tbi = new ToolbarItem("1_markUnreadSelected");
+				markTBITitle(tbi, "toolbar.markUnread");
+				markTBIEvent(tbi, TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES);
+				moreTBI.addNestedItem(tbi);
+			}
 		}
 		
 		// ...add a separator item...
-		moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+		if (moreTBI.hasNestedToolbarItems() && (isFolder || (!isGuest))) {
+			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+		}
 		
-		// ...add the change entry type item....
-		tbi = new ToolbarItem("1_changeEntryTypeSelected");
-		markTBITitle(tbi, "toolbar.changeEntryType");
-		markTBIEvent(tbi, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES);
-		moreTBI.addNestedItem(tbi);
+		if (isFolder) {
+			// ...add the change entry type item....
+			tbi = new ToolbarItem("1_changeEntryTypeSelected");
+			markTBITitle(tbi, "toolbar.changeEntryType");
+			markTBIEvent(tbi, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES);
+			moreTBI.addNestedItem(tbi);
+		}
 		
 		// ...if the user is not the Guest user...
 		if (!isGuest) {
@@ -675,6 +755,16 @@ public class GwtMenuHelper {
 			// ...and the more toolbar to the entry toolbar.
 			entryToolbar.addNestedItem(moreTBI);
 		}
+	}
+
+	/*
+	 * Creates a 'purge' item in the 'more' toolbar.
+	 */
+	private static void constructEntryMorePurgeItem(ToolbarItem moreTBI) {
+		ToolbarItem tbi = new ToolbarItem("1_purgeSelected");
+		markTBITitle(tbi, "toolbar.purge");
+		markTBIEvent(tbi, TeamingEvents.PURGE_SELECTED_ENTRIES);
+		moreTBI.addNestedItem(tbi);
 	}
 	
 	/*
@@ -794,17 +884,25 @@ public class GwtMenuHelper {
 		// For the view types that support it...
 		if (MiscUtil.hasString(viewType)) {
 			if (folderSupportsShare(folder, viewType)) {
-				// ...for non-guest users...
-				User    user    = GwtServerHelper.getCurrentUser();
-				boolean isGuest = ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
-				if (!isGuest) {
-					// ...add the share item...
-					ToolbarItem shareTBI = new ToolbarItem("1_shareSelected");
-					markTBITitle(shareTBI, "toolbar.shareSelected");
-					markTBIEvent(shareTBI, TeamingEvents.SHARE_SELECTED_ENTRIES);
-					entryToolbar.addNestedItem(shareTBI);
-				}
+				// ...construct the share item.
+				constructEntryShareItem(entryToolbar, bs, request);
 			}
+		}
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for sharing the selected entries.
+	 */
+	private static void constructEntryShareItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request) {
+		// For non-guest users...
+		User    user    = GwtServerHelper.getCurrentUser();
+		boolean isGuest = ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
+		if (!isGuest) {
+			// ...add the share item.
+			ToolbarItem shareTBI = new ToolbarItem("1_shareSelected");
+			markTBITitle(shareTBI, "toolbar.shareSelected");
+			markTBIEvent(shareTBI, TeamingEvents.SHARE_SELECTED_ENTRIES);
+			entryToolbar.addNestedItem(shareTBI);
 		}
 	}
 	
@@ -1956,20 +2054,21 @@ public class GwtMenuHelper {
 			ToolbarItem entryToolbar = new ToolbarItem(WebKeys.ENTRY_TOOLBAR);
 			toolbarItems.add(entryToolbar);
 			
-			// Access the binder/folder.
-			Long folderId = folderInfo.getBinderIdAsLong();
-			Binder    binder   = bs.getBinderModule().getBinder(folderId);
-			Folder    folder   = ((binder instanceof Folder)    ? ((Folder)    binder) : null);
-			Workspace ws       = ((binder instanceof Workspace) ? ((Workspace) binder) : null);
-			boolean   isFolder = (null != folder);
-			String    viewType = (isFolder ? DefinitionUtils.getViewType(folder) : null);
+			// Access the binder/folder/workspace.
+			Long		folderId = folderInfo.getBinderIdAsLong();
+			Binder		binder   = bs.getBinderModule().getBinder(folderId);
+			Folder		folder   = ((binder instanceof Folder)    ? ((Folder)    binder) : null);
+			Workspace	ws       = ((binder instanceof Workspace) ? ((Workspace) binder) : null);
+			boolean		isFolder = (null != folder);
+			String		viewType = (isFolder ? DefinitionUtils.getViewType(folder) : null);
 
 			// Construct the item for viewing pinned vs. non-pinned
 			// items.
 			constructEntryPinnedItem(entryToolbar, bs, request, viewType, folder);
 
 			// Are we returning the toolbar items for a trash view?
-			boolean isBinderTrash = folderInfo.isBinderTrash();
+			boolean isBinderCollection = folderInfo.isBinderCollection();
+			boolean isBinderTrash      = folderInfo.isBinderTrash();
 			if (isBinderTrash) {
 				// Yes!  Construct the items for viewing the trash.
 				constructEntryTrashItems(entryToolbar, bs, request, binder);
@@ -1984,11 +2083,24 @@ public class GwtMenuHelper {
 				constructEntryProfilesRootWSItems(entryToolbar, bs, request, ws);
 			}
 			
+			// No, we aren't returning the toolbar items for the root
+			// profiles workspace view either!  Are we returning them
+			// for a collection view?
+			else if (isBinderCollection) {
+				boolean myFiles = (CollectionType.MYFILES == folderInfo.getCollectionType());
+				if (myFiles) {
+					constructEntryAddFileFolderItem(entryToolbar, bs, request,                                      ws        );
+				    constructEntryShareItem(        entryToolbar, bs, request);
+				}
+				constructEntryDeleteItem(           entryToolbar, bs, request,                           (myFiles ? ws : null));
+				constructEntryMoreItems(            entryToolbar, bs, request, folderId, viewType, null, (myFiles ? ws : null));
+			}
+			
 			else {
-				// No, we aren't returning the toolbar items for the
-				// root profiles workspace view either!  Is this is
-				// other than a mirrored folder, or if its a mirrored
-				// folder, is its resource driver configured?
+				// No, we aren't returning the toolbar items for a
+				// collection view either!  Is this is other than a
+				// mirrored folder, or if its a mirrored folder, is its
+				// resource driver configured?
 				boolean isMirrored           = (isFolder && folder.isMirrored());
 				boolean isMirroredConfigured = isMirrored && MiscUtil.hasString(folder.getResourceDriverName());
 				if ((!isMirrored) || isMirroredConfigured) {
@@ -2040,7 +2152,14 @@ public class GwtMenuHelper {
 					if (folderSupportsMore(folder, viewType)) {
 						// ...construct the various items that appear
 						// ...in it.
-						constructEntryMoreItems(entryToolbar, bs, request, folderId, viewType, folder);
+						constructEntryMoreItems(
+							entryToolbar,
+							bs,
+							request,
+							folderId,
+							viewType,
+							folder,
+							null);	// null -> Not a Workspace.
 					}
 					
 					// Are we working on a calendar folder?
@@ -2048,14 +2167,20 @@ public class GwtMenuHelper {
 					if (isCalendar) {
 						// Yes!  Construct the various items that
 						// appear in the view drop down.
-						constructEntryViewCalendarItems(entryToolbar, bs, request, folderId, viewType, folder);
+						constructEntryViewCalendarItems(
+							entryToolbar,
+							bs,
+							request,
+							folderId,
+							viewType,
+							folder);
 					}
 				}
 			}
 			
 			// Are we returning the toolbar items for other than a
-			// trash view?
-			if (!isBinderTrash) {
+			// trash or collections view?
+			if ((!isBinderTrash) && (!isBinderCollection)) {
 				// Yes!  Add the configure accessories item to the
 				// toolbar.
 				constructEntryConfigureAccessories(

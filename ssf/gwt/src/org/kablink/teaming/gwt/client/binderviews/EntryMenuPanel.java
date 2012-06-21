@@ -1020,6 +1020,7 @@ public class EntryMenuPanel extends ToolPanelBase
 	 */
 	private boolean supportsQuickFilter() {
 		boolean reply = false;
+		
 		switch (m_binderInfo.getBinderType()) {
 		case FOLDER:
 			switch (m_binderInfo.getFolderType()) {
@@ -1036,7 +1037,14 @@ public class EntryMenuPanel extends ToolPanelBase
 				reply = true;
 				break;
 			}
+			break;
+			
+		case COLLECTION:
+			// All collections support the quick filters.
+			reply = true;
+			break;
 		}
+		
 		return reply;
 	}
 	
