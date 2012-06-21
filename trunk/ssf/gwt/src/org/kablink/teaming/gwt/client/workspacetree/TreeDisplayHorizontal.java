@@ -261,9 +261,8 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		FlowPanel panel = new FlowPanel();
 		
 		// ...create the Image...
-		Image img = new Image(getImages().breadcrumb_close());
+		Image img = GwtClientHelper.buildImage(getImages().breadcrumb_close(), getMessages().treeCloseBreadCrumbs());
 		img.addStyleName("breadCrumb_CloseImg");
-		setWidgetHover(img, getMessages().treeCloseBreadCrumbs());
 		
 		// ...create the Anchor...
 		Anchor a = new Anchor();
@@ -477,8 +476,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			if (showExpander) {
 				// Yes!  Put an expander Anchor to allow expanding and
 				// collapsing of its contents.
-				expanderImg = new Image();
-				expanderImg.setUrl(expanderImgRes.getSafeUri());
+				expanderImg = GwtClientHelper.buildImage(expanderImgRes.getSafeUri());
 				expanderImg.getElement().setAttribute("align", "absmiddle");
 				expanderImg.addStyleName("breadCrumb_ContentNode_ExpanderImg");
 				if (getTreeMode().isHorizontalBinder()) {
@@ -493,8 +491,8 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				// No, it isn't expandable!  Put a 16x16 spacer in place of
 				// the expander.
 				expanderImgRes = getImages().spacer_1px();
-				expanderImg = new Image(expanderImgRes);
-				expanderImg.setWidth(EXPANDER_WIDTH);
+				expanderImg = GwtClientHelper.buildImage(expanderImgRes.getSafeUri());
+				expanderImg.setWidth( EXPANDER_WIDTH );
 				expanderImg.setHeight(EXPANDER_HEIGHT);
 				expanderWidget = expanderImg;
 			}
@@ -546,7 +544,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			}
 
 			// ...add an image for the binder itself...
-			Image binderImg = new Image();
+			Image binderImg = GwtClientHelper.buildImage(((String) null));
 			binderImg.addStyleName("breadCrumb_ContentTail_Img");
 			binderImg.getElement().setAttribute("align", "absmiddle");
 			ti.setBinderUIImage(binderImg);

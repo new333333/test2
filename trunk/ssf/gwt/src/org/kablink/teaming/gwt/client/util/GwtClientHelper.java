@@ -63,6 +63,7 @@ import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -178,7 +179,10 @@ public class GwtClientHelper {
 	 * @param title
 	 */
 	public static Image buildImage(ImageResource res, String title) {
-		Image reply = new Image(res);
+		Image reply = new Image();
+		if (null != res) {
+			reply.setResource(res);
+		}
 		buildImageImpl(reply, title);
 		return reply;
 	}
@@ -190,12 +194,33 @@ public class GwtClientHelper {
 	/**
 	 * Returns a base Image widget.
 	 * 
+	 * @param resUri
+	 * @param title
+	 */
+	public static Image buildImage(SafeUri resUri, String title) {
+		Image reply = new Image();
+		if (null != resUri) {
+			reply.setUrl(resUri);
+		}
+		buildImageImpl(reply, title);
+		return reply;
+	}
+	
+	public static Image buildImage(SafeUri resUri) {
+		return buildImage(resUri, null);
+	}
+	
+	/**
+	 * Returns a base Image widget.
+	 * 
 	 * @param resUrl
 	 * @param title
 	 */
 	public static Image buildImage(String resUrl, String title) {
 		Image reply = new Image();
-		reply.setUrl(resUrl);
+		if (hasString(resUrl)) {
+			reply.setUrl(resUrl);
+		}
 		buildImageImpl(reply, title);
 		return reply;
 	}
@@ -1083,101 +1108,97 @@ public class GwtClientHelper {
 	
 	/**
 	 * Set the background color if specified in the WidgetStyles.
+	 * 
+	 * @param element
+	 * @param color
 	 */
-	public static void setElementBackgroundColor( Element element, String color )
-	{
-		if ( element != null && color != null && color.length() > 0 )
-		{
-			Style style;
-
-			style = element.getStyle();
-			style.setBackgroundColor( color );
+	public static void setElementBackgroundColor(Element element, String color) {
+		if ((null != element) && hasString(color)) {
+			Style style = element.getStyle();
+			style.setBackgroundColor(color);
 		}
 	}
 	
 	/**
-	 * Set the border width and color if specified in the WidgetStyles
+	 * Set the border width and color if specified in the WidgetStyles.
+	 * 
+	 * @param element
+	 * @param widgetStyles
 	 */
-	public static void setElementBorderStyles( Element element, WidgetStyles widgetStyles )
-	{
-		if ( element != null )
-		{
-			String width;
-			String color;
-			Style style;
-			
-			style = element.getStyle();
-			
-			width = widgetStyles.getBorderWidth();
-			if ( width != null && width.length() > 0 )
-			{
-				style.setBorderWidth( Double.valueOf( width ), Unit.PX );
+	public static void setElementBorderStyles(Element element, WidgetStyles widgetStyles) {
+		if (null != element) {
+			Style  style = element.getStyle();
+			String width = widgetStyles.getBorderWidth();
+			if (hasString(width)) {
+				style.setBorderWidth(Double.valueOf(width), Unit.PX);
 			}
 			
-			color = widgetStyles.getBorderColor();
-			if ( color != null && color.length() > 0 )
-			{
-				style.setBorderColor( color );
+			String color = widgetStyles.getBorderColor();
+			if (hasString(color)) {
+				style.setBorderColor(color);
 			}
 		}
 	}
 	
 	/**
 	 * Set the text color if one is specified in the WidgetStyles.
+	 * 
+	 * @param element
+	 * @param color
 	 */
-	public static void setElementTextColor( Element element, String color )
-	{
-		if ( element != null && color != null && color.length() > 0 )
-		{
-			Style style;
-			
-			style = element.getStyle();
-			
-			style.setColor( color );
+	public static void setElementTextColor(Element element, String color) {
+		if ((null != element) && hasString(color)) {
+			Style style = element.getStyle();
+			style.setColor(color);
 		}
 	}
 	
 	/**
-	 * Set the overflow style on the given UIObject
+	 * Set the overflow style on the given UIObject.
+	 * 
+	 * @param overflow
+	 * @param uiObj
 	 */
-	public static void setOverflow( Style.Overflow overflow, UIObject uiObj )
-	{
-		Style style;
-		
-		style = uiObj.getElement().getStyle();
-		if ( style != null )
-			style.setOverflow( overflow );
+	public static void setOverflow(Style.Overflow overflow, UIObject uiObj) {
+		Style style = uiObj.getElement().getStyle();
+		if (null != style) {
+			style.setOverflow(overflow);
+		}
 	}
 	
 	/**
 	 * Set the height of the given UIObject
+	 * 
+	 * @param height
+	 * @param unit
+	 * @param uiObj
 	 */
-	public static void setHeight( int height, Unit unit, UIObject uiObj )
-	{
-		Style style;
-		
-		style = uiObj.getElement().getStyle();
-		if ( style != null )
-		{
-			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
-			if ( height != 100 || unit != Unit.PCT )
-				style.setHeight( height, unit );
+	public static void setHeight(int height, Unit unit, UIObject uiObj) {
+		Style style = uiObj.getElement().getStyle();
+		if (null != style) {
+			// Don't set the height if it is set to 100%.  This causes
+			// a scroll bar to appear.
+			if ((100 != height) || (Unit.PCT != unit)) {
+				style.setHeight(height, unit);
+			}
 		}
 	}
 	
 	/**
 	 * Set the width of the given UIObject
+	 * 
+	 * @param width
+	 * @param unit
+	 * @param uiObj
 	 */
-	public static void setWidth( int width, Unit unit, UIObject uiObj )
-	{
-		Style style;
-		
-		style = uiObj.getElement().getStyle();
-		if ( style != null )
-		{
-			// Don't set the width if it is 100%.  This causes a scroll bar to appear
-			if ( width != 100 || unit != Unit.PCT )
-				style.setWidth( width, unit );
+	public static void setWidth(int width, Unit unit, UIObject uiObj) {
+		Style style = uiObj.getElement().getStyle();
+		if (null != style) {
+			// Don't set the width if it is 100%.  This causes a scroll
+			// bar to appear.
+			if ((100 != width) || (Unit.PCT != unit)) {
+				style.setWidth(width, unit);
+			}
 		}
 	}
 	

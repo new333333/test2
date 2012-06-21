@@ -452,7 +452,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				// that's busy!  In that case, we'll have stuck the
 				// spinner on the tree's root node.  Restore that.
 				Image binderImg = ((Image) getRootTreeInfo().getBinderUIImage());
-				binderImg.setResource(getImages().spacer_1px());
+				binderImg.setUrl(getImages().spacer_1px().getSafeUri());
 			}
 		}
 		/*
@@ -971,7 +971,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorGrid.setCellPadding(0);
 		String rootTitle = rootTI.getBinderTitle();
 		if (GwtClientHelper.hasString(rootTitle)) {
-			Image binderImg = new Image(getImages().spacer_1px());
+			Image binderImg = GwtClientHelper.buildImage(getImages().spacer_1px().getSafeUri());
 			rootTI.setBinderUIImage(binderImg);
 			binderImg.addStyleName("workspaceTreeBinderImg");
 			selectorGrid.setWidget(0, 0, binderImg);
@@ -1064,7 +1064,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		if (showExpander) {
 			// Yes!  Put an expander Anchor to allow expanding and
 			// collapsing of its contents.
-			expanderImg = new Image(expanderImgRes);
+			expanderImg = GwtClientHelper.buildImage(expanderImgRes);
 			expanderImg.addStyleName(buildElementStyle(ti, "workspaceTreeBinderExpanderImg"));
 			Anchor expanderA = new Anchor();
 			expanderA.getElement().appendChild(expanderImg.getElement());
@@ -1075,7 +1075,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// No, it isn't expandable!  Put a 16x16 spacer in place of
 			// the expander.
 			expanderImgRes = getImages().spacer_1px();
-			expanderImg = new Image(expanderImgRes);
+			expanderImg = GwtClientHelper.buildImage(expanderImgRes);
 			expanderImg.setWidth( EXPANDER_WIDTH );
 			expanderImg.setHeight(EXPANDER_HEIGHT);
 			expanderWidget = expanderImg;
@@ -1085,11 +1085,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		FlexTable selectorGrid = new FlexTable();
 		selectorGrid.setCellSpacing(0);
 		selectorGrid.setCellPadding(0);
-		Image binderImg = new Image();
+		Image binderImg = GwtClientHelper.buildImage(((String) null), ti.getBinderHoverImage());
 		ti.setBinderUIImage(binderImg);
 		setBinderImageResource(ti, GwtConstants.SIDEBAR_TREE_ICON_SIZE);
 		binderImg.addStyleName(buildElementStyle(ti, "workspaceTreeBinderImg"));
-		setWidgetHover(binderImg, ti.getBinderHoverImage());
 		selectorGrid.setWidget(0, 0, binderImg);
 		Widget selectorLabel = getSelectorLabel(ti, (ti.isActivityStream() && (0 == renderDepth)));
 		setWidgetHover(selectorLabel, getBinderHover(ti));
@@ -1591,14 +1590,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				// No!  Set the busy animation image on the tree's
 				// root.
 				binderImg = ((Image) rootTI.getBinderUIImage());
-				binderImg.setResource(getImages().busyAnimation());
+				binderImg.setUrl(getImages().busyAnimation().getSafeUri());
 			}
 			else {
 				// Yes!  Set the busy animation image for this
 				// TreeInfo's binder...
 				binderImg = ((Image) ti.getBinderUIImage());
 				if (null != binderImg) {
-					binderImg.setResource(getImages().busyAnimation());
+					binderImg.setUrl(getImages().busyAnimation().getSafeUri());
 				}
 				
 				// ...and keep track of as being the one that we're
