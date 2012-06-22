@@ -636,6 +636,17 @@ public class GwtClientHelper {
 	}	
 
 	/**
+	 * Invokes the simple profile dialog off an HTML Element.
+	 * 
+	 * @param htmlElement
+	 * @param binderId
+	 * @param userName
+	 */
+	public static native void invokeSimpleProfile(Element htmlElement, String binderId, String userName) /*-{
+		$wnd.top.ss_invokeSimpleProfile(htmlElement, binderId, userName);
+	}-*/;
+	
+	/**
 	 * Returns true if the UI is in debug mode for the landing page
 	 * 
 	 * @return
@@ -679,16 +690,16 @@ public class GwtClientHelper {
 	}
 
 	/**
-	 * Invokes the simple profile dialog off an HTML Element.
+	 * Returns true if we're running in Vibe Lite (Filr) mode and false
+	 * otherwise.
 	 * 
-	 * @param htmlElement
-	 * @param binderId
-	 * @param userName
+	 * @return
 	 */
-	public static native void invokeSimpleProfile(Element htmlElement, String binderId, String userName) /*-{
-		$wnd.top.ss_invokeSimpleProfile(htmlElement, binderId, userName);
-	}-*/;
-	
+	public static boolean isVibeLite() {
+		RequestInfo ri = getRequestInfo();
+		return ((null != ri) && ri.isVibeLite());
+	}
+
 	/**
 	 * Appends an HTML element to the top document.
 	 * 

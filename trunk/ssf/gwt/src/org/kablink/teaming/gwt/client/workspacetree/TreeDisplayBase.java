@@ -363,6 +363,16 @@ public abstract class TreeDisplayBase {
 	}
 
 	/**
+	 * Returns true if the workspace tree is currently hidden because
+	 * of an empty sidebar and false otherwise.
+	 * 
+	 * @return
+	 */
+	final public boolean isTreeHiddenByEmptySidebar() {
+		return m_wsTree.isTreeHiddenByEmptySidebar();
+	}
+	
+	/**
 	 * Returns true if the tree is displaying for a trash view and
 	 * false otherwise.
 	 * 
@@ -372,6 +382,26 @@ public abstract class TreeDisplayBase {
 		return m_wsTree.isTrash();
 	}
 
+	/**
+	 * Returns true if we're running in Vibe Lite (Filr) mode and
+	 * false otherwise.
+	 * 
+	 * @return
+	 */
+	final public boolean isVibeLite() {
+		return GwtClientHelper.isVibeLite();
+	}
+
+	/**
+	 * Returns true if the workspace tree is visible and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	final public boolean isTreeVisible() {
+		return m_wsTree.isVisible();
+	}
+	
 	/**
 	 * Called to reset the main menu context to that previously loaded.
 	 */

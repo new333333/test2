@@ -1651,9 +1651,10 @@ public class GwtViewHelper {
 				String[] columns;
 				switch (folderInfo.getCollectionType()) {
 				default:
-				case FILESPACES:  baseNameKey += "filespaces."; columns = new String[]{"title", "rights", "description"}; break;
-				case MYFILES:     baseNameKey += "myfiles.";    columns = new String[]{"title", "family", "date"};        break;
-				case SHARED:      baseNameKey += "shared.";     columns = new String[]{"title", "access", "sharedBy"};    break;
+				case FILE_SPACES:     baseNameKey += "filespaces.";   columns = new String[]{"title", "rights", "description"}; break;
+				case MY_FILES:        baseNameKey += "myfiles.";      columns = new String[]{"title", "family", "date"};        break;
+				case SHARED_BY_ME:    baseNameKey += "sharedByMe.";   columns = new String[]{"title", "access", "sharedBy"};    break;
+				case SHARED_WITH_ME:  baseNameKey += "sharedWithMe."; columns = new String[]{"title", "access", "sharedBy"};    break;
 				}
 				columnNames = getColumnsLHMFromAS(columns);
 			}

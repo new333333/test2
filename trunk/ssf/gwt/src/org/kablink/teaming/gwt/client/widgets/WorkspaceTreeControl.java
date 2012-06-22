@@ -91,12 +91,13 @@ public class WorkspaceTreeControl extends ResizeComposite
 		RerootSidebarTreeEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
-{	
-	private boolean			m_isTrash;			//
-	private GwtMainPage		m_mainPage;			//
-	private Long			m_selectedBinderId;	//
-	private TreeDisplayBase	m_treeDisplay;		//
-	private TreeMode 		m_tm;				//
+{
+	private boolean			m_hiddenByEmptySidebar;	//
+	private boolean			m_isTrash;				//
+	private GwtMainPage		m_mainPage;				//
+	private Long			m_selectedBinderId;		//
+	private TreeDisplayBase	m_treeDisplay;			//
+	private TreeMode 		m_tm;					//
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -346,7 +347,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 	public boolean isBreadcrumbTree() {
 		return (getTreeMode().isHorizontalPopup());
 	}
-	
+
 	/**
 	 * Returns true if the workspace tree control is in activity stream
 	 * mode and false otherwise.
@@ -375,6 +376,16 @@ public class WorkspaceTreeControl extends ResizeComposite
 	 */
 	public boolean isTrash() {
 		return m_isTrash;
+	}
+	
+	/**
+	 * Returns true if the tree is hidden because it had an empty
+	 * sidebar and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isTreeHiddenByEmptySidebar() {
+		return ((!(isVisible()) && m_hiddenByEmptySidebar));
 	}
 	
 	/**
@@ -519,6 +530,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 	public void onSidebarHide(SidebarHideEvent event) {
 		if (isSidebarTree() && (!(m_mainPage.isAdminActive()))) {
 			setVisible(false);
+			m_hiddenByEmptySidebar = event.getHiddenByEmptySidebar();
 		}
 	}
 	
@@ -533,6 +545,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 	public void onSidebarShow(SidebarShowEvent event) {
 		if (isSidebarTree() && (!(m_mainPage.isAdminActive()))) {
 			setVisible(true);
+			m_hiddenByEmptySidebar = false;
 		}
 	}
 	

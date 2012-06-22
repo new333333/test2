@@ -34,7 +34,6 @@ package org.kablink.teaming.gwt.client.workspacetree;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyExitEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
@@ -43,6 +42,7 @@ import org.kablink.teaming.gwt.client.event.TreeNodeExpandedEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.ExpandHorizontalBucketCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalNodeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -548,7 +548,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			binderImg.addStyleName("breadCrumb_ContentTail_Img");
 			binderImg.getElement().setAttribute("align", "absmiddle");
 			ti.setBinderUIImage(binderImg);
-			setBinderImageResource(ti, GwtConstants.BINDER_BREADCRUMB_ICON_SIZE, getFilrImages().folder());
+			setBinderImageResource(ti, BinderIconSize.getBreadCrumbIconSize(), getFilrImages().folder());
 
 			// ...finally, tie it all together and add it to the root
 			// ...panel.

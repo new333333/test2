@@ -223,7 +223,6 @@ import org.kablink.teaming.security.function.OperationAccessControlExceptionNoNa
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.ResolveIds;
@@ -711,19 +710,21 @@ public class GwtServerHelper {
 		
 		// If we get here, we have access to the user's workspace!  Add
 		// TreeInfo's for the various collections. 
-		addCollection(bs, request, userWS, ti, CollectionType.MYFILES   );
-		addCollection(bs, request, userWS, ti, CollectionType.SHARED    );
-		addCollection(bs, request, userWS, ti, CollectionType.FILESPACES);
+		addCollection(bs, request, userWS, ti, CollectionType.MY_FILES,       false);
+		addCollection(bs, request, userWS, ti, CollectionType.SHARED_WITH_ME, false);
+		addCollection(bs, request, userWS, ti, CollectionType.FILE_SPACES,    false);
+		addCollection(bs, request, userWS, ti, CollectionType.SHARED_BY_ME,   true );
 	}
 	
 	/*
 	 * Adds a TreeInfo for one of the collections we display at the top
 	 * workspace tree.
 	 */
-	private static void addCollection(AllModulesInjected bs, HttpServletRequest request, Workspace userWS, TreeInfo ti, CollectionType ct) throws GwtTeamingException {
+	private static void addCollection(AllModulesInjected bs, HttpServletRequest request, Workspace userWS, TreeInfo ti, CollectionType ct, boolean binderBorderTop) throws GwtTeamingException {
 		try {
 			// Allocate a TreeInfo for the collection's information...
 			TreeInfo collectionTI = new TreeInfo();
+			collectionTI.setBinderBorderTop(binderBorderTop);
 	
 			// ...add a BinderInfo to the TreeInfo...
 			BinderInfo bi = buildCollectionBI(ct, userWS.getId());
@@ -1101,9 +1102,10 @@ public class GwtServerHelper {
 		String titleKey;
 		switch (ct) {
 		default:
-		case MYFILES:     titleKey = "collection.myFiles";    break;
-		case FILESPACES:  titleKey = "collection.fileSpaces"; break;
-		case SHARED:      titleKey = "collection.shared";     break;
+		case MY_FILES:        titleKey = "collection.myFiles";      break;
+		case FILE_SPACES:     titleKey = "collection.fileSpaces";   break;
+		case SHARED_BY_ME:    titleKey = "collection.sharedByMe";   break;
+		case SHARED_WITH_ME:  titleKey = "collection.sharedWithMe"; break;
 		}
 		String title = NLT.get(titleKey);
 		

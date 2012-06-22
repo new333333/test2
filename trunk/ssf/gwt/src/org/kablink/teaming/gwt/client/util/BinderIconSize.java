@@ -64,21 +64,37 @@ public enum BinderIconSize implements IsSerializable {
 	 * Converts the ordinal value of a BinderIconSize to its
 	 * enumeration equivalent.
 	 * 
-	 * @param sizeOrdinal
+	 * @param iconSizeOrdinal
 	 * 
 	 * @return
 	 */
-	public static BinderIconSize getEnum(int sizeOrdinal) {
-		BinderIconSize size;
-		try {
-			size = BinderIconSize.values()[sizeOrdinal];
-		}
-		catch (ArrayIndexOutOfBoundsException e) {
-			size = BinderIconSize.SMALL;
-		}
-		return size;
+	public static BinderIconSize getEnum(int iconSizeOrdinal) {
+		BinderIconSize iconSize;
+		try                                      {iconSize = BinderIconSize.values()[iconSizeOrdinal];}
+		catch (ArrayIndexOutOfBoundsException e) {iconSize = BinderIconSize.SMALL;                    }
+		return iconSize;
 	}
 
+	/**
+	 * Get'er methods.
+	 * 
+	 * The following are used to control the icon sizes displayed in
+	 * various places within the Vibe UI.
+	 * 
+	 * @return
+	 */
+	public static BinderIconSize getChildBindersWidgetIconSize() {return BinderIconSize.SMALL; }
+	public static BinderIconSize getDialogCaptionIconSize()      {return BinderIconSize.LARGE; }
+	public static BinderIconSize getBreadCrumbIconSize()         {return BinderIconSize.MEDIUM;}
+	public static BinderIconSize getListViewIconSize()           {return BinderIconSize.SMALL; }
+	public static BinderIconSize getSidebarTreeIconSize()        {
+		BinderIconSize reply;
+		if (GwtClientHelper.isVibeLite())
+		     reply = BinderIconSize.MEDIUM;
+		else reply = BinderIconSize.SMALL;
+		return reply;
+	}
+	
 	/**
 	 * Returns the height to use for an icon of this size.
 	 * 
