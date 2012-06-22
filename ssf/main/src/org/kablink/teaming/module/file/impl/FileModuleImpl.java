@@ -1310,6 +1310,58 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         return result;
     }
 
+	public Map<String,Long> getChildrenFileNames(Binder binder) {
+		// look for the specific binder id
+    	// look only for attachments
+    	Criteria crit = new Criteria()
+    	    .add(conjunction()	
+    			.add(eq(Constants.BINDER_ID_FIELD, binder.getId().toString()))
+   				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_ATTACHMENT))
+     		);
+		// We use search engine to get the list of file names in the specified folder.
+		QueryBuilder qb = new QueryBuilder(true,false);
+    	org.dom4j.Document qTree = crit.toQuery(); //save for debug
+		SearchObject so = qb.buildQuery(qTree);   	
+   	
+    	// create Lucene query    	
+    	Query soQuery = so.getLuceneQuery();
+    	    	
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Query is: " + qTree.asXML());
+    		logger.debug("Query is: " + soQuery.toString());
+    	}
+    	
+    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
+        
+    	Hits hits = null;
+        try {
+	        hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
+	        		so.getAclQueryStr(), Constants.SEARCH_MODE_NORMAL, soQuery, null, 0, Integer.MAX_VALUE);
+        }
+        finally {
+            luceneSession.close();
+        }
+    	
+        Map<String,Long> result = new HashMap<String,Long>();
+        int count = hits.length();
+        org.apache.lucene.document.Document doc;
+        String fileName;
+        Long entryId;
+        for(int i = 0; i < count; i++) {
+        	doc = hits.doc(i);
+        	fileName = doc.get(Constants.FILENAME_FIELD);
+        	if(fileName != null) {
+        		try {
+	        		entryId = Long.valueOf(doc.get(Constants.DOCID_FIELD));
+	        		result.put(fileName, entryId);
+        		}
+        		catch(Exception ignore) {}
+        	}
+        }
+        
+        return result;
+	}
+
     public Long deleteAgedFileVersions(DefinableEntity entity, Date agingDate) {
 		Binder binder = entity.getParentBinder();
 		Date now = new Date();

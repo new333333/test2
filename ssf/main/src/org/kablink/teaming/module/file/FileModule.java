@@ -481,6 +481,15 @@ public interface FileModule {
     public Map<String,FileIndexData> getChildrenFileDataFromIndexRecursively(Long binderId);
 	
 	/**
+	 * Returns a map of names of the files contained in the specified binder
+	 * to its enclosing entry ids.
+	 * 
+	 * @param binder
+	 * @return
+	 */
+	public Map<String,Long> getChildrenFileNames(Binder binder);
+
+	/**
 	 * Get a file attachment from the fileId.
 	 *  
 	 * @param fileId
