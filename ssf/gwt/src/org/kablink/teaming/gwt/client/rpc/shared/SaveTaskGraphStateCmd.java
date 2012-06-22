@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
 /**
@@ -61,8 +60,10 @@ public class SaveTaskGraphStateCmd extends VibeRpcCmd {
 	 * @param expandGraphs
 	 */
 	public SaveTaskGraphStateCmd(Long folderId, boolean expandGraphs) {
+		// Initialize this object...
 		this();
 		
+		// ...and store the parameters.
 		setFolderId(    folderId    );
 		setExpandGraphs(expandGraphs);
 	}
@@ -86,7 +87,7 @@ public class SaveTaskGraphStateCmd extends VibeRpcCmd {
 	/**
 	 * Returns the command's enumeration value.
 	 * 
-	 * Overrides SaveFolderSortCmd.getCmdType()
+	 * Implements VibeRpcCmd.getCmdType()
 	 * 
 	 * @return
 	 */

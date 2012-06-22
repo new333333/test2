@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import static org.kablink.util.search.Restrictions.in;
+import static org.kablink.util.search.Restrictions.like;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
@@ -169,6 +172,8 @@ import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.teaming.web.util.TrashHelper.TrashEntry;
 import org.kablink.teaming.web.util.TrashHelper.TrashResponse;
 import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Order;
 
 /**
  * Helper methods for the GWT binder views.
@@ -1456,6 +1461,64 @@ public class GwtViewHelper {
 	}
 
 	/*
+	 * Returns the entries for the given collection.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Map getCollectionEntries(AllModulesInjected bs, Binder binder, String quickFilter, Map options, CollectionType ct) {
+		// Construct the search Criteria...
+		Criteria crit = new Criteria();
+		switch (ct) {
+		default:
+		case MY_FILES:
+			crit.add(in(Constants.DOC_TYPE_FIELD,          new String[] {Constants.DOC_TYPE_BINDER}));
+			crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[] {String.valueOf(binder.getId())}));
+			crit.add(in(Constants.FAMILY_FIELD,            new String[] {Definition.FAMILY_FILE, Definition.FAMILY_PHOTO}));
+			break;
+
+		case SHARED_BY_ME:
+		case SHARED_WITH_ME:
+//!			...this needs to be implemented...
+			crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_BINDER}));
+			crit.add(in(Constants.ENTRY_ANCESTRY, new String[] {String.valueOf(binder.getId())}));
+			break;
+			
+		case FILE_SPACES:
+//!			...this needs to be implemented...
+			String contextId = GwtUIHelper.getTopWSIdSafely(bs);
+			if (!(MiscUtil.hasString(contextId))) {
+				return new HashMap();
+			}
+			crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}));
+			crit.add(in(Constants.ENTRY_ANCESTRY, new String[] {GwtUIHelper.getTopWSIdSafely(bs)}));
+			crit.add(in(Constants.FAMILY_FIELD,   new String[] {Definition.FAMILY_FILE}));
+			break;
+		}
+		
+		if (null != quickFilter) {
+			quickFilter = quickFilter.trim();
+			if (0 < quickFilter.length()) {
+				if (!(quickFilter.endsWith("*"))) {
+					quickFilter += "*";
+				}
+				crit.add(like(Constants.TITLE_FIELD, quickFilter));
+			}
+		}
+
+		// ...add in the sort information...
+		boolean sortDescend = GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false);
+		String  sortBy      = GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
+		crit.addOrder(new Order(sortBy, (!sortDescend)));
+		
+		// ...and issue the query and return the entries.
+		return
+			bs.getBinderModule().executeSearchQuery(
+				crit,
+				Constants.SEARCH_MODE_NORMAL,
+				GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
+				GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS));
+	}
+	
+	/*
 	 * Returns a LinkedHashMap of the column names from a String[]
 	 * of them.
 	 */
@@ -1913,16 +1976,26 @@ public class GwtViewHelper {
 			UserProperties	userProperties       = bs.getProfileModule().getUserProperties(user.getId());
 			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folderId);
 			
+			// Allow for collection sort information being stored on
+			// the same binder.
+			String propSortBy      = ObjectKeys.SEARCH_SORT_BY;
+			String propSortDescend = ObjectKeys.SEARCH_SORT_DESCEND;
+			if (folderInfo.isBinderCollection()) {
+				String cName     = folderInfo.getCollectionType().name();
+				propSortBy      += cName;
+				propSortDescend += cName;
+			}
+			
 			// How should the folder be sorted?
-			String	sortBy = ((String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY));
+			String	sortBy = ((String) userFolderProperties.getProperty(propSortBy));
 			boolean sortDescend;
 			if (MiscUtil.hasString(sortBy)) {
-				String sortDescendS = ((String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_DESCEND));
+				String sortDescendS = ((String) userFolderProperties.getProperty(propSortDescend));
 				sortDescend = (("true").equalsIgnoreCase(sortDescendS));
 			}
 			else {
 				sortDescend = false;
-				if (folderInfo.isBinderProfilesRootWS()) {
+				if (folderInfo.isBinderProfilesRootWS() || folderInfo.isBinderCollection()) {
 					sortBy = Constants.SORT_TITLE_FIELD;
 				}
 				else {
@@ -2014,6 +2087,7 @@ public class GwtViewHelper {
 			boolean isGuestbook      = false;
 			boolean isMilestone      = false;
 			boolean isSurvey         = false;
+			boolean isCollection     = folderInfo.isBinderCollection();
 			boolean isProfilesRootWS = folderInfo.isBinderProfilesRootWS();
 			boolean isTrash          = folderInfo.isBinderTrash();
 			switch (folderInfo.getFolderType()) {
@@ -2079,6 +2153,7 @@ public class GwtViewHelper {
 				Map searchResults;
 				if      (isTrash)          searchResults = TrashHelper.getTrashEntries(bs, binder, options);
 				else if (isProfilesRootWS) searchResults = bs.getProfileModule().getUsers(         options);
+				else if (isCollection)     searchResults = getCollectionEntries(bs, binder, quickFilter, options, folderInfo.getCollectionType());
 				else {
 					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
 					searchResults = bs.getFolderModule().getEntries(folderId, options);
@@ -2093,8 +2168,8 @@ public class GwtViewHelper {
 			List<Long>      contributorIds   = new ArrayList<Long>();
 			for (Map entryMap:  searchEntries) {
 				// Is this an entry or folder?
-				String  entityType     = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD);
-				boolean isEntityFolder = EntityType.folder.name().equals(entityType);
+				String  entityType          = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_FIELD);
+				boolean isEntityFolderEntry = EntityType.folderEntry.name().equals(entityType);
 				
 				String locationBinderId = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.BINDER_ID_FIELD);
 				if (!(MiscUtil.hasString(locationBinderId))) {
@@ -2116,7 +2191,7 @@ public class GwtViewHelper {
 				
 				// Create a FolderRow for each entry.
 				FolderRow fr = new FolderRow(entityId, folderColumns);
-				if ((!(isEntityFolder)) && pinnedEntryIds.contains(entityId.getEntityId())) {
+				if (isEntityFolderEntry && pinnedEntryIds.contains(entityId.getEntityId())) {
 					fr.setPinned(true);
 				}
 				
@@ -2149,18 +2224,18 @@ public class GwtViewHelper {
 							// column in a guest book folder?
 							Principal p = ((Principal) emValue);
 							if (isGuestbook && cn.equals("guest")) {
-								// Yes!  If the entity is a folder...
-								if (isEntityFolder) {
-									// ...don't store a value for the
-									// ...column...
-									fr.setColumnValue(fc, "");
-								}
-								else {
-									// ...otherwise, use the principal
-									// ...to generate a GuestInfo for
-									// ...the column.
+								// Yes!  If the entity is a folder
+								// entry...
+								if (isEntityFolderEntry) {
+									// ...use the principal to generate
+									// ...a GuestInfo for the column...
 									gi = getGuestInfoFromPrincipal(bs, request, p);
 									fr.setColumnValue(fc, gi);
+								}
+								else {
+									// ...otherwise, don't store a
+									// ...value for the column.
+									fr.setColumnValue(fc, "");
 								}
 							}
 							
@@ -2236,7 +2311,7 @@ public class GwtViewHelper {
 									// Yes!  Construct an
 									// EntryTitleInfo for it.
 									EntryTitleInfo eti = new EntryTitleInfo();
-									eti.setSeen(isEntityFolder ? true : seenMap.checkIfSeen(entryMap));
+									eti.setSeen(isEntityFolderEntry ? seenMap.checkIfSeen(entryMap) : true);
 									eti.setTrash(isTrash);
 									eti.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
 									eti.setEntityId(entityId);
@@ -2327,14 +2402,14 @@ public class GwtViewHelper {
 									else if (csk.equals(Constants.FILE_SIZE_FIELD)) {
 										// Yes!  Trim any leading 0's
 										// from the value.
-										if (isEntityFolder) {
-											value = "";
-										}
-										else {
+										if (isEntityFolderEntry) {
 											value = trimFileSize(value);
 											if (MiscUtil.hasString(value)) {
 												value += "KB";
 											}
+										}
+										else {
+											value = "";
 										}
 									}
 
@@ -3115,7 +3190,8 @@ public class GwtViewHelper {
 				}
 	
 				// Is this a view folder listing?
-				Long binderId = vi.getBinderInfo().getBinderIdAsLong();
+				BinderInfo	viBI     = vi.getBinderInfo();
+				Long		binderId = viBI.getBinderIdAsLong();
 				if (viewFolderListing) {
 					// Yes!  Does it also contain changes to the folder
 					// sorting?
@@ -3126,7 +3202,7 @@ public class GwtViewHelper {
 						Boolean sortDescend = Boolean.parseBoolean(sortDescendS);
 						GwtServerHelper.saveFolderSort(
 							bs,
-							binderId,
+							viBI,
 							sortBy,
 							(!sortDescend));
 					}

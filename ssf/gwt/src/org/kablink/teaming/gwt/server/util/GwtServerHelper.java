@@ -7193,7 +7193,7 @@ public class GwtServerHelper {
 	 * Saves the folder sort options on the specified binder.
 	 * 
 	 * @param bs
-	 * @param binderId
+	 * @param binderInfo
 	 * @param sortKey
 	 * @param sortAscending
 	 * 
@@ -7201,12 +7201,23 @@ public class GwtServerHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static Boolean saveFolderSort(AllModulesInjected bs, Long binderId, String sortKey, boolean sortAscending) throws GwtTeamingException {
+	public static Boolean saveFolderSort(AllModulesInjected bs, BinderInfo binderInfo, String sortKey, boolean sortAscending) throws GwtTeamingException {
 		try {
-			Long          userId = getCurrentUser().getId();
-			ProfileModule pm     = bs.getProfileModule();
-			pm.setUserProperty(userId, binderId, ObjectKeys.SEARCH_SORT_BY,                      sortKey       );
-			pm.setUserProperty(userId, binderId, ObjectKeys.SEARCH_SORT_DESCEND, String.valueOf(!sortAscending));
+			// Allow for collection sort information being stored on
+			// the same binder.
+			String propSortBy      = ObjectKeys.SEARCH_SORT_BY;
+			String propSortDescend = ObjectKeys.SEARCH_SORT_DESCEND;
+			if (binderInfo.isBinderCollection()) {
+				String cName     = binderInfo.getCollectionType().name();
+				propSortBy      += cName;
+				propSortDescend += cName;
+			}
+			
+			Long			binderId = binderInfo.getBinderIdAsLong();
+			Long			userId = getCurrentUser().getId();
+			ProfileModule	pm     = bs.getProfileModule();
+			pm.setUserProperty(userId, binderId, propSortBy,                      sortKey       );
+			pm.setUserProperty(userId, binderId, propSortDescend, String.valueOf(!sortAscending));
 			
 			if (m_logger.isDebugEnabled()) {
 				m_logger.debug("GwtServerHelper.saveFolderSort( Stored folder sort for binder ):  Binder:  " + binderId.longValue() + ", Sort Key:  '" + sortKey + "', Sort Ascending:  " + sortAscending);

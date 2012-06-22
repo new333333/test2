@@ -2088,7 +2088,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_FOLDER_SORT:
 		{
 			SaveFolderSortCmd sfsCmd = ((SaveFolderSortCmd) cmd);
-			Boolean result = saveFolderSort( ri, sfsCmd.getBinderId(), sfsCmd.getSortKey(), sfsCmd.getSortAscending() );
+			Boolean result = saveFolderSort( ri, sfsCmd.getBinderInfo(), sfsCmd.getSortKey(), sfsCmd.getSortAscending() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
 			return response;
 		}
@@ -2144,7 +2144,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_TASK_SORT:
 		{
 			SaveTaskSortCmd stsCmd = ((SaveTaskSortCmd) cmd);
-			Boolean result = saveFolderSort( ri, stsCmd.getBinderId(), stsCmd.getSortKey(), stsCmd.getSortAscending() );
+			Boolean result = saveFolderSort( ri, stsCmd.getBinderInfo(), stsCmd.getSortKey(), stsCmd.getSortAscending() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
 			return response;
 		}
@@ -4260,17 +4260,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return GwtServerHelper.saveFolderColumns( this, binderId, fcList, isDefault );
 		}
 		finally {
-			SimpleProfiler.stop("GwtRpcServiceImpl.saveFolderSort()");
+			SimpleProfiler.stop("GwtRpcServiceImpl.saveFolderColumns()");
 		}
 	}
 	
 	/*
 	 * Save a folders sort options on the specified binder.
 	 */
-	private Boolean saveFolderSort( HttpRequestInfo ri, Long binderId, String sortKey, boolean sortAscending ) throws GwtTeamingException {
+	private Boolean saveFolderSort( HttpRequestInfo ri, BinderInfo binderInfo, String sortKey, boolean sortAscending ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.saveFolderSort()");
 		try {
-			return GwtServerHelper.saveFolderSort( this, binderId, sortKey, sortAscending );
+			return GwtServerHelper.saveFolderSort( this, binderInfo, sortKey, sortAscending );
 		}
 		finally {
 			SimpleProfiler.stop("GwtRpcServiceImpl.saveFolderSort()");

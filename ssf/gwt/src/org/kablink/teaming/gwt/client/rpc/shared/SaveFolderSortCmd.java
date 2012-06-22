@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 /**
  * This class holds all of the information necessary to execute the
@@ -41,9 +42,9 @@ package org.kablink.teaming.gwt.client.rpc.shared;
  * @author drfoster@novell.com
  */
 public class SaveFolderSortCmd extends VibeRpcCmd {
-	private boolean	m_sortAscending;	// true -> Sort ascending.  false -> Sort descending.
-	private Long	m_binderId;			// The ID of the binder whose sort criteria is being saved.
-	private String	m_sortKey;			// The sort key to save.
+	private boolean		m_sortAscending;	// true -> Sort ascending.  false -> Sort descending.
+	private BinderInfo	m_binderInfo;		// The binder whose sort criteria is being saved.
+	private String		m_sortKey;			// The sort key to save.
 	
 	/**
 	 * Class constructor.
@@ -59,18 +60,18 @@ public class SaveFolderSortCmd extends VibeRpcCmd {
 	/**
 	 * Class constructor.
 	 * 
-	 * @param binderId
+	 * @param binderInfo
 	 * @param sortKey
 	 * @param sortAscending
 	 */
-	public SaveFolderSortCmd(Long binderId, String sortKey, boolean sortAscending) {
+	public SaveFolderSortCmd(BinderInfo binderInfo, String sortKey, boolean sortAscending) {
 		// Initialize the class...
 		this();		
 		
 		// ...and store the parameters.
-		m_binderId      = binderId;
-		m_sortKey       = sortKey;
-		m_sortAscending = sortAscending;
+		setBinderInfo(   binderInfo   );
+		setSortKey(      sortKey      );
+		setSortAscending(sortAscending);
 	}
 	
 	/**
@@ -78,9 +79,18 @@ public class SaveFolderSortCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public boolean getSortAscending() {return m_sortAscending;}	
-	public Long    getBinderId()      {return m_binderId;     }	
-	public String  getSortKey()       {return m_sortKey;      }	
+	public boolean    getSortAscending() {return m_sortAscending;}	
+	public BinderInfo getBinderInfo()    {return m_binderInfo;   }	
+	public String     getSortKey()       {return m_sortKey;      }
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setSortAscending(boolean    sortAscending) {m_sortAscending = sortAscending;}
+	public void setBinderInfo(   BinderInfo binderInfo)    {m_binderInfo    = binderInfo;   }
+	public void setSortKey(      String     sortKey)       {m_sortKey       = sortKey;      }
 	
 	/**
 	 * Returns the command's enumeration value.

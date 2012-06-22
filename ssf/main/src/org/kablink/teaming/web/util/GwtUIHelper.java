@@ -751,6 +751,54 @@ public class GwtUIHelper {
 	}
 		
 	/**
+	 * Returns an Integer based value from an options Map.  If a value
+	 * for key isn't found, defInt is returned.
+	 * 
+	 * @param options
+	 * @param key
+	 * @param defInt
+	 *  
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static int getOptionInt(Map options, String key, int defInt) {
+		Integer obj = ((Integer) options.get(key));
+		return ((null == obj) ? defInt : obj.intValue());
+	}
+	
+	/**
+	 * Returns a Boolean based value from an options Map.  If a value
+	 * for key isn't found, defBool is returned. 
+	 * 
+	 * @param options
+	 * @param key
+	 * @param defBool
+	 *  
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static boolean getOptionBoolean(Map options, String key, boolean defBool) {
+		Boolean obj = ((Boolean) options.get(key));
+		return ((null == obj) ? defBool : obj.booleanValue());
+	}
+	
+	/**
+	 * Returns a String based value from an options Map.  If a value
+	 * for key isn't found, defStr is returned. 
+	 * 
+	 * @param options
+	 * @param key
+	 * @param defStr
+	 *  
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static String getOptionString(Map options, String key, String defStr) {
+		String obj = ((String) options.get(key));
+		return (((null == obj) || (0 == obj.length())) ? defStr : obj);
+	}
+
+	/**
 	 * Returns the string representation of the top most workspace ID.
 	 * If the true top workspace ID can't be accessed, the current
 	 * user's workspace ID is returned.
@@ -1042,9 +1090,8 @@ public class GwtUIHelper {
 	 * 
 	 * @return
 	 */
-	public static boolean isVibeDebugLP()
-	{
-		return SPropsUtil.getBoolean( "ssf.lp.debug.enabled", false );
+	public static boolean isVibeDebugLP() {
+		return SPropsUtil.getBoolean("ssf.lp.debug.enabled", false);
 	}
 	
 	/**
@@ -1129,9 +1176,8 @@ public class GwtUIHelper {
 	 * 
 	 * @return
 	 */
-	public static String getHelpUrl()
-	{
-		return MiscUtil.getHelpUrl( "user", null, null );
+	public static String getHelpUrl() {
+		return MiscUtil.getHelpUrl("user", null, null);
 	}
 
 	/**
@@ -1241,7 +1287,7 @@ public class GwtUIHelper {
 		model.put(WebKeys.VIBE_UI_DEBUG, isVibeUiDebug());
 		
 		// Put out the flag indicating whether the landing page is in debug mode.
-		model.put( WebKeys.VIBE_LP_DEBUG, isVibeDebugLP() );
+		model.put(WebKeys.VIBE_LP_DEBUG, isVibeDebugLP());
 		
 		// Put out the flag indicating which product we're running as.
 		// Note that we do this first as it has the side affect of
@@ -1255,33 +1301,28 @@ public class GwtUIHelper {
 		// Put out the flag that tells us if we are running Novell or
 		// Kablink Vibe.
 		String isNovellTeaming = Boolean.toString(ReleaseInfo.isLicenseRequiredEdition());
-		model.put( "isNovellTeaming", isNovellTeaming );
+		model.put("isNovellTeaming", isNovellTeaming);
 		
 		// Put out the flag that tells us if we are running Novell or
 		// Kablink Vibe.
 		String isVibeLite = Boolean.toString(Utils.checkIfVibeLite());
-		model.put( "isVibeLite", isVibeLite );
+		model.put("isVibeLite", isVibeLite);
 		
-		// Put out the flag that tells us if the tinyMCE editor will work on the device we are running on.
-		{
-			boolean isCapable;
-			String unsupportedUserAgents;
-			HttpServletRequest hRequest;
-			
-			// Get the list of user agents that the tinyMCE editor won't run on.
-			hRequest = WebHelper.getHttpServletRequest( request );
-			unsupportedUserAgents = SPropsUtil.getString( "TinyMCE.notSupportedUserAgents", "" );
-			
-			// See if the tinyMCE editor is capable of running on the current device.
-			isCapable = BrowserSniffer.is_TinyMCECapable( hRequest, unsupportedUserAgents );
-			model.put( "isTinyMCECapable", Boolean.toString( isCapable ) );
-		}
+		// Put out the flag that tells us if the tinyMCE editor will
+		// work on the device we are running on.  Get the list of user
+		// agents that the tinyMCE editor won't run on.
+		HttpServletRequest hRequest = WebHelper.getHttpServletRequest(request);
+		String unsupportedUserAgents = SPropsUtil.getString("TinyMCE.notSupportedUserAgents", "");
+		
+		// See if the tinyMCE editor is capable of running on the current device.
+		boolean isCapable = BrowserSniffer.is_TinyMCECapable(hRequest, unsupportedUserAgents);
+		model.put("isTinyMCECapable", Boolean.toString(isCapable));
 		
 		// Add the language code the tinyMCE editor will use.  It is different from the
 		// language is running in in the following way.  If the user is running
 		// Traditional Chinese the language code will be "tw".  If the user is running
 		// Simplified Chinese the language code will be "zh".
-		model.put( "tinyMCELang", getTinyMCELanguage() );
+		model.put("tinyMCELang", getTinyMCELanguage());
 
 		// Put out the name of the product (Novell or Kablink Vibe)
 		// that's running.
@@ -1305,8 +1346,8 @@ public class GwtUIHelper {
 		// Logging in via our standard login dialog will be disabled if we are running behind
 		// a single-sign on product such as NAM.
 		Boolean loginDisallowed;
-		loginDisallowed = SPropsUtil.getBoolean( "form.login.auth.disallowed", false );
-		model.put( WebKeys.IS_FORM_LOGIN_ALLOWED,  !loginDisallowed );
+		loginDisallowed = SPropsUtil.getBoolean("form.login.auth.disallowed", false);
+		model.put(WebKeys.IS_FORM_LOGIN_ALLOWED, (!loginDisallowed));
 	}
 	
 	/**
@@ -1315,22 +1356,16 @@ public class GwtUIHelper {
 	 * Traditional Chinese the language code will be "tw".  If the user is running
 	 * Simplified Chinese the language code will be "zh".
 	 */
-	public static String getTinyMCELanguage()
-	{
-		String langCode;
-		String country;
-		User user;
-		
-		user = RequestContextHolder.getRequestContext().getUser();
-		
-		langCode = user.getLocale().getLanguage();
-
-		country = user.getLocale().getCountry();
-		if ( country != null && country.equalsIgnoreCase( "tw" ) )
+	public static String getTinyMCELanguage() {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String langCode = user.getLocale().getLanguage();
+		String country = user.getLocale().getCountry();
+		if ((null != country) && country.equalsIgnoreCase("tw")) {
 			langCode = "tw";
-		else if ( country != null && country.equalsIgnoreCase( "cn" ) )
+		}
+		else if ((null != country) && country.equalsIgnoreCase("cn")) {
 			langCode = "zh";
-		
+		}
 		return langCode;
 	}
 	
@@ -1362,7 +1397,7 @@ public class GwtUIHelper {
 		// titles in yet...
 		if ((-1) == TREE_TITLE_FORMAT) {
 			// ...read it now.
-			TREE_TITLE_FORMAT = SPropsUtil.getInt( 
+			TREE_TITLE_FORMAT = SPropsUtil.getInt(
 				TREE_TITLE_FORMAT_KEY,
 				TREE_TITLE_FORMAT_DEFAULT);
 
