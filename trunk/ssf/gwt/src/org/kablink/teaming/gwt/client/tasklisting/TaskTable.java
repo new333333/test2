@@ -96,6 +96,8 @@ import org.kablink.teaming.gwt.client.tasklisting.TaskDispositionDlg.TaskDisposi
 import org.kablink.teaming.gwt.client.tasklisting.TaskDueDateDlg;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
 import org.kablink.teaming.gwt.client.util.FolderType;
@@ -3143,7 +3145,12 @@ public class TaskTable extends Composite
 	private void persistSortChange() {
 		// Simply tell the server to persist the new sort setting on
 		// the binder.
-		SaveTaskSortCmd cmd = new SaveTaskSortCmd(m_taskBundle.getBinderId(), m_sortColumn.getSortKey(), m_sortAscending);
+		BinderInfo bi = new BinderInfo();
+		bi.setBinderType(BinderType.FOLDER         );
+		bi.setFolderType(FolderType.TASK           );
+		bi.setBinderId(  m_taskBundle.getBinderId());
+		bi.setEntityType("folder"                  );
+		SaveTaskSortCmd cmd = new SaveTaskSortCmd(bi, m_sortColumn.getSortKey(), m_sortAscending);
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {

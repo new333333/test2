@@ -464,7 +464,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				final String  folderSortBy        = fc.getColumnSortKey();
 				final boolean folderSortByChanged = (!(folderSortBy.equalsIgnoreCase(getFolderSortBy())));
 				final boolean folderSortDescend   = (folderSortByChanged ? getFolderSortDescend() : (!getFolderSortDescend()));
-				final SaveFolderSortCmd cmd = new SaveFolderSortCmd(getFolderId(), folderSortBy, (!folderSortDescend));
+				final SaveFolderSortCmd cmd = new SaveFolderSortCmd(getFolderInfo(), folderSortBy, (!folderSortDescend));
 				GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 					@Override
 					public void onFailure(Throwable caught) {

@@ -1242,11 +1242,11 @@ public class TrashHelper {
 		    .add(in(Constants.ENTRY_ANCESTRY, new String[] {String.valueOf(binder.getId())}));
 
 		// ...if sorting is enabled...
-		boolean sortDisabled = getOptionBoolean(options, ObjectKeys.SEARCH_SORT_NONE, false);
+		boolean sortDisabled = GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_NONE, false);
 		if (!sortDisabled) {
 			// ...add in the sort information...
-			boolean sortDescend = getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false);
-			String  sortBy      = getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
+			boolean sortDescend = GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false);
+			String  sortBy      = GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
 			crit.addOrder(new Order(sortBy, sortDescend));
 		}
 		
@@ -1255,8 +1255,8 @@ public class TrashHelper {
 			bs.getBinderModule().executeSearchQuery(
 				crit,
 				Constants.SEARCH_MODE_NORMAL,
-				getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
-				getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
+				GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
+				GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
 				true);	// true -> Search deleted entries.
 	}
 	
@@ -1298,36 +1298,6 @@ public class TrashHelper {
 		return mvReply;
 	}
 	
-	/*
-	 * Returns an Integer based value from an options Map.  If a value
-	 * for key isn't found, defInt is returned. 
-	 */
-	@SuppressWarnings("unchecked")
-	private static int getOptionInt(Map options, String key, int defInt) {
-		Integer obj = ((Integer) options.get(key));
-		return ((null == obj) ? defInt : obj.intValue());
-	}
-	
-	/*
-	 * Returns a Boolean based value from an options Map.  If a value
-	 * for key isn't found, defBool is returned. 
-	 */
-	@SuppressWarnings("unchecked")
-	private static boolean getOptionBoolean(Map options, String key, boolean defBool) {
-		Boolean obj = ((Boolean) options.get(key));
-		return ((null == obj) ? defBool : obj.booleanValue());
-	}
-	
-	/*
-	 * Returns a String based value from an options Map.  If a value
-	 * for key isn't found, defStr is returned. 
-	 */
-	@SuppressWarnings("unchecked")
-	private static String getOptionString(Map options, String key, String defStr) {
-		String obj = ((String) options.get(key));
-		return (((null == obj) || (0 == obj.length())) ? defStr : obj);
-	}
-
 	/**
 	 * Returns true if binder is a Folder.
 	 * 

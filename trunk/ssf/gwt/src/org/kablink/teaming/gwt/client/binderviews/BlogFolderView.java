@@ -741,7 +741,7 @@ public class BlogFolderView extends FolderViewBase
 					}
 				};
  
-				cmd = new SaveFolderSortCmd( getFolderId(), sortBy, (!sortDescending) );
+				cmd = new SaveFolderSortCmd( getFolderInfo(), sortBy, (!sortDescending) );
 				GwtClientHelper.executeCommand( cmd, callback );
 			}
 		}
