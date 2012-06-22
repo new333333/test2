@@ -152,7 +152,10 @@ public class ContentControl extends Composite
 		ShowTrashEvent.Handler
 {
 	//!	DRF:  false until I get collections working.
-	//! 	Used here and in TreeDisplayVertical.java.
+	//! 	Modules referencing this:
+	//!			- This module;
+	//!			- TreeDisplayVertical.java; and
+	//!			- BinderIconSize.java.
 	public final static boolean SHOW_COLLECTION_VIEW = false; 
 	
 	private boolean m_contentInGWT;

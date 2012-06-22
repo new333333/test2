@@ -242,8 +242,9 @@ public class MainMenuControl extends Composite
 				m_constructedItemCount      = 0;
 				
 				// In activity stream mode, there's 1 context menu
-				// item.  Otherwise, there are 3.
-				m_expectedItemCount = (isASActive ? 1 : 3);
+				// item.  Otherwise, in Vibe Lite (Filr) mode, there's
+				// 2.  Otherwise, there's 3.
+				m_expectedItemCount = (isASActive ? 1 : (GwtClientHelper.isVibeLite() ? 2 : 3));
 			}
 		}
 
