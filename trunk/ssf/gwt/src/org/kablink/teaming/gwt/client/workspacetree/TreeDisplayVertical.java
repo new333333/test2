@@ -1026,7 +1026,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		}
 
 		// Are we running in full Vibe mode or in an activity stream?
-		if ((!(isVibeLite())) || isAS) {
+		if ((!(isVibeLite())) || isAS || (!ContentControl.SHOW_COLLECTION_VIEW)) {
 			// Yes!  Are there are any child binder rows to display?
 			tiList = rootTI.getChildBindersList();
 			if ((null != tiList) && (!(tiList.isEmpty()))) {
