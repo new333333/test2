@@ -432,19 +432,21 @@ public class MainMenuControl extends Composite
 		m_mastHeadSlider.addStyleName("vibe-mainMenuButton subhead-control-bg1 roundcornerSM");
 		m_mainMenu.addItem(m_mastHeadSlider);
 
-		// ...add the browse hierarchy button...
-		BrowseHierarchyEvent bhe = new BrowseHierarchyEvent();
-		m_bhButton = new MenuBarButton(m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), bhe);
-		bhe.setOnBrowseHierarchyInfo(new OnBrowseHierarchyInfo(m_bhButton));
-		m_bhButton.addStyleName("vibe-mainMenuButton subhead-control-bg1 roundcornerSM");
-		m_mainMenu.addItem(m_bhButton);
+		// ...in full Vibe mode...
+		if (!(GwtClientHelper.isVibeLite())) {
+			// ...add the browse hierarchy button...
+			BrowseHierarchyEvent bhe = new BrowseHierarchyEvent();
+			m_bhButton = new MenuBarButton(m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), bhe);
+			bhe.setOnBrowseHierarchyInfo(new OnBrowseHierarchyInfo(m_bhButton));
+			m_bhButton.addStyleName("vibe-mainMenuButton subhead-control-bg1 roundcornerSM");
+			m_mainMenu.addItem(m_bhButton);
+		}
 
 		// ...and finally, add the common drop down items to the menu bar.
-		RequestInfo ri = GwtClientHelper.getRequestInfo();
 		addMyWorkspaceToCommon(        m_mainMenu);
 		addWhatsNewToCommon(           m_mainMenu);
 		addMyFavoritesToCommon(        m_mainMenu);
-		if (!(ri.isVibeLite())) {
+		if (!(GwtClientHelper.isVibeLite())) {
 			addMyTeamsToCommon(        m_mainMenu);
 		}
 		addCloseAdministrationToCommon(m_mainMenu);
@@ -1385,13 +1387,16 @@ public class MainMenuControl extends Composite
 					m_contextMenuSync.contextItemConstructed();
 				}
 			});
-			if (!isASActive) {
+			if ((!isASActive) && (!(GwtClientHelper.isVibeLite()))) {
 				addManageToContext(toolbarItemList, tmi,new ContextItemCallback() {
 					@Override
 					public void complete() {
 						m_contextMenuSync.contextItemConstructed();
 					}
 				});
+			}
+			
+			if (!isASActive) {
 				addViewsToContext( toolbarItemList, inSearch, searchTabId, new ContextItemCallback() {
 					@Override
 					public void complete() {

@@ -39,8 +39,8 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TreeNodeCollapsedEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeExpandedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
@@ -173,13 +173,13 @@ public class BreadCrumbPanel extends ToolPanelBase
 			// ...create the image...
 			TreeInfo ti = new TreeInfo();
 			ti.setBinderInfo(m_binderInfo);
-			Image i = GwtClientHelper.buildImage(ti.getBinderImage(GwtConstants.BINDER_BREADCRUMB_ICON_SIZE).getSafeUri().asString());
+			Image i = GwtClientHelper.buildImage(ti.getBinderImage(BinderIconSize.getBreadCrumbIconSize()).getSafeUri().asString());
 			i.addStyleName("vibe-breadCrumbCollection-image");
-			int width  = GwtConstants.BINDER_BREADCRUMB_ICON_SIZE.getBinderIconWidth();
+			int width  = BinderIconSize.getBreadCrumbIconSize().getBinderIconWidth();
 			if ((-1) != width) {
 				i.setWidth(width + "px");
 			}
-			int height = GwtConstants.BINDER_BREADCRUMB_ICON_SIZE.getBinderIconHeight();
+			int height = BinderIconSize.getBreadCrumbIconSize().getBinderIconHeight();
 			if ((-1) != height) {
 				i.setHeight(height + "px");
 			}

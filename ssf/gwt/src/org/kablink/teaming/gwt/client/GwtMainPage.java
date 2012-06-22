@@ -619,7 +619,7 @@ public class GwtMainPage extends ResizeComposite
 		if ((VibeProduct.GW == m_requestInfo.getVibeProduct()) || m_requestInfo.isSessionCaptive())
 		{
 			// ...we hide the masthead and sidebar by default.
-			GwtTeaming.fireEvent( new MastheadHideEvent( false ) );	// false -> Done resize the content now...
+			GwtTeaming.fireEvent( new MastheadHideEvent( false ) );	// false -> Don't resize the content now...
 			GwtTeaming.fireEvent( new SidebarHideEvent(  false ) );	// ...will happen when the frame has loaded.
 			
 			// Have the masthead hide the logout link

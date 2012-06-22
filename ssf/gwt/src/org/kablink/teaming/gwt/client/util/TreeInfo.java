@@ -60,6 +60,7 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	private List<TreeInfo>	m_childBindersList = new ArrayList<TreeInfo>();
 	private BinderIcons		m_binderIcons      = new BinderIcons();
 	private BinderInfo		m_binderInfo       = new BinderInfo();
+	private boolean			m_binderBorderTop;
 	private boolean			m_binderExpanded;
 	private int				m_binderChildren;
 	private int				m_binderCollections;
@@ -162,6 +163,7 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 		// ...copy the information from this TreeInfo...
 		reply.setActivityStream(      isActivityStream()                                         );
 		reply.setActivityStreamEvent( getActivityStreamEvent(), getActivityStreamInfo()          );
+		reply.setBinderBorderTop(     isBinderBorderTop()                                        );
 		reply.setBinderExpanded(      isBinderExpanded()                                         );
 		reply.setBinderHover(         getBinderHover()                                           );
 		reply.setBinderIcon(          getBinderIcon(BinderIconSize.SMALL),  BinderIconSize.SMALL );
@@ -238,8 +240,7 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 		}
 		
 		// If this TreeInfo is for the binder in question...
-		BinderInfo bi = ti.getBinderInfo();
-		if (bi.isBinderCollection() && ct.equals(bi.getCollectionType())) {
+		if (ti.isBinderCollection() && ct.equals(ti.getBinderInfo().getCollectionType())) {
 			// ...return it.
 			return ti;
 		}
@@ -322,7 +323,7 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 		}
 		
 		// If this TreeInfo is a trash binder...
-		if (ti.getBinderInfo().isBinderTrash()) {
+		if (ti.isBinderTrash()) {
 			// ...return it.
 			return ti;
 		}
@@ -555,9 +556,10 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 			switch (m_binderInfo.getBinderType()) {
 			case COLLECTION:
 				switch (m_binderInfo.getCollectionType()) {
-				case FILESPACES:  reply = filrImages.fileSpace(); break;
-				case MYFILES:     reply = filrImages.myFiles();   break;
-				case SHARED:      reply = filrImages.shared();    break;
+				case FILE_SPACES:     reply = filrImages.fileSpace(); break;
+				case MY_FILES:        reply = filrImages.myFiles();   break;
+				case SHARED_BY_ME:
+				case SHARED_WITH_ME:  reply = filrImages.shared();    break;
 				}
 				
 				if (null == reply) {
@@ -632,9 +634,10 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 			switch (m_binderInfo.getBinderType()) {
 			case COLLECTION:
 				switch (m_binderInfo.getCollectionType()) {
-				case FILESPACES:  reply = filrImages.fileSpace_medium(); break;
-				case MYFILES:     reply = filrImages.myFiles_medium();   break;
-				case SHARED:      reply = filrImages.shared_medium();    break;
+				case FILE_SPACES:     reply = filrImages.fileSpace_medium(); break;
+				case MY_FILES:        reply = filrImages.myFiles_medium();   break;
+				case SHARED_BY_ME:
+				case SHARED_WITH_ME:  reply = filrImages.shared_medium();    break;
 				}
 				
 				if (null == reply) {
@@ -709,9 +712,10 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 			switch (m_binderInfo.getBinderType()) {
 			case COLLECTION:
 				switch (m_binderInfo.getCollectionType()) {
-				case FILESPACES:  reply = filrImages.fileSpace_large(); break;
-				case MYFILES:     reply = filrImages.myFiles_large();   break;
-				case SHARED:      reply = filrImages.shared_large();    break;
+				case FILE_SPACES:     reply = filrImages.fileSpace_large(); break;
+				case MY_FILES:        reply = filrImages.myFiles_large();   break;
+				case SHARED_BY_ME:
+				case SHARED_WITH_ME:  reply = filrImages.shared_large();    break;
 				}
 				
 				if (null == reply) {
@@ -938,6 +942,26 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	}
 	
 	/**
+	 * Returns true if the Binder is supposed to display a border along
+	 * its top edge and false otherwise..
+	 * 
+	 * @return
+	 */
+	public boolean isBinderBorderTop() {
+		return m_binderBorderTop;
+	}
+
+	/**
+	 * Returns true if this TreeInfo represents a collection and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isBinderCollection() {
+		return ((null != m_binderInfo) && m_binderInfo.isBinderCollection());
+	}
+
+	/**
 	 * Returns true if the Binder corresponding to this TreeInfo object
 	 * should be expanded and false otherwise.
 	 * 
@@ -945,6 +969,16 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	 */
 	public boolean isBinderExpanded() {
 		return m_binderExpanded;
+	}
+
+	/**
+	 * Returns true if this TreeInfo represents a trash view and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isBinderTrash() {
+		return ((null != m_binderInfo) && m_binderInfo.isBinderTrash());
 	}
 
 	/**
@@ -1049,6 +1083,16 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	 */
 	public void setBinderIcon(String binderIcon, BinderIconSize iconSize) {
 		m_binderIcons.setBinderIcon(binderIcon, iconSize);
+	}
+
+	/**
+	 * Stores whether the Binder should display a border along its top
+	 * edge.
+	 * 
+	 * @param binderBorderTop
+	 */
+	public void setBinderBorderTop(boolean binderBorderTop) {
+		m_binderBorderTop = binderBorderTop;
 	}
 
 	/**

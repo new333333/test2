@@ -41,9 +41,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public enum CollectionType implements IsSerializable {
-	FILESPACES,
-	MYFILES,
-	SHARED,
+	FILE_SPACES,
+	MY_FILES,
+	SHARED_BY_ME,
+	SHARED_WITH_ME,
 	
 	OTHER,
 	NOT_A_COLLECTION,

@@ -20,6 +20,11 @@
 .displayNone        { display: none;           }
 .displayNone2       { display: none !important;}
 
+.padding3  {padding: 3px;           }
+.padding3b {padding: 3px !important;}
+.padding5  {padding: 5px;           }
+.padding5b {padding: 5px !important;}
+
 .vibe-verticalScroll {overflow-y: auto;}
 
 .white { color: white !important; }
@@ -1089,6 +1094,8 @@ body, table td, select
 
 /* Must match the definition of GwtConstants.WORKSPACE_TREE_WIDTH. */
 .workspaceTreeWidth {width: 250px !important;}
+
+.workspaceTreeControlBorderTop {border-top: 1px solid #C4C4C4 !important; margin-top: 7px;}
 
 .workspaceTreeControl
 {

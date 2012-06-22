@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.gwt.client;
 
-import org.kablink.teaming.gwt.client.util.BinderIconSize;
-
 /**
  * Various constants used throughout the GWT UI.
  * 
@@ -48,15 +46,7 @@ public class GwtConstants {
 	public static final double	HEADER_HEIGHT				= 200;		// Default height of the header panel.
 	public static final int		WORKSPACE_TREE_WIDTH		= 250;		// Must match the definition of the workspaceTreeWidth style. 
 	public static final int		SIDEBAR_TREE_WIDTH_ADJUST	=  16;		// Based on empirical evidence (left, right spacing, ...)
-	public static final double	SIDEBAR_TREE_WIDTH			= (WORKSPACE_TREE_WIDTH + SIDEBAR_TREE_WIDTH_ADJUST);	// Default width  of the sidebar tree panel.
-
-	// The following are used to control the icon sizes displayed in
-	// various places within the Vibe UI.
-	public static final BinderIconSize	BINDER_BREADCRUMB_ICON_SIZE		= BinderIconSize.MEDIUM;
-	public static final BinderIconSize	CHILD_BINDERS_WIDGET_ICON_SIZE	= BinderIconSize.SMALL;
-	public static final BinderIconSize	DIALOG_CAPTION_ICON_SIZE		= BinderIconSize.LARGE;
-	public static final BinderIconSize	LISTVIEW_ICON_SIZE				= BinderIconSize.SMALL;
-	public static final BinderIconSize	SIDEBAR_TREE_ICON_SIZE			= BinderIconSize.SMALL;
+	public static final double	SIDEBAR_TREE_WIDTH			= (WORKSPACE_TREE_WIDTH + SIDEBAR_TREE_WIDTH_ADJUST);	// Default width of the sidebar tree panel.
 	
 	/*
 	 * Constructor method. 

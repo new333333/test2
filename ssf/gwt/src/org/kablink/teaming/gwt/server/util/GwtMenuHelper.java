@@ -2087,7 +2087,7 @@ public class GwtMenuHelper {
 			// profiles workspace view either!  Are we returning them
 			// for a collection view?
 			else if (isBinderCollection) {
-				boolean myFiles = (CollectionType.MYFILES == folderInfo.getCollectionType());
+				boolean myFiles = (CollectionType.MY_FILES == folderInfo.getCollectionType());
 				if (myFiles) {
 					constructEntryAddFileFolderItem(entryToolbar, bs, request,                                      ws        );
 				    constructEntryShareItem(        entryToolbar, bs, request);
