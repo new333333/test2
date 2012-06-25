@@ -97,6 +97,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             StringIdLinkPair.class,
             Tag.class,
             TeamBrief.class,
+            TeamMember.class,
             TemplateBrief.class,
             User.class,
             UserBrief.class,

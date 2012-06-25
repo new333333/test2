@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.remoting.rest.v1.util;
 
-import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -42,7 +41,6 @@ import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
 import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.rest.v1.model.TemplateBrief;
-import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.search.Constants;
 
@@ -160,6 +158,7 @@ public class LinkUriUtil {
         model.addAdditionalLink("child_binders", model.getLink() + "/binders");
         model.addAdditionalLink("child_binder_tree", model.getLink() + "/binder_tree");
         model.addAdditionalLink("child_files", model.getLink() + "/files");
+        model.addAdditionalLink("team_members", model.getLink() + "/team_members");
     }
 
     public static void populateWorkspaceLinks(BaseRestObject model) {
@@ -235,7 +234,7 @@ public class LinkUriUtil {
         EntityIdentifier.EntityType type = EntityIdentifier.EntityType.valueOf(model.getEntity().getType());
         String baseEntityUri = getDefinableEntityLinkUri(type, model.getEntity().getId());
         if (baseEntityUri!=null) {
-            return baseEntityUri + "/tag/" + model.getId();
+            return baseEntityUri + "/tags/" + model.getId();
         }
         return null;
     }
@@ -257,5 +256,9 @@ public class LinkUriUtil {
 
     public static String getGroupMemberLinkUri(long groupId, Long memberId) {
         return getGroupLinkUri(groupId) + "/members/" + memberId;
+    }
+
+    public static String getTeamMemberLinkUri(long teamId, Long memberId) {
+        return getWorkspaceLinkUri(teamId) + "/team_members/" + memberId;
     }
 }

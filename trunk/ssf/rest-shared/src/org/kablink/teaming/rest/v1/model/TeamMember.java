@@ -30,28 +30,24 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.remoting.rest.provider;
+package org.kablink.teaming.rest.v1.model;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.kablink.teaming.rest.v1.model.ErrorInfo;
-import org.kablink.util.api.ApiErrorCode;
-
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * User: david
- * Date: 6/14/12
- * Time: 8:29 AM
+ * Date: 6/18/12
+ * Time: 2:10 PM
  */
-@Provider
-public class RuntimeMapper implements ExceptionMapper<RuntimeException> {
-    protected static Log logger = LogFactory.getLog(RuntimeMapper.class);
+@XmlRootElement(name="team_member")
+public class TeamMember extends BaseRestObject {
+    private PrincipalBrief principal;
 
-	public Response toResponse(RuntimeException ex) {
-        logger.error("An error occurred processing the REST request.", ex);
-		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ErrorInfo(ApiErrorCode.SERVER_ERROR.name(), ex.getMessage())).build();
-	}
+    public PrincipalBrief getPrincipal() {
+        return principal;
+    }
+
+    public void setPrincipal(PrincipalBrief principal) {
+        this.principal = principal;
+    }
 }
