@@ -264,6 +264,8 @@ public class Constants {
 	public static final String PERSONFLAG_FIELD = "_isPerson";
 	public static final String IS_LIBRARY_FIELD = "_isLibrary";
 	public static final String IS_MIRRORED_FIELD = "_isMirrored";
+	public static final String IS_TOP_FOLDER_FIELD = "_isTopFolder";
+	public static final String MIRRORED_DRIVER_FIELD = "_mirroredDriver";
 	public static final String ICON_NAME_FIELD = "_iconName";
 	public static final String TASK_COMPLETED_DATE_FIELD = "_taskCompleted";
 	public static final String IS_GROUP_DYNAMIC_FIELD = "_isGroupDynamic";

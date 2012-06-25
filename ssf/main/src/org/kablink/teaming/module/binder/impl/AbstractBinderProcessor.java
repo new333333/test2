@@ -2400,6 +2400,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	EntityIndexUtils.addBinderIconName(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderIsLibrary(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderIsMirrored(indexDoc, (Binder) entity, fieldsOnly);
+        	EntityIndexUtils.addBinderIsTopFolder(indexDoc, (Binder) entity, fieldsOnly);
         }
  
         // Add data fields driven by the entry's definition object. 
