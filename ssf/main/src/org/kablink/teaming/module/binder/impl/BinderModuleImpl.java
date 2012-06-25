@@ -1339,18 +1339,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	 * Add a new tag, to binder
 	 */
 	// inside write transaction
-	public void setTag(Long binderId, String newTag, boolean community) {
+	public Tag [] setTag(Long binderId, String newTag, boolean community) {
 		Binder binder = loadBinder(binderId);
 		if (community)
 			checkAccess(binder, BinderOperation.manageTag);
 		if (Validator.isNull(newTag))
-			return;
+			return null;
 		Collection<String> newTags = TagUtil.buildTags(newTag);
 		if (newTags.size() == 0)
-			return;
+			return null;
 		User user = RequestContextHolder.getRequestContext().getUser();
 		EntityIdentifier uei = user.getEntityIdentifier();
 		EntityIdentifier bei = binder.getEntityIdentifier();
+        List<Tag> tags = new ArrayList<Tag>();
 		for (String tagName : newTags) {
 			Tag tag = new Tag();
 			// community tags belong to the binder - don't care who created it
@@ -1360,8 +1361,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			tag.setPublic(community);
 			tag.setName(tagName);
 			getCoreDao().save(tag);
+            tags.add(tag);
 		}
 		loadBinderProcessor(binder).indexBinder(binder, false);
+        return tags.toArray(new Tag[tags.size()]);
 	}
 
 	/**

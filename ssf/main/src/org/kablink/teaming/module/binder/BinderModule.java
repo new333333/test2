@@ -689,7 +689,7 @@ public interface BinderModule {
      * @param community
      * @throws AccessControlException
      */
-	public void setTag(Long binderId, String newtag, boolean community) 
+	public Tag [] setTag(Long binderId, String newtag, boolean community)
 		throws AccessControlException;  
 	/**
 	 * Set the team members for a binder.  By default inherits from parent

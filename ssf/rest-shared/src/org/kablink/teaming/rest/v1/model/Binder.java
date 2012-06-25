@@ -40,15 +40,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@type")
 public class Binder extends DefinableEntity {
     private String path;
-    private String family;
-
-    public String getFamily() {
-        return family;
-    }
-
-    public void setFamily(String family) {
-        this.family = family;
-    }
 
     public String getPath() {
         return path;

@@ -252,7 +252,7 @@ public class FolderEntryResource extends AbstractDefinableEntityResource {
     }
 
     @GET
-    @Path("{id}/tag/{tagId}")
+    @Path("{id}/tags/{tagId}")
     public Tag getTag(@PathParam("id") Long id, @PathParam("tagId") String tagId) {
         org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
         Collection<org.kablink.teaming.domain.Tag> tags = getFolderModule().getTags(entry);
@@ -265,7 +265,7 @@ public class FolderEntryResource extends AbstractDefinableEntityResource {
     }
 
     @DELETE
-    @Path("{id}/tag/{tagId}")
+    @Path("{id}/tags/{tagId}")
     public void deleteTag(@PathParam("id") Long id, @PathParam("tagId") String tagId) {
         getFolderModule().deleteTag(null, id, tagId);
     }

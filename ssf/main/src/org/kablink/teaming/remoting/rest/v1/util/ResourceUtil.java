@@ -227,6 +227,13 @@ public class ResourceUtil {
         return model;
     }
 
+    public static TeamMember buildTeamMember(long teamId, org.kablink.teaming.domain.Principal principal) {
+        TeamMember model = new TeamMember();
+        model.setPrincipal(buildPrincipalBrief(principal));
+        model.setLink(LinkUriUtil.getTeamMemberLinkUri(teamId, model.getPrincipal().getId()));
+        return model;
+    }
+
     public static PrincipalBrief buildPrincipalBrief(org.kablink.teaming.domain.Principal principal) {
         if (principal instanceof org.kablink.teaming.domain.User) {
             return buildUserBrief((org.kablink.teaming.domain.User) principal);

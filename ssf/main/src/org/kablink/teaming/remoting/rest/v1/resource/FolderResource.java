@@ -166,7 +166,7 @@ public class FolderResource extends AbstractBinderResource {
 			@QueryParam("count") Integer maxCount) {
         SearchFilter filter = new SearchFilter();
         filter.addFolderFilter("");
-        return getSubBinders(id, filter, offset, maxCount, "/folder/" + id + "/folders");
+        return getSubBinders(id, filter, offset, maxCount, "/folders/" + id + "/folders");
 	}
 
     @POST

@@ -48,8 +48,8 @@ import java.util.List;
 @XmlRootElement (name = "results")
 public class SearchResultList<T> {
     private Integer first;
-    private Integer count;
-    private Integer total;
+    private Integer count = 0;
+    private Integer total = 0;
     private String next;
     private List<T> results = new ArrayList<T>();
 

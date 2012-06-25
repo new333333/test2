@@ -2,6 +2,8 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.NoTagByTheIdException;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -16,7 +18,10 @@ import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderTree;
 import org.kablink.teaming.rest.v1.model.FileProperties;
+import org.kablink.teaming.rest.v1.model.PrincipalBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.teaming.rest.v1.model.Tag;
+import org.kablink.teaming.rest.v1.model.TeamMember;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.util.api.ApiErrorCode;
 
@@ -31,8 +36,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * User: david
@@ -124,6 +132,101 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                                   @QueryParam("count") Integer maxCount) {
         return getSubFiles(id, recursive, offset, maxCount, null);
 	}
+
+    @GET
+   	@Path("{id}/team_members")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+   	public SearchResultList<TeamMember> getTeamMembers(@PathParam("id") long id,
+            @QueryParam("expand_groups") @DefaultValue("false") boolean expandGroups) {
+        org.kablink.teaming.domain.Binder binder = _getBinder(id);
+        SortedSet<Principal> teamMembers = getBinderModule().getTeamMembers(binder, expandGroups);
+        SearchResultList<TeamMember> results = new SearchResultList<TeamMember>();
+        for (Principal principal : teamMembers) {
+            results.append(ResourceUtil.buildTeamMember(id, principal));
+        }
+        return results;
+    }
+
+    @POST
+   	@Path("{id}/team_members")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+   	public TeamMember addTeamMember(@PathParam("id") long id, PrincipalBrief principal) {
+        _getBinder(id);
+        Principal member = getProfileModule().getEntry(principal.getId());
+        Set<Long> teamMembers = getBinderModule().getTeamMemberIds(id, false);
+        if (!teamMembers.contains(principal.getId())) {
+            teamMembers.add(principal.getId());
+            getBinderModule().setTeamMembers(id, teamMembers);
+        }
+        return ResourceUtil.buildTeamMember(id, member);
+    }
+
+    @DELETE
+   	@Path("{id}/team_members")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+   	public void clearTeamMembers(@PathParam("id") long id) {
+        _getBinder(id);
+        getBinderModule().setTeamMembershipInherited(id, true);
+    }
+
+    @DELETE
+   	@Path("{id}/team_members/{memberId}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+   	public void deleteTeamMember(@PathParam("id") long id, @PathParam("memberId") long memberId) {
+        _getBinder(id);
+        Set<Long> teamMembers = getBinderModule().getTeamMemberIds(id, false);
+        if (teamMembers.contains(memberId)) {
+            teamMembers.remove(memberId);
+            getBinderModule().setTeamMembers(id, teamMembers);
+        }
+        teamMembers = getBinderModule().getTeamMemberIds(id, false);
+        logger.debug("");
+    }
+
+    @GET
+    @Path("{id}/tags")
+    public SearchResultList<Tag> getTags(@PathParam("id") Long id) {
+        org.kablink.teaming.domain.Binder entry = _getBinder(id);
+        Collection<org.kablink.teaming.domain.Tag> tags = getBinderModule().getTags(entry);
+        SearchResultList<Tag> results = new SearchResultList<Tag>();
+        for (org.kablink.teaming.domain.Tag tag : tags) {
+            results.append(ResourceUtil.buildTag(tag));
+        }
+        return results;
+    }
+
+    @POST
+    @Path("{id}/tags")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public SearchResultList<Tag> addTag(@PathParam("id") Long id, Tag tag) {
+        _getBinder(id);
+        org.kablink.teaming.domain.Tag[] tags = getBinderModule().setTag(id, tag.getName(), tag.isPublic());
+        SearchResultList<Tag> results = new SearchResultList<Tag>();
+        for (org.kablink.teaming.domain.Tag tg : tags) {
+            results.append(ResourceUtil.buildTag(tg));
+        }
+        return results;
+    }
+
+    @GET
+    @Path("{id}/tags/{tagId}")
+    public Tag getTag(@PathParam("id") Long id, @PathParam("tagId") String tagId) {
+        org.kablink.teaming.domain.Binder entry = _getBinder(id);
+        Collection<org.kablink.teaming.domain.Tag> tags = getBinderModule().getTags(entry);
+        for (org.kablink.teaming.domain.Tag tag : tags) {
+            if (tag.getId().equals(tagId)) {
+                return ResourceUtil.buildTag(tag);
+            }
+        }
+        throw new NoTagByTheIdException(tagId);
+    }
+
+    @DELETE
+    @Path("{id}/tags/{tagId}")
+    public void deleteTag(@PathParam("id") Long id, @PathParam("tagId") String tagId) {
+        getFolderModule().deleteTag(null, id, tagId);
+    }
 
     protected Binder createBinder(long parentId, Binder newBinder, Long templateId) throws WriteFilesException, WriteEntryDataException {
         _getBinder(parentId);

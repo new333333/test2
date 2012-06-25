@@ -104,7 +104,7 @@ public class WorkspaceResource extends AbstractBinderResource {
 			@QueryParam("count") Integer maxCount) {
         SearchFilter filter = new SearchFilter();
         filter.addWorkspaceFilter("");
-        return getSubBinders(id, filter, offset, maxCount, "/workspace/" + id + "/workspaces");
+        return getSubBinders(id, filter, offset, maxCount, "/workspaces/" + id + "/workspaces");
 	}
 
     @POST
@@ -131,7 +131,7 @@ public class WorkspaceResource extends AbstractBinderResource {
 			@QueryParam("count") Integer maxCount) {
         SearchFilter filter = new SearchFilter();
         filter.addFolderFilter("");
-        return getSubBinders(id, filter, offset, maxCount, "/workspace/" + id + "/folders");
+        return getSubBinders(id, filter, offset, maxCount, "/workspaces/" + id + "/folders");
 	}
 
     @POST
@@ -149,6 +149,7 @@ public class WorkspaceResource extends AbstractBinderResource {
         }
         return (Folder) createBinder(id, binder, templateId);
     }
+
     @Override
     protected Binder _getBinder(long id) {
         return _getWorkspace(id);
