@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -51,8 +51,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
@@ -88,7 +86,6 @@ import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
-import org.kablink.teaming.exception.UncheckedCodedException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceSession;
 import org.kablink.teaming.jobs.BinderReindex;
@@ -96,7 +93,6 @@ import org.kablink.teaming.jobs.DefaultMirroredFolderSynchronization;
 import org.kablink.teaming.jobs.MirroredFolderSynchronization;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.lucene.Hits;
-import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.definition.DefinitionModule;
@@ -118,14 +114,12 @@ import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workflow.WorkflowModule;
-import org.kablink.teaming.relevance.RelevanceManager;
 import org.kablink.teaming.relevance.Relevance;
 import org.kablink.teaming.relevance.util.RelevanceUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.search.LuceneReadSession;
-import org.kablink.teaming.search.LuceneWriteSession;
 import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.search.filter.SearchFilter;
@@ -154,6 +148,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  *
  * 
  */
+@SuppressWarnings({"unchecked", "unused"})
 public abstract class AbstractBinderProcessor extends CommonDependencyInjection 
 	implements BinderProcessor {
 	private static  String[] docTypes = new String[] {Constants.DOC_TYPE_ENTRY,Constants.DOC_TYPE_ATTACHMENT};
@@ -249,7 +244,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
 	//***********************************************************************************************************	
     //no transaction    
-    public Binder addBinder(final Binder parent, Definition def, Class clazz, 
+    @Override
+	public Binder addBinder(final Binder parent, Definition def, Class clazz, 
     		final InputDataAccessor inputData, Map fileItems, Map options) 
     	throws AccessControlException, WriteFilesException, WriteEntryDataException {
         // This default implementation is coded after template pattern. 
@@ -295,7 +291,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        SimpleProfiler.start("addBinder_transactionExecute");
 	        // The following part requires update database transaction.
 	        getTransactionTemplate().execute(new TransactionCallback() {
-	        	public Object doInTransaction(TransactionStatus status) {
+	        	@Override
+				public Object doInTransaction(TransactionStatus status) {
 	                //need to set entry/binder information before generating file attachments
 	                //Attachments/Events need binder info for AnyOwner
 	                addBinder_fillIn(parent, binder, inputData, entryData, ctx);
@@ -653,7 +650,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  	}
     //***********************************************************************************************************
     //no transaction    
-    public void modifyBinder(final Binder binder, final InputDataAccessor inputData, 
+    @Override
+	public void modifyBinder(final Binder binder, final InputDataAccessor inputData, 
     		Map fileItems, final Collection deleteAttachments, Map options) 
     		throws AccessControlException, WriteFilesException, WriteEntryDataException {
 	
@@ -681,7 +679,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		    SimpleProfiler.start("modifyBinder_transactionExecute");
 	    	// The following part requires update database transaction.
 	        getTransactionTemplate().execute(new TransactionCallback() {
-	        	public Object doInTransaction(TransactionStatus status) {
+	        	@Override
+				public Object doInTransaction(TransactionStatus status) {
 	        		String oldTitle = binder.getTitle();
 	        		String oldNormalTitle = binder.getNormalTitle();
 	        		modifyBinder_fillIn(binder, inputData, entryData, ctx);
@@ -913,7 +912,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     //***********************************************************************************************************
     //inside write transaction    
-    public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
+    @Override
+	public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
     	if (binder.isReserved() && !binder.getRoot().isDeleted()) 
     		throw new NotSupportedException(
     				"errorcode.notsupported.deleteBinder", new String[]{binder.getPathName()});
@@ -1053,7 +1053,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
     //***********************************************************************************************************
     //inside write transaction    
-    public void moveBinder(Binder source, Binder destination, Map options) {
+    @Override
+	public void moveBinder(Binder source, Binder destination, Map options) {
     	if (source.equals(destination)) return;
     	if (source.isReserved() || source.isZone()) 
     		throw new NotSupportedException(
@@ -1087,7 +1088,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     
     //Check to see if destination folder has enough quota
-    public boolean checkMoveBinderQuota(Binder source, Binder destination) {
+    @Override
+	public boolean checkMoveBinderQuota(Binder source, Binder destination) {
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
     	if (getBinderModule().isBinderDiskQuotaEnabled()) {
 	    	Long minQuotaLeft = getBinderModule().getMinBinderQuotaLeft(destination);
@@ -1116,7 +1118,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
 
     //Check to see if destination folder has enough quota
-    public boolean checkMoveEntryQuota(Binder source, Binder destination, FolderEntry entry) {
+    @Override
+	public boolean checkMoveEntryQuota(Binder source, Binder destination, FolderEntry entry) {
     	SortedSet<FileAttachment> atts = entry.getFileAttachments();
     	Long totalFileSizes = 0L;
     	for (FileAttachment att : atts) {
@@ -1306,13 +1309,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //somewhere up the parent chain we have a new parent
     //don't have to do all the work immediate parent had to do
     //inside write transaction    
+	@Override
 	public void moveBinderFixup(Binder binder) {
 		getCoreDao().move(binder);
 		
 	}
     //***********************************************************************************************************
     //no transaction    
-    public Binder copyBinder(final Binder source, final Binder destination, final Map options) {
+    @Override
+	public Binder copyBinder(final Binder source, final Binder destination, final Map options) {
     	//Check if moving a binder into itself or into a sub binder of itself
     	Binder parent = destination;
     	while (parent != null) {
@@ -1344,7 +1349,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      	copyBinder_adjustForMirroredFolder(binder, destination);
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
+        	@Override
+			public Object doInTransaction(TransactionStatus status) {
                 //need to set entry/binder information before generating file attachments
                 //Attachments/Events need binder info for AnyOwner
         		copyBinder_fillIn(source, destination, binder, ctx);
@@ -1460,7 +1466,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     
     //********************************************************************************************************
-    public Map getBinders(Binder binder, Map searchOptions) {
+    @Override
+	public Map getBinders(Binder binder, Map searchOptions) {
         //search engine will only return binder you have access to
          //validate entry count
     	//do actual search index query
@@ -1469,7 +1476,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         return buildResultMap(binder, hits);
    }
 
-    public Map getBinders(Binder binder, List binderIds, Map searchOptions) {
+    @Override
+	public Map getBinders(Binder binder, List binderIds, Map searchOptions) {
         //search engine will only return binder you have access to
          //validate entry count
     	//do actual search index query 
@@ -1477,7 +1485,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         return buildResultsMap(hits);
     }
 
-    public Map getBindersRecursively(Binder binder, Map options) {
+    @Override
+	public Map getBindersRecursively(Binder binder, Map options) {
         //search engine will only return binder you have access to
          //validate entry count
     	//do actual search index query
@@ -1612,7 +1621,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //***********************************************************************************************************
     //not really meant to be overridden, but here to share code
  
-    public void indexFunctionMembership(Binder binder, boolean cascade) {
+    @Override
+	public void indexFunctionMembership(Binder binder, boolean cascade) {
 		String value = EntityIndexUtils.getFolderAclString(binder);
     	if (cascade) {
     		Map params = new HashMap();
@@ -1658,7 +1668,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
     	
     }
-     public void indexTeamMembership(Binder binder, boolean cascade) {
+     @Override
+	public void indexTeamMembership(Binder binder, boolean cascade) {
     	String value = binder.getTeamMemberString();
     	if (cascade) {
     		Map params = new HashMap();
@@ -1728,7 +1739,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	 return ids;
    
      }
-     public void indexOwner(Collection<Binder>binders, Long ownerId) {
+     @Override
+	public void indexOwner(Collection<Binder>binders, Long ownerId) {
   		String value = Constants.EMPTY_ACL_FIELD;
  		if (ownerId != null) value = ownerId.toString();
  		doFieldUpdate(binders, Constants.BINDER_OWNER_ACL_FIELD, value);     		
@@ -1852,34 +1864,40 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      }
 
     //***********************************************************************************************************
-    public IndexErrors indexBinder(Binder binder, boolean includeEntries) {
+    @Override
+	public IndexErrors indexBinder(Binder binder, boolean includeEntries) {
     	//call overloaded methods
     	IndexErrors errors = indexBinder(binder, includeEntries, true, null);   
    		return errors;
     }
     
-    public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries) {
+    @Override
+	public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries) {
     	//call overloaded methods
     	IndexErrors errors = loadIndexTreeIncremental(binder, includeEntries);   
    		return errors;
     }
     
-    public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
+    @Override
+	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
     	IndexErrors errors = indexBinder(binder, null, null, !deleteIndex, tags);    	
    		return errors;
     	
     }
     //***********************************************************************************************************
     //It is assumed that the index has been deleted for each binder to be index
-    public Collection indexTree(Binder binder, Collection exclusions) {
+    @Override
+	public Collection indexTree(Binder binder, Collection exclusions) {
    		IndexErrors errors = new IndexErrors();
     	return loadIndexTree(binder, exclusions, StatusTicket.NULL_TICKET, errors);
     }
-   	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
+   	@Override
+	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
    		IndexErrors errors = new IndexErrors();
    		return indexTree(binder, exclusions, statusTicket, errors);
    	}
-   	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors) {
+   	@Override
+	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors) {
    		return loadIndexTree(binder, exclusions, statusTicket, errors);
    	}
    	private Collection loadIndexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors) {
@@ -1986,7 +2004,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			this.newDiskSpaceUsedCumulative = null;
 		}
 	}
-    public Collection validateBinderQuotasTree(Binder binder, StatusTicket statusTicket, 
+    @Override
+	public Collection validateBinderQuotasTree(Binder binder, StatusTicket statusTicket, 
     		List<Long> errors) {
     	final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
     	final List<Long> binderQuotasToUpdate = new ArrayList<Long>();
@@ -2046,7 +2065,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				SimpleProfiler.start("validateBinderQuotasTree");
 		        // The following part requires update database transaction.
 		        getTransactionTemplate().execute(new TransactionCallback() {
-		        	public Object doInTransaction(TransactionStatus status) {
+		        	@Override
+					public Object doInTransaction(TransactionStatus status) {
 		        		//Go through all binders to validate and update the disk space used values
 		        		//  This step makes sure each binder has a BinderQuota in the database
 		        		for (Long binderId : binderQuotasToUpdate) {
@@ -2097,7 +2117,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         //Now, the map is updated with new cumulative counts, look for changes to be written to the database
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
+        	@Override
+			public Object doInTransaction(TransactionStatus status) {
         		//Go through all binders to validate and update the disk space used values
         		//  This step makes sure each binder has a BinderQuota in the database
         		for (Long binderId : binderQuotasMap.keySet()) {
@@ -2127,12 +2148,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
 
     //Routine to calculate the aging date for each file in a binder
-    public void setFileAgingDates(Binder binder) {
+    @Override
+	public void setFileAgingDates(Binder binder) {
     	//Nothing to be done here. It is all done in FolderCoreProcessor
     }
    	
     //Routine to see if this binder is empty
-    public boolean isFolderEmpty(final Binder binder) {
+    @Override
+	public boolean isFolderEmpty(final Binder binder) {
     	return true;
     }
    	
@@ -2400,11 +2423,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	EntityIndexUtils.addBinderIconName(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderIsLibrary(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderIsMirrored(indexDoc, (Binder) entity, fieldsOnly);
+        	EntityIndexUtils.addBinderHasResourceDriver(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderIsTopFolder(indexDoc, (Binder) entity, fieldsOnly);
         }
  
         // Add data fields driven by the entry's definition object. 
 		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
+			@Override
 			public void visit(Element entryElement, Element flagElement, Map args)
 			{
                 if (flagElement.attributeValue("apply").equals("true")) {
@@ -2421,6 +2446,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
                     }
                 }
 			}
+			@Override
 			public String getFlagElementName() { return "index"; }
 		};
 		if (!fieldsOnly) {
@@ -2566,6 +2592,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         }
 		
 	}
+	@Override
 	public ChangeLog processChangeLog(Binder binder, String operation) {
 		ChangeLog changes = new ChangeLog(binder, operation);
 		//any changes here should be considered to template export

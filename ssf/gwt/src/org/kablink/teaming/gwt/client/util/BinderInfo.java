@@ -167,6 +167,38 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	}
 
 	/**
+	 * Returns true if the given BinderInfo is considered equal to this
+	 * one.
+	 * 
+	 * @param bi
+	 * 
+	 * @return
+	 */
+	public boolean isEqual(BinderInfo bi) {
+		// If we weren't given a BinderInfo to compare...
+		if (null == bi) {
+			// ...they can't be equals.
+			return false;
+		}
+
+		// Are all the  types equal?
+		boolean reply =
+			(m_binderType.equals(    bi.getBinderType())    &&
+			 m_folderType.equals(    bi.getFolderType())    &&
+			 m_wsType.equals(        bi.getWorkspaceType()) &&
+			 m_collectionType.equals(bi.getCollectionType()));
+		
+		if (reply) {
+			// Yes!  Are the binder IDs equal?
+			reply = m_binderId.equals(bi.getBinderId());
+		}
+
+		// If we get here, reply is true if the given BinderInfo
+		// matches this one and false otherwise.  Return it.
+		return reply;
+	}
+
+	/**
 	 * Stores the description of a Binder.
 	 */
 	public void setBinderDesc( String binderDesc )

@@ -96,6 +96,8 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
@@ -228,7 +230,7 @@ public class MainMenuControl extends Composite
 		/*
 		 * Initiates context menu construction tracking.
 		 */
-		private void activateContextConstruction(boolean isASActive) {
+		private void activateContextConstruction(boolean isASActive, CollectionType collectionType) {
 			// Are we already in construction mode?
 			if (m_constructionInProgress) {
 				// Yes!  Then it shouldn't be getting activated again.
@@ -242,9 +244,15 @@ public class MainMenuControl extends Composite
 				m_constructedItemCount      = 0;
 				
 				// In activity stream mode, there's 1 context menu
-				// item.  Otherwise, in Vibe Lite (Filr) mode, there's
-				// 2.  Otherwise, there's 3.
-				m_expectedItemCount = (isASActive ? 1 : (GwtClientHelper.isVibeLite() ? 2 : 3));
+				// item.  Otherwise, in Vibe Lite (Filr) mode or
+				// viewing a collection, there's 2.  Otherwise, there's
+				// 3.
+				m_expectedItemCount =
+					(isASActive ?
+						1       :
+						((GwtClientHelper.isVibeLite() || collectionType.isCollection()) ?
+							2                                                            :
+							3));
 			}
 		}
 
@@ -290,18 +298,20 @@ public class MainMenuControl extends Composite
 	 * See the parameters to contextLoaded().
 	 */
 	private static class ContextLoadInfo {
-		private boolean m_inSearch;
-		private String  m_binderId;
-		private String  m_searchTabId;
+		private boolean 		m_isSearch;
+		private CollectionType	m_collectionType;
+		private String  		m_binderId;
+		private String  		m_searchTabId;
 
 		/*
 		 * Class constructor.
 		 */
-		private ContextLoadInfo(String binderId, boolean inSearch, String searchTabId) {
+		private ContextLoadInfo(String binderId, boolean isSearch, String searchTabId, CollectionType collectionType) {
 			// Simply store the parameters.
-			m_binderId    = binderId;
-			m_inSearch    = inSearch;
-			m_searchTabId = searchTabId;
+			m_binderId       = binderId;
+			m_isSearch       = isSearch;
+			m_searchTabId    = searchTabId;
+			m_collectionType = collectionType;
 		}
 	}
 	
@@ -457,7 +467,7 @@ public class MainMenuControl extends Composite
 	 * Adds the Manage item to the context based portion of the menu
 	 * bar.
 	 */
-	private void addManageToContext(final List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi, final ContextItemCallback callback) {
+	private void addManageToContext(final List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi, final ContextItemCallback callback, final CollectionType collectionType) {
 		if (null == m_manageBox) {
 			String manageNameCalc;
 			switch (m_contextBinder.getBinderType()) {
@@ -485,6 +495,9 @@ public class MainMenuControl extends Composite
 						m_manageBox = new MenuBarBox("ss_mainMenuManage", manageName, mmp.getMenuBar());
 						mmp.setMenuBox(m_manageBox);
 						m_mainMenu.addItem(m_manageBox);
+						if (collectionType.isCollection()) {
+							m_manageBox.setVisible(false);
+						}
 					}
 					callback.complete();
 				}
@@ -561,9 +574,9 @@ public class MainMenuControl extends Composite
 	 * Adds the Views item to the context based portion of the menu
 	 * bar.
 	 */
-	private void addViewsToContext(final List<ToolbarItem> toolbarItemList, boolean inSearch, String searchTabId, final ContextItemCallback callback) {
+	private void addViewsToContext(final List<ToolbarItem> toolbarItemList, boolean isSearch, String searchTabId, final ContextItemCallback callback) {
 		if (null == m_viewsBox) {
-			ViewsMenuPopup.createAsync(this, inSearch, searchTabId, new ViewsMenuPopupClient() {			
+			ViewsMenuPopup.createAsync(this, isSearch, searchTabId, new ViewsMenuPopupClient() {			
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in
@@ -637,7 +650,7 @@ public class MainMenuControl extends Composite
 		}
 	}
 	
-	/**
+	/*
 	 * Called when a new context has been loaded into the content panel
 	 * to refresh the menu contents.
 	 * 
@@ -648,17 +661,13 @@ public class MainMenuControl extends Composite
 	 *    If it's null or an empty value, it implies that there is no
 	 *    current search that can be saved and no saving capabilities
 	 *    will be exposed.
-	 *    
-	 * @param binderId
-	 * @param inSearch
-	 * @param searchTabId
 	 */
-	public void contextLoaded(final String binderId, final boolean inSearch, final String searchTabId) {
+	private void contextLoaded(final String binderId, final boolean isSearch, final String searchTabId, final CollectionType collectionType) {
 		// Keep track of the context that we're loading.
-		setContext(binderId, inSearch, searchTabId);
+		setContext(binderId, isSearch, searchTabId, collectionType);
 		
 		// Rebuild the context based panel based on the new context.
-		GetBinderInfoCmd cmd = new GetBinderInfoCmd( binderId );
+		GetBinderInfoCmd cmd = new GetBinderInfoCmd(binderId);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -674,7 +683,11 @@ public class MainMenuControl extends Composite
 				// Show the context asynchronously so that we can
 				// release the AJAX request ASAP.
 				BinderInfo binderInfo = ((BinderInfo) response.getResponseData());
-				showContextAsync(binderInfo, binderId, inSearch, searchTabId);
+				if (collectionType.isCollection()) {
+					binderInfo.setBinderType(    BinderType.COLLECTION);
+					binderInfo.setCollectionType(collectionType       );
+				}
+				showContextAsync(binderInfo, binderId, isSearch, searchTabId, collectionType);
 			}
 		});
 	}
@@ -702,9 +715,9 @@ public class MainMenuControl extends Composite
 			// Yes!  Use it as the current binder for the
 			// activity stream.
 			ActivityStreamInfo asi = new ActivityStreamInfo();
-			asi.setActivityStream(ActivityStream.CURRENT_BINDER);
-			asi.setBinderId(m_contextBinder.getBinderId());
-			asi.setTitle(   m_contextBinder.getBinderTitle());
+			asi.setActivityStream(ActivityStream.CURRENT_BINDER   );
+			asi.setBinderId(      m_contextBinder.getBinderId()   );
+			asi.setTitle(         m_contextBinder.getBinderTitle());
 			GwtTeaming.fireEvent(new ActivityStreamEnterEvent(asi, ss));
 		}
 		
@@ -775,7 +788,8 @@ public class MainMenuControl extends Composite
 				contextLoaded(
 					osbInfo.getBinderId().toString(),
 					m_mainPage.isInSearch(),
-					m_mainPage.getSearchTabId());
+					m_mainPage.getSearchTabId(),
+					osbInfo.getCollectionType());
 			}
 		}
 	}
@@ -1166,8 +1180,9 @@ public class MainMenuControl extends Composite
 			// ...re-load it.
 			contextLoaded(
 				m_lastContextLoaded.m_binderId,
-				m_lastContextLoaded.m_inSearch,
-				m_lastContextLoaded.m_searchTabId);
+				m_lastContextLoaded.m_isSearch,
+				m_lastContextLoaded.m_searchTabId,
+				m_lastContextLoaded.m_collectionType);
 		}
 	}
 
@@ -1175,11 +1190,17 @@ public class MainMenuControl extends Composite
 	 * Sets the parameters as the most recently loaded context.
 	 * 
 	 * @param binderId
-	 * @param inSearch
+	 * @param isSearch
 	 * @param searchTabId
+	 * @param collectionType
 	 */
-	public void setContext(String binderId, boolean inSearch, String searchTabId) {
-		m_lastContextLoaded = new ContextLoadInfo(binderId, inSearch, searchTabId);
+	public void setContext(String binderId, boolean isSearch, String searchTabId, CollectionType collectionType) {
+		m_lastContextLoaded = new ContextLoadInfo(binderId, isSearch, searchTabId, collectionType);
+	}
+	
+	public void setContext(String binderId, boolean isSearch, String searchTabId) {
+		// Always use the initial form of the method.
+		setContext(binderId, isSearch, searchTabId, CollectionType.NOT_A_COLLECTION);
 	}
 
 	/*
@@ -1263,11 +1284,11 @@ public class MainMenuControl extends Composite
 	/*
 	 * Asynchronously shows the context that was loaded.
 	 */
-	private void showContextAsync(final BinderInfo binderInfo, final String binderId, final boolean inSearch, final String searchTabId) {
+	private void showContextAsync(final BinderInfo binderInfo, final String binderId, final boolean isSearch, final String searchTabId, final CollectionType collectionType) {
 		ScheduledCommand doShow = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				showContextNow(binderInfo, binderId, inSearch, searchTabId);
+				showContextNow(binderInfo, binderId, isSearch, searchTabId, collectionType);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doShow);
@@ -1276,9 +1297,9 @@ public class MainMenuControl extends Composite
 	/*
 	 * Synchronously shows the context that was loaded.
 	 */
-	private void showContextNow(final BinderInfo binderInfo, final String binderId, final boolean inSearch, final String searchTabId) {
+	private void showContextNow(final BinderInfo binderInfo, final String binderId, final boolean isSearch, final String searchTabId, final CollectionType collectionType) {
 		m_contextBinder = binderInfo;
-		GetToolbarItemsCmd cmd = new GetToolbarItemsCmd( binderId );
+		GetToolbarItemsCmd cmd = new GetToolbarItemsCmd(binderId);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -1300,7 +1321,7 @@ public class MainMenuControl extends Composite
 					@Override
 					public void execute() {
 						GetTeamManagementInfoCmd cmd = new GetTeamManagementInfoCmd(binderId);
-						GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+						GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 							@Override
 							public void onFailure(Throwable t) {
 								GwtClientHelper.handleGwtRPCFailure(
@@ -1315,10 +1336,11 @@ public class MainMenuControl extends Composite
 								// that we can release the AJAX request ASAP.
 								TeamManagementInfo tmi = ((TeamManagementInfo) response.getResponseData());
 								showToolbarItemsAsync(
-									inSearch,
+									isSearch,
 									searchTabId,
 									toolbarItemList,
-									tmi);
+									tmi,
+									collectionType);
 							}
 						});
 					}
@@ -1352,11 +1374,11 @@ public class MainMenuControl extends Composite
 	/*
 	 * Asynchronously shows the toolbar items.
 	 */
-	private void showToolbarItemsAsync(final boolean inSearch, final String searchTabId, final List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi) {
+	private void showToolbarItemsAsync(final boolean isSearch, final String searchTabId, final List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi, final CollectionType collectionType) {
 		ScheduledCommand doShow = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				showToolbarItemsNow(inSearch, searchTabId, toolbarItemList, tmi);
+				showToolbarItemsNow(isSearch, searchTabId, toolbarItemList, tmi, collectionType);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doShow);
@@ -1365,7 +1387,7 @@ public class MainMenuControl extends Composite
 	/*
 	 * Synchronously shows the toolbar items.
 	 */
-	private void showToolbarItemsNow(boolean inSearch, String searchTabId, List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi) {
+	private void showToolbarItemsNow(boolean isSearch, String searchTabId, List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi, final CollectionType collectionType) {
 		// Do we currently have context items being constructed?
 		if (m_contextMenuSync.isConstructionInProgress()) {
 			// Yes!  That's an error.  Tell the user.
@@ -1376,34 +1398,36 @@ public class MainMenuControl extends Composite
 			// No, we don't currently have context items being
 			// constructed!  Initiate the construction processing now.
 			boolean isASActive = m_mainPage.isActivityStreamActive();
-			m_contextMenuSync.activateContextConstruction(isASActive);
+			m_contextMenuSync.activateContextConstruction(isASActive, collectionType);
 			
 			// Clear any context menus currently displayed...
 			clearContextMenus();
 			
 			// ...and handle the variations based on activity stream mode.
 			addRecentPlacesToContext(toolbarItemList, new ContextItemCallback() {
-				@Override
-				public void complete() {
-					m_contextMenuSync.contextItemConstructed();
-				}
-			});
-			if ((!isASActive) && (!(GwtClientHelper.isVibeLite()))) {
-				addManageToContext(toolbarItemList, tmi,new ContextItemCallback() {
 					@Override
 					public void complete() {
 						m_contextMenuSync.contextItemConstructed();
 					}
 				});
+			
+			if ((!isASActive) && (!(GwtClientHelper.isVibeLite()))) {
+				addManageToContext(toolbarItemList, tmi,new ContextItemCallback() {
+						@Override
+						public void complete() {
+							m_contextMenuSync.contextItemConstructed();
+						}
+					},
+					collectionType);
 			}
 			
 			if (!isASActive) {
-				addViewsToContext( toolbarItemList, inSearch, searchTabId, new ContextItemCallback() {
-					@Override
-					public void complete() {
-						m_contextMenuSync.contextItemConstructed();
-					}
-				});
+				addViewsToContext(toolbarItemList, isSearch, searchTabId, new ContextItemCallback() {
+						@Override
+						public void complete() {
+							m_contextMenuSync.contextItemConstructed();
+						}
+					});
 			}
 		}
 	}
@@ -1436,7 +1460,7 @@ public class MainMenuControl extends Composite
 			
 			@Override
 			public void onFailure(Throwable reason) {
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_MainMenuControl() );
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_MainMenuControl());
 				menuClient.onUnavailable();
 			}
 		});

@@ -1485,18 +1485,18 @@ public class GwtViewHelper {
 		switch (ct) {
 		default:
 		case MY_FILES:
-			crit.add(in(Constants.DOC_TYPE_FIELD,          new String[] {Constants.DOC_TYPE_BINDER}));
-			crit.add(in(Constants.IS_MIRRORED_FIELD,       new String[] {Constants.FALSE}));
-			crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[] {String.valueOf(binder.getId())}));
-			crit.add(in(Constants.FAMILY_FIELD,            new String[] {Definition.FAMILY_FILE, Definition.FAMILY_PHOTO}));
+			crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
+			crit.add(in(Constants.IS_MIRRORED_FIELD,       new String[]{Constants.FALSE}));
+			crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(binder.getId())}));
+			crit.add(in(Constants.FAMILY_FIELD,            new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO}));
 			
 			break;
 
 		case SHARED_BY_ME:
 //!			...this needs to be implemented...
 			
-			crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_BINDER}));
-			crit.add(in(Constants.ENTRY_ANCESTRY, new String[] {String.valueOf(binder.getId())}));
+			crit.add(in(Constants.DOC_TYPE_FIELD, new String[]{Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_BINDER}));
+			crit.add(in(Constants.ENTRY_ANCESTRY, new String[]{String.valueOf(binder.getId())}));
 			
 			break;
 			
@@ -1537,18 +1537,18 @@ public class GwtViewHelper {
 			}
 
 			// Add the shared binder and entry IDs to the search criteria.
-			crit.add(in(Constants.ENTRY_ANCESTRY, new String[] {topWSId}));
+			crit.add(in(Constants.ENTRY_ANCESTRY, new String[]{topWSId}));
     		Disjunction disj = disjunction();
 			crit.add(disj);
 			if (hasSharedBinders) {
 	    		Conjunction conj = conjunction();
-				conj.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}));
+				conj.add(in(Constants.DOC_TYPE_FIELD, new String[]{Constants.DOC_TYPE_BINDER}));
 				conj.add(in(Constants.DOCID_FIELD, sharedBinderIds.toArray(new String[0])));
 				disj.add(conj);
 			}
 			if (hasSharedEntries) {
 	    		Conjunction conj = conjunction();
-				conj.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_ENTRY}));
+				conj.add(in(Constants.DOC_TYPE_FIELD, new String[]{Constants.DOC_TYPE_ENTRY}));
 				conj.add(in(Constants.DOCID_FIELD, sharedEntryIds.toArray(new String[0])));
 				disj.add(conj);
 			}
@@ -1556,18 +1556,20 @@ public class GwtViewHelper {
 			break;
 			
 		case FILE_SPACES:
-//!			...this needs to be implemented...
-			
 			// Can we access the ID of the top workspace?
 			if (!(MiscUtil.hasString(topWSId))) {
 				// No!  Then we can't search for file spaces.  Bail.
 				return new HashMap();
 			}
-			
-			crit.add(in(Constants.DOC_TYPE_FIELD,    new String[] {Constants.DOC_TYPE_BINDER}));
-			crit.add(in(Constants.IS_MIRRORED_FIELD, new String[] {Constants.TRUE}));
-			crit.add(in(Constants.ENTRY_ANCESTRY,    new String[] {topWSId}));
-			crit.add(in(Constants.FAMILY_FIELD,      new String[] {Definition.FAMILY_FILE}));
+
+			// Add the criteria for top level mirrored file folders
+			// that have been configured.
+			crit.add(in(Constants.DOC_TYPE_FIELD,            new String[]{Constants.DOC_TYPE_BINDER}));
+			crit.add(in(Constants.ENTRY_ANCESTRY,            new String[]{topWSId}));
+			crit.add(in(Constants.FAMILY_FIELD,              new String[]{Definition.FAMILY_FILE}));
+			crit.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
+			crit.add(in(Constants.IS_TOP_FOLDER_FIELD,       new String[]{Constants.TRUE}));
+    		crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
 			
 			break;
 		}
