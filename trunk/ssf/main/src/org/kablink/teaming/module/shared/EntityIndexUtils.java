@@ -1128,6 +1128,17 @@ public class EntityIndexUtils {
     public static void addBinderIsMirrored(Document doc, Binder binder, boolean fieldsOnly) {
 		Field path = FieldFactory.createStoredNotAnalyzedNoNorms(IS_MIRRORED_FIELD, (binder.isMirrored() ? Constants.TRUE : Constants.FALSE));
 		doc.add(path);
+		if (binder.isMirrored() && binder.getResourceDriverName() != null) {
+			path = FieldFactory.createStoredNotAnalyzedNoNorms(MIRRORED_DRIVER_FIELD, binder.getResourceDriverName());
+			doc.add(path);
+		}
+    }
+
+    public static void addBinderIsTopFolder(Document doc, Binder binder, boolean fieldsOnly) {
+    	if (binder instanceof Folder) {
+    		Field path = FieldFactory.createStoredNotAnalyzedNoNorms(IS_TOP_FOLDER_FIELD, (((Folder)binder).isTop() ? Constants.TRUE : Constants.FALSE));
+    		doc.add(path);
+    	}
     }
 
 }
