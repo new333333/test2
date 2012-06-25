@@ -150,6 +150,17 @@ public class WorkspaceResource extends AbstractBinderResource {
         return (Folder) createBinder(id, binder, templateId);
     }
 
+    @GET
+    @Path("/{id}/folders/{title}")
+    public Folder getFolderByTitle(@PathParam("id") long parentId, @PathParam("title") String name) {
+        _getWorkspace(parentId);
+        Binder binder = getBinderModule().getBinderByParentAndTitle(parentId, name);
+        if (binder instanceof org.kablink.teaming.domain.Folder) {
+            return (Folder) ResourceUtil.buildBinder(binder, true);
+        }
+        throw new NoWorkspaceByTheNameException(name);
+    }
+
     @Override
     protected Binder _getBinder(long id) {
         return _getWorkspace(id);
