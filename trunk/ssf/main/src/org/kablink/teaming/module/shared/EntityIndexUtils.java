@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,12 +30,11 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-	package org.kablink.teaming.module.shared;
+package org.kablink.teaming.module.shared;
 
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -85,13 +84,11 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.FieldFactory;
-
-import com.liferay.portal.tools.Entity;
-
 
 import static org.kablink.util.search.Constants.*;
 
@@ -100,6 +97,7 @@ import static org.kablink.util.search.Constants.*;
  *
  * @author Jong Kim
  */
+@SuppressWarnings("unchecked")
 public class EntityIndexUtils {
 
     // Defines field values
@@ -402,7 +400,7 @@ public class EntityIndexUtils {
     	// Add the workflow fields
     	if (entry instanceof WorkflowSupport) {
     		WorkflowSupport wEntry = (WorkflowSupport)entry;
-    		Set workflowStates = wEntry.getWorkflowStates();
+			Set workflowStates = wEntry.getWorkflowStates();
     		if (workflowStates != null) {
     			for (Iterator iter=workflowStates.iterator(); iter.hasNext();) {
     				WorkflowState ws = (WorkflowState)iter.next();
@@ -440,7 +438,6 @@ public class EntityIndexUtils {
 	 * @param doc
 	 * @param entry
 	 */
-    @SuppressWarnings("unchecked")
 	public static void addEvents(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	int count = 0;
 		Map customAttrs = entry.getCustomAttributes();
@@ -676,7 +673,8 @@ public class EntityIndexUtils {
 		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.ENTRY_OWNER_ACL_FIELD, ownerStr));    	
     }
 
-    private static void addDefaultEntryAcls(Document doc, Binder binder, Entry entry) {
+    @SuppressWarnings("unused")
+	private static void addDefaultEntryAcls(Document doc, Binder binder, Entry entry) {
     	boolean personal = Utils.isWorkareaInProfilesTree(binder);
 		//get default entry access
 		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL));
@@ -761,7 +759,8 @@ public class EntityIndexUtils {
    		addBinderAcls(parent, binder, includeTitleAcl);
     }
     private static String getWfEntryAccess(WorkflowSupport wEntry) {
-    	Long allUsersId = Utils.getAllUsersGroupId();
+    	@SuppressWarnings("unused")
+		Long allUsersId = Utils.getAllUsersGroupId();
     	boolean personal = false;
     	if (wEntry instanceof FolderEntry) 
     		personal = Utils.isWorkareaInProfilesTree(((FolderEntry)wEntry).getParentBinder());
@@ -977,7 +976,8 @@ public class EntityIndexUtils {
     		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.ACL_TAG_FIELD, acl));
     }
 	
-    public static void addFileType(Document doc, File textfile, boolean fieldsOnly) {
+    @SuppressWarnings("unused")
+	public static void addFileType(Document doc, File textfile, boolean fieldsOnly) {
     	org.dom4j.Document document = null;
        	if ((textfile == null) || textfile.length() <= 0) return;
     	// open the file with an xml reader
@@ -1128,10 +1128,14 @@ public class EntityIndexUtils {
     public static void addBinderIsMirrored(Document doc, Binder binder, boolean fieldsOnly) {
 		Field path = FieldFactory.createStoredNotAnalyzedNoNorms(IS_MIRRORED_FIELD, (binder.isMirrored() ? Constants.TRUE : Constants.FALSE));
 		doc.add(path);
-		if (binder.isMirrored() && binder.getResourceDriverName() != null) {
-			path = FieldFactory.createStoredNotAnalyzedNoNorms(MIRRORED_DRIVER_FIELD, binder.getResourceDriverName());
-			doc.add(path);
-		}
+    }
+
+    public static void addBinderHasResourceDriver(Document doc, Binder binder, boolean fieldsOnly) {
+    	if ((binder instanceof Folder) && binder.isMirrored()) {
+    		boolean hasResourceDriver = MiscUtil.hasString(binder.getResourceDriverName());
+    		Field path = FieldFactory.createStoredNotAnalyzedNoNorms(HAS_RESOURCE_DRIVER_FIELD, (hasResourceDriver ? Constants.TRUE : Constants.FALSE));
+    		doc.add(path);
+    	}
     }
 
     public static void addBinderIsTopFolder(Document doc, Binder binder, boolean fieldsOnly) {

@@ -47,5 +47,15 @@ public enum CollectionType implements IsSerializable {
 	SHARED_WITH_ME,
 	
 	OTHER,
-	NOT_A_COLLECTION,
+	NOT_A_COLLECTION;
+
+	/**
+	 * Returns true if this CollectionType value represents a
+	 * collection and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isCollection() {
+		return (!(this.equals(NOT_A_COLLECTION)));
+	}
 }
