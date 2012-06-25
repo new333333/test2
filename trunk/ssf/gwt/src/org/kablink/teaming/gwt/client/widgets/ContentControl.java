@@ -151,13 +151,6 @@ public class ContentControl extends Composite
 		ShowTeamWSEvent.Handler,
 		ShowTrashEvent.Handler
 {
-	//!	DRF:  false until I get collections working.
-	//! 	Modules referencing this:
-	//!			- This module;
-	//!			- TreeDisplayVertical.java; and
-	//!			- BinderIconSize.java.
-	public final static boolean SHOW_COLLECTION_VIEW = false; 
-	
 	private boolean m_contentInGWT;
 	private boolean m_isAdminContent;
 	private boolean m_isDebugUI;
@@ -618,11 +611,8 @@ public class ContentControl extends Composite
 					switch ( bt )
 					{
 					case COLLECTION:
-						if ( SHOW_COLLECTION_VIEW )
-						{
-							GwtTeaming.fireEvent( new ShowCollectionEvent( bi, viewReady ) );
-							m_contentInGWT = true;
-						}
+						GwtTeaming.fireEvent( new ShowCollectionEvent( bi, viewReady ) );
+						m_contentInGWT = true;
 						break;
 						
 						

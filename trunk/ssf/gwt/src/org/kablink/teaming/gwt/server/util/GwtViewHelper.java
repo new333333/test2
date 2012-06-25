@@ -32,18 +32,17 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
-import static org.kablink.util.search.Restrictions.in;
-import static org.kablink.util.search.Restrictions.like;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -66,10 +65,16 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import static org.kablink.util.search.Restrictions.conjunction;
+import static org.kablink.util.search.Restrictions.disjunction;
+import static org.kablink.util.search.Restrictions.in;
+import static org.kablink.util.search.Restrictions.like;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -78,6 +83,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SeenMap;
+import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -174,6 +180,8 @@ import org.kablink.teaming.web.util.TrashHelper.TrashResponse;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
+import org.kablink.util.search.Junction.Conjunction;
+import org.kablink.util.search.Junction.Disjunction;
 
 /**
  * Helper methods for the GWT binder views.
@@ -222,7 +230,7 @@ public class GwtViewHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static CreateFolderRpcResponseData addNewFolder( AllModulesInjected bs, HttpServletRequest request, Long binderId, Long folderTemplateId, String folderName) throws GwtTeamingException {
+	public static CreateFolderRpcResponseData addNewFolder(AllModulesInjected bs, HttpServletRequest request, Long binderId, Long folderTemplateId, String folderName) throws GwtTeamingException {
 		try {
 			// Allocate a response we can return.
 			CreateFolderRpcResponseData reply = new CreateFolderRpcResponseData(new ArrayList<String>());
@@ -1045,9 +1053,12 @@ public class GwtViewHelper {
 	 *    by folder_view_common2.jsp or view_trash.jsp.
 	 */
 	private static void fixupFCs(List<FolderColumn> fcList, boolean isTrash) {
+		// We need to handle the columns that were added for
+		// collections.
+//!		...this needs to be implemented...
+		
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
-//!			...this needs to be implemented...
 			if      (colName.equals("access"))          {fc.setColumnSearchKey("access");                                                                                   }
 			else if (colName.equals("author"))          {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
 			else if (colName.equals("comments"))        {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                            }
@@ -1097,9 +1108,9 @@ public class GwtViewHelper {
 				if (MiscUtil.hasString(defId)) {
 					// Yes!  Update the FolderColumn components based
 					// on the information extracted from the field.
-					fc.setColumnDefId(defId  );
-					fc.setColumnType( eleType);
-					fc.setColumnEleName( eleName);
+					fc.setColumnDefId(  defId  );
+					fc.setColumnType(   eleType);
+					fc.setColumnEleName(eleName);
 					
 					if (!(MiscUtil.hasString(fc.getColumnTitle()))) {
 						fc.setColumnTitle(eleCaption);
@@ -1465,38 +1476,107 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static Map getCollectionEntries(AllModulesInjected bs, Binder binder, String quickFilter, Map options, CollectionType ct) {
+		// Several of the collections require the ID of the top
+		// workspace.
+		String topWSId = GwtUIHelper.getTopWSIdSafely(bs, false);
+		
 		// Construct the search Criteria...
 		Criteria crit = new Criteria();
 		switch (ct) {
 		default:
 		case MY_FILES:
 			crit.add(in(Constants.DOC_TYPE_FIELD,          new String[] {Constants.DOC_TYPE_BINDER}));
+			crit.add(in(Constants.IS_MIRRORED_FIELD,       new String[] {Constants.FALSE}));
 			crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[] {String.valueOf(binder.getId())}));
 			crit.add(in(Constants.FAMILY_FIELD,            new String[] {Definition.FAMILY_FILE, Definition.FAMILY_PHOTO}));
+			
 			break;
 
 		case SHARED_BY_ME:
-		case SHARED_WITH_ME:
 //!			...this needs to be implemented...
+			
 			crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_BINDER}));
 			crit.add(in(Constants.ENTRY_ANCESTRY, new String[] {String.valueOf(binder.getId())}));
+			
+			break;
+			
+		case SHARED_WITH_ME:
+			// Can we access the ID of the top workspace?
+			if (!(MiscUtil.hasString(topWSId))) {
+				// No!  Then we can't search for things that have been
+				// shared with me.  Bail.
+				return new HashMap();
+			}
+			
+			// Has anything been shared with the current user in the
+			// last 2 years?
+			GregorianCalendar since = new GregorianCalendar();
+			since.add(Calendar.YEAR, (-2));
+			List<SharedEntity> shares = bs.getProfileModule().getShares(GwtServerHelper.getCurrentUser().getId(), since.getTime());
+			if ((null == shares) || shares.isEmpty()) {
+				// No!  Bail.
+				return new HashMap();
+			}
+
+			// Do we have the IDs of any entries or binders that have
+			// been shared?
+			List<String> sharedBinderIds = new ArrayList<String>();
+			List<String> sharedEntryIds  = new ArrayList<String>();
+			for (SharedEntity se:  shares) {
+				DefinableEntity de = se.getEntity();
+				String deId = String.valueOf(de.getId());
+				if (de.getEntityType().equals(EntityType.folderEntry))
+				     sharedEntryIds.add( deId);
+				else sharedBinderIds.add(deId);
+			}
+			boolean hasSharedBinders = (!(sharedBinderIds.isEmpty()));
+			boolean hasSharedEntries = (!(sharedEntryIds.isEmpty()));
+			if ((!hasSharedBinders) && (!hasSharedEntries)) {
+				// No!  Bail.
+				return new HashMap();
+			}
+
+			// Add the shared binder and entry IDs to the search criteria.
+			crit.add(in(Constants.ENTRY_ANCESTRY, new String[] {topWSId}));
+    		Disjunction disj = disjunction();
+			crit.add(disj);
+			if (hasSharedBinders) {
+	    		Conjunction conj = conjunction();
+				conj.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}));
+				conj.add(in(Constants.DOCID_FIELD, sharedBinderIds.toArray(new String[0])));
+				disj.add(conj);
+			}
+			if (hasSharedEntries) {
+	    		Conjunction conj = conjunction();
+				conj.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_ENTRY}));
+				conj.add(in(Constants.DOCID_FIELD, sharedEntryIds.toArray(new String[0])));
+				disj.add(conj);
+			}
+			
 			break;
 			
 		case FILE_SPACES:
 //!			...this needs to be implemented...
-			String contextId = GwtUIHelper.getTopWSIdSafely(bs);
-			if (!(MiscUtil.hasString(contextId))) {
+			
+			// Can we access the ID of the top workspace?
+			if (!(MiscUtil.hasString(topWSId))) {
+				// No!  Then we can't search for file spaces.  Bail.
 				return new HashMap();
 			}
-			crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}));
-			crit.add(in(Constants.ENTRY_ANCESTRY, new String[] {GwtUIHelper.getTopWSIdSafely(bs)}));
-			crit.add(in(Constants.FAMILY_FIELD,   new String[] {Definition.FAMILY_FILE}));
+			
+			crit.add(in(Constants.DOC_TYPE_FIELD,    new String[] {Constants.DOC_TYPE_BINDER}));
+			crit.add(in(Constants.IS_MIRRORED_FIELD, new String[] {Constants.TRUE}));
+			crit.add(in(Constants.ENTRY_ANCESTRY,    new String[] {topWSId}));
+			crit.add(in(Constants.FAMILY_FIELD,      new String[] {Definition.FAMILY_FILE}));
+			
 			break;
 		}
-		
+
+		// Do we have a quick filter?
 		if (null != quickFilter) {
 			quickFilter = quickFilter.trim();
 			if (0 < quickFilter.length()) {
+				// Yes!  Add it to the search criteria.
 				if (!(quickFilter.endsWith("*"))) {
 					quickFilter += "*";
 				}
@@ -1504,7 +1584,7 @@ public class GwtViewHelper {
 			}
 		}
 
-		// ...add in the sort information...
+		// Add in the sort information...
 		boolean sortDescend = GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false);
 		String  sortBy      = GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
 		crit.addOrder(new Order(sortBy, (!sortDescend)));
@@ -2698,82 +2778,73 @@ public class GwtViewHelper {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static JspHtmlRpcResponseData getJspHtml(AllModulesInjected bs, HttpServletRequest request, 
-			HttpServletResponse response, ServletContext servletContext, 
-			VibeJspHtmlType jspType, Map<String,Object> model) throws GwtTeamingException {
+	public static JspHtmlRpcResponseData getJspHtml(AllModulesInjected bs, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, VibeJspHtmlType jspType, Map<String,Object> model) throws GwtTeamingException {
 		String html = "";
 		String jspPath = null;
 		try {
+			// The following are the supported jsp calls.
 			switch (jspType) {
-				// The following are the supported jsp calls.
 			case ACCESSORY_PANEL:
 			{
 				try {
-					RenderRequestImpl renderReq;
-					RenderResponseImpl renderRes;
-					PortletInfo portletInfo;
+					// Build request and render objects needed to build
+					// the toolbar.
+					String portletName = "ss_forum";
+					PortletInfo portletInfo = ((PortletInfo) AdaptedPortlets.getPortletInfo(portletName));
 					
-					//Build request and render objects needed to build the toolbar
-					{
-						Map<String, Object> params;
-	
-						String portletName;
-						String charEncoding;
-	
-						portletName = "ss_forum";
-						portletInfo = (PortletInfo) AdaptedPortlets.getPortletInfo( portletName );
-						
-						renderReq = new RenderRequestImpl( request, portletInfo, AdaptedPortlets.getPortletContext() );
-						
-						params = new HashMap<String, Object>();
-						params.put( KeyNames.PORTLET_URL_PORTLET_NAME, new String[] {portletName} );
-						renderReq.setRenderParameters( params );
-						
-						renderRes = new RenderResponseImpl( renderReq, response, portletName );
-						charEncoding = SPropsUtil.getString( "web.char.encoding", "UTF-8" );
-						renderRes.setContentType( "text/html; charset=" + charEncoding );
-						renderReq.defineObjects( portletInfo.getPortletConfig(), renderRes );
-						
-						renderReq.setAttribute( PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE );
-					}
+					RenderRequestImpl renderReq = new RenderRequestImpl(request, portletInfo, AdaptedPortlets.getPortletContext());
+					
+					Map<String, Object> params = new HashMap<String, Object>();
+					params.put(KeyNames.PORTLET_URL_PORTLET_NAME, new String[]{portletName});
+					renderReq.setRenderParameters(params);
+					
+					RenderResponseImpl renderRes = new RenderResponseImpl(renderReq, response, portletName);
+					String charEncoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
+					renderRes.setContentType("text/html; charset=" + charEncoding);
+					renderReq.defineObjects(portletInfo.getPortletConfig(), renderRes);
+					
+					renderReq.setAttribute(PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE);
 
-					//Display the whole accessory panel
+					// Display the whole accessory panel.
 					User user = RequestContextHolder.getRequestContext().getUser();
 					String s_binderId = (String) model.get("binderId");
 					Binder binder = bs.getBinderModule().getBinder(Long.valueOf(s_binderId));
 
 					UserProperties userProperties = new UserProperties(user.getId());
 					Map userProps = new HashMap();
-		    		if (userProperties.getProperties() != null) {
+		    		if (null != userProperties.getProperties()) {
 		    			userProps = userProperties.getProperties();
 		    		}
 
-		    		if (user != null) {
+		    		if (null != user) {
 		    			userProperties = bs.getProfileModule().getUserProperties(user.getId());
 		    		}
+		    		
+					// Build the 'Add Accessory' toolbar.
 		    		Map<String,Object> panelModel = new HashMap<String,Object>();
 					DashboardHelper.getDashboardMap(binder, userProps, panelModel);
-					//Build the "Add Accessory" toolbar
 					Toolbar dashboardToolbar = new Toolbar();
 					BinderHelper.buildDashboardToolbar(renderReq, renderRes, bs, binder, dashboardToolbar, panelModel);
 
-					//Set up the beans used by the jsp
+					// Set up the beans used by the jsp.
 					panelModel.put(WebKeys.BINDER_ID, binder.getId());
 					panelModel.put(WebKeys.BINDER, binder);
 					panelModel.put(WebKeys.USER_PROPERTIES, userProps);
-					panelModel.put(WebKeys.SNIPPET, true);				//Signal that <html> and <head> should not be output
+					panelModel.put(WebKeys.SNIPPET, true);	// Signal that <html> and <head> should not be output.
 					panelModel.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
 					
 					jspPath = "definition_elements/view_dashboard_canvas.jsp";
 					html = GwtServerHelper.executeJsp(bs, request, response, servletContext, jspPath, panelModel);
 					break;
-				} catch(Exception e) {
+				}
+				
+				catch(Exception e) {
 					if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
 					     m_logger.debug("GwtViewHelper.getJspHtml( SOURCE EXCEPTION ):  ", e);
 					}
-					//Return an error back to the user
-					String[] args = new String[1];
-					args[0] = e.getMessage();
+					
+					// Return an error back to the user.
+					String[] args = new String[]{e.getMessage()};
 					html = NLT.get("errorcode.dashboardComponentViewFailure", args);
 				}
 			}
@@ -2781,7 +2852,8 @@ public class GwtViewHelper {
 			case ACCESSORY:
 			{
 				try {
-					//Set up bean used by the dashboard component (aka accessory)
+					// Set up bean used by the dashboard component (aka
+					// accessory).
 					User user = RequestContextHolder.getRequestContext().getUser();
 					String s_binderId = (String) model.get("binderId");
 					Binder binder = bs.getBinderModule().getBinder(Long.valueOf(s_binderId));
@@ -2790,14 +2862,13 @@ public class GwtViewHelper {
 
 					UserProperties userProperties = new UserProperties(user.getId());
 					Map userProps = new HashMap();
-		    		if (userProperties.getProperties() != null) {
+		    		if (null != userProperties.getProperties()) {
 		    			userProps = userProperties.getProperties();
 		    		}
-
-		    		if (user != null) {
+		    		if (null != user) {
 		    			userProperties = bs.getProfileModule().getUserProperties(user.getId());
 		    		}
-		    		if (componentId != null && !componentId.equals("")) {
+		    		if ((null != componentId) && (!(componentId.equals("")))) {
 			    		Map<String,Object> componentModel = new HashMap<String,Object>();
 						DashboardHelper.getDashboardMap(binder, userProps, componentModel, scope, componentId, false);
 						Map<String,Object> componentDashboard = (Map<String,Object>) componentModel.get("ssDashboard");
@@ -2808,23 +2879,22 @@ public class GwtViewHelper {
 						html = GwtServerHelper.executeJsp(bs, request, response, servletContext, jspPath, componentModel);
 		    		}
 					break;
-				} catch(Exception e) {
+				}
+				
+				catch(Exception e) {
 					if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
 					     m_logger.debug("GwtViewHelper.getJspHtml( SOURCE EXCEPTION ):  ", e);
 					}
-					//Return an error back to the user
-					String[] args = new String[1];
-					args[0] = e.getMessage();
+					// Return an error back to the user.
+					String[] args = new String[]{e.getMessage()};
 					html = NLT.get("errorcode.dashboardComponentViewFailure", args);
 				}
 			}
 			
-				default: 
-				{
-					// Log an error that we encountered an unhandled command.
-					m_logger.error("JspHtmlRpcResponseData( Unknown jsp type ):  " + jspType.name());
-					break;
-				}
+			default: 
+				// Log an error that we encountered an unhandled command.
+				m_logger.error("JspHtmlRpcResponseData( Unknown jsp type ):  " + jspType.name());
+				break;
 			}
 			
 			return new JspHtmlRpcResponseData(html, model);
@@ -2937,7 +3007,7 @@ public class GwtViewHelper {
 					String name = p.substring(0, eq);
 					if (MiscUtil.hasString(name)) {
 						// Yes!  Add it to the map.
-						reply.put(name.toLowerCase(), p.substring(  eq + 1));
+						reply.put(name.toLowerCase(), p.substring(eq + 1));
 					}
 				}
 			}

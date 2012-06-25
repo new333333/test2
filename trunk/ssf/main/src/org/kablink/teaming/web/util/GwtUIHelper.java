@@ -800,14 +800,16 @@ public class GwtUIHelper {
 
 	/**
 	 * Returns the string representation of the top most workspace ID.
-	 * If the true top workspace ID can't be accessed, the current
-	 * user's workspace ID is returned.
+	 * 
+	 * If requested, when the true top workspace ID can't be accessed,
+	 * the current user's workspace ID is returned.
 	 * 
 	 * @param bs
+	 * @param defaultToUsersWS
 	 * 
 	 * @return
 	 */
-	public static String getTopWSIdSafely(AllModulesInjected bs) {
+	public static String getTopWSIdSafely(AllModulesInjected bs, boolean defaultToUsersWS) {
 		Long topWSId;
 		
 		try {
@@ -816,13 +818,18 @@ public class GwtUIHelper {
 		catch (Exception e) {
 			topWSId = null;
 		}
-		if (null == topWSId) {
+		if ((null == topWSId) && defaultToUsersWS) {
 			User user = RequestContextHolder.getRequestContext().getUser();
 			topWSId = bs.getProfileModule().getEntryWorkspaceId(user.getId());
 		}
 		
 		String reply = ((null == topWSId) ? "" : String.valueOf(topWSId.longValue()));
 		return reply;
+	}
+	
+	public static String getTopWSIdSafely(AllModulesInjected bs) {
+		// Always use the initial form of the method.
+		return getTopWSIdSafely(bs, true);	// true -> Default to user's WS if top WS can't be accessed.
 	}
 
 	/*
