@@ -54,5 +54,15 @@ public enum WorkspaceType implements IsSerializable {
 	WORKSPACE,
 	
 	OTHER,
-	NOT_A_WORKSPACE,
+	NOT_A_WORKSPACE;
+	
+	/**
+	 * Returns true if this WorkspaceType value represents a workspace
+	 * and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isWorkspace() {
+		return (!(this.equals(NOT_A_WORKSPACE)));
+	}
 }

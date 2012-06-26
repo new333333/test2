@@ -733,21 +733,16 @@ public class Utils {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unused")
 	public static String getIconNameTranslated(String iconName) {
-		// This will be changed to translate .gif into .png after the
-		// .png files are made.
-		if (false) {
-			// Does the icon name have an extension?
-			int i = iconName.lastIndexOf(".");
-			if (i >= 0) {
-				// Yes!  Is that extension '.gif'?
-				String root = iconName.substring(0, i);
-				String ext  = iconName.substring(i, iconName.length());
-				if (ext.equalsIgnoreCase(".gif")) {
-					// Yes!  Change it to '.png'.
-					iconName = (root + ".png");
-				}
+		// Does the icon name have an extension?
+		int i = iconName.lastIndexOf(".");
+		if (i >= 0) {
+			// Yes!  Is that extension '.gif'?
+			String root = iconName.substring(0, i);
+			String ext  = iconName.substring(i, iconName.length());
+			if (ext.equalsIgnoreCase(".gif")) {
+				// Yes!  Change it to '.png'.
+				iconName = (root + ".png");
 			}
 		}
 		return iconName;
@@ -764,6 +759,8 @@ public class Utils {
 	 */
 	public static String getIconNameTranslated(String iconName, IconSize size) {
 		String name = getIconNameTranslated(iconName);
+		return name;
+/*
 		String sizePart;
 		switch (size) {
 		default:
@@ -777,12 +774,13 @@ public class Utils {
 		
 		int i = name.lastIndexOf(".");
 		if (i >= 0) {
-			String root = iconName.substring(0, i);
-			String ext  = iconName.substring(i, iconName.length());
+			String root = name.substring(0, i);
+			String ext  = name.substring(i, name.length());
 			return (root + sizePart + ext);
 		} else {
-			return (iconName + sizePart);
+			return (name + sizePart);
 		}
+*/
 	}
 	
 }

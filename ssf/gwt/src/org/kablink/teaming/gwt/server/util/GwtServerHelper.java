@@ -223,6 +223,7 @@ import org.kablink.teaming.security.function.OperationAccessControlExceptionNoNa
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.ResolveIds;
@@ -1149,9 +1150,8 @@ public class GwtServerHelper {
 		reply.setBinderPermalink(binderPermalink);
 		reply.setBinderTrashPermalink(GwtUIHelper.getTrashPermalink(binderPermalink));
 		reply.setBinderIcon(binder.getIconName(), BinderIconSize.SMALL);
-//!		...this needs to be implemented...
-//!		reply.setBinderIcon(binder.getIconName(IconSize.MEDIUM), BinderIconSize.MEDIUM);	// Fix when APIs for getting medium...
-//!		reply.setBinderIcon(binder.getIconName(IconSize.LARGE),  BinderIconSize.LARGE );	// ...and large icons are there.
+		reply.setBinderIcon(binder.getIconName(IconSize.MEDIUM), BinderIconSize.MEDIUM);
+		reply.setBinderIcon(binder.getIconName(IconSize.LARGE ), BinderIconSize.LARGE );
 
 		// When requested to do so...
 		if (mergeUsersExpansions) {

@@ -56,5 +56,15 @@ public enum FolderType implements IsSerializable {
 	WIKI,
 	
 	OTHER,
-	NOT_A_FOLDER,
+	NOT_A_FOLDER;
+	
+	/**
+	 * Returns true if this FolderType value represents a folder and
+	 * false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isFolder() {
+		return (!(this.equals(NOT_A_FOLDER)));
+	}
 }
