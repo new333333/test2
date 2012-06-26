@@ -244,14 +244,13 @@ public class MainMenuControl extends Composite
 				m_constructedItemCount      = 0;
 				
 				// In activity stream mode, there's 1 context menu
-				// item.  Otherwise, in Vibe Lite (Filr) mode or
-				// viewing a collection, there's 2.  Otherwise, there's
-				// 3.
+				// item.  Otherwise, in Filr mode or viewing a
+				// collection, there's 2.  Otherwise, there's 3.
 				m_expectedItemCount =
 					(isASActive ?
 						1       :
-						((GwtClientHelper.isVibeLite() || collectionType.isCollection()) ?
-							2                                                            :
+						((GwtClientHelper.isFilr() || collectionType.isCollection()) ?
+							2                                                        :
 							3));
 			}
 		}
@@ -444,7 +443,7 @@ public class MainMenuControl extends Composite
 		m_mainMenu.addItem(m_mastHeadSlider);
 
 		// ...in full Vibe mode...
-		if (!(GwtClientHelper.isVibeLite())) {
+		if (!(GwtClientHelper.isFilr())) {
 			// ...add the browse hierarchy button...
 			BrowseHierarchyEvent bhe = new BrowseHierarchyEvent();
 			m_bhButton = new MenuBarButton(m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), bhe);
@@ -457,7 +456,7 @@ public class MainMenuControl extends Composite
 		addMyWorkspaceToCommon(        m_mainMenu);
 		addWhatsNewToCommon(           m_mainMenu);
 		addMyFavoritesToCommon(        m_mainMenu);
-		if (!(GwtClientHelper.isVibeLite())) {
+		if (!(GwtClientHelper.isFilr())) {
 			addMyTeamsToCommon(        m_mainMenu);
 		}
 		addCloseAdministrationToCommon(m_mainMenu);
@@ -1411,7 +1410,7 @@ public class MainMenuControl extends Composite
 					}
 				});
 			
-			if ((!isASActive) && (!(GwtClientHelper.isVibeLite()))) {
+			if ((!isASActive) && (!(GwtClientHelper.isFilr()))) {
 				addManageToContext(toolbarItemList, tmi,new ContextItemCallback() {
 						@Override
 						public void complete() {

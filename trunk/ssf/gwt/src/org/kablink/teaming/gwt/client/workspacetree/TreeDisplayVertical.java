@@ -1022,7 +1022,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		}
 
 		// Are we running in full Vibe mode or in an activity stream?
-		if ((!(isVibeLite())) || isAS) {
+		if ((!(isFilr())) || isAS) {
 			// Yes!  Are there are any child binder rows to display?
 			tiList = rootTI.getChildBindersList();
 			if ((null != tiList) && (!(tiList.isEmpty()))) {
@@ -1138,7 +1138,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorGrid.addStyleName(buildElementStyle(ti, "workspaceTreeControlRow"));
 		if (ti.isBinderCollection()) {
 			String paddingStyle;
-			if (isVibeLite())
+			if (isFilr())
 			     paddingStyle = "padding5b";
 			else paddingStyle = "padding3b";
 			selectorGrid.addStyleName(paddingStyle);

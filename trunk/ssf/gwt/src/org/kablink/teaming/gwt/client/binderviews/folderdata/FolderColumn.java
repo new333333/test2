@@ -36,17 +36,16 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
  * Class used to communicate information about a folder columns between
  * the client and server.
  * 
  * @author drfoster@novell.com
- *
  */
 public class FolderColumn implements IsSerializable, VibeRpcResponseData {
-	private Boolean			m_columnIsShown;		//
-	private transient int	m_displayIndex;			// The index of the column in the browser's display (i.e., the index of the column's <TD> in the <TR>.
+	private Boolean			m_columnShown;			//
+	private boolean			m_columnSortable;		//
+	private transient int	m_displayIndex;			// The index of the column in the browser's display (i.e., the index of the column's <TD> in the <TR>.)
 	private String			m_columnName;			// For custom attributes this is 'defId,type,eleName,caption'.
 	private String			m_columnTitle;			//
 	private String			m_columnDefaultTitle;	//
@@ -79,6 +78,7 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public final static String COLUMN_RESPONSIBLE		= "responsible";
 	public final static String COLUMN_RIGHTS			= "rights";
 	public final static String COLUMN_SHARED_BY			= "sharedBy";
+	public final static String COLUMN_SHARED_WITH		= "sharedWith";
 	public final static String COLUMN_SIZE				= "size";
 	public final static String COLUMN_STATE				= "state";
 	public final static String COLUMN_STATUS			= "status";
@@ -95,8 +95,11 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public FolderColumn() {
-		// Simply initialize the super class.
+		// Initialize the super class...
 		super();
+		
+		// ...and anything else.
+		m_columnSortable = true;
 	}
 
 	/**
@@ -169,7 +172,8 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @return
 	 */
-	public Boolean getColumnIsShown()      {return m_columnIsShown;     }
+	public Boolean isColumnShown()         {return m_columnShown;       }
+	public boolean isColumnSortable()      {return m_columnSortable;    }
 	public int     getDisplayIndex()       {return m_displayIndex;      }
 	public String  getColumnName()         {return m_columnName;        }
 	public String  getColumnTitle()        {return m_columnTitle;       }
@@ -205,7 +209,8 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @param
 	 */
-	public void setColumnIsShown(     Boolean showThis)           {m_columnIsShown      = showThis;          }
+	public void setColumnShown(       Boolean columnShown)        {m_columnShown        = columnShown;       }
+	public void setColumnSortable(    boolean columnSortable)     {m_columnSortable     = columnSortable;    }
 	public void setDisplayIndex(      int     displayIndex)       {m_displayIndex       = displayIndex;      }
 	public void setColumnName(        String  columnName)      	  {m_columnName         = columnName;        }
 	public void setColumnTitle(       String  columnTitle)     	  {m_columnTitle        = columnTitle;       }
@@ -246,8 +251,8 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public static boolean isColumnRights(         String       columnName) {return columnName.equals(FolderColumn.COLUMN_RIGHTS);          }
 	public static boolean isColumnPresence(       String       columnName) {return columnName.equals(FolderColumn.COLUMN_AUTHOR);          }
 	public static boolean isColumnSharedBy(       String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARED_BY);       }
+	public static boolean isColumnSharedWith(     String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARED_WITH);     }
 	public static boolean isColumnTaskFolders(    String       columnName) {return columnName.equals(FolderColumn.COLUMN_TASKS);           }
 	public static boolean isColumnTitle(          String       columnName) {return columnName.equals(FolderColumn.COLUMN_TITLE);           }
 	public static boolean isColumnView(           String       columnName) {return columnName.equals(FolderColumn.COLUMN_HTML);            }
-
 }

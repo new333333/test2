@@ -928,7 +928,7 @@ public class GwtMenuHelper {
 	 */
 	private static void constructEntrySortByItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
 		Long folderId = folder.getId();
-		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUser().getId(), folderId);
+		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUserId(), folderId);
 		String searchSortBy = ((String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY));
 		if (searchSortBy == null) searchSortBy = "";
 		String[] sortOptions;
@@ -1065,7 +1065,7 @@ public class GwtMenuHelper {
 		// folder?
 		String eventType = EventsViewHelper.getCalendarDisplayEventType(
 			bs,
-			GwtServerHelper.getCurrentUser().getId(),
+			GwtServerHelper.getCurrentUserId(),
 			folderId);
 		
 		if (null == eventType) {
@@ -1541,7 +1541,7 @@ public class GwtMenuHelper {
 			// Does the user have a default view defined on this
 			// folder?
 			Long folderId = folder.getId();
-			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUser().getId(), folderId);
+			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUserId(), folderId);
 			String userSelectedDefinition = ((String) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
 			Definition currentDef = folderViewDefs.get(0);
 			if (MiscUtil.hasString(userSelectedDefinition)) {

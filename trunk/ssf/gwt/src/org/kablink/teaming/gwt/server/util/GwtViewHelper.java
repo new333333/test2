@@ -552,7 +552,7 @@ public class GwtViewHelper {
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// Were we given the IDs of any users to delete?
-			Long currentUserId = GwtServerHelper.getCurrentUser().getId(); 
+			Long currentUserId = GwtServerHelper.getCurrentUserId(); 
 			if ((null != userIds) && (!(userIds.isEmpty()))) {
 				// Yes!  Scan them.
 				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
@@ -630,7 +630,7 @@ public class GwtViewHelper {
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// Were we given the IDs of any users to disable?
-			Long currentUserId = GwtServerHelper.getCurrentUser().getId(); 
+			Long currentUserId = GwtServerHelper.getCurrentUserId(); 
 			if ((null != userIds) && (!(userIds.isEmpty()))) {
 				// Yes!  Scan them.
 				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
@@ -1060,7 +1060,7 @@ public class GwtViewHelper {
 		
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
-			if      (colName.equals("access"))          {fc.setColumnSearchKey("access");                                                                                   }
+			if      (colName.equals("access"))          {fc.setColumnSearchKey("access");                               fc.setColumnSortable(false);                        }
 			else if (colName.equals("author"))          {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
 			else if (colName.equals("comments"))        {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                            }
 			else if (colName.equals("date"))            {fc.setColumnSearchKey(Constants.LASTACTIVITY_FIELD);                                                               }
@@ -1069,7 +1069,7 @@ public class GwtViewHelper {
 			else if (colName.equals("download"))        {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                   }
 			else if (colName.equals("dueDate"))         {fc.setColumnSearchKey(Constants.DUE_DATE_FIELD);                                                                   }
 			else if (colName.equals("emailAddress"))    {fc.setColumnSearchKey(Constants.EMAIL_FIELD);                                                                      }
-			else if (colName.equals("family"))          {fc.setColumnSearchKey(Constants.FAMILY_FIELD);                                                                     }
+			else if (colName.equals("family"))          {fc.setColumnSearchKey(Constants.FAMILY_FIELD);                 fc.setColumnSortable(false);                        }
 			else if (colName.equals("fullName"))        {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);    }
 			else if (colName.equals("guest"))           {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
 			else if (colName.equals("html"))            {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                    }
@@ -1078,9 +1078,10 @@ public class GwtViewHelper {
 			else if (colName.equals("number"))          {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);    }
 			else if (colName.equals("rating"))          {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                     }
 			else if (colName.equals("responsible"))     {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                }
-			else if (colName.equals("rights"))          {fc.setColumnSearchKey("rights");                                                                                   }
+			else if (colName.equals("rights"))          {fc.setColumnSearchKey("rights");                               fc.setColumnSortable(false);                        }
 			else if (colName.equals("size"))            {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                  }
-			else if (colName.equals("sharedBy"))        {fc.setColumnSearchKey("sharedBy");                                                                                 }
+			else if (colName.equals("sharedBy"))        {fc.setColumnSearchKey("sharedBy");                             fc.setColumnSortable(false);                        }
+			else if (colName.equals("sharedWith"))      {fc.setColumnSearchKey("sharedWith");                           fc.setColumnSortable(false);                        }
 			else if (colName.equals("state"))           {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD); fc.setColumnSortKey(Constants.WORKFLOW_STATE_FIELD);}
 			else if (colName.equals("status"))          {fc.setColumnSearchKey(Constants.STATUS_FIELD);                                                                     }
 			else if (colName.equals("tasks"))           {fc.setColumnSearchKey(Constants.TASKS_FIELD);                                                                      }
@@ -1453,7 +1454,7 @@ public class GwtViewHelper {
 	public static StringRpcResponseData getBinderRegionState(AllModulesInjected bs, HttpServletRequest request, Long binderId, String regionId) throws GwtTeamingException {
 		try {
 			// Does the user have this region state defined?
-			UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUser().getId(), binderId);
+			UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUserId(), binderId);
 			String regionState = ((String) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_REGION_VIEW + "." + regionId));
 
 			// Use the data we obtained to create a
@@ -1475,28 +1476,57 @@ public class GwtViewHelper {
 	 * Returns the entries for the given collection.
 	 */
 	@SuppressWarnings("unchecked")
-	private static Map getCollectionEntries(AllModulesInjected bs, Binder binder, String quickFilter, Map options, CollectionType ct) {
+	private static Map getCollectionEntries(AllModulesInjected bs, Binder binder, String quickFilter, Map options, CollectionType ct, List<SharedEntity> shares) {
 		// Several of the collections require the ID of the top
 		// workspace.
 		String topWSId = GwtUIHelper.getTopWSIdSafely(bs, false);
 		
 		// Construct the search Criteria...
+		Conjunction conj;
+		Disjunction disj;
 		Criteria crit = new Criteria();
 		switch (ct) {
 		default:
 		case MY_FILES:
+			// Search for File Folder and Photo Albums within the
+			// binder...
 			crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
-			crit.add(in(Constants.IS_MIRRORED_FIELD,       new String[]{Constants.FALSE}));
 			crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(binder.getId())}));
 			crit.add(in(Constants.FAMILY_FIELD,            new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO}));
+
+			// ...that are non-mirrored...
+    		disj = disjunction();
+			crit.add(disj);
+    		conj = conjunction();
+			conj.add(in(Constants.IS_MIRRORED_FIELD,       new String[]{Constants.FALSE}));
+			disj.add(conj);
+
+			// ...or configured mirrored File Folders.
+    		conj = conjunction();
+			conj.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
+			conj.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
+			disj.add(conj);
 			
 			break;
 
 		case SHARED_BY_ME:
 //!			...this needs to be implemented...
-			
-			crit.add(in(Constants.DOC_TYPE_FIELD, new String[]{Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_BINDER}));
-			crit.add(in(Constants.ENTRY_ANCESTRY, new String[]{String.valueOf(binder.getId())}));
+
+			// Search for anything in within the binder or below...
+			crit.add(in(Constants.ENTRY_ANCESTRY,   new String[]{String.valueOf(binder.getId())}));
+
+			// ...thats a binder...
+    		disj = disjunction();
+			crit.add(disj);
+    		conj = conjunction();
+			conj.add(in(Constants.DOC_TYPE_FIELD, new String[]{Constants.DOC_TYPE_BINDER}));
+			disj.add(conj);
+
+			// ...or a top level entry (no replies.)
+    		conj = conjunction();
+			conj.add(in(Constants.DOC_TYPE_FIELD,   new String[]{Constants.DOC_TYPE_ENTRY}));
+			conj.add(in(Constants.ENTRY_TYPE_FIELD, new String[]{Constants.ENTRY_TYPE_ENTRY}));
+			disj.add(conj);
 			
 			break;
 			
@@ -1507,12 +1537,8 @@ public class GwtViewHelper {
 				// shared with me.  Bail.
 				return new HashMap();
 			}
-			
-			// Has anything been shared with the current user in the
-			// last 2 years?
-			GregorianCalendar since = new GregorianCalendar();
-			since.add(Calendar.YEAR, (-2));
-			List<SharedEntity> shares = bs.getProfileModule().getShares(GwtServerHelper.getCurrentUser().getId(), since.getTime());
+
+			// Do we have any shares to analyze?
 			if ((null == shares) || shares.isEmpty()) {
 				// No!  Bail.
 				return new HashMap();
@@ -1538,16 +1564,19 @@ public class GwtViewHelper {
 
 			// Add the shared binder and entry IDs to the search criteria.
 			crit.add(in(Constants.ENTRY_ANCESTRY, new String[]{topWSId}));
-    		Disjunction disj = disjunction();
+			
+    		disj = disjunction();
 			crit.add(disj);
+			
 			if (hasSharedBinders) {
-	    		Conjunction conj = conjunction();
+	    		conj = conjunction();
 				conj.add(in(Constants.DOC_TYPE_FIELD, new String[]{Constants.DOC_TYPE_BINDER}));
 				conj.add(in(Constants.DOCID_FIELD, sharedBinderIds.toArray(new String[0])));
 				disj.add(conj);
 			}
+			
 			if (hasSharedEntries) {
-	    		Conjunction conj = conjunction();
+	    		conj = conjunction();
 				conj.add(in(Constants.DOC_TYPE_FIELD, new String[]{Constants.DOC_TYPE_ENTRY}));
 				conj.add(in(Constants.DOCID_FIELD, sharedEntryIds.toArray(new String[0])));
 				disj.add(conj);
@@ -1796,10 +1825,10 @@ public class GwtViewHelper {
 				String[] columns;
 				switch (folderInfo.getCollectionType()) {
 				default:
-				case FILE_SPACES:     baseNameKey += "filespaces.";   columns = new String[]{"title", "rights", "description"}; break;
-				case MY_FILES:        baseNameKey += "myfiles.";      columns = new String[]{"title", "family", "date"};        break;
-				case SHARED_BY_ME:    baseNameKey += "sharedByMe.";   columns = new String[]{"title", "access", "sharedBy"};    break;
-				case SHARED_WITH_ME:  baseNameKey += "sharedWithMe."; columns = new String[]{"title", "access", "sharedBy"};    break;
+				case FILE_SPACES:     baseNameKey += "filespaces.";   columns = new String[]{"title", "rights", "descriptionHtml"}; break;
+				case MY_FILES:        baseNameKey += "myfiles.";      columns = new String[]{"title", "family", "date"};            break;
+				case SHARED_BY_ME:    baseNameKey += "sharedByMe.";   columns = new String[]{"title", "access", "sharedWith"};      break;
+				case SHARED_WITH_ME:  baseNameKey += "sharedWithMe."; columns = new String[]{"title", "access", "sharedBy"};        break;
 				}
 				columnNames = getColumnsLHMFromAS(columns);
 			}
@@ -1920,14 +1949,12 @@ public class GwtViewHelper {
 						caption = caption.substring(caption.indexOf(",")+1);
 						fc.setColumnDefaultTitle(caption);
 					}
-					// Is this column to be shown?
+					// Is this column is not to be shown, skip it.
+					// No!  Skip it.
 					String columnValue = ((String) columnNames.get(colName));
-					if (!(MiscUtil.hasString(columnValue))) {
-						// No!  Skip it.
-						fc.setColumnIsShown(Boolean.FALSE);;
-					} else {
-						fc.setColumnIsShown(Boolean.TRUE);
-					}
+					if (!(MiscUtil.hasString(columnValue)))
+					     fc.setColumnShown(Boolean.FALSE);
+					else fc.setColumnShown(Boolean.TRUE );
 	
 					// Is there a custom title for this column?
 					String colTitle = ((String) columnTitles.get(colName));
@@ -1951,8 +1978,8 @@ public class GwtViewHelper {
 	
 					// Add a FolderColumn for this to the list we're
 					// going to return.
-					if (fc.getColumnIsShown()) {
-						//This column is being shown
+					if (fc.isColumnShown()) {
+						// This column is being shown.
 						fcList.add(fc);
 					}
 					fcListAll.add(fc);
@@ -1996,8 +2023,8 @@ public class GwtViewHelper {
 								// Is this column to be shown?
 								String columnValue = ((String) columnNames.get(colName));
 								if (!(MiscUtil.hasString(columnValue)))
-								     fc.setColumnIsShown(Boolean.FALSE);
-								else fc.setColumnIsShown(Boolean.TRUE );
+								     fc.setColumnShown(Boolean.FALSE);
+								else fc.setColumnShown(Boolean.TRUE );
 			
 								// Is there a custom title for this column?
 								String colTitleDefault = (String)((Map)me.getValue()).get("caption");
@@ -2220,6 +2247,20 @@ public class GwtViewHelper {
 				pinnedEntrySearchMaps = null;
 			}
 
+			// Are we working with a 'Shared with Me' collection?
+			List<SharedEntity> shares;
+			boolean isCollectionSharedWithMe = (isCollection && CollectionType.SHARED_WITH_ME.equals(folderInfo.getCollectionType()));
+			if (isCollectionSharedWithMe) {
+				// Yes!  Has anything been shared with the current user
+				// in the last 2 years?
+				GregorianCalendar since = new GregorianCalendar();
+				since.add(Calendar.YEAR, (-2));
+				shares = bs.getProfileModule().getShares(GwtServerHelper.getCurrentUserId(), since.getTime());
+			}
+			else {
+				shares = null;
+			}
+
 			// Is the user currently viewing pinned entries?
 			List<Map>  searchEntries;
 			int        totalRecords;
@@ -2235,7 +2276,7 @@ public class GwtViewHelper {
 				Map searchResults;
 				if      (isTrash)          searchResults = TrashHelper.getTrashEntries(bs, binder, options);
 				else if (isProfilesRootWS) searchResults = bs.getProfileModule().getUsers(         options);
-				else if (isCollection)     searchResults = getCollectionEntries(bs, binder, quickFilter, options, folderInfo.getCollectionType());
+				else if (isCollection)     searchResults = getCollectionEntries(bs, binder, quickFilter, options, folderInfo.getCollectionType(), shares);
 				else {
 					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
 					searchResults = bs.getFolderModule().getEntries(folderId, options);
@@ -2296,6 +2337,47 @@ public class GwtViewHelper {
 							emValue = GwtServerHelper.getValueFromEntryMap(entryMap, Constants.CREATION_DATE_FIELD);
 							if (null != emValue) {
 								csk = Constants.CREATION_DATE_FIELD;
+							}
+						}
+						
+						// Are we working on a 'Shared with Me'
+						// collection that we might be able to resolve
+						// a sharedBy for?
+						if (isCollectionSharedWithMe && (csk.equals("sharedBy")) && (null == emValue) && (null != shares) && (!(shares.isEmpty()))) {
+							// Yes!  Scan the entities that have been
+							// shared with me.
+							for (SharedEntity se:  shares) {
+								// Are we working with an entry row?
+								DefinableEntity	de   = se.getEntity();
+								Long			deId = de.getId();
+								if (isEntityFolderEntry) {
+									// Yes!  Is this the SharedEntity
+									// for it?
+									if ((!(de instanceof FolderEntry)) || (!(deId.equals(docId)))) {
+										// No!  Skip it.
+										continue;
+									}
+									
+									// Yes, this is the SharedEntity
+									// for it!  Track who shared it.
+									emValue = se.getReferer();
+									break;
+								}
+								
+								else {
+									// No, we must be working with a
+									// binder row!  Is this the
+									// SharedEntity for it?
+									if ((de instanceof FolderEntry) || (!(deId.equals(docId)))) {
+										// No!  Skip it.
+										continue;
+									}
+									
+									// Yes, this is the SharedEntity
+									// for it!  Track who shared it.
+									emValue = se.getReferer();
+									break;
+								}
 							}
 						}
 						
@@ -2378,7 +2460,7 @@ public class GwtViewHelper {
 								EmailAddressInfo emai = GwtServerHelper.getEmailAddressInfoFromEntryMap(bs, entryMap);
 								fr.setColumnValue(fc, emai);
 							}
-	
+							
 							else {
 								// No, the column doesn't contain an
 								// email address either!  Extract its
@@ -2448,11 +2530,29 @@ public class GwtViewHelper {
 									fr.setColumnValue(fc, new DescriptionHtml(value, isHtml));
 								}
 								
+								// No, we aren't working on an HTML
+								// description field either!  Are we
+								// working on a family specification
+								// field?
+								else if (csk.equals(Constants.FAMILY_FIELD)) {
+									// Yes!  Do we have a value for the
+									// column?
+									if (MiscUtil.hasString(value)) {
+										// Yes!  Load any localized
+										// name we might have for it.
+										value = NLT.get(("__folder_" + value), value);
+									}
+									
+									// Use what ever String value we
+									// arrived at.
+									fr.setColumnValue(fc, (null == (value) ? "" : value));
+								}
+								
 								else {
-									// No, we aren't working on an HTML
-									// description field either!  Are
-									// we working on a field whose
-									// value is a Date?
+									// No, we aren't working on a
+									// family specification field
+									// either!  Are we working on a
+									// field whose value is a Date?
 									if (emValue instanceof Date) {
 										// Yes!  Is that Date overdue?
 										if (DateComparer.isOverdue((Date) emValue)) {
@@ -3243,7 +3343,7 @@ public class GwtViewHelper {
 				// viewing a folder while changing its view?
 				boolean       viewFolderListing = action.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING);
 				ProfileModule pm                = bs.getProfileModule();
-				Long          userId            = GwtServerHelper.getCurrentUser().getId();
+				Long          userId            = GwtServerHelper.getCurrentUserId();
 				if (viewFolderListing && op.equals(WebKeys.OPERATION_SET_DISPLAY_DEFINITION)) {
 					// Yes!  Do we have both the view definition and
 					// binder ID's?
@@ -3305,7 +3405,7 @@ public class GwtViewHelper {
 					pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER,       filterName );
 					pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE, filterScope);
 	
-					UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUser().getId(), binderId);
+					UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUserId(), binderId);
 					List<String> currentFilters = ((List<String>) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTERS));
 					if (null == currentFilters) {
 						currentFilters = new ArrayList<String>();
@@ -3334,7 +3434,7 @@ public class GwtViewHelper {
 	
 					String filterName = getQueryParameterString(nvMap, WebKeys.URL_CLEAR_FILTER);
 					String filterSpec = BinderFilter.buildFilterSpec(filterName, filterScope);
-					UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUser().getId(), binderId);
+					UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUserId(), binderId);
 					List<String> currentFilters = ((List<String>) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTERS));
 					if (null == currentFilters) {
 						currentFilters = new ArrayList<String>();
@@ -3614,7 +3714,7 @@ public class GwtViewHelper {
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// Were we given the IDs of any users to purge?
-			Long currentUserId = GwtServerHelper.getCurrentUser().getId(); 
+			Long currentUserId = GwtServerHelper.getCurrentUserId(); 
 			if ((null != userIds) && (!(userIds.isEmpty()))) {
 				// Yes!  Scan them.
 				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
@@ -3698,7 +3798,7 @@ public class GwtViewHelper {
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// Were we given the IDs of any users to purge?
-			Long currentUserId = GwtServerHelper.getCurrentUser().getId(); 
+			Long currentUserId = GwtServerHelper.getCurrentUserId(); 
 			if ((null != userIds) && (!(userIds.isEmpty()))) {
 				// Yes!  Scan them.
 				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
@@ -3835,7 +3935,7 @@ public class GwtViewHelper {
 		try {
 			// Save the accessory status...
 			bs.getProfileModule().setUserProperty(
-				GwtServerHelper.getCurrentUser().getId(),
+				GwtServerHelper.getCurrentUserId(),
 				binderId,
 				ObjectKeys.USER_PROPERTY_BINDER_SHOW_ACCESSORIES,
 				new Boolean(showAccessoryPanel));
@@ -3868,7 +3968,7 @@ public class GwtViewHelper {
 	public static BooleanRpcResponseData saveBinderRegionState(AllModulesInjected bs, HttpServletRequest request, Long binderId, String regionId, String regionState) throws GwtTeamingException {
 		try {
 			// Store the new region state and return true.
-			bs.getProfileModule().setUserProperty(GwtServerHelper.getCurrentUser().getId(), binderId, ObjectKeys.USER_PROPERTY_REGION_VIEW + "." + regionId, regionState);
+			bs.getProfileModule().setUserProperty(GwtServerHelper.getCurrentUserId(), binderId, ObjectKeys.USER_PROPERTY_REGION_VIEW + "." + regionId, regionState);
 			return new BooleanRpcResponseData(Boolean.TRUE);
 		}
 		
@@ -3902,7 +4002,7 @@ public class GwtViewHelper {
 				propKey += ".Trash";
 			}
 			bs.getProfileModule().setUserProperty(
-				GwtServerHelper.getCurrentUser().getId(),
+				GwtServerHelper.getCurrentUserId(),
 				folderInfo.getBinderIdAsLong(),
 				propKey,
 				columnWidths);

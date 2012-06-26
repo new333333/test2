@@ -660,7 +660,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		};
 		
 		// ...and connect it all together.
-		column.setSortable(   true                                             );
+		column.setSortable(   true                                             );	// Not really sorted, but enters/exits 'pin' mode. 
 	    m_dataTable.addColumn(column, pinHtml                                  );
 	    setColumnStyles(      column, FolderColumn.COLUMN_PIN, colIndex        );
 	    setColumnWidth(               FolderColumn.COLUMN_PIN, column, pctTotal);
@@ -727,6 +727,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		});
 
 		// ...and connect it all together.
+		column.setSortable(     false                                       ); 
 	    m_dataTable.addColumn(column, saHeader);
 	    setColumnStyles(column, FolderColumn.COLUMN_SELECT, colIndex        );
 	    setColumnWidth(         FolderColumn.COLUMN_SELECT, column, pctTotal);
@@ -1135,7 +1136,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			
 			// No, this column doesn't show a download link!  Does it
 			// show presence?
-			else if (FolderColumn.isColumnPresence(cName) || FolderColumn.isColumnFullName(cName)) {
+			else if (FolderColumn.isColumnPresence(cName) || FolderColumn.isColumnSharedBy(cName) || FolderColumn.isColumnFullName(cName)) {
 				// Yes!  Create a PresenceColumn for it.
 				column = new PresenceColumn<FolderRow>(fc, showProfileEntryForPresenceWithNoWS()) {
 					@Override
@@ -1302,7 +1303,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 
 			// Complete the initialization of the column.
 			fc.setDisplayIndex(   colIndex                       );
-			column.setSortable(   true                           );
+			column.setSortable(   fc.isColumnSortable()          );
 			m_dataTable.addColumn(column, fc.getColumnTitle()    );
 		    setColumnStyles(      column, cName, colIndex++      );
 		    setColumnWidth(               cName, column, pctTotal);

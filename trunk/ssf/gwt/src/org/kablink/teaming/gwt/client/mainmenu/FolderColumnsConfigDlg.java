@@ -513,7 +513,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 				String       rowId = getRowId(i);
 				FolderColumn fc    = getFolderColumnByName(getFolderColumnNameFromRow(i));
 				InputElement iE    = Document.get().getElementById(rowId + IDTAIL_CHECKBOX).getFirstChild().cast();
-				fc.setColumnIsShown(iE.isChecked());
+				fc.setColumnShown(iE.isChecked());
 				
 				iE = Document.get().getElementById(rowId + IDTAIL_TEXTBOX).cast();
 				fc.setColumnCustomTitle(iE.getValue());
@@ -662,7 +662,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		cb.setName("ColumnSelected_" + rowIdSuffix);
 		cb.addStyleName("folderColumnsDlg_CheckBox");
 		cb.getElement().setId(rowId + IDTAIL_CHECKBOX);
-		cb.setValue(fci.getColumnIsShown());
+		cb.setValue(fci.isColumnShown());
 		m_folderColumnsGrid.setWidget(     row, COL_SHOW_CB, cb);
 		m_folderColumnsGridCF.addStyleName(row, COL_SHOW_CB, "folderColumnsDlg_RowCell folderColumnsDlg_RowCellCB");
 	}
@@ -717,7 +717,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			for (FolderColumn fca : m_folderColumnsListAll) {
 				if (fc.getColumnName().equals(fca.getColumnName())) {
 					//Set the columns that are shown
-					fca.setColumnIsShown(Boolean.TRUE);
+					fca.setColumnShown(Boolean.TRUE);
 					break;
 				}
 			}
