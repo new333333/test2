@@ -676,6 +676,17 @@ public class GwtClientHelper {
 	}
 	
 	/**
+	 * Returns true if we're running in Filr mode and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isFilr() {
+		RequestInfo ri = getRequestInfo();
+		return ((null != ri) && ri.isVibeLite());
+	}
+
+	/**
 	 * Returns true if a URL is a permalink URL and false otherwise.
 	 * 
 	 * @param url
@@ -687,17 +698,6 @@ public class GwtClientHelper {
 			reply = (0 < url.indexOf(PERMALINK_MARKER));
 		}
 		return reply;
-	}
-
-	/**
-	 * Returns true if we're running in Vibe Lite (Filr) mode and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isVibeLite() {
-		RequestInfo ri = getRequestInfo();
-		return ((null != ri) && ri.isVibeLite());
 	}
 
 	/**

@@ -363,6 +363,15 @@ public abstract class TreeDisplayBase {
 	}
 
 	/**
+	 * Returns true if we're running in Filr mode and false otherwise.
+	 * 
+	 * @return
+	 */
+	final public boolean isFilr() {
+		return GwtClientHelper.isFilr();
+	}
+
+	/**
 	 * Returns true if the workspace tree is currently hidden because
 	 * of an empty sidebar and false otherwise.
 	 * 
@@ -380,16 +389,6 @@ public abstract class TreeDisplayBase {
 	 */
 	final public boolean isTrash() {
 		return m_wsTree.isTrash();
-	}
-
-	/**
-	 * Returns true if we're running in Vibe Lite (Filr) mode and
-	 * false otherwise.
-	 * 
-	 * @return
-	 */
-	final public boolean isVibeLite() {
-		return GwtClientHelper.isVibeLite();
 	}
 
 	/**

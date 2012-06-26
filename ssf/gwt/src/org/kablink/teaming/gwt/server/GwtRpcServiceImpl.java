@@ -6143,7 +6143,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	private Boolean setSeen( HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException
 	{
-		getProfileModule().setSeenIds( GwtServerHelper.getCurrentUser().getId(), entryIds );
+		getProfileModule().setSeenIds( GwtServerHelper.getCurrentUserId(), entryIds );
 		return Boolean.TRUE;
 	}//end setSeen()
 	
@@ -6152,7 +6152,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	private Boolean setUnseen( HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException
 	{
-		getProfileModule().setUnseen( GwtServerHelper.getCurrentUser().getId(), entryIds );
+		getProfileModule().setUnseen( GwtServerHelper.getCurrentUserId(), entryIds );
 		return Boolean.TRUE;
 	}//end setUnseen()
 }// end GwtRpcServiceImpl

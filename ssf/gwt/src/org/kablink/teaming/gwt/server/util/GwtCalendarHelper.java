@@ -1169,7 +1169,7 @@ public class GwtCalendarHelper {
 		
 		// Does the user have a week start day saved in their
 		// preferences?
-		Long    userId    = GwtServerHelper.getCurrentUser().getId();
+		Long    userId    = GwtServerHelper.getCurrentUserId();
 		Integer weekStart = ((Integer) pm.getUserProperties(userId).getProperty(ObjectKeys.USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK));
 		if (null == weekStart) {
 			// No!  Use an appropriate default.
@@ -1195,7 +1195,7 @@ public class GwtCalendarHelper {
 
 		// Does the user have a work day start hour saved in their
 		// preferences?
-		Long userId = GwtServerHelper.getCurrentUser().getId();
+		Long userId = GwtServerHelper.getCurrentUserId();
 		Integer workDayStart = ((Integer) pm.getUserProperties(userId).getProperty(ObjectKeys.USER_PROPERTY_CALENDAR_WORK_DAY_START));
 		if (null == workDayStart) {
 			// No!  Use an appropriate default.
@@ -1358,7 +1358,7 @@ public class GwtCalendarHelper {
 	public static Boolean saveCalendarSettings(AllModulesInjected bs, HttpServletRequest request, Long folderId, int weekStart, int workDayStart) throws GwtTeamingException {
 		try {
 			// If we have a week starting day to save...
-			Long userId = GwtServerHelper.getCurrentUser().getId();
+			Long userId = GwtServerHelper.getCurrentUserId();
 			ProfileModule pm = bs.getProfileModule();
 			if ((-1) != weekStart) {
 				// ...save it.
@@ -1414,7 +1414,7 @@ public class GwtCalendarHelper {
 			}
 			
 			// ...and store them.
-			Long userId   = GwtServerHelper.getCurrentUser().getId();
+			Long userId   = GwtServerHelper.getCurrentUserId();
 			Long folderId = folderInfo.getBinderIdAsLong();
 			ListFolderHelper.setFolderModeType(          bs, userId, folderId, mode     );
 			EventsViewHelper.setCalendarDisplayEventType(bs, userId, folderId, eventType);			

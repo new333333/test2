@@ -3700,6 +3700,15 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Returns the ID of User object of the currently logged in user.
+	 * 
+	 * @return
+	 */
+	public static Long getCurrentUserId() {
+		return getCurrentUser().getId();
+	}
+
+	/**
 	 * Returns the current HttpSession, if accessible.
 	 * 
 	 * @return
@@ -4162,7 +4171,7 @@ public class GwtServerHelper {
 			
 			folderSortSetting = new FolderSortSetting();
 
-			userId = getCurrentUser().getId();
+			userId = getCurrentUserId();
 			pm = ami.getProfileModule();
 			
 			userFolderProperties = pm.getUserProperties( userId, binderId );
@@ -5196,7 +5205,7 @@ public class GwtServerHelper {
 		List<SavedSearchInfo> ssList = new ArrayList<SavedSearchInfo>();
 
 		// Does the user have any saved searches defined?
-		UserProperties userProperties = bs.getProfileModule().getUserProperties(getCurrentUser().getId());
+		UserProperties userProperties = bs.getProfileModule().getUserProperties(getCurrentUserId());
 		Map properties = userProperties.getProperties();
 		if (properties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
 			// Yes!  Scan them...
@@ -5668,7 +5677,7 @@ public class GwtServerHelper {
 	 */
 	public static List<String> getTrackedPeople(AllModulesInjected bs) {
 		// Return the IDs of the people the current user is tracking.
-		Long userId = getCurrentUser().getId();
+		Long userId = getCurrentUserId();
 		return SearchUtils.getTrackedPeopleIds(bs, userId);
 	}
 	
@@ -5679,7 +5688,7 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static List<String> getTrackedPlaces(AllModulesInjected bs) {
-		Long userId = getCurrentUser().getId();
+		Long userId = getCurrentUserId();
 		return SearchUtils.getTrackedPlacesIds(bs, userId);
 	}
 	
@@ -7056,7 +7065,7 @@ public class GwtServerHelper {
 	 */
 	public static Boolean removeSavedSearch(AllModulesInjected bs, SavedSearchInfo ssi) {
 		// Does the user contain any saved searches?
-		UserProperties userProperties = bs.getProfileModule().getUserProperties(getCurrentUser().getId());
+		UserProperties userProperties = bs.getProfileModule().getUserProperties(getCurrentUserId());
 		Map properties = userProperties.getProperties();		
 		if (properties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
 			// Yes!  Can we find a saved search by the given name?
@@ -7172,11 +7181,9 @@ public class GwtServerHelper {
 				for (FolderColumn fc : fcList) {
 					if (!columnSortOrder.equals("")) columnSortOrder += "|";
 					columnSortOrder += fc.getColumnName();
-					if (fc.getColumnIsShown()) {
-						columns.put(fc.getColumnName(), "on");
-					} else {
-						columns.put(fc.getColumnName(), "");
-					}
+					if (fc.isColumnShown())
+					     columns.put(fc.getColumnName(), "on");
+					else columns.put(fc.getColumnName(), ""  );
 					String columnTitle = fc.getColumnCustomTitle();
 					if (columnTitle != null && !columnTitle.equals("")) {
 						columnsText.put(fc.getColumnName(), columnTitle);
@@ -7222,7 +7229,7 @@ public class GwtServerHelper {
 			}
 			
 			Long			binderId = binderInfo.getBinderIdAsLong();
-			Long			userId = getCurrentUser().getId();
+			Long			userId = getCurrentUserId();
 			ProfileModule	pm     = bs.getProfileModule();
 			pm.setUserProperty(userId, binderId, propSortBy,                      sortKey       );
 			pm.setUserProperty(userId, binderId, propSortDescend, String.valueOf(!sortAscending));
@@ -7259,7 +7266,7 @@ public class GwtServerHelper {
 		}
 
 		// Get the user's currently defined saved searches...
-		UserProperties userProperties = bs.getProfileModule().getUserProperties(getCurrentUser().getId());
+		UserProperties userProperties = bs.getProfileModule().getUserProperties(getCurrentUserId());
 		Map properties = userProperties.getProperties();
 		Map userQueries = new HashMap();
 		if (properties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
@@ -7382,7 +7389,7 @@ public class GwtServerHelper {
 				}
 	
 				// Read the user's folder properties for the folder.
-				Long userId = getCurrentUser().getId();
+				Long userId = getCurrentUserId();
 				ProfileModule pm = bs.getProfileModule();
 				UserProperties userFolderProperties = pm.getUserProperties(userId, folderId);
 				Map properties = userFolderProperties.getProperties();

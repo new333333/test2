@@ -89,7 +89,7 @@ public enum BinderIconSize implements IsSerializable {
 	public static BinderIconSize getListViewIconSize()           {return BinderIconSize.SMALL; }
 	public static BinderIconSize getSidebarTreeIconSize()        {
 		BinderIconSize reply;
-		if (GwtClientHelper.isVibeLite())
+		if (GwtClientHelper.isFilr())
 		     reply = BinderIconSize.MEDIUM;
 		else reply = BinderIconSize.SMALL;
 		return reply;

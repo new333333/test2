@@ -360,7 +360,7 @@ public class RequestInfo extends JavaScriptObject
 	}
 
 	/**
-	 * Return the flag that tells us if we are running Vibe Lite.
+	 * Return the flag that tells us if we are running in Filr mode.
 	 * 
 	 * @return
 	 */
