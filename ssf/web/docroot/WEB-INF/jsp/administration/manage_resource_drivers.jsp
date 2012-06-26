@@ -63,6 +63,20 @@
 	
 	}// end handleCloseBtn()
 	
+	//Routine to show the right options
+	var ss_resourceDriverCount = 0;
+	function showOptions(selectObj, formNumber) {
+		var type, obj;
+		<c:forEach var="driverType" items='<%= new java.lang.String[] {"filesystem", "webdav", "cifs", "ncp_netware", "ncp_oes"} %>'>
+			type = "${driverType}";
+			obj = document.getElementById("options_" + formNumber + "_" + type);
+			obj.style.display = "none";
+		</c:forEach>
+		type = selectObj.options[selectObj.selectedIndex].value;
+		obj = document.getElementById("options_" + formNumber + "_" + type);
+		obj.style.display = "block";
+	}
+	
 	function confirmDelete() {
 		return confirm("<ssf:nlt tag="administration.resourceDrivers.confirmDelete"/>");
 	}
@@ -154,6 +168,7 @@ function ss_showModifyDiv(id) {
 <br>
 <h3><ssf:nlt tag="administration.resourceDrivers.currentResourceDrivers"/></h3>
 
+<c:set var="formNumber" value="0"/>
 <c:forEach var="fsr" items="${ss_filespaceRoots}">
     <ssf:expandableArea title="${fsr.name}">
 	  <c:set var="buttonName" value="modifyBtn"/>
@@ -165,6 +180,7 @@ function ss_showModifyDiv(id) {
 	  <c:set var="resourceDriverUsers" value="${ssFunctionMap[fsr.name]['users']}"/>
       <%@ include file="/WEB-INF/jsp/administration/manage_resource_drivers_form.jsp" %>	
     </ssf:expandableArea>
+    <c:set var="formNumber" value="${formNumber + 1}"/>
 </c:forEach>
 	
 

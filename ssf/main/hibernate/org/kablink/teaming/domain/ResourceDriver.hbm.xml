@@ -24,5 +24,9 @@
     <property name="rootPath"/>
     <property name="accountName"/>
 	<property name="password" access="field" length="64" type="encrypted"/>
+    <property name="shareName"/>
+    <property name="serverName"/>
+    <property name="serverIP"/>
+    <property name="volume"/>
   </class>
 </hibernate-mapping>

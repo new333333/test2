@@ -38,7 +38,7 @@
 <div style="padding:0px 20px;">
 <fieldset>
 <form class="ss_style ss_form" method="post" 
-	action="${formAction}">
+	action="${formAction}" id="form${fsr.name}">
 	<table cellspacing="6" cellpadding="4">
 	<tr>
 	<td valign="middle">
@@ -60,17 +60,26 @@
 	  </label>
 	</td>
 	<td valign="middle">
-	  <c:set var="selected" value="filesystem"/>
+	  <c:set var="selectedType" value="filesystem"/>
 	  <c:if test="${!empty fsr}">
-	    <c:set var="selected">${fsr.driverType}</c:set>
+	    <c:set var="selectedType">${fsr.driverType}</c:set>
 	  </c:if>
-	  <select name="driverType" id="driverType">
+	  <select name="driverType" id="driverType" onChange="showOptions(this, '${formNumber}');">
 	    <option value="<%= ResourceDriverConfig.DriverType.filesystem %>" 
-	      <c:if test="${selected == 'filesystem'}">selected</c:if>
+	      <c:if test="${selectedType == 'filesystem'}">selected</c:if>
 	    ><ssf:nlt tag="administration.resourceDrivers.type.filesystem"/></option>
 	    <option value="<%= ResourceDriverConfig.DriverType.webdav %>"
-	      <c:if test="${selected == 'webdav'}">selected</c:if>
+	      <c:if test="${selectedType == 'webdav'}">selected</c:if>
 	    ><ssf:nlt tag="administration.resourceDrivers.type.webdav"/></option>
+	    <option value="<%= ResourceDriverConfig.DriverType.cifs %>"
+	      <c:if test="${selectedType == 'cifs'}">selected</c:if>
+	    ><ssf:nlt tag="administration.resourceDrivers.type.cifs"/></option>
+	    <option value="<%= ResourceDriverConfig.DriverType.ncp_netware %>"
+	      <c:if test="${selectedType == 'ncp_netware'}">selected</c:if>
+	    ><ssf:nlt tag="administration.resourceDrivers.type.ncp_netware"/></option>
+	    <option value="<%= ResourceDriverConfig.DriverType.ncp_oes %>"
+	      <c:if test="${selectedType == 'ncp_oes'}">selected</c:if>
+	    ><ssf:nlt tag="administration.resourceDrivers.type.ncp_oes"/></option>
 	  </select>
 	</td>
 	</tr>		
@@ -102,42 +111,20 @@
 	
 	<div style="margin:10px; padding-top:20px;">
 	  <span><ssf:nlt tag="administration.resourceDrivers.otherOptions"/></span>
-	
-	  <div style="padding-left:20px;">
+	  
+	  <c:set var="displayStyle" value="none"/>
+	  <c:if test="${selectedType == 'filesystem'}"><c:set var="displayStyle" value="block"/></c:if>
+	  <div style="padding-left:20px; display:${displayStyle};" id="options_${formNumber}_filesystem">
 		<table cellspacing="6" cellpadding="4">		
 		<tr>
 		<td valign="middle" style="padding-top:20px;">
-		  <label for="hostUrl">
-		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.hostUrl"/></span>
-		  </label>
-		</td>
-		<td valign="middle" style="padding-top:20px;">
-		  <input type="text" class="ss_text" size="70" name="hostUrl" id="hostUrl" maxlength="64"
-		  <c:if test="${!empty fsr}"> value="${fsr.hostUrl}" </c:if>
-		  >
-		</td>
-		</tr>
-	
-		<tr>
-		<td valign="middle" colspan="2">
-		  <input type="checkbox" class="ss_text" size="70" name="allowSelfSignedCertificate" 
-		    id="allowSelfSignedCertificate"
-		    <c:if test="${fsr.allowSelfSignedCertificate}"> checked="checked"</c:if>
-		  >
-		  <label for="allowSelfSignedCertificate">
-		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.allowSelfSignedCertificate"/></span>
-		  </label>
-		</td>
-		</tr>		
-		
-		<tr>
-		<td valign="middle" style="padding-top:20px;">
-		  <label for="accountName">
+		  <label for="accountName_filesystem">
 		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.accountName"/></span>
 		  </label>
 		</td>
 		<td valign="middle" style="padding-top:20px;">
-		  <input type="text" class="ss_text" size="70" name="accountName" id="accountName" maxlength="64"
+		  <input type="text" class="ss_text" size="70" name="accountName_filesystem" 
+		    id="accountName_filesystem" maxlength="64"
 		  <c:if test="${!empty fsr.accountName}"> value="${fsr.accountName}" </c:if>
 		  >
 		</td>
@@ -145,20 +132,273 @@
 		
 		<tr>
 		<td valign="middle" style="padding-top:20px;">
-		  <label for="password">
+		  <label for="password_filesystem">
 		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.accountPassword"/></span>
 		  </label>
 		</td>
 		<td valign="middle" style="padding-top:20px;">
-		  <input type="password" class="ss_text" size="70" name="password" id="password" maxlength="64">
+		  <input type="password" class="ss_text" size="70" name="password_filesystem" 
+		    id="password_filesystem" maxlength="64">
 		  <br/>
-		  <input type="checkbox" name="changePassword">
+		  <input type="checkbox" name="changePassword_filesystem">
 		  <span><ssf:nlt tag="administration.resourceDrivers.changePassword"/></span>
 		</td>
 		</tr>
 		
 		</table>
 	  </div>
+	  <c:set var="displayStyle" value="none"/>
+	  <c:if test="${selectedType == 'webdav'}"><c:set var="displayStyle" value="block"/></c:if>
+	  <div style="padding-left:20px; display:${displayStyle}; " id="options_${formNumber}_webdav">
+		<table cellspacing="6" cellpadding="4">		
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="hostUrl_webdav">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.hostUrl"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="text" class="ss_text" size="70" name="hostUrl_webdav" id="hostUrl_webdav" maxlength="64"
+		  <c:if test="${!empty fsr}"> value="${fsr.hostUrl}" </c:if>
+		  >
+		</td>
+		</tr>
+	
+		<tr>
+		<td valign="middle" colspan="2">
+		  <input type="checkbox" class="ss_text" size="70" name="allowSelfSignedCertificate_webdav" 
+		    id="allowSelfSignedCertificate_webdav"
+		    <c:if test="${fsr.allowSelfSignedCertificate}"> checked="checked"</c:if>
+		  >
+		  <label for="allowSelfSignedCertificate_webdav">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.allowSelfSignedCertificate"/></span>
+		  </label>
+		</td>
+		</tr>		
+		
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="accountName_webdav">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.accountName"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="text" class="ss_text" size="70" name="accountName_webdav" id="accountName_webdav" maxlength="64"
+		  <c:if test="${!empty fsr.accountName}"> value="${fsr.accountName}" </c:if>
+		  >
+		</td>
+		</tr>
+		
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="password_webdav">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.accountPassword"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="password" class="ss_text" size="70" name="password_webdav" id="password_webdav" maxlength="64">
+		  <br/>
+		  <input type="checkbox" name="changePassword_webdav">
+		  <span><ssf:nlt tag="administration.resourceDrivers.changePassword"/></span>
+		</td>
+		</tr>
+		
+		</table>
+	  </div>
+
+	  <div style="padding-left:20px; <c:if test="${selectedType != 'cifs'}"> display:none; </c:if>" 
+	    id="options_${formNumber}_cifs"
+	  >
+		<table cellspacing="6" cellpadding="4">		
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="accountName_cifs">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.accountName"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="text" class="ss_text" size="70" name="accountName_cifs" id="accountName_cifs" maxlength="64"
+		  <c:if test="${!empty fsr.accountName}"> value="${fsr.accountName}" </c:if>
+		  >
+		</td>
+		</tr>
+		
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="password_cifs">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.accountPassword"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="password" class="ss_text" size="70" name="password_cifs" id="password_cifs" maxlength="64">
+		  <br/>
+		  <input type="checkbox" name="changePassword_cifs">
+		  <span><ssf:nlt tag="administration.resourceDrivers.changePassword"/></span>
+		</td>
+		</tr>
+		
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="shareName_cifs">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.shareName"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="text" class="ss_text" size="70" name="shareName_cifs" id="shareName_cifs" maxlength="64"
+		  <c:if test="${!empty fsr.shareName}"> value="${fsr.shareName}" </c:if>
+		  >
+		</td>
+		</tr>
+		
+		</table>
+	  </div>
+
+	  <div style="padding-left:20px; <c:if test="${selectedType != 'ncp_netware'}"> display:none; </c:if>" 
+	    id="options_${formNumber}_ncp_netware"
+	  >
+		<table cellspacing="6" cellpadding="4">		
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="accountName_ncp_netware">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.accountName"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="text" class="ss_text" size="70" name="accountName_ncp_netware" id="accountName_ncp_netware" maxlength="64"
+		  <c:if test="${!empty fsr.accountName}"> value="${fsr.accountName}" </c:if>
+		  >
+		</td>
+		</tr>
+		
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="password_ncp_netware">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.accountPassword"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="password" class="ss_text" size="70" name="password_ncp_netware" id="password_ncp_netware" maxlength="64">
+		  <br/>
+		  <input type="checkbox" name="changePassword_ncp_netware">
+		  <span><ssf:nlt tag="administration.resourceDrivers.changePassword"/></span>
+		</td>
+		</tr>
+		
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="serverName_ncp_netware">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.serverName"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="text" class="ss_text" size="70" name="serverName_ncp_netware" id="serverName_ncp_netware" maxlength="64"
+		  <c:if test="${!empty fsr}"> value="${fsr.serverName}" </c:if>
+		  >
+		</td>
+		</tr>
+	
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="serverIP_ncp_netware">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.serverIP"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="text" class="ss_text" size="70" name="serverIP_ncp_netware" id="serverIP_ncp_netware" maxlength="64"
+		  <c:if test="${!empty fsr}"> value="${fsr.serverIP}" </c:if>
+		  >
+		</td>
+		</tr>
+	
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="volume_ncp_netware">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.volume"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="text" class="ss_text" size="70" name="volume_ncp_netware" id="volume_ncp_netware" maxlength="64"
+		  <c:if test="${!empty fsr}"> value="${fsr.volume}" </c:if>
+		  >
+		</td>
+		</tr>
+	
+		</table>
+	  </div>
+
+	  <div style="padding-left:20px; <c:if test="${selectedType != 'ncp_oes'}"> display:none; </c:if>" 
+	    id="options_${formNumber}_ncp_oes"
+	  >
+		<table cellspacing="6" cellpadding="4">		
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="accountName_ncp_oes">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.accountName"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="text" class="ss_text" size="70" name="accountName_ncp_oes" id="accountName_ncp_oes" maxlength="64"
+		  <c:if test="${!empty fsr.accountName}"> value="${fsr.accountName}" </c:if>
+		  >
+		</td>
+		</tr>
+		
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="password_ncp_oes">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.accountPassword"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="password" class="ss_text" size="70" name="password_ncp_oes" id="password_ncp_oes" maxlength="64">
+		  <br/>
+		  <input type="checkbox" name="changePassword_ncp_oes">
+		  <span><ssf:nlt tag="administration.resourceDrivers.changePassword"/></span>
+		</td>
+		</tr>
+		
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="serverName_ncp_oes">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.serverDnsName"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="text" class="ss_text" size="70" name="serverName_ncp_oes" id="serverName_ncp_oes" maxlength="64"
+		  <c:if test="${!empty fsr}"> value="${fsr.serverName}" </c:if>
+		  >
+		</td>
+		</tr>
+	
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="serverIP_ncp_oes">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.serverIP"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="text" class="ss_text" size="70" name="serverIP_ncp_oes" id="serverIP_ncp_oes" maxlength="64"
+		  <c:if test="${!empty fsr}"> value="${fsr.serverIP}" </c:if>
+		  >
+		</td>
+		</tr>
+	
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="volume_ncp_oes">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.volume"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="text" class="ss_text" size="70" name="volume_ncp_oes" id="volume_ncp_oes" maxlength="64"
+		  <c:if test="${!empty fsr}"> value="${fsr.volume}" </c:if>
+		  >
+		</td>
+		</tr>
+	
+		</table>
+	  </div>
+
 	</div>
 	
 	<div style="margin:10px; padding-top:20px;">

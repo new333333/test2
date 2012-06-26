@@ -415,6 +415,10 @@ public interface ObjectKeys {
 	public static final String RESOURCE_DRIVER_HOST_URL = "hostUrl";
 	public static final String RESOURCE_DRIVER_ACCOUNT_NAME = "accountName";
 	public static final String RESOURCE_DRIVER_PASSWORD = "password";
+	public static final String RESOURCE_DRIVER_SHARE_NAME = "shareName";
+	public static final String RESOURCE_DRIVER_SERVER_NAME = "serverName";
+	public static final String RESOURCE_DRIVER_SERVER_IP = "serverIP";
+	public static final String RESOURCE_DRIVER_VOLUME = "volume";
 	
     //User and Principal objects
     public static final int USER_STATUS_DATABASE_FIELD_LENGTH = 256;
