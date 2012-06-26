@@ -92,14 +92,26 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource myFiles_large();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/sharedbyme.png")
+	public ImageResource sharedByMe();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/sharedbyme_36.png")
+	public ImageResource sharedByMe_medium();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/sharedbyme_48.png")
+	public ImageResource sharedByMe_large();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/shared.png")
-	public ImageResource shared();
+	public ImageResource sharedWithMe();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/shared_36.png")
-	public ImageResource shared_medium();
+	public ImageResource sharedWithMe_medium();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/shared_48.png")
-	public ImageResource shared_large();
+	public ImageResource sharedWithMe_large();
 }
