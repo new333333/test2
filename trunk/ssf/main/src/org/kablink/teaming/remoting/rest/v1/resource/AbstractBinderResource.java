@@ -209,6 +209,16 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return results;
     }
 
+    @DELETE
+    @Path("{id}/tags")
+    public void deleteTags(@PathParam("id") Long id) {
+        org.kablink.teaming.domain.Binder entry = _getBinder(id);
+        Collection<org.kablink.teaming.domain.Tag> tags = getBinderModule().getTags(entry);
+        for (org.kablink.teaming.domain.Tag tag : tags) {
+            getBinderModule().deleteTag(id, tag.getId());
+        }
+    }
+
     @GET
     @Path("{id}/tags/{tagId}")
     public Tag getTag(@PathParam("id") Long id, @PathParam("tagId") String tagId) {
