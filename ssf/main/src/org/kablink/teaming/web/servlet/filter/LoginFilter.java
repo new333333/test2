@@ -391,47 +391,10 @@ public class LoginFilter  implements Filter {
 
 			// Do we have a default home page for the logged in user?
 			binderId = homePageConfig.getDefaultHomePageId();
-			if (binderId != null) 
+			if ( binderId != null ) 
 			{
-				// Is guest access turned on?
-				if ( guestAccessAllowed() == true )
-				{
-					// Yes, does guest have access to the default landing page for logged-in users?
-					try
-					{
-						String url = null;
-						RunasCallback callback;
-						final Long defaultBinderId;
-						
-						defaultBinderId = binderId;
-						callback = new RunasCallback()
-						{
-							public Object doAs()
-							{
-								@SuppressWarnings("unused")
-								Binder binder;
-								
-								binder = getBinderModule().getBinder( defaultBinderId );
-								
-								// If we get here, guest as access to the default home page.
-								return PermaLinkUtil.getPermalink( req, defaultBinderId, EntityType.folder);
-							}
-						};
-						url = (String) RunasTemplate.runas(
-														callback,
-														WebHelper.getRequiredZoneName( req ),
-														WebHelper.getRequiredUserId( req ) );
-						
-						// If we get here guest has access to the guest default home page.
-						if ( url != null )
-							return url;
-					}
-					catch (Exception ex)
-					{
-						
-					}
-				}
-				// If we get here, guest does not have access to the logged-in user default home page.
+				// Yes
+				return PermaLinkUtil.getPermalink( req, binderId, EntityType.folder );
 			}
 		} else if (!WebHelper.isGuestLoggedIn(req)) {
 			//This user is logged in. Look for a default home page
