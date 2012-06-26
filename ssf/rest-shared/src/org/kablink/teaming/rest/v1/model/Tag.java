@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -62,6 +63,7 @@ public class Tag extends BaseRestObject {
 	    this.name = name;
 	}	
 
+    @XmlElement(name="public")
 	public Boolean isPublic() {
 		return isPublic;
 	}
