@@ -99,7 +99,7 @@ public class RelevanceDashboardHelper {
 			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
 			String relevanceTab = (String)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_TAB);
 			if (!(MiscUtil.hasString(relevanceTab))) {
-				if (Utils.checkIfVibeLite()) {
+				if (Utils.checkIfFilr()) {
 					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_FILESPACES;
 				} else {
 					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW;

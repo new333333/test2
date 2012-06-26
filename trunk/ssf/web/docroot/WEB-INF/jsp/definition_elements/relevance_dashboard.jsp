@@ -99,7 +99,7 @@ if (ss_getUserDisplayStyle() != "accessible") {
 	
 		<!-- CSS Tabs -->
 		<% /* If we are dealing with a Template Binder select the Overview tab as the default tab. */ %>
-		<ssf:ifNotVibeLite>
+		<ssf:ifNotFilr>
 			<c:if test="${usingTemplateBinder == 'true'}">
 				<c:set var="ssRDCurrentTab" value="overview" scope="request"/>
 			</c:if>
@@ -115,12 +115,12 @@ if (ss_getUserDisplayStyle() != "accessible") {
 					<c:set var="ssRDCurrentTab" value="overview" scope="request"/>
 				</c:if>
 			</c:if>
-		</ssf:ifNotVibeLite>
-		<ssf:ifVibeLite>
+		</ssf:ifNotFilr>
+		<ssf:ifFilr>
 		  <c:if test="${empty ssRDCurrentTab || ssRDCurrentTab == 'overview'}">
 		    <c:set var="ssRDCurrentTab" value="filespaces" scope="request"/>
 		  </c:if>
-		</ssf:ifVibeLite>
+		</ssf:ifFilr>
 		
 	<tr>
 	
@@ -155,7 +155,7 @@ if (ss_getUserDisplayStyle() != "accessible") {
 		</td>
 		</c:if>
 	
-		<ssf:ifVibeLite>
+		<ssf:ifFilr>
 		<ssf:ifLoggedIn>
 		<td>
 		<div
@@ -170,7 +170,7 @@ if (ss_getUserDisplayStyle() != "accessible") {
 			><span><ssf:nlt tag="relevance.tab.filespaces"/></span></a></div>
 		</td>
 		</ssf:ifLoggedIn>
-		</ssf:ifVibeLite>
+		</ssf:ifFilr>
 			
 		<% /* Only add the other tabs if we are not dealing with a Template Binder. */ %>
 		<c:if test="${usingTemplateBinder == 'false'}">
@@ -191,7 +191,7 @@ if (ss_getUserDisplayStyle() != "accessible") {
 		</td>
 
 		<% /* Tasks and Calendars Tab */ %>
-		<ssf:ifNotVibeLite>
+		<ssf:ifNotFilr>
 		<td>
 			<div
 				<c:choose>
@@ -204,10 +204,10 @@ if (ss_getUserDisplayStyle() != "accessible") {
 				onclick="ss_selectRelevanceTab(this, 'tasks_and_calendars', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
 				<span><ssf:nlt tag="relevance.tab.tasksAndCalendars"/></span></a></div>
 		</td>
-		</ssf:ifNotVibeLite>
+		</ssf:ifNotFilr>
 
 		<% /* Mini-blogs and Shared Items Tab */ %>
-		<ssf:ifNotVibeLite>
+		<ssf:ifNotFilr>
 		<td>
 			<div
 				<c:choose>
@@ -220,12 +220,12 @@ if (ss_getUserDisplayStyle() != "accessible") {
 				onclick="ss_selectRelevanceTab(this, 'miniblogs', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
 				<span><ssf:nlt tag="relevance.tab.miniblogs"/></span></a></div>
 		</td>
-		</ssf:ifNotVibeLite>
+		</ssf:ifNotFilr>
 		</ssf:ifLoggedIn>
 		</c:if>
 
 		<% /* Add the "Overview" tab as the first tab. */ %>
-		<ssf:ifNotVibeLite>
+		<ssf:ifNotFilr>
 		<td>
 		<div
 			<c:choose>
@@ -248,7 +248,7 @@ if (ss_getUserDisplayStyle() != "accessible") {
 			</a>
 		</div>
 		</td>
-		</ssf:ifNotVibeLite>
+		</ssf:ifNotFilr>
 
 		<td width="100%"></td>	
 		</tr>

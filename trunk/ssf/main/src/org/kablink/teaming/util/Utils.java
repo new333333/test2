@@ -560,15 +560,15 @@ public class Utils {
 		}
 	}
 	
-	//Routines that support Vibe Lite
+	//Routines that support Filr
 	
 	/**
-	 * Check if this is a Vibe Lite license
+	 * Check if this is a Filr license
 	 * 
 	 */
-	public static boolean checkIfVibeLite() {
-		if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.VibeLite") ||
-				SPropsUtil.getBoolean("UI.type.VibeLite", Boolean.FALSE)) {
+	public static boolean checkIfFilr() {
+		if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Filr") ||
+				SPropsUtil.getBoolean("UI.type.Filr", Boolean.FALSE)) {
 			return true;
 		} else {
 			return false;
@@ -576,34 +576,34 @@ public class Utils {
 	}
 	
 	/**
-	 * Check if this is Vibe Lite definition
+	 * Check if this is Filr definition
 	 * 
 	 */
-	public static boolean checkIfVibeLiteDefinition(Definition def) {
+	public static boolean checkIfFilrDefinition(Definition def) {
 		Document doc = def.getDefinition();
 		int defType = def.getType();
 		Element familyProperty = (Element) doc.getRootElement().selectSingleNode("//properties/property[@name='family']");
 		if (familyProperty != null) {
 			String family = familyProperty.attributeValue("value", "");
-			return checkIfVibeLiteFamily(defType, family);
+			return checkIfFilrFamily(defType, family);
 		}
 		return false;
 	}
 
-	public static boolean checkIfVibeLiteFamily(String type, String family) {
+	public static boolean checkIfFilrFamily(String type, String family) {
 		if (type.equals("familySelectboxFolder")) {
-			return Utils.checkIfVibeLiteFamily(Definition.FOLDER_VIEW, family);
+			return Utils.checkIfFilrFamily(Definition.FOLDER_VIEW, family);
 		} else if (type.equals("familySelectboxWorkspace")) {
-			return Utils.checkIfVibeLiteFamily(Definition.WORKSPACE_VIEW, family);
+			return Utils.checkIfFilrFamily(Definition.WORKSPACE_VIEW, family);
 		} else if (type.equals("familySelectboxEntry")) {
-			return Utils.checkIfVibeLiteFamily(Definition.FOLDER_ENTRY, family);
+			return Utils.checkIfFilrFamily(Definition.FOLDER_ENTRY, family);
 		} else if (type.equals("familySelectboxUserWorkspace")) {
-			return Utils.checkIfVibeLiteFamily(Definition.USER_WORKSPACE_VIEW, family);
+			return Utils.checkIfFilrFamily(Definition.USER_WORKSPACE_VIEW, family);
 		}
 		return false;
 	}
 
-	public static boolean checkIfVibeLiteFamily(int defType, String family) {
+	public static boolean checkIfFilrFamily(int defType, String family) {
 		if (defType == Definition.FOLDER_VIEW && family.equals(Definition.FAMILY_FILE)) {
 			return true;
 		} else if (defType == Definition.WORKSPACE_VIEW && family.equals(Definition.FAMILY_WORKSPACE)) {
@@ -620,13 +620,13 @@ public class Utils {
 	
    	//Validate a definition to see if it is allowed to be used
 	public static boolean validateDefinition(Definition def, Binder binder) {
-		if (!Utils.checkIfVibeLite()) return true;
+		if (!Utils.checkIfFilr()) return true;
 		
 		List<Definition> binderDefs = new ArrayList<Definition>();
 		if (binder != null) binderDefs = binder.getDefinitions();
 		
 		//Check if def allowed
-		if (binderDefs.contains(def) || checkIfVibeLiteDefinition(def)) {
+		if (binderDefs.contains(def) || checkIfFilrDefinition(def)) {
 			//This template is allowed
 			return true;
 		} else {
@@ -636,7 +636,7 @@ public class Utils {
 		
    	//Validate which definitions are allowed to be used
 	public static List<Definition> validateDefinitions(List<Definition> defs, Binder binder) {
-		if (!Utils.checkIfVibeLite()) return defs;
+		if (!Utils.checkIfFilr()) return defs;
 		
 		List<Definition> binderDefs = new ArrayList<Definition>();
 		if (binder != null) binderDefs = binder.getDefinitions();
@@ -644,7 +644,7 @@ public class Utils {
 		//Filter out any definitions that are not allowed
 		List<Definition> filteredList = new ArrayList<Definition>();
 		for (Definition def : defs) {
-			if (binderDefs.contains(def) || checkIfVibeLiteDefinition(def)) {
+			if (binderDefs.contains(def) || checkIfFilrDefinition(def)) {
 				//This template is allowed
 				filteredList.add(def);
 			}
@@ -654,7 +654,7 @@ public class Utils {
 		
    	//Validate which definitions by family type are allowed to be used
 	public static List<Definition> validateDefinitions(List<Definition> defs, Binder binder, List<String> familyTypes) {
-		if (!Utils.checkIfVibeLite()) return defs;
+		if (!Utils.checkIfFilr()) return defs;
 		
 		List<Definition> binderDefs = new ArrayList<Definition>();
 		if (binder != null) binderDefs = binder.getDefinitions();
@@ -672,7 +672,7 @@ public class Utils {
 				Element familyProperty = (Element) doc.getRootElement().selectSingleNode("//properties/property[@name='family']");
 				if (familyProperty != null) {
 					String family = familyProperty.attributeValue("value", "");
-					if (familyTypes.contains(family) && checkIfVibeLiteDefinition(def)) {
+					if (familyTypes.contains(family) && checkIfFilrDefinition(def)) {
 						//This template is allowed
 						filteredList.add(def);
 					}
@@ -684,7 +684,7 @@ public class Utils {
 		
    	//Validate that which templates are allowed to be used
 	public static List<TemplateBinder> validateTemplateBinders(List<TemplateBinder> binders) {
-		if (!Utils.checkIfVibeLite()) return binders;
+		if (!Utils.checkIfFilr()) return binders;
 		
 		//Filter out any templates that are not allowed
 		List<TemplateBinder> filteredList = new ArrayList<TemplateBinder>();
@@ -700,20 +700,20 @@ public class Utils {
    	//Validate that a template is allowed to be used
 	public static TemplateBinder validateTemplateBinder(TemplateBinder binder) {
 		if (binder == null) return null;
-		if (!Utils.checkIfVibeLite()) return binder;
+		if (!Utils.checkIfFilr()) return binder;
 		
-		//We are using Vibe Lite, so make sure the template is allowed
+		//We are using Filr, so make sure the template is allowed
 		//First, check the definitions used by the template
 		List<Definition> defs = binder.getDefinitions();
 		if (defs.isEmpty() || binder.isDefinitionsInherited()) {
 			Definition def = binder.getEntryDef();
 			if (def != null) {
-				if (!Utils.checkIfVibeLiteDefinition(def)) return null;
+				if (!Utils.checkIfFilrDefinition(def)) return null;
 			}
 			
 		} else {
 			for (Definition def:defs) {
-				if (!Utils.checkIfVibeLiteDefinition(def)) return null;
+				if (!Utils.checkIfFilrDefinition(def)) return null;
 			}
 		}
 		//Next, check all of the child binders

@@ -37,10 +37,10 @@
   <c:set var="ss_hideApplications" value="1" scope="request"/>
   <c:set var="isEntryACL" value="true" scope="request"/>
 </c:if>
-<c:set var="isVibeLite" value="false"/>
-<ssf:ifVibeLite>
-  <c:set var="isVibeLite" value="true"/>
-</ssf:ifVibeLite>
+<c:set var="isFilr" value="false"/>
+<ssf:ifFilr>
+  <c:set var="isFilr" value="true"/>
+</ssf:ifFilr>
 <div id="${ss_accessControlTableDivId}" class="ss_portlet ss_style ss_form">
 <TABLE class="ss_table">
 <THEAD>
@@ -126,7 +126,7 @@
   
 </TR>
 
-<c:if test="${!isVibeLite || !empty ssBinder.teamMemberIds}">
+<c:if test="${!isFilr || !empty ssBinder.teamMemberIds}">
 <TR>
   <TD class="ss_table_paragraph"></TD>
   <TD colSpan="2" class="ss_table_paragraph"><ssf:nlt tag="access.teamMembers"/></TD>

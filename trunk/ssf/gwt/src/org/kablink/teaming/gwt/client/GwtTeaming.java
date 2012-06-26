@@ -330,7 +330,7 @@ public class GwtTeaming implements EntryPoint
 		
 		// Are we loading the profile page?
 		final RootPanel usRootPanel = RootPanel.get( "gwtUserStatusDiv" );
-		if ( ( usRootPanel != null ) && ( !m_requestInfo.isVibeLite() ) )
+		if ( ( usRootPanel != null ) && ( !m_requestInfo.isFilr() ) )
 		{
 			// Yes!  Load the user status control's split point.
 			UserStatusControl.createAsync(

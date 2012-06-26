@@ -732,8 +732,8 @@ public class BuildDefinitionDivs extends TagSupport {
 								while (itSelections.hasNext()) {
 									Element selection = (Element) itSelections.next();
 									if (type.startsWith("familySelectbox") && 
-											Utils.checkIfVibeLite()) {
-										if (Utils.checkIfVibeLiteFamily(type, selection.attributeValue("name", ""))) {
+											Utils.checkIfFilr()) {
+										if (Utils.checkIfFilrFamily(type, selection.attributeValue("name", ""))) {
 											count++;
 											for (int i = 0; i < propertyValues.size(); i++) {
 												if (((String)propertyValues.get(i)).equals(selection.attributeValue("name", ""))) {
@@ -776,8 +776,8 @@ public class BuildDefinitionDivs extends TagSupport {
 							if (type.equals("selectbox") || type.startsWith("familySelectbox")) {
 								boolean allowed = true;
 								if (type.startsWith("familySelectbox") && 
-										Utils.checkIfVibeLite()) {
-									allowed = Utils.checkIfVibeLiteFamily(type, selection.attributeValue("name", ""));
+										Utils.checkIfFilr()) {
+									allowed = Utils.checkIfFilrFamily(type, selection.attributeValue("name", ""));
 								}
 								if (allowed) {
 									if (!selectedSeen && checked.equals("")) {
