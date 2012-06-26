@@ -759,8 +759,6 @@ public class Utils {
 	 */
 	public static String getIconNameTranslated(String iconName, IconSize size) {
 		String name = getIconNameTranslated(iconName);
-		return name;
-/*
 		String sizePart;
 		switch (size) {
 		default:
@@ -780,7 +778,5 @@ public class Utils {
 		} else {
 			return (name + sizePart);
 		}
-*/
 	}
-	
 }
