@@ -2874,19 +2874,27 @@ public class GwtServerHelper {
 			options.put( ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE );
 			options.put( ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1 );
 			
-			// Exclude allUsers from the search
+			// Exclude allUsers and allExtUsers from the search
 			{
 				Document searchFilter;
-				Element rootElement;
+				Element rootElement, orElement;
 				Element field;
 		    	Element child;
 	
 				searchFilter = DocumentHelper.createDocument();
 				rootElement = searchFilter.addElement( Constants.NOT_ELEMENT );
-				field = rootElement.addElement( Constants.FIELD_ELEMENT );
+				orElement = rootElement.addElement(Constants.OR_ELEMENT);
+				
+				field = orElement.addElement( Constants.FIELD_ELEMENT );
 		    	field.addAttribute( Constants.FIELD_NAME_ATTRIBUTE, Constants.GROUPNAME_FIELD );
 		    	child = field.addElement( Constants.FIELD_TERMS_ELEMENT );
 		    	child.setText( "allUsers" );
+		    	
+		    	field = orElement.addElement( Constants.FIELD_ELEMENT );
+		    	field.addAttribute( Constants.FIELD_NAME_ATTRIBUTE, Constants.GROUPNAME_FIELD );
+		    	child = field.addElement( Constants.FIELD_TERMS_ELEMENT );
+		    	child.setText( "allExtUsers" );
+		    	
 		    	options.put( ObjectKeys.SEARCH_FILTER_AND, searchFilter );
 			}
 	

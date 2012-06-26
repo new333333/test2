@@ -194,18 +194,19 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
 		//get them all
 		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
-		//Exclude allUsers from the search 
+		//Exclude allUsers and allExtUsers from the search 
 		Document searchFilter = DocumentHelper.createDocument();
 		
 		Element rootElement = searchFilter.addElement(Constants.NOT_ELEMENT);
-		Element field = rootElement.addElement(Constants.FIELD_ELEMENT);
+		Element orElement = rootElement.addElement(Constants.OR_ELEMENT);
+		
+		Element field = orElement.addElement(Constants.FIELD_ELEMENT);
     	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.GROUPNAME_FIELD);
     	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     	child.setText(allIndividualsGroupName());
     	
     	if(allExtIndividualsGroupName() != null) {
-			rootElement = searchFilter.addElement(Constants.NOT_ELEMENT);
-			field = rootElement.addElement(Constants.FIELD_ELEMENT);
+			field = orElement.addElement(Constants.FIELD_ELEMENT);
 	    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.GROUPNAME_FIELD);
 	    	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 	    	child.setText(allExtIndividualsGroupName());
