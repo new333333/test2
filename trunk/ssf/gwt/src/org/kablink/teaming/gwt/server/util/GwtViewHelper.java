@@ -156,6 +156,7 @@ import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.DateComparer;
+import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
@@ -1215,9 +1216,8 @@ public class GwtViewHelper {
 				if (null != binder) {
 					// Yes!  Store its icon names...
 					fr.setBinderIcon(binder.getIconName(), BinderIconSize.SMALL);
-//!					...this needs to be implemented...
-//!					fr.setBinderIcon(binder.getIconName(IconSize.MEDIUM), BinderIconSize.MEDIUM);	// Fix when APIs for getting medium...
-//!					fr.setBinderIcon(binder.getIconName(IconSize.LARGE),  BinderIconSize.LARGE );	// ...and large icons are there.
+					fr.setBinderIcon(binder.getIconName(IconSize.MEDIUM), BinderIconSize.MEDIUM);
+					fr.setBinderIcon(binder.getIconName(IconSize.LARGE ), BinderIconSize.LARGE );
 
 					// ...and the user's rights to that Binder.
 					fr.setCanModify(bm.testAccess(binder, BinderOperation.modifyBinder   ));
