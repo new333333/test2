@@ -74,7 +74,7 @@
 		.vibe-entryMenu-filtersPanel        {vertical-align: top; padding-right: 8px; margin-top: 6px;}
 		.vibe-entryMenu-grid                {padding: 0px !important; background-color: #ededed; display: table; table-layout: fixed;}
 		.vibe-entryMenu-quickFilters-filter {}
-		.vibe-entryMenu-quickFilters-panel  {vertical-align: top; padding: 0 0 0 5px; margin-top: 3px; border-left: none; height: 19px; white-space: nowrap; background-color: #fff; border: 1px solid #b8b8b8; -moz-border-radius: 15px; border-radius: 15px; -webkit-border-radius: 15px;}
+		.vibe-entryMenu-quickFilters-panel  {vertical-align: top; padding: 0 0 0 5px; margin-top: 1px; border-left: none; height: 19px; white-space: nowrap; background-color: #fff; border: 1px solid #b8b8b8; -moz-border-radius: 15px; border-radius: 15px; -webkit-border-radius: 15px;}
 		.vibe-entryMenu-rightPanel          {padding-right: 5px; margin-right: 3px;}
 /* ...End:  Entry menu panel styles. */
 	
