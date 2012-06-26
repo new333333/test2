@@ -219,6 +219,18 @@ public class ResourceDriverModuleImpl extends CommonDependencyInjection implemen
 			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_PASSWORD)) {
 			   		newResourceDriver.setPassword((String)options.get(ObjectKeys.RESOURCE_DRIVER_PASSWORD));
 			   	}
+			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_SERVER_NAME)) {
+			   		newResourceDriver.setServerName((String)options.get(ObjectKeys.RESOURCE_DRIVER_SERVER_NAME));
+			   	}
+			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_SERVER_IP)) {
+			   		newResourceDriver.setServerIP((String)options.get(ObjectKeys.RESOURCE_DRIVER_SERVER_IP));
+			   	}
+			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_SHARE_NAME)) {
+			   		newResourceDriver.setShareName((String)options.get(ObjectKeys.RESOURCE_DRIVER_SHARE_NAME));
+			   	}
+			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_VOLUME)) {
+			   		newResourceDriver.setVolume((String)options.get(ObjectKeys.RESOURCE_DRIVER_VOLUME));
+			   	}
 				getCoreDao().save(newResourceDriver);
 				
 				//Set up the access controls for this new resource driver
@@ -295,6 +307,18 @@ public class ResourceDriverModuleImpl extends CommonDependencyInjection implemen
 			   	}
 			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_PASSWORD)) {
 			   		rdc.setPassword((String)options.get(ObjectKeys.RESOURCE_DRIVER_PASSWORD));
+			   	}
+			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_SERVER_NAME)) {
+			   		rdc.setServerName((String)options.get(ObjectKeys.RESOURCE_DRIVER_SERVER_NAME));
+			   	}
+			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_SERVER_IP)) {
+			   		rdc.setServerIP((String)options.get(ObjectKeys.RESOURCE_DRIVER_SERVER_IP));
+			   	}
+			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_SHARE_NAME)) {
+			   		rdc.setShareName((String)options.get(ObjectKeys.RESOURCE_DRIVER_SHARE_NAME));
+			   	}
+			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_VOLUME)) {
+			   		rdc.setVolume((String)options.get(ObjectKeys.RESOURCE_DRIVER_VOLUME));
 			   	}
 				getCoreDao().save(rdc);
     			return null;

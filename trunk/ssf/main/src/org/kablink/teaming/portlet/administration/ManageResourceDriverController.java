@@ -98,11 +98,11 @@ public class ManageResourceDriverController extends SAbstractController {
 					options.put(ObjectKeys.RESOURCE_DRIVER_READ_ONLY, readonly);
 					
 					//Is there a Host URL 
-					String hostUrl = PortletRequestUtils.getStringParameter(request, "hostUrl", "");
+					String hostUrl = PortletRequestUtils.getStringParameter(request, "hostUrl_"+driverType, "");
 					options.put(ObjectKeys.RESOURCE_DRIVER_HOST_URL, hostUrl);
 					
 					//Allow self signed certificates? 
-					Boolean allowSelfSignedCertificate = PortletRequestUtils.getBooleanParameter(request, "allowSelfSignedCertificate", Boolean.FALSE);
+					Boolean allowSelfSignedCertificate = PortletRequestUtils.getBooleanParameter(request, "allowSelfSignedCertificate_"+driverType, Boolean.FALSE);
 					options.put(ObjectKeys.RESOURCE_DRIVER_ALLOW_SELF_SIGNED_CERTIFICATE, allowSelfSignedCertificate);
 					
 					//Always prevent the top level folder from being deleted
@@ -111,14 +111,30 @@ public class ManageResourceDriverController extends SAbstractController {
 					options.put(ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE, Boolean.FALSE);
 					
 					//Is there an account name 
-					String accountName = PortletRequestUtils.getStringParameter(request, "accountName", "");
+					String accountName = PortletRequestUtils.getStringParameter(request, "accountName_"+driverType, "");
 					options.put(ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, accountName);
 					
 					//Is there a password 
-					String password = PortletRequestUtils.getStringParameter(request, "password", "");
+					String password = PortletRequestUtils.getStringParameter(request, "password_"+driverType, "");
 					if (!password.equals("")) {
 						options.put(ObjectKeys.RESOURCE_DRIVER_PASSWORD, password);
 					}
+					
+					//Is there a server name 
+					String serverName = PortletRequestUtils.getStringParameter(request, "serverName_"+driverType, "");
+					options.put(ObjectKeys.RESOURCE_DRIVER_SERVER_NAME, serverName);
+					
+					//Is there a server IP address 
+					String serverIP = PortletRequestUtils.getStringParameter(request, "serverIP_"+driverType, "");
+					options.put(ObjectKeys.RESOURCE_DRIVER_SERVER_IP, serverIP);
+					
+					//Is there an share name 
+					String shareName = PortletRequestUtils.getStringParameter(request, "shareName_"+driverType, "");
+					options.put(ObjectKeys.RESOURCE_DRIVER_SHARE_NAME, shareName);
+					
+					//Is there an volume name 
+					String volume = PortletRequestUtils.getStringParameter(request, "volume_"+driverType, "");
+					options.put(ObjectKeys.RESOURCE_DRIVER_VOLUME, volume);
 					
 					//Get who is allowed to manage this 
 					Set<Long> groupIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addedGroups"));
@@ -147,11 +163,11 @@ public class ManageResourceDriverController extends SAbstractController {
 					options.put(ObjectKeys.RESOURCE_DRIVER_READ_ONLY, readonly);
 					
 					//Is there a Host URL 
-					String hostUrl = PortletRequestUtils.getStringParameter(request, "hostUrl", "");
+					String hostUrl = PortletRequestUtils.getStringParameter(request, "hostUrl_"+driverType, "");
 					options.put(ObjectKeys.RESOURCE_DRIVER_HOST_URL, hostUrl);
 					
 					//Allow self signed certificates? 
-					Boolean allowSelfSignedCertificate = PortletRequestUtils.getBooleanParameter(request, "allowSelfSignedCertificate", Boolean.FALSE);
+					Boolean allowSelfSignedCertificate = PortletRequestUtils.getBooleanParameter(request, "allowSelfSignedCertificate_"+driverType, Boolean.FALSE);
 					options.put(ObjectKeys.RESOURCE_DRIVER_ALLOW_SELF_SIGNED_CERTIFICATE, allowSelfSignedCertificate);
 					
 					//Always prevent the top level folder from being deleted
@@ -160,15 +176,31 @@ public class ManageResourceDriverController extends SAbstractController {
 					options.put(ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE, Boolean.FALSE);
 					
 					//Is there an account name 
-					String accountName = PortletRequestUtils.getStringParameter(request, "accountName", "");
+					String accountName = PortletRequestUtils.getStringParameter(request, "accountName_"+driverType, "");
 					options.put(ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, accountName);
 					
 					//Is there a password 
-					String password = PortletRequestUtils.getStringParameter(request, "password", "");
-					boolean changePassword = PortletRequestUtils.getBooleanParameter(request, "changePassword", Boolean.FALSE);
+					String password = PortletRequestUtils.getStringParameter(request, "password_"+driverType, "");
+					Boolean changePassword = PortletRequestUtils.getBooleanParameter(request, "changePassword_"+driverType, Boolean.FALSE);
 					if (changePassword) {
 						options.put(ObjectKeys.RESOURCE_DRIVER_PASSWORD, password);
 					}
+					
+					//Is there a server name 
+					String serverName = PortletRequestUtils.getStringParameter(request, "serverName_"+driverType, "");
+					options.put(ObjectKeys.RESOURCE_DRIVER_SERVER_NAME, serverName);
+					
+					//Is there a server IP address 
+					String serverIP = PortletRequestUtils.getStringParameter(request, "serverIP_"+driverType, "");
+					options.put(ObjectKeys.RESOURCE_DRIVER_SERVER_IP, serverIP);
+					
+					//Is there an share name 
+					String shareName = PortletRequestUtils.getStringParameter(request, "shareName_"+driverType, "");
+					options.put(ObjectKeys.RESOURCE_DRIVER_SHARE_NAME, shareName);
+					
+					//Is there an volume name 
+					String volume = PortletRequestUtils.getStringParameter(request, "volume_"+driverType, "");
+					options.put(ObjectKeys.RESOURCE_DRIVER_VOLUME, volume);
 					
 					//Get who is allowed to manage this 
 					Set<Long> groupIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addedGroups"));

@@ -51,10 +51,17 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	private String rootPath;
 	private String accountName;
 	private String password; //set by hibernate access="field" type="encrypted"
+	private String shareName;
+	private String serverName;
+	private String serverIP;
+	private String volume;
 		
 	public enum DriverType {
 		filesystem (0),
-		webdav (1);
+		webdav (1),
+		cifs (2),
+		ncp_netware (3),
+		ncp_oes (4);
 		int dtValue;
 		DriverType(int dtValue) {
 			this.dtValue = dtValue;
@@ -64,6 +71,9 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 			switch (type) {
 			case 0: return DriverType.filesystem;
 			case 1: return DriverType.webdav;
+			case 2: return DriverType.cifs;
+			case 3: return DriverType.ncp_netware;
+			case 4: return DriverType.ncp_oes;
 			default: return DriverType.filesystem;
 			}
 		}
@@ -234,6 +244,38 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	@Override
 	public Set<Long> getChildWorkAreas() {
 		return null;
+	}
+
+	public String getShareName() {
+		return shareName;
+	}
+
+	public void setShareName(String shareName) {
+		this.shareName = shareName;
+	}
+
+	public String getServerName() {
+		return serverName;
+	}
+
+	public void setServerName(String serverName) {
+		this.serverName = serverName;
+	}
+
+	public String getServerIP() {
+		return serverIP;
+	}
+
+	public void setServerIP(String serverIP) {
+		this.serverIP = serverIP;
+	}
+
+	public String getVolume() {
+		return volume;
+	}
+
+	public void setVolume(String volume) {
+		this.volume = volume;
 	}
 	
 	
