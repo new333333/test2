@@ -364,9 +364,9 @@ public class RequestInfo extends JavaScriptObject
 	 * 
 	 * @return
 	 */
-	public final native boolean isVibeLite()
+	public final native boolean isFilr()
 	/*-{
-		return (this.getBFromS( this.isVibeLite ));
+		return (this.getBFromS( this.isFilr ));
 	}-*/;
 
 	/**

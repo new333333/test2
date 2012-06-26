@@ -41,7 +41,7 @@
 <!-- The accessory panel can only be displayed once in a page. -->
 <!-- If the accessory panel has already been loaded then don't display it again. -->
 <c:set var="ss_dashboardComponentNumber" value="0" scope="request"/>
-<ssf:ifNotVibeLite>
+<ssf:ifNotFilr>
   <c:choose>
 	<c:when test="${empty accessory_panel_loaded}">
 		<c:set var="accessory_panel_loaded" value="true" scope="request"/>
@@ -276,4 +276,4 @@ ss_createOnLayoutChangeObj('ss_resizeDashboardCanvas',
 		<ssf:nlt tag="workspace.accessoryPanel.moreThanOne" />
 	</c:otherwise>
   </c:choose>
-</ssf:ifNotVibeLite>
+</ssf:ifNotFilr>

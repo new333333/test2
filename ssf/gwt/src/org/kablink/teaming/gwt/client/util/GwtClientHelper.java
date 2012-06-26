@@ -683,7 +683,7 @@ public class GwtClientHelper {
 	 */
 	public static boolean isFilr() {
 		RequestInfo ri = getRequestInfo();
-		return ((null != ri) && ri.isVibeLite());
+		return ((null != ri) && ri.isFilr());
 	}
 
 	/**

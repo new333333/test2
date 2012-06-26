@@ -1159,9 +1159,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								type.equals("folderSelect") || type.equals("locale")) {
 							newPropertyEle.addAttribute("value", value);
 						} else if (type.startsWith("familySelectbox")) {
-							if (Utils.checkIfVibeLite()) {
-								//This is Vibe Lite, check for a valid family type
-								if (!Utils.checkIfVibeLiteFamily(type, value)) {
+							if (Utils.checkIfFilr()) {
+								//This is Filr, check for a valid family type
+								if (!Utils.checkIfFilrFamily(type, value)) {
 									throw new DefinitionInvalidException("definition.error.familyInvalid");
 								}
 							}

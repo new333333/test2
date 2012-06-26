@@ -993,13 +993,13 @@
 	</tag>
 
 	<tag>
-		<name>ifVibeLite</name>
-		<tag-class>org.kablink.teaming.taglib.IfVibeLite</tag-class>
+		<name>ifFilr</name>
+		<tag-class>org.kablink.teaming.taglib.IfFilr</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	<tag>
-		<name>ifNotVibeLite</name>
-		<tag-class>org.kablink.teaming.taglib.IfNotVibeLite</tag-class>
+		<name>ifNotFilr</name>
+		<tag-class>org.kablink.teaming.taglib.IfNotFilr</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	

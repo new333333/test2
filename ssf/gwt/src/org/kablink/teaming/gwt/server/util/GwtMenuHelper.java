@@ -2371,7 +2371,7 @@ public class GwtMenuHelper {
 				if ((null != binder) && (EntityIdentifier.EntityType.profiles != binder.getEntityType())) {				
 					// Yes!  Can the user work with teams on this
 					// binder?
-					if ((!(Utils.checkIfVibeLite())) || (0 < binder.getTeamMemberIds().size())) {
+					if ((!(Utils.checkIfFilr())) || (0 < binder.getTeamMemberIds().size())) {
 						// Yes!  Then the user is allowed to view team membership.
 						reply.setViewAllowed(true);
 		

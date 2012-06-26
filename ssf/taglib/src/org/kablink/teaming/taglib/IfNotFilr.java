@@ -40,13 +40,13 @@ import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.util.Utils;
 
 
-public class IfVibeLite extends TagSupport {
+public class IfNotFilr extends TagSupport {
 
 	private static final long serialVersionUID = 1L;
 	
 	public int doStartTag() throws JspException {
 		HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
-		if (Utils.checkIfVibeLite()) {
+		if (!Utils.checkIfFilr()) {
 			return EVAL_BODY_INCLUDE;
 		}
 		else {
