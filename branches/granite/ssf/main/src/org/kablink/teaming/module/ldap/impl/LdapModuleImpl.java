@@ -586,6 +586,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		String[] ldapAttributesToRead;
 		String ldapGuidAttribute;
 
+		logger.info( "In syncGuidAttributeForAllUsers()" );
 		// usersToUpdate will hold the users that need to be updated and the attributes to update.
 		// The key is the user's id and the value is the map of attributes.
 		usersToUpdate = new HashMap();
@@ -602,6 +603,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		ldapAttributesToRead = new String[2];
 		ldapAttributesToRead[0] = ldapConfig.getUserIdAttribute();
 		ldapAttributesToRead[1] = ldapGuidAttribute;
+		
+		modifiedUsersSyncResults = null;
+		if ( syncResults != null )
+		{
+			// Yes
+			modifiedUsersSyncResults = syncResults.getModifiedUsers();
+		}
 		
 		// Go through each user search criteria
 		for ( LdapConnectionConfig.SearchInfo searchInfo : ldapConfig.getUserSearches() )
@@ -694,34 +702,32 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							userMods.put( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID, guid );
 							
 							// Add this user to our list of users that need to be updated.
+							logger.info( "adding user to list of users to update: " + teamingName );
 							usersToUpdate.put( teamingId, userMods );
+							
+							// Update every 100 users
+							if ( usersToUpdate.size() > 99 )
+							{
+								logger.info( "about to call updateUsers()" );
+								updateUsers( zoneId, usersToUpdate, modifiedUsersSyncResults );
+								logger.info( "back from updateUsers()" );
+								
+								usersToUpdate.clear();
+							}
 						}
 					}// end while()
 				}// end try
-		  		catch (NamingException ex)
+		  		catch (Exception ex)
 		  		{
-		  			LdapSyncException	ldapSyncEx;
-
-		  			// Yes
 		  			logError( NLT.get( "errorcode.ldap.context" ), ex );
-		  			
-		  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
-		  			// the LdapConnectionConfig object that was being used when the error happened.
-		  			ldapSyncEx = new LdapSyncException( ldapConfig, ex );
-		  			throw ldapSyncEx;
 		  		}
 			}
 		}// end for()
 
-		modifiedUsersSyncResults = null;
-		if ( syncResults != null )
-		{
-			// Yes
-			modifiedUsersSyncResults = syncResults.getModifiedUsers();
-		}
-		
 		// Update the users with the guid from the ldap directory.
+		logger.info( "about to call updateUsers()" );
 		updateUsers( zoneId, usersToUpdate, modifiedUsersSyncResults );
+		logger.info( "back from updateUsers()" );
 		
     }// end syncGuidAttributeForAllUsers()
     
@@ -828,17 +834,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						}
 					}// end while()
 				}// end try
-		  		catch (NamingException ex)
+		  		catch (Exception ex)
 		  		{
-		  			LdapSyncException	ldapSyncEx;
-
-		  			// Yes
 		  			logError( NLT.get( "errorcode.ldap.context" ), ex );
-		  			
-		  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
-		  			// the LdapConnectionConfig object that was being used when the error happened.
-		  			ldapSyncEx = new LdapSyncException( ldapConfig, ex );
-		  			throw ldapSyncEx;
 		  		}
 			}
 		}// end for()
@@ -913,10 +911,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				ldapContext = getContext( zoneId, nextLdapConfig, false );
 				
 				// Sync the guid attributes for all users.
+				logger.info( "about to call syncGuidAttributeForAllUsers()" );
 				syncGuidAttributeForAllUsers( nextLdapConfig, ldapContext, userMap, syncResults );
+				logger.info( "back from syncGuidAttributeForAllUsers()" );
 				
 				// Sync the guid attribute for all groups.
+				logger.info( "about to call syncGuidAttributeForAllGroups()" );
 				syncGuidAttributeForAllGroups( nextLdapConfig, ldapContext, syncResults );
+				logger.info( "back from syncGuidAttributeForAllGroups()" );
 			}// end try
 	  		catch (NamingException ex)
 	  		{
@@ -1211,9 +1213,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			m_zoneSyncInProgressMap.put( zone.getId(), Boolean.TRUE );
 			
+
 			// Sync guids if called for.
 			if ( syncGuids == true )
+			{
+				logger.info( "about to call syncGuidAttributeForAllUsersAndGroups()" );
 				syncGuidAttributeForAllUsersAndGroups( syncResults );
+				logger.info( "back from syncGuidAttributeForAllUsersAndGroups()" );
+			}
 			
 			// If we don't need to sync users and groups then bail.
 			if ( syncUsersAndGroups == false )
