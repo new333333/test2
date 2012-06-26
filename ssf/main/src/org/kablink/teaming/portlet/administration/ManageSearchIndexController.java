@@ -59,6 +59,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.StatusTicket;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
@@ -195,12 +196,11 @@ public class ManageSearchIndexController extends  SAbstractController {
        	users.addAttribute("title", NLT.get("administration.profile.content"));
     	users.addAttribute("id", usersAndGroups);
 		String icon = p.getIconName();
-		String imageBrand = SPropsUtil.getString("branding.prefix");
 		if (Validator.isNull(icon)) {
-	    	users.addAttribute("image", "/" + imageBrand + "/icons/profiles.gif");
+	    	users.addAttribute("image", Utils.getIconNameTranslated("/icons/profiles.gif"));
 			users.addAttribute("imageClass", "ss_twImg");
 		} else {
-			users.addAttribute("image", "/" + imageBrand + icon);
+			users.addAttribute("image", Utils.getIconNameTranslated(icon));
 			users.addAttribute("imageClass", "ss_twIcon");
 		}
 		users.addAttribute("url", "");
