@@ -73,6 +73,8 @@ import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.liferay.util.Validator;
+
 
 public class AuthenticationManagerImpl implements AuthenticationManager,InitializingBean {
 	protected Log logger = LogFactory.getLog(getClass());
@@ -175,10 +177,15 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			if (!hadSession)
 				SessionUtil.sessionStartup();	
 			
-			if(isExternalUser(identitySource))
+			if(isExternalUser(identitySource)) {
 				user = doAuthenticateExternalUser(zoneName, userName);
-			else 
+				// If you're still here, it means that the corresponding user object was found in the database.
+				if(!synchronizeProfilesOnLoginForExternalUsers())
+					updates.clear(); // Clear all attributes
+			}
+			else { 
 				user = doAuthenticateInternalUser(zoneName, userName, password, passwordAutoSynch, ignorePassword);
+			}
 			//Make sure this user account hasn't been disabled
 			if (!user.isActive() && !MiscUtil.isSystemUserAccount( userName )) {
 				//This account is not active
@@ -186,7 +193,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			}
 			if (updates != null && !updates.isEmpty()) { // There are some update data
 				if(identitySource != null) {
-					if(identitySource.intValue() == User.IDENTITY_SOURCE_LDAP || identitySource.intValue() == User.IDENTITY_SOURCE_EXTERNAL)
+					if(identitySource.intValue() != User.IDENTITY_SOURCE_LOCAL)
 						syncUser = true;
 				}
 				else { // This means either LDAP or LOCAL. We have to fall back to the old mechanism for making determination.
@@ -208,6 +215,21 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		} 
 		catch (UserDoesNotExistException nu) {
  			if (createUser) {
+ 				if(isExternalUser(identitySource)) {
+ 					if(!synchronizeProfilesOnSelfProvisionForExternalUsers()) {
+ 						// Don't allow profile sync upon self-provisioning. We will only store email address.
+ 						removeEverythingButEmailAddress(updates);
+ 					}
+ 			 		// Make sure foreign name is identical to name.
+ 					updates.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, userName);
+ 					// For external users, there's no need for separate step for synchronizing profile info
+ 					// because all the information is already ready and presented to the method that creates the user.
+ 					syncUser = false;
+ 				}
+ 				else {
+ 					syncUser = true;
+ 				}
+ 				
  				user=getProfileModule().addUserFromPortal(
  						// It is NOT possible for system to authenticate a local user against Vibe database 
  						// unless the user record already exists in the database. So, if the authentication
@@ -219,8 +241,6 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
  						userName, password, updates, null);
  				if(user == null)
  					throw nu;
-
- 				syncUser = true;
  				
  				if(authenticatorName != null)
  					getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
@@ -273,6 +293,23 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
  		}
  	}
  	
+	
+	private boolean synchronizeProfilesOnLoginForExternalUsers() {
+		return SPropsUtil.getBoolean("external.user.synchronize.profiles.on.login", false);
+	}
+
+	private boolean synchronizeProfilesOnSelfProvisionForExternalUsers() {
+		return SPropsUtil.getBoolean("external.user.synchronize.profiles.on.self.provision", true);		
+	}
+	
+	private void removeEverythingButEmailAddress(Map<String,String> updates) {
+		if(updates == null) return;
+		String emailAddress = updates.get("emailAddress");
+		updates.clear();
+		if(Validator.isNotNull(emailAddress))
+			updates.put("emailAddress", emailAddress);
+	}
+	
 	public User authenticate(String zoneName, String username, String password,
 			boolean passwordAutoSynch, boolean ignorePassword, String authenticatorName)
 		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException, UserMismatchException {

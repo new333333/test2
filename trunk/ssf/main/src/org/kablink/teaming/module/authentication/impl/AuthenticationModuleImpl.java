@@ -561,7 +561,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 			return ((IdentitySourceObtainable)authentication).getIdentitySource();
 		}
 		else if(authentication instanceof OpenIDAuthenticationToken) {
-			// When authentication is done by OpenID provider, the identity source is always OpenID.
+			// When authentication is done by OpenID provider, the identity source is always external.
 			return User.IDENTITY_SOURCE_EXTERNAL;
 		}
 		else {
