@@ -80,7 +80,10 @@ public class AccessoriesPanel extends ToolPanelBase
 		JspLayoutChangedEvent.Handler,
 		ShowAccessoriesEvent.Handler
 {
+	private boolean						m_executeJavaScripOnAttach;	//
+	private boolean						m_panelAttached;			//
 	private boolean						m_notifyOnReady;			// true -> Notify the container when this panel is ready.  false -> Don't.
+	private HTMLPanel					m_htmlPanel;				//
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private VibeFlowPanel				m_fp;						// The panel holding the AccessoryPanel's contents.
 	private String						m_binderId;					//
@@ -241,13 +244,17 @@ public class AccessoriesPanel extends ToolPanelBase
 	 * Synchronously loads the next part of the accessories panel.
 	 */
 	private void loadPart3Now() {
-		if (m_html != null && !m_html.equals("")) {
-			HTMLPanel hp = new HTMLPanel(m_html);
-			m_fp.add(hp);
+		// Do we have any HTML for the accessories?
+		if (GwtClientHelper.hasString(m_html)) {
+			// Yes!  Embed it in an HTML panel in this accessories
+			// panel...
+			m_htmlPanel = new HTMLPanel(m_html);
+			m_fp.add(m_htmlPanel);
 			
-			// Make sure any JavaScript inside the accessory panel gets
-			// executed as needed.
-			GwtClientHelper.jsExecuteJavaScript( hp.getElement() );
+			// ...and make sure any JavaScript inside it gets executed.
+			if (m_panelAttached)
+			     executeJavaScriptAsync();
+			else m_executeJavaScripOnAttach = true;
 		}
 		
 		// ...and if we need to...
@@ -284,6 +291,26 @@ public class AccessoriesPanel extends ToolPanelBase
 		});
 	}
 
+	/*
+	 * Asynchronously executes the JavaScript in the HTML panel.
+	 */
+	private void executeJavaScriptAsync() {
+		ScheduledCommand doExecute = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				executeJavaScriptNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doExecute);
+	}
+	
+	/*
+	 * Asynchronously executes the JavaScript in the HTML panel.
+	 */
+	private void executeJavaScriptNow() {
+		GwtClientHelper.jsExecuteJavaScript(m_htmlPanel.getElement());
+	}
+	
 	/*
 	 * Asynchronously causes the the accessories panel to be hidden.
 	 */
@@ -341,6 +368,15 @@ public class AccessoriesPanel extends ToolPanelBase
 		// Let the widget attach and then register our event handlers.
 		super.onAttach();
 		registerEvents();
+		m_panelAttached = true;
+		
+		// Do we need to execute the accessories JavaScript on the
+		// attach?
+		if (m_executeJavaScripOnAttach) {
+			// Yes!  Execute it.
+			m_executeJavaScripOnAttach = false;
+			executeJavaScriptAsync();
+		}
 	}
 	
 	/**
@@ -354,6 +390,7 @@ public class AccessoriesPanel extends ToolPanelBase
 		// handlers.
 		super.onDetach();
 		unregisterEvents();
+		m_panelAttached = false;
 	}
 	
 	/**
