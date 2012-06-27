@@ -257,7 +257,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		
 		// Build OpenID authentication provider
 		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
-		if(zoneConfig.getAuthenticationConfig().getOpenidEnabled()) {
+		if(zoneConfig.getAuthenticationConfig().getOpenidAuthenticationEnabled()) {
 			providers.add(createOpenIDAuthenticationProvider());
 		}
 		
@@ -462,7 +462,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		     				passwordAutoSynch = false;
 		     				ignorePassword = true;
 		     				ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zone);
-		     				if(zoneConfig.getAuthenticationConfig().getOpenidSelfProvisioningEnabled())
+		     				if(zoneConfig.getOpenidConfig().getSelfProvisioningEnabled())
 		     					createUser = true;
 		     				else
 		     					createUser = false;
