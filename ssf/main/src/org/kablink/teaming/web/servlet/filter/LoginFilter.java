@@ -68,6 +68,7 @@ import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -363,6 +364,7 @@ public class LoginFilter  implements Filter {
 						defaultBinderId = binderId;
 						callback = new RunasCallback()
 						{
+							@Override
 							public Object doAs()
 							{
 								@SuppressWarnings("unused")
@@ -447,7 +449,12 @@ public class LoginFilter  implements Filter {
 		return (String) RunasTemplate.runasAdmin(new RunasCallback() {
 			@Override
 			public Object doAs() {
-				return PermaLinkUtil.getUserPermalink(req, userId, GwtUIHelper.isActivityStreamOnLogin());
+				return
+					PermaLinkUtil.getUserPermalink(
+						req,
+						userId,
+						GwtUIHelper.isActivityStreamOnLogin(),
+						Utils.checkIfFilr());
 			}
 		}, WebHelper.getRequiredZoneName(req));									
 	}

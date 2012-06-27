@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client;
 
 import java.util.ArrayList;
@@ -151,7 +150,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.RootPanel;
-
 
 /**
  * This widget will display the main Vibe page.
@@ -581,12 +579,20 @@ public class GwtMainPage extends ResizeComposite
 		m_contentLayoutPanel.addStyleName( "contentLayoutPanel" );
 		m_splitLayoutPanel.add( m_contentLayoutPanel );
 		
-		// Do we have a url we should set the ContentControl to?
+		// Do we have a URL we should set the ContentControl to?
 		url = m_requestInfo.getAdaptedUrl();
-		if ( url != null && url.length() > 0 )
+		if ( GwtClientHelper.hasString( url ) )
 		{
-			// Yes
-			gotoUrlAsync( m_requestInfo.getAdaptedUrl() );
+			// Yes!  If we're supposed to show a collection at login...
+			String showCollectionOnLogin = m_requestInfo.getShowCollectionOnLogin();
+			if ( GwtClientHelper.hasString( showCollectionOnLogin ) )
+			{
+				// ...add it to the URL...
+				url += ( "&showCollection=" + showCollectionOnLogin);
+			}
+			
+			// ...and put the URL into affect.
+			gotoUrlAsync( url );
 		}
 		
 		// Is the user logged in?
