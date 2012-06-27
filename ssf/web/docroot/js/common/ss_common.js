@@ -5932,9 +5932,9 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, imURL, sweepTime, 
     if (self.document.images["ppgimsg"+ssNamespace]) {
         self.document.images["ppgimsg"+ssNamespace].src = ss_presencePopupGraphics["imsg"].src;
     }
-    if (self.document.images["ppgimtg"+ssNamespace]) {
-        self.document.images["ppgimtg"+ssNamespace].src = ss_presencePopupGraphics["imtg"].src;
-    }
+    //if (self.document.images["ppgimtg"+ssNamespace]) {
+        //self.document.images["ppgimtg"+ssNamespace].src = ss_presencePopupGraphics["imtg"].src;
+    //}
     if (self.document.images["ppgmail"+ssNamespace]) {
         self.document.images["ppgmail"+ssNamespace].src = ss_presencePopupGraphics["mail"].src;
     }
