@@ -173,8 +173,9 @@ public class BlogFolderView extends FolderViewBase
 		getFlowPanel().addStyleName( "vibe-blogFolderFlowPanel" );
 
 		table = new FlexTable();
-		table.setWidth( "100%" );
+		table.setWidth( "99%" );
 		table.setCellSpacing( 0 );
+		table.setCellPadding( 0 );
 		table.addStyleName( "blogFolderView_MainTable" );
 		
 		cellFormatter = table.getFlexCellFormatter();
@@ -942,7 +943,7 @@ public class BlogFolderView extends FolderViewBase
 		totalBelow = footerPanelHeight;
 
 		// Get the optimum height for the task listing so we don't get a vertical scroll bar?
-		listHeight = (((viewHeight - listTop) - totalBelow) - 20);
+		listHeight = (((viewHeight - listTop) - totalBelow) - 25);
 		if ( LIST_MIN_HEIGHT > listHeight)
 		{
 			// Too small!  Use the minimum even though this will turn on the vertical scroll bar.
