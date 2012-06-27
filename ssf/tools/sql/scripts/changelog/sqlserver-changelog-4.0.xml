@@ -87,4 +87,26 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="10">
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="shareName" type="NVARCHAR(255)">
+            	<constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="serverName" type="NVARCHAR(255)">
+            	<constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="serverIP" type="NVARCHAR(255)">
+            	<constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="volume" type="NVARCHAR(255)">
+            	<constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
