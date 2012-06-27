@@ -85,10 +85,6 @@ public class GwtUIHelper {
 	// of the GWT UI.
 	private final static String GWT_UI_ENABLED_FLAG = "gwtUIEnabled";
 	
-	// ssf*.properties settings that affect various aspects of the GWT
-	// based UI.
-	private final static boolean IS_ACTIVITY_STREAMS_ON_LOGIN = SPropsUtil.getBoolean("activity.stream.on.login",  true);
-	
 	// String used to recognize an '&' formatted URL vs. a '/'
 	// formatted permalink URL.
 	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
@@ -970,7 +966,9 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static boolean isActivityStreamOnLogin() {
-		return IS_ACTIVITY_STREAMS_ON_LOGIN;
+		return (
+			(!(Utils.checkIfFilr())) &&									// Not Filr and...
+			SPropsUtil.getBoolean("activity.stream.on.login",  true));	// ...default at login is activity streams.
 	}
 	
 	/**
@@ -1273,15 +1271,20 @@ public class GwtUIHelper {
 	 * definition of m_requestInfo in GwtMainPage.jsp.
 	 * 
 	 * Items included are:
+	 * - vibeUIDebug
+	 * - vibeLPDebug
+	 * - vibeProduct
 	 * - sessionCaptive
 	 * - isNovellTeaming
 	 * - isFilr
 	 * - isTinyMCECapable
-	 * - vibeProduct
+	 * - tinyMCELang
 	 * - productName
 	 * - ss_helpUrl
 	 * - topWSId
 	 * - showWhatsNew
+	 * - showCollection
+	 * - isFormLoginAllowed
 	 * 
 	 * @param request
 	 * @param bs
@@ -1312,8 +1315,8 @@ public class GwtUIHelper {
 		
 		// Put out the flag that tells us if we are running Novell or
 		// Kablink Vibe.
-		String isFilr = Boolean.toString(Utils.checkIfFilr());
-		model.put("isFilr", isFilr);
+		boolean isFilr = Utils.checkIfFilr();
+		model.put("isFilr", Boolean.toString(isFilr));
 		
 		// Put out the flag that tells us if the tinyMCE editor will
 		// work on the device we are running on.  Get the list of user
@@ -1345,9 +1348,22 @@ public class GwtUIHelper {
 		
 		// Put out a true/false indicator as to the state of the
 		// activity streams based user interface.
-		String  showWhatsNewS = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
-		boolean showWhatsNew  = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
-		model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, String.valueOf(showWhatsNew));		
+		boolean showWhatsNew;
+		if (isFilr) {
+			showWhatsNew = false;
+		}
+		else {
+			String showWhatsNewS = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
+			showWhatsNew         = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
+		}
+		model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, String.valueOf(showWhatsNew));
+
+		// If there's a show collection setting...
+		String showCollection = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SHOW_COLLECTION, "");
+		if (MiscUtil.hasString(showCollection)) {
+			// ...put that out.
+			model.put(WebKeys.URL_SHOW_COLLECTION, showCollection);
+		}
 
 		// Put out the flag indicating whether login is allowed via our standard login dialog.
 		// Logging in via our standard login dialog will be disabled if we are running behind
@@ -1375,7 +1391,6 @@ public class GwtUIHelper {
 		}
 		return langCode;
 	}
-	
 	
 	/**
 	 * Given a binder, returns the string to display for it in a

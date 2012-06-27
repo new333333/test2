@@ -416,6 +416,17 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 	
 	/**
+	 * Returns a collection that's to be shown at login, if one is
+	 * required.
+	 * 
+	 * @return
+	 */
+	public final native String getShowCollectionOnLogin()
+	/*-{
+		return this.showCollectionOnLogin;
+	}-*/;
+	
+	/**
 	 * Return whether logging in is allowed from our standard login dialog.  This will be
 	 * disallowed if we are running behind a single-sign on product such as NAM.
 	 * 
