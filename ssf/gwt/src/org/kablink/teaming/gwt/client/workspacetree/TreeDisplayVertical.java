@@ -1633,7 +1633,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			default:
 			case SMALL:   busyAnimation = getImages().busyAnimation();        break;
 			case MEDIUM:  busyAnimation = getImages().busyAnimation_medium(); break;
-			case LARGE:   busyAnimation = getImages().busyAnimation_medium(); break;	// No large available form Lynn.
+			case LARGE:   busyAnimation = getImages().busyAnimation_large();  break;
 			}
 			Image binderImg;
 			if ((null == ti) || (ti == rootTI)) {

@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.tasklisting;
 
 import java.util.ArrayList;
@@ -487,8 +486,7 @@ public class TaskTable extends Composite
 			m_processActiveLabel = new InlineLabel();
 			m_processActiveDIV.add(m_processActiveLabel);
 			m_processActiveDIV.addStyleName("gwtTaskList_processActive");
-			Image busyImg = new Image(m_images.busyAnimation_small());
-			busyImg.getElement().setAttribute("align", "absmiddle");
+			Image busyImg = GwtClientHelper.buildImage(m_images.busyAnimation_small());
 			m_processActiveDIV.add(busyImg);
 			m_processActiveDIV.setVisible(false);
 		}
@@ -871,9 +869,7 @@ public class TaskTable extends Composite
 		case GROUP:
 		case TEAM:
 			// Group or team assignee!
-			Image assigneeImg = new Image();
-			assigneeImg.setUrl(m_taskListing.getRequestInfo().getImagesPath() + ai.getPresenceDude());
-			assigneeImg.getElement().setAttribute("align", "absmiddle");
+			Image assigneeImg = GwtClientHelper.buildImage(m_taskListing.getRequestInfo().getImagesPath() + ai.getPresenceDude());
 			fp.add(assigneeImg);
 
 			int    members       = ai.getMembers();
@@ -1084,7 +1080,7 @@ public class TaskTable extends Composite
 	 * Returns a spacer Image.
 	 */
 	private Image buildSpacer(int height, int width) {
-		Image reply = new Image(m_images.spacer());
+		Image reply = GwtClientHelper.buildImage(m_images.spacer());
 		reply.setHeight(String.valueOf(height) + "px");
 		reply.setWidth( String.valueOf(width ) + "px");
 		return reply;

@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
-
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -71,8 +70,7 @@ public class GroupTitleCell extends AbstractCell<GroupInfoPlus>
 			Image img;
 			
 			imgResource = GwtTeaming.getImageBundle().spinner16();
-			img = new Image( imgResource );
-			img.getElement().setAttribute( "align", "absmiddle" );
+			img = GwtClientHelper.buildImage( imgResource );
 			m_imgHtml = img.toString();
 		}
 	}

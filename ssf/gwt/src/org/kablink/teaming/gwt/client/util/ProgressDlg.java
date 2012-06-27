@@ -112,8 +112,7 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 	 * Constructs and returns an Image with a spinner in it.
 	 */
 	private Image buildSpinnerImage(String style) {
-		Image reply = new Image(GwtTeaming.getImageBundle().spinner16());
-		reply.getElement().setAttribute("align", "absmiddle");
+		Image reply = GwtClientHelper.buildImage(GwtTeaming.getImageBundle().spinner16());
 		if (GwtClientHelper.hasString(style)) {
 			reply.addStyleName(style);
 		}

@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -52,7 +53,7 @@ public class SpinnerPopup extends TeamingPopupPanel {
 	
 		setStyleName("spinnerPopup");
 		FlowPanel mainPanel = new FlowPanel();
-		Image spinnerImage = new Image(GwtTeaming.getImageBundle().spinner32());
+		Image spinnerImage = GwtClientHelper.buildImage(GwtTeaming.getImageBundle().spinner32());
 		mainPanel.add(spinnerImage);
 		setWidget(mainPanel);
 	}
