@@ -24,6 +24,11 @@ import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.rest.v1.model.TeamMember;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.util.api.ApiErrorCode;
+import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Criterion;
+import org.kablink.util.search.Junction;
+import org.kablink.util.search.Restrictions;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -92,8 +97,8 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 	@Path("{id}/binders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<BinderBrief> getSubBinders(@PathParam("id") long id,
-			@QueryParam("first") Integer offset,
-			@QueryParam("count") Integer maxCount) {
+			@QueryParam("first") @DefaultValue("0") Integer offset,
+			@QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         return getSubBinders(id, null, offset, maxCount, null);
 	}
 
@@ -121,6 +126,21 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 	public BinderTree getSubBinderTree(@PathParam("id") long id) {
         return getSubBinderTree(id, null);
 	}
+
+    @GET
+   	@Path("{id}/library_folders")
+       @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+   	public SearchResultList<BinderBrief> getLibraryFolders(@PathParam("id") long id,
+   			@QueryParam("first") @DefaultValue("0") Integer offset,
+   			@QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        Junction crit = Restrictions.conjunction();
+        crit.add(Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER));
+        crit.add(Restrictions.eq(Constants.IS_LIBRARY_FIELD, "true"));
+        crit.add(Restrictions.disjunction()
+                .add(Restrictions.eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_FILE))
+                .add(Restrictions.eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_PHOTO)));
+        return getSubBinders(id, crit, offset, maxCount, null);
+   	}
 
 	// Read entries
 	@GET
@@ -267,21 +287,21 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return results;
     }
 
-    protected SearchResultList<BinderBrief> getSubBinders(long id, SearchFilter filter, Integer offset, Integer maxCount, String nextUrl) {
-        org.kablink.teaming.domain.Binder workspace = _getBinder(id);
-        Map<String, Object> options = new HashMap<String, Object>();
-        if (filter!=null) {
-            options.put( ObjectKeys.SEARCH_SEARCH_FILTER, filter.getFilter() );
-        }
-        if (offset!=null) {
-            options.put(ObjectKeys.SEARCH_OFFSET, offset);
-        } else {
+    protected SearchResultList<BinderBrief> getSubBinders(long id, Criterion filter, Integer offset, Integer maxCount, String nextUrl) {
+        _getBinder(id);
+        if (offset==null) {
             offset = 0;
         }
-        if (maxCount!=null) {
-            options.put(ObjectKeys.SEARCH_MAX_HITS, maxCount);
+        if (maxCount==null) {
+            maxCount = -1;
         }
-        Map resultMap = getBinderModule().getBinders(workspace, options);
+        Criteria crit = new Criteria();
+        if (filter!=null) {
+            crit.add(filter);
+        }
+        crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
+        crit.add(Restrictions.eq(Constants.BINDERS_PARENT_ID_FIELD, ((Long) id).toString()));
+        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultMap, nextUrl, offset);
         return results;

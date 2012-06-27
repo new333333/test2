@@ -63,6 +63,7 @@ import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
+import org.kablink.util.search.Restrictions;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -162,11 +163,10 @@ public class FolderResource extends AbstractBinderResource {
 	@Path("{id}/folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<BinderBrief> getSubFolders(@PathParam("id") long id,
-			@QueryParam("first") Integer offset,
-			@QueryParam("count") Integer maxCount) {
-        SearchFilter filter = new SearchFilter();
-        filter.addFolderFilter("");
-        return getSubBinders(id, filter, offset, maxCount, "/folders/" + id + "/folders");
+			@QueryParam("first") @DefaultValue("0") Integer offset,
+			@QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        return getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER),
+                offset, maxCount, "/folders/" + id + "/folders");
 	}
 
     @POST

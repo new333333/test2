@@ -420,6 +420,12 @@ public class SearchFilter {
 		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeIsTeam);
 	}
 	
+	public void addIsLibraryFolder() {
+		checkCurrent();
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+        filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeIsLibrary);
+	}
+
 	public void addEntryId(String entryId) {
 		checkCurrent();
  

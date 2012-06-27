@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.remoting.rest.v1.resource;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -120,7 +121,8 @@ public class MiscResource extends AbstractResource {
         subpath = "static/" + subpath;
         InputStream stream = getServletContext().getResourceAsStream(subpath);
         if (stream!=null) {
-            return Response.ok(stream).build();
+            String mt = new MimetypesFileTypeMap().getContentType(subpath);
+            return Response.ok(stream, mt).build();
         } else {
             return Response.status(404).build();
         }

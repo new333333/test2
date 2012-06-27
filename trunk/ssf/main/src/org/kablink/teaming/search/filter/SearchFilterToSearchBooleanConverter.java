@@ -156,6 +156,8 @@ public class SearchFilterToSearchBooleanConverter {
 		    			addBinderParentIdField(block, filterTerm.attributeValue(SearchFilterKeys.FilterBinderId, ""));    	    			
 		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeIsTeam)) {
 		    			addIsTeamField(block);    	    			
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeIsLibrary)) {
+		    			addIsLibraryField(block);
 		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntityTypes)) {
 		    			parseAndAddEntityTypesField(block, filterTerm);
 		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntryTypes)) {
@@ -730,6 +732,17 @@ public class SearchFilterToSearchBooleanConverter {
 		andField = block.addElement(Constants.AND_ELEMENT);
 		field = andField.addElement(Constants.FIELD_ELEMENT);
 		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.IS_TEAM_FIELD);
+    	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
+    	child.setText("true");
+	}
+
+	private static void addIsLibraryField(Element block) {
+		Element field;
+		Element child;
+		Element andField = block;
+		andField = block.addElement(Constants.AND_ELEMENT);
+		field = andField.addElement(Constants.FIELD_ELEMENT);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.IS_LIBRARY_FIELD);
     	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     	child.setText("true");
 	}
