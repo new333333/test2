@@ -37,12 +37,17 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TeamInfo;
+import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
+import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
+import org.kablink.teaming.search.SearchUtils;
+import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Order;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -51,6 +56,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.Map;
+
+import org.kablink.util.search.Constants;
+import org.kablink.util.search.Restrictions;
+
+import static org.kablink.util.search.Restrictions.eq;
 
 /**
  * User: david
@@ -80,6 +91,10 @@ public class SelfResource extends AbstractResource {
         User user = ResourceUtil.buildUser((org.kablink.teaming.domain.User) entry, includeAttachments);
         user.setLink("/self");
         user.addAdditionalLink("roots", "/self/roots");
+        user.addAdditionalLink("accessible_library_folders", "/self/accessible_library_folders");
+        if (user.getWorkspace()!=null) {
+            user.addAdditionalLink("library_folders", user.getWorkspace().getLink() + "/library_folders");
+        }
         return user;
     }
 
@@ -132,6 +147,26 @@ public class SelfResource extends AbstractResource {
                 getFakeMyWorkspace(), getFakeMyTeams(), getFakeMyFavorites(),
                 ResourceUtil.buildBinderBrief(getBinderModule().getBinder(getWorkspaceModule().getTopWorkspaceId()))
         });
+        return results;
+    }
+
+    @GET
+    @Path("/accessible_library_folders")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<BinderBrief> getAccessibleLibraryFolders(
+                                                           @QueryParam("first") @DefaultValue("0") Integer offset,
+                                                           @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        Criteria crit = new Criteria();
+        crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
+        crit.add(Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER));
+        crit.add(Restrictions.disjunction()
+                .add(Restrictions.eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_FILE))
+                .add(Restrictions.eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_PHOTO)));
+        crit.add(Restrictions.eq(Constants.IS_LIBRARY_FIELD, "true"));
+        crit.add(Restrictions.not().add(Restrictions.eq(Constants.OWNERID_FIELD, getLoggedInUserId().toString())));
+        Map map = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount);
+        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), map, "/self/accessible_library_folders", offset);
         return results;
     }
 
