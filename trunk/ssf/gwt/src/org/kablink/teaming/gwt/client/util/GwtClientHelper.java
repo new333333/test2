@@ -760,8 +760,8 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
-	 * Search for <script type="text/javascript"> elements found in the given html element
-	 * and execute the javascript.
+	 * Search for <SCRIPT> elements found in the given HTML element and
+	 * execute the JavaScript.
 	 * 
 	 * @param htmlElement
 	 */
