@@ -52,22 +52,31 @@ public class DefaultAttributesPostProcessing implements AttributesPostProcessing
 	 */
 	@Override
 	public void postProcess(List<OpenIDAttribute> openidAttributes, Map<String, String> vibeAttributes) {
+		// If this default behavior needs to be altered, write a custom class and specify it in ssf-ext.properties file.
 		Set<String> keys = new HashSet<String>();
 		keys.addAll(vibeAttributes.keySet());
 		for(String vibeAttrName:keys) {
 			if(vibeAttrName.equals("title")) {
 				// Vibe does not allow modifying title directly on user object.
 				// So let's see if there's something useful we can do with it before discarding it.
+				String firstName = vibeAttributes.get("firstName");
 				String lastName = vibeAttributes.get("lastName");
-				if(Validator.isNull(lastName)) {
-					// Last name is not supplied. Let's use (portion of) the title as the last name.
+				if(Validator.isNull(firstName) || Validator.isNull(lastName)) {
+					// Either first name or last name is missing. Let's see if we can use the title for this.
 					String[] parts = StringUtil.split(vibeAttributes.get("title"), " ");
-					if(parts.length > 0) {
-						// Use the last token of the title as the user's last name. If this default behavior
-						// needs to be altered, write a custom class and specify it in ssf-ext.properties file.
-						lastName = parts[parts.length-1].trim();
-						if(Validator.isNotNull(lastName))
+					if(parts.length > 0) { // Title contains something
+						boolean usedForLastName = false;
+						if(Validator.isNull(lastName)) {
+							lastName = parts[parts.length-1].trim();
 							vibeAttributes.put("lastName", lastName);
+							usedForLastName = true;
+						}
+						if(Validator.isNull(firstName)) {
+							if((usedForLastName && parts.length > 1) || !usedForLastName) {
+								firstName = parts[0].trim();
+								vibeAttributes.put("firstName", firstName);
+							}
+						}
 					}
 				}
 				vibeAttributes.remove("title");
