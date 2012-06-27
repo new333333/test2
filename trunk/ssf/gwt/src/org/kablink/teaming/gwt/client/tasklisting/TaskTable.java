@@ -487,7 +487,7 @@ public class TaskTable extends Composite
 			m_processActiveLabel = new InlineLabel();
 			m_processActiveDIV.add(m_processActiveLabel);
 			m_processActiveDIV.addStyleName("gwtTaskList_processActive");
-			Image busyImg = new Image(m_images.busyAnimation());
+			Image busyImg = new Image(m_images.busyAnimation_small());
 			busyImg.getElement().setAttribute("align", "absmiddle");
 			m_processActiveDIV.add(busyImg);
 			m_processActiveDIV.setVisible(false);
@@ -4287,7 +4287,7 @@ public class TaskTable extends Composite
 			pa.setMessage(m_messages.taskProcess_updatingDates());
 		}
 		
-		m_dueDateBusy.setResource(m_images.busyAnimation());
+		m_dueDateBusy.setResource(m_images.busyAnimation_small());
 		UpdateCalculatedDatesCmd cmd = new UpdateCalculatedDatesCmd(binderId, entryId);
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override

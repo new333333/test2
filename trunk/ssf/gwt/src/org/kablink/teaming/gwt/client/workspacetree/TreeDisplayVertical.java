@@ -1628,19 +1628,26 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					}
 				}
 			}
+			ImageResource busyAnimation;
+			switch (BinderIconSize.getSidebarTreeIconSize()) {
+			default:
+			case SMALL:   busyAnimation = getImages().busyAnimation();        break;
+			case MEDIUM:  busyAnimation = getImages().busyAnimation_medium(); break;
+			case LARGE:   busyAnimation = getImages().busyAnimation_medium(); break;	// No large available form Lynn.
+			}
 			Image binderImg;
 			if ((null == ti) || (ti == rootTI)) {
 				// No!  Set the busy animation image on the tree's
 				// root.
 				binderImg = ((Image) rootTI.getBinderUIImage());
-				binderImg.setUrl(getImages().busyAnimation().getSafeUri());
+				binderImg.setUrl(busyAnimation.getSafeUri());
 			}
 			else {
 				// Yes!  Set the busy animation image for this
 				// TreeInfo's binder...
 				binderImg = ((Image) ti.getBinderUIImage());
 				if (null != binderImg) {
-					binderImg.setUrl(getImages().busyAnimation().getSafeUri());
+					binderImg.setUrl(busyAnimation.getSafeUri());
 				}
 				
 				// ...and keep track of as being the one that we're
