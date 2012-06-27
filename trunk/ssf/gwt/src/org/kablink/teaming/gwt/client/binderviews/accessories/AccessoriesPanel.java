@@ -308,7 +308,7 @@ public class AccessoriesPanel extends ToolPanelBase
 	 * Asynchronously executes the JavaScript in the HTML panel.
 	 */
 	private void executeJavaScriptNow() {
-		GwtClientHelper.jsExecuteJavaScript(m_htmlPanel.getElement());
+		GwtClientHelper.jsExecuteJavaScript(m_htmlPanel.getElement(), true);
 	}
 	
 	/*

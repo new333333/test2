@@ -763,10 +763,28 @@ public class GwtClientHelper {
 	 * Search for <SCRIPT> elements found in the given HTML element and
 	 * execute the JavaScript.
 	 * 
+	 * Note:  This is done in 2 methods to facility setting a
+	 * breakpoint within this method.
+	 * 
 	 * @param htmlElement
+	 * @param globelScope
 	 */
-	public static native void jsExecuteJavaScript(Element htmlElement) /*-{
-		$wnd.parent.ss_executeJavascript(htmlElement);
+	public static void jsExecuteJavaScript(Element htmlElement, boolean globalScope) {
+		// Always use the implementation form of the method.
+		jsExecuteJavaScriptImpl(htmlElement, globalScope);
+	}
+	
+	public static void jsExecuteJavaScript(Element htmlElement) {
+		// Always use the initial form of the method.
+		jsExecuteJavaScript(htmlElement, false);
+	}
+
+	/*
+	 * Search for <SCRIPT> elements found in the given HTML element and
+	 * execute the JavaScript.
+	 */
+	private static native void jsExecuteJavaScriptImpl(Element htmlElement, boolean globalScope) /*-{
+		$wnd.parent.ss_executeJavascript(htmlElement, globalScope);
 	}-*/;
 
 	/**
