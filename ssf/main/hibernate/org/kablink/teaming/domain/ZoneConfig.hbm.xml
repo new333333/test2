@@ -42,7 +42,7 @@
     	 <property name="lastUpdate"/>
  		 <property name="openidAuthenticationEnabled" column="openidEnabled" access="field"/>
     </component>
-    <component name="openidConfig" class="org.kablink.teaming.domain.OpenIDConfig">
+    <component name="openIDConfig" class="org.kablink.teaming.domain.OpenIDConfig" access="field">
  		 <property name="selfProvisioningEnabled" column="openidSelfProvisioningEnabled" access="field"/>
  		 <property name="allowedClaimedIdentityRegexList" column="openidClaimedIdentityRegex" type="org.kablink.teaming.spring.orm.hibernate3.support.NewlineSeparatedClobStringArrayType" access="field"/>
     </component>
