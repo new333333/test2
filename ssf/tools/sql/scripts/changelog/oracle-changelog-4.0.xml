@@ -79,4 +79,12 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="9">
+        <comment>Newline separated list of regex patterns for allowed OpenID provider login URLs</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="OPENIDPROVIDERSLOGINURLREGEX" type="CLOB">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -40,8 +40,11 @@
  		 <property name="allowAnonymousAccess"/>
 	     <property name="allowSelfRegistration"/>
     	 <property name="lastUpdate"/>
- 		 <property name="openidEnabled" access="field"/>
- 		 <property name="openidSelfProvisioningEnabled" access="field"/>
+ 		 <property name="openidAuthenticationEnabled" column="openidEnabled" access="field"/>
+    </component>
+    <component name="openidConfig" class="org.kablink.teaming.domain.OpenIDConfig">
+ 		 <property name="selfProvisioningEnabled" column="openidSelfProvisioningEnabled" access="field"/>
+ 		 <property name="allowedClaimedIdentityRegexList" column="openidClaimedIdentityRegex" type="org.kablink.teaming.spring.orm.hibernate3.support.NewlineSeparatedClobStringArrayType" access="field"/>
     </component>
    </class>
 </hibernate-mapping>

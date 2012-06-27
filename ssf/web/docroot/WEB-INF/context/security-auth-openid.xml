@@ -20,7 +20,8 @@
 		<property name="filterProcessesUrl" value="/s/portalLogout"/>
     </bean>
 
-    <bean id="authenticationProcessingFilter" class="org.springframework.security.openid.OpenIDAuthenticationFilter">
+    <bean id="authenticationProcessingFilter" class="org.kablink.teaming.spring.security.openid.OpenIDAuthenticationFilter">
+        <property name="coreDao" ref="coreDao"/>
 		<property name="authenticationManager" ref="_authenticationManager"/>
 		<!--<property name="filterProcessesUrl" value="/s/portalLogin"/>-->
 		<property name="filterProcessesUrl" value="/j_spring_openid_security_check"/>
@@ -33,7 +34,43 @@
 		            <bean class="org.springframework.security.openid.RegexBasedAxFetchListFactory">
 		                <constructor-arg>
 		                    <map>
-		                        <!--
+		                        <!-- Catch-all rules for retrieving profile attributes from various OpenID providers -->
+		                        <entry key=".*">
+		                            <list>
+		                                <bean class="org.springframework.security.openid.OpenIDAttribute">
+		                                	<constructor-arg value="email"/>
+		                                	<constructor-arg value="http://axschema.org/contact/email"/>
+		                                	<property name="required"><value>true</value></property>
+		                                </bean>
+		                                <bean class="org.springframework.security.openid.OpenIDAttribute">
+		                                	<constructor-arg value="email"/>
+		                                	<constructor-arg value="http://schema.openid.net/contact/email"/>
+		                                	<property name="required"><value>true</value></property>
+		                                </bean>
+		                                <bean class="org.springframework.security.openid.OpenIDAttribute">
+		                                	<constructor-arg value="firstname"/>
+		                                	<constructor-arg value="http://axschema.org/namePerson/first"/>
+		                                	<property name="required"><value>false</value></property>
+		                                </bean>
+		                                <bean class="org.springframework.security.openid.OpenIDAttribute">
+		                                	<constructor-arg value="lastname"/>
+		                                	<constructor-arg value="http://axschema.org/namePerson/last"/>
+		                                	<property name="required"><value>false</value></property>
+		                                </bean>
+		                                <bean class="org.springframework.security.openid.OpenIDAttribute">
+		                                	<constructor-arg value="fullname"/>
+		                                	<constructor-arg value="http://axschema.org/namePerson"/>
+		                                	<property name="required"><value>false</value></property>
+		                                </bean>
+		                                <bean class="org.springframework.security.openid.OpenIDAttribute">
+		                                	<constructor-arg value="fullname"/>
+		                                	<constructor-arg value="http://schema.openid.net/namePerson"/>
+		                                	<property name="required"><value>false</value></property>
+		                                </bean>
+		                            </list>
+		                        </entry>
+		                        <!-- If it is desirable to specify different rules for each OpenID provider, 
+		                             use this as example. It shows for Google, Yahoo, and myopenid.
 		                        <entry key="https://www.google.com/.*">
 		                            <list>
 		                                <bean class="org.springframework.security.openid.OpenIDAttribute">
@@ -82,40 +119,6 @@
 		                            </list>
 		                        </entry>
 		                        -->		             
-		                        <entry key=".*">
-		                            <list>
-		                                <bean class="org.springframework.security.openid.OpenIDAttribute">
-		                                	<constructor-arg value="email"/>
-		                                	<constructor-arg value="http://axschema.org/contact/email"/>
-		                                	<property name="required"><value>true</value></property>
-		                                </bean>
-		                                <bean class="org.springframework.security.openid.OpenIDAttribute">
-		                                	<constructor-arg value="email"/>
-		                                	<constructor-arg value="http://schema.openid.net/contact/email"/>
-		                                	<property name="required"><value>true</value></property>
-		                                </bean>
-		                                <bean class="org.springframework.security.openid.OpenIDAttribute">
-		                                	<constructor-arg value="firstname"/>
-		                                	<constructor-arg value="http://axschema.org/namePerson/first"/>
-		                                	<property name="required"><value>false</value></property>
-		                                </bean>
-		                                <bean class="org.springframework.security.openid.OpenIDAttribute">
-		                                	<constructor-arg value="lastname"/>
-		                                	<constructor-arg value="http://axschema.org/namePerson/last"/>
-		                                	<property name="required"><value>false</value></property>
-		                                </bean>
-		                                <bean class="org.springframework.security.openid.OpenIDAttribute">
-		                                	<constructor-arg value="fullname"/>
-		                                	<constructor-arg value="http://axschema.org/namePerson"/>
-		                                	<property name="required"><value>false</value></property>
-		                                </bean>
-		                                <bean class="org.springframework.security.openid.OpenIDAttribute">
-		                                	<constructor-arg value="fullname"/>
-		                                	<constructor-arg value="http://schema.openid.net/namePerson"/>
-		                                	<property name="required"><value>false</value></property>
-		                                </bean>
-		                            </list>
-		                        </entry>
 		                    </map>
 		                </constructor-arg>
 		            </bean>
@@ -157,8 +160,6 @@
         <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
         
         <security:anonymous enabled="false" />
-
-        <!--<security:openid-login/>-->
     </security:http>
         
     <security:user-service>

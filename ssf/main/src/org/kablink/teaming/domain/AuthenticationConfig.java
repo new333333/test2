@@ -31,6 +31,9 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.domain;
+
+import org.kablink.teaming.util.SPropsUtil;
+
 //Used to encapsalate authentication information.  A component of zoneConfig
 public class AuthenticationConfig  {
 
@@ -39,8 +42,7 @@ public class AuthenticationConfig  {
 	private boolean allowSelfRegistration = false;
 	private Long lastUpdate;
 	
-	private Boolean openidEnabled; // OpenID authentication enabled
-	private Boolean openidSelfProvisioningEnabled; // OpenID self-provisioning enabled
+	private Boolean openidAuthenticationEnabled; // OpenID authentication enabled
 	
 	public AuthenticationConfig()
 	{
@@ -76,25 +78,14 @@ public class AuthenticationConfig  {
 		setLastUpdate(System.currentTimeMillis());
 	}
 	
-	public boolean getOpenidEnabled() {
-		if(openidEnabled == null)
-			return true; // OpenID is enabled by default
+	public boolean getOpenidAuthenticationEnabled() {
+		if(openidAuthenticationEnabled == null) // not set yet
+			return SPropsUtil.getBoolean("openid.authentication.enabled.default", false); // OpenID authentication is disabled by default
 		else 
-			return openidEnabled.booleanValue();
+			return openidAuthenticationEnabled.booleanValue();
 	}
-	public void setOpenidEnabled(boolean openidEnabled) {
-		this.openidEnabled = openidEnabled;
+	public void setOpenidAuthenticationEnabled(boolean openidAuthenticationEnabled) {
+		this.openidAuthenticationEnabled = openidAuthenticationEnabled;
 	}
 	
-	public boolean getOpenidSelfProvisioningEnabled() {
-		if(openidSelfProvisioningEnabled == null)
-			return false; // OpenID self provisioning is disabled by default
-		else
-			return openidSelfProvisioningEnabled.booleanValue();
-	}
-	public void setOpenidSelfProvisioningEnabled(
-			boolean openidSelfProvisioningEnabled) {
-		this.openidSelfProvisioningEnabled = openidSelfProvisioningEnabled;
-	}
-
 }
