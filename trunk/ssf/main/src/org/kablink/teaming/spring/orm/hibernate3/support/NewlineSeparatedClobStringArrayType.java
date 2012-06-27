@@ -86,7 +86,10 @@ public class NewlineSeparatedClobStringArrayType extends AbstractLobType {
 			Object owner, LobHandler lobHandler) throws SQLException,
 			IOException, HibernateException {
 		String str = lobHandler.getClobAsString(rs, names[0]);
-		return StringUtil.split(str, NEWLINE);
+		if(str != null)
+			return StringUtil.split(str, NEWLINE);
+		else
+			return null;
 	}
 
 	/* (non-Javadoc)

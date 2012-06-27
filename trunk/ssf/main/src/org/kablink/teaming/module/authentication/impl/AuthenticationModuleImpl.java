@@ -462,7 +462,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		     				passwordAutoSynch = false;
 		     				ignorePassword = true;
 		     				ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zone);
-		     				if(zoneConfig.getOpenidConfig().getSelfProvisioningEnabled())
+		     				if(zoneConfig.getOpenIDConfig().getSelfProvisioningEnabled())
 		     					createUser = true;
 		     				else
 		     					createUser = false;

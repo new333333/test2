@@ -58,7 +58,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Integer fsaSynchInterval;
 	private String fsaAutoUpdateUrl;
 	private Long fsaMaxFileSize;
-	private OpenIDConfig openidConfig;
+	private OpenIDConfig openIDConfig;
 
 	public ZoneConfig()
 	{
@@ -69,7 +69,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 		this.homePageConfig = new HomePageConfig();
 		this.weekendsAndHolidaysConfig = new WeekendsAndHolidaysConfig();
 		this.mailConfig = new MailConfig();
-		this.openidConfig = new OpenIDConfig();
+		this.openIDConfig = new OpenIDConfig();
 	}
 	public void setZoneId(Long zoneId)
 	{
@@ -88,11 +88,13 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     public void setAuthenticationConfig(AuthenticationConfig authenticationConfig) {
     	this.authenticationConfig = authenticationConfig;
     }
-    public OpenIDConfig getOpenidConfig() {
-		return openidConfig;
+    public OpenIDConfig getOpenIDConfig() {
+    	if(openIDConfig == null)
+    		return new OpenIDConfig(); // actor for default settings
+		return openIDConfig;
 	}
-	public void setOpenidConfig(OpenIDConfig openidConfig) {
-		this.openidConfig = openidConfig;
+	public void setOpenIDConfig(OpenIDConfig openidConfig) {
+		this.openIDConfig = openidConfig;
 	}
 	public HomePageConfig getHomePageConfig() {
     	return homePageConfig;
