@@ -502,8 +502,24 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource spinner16();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/spinner25x25.gif")
+	public ImageResource spinner25();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/spinner32x32.gif")
 	public ImageResource spinner32();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/spinner36x36.gif")
+	public ImageResource spinner36();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/spinner48x48.gif")
+	public ImageResource spinner48();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/spinner72x72.gif")
+	public ImageResource spinner72();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/sunburst.png")

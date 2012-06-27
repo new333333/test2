@@ -1063,7 +1063,7 @@ public class GwtViewHelper {
 			if      (colName.equals("access"))          {fc.setColumnSearchKey("access");                               fc.setColumnSortable(false);                        }
 			else if (colName.equals("author"))          {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
 			else if (colName.equals("comments"))        {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                            }
-			else if (colName.equals("date"))            {fc.setColumnSearchKey(Constants.LASTACTIVITY_FIELD);                                                               }
+			else if (colName.equals("date"))            {fc.setColumnSearchKey(Constants.MODIFICATION_DATE_FIELD);                                                          }
 			else if (colName.equals("description"))     {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                       }
 			else if (colName.equals("descriptionHtml")) {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                       }
 			else if (colName.equals("download"))        {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                   }
@@ -2333,7 +2333,7 @@ public class GwtViewHelper {
 						String cn      = fc.getColumnName();
 						String csk     = fc.getColumnSearchKey();
 						Object emValue = GwtServerHelper.getValueFromEntryMap(entryMap, csk);
-						if ((null == emValue) && csk.equals(Constants.LASTACTIVITY_FIELD)) {
+						if ((null == emValue) && csk.equals(Constants.MODIFICATION_DATE_FIELD)) {
 							emValue = GwtServerHelper.getValueFromEntryMap(entryMap, Constants.CREATION_DATE_FIELD);
 							if (null != emValue) {
 								csk = Constants.CREATION_DATE_FIELD;

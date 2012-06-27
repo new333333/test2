@@ -57,6 +57,10 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource busyAnimation_medium();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/spinner48x48.gif")
+	public ImageResource busyAnimation_large();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/collapse_16.png")
 	public ImageResource collapseDescription();
 	

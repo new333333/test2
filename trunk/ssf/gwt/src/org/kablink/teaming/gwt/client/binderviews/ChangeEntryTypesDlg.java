@@ -104,8 +104,7 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 */
 	@SuppressWarnings("unused")
 	private Image buildSpinnerImage(String style) {
-		Image reply = new Image(GwtTeaming.getImageBundle().spinner16());
-		reply.getElement().setAttribute("align", "absmiddle");
+		Image reply = GwtClientHelper.buildImage(GwtTeaming.getImageBundle().spinner16());
 		if (GwtClientHelper.hasString(style)) {
 			reply.addStyleName(style);
 		}

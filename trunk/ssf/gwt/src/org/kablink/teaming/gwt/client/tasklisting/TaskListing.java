@@ -162,9 +162,8 @@ public class TaskListing extends Composite implements TaskProvider {
 		pleaseWaitPanel.addStyleName("wiki-noentries-panel gwtTaskList_loading");
 		m_pleaseWaitLabel = new InlineLabel(m_messages.taskPleaseWait_Loading());
 		pleaseWaitPanel.add(m_pleaseWaitLabel);
-		Image busyImg = new Image(m_images.busyAnimation_small());
+		Image busyImg = GwtClientHelper.buildImage(m_images.busyAnimation_small());
 		busyImg.addStyleName("gwtTaskList_loadingImg");
-		busyImg.getElement().setAttribute("align", "absmiddle");
 		pleaseWaitPanel.add(busyImg);
 		m_taskListingDIV.add(pleaseWaitPanel);
 		m_taskRootDIV.add(m_taskListingDIV);
@@ -557,8 +556,7 @@ public class TaskListing extends Composite implements TaskProvider {
 		il.addStyleName("gwtTaskTools_ViewMenuSpan");
 		final Element aE = a.getElement();
 		aE.appendChild(il.getElement());
-		Image img = new Image(m_images.menu());
-		img.getElement().setAttribute("align", "absmiddle");
+		Image img = GwtClientHelper.buildImage(m_images.menu());
 		aE.appendChild(img.getElement());
 		EventWrapper.addHandler(a, new ClickHandler(){
 			@Override
