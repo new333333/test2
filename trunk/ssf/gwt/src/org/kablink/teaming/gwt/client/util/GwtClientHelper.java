@@ -1330,6 +1330,18 @@ public class GwtClientHelper {
 	public static void setFocusNow(FocusWidget focusWidget) {
 		focusWidget.setFocus(true);
 	}
+
+	/**
+	 * Set's the visibility state of a non-null UIObject.
+	 * 
+	 * @param uio
+	 * @param visible
+	 */
+	public static void setVisibile(UIObject uio, boolean visible) {
+		if (null != uio) {
+			uio.setVisible(visible);
+		}
+	}
 	
 	/**
 	 * Simulates a click event on the given element.

@@ -423,8 +423,8 @@ public class MainMenuControl extends Composite
 				}
 			});
 		menuPanel.addItem(m_closeAdminBox);
-		m_closeAdminBox.setVisible(false);
-		m_closeAdminBox.setEnabled(false);
+		GwtClientHelper.setVisibile(m_closeAdminBox, false);
+		GwtClientHelper.setVisibile(m_closeAdminBox, false);
 	}
 	
 	/*
@@ -495,7 +495,7 @@ public class MainMenuControl extends Composite
 						mmp.setMenuBox(m_manageBox);
 						m_mainMenu.addItem(m_manageBox);
 						if (collectionType.isCollection()) {
-							m_manageBox.setVisible(false);
+							GwtClientHelper.setVisibile(m_manageBox, false);
 						}
 					}
 					callback.complete();
@@ -747,24 +747,24 @@ public class MainMenuControl extends Composite
 		if (m_closeAdminBox.isVisible()) {
 			// Yes!  Show the widget that holds the expand/contract
 			// left navigation, expand/contract header, ... widgets.
-			m_bhButton.setVisible(true);
+			GwtClientHelper.setVisibile(m_bhButton, true);
 			
 			// Show My Workspace, My Teams, My Favorites and What's
 			// New.
-			m_myWorkspaceBox.setVisible(true);
-			if (null != m_myTeamsBox)     m_myTeamsBox.setVisible(    true);
-			if (null != m_myFavoritesBox) m_myFavoritesBox.setVisible(true);
-			if (null != m_whatsNewBox)    m_whatsNewBox.setVisible(   true);
+			GwtClientHelper.setVisibile(m_myWorkspaceBox, true);
+			GwtClientHelper.setVisibile(m_myTeamsBox,     true);
+			GwtClientHelper.setVisibile(m_myFavoritesBox, true);
+			GwtClientHelper.setVisibile(m_whatsNewBox,    true);
 			
 			// Show the panel that holds the menu items.
 			setContextMenusVibibile(true);
 			
 			// Show the search panel.
-			m_searchPanel.setVisible(true);
-			m_soButton.setVisible(   true);
+			GwtClientHelper.setVisibile(m_searchPanel, true);
+			GwtClientHelper.setVisibile(m_soButton,    true);
 			
 			// Hide the Close administration menu item.
-			m_closeAdminBox.setVisible(false);
+			GwtClientHelper.setVisibile(m_closeAdminBox, false);
 		}
 	}
 
@@ -1206,23 +1206,10 @@ public class MainMenuControl extends Composite
 	 * Sets the visibility state of the various context menus.
 	 */
 	private void setContextMenusVibibile(boolean visible) {
-		// If we have a manage box...
-		if (null != m_manageBox) {
-			// ...hide/show it...
-			m_manageBox.setVisible(visible);
-		}
-
-		// ...if we have recent places box...
-		if (null != m_recentPlacesBox) {
-			// ...hide/show it...
-			m_recentPlacesBox.setVisible(visible);
-		}
-
-		// ...and if we have a views box...
-		if (null != m_viewsBox) {
-			// ...hide/show it...
-			m_viewsBox.setVisible(visible);
-		}
+		// Hide/show the manage, recent places and views boxes.
+		GwtClientHelper.setVisibile(m_manageBox,       visible);
+		GwtClientHelper.setVisibile(m_recentPlacesBox, visible);
+		GwtClientHelper.setVisibile(m_viewsBox,        visible);
 	}
 	
 	/**
@@ -1253,23 +1240,23 @@ public class MainMenuControl extends Composite
 		// Do we think we're in administration mode?
 		if (!(m_closeAdminBox.isVisible())) {
 			// No!  Hide the browse button
-			m_bhButton.setVisible(false);
+			GwtClientHelper.setVisibile(m_bhButton, false);
 			
 			// Hide My Workspace, My Teams, My Favorites and What's New.
-			m_myWorkspaceBox.setVisible(false);
-			if (null != m_myTeamsBox)     m_myTeamsBox.setVisible(    false);
-			if (null != m_myFavoritesBox) m_myFavoritesBox.setVisible(false);
-			if (null != m_whatsNewBox)    m_whatsNewBox.setVisible(   false);
+			GwtClientHelper.setVisibile(m_myWorkspaceBox, false);
+			GwtClientHelper.setVisibile(m_myTeamsBox,     false);
+			GwtClientHelper.setVisibile(m_myFavoritesBox, false);
+			GwtClientHelper.setVisibile(m_whatsNewBox,    false);
 			
 			// Hide the panel that holds the menu items.
 			setContextMenusVibibile(false);
 			
 			// Hide the search panel.
-			m_searchPanel.setVisible(false);
-			m_soButton.setVisible(   false);
+			GwtClientHelper.setVisibile(m_searchPanel, false);
+			GwtClientHelper.setVisibile(m_soButton,    false);
 			
 			// Show the Close administration menu item.
-			m_closeAdminBox.setVisible(true);
+			GwtClientHelper.setVisibile(m_closeAdminBox, true);
 		}
 	}
 
