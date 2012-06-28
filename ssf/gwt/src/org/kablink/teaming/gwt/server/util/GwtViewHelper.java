@@ -280,6 +280,17 @@ public class GwtViewHelper {
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
 	}
+
+	/*
+	 * Returns an entry map that represents no entries available.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Map buildEmptyEntryMap() {
+		Map reply = new HashMap();
+		reply.put(ObjectKeys.SEARCH_ENTRIES,     new ArrayList<Map>());
+		reply.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(0)      );
+		return reply;
+	}
 	
 	/*
 	 * Extracts the ID's of the entry contributors and adds them to the
@@ -1481,6 +1492,13 @@ public class GwtViewHelper {
 		// workspace.
 		String topWSId = GwtUIHelper.getTopWSIdSafely(bs, false);
 		
+		// Based on the installed license, what definition families do
+		// we consider as 'file'?
+		String[] fileFamilies;
+		if (Utils.checkIfFilr())
+		     fileFamilies = new String[]{Definition.FAMILY_FILE                         };
+		else fileFamilies = new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO};
+		
 		// Construct the search Criteria...
 		Conjunction conj;
 		Disjunction disj;
@@ -1488,17 +1506,17 @@ public class GwtViewHelper {
 		switch (ct) {
 		default:
 		case MY_FILES:
-			// Search for File Folder and Photo Albums within the
-			// binder...
+			// Search for file folders within the binder...
 			crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
 			crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(binder.getId())}));
-			crit.add(in(Constants.FAMILY_FIELD,            new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO}));
+			crit.add(in(Constants.FAMILY_FIELD,            fileFamilies));
+			crit.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
 
 			// ...that are non-mirrored...
     		disj = disjunction();
 			crit.add(disj);
     		conj = conjunction();
-			conj.add(in(Constants.IS_MIRRORED_FIELD,       new String[]{Constants.FALSE}));
+			conj.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
 			disj.add(conj);
 
 			// ...or configured mirrored File Folders.
@@ -1515,16 +1533,19 @@ public class GwtViewHelper {
 			// Search for anything in within the binder or below...
 			crit.add(in(Constants.ENTRY_ANCESTRY,   new String[]{String.valueOf(binder.getId())}));
 
-			// ...thats a binder...
+			// ...thats a file folder...
     		disj = disjunction();
 			crit.add(disj);
     		conj = conjunction();
-			conj.add(in(Constants.DOC_TYPE_FIELD, new String[]{Constants.DOC_TYPE_BINDER}));
+			conj.add(in(Constants.DOC_TYPE_FIELD,   new String[]{Constants.DOC_TYPE_BINDER}));
+			conj.add(in(Constants.FAMILY_FIELD,     fileFamilies));
+			conj.add(in(Constants.IS_LIBRARY_FIELD, new String[]{Constants.TRUE}));
 			disj.add(conj);
 
-			// ...or a top level entry (no replies.)
+			// ...or a top level file entry (no replies.)
     		conj = conjunction();
 			conj.add(in(Constants.DOC_TYPE_FIELD,   new String[]{Constants.DOC_TYPE_ENTRY}));
+			conj.add(in(Constants.FAMILY_FIELD,     fileFamilies));
 			conj.add(in(Constants.ENTRY_TYPE_FIELD, new String[]{Constants.ENTRY_TYPE_ENTRY}));
 			disj.add(conj);
 			
@@ -1535,31 +1556,41 @@ public class GwtViewHelper {
 			if (!(MiscUtil.hasString(topWSId))) {
 				// No!  Then we can't search for things that have been
 				// shared with me.  Bail.
-				return new HashMap();
+				return buildEmptyEntryMap();
 			}
 
 			// Do we have any shares to analyze?
 			if ((null == shares) || shares.isEmpty()) {
 				// No!  Bail.
-				return new HashMap();
+				return buildEmptyEntryMap();
 			}
 
-			// Do we have the IDs of any entries or binders that have
-			// been shared?
-			List<String> sharedBinderIds = new ArrayList<String>();
-			List<String> sharedEntryIds  = new ArrayList<String>();
+			// Scan the entities that have been shared.
+			List<String>	sharedBinderIds = new ArrayList<String>();
+			List<String>	sharedEntryIds  = new ArrayList<String>();
+			Long			userId          = GwtServerHelper.getCurrentUserId();
 			for (SharedEntity se:  shares) {
+				// If the user's has shared this with them self...
+				if (se.getReferer().getId().equals(userId)) {
+					// ...skip it.
+					continue;
+				}
+				
+				// Otherwise, track the ID.
 				DefinableEntity de = se.getEntity();
 				String deId = String.valueOf(de.getId());
 				if (de.getEntityType().equals(EntityType.folderEntry))
 				     sharedEntryIds.add( deId);
 				else sharedBinderIds.add(deId);
 			}
+			
+			// Do we have any binders or entries that have been shared
+			// with the current user?
 			boolean hasSharedBinders = (!(sharedBinderIds.isEmpty()));
 			boolean hasSharedEntries = (!(sharedEntryIds.isEmpty()));
 			if ((!hasSharedBinders) && (!hasSharedEntries)) {
 				// No!  Bail.
-				return new HashMap();
+				return buildEmptyEntryMap();
 			}
 
 			// Add the shared binder and entry IDs to the search criteria.
@@ -1569,16 +1600,21 @@ public class GwtViewHelper {
 			crit.add(disj);
 			
 			if (hasSharedBinders) {
+				// Limit the search to file folders.
 	    		conj = conjunction();
-				conj.add(in(Constants.DOC_TYPE_FIELD, new String[]{Constants.DOC_TYPE_BINDER}));
-				conj.add(in(Constants.DOCID_FIELD, sharedBinderIds.toArray(new String[0])));
+				conj.add(in(Constants.DOC_TYPE_FIELD,   new String[]{Constants.DOC_TYPE_BINDER}));
+				conj.add(in(Constants.FAMILY_FIELD,     fileFamilies));
+				conj.add(in(Constants.DOCID_FIELD,      sharedBinderIds.toArray(new String[0])));
+				conj.add(in(Constants.IS_LIBRARY_FIELD, new String[]{Constants.TRUE}));
 				disj.add(conj);
 			}
 			
 			if (hasSharedEntries) {
+				// Limit the search to file entries.
 	    		conj = conjunction();
 				conj.add(in(Constants.DOC_TYPE_FIELD, new String[]{Constants.DOC_TYPE_ENTRY}));
-				conj.add(in(Constants.DOCID_FIELD, sharedEntryIds.toArray(new String[0])));
+				conj.add(in(Constants.FAMILY_FIELD,   fileFamilies));
+				conj.add(in(Constants.DOCID_FIELD,    sharedEntryIds.toArray(new String[0])));
 				disj.add(conj);
 			}
 			
@@ -1588,7 +1624,7 @@ public class GwtViewHelper {
 			// Can we access the ID of the top workspace?
 			if (!(MiscUtil.hasString(topWSId))) {
 				// No!  Then we can't search for file spaces.  Bail.
-				return new HashMap();
+				return buildEmptyEntryMap();
 			}
 
 			// Add the criteria for top level mirrored file folders
