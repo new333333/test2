@@ -1076,6 +1076,12 @@ body, table td, select
 	color: red;
 }
 
+.loginDlg_useOpenIdPanel
+{
+	margin-left: 10px;
+	margin-top: 6px;
+}
+
 /* Styles used by the WorkspaceTreeControl. */
 .workspaceTreeBinderAnchor            {color: #414648; text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-size: .9em;}
 .workspaceTreeBinderAnchor_collection {font-size: 14px; padding-left: 2px;}

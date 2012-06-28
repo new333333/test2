@@ -357,14 +357,6 @@
 					</td>
 				</tr>
 				<tr>
-					<td colspan="2">
-						<div id="useOpenId_div" style="display: none">
-							<input type="checkbox" name="useOpenId_ckboxName" id="useOpenId_ckboxId" />
-							<span id="useOpenId_span"></span>
-						</div>
-					</td>
-				</tr>
-				<tr>
 					<td align="right"></td>
 					<td>
 						<div class="gwt-Label loginFailedMsg" style="display: none;" id="loginFailedMsgDiv"></div>
