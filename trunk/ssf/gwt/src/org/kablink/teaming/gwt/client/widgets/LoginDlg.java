@@ -49,6 +49,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -56,6 +57,8 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -83,7 +86,9 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 @SuppressWarnings("unused")
 public class LoginDlg extends DlgBox
 {
+	private FlowPanel m_mainPanel = null;
 	private FormPanel m_formPanel = null;
+	private Element m_userIdLabelElement = null;
 	private TextBox m_userIdTxtBox = null;
 	private Button m_cancelBtn = null;
 	private Label m_loginFailedMsg = null;
@@ -94,7 +99,7 @@ public class LoginDlg extends DlgBox
 	private InlineLabel m_selfRegLink = null;
 	private TextBox m_openIdIdentityTxtBox = null;
 	private Label m_openIdLabel = null;
-	private InputElement m_useOpenIdCkboxElement = null;
+	private CheckBox m_useOpenIdCkbox = null;
 	private AsyncCallback<VibeRpcResponse> m_rpcGetLoginInfoCallback = null;
 
 	/**
@@ -108,21 +113,6 @@ public class LoginDlg extends DlgBox
 		public LoginFormPanel( Element formElement )
 		{
 			super( formElement );
-		}
-	}
-	
-	
-	/**
-	 * 
-	 */
-	private class LoginDlgCheckBox extends CheckBox
-	{
-		/**
-		 * 
-		 */
-		public LoginDlgCheckBox( com.google.gwt.user.client.Element element )
-		{
-			super( element );
 		}
 	}
 	
@@ -215,10 +205,9 @@ public class LoginDlg extends DlgBox
 	@Override
 	public Panel createContent( Object props )
 	{
-		FlowPanel mainPanel = null;
 		Element formElement;
 		
-		mainPanel = new FlowPanel();
+		m_mainPanel = new FlowPanel();
 		
 		// Get the <form ...> element that was created by GwtMainPage.jsp
 		formElement = Document.get().getElementById( "loginFormId" );
@@ -251,11 +240,10 @@ public class LoginDlg extends DlgBox
 		
 		// Add a row for the "user id" controls.
 		{
-			Element userIdLabelElement;
 			Element userIdElement;
 			
-			userIdLabelElement = Document.get().getElementById( "userIdLabel" );
-			userIdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgUserId() );
+			m_userIdLabelElement = Document.get().getElementById( "userIdLabel" );
+			m_userIdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgUserId() );
 			
 			userIdElement = Document.get().getElementById( "j_usernameId" );
 			m_userIdTxtBox = TextBox.wrap( userIdElement );
@@ -269,7 +257,7 @@ public class LoginDlg extends DlgBox
 			pwdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgPassword() );
 		}
 		
-		// Get the OpenID controls
+		// OpenID controls
 		{
 			Element labelElement;
 			Element txtBoxElement;
@@ -281,12 +269,6 @@ public class LoginDlg extends DlgBox
 			
 			txtBoxElement = Document.get().getElementById( "openid_identifier_id" );
 			m_openIdIdentityTxtBox = TextBox.wrap( txtBoxElement );
-			
-			labelElement = Document.get().getElementById( "useOpenId_span" );
-			labelElement.setInnerHTML( GwtTeaming.getMessages().loginDlgUseOpenId() );
-			
-			inputElement = Document.get().getElementById( "useOpenId_ckboxId" );
-			m_useOpenIdCkboxElement = InputElement.as( inputElement );
 		}
 		
 		// Add a "login failed" label to the dialog.
@@ -411,11 +393,11 @@ public class LoginDlg extends DlgBox
 			m_selfRegLink.addMouseOutHandler( mouseOutHandler );
 		}
 		
-		mainPanel.add( m_formPanel );
+		m_mainPanel.add( m_formPanel );
 
 		init( props );
 
-		return mainPanel;
+		return m_mainPanel;
 	}// end createContent()
 	
 	
@@ -478,22 +460,73 @@ public class LoginDlg extends DlgBox
 		else
 			DOM.setElementAttribute( m_formPanel.getElement(), "autocomplete", "off" );
 		
-		if ( m_useOpenIdCkboxElement != null )
+		// Is OpenID authentication available?
+		if ( loginInfo.getAllowOpenIdAuthentication() )
 		{
-			// Is OpenID authentication available?
-			if ( loginInfo.getAllowOpenIdAuthentication() )
+			// Yes
+			// Have we already created a "Use OpenID Authentication" checkbox?
+			if ( m_useOpenIdCkbox == null )
+			{
+				FlowPanel panel;
+				ValueChangeHandler<java.lang.Boolean> valueChangeHandler;
+				
+				// No, add one.
+				m_useOpenIdCkbox = new CheckBox( GwtTeaming.getMessages().loginDlgUseOpenId() );
+				panel = new FlowPanel();
+				panel.addStyleName( "loginDlg_useOpenIdPanel" );
+				panel.add( m_useOpenIdCkbox );
+				m_mainPanel.insert( panel, 0 );
+				
+				valueChangeHandler = new ValueChangeHandler<java.lang.Boolean>()
+				{
+					@Override
+					public void onValueChange( ValueChangeEvent<java.lang.Boolean> event )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute() 
+							{
+								danceOpenIdControls();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				};
+				m_useOpenIdCkbox.addValueChangeHandler( valueChangeHandler );
+			}
+			
+			danceOpenIdControls();
+		}
+	}
+	
+	/**
+	 * Show/hide the controls used with OpenId authentication
+	 */
+	private void danceOpenIdControls()
+	{
+		if ( m_useOpenIdCkbox != null )
+		{
+			// Is the "Use OpenId Authentication" checkbox checked.
+			if ( m_useOpenIdCkbox.getValue() )
 			{
 				// Yes
-				m_useOpenIdCkboxElement.getStyle().setVisibility( Visibility.VISIBLE );
 				m_openIdLabel.setVisible( true );
 				m_openIdIdentityTxtBox.setVisible( true );
+				
+				m_userIdLabelElement.getStyle().setDisplay( Display.NONE );
+				m_userIdTxtBox.setVisible( false );
 			}
 			else
 			{
 				// No
-				m_useOpenIdCkboxElement.getStyle().setVisibility( Visibility.HIDDEN );
 				m_openIdLabel.setVisible( false );
 				m_openIdIdentityTxtBox.setVisible( false );
+				
+				m_userIdLabelElement.getStyle().setDisplay( Display.BLOCK );
+				m_userIdTxtBox.setVisible( true );
 			}
 		}
 	}
@@ -967,15 +1000,8 @@ public class LoginDlg extends DlgBox
 	 */
 	private boolean getUseOpenIDAuthentication()
 	{
-		if ( m_openIdIdentityTxtBox != null )
-		{
-			String openId;
-			
-			// Did the user enter anything for the openId?
-			openId = m_openIdIdentityTxtBox.getValue();
-			if ( openId != null && openId.length() > 0 )
-				return true;
-		}
+		if ( m_useOpenIdCkbox != null && m_useOpenIdCkbox.getValue() == true )
+			return true;
 		
 		return false;
 	}
