@@ -47,6 +47,7 @@ public class GwtLoginInfo
 {
 	private GwtSelfRegistrationInfo m_selfRegInfo;;
 	private boolean m_allowAutoComplete;
+	private boolean m_allowOpenIdAuthentication;
 	
 	/**
 	 * 
@@ -62,6 +63,14 @@ public class GwtLoginInfo
 	public boolean getAllowAutoComplete()
 	{
 		return m_allowAutoComplete;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getAllowOpenIdAuthentication()
+	{
+		return m_allowOpenIdAuthentication;
 	}
 	
 	
@@ -80,6 +89,14 @@ public class GwtLoginInfo
 	public void setAllowAutoComplete( boolean allowAutoComplete )
 	{
 		m_allowAutoComplete = allowAutoComplete;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setAllowOpenIdAuthentication( boolean allowOpenIdAuthentication )
+	{
+		m_allowOpenIdAuthentication = allowOpenIdAuthentication;
 	}
 	
 	

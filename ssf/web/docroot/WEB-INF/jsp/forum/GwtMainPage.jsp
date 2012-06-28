@@ -339,6 +339,12 @@
 			</colgroup>
 			<tbody>
 				<tr>
+					<td><span id="openid_identifier_label" style="display: none;"></span></td>
+					<td>
+						<input type="text" size="20" id="openid_identifier_id" name="openid_identifier" class="gwt-TextBox">
+					</td>
+				</tr>
+				<tr>
 					<td><span id="userIdLabel"></span></td>
 					<td>
 						<input type="text" size="20" id="j_usernameId" name="j_username" class="gwt-TextBox">
@@ -348,6 +354,14 @@
 					<td><span id="pwdLabel"></span></td>
 					<td>
 						<input type="password" size="20" id="j_passwordId" name="j_password" class="gwt-PasswordTextBox">
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<div id="useOpenId_div" style="display: none">
+							<input type="checkbox" name="useOpenId_ckboxName" id="useOpenId_ckboxId" />
+							<span id="useOpenId_span"></span>
+						</div>
 					</td>
 				</tr>
 				<tr>

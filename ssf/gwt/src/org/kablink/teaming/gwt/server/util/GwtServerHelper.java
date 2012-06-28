@@ -4938,6 +4938,18 @@ public class GwtServerHelper {
 		allowAutoComplete = SPropsUtil.getBoolean( "enable.login.autocomplete", false );
 		loginInfo.setAllowAutoComplete( allowAutoComplete );
 		
+		// See if OpenId authentication is allowed
+		{
+			ZoneConfig zoneConfig;
+			ZoneModule zoneModule;
+			boolean allowOpenIdAuth;
+			
+			zoneModule = ami.getZoneModule();
+			zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+			allowOpenIdAuth = zoneConfig.getAuthenticationConfig().getOpenidAuthenticationEnabled();
+			loginInfo.setAllowOpenIdAuthentication( allowOpenIdAuth ); 
+		}
+		
 		return loginInfo;
 	}
 	

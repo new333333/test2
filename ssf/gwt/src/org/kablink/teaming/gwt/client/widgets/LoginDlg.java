@@ -48,6 +48,8 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -58,6 +60,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.FormPanel;
@@ -89,6 +92,9 @@ public class LoginDlg extends DlgBox
 	private String m_springSecurityRedirect = null;	// This values tells Teaming what url to go to after the user authenticates.
 	private GwtSelfRegistrationInfo m_selfRegInfo = null;
 	private InlineLabel m_selfRegLink = null;
+	private TextBox m_openIdIdentityTxtBox = null;
+	private Label m_openIdLabel = null;
+	private InputElement m_useOpenIdCkboxElement = null;
 	private AsyncCallback<VibeRpcResponse> m_rpcGetLoginInfoCallback = null;
 
 	/**
@@ -102,6 +108,21 @@ public class LoginDlg extends DlgBox
 		public LoginFormPanel( Element formElement )
 		{
 			super( formElement );
+		}
+	}
+	
+	
+	/**
+	 * 
+	 */
+	private class LoginDlgCheckBox extends CheckBox
+	{
+		/**
+		 * 
+		 */
+		public LoginDlgCheckBox( com.google.gwt.user.client.Element element )
+		{
+			super( element );
 		}
 	}
 	
@@ -141,6 +162,7 @@ public class LoginDlg extends DlgBox
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				// Don't call GwtClientHelper.handleGwtRPCFailure() like we would normally do.  If the
@@ -155,22 +177,23 @@ public class LoginDlg extends DlgBox
 			 * 
 			 * @param result
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
-				GwtLoginInfo loginInfo;
+				Scheduler.ScheduledCommand cmd;
+				final GwtLoginInfo loginInfo;
 				
 				loginInfo = (GwtLoginInfo) response.getResponseData();
 				
-				m_selfRegInfo = loginInfo.getSelfRegistrationInfo();
-				
-				// Hide or show the self registration controls.
-				updateSelfRegistrationControls( m_selfRegInfo );
-
-				// Turn auto complete on/off.
-				if ( loginInfo.getAllowAutoComplete() == true )
-					DOM.removeElementAttribute( m_formPanel.getElement(), "autocomplete" );
-				else
-					DOM.setElementAttribute( m_formPanel.getElement(), "autocomplete", "off" );
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						danceDlg( loginInfo );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}// end onSuccess()
 		};
 
@@ -189,6 +212,7 @@ public class LoginDlg extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
+	@Override
 	public Panel createContent( Object props )
 	{
 		FlowPanel mainPanel = null;
@@ -206,6 +230,7 @@ public class LoginDlg extends DlgBox
 			/**
 			 * 
 			 */
+			@Override
 			public void onSubmit(SubmitEvent event)
 			{
 				// Hide the "login failed" message.
@@ -213,6 +238,14 @@ public class LoginDlg extends DlgBox
 				
 				// Show the the "authenticating..." message.
 				showAuthenticatingMsg();
+				
+				// Are we using OpenID to authenticate
+				if ( getUseOpenIDAuthentication() )
+				{
+					// Yes
+					m_formPanel.setAction( "/ssf/j_spring_openid_security_check" );		
+					m_formPanel.getElement().setAttribute( "name", "oidf" );
+				}
 			}
 		});
 		
@@ -234,6 +267,26 @@ public class LoginDlg extends DlgBox
 			
 			pwdLabelElement = Document.get().getElementById( "pwdLabel" );
 			pwdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgPassword() );
+		}
+		
+		// Get the OpenID controls
+		{
+			Element labelElement;
+			Element txtBoxElement;
+			Element inputElement;
+			
+			labelElement = Document.get().getElementById( "openid_identifier_label" );
+			labelElement.setInnerText( GwtTeaming.getMessages().loginDlgOpenIDIdentity() );
+			m_openIdLabel = Label.wrap( labelElement );
+			
+			txtBoxElement = Document.get().getElementById( "openid_identifier_id" );
+			m_openIdIdentityTxtBox = TextBox.wrap( txtBoxElement );
+			
+			labelElement = Document.get().getElementById( "useOpenId_span" );
+			labelElement.setInnerHTML( GwtTeaming.getMessages().loginDlgUseOpenId() );
+			
+			inputElement = Document.get().getElementById( "useOpenId_ckboxId" );
+			m_useOpenIdCkboxElement = InputElement.as( inputElement );
 		}
 		
 		// Add a "login failed" label to the dialog.
@@ -306,6 +359,7 @@ public class LoginDlg extends DlgBox
 				/**
 				 * Clear all branding information.
 				 */
+				@Override
 				public void onClick( ClickEvent event )
 				{
 					String url;
@@ -325,6 +379,7 @@ public class LoginDlg extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onMouseOver( MouseOverEvent event )
 				{
 					Widget widget;
@@ -342,6 +397,7 @@ public class LoginDlg extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onMouseOut( MouseOutEvent event )
 				{
 					Widget widget;
@@ -366,6 +422,7 @@ public class LoginDlg extends DlgBox
 	/*
 	 * Override the createFooter() method so we can control what buttons are in the footer.
 	 */
+	@Override
 	public Panel createFooter()
 	{
 		return null;
@@ -375,6 +432,7 @@ public class LoginDlg extends DlgBox
 	/**
 	 * Override the createHeader() method because we need to make it nicer.
 	 */
+	@Override
 	public Panel createHeader( String caption )
 	{
 		Image img;
@@ -405,8 +463,45 @@ public class LoginDlg extends DlgBox
 	
 	
 	/**
+	 * Hide/show controls on the dialog based on the given login info
+	 */
+	private void danceDlg( GwtLoginInfo loginInfo )
+	{
+		m_selfRegInfo = loginInfo.getSelfRegistrationInfo();
+		
+		// Hide or show the self registration controls.
+		updateSelfRegistrationControls( m_selfRegInfo );
+
+		// Turn auto complete on/off.
+		if ( loginInfo.getAllowAutoComplete() == true )
+			DOM.removeElementAttribute( m_formPanel.getElement(), "autocomplete" );
+		else
+			DOM.setElementAttribute( m_formPanel.getElement(), "autocomplete", "off" );
+		
+		if ( m_useOpenIdCkboxElement != null )
+		{
+			// Is OpenID authentication available?
+			if ( loginInfo.getAllowOpenIdAuthentication() )
+			{
+				// Yes
+				m_useOpenIdCkboxElement.getStyle().setVisibility( Visibility.VISIBLE );
+				m_openIdLabel.setVisible( true );
+				m_openIdIdentityTxtBox.setVisible( true );
+			}
+			else
+			{
+				// No
+				m_useOpenIdCkboxElement.getStyle().setVisibility( Visibility.HIDDEN );
+				m_openIdLabel.setVisible( false );
+				m_openIdIdentityTxtBox.setVisible( false );
+			}
+		}
+	}
+	
+	/**
 	 * 
 	 */
+	@Override
 	public Object getDataFromDlg()
 	{
 		// Nothing to do.
@@ -417,6 +512,7 @@ public class LoginDlg extends DlgBox
 	/**
 	 *  
 	 */
+	@Override
 	public FocusWidget getFocusWidget()
 	{
 		return m_userIdTxtBox;
@@ -465,6 +561,7 @@ public class LoginDlg extends DlgBox
 	/*
 	 * This method gets called when the user clicks on a button in the footer.
 	 */
+	@Override
 	public void onClick( ClickEvent event )
 	{
 		Object	source;
@@ -493,6 +590,7 @@ public class LoginDlg extends DlgBox
 	 * Override this method so we can issue an ajax request to get information about self
 	 * registration every time this dialog is invoked.
 	 */
+	@Override
 	public void show()
 	{
 		Scheduler.ScheduledCommand cmd;
@@ -501,6 +599,7 @@ public class LoginDlg extends DlgBox
 		
 		cmd = new Scheduler.ScheduledCommand()
 		{
+			@Override
 			public void execute()
 			{
 				// Issue an ajax request to get self registration info
@@ -861,4 +960,23 @@ public class LoginDlg extends DlgBox
 		// Always use the initial form of the method.
 		prefetch( null );
 	}// end prefetch()
+	
+	
+	/**
+	 * Return whether we should use OpenID authentication 
+	 */
+	private boolean getUseOpenIDAuthentication()
+	{
+		if ( m_openIdIdentityTxtBox != null )
+		{
+			String openId;
+			
+			// Did the user enter anything for the openId?
+			openId = m_openIdIdentityTxtBox.getValue();
+			if ( openId != null && openId.length() > 0 )
+				return true;
+		}
+		
+		return false;
+	}
 }// end LoginDlg
