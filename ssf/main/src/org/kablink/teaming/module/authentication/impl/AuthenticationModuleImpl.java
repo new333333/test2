@@ -457,7 +457,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		     					SPropsUtil.getBoolean("portal.password.ignore", true);
 		     			boolean createUser = 
 		     					SPropsUtil.getBoolean("portal.user.auto.create", true);
-		     			if(identitySource == User.IDENTITY_SOURCE_EXTERNAL) {
+		     			if(result instanceof OpenIDAuthenticationToken) {
 		     				// Override the above default settings which apply only to local and LDAP users.
 		     				passwordAutoSynch = false;
 		     				ignorePassword = true;
