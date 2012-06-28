@@ -620,6 +620,8 @@ public interface GwtTeamingMessages extends Messages
 	String loginDlgKablinkHeader();
 	String loginDlgLoginFailed();
 	String loginDlgNovellHeader();
+	String loginDlgOpenIDIdentity();
+	String loginDlgUseOpenId();
 	String loginDlgPassword();
 	String loginDlgReset();
 	String loginDlgUserId();
