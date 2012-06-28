@@ -1257,9 +1257,16 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	@Override
 	void selectBinder(TreeInfo ti) {
-		// If this a trash Binder?
-		if (!(ti.isBinderTrash())) {
-			// No!  Mark it as having been selected.
+		// We skip selecting a trash...
+		boolean skipSelection = ti.isBinderTrash();
+		if ((!skipSelection) && isFilr()) {
+			// ...or non-collection when in Filr mode.
+			skipSelection = (!(ti.isBinderCollection()));
+		}
+
+		// Should we select this item?
+		if (!skipSelection) {
+			// Yes!  Mark it as having been selected.
 			if (!(ti.isActivityStream())) {
 				setSelectedBinderId(ti.getBinderInfo().getBinderId());
 			}
