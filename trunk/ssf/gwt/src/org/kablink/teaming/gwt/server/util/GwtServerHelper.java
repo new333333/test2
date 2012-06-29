@@ -714,7 +714,7 @@ public class GwtServerHelper {
 		addCollection(bs, request, userWS, ti, CollectionType.MY_FILES,       false);
 		addCollection(bs, request, userWS, ti, CollectionType.SHARED_WITH_ME, false);
 		addCollection(bs, request, userWS, ti, CollectionType.FILE_SPACES,    false);
-		addCollection(bs, request, userWS, ti, CollectionType.SHARED_BY_ME,   true );
+//!		addCollection(bs, request, userWS, ti, CollectionType.SHARED_BY_ME,   true );
 	}
 	
 	/*
