@@ -82,7 +82,7 @@
     <changeSet author="jong" context="schema" failOnError="true" id="9">
         <comment>Newline separated list of regex patterns for allowed OpenID provider login URLs</comment>
         <addColumn tableName="SS_ZONECONFIG">
-            <column name="OPENIDPROVIDERSLOGINURLREGEX" type="CLOB">
+            <column name="OPENIDCLAIMEDIDENTITYREGEX" type="CLOB">
                 <constraints nullable="true" />
             </column>
         </addColumn>
