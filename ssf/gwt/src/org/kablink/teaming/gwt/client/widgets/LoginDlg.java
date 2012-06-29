@@ -72,6 +72,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -90,6 +91,8 @@ public class LoginDlg extends DlgBox
 	private FormPanel m_formPanel = null;
 	private Element m_userIdLabelElement = null;
 	private TextBox m_userIdTxtBox = null;
+	private Element m_pwdLabelElement = null;
+	private PasswordTextBox m_pwdTxtBox = null;
 	private Button m_cancelBtn = null;
 	private Label m_loginFailedMsg = null;
 	private Label m_authenticatingMsg = null;
@@ -97,8 +100,8 @@ public class LoginDlg extends DlgBox
 	private String m_springSecurityRedirect = null;	// This values tells Teaming what url to go to after the user authenticates.
 	private GwtSelfRegistrationInfo m_selfRegInfo = null;
 	private InlineLabel m_selfRegLink = null;
-	private TextBox m_openIdIdentityTxtBox = null;
-	private Label m_openIdLabel = null;
+	private Element m_openIdLabelElement = null;
+	private Element m_openIdIdentityTxtBoxElement = null;
 	private CheckBox m_useOpenIdCkbox = null;
 	private AsyncCallback<VibeRpcResponse> m_rpcGetLoginInfoCallback = null;
 
@@ -251,24 +254,13 @@ public class LoginDlg extends DlgBox
 		
 		// Add a row for the "password" controls.
 		{
-			Element pwdLabelElement;
+			Element pwdTxtBoxElement;
 			
-			pwdLabelElement = Document.get().getElementById( "pwdLabel" );
-			pwdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgPassword() );
-		}
-		
-		// OpenID controls
-		{
-			Element labelElement;
-			Element txtBoxElement;
-			Element inputElement;
+			m_pwdLabelElement = Document.get().getElementById( "pwdLabel" );
+			m_pwdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgPassword() );
 			
-			labelElement = Document.get().getElementById( "openid_identifier_label" );
-			labelElement.setInnerText( GwtTeaming.getMessages().loginDlgOpenIDIdentity() );
-			m_openIdLabel = Label.wrap( labelElement );
-			
-			txtBoxElement = Document.get().getElementById( "openid_identifier_id" );
-			m_openIdIdentityTxtBox = TextBox.wrap( txtBoxElement );
+			pwdTxtBoxElement = Document.get().getElementById( "j_passwordId" );
+			m_pwdTxtBox = PasswordTextBox.wrap( pwdTxtBoxElement );
 		}
 		
 		// Add a "login failed" label to the dialog.
@@ -443,7 +435,54 @@ public class LoginDlg extends DlgBox
 		return panel;
 	}// end createHeader()
 	
-	
+	/**
+	 * Create the controls needed for OpenID authentication
+	 */
+	private void createOpenIdControls()
+	{
+		// Have we already created a "Use OpenID Authentication" checkbox?
+		if ( m_useOpenIdCkbox == null )
+		{
+			FlowPanel panel;
+			ValueChangeHandler<java.lang.Boolean> valueChangeHandler;
+			
+			// No, add one.
+			m_useOpenIdCkbox = new CheckBox( GwtTeaming.getMessages().loginDlgUseOpenId() );
+			panel = new FlowPanel();
+			panel.addStyleName( "loginDlg_useOpenIdPanel" );
+			panel.add( m_useOpenIdCkbox );
+			m_mainPanel.insert( panel, 0 );
+			
+			valueChangeHandler = new ValueChangeHandler<java.lang.Boolean>()
+			{
+				@Override
+				public void onValueChange( ValueChangeEvent<java.lang.Boolean> event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							danceOpenIdControls();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+			m_useOpenIdCkbox.addValueChangeHandler( valueChangeHandler );
+
+			// Add the OpenID Identity text box.
+			{
+				m_openIdLabelElement = Document.get().getElementById( "openid_identifier_label" );
+				m_openIdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgOpenIDIdentity() );
+				
+				m_openIdIdentityTxtBoxElement = Document.get().getElementById( "openid_identifier_id" );
+			}
+		}
+	}
+
 	/**
 	 * Hide/show controls on the dialog based on the given login info
 	 */
@@ -464,40 +503,10 @@ public class LoginDlg extends DlgBox
 		if ( loginInfo.getAllowOpenIdAuthentication() )
 		{
 			// Yes
-			// Have we already created a "Use OpenID Authentication" checkbox?
-			if ( m_useOpenIdCkbox == null )
-			{
-				FlowPanel panel;
-				ValueChangeHandler<java.lang.Boolean> valueChangeHandler;
-				
-				// No, add one.
-				m_useOpenIdCkbox = new CheckBox( GwtTeaming.getMessages().loginDlgUseOpenId() );
-				panel = new FlowPanel();
-				panel.addStyleName( "loginDlg_useOpenIdPanel" );
-				panel.add( m_useOpenIdCkbox );
-				m_mainPanel.insert( panel, 0 );
-				
-				valueChangeHandler = new ValueChangeHandler<java.lang.Boolean>()
-				{
-					@Override
-					public void onValueChange( ValueChangeEvent<java.lang.Boolean> event )
-					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute() 
-							{
-								danceOpenIdControls();
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				};
-				m_useOpenIdCkbox.addValueChangeHandler( valueChangeHandler );
-			}
+			// Create the controls needed for openid authentication.
+			createOpenIdControls();
 			
+			// Show/hide the openid controls
 			danceOpenIdControls();
 		}
 	}
@@ -513,20 +522,26 @@ public class LoginDlg extends DlgBox
 			if ( m_useOpenIdCkbox.getValue() )
 			{
 				// Yes
-				m_openIdLabel.setVisible( true );
-				m_openIdIdentityTxtBox.setVisible( true );
+				m_openIdLabelElement.getStyle().setDisplay( Display.BLOCK );
+				m_openIdIdentityTxtBoxElement.getStyle().setDisplay( Display.BLOCK );
 				
 				m_userIdLabelElement.getStyle().setDisplay( Display.NONE );
 				m_userIdTxtBox.setVisible( false );
+				
+				m_pwdLabelElement.getStyle().setDisplay( Display.NONE );
+				m_pwdTxtBox.setVisible( false );
 			}
 			else
 			{
 				// No
-				m_openIdLabel.setVisible( false );
-				m_openIdIdentityTxtBox.setVisible( false );
+				m_openIdLabelElement.getStyle().setDisplay( Display.NONE );
+				m_openIdIdentityTxtBoxElement.getStyle().setDisplay( Display.NONE );
 				
 				m_userIdLabelElement.getStyle().setDisplay( Display.BLOCK );
 				m_userIdTxtBox.setVisible( true );
+
+				m_pwdLabelElement.getStyle().setDisplay( Display.BLOCK );
+				m_pwdTxtBox.setVisible( true );
 			}
 		}
 	}
