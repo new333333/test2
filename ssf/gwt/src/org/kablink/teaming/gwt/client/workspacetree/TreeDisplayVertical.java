@@ -99,10 +99,10 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class TreeDisplayVertical extends TreeDisplayBase {
 	private ActivityStreamInfo		m_selectedActivityStream;	// When displaying activity streams, the ActivityStream info of the selected activity stream.  null if no activity stream is currently selected.
+	private BinderInfo				m_selectedBinderInfo;		// The currently selected binder.
 	private BusyInfo				m_busyInfo;					// Stores a BusyInfo while we're busy switching contexts.
 	private FlowPanel				m_rootPanel;				// The top level FlowPanel containing the sidebar tree's contents.
 	private HashMap<String,Integer> m_renderDepths;				// A map of the depths the Binder's are are displayed at.
-	private Long 					m_selectedBinderId;			// The ID of the currently selected binder.
 
 	// The following are used for widget IDs assigned to various
 	// objects in a running WorkspaceTreeControl.
@@ -182,7 +182,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			m_expanderImg.setResource(getImages().tree_opener());
 			
 			// ...and tell everybody that it's been collapsed.
-			GwtTeaming.fireEventAsync(new TreeNodeCollapsedEvent(getSelectedBinderId(), getTreeMode()));
+			GwtTeaming.fireEventAsync(
+				new TreeNodeCollapsedEvent(
+					getSelectedBinderInfo(),
+					getTreeMode()));
 		}
 
 		/*
@@ -211,7 +214,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			m_expanderImg.setResource(getImages().tree_closer());
 			
 			// ...and tell everybody that it's been expanded.
-			GwtTeaming.fireEventAsync(new TreeNodeExpandedEvent(getSelectedBinderId(), getTreeMode()));
+			GwtTeaming.fireEventAsync(
+				new TreeNodeExpandedEvent(
+					getSelectedBinderInfo(),
+					getTreeMode()));
 		}
 		
 		/**
@@ -505,8 +511,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		super(wsTree, rootTI);
 		
 		// ...and initialize everything else.
-		m_selectedBinderId = (-1L);
-		m_renderDepths     = new HashMap<String,Integer>();
+		m_renderDepths = new HashMap<String,Integer>();
 	}
 
 	/*
@@ -627,7 +632,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		else {
 			// No, we aren't in activity stream mode!  Build a TreeInfo
 			// for the activity streams...
-			final String selectedBinderId = String.valueOf(m_selectedBinderId);
+			final String selectedBinderId = m_selectedBinderInfo.getBinderId();
 			GetVerticalActivityStreamsTreeCmd cmd = new GetVerticalActivityStreamsTreeCmd(selectedBinderId);
 			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
@@ -668,7 +673,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		m_selectedActivityStream = defaultASI;
 		setRootTreeInfo(asRootTI);
 		m_rootPanel.clear();
-		render(String.valueOf(m_selectedBinderId), m_rootPanel);
+		render(m_selectedBinderInfo, m_rootPanel);
 		
 		// ...and if we have a default activity stream to select...
 		if (null != defaultASI) {
@@ -695,7 +700,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		if (isInActivityStreamMode()) { 
 			// Yes!  Reload the workspace tree control.
 			m_selectedActivityStream = null;
-			rerootTree(m_selectedBinderId, m_selectedBinderId, exitMode);
+			rerootTree(m_selectedBinderInfo, m_selectedBinderInfo, exitMode);
 		}
 	}
 	
@@ -902,7 +907,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		}
 		
 		else {
-			reply = (Long.valueOf(ti.getBinderInfo().getBinderId()).equals(m_selectedBinderId));
+			reply = ti.getBinderInfo().isEqual(m_selectedBinderInfo);
 		}
 		
 		return reply;
@@ -917,7 +922,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	@Override
 	public void refreshSidebarTree() {
 		// Simply reload the tree.
-		reloadTree(m_selectedBinderId);
+		reloadTree(m_selectedBinderInfo);
 	}
 
 	/**
@@ -929,7 +934,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	@Override
 	public void rerootSidebarTree() {
 		// Re-root the tree at the currently selected binder.
-		rerootTree(m_selectedBinderId, m_selectedBinderId, ExitMode.SIMPLE_EXIT);
+		rerootTree(m_selectedBinderInfo, m_selectedBinderInfo, ExitMode.SIMPLE_EXIT);
 	}
 
 	/**
@@ -938,14 +943,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * 
 	 * Implementation of TreeDisplayBase.render().
 	 *
-	 * @param selectedBinderId
+	 * @param selectedBinderInfo
 	 * @param targetPanel
 	 */
 	@Override
-	public void render(String selectedBinderId, FlowPanel targetPanel) {
+	public void render(BinderInfo selectedBinderInfo, FlowPanel targetPanel) {
 		// Track the Binder that's to be initially selected.
 		m_rootPanel = targetPanel;
-		setSelectedBinderId(selectedBinderId);
+		setSelectedBinderInfo(selectedBinderInfo);
 		
 		// Create a hidden <INPUT> that we'll use to store the ID of
 		// the currently selected Binder.
@@ -1261,7 +1266,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		if (!skipSelection) {
 			// Yes!  Mark it as having been selected.
 			if (!(ti.isActivityStream())) {
-				setSelectedBinderId(ti.getBinderInfo().getBinderId());
+				setSelectedBinderInfo(ti.getBinderInfo());
 			}
 			String selectedId_New = getSelectorId(ti);
 			Element selectorLabel_New = Document.get().getElementById(selectedId_New);
@@ -1296,34 +1301,34 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	/*
 	 * Forces the tree to reload regardless of the circumstances.
 	 */
-	private void reloadTree(Long selectedBinderId) {
+	private void reloadTree(BinderInfo selectedBinderInfo) {
 		// To reload it, simply re-root it at the same point that it's
 		// currently rooted, reselecting the previously selected binder.
-		String rootBinderId;
+		BinderInfo rootBinderInfo;
 		if (GwtClientHelper.getRequestInfo().isRerootSidebarTree())
-		     rootBinderId = String.valueOf(selectedBinderId);
-		else rootBinderId = getRootTreeInfo().getBinderInfo().getBinderId();
-		rerootTree(rootBinderId, selectedBinderId, ExitMode.SIMPLE_EXIT);
+		     rootBinderInfo = selectedBinderInfo;
+		else rootBinderInfo = getRootTreeInfo().getBinderInfo();
+		rerootTree(rootBinderInfo, selectedBinderInfo, ExitMode.SIMPLE_EXIT);
 	}
 	
 	/*
 	 * Re-roots the WorkspaceTreeControl to a new Binder and optionally
 	 * selects a binder.
 	 */
-	private void rerootTree(final String newRootBinderId, final Long selectedBinderId, final ExitMode exitingActivityStreamMode) {
+	private void rerootTree(final BinderInfo newRootBinderInfo, final BinderInfo selectedBinderInfo, final ExitMode exitingActivityStreamMode) {
 		// Clear any pending sidebar flags.  Re-rooting will take care
 		// of any refresh/re-root request.
 		clearSidebarFlags();
 		
 		// Read the TreeInfo for the selected Binder.
-		GetVerticalTreeCmd cmd = new GetVerticalTreeCmd(newRootBinderId);
+		GetVerticalTreeCmd cmd = new GetVerticalTreeCmd(newRootBinderInfo.getBinderId());
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetTree(),
-					newRootBinderId);
+					newRootBinderInfo.getBinderId());
 			}
 			
 			@Override
@@ -1332,35 +1337,30 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				// the AJAX request ASAP.
 				TreeInfo rootTI = ((TreeInfo) response.getResponseData());
 				rerootTreeAsync(
-					newRootBinderId,
-					selectedBinderId,
+					newRootBinderInfo,
+					selectedBinderInfo,
 					exitingActivityStreamMode,
 					rootTI);
 			}
 		});
 	}
 	
-	private void rerootTree(final Long newRootBinderId, final Long selectedBinderId, final ExitMode exitingActivityStreamMode) {
+	private void rerootTree(final BinderInfo newRootBinderInfo) {
 		// Always use the initial form of the method.
-		rerootTree(String.valueOf(newRootBinderId), selectedBinderId, exitingActivityStreamMode);
-	}
-	
-	private void rerootTree(final String newRootBinderId) {
-		// Always use the initial form of the method.
-		rerootTree(newRootBinderId, null, ExitMode.SIMPLE_EXIT);
+		rerootTree(newRootBinderInfo, null, ExitMode.SIMPLE_EXIT);
 	}
 	
 	/*
 	 * Asynchronously re-roots the WorkspaceTreeControl to a new Binder
 	 * and optionally selects a binder.
 	 */
-	private void rerootTreeAsync(final String newRootBinderId, final Long selectedBinderId, final ExitMode exitingActivityStreamMode, final TreeInfo rootTI) {
+	private void rerootTreeAsync(final BinderInfo newRootBinderInfo, final BinderInfo selectedBinderInfo, final ExitMode exitingActivityStreamMode, final TreeInfo rootTI) {
 		ScheduledCommand treeRooter = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				rerootTreeNow(
-					newRootBinderId,
-					selectedBinderId,
+					newRootBinderInfo,
+					selectedBinderInfo,
 					exitingActivityStreamMode,
 					rootTI);
 			}
@@ -1372,17 +1372,17 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Synchronously re-roots the WorkspaceTreeControl to a new Binder
 	 * and optionally selects a binder.
 	 */
-	private void rerootTreeNow(String newRootBinderId, Long selectedBinderId, ExitMode exitingActivityStreamMode, TreeInfo rootTI) {
+	private void rerootTreeNow(BinderInfo newRootBinderInfo, BinderInfo selectedBinderInfo, ExitMode exitingActivityStreamMode, TreeInfo rootTI) {
 		// Update the display with the TreeInfo.
 		setRootTreeInfo(rootTI);
 		m_rootPanel.clear();
-		render(newRootBinderId, m_rootPanel);
+		render(newRootBinderInfo, m_rootPanel);
 		
 		// If we're supposed to select a binder as part of the
 		// re-rooting...
-		if (null != selectedBinderId) {
+		if (null != selectedBinderInfo) {
 			// ...and we can find that binder...
-			TreeInfo selectedBinderTI = TreeInfo.findBinderTI(rootTI, String.valueOf(selectedBinderId));
+			TreeInfo selectedBinderTI = TreeInfo.findBinderTI(rootTI, String.valueOf(selectedBinderInfo));
 			if (null != selectedBinderTI) {
 				// ...select it.
 				selectBinder(selectedBinderTI);
@@ -1403,15 +1403,15 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * 
 	 * Implementation of TreeDisplayBase.setRenderContext().
 	 * 
-	 * @param selectedBinderId
+	 * @param selectedBinderInfo
 	 * @param targetPanel
 	 */
 	@Override
-	public void setRenderContext(String selectedBinderId, FlowPanel targetPanel) {
+	public void setRenderContext(BinderInfo selectedBinderInfo, FlowPanel targetPanel) {
 		// Simply store the parameter in their appropriate data
 		// members.
-		m_selectedBinderId = Long.valueOf(selectedBinderId);
-		m_rootPanel        = targetPanel;
+		m_selectedBinderInfo = selectedBinderInfo;
+		m_rootPanel          = targetPanel;
 	}
 	
 	/**
@@ -1440,10 +1440,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		
 		// Is the requested Binder available in those we've already
 		// got loaded?
-		Instigator		instigator = osbInfo.getInstigator();
-		final Long		binderId   = osbInfo.getBinderId();
-		final String	binderIdS  = String.valueOf(binderId);
-		final TreeInfo	targetTI   = TreeInfo.findBinderTI(getRootTreeInfo(), binderIdS);
+		Instigator		 instigator = osbInfo.getInstigator();
+		final BinderInfo binderInfo = osbInfo.getBinderInfo();
+		final TreeInfo	 targetTI   = TreeInfo.findBinderTI(getRootTreeInfo(), binderInfo.getBinderId());
 		if (null != targetTI) {
 			// Yes!  Should the request cause the tree to be reloaded?
 			RequestInfo ri = GwtClientHelper.getRequestInfo();
@@ -1455,7 +1454,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			case CONTENT_AREA_CHANGED:
 			case SIDEBAR_TREE_SELECT:
 				if (forceReload)
-					 reloadTree(binderId);
+					 reloadTree(binderInfo);
 				else selectBinder(targetTI);
 				break;
 
@@ -1464,14 +1463,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				// reloaded!  (It may be coming from the bread crumbs
 				// or some other unknown source.)  What's the ID if the
 				// selected Binder's root workspace?
-				GetRootWorkspaceIdCmd cmd = new GetRootWorkspaceIdCmd(binderIdS);
+				GetRootWorkspaceIdCmd cmd = new GetRootWorkspaceIdCmd(binderInfo.getBinderId());
 				GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 					@Override
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
 							GwtTeaming.getMessages().rpcFailure_GetRootWorkspaceId(),
-							binderIdS);
+							binderInfo.getBinderId());
 						selectBinder(targetTI);
 					}
 					
@@ -1482,7 +1481,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 						StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
 						String rootWorkspaceId = responseData.getStringValue();
 						selectRootWorkspaceIdAsync(
-							binderIdS,
+							binderInfo,
 							forceReload,
 							targetTI,
 							rootWorkspaceId);
@@ -1496,18 +1495,18 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// No, the requested Binder isn't available in those we've
 			// already got loaded!  Re-root the tree at the selected
 			// Binder...
-			rerootTree(binderIdS);
+			rerootTree(binderInfo);
 		}
 	}
 
 	/*
 	 * Asynchronously selects a binder and/or re-roots the tree.
 	 */
-	private void selectRootWorkspaceIdAsync(final String binderId, final boolean forceReload, final TreeInfo targetTI, final String rootWorkspaceId) {
+	private void selectRootWorkspaceIdAsync(final BinderInfo binderInfo, final boolean forceReload, final TreeInfo targetTI, final String rootWorkspaceId) {
 		ScheduledCommand rootWSSelector = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				selectRootWorkspaceIdNow(binderId, forceReload, targetTI, rootWorkspaceId);
+				selectRootWorkspaceIdNow(binderInfo, forceReload, targetTI, rootWorkspaceId);
 			}
 		};
 		Scheduler.get().scheduleDeferred(rootWSSelector);
@@ -1516,19 +1515,19 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	/*
 	 * Synchronously selects a binder and/or re-roots the tree.
 	 */
-	private void selectRootWorkspaceIdNow(String binderId, boolean forceReload, TreeInfo targetTI, String rootWorkspaceId) {
+	private void selectRootWorkspaceIdNow(BinderInfo binderInfo, boolean forceReload, TreeInfo targetTI, String rootWorkspaceId) {
 		// If the selected Binder's workspace is different from the
 		// Binder we're currently rooted to, we need to re-root the
 		// tree.  Do we need to re-root?
 		if (rootWorkspaceId.equals(getRootTreeInfo().getBinderInfo().getBinderId())) {
 			// No!  Simply select the Binder.
 			if (forceReload)
-				 reloadTree(m_selectedBinderId);
-			else selectBinder(targetTI);
+				 reloadTree(  m_selectedBinderInfo);
+			else selectBinder(targetTI            );
 		}
 		else {
 			// Yes, we need to re-root!
-			rerootTree(binderId);
+			rerootTree(binderInfo);
 		}
 	}
 	
@@ -1542,8 +1541,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	/*
 	 * Stores which Binder is selected.
 	 */
-	private void setSelectedBinderId(String selectedBinderId) {
-		m_selectedBinderId = Long.valueOf(selectedBinderId);
+	private void setSelectedBinderInfo(BinderInfo selectedBinderInfo) {
+		m_selectedBinderInfo = selectedBinderInfo;
 	}
 
 	/*

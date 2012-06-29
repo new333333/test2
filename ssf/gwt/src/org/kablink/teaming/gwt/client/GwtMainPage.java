@@ -87,7 +87,6 @@ import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg.GwtQuickViewDlgClient;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CanModifyBinderCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetBinderInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetShareBinderPageUrlCmd;
@@ -104,9 +103,11 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.Agent;
 import org.kablink.teaming.gwt.client.util.AgentBase;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.BinderInfoHelper;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.BinderInfoHelper.BinderInfoCallback;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TagInfo;
@@ -228,7 +229,7 @@ public class GwtMainPage extends ResizeComposite
 	private MastHead m_mastHead;
 	private AdminControl m_adminControl = null;
 	private BreadcrumbTreePopup m_breadCrumbBrowser;
-	private String m_selectedBinderId;
+	private BinderInfo m_selectedBinderInfo;
 	private WorkspaceTreeControl m_wsTreeCtrl;
 	private UIStateManager m_uiStateManager;
 	private ActivityStreamCtrl m_activityStreamCtrl = null;
@@ -380,7 +381,7 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void loadWorkspaceTreeControl()
 	{
-		WorkspaceTreeControl.createAsync( this, m_selectedBinderId, false, TreeMode.VERTICAL, new WorkspaceTreeControlClient()
+		WorkspaceTreeControl.createAsync( this, m_selectedBinderInfo, false, TreeMode.VERTICAL, new WorkspaceTreeControlClient()
 		{			
 			@Override
 			public void onUnavailable()
@@ -475,30 +476,44 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void constructMainPage_Start()
 	{
-		// Get information about the request we are dealing with.
-		m_selectedBinderId = m_requestInfo.getBinderId();
-		if ( ! ( GwtClientHelper.hasString( m_selectedBinderId ) ) )
+		m_novellTeaming = m_requestInfo.isNovellTeaming();
+		m_mainPanel     = new VibeDockLayoutPanel( Style.Unit.PX );
+		m_mainPanel.addStyleName( "mainTeamingPagePanel" );
+		
+		String riBinderId = m_requestInfo.getBinderId();
+		if ( ! GwtClientHelper.hasString( riBinderId ))
 		{
-			m_selectedBinderId = m_requestInfo.getCurrentUserWorkspaceId();
-			if ( ! ( GwtClientHelper.hasString( m_selectedBinderId ) ) )
+			riBinderId = m_requestInfo.getCurrentUserWorkspaceId();
+			if ( ! ( GwtClientHelper.hasString( riBinderId ) ) )
 			{
-				m_selectedBinderId = m_requestInfo.getTopWSId();
+				riBinderId = m_requestInfo.getTopWSId();
 			}
 		}
-		m_novellTeaming = m_requestInfo.isNovellTeaming();
 		
-		m_mainPanel = new VibeDockLayoutPanel( Style.Unit.PX );
-		m_mainPanel.addStyleName( "mainTeamingPagePanel" );
-
-		ScheduledCommand loadControls = new ScheduledCommand()
-		{
+		BinderInfoHelper.getBinderInfo( riBinderId, new BinderInfoCallback() {
 			@Override
-			public void execute()
+			public void onFailure()
 			{
-				loadMainMenuControl();
-			}// end execute()
-		};
-		Scheduler.get().scheduleDeferred( loadControls );		
+				// Nothing to do!  The user will already have been
+				// told about the problem.
+			}// end onFailure()
+
+			@Override
+			public void onSuccess( BinderInfo binderInfo )
+			{
+				// Get information about the request we are dealing with.
+				m_selectedBinderInfo = binderInfo;
+				ScheduledCommand loadControls = new ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						loadMainMenuControl();
+					}// end execute()
+				};
+				Scheduler.get().scheduleDeferred( loadControls );		
+			}// end onSuccess()
+		});
 	}// end constructMainPage_Start();
 	
 	/*
@@ -931,10 +946,50 @@ public class GwtMainPage extends ResizeComposite
 		contextLoaded( binderId, instigator, false, "" );
 	}
 	
-	private void contextLoaded( String binderId, final Instigator instigator, boolean inSearch, String searchTabId )
+	private void contextLoaded( final String binderId, final Instigator instigator, final boolean inSearch, final String searchTabId )
 	{
-		GetBinderPermalinkCmd cmd;
+		// Do we have a binder ID of the context loaded?  (Note that we
+		// won't for search results.)
+		if ( GwtClientHelper.hasString( binderId ) )
+		{
+			// Yes!  Get the BinderInfo for the binder...
+			BinderInfoHelper.getBinderInfo( binderId, new BinderInfoCallback() {
+				@Override
+				public void onFailure()
+				{
+					// Nothing to do!  The user will already have been
+					// told about the problem.
+				}// end onFailure()
+
+				@Override
+				public void onSuccess( final BinderInfo binderInfo )
+				{
+					// ...and load the context from that.
+					ScheduledCommand loadNextControl = new ScheduledCommand() {
+						@Override
+						public void execute()
+						{
+							contextLoaded( binderInfo, instigator, inSearch, searchTabId );
+						}// end execute()
+					};
+					Scheduler.get().scheduleDeferred( loadNextControl );
+				}// end onSuccess()
+			});
+		}
 		
+		else {
+			// No, we weren't given the ID of the context loaded!
+			// Treat it as though the current context was reloaded.
+			contextLoaded(
+				m_selectedBinderInfo,
+				instigator,
+				inSearch,
+				searchTabId );
+		}
+	}
+	
+	private void contextLoaded( final BinderInfo binderInfo, final Instigator instigator, boolean inSearch, String searchTabId )
+	{
 		// If the administration control is NOT active...
 		if ( !isAdminActive() )
 		{
@@ -950,7 +1005,7 @@ public class GwtMainPage extends ResizeComposite
 			// ...Clear the flag, tell the menu about this context and
 			// ...otherwise ignore this.
 			m_requestInfo.clearShowWhatsNewOnLogin();
-			m_mainMenuCtrl.setContext( binderId, inSearch, searchTabId );
+			m_mainMenuCtrl.setContext( binderInfo, inSearch, searchTabId );
 			handleOnActivityStreamEnter(ActivityStreamDataType.OTHER);
 			return;
 		}
@@ -977,15 +1032,7 @@ public class GwtMainPage extends ResizeComposite
 		
 		jsFixupGwtMainTitle();
 		
-		// If we're in a search panel, we always show the root
-		// workspace in the sidebar tree.  That's the way it worked
-		// in the JSP based UI so I kept that functionality intact.
-		final String contextBinderId;
-		if      ( m_inSearch )                            contextBinderId = m_selectedBinderId; // Teaming 2.x equivalent would have been:  m_requestInfo.getTopWSId();
-		else if ( GwtClientHelper.hasString( binderId ) ) contextBinderId = binderId;
-		else                                              contextBinderId = m_selectedBinderId;
-		
-		cmd = new GetBinderPermalinkCmd( contextBinderId );
+		GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd( binderInfo.getBinderId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
@@ -994,7 +1041,7 @@ public class GwtMainPage extends ResizeComposite
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
-					contextBinderId );
+					binderInfo.getBinderId() );
 			}//end onFailure()
 			
 			@Override
@@ -1003,9 +1050,17 @@ public class GwtMainPage extends ResizeComposite
 				String binderPermalink;
 				StringRpcResponseData responseData;
 
-				responseData = (StringRpcResponseData) response.getResponseData();
+				responseData    = ((StringRpcResponseData) response.getResponseData());
 				binderPermalink = responseData.getStringValue();
-				EventHelper.fireContextChangedEventAsync( contextBinderId, binderPermalink, instigator );
+				
+				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+					binderInfo,
+					binderPermalink,
+					instigator );
+				if ( GwtClientHelper.validateOSBI( osbInfo ) )
+				{
+					GwtTeaming.fireEvent( new ContextChangedEvent( osbInfo ) );
+				}
 			}// end onSuccess()
 		});
 	}// end contextLoaded()
@@ -1042,7 +1097,7 @@ public class GwtMainPage extends ResizeComposite
 		{
 			// Yes, start with empty branding data.
 			brandingDataIn = new GwtBrandingData();
-			brandingDataIn.setBinderId( m_selectedBinderId );
+			brandingDataIn.setBinderId( m_selectedBinderInfo.getBinderId() );
 		}
 		
 		final GwtBrandingData brandingData = brandingDataIn;
@@ -1809,7 +1864,7 @@ public class GwtMainPage extends ResizeComposite
 		
 		WorkspaceTreeControl.createAsync(
 				this,
-				m_selectedBinderId,
+				m_selectedBinderInfo,
 				false,
 				TreeMode.HORIZONTAL_POPUP,
 				new WorkspaceTreeControlClient() {				
@@ -1861,7 +1916,7 @@ public class GwtMainPage extends ResizeComposite
 		if (GwtClientHelper.validateOSBI( osbInfo ))
 		{
 			// ...put it into effect.
-			m_selectedBinderId = osbInfo.getBinderId().toString();			
+			m_selectedBinderInfo = osbInfo.getBinderInfo();			
 		}
 	}// end onContextChanged()
 	
@@ -2377,7 +2432,7 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onSearchAdvanced( SearchAdvancedEvent event )
 	{
-		String searchUrl = (m_requestInfo.getAdvancedSearchUrl() + "&binderId=" + m_selectedBinderId);
+		String searchUrl = (m_requestInfo.getAdvancedSearchUrl() + "&binderId=" + m_selectedBinderInfo.getBinderId());
 		gotoUrlAsync(searchUrl);
 	}// end onSearchAdvanced()
 	
@@ -2565,7 +2620,7 @@ public class GwtMainPage extends ResizeComposite
 		
 		forceUIReload = event.getForceUIReload();
 		
-		cmd = new TrackBinderCmd( m_selectedBinderId );
+		cmd = new TrackBinderCmd( m_selectedBinderInfo.getBinderId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
@@ -2574,7 +2629,7 @@ public class GwtMainPage extends ResizeComposite
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_TrackingBinder(),
-					m_selectedBinderId );
+					m_selectedBinderInfo.getBinderId() );
 			}//end onFailure()
 			
 			@Override
@@ -2616,7 +2671,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		UntrackBinderCmd cmd;
 		
-		cmd = new UntrackBinderCmd( m_selectedBinderId );
+		cmd = new UntrackBinderCmd( m_selectedBinderInfo.getBinderId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
@@ -2625,7 +2680,7 @@ public class GwtMainPage extends ResizeComposite
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_UntrackingBinder(),
-					m_selectedBinderId );
+					m_selectedBinderInfo.getBinderId() );
 			}//end onFailure()
 			
 			@Override
@@ -2652,7 +2707,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		GetBinderPermalinkCmd cmd;
 		
-		cmd = new GetBinderPermalinkCmd( m_selectedBinderId );
+		cmd = new GetBinderPermalinkCmd( m_selectedBinderInfo.getBinderId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
@@ -2660,7 +2715,7 @@ public class GwtMainPage extends ResizeComposite
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
-					m_selectedBinderId );
+					m_selectedBinderInfo.getBinderId() );
 			}//end onFailure()
 			
 			@Override
@@ -2672,8 +2727,14 @@ public class GwtMainPage extends ResizeComposite
 				responseData = (StringRpcResponseData) response.getResponseData();
 				binderUrl = responseData.getStringValue();
 				
-				binderUrl = GwtClientHelper.appendUrlParam( binderUrl, "operation", "show_team_members" );
-				EventHelper.fireChangeContextEventAsync( m_selectedBinderId, binderUrl, Instigator.VIEW_TEAM_MEMBERS );
+				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+					m_selectedBinderInfo,
+					binderUrl,
+					Instigator.VIEW_TEAM_MEMBERS );
+				if ( GwtClientHelper.validateOSBI( osbInfo ) )
+				{
+					GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ));
+				}
 			}// end onSuccess()
 		});// end AsyncCallback()
 	}// end onViewCurrentBinderTeamMembers()
@@ -2745,7 +2806,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		UntrackPersonCmd cmd;
 		
-		cmd = new UntrackPersonCmd( m_selectedBinderId );
+		cmd = new UntrackPersonCmd( m_selectedBinderInfo.getBinderId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
@@ -2754,7 +2815,7 @@ public class GwtMainPage extends ResizeComposite
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_TrackingPerson(),
-					m_selectedBinderId );
+					m_selectedBinderInfo.getBinderId() );
 			}//end onFailure()
 			
 			@Override
@@ -3023,13 +3084,13 @@ public class GwtMainPage extends ResizeComposite
 	/**
 	 * ?
 	 * 
-	 * @param selectedBinderId
+	 * @param selectedBinderInfo
 	 * @param inSearch
 	 * @param searchTabId
 	 */
-	public void setMenuContext( String selectedBinderId, boolean inSearch, String searchTabId )
+	public void setMenuContext( BinderInfo selectedBinderInfo, boolean inSearch, String searchTabId )
 	{
-		m_mainMenuCtrl.setContext(selectedBinderId, inSearch, searchTabId);
+		m_mainMenuCtrl.setContext(selectedBinderInfo, inSearch, searchTabId);
 	}// end setMenuContext()
 	
 	/*

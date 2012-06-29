@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
 
 import com.google.gwt.event.shared.EventHandler;
@@ -47,8 +48,8 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 public class TreeNodeExpandedEvent extends VibeEventBase<TreeNodeExpandedEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
-    private Long		m_binderId;	//
-    private TreeMode	m_treeMode;	//
+    private BinderInfo	m_binderInfo;	//
+    private TreeMode	m_treeMode;		//
 
 	/**
 	 * Handler interface for this event.
@@ -68,16 +69,16 @@ public class TreeNodeExpandedEvent extends VibeEventBase<TreeNodeExpandedEvent.H
 	/**
 	 * Class constructor.
 	 * 
-	 * @param binderId
+	 * @param binderInfo
 	 * @param treeMode
 	 */
-	public TreeNodeExpandedEvent(Long binderId, TreeMode treeMode) {
+	public TreeNodeExpandedEvent(BinderInfo binderInfo, TreeMode treeMode) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
-		setBinderId(binderId);
-		setTreeMode(treeMode);
+		setBinderInfo(binderInfo);
+		setTreeMode(  treeMode  );
 	}
 	
 	/**
@@ -85,16 +86,16 @@ public class TreeNodeExpandedEvent extends VibeEventBase<TreeNodeExpandedEvent.H
 	 * 
 	 * @return
 	 */
-	public Long     getBinderId() {return m_binderId;}
-	public TreeMode getTreeMode() {return m_treeMode;}
+	public BinderInfo getBinderInfo() {return m_binderInfo;}
+	public TreeMode   getTreeMode()   {return m_treeMode;  }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setBinderId(Long     binderId) {m_binderId = binderId;}
-	public void setTreeMode(TreeMode treeMode) {m_treeMode = treeMode;}
+	public void setBinderInfo(BinderInfo binderInfo) {m_binderInfo = binderInfo;}
+	public void setTreeMode(  TreeMode   treeMode)   {m_treeMode   = treeMode;  }
 	
 	/**
 	 * Dispatches this event when one is triggered.

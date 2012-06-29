@@ -35,9 +35,9 @@ package org.kablink.teaming.gwt.client.event;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.rpc.shared.GetBinderInfoCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.BinderInfoHelper;
+import org.kablink.teaming.gwt.client.util.BinderInfoHelper.BinderInfoCallback;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -45,7 +45,6 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
@@ -159,21 +158,17 @@ public class EventHelper {
 	 * Synchronously fires a ChangeContextEvent.
 	 */
 	private static void fireChangeContextEventNow(final String binderId, final String binderPermalink, final Instigator instigator) {
-		GetBinderInfoCmd cmd = new GetBinderInfoCmd(binderId);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+		BinderInfoHelper.getBinderInfo(binderId, new BinderInfoCallback() {
 			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetBinderInfo(),
-					binderId);
+			public void onFailure() {
+				// Nothing to do!  The user will already have been
+				// told about the problem.
 			}
-			
+
 			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				BinderInfo bi = ((BinderInfo) response.getResponseData());
+			public void onSuccess(BinderInfo binderInfo) {
 				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
-					bi,
+					binderInfo,
 					binderPermalink,
 					instigator);
 				if (GwtClientHelper.validateOSBI(osbInfo)) {
@@ -203,22 +198,18 @@ public class EventHelper {
 	/*
 	 * Synchronously fires a ContextChangedEvent.
 	 */
-	private static void fireContextChangedEventNow(final String contextBinderId, final String binderPermalink, final Instigator instigator) {
-		GetBinderInfoCmd cmd = new GetBinderInfoCmd(contextBinderId);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+	private static void fireContextChangedEventNow(final String binderId, final String binderPermalink, final Instigator instigator) {
+		BinderInfoHelper.getBinderInfo(binderId, new BinderInfoCallback() {
 			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetBinderInfo(),
-					contextBinderId);
+			public void onFailure() {
+				// Nothing to do!  The user will already have been
+				// told about the problem.
 			}
-			
+
 			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				BinderInfo bi = ((BinderInfo) response.getResponseData());
+			public void onSuccess(BinderInfo binderInfo) {
 				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
-					bi,
+					binderInfo,
 					binderPermalink,
 					instigator);
 				if (GwtClientHelper.validateOSBI(osbInfo)) {
