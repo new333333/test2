@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,7 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.SearchRecentPlaceEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetRecentPlacesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetRecentPlacesRpcResponseData;
@@ -44,7 +44,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
@@ -89,13 +88,10 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 			// Trigger the appropriate action for the place.
 			switch (m_place.getTypeEnum()) {
 			case BINDER:
-				GwtTeaming.fireEvent(
-					new ChangeContextEvent(
-						new OnSelectBinderInfo(
-							m_place.getBinderId(),
-							m_place.getPermalinkUrl(),
-							false,
-							Instigator.RECENT_PLACE_SELECT)));
+				EventHelper.fireChangeContextEventAsync(
+					m_place.getBinderId(),
+					m_place.getPermalinkUrl(),
+					Instigator.RECENT_PLACE_SELECT);
 				
 				break;
 			
@@ -170,12 +166,14 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 			// No!  Populate it now.
 			GetRecentPlacesCmd cmd = new GetRecentPlacesCmd(Long.parseLong(m_currentBinder.getBinderId()));
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
 						m_messages.rpcFailure_GetRecentPlaces());
 				}
 				
+				@Override
 				public void onSuccess(VibeRpcResponse response)  {
 					List<RecentPlaceInfo> rpList;
 					GetRecentPlacesRpcResponseData responseData;

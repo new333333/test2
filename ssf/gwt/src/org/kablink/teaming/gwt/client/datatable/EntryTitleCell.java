@@ -111,7 +111,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 					// contexts to it.
 					StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
 					String binderPermalink = responseData.getStringValue();
-					OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(binderPermalink, false, Instigator.GOTO_CONTENT_URL);
+					OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(binderPermalink, Instigator.GOTO_CONTENT_URL);
 					if (GwtClientHelper.validateOSBI(osbInfo)) {
 						GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
 					}

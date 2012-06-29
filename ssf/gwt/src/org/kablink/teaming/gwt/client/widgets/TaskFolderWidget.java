@@ -30,20 +30,18 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.lpe.TaskFolderProperties;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTaskListCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.TaskListItemListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 
@@ -55,14 +53,11 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.InlineLabel;
 
-
-
 /**
- * 
  * This class is used to display a task folder widget in a landing page.  We will display the first
  * n tasks found in the given folder.
+ * 
  * @author jwootton
- *
  */
 public class TaskFolderWidget extends VibeWidget
 {
@@ -105,10 +100,7 @@ public class TaskFolderWidget extends VibeWidget
 	 */
 	private void handleClickOnFolderTitle()
 	{
-		OnSelectBinderInfo binderInfo;
-		
-		binderInfo = new OnSelectBinderInfo( m_properties.getFolderId(), m_properties.getViewFolderUrl(), false, Instigator.UNKNOWN );
-		GwtTeaming.fireEvent( new ChangeContextEvent( binderInfo ) );
+		EventHelper.fireChangeContextEventAsync( m_properties.getFolderId(), m_properties.getViewFolderUrl(), Instigator.UNKNOWN );
 	}
 	
 	

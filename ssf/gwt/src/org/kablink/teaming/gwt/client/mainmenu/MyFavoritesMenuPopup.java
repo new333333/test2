@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,7 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.rpc.shared.AddFavoriteCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFavoritesCmd;
@@ -47,14 +47,12 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
 
 /**
  * Class used for the My Favorites menu item popup.  
@@ -101,6 +99,7 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 			// Fire a selection changed event.
 			GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd(m_favorite.getValue());
 			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
@@ -108,6 +107,7 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 						m_favorite.getValue());
 				}
 				
+				@Override
 				public void onSuccess(VibeRpcResponse response) {
 					String binderPermalink;
 					StringRpcResponseData responseData;
@@ -118,34 +118,12 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 					// Fire the selection changed event
 					// asynchronously so that we can release the AJAX
 					// request ASAP.
-					fireChangeContextAsync(
-						new OnSelectBinderInfo(
-							m_favorite.getValue(),
-							binderPermalink,
-							false,
-							Instigator.FAVORITE_SELECT));
+					EventHelper.fireChangeContextEventAsync(
+						m_favorite.getValue(),
+						binderPermalink,
+						Instigator.FAVORITE_SELECT);
 				}
 			});
-		}
-
-		/*
-		 * Asynchronously fires a change context event.
-		 */
-		private void fireChangeContextAsync(final OnSelectBinderInfo osbi) {
-			ScheduledCommand changeSelection = new ScheduledCommand() {
-				@Override
-				public void execute() {
-					fireChangeContextNow(osbi);
-				}
-			};
-			Scheduler.get().scheduleDeferred(changeSelection);
-		}
-		
-		/*
-		 * Synchronously fires a change context event.
-		 */
-		private void fireChangeContextNow(OnSelectBinderInfo osbi) {
-			GwtTeaming.fireEvent(new ChangeContextEvent(osbi));
 		}
 	}
 	
@@ -189,12 +167,14 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 				// Adding the current binder to the favorites!
 				cmd = new AddFavoriteCmd( m_id );
 				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+					@Override
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
 							m_messages.rpcFailure_AddFavorite(),
 							m_id);
 					}
+					@Override
 					public void onSuccess(VibeRpcResponse response)  {}
 				});
 				break;
@@ -205,12 +185,14 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 				// Removing the current binder from the favorites!
 				rfCmd = new RemoveFavoriteCmd( m_id );
 				GwtClientHelper.executeCommand( rfCmd, new AsyncCallback<VibeRpcResponse>() {
+					@Override
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
 							m_messages.rpcFailure_RemoveFavorite(),
 							m_id);
 					}
+					@Override
 					public void onSuccess(VibeRpcResponse response)  {}
 				});
 				break;
@@ -303,12 +285,14 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 			// ...populate it now.
 			GetFavoritesCmd cmd = new GetFavoritesCmd();
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
 						m_messages.rpcFailure_GetFavorites());
 				}
 				
+				@Override
 				public void onSuccess(VibeRpcResponse response)  {
 					List<FavoriteInfo> fList;
 					GetFavoritesRpcResponseData responseData;

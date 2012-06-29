@@ -1862,30 +1862,22 @@ public class TaskTable extends Composite
 	 * Called to switch to the folder location of a task.
 	 */
 	private void handleTaskLocation(TaskListItem task) {
-		final Long folderId = task.getTask().getTaskId().getBinderId();
-		GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd(String.valueOf(folderId));
+		final String folderId = String.valueOf(task.getTask().getTaskId().getBinderId());
+		GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd(folderId);
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
-					String.valueOf(folderId));
+					folderId);
 			}
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
 				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
 				String binderPermalink = responseData.getStringValue();
-				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
-					folderId,
-					binderPermalink,
-					false,	// false -> Not trash.
-					Instigator.GOTO_CONTENT_URL);
-				
-				if (GwtClientHelper.validateOSBI(osbInfo)) {
-					GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
-				}
+				EventHelper.fireChangeContextEventAsync(folderId, binderPermalink, Instigator.GOTO_CONTENT_URL);
 			}
 		});
 	}
@@ -2001,7 +1993,6 @@ public class TaskTable extends Composite
 		else {
 			OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
 				newTaskUrl,
-				false,	// false -> Not trash.
 				Instigator.GOTO_CONTENT_URL);
 			
 			if (GwtClientHelper.validateOSBI(osbInfo)) {

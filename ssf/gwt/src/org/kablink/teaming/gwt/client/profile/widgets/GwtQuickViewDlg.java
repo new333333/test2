@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,13 +30,12 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.profile.widgets;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.presence.InstantMessageClickHandler;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
@@ -55,7 +54,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.TrackBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UntrackPersonCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
@@ -90,7 +88,6 @@ import com.google.gwt.user.client.ui.Widget;
  * This is the QuickView Dialog
  * 
  * @author nbjensen
- *
  */
 public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 
@@ -134,6 +131,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	/**
 	 * Create the header, content and footer for the dialog box.
 	 */
+	@Override
 	public void createAllDlgContent(String caption,
 			EditSuccessfulHandler editSuccessfulHandler,// We will call this
 														// handler when the user
@@ -238,6 +236,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 		instantMessageBtn.addClickHandler(new InstantMessageClickHandler(binderId) {
 				// Override onClick so we can hide the dialog after launching
 				// the instant message.
+				@Override
 				public void onClick(ClickEvent event) {
 					super.onClick(event);
 					hide();
@@ -255,6 +254,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 			/**
 			 * Invoke the "edit advanced branding" dialog
 			 */
+			@Override
 			public void onClick(ClickEvent event) {
 				if(followBtn.isChecked()) {
 					unFollowAction();
@@ -269,6 +269,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 				cmd = new TrackBinderCmd( binderId );
 				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 				{
+					@Override
 					public void onFailure( Throwable t )
 					{
 						GwtClientHelper.handleGwtRPCFailure(
@@ -277,6 +278,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 							binderId);
 					}//end onFailure()
 					
+					@Override
 					public void onSuccess( VibeRpcResponse response )
 					{
 						updateFollowingButton(true);
@@ -290,6 +292,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 				cmd = new UntrackPersonCmd( binderId );
 				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 				{
+					@Override
 					public void onFailure( Throwable t )
 					{
 						GwtClientHelper.handleGwtRPCFailure(
@@ -298,6 +301,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 							binderId);
 					}//end onFailure()
 					
+					@Override
 					public void onSuccess( VibeRpcResponse response )
 					{
 						updateFollowingButton(false);
@@ -356,6 +360,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	 * Override the createFooter() method so we can control what buttons are in
 	 * the footer.
 	 */
+	@Override
 	public Panel createFooter() {
 		FlowPanel panel;
 
@@ -368,6 +373,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	/**
 	 * Override the createHeader() method because we need to make it nicer.
 	 */
+	@Override
 	public Panel createHeader(String caption) {
 		FlowPanel panel;
 
@@ -400,6 +406,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 		panel.add(closeA);
 
 		closeA.addClickHandler(new ClickHandler() {
+			@Override
 			public void onClick(ClickEvent event) {
 				hide();
 			}
@@ -441,6 +448,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 		// create an async callback to handle the result of the request to get
 		// the state:
 		AsyncCallback<VibeRpcResponse> callback = new AsyncCallback<VibeRpcResponse>() {
+			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
@@ -450,6 +458,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 				hide();
 			}
 
+			@Override
 			public void onSuccess( VibeRpcResponse response ) {
 				ProfileInfo profile;
 				
@@ -511,12 +520,14 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 			this.showProfile = profile;
 		}
 		
+		@Override
 		public void onClick(ClickEvent event) {
 			GetBinderPermalinkCmd cmd;
 			
 			cmd = new GetBinderPermalinkCmd( binderId );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 			{
+				@Override
 				public void onFailure( Throwable t ) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
@@ -524,10 +535,10 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 						binderId);
 				}//end onFailure()
 				
+				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
 					String binderUrl;
-					OnSelectBinderInfo osbInfo;
 					StringRpcResponseData responseData;
 
 					responseData = (StringRpcResponseData) response.getResponseData();
@@ -554,10 +565,9 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 					} else {
 						binderUrl = GwtClientHelper.appendUrlParam( binderUrl, "operation", "showWorkspace" );
 					}
-					osbInfo = new OnSelectBinderInfo( binderId, binderUrl, false, Instigator.PROFILE_QUICK_VIEW_SELECT );
 					
 					//Fire event to notify that a selection has changed
-					GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+					EventHelper.fireChangeContextEventAsync( binderId, binderUrl, Instigator.PROFILE_QUICK_VIEW_SELECT );
 					
 					hide();
 				}// end onSuccess()
@@ -575,6 +585,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 		cmd = new IsPersonTrackedCmd( binderId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 				{
+					@Override
 					public void onFailure( Throwable t )
 					{
 						GwtClientHelper.handleGwtRPCFailure(
@@ -583,6 +594,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 							binderId);
 					}//end onFailure()
 					
+					@Override
 					public void onSuccess( VibeRpcResponse response )
 					{
 						Boolean success;
@@ -617,6 +629,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 		GetUserStatusCmd cmd;
 		AsyncCallback<VibeRpcResponse> rpcCallback = new AsyncCallback<VibeRpcResponse>(){
 
+			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
@@ -624,6 +637,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 					binderId );
 			}
 
+			@Override
 			public void onSuccess( VibeRpcResponse response ) {
 				UserStatus result = null;
 				
@@ -653,6 +667,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 			this.mbBinderId = binderId;
 		}
 		
+		@Override
 		public void onClick(ClickEvent event) {
 
 			GetMicroBlogUrlCmd cmd;
@@ -665,6 +680,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 
 		
 		AsyncCallback<VibeRpcResponse> rpcCallback = new AsyncCallback<VibeRpcResponse>(){
+			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
@@ -672,6 +688,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 					binderId );
 				}
 
+				@Override
 				public void onSuccess(VibeRpcResponse response) {
 					String url = null;
 					
@@ -692,7 +709,9 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 			};
 	}
 
+	@SuppressWarnings("unused")
 	private class ConferencingClickHandler implements ClickHandler {
+		@Override
 		public void onClick(ClickEvent event) {
 			GetAddMeetingUrlCmd cmd;
 			
@@ -700,6 +719,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 			cmd = new GetAddMeetingUrlCmd( binderId );
 			GwtClientHelper.executeCommand( cmd,
 					new AsyncCallback<VibeRpcResponse>() {
+						@Override
 						public void onSuccess( VibeRpcResponse response ) {
 							String url=null;
 							
@@ -716,6 +736,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 								hide();
 							}
 						}
+						@Override
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
@@ -729,6 +750,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	/**
 	 * Show this dialog.
 	 */
+	@Override
 	public void show()
 	{
 		// Is this dialog suppose to be modal
@@ -762,6 +784,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 
 			cmd = new Scheduler.ScheduledCommand()
 			{
+				@Override
 				public void execute()
 				{
 					if ( m_focusWidget != null )
@@ -775,6 +798,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	/**
 	 * Using this onPreviewNativeEvent to check if the mouse click is in the input widget 
 	 */
+	@Override
 	public void onPreviewNativeEvent(NativePreviewEvent previewEvent) {
 
 
@@ -858,6 +882,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 			}
 			
 			addMouseOverHandler(new MouseOverHandler() {
+				@Override
 				public void onMouseOver(MouseOverEvent event) {
 					if(labelStyle.equals("qView-action-following") ){
 						panel.addStyleName("qView-action2");
@@ -867,6 +892,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 				}});
 			
 			addMouseOutHandler(new MouseOutHandler(){
+				@Override
 				public void onMouseOut(MouseOutEvent event) {
 					if(labelStyle.equals("qView-action-following") ){
 						panel.removeStyleName("qView-action2");
@@ -907,6 +933,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 			}
 		}
 		
+		@Override
 		public void setText(String text) {
 			if(label!=null){
 				label.setText(text);

@@ -788,7 +788,7 @@ public class MainMenuControl extends Composite
 					osbInfo.getBinderId().toString(),
 					m_mainPage.isInSearch(),
 					m_mainPage.getSearchTabId(),
-					osbInfo.getCollectionType());
+					osbInfo.getBinderInfo().getCollectionType());
 			}
 		}
 	}

@@ -584,13 +584,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			}
 		}
 
-		// Does this TreeInfo object refer to a collection?
-		if (ti.isBinderCollection()) {
-			// Yes!  Store the collection type in the
-			// OnSelectBinderInfo.
-			reply.setCollectionType(bi.getCollectionType());
-		}
-		
 		// If we get here, reply refers to the OnSelectBinderInfo
 		// object for this TreeInfo.  Return it.
 		return reply;
@@ -1430,25 +1423,25 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * @param binderId
 	 */
 	@Override
-	public void setSelectedBinder(OnSelectBinderInfo binderInfo) {
+	public void setSelectedBinder(OnSelectBinderInfo osbInfo) {
 		// If the selection is for a Binder's trash...
-		if (binderInfo.isTrash()) {
+		if (osbInfo.isTrash()) {
 			// ...we don't change anything.
 			return;
 		}
 
 		// If the selection is for a collection...
-		if (binderInfo.isCollection()) {
+		if (osbInfo.isCollection()) {
 			// ...select it.
-			TreeInfo targetTI = TreeInfo.findCollectionTI(getRootTreeInfo(), binderInfo.getCollectionType());
+			TreeInfo targetTI = TreeInfo.findCollectionTI(getRootTreeInfo(), osbInfo.getBinderInfo().getCollectionType());
 			selectBinder(targetTI);
 			return;
 		}
 		
 		// Is the requested Binder available in those we've already
 		// got loaded?
-		Instigator		instigator = binderInfo.getInstigator();
-		final Long		binderId   = binderInfo.getBinderId();
+		Instigator		instigator = osbInfo.getInstigator();
+		final Long		binderId   = osbInfo.getBinderId();
 		final String	binderIdS  = String.valueOf(binderId);
 		final TreeInfo	targetTI   = TreeInfo.findBinderTI(getRootTreeInfo(), binderIdS);
 		if (null != targetTI) {
@@ -1626,7 +1619,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			}
 			if (null == ti) {
 				if (osbInfo.isCollection()) {
-					ti = TreeInfo.findCollectionTI(rootTI, osbInfo.getCollectionType());
+					ti = TreeInfo.findCollectionTI(rootTI, osbInfo.getBinderInfo().getCollectionType());
 				}
 				else {
 					Long binderId = osbInfo.getBinderId();

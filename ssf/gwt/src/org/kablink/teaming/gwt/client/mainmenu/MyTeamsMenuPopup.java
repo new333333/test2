@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,21 +36,19 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
 
 /**
  * Class used for the My Teams menu item popup.  
@@ -84,13 +82,10 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 		@Override
 		public void execute() {
 			// Fire a change context event.
-			GwtTeaming.fireEvent(
-				new ChangeContextEvent(
-					new OnSelectBinderInfo(
-						m_myTeam.getBinderId(),
-						m_myTeam.getPermalinkUrl(),
-						false,
-						Instigator.TEAM_SELECT)));
+			EventHelper.fireChangeContextEventAsync(
+				m_myTeam.getBinderId(),
+				m_myTeam.getPermalinkUrl(),
+				Instigator.TEAM_SELECT);
 		}
 	}
 	
@@ -166,12 +161,14 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 			// No!  Populate it now.
 			GetMyTeamsCmd cmd = new GetMyTeamsCmd();
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
 						m_messages.rpcFailure_GetMyTeams());
 				}
 				
+				@Override
 				public void onSuccess(VibeRpcResponse response)  {
 					List<TeamInfo> mtList;
 					GetMyTeamsRpcResponseData responseData;

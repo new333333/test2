@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCommentsCmd;
@@ -45,7 +45,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
@@ -446,12 +445,12 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	 */
 	private void gotoParentBinder()
 	{
-		OnSelectBinderInfo binderInfo;
-		
 		if ( m_parentBinderId != null && m_parentBinderPermalink != null )
 		{
-			binderInfo = new OnSelectBinderInfo( m_parentBinderId, m_parentBinderPermalink, false, Instigator.ACTIVITY_STREAM_BINDER_SELECT );
-			GwtTeaming.fireEvent( new ChangeContextEvent( binderInfo ) );
+			EventHelper.fireChangeContextEventAsync(
+				m_parentBinderId,
+				m_parentBinderPermalink,
+				Instigator.ACTIVITY_STREAM_BINDER_SELECT );
 		}
 	}
 	

@@ -87,6 +87,7 @@ import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg.GwtQuickViewDlgClient;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CanModifyBinderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetShareBinderPageUrlCmd;
@@ -102,6 +103,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.Agent;
 import org.kablink.teaming.gwt.client.util.AgentBase;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -999,21 +1001,11 @@ public class GwtMainPage extends ResizeComposite
 			public void onSuccess( VibeRpcResponse response )
 			{
 				String binderPermalink;
-				OnSelectBinderInfo osbInfo;
 				StringRpcResponseData responseData;
 
 				responseData = (StringRpcResponseData) response.getResponseData();
 				binderPermalink = responseData.getStringValue();
-				
-				osbInfo = new OnSelectBinderInfo(
-					contextBinderId,
-					binderPermalink,
-					false,	// false -> Not trash.
-					instigator );
-				if (GwtClientHelper.validateOSBI(osbInfo))
-				{
-					GwtTeaming.fireEvent( new ContextChangedEvent( osbInfo ) );
-				}
+				EventHelper.fireContextChangedEventAsync( contextBinderId, binderPermalink, instigator );
 			}// end onSuccess()
 		});
 	}// end contextLoaded()
@@ -1210,7 +1202,6 @@ public class GwtMainPage extends ResizeComposite
 		m_editBrandingDlg.show();
 	}
 
-	
 	/*
 	 * Use JSNI to grab the JavaScript object that holds the information about the request dealing with.
 	 */
@@ -1623,7 +1614,6 @@ public class GwtMainPage extends ResizeComposite
 			// Change the browser's URL.
 			OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
 				url,
-				false,	// false -> Not trash.
 				Instigator.GOTO_CONTENT_URL );
 			if ( GwtClientHelper.validateOSBI( osbInfo ) )
 			{
@@ -2677,18 +2667,13 @@ public class GwtMainPage extends ResizeComposite
 			public void onSuccess( VibeRpcResponse response )
 			{
 				String binderUrl;
-				OnSelectBinderInfo osbInfo;
 				StringRpcResponseData responseData;
 
 				responseData = (StringRpcResponseData) response.getResponseData();
 				binderUrl = responseData.getStringValue();
 				
 				binderUrl = GwtClientHelper.appendUrlParam( binderUrl, "operation", "show_team_members" );
-				osbInfo = new OnSelectBinderInfo( m_selectedBinderId, binderUrl, false, Instigator.VIEW_TEAM_MEMBERS );
-				if (GwtClientHelper.validateOSBI( osbInfo ))
-				{
-					GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
-				}
+				EventHelper.fireChangeContextEventAsync( m_selectedBinderId, binderUrl, Instigator.VIEW_TEAM_MEMBERS );
 			}// end onSuccess()
 		});// end AsyncCallback()
 	}// end onViewCurrentBinderTeamMembers()

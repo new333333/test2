@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.List;
@@ -38,7 +37,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
-import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.AssignmentInfoListRpcResponseData;
@@ -51,7 +50,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -71,13 +69,10 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 
-
-
 /**
- * 
  * This class is used to display simple list of tasks.
+ * 
  * @author jwootton
- *
  */
 public class SimpleListOfTasksWidget extends VibeWidget
 {
@@ -1129,11 +1124,7 @@ public class SimpleListOfTasksWidget extends VibeWidget
 						@Override
 						public void execute()
 						{
-							OnSelectBinderInfo binderInfo;
-							
-							// Fire the event that will take us to the binder
-							binderInfo = new OnSelectBinderInfo( binderIdS, binderPermalink, false, Instigator.UNKNOWN );
-							GwtTeaming.fireEvent( new ChangeContextEvent( binderInfo ) );
+							EventHelper.fireChangeContextEventAsync( binderIdS, binderPermalink, Instigator.UNKNOWN );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );

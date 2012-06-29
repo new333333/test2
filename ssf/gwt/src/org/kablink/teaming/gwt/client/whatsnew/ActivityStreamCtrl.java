@@ -43,7 +43,6 @@ import java.util.Set;
 
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
-import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.DeleteEntryEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeReplyEvent;
@@ -65,7 +64,6 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
@@ -733,14 +731,12 @@ public class ActivityStreamCtrl extends ResizeComposite
 					// Is the activity stream source a binder or person?
 					if ( isActivityStreamSourceABinder() || isActivityStreamSourceAPerson() )
 					{
-						OnSelectBinderInfo binderInfo;
 						String asSourceId;
 						
 						// Yes
 						// Take the user to the source of the selected activity stream.
 						asSourceId = getActivityStreamSourceBinderId();
-						binderInfo = new OnSelectBinderInfo( asSourceId, m_asSourcePermalink, false, Instigator.ACTIVITY_STREAM_SOURCE_SELECT );
-						GwtTeaming.fireEvent( new ChangeContextEvent(  binderInfo ));
+						EventHelper.fireChangeContextEventAsync( asSourceId, m_asSourcePermalink, Instigator.ACTIVITY_STREAM_SOURCE_SELECT );
 					}
 				}
 				

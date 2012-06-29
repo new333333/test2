@@ -35,9 +35,17 @@ package org.kablink.teaming.gwt.client.event;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
@@ -52,18 +60,6 @@ public class EventHelper {
 	 */
 	private EventHelper() {
 		// Inhibits this class from being instantiated.
-	}
-	
-	/**
-	 * Given an event that requires no parameters, fires one.
-	 * 
-	 * @param eventEnum
-	 */
-	public static void fireSimpleEvent(TeamingEvents eventEnum) {
-		VibeEventBase<?> event = createSimpleEvent(eventEnum);
-		if (null != event) {
-			GwtTeaming.fireEvent(event);
-		}
 	}
 	
 	/**
@@ -142,6 +138,96 @@ public class EventHelper {
 		return reply;
 	}
 	
+	/**
+	 * Asynchronously fires a ChangeContextEvent.
+	 * 
+	 * @param binderId
+	 * @param binderPermalink
+	 * @param instigator
+	 */
+	public static void fireChangeContextEventAsync(final String binderId, final String binderPermalink, final Instigator instigator) {
+		ScheduledCommand doChangeContext = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				fireChangeContextEventNow(binderId, binderPermalink, instigator);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doChangeContext);
+	}
+	
+	/*
+	 * Synchronously fires a ChangeContextEvent.
+	 */
+	private static void fireChangeContextEventNow(final String binderId, final String binderPermalink, final Instigator instigator) {
+		GetBinderInfoCmd cmd = new GetBinderInfoCmd(binderId);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetBinderInfo(),
+					binderId);
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				BinderInfo bi = ((BinderInfo) response.getResponseData());
+				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+					bi,
+					binderPermalink,
+					instigator);
+				if (GwtClientHelper.validateOSBI(osbInfo)) {
+					GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Asynchronously fires a ContextChangedEvent.
+	 * 
+	 * @param contextBinderId
+	 * @param binderPermalink
+	 * @param instigator
+	 */
+	public static void fireContextChangedEventAsync(final String contextBinderId, final String binderPermalink, final Instigator instigator) {
+		ScheduledCommand doContextChanged = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				fireContextChangedEventNow(contextBinderId, binderPermalink, instigator);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doContextChanged);
+	}
+	
+	/*
+	 * Synchronously fires a ContextChangedEvent.
+	 */
+	private static void fireContextChangedEventNow(final String contextBinderId, final String binderPermalink, final Instigator instigator) {
+		GetBinderInfoCmd cmd = new GetBinderInfoCmd(contextBinderId);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetBinderInfo(),
+					contextBinderId);
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				BinderInfo bi = ((BinderInfo) response.getResponseData());
+				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+					bi,
+					binderPermalink,
+					instigator);
+				if (GwtClientHelper.validateOSBI(osbInfo)) {
+					GwtTeaming.fireEvent(new ContextChangedEvent(osbInfo));
+				}
+			}
+		});
+	}
+	
 	/*
 	 * Returns true of an event is an an array of events and false
 	 * otherwise.
@@ -154,6 +240,18 @@ public class EventHelper {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Given an event that requires no parameters, fires one.
+	 * 
+	 * @param eventEnum
+	 */
+	public static void fireSimpleEvent(TeamingEvents eventEnum) {
+		VibeEventBase<?> event = createSimpleEvent(eventEnum);
+		if (null != event) {
+			GwtTeaming.fireEvent(event);
+		}
 	}
 	
 	/**

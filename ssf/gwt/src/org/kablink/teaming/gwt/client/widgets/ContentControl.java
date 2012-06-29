@@ -594,14 +594,9 @@ public class ContentControl extends Composite
 						{
 							GwtClientHelper.jsSetMainTitle(bi.getBinderTitle());
 							OnSelectBinderInfo osbi = new OnSelectBinderInfo(
-								bi.getBinderId(),
+								bi,
 								url,
-								bi.isBinderTrash(),
 								Instigator.CONTENT_AREA_CHANGED );
-							if ( bi.isBinderCollection() )
-							{
-								osbi.setCollectionType( bi.getCollectionType() );
-							}
 							GwtTeaming.fireEvent( new ContextChangedEvent( osbi ));
 						}//end viewReady()
 					};
