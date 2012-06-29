@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.Map;
@@ -234,7 +233,6 @@ public class GuestbookFolderView extends DataTableFolderViewBase {
 	private void signGuestbookNow() {
 		OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
 			m_signGuestBookUrl,
-			false,	// false -> Not trash.
 			Instigator.GOTO_CONTENT_URL);
 		
 		if (GwtClientHelper.validateOSBI(osbInfo)) {

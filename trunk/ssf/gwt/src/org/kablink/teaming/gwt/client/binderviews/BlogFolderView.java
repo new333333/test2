@@ -46,7 +46,6 @@ import org.kablink.teaming.gwt.client.event.BlogArchiveMonthSelectedEvent;
 import org.kablink.teaming.gwt.client.event.BlogGlobalTagSelectedEvent;
 import org.kablink.teaming.gwt.client.event.BlogPageCreatedEvent;
 import org.kablink.teaming.gwt.client.event.BlogPageSelectedEvent;
-import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
@@ -65,7 +64,6 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu;
@@ -302,24 +300,18 @@ public class BlogFolderView extends FolderViewBase
 						@Override
 						public void execute()
 						{
-							ContextChangedEvent event;
-							OnSelectBinderInfo osBinderInfo;
-							
-							osBinderInfo = new OnSelectBinderInfo(
-													m_binderId,
-													binderPermalink,
-													false,
-													Instigator.CONTENT_AREA_CHANGED );
-
+							// Tell the side-bar to refresh so it picks up the new folder
+							// and selects it.
 							if ( refreshSidebarTree )
 							{
 								GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
 							}
-							
-							// Tell the side-bar to refresh so it picks up the new folder
-							// and selects it.
-							event = new ContextChangedEvent( osBinderInfo );
-							GwtTeaming.fireEvent( event );
+
+							EventHelper.fireContextChangedEventAsync(
+									m_binderId,
+									binderPermalink,
+									Instigator.CONTENT_AREA_CHANGED );
+
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );

@@ -775,7 +775,6 @@ public class EntryMenuPanel extends ToolPanelBase
 					// Yes!  Launch it in the content frame.
 					OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
 						simpleUrl,
-						false,	// false -> Not trash.
 						Instigator.GOTO_CONTENT_URL);
 					
 					if (GwtClientHelper.validateOSBI(osbInfo)) {

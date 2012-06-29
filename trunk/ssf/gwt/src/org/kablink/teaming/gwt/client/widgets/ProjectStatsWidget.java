@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
-import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderStatsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetListOfChildBindersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetListOfChildBindersRpcResponseData;
@@ -46,7 +46,6 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.MilestoneStats;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TaskStats;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -64,10 +63,9 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RequiresResize;
 
-
-
 /**
  * This class will display project statistics for the given binder.
+ * 
  * @author jwootton
  */
 public class ProjectStatsWidget extends ToolPanelBase
@@ -152,6 +150,7 @@ public class ProjectStatsWidget extends ToolPanelBase
 	/**
 	 * Add a milestones statistics graph to the given panel.
 	 */
+	@SuppressWarnings("unused")
 	private void addMilestoneStatsGraph( MilestoneStats milestoneStats, VibeFlowPanel panel )
 	{
 		if ( milestoneStats != null )
@@ -173,6 +172,7 @@ public class ProjectStatsWidget extends ToolPanelBase
 	/**
 	 * Add a tasks statistics graph to the given panel.
 	 */
+	@SuppressWarnings("unused")
 	private void addTaskStatsGraph( TaskStats taskStats, VibeFlowPanel panel )
 	{
 		if ( taskStats != null )
@@ -397,10 +397,10 @@ public class ProjectStatsWidget extends ToolPanelBase
 	{
 		if ( GwtClientHelper.hasString( binderUrl ) )
 		{
-			OnSelectBinderInfo binderInfo;
-			
-			binderInfo = new OnSelectBinderInfo( binderId, binderUrl, false, Instigator.UNKNOWN );
-			GwtTeaming.fireEvent( new ChangeContextEvent( binderInfo ) );
+			EventHelper.fireChangeContextEventAsync(
+				binderId,
+				binderUrl,
+				Instigator.UNKNOWN );
 		}
 	}
 	

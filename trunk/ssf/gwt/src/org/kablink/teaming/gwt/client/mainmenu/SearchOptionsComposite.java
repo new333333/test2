@@ -50,14 +50,12 @@ import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
-import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSavedSearchesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSavedSearchesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
@@ -81,7 +79,6 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.Widget;
-
 
 /**
  * Class used for the content of the additional search options.  
@@ -334,10 +331,8 @@ public class SearchOptionsComposite extends Composite
 	 * Loads a binder into the context pane.
 	 */
 	private void loadBinder(final String binderId) {
-		GetBinderPermalinkCmd cmd;
-		
-		cmd = new GetBinderPermalinkCmd( binderId );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+		GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd(binderId);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
@@ -353,9 +348,8 @@ public class SearchOptionsComposite extends Composite
 				
 				responseData = (StringRpcResponseData) response.getResponseData();
 				binderPermalink = responseData.getStringValue();
-				
-				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(binderId, binderPermalink, false, Instigator.SEARCH_SELECT);
-				GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+
+				EventHelper.fireChangeContextEventAsync(binderId, binderPermalink, Instigator.SEARCH_SELECT);
 			}
 		});
 	}
@@ -441,7 +435,7 @@ public class SearchOptionsComposite extends Composite
 		
 		// Does the user have any saved searches defined?
 		cmd = new GetSavedSearchesCmd();
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
@@ -535,7 +529,7 @@ public class SearchOptionsComposite extends Composite
 					
 					@Override
 					public void onFailure(Throwable reason) {
-						Window.alert( GwtTeaming.getMessages().codeSplitFailure_SearchOptionsComposite() );
+						Window.alert(GwtTeaming.getMessages().codeSplitFailure_SearchOptionsComposite());
 						socClient.onUnavailable();
 					}
 				});

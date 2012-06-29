@@ -94,6 +94,7 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
  * @author phurley@novell.com
  */
 public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHandler {
+	private BinderInfo						m_binderInfo;				// The binder the folder columns dialog is running against.
 	private Button							m_folderDefaultBtn;			// Restore default settings
 	private CheckBox						m_folderDefaultCheckBox;	// Set the folder default columns.
 	private FlexCellFormatter				m_folderColumnsGridCF;		//
@@ -105,7 +106,6 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	private List<FolderColumn>				m_folderColumnsListAll;		// List of all folder column items.
 	private RowFormatter					m_folderColumnsGridRF;		//
 	private ScrollPanel						m_sp;						//
-	private String							m_binderId;					// The ID of the binder the folder columns dialog is running against.
 	private VerticalPanel					m_vp;						//
 	private VibeMenuItem					m_moveDown;					//
 	private VibeMenuItem					m_moveUp;					//
@@ -454,7 +454,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		@SuppressWarnings("unchecked")
 		List<FolderColumn> fcList = ((List<FolderColumn>) callbackData);
 		Boolean isDefault = m_folderDefaultCheckBox.getValue();
-		SaveFolderColumnsCmd cmd = new SaveFolderColumnsCmd(m_binderId, fcList, isDefault);
+		SaveFolderColumnsCmd cmd = new SaveFolderColumnsCmd(m_binderInfo.getBinderId(), fcList, isDefault);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -465,21 +465,21 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd(m_binderId);
+				GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd(m_binderInfo.getBinderId());
 				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
 					@Override
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
 							GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
-							m_binderId);
+							m_binderInfo.getBinderId());
 					}
 					
 					@Override
 					public void onSuccess(VibeRpcResponse response) {
 						StringRpcResponseData responseData = (StringRpcResponseData) response.getResponseData();
 						String binderUrl = responseData.getStringValue();
-						OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(m_binderId, binderUrl, false, Instigator.CONTENT_AREA_CHANGED);
+						OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(m_binderInfo, binderUrl, Instigator.CONTENT_AREA_CHANGED);
 						if (GwtClientHelper.validateOSBI(osbInfo)) {
 							GwtTeaming.fireEvent( new ChangeContextEvent(osbInfo));
 						}
@@ -694,11 +694,11 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	/*
 	 * Asynchronously populates the dialog.
 	 */
-	private void populateDlgAsync(final String binderId, final List<FolderColumn> folderColumnsList, final List<FolderColumn> folderColumnsListAll) {
+	private void populateDlgAsync(final BinderInfo binderInfo, final List<FolderColumn> folderColumnsList, final List<FolderColumn> folderColumnsListAll) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				populateDlgNow(binderId, folderColumnsList, folderColumnsListAll);
+				populateDlgNow(binderInfo, folderColumnsList, folderColumnsListAll);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -707,9 +707,9 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	/*
 	 * Asynchronously populates the dialog.
 	 */
-	private void populateDlgNow(String binderId, List<FolderColumn> folderColumnsList, List<FolderColumn> folderColumnsListAll) {
+	private void populateDlgNow(BinderInfo binderInfo, List<FolderColumn> folderColumnsList, List<FolderColumn> folderColumnsListAll) {
 		// Setup the column data...
-		m_binderId = binderId;
+		m_binderInfo = binderInfo;
 		m_folderColumnsList = folderColumnsList;
 		m_folderColumnsListAll = folderColumnsListAll;
 		m_folderColumnsListCount = ((null == m_folderColumnsListAll) ? 0 : m_folderColumnsListAll.size());
@@ -749,21 +749,21 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	 * panel again.
 	 */
 	private void relaunchViewNow(final boolean hideOnRelaunch) {
-		GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd(m_binderId);
+		GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd(m_binderInfo.getBinderId());
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure( Throwable t ) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
-					m_binderId);
+					m_binderInfo.getBinderId());
 			}
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
 				StringRpcResponseData responseData = (StringRpcResponseData) response.getResponseData();
 				String binderUrl = responseData.getStringValue();
-				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo( m_binderId, binderUrl, false, Instigator.CONTENT_AREA_CHANGED );
+				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(m_binderInfo, binderUrl, Instigator.CONTENT_AREA_CHANGED);
 				if (GwtClientHelper.validateOSBI(osbInfo)) {
 					GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
 				}
@@ -810,7 +810,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 				// We successfully retrieved the folder's columns.
 				// Use it to populate the dialog.
 				FolderColumnsRpcResponseData cData = ((FolderColumnsRpcResponseData)response.getResponseData());
-				populateDlgAsync(bi.getBinderId(), cData.getFolderColumns(), cData.getFolderColumnsAll());
+				populateDlgAsync(bi, cData.getFolderColumns(), cData.getFolderColumnsAll());
 			} // end onSuccess()
 		};
 		
@@ -837,7 +837,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	 */
 	private void setFactoryDefaultsNow() {
 		// Save the folder columns...
-		SaveFolderColumnsCmd cmd = new SaveFolderColumnsCmd(m_binderId, new ArrayList<FolderColumn>(), new Boolean(Boolean.TRUE));
+		SaveFolderColumnsCmd cmd = new SaveFolderColumnsCmd(m_binderInfo.getBinderId(), new ArrayList<FolderColumn>(), new Boolean(Boolean.TRUE));
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {

@@ -35,22 +35,21 @@ package org.kablink.teaming.gwt.client.util;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 
 /**
- * Class used to communicate information about context selection.
+ * Class used to communicate information about context (i.e., binder)
+ * selection.
  * 
  * @author drfoster@novell.com
  */
 public class OnSelectBinderInfo {
-	private boolean			m_isPermalinkUrl;	//
-	private boolean			m_isTrash;			//
-	private CollectionType	m_collectionType;	//
-	private Instigator		m_instigator;		//
-	private Long			m_binderId;			//
-	private String			m_binderUrl;		//
+	private BinderInfo	m_binderInfo;		//
+	private boolean		m_isPermalinkUrl;	//
+	private Instigator	m_instigator;		//
+	private String		m_binderUrl;		//
 
 	// Various marker strings used to recognize the format of a URL.
 	private final static String GWT_MARKER = "seen_by_gwt";
 
-	// Used to identify the instigator of the Binder selection.
+	// Used to identify the instigator of the binder selection.
 	public enum Instigator {
 		ACTIVITY_STREAM_BINDER_SELECT,	// The binder link in an activity stream was selected.
 		ACTIVITY_STREAM_SOURCE_SELECT,	// The top level source link of an activity stream was selected.
@@ -77,51 +76,35 @@ public class OnSelectBinderInfo {
 	 */
 	public OnSelectBinderInfo(TreeInfo ti, Instigator instigator) {
 		// Always use the final form of the constructor.
-		this(Long.valueOf(ti.getBinderInfo().getBinderId()), ti.getBinderPermalink(), ti.getBinderInfo().isBinderTrash(), instigator);
+		this(ti.getBinderInfo(), ti.getBinderPermalink(), instigator);
 	}
 
 	/**
 	 * Class constructor.
 	 * 
-	 * @param binderId
 	 * @param binderUrl
-	 * @param isTrash
 	 * @param instigator
 	 */
-	public OnSelectBinderInfo(String binderId, String binderUrl, boolean isTrash, Instigator instigator) {
+	public OnSelectBinderInfo(String binderUrl, Instigator instigator) {
 		// Always use the final form of the constructor.
-		this(Long.valueOf(binderId), binderUrl, isTrash, instigator);
+		this(((BinderInfo) null), binderUrl, instigator);
 	}
 	
 	/**
 	 * Class constructor.
 	 * 
+	 * @param binderInfo
 	 * @param binderUrl
-	 * @param isTrash
 	 * @param instigator
 	 */
-	public OnSelectBinderInfo(String binderUrl, boolean isTrash, Instigator instigator) {
-		// Always use the final form of the constructor.
-		this(((Long) null), binderUrl, isTrash, instigator);
-	}
-	
-	/**
-	 * Class constructor.
-	 * 
-	 * @param binderId
-	 * @param binderUrl
-	 * @param isTrash
-	 * @param instigator
-	 */
-	public OnSelectBinderInfo(Long binderId, String binderUrl, boolean isTrash, Instigator instigator) {
-		// Store the parameters...
-		setBinderId(binderId);
-		setBinderUrl(binderUrl);
-		m_isTrash    = isTrash;
-		m_instigator = instigator;
+	public OnSelectBinderInfo(BinderInfo binderInfo, String binderUrl, Instigator instigator) {
+		// Initialize the super class...
+		super();
 		
-		// ...and initialize everything else.
-		m_collectionType = CollectionType.NOT_A_COLLECTION;
+		// ...and store the parameters.
+		setBinderInfo(binderInfo);
+		setBinderUrl( binderUrl );
+		setInstigator(instigator);
 	}
 
 	/*
@@ -138,25 +121,25 @@ public class OnSelectBinderInfo {
 	}
 
 	/**
-	 * Returns the collection type from this OnSelectBinderInfo object.
-	 * 
-	 * @return
-	 */
-	public CollectionType getCollectionType() {
-		return m_collectionType;
-	}
-	
-	/**
-	 * Returns the Binder ID from this OnSelectBinderInfo object.
+	 * Returns the binder ID from this OnSelectBinderInfo object.
 	 * 
 	 * @return
 	 */
 	public Long getBinderId() {
-		return m_binderId;
+		return ((null == m_binderInfo) ? null : m_binderInfo.getBinderIdAsLong());
 	}
 	
 	/**
-	 * Returns the Binder URL from this OnSelectBinderInfo object.
+	 * Returns the BinderInfo from this OnSelectBinderInfo object.
+	 * 
+	 * @return
+	 */
+	public BinderInfo getBinderInfo() {
+		return m_binderInfo;
+	}
+	
+	/**
+	 * Returns the binder URL from this OnSelectBinderInfo object.
 	 * 
 	 * @return
 	 */
@@ -165,7 +148,7 @@ public class OnSelectBinderInfo {
 	}
 
 	/**
-	 * Returns the instigator of the Binder selection, if known.
+	 * Returns the instigator of the binder selection, if known.
 	 * 
 	 * @return
 	 */
@@ -180,11 +163,11 @@ public class OnSelectBinderInfo {
 	 * @return
 	 */
 	public boolean isCollection() {
-		return (CollectionType.NOT_A_COLLECTION != m_collectionType);
+		return ((null != m_binderInfo) && m_binderInfo.isBinderCollection());
 	}
 	
 	/**
-	 * Returns true if the Binder URL is a permalink and false
+	 * Returns true if the binder URL is a permalink and false
 	 * otherwise.
 	 * 
 	 * @return
@@ -199,27 +182,18 @@ public class OnSelectBinderInfo {
 	 * @return
 	 */
 	public boolean isTrash() {
-		return m_isTrash;
+		return ((null != m_binderInfo) && m_binderInfo.isBinderTrash());
 	}
 
-	/**
-	 * Stores a CollectionType in this OnSelectBinderInfo.
-	 * 
-	 * @param collectionType
-	 */
-	public void setCollectionType(CollectionType collectionType) {
-		m_collectionType = collectionType;
-	}
-	
 	/*
-	 * Stores the Binder ID into this OnSelectBinderInfo object.
+	 * Stores the BinderInfo into this OnSelectBinderInfo object.
 	 */
-	private void setBinderId(Long binderId) {
-		m_binderId = binderId;
+	private void setBinderInfo(BinderInfo binderInfo) {
+		m_binderInfo = binderInfo;
 	}
 	
 	/**
-	 * Stores a Binder URL into this OnSelectBinderInfo object.
+	 * Stores a binder URL into this OnSelectBinderInfo object.
 	 * 
 	 * @param binderUrl
 	 */

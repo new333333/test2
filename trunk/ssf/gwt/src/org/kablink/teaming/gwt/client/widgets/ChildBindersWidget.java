@@ -186,7 +186,7 @@ public class ChildBindersWidget extends ToolPanelBase
 			{
 				OnSelectBinderInfo binderInfo;
 				
-				binderInfo = new OnSelectBinderInfo( m_binderInfo.getBinderId(), m_binderUrl, false, Instigator.UNKNOWN );
+				binderInfo = new OnSelectBinderInfo( m_binderInfo, m_binderUrl, Instigator.UNKNOWN );
 				GwtTeaming.fireEvent( new ChangeContextEvent( binderInfo ) );
 			}
 			
