@@ -272,6 +272,7 @@ public class Constants {
 	public static final String ENTRY_ACL_PARENT_ID_FIELD = "_entryAclParentId"; // This numeric field is only used for entries that inherit ACLs from parent folders.
 	public static final String FOLDER_ID_FIELD = "_folderId"; // This numeric field contains folder ID. Used only for folders.
 	public static final String GENERAL_TEXT_FIELD = "_generalText"; // This field contains textual representation of all field values except for title and description fields.
+	public static final String IDENTITY_SOURCE_FIELD = "_identitySource";
 
 
 	public Constants() {

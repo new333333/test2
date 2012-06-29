@@ -88,6 +88,11 @@ public class ProfileIndexUtils {
         doc.add(docNumField);
     }
     
+    public static void addIdentitySource(Document doc, User user) {
+        Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(IDENTITY_SOURCE_FIELD, String.valueOf(user.getIdentitySource()));
+        doc.add(docNumField);    	
+    }
+    
     public static void addDynamic(Document doc, Group group, boolean fieldsOnly) {
     	Field dynamicField = FieldFactory.createStoredNotAnalyzedNoNorms(IS_GROUP_DYNAMIC_FIELD, (group.isDynamic() ? Constants.TRUE : Constants.FALSE));
     	doc.add(dynamicField);
