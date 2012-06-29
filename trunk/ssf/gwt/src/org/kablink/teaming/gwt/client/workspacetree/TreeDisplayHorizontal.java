@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ExpandHorizontalBucketCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalNodeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -130,7 +131,10 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			reRenderNode(m_ti, m_nodeGrid);
 			
 			// ...and tell everybody that it's been expanded.
-			GwtTeaming.fireEventAsync(new TreeNodeExpandedEvent(getSelectedBinderId(), getTreeMode()));
+			GwtTeaming.fireEventAsync(
+				new TreeNodeExpandedEvent(
+					getSelectedBinderInfo(),
+					getTreeMode()));
 		}
 		
 		/**
@@ -148,7 +152,10 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				reRenderNode(m_ti, m_nodeGrid);
 				
 				// ...and tell everybody that it's been collapsed.
-				GwtTeaming.fireEventAsync(new TreeNodeCollapsedEvent(getSelectedBinderId(), getTreeMode()));
+				GwtTeaming.fireEventAsync(
+					new TreeNodeCollapsedEvent(
+						getSelectedBinderInfo(),
+						getTreeMode()));
 			}
 				
 			else {
@@ -417,10 +424,11 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * 
 	 * Implementation of TreeDisplayBase.render().
 	 *
+	 * @param selectedBinderInfo
 	 * @param rootPanel
 	 */
 	@Override
-	public void render(String selectedBinderId, FlowPanel rootPanel) {
+	public void render(BinderInfo selectedBinderInfo, FlowPanel rootPanel) {
 		m_rootPanel = rootPanel;
 		
 		// If we're displaying a horizontal popup...
@@ -610,11 +618,11 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * 
 	 * Implementation of TreeDisplayBase.setRenderContext().
 	 * 
-	 * @param selectedBinderId
+	 * @param selectedBinderInfo
 	 * @param targetPanel
 	 */
 	@Override
-	public void setRenderContext(String selectedBinderId, FlowPanel targetPanel) {
+	public void setRenderContext(BinderInfo selectedBinderInfo, FlowPanel targetPanel) {
 		// These values aren't used by the horizontal tree control.
 	}
 	

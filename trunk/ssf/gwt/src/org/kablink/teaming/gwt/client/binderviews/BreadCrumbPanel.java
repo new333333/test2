@@ -201,7 +201,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 			// collection!  We need the full bread crumb tree.
 			WorkspaceTreeControl.createAsync(
 					GwtTeaming.getMainPage(),
-					m_binderInfo.getBinderId(),
+					m_binderInfo,
 					m_binderInfo.isBinderTrash(),
 					TreeMode.HORIZONTAL_BINDER,
 					new WorkspaceTreeControlClient() {				
@@ -260,7 +260,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 	@Override
 	public void onTreeNodeCollapsed(TreeNodeCollapsedEvent event) {
 		// If this is our bread crumb tree being collapsed...
-		Long binderId = event.getBinderId();
+		Long binderId = event.getBinderInfo().getBinderIdAsLong();
 		if ((binderId.equals(m_binderInfo.getBinderIdAsLong())) && event.getTreeMode().isHorizontalBinder()) {
 			// ...tell our container about the size change.
 			doResizeAsync();
@@ -278,7 +278,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 	@Override
 	public void onTreeNodeExpanded(TreeNodeExpandedEvent event) {
 		// If this is our bread crumb tree being expanded...
-		Long binderId = event.getBinderId();
+		Long binderId = event.getBinderInfo().getBinderIdAsLong();
 		if ((binderId.equals(m_binderInfo.getBinderIdAsLong())) && event.getTreeMode().isHorizontalBinder()) {
 			// ...tell our container about the size change.
 			doResizeAsync();

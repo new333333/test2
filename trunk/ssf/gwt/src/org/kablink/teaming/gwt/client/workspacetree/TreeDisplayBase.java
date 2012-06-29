@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
@@ -171,8 +172,8 @@ public abstract class TreeDisplayBase {
 	public abstract boolean isInActivityStreamMode();
 	public abstract void    refreshSidebarTree();
 	public abstract void    rerootSidebarTree();
-	public abstract void    render(          String selectedBinderId, FlowPanel targetPanel);
-	public abstract void    setRenderContext(String selectedBinderId, FlowPanel targetPanel);
+	public abstract void    render(          BinderInfo selectedBinderInfo, FlowPanel targetPanel);
+	public abstract void    setRenderContext(BinderInfo selectedBinderInfo, FlowPanel targetPanel);
 	public abstract void    setSelectedBinder(OnSelectBinderInfo binderInfo);
 
 	/**
@@ -326,12 +327,12 @@ public abstract class TreeDisplayBase {
 	}
 
 	/**
-	 * Returns the ID of the binder this tree control was built from.
+	 * Returns the binder this tree control was built from.
 	 * 
 	 * @return
 	 */
-	Long getSelectedBinderId() {
-		return m_wsTree.getSelectedBinderId();
+	BinderInfo getSelectedBinderInfo() {
+		return m_wsTree.getSelectedBinderInfo();
 	}
 	
 	/**
