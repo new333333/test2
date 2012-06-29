@@ -244,14 +244,12 @@ public class MainMenuControl extends Composite
 				m_constructedItemCount      = 0;
 				
 				// In activity stream mode, there's 1 context menu
-				// item.  Otherwise, in Filr mode or viewing a
-				// collection, there's 2.  Otherwise, there's 3.
+				// item.  Otherwise, if we're viewing a collection,
+				// there's 2.  Otherwise, there's 3.
 				m_expectedItemCount =
 					(isASActive ?
 						1       :
-						((GwtClientHelper.isFilr() || collectionType.isCollection()) ?
-							2                                                        :
-							3));
+						(collectionType.isCollection()) ? 2 : 3);
 			}
 		}
 
@@ -1397,7 +1395,7 @@ public class MainMenuControl extends Composite
 					}
 				});
 			
-			if ((!isASActive) && (!(GwtClientHelper.isFilr()))) {
+			if (!isASActive) {
 				addManageToContext(toolbarItemList, tmi,new ContextItemCallback() {
 						@Override
 						public void complete() {

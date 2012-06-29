@@ -522,9 +522,9 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			if ((null != prevTI) && (BinderType.FOLDER == prevTI.getBinderInfo().getBinderType())) {
 				// ...add a back button to navigate to it...
 				EventButton backButton = new EventButton(
-					getBaseImages().previousDisabled16(),
+					getBaseImages().upDisabled16(),
 					null,
-					getBaseImages().previousMouseOver16(),
+					getBaseImages().upMouseOver16(),
 					true,
 					getMessages().treePreviousFolder(),
 					new Command() {
