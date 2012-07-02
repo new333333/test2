@@ -99,11 +99,13 @@ import org.kablink.teaming.domain.NoBinderQuotaByTheIdException;
 import org.kablink.teaming.domain.NoDashboardByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoLibraryEntryByTheIdException;
+import org.kablink.teaming.domain.NoOpenIDProviderByTheIdException;
 import org.kablink.teaming.domain.NoPostingByTheIdException;
 import org.kablink.teaming.domain.NoTagByTheIdException;
 import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
 import org.kablink.teaming.domain.NoZoneByTheIdException;
 import org.kablink.teaming.domain.NotifyStatus;
+import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.SimpleName;
@@ -119,6 +121,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.SimpleName.SimpleNamePK;
+import org.kablink.teaming.security.function.Condition;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
@@ -2733,5 +2736,39 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		// the input instance (eg. Bug #760515)
 		LibraryEntry primaryKeyValue = new LibraryEntry(le.getBinderId(), le.getType(), le.getName());
 		return (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, primaryKeyValue);
+	}
+	
+	public OpenIDProvider loadOpenIDProvider(Long zoneId, String openIDProviderId) {
+		long begin = System.nanoTime();
+		try {
+			OpenIDProvider o =(OpenIDProvider)getHibernateTemplate().get(OpenIDProvider.class, openIDProviderId);
+	        if (o != null && o.getZoneId().equals(zoneId)) return o;
+	        throw new NoOpenIDProviderByTheIdException(openIDProviderId);
+    	}
+    	finally {
+    		end(begin, "loadOpenIDProvider(String,Long)");
+    	}	        
+	}
+
+	public List<OpenIDProvider> findOpenIDProviders(final Long zoneId) {
+		long begin = System.nanoTime();
+		try {
+	        return (List)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    public Object doInHibernate(Session session) throws HibernateException {
+	                        return session.createCriteria(OpenIDProvider.class)
+	                        	.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
+	                        	.setCacheable(true)
+	                        	.setCacheRegion("query.ReferenceQueryCache")
+	                        	.addOrder(Order.asc("title"))
+	                        	.list();
+	                    }
+	                }
+	            );
+    	}
+    	finally {
+    		end(begin, "findOpenIDProviders(Long)");
+    	}	
+
 	}
  }

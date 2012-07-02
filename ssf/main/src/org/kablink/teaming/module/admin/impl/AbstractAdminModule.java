@@ -74,6 +74,8 @@ import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
+import org.kablink.teaming.domain.NoOpenIDProviderByTheIdException;
+import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
@@ -339,6 +341,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   			case manageRuntime:
   			case manageResourceDrivers:
   			case manageFileSynchApp:
+  			case manageOpenIDProviders:
   				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    				break;
 			case report:
@@ -1563,6 +1566,37 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		checkAccess(AdminOperation.manageRuntime);
 		RuntimeStatistics rs = (RuntimeStatistics) SpringContextUtil.getBean("runtimeStatistics");
 		rs.setSimpleProfilerEnabled(false);
+	}
+
+	public void addOpenIDProvider(OpenIDProvider openIDProvider) {
+		checkAccess(AdminOperation.manageOpenIDProviders);
+		getCoreDao().save(openIDProvider);		
+	}
+	
+	public void modifyOpenIDProvider(OpenIDProvider openIDProvider) {
+		checkAccess(AdminOperation.manageOpenIDProviders);
+		getCoreDao().update(openIDProvider);
+	}
+	
+	public void deleteOpenIDProvider(String openIDProviderId) {
+		checkAccess(AdminOperation.manageOpenIDProviders);
+		try {
+			OpenIDProvider openIDProvider = getCoreDao().loadOpenIDProvider(RequestContextHolder.getRequestContext().getZoneId(), openIDProviderId);
+			getCoreDao().delete(openIDProvider);
+		}
+		catch(NoOpenIDProviderByTheIdException e) {
+			// already gone - no problem
+		}
+	}
+	
+	public OpenIDProvider getOpenIDProvider(String openIDProviderId) {
+		// let anyone read it?
+		return getCoreDao().loadOpenIDProvider(RequestContextHolder.getRequestContext().getZoneId(), openIDProviderId);	
+	}
+	
+	public List<OpenIDProvider> getOpenIDProviders() {
+		// let anyone read them - is this right?
+		return getCoreDao().findOpenIDProviders(RequestContextHolder.getRequestContext().getZoneId());
 	}
 
 }

@@ -35,6 +35,7 @@ package org.kablink.teaming.security.authentication;
 import java.util.Map;
 
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.util.SPropsUtil;
@@ -44,6 +45,7 @@ import org.kablink.teaming.util.SpringContextUtil;
 public class AuthenticationManagerUtil {
 
 	public static User authenticate(final Integer identitySource,
+			final AuthenticationServiceProvider authenticationServiceProvider,
 			final String zoneName,
 			final String username, final String password,
 			final boolean createUser, final boolean passwordAutoSynch,
@@ -53,6 +55,7 @@ public class AuthenticationManagerUtil {
 		return (User) RunasTemplate.runasAdmin(new RunasCallback() {
 			public Object doAs() {
 				return getAuthenticationManager().authenticate(identitySource,
+						authenticationServiceProvider,
 						zoneName,
 						username, password, createUser, passwordAutoSynch,
 						ignorePassword, updates, authenticatorName);
@@ -73,7 +76,7 @@ public class AuthenticationManagerUtil {
 		boolean createUser = 
 			SPropsUtil.getBoolean("portal.user.auto.create", true);
 		
-		return authenticate(null, zoneName, username, password, createUser, passwordAutoSynch, ignorePassword, updates, authenticatorName);
+		return authenticate(null, AuthenticationServiceProvider.NONE, zoneName, username, password, createUser, passwordAutoSynch, ignorePassword, updates, authenticatorName);
 	}
 	
 	public static User authenticate(final String zoneName,

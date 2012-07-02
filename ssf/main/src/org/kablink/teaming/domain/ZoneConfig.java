@@ -59,6 +59,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private String fsaAutoUpdateUrl;
 	private Long fsaMaxFileSize;
 	private OpenIDConfig openIDConfig;
+	private Boolean externalUserEnabled;
 
 	public ZoneConfig()
 	{
@@ -283,5 +284,14 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 		// In this version of Vibe, this field is NOT persisted to database. So, this method shouldn't be used.
 		this.fsaMaxFileSize = fsaMaxFileSize;
 	}
-	
+
+	public boolean isExternalUserEnabled() {
+		if(externalUserEnabled == null)
+			return SPropsUtil.getBoolean("external.user.enabled.default", false);
+		else
+			return externalUserEnabled.booleanValue();
+	}
+	public void setExternalUserEnabled(boolean externalUserEnabled) {
+		this.externalUserEnabled = externalUserEnabled;
+	}
 }

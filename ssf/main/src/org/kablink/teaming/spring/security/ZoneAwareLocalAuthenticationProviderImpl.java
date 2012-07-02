@@ -37,6 +37,9 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
+import org.kablink.teaming.module.authentication.IdentitySourceObtainable;
+import org.kablink.teaming.module.authentication.LocalAuthentication;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
@@ -70,6 +73,7 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 	protected Authentication doAuthenticate(Authentication authentication) throws AuthenticationException {
 		try {
 			User user = AuthenticationManagerUtil.authenticate(User.IDENTITY_SOURCE_LOCAL,
+					AuthenticationServiceProvider.LOCAL,
 					zoneName,
 					(String) authentication.getName(), 
 					(String) authentication.getCredentials(),
@@ -101,7 +105,7 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 		return new SynchNotifiableAuthenticationImpl(principal, credentials, authorities, user);
 	}
 	
-	public static class SynchNotifiableAuthenticationImpl extends UsernamePasswordAuthenticationToken implements IdentitySourceObtainable, SynchNotifiableAuthentication {
+	public static class SynchNotifiableAuthenticationImpl extends UsernamePasswordAuthenticationToken implements LocalAuthentication, IdentitySourceObtainable, SynchNotifiableAuthentication {
 		User user;
 	    public SynchNotifiableAuthenticationImpl(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities, User user) {
 	    	super(principal, credentials, authorities);

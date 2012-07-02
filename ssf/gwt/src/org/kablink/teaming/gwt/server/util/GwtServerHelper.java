@@ -4946,7 +4946,7 @@ public class GwtServerHelper {
 			
 			zoneModule = ami.getZoneModule();
 			zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-			allowOpenIdAuth = zoneConfig.getAuthenticationConfig().getOpenidAuthenticationEnabled();
+			allowOpenIdAuth = zoneConfig.isExternalUserEnabled() && zoneConfig.getOpenIDConfig().isAuthenticationEnabled();
 			loginInfo.setAllowOpenIdAuthentication( allowOpenIdAuth ); 
 		}
 		

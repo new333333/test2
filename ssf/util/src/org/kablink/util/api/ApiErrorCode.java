@@ -169,4 +169,8 @@ public enum ApiErrorCode {
 	ZONE_NAME_EXISTS, // Zone with this name already exists
 	ZONE_VIRTUAL_HOST_EXISTS, // Zone with this virtual host already exists
 	ZONE_ERROR, // Error during zone operation
+
+	// OpenID errors
+	OPENID_PROVIDER_NOT_FOUND, // No OpenID provider object found with this name or id
+	
 }

@@ -49,6 +49,7 @@ import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.NoApplicationByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
+import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.WeekendsAndHolidaysConfig;
 import org.kablink.teaming.extension.ExtensionManager;
@@ -81,7 +82,8 @@ public interface AdminModule {
 		manageFunctionCondition,
 		manageRuntime,
 		manageResourceDrivers,
-		manageFileSynchApp
+		manageFileSynchApp,
+		manageOpenIDProviders,
 	}
 	/**
 	 * The method name to be called is used as the operation.   This
@@ -320,4 +322,15 @@ public interface AdminModule {
 	public void disableSimpleProfiler();
 	
 	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl);
+	
+	public void addOpenIDProvider(OpenIDProvider openIDProvider);
+	
+	public void modifyOpenIDProvider(OpenIDProvider openIDProvider);
+	
+	public void deleteOpenIDProvider(String openIDProviderId);
+	
+	public OpenIDProvider getOpenIDProvider(String openIDProviderId);
+	
+	public List<OpenIDProvider> getOpenIDProviders();
+
  }

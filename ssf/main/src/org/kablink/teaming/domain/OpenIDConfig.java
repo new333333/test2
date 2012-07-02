@@ -42,11 +42,17 @@ public class OpenIDConfig {
 
 	private Boolean selfProvisioningEnabled; // OpenID self-provisioning enabled
 
+	private Boolean authenticationEnabled; // OpenID authentication enabled
+	
 	private String[] allowedClaimedIdentityRegexList;
 	
 	private static String[] allowedClaimedIdentityRegexListDefault;
 	
-	public boolean getSelfProvisioningEnabled() {
+	private Boolean synchronizeProfilesOnSelfProvision;
+	
+	private Boolean synchronizeProfilesOnLogin;
+	
+	public boolean isSelfProvisioningEnabled() {
 		if(selfProvisioningEnabled == null)
 			return SPropsUtil.getBoolean("openid.self.provisioning.enabled.default", false); // OpenID self provisioning is disabled by default
 		else
@@ -55,6 +61,36 @@ public class OpenIDConfig {
 	public void setSelfProvisioningEnabled(
 			boolean selfProvisioningEnabled) {
 		this.selfProvisioningEnabled = selfProvisioningEnabled;
+	}
+	
+	public boolean isAuthenticationEnabled() {
+		if(authenticationEnabled == null) // not set yet
+			return SPropsUtil.getBoolean("openid.authentication.enabled.default", false); // OpenID authentication is disabled by default
+		else 
+			return authenticationEnabled.booleanValue();
+	}
+	public void setAuthenticationEnabled(boolean openidAuthenticationEnabled) {
+		this.authenticationEnabled = openidAuthenticationEnabled;
+	}
+	
+	public boolean isSynchronizeProfilesOnSelfProvision() {
+		if(synchronizeProfilesOnSelfProvision == null)
+			return SPropsUtil.getBoolean("openid.synchronize.profiles.on.self.provision.default", true);
+		else
+			return synchronizeProfilesOnSelfProvision.booleanValue();
+	}
+	public void setSynchronizeProfilesOnSelfProvision(boolean synchronizeProfilesOnSelfProvision) {
+		this.synchronizeProfilesOnSelfProvision = synchronizeProfilesOnSelfProvision;
+	}
+	
+	public boolean isSynchronizeProfilesOnLogin() {
+		if(synchronizeProfilesOnLogin == null)
+			return SPropsUtil.getBoolean("openid.synchronize.profiles.on.login.default", false);
+		else
+			return synchronizeProfilesOnLogin.booleanValue();
+	}
+	public void setSynchronizeProfilesOnLogin(boolean synchronizeProfilesOnLogin) {
+		this.synchronizeProfilesOnLogin = synchronizeProfilesOnLogin;
 	}
 	
 	public String[] getAllowedClaimedIdentityRegexList() {

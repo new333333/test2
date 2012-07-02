@@ -65,29 +65,7 @@
             <column name="password" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong" context="schema" failOnError="true" id="8">
-        <comment>Enable OpenID authentication</comment>
-        <addColumn tableName="SS_ZoneConfig">
-            <column name="openidEnabled" type="BIT">
-                <constraints nullable="true" />
-            </column>
-        </addColumn>
-        <comment>Enable OpenID self-provisioning</comment>
-        <addColumn tableName="SS_ZoneConfig">
-            <column name="openidSelfProvisioningEnabled" type="BIT">
-                <constraints nullable="true" />
-            </column>
-        </addColumn>
-    </changeSet>
-    <changeSet author="jong" context="schema" failOnError="true" id="9">
-        <comment>Newline separated list of regex patterns for allowed OpenID provider login URLs</comment>
-        <addColumn tableName="SS_ZoneConfig">
-            <column name="openidClaimedIdentityRegex" type="LONGTEXT">
-                <constraints nullable="true" />
-            </column>
-        </addColumn>
-    </changeSet>
-    <changeSet author="peter" context="schema" failOnError="true" id="10">
+    <changeSet author="peter" context="schema" failOnError="true" id="8">
         <addColumn tableName="SS_ResourceDriver">
             <column name="shareName" type="VARCHAR(255)">
             	<constraints nullable="true" />
@@ -108,5 +86,56 @@
             	<constraints nullable="true" />
             </column>
         </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="9">
+        <comment>Enable external users</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="externalUserEnabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Enable OpenID authentication</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="openidAuthenticationEnabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Enable OpenID self-provisioning</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="openidSelfProvisioningEnabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+       <comment>Enable synchronization of profiles upon self-provisioning/creation of external user account via OpenID</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="openidSyncOnSelfProvision" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+       <comment>Enable synchronization of profiles upon login of existing external user via OpenID</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="openidSyncOnLogin" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" id="10">
+        <createTable tableName="SS_OpenIDProviders">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="zoneId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="url" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
     </changeSet>
 </databaseChangeLog>
