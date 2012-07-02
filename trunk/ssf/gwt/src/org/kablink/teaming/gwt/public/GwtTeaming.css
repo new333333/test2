@@ -1113,6 +1113,8 @@ body, table td, select
 	overflow: auto;
 }
 
+.workspaceTreeControl_blankContent {display: block; margin: 10px; color: #666666; font-size: 1.1em;}
+
 .workspaceTreeControlBody            {padding-top: 10px;}
 .workspaceTreeControlBody_collection {background-color: white !important; padding-top: 10px; padding-bottom: 10px; border-bottom: 1px solid #cccccc;}
 
@@ -1724,11 +1726,6 @@ body, table td, select
 	margin-left: 0px !important;
 	vertical-align: middle;
 }
-.breadCrumb_ContentTail_Back
-{
-	margin-right: 3px;
-	vertical-align: middle;
-}
 .breadCrumb_ContentTail_Img
 {
 	margin-right: 3px;
@@ -1739,6 +1736,11 @@ body, table td, select
 	display: block;
 	padding-top: 5px;
 	white-space: nowrap;
+}
+.breadCrumb_ContentTail_Up
+{
+	margin-right: 3px;
+	vertical-align: middle;
 }
 .breadCrumb_TrashLabel
 {

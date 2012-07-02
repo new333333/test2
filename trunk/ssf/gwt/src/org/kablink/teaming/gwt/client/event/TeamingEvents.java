@@ -173,6 +173,7 @@ public enum TeamingEvents implements IsSerializable {
 	HIDE_ACCESSORIES,					// Hides the accessories panel on the given binder.
 	SHOW_ACCESSORIES,					// Shows the accessories panel on the given binder.
 	
+	GET_SIDEBAR_CONTEXT,				// Returns the context currently loaded in the sidebar tree.
 	REFRESH_SIDEBAR_TREE,				// Refreshes the sidebar tree content maintaining its current root and selected binder.
 	REROOT_SIDEBAR_TREE,				// Re-roots the sidebar tree to the currently selected binder.
 	SIDEBAR_HIDE,						// Hides the left navigation panel.

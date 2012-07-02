@@ -934,15 +934,27 @@ public class GwtMainPage extends ResizeComposite
 	/*
 	 * Puts a context change from the JSP based UI into effect.
 	 */
-	private void contextLoaded( String binderId, String inSearch, String searchTabId ) {
-		contextLoaded(
-			binderId,
-			Instigator.CONTENT_AREA_CHANGED,
-			((null != inSearch) && Boolean.parseBoolean( inSearch )),
-			searchTabId );
+	private void contextLoaded( String binderId, String inSearchS, String searchTabId )
+	{
+		Instigator instigator = Instigator.CONTENT_AREA_CHANGED;
+		boolean inSearch = ( (null != inSearchS ) && Boolean.parseBoolean( inSearchS ) );
+		if ( inSearch )
+		{
+			instigator = Instigator.SEARCH_RESULTS;
+		}
+		else if ( null != m_contentCtrl )
+		{
+			instigator = m_contentCtrl.getContentInstigator();
+			if ( Instigator.UNKNOWN == instigator )
+			{
+				instigator = Instigator.CONTENT_AREA_CHANGED;
+			}
+		}
+		contextLoaded( binderId, instigator, inSearch, searchTabId );
 	}
 	
-	private void contextLoaded( String binderId, Instigator instigator ) {
+	private void contextLoaded( String binderId, Instigator instigator )
+	{
 		contextLoaded( binderId, instigator, false, "" );
 	}
 	

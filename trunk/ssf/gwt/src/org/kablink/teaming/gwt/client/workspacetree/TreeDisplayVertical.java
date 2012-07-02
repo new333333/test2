@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
+import org.kablink.teaming.gwt.client.event.GetSidebarContextEvent.ContextCallback;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -92,8 +93,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Class used to drive the display of the WorkspaceTreeControl,
- * typically used for Teaming's sidebar.
+ * Class used to drive the display of a vertical WorkspaceTreeControl,
+ * typically used for Vibe's sidebar.
  * 
  * @author drfoster@novell.com
  */
@@ -101,7 +102,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	private ActivityStreamInfo		m_selectedActivityStream;	// When displaying activity streams, the ActivityStream info of the selected activity stream.  null if no activity stream is currently selected.
 	private BinderInfo				m_selectedBinderInfo;		// The currently selected binder.
 	private BusyInfo				m_busyInfo;					// Stores a BusyInfo while we're busy switching contexts.
-	private FlowPanel				m_rootPanel;				// The top level FlowPanel containing the sidebar tree's contents.
+	private FlowPanel				m_rootPanel;				// The top level FlowPanel containing the tree's contents.
 	private HashMap<String,Integer> m_renderDepths;				// A map of the depths the Binder's are are displayed at.
 
 	// The following are used for widget IDs assigned to various
@@ -421,9 +422,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// Initialize the super class.
 			super();
 			
-			// Setup a timer to wait for the the busy state to clear.
-			// If we exceed the timeout, we simply clear the busy
-			// state.
+			// Setup a timer to wait for the busy state to clear.  If
+			// we exceed the timeout, we simply clear the busy state.
 			m_maxBusyDurationTimer = new Timer() {
 				@Override
 				public void run() {
@@ -704,6 +704,21 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		}
 	}
 	
+	/**
+	 * Called after a new context has been loaded.
+	 * 
+	 * Overrides TreeDisplayBase.clearBusySpinner().
+	 */
+	@Override
+	public void clearBusySpinner() {
+		// Are we tracking a BusyInfo indicating that we're in the
+		// middle of a context switch?
+		if (null != m_busyInfo) {
+			// Yes!  Clear the busy state.
+			m_busyInfo.clearBusy();
+		}
+	}
+
 	/*
 	 * Removes the widgets from a FlexTable row.
 	 */
@@ -719,23 +734,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		RequestInfo ri = GwtClientHelper.getRequestInfo();
 		ri.clearRefreshSidebarTree();
 		ri.clearRerootSidebarTree();
-	}
-
-	/**
-	 * Called after a new context has been loaded.
-	 * 
-	 * Overrides TreeDisplayBase.contextLoaded().
-	 * 
-	 * @param binderId
-	 */
-	@Override
-	public void contextLoaded(String binderId) {
-		// Are we tracking a BusyInfo indicating that we're in the
-		// middle of a context switch?
-		if (null != m_busyInfo) {
-			// Yes!  Clear the busy state.
-			m_busyInfo.clearBusy();
-		}
 	}
 
 	/*
@@ -874,6 +872,27 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		return reply;
 	}
 
+	/**
+	 * Returns the current sidebar context via a callback.
+	 * 
+	 * Implementation of TreeDisplayBase.getContextCallback().
+	 * 
+	 * @param contextCallback
+	 */
+	@Override
+	public void getSidebarContext(ContextCallback contextCallback) {
+		String contextPermalink = "";
+		if (null != m_selectedBinderInfo) {
+			TreeInfo selectedTI;
+			TreeInfo rootTI = getRootTreeInfo();
+			if (m_selectedBinderInfo.isBinderCollection())
+			     selectedTI = TreeInfo.findCollectionTI(rootTI, m_selectedBinderInfo.getCollectionType());
+			else selectedTI = TreeInfo.findBinderTI(    rootTI, m_selectedBinderInfo.getBinderId());
+			contextPermalink = selectedTI.getBinderPermalink();
+		}
+		contextCallback.context(m_selectedBinderInfo, contextPermalink);
+	}
+	
 	/**
 	 * Returns true if we're displaying activity streams and false
 	 * otherwise.
@@ -1057,7 +1076,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 
 		// Did we display anything in the sidebar?
 		if (0 == rowCount) {
-			// No!  Is the tree visible?
+			// No!  Display some text saying we know what we're doing.
+			Label l = new Label(getMessages().treeIntentionallyLeftBlank());
+			l.addStyleName("workspaceTreeControl_blankContent");
+			grid.setWidget(0, 0, l);
+			
+			// Is the tree visible?
 			if (isTreeVisible()) {
 				// Yes!  Then by default, we hide it.
 				GwtTeaming.fireEvent(
@@ -1256,7 +1280,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	@Override
 	void selectBinder(TreeInfo ti) {
 		// We skip selecting a trash...
-		boolean skipSelection = ti.isBinderTrash();
+		boolean skipSelection = ((null == ti) || ti.isBinderTrash());
 		if ((!skipSelection) && isFilr()) {
 			// ...or non-collection when in Filr mode.
 			skipSelection = (!(ti.isBinderCollection()));
@@ -1433,8 +1457,11 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// If the selection is for a collection...
 		if (osbInfo.isCollection()) {
 			// ...select it.
-			TreeInfo targetTI = TreeInfo.findCollectionTI(getRootTreeInfo(), osbInfo.getBinderInfo().getCollectionType());
-			selectBinder(targetTI);
+			selectBinder(
+				TreeInfo.findCollectionTI(
+					getRootTreeInfo(),
+					osbInfo.getBinderInfo().getCollectionType()));
+			
 			return;
 		}
 		
@@ -1479,12 +1506,11 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 						// Asynchronously perform the selection so that
 						// we release the AJAX request ASAP.
 						StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
-						String rootWorkspaceId = responseData.getStringValue();
 						selectRootWorkspaceIdAsync(
 							binderInfo,
 							forceReload,
 							targetTI,
-							rootWorkspaceId);
+							responseData.getStringValue());
 					}
 				});
 				break;

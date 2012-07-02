@@ -245,10 +245,23 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 			return ti;
 		}
 
-		// Otherwise, if the TreeInfo has child Binder's...
-		List<TreeInfo> collectionsList = ti.getCollectionsList();
+		// Otherwise, search the TreeInfo's collections list.
+		return findCollectionTI(ti.getCollectionsList(), ct);
+	}
+	
+	/**
+	 * Returns the TreeInfo from a List<TreeInfo> that references a
+	 * collection type.
+	 * 
+	 * @param collectionsList
+	 * @param ct
+	 * 
+	 * @return
+	 */
+	public static TreeInfo findCollectionTI(List<TreeInfo> collectionsList, CollectionType ct) {
+		// Do we have a collections list to search?
 		if ((null != collectionsList) && (0 < collectionsList.size())) {
-			// ...scan them...
+			// Yes!  Scan them...
 			for (TreeInfo collectionTI: collectionsList) {
 				// ...and if one of them references the collection in
 				// ...question...
@@ -259,9 +272,9 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 				}
 			}
 		}
-
-		// If we get here, the collection was nowhere to be found in
-		// the TreeInfo.  Return null.
+		
+		// If we get here, we couldn't find the collection in question.
+		// Return null.
 		return null;
 	}
 

@@ -37,6 +37,8 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyExitEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.GetSidebarContextEvent;
+import org.kablink.teaming.gwt.client.event.GetSidebarContextEvent.ContextCallback;
 import org.kablink.teaming.gwt.client.event.TreeNodeCollapsedEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeExpandedEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.ExpandHorizontalBucketCmd;
@@ -58,6 +60,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -71,13 +74,13 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 
 /**
- * Class used to drive the display of the WorkspaceTreeControl,
- * typically used for Teaming's bread crumbs.
+ * Class used to drive the display of a horizontal
+ * WorkspaceTreeControl, typically used for Vibe's bread crumbs.
  * 
  * @author drfoster@novell.com
  */
 public class TreeDisplayHorizontal extends TreeDisplayBase {
-	private FlowPanel	m_rootPanel;	//
+	private FlowPanel	m_rootPanel;	// The top level FlowPanel containing the tree's contents.
 	
 	private final static String GRID_DEPTH_ATTRIBUTE	= "n-depth";
 	
@@ -165,8 +168,8 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 					ExpandHorizontalBucketCmd cmd;
 					
 					// Yes!  Expand it.
-					cmd = new ExpandHorizontalBucketCmd( m_ti.getBucketInfo() );
-					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+					cmd = new ExpandHorizontalBucketCmd(m_ti.getBucketInfo());
+					GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 						@Override
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
@@ -193,8 +196,8 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 					// No, we aren't showing a collapsed bucket!  We
 					// must be showing a normal node.  Can we get a
 					// TreeInfo for the expansion?
-					cmd = new GetHorizontalNodeCmd( m_ti.getBinderInfo().getBinderId() );
-					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+					cmd = new GetHorizontalNodeCmd(m_ti.getBinderInfo().getBinderId());
+					GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 						@Override
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
@@ -219,6 +222,82 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		}
 	}
 	
+	/*
+	 * Inner class used to track information about getting the context
+	 * from the sidebar.
+	 */
+	private class GetSidebarContextHelper {
+		private Anchor		m_selectorA;			// The anchor for the TreeInfo.
+		private boolean		m_handleSidebarContext;	// Coordinates handling the callback.
+		private FlowPanel	m_fp;					// The FlowPanel things are to be added to.
+		private Timer		m_timer;				// A timer used to control the maximum amount of time we'll wait for a response.
+		private TreeInfo	m_ti;					// The TreeInfo we're dealing with.
+		
+		/**
+		 * Class constructor.
+		 */
+		GetSidebarContextHelper(FlowPanel fp, TreeInfo ti, Anchor selectorA) {
+			// Initialize the super class.
+			super();
+			
+			// ...store the parameters...
+			m_fp        = fp;
+			m_ti        = ti;
+			m_selectorA = selectorA;
+			
+			// ...and initialize everything else.
+			setHandleSidebarContext(true);
+			
+			// Setup a timer to wait for the context.  If we exceed the
+			// timeout, we simply stop waiting.
+			m_timer = new Timer() {
+				@Override
+				public void run() {
+					// Stop waiting...
+					clearGetContext();
+					m_handleSidebarContext = false;
+					
+					// ...and add the TreeInfo information since we
+					// ...didn't get a context that we'd normally add
+					// ...one from.
+					addTIImageAndAnchor(m_fp, m_ti, m_selectorA);
+
+					// If we're in UI debug mode, display an alert
+					// about the problem.
+					GwtClientHelper.debugAlert(
+						getMessages().treeInternalErrorNoContext());
+				}
+			};
+			m_timer.schedule(1000);	// We'll wait no longer than 1 second for a context.
+		}
+
+		/**
+		 * Called to clear the get context timer.
+		 */
+		void clearGetContext() {
+			// If we have a timer...
+			if (null != m_timer) {
+				// ...cancel and forget about it.
+				m_timer.cancel();
+				m_timer = null;
+			}
+		}
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		boolean getHandleSidebarContext() {return m_handleSidebarContext;}
+
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		void setHandleSidebarContext(boolean handleSidebarContext) {m_handleSidebarContext = handleSidebarContext;}
+	}
+	
 	/**
 	 * Class constructor.
 	 * 
@@ -230,6 +309,40 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		super(wsTree, rootTIList);
 	}
 
+	/*
+	 * Adds an image and anchor for a TreeInfo to a flow panel.
+	 */
+	private void addTIImageAndAnchor(FlowPanel fp, TreeInfo ti, Anchor selectorA) {
+		// Create the image for the TreeInfo...
+		Image binderImg = GwtClientHelper.buildImage(((String) null));
+		binderImg.addStyleName("breadCrumb_ContentTail_Img");
+		binderImg.getElement().setAttribute("align", "absmiddle");
+		ti.setBinderUIImage(binderImg);
+		setBinderImageResource(ti, BinderIconSize.getBreadCrumbIconSize(), getFilrImages().folder());
+
+		// ...and add it to the flow panel with the anchor.
+		fp.add(binderImg);
+		fp.add(selectorA);
+	}
+	
+	/*
+	 * Adds a button to move up the hierarchy to a flow panel.
+	 */
+	private void addUpButton(FlowPanel fp, Command upCommand) {
+		// Create the up button...
+		EventButton upButton = new EventButton(
+			getBaseImages().upDisabled16(),		// This is really the enabled image, but it needs to be gray.
+			null,								// null -> No disabled image.
+			getBaseImages().upMouseOver16(),	// The hover images for the button.
+			true,								// true -> Enable the button.
+			getMessages().treePreviousFolder(),	// The alternate text for the button.
+			upCommand);
+		upButton.addStyleName("breadCrumb_ContentTail_Up");
+		
+		// ...and add it to the flow panel.
+		fp.add(upButton);
+	}
+	
 	/**
 	 * Returns an OnSelectBinderInfo object that corresponds to a
 	 * TreeInfo object.
@@ -378,6 +491,19 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	}
 
 	/**
+	 * Returns the current sidebar context via a callback.  Ignored by
+	 * horizontal trees.
+	 * 
+	 * Implementation of TreeDisplayBase.getContextCallback().
+	 * 
+	 * @param contextCallback
+	 */
+	@Override
+	public void getSidebarContext(ContextCallback contextCallback) {
+		// Nothing to do.  Ignored by horizontal trees.
+	}
+	
+	/**
 	 * Returns true if we're displaying activity streams and false
 	 * otherwise.
 	 * 
@@ -464,7 +590,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	/*
 	 * Renders a TreeInfo into the next position in a HorizontalPanel.
 	 */
-	private void renderNode(TreeInfo ti, FlexTable nodeGrid) {
+	private void renderNode(final TreeInfo ti, FlexTable nodeGrid) {
 		int depth = Integer.parseInt(nodeGrid.getElement().getAttribute(GRID_DEPTH_ATTRIBUTE));
 		Widget selectorLabel      = getSelectorLabel(ti, (0 == depth));
 		String selectorLabelStyle = selectorLabel.getStyleName();
@@ -507,7 +633,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		}
 		
 		// Generate the widgets to select the Binder.
-		Anchor selectorA = new Anchor();
+		final Anchor selectorA = new Anchor();
 		selectorA.getElement().appendChild(selectorLabel.getElement());
 		selectorA.addClickHandler(new BinderSelector(ti));
 		selectorA.setWidth("100%");
@@ -522,24 +648,25 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 
 			// ...create panel to hold the various widgets we'll lay
 			// ...down for the tail node...
-			FlowPanel fp = new FlowPanel();
+			final FlowPanel fp = new FlowPanel();
 			fp.addStyleName("breadCrumb_ContentTail_Panel");
+		    m_rootPanel.add(fp);
 
 			// ...if the binder about the tail is a folder...
 			final TreeInfo prevTI = getPreviousTI(ti);
 			if ((null != prevTI) && (BinderType.FOLDER == prevTI.getBinderInfo().getBinderType())) {
-				// ...add a back button to navigate to it...
-				EventButton backButton = new EventButton(
-					getBaseImages().upDisabled16(),
-					null,
-					getBaseImages().upMouseOver16(),
-					true,
-					getMessages().treePreviousFolder(),
+				// ...add an up button to navigate to it...
+				addUpButton(
+					fp,
 					new Command() {
 						@Override
 						public void execute() {
+							// If we can change contexts...
 							if (canChangeContext()) {
+								// ...select the appropriate TreeInfo...
 								selectBinder(prevTI);
+								
+								// ...and change the context.
 								GwtTeaming.fireEvent(
 									new ChangeContextEvent(
 										buildOnSelectBinderInfo(
@@ -547,22 +674,75 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 							}
 						}
 					});
-				backButton.addStyleName("breadCrumb_ContentTail_Back");
-				fp.add(backButton);
+				
+				// ...and add the image for the binder.
+				addTIImageAndAnchor(fp, ti, selectorA);
 			}
+			
+			else {
+				// Construct the helper to coordinate handling not
+				// getting called back with the context...
+				final GetSidebarContextHelper gscHelper = new GetSidebarContextHelper(
+					fp,			// The FlowPanel we're constructing. 
+					ti,			// The TreeInfo  we're constructing from.
+					selectorA);	// The Anchor for this TreeInfo.
+				
+				// ...and fire a get sidebar context event.
+				GwtTeaming.fireEvent(
+					new GetSidebarContextEvent(
+						new ContextCallback() {
+							/**
+							 * Callback method for the event.
+							 * 
+							 * This method will be called by the event
+							 * handler(s) with the current context
+							 * loaded in the sidebar tree.
+							 * 
+							 * @param contextBI
+							 * @param contextPermalink
+							 */
+							@Override
+							public void context(final BinderInfo contextBI, final String contextPermalink) {
+								// Did we timeout before we got a
+								// context?
+								gscHelper.clearGetContext();
+								if (gscHelper.getHandleSidebarContext()) {
+									// No!  If the current sidebar
+									// context is a collection...
+									gscHelper.setHandleSidebarContext(false);
+									if ((null != contextBI) && contextBI.isBinderCollection()) {
+										// ...add an up button to
+										// ...navigate to it...
+										addUpButton(
+											fp,
+											new Command() {
+												@Override
+												public void execute() {
+													// If we can change contexts...
+													if (canChangeContext()) {
+														// ...select the appropriate TreeInfo...
+														selectBinder(TreeInfo.findCollectionTI(
+															getRootTreeInfoList(),
+															contextBI.getCollectionType()));
 
-			// ...add an image for the binder itself...
-			Image binderImg = GwtClientHelper.buildImage(((String) null));
-			binderImg.addStyleName("breadCrumb_ContentTail_Img");
-			binderImg.getElement().setAttribute("align", "absmiddle");
-			ti.setBinderUIImage(binderImg);
-			setBinderImageResource(ti, BinderIconSize.getBreadCrumbIconSize(), getFilrImages().folder());
-
-			// ...finally, tie it all together and add it to the root
-			// ...panel.
-			fp.add(binderImg);
-			fp.add(selectorA);
-		    m_rootPanel.add(fp);
+														// ...and change the context.
+														GwtTeaming.fireEvent(
+															new ChangeContextEvent(
+																new OnSelectBinderInfo(
+																	contextBI,
+																	contextPermalink,
+																	Instigator.BREADCRUMB_TREE_SELECT)));
+													}
+												}
+											});
+									}
+									
+									// ...and add the image for the binder.
+									addTIImageAndAnchor(fp, ti, selectorA);
+								}
+							}
+						}));
+			}
 		}
 		
 		else {
