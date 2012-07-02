@@ -75,6 +75,7 @@ public class OnSelectBinderInfo {
 	 * Class constructor.
 	 * 
 	 * @param ti
+	 * @param instigator
 	 */
 	public OnSelectBinderInfo(TreeInfo ti, Instigator instigator) {
 		// Always use the final form of the constructor.

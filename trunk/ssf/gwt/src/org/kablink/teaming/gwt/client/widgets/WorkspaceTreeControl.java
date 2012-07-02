@@ -462,6 +462,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 				// Yes!  Does the sidebar tree need to react to this?
 				// (It doesn't if it came from the sidebar itself AND
 				// we don't have to force a refresh.)
+//!GwtClientHelper.deferredAlert("onContextChanged(): " + osbInfo.getInstigator().name());
 				Instigator instigator = osbInfo.getInstigator();
 				if ((Instigator.SIDEBAR_TREE_SELECT != instigator) ||
 					getRequestInfo().isRefreshSidebarTree()) {
