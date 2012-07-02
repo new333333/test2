@@ -45,7 +45,7 @@
             </column>
         </addColumn>
     </changeSet>
-    <changeSet author="peter" context="schema" id="7">
+    <changeSet author="peter" context="schema" failOnError="true" id="7">
         <createTable tableName="SS_ResourceDriver">
             <column name="ID" type="NUMBER(19,0)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_RESOURCEDRIVER"/>
@@ -119,7 +119,7 @@
             </column>
         </addColumn>
     </changeSet>
-    <changeSet author="jong" context="schema" id="10">
+    <changeSet author="jong" context="schema" failOnError="true" id="10">
         <createTable tableName="SS_OPENIDPROVIDERS">
             <column name="ID" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_OPENIDPROVIDERS"/>
@@ -141,7 +141,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong" context="schema" id="11">
+    <changeSet author="jong" context="schema" failOnError="true" id="11">
         <createIndex indexName="NAME_OPENIDPROVIDERS" tableName="SS_OPENIDPROVIDERS" unique="true">
             <column name="ZONEID"/>
             <column name="NAME"/>

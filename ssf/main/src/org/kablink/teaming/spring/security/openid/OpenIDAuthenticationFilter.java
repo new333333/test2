@@ -32,10 +32,13 @@
  */
 package org.kablink.teaming.spring.security.openid;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -53,9 +56,13 @@ public class OpenIDAuthenticationFilter extends org.springframework.security.ope
     	String claimedIdentity = super.obtainUsername(req);
     	Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
     	ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
-    	String[] claimedIdentityRegexs = zoneConfig.getOpenIDConfig().getAllowedClaimedIdentityRegexList();
-    	if(claimedIdentityRegexs != null) {
-    		for(String claimedIdentityRegex:claimedIdentityRegexs) {
+    	
+    	List<OpenIDProvider> providers = getCoreDao().findOpenIDProviders(zoneId);
+    	
+    	if(providers != null) {
+    		String claimedIdentityRegex;
+    		for(OpenIDProvider provider:providers) {
+    			claimedIdentityRegex = provider.getRegex();
     			// Since this method is called only when OpenID user logs into the system, some inefficiency
     			// in the processing is acceptable.
     			if(claimedIdentity.matches(claimedIdentityRegex))
