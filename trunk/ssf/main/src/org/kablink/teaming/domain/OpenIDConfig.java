@@ -44,10 +44,6 @@ public class OpenIDConfig {
 
 	private Boolean authenticationEnabled; // OpenID authentication enabled
 	
-	private String[] allowedClaimedIdentityRegexList;
-	
-	private static String[] allowedClaimedIdentityRegexListDefault;
-	
 	private Boolean synchronizeProfilesOnSelfProvision;
 	
 	private Boolean synchronizeProfilesOnLogin;
@@ -92,30 +88,5 @@ public class OpenIDConfig {
 	public void setSynchronizeProfilesOnLogin(boolean synchronizeProfilesOnLogin) {
 		this.synchronizeProfilesOnLogin = synchronizeProfilesOnLogin;
 	}
-	
-	/*
-	public String[] getAllowedClaimedIdentityRegexList() {
-		if(allowedClaimedIdentityRegexList == null) {
-			// Use default settings from configuration file.
-			if(allowedClaimedIdentityRegexListDefault == null) {
-				loadAllowedClaimedIdentityRegexListDefault();
-			}
-			return allowedClaimedIdentityRegexListDefault;
-		}
-		return allowedClaimedIdentityRegexList;
-	}
-	public void setAllowedClaimedIdentityRegexList(
-			String[] allowedClaimedIdentityRegexList) {
-		this.allowedClaimedIdentityRegexList = allowedClaimedIdentityRegexList;
-	}
 
-	private void loadAllowedClaimedIdentityRegexListDefault() {
-		int count = SPropsUtil.getInt("openid.allowed.claimed.identity.regex.default.count", 0);
-		String[] list = new String[count];
-		for(int i = 0; i < count; i++) {
-			list[i] = SPropsUtil.getString("openid.allowed.claimed.identity.regex.default." + i);
-		}
-		allowedClaimedIdentityRegexListDefault = list;
-	}
-	*/
 }
