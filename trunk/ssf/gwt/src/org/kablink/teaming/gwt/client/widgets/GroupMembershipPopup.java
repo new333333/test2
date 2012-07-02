@@ -531,8 +531,8 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 			}; 
 		}
 		
-		// Issue an ajax request to see if this group is the "all users" group.  If it is
-		// not the "all users" group we will make another ajax request to get the group membership.
+		// Issue an ajax request to see if this group is the "all users" or the "all external users" group.  If it is
+		// If it isn't, we will make another ajax request to get the group membership.
 		IsAllUsersGroupCmd cmd = new IsAllUsersGroupCmd( m_groupId );
 		GwtClientHelper.executeCommand( cmd, m_isAllUsersGroupCallback );		
 	}

@@ -3457,8 +3457,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 			Group group = (Group)getProfileModule().getEntry(groupId);		
 			model.put(WebKeys.GROUP, group);
 			Set ids = new HashSet();
-			if (ObjectKeys.ALL_USERS_GROUP_INTERNALID.equals(group.getInternalId())) {
-				//We don't try to list all the users. This could take a very long time
+			if (ObjectKeys.ALL_USERS_GROUP_INTERNALID.equals(group.getInternalId()) ||
+					ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID.equals(group.getInternalId())) {
+				//We don't try to list all the users or all of the external users. This could take a very long time
 			} else {
 				List memberList = ((Group)group).getMembers();
 				Iterator itUsers = memberList.iterator();
