@@ -81,6 +81,10 @@
 		<jsp:include page="/WEB-INF/jsp/definition_elements/survey/survey_form.jsp" />
   </c:when>
 
+  <c:when test="${ss_formViewStyle == 'file'}">
+		<jsp:include page="/WEB-INF/jsp/definition_elements/file/file_form.jsp" />
+  </c:when>
+
   <c:when test="${ss_formViewStyle == 'profile'}">
 		<jsp:include page="/WEB-INF/jsp/definition_elements/profile_entry_form.jsp" />
   </c:when>

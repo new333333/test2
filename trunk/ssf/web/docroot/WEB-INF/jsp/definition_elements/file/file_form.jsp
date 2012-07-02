@@ -61,12 +61,13 @@
 		
 	<form method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
 	  id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this, true);">
-		<c:set var="onClickCancelRoutine" value="ss_cancelButtonCloseWindow();return false;" scope="request"/>
 		<div id="ss_content">
 			<div id="ss_fileForm">
-				<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+				<ssf:displayConfiguration 
+				  configDefinition="${ssConfigDefinition}" 
 				  configElement="<%= item %>" 
-				  configJspStyle="${ssConfigJspStyle}" />
+				  configJspStyle="${ssConfigJspStyle}" 
+				  entry="${ssDefinitionEntry}" />
 			</div>
 		</div>
 	</form>
