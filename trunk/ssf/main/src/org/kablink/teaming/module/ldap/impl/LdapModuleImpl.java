@@ -2920,28 +2920,67 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * Update users with their own map of updates
 	 * @param users - Map indexed by user id, value is map of updates for a user
 	 */
-	protected void updateUsers(Long zoneId, final Map users, PartialLdapSyncResults syncResults ) {
-		if (users.isEmpty()) return;
-		ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
-		List collections = new ArrayList();
-		collections.add("customAttributes");
-	   	List foundEntries = getCoreDao().loadObjects(users.keySet(), User.class, zoneId, collections);
-	   	Map entries = new HashMap();
-	   	for (int i=0; i<foundEntries.size(); ++i) {
+	protected void updateUsers(Long zoneId, final Map users, PartialLdapSyncResults syncResults ) 
+	{
+		ProfileBinder pf;
+		List collections;
+	   	List foundEntries;
+	   	Map entries;
+   		ProfileCoreProcessor processor;
+
+		if ( users.isEmpty() )
+			return;
+		
+		pf = getProfileDao().getProfileBinder(zoneId);
+		collections = new ArrayList();
+		collections.add( "customAttributes" );
+	   	foundEntries = getCoreDao().loadObjects( users.keySet(), User.class, zoneId, collections );
+	   	entries = new HashMap();
+	   	for (int i=0; i<foundEntries.size(); ++i)
+	   	{
 	   		User u = (User)foundEntries.get(i);
-	   		entries.put(u, new MapInputData(StringCheckUtil.check((Map)users.get(u.getId()))));
+	   		entries.put( u, new MapInputData( StringCheckUtil.check( (Map)users.get( u.getId() ) ) ) );
 	   	}
 
-	   	try {
-	   		ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
-            	pf, ProfileCoreProcessor.PROCESSOR_KEY);
-	   		processor.syncEntries(entries, null, syncResults );
+   		processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
+   																		pf, 
+   																		ProfileCoreProcessor.PROCESSOR_KEY);
+	   	try 
+	   	{
+	   		processor.syncEntries( entries, null, syncResults );
 	   		IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
 	   		//flush from cache
-	   		for (int i=0; i<foundEntries.size(); ++i) getCoreDao().evict(foundEntries.get(i));
-	   	} catch (Exception ex) {
-	   		//continue 
-			logError("Error updating users", ex);	   		
+	   		for (int i=0; i<foundEntries.size(); ++i)
+	   		{
+	   			getCoreDao().evict( foundEntries.get( i ) );
+	   		}
+	   	}
+	   	catch ( Exception ex )
+	   	{
+	   		logger.error( "An error happened updating a user in the batch of users: " + ex.toString() );
+	   		
+	   		// Try to update each user in the list
+		   	for (int i=0; i < foundEntries.size(); ++i)
+		   	{
+		   		try
+		   		{
+			   		User user;
+
+			   		entries.clear();
+			   		user = (User)foundEntries.get( i );
+			   		entries.put( user, new MapInputData( StringCheckUtil.check( (Map)users.get( user.getId() ) ) ) );
+
+			   		logger.info( "2nd attempt to update the user: " + user.getName() );
+			   		
+			   		processor.syncEntries( entries, null, syncResults );
+			   		IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
+		   			getCoreDao().evict( user );
+		   		}
+		   		catch ( Exception ex2 )
+		   		{
+		   			logger.error( "2nd attempt to update the user failed: " + ex2.toString() );
+		   		}
+		   	}
 	   	}
 	}
 	
@@ -3178,8 +3217,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * @param users - Map keyed by user id, value is map of attributes
      * @return
      */
-    protected List<User> createUsers(Long zoneId, Map<String, Map> users, PartialLdapSyncResults syncResults ) {
+    protected List<User> createUsers(Long zoneId, Map<String, Map> users, PartialLdapSyncResults syncResults ) 
+    {
 		//SimpleProfiler.setProfiler(new SimpleProfiler(false));
+		ProfileCoreProcessor processor;
 		
 		ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
 		List newUsers = new ArrayList();
@@ -3191,29 +3232,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		//get default definition to use
 		Definition userDef = pf.getDefaultEntryDef();		
 		if (userDef == null) {
-			User temp = new User(User.IDENTITY_SOURCE_LDAP);
+			User temp = new User( User.IDENTITY_SOURCE_LDAP );
 			getDefinitionModule().setDefaultEntryDefinition(temp);
 			userDef = getDefinitionModule().getDefinition(temp.getEntryDefId());
 		}
-		try {
-			ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
-            	pf, ProfileCoreProcessor.PROCESSOR_KEY);
-			if(logger.isDebugEnabled())
-				logger.debug("Synchronizing user objects");
+
+		processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
+            																pf,
+            																ProfileCoreProcessor.PROCESSOR_KEY );
+		try 
+		{
+			// Try to create all of the users at once.
 			newUsers = processor.syncNewEntries(pf, userDef, User.class, newUsers, null, syncResults );    
-//	  Takes to long to addWorkspaces - they will get added as needed
-//	   	for (int i =0; i<newUsers.size(); ++i) {
-//	   		User u = (User)newUsers.get(i);
-//	   		SimpleProfiler.startProfiler("createUsers:addUserWorkspace");
-//	   		try {
-//	   			if(logger.isDebugEnabled())
-//	   				logger.debug("Adding personal workspace for user [" + u.getName() + "]");
-//	   			getProfileModule().addUserWorkspace(u);
-//	   		} catch (Exception ex) {
-//	   			logger.error(NLT.get("errorcode.ldap.createworkspace", new Object[] {u.getName()}) + " " + ex.getLocalizedMessage());
-//	   		}
-//	   		SimpleProfiler.stopProfiler("createUsers:addUserWorkspace");	
-//	   	}
+
 			if(logger.isDebugEnabled())
 				logger.debug("Applying index changes");
 			IndexSynchronizationManager.applyChanges();  //apply now, syncNewEntries will commit
@@ -3221,17 +3252,54 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		   	//SimpleProfiler.clearProfiler();
 			//flush from cache
 			getCoreDao().evict(newUsers);
-		} catch (Exception ex) {
-			logError("Error adding users", ex);
-			for (Map.Entry<String, Map> me:users.entrySet()) {
-				logger.error("\t'" + me.getKey() + "':'" + me.getValue().get(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME) + "'");
-			}
-
-			//continue, returning empty list
-			newUsers.clear();
 		}
+		catch ( Exception ex )
+		{
+			List nextUser;
+			
+			nextUser = new ArrayList();
+
+			// An error happened trying to create one of the users in the batch.  Log the error
+			logger.error( "An error occurred attempting to create a batch of users: " + ex.toString() );
+		
+			newUsers.clear();
+			
+			// Try to create the users one at a time.
+			for (Iterator i=users.values().iterator(); i.hasNext();) 
+			{
+				String userName;
+				Map attrs;
+				
+				attrs = (Map)i.next();
+				userName = (String) attrs.get( ObjectKeys.FIELD_PRINCIPAL_NAME );
+
+				try
+				{
+					// Try to create the next user in the list.
+					logger.info( "2nd attempt to create the user: " + userName );
+					nextUser.clear();
+					nextUser.add( new MapInputData(StringCheckUtil.check( attrs ) ) );
+					nextUser = processor.syncNewEntries( pf, userDef, User.class, nextUser, null, syncResults );    
+					
+					if ( nextUser != null && nextUser.size() == 1 )
+					{
+						// Remember the user that was just created.
+						newUsers.add( nextUser.get( 0 ) );
+					}
+				}
+				catch ( Exception except )
+				{
+					logger.error( "An error occurred trying to create the user the 2nd time: " + userName );
+				}
+			}
+			
+			if ( newUsers.size() > 0 )
+				getCoreDao().evict( newUsers );
+		}
+		
 	   	return newUsers;
      }
+
     /**
      * Create groups.
      * @param zoneName
