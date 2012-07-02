@@ -1734,7 +1734,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case IS_ALL_USERS_GROUP:
 		{
 			String groupId = ((IsAllUsersGroupCmd) cmd).getGroupId();
-			Boolean result = isAllUsersGroup( ri, groupId );
+			Boolean result = isAllUsersGroup( ri, groupId );	//Note, this checks for either allUsers or allExtUsers
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
@@ -2836,7 +2836,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 							{
 								// No
 								// Is this group the "all users" group?
-								if ( (null != id) && id.equalsIgnoreCase( ObjectKeys.ALL_USERS_GROUP_INTERNALID ) )
+								if ( (null != id) && (id.equalsIgnoreCase( ObjectKeys.ALL_USERS_GROUP_INTERNALID ) ||
+										id.equalsIgnoreCase( ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID )) )
 								{
 									// Yes, skip it.
 									useGroup = false;
@@ -5609,7 +5610,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				String internalId;
 				
 				internalId = group.getInternalId();
-				if ( internalId != null && internalId.equalsIgnoreCase( ObjectKeys.ALL_USERS_GROUP_INTERNALID ) )
+				if ( internalId != null && (internalId.equalsIgnoreCase( ObjectKeys.ALL_USERS_GROUP_INTERNALID ) ||
+						internalId.equalsIgnoreCase( ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID )))
 					return Boolean.TRUE;
 			}
 		}

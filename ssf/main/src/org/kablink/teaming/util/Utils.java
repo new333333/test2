@@ -305,6 +305,17 @@ public class Utils {
 		}
 	}
 	
+	public static Long getAllExtUsersGroupId() {
+		ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+		try {
+			Long allExtUsersGroupId = profileDao.getReservedGroupId(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID, RequestContextHolder.getRequestContext().getZoneId());
+			return allExtUsersGroupId;
+		} catch(Exception e) {
+			//Can't find the All External Users group, return null
+			return null;
+		}
+	}
+	
 	public static void end(Log logger, long startTimeInNanoseconds, String methodName) {
 		if(logger.isDebugEnabled()) {
 			logger.debug((System.nanoTime()-startTimeInNanoseconds)/1000000.0 + " ms, " + methodName);

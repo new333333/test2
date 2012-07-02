@@ -287,7 +287,9 @@ public class TypeToFindAjaxController extends SAbstractController {
 				    		// Is this entry the all user's group?
 				    		Map entry = (Map)searchEntries.get(i);
 							String id = (String)entry.get(Constants.RESERVEDID_FIELD);
-							if ((null != id) && id.equalsIgnoreCase(ObjectKeys.ALL_USERS_GROUP_INTERNALID)) {
+							if ((null != id) && 
+									(id.equalsIgnoreCase(ObjectKeys.ALL_USERS_GROUP_INTERNALID) || 
+									 id.equalsIgnoreCase(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID))) {
 								// Yes!  Remove it from the results.
 								searchEntries.remove(i);
 								searchHits -= 1;
