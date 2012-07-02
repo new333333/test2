@@ -646,16 +646,16 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			// Yes!  Make the selector display inline...
 			selectorLabel.addStyleName("displayInline");
 
-			// ...create panel to hold the various widgets we'll lay
-			// ...down for the tail node...
+			// ...and create panel to hold the various widgets we'll
+			// ...lay down for the tail node.
 			final FlowPanel fp = new FlowPanel();
 			fp.addStyleName("breadCrumb_ContentTail_Panel");
 		    m_rootPanel.add(fp);
 
-			// ...if the binder about the tail is a folder...
+			// Is the tail binder a folder?
 			final TreeInfo prevTI = getPreviousTI(ti);
 			if ((null != prevTI) && (BinderType.FOLDER == prevTI.getBinderInfo().getBinderType())) {
-				// ...add an up button to navigate to it...
+				// Yes!  Add an up button to navigate to it...
 				addUpButton(
 					fp,
 					new Command() {
@@ -675,13 +675,15 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 						}
 					});
 				
-				// ...and add the image for the binder.
+				// ...and add the image and anchor for the binder.
 				addTIImageAndAnchor(fp, ti, selectorA);
 			}
-			
-			else {
-				// Construct the helper to coordinate handling not
-				// getting called back with the context...
+
+			// No the tail binder is not a folder!  Are we in Filr
+			// mode?
+			else if (isFilr()) {
+				// Yes!  Construct the helper to coordinate handling
+				// not getting called back with the context...
 				final GetSidebarContextHelper gscHelper = new GetSidebarContextHelper(
 					fp,			// The FlowPanel we're constructing. 
 					ti,			// The TreeInfo  we're constructing from.
@@ -737,11 +739,18 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 											});
 									}
 									
-									// ...and add the image for the binder.
+									// ...and add the image and anchor
+									// ...for the binder.
 									addTIImageAndAnchor(fp, ti, selectorA);
 								}
 							}
 						}));
+			}
+
+			else {
+				// No, we aren't in Filr mode either!  Simply add the
+				// image and anchor for the binder.
+				addTIImageAndAnchor(fp, ti, selectorA);
 			}
 		}
 		
