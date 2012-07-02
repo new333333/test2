@@ -37,6 +37,7 @@
  * Window - Preferences - Java - Code Style - Code Templates
  */
 package org.kablink.teaming.domain;
+import org.kablink.util.Html;
 import org.kablink.util.Validator;
 /**
  * @author janet
@@ -129,7 +130,7 @@ public class Description {
     }    
     public String getStrippedText() {
     	if (getFormat() != FORMAT_HTML) return getText();
-    	return getText().replaceAll("\\<.*?\\>","");
+    	return Html.stripHtml(getText());
 
     }
     public String toString() {
