@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.GetSidebarContextEvent;
 import org.kablink.teaming.gwt.client.event.RefreshSidebarTreeEvent;
 import org.kablink.teaming.gwt.client.event.RerootSidebarTreeEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
@@ -88,6 +89,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 		ActivityStreamExitEvent.Handler,
 		ChangeContextEvent.Handler,
 		ContextChangedEvent.Handler,
+		GetSidebarContextEvent.Handler,
 		RefreshSidebarTreeEvent.Handler,
 		RerootSidebarTreeEvent.Handler,
 		SidebarHideEvent.Handler,
@@ -114,6 +116,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 		TeamingEvents.CONTEXT_CHANGED,
 		
 		// Sidebar events.
+		TeamingEvents.GET_SIDEBAR_CONTEXT,
 		TeamingEvents.REFRESH_SIDEBAR_TREE,
 		TeamingEvents.REROOT_SIDEBAR_TREE,
 		TeamingEvents.SIDEBAR_HIDE,
@@ -203,8 +206,8 @@ public class WorkspaceTreeControl extends ResizeComposite
 		{
 			boolean isBinder = (TreeMode.HORIZONTAL_BINDER == m_tm);
 			mainPanel.addStyleName("breadCrumb_Browser " + (isBinder ? "breadCrumb_BrowserBinder" : "breadCrumb_BrowserPopup"));
-			GetHorizontalTreeCmd cmd = new GetHorizontalTreeCmd( selectedBinderInfo.getBinderId() );
-			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+			GetHorizontalTreeCmd cmd = new GetHorizontalTreeCmd(selectedBinderInfo.getBinderId());
+			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
@@ -239,8 +242,8 @@ public class WorkspaceTreeControl extends ResizeComposite
 				this);
 
 			mainPanel.addStyleName("workspaceTreeControl workspaceTreeWidth");
-			GetVerticalTreeCmd cmd = new GetVerticalTreeCmd( selectedBinderInfo.getBinderId() );
-			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+			GetVerticalTreeCmd cmd = new GetVerticalTreeCmd(selectedBinderInfo.getBinderId());
+			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
@@ -274,13 +277,12 @@ public class WorkspaceTreeControl extends ResizeComposite
 
 	/**
 	 * Called after a new context has been loaded.
-	 * 
-	 * @param binderId
 	 */
-	public void contextLoaded(String binderId) {
+	public void clearBusySpinner() {
+		// If we've got a tree display...
 		if (null != m_treeDisplay) {
-			// Simply tell the display that the context has been loaded.
-			m_treeDisplay.contextLoaded(binderId);
+			// ...tell it that a context has been loaded.
+			m_treeDisplay.clearBusySpinner();
 		}
 	}
 	
@@ -451,23 +453,26 @@ public class WorkspaceTreeControl extends ResizeComposite
 	 * @param event
 	 */
 	@Override
-	public void onContextChanged(final ContextChangedEvent event)
-	{
+	public void onContextChanged(final ContextChangedEvent event) {
+		// Only sidebar trees care about context changes.
 		if (isSidebarTree()) {
+			// Is the selection valid?
 			OnSelectBinderInfo osbInfo = event.getOnSelectBinderInfo();
 			if (GwtClientHelper.validateOSBI(osbInfo, false)) {
+				// Yes!  Does the sidebar tree need to react to this?
+				// (It doesn't if it came from the sidebar itself AND
+				// we don't have to force a refresh.)
 				Instigator instigator = osbInfo.getInstigator();
 				if ((Instigator.SIDEBAR_TREE_SELECT != instigator) ||
-					getRequestInfo().isRefreshSidebarTree())
-				{
-					// Tell the WorkspaceTreeControl to change contexts.
+					getRequestInfo().isRefreshSidebarTree()) {
+					// Yes!  Tell it to change contexts.
 					setSelectedBinder(osbInfo);
 				}
-				
-				if (Instigator.CONTENT_AREA_CHANGED == instigator) {
-					contextLoaded(osbInfo.getBinderId().toString());
-				}
 			}
+			
+			// The context has been loaded.  Clear any busy spinner on
+			// the sidebar.
+			clearBusySpinner();
 		}
 	}
 	
@@ -480,11 +485,30 @@ public class WorkspaceTreeControl extends ResizeComposite
 	 */
 	@Override
 	public void onChangeContext(final ChangeContextEvent event) {
+		// Only sidebar trees care about context changes.
 		if (isSidebarTree()) {
+			// Is the selection valid?
 			OnSelectBinderInfo osbInfo = event.getOnSelectBinderInfo();
 			if (GwtClientHelper.validateOSBI(osbInfo, false)) {
+				// Yes!  Tell the sidebar to start the busy spinner.
 				showBinderBusy(osbInfo);
 			}
+		}
+	}
+	
+	/**
+	 * Handles GetSidebarContextEvent's received by this class.
+	 * 
+	 * Implements the GetSidebarContextEvent.Handler.onGetSidebarContext() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onGetSidebarContext(GetSidebarContextEvent event) {
+		// If this is a sidebar tree...
+		if (isSidebarTree()) {
+			// ...tell it to return its context.
+			m_treeDisplay.getSidebarContext(event.getContextCallback());
 		}
 	}
 	
@@ -535,8 +559,19 @@ public class WorkspaceTreeControl extends ResizeComposite
 		}
 	}
 	
+	/**
+	 * Called to hide/show the workspace tree control.
+	 * 
+	 * Overrides the UIObject.setVisible() method.
+	 * 
+	 * @param visible
+	 */
 	@Override
 	public void setVisible(boolean visible) {
+		// Simply call the super class version of the method.  I
+		// included this override for setting breakpoints to debug
+		// issues with hiding and/or showing the workspace tree
+		// control.
 		super.setVisible(visible);
 	}
 	
@@ -736,7 +771,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 			
 			@Override
 			public void onFailure(Throwable reason) {
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_WorkspaceTreeControl() );
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_WorkspaceTreeControl());
 				wsTreeCtrlClient.onUnavailable();
 			}
 		});

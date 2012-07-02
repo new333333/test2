@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
@@ -59,6 +58,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFileSyncAppConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 
@@ -86,11 +86,12 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.gwt.user.client.ui.UIObject;
 
-
 /**
  * This widget will display the controls that make up the "Administration" control.
  * There is a widget that displays the list of administration actions and a widget
  * that displays the page for the selected administration action.
+ * 
+ * @author jwootton@novell.com
  */
 public class AdminControl extends TeamingPopupPanel
 	implements 
@@ -665,7 +666,7 @@ public class AdminControl extends TeamingPopupPanel
 				m_contentControl.clear();
 				
 				// Set the iframe's content to the selected administration page.
-				m_contentControl.setUrl( url );
+				m_contentControl.setUrl( url, Instigator.ADMINISTRATION_CONSOLE );
 				
 				cmd = new Scheduler.ScheduledCommand()
 				{
@@ -695,7 +696,7 @@ public class AdminControl extends TeamingPopupPanel
 			m_contentControl.clear();
 		
 			// Set the iframe's content to nothing.
-			m_contentControl.setUrl( "" );
+			m_contentControl.setUrl( "", Instigator.ADMINISTRATION_CONSOLE );
 		}
 	}// end doPreLogoutCleanup()
 	

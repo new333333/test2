@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
@@ -156,12 +155,14 @@ public class ContentControl extends Composite
 	private boolean m_isDebugUI;
 	private boolean m_isDebugLP;
 	private GwtMainPage m_mainPage;
+	private Instigator	m_contentInstigator = Instigator.UNKNOWN;
 	private NamedFrame m_frame;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[]
+	{
 		// Context events.
 		TeamingEvents.CHANGE_CONTEXT,
 		TeamingEvents.GOTO_URL,
@@ -343,6 +344,16 @@ public class ContentControl extends Composite
 		return jsGetContentHistoryUrl( index );
 	}// end getContentHistoryUrl()
 
+	/**
+	 * Returns the instigator of the current content.
+	 * 
+	 * @return
+	 */
+	public Instigator getContentInstigator()
+	{
+		return m_contentInstigator;
+	}// end getContentInstigator()
+	
 	/*
 	 * Initializes the JavaScript for tracking content history.
 	 */
@@ -424,8 +435,8 @@ public class ContentControl extends Composite
 		String url = getContentHistoryUrl( 0 );
 
 		// Reload the URL.
-		setUrl(         ""  );
-		setViewFromUrl( url );
+		setUrl(         "",  Instigator.FORCE_FULL_RELOAD );
+		setViewFromUrl( url, Instigator.FORCE_FULL_RELOAD );
 	}// end reload()
 	
 	/**
@@ -435,7 +446,8 @@ public class ContentControl extends Composite
 	{
 		if ( isVisible() )
 		{
-			if (!m_isAdminContent) {
+			if ( !m_isAdminContent )
+			{
 				// Adjust the width and height for proper spacing.
 				width  += GwtConstants.CONTENT_WIDTH_ADJUST;
 				height += GwtConstants.CONTENT_HEIGHT_ADJUST;
@@ -486,21 +498,23 @@ public class ContentControl extends Composite
 	 * 
 	 * @param url
 	 */
-	public void setUrl( String url )
+	public void setUrl( String url, Instigator instigator )
 	{
+		m_contentInstigator = instigator;
 		m_frame.setUrl( url );
 	}// end setUrl()
-
+	
 	/*
 	 * Asynchronously loads a view based on a ViewInfo.
 	 */
-	private void setViewAsync( final ViewInfo vi, final String url ) {
+	private void setViewAsync( final ViewInfo vi, final String url, final Instigator instigator )
+	{
 		ScheduledCommand doSetView = new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
-				setViewNow( vi, url );
+				setViewNow( vi, url, instigator );
 			}// end execute()
 		};
 		Scheduler.get().scheduleDeferred( doSetView );
@@ -509,13 +523,13 @@ public class ContentControl extends Composite
 	/*
 	 * Sets the view based on the URL.
 	 */
-	private void setViewFromUrl( final String url )
+	private void setViewFromUrl( final String url, final Instigator instigator )
 	{
 		// Are we running the admin console?
 		if ( m_isAdminContent )
 		{
 			// Yes!  Simply activate the URL.
-			setUrl( url );
+			setUrl( url, Instigator.ADMINISTRATION_CONSOLE );
 		}
 		else
 		{
@@ -539,7 +553,7 @@ public class ContentControl extends Composite
 					// Show the context asynchronously so that we can
 					// release the AJAX request ASAP.
 					ViewInfo vi = ((ViewInfo) response.getResponseData());
-					setViewAsync( vi, url );
+					setViewAsync( vi, url, instigator );
 				}//end onSuccess()
 			});
 		}
@@ -551,8 +565,11 @@ public class ContentControl extends Composite
 	 * If a view cannot be determined (or no ViewInfo was provided),
 	 * the URL is loaded into the IFRAME instead.
 	 */
-	private void setViewNow( final ViewInfo vi, final String url ) {
-		try {
+	private void setViewNow( final ViewInfo vi, final String url, final Instigator instigator )
+	{
+		m_contentInstigator = instigator;
+		try
+		{
 			// Do we have a ViewInfo?
 			m_contentInGWT = false;
 			if ( null != vi )
@@ -577,7 +594,8 @@ public class ContentControl extends Composite
 						// type, to ALWAYS go through the JSP display
 						// flow.
 						String binderTitle = bi.getBinderTitle().trim().toLowerCase();
-						if (binderTitle.startsWith("jsp-") && binderTitle.endsWith("-jsp")) {
+						if ( binderTitle.startsWith( "jsp-" ) && binderTitle.endsWith( "-jsp" ) )
+						{
 							// Yes!  Simply break out of the switch.
 							// That will let it take the default flow.
 							break;
@@ -593,11 +611,12 @@ public class ContentControl extends Composite
 						public void viewReady()
 						{
 							GwtClientHelper.jsSetMainTitle(bi.getBinderTitle());
-							OnSelectBinderInfo osbi = new OnSelectBinderInfo(
-								bi,
-								url,
-								Instigator.CONTENT_AREA_CHANGED );
-							GwtTeaming.fireEvent( new ContextChangedEvent( osbi ));
+							GwtTeaming.fireEvent(
+								new ContextChangedEvent(
+									new OnSelectBinderInfo(
+										bi,
+										url,
+										instigator )));
 						}//end viewReady()
 					};
 					
@@ -821,7 +840,7 @@ public class ContentControl extends Composite
 			{
 				// No!  Load the URL instead and make sure the
 				// ContentControl is showing.
-				setUrl( url );
+				setUrl( url, instigator );
 				
 				// Tell the main content layout panel to not show a GWT
 				// widget it may have.
@@ -836,12 +855,13 @@ public class ContentControl extends Composite
 				GwtClientHelper.jsHideNewPageEntryViewDIV();
 				
 				// ...and clear out the content of the IFRAME.
-				setUrl( "" );
+				setUrl( "", instigator );
 				clear();
 			}
 		}
 		
-		finally {
+		finally
+		{
 			// Finally, push the URL we just processed on the content
 			// history stack.
 			pushContentHistoryUrl( url );
@@ -865,7 +885,7 @@ public class ContentControl extends Composite
 			// Yes!  Tell everybody the context is about to be changed
 			// and change it.
 			ContextChangingEvent.fireOne();						
-			setViewFromUrl( osbInfo.getBinderUrl() );
+			setViewFromUrl( osbInfo.getBinderUrl(), osbInfo.getInstigator() );
 		}
 	}// end onChangeContext()
 
@@ -917,8 +937,8 @@ public class ContentControl extends Composite
 		final List<Long> contributorIds = new ArrayList<Long>();
 		for ( String cId:  contributorIdsS )
 		{
-			try {contributorIds.add( Long.parseLong( cId.trim() ) );}
-			catch (Exception ex) {}
+			try                    {contributorIds.add( Long.parseLong( cId.trim() ) );}
+			catch ( Exception ex ) {}
 		}
 		if ( contributorIds.isEmpty() )
 		{
@@ -952,7 +972,7 @@ public class ContentControl extends Composite
 	@Override
 	public void onGotoUrl( GotoUrlEvent event )
 	{
-		setViewNow( null, event.getUrl() );
+		setViewNow( null, event.getUrl(), Instigator.GOTO_CONTENT_URL );
 	}
 
 	
@@ -1613,8 +1633,9 @@ public class ContentControl extends Composite
 	 * Callback interface to interact with the content control
 	 * asynchronously after it loads. 
 	 */
-	public interface ContentControlClient {
-		void onSuccess(ContentControl contentCtrl);
+	public interface ContentControlClient
+	{
+		void onSuccess( ContentControl contentCtrl );
 		void onUnavailable();
 	}
 

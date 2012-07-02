@@ -54,7 +54,7 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	private Long          	m_numUnread                = 0L;							// Number of unread entries in this binder and sub binders.
 	private String        	m_binderId                 = "";							//
 	private String        	m_binderTitle              = "";							//
-	private String		  	m_binderDesc	             = "";							//
+	private String		  	m_binderDesc	           = "";							//
 	private String        	m_entityType               = "";							//
 	private WorkspaceType 	m_wsType                   = WorkspaceType.NOT_A_WORKSPACE;	//
 	

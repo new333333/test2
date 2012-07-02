@@ -100,7 +100,6 @@ import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -752,13 +751,10 @@ public class MainMenuControl extends Composite
 		OnSelectBinderInfo osbInfo = event.getOnSelectBinderInfo();
 		if (GwtClientHelper.validateOSBI(osbInfo, false)) {
 			// Yes!  Put it into effect.
-			Instigator instigator = osbInfo.getInstigator();
-			if (Instigator.CONTENT_AREA_CHANGED == instigator) {
-				contextLoaded(
-					osbInfo.getBinderInfo(),
-					m_mainPage.isInSearch(),
-					m_mainPage.getSearchTabId());
-			}
+			contextLoaded(
+				osbInfo.getBinderInfo(),
+				m_mainPage.isInSearch(),
+				m_mainPage.getSearchTabId());
 		}
 	}
 	

@@ -35,8 +35,8 @@ package org.kablink.teaming.gwt.client.util;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 
 /**
- * Class used to communicate information about context (i.e., binder)
- * selection.
+ * Class used to communicate information about context (i.e.,
+ * binder, ...) selection.
  * 
  * @author drfoster@novell.com
  */
@@ -53,6 +53,7 @@ public class OnSelectBinderInfo {
 	public enum Instigator {
 		ACTIVITY_STREAM_BINDER_SELECT,	// The binder link in an activity stream was selected.
 		ACTIVITY_STREAM_SOURCE_SELECT,	// The top level source link of an activity stream was selected.
+		ADMINISTRATION_CONSOLE,			// The admin console instigated the selection.
 		BREADCRUMB_TREE_SELECT,			// A binder in the bread crumb tree was selected. 
 		CONTENT_AREA_CHANGED,			// The content of the content area changed.
 		FAVORITE_SELECT,				// A favorite was selected from the My Favorites menu.
@@ -60,6 +61,7 @@ public class OnSelectBinderInfo {
 		GOTO_CONTENT_URL,				// User clicked on something that loads some URL into the content frame.
 		PROFILE_QUICK_VIEW_SELECT,		// The workspace or profile button in the quick view dialog was selected.
 		RECENT_PLACE_SELECT,			// A recent place was selected from the Recent Places menu.
+		SEARCH_RESULTS,					// The result of a search is being loaded.
 		SEARCH_SELECT,					// A link from the search options dialog search results was selected.
 		SIDEBAR_TREE_SELECT,			// A binder in the sidebar tree was select.
 		TEAM_SELECT,					// A team was selected from the My Teams menu.
