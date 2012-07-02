@@ -340,8 +340,8 @@ if (!window.ssSurvey) {
 			
 			var allowObj = dojo.byId(prefix + "_allowChange");		
 			var allowMultipleGuestVotesObj = dojo.byId(prefix + "_allowMultipleGuestVotes");		
-			alert(allowMultipleGuestVotesObj)
-			alert(allowMultipleGuestVotesObj.checked)
+			//alert(allowMultipleGuestVotesObj)
+			//alert(allowMultipleGuestVotesObj.checked)
 			var inputObj = document.getElementById(inputId);
 			if (inputObj) {
 				inputObj.value = dojo.toJson(
