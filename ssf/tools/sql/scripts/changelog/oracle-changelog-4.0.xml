@@ -138,4 +138,10 @@
             </column>
         </createTable>
     </changeSet>
+    <changeSet author="jong" context="schema" id="11">
+        <createIndex indexName="NAME_OPENIDPROVIDERS" tableName="SS_OPENIDPROVIDERS" unique="true">
+            <column name="ZONEID"/>
+            <column name="NAME"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
