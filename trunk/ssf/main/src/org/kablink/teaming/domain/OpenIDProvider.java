@@ -39,11 +39,26 @@ package org.kablink.teaming.domain;
  */
 public class OpenIDProvider extends ZonedObject {
 
+	public OpenIDProvider() {	
+	}
+	
+	public OpenIDProvider(String name, String title, String url, String regex) {
+		this.name = name;
+		this.title = title;
+		this.url = url;
+		this.regex = regex;
+	}
+	
+	// Internal database id.
 	private String id;
-	private String name; // provider name (e.g. google). this is all low case and must be unique within a zone
-	private String title; // provider title (e.g. Google) 	
-	private String url; // provider URL (e.g. https://www.google.com/accounts/o8/id)
-	private String regex; // claimed identity regex
+	// Provider name (e.g. google). This is all low case and must be unique within a zone.
+	private String name;
+	// Provider title used for display (e.g. Google).
+	private String title;
+	// Provider discovery URL (e.g. https://www.google.com/accounts/o8/id). This is NOT OpenID endpoint.
+	private String url;
+	// Regex used to validate claimed identity or discovery URL.
+	private String regex;
 	
 	public String getId() {
 		return id;

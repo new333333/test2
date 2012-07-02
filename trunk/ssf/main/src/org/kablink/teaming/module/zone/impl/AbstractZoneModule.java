@@ -59,6 +59,7 @@ import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
+import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -619,6 +620,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				setTokenRequesterInitialMembership(zoneConfig, synchAgent);
 		}
 		
+		if(version.intValue() <= 8) {
+			setupInitialOpenIDProviderList();
+		}
+		
 		//In general, make sure all of the global functions are there
 		//This call only adds roles that aren't there
 		List ids = new ArrayList();
@@ -1031,6 +1036,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			//Turn on file version aging job
 			info = getAdminModule().getFileVersionAgingSchedule();
 			getAdminModule().setFileVersionAgingSchedule(info);
+			
+			setupInitialOpenIDProviderList();
 
     		return top;
  	}
@@ -1664,4 +1671,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		return results;
 	}
 
+	private void setupInitialOpenIDProviderList() {
+		getCoreDao().save(new OpenIDProvider("google", "Google", "https://google.com/accounts/o8/id", ".*google.com.*"));
+		getCoreDao().save(new OpenIDProvider("yahoo", "Yahoo", "https://me.yahoo.com", ".*yahoo.com.*"));
+		getCoreDao().save(new OpenIDProvider("aol", "AOL", "https://openid.aol.com", ".*openid.aol.com.*"));
+		getCoreDao().save(new OpenIDProvider("myopenid", "myOpenID", "https://myopenid.com", ".*myopenid.com.*"));
+		getCoreDao().save(new OpenIDProvider("verisign", "VeriSign", "https://pip.verisignlabs.com", ".*pip.verisignlabs.com.*"));
+	}
 }

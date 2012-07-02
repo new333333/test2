@@ -45,7 +45,7 @@
             </column>
         </addColumn>
     </changeSet>
-    <changeSet author="peter" context="schema" id="7">
+    <changeSet author="peter" context="schema" failOnError="true" id="7">
         <createTable tableName="SS_ResourceDriver">
             <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_ResourceDriver"/>
@@ -119,7 +119,7 @@
             </column>
         </addColumn>
     </changeSet>
-    <changeSet author="jong" context="schema" id="10">
+    <changeSet author="jong" context="schema" failOnError="true" id="10">
         <createTable tableName="SS_OpenIDProviders">
             <column name="id" type="CHAR(32)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_OpenIDProviders"/>
@@ -141,7 +141,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="jong" context="schema" id="11">
+    <changeSet author="jong" context="schema" failOnError="true" id="11">
         <createIndex indexName="name_OpenIDProviders" schemaName="dbo" tableName="SS_OpenIDProviders" unique="true">
             <column name="zoneId"/>
             <column name="name"/>

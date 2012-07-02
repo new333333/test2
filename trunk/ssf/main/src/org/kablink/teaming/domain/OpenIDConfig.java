@@ -93,6 +93,7 @@ public class OpenIDConfig {
 		this.synchronizeProfilesOnLogin = synchronizeProfilesOnLogin;
 	}
 	
+	/*
 	public String[] getAllowedClaimedIdentityRegexList() {
 		if(allowedClaimedIdentityRegexList == null) {
 			// Use default settings from configuration file.
@@ -116,4 +117,5 @@ public class OpenIDConfig {
 		}
 		allowedClaimedIdentityRegexListDefault = list;
 	}
+	*/
 }
