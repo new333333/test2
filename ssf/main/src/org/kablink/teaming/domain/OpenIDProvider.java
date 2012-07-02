@@ -43,6 +43,7 @@ public class OpenIDProvider extends ZonedObject {
 	private String name; // provider name (e.g. google). this is all low case and must be unique within a zone
 	private String title; // provider title (e.g. Google) 	
 	private String url; // provider URL (e.g. https://www.google.com/accounts/o8/id)
+	private String regex; // claimed identity regex
 	
 	public String getId() {
 		return id;
@@ -72,6 +73,13 @@ public class OpenIDProvider extends ZonedObject {
 	}
 	public void setUrl(String url) {
 		this.url = url;
+	}
+	
+	public String getRegex() {
+		return regex;
+	}
+	public void setRegex(String regex) {
+		this.regex = regex;
 	}
 
 }

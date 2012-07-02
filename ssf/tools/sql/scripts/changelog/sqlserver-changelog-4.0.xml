@@ -136,6 +136,9 @@
             <column name="url" type="NVARCHAR(256)">
                 <constraints nullable="false"/>
             </column>
+            <column name="regex" type="NVARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
     <changeSet author="jong" context="schema" id="11">

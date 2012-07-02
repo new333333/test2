@@ -136,6 +136,9 @@
             <column name="url" type="VARCHAR(256)">
                 <constraints nullable="false"/>
             </column>
+            <column name="regex" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
     <changeSet author="jong" context="schema" id="11">
