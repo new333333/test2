@@ -39,10 +39,18 @@ package org.kablink.teaming.domain;
  */
 public class OpenIDProvider extends ZonedObject {
 
+	private String id;
 	private String name; // provider name (e.g. google). this is all low case and must be unique within a zone
 	private String title; // provider title (e.g. Google) 	
 	private String url; // provider URL (e.g. https://www.google.com/accounts/o8/id)
 	
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -51,12 +59,14 @@ public class OpenIDProvider extends ZonedObject {
 			name = name.toLowerCase();
 		this.name = name;
 	}
+	
 	public String getTitle() {
 		return title;
 	}
 	public void setTitle(String title) {
 		this.title = title;
 	}
+	
 	public String getUrl() {
 		return url;
 	}
