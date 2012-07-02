@@ -54,7 +54,7 @@ import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
-import org.kablink.teaming.spring.security.IdentitySourceObtainable;
+import org.kablink.teaming.spring.security.OpenIDAuthenticationProvider;
 import org.kablink.teaming.spring.security.SsfContextMapper;
 import org.kablink.teaming.spring.security.SynchNotifiableAuthentication;
 import org.kablink.teaming.spring.security.ZoneAwareLocalAuthenticationProvider;
@@ -72,6 +72,9 @@ import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.WindowsUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
+import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
+import org.kablink.teaming.module.authentication.IdentitySourceObtainable;
+import org.kablink.teaming.module.authentication.LocalAuthentication;
 import org.kablink.teaming.module.authentication.UserAccountNotProvisionedException;
 import org.kablink.teaming.module.authentication.UserIdNotActiveException;
 import org.kablink.teaming.module.authentication.UserIdNotUniqueException;
@@ -86,7 +89,6 @@ import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.ldap.authentication.BindAuthenticator;
-import org.springframework.security.openid.OpenIDAuthenticationProvider;
 import org.springframework.security.openid.OpenIDAuthenticationToken;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -256,10 +258,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		}
 		
 		// Build OpenID authentication provider
-		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
-		if(zoneConfig.getAuthenticationConfig().getOpenidAuthenticationEnabled()) {
-			providers.add(createOpenIDAuthenticationProvider());
-		}
+		providers.add(createOpenIDAuthenticationProvider(zoneId));
 		
 		/*
 		 * Don't forget to allow for custom authenticators. This isn't how to do
@@ -276,8 +275,8 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		return providers;
 	}
 	
-	protected OpenIDAuthenticationProvider createOpenIDAuthenticationProvider() throws Exception {
-		OpenIDAuthenticationProvider openidAuthenticationProvider = new OpenIDAuthenticationProvider();
+	protected OpenIDAuthenticationProvider createOpenIDAuthenticationProvider(Long zoneId) throws Exception {
+		OpenIDAuthenticationProvider openidAuthenticationProvider = new OpenIDAuthenticationProvider(zoneId);
 		openidAuthenticationProvider.setAuthenticationUserDetailsService(new OpenIDAuthenticationUserDetailsService());
 		openidAuthenticationProvider.afterPropertiesSet();
 		return openidAuthenticationProvider;
@@ -449,6 +448,8 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	     			
 	     			identitySource = getIdentitySource(result);
 	     			
+	     			AuthenticationServiceProvider authenticationServiceProvider = getAuthenticationSource(result);
+	     			
 	     			if(SPropsUtil.getBoolean("authenticator.synch." + getAuthenticator(), false)) {
 		     			// Get default settings
 		     			boolean passwordAutoSynch = 
@@ -457,12 +458,12 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		     					SPropsUtil.getBoolean("portal.password.ignore", true);
 		     			boolean createUser = 
 		     					SPropsUtil.getBoolean("portal.user.auto.create", true);
-		     			if(result instanceof OpenIDAuthenticationToken) {
+		     			if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
 		     				// Override the above default settings which apply only to local and LDAP users.
 		     				passwordAutoSynch = false;
 		     				ignorePassword = true;
 		     				ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zone);
-		     				if(zoneConfig.getOpenIDConfig().getSelfProvisioningEnabled())
+		     				if(zoneConfig.getOpenIDConfig().isSelfProvisioningEnabled())
 		     					createUser = true;
 		     				else
 		     					createUser = false;
@@ -470,6 +471,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		     			// This is not used for authentication but for profile synchronization.
 		     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate1" );
 		    			AuthenticationManagerUtil.authenticate(identitySource, 
+		    					authenticationServiceProvider,
 		    					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
 		    					loginName, 
 		    					(String) result.getCredentials(),
@@ -484,6 +486,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	        			// This is not used for authentication or profile synchronization but merely to log the authenticator.
 		     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate2" );
 	        			AuthenticationManagerUtil.authenticate(identitySource,
+	        					authenticationServiceProvider,
 	        					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
 	        					loginName, 
 	        					(String) result.getCredentials(),
@@ -526,6 +529,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     			// This is not used for authentication or profile synchronization but merely to log the authenticator.
      			SimpleProfiler.start( "4a-system account: AuthenticationManagerUtil.authenticate()" );
     			AuthenticationManagerUtil.authenticate(User.IDENTITY_SOURCE_LOCAL,
+    					AuthenticationServiceProvider.LOCAL,
     					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
     					(String) result.getName(), 
     					(String) result.getCredentials(),
@@ -569,6 +573,15 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 			// This should mean that the identy source is LDAP.
 			return User.IDENTITY_SOURCE_LDAP;
 		}
+	}
+	
+	private AuthenticationServiceProvider getAuthenticationSource(Authentication authentication) {
+		if(authentication instanceof LocalAuthentication)
+			return AuthenticationServiceProvider.LOCAL; // identity source is either local or LDAP
+		else if(authentication instanceof OpenIDAuthenticationToken)
+			return AuthenticationServiceProvider.OPENID; // identity source id external
+		else
+			return AuthenticationServiceProvider.LDAP; // identity source is LDAP
 	}
 	
 	private String getLoginName(Authentication result) {

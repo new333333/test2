@@ -30,10 +30,9 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.spring.security;
+package org.kablink.teaming.module.authentication;
 
 /**
- * Marker interface indicating local authentication
  * 
  * @author jong
  *

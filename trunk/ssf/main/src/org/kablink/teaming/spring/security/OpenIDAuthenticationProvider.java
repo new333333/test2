@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,50 +30,39 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.domain;
 
-import org.kablink.teaming.util.SPropsUtil;
+package org.kablink.teaming.spring.security;
 
-//Used to encapsalate authentication information.  A component of zoneConfig
-public class AuthenticationConfig  {
+import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.util.SpringContextUtil;
 
-	private boolean allowLocalLogin = true;
-	private boolean allowAnonymousAccess = true;
-	private boolean allowSelfRegistration = false;
-	private Long lastUpdate;
+/**
+ * @author jong
+ *
+ */
+public class OpenIDAuthenticationProvider extends org.springframework.security.openid.OpenIDAuthenticationProvider {
 	
-	public AuthenticationConfig()
-	{
-		lastUpdate = new Long(System.currentTimeMillis());
-	}
+	private Long zoneId;
 	
-	public boolean isAllowAnonymousAccess() {
-		return allowAnonymousAccess;
-	}
-	public void setAllowAnonymousAccess(boolean allowAnonymousAccess) {
-		this.allowAnonymousAccess = allowAnonymousAccess;
-	}
-	public boolean isAllowLocalLogin() {
-		return allowLocalLogin;
-	}
-	public void setAllowLocalLogin(boolean allowLocalLogin) {
-		this.allowLocalLogin = allowLocalLogin;
-	}
-	public boolean isAllowSelfRegistration() {
-		return allowSelfRegistration;
-	}
-	public void setAllowSelfRegistration(boolean allowSelfRegistration) {
-		this.allowSelfRegistration = allowSelfRegistration;
-	}
-	public Long getLastUpdate() {
-		return lastUpdate;
-	}
-	protected void setLastUpdate(Long lastUpdate) {
-		this.lastUpdate = lastUpdate;
-	}
-	public void markAsUpdated()
-	{
-		setLastUpdate(System.currentTimeMillis());
+	public OpenIDAuthenticationProvider(Long zoneId) {
+		super();
+		this.zoneId = zoneId;
 	}
 	
+	@Override
+    public boolean supports(Class<?> authentication) {
+		if(super.supports(authentication)) {
+			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+			// Check the settings.
+			return zoneConfig.isExternalUserEnabled() && zoneConfig.getOpenIDConfig().isAuthenticationEnabled();
+		}
+		else {
+			return false;
+		}
+    }
+	
+	private CoreDao getCoreDao() {
+		return (CoreDao) SpringContextUtil.getBean("coreDao");
+	}
 }

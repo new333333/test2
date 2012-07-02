@@ -38,6 +38,8 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -51,6 +53,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.modelprocessor.ProcessorManager;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
@@ -156,7 +159,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
  	}
  	
  	@Override
-	public User authenticate(Integer identitySource, String zoneName, String userName, String password,
+	public User authenticate(Integer identitySource, AuthenticationServiceProvider authenticationServiceProvider, 
+			String zoneName, String userName, String password,
 			boolean createUser, boolean passwordAutoSynch, boolean ignorePassword, 
 			Map updates, String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException, UserMismatchException
@@ -172,18 +176,25 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		ldapModule = getLdapModule();
 		syncUser = false;
 		
+		Long zoneId = getCoreDao().findTopWorkspace(zoneName).getZoneId();
+		
 		try
 		{
 			if (!hadSession)
 				SessionUtil.sessionStartup();	
 			
-			if(isExternalUser(identitySource)) {
+			if(isExternalUser(identitySource)) { // OpenID
 				user = doAuthenticateExternalUser(zoneName, userName);
 				// If you're still here, it means that the corresponding user object was found in the database.
-				if(!synchronizeProfilesOnLoginForExternalUsers())
-					updates.clear(); // Clear all attributes
+				if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
+					if(!getCoreDao().loadZoneConfig(zoneId).getOpenIDConfig().isSynchronizeProfilesOnLogin())
+						updates.clear(); // Clear all attributes
+				}
+				else {
+					throw new InternalException("Encountered auth service provider " + authenticationServiceProvider.name() + " when expecting OPENID");
+				}
 			}
-			else { 
+			else { // LOCAL and LDAP
 				user = doAuthenticateInternalUser(zoneName, userName, password, passwordAutoSynch, ignorePassword);
 			}
 			//Make sure this user account hasn't been disabled
@@ -215,18 +226,23 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		} 
 		catch (UserDoesNotExistException nu) {
  			if (createUser) {
- 				if(isExternalUser(identitySource)) {
- 					if(!synchronizeProfilesOnSelfProvisionForExternalUsers()) {
- 						// Don't allow profile sync upon self-provisioning. We will only store email address.
- 						removeEverythingButEmailAddress(updates);
+ 				if(isExternalUser(identitySource)) { // OpenID
+ 					if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) { 					
+						if(!getCoreDao().loadZoneConfig(zoneId).getOpenIDConfig().isSynchronizeProfilesOnSelfProvision()) {
+	 						// Don't allow profile sync upon self-provisioning. We will only store email address.
+	 						removeEverythingButEmailAddress(updates);
+	 					}
+	 			 		// Make sure foreign name is identical to name.
+	 					updates.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, userName);
+	 					// For external users, there's no need for separate step for synchronizing profile info
+	 					// because all the information is already ready and presented to the method that creates the user.
+	 					syncUser = false;
  					}
- 			 		// Make sure foreign name is identical to name.
- 					updates.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, userName);
- 					// For external users, there's no need for separate step for synchronizing profile info
- 					// because all the information is already ready and presented to the method that creates the user.
- 					syncUser = false;
+ 					else {
+ 						throw new InternalException("Encountered auth service provider " + authenticationServiceProvider.name() + " when expecting OPENID");	
+ 					}
  				}
- 				else {
+ 				else { // LDAP
  					syncUser = true;
  				}
  				
@@ -292,16 +308,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
  			return false;
  		}
  	}
- 	
-	
-	private boolean synchronizeProfilesOnLoginForExternalUsers() {
-		return SPropsUtil.getBoolean("external.user.synchronize.profiles.on.login", false);
-	}
-
-	private boolean synchronizeProfilesOnSelfProvisionForExternalUsers() {
-		return SPropsUtil.getBoolean("external.user.synchronize.profiles.on.self.provision", true);		
-	}
-	
+ 		
 	private void removeEverythingButEmailAddress(Map<String,String> updates) {
 		if(updates == null) return;
 		String emailAddress = updates.get("emailAddress");

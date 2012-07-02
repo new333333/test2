@@ -53,6 +53,7 @@ import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LibraryEntry;
 import org.kablink.teaming.domain.NotifyStatus;
+import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SimpleName;
@@ -253,4 +254,7 @@ public interface CoreDao {
 
     public Binder loadBinderByParentAndName(final Long parentBinderId, final String title, final Long zoneId);
 
+	public OpenIDProvider loadOpenIDProvider(Long zoneId, String openIDProviderId);
+	
+	public List<OpenIDProvider> findOpenIDProviders(Long zoneId);
 }
