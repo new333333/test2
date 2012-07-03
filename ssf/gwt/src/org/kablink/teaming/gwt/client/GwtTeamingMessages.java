@@ -809,6 +809,7 @@ public interface GwtTeamingMessages extends Messages
 	String treeInternalErrorNoContext();
 	String treeInternalErrorRefreshNotSidebar();
 	String treeInternalErrorRerootNotSidebar();
+	String treePreviousCollection();
 	String treePreviousFolder();
 	String treeSiteWide();
 	String treeTrash();

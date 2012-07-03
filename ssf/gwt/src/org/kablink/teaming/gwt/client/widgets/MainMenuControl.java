@@ -435,8 +435,8 @@ public class MainMenuControl extends Composite
 		m_mastHeadSlider.addStyleName("vibe-mainMenuButton subhead-control-bg1 roundcornerSM");
 		m_mainMenu.addItem(m_mastHeadSlider);
 
-		// ...in full Vibe mode...
-		if (!(GwtClientHelper.isFilr())) {
+		// ...if we're showing navigation trees...
+		if (WorkspaceTreeControl.showNavigationTrees()) {
 			// ...add the browse hierarchy button...
 			BrowseHierarchyEvent bhe = new BrowseHierarchyEvent();
 			m_bhButton = new MenuBarButton(m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), bhe);
@@ -449,7 +449,7 @@ public class MainMenuControl extends Composite
 		addMyWorkspaceToCommon(        m_mainMenu);
 		addWhatsNewToCommon(           m_mainMenu);
 		addMyFavoritesToCommon(        m_mainMenu);
-		if (!(GwtClientHelper.isFilr())) {
+		if (!(GwtClientHelper.isLicenseFilr())) {
 			addMyTeamsToCommon(        m_mainMenu);
 		}
 		addCloseAdministrationToCommon(m_mainMenu);

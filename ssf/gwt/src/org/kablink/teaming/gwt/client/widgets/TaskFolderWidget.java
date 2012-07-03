@@ -100,7 +100,7 @@ public class TaskFolderWidget extends VibeWidget
 	 */
 	private void handleClickOnFolderTitle()
 	{
-		EventHelper.fireChangeContextEventAsync( m_properties.getFolderId(), m_properties.getViewFolderUrl(), Instigator.UNKNOWN );
+		EventHelper.fireChangeContextEventAsync( m_properties.getFolderId(), m_properties.getViewFolderUrl(), Instigator.GOTO_CONTENT_URL );
 	}
 	
 	

@@ -72,11 +72,59 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.util.Validator;
 
-
 @SuppressWarnings("unchecked")
 public class Utils {
 	private static Log m_logger = LogFactory.getLog( Utils.class );
+	
+	// The following controls whether we can switch UI modes without
+	// having to install a license.  It MUST be set false in the
+	// shipping code.
+	public final static boolean ENABLE_SSF_UI_OVERRIDE	= true;
 
+	/*
+	 * Enumeration used to communicate the type of license we're running
+	 * with.
+	 */
+	@SuppressWarnings("unused")
+	private enum LicenseOverride {
+		FILR,
+		FILR_AND_VIBE,
+		VIBE,
+		
+		NO_OVERRIDE;
+		
+		/*
+		 * Get'er methods.
+		 */
+		boolean isFilr()              {return    this.equals(FILR);         }
+		boolean isFilrAndVibe()       {return    this.equals(FILR_AND_VIBE);}
+		boolean isFilrEnabled()       {return (isFilr() || isFilrAndVibe());}
+		boolean isLicenseOverridden() {return (!(this.equals(NO_OVERRIDE)));}
+		boolean isVibe()              {return    this.equals(VIBE);         }
+		boolean isVibeEnabled()       {return (isVibe() || isFilrAndVibe());}
+		
+		/*
+		 * Checks for the current UI mode being overridden by an
+		 * ssf*.properties setting.
+		 */
+		static LicenseOverride getLicenseOverride() {
+			// Do we allow the license to be overridden?
+			LicenseOverride reply = LicenseOverride.NO_OVERRIDE; 
+			if (ENABLE_SSF_UI_OVERRIDE) {
+				// Yes!  Check the setting.
+				String uiType = SPropsUtil.getString("UI.type", "");
+				if      (uiType.equalsIgnoreCase("Filr"))        reply = LicenseOverride.FILR;
+				else if (uiType.equalsIgnoreCase("FilrAndVibe")) reply = LicenseOverride.FILR_AND_VIBE;
+				else if (uiType.equalsIgnoreCase("Vibe"))        reply = LicenseOverride.VIBE;
+			}
+			
+			// If we get here, reply refers to the ssf*.properties, if
+			// enabled or an indication of no override otherwise.
+			return reply;
+		}
+		
+	}
+	
 	//Return the account name of the super user (e.g., "admin")
 	public static String getAdminName() {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
@@ -576,11 +624,19 @@ public class Utils {
 	/**
 	 * Check if this is a Filr only license
 	 * 
+	 * @return
 	 */
 	public static boolean checkIfFilr() {
-		if ((LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Filr") &&
-				!LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Vibe")) ||
-				SPropsUtil.getBoolean("UI.type.Filr", Boolean.FALSE)) {
+		// If we have an ssf*.properties license override...
+		LicenseOverride lo = LicenseOverride.getLicenseOverride();
+		if (lo.isLicenseOverridden()) {
+			// ...that's all we look at.
+			return lo.isFilr();
+		}
+		
+		// No ssf*.properties override!  Check the license.
+		if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Filr") &&
+				!LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Vibe")) {
 			return true;
 		} else {
 			return false;
@@ -589,9 +645,18 @@ public class Utils {
 	
 	/**
 	 * Check if this is a Filr and Vibe license
-	 * 
+	 *
+	 * @return
 	 */
 	public static boolean checkIfFilrAndVibe() {
+		// If we have an ssf*.properties license override...
+		LicenseOverride lo = LicenseOverride.getLicenseOverride();
+		if (lo.isLicenseOverridden()) {
+			// ...that's all we look at.
+			return lo.isFilrAndVibe();
+		}
+		
+		// No ssf*.properties override!  Check the license.
 		if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Filr") &&
 				LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Vibe")) {
 			return true;
@@ -603,8 +668,17 @@ public class Utils {
 	/**
 	 * Check if this is a Vibe license
 	 * 
+	 * @return
 	 */
 	public static boolean checkIfVibe() {
+		// If we have an ssf*.properties license override...
+		LicenseOverride lo = LicenseOverride.getLicenseOverride();
+		if (lo.isLicenseOverridden()) {
+			// ...that's all we look at.
+			return lo.isVibe();
+		}
+		
+		// No ssf*.properties override!  Check the license.
 		if (!checkIfFilrAndVibe() && (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Vibe") || 
 				(LicenseChecker.validLicenseExists()))) {
 			return true;

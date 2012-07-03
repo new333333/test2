@@ -1124,7 +1124,7 @@ public class SimpleListOfTasksWidget extends VibeWidget
 						@Override
 						public void execute()
 						{
-							EventHelper.fireChangeContextEventAsync( binderIdS, binderPermalink, Instigator.UNKNOWN );
+							EventHelper.fireChangeContextEventAsync( binderIdS, binderPermalink, Instigator.GOTO_CONTENT_URL );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );

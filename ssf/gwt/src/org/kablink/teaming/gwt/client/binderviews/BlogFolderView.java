@@ -310,7 +310,7 @@ public class BlogFolderView extends FolderViewBase
 							EventHelper.fireContextChangedEventAsync(
 									m_binderId,
 									binderPermalink,
-									Instigator.CONTENT_AREA_CHANGED );
+									Instigator.BLOG_PAGE_SELECT );
 
 						}
 					};

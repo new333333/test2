@@ -384,26 +384,6 @@ public abstract class TreeDisplayBase {
 	}
 
 	/**
-	 * Returns true if we're running in Filr mode and
-	 * false otherwise.
-	 * 
-	 * @return
-	 */
-	final public boolean isFilr() {
-		return GwtClientHelper.isFilr();
-	}
-
-	/**
-	 * Returns true if we're running in Filr and Vibe mode and
-	 * false otherwise.
-	 * 
-	 * @return
-	 */
-	final public boolean isFilrAndVibe() {
-		return GwtClientHelper.isFilrAndVibe();
-	}
-
-	/**
 	 * Returns true if the workspace tree is visible and false
 	 * otherwise.
 	 * 

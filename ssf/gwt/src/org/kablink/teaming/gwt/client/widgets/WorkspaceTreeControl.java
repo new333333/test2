@@ -462,9 +462,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 				// Yes!  Does the sidebar tree need to react to this?
 				// (It doesn't if it came from the sidebar itself AND
 				// we don't have to force a refresh.)
-//!GwtClientHelper.deferredAlert("onContextChanged(): " + osbInfo.getInstigator().name());
-				Instigator instigator = osbInfo.getInstigator();
-				if ((Instigator.SIDEBAR_TREE_SELECT != instigator) ||
+				if ((Instigator.SIDEBAR_TREE_SELECT != osbInfo.getInstigator()) ||
 					getRequestInfo().isRefreshSidebarTree()) {
 					// Yes!  Tell it to change contexts.
 					setSelectedBinder(osbInfo);
@@ -742,6 +740,18 @@ public class WorkspaceTreeControl extends ResizeComposite
 		if (null != m_treeDisplay) {
 			m_treeDisplay.showBinderBusy(osbInfo);
 		}
+	}
+
+	/**
+	 * Returns true if navigation trees are to be shown and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean showNavigationTrees() {
+		// We show the navigation tree for all license modes except
+		// Filr.
+		return (!(GwtClientHelper.isLicenseFilr()));
 	}
 	
 	/**

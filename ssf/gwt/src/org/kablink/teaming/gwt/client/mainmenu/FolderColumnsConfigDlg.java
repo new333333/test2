@@ -479,7 +479,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 					public void onSuccess(VibeRpcResponse response) {
 						StringRpcResponseData responseData = (StringRpcResponseData) response.getResponseData();
 						String binderUrl = responseData.getStringValue();
-						OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(m_binderInfo, binderUrl, Instigator.CONTENT_AREA_CHANGED);
+						OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(m_binderInfo, binderUrl, Instigator.FORCE_FULL_RELOAD);
 						if (GwtClientHelper.validateOSBI(osbInfo)) {
 							GwtTeaming.fireEvent( new ChangeContextEvent(osbInfo));
 						}
@@ -763,7 +763,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			public void onSuccess(VibeRpcResponse response) {
 				StringRpcResponseData responseData = (StringRpcResponseData) response.getResponseData();
 				String binderUrl = responseData.getStringValue();
-				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(m_binderInfo, binderUrl, Instigator.CONTENT_AREA_CHANGED);
+				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(m_binderInfo, binderUrl, Instigator.FORCE_FULL_RELOAD);
 				if (GwtClientHelper.validateOSBI(osbInfo)) {
 					GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
 				}

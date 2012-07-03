@@ -64,10 +64,9 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RequiresResize;
 
-
-
 /**
  * This class will display a list of the child binders of the given binder.
+ * 
  * @author jwootton
  */
 public class ChildBindersWidget extends ToolPanelBase
@@ -186,7 +185,7 @@ public class ChildBindersWidget extends ToolPanelBase
 			{
 				OnSelectBinderInfo binderInfo;
 				
-				binderInfo = new OnSelectBinderInfo( m_binderInfo, m_binderUrl, Instigator.UNKNOWN );
+				binderInfo = new OnSelectBinderInfo( m_binderInfo, m_binderUrl, Instigator.GOTO_CONTENT_URL );
 				GwtTeaming.fireEvent( new ChangeContextEvent( binderInfo ) );
 			}
 			

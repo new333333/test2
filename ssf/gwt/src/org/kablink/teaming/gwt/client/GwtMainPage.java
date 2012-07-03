@@ -936,7 +936,7 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void contextLoaded( String binderId, String inSearchS, String searchTabId )
 	{
-		Instigator instigator = Instigator.CONTENT_AREA_CHANGED;
+		Instigator instigator = Instigator.JSP_CONTENT_LOADED;
 		boolean inSearch = ( (null != inSearchS ) && Boolean.parseBoolean( inSearchS ) );
 		if ( inSearch )
 		{
@@ -947,7 +947,7 @@ public class GwtMainPage extends ResizeComposite
 			instigator = m_contentCtrl.getContentInstigator();
 			if ( Instigator.UNKNOWN == instigator )
 			{
-				instigator = Instigator.CONTENT_AREA_CHANGED;
+				instigator = Instigator.JSP_CONTENT_LOADED;
 			}
 		}
 		contextLoaded( binderId, instigator, inSearch, searchTabId );
