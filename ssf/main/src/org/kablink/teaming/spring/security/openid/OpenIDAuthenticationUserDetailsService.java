@@ -70,8 +70,6 @@ public class OpenIDAuthenticationUserDetailsService implements AuthenticationUse
 	@Override
 	public UserDetails loadUserDetails(OpenIDAuthenticationToken token)
 			throws UsernameNotFoundException {
-		System.out.println(token.getName());//$$$
-
 		Map<String, String> vibeAttributes = convertOpenIDAttributesToVibeAttributes(token.getAttributes());
 		
 		getAttributesPostProcessing().postProcess(token.getAttributes(), vibeAttributes);
