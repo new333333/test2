@@ -35,6 +35,7 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
@@ -62,6 +63,7 @@ import org.kablink.util.search.Constants;
 import org.kablink.util.search.Restrictions;
 
 import static org.kablink.util.search.Restrictions.eq;
+import static org.kablink.util.search.Restrictions.in;
 
 /**
  * User: david
@@ -91,10 +93,11 @@ public class SelfResource extends AbstractResource {
         User user = ResourceUtil.buildUser((org.kablink.teaming.domain.User) entry, includeAttachments);
         user.setLink("/self");
         user.addAdditionalLink("roots", "/self/roots");
-        user.addAdditionalLink("accessible_library_folders", "/self/accessible_library_folders");
         if (user.getWorkspace()!=null) {
-            user.addAdditionalLink("library_folders", user.getWorkspace().getLink() + "/library_folders");
+            user.addAdditionalLink("my_file_folders", user.getWorkspace().getLink() + "/library_folders");
         }
+        user.addAdditionalLink("accessible_library_folders", "/self/accessible_library_folders");
+        user.addAdditionalLink("file_spaces", "/self/file_spaces");
         return user;
     }
 
@@ -164,6 +167,24 @@ public class SelfResource extends AbstractResource {
                 .add(Restrictions.eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_PHOTO)));
         crit.add(Restrictions.eq(Constants.IS_LIBRARY_FIELD, "true"));
         crit.add(Restrictions.not().add(Restrictions.eq(Constants.OWNERID_FIELD, getLoggedInUserId().toString())));
+        Map map = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount);
+        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), map, "/self/accessible_library_folders", offset);
+        return results;
+    }
+
+    @GET
+    @Path("/file_spaces")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<BinderBrief> getFileSpaces(
+                                                           @QueryParam("first") @DefaultValue("0") Integer offset,
+                                                           @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        Criteria crit = new Criteria();
+        crit.add(in(Constants.DOC_TYPE_FIELD,            new String[]{Constants.DOC_TYPE_BINDER}));
+        crit.add(in(Constants.FAMILY_FIELD,              new String[]{Definition.FAMILY_FILE}));
+        crit.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
+        crit.add(in(Constants.IS_TOP_FOLDER_FIELD,       new String[]{Constants.TRUE}));
+        crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
         Map map = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), map, "/self/accessible_library_folders", offset);
