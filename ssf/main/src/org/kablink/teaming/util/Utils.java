@@ -578,7 +578,8 @@ public class Utils {
 	 * 
 	 */
 	public static boolean checkIfFilr() {
-		if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Filr") ||
+		if ((LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Filr") &&
+				!LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Vibe")) ||
 				SPropsUtil.getBoolean("UI.type.Filr", Boolean.FALSE)) {
 			return true;
 		} else {
