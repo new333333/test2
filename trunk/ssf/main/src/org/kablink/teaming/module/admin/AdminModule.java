@@ -49,6 +49,7 @@ import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.NoApplicationByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
+import org.kablink.teaming.domain.OpenIDConfig;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.WeekendsAndHolidaysConfig;
@@ -83,7 +84,8 @@ public interface AdminModule {
 		manageRuntime,
 		manageResourceDrivers,
 		manageFileSynchApp,
-		manageOpenIDProviders,
+		manageOpenID,
+		manageExternalUser,
 	}
 	/**
 	 * The method name to be called is used as the operation.   This
@@ -332,5 +334,12 @@ public interface AdminModule {
 	public OpenIDProvider getOpenIDProvider(String openIDProviderId);
 	
 	public List<OpenIDProvider> getOpenIDProviders();
+	
+	public boolean isExternalUserEnabled();
+	
+	public void setExternalUserEnabled(boolean enabled);
 
+	public OpenIDConfig getOpenIDConfig();
+	
+	public void setOpenIDConfig(OpenIDConfig openIDConfig);
  }
