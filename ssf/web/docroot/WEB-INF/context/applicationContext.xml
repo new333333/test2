@@ -642,6 +642,7 @@
 				<prop key="addFunction">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addFunctionCondition">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addPosting">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addOpenIDProvider">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="updateDefaultDefinitions">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setMailConfigAndSchedules">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setMobileAccessEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
@@ -656,6 +657,8 @@
 				<prop key="setHomePageConfig">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setWeekendsAndHolidaysConfig">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setFileSynchAppSettings">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setExternalUserEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setOpenIDConfig">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 	</bean>
