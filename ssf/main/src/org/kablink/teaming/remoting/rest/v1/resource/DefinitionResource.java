@@ -50,7 +50,7 @@ import java.util.List;
  * Date: 5/25/12
  * Time: 12:22 PM
  */
-@Path("/v1/definitions")
+@Path("/definitions")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class DefinitionResource extends AbstractResource {

@@ -72,7 +72,7 @@ import java.util.List;
  * Date: 5/22/12
  * Time: 11:02 AM
  */
-@Path("/v1/files/{id}")
+@Path("/files/{id}")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class FileResource extends AbstractFileResource {

@@ -50,7 +50,7 @@ import java.util.List;
  * Date: 5/29/12
  * Time: 11:49 AM
  */
-@Path("/v1/templates")
+@Path("/templates")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class TemplateResource extends AbstractResource {

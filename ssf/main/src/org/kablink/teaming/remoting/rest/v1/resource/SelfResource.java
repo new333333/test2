@@ -70,7 +70,7 @@ import static org.kablink.util.search.Restrictions.in;
  * Date: 5/16/12
  * Time: 4:04 PM
  */
-@Path("/v1/self")
+@Path("/self")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class SelfResource extends AbstractResource {

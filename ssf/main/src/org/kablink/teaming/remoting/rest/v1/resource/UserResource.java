@@ -75,7 +75,7 @@ import org.kablink.teaming.rest.v1.model.UserBrief;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.util.api.ApiErrorCode;
 
-@Path("/v1/users")
+@Path("/users")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class UserResource extends AbstractPrincipalResource {

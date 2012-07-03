@@ -67,7 +67,7 @@ import org.kablink.util.search.Constants;
 import java.io.InputStream;
 import java.util.Map;
 
-@Path("/v1")
+@Path("/")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class MiscResource extends AbstractResource {

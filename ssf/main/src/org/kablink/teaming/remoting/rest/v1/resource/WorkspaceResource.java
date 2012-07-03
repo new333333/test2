@@ -68,7 +68,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.util.Map;
 
-@Path("/v1/workspaces")
+@Path("/workspaces")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class WorkspaceResource extends AbstractBinderResource {
