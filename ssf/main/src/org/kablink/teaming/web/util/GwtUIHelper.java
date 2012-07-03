@@ -1277,6 +1277,7 @@ public class GwtUIHelper {
 	 * - sessionCaptive
 	 * - isNovellTeaming
 	 * - isFilr
+	 * - isFilrAndVibe
 	 * - isTinyMCECapable
 	 * - tinyMCELang
 	 * - productName
@@ -1313,10 +1314,13 @@ public class GwtUIHelper {
 		String isNovellTeaming = Boolean.toString(ReleaseInfo.isLicenseRequiredEdition());
 		model.put("isNovellTeaming", isNovellTeaming);
 		
-		// Put out the flag that tells us if we are running Novell or
-		// Kablink Vibe.
+		// Put out the flag that tells us if we are running Filr.
 		boolean isFilr = Utils.checkIfFilr();
 		model.put("isFilr", Boolean.toString(isFilr));
+		
+		// Put out the flag that tells us if we are running Filr and Vibe.
+		boolean isFilrAndVibe = Utils.checkIfFilrAndVibe();
+		model.put("isFilrAndVibe", Boolean.toString(isFilrAndVibe));
 		
 		// Put out the flag that tells us if the tinyMCE editor will
 		// work on the device we are running on.  Get the list of user

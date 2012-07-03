@@ -83,4 +83,9 @@ public class LicenseChecker {
 	{
 		return getInstance().getLicenseManager().validLicense(when);
 	}
+	
+	public static boolean validLicenseExists()
+	{
+		return getInstance().getLicenseManager().validLicenseExists();
+	}
 }

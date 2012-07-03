@@ -30,86 +30,27 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.license.impl;
+package org.kablink.teaming.taglib;
 
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.LinkedList;
-import java.util.Locale;
-import java.util.TimeZone;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
 
-import org.dom4j.Document;
-import org.kablink.teaming.calendar.TimeZoneHelper;
-import org.kablink.teaming.license.LicenseException;
-import org.kablink.teaming.license.LicenseManager;
+import org.kablink.teaming.module.license.LicenseChecker;
+import org.kablink.teaming.util.Utils;
 
 
-public class NullLicenseManager implements LicenseManager {
+public class IfFilrAndVibe extends TagSupport {
 
-	public void loadLicense() throws LicenseException
-	{
-	}
-	public void validate() throws LicenseException
-	{
-	}
+	private static final long serialVersionUID = 1L;
 	
-	public void recordUserCount(long internal, long external, long active)
-	{
-	}
-	
-	public boolean inCompliance()
-	{
-		return true;
-	}
-
-	public boolean validLicense()
-	{
-		return true;
-	}
-	
-	public boolean validLicense(Calendar when)
-	{
-		return true;
-	}
-	
-	public boolean isAuthorizedByLicense(String featureName)
-	{
-			return false;
-	}
-	
-	public Calendar getExpirationDate()
-	{
-		GregorianCalendar cal = new GregorianCalendar(TimeZoneHelper.getTimeZone("GMT"), Locale.US);
-		//  Make it tomorrow, so it's always valid
-		cal.add(Calendar.DATE, 1);
-		return cal;
-	}
-	public Calendar getEffectiveDate()
-	{
-		GregorianCalendar cal = new GregorianCalendar(TimeZoneHelper.getTimeZone("GMT"), Locale.US);
-		// Make it yesterday, so it's always valid
-		cal.add(Calendar.DATE, -1);
-		return cal;
-	}
-
-	public Collection<Document> getLicenses()
-	{
-		return new LinkedList<Document>();
-	}
-	
-	public long getRegisteredUsers()
-	{
-		return 0;
-	}
-	
-	public long getExternalUsers()
-	{
-		return 0;
-	}
-	
-	public boolean validLicenseExists()
-	{
-		return false;
+	public int doStartTag() throws JspException {
+		HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
+		if (Utils.checkIfFilrAndVibe()) {
+			return EVAL_BODY_INCLUDE;
+		}
+		else {
+			return SKIP_BODY;
+		}
 	}
 }

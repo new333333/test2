@@ -574,12 +574,38 @@ public class Utils {
 	//Routines that support Filr
 	
 	/**
-	 * Check if this is a Filr license
+	 * Check if this is a Filr only license
 	 * 
 	 */
 	public static boolean checkIfFilr() {
 		if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Filr") ||
 				SPropsUtil.getBoolean("UI.type.Filr", Boolean.FALSE)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Check if this is a Filr and Vibe license
+	 * 
+	 */
+	public static boolean checkIfFilrAndVibe() {
+		if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Filr") &&
+				LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Vibe")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Check if this is a Vibe license
+	 * 
+	 */
+	public static boolean checkIfVibe() {
+		if (!checkIfFilrAndVibe() && (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Vibe") || 
+				(LicenseChecker.validLicenseExists()))) {
 			return true;
 		} else {
 			return false;

@@ -52,6 +52,7 @@
 		isModifyAllowed:					'${ss_modifyEntryAllowed}',
 		isNovellTeaming:					'${isNovellTeaming}',
 		isFilr:							    '${isFilr}',
+		isFilrAndVibe:						'${isFilrAndVibe}',
 		isQuotasDiskQuotaExceeded:			'${ss_diskQuotaExceeded}',
 		isQuotasEnabled:					'${ss_quotasEnabled}',
 		isTinyMCECapable:					'${isTinyMCECapable}',
