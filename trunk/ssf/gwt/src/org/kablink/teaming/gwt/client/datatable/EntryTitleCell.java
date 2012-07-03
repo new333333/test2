@@ -348,12 +348,12 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			fp.add(i);
 		}
 		
-		else if (!isEntry) {
-			Image binderImg = ((Image) eti.getClientBinderImage());
-			if (null != binderImg) {
-				binderImg.addStyleName("vibe-dataTableBinder-Img");
-				fp.add(binderImg);
-			}
+		// Do we have a client image for this item?
+		Image binderImg = ((Image) eti.getClientItemImage());
+		if (null != binderImg) {
+			// Yes!  Add it to the flow panel.
+			binderImg.addStyleName("vibe-dataTableItem-Img");
+			fp.add(binderImg);
 		}
 
 		// ...add the title link...

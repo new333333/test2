@@ -1495,9 +1495,9 @@ public class GwtViewHelper {
 		// Based on the installed license, what definition families do
 		// we consider as 'file'?
 		String[] fileFamilies;
-		if (Utils.checkIfFilr())
-		     fileFamilies = new String[]{Definition.FAMILY_FILE                         };
-		else fileFamilies = new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO};
+		if (Utils.checkIfFilrAndVibe() || Utils.checkIfVibe())
+		     fileFamilies = new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO};
+		else fileFamilies = new String[]{Definition.FAMILY_FILE                         };
 		
 		// Construct the search Criteria...
 		Conjunction conj;

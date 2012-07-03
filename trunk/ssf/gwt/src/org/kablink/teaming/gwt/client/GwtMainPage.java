@@ -951,6 +951,10 @@ public class GwtMainPage extends ResizeComposite
 			}
 		}
 		contextLoaded( binderId, instigator, inSearch, searchTabId );
+		if ( inSearch )
+		{
+			relayoutPage();
+		}
 	}
 	
 	private void contextLoaded( String binderId, Instigator instigator )
