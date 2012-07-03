@@ -99,6 +99,7 @@ import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
+import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
@@ -115,40 +116,13 @@ import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
+import org.kablink.teaming.gwt.client.GwtOpenIDAuthenticationProvider;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
-import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
-import org.kablink.teaming.gwt.client.util.AssignmentInfo;
-import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
-import org.kablink.teaming.gwt.client.util.BinderFilter;
-import org.kablink.teaming.gwt.client.util.BinderIconSize;
-import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.BinderStats;
-import org.kablink.teaming.gwt.client.util.BinderType;
-import org.kablink.teaming.gwt.client.util.CollectionType;
-import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
-import org.kablink.teaming.gwt.client.util.EntityId;
-import org.kablink.teaming.gwt.client.util.FolderSortSetting;
-import org.kablink.teaming.gwt.client.util.FolderType;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.MilestoneStats;
-import org.kablink.teaming.gwt.client.util.PrincipalInfo;
-import org.kablink.teaming.gwt.client.util.ProjectInfo;
-import org.kablink.teaming.gwt.client.util.SubscriptionData;
-import org.kablink.teaming.gwt.client.util.TagInfo;
-import org.kablink.teaming.gwt.client.util.TagType;
-import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
-import org.kablink.teaming.gwt.client.util.TaskListItem;
-import org.kablink.teaming.gwt.client.util.TaskStats;
-import org.kablink.teaming.gwt.client.util.TopRankedInfo;
-import org.kablink.teaming.gwt.client.util.ViewFileInfo;
-import org.kablink.teaming.gwt.client.util.WorkspaceType;
-import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
-import org.kablink.teaming.gwt.client.util.TopRankedInfo.TopRankedType;
-import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
@@ -168,9 +142,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.C
 import org.kablink.teaming.gwt.client.rpc.shared.CreateGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
-import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
 import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
@@ -181,8 +155,36 @@ import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmdType;
+import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
+import org.kablink.teaming.gwt.client.util.AssignmentInfo;
+import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
+import org.kablink.teaming.gwt.client.util.BinderFilter;
+import org.kablink.teaming.gwt.client.util.BinderIconSize;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.BinderStats;
+import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.BucketInfo;
+import org.kablink.teaming.gwt.client.util.CollectionType;
+import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
+import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.FolderSortSetting;
+import org.kablink.teaming.gwt.client.util.FolderType;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.gwt.client.util.MilestoneStats;
+import org.kablink.teaming.gwt.client.util.PrincipalInfo;
+import org.kablink.teaming.gwt.client.util.ProjectInfo;
+import org.kablink.teaming.gwt.client.util.SubscriptionData;
+import org.kablink.teaming.gwt.client.util.TagInfo;
+import org.kablink.teaming.gwt.client.util.TagType;
+import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
+import org.kablink.teaming.gwt.client.util.TaskListItem;
+import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
+import org.kablink.teaming.gwt.client.util.TaskStats;
+import org.kablink.teaming.gwt.client.util.TopRankedInfo;
+import org.kablink.teaming.gwt.client.util.TopRankedInfo.TopRankedType;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
+import org.kablink.teaming.gwt.client.util.ViewFileInfo;
+import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -243,15 +245,15 @@ import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.FavoritesLimitExceededException;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.GwtUISessionData;
+import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
-import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
-import org.kablink.teaming.web.util.WorkspaceTreeHelper.Counter;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
+import org.kablink.teaming.web.util.WorkspaceTreeHelper.Counter;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.servlet.StringServletResponse;
@@ -4938,16 +4940,34 @@ public class GwtServerHelper {
 		allowAutoComplete = SPropsUtil.getBoolean( "enable.login.autocomplete", false );
 		loginInfo.setAllowAutoComplete( allowAutoComplete );
 		
-		// See if OpenId authentication is allowed
+		// Are we running the Enterprise version of Vibe?
+		if ( ReleaseInfo.isLicenseRequiredEdition() )
 		{
-			ZoneConfig zoneConfig;
-			ZoneModule zoneModule;
-			boolean allowOpenIdAuth;
-			
-			zoneModule = ami.getZoneModule();
-			zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-			allowOpenIdAuth = zoneConfig.isExternalUserEnabled() && zoneConfig.getOpenIDConfig().isAuthenticationEnabled();
-			loginInfo.setAllowOpenIdAuthentication( allowOpenIdAuth ); 
+			// Yes
+			// Does the license allow external users?
+			if ( LicenseChecker.isAuthorizedByLicense( "com.novell.teaming.ExtUsers" ) )
+			{
+				ZoneConfig zoneConfig;
+				ZoneModule zoneModule;
+				boolean allowOpenIdAuth;
+				
+				// Yes
+				zoneModule = ami.getZoneModule();
+				zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+				allowOpenIdAuth = zoneConfig.isExternalUserEnabled() && zoneConfig.getOpenIDConfig().isAuthenticationEnabled();
+				loginInfo.setAllowOpenIdAuthentication( allowOpenIdAuth ); 
+				
+				// Is openid authentication enabled?
+				if ( allowOpenIdAuth )
+				{
+					ArrayList<GwtOpenIDAuthenticationProvider> listOfProviders;
+					
+					// Yes
+					// Get a list of the openid authentication providers supported by Vibe
+					listOfProviders = getOpenIDAuthenticationProviders( ami );
+					loginInfo.setListOfOpenIDAuthProviders( listOfProviders );
+				}
+			}
 		}
 		
 		return loginInfo;
@@ -5007,6 +5027,41 @@ public class GwtServerHelper {
 		return count;
 	}
 
+	/**
+	 * Return a list of OpenID Authentication providers supported by Vibe
+	 */
+	public static ArrayList<GwtOpenIDAuthenticationProvider> getOpenIDAuthenticationProviders( AllModulesInjected ami )
+	{
+		ArrayList<GwtOpenIDAuthenticationProvider> listOfProviders;
+		List<OpenIDProvider> providers; 
+		
+		listOfProviders = new ArrayList<GwtOpenIDAuthenticationProvider>();
+
+		// Get a list of the OpenID providers
+		providers = ami.getAdminModule().getOpenIDProviders();
+		if ( providers != null && providers.size() > 0 )
+		{
+			Iterator<OpenIDProvider> iterator;
+			
+			iterator = providers.iterator();
+			while ( iterator.hasNext() )
+			{
+				OpenIDProvider provider;
+				GwtOpenIDAuthenticationProvider gwtProvider;
+				
+				provider = iterator.next();
+				
+				gwtProvider = new GwtOpenIDAuthenticationProvider();
+				gwtProvider.setName( provider.getName() );
+				gwtProvider.setUrl( provider.getUrl() );
+				
+				listOfProviders.add( gwtProvider );
+			}
+		}
+		
+		return listOfProviders;
+	}
+	
 	/**
 	 * Returns a GwtPresenceInfo object for a User.
 	 * 

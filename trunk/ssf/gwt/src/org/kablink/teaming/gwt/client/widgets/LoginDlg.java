@@ -32,8 +32,11 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
+
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtMainPage;
+import org.kablink.teaming.gwt.client.GwtOpenIDAuthenticationProvider;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLoginInfoCmd;
@@ -59,11 +62,13 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.FormPanel;
@@ -89,6 +94,7 @@ public class LoginDlg extends DlgBox
 {
 	private FlowPanel m_mainPanel = null;
 	private FormPanel m_formPanel = null;
+	private FlowPanel m_hiddenInputPanel = null;
 	private Element m_userIdLabelElement = null;
 	private TextBox m_userIdTxtBox = null;
 	private Element m_pwdLabelElement = null;
@@ -100,10 +106,11 @@ public class LoginDlg extends DlgBox
 	private String m_springSecurityRedirect = null;	// This values tells Teaming what url to go to after the user authenticates.
 	private GwtSelfRegistrationInfo m_selfRegInfo = null;
 	private InlineLabel m_selfRegLink = null;
-	private Element m_openIdLabelElement = null;
-	private Element m_openIdIdentityTxtBoxElement = null;
 	private CheckBox m_useOpenIdCkbox = null;
+	private FlowPanel m_openIdProvidersPanel = null;
+	private Hidden m_openIdProviderInput = null;
 	private AsyncCallback<VibeRpcResponse> m_rpcGetLoginInfoCallback = null;
+	private boolean m_requestedLoginInfo = false;
 
 	/**
 	 * 
@@ -118,7 +125,74 @@ public class LoginDlg extends DlgBox
 			super( formElement );
 		}
 	}
-	
+
+	/**
+	 * 
+	 */
+	private class OpenIDAuthProviderImg extends Image
+	{
+		private GwtOpenIDAuthenticationProvider m_provider;
+		
+		/**
+		 * 
+		 */
+		public OpenIDAuthProviderImg( GwtOpenIDAuthenticationProvider provider )
+		{
+			super();
+			
+			ImageResource imgResource;
+			String title;
+			
+			m_provider = provider;
+			if ( provider != null )
+			{
+				switch ( provider.getType() )
+				{
+				case AOL:
+					imgResource = GwtTeaming.getImageBundle().openIdAuthProvider_aol();
+					title = GwtTeaming.getMessages().loginDlg_AuthProviderAol();
+					break;
+				
+				case GOOGLE:
+					imgResource = GwtTeaming.getImageBundle().openIdAuthProvider_google();
+					title = GwtTeaming.getMessages().loginDlg_AuthProviderGoogle();
+					break;
+				
+				case MYOPENID:
+					imgResource = GwtTeaming.getImageBundle().openIdAuthProvider_myopenid();
+					title = GwtTeaming.getMessages().loginDlg_AuthProviderMyOpenId();
+					break;
+					
+				case VERISIGN:
+					imgResource = GwtTeaming.getImageBundle().openIdAuthProvider_verisign();
+					title = GwtTeaming.getMessages().loginDlg_AuthProviderVerisign();
+					break;
+					
+				case YAHOO:
+					imgResource = GwtTeaming.getImageBundle().openIdAuthProvider_yahoo();
+					title = GwtTeaming.getMessages().loginDlg_AuthProviderYahoo();
+					break;
+					
+				case UNKNOWN:
+				default:
+					title = GwtTeaming.getMessages().loginDlg_AuthProviderUnknown();
+					imgResource = GwtTeaming.getImageBundle().openIdAuthProvider_unknown();
+					break;
+				}
+				
+				setResource( imgResource );
+				setTitle( title );
+			}
+		}
+		
+		/**
+		 * 
+		 */
+		public GwtOpenIDAuthenticationProvider getProvider()
+		{
+			return m_provider;
+		}
+	}
 	
 	/*
 	 * Class constructor.
@@ -223,7 +297,7 @@ public class LoginDlg extends DlgBox
 			 * 
 			 */
 			@Override
-			public void onSubmit(SubmitEvent event)
+			public void onSubmit( SubmitEvent event )
 			{
 				// Hide the "login failed" message.
 				hideLoginFailedMsg();
@@ -283,6 +357,10 @@ public class LoginDlg extends DlgBox
 			m_authenticatingMsg.setVisible( false );
 		}
 		
+		// Create a panel where hidden inputs will live.
+		m_hiddenInputPanel = new FlowPanel();
+		m_formPanel.add( m_hiddenInputPanel );
+		
 		// Add a hidden input for the "spring security redirect" which tells Teaming what page to go
 		// to after the user authenticates.
 		if ( m_springSecurityRedirect != null && m_springSecurityRedirect.length() > 0 )
@@ -292,7 +370,7 @@ public class LoginDlg extends DlgBox
 			hiddenInput = new Hidden();
 			hiddenInput.setName( "spring-security-redirect" );
 			hiddenInput.setValue( m_springSecurityRedirect );
-			m_formPanel.add( hiddenInput );
+			m_hiddenInputPanel.add( hiddenInput );
 		}
 		
 		// Create the ok and cancel buttons
@@ -438,15 +516,16 @@ public class LoginDlg extends DlgBox
 	/**
 	 * Create the controls needed for OpenID authentication
 	 */
-	private void createOpenIdControls()
+	private void createOpenIdControls( ArrayList<GwtOpenIDAuthenticationProvider> listOfProviders )
 	{
 		// Have we already created a "Use OpenID Authentication" checkbox?
 		if ( m_useOpenIdCkbox == null )
 		{
 			FlowPanel panel;
 			ValueChangeHandler<java.lang.Boolean> valueChangeHandler;
-			
-			// No, add one.
+
+			// No
+			// Add a "Use OpenID Authentication" checkbox.
 			m_useOpenIdCkbox = new CheckBox( GwtTeaming.getMessages().loginDlgUseOpenId() );
 			panel = new FlowPanel();
 			panel.addStyleName( "loginDlg_useOpenIdPanel" );
@@ -473,12 +552,72 @@ public class LoginDlg extends DlgBox
 			};
 			m_useOpenIdCkbox.addValueChangeHandler( valueChangeHandler );
 
-			// Add the OpenID Identity text box.
+			// Add a hidden input that will hold the url of the selected OpenID authentication provider
 			{
-				m_openIdLabelElement = Document.get().getElementById( "openid_identifier_label" );
-				m_openIdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgOpenIDIdentity() );
+				m_openIdProviderInput = new Hidden();
+				m_openIdProviderInput.setName( "openid_identifier" );
+				m_openIdProviderInput.setValue( "" );
+				m_hiddenInputPanel.add( m_openIdProviderInput );
+			}
+			
+			// Create a panel that holds all of the openid authentication providers
+			{
+				// Add a panel that will hold all of the OpenID authentication providers.
+				m_openIdProvidersPanel = new FlowPanel();
+				m_openIdProvidersPanel.addStyleName( "loginDlg_openIdProvidersPanel" );
+				m_mainPanel.insert( m_openIdProvidersPanel, 1 );
 				
-				m_openIdIdentityTxtBoxElement = Document.get().getElementById( "openid_identifier_id" );
+				if ( listOfProviders != null && listOfProviders.size() > 0 )
+				{
+					FlexTable table;
+					int row;
+					int i;
+					
+					table = new FlexTable();
+					m_openIdProvidersPanel.add( table );
+					
+					row = 0;
+					for (i = 0; i < listOfProviders.size(); ++i)
+					{
+						OpenIDAuthProviderImg img;
+						GwtOpenIDAuthenticationProvider provider;
+						int col;
+						
+						provider = listOfProviders.get( i );
+						img = new OpenIDAuthProviderImg( provider );
+						img.addStyleName( "loginDlg_openIdProviderImg" );
+						
+						img.addClickHandler( new ClickHandler() 
+						{
+							@Override
+							public void onClick( ClickEvent event )
+							{
+								Scheduler.ScheduledCommand cmd;
+								OpenIDAuthProviderImg img;
+								final GwtOpenIDAuthenticationProvider selectedProvider;
+								
+								img = (OpenIDAuthProviderImg) event.getSource();
+								selectedProvider = img.getProvider();
+								
+								cmd = new Scheduler.ScheduledCommand()
+								{
+									@Override
+									public void execute() 
+									{
+										handleOpenIDAuthProviderSelected( selectedProvider );
+									}
+								};
+								Scheduler.get().scheduleDeferred( cmd );
+							}
+						} );
+						
+						col = i % 3;
+						table.setWidget( row, col, img );
+						if ( col == 2 )
+							++row;
+						
+					}// end for()
+				}
 			}
 		}
 	}
@@ -504,7 +643,7 @@ public class LoginDlg extends DlgBox
 		{
 			// Yes
 			// Create the controls needed for openid authentication.
-			createOpenIdControls();
+			createOpenIdControls( loginInfo.getOpenIDAuthenticationProviders() );
 			
 			// Show/hide the openid controls
 			danceOpenIdControls();
@@ -522,8 +661,7 @@ public class LoginDlg extends DlgBox
 			if ( m_useOpenIdCkbox.getValue() )
 			{
 				// Yes
-				m_openIdLabelElement.getStyle().setDisplay( Display.BLOCK );
-				m_openIdIdentityTxtBoxElement.getStyle().setDisplay( Display.BLOCK );
+				m_openIdProvidersPanel.setVisible( true );
 				
 				m_userIdLabelElement.getStyle().setDisplay( Display.NONE );
 				m_userIdTxtBox.setVisible( false );
@@ -534,8 +672,7 @@ public class LoginDlg extends DlgBox
 			else
 			{
 				// No
-				m_openIdLabelElement.getStyle().setDisplay( Display.NONE );
-				m_openIdIdentityTxtBoxElement.getStyle().setDisplay( Display.NONE );
+				m_openIdProvidersPanel.setVisible( false );
 				
 				m_userIdLabelElement.getStyle().setDisplay( Display.BLOCK );
 				m_userIdTxtBox.setVisible( true );
@@ -574,9 +711,26 @@ public class LoginDlg extends DlgBox
 	{
 		GetLoginInfoCmd cmd;
 		
-		// Issue an ajax request to get login information
-		cmd = new GetLoginInfoCmd();
-		GwtClientHelper.executeCommand( cmd, m_rpcGetLoginInfoCallback );
+		if ( m_requestedLoginInfo == false )
+		{
+			m_requestedLoginInfo = true;
+
+			// Issue an ajax request to get login information
+			cmd = new GetLoginInfoCmd();
+			GwtClientHelper.executeCommand( cmd, m_rpcGetLoginInfoCallback );
+		}
+	}
+	
+	/**
+	 * Submit the login form using the url of the selecte openid authentication provider.
+	 */
+	private void handleOpenIDAuthProviderSelected( GwtOpenIDAuthenticationProvider provider )
+	{
+		if ( provider != null )
+		{
+			m_openIdProviderInput.setValue( provider.getUrl() );
+			m_formPanel.submit();
+		}
 	}
 	
 	/**

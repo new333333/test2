@@ -1082,6 +1082,17 @@ body, table td, select
 	margin-top: 6px;
 }
 
+.loginDlg_openIdProviderImg:hover
+{
+	cursor: pointer;
+}
+
+.loginDlg_openIdProvidersPanel
+{
+	margin-left: 10px;
+	margin-top: 8px;
+}
+
 /* Styles used by the WorkspaceTreeControl. */
 .workspaceTreeBinderAnchor            {color: #414648; text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-size: .9em;}
 .workspaceTreeBinderAnchor_collection {font-size: 14px; padding-left: 2px;}
