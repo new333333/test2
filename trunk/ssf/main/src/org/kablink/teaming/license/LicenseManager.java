@@ -125,4 +125,11 @@ public interface LicenseManager {
 	 * @return Total number of external users from all licenses
 	 */
 	public long getExternalUsers();
+
+	
+	/**
+	 * 
+	 * @return whether there is a valid license loaded
+	 */
+	public boolean validLicenseExists();
 }

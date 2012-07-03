@@ -370,6 +370,16 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Return the flag that tells us if we are running in Filr and Vibe mode.
+	 * 
+	 * @return
+	 */
+	public final native boolean isFilrAndVibe()
+	/*-{
+		return (this.getBFromS( this.isFilrAndVibe ));
+	}-*/;
+
+	/**
 	 * Return the flag that tells us if we are running Kablink Vibe.
 	 * 
 	 * @return

@@ -687,6 +687,17 @@ public class GwtClientHelper {
 	}
 
 	/**
+	 * Returns true if we're running in Filr and Vibe mode and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isFilrAndVibe() {
+		RequestInfo ri = getRequestInfo();
+		return ((null != ri) && ri.isFilrAndVibe());
+	}
+
+	/**
 	 * Returns true if a URL is a permalink URL and false otherwise.
 	 * 
 	 * @param url
