@@ -1448,12 +1448,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	@Override
 	public void setSelectedBinder(OnSelectBinderInfo osbInfo) {
-		// If the selection is for a Binder's trash...
-		if (osbInfo.isTrash()) {
-			// ...we don't change anything.
-			return;
-		}
-
 		// If the selection is for a collection...
 		if (osbInfo.isCollection()) {
 			// ...select it.
@@ -1465,6 +1459,19 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			return;
 		}
 		
+		// Are we in a mode where we don't show navigation trees?
+		if (!(WorkspaceTreeControl.showNavigationTrees())) {
+			// Yes, navigation tress are not being show!  Simply
+			// ignore the select.
+			return;
+		}
+		
+		// If the selection is for a Binder's trash...
+		if (osbInfo.isTrash()) {
+			// ...we don't change anything.
+			return;
+		}
+
 		// Is the requested Binder available in those we've already
 		// got loaded?
 		Instigator		 instigator = osbInfo.getInstigator();

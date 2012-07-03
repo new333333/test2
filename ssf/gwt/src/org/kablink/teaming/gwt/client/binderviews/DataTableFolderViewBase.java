@@ -1173,30 +1173,37 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					@Override
 					public EntryTitleInfo getValue(FolderRow fr) {
 						EntryTitleInfo reply = fr.getColumnValueAsEntryTitle(fc);
-						if ((null != reply) && fr.isBinder()) {
-							// Create the binder's Image widget...
-							Image binderImg = new Image();
-							binderImg.getElement().setAttribute("align", "absmiddle");
-
-							// ...store the URL in the Image...
-							String binderIcon = fr.getBinderIcon(BinderIconSize.getListViewIconSize());
-							if (GwtClientHelper.hasString(binderIcon)) {
-								String imagesPath = GwtClientHelper.getRequestInfo().getImagesPath();
-								if (binderIcon.startsWith("/"))
-								     binderImg.setUrl(imagesPath + binderIcon.substring(1));
-								else binderImg.setUrl(imagesPath + binderIcon);
+						if (null != reply) {
+							// Create the rows's Image widget...
+							Image rowImg = new Image();
+							rowImg.getElement().setAttribute("align", "absmiddle");
+							
+							if (fr.isBinder()) {
+								// ...store the URL in the Image...
+								String binderIcon = fr.getBinderIcon(BinderIconSize.getListViewIconSize());
+								if (GwtClientHelper.hasString(binderIcon)) {
+									String imagesPath = GwtClientHelper.getRequestInfo().getImagesPath();
+									if (binderIcon.startsWith("/"))
+									     rowImg.setUrl(imagesPath + binderIcon.substring(1));
+									else rowImg.setUrl(imagesPath + binderIcon);
+								}
+								else {
+									ImageResource binderImgRes = GwtTeaming.getFilrImageBundle().folder();
+									rowImg.setUrl(binderImgRes.getSafeUri());
+								}
 							}
 							else {
-								ImageResource binderImgRes = GwtTeaming.getFilrImageBundle().folder();
-								binderImg.setUrl(binderImgRes.getSafeUri());
+								// ...store the URL in the Image...
+								ImageResource binderImgRes = GwtTeaming.getFilrImageBundle().entry();
+								rowImg.setUrl(binderImgRes.getSafeUri());
 							}
-
+							
 							// ...apply any scaling to the Image...
-							int width  = BinderIconSize.getListViewIconSize().getBinderIconWidth();  if ((-1) != width)  binderImg.setWidth( width  + "px");
-							int height = BinderIconSize.getListViewIconSize().getBinderIconHeight(); if ((-1) != height) binderImg.setHeight(height + "px");
+							int width  = BinderIconSize.getListViewIconSize().getBinderIconWidth();  if ((-1) != width)  rowImg.setWidth( width  + "px");
+							int height = BinderIconSize.getListViewIconSize().getBinderIconHeight(); if ((-1) != height) rowImg.setHeight(height + "px");
 
 							// ...and store the Image in the reply.
-							reply.setClientBinderImage(binderImg);
+							reply.setClientItemImage(rowImg);
 						}
 						return reply;
 					}

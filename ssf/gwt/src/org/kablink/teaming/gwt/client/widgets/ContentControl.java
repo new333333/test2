@@ -115,9 +115,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.NamedFrame;
 
-
 /**
- * This widget will display the Teaming content for a given
+ * This widget will display the Vibe content for a given
  * folder/workspace.
  * 
  * @author jwootton@novell.com
@@ -254,15 +253,16 @@ public class ContentControl extends Composite
 			
 		frameElement = getContentFrame();
 		if ( null != frameElement )
+		{
 			frameElement.setSrc( "/ssf/html/empty.html" );
-
-		//setFrameHtml( m_frame.getName(), html );		
+		}
 	}
 	
 	/**
-	 * Write the given html to the iframe
+	 * Write the given HTML to the IFRAME.
 	 */
-	public static native void setFrameHtml( String frameName, String html ) /*-{
+	public static native void setFrameHtml( String frameName, String html )
+	/*-{
 		var frame;
 		
 		// Can we find a frame with the given name?
@@ -272,7 +272,7 @@ public class ContentControl extends Composite
 			// Yes
 			frame.document.open();
 
-			// Write the given html to the document.
+			// Write the given HTML to the document.
 			frame.document.write( html );
 
 			frame.document.close();
@@ -357,7 +357,8 @@ public class ContentControl extends Composite
 	/*
 	 * Initializes the JavaScript for tracking content history.
 	 */
-	private native void initContentHistoryJS( ContentControl contentControl, int contentHistoryDepth ) /*-{
+	private native void initContentHistoryJS( ContentControl contentControl, int contentHistoryDepth )
+	/*-{
 		// Have we defined the JavaScript elements for tracking content
 		// history yet?
 		if ( ! $wnd.top.ss_contentHistory )
@@ -378,7 +379,8 @@ public class ContentControl extends Composite
 	 * If there aren't enough items being tracked to satisfy the
 	 * request, null is returned.
 	 */
-	private native String jsGetContentHistoryUrl( Integer index ) /*-{
+	private native String jsGetContentHistoryUrl( Integer index )
+	/*-{
 		// If we were given a negative index...
 		if ( 0 > index )
 		{
@@ -400,7 +402,8 @@ public class ContentControl extends Composite
 	/*
 	 * Pushes a URL on the content history stack.
 	 */
-	private native void jsPushContentHistoryUrl( String url ) /*-{
+	private native void jsPushContentHistoryUrl( String url )
+	/*-{
 		// Push the URL.
 		$wnd.top.ss_contentHistory.unshift( url );
 		
@@ -454,7 +457,7 @@ public class ContentControl extends Composite
 			}
 			
 			// Set the width and height of the frame.
-			setSize( String.valueOf( width ) + "px", String.valueOf( height ) + "px" );
+			setSize( (width + "px"), (height + "px") );
 			m_frame.setPixelSize( width, height );
 	
 			// Does the content panel contain a task listing?
@@ -484,7 +487,8 @@ public class ContentControl extends Composite
 	 * Uses JSNI to tell the task listing that it may need to be
 	 * resized.
 	 */
-	private static native void jsResizeTaskListing() /*-{
+	private static native void jsResizeTaskListing()
+	/*-{
 		// If the method to resize the task listing is defined...
 		if ( $wnd.top.gwtContentIframe.ss_resizeTasks )
 		{
@@ -611,7 +615,7 @@ public class ContentControl extends Composite
 						public void viewReady()
 						{
 							GwtClientHelper.jsSetMainTitle(bi.getBinderTitle());
-							GwtTeaming.fireEvent(
+							GwtTeaming.fireEventAsync(
 								new ContextChangedEvent(
 									new OnSelectBinderInfo(
 										bi,
