@@ -339,12 +339,6 @@
 			</colgroup>
 			<tbody>
 				<tr>
-					<td><span id="openid_identifier_label" style="display: none;"></span></td>
-					<td>
-						<input type="text" size="20" id="openid_identifier_id" name="openid_identifier" class="gwt-TextBox" style="display: none;">
-					</td>
-				</tr>
-				<tr>
 					<td><span id="userIdLabel"></span></td>
 					<td>
 						<input type="text" size="20" id="j_usernameId" name="j_username" class="gwt-TextBox">

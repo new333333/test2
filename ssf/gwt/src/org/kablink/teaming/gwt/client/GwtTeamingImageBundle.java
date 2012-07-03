@@ -591,6 +591,30 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/folder_mirrored_large.png")
 	public ImageResource mirroredFileFolderLarge();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/OpenIDAuthProviders/aol.png")
+	public ImageResource openIdAuthProvider_aol();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/OpenIDAuthProviders/google.png")
+	public ImageResource openIdAuthProvider_google();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/OpenIDAuthProviders/myopenid.png")
+	public ImageResource openIdAuthProvider_myopenid();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/OpenIDAuthProviders/verisign.png")
+	public ImageResource openIdAuthProvider_verisign();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/OpenIDAuthProviders/yahoo.png")
+	public ImageResource openIdAuthProvider_yahoo();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/OpenIDAuthProviders/unknown.png")
+	public ImageResource openIdAuthProvider_unknown();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/folder_photo_large.png")
