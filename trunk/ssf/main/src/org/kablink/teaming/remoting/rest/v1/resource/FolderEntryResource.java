@@ -76,7 +76,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Path("/v1/folder_entries")
+@Path("/folder_entries")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class FolderEntryResource extends AbstractDefinableEntityResource {

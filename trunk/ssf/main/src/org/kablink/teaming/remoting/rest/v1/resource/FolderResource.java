@@ -80,7 +80,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Path("/v1/folders")
+@Path("/folders")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class FolderResource extends AbstractBinderResource {

@@ -57,7 +57,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.util.Map;
 
-@Path("/v1/binders")
+@Path("/binders")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class BinderResource extends AbstractResource {
