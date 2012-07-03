@@ -1488,12 +1488,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    }
 	//RO transaction 
 	public SortedSet<User> getUsers(Collection<Long> entryIds) {
-		//does read check
-		ProfileBinder profile = getProfileBinder();
+		//does read check on Profiles binder
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
        	TreeSet<User> result = new TreeSet(c);
-       	result.addAll(getProfileDao().loadUsers(entryIds, profile.getZoneId()));
+       	try {
+			ProfileBinder profile = getProfileBinder();
+	       	result.addAll(getProfileDao().loadUsers(entryIds, profile.getZoneId()));
+       	} catch(AccessControlException ace) {}
  		return result;
 	}
 	  
