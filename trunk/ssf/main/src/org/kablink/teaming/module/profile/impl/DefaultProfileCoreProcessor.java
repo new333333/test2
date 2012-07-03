@@ -414,9 +414,9 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     			entryData.put(ObjectKeys.FIELD_USER_TWITTERID, inputData.getSingleValue(ObjectKeys.FIELD_USER_TWITTERID));
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_IDENTITY_SOURCE) && !entryData.containsKey(ObjectKeys.FIELD_USER_IDENTITY_SOURCE)) {
-    			String s = inputData.getSingleValue(ObjectKeys.FIELD_USER_IDENTITY_SOURCE);
-    			if(s != null && s.length() > 0)
-    				entryData.put(ObjectKeys.FIELD_USER_IDENTITY_SOURCE, Integer.valueOf(s));
+    			Object o = inputData.getSingleObject(ObjectKeys.FIELD_USER_IDENTITY_SOURCE);
+    			if(o != null)
+    				entryData.put(ObjectKeys.FIELD_USER_IDENTITY_SOURCE, o);
     		}
     	} else if(entry instanceof Application) {
         	if (inputData.exists(ObjectKeys.FIELD_APPLICATION_POST_URL) && !entryData.containsKey(ObjectKeys.FIELD_APPLICATION_POST_URL)) {
