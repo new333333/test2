@@ -65,6 +65,11 @@
 		                                	<constructor-arg value="http://schema.openid.net/namePerson"/>
 		                                	<property name="required"><value>false</value></property>
 		                                </bean>
+		                                <bean class="org.springframework.security.openid.OpenIDAttribute">
+		                                	<constructor-arg value="phone"/>
+		                                	<constructor-arg value="http://axschema.org/contact/phone/default"/>
+		                                	<property name="required"><value>false</value></property>
+		                                </bean>
 		                            </list>
 		                        </entry>
 		                        <!-- If it is desirable to specify different rules for each OpenID provider, 

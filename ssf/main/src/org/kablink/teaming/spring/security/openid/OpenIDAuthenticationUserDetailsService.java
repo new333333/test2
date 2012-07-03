@@ -93,11 +93,15 @@ public class OpenIDAuthenticationUserDetailsService implements AuthenticationUse
 		for(OpenIDAttribute openidAttribute:attributes) {
 			if(mapping.containsKey(openidAttribute.getName()) && openidAttribute.getCount() > 0) {
 				String vibeAttributeName = mapping.get(openidAttribute.getName());
-				String vibeAttributeValue = openidAttribute.getValues().get(0);
-				// Normalize email address to lower case.
-				if(vibeAttributeName.equals("emailAddress"))
-					vibeAttributeValue = vibeAttributeValue.toLowerCase();
-				vibeAttributes.put(vibeAttributeName, vibeAttributeValue);
+				if(vibeAttributeName != null) {
+					String vibeAttributeValue = openidAttribute.getValues().get(0);
+					if(vibeAttributeValue != null) {
+						// Normalize email address to lower case.
+						if(vibeAttributeName.equals("emailAddress"))
+							vibeAttributeValue = vibeAttributeValue.toLowerCase();
+						vibeAttributes.put(vibeAttributeName, vibeAttributeValue);
+					}
+				}
 			}
 		}
 		return vibeAttributes;
