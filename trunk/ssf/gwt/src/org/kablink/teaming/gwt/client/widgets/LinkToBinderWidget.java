@@ -93,7 +93,7 @@ public class LinkToBinderWidget extends VibeWidget
 			}
 			else
 			{
-				EventHelper.fireChangeContextEventAsync( m_properties.getFolderId(), viewBinderUrl, Instigator.UNKNOWN );
+				EventHelper.fireChangeContextEventAsync( m_properties.getFolderId(), viewBinderUrl, Instigator.GOTO_CONTENT_URL );
 			}
 		}
 		else
@@ -122,6 +122,7 @@ public class LinkToBinderWidget extends VibeWidget
 		// Issue an rpc request to get information about the binder.
 		m_properties.getDataFromServer( new GetterCallback<Boolean>()
 		{
+			@Override
 			public void returnValue(Boolean value)
 			{
 				updateWidget();
@@ -153,6 +154,7 @@ public class LinkToBinderWidget extends VibeWidget
 			/**
 			 * 
 			 */
+			@Override
 			public void onClick( ClickEvent event )
 			{
 				handleClickOnLink();

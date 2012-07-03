@@ -389,6 +389,22 @@ public class GwtClientHelper {
 	public static void executeCommand(VibeRpcCmd cmd, AsyncCallback<VibeRpcResponse> callback) {
 		GwtTeaming.getRpcService().executeCommand(HttpRequestInfo.createHttpRequestInfo(), cmd, callback);
 	}	
+
+	/**
+	 * Returns the license type that we're currently running under.
+	 * 
+	 * @return
+	 */
+	public static LicenseType getLicenseType() {
+		LicenseType reply = LicenseType.NO_LICENSE;
+		RequestInfo ri = getRequestInfo();
+		if (null != ri) {
+			if      (ri.isLicenseFilr())        reply = LicenseType.FILR;
+			else if (ri.isLicenseFilrAndVibe()) reply = LicenseType.FILR_AND_VIBE;
+			else if (ri.isLicenseVibe())        reply = LicenseType.VIBE;
+		}
+		return reply;
+	}
 	
 	/**
 	 * Returns the RequestInfo object from whatever component we're
@@ -681,9 +697,8 @@ public class GwtClientHelper {
 	 * 
 	 * @return
 	 */
-	public static boolean isFilr() {
-		RequestInfo ri = getRequestInfo();
-		return ((null != ri) && ri.isFilr());
+	public static boolean isLicenseFilr() {
+		return getLicenseType().isFilr();
 	}
 
 	/**
@@ -692,9 +707,37 @@ public class GwtClientHelper {
 	 * 
 	 * @return
 	 */
-	public static boolean isFilrAndVibe() {
-		RequestInfo ri = getRequestInfo();
-		return ((null != ri) && ri.isFilrAndVibe());
+	public static boolean isLicenseFilrAndVibe() {
+		return getLicenseType().isFilrAndVibe();
+	}
+
+	/**
+	 * Returns true if we're running in a mode with Filr enabled and
+	 * false otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isLicenseFilrEnabled() {
+		return getLicenseType().isFilrEnabled();
+	}
+
+	/**
+	 * Returns true if we're running in Vibe mode and false otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isLicenseVibe() {
+		return getLicenseType().isVibe();
+	}
+
+	/**
+	 * Returns true if we're running in a mode with Vibe enabled and
+	 * false otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isLicenseVibeEnabled() {
+		return getLicenseType().isVibeEnabled();
 	}
 
 	/**

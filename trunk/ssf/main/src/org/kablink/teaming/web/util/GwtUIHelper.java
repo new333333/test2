@@ -1315,12 +1315,16 @@ public class GwtUIHelper {
 		model.put("isNovellTeaming", isNovellTeaming);
 		
 		// Put out the flag that tells us if we are running Filr.
-		boolean isFilr = Utils.checkIfFilr();
-		model.put("isFilr", Boolean.toString(isFilr));
+		boolean isLicenseFilr = Utils.checkIfFilr();
+		model.put("isLicenseFilr", Boolean.toString(isLicenseFilr));
 		
 		// Put out the flag that tells us if we are running Filr and Vibe.
-		boolean isFilrAndVibe = Utils.checkIfFilrAndVibe();
-		model.put("isFilrAndVibe", Boolean.toString(isFilrAndVibe));
+		boolean isLicenseFilrAndVibe = Utils.checkIfFilrAndVibe();
+		model.put("isLicenseFilrAndVibe", Boolean.toString(isLicenseFilrAndVibe));
+		
+		// Put out the flag that tells us if we are running Vibe.
+		boolean isLicenseVibe = Utils.checkIfVibe();
+		model.put("isLicenseVibe", Boolean.toString(isLicenseVibe));
 		
 		// Put out the flag that tells us if the tinyMCE editor will
 		// work on the device we are running on.  Get the list of user
@@ -1353,7 +1357,7 @@ public class GwtUIHelper {
 		// Put out a true/false indicator as to the state of the
 		// activity streams based user interface.
 		boolean showWhatsNew;
-		if (isFilr) {
+		if (isLicenseFilr) {
 			showWhatsNew = false;
 		}
 		else {

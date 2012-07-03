@@ -1038,8 +1038,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			}
 		}
 
-		// Are we running in full Vibe mode or in an activity stream?
-		if ((!(isFilr())) || isAS) {
+		// Are we showing navigation trees or in an activity stream?
+		if (WorkspaceTreeControl.showNavigationTrees() || isAS) {
 			// Yes!  Are there are any child binder rows to display?
 			tiList = rootTI.getChildBindersList();
 			if ((null != tiList) && (!(tiList.isEmpty()))) {
@@ -1160,9 +1160,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorGrid.addStyleName(buildElementStyle(ti, "workspaceTreeControlRow"));
 		if (ti.isBinderCollection()) {
 			String paddingStyle;
-			if (isFilr())
-			     paddingStyle = "padding5b";
-			else paddingStyle = "padding3b";
+			if (WorkspaceTreeControl.showNavigationTrees())
+			     paddingStyle = "padding3b";
+			else paddingStyle = "padding5b";
 			selectorGrid.addStyleName(paddingStyle);
 		}
 		if (ti.isBinderBorderTop()) {
@@ -1281,8 +1281,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	void selectBinder(TreeInfo ti) {
 		// We skip selecting a trash...
 		boolean skipSelection = ((null == ti) || ti.isBinderTrash());
-		if ((!skipSelection) && isFilr()) {
-			// ...or non-collection when in Filr mode.
+		if ((!skipSelection) && (!(WorkspaceTreeControl.showNavigationTrees()))) {
+			// ...or non-collection when not showing navigation trees.
 			skipSelection = (!(ti.isBinderCollection()));
 		}
 
@@ -1478,7 +1478,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				 ri.isRerootSidebarTree());
 			
 			switch (instigator) {
-			case CONTENT_AREA_CHANGED:
 			case SIDEBAR_TREE_SELECT:
 				if (forceReload)
 					 reloadTree(binderInfo);

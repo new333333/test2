@@ -364,9 +364,9 @@ public class RequestInfo extends JavaScriptObject
 	 * 
 	 * @return
 	 */
-	public final native boolean isFilr()
+	public final native boolean isLicenseFilr()
 	/*-{
-		return (this.getBFromS( this.isFilr ));
+		return (this.getBFromS( this.isLicenseFilr ));
 	}-*/;
 
 	/**
@@ -374,9 +374,19 @@ public class RequestInfo extends JavaScriptObject
 	 * 
 	 * @return
 	 */
-	public final native boolean isFilrAndVibe()
+	public final native boolean isLicenseFilrAndVibe()
 	/*-{
-		return (this.getBFromS( this.isFilrAndVibe ));
+		return (this.getBFromS( this.isLicenseFilrAndVibe ));
+	}-*/;
+
+	/**
+	 * Return the flag that tells us if we are running in Vibe mode.
+	 * 
+	 * @return
+	 */
+	public final native boolean isLicenseVibe()
+	/*-{
+		return (this.getBFromS( this.isLicenseVibe ));
 	}-*/;
 
 	/**

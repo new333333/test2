@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -89,9 +91,9 @@ public enum BinderIconSize implements IsSerializable {
 	public static BinderIconSize getListViewIconSize()           {return BinderIconSize.SMALL; }
 	public static BinderIconSize getSidebarTreeIconSize()        {
 		BinderIconSize reply;
-		if (GwtClientHelper.isFilr())
-		     reply = BinderIconSize.MEDIUM;
-		else reply = BinderIconSize.SMALL;
+		if (WorkspaceTreeControl.showNavigationTrees())
+		     reply = BinderIconSize.SMALL;
+		else reply = BinderIconSize.MEDIUM;
 		return reply;
 	}
 	

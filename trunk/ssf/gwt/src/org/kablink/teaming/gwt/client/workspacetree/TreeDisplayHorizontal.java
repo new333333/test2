@@ -328,14 +328,14 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	/*
 	 * Adds a button to move up the hierarchy to a flow panel.
 	 */
-	private void addUpButton(FlowPanel fp, Command upCommand) {
+	private void addUpButton(FlowPanel fp, String upAltText, Command upCommand) {
 		// Create the up button...
 		EventButton upButton = new EventButton(
 			getBaseImages().upDisabled16(),		// This is really the enabled image, but it needs to be gray.
 			null,								// null -> No disabled image.
 			getBaseImages().upMouseOver16(),	// The hover images for the button.
 			true,								// true -> Enable the button.
-			getMessages().treePreviousFolder(),	// The alternate text for the button.
+			upAltText,							// The alternate text for the button.
 			upCommand);
 		upButton.addStyleName("breadCrumb_ContentTail_Up");
 		
@@ -658,6 +658,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				// Yes!  Add an up button to navigate to it...
 				addUpButton(
 					fp,
+					getMessages().treePreviousFolder(),
 					new Command() {
 						@Override
 						public void execute() {
@@ -679,10 +680,10 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				addTIImageAndAnchor(fp, ti, selectorA);
 			}
 
-			// No the tail binder is not a folder!  Are we in Filr
-			// mode?
-			else if (isFilr()) {
-				// Yes!  Construct the helper to coordinate handling
+			// No the tail binder is not a folder!  Are we showing
+			// navigation trees?
+			else if (!(WorkspaceTreeControl.showNavigationTrees())) {
+				// No!  Construct the helper to coordinate handling
 				// not getting called back with the context...
 				final GetSidebarContextHelper gscHelper = new GetSidebarContextHelper(
 					fp,			// The FlowPanel we're constructing. 
@@ -717,6 +718,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 										// ...navigate to it...
 										addUpButton(
 											fp,
+											getMessages().treePreviousCollection(),
 											new Command() {
 												@Override
 												public void execute() {
@@ -748,8 +750,8 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			}
 
 			else {
-				// No, we aren't in Filr mode either!  Simply add the
-				// image and anchor for the binder.
+				// No, we must be showing navigation trees!  Simply add
+				// the image and anchor for the binder.
 				addTIImageAndAnchor(fp, ti, selectorA);
 			}
 		}

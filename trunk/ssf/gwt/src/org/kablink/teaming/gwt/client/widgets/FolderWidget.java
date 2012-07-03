@@ -62,7 +62,6 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 
 /**
- * 
  * This class is used to display a folder widget in a landing page.  We will display the first
  * n entries found in the given folder.
  * 
@@ -326,7 +325,7 @@ public class FolderWidget extends VibeWidget
 	 */
 	private void handleClickOnFolderTitle()
 	{
-		EventHelper.fireChangeContextEventAsync( m_properties.getFolderId(), m_properties.getViewFolderUrl(), Instigator.UNKNOWN );
+		EventHelper.fireChangeContextEventAsync( m_properties.getFolderId(), m_properties.getViewFolderUrl(), Instigator.GOTO_CONTENT_URL );
 	}
 	
 	

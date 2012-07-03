@@ -400,7 +400,7 @@ public class ProjectStatsWidget extends ToolPanelBase
 			EventHelper.fireChangeContextEventAsync(
 				binderId,
 				binderUrl,
-				Instigator.UNKNOWN );
+				Instigator.GOTO_CONTENT_URL );
 		}
 	}
 	

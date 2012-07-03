@@ -150,13 +150,13 @@ public class ContentControl extends Composite
 		ShowTeamWSEvent.Handler,
 		ShowTrashEvent.Handler
 {
-	private boolean m_contentInGWT;
-	private boolean m_isAdminContent;
-	private boolean m_isDebugUI;
-	private boolean m_isDebugLP;
-	private GwtMainPage m_mainPage;
-	private Instigator	m_contentInstigator = Instigator.UNKNOWN;
-	private NamedFrame m_frame;
+	private boolean		m_contentInGWT;								//
+	private boolean		m_isAdminContent;							//
+	private boolean		m_isDebugUI;								//
+	private boolean		m_isDebugLP;								//
+	private GwtMainPage	m_mainPage;									//
+	private Instigator	m_contentInstigator = Instigator.UNKNOWN;	//
+	private NamedFrame	m_frame;									//
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
