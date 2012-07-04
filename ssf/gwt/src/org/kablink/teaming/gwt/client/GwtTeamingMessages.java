@@ -798,6 +798,8 @@ public interface GwtTeamingMessages extends Messages
 	String calendarSettingsDlg_Label_WorkDayStartsAt();
 
 	// Strings used in the workspace tree control.
+	String treeAltConfigureFolder();
+	String treeAltConfigureWorkspace();
 	String treeAltEntry();
 	String treeAltFolder();
 	String treeAltWorkspace();

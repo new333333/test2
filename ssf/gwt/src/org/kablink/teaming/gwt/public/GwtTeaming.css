@@ -1122,6 +1122,7 @@ body, table td, select
 	border-radius: 5px;
 	-webkit-border-radius: 5px;
 	overflow: auto;
+	position: relative;
 }
 
 .workspaceTreeControl_blankContent {display: block; margin: 10px; color: #666666; font-size: 1.1em;}
@@ -1195,6 +1196,9 @@ body, table td, select
 }
 .workspaceTreeControlRow            {padding: 2px; margin-bottom: 1px;}
 .workspaceTreeControlRow_collection {margin-left: -10px;}
+
+.workspaceTreeControlRow_configureImg   {padding-top: 1px; cursor: pointer;}
+.workspaceTreeControlRow_configurePanel {display: block; position: absolute;}
 
 .workspaceTreeControlRow:hover            a {color: #135c8f;}
 .workspaceTreeControlRow_collection:hover a {} 

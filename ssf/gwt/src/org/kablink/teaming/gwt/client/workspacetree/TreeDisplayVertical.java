@@ -71,6 +71,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -99,12 +100,12 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class TreeDisplayVertical extends TreeDisplayBase {
-	private ActivityStreamInfo		m_selectedActivityStream;	// When displaying activity streams, the ActivityStream info of the selected activity stream.  null if no activity stream is currently selected.
-	private BinderInfo				m_selectedBinderInfo;		// The currently selected binder.
-	private BusyInfo				m_busyInfo;					// Stores a BusyInfo while we're busy switching contexts.
-	private FlowPanel				m_rootPanel;				// The top level FlowPanel containing the tree's contents.
-	private FlowPanel				m_binderConfigPanel;		// The FlowPanel containing access to the binder configuration menu.
-	private HashMap<String,Integer> m_renderDepths;				// A map of the depths the Binder's are are displayed at.
+	private ActivityStreamInfo			m_selectedActivityStream;	// When displaying activity streams, the ActivityStream info of the selected activity stream.  null if no activity stream is currently selected.
+	private BinderInfo					m_selectedBinderInfo;		// The currently selected binder.
+	private BusyInfo					m_busyInfo;					// Stores a BusyInfo while we're busy switching contexts.
+	private FlowPanel					m_rootPanel;				// The top level FlowPanel containing the tree's contents.
+	private FlowPanel					m_selectorConfig;			//
+	private HashMap<String, Integer>	m_renderDepths;				// A map of the depths the Binder's are are displayed at.
 
 	// The following are used for widget IDs assigned to various
 	// objects in a running WorkspaceTreeControl.
@@ -127,7 +128,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	// The following defines the maximum amount of time we wait to
 	// process the completion event for a context switch.  If we exceed
 	// this, we simply clear it.
-	private final static int MAX_BUSY_DURATION	= 5000;	//	5 seconds. 
+	private final static int MAX_BUSY_DURATION	= 5000;	//	5 seconds.
+
+	// The following provide the adjustments used to position the
+	// binder configuration button properly over a selected binder.
+	private final static int CONFIG_LEFT_ADJUST	= (-50);
+	private final static int CONFIG_TOP_ADJUST	=    6;
 	
 	/*
 	 * Inner class that implements clicking on the various tree
@@ -512,7 +518,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		super(wsTree, rootTI);
 		
 		// ...and initialize everything else.
-		m_renderDepths = new HashMap<String,Integer>();
+		m_renderDepths = new HashMap<String, Integer>();
 	}
 
 	/*
@@ -1163,6 +1169,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorGrid.setWidget(0, 1, selectorLabel);
 		selectorGrid.setWidget(0, 2, new Label("\u00A0"));
 		selectorGrid.getCellFormatter().setWidth(0, 2, "100%");
+		String selectorId = getSelectorId(ti);
 		int width = (SELECTOR_GRID_WIDTH - (SELECTOR_GRID_DEPTH_OFFSET * renderDepth));
 		if (ti.getBinderIconWidth(BinderIconSize.getSidebarTreeIconSize()) > width) {
 			width = SELECTOR_GRID_WIDTH;
@@ -1172,7 +1179,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorA.getElement().appendChild(selectorGrid.getElement());
 		selectorA.addClickHandler(new BinderSelector(ti));
 		selectorA.setWidth("100%");
-		String selectorId = getSelectorId(ti);
 		String selectorGridId = (EXTENSION_ID_SELECTOR_ANCHOR + selectorId);
 		selectorGrid.getElement().setId(selectorGridId);
 		selectorGrid.addStyleName(buildElementStyle(ti, "workspaceTreeControlRow"));
@@ -1714,22 +1720,47 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Hides/shows the binder configuration widgets for binder
 	 * selection.
 	 */
-	private void showBinderConfig(TreeInfo selectedTI, String selectedId) {
+	private void showBinderConfig(final TreeInfo selectedTI, final String selectedId) {
 		// Clear any previous binder configuration panel we may be
 		// tracking.
-		if (null != m_binderConfigPanel) {
-			m_binderConfigPanel.removeFromParent();
-			m_binderConfigPanel.clear();
-			m_binderConfigPanel = null;
+		if (null != m_selectorConfig) {
+			m_selectorConfig.removeFromParent();
+			m_selectorConfig.clear();
+			m_selectorConfig = null;
 		}
-
+		
 		// Can we find the selector grid for a configurable binder?
 		Element selectorGrid = findConfigurableSelectorGrid(selectedTI, (EXTENSION_ID_SELECTOR_ANCHOR + selectedId));
 		if (null == selectorGrid) {
 			// No!  Then we don't show a binder configuration widget.
 			return;
 		}
+
+		// Create an anchor to run the configuration menu on this
+		// binder.
+		final Anchor selectorConfigA = new Anchor();
+		selectorConfigA.setTitle(selectedTI.getBinderInfo().isBinderFolder() ? getMessages().treeAltConfigureFolder() : getMessages().treeAltConfigureWorkspace());
+		Image selectorConfigImg = GwtClientHelper.buildImage(getImages().configOptions());
+		selectorConfigImg.addStyleName("workspaceTreeControlRow_configureImg");
+		selectorConfigA.getElement().appendChild(selectorConfigImg.getElement());
+		selectorConfigA.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+//!				...this needs to be implemented...
+				GwtClientHelper.deferredAlert("TreeDisplayVertical.showBinderConfig( '" + selectedTI.getBinderTitle() + "' ):  ...this needs to be implemented...");
+			}
+		});
 		
-//!		GwtClientHelper.deferredAlert("showBinderConfig( SHOW ):  " + selectedId);
+		// Create a panel to hold the configuration button...
+		m_selectorConfig = new FlowPanel();
+		m_selectorConfig.addStyleName("workspaceTreeControlRow_configurePanel");
+		m_selectorConfig.add(selectorConfigA);
+		
+		// ...and show it.
+		double top  = ((selectorGrid.getAbsoluteTop() - m_rootPanel.getAbsoluteTop()) + CONFIG_TOP_ADJUST );
+		double left = (GwtConstants.SIDEBAR_TREE_WIDTH                                + CONFIG_LEFT_ADJUST);
+		m_selectorConfig.getElement().getStyle().setTop( top,  Unit.PX);
+		m_selectorConfig.getElement().getStyle().setLeft(left, Unit.PX);
+		m_rootPanel.add(m_selectorConfig);
 	}
 }
