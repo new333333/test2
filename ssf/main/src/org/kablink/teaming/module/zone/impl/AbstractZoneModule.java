@@ -1676,6 +1676,5 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getCoreDao().save(new OpenIDProvider("yahoo", "Yahoo", "https://me.yahoo.com", ".*yahoo.com.*"));
 		getCoreDao().save(new OpenIDProvider("aol", "AOL", "https://openid.aol.com", ".*openid.aol.com.*"));
 		getCoreDao().save(new OpenIDProvider("myopenid", "myOpenID", "https://myopenid.com", ".*myopenid.com.*"));
-		getCoreDao().save(new OpenIDProvider("verisign", "VeriSign", "https://pip.verisignlabs.com", ".*pip.verisignlabs.com.*"));
 	}
 }
