@@ -53,7 +53,6 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-
 /**
  * Class used for the Views menu item popup.  
  * 
@@ -76,7 +75,7 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 	private ToolbarItem			m_mobileUiTBI;			// The mobile UI  	   toolbar item, if found.
 
 	/*
-	 * Class constructor.
+	 * Constructor method.
 	 * 
 	 * Note that the class constructor is private to facilitate code
 	 * splitting.  All instantiations of this object must be done
@@ -84,7 +83,7 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 	 */
 	private ViewsMenuPopup(ContextBinderProvider binderProvider, boolean inSearch, String searchTabId) {
 		// Initialize the super class...
-		super(binderProvider, GwtTeaming.getMessages().mainMenuBarViews());
+		super(binderProvider);
 		
 		// ...and save the other parameters.
 		m_inSearch    = inSearch;

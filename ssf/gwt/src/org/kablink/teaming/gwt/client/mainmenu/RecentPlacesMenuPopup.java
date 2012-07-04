@@ -51,7 +51,6 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-
 /**
  * Class used for the recent places menu item popup.  
  * 
@@ -69,12 +68,15 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 		private RecentPlaceInfo m_place;	// The place selected on.
 
 		/**
-		 * Class constructor.
+		 * Constructor method.
 		 * 
 		 * @param place
 		 */
 		PlaceCommand(RecentPlaceInfo place) {
-			// Simply store the parameter.
+			// Initialize the super class...
+			super();
+			
+			// ...and store the parameter.
 			m_place = place;
 		}
 
@@ -107,11 +109,13 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 	}
 	
 	/**
-	 * Class constructor.
+	 * Constructor method.
+	 * 
+	 * @param binderProvider
 	 */
 	public RecentPlacesMenuPopup(ContextBinderProvider binderProvider) {
-		// Initialize the superclass.
-		super(binderProvider, GwtTeaming.getMessages().mainMenuBarRecentPlaces());
+		// Initialize the super class.
+		super(binderProvider);
 	}
 	
 	/**

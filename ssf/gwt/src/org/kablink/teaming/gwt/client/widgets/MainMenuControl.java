@@ -40,7 +40,10 @@ import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent;
+import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent.ManageMenuPopupCallback;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
+import org.kablink.teaming.gwt.client.event.HideManageMenuEvent;
 import org.kablink.teaming.gwt.client.event.InvokeAboutEvent;
 import org.kablink.teaming.gwt.client.event.InvokeClipboardEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureColumnsEvent;
@@ -126,6 +129,8 @@ public class MainMenuControl extends Composite
 	// Event handlers implemented by this class.
 		ContextChangedEvent.Handler,
 		ContextChangingEvent.Handler,
+		GetManageMenuPopupEvent.Handler,
+		HideManageMenuEvent.Handler,
 		InvokeClipboardEvent.Handler,
 		InvokeConfigureColumnsEvent.Handler,
 		InvokeAboutEvent.Handler,
@@ -150,6 +155,7 @@ public class MainMenuControl extends Composite
 	private GwtTeamingMessages 				m_messages = GwtTeaming.getMessages();
 	private ImportIcalByFileDlg				m_iiFileDlg;
 	private ImportIcalByUrlDlg				m_iiUrlDlg;
+	private List<ToolbarItem>				m_contextTBIList;
 	private MenuBarBox						m_closeAdminBox;
 	private MenuBarBox						m_manageBox;
 	private MenuBarBox						m_myFavoritesBox;
@@ -167,6 +173,7 @@ public class MainMenuControl extends Composite
 	private SearchMenuPanel					m_searchPanel;
 	private TeamingPopupPanel               m_aboutPopup;
 	private TeamingPopupPanel               m_soPopup;
+	private TeamManagementInfo				m_contextTMI;
 	private VibeMenuBar						m_mainMenu;
 
 	// The following defines the TeamingEvents that are handled by
@@ -190,6 +197,10 @@ public class MainMenuControl extends Composite
 		TeamingEvents.MASTHEAD_HIDE,
 		TeamingEvents.MASTHEAD_SHOW,
 		
+		// Menu events.
+		TeamingEvents.GET_MANAGE_MENU_POPUP,
+		TeamingEvents.HIDE_MANAGE_MENU,
+		
 		// Sidebar events.
 		TeamingEvents.SIDEBAR_HIDE,
 		TeamingEvents.SIDEBAR_SHOW,
@@ -204,7 +215,7 @@ public class MainMenuControl extends Composite
 	 * their completion.
 	 */
 	private interface ContextItemCallback {
-		public void complete();
+		public void contextItemComplete();
 	}
 	
 	/*
@@ -220,8 +231,8 @@ public class MainMenuControl extends Composite
 		 * Constructor method.
 		 */
 		private ContextMenuSynchronizer() {
-			// Nothing to do.  Default data member values are
-			// sufficient.
+			// Initialize the super class.
+			super();
 		}
 		
 		/*
@@ -244,9 +255,8 @@ public class MainMenuControl extends Composite
 				// item.  Otherwise, if we're viewing a collection,
 				// there's 2.  Otherwise, there's 3.
 				m_expectedItemCount =
-					(isASActive ?
-						1       :
-						(collectionType.isCollection()) ? 2 : 3);
+					(isASActive                     ? 1 :
+					(collectionType.isCollection()) ? 2 : 3);
 			}
 		}
 
@@ -297,10 +307,13 @@ public class MainMenuControl extends Composite
 		private String  		m_searchTabId;
 
 		/*
-		 * Class constructor.
+		 * Constructor method.
 		 */
 		private ContextLoadInfo(BinderInfo binderInfo, boolean isSearch, String searchTabId) {
-			// Simply store the parameters.
+			// Initialize the super class...
+			super();
+			
+			// ...and store the parameters.
 			m_binderInfo  = binderInfo;
 			m_isSearch    = isSearch;
 			m_searchTabId = searchTabId;
@@ -315,7 +328,7 @@ public class MainMenuControl extends Composite
 	 * through its createAsync().
 	 */
 	private MainMenuControl(GwtMainPage mainPage, String menuUsage) {
-		// Initialize the superclass.
+		// Initialize the super class.
 		super();
 		
 		// Store the parameters.
@@ -459,46 +472,41 @@ public class MainMenuControl extends Composite
 	 * Adds the Manage item to the context based portion of the menu
 	 * bar.
 	 */
-	private void addManageToContext(final List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi, final ContextItemCallback callback, final CollectionType collectionType) {
+	private void addManageToContext(final ContextItemCallback contextCallback) {
+		// Do we have a MenuBarBox for the manage menu yet?
 		if (null == m_manageBox) {
-			String manageNameCalc;
-			switch (m_contextBinder.getBinderType()) {
-			default:
-			case OTHER:                                                          return;
-			case FOLDER:     manageNameCalc = m_messages.mainMenuBarFolder();    break;
-			case WORKSPACE:  manageNameCalc = m_messages.mainMenuBarWorkspace(); break;
-			}
-			
-			final String manageName = manageNameCalc;
-			ManageMenuPopup.createAsync(this, manageName, new ManageMenuPopupClient() {			
+			// No!  Can we create a ManageMenuPopup?
+			buildManageMenuPopup(new ManageMenuPopupCallback() {
 				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-					callback.complete();
-				}
-				
-				@Override
-				public void onSuccess(final ManageMenuPopup mmp) {
-					mmp.setCurrentBinder(m_contextBinder);
-					mmp.setToolbarItemList(toolbarItemList);
-					mmp.setTeamManagementInfo(tmi);
-					if (mmp.shouldShowMenu()) {
-						m_manageBox = new MenuBarBox("ss_mainMenuManage", manageName, mmp.getMenuBar());
-						mmp.setMenuBox(m_manageBox);
-						m_mainMenu.addItem(m_manageBox);
-						if (collectionType.isCollection()) {
-							GwtClientHelper.setVisibile(m_manageBox, false);
+				public void manageMenuPopup(ManageMenuPopup mmp) {
+					if (null != mmp) {
+						// Yes!  Does it contain anything to show?
+						if (mmp.shouldShowMenu()) {
+							// Yes!  Create a MenuBarBox for it...
+							String manageName;
+							switch (m_contextBinder.getBinderType()) {
+							default:
+							case FOLDER:     manageName = m_messages.mainMenuBarFolder();    break;
+							case WORKSPACE:  manageName = m_messages.mainMenuBarWorkspace(); break;
+							}
+							m_manageBox = new MenuBarBox("ss_mainMenuManage", manageName, mmp.getMenuBar());
+							
+							// ...and tie it all together.
+							mmp.setMenuBox(m_manageBox);
+							m_mainMenu.addItem(m_manageBox);
 						}
 					}
-					callback.complete();
+					
+					// Finally, tell the context callback that we've
+					// completed the menu.
+					contextCallback.contextItemComplete();
 				}
 			});
 		}
 		
 		else {
 			GwtClientHelper.debugAlert("MainMenuControl.addManageToContext( *Internal Error* ):  Duplicate Request:  Ignored");
-			callback.complete();
+			contextCallback.contextItemComplete();
 		}
 	}
 	
@@ -543,22 +551,22 @@ public class MainMenuControl extends Composite
 	 * Adds the Recent Places item to the context based portion of the
 	 * menu bar.
 	 */
-	private void addRecentPlacesToContext(List<ToolbarItem> toolbarItemList, ContextItemCallback callback) {
+	private void addRecentPlacesToContext(final ContextItemCallback contextCallback) {
 		if (null == m_recentPlacesBox) {
 			final RecentPlacesMenuPopup rpmp = new RecentPlacesMenuPopup(this);
 			rpmp.setCurrentBinder(m_contextBinder);
-			rpmp.setToolbarItemList(toolbarItemList);
+			rpmp.setToolbarItemList(m_contextTBIList);
 			if (rpmp.shouldShowMenu()) {
 				m_recentPlacesBox = new MenuBarBox("ss_mainMenuRecentPlaces", m_messages.mainMenuBarRecentPlaces(), rpmp.getMenuBar());
 				rpmp.setMenuBox(m_recentPlacesBox);
 				m_mainMenu.addItem(m_recentPlacesBox);
 			}
-			callback.complete();
+			contextCallback.contextItemComplete();
 		}
 		
 		else {
 			GwtClientHelper.debugAlert("MainMenuControl.addRecentPlacesToContext( *Internal Error* ):  Duplicate Request:  Ignored");
-			callback.complete();
+			contextCallback.contextItemComplete();
 		}
 	}
 
@@ -566,33 +574,33 @@ public class MainMenuControl extends Composite
 	 * Adds the Views item to the context based portion of the menu
 	 * bar.
 	 */
-	private void addViewsToContext(final List<ToolbarItem> toolbarItemList, boolean isSearch, String searchTabId, final ContextItemCallback callback) {
+	private void addViewsToContext(final boolean isSearch, final String searchTabId, final ContextItemCallback contextCallback) {
 		if (null == m_viewsBox) {
 			ViewsMenuPopup.createAsync(this, isSearch, searchTabId, new ViewsMenuPopupClient() {			
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in
 					// asynchronous provider.
-					callback.complete();
+					contextCallback.contextItemComplete();
 				}
 				
 				@Override
 				public void onSuccess(final ViewsMenuPopup vmp) {
 					vmp.setCurrentBinder(m_contextBinder);
-					vmp.setToolbarItemList(toolbarItemList);
+					vmp.setToolbarItemList(m_contextTBIList);
 					if (vmp.shouldShowMenu()) {
 						m_viewsBox = new MenuBarBox("ss_mainMenuViews", m_messages.mainMenuBarViews(), vmp.getMenuBar());
 						vmp.setMenuBox(m_viewsBox);
 						m_mainMenu.addItem(m_viewsBox);
 					}
-					callback.complete();
+					contextCallback.contextItemComplete();
 				}
 			});
 		}
 		
 		else {
 			GwtClientHelper.debugAlert("MainMenuControl.addViewsToContext( *Internal Error* ):  Duplicate Request:  Ignored");
-			callback.complete();
+			contextCallback.contextItemComplete();
 		}
 	}
 	
@@ -611,6 +619,29 @@ public class MainMenuControl extends Composite
 		menuPanel.addItem(m_whatsNewBox);
 	}
 
+	/*
+	 * Constructs a ManageMenuPopup based on the parameters and returns
+	 * it via the callback.
+	 */
+	private void buildManageMenuPopup(final ManageMenuPopupCallback manageMenuPopupCallback) {
+		ManageMenuPopup.createAsync(this, new ManageMenuPopupClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+				manageMenuPopupCallback.manageMenuPopup(null);
+			}
+			
+			@Override
+			public void onSuccess(final ManageMenuPopup mmp) {
+				mmp.setCurrentBinder(m_contextBinder);
+				mmp.setToolbarItemList(m_contextTBIList);
+				mmp.setTeamManagementInfo(m_contextTMI);
+				manageMenuPopupCallback.manageMenuPopup(mmp);
+			}
+		});
+	}
+	
 	/*
 	 * Called to remove the context based menu items (Workspace,
 	 * Folder, ...) from the menu bar.
@@ -768,6 +799,32 @@ public class MainMenuControl extends Composite
 	@Override
 	public void onContextChanging(final ContextChangingEvent event) {
 		clearContextMenus();
+	}
+	
+	/**
+	 * Handles GetManageMenuPopupEvent's received by this class.
+	 * 
+	 * Implements the GetManageMenuPopupEvent.Handler.onGetManageMenuPopup() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onGetManageMenuPopup(final GetManageMenuPopupEvent event) {
+		// Build a ManageMenuPopup and return it through the callback.
+		buildManageMenuPopup(event.getManageMenuPopupCallback());
+	}
+	
+	/**
+	 * Handles HideManageMenuEvent's received by this class.
+	 * 
+	 * Implements the HideManageMenuEvent.Handler.onHideManageMenu() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onHideManageMenu(final HideManageMenuEvent event) {
+		// If we have a manage menu, hide it.
+		GwtClientHelper.setVisibile(m_manageBox, false);
 	}
 	
 	/**
@@ -1255,8 +1312,9 @@ public class MainMenuControl extends Composite
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
+				// Save the context List<ToolbarItem> returned.
 				GetToolbarItemsRpcResponseData responseData = ((GetToolbarItemsRpcResponseData) response.getResponseData());
-				final List<ToolbarItem> toolbarItemList = ((null == responseData) ? null : responseData.getToolbarItems());
+				m_contextTBIList = ((null == responseData) ? null : responseData.getToolbarItems());
 
 				// Run the 'Get Team Management' RPC request as a
 				// scheduled command so the RPC request that got us
@@ -1276,15 +1334,12 @@ public class MainMenuControl extends Composite
 							
 							@Override
 							public void onSuccess(VibeRpcResponse response) {
-								// Show the toolbar items asynchronously so
-								// that we can release the AJAX request ASAP.
-								TeamManagementInfo tmi = ((TeamManagementInfo) response.getResponseData());
-								showToolbarItemsAsync(
-									isSearch,
-									searchTabId,
-									toolbarItemList,
-									tmi,
-									binderInfo.getCollectionType());
+								// Save the TeamManagementInfo returned
+								// and show the toolbar items
+								// asynchronously so that we can
+								// release the AJAX request ASAP.
+								m_contextTMI = ((TeamManagementInfo) response.getResponseData());
+								showToolbarItemsAsync(isSearch, searchTabId);
 							}
 						});
 					}
@@ -1318,11 +1373,11 @@ public class MainMenuControl extends Composite
 	/*
 	 * Asynchronously shows the toolbar items.
 	 */
-	private void showToolbarItemsAsync(final boolean isSearch, final String searchTabId, final List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi, final CollectionType collectionType) {
+	private void showToolbarItemsAsync(final boolean isSearch, final String searchTabId) {
 		ScheduledCommand doShow = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				showToolbarItemsNow(isSearch, searchTabId, toolbarItemList, tmi, collectionType);
+				showToolbarItemsNow(isSearch, searchTabId);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doShow);
@@ -1331,7 +1386,7 @@ public class MainMenuControl extends Composite
 	/*
 	 * Synchronously shows the toolbar items.
 	 */
-	private void showToolbarItemsNow(boolean isSearch, String searchTabId, List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi, final CollectionType collectionType) {
+	private void showToolbarItemsNow(boolean isSearch, String searchTabId) {
 		// Do we currently have context items being constructed?
 		if (m_contextMenuSync.isConstructionInProgress()) {
 			// Yes!  That's an error.  Tell the user.
@@ -1342,33 +1397,39 @@ public class MainMenuControl extends Composite
 			// No, we don't currently have context items being
 			// constructed!  Initiate the construction processing now.
 			boolean isASActive = m_mainPage.isActivityStreamActive();
-			m_contextMenuSync.activateContextConstruction(isASActive, collectionType);
+			m_contextMenuSync.activateContextConstruction(isASActive, m_contextBinder.getCollectionType());
 			
 			// Clear any context menus currently displayed...
 			clearContextMenus();
 			
-			// ...and handle the variations based on activity stream mode.
-			addRecentPlacesToContext(toolbarItemList, new ContextItemCallback() {
+			// ...and handle the variations based on the mode.
+			addRecentPlacesToContext(
+				new ContextItemCallback() {
 					@Override
-					public void complete() {
+					public void contextItemComplete() {
 						m_contextMenuSync.contextItemConstructed();
 					}
 				});
 			
-			if (!isASActive) {
-				addManageToContext(toolbarItemList, tmi,new ContextItemCallback() {
+			// ...no manage with activity streams or collections...
+			if ((!isASActive) && (!(m_contextBinder.isBinderCollection()))) {
+				addManageToContext(
+					new ContextItemCallback() {
 						@Override
-						public void complete() {
+						public void contextItemComplete() {
 							m_contextMenuSync.contextItemConstructed();
 						}
-					},
-					collectionType);
+					});
 			}
 			
+			// ...no view with activity streams...
 			if (!isASActive) {
-				addViewsToContext(toolbarItemList, isSearch, searchTabId, new ContextItemCallback() {
+				addViewsToContext(
+					isSearch,
+					searchTabId,
+					new ContextItemCallback() {
 						@Override
-						public void complete() {
+						public void contextItemComplete() {
 							m_contextMenuSync.contextItemConstructed();
 						}
 					});
@@ -1394,19 +1455,20 @@ public class MainMenuControl extends Composite
 	 * @param menuClient
 	 */
 	public static void createAsync(final GwtMainPage mainPage, final String menuUsage, final MainMenuControlClient menuClient) {
-		GWT.runAsync(MainMenuControl.class, new RunAsyncCallback()
-		{			
-			@Override
-			public void onSuccess() {
-				MainMenuControl mainMenuCtrl = new MainMenuControl(mainPage, menuUsage);
-				menuClient.onSuccess(mainMenuCtrl);
-			}
-			
-			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_MainMenuControl());
-				menuClient.onUnavailable();
-			}
-		});
+		GWT.runAsync(
+			MainMenuControl.class,
+			new RunAsyncCallback() {			
+				@Override
+				public void onSuccess() {
+					MainMenuControl mainMenuCtrl = new MainMenuControl(mainPage, menuUsage);
+					menuClient.onSuccess(mainMenuCtrl);
+				}
+				
+				@Override
+				public void onFailure(Throwable reason) {
+					Window.alert(GwtTeaming.getMessages().codeSplitFailure_MainMenuControl());
+					menuClient.onUnavailable();
+				}
+			});
 	}
 }

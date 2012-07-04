@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.mainmenu;
 import java.util.Iterator;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
@@ -65,12 +64,15 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 		private TeamInfo m_myTeam;	// The team selected on.
 
 		/**
-		 * Class constructor.
+		 * Constructor method.
 		 * 
 		 * @param myTeam
 		 */
 		TeamCommand(TeamInfo myTeam) {
-			// Simply store the parameter.
+			// Initialize the super class...
+			super();
+			
+			// ...and store the parameter.
 			m_myTeam = myTeam;
 		}
 
@@ -90,11 +92,13 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 	}
 	
 	/**
-	 * Class constructor.
+	 * Constructor method.
+	 * 
+	 * @param binderProvider
 	 */
 	public MyTeamsMenuPopup(ContextBinderProvider binderProvider) {
-		// Initialize the superclass.
-		super(binderProvider, GwtTeaming.getMessages().mainMenuBarMyTeams());
+		// Initialize the super class.
+		super(binderProvider);
 	}
 	
 	/**

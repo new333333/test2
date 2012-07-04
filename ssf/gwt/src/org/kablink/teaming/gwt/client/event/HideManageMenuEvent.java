@@ -33,72 +33,34 @@
 package org.kablink.teaming.gwt.client.event;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The GetSidebarContextEvent is used to get the context currently
- * loaded in the sidebar tree.
+ * The HideManageMenuEvent is used to hide the manage menu loaded on
+ * the main menu bar.
  * 
  * @author drfoster@novell.com
  */
-public class GetSidebarContextEvent extends VibeEventBase<GetSidebarContextEvent.Handler> {
+public class HideManageMenuEvent extends VibeEventBase<HideManageMenuEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
-	
-	private ContextCallback	m_contextCallback;	//
-
-	/**
-	 * Interface used to callback to the event trigger what the current
-	 * sidebar context currently is. 
-	 */
-	public interface ContextCallback {
-		public void context(BinderInfo contextBI, String contextPermalink);
-	}
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onGetSidebarContext(GetSidebarContextEvent event);
+		void onHideManageMenu(HideManageMenuEvent event);
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public GetSidebarContextEvent() {
+	public HideManageMenuEvent() {
 		// Initialize the super class.
 		super();
 	}
-	
-	/**
-	 * Class constructor.
-	 * 
-	 * @param contextCallback
-	 */
-	public GetSidebarContextEvent(ContextCallback contextCallback) {
-		// Initialize the this object...
-		this();
-		
-		// ...and store the parameter.
-		setContextCallback(contextCallback);
-	}
-	
-	/**
-	 * Get'er method.
-	 * 
-	 * @return
-	 */
-	public ContextCallback getContextCallback() {return m_contextCallback;}
-
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setContextCallback(ContextCallback contextCallback) {m_contextCallback = contextCallback;}
 	
 	/**
 	 * Dispatches this event when one is triggered.
@@ -109,14 +71,7 @@ public class GetSidebarContextEvent extends VibeEventBase<GetSidebarContextEvent
 	 */
 	@Override
 	protected void dispatch(Handler handler) {
-		handler.onGetSidebarContext(this);
-	}
-	
-	/**
-	 * Fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new GetSidebarContextEvent());
+		handler.onHideManageMenu(this);
 	}
 	
 	/**
@@ -132,6 +87,13 @@ public class GetSidebarContextEvent extends VibeEventBase<GetSidebarContextEvent
 	}
 
 	/**
+	 * Fires a new one of these events.
+	 */
+	public static void fireOne() {
+		GwtTeaming.fireEvent(new HideManageMenuEvent());
+	}
+
+	/**
 	 * Returns the TeamingEvents enumeration value corresponding to
 	 * this event.
 	 * 
@@ -141,7 +103,7 @@ public class GetSidebarContextEvent extends VibeEventBase<GetSidebarContextEvent
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.GET_SIDEBAR_CONTEXT;
+		return TeamingEvents.HIDE_MANAGE_MENU;
 	}
 		
 	/**

@@ -83,6 +83,7 @@ public class EventHelper {
 		case EDIT_SITE_BRANDING:                	reply = new EditSiteBrandingEvent();              break;
 		case FULL_UI_RELOAD:                    	reply = new FullUIReloadEvent();                  break;
 		case GOTO_MY_WORKSPACE:                 	reply = new GotoMyWorkspaceEvent();               break;
+		case HIDE_MANAGE_MENU:                 	    reply = new HideManageMenuEvent();                break;
 		case INVOKE_ABOUT:							reply = new InvokeAboutEvent();                   break;
 		case INVOKE_CLIPBOARD:						reply = new InvokeClipboardEvent();               break;
 		case INVOKE_CONFIGURE_COLUMNS:				reply = new InvokeConfigureColumnsEvent();        break;
@@ -621,6 +622,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case GET_MANAGE_MENU_POPUP:
+				// An GetManageMenuPopupEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof GetManageMenuPopupEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = GetManageMenuPopupEvent.registerEvent(eventBus, ((GetManageMenuPopupEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case GET_SIDEBAR_CONTEXT:
 				// An GetSidebarContextEvent!  Can the event handler we
 				// were given handle that?
@@ -736,6 +746,15 @@ public class EventHelper {
 				if (eventHandler instanceof HideAccessoriesEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = HideAccessoriesEvent.registerEvent(eventBus, ((HideAccessoriesEvent.Handler) eventHandler) );
+				}
+				break;
+			
+			case HIDE_MANAGE_MENU:
+				// A HideManageMenuEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof HideManageMenuEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = HideManageMenuEvent.registerEvent(eventBus, ((HideManageMenuEvent.Handler) eventHandler) );
 				}
 				break;
 			
@@ -1892,6 +1911,8 @@ public class EventHelper {
 			case MASTHEAD_HIDE:                     	hasHandler = (eventHandler instanceof MastheadHideEvent.Handler);                  break;
 			case MASTHEAD_SHOW:                     	hasHandler = (eventHandler instanceof MastheadShowEvent.Handler);                  break;
 			
+			case GET_MANAGE_MENU_POPUP:                 hasHandler = (eventHandler instanceof GetManageMenuPopupEvent.Handler);            break;
+			case HIDE_MANAGE_MENU:						hasHandler = (eventHandler instanceof HideManageMenuEvent.Handler);		           break;
 			case MENU_HIDE:                     		hasHandler = (eventHandler instanceof MenuHideEvent.Handler);                 	   break;
 			case MENU_SHOW:                     		hasHandler = (eventHandler instanceof MenuShowEvent.Handler);                      break;
 
