@@ -686,7 +686,7 @@ public interface ObjectKeys {
     public static final String XTAG_USER_LOCALE="locale";
     public static final String XTAG_USER_PASSWORD="password";
     public static final String XTAG_USER_DIGESTSEED="digestSeed";
-    public static final String XTAG_USER_LOGINDATE="loginDate";
+    public static final String XTAG_USER_FIRST_LOGINDATE="loginDate";
     //values of name= attributes on XTAG_ELEMENT_TYPE_PROPERTY for groups
     public static final String XTAG_GROUP_MEMBERS="members";
     public static final String XTAG_GROUP_MEMBER_NAME="memberName";

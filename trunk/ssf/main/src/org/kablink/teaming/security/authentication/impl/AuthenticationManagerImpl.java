@@ -49,8 +49,10 @@ import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
+import org.kablink.teaming.domain.OpenIDConfig;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.modelprocessor.ProcessorManager;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
@@ -187,8 +189,17 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				user = doAuthenticateExternalUser(zoneName, userName);
 				// If you're still here, it means that the corresponding user object was found in the database.
 				if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
-					if(!getCoreDao().loadZoneConfig(zoneId).getOpenIDConfig().isSynchronizeProfilesOnLogin())
-						updates.clear(); // Clear all attributes
+					int syncMode = getCoreDao().loadZoneConfig(zoneId).getOpenIDConfig().getProfileSynchronizationMode();
+					if(syncMode == OpenIDConfig.PROFILE_SYNCHRONIZATION_ON_FIRST_LOGIN_ONLY) {
+						if(user.getFirstLoginDate() != null)
+							updates.clear(); // This is not the first time logging in. Should not sync. Clear all attributes.
+					}
+					else if(syncMode == OpenIDConfig.PROFILE_SYNCHRONIZATION_ON_EVERY_LOGIN) {
+						// Should sync.
+					}
+					else {
+						updates.clear(); // Should not sync.
+					}
 				}
 				else {
 					throw new InternalException("Encountered auth service provider " + authenticationServiceProvider.name() + " when expecting OPENID");
@@ -226,12 +237,13 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		} 
 		catch (UserDoesNotExistException nu) {
  			if (createUser) {
- 				if(isExternalUser(identitySource)) { // OpenID
- 					if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) { 					
-						if(!getCoreDao().loadZoneConfig(zoneId).getOpenIDConfig().isSynchronizeProfilesOnSelfProvision()) {
-	 						// Don't allow profile sync upon self-provisioning. We will only store email address.
-	 						removeEverythingButEmailAddress(updates);
-	 					}
+ 				if(isExternalUser(identitySource)) { // e.g. OpenID
+ 					if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
+ 						int syncMode = getCoreDao().loadZoneConfig(zoneId).getOpenIDConfig().getProfileSynchronizationMode();
+ 						if(syncMode == OpenIDConfig.PROFILE_SYNCHRONIZATION_NEVER) {
+	 						// Don't allow profile sync as we create new user account. We will only store email address.
+	 						removeEverythingButEmailAddress(updates); 							
+ 						}
 	 			 		// Make sure foreign name is identical to name.
 	 					updates.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, userName);
 	 					// For external users, there's no need for separate step for synchronizing profile info
@@ -292,6 +304,11 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				}
 			}
 		}
+		
+		// If still here, it means that authentication was successful.
+		// If this is the user's first time logging in, let's capture the date/time.
+		if(user.getFirstLoginDate() == null)
+			getProfileModule().setFirstLoginDate(user.getId());
 		
 		SimpleProfiler.stop( "3x-AuthenticationManagerImpl.authenticate()" );
 		return user;

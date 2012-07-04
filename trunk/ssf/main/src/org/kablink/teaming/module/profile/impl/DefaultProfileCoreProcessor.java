@@ -839,7 +839,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_LOCALE, user.getLocale());
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_PASSWORD, user.getPassword());
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_DIGESTSEED, user.getDigestSeed());
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_LOGINDATE, user.getLoginDate());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_FIRST_LOGINDATE, user.getFirstLoginDate());
 
 		} else if(prin instanceof Group) {
 			Group group = (Group)prin;

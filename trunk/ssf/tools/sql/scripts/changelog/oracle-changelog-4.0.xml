@@ -106,15 +106,9 @@
                 <constraints nullable="true" />
             </column>
         </addColumn>
-       <comment>Enable synchronization of profiles upon self-provisioning/creation of external user account via OpenID</comment>
+        <comment>The mode in which OpenID user's profile information is synchronized</comment>
         <addColumn tableName="SS_ZONECONFIG">
-            <column name="OPENIDSYNCONSELFPROVISION" type="NUMBER(1,0)">
-                <constraints nullable="true" />
-            </column>
-        </addColumn>
-       <comment>Enable synchronization of profiles upon login of existing external user via OpenID</comment>
-        <addColumn tableName="SS_ZONECONFIG">
-            <column name="OPENIDSYNCONLOGIN" type="NUMBER(1,0)">
+            <column name="OPENIDPROFILESYNCMODE" type="NUMBER(10,0)">
                 <constraints nullable="true" />
             </column>
         </addColumn>

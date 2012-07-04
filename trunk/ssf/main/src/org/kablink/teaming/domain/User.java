@@ -73,7 +73,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected String zonName="";
     protected Locale locale;//set by hibernate access="field"
 	protected TimeZone timeZone;//set by hibernate access="field"
-    protected Date loginDate;
+    protected Date firstLoginDate; // This indicates the date/time at which the user logged into Vibe for the first time
     protected String displayStyle;
     protected String password; //set by hibernate access="field"
     protected String pwdenc; // set by hibernate access="field"
@@ -199,11 +199,11 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	 * @hibernate.property 
 	 * @return
 	 */
-	public Date getLoginDate() {
-		return loginDate;
+	public Date getFirstLoginDate() {
+		return firstLoginDate;
 	}
-	public void setLoginDate(Date loginDate) {
-		this.loginDate = loginDate;
+	public void setFirstLoginDate(Date firstLoginDate) {
+		this.firstLoginDate = firstLoginDate;
 	}
 
      

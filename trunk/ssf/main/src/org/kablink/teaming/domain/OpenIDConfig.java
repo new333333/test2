@@ -40,13 +40,15 @@ import org.kablink.teaming.util.SPropsUtil;
  */
 public class OpenIDConfig {
 
+	public static final int PROFILE_SYNCHRONIZATION_ON_FIRST_LOGIN_ONLY 	= 1;
+	public static final int PROFILE_SYNCHRONIZATION_ON_EVERY_LOGIN			= 2;
+	public static final int PROFILE_SYNCHRONIZATION_NEVER					= 3;
+	
 	private Boolean selfProvisioningEnabled; // OpenID self-provisioning enabled
 
 	private Boolean authenticationEnabled; // OpenID authentication enabled
 	
-	private Boolean synchronizeProfilesOnSelfProvision;
-	
-	private Boolean synchronizeProfilesOnLogin;
+	private Integer profileSynchronizationMode; // OpenID user profile synchronization mode
 	
 	public boolean isSelfProvisioningEnabled() {
 		if(selfProvisioningEnabled == null)
@@ -69,24 +71,14 @@ public class OpenIDConfig {
 		this.authenticationEnabled = openidAuthenticationEnabled;
 	}
 	
-	public boolean isSynchronizeProfilesOnSelfProvision() {
-		if(synchronizeProfilesOnSelfProvision == null)
-			return SPropsUtil.getBoolean("openid.synchronize.profiles.on.self.provision.default", true);
+	public int getProfileSynchronizationMode() {
+		if(profileSynchronizationMode == null)
+			return SPropsUtil.getInt("openid.profile.synchronization.mode.default", PROFILE_SYNCHRONIZATION_ON_FIRST_LOGIN_ONLY);
 		else
-			return synchronizeProfilesOnSelfProvision.booleanValue();
+			return profileSynchronizationMode.intValue();
 	}
-	public void setSynchronizeProfilesOnSelfProvision(boolean synchronizeProfilesOnSelfProvision) {
-		this.synchronizeProfilesOnSelfProvision = synchronizeProfilesOnSelfProvision;
-	}
-	
-	public boolean isSynchronizeProfilesOnLogin() {
-		if(synchronizeProfilesOnLogin == null)
-			return SPropsUtil.getBoolean("openid.synchronize.profiles.on.login.default", false);
-		else
-			return synchronizeProfilesOnLogin.booleanValue();
-	}
-	public void setSynchronizeProfilesOnLogin(boolean synchronizeProfilesOnLogin) {
-		this.synchronizeProfilesOnLogin = synchronizeProfilesOnLogin;
+	public void setProfileSynchronizationMode(Integer profileSynchronizationMode) {
+		this.profileSynchronizationMode = profileSynchronizationMode;
 	}
 
 }

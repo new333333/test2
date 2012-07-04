@@ -784,4 +784,6 @@ public interface ProfileModule {
     public List<Binder> getUserFavorites(Long userId) throws AccessControlException;
 
     public List<TeamInfo> getUserTeams(Long userId);
+    
+    public void setFirstLoginDate(Long userId);
 }

@@ -2228,5 +2228,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    		}
    	}
 
+    public void setFirstLoginDate(Long userId) {
+		User user = getUser(userId, true);
+		if(user.getFirstLoginDate() != null)
+			return; // This user already logged in before. Shouldn't update it (or shall we throw an exception?)
+		user.setFirstLoginDate(new Date()); // Set it to current date/time.
+    }
+    
 }
 
