@@ -45,8 +45,7 @@
     <component name="openIDConfig" class="org.kablink.teaming.domain.OpenIDConfig" access="field">
  		 <property name="selfProvisioningEnabled" column="openidSelfProvisioningEnabled" access="field"/>
  		 <property name="authenticationEnabled" column="openidAuthenticationEnabled" access="field"/>
- 		 <property name="synchronizeProfilesOnSelfProvision" column="openidSyncOnSelfProvision" access="field"/>
- 		 <property name="synchronizeProfilesOnLogin" column="openidSyncOnLogin" access="field"/>
+ 		 <property name="profileSynchronizationMode" column="openidProfileSyncMode" access="field"/>
     </component>
    </class>
 </hibernate-mapping>
