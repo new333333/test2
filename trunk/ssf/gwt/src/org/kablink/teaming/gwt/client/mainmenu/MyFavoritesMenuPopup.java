@@ -80,12 +80,15 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 		private FavoriteInfo m_favorite;	// The favorite selected.
 
 		/**
-		 * Class constructor.
+		 * Constructor method.
 		 * 
 		 * @param favorite
 		 */
 		FavoriteCommand(FavoriteInfo favorite) {
-			// Simply store the parameter.
+			// Initialize the super class...
+			super();
+			
+			// ...and store the parameter.
 			m_favorite = favorite;
 		}
 
@@ -136,18 +139,32 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 		private String m_id;						// ADD:  ID of binder to add.  REMOVE:  ID of favorite to remove.  EDIT:  Not used.
 		
 		/**
-		 * Class constructors.
+		 * Constructor method.
 		 * 
 		 * @param operation
 		 * @param id
 		 */
 		ManageCommand(FavoriteOperation operation, String id) {
+			// Initial the super class...
+			super();
+			
+			// ...and store the parameters.
 			m_operation = operation;
 			m_id = id;
 		}
-		
+
+		/**
+		 * Constructor method.
+		 * 
+		 * @param operation
+		 * @param fList
+		 */
 		ManageCommand(FavoriteOperation operation, List<FavoriteInfo> fList) {
-			m_operation = operation;
+			// Initialize the super class...
+			super();
+			
+			// ...and store the parameters.
+			m_operation     = operation;
 			m_favoritesList = fList;
 		}
 		
@@ -213,11 +230,13 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 	}
 	
 	/**
-	 * Class constructor.
+	 * Constructor method.
+	 * 
+	 * @param binderProvider
 	 */
 	public MyFavoritesMenuPopup(ContextBinderProvider binderProvider) {
-		// Initialize the superclass.
-		super(binderProvider, GwtTeaming.getMessages().mainMenuBarMyFavorites());
+		// Initialize the super class.
+		super(binderProvider);
 	}
 
 	/**

@@ -52,44 +52,43 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 
-
 /**
  * Class used for the Manage menu item popup.  
  * 
  * @author drfoster@novell.com
  */
 public class ManageMenuPopup extends MenuBarPopupBase {
-	private final String IDBASE = "manage_";	// Base ID for the items created in this menu.
+	private BinderInfo			m_currentBinder;		// The currently selected binder.
+	private List<ToolbarItem>	m_actionsBucket;		// List of action         items for the context based menu.
+	private List<ToolbarItem>	m_configBucket;			// List of configuration  items for the context based menu.
+	private List<ToolbarItem>	m_ignoreBucket;			// List of ignored        items for the context based menu.
+	private List<ToolbarItem>	m_miscBucket;			// List of miscellaneous  items for the context based menu.
+	private List<ToolbarItem>	m_teamAndEmailBucket;	// List of team and email items for the context based menu.
+	private List<ToolbarItem>	m_toolbarItemList;		// The context based toolbar requirements.
+	private TagThisDlg			m_tagThisDlg;			//
+	private TeamManagementInfo	m_tmi;					// The team management information for which team management menu items should appear on the menu.
+	private ToolbarItem			m_brandingTBI;			// The branding                  toolbar item, if found.
+	private ToolbarItem			m_calendarImportTBI;	// The calendar import           toolbar item, if found.
+	private ToolbarItem			m_commonActionsTBI;		// The common actions            toolbar item, if found.
+	private ToolbarItem			m_emailContributorsTBI;	// The email contributors        toolbar item, if found.
+	private ToolbarItem			m_emailNotificationTBI;	// The email notification        toolbar item, if found.
+	private ToolbarItem			m_folderViewsTBI;		// The folder views              toolbar item, if found.
+	private ToolbarItem			m_shareThisTBI;			// The share this                toolbar item, if found.
+	private ToolbarItem			m_trackBinderTBI;		// The binder tracking           toolbar item, if found.
+	private ToolbarItem			m_trackPersonTBI;		// The person tracking           toolbar item, if found.
 	
-	private BinderInfo m_currentBinder;				// The currently selected binder.
-	private List<ToolbarItem> m_actionsBucket;		// List of action         items for the context based menu.
-	private List<ToolbarItem> m_configBucket;		// List of configuration  items for the context based menu.
-	private List<ToolbarItem> m_ignoreBucket;		// List of ignored        items for the context based menu.
-	private List<ToolbarItem> m_miscBucket;			// List of miscellaneous  items for the context based menu.
-	private List<ToolbarItem> m_teamAndEmailBucket;	// List of team and email items for the context based menu.
-	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
-	private TeamManagementInfo m_tmi;				// The team management information for which team management menu items should appear on the menu.
-	private ToolbarItem m_brandingTBI;				// The branding                  toolbar item, if found.
-	private ToolbarItem m_calendarImportTBI;		// The calendar import           toolbar item, if found.
-	private ToolbarItem m_commonActionsTBI;			// The common actions            toolbar item, if found.
-	private ToolbarItem m_emailContributorsTBI;		// The email contributors        toolbar item, if found.
-	private ToolbarItem m_emailNotificationTBI;		// The email notification        toolbar item, if found.
-	private ToolbarItem m_folderViewsTBI;			// The folder views              toolbar item, if found.
-	private ToolbarItem m_shareThisTBI;				// The share this                toolbar item, if found.
-	private ToolbarItem m_trackBinderTBI;			// The binder tracking           toolbar item, if found.
-	private ToolbarItem m_trackPersonTBI;			// The person tracking           toolbar item, if found.
-	private TagThisDlg m_tagThisDlg = null;
+	private final String IDBASE = "manage_";	// Base ID for the items created in this menu.
 
 	/*
-	 * Class constructor.
+	 * Constructor method.
 	 * 
 	 * Note that the class constructor is private to facilitate code
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ManageMenuPopup(ContextBinderProvider binderProvider, String manageName) {
+	private ManageMenuPopup(ContextBinderProvider binderProvider) {
 		// Simply initialize the super class.
-		super(binderProvider, manageName);
+		super(binderProvider);
 	}
 
 	/*
@@ -100,9 +99,6 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	 * Returns true if the action was found and added to the bucket
 	 * and false otherwise.
 	 */
-	private boolean addNestedItemFromUrl(List<ToolbarItem> bucket, ToolbarItem tbi, String action) {
-		return addNestedItemFromUrl(bucket, tbi, action, null);
-	}
 	private boolean addNestedItemFromUrl(List<ToolbarItem> bucket, ToolbarItem tbi, String action, String operation) {
 		// If we don't have a toolbar to search or it has no nested
 		// items...
@@ -145,6 +141,11 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		// false.
 		return false;
 	}
+	
+	private boolean addNestedItemFromUrl(List<ToolbarItem> bucket, ToolbarItem tbi, String action) {
+		// Always use the initial form of the method.
+		return addNestedItemFromUrl(bucket, tbi, action, null);
+	}
 
 	/*
 	 * Copies the nested ToolbarItem's from one ToolbarItem to another.
@@ -170,8 +171,6 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	 * items that appear in the various sections of the menu.
 	 */
 	private void fillBuckets() {
-		ToolbarItem localTBI;
-
 		// Allocate the bucket lists.
 		m_actionsBucket      = new ArrayList<ToolbarItem>();
 		m_configBucket       = new ArrayList<ToolbarItem>();
@@ -196,6 +195,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		// ...then the team section...
 		if ((null != m_tmi) && m_tmi.isTeamManagementEnabled()) {
 			// Add the team management items.
+			ToolbarItem localTBI;
 			if (m_tmi.isViewAllowed()) {
 				localTBI = new ToolbarItem();
 				localTBI.setName("viewTeam");
@@ -268,6 +268,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	}
 	
 	private boolean hasNestedItems(ToolbarItem tbi) {
+		// Always use the initial form of the method.
 		return hasNestedItems(tbi, 1);
 	}
 	
@@ -281,7 +282,6 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	 */
 	@Override
 	public void setCurrentBinder(BinderInfo binderInfo) {
-		// Simply store the parameter.
 		m_currentBinder = binderInfo;
 	}
 
@@ -603,15 +603,14 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	 * instance of it via the callback.
 	 *
 	 * @param binderProvider
-	 * @param name
 	 * @param mmpClient
 	 */
-	public static void createAsync(final ContextBinderProvider binderProvider, final String name, final ManageMenuPopupClient mmpClient) {
+	public static void createAsync(final ContextBinderProvider binderProvider, final ManageMenuPopupClient mmpClient) {
 		GWT.runAsync(ManageMenuPopup.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess() {
-				ManageMenuPopup mmp = new ManageMenuPopup(binderProvider, name);
+				ManageMenuPopup mmp = new ManageMenuPopup(binderProvider);
 				mmpClient.onSuccess(mmp);
 			}
 			

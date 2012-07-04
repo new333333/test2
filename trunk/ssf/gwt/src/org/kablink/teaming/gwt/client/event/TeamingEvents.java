@@ -135,6 +135,8 @@ public enum TeamingEvents implements IsSerializable {
 	MASTHEAD_HIDE,						// Hides the masthead.
 	MASTHEAD_SHOW,						// Shows the masthead.
 	
+	GET_MANAGE_MENU_POPUP,				// Returns the manage menu (Workspace or Folder) currently loaded in the main menu bar.
+	HIDE_MANAGE_MENU,					// Hides the manage menu loaded in the main menu bar.
 	MENU_HIDE,							// Hides the main menu
 	MENU_SHOW,							// Shows the main menu
 	

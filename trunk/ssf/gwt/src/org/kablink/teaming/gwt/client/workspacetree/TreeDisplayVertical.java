@@ -103,6 +103,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	private BinderInfo				m_selectedBinderInfo;		// The currently selected binder.
 	private BusyInfo				m_busyInfo;					// Stores a BusyInfo while we're busy switching contexts.
 	private FlowPanel				m_rootPanel;				// The top level FlowPanel containing the tree's contents.
+	private FlowPanel				m_binderConfigPanel;		// The FlowPanel containing access to the binder configuration menu.
 	private HashMap<String,Integer> m_renderDepths;				// A map of the depths the Binder's are are displayed at.
 
 	// The following are used for widget IDs assigned to various
@@ -703,6 +704,23 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			rerootTree(m_selectedBinderInfo, m_selectedBinderInfo, exitMode);
 		}
 	}
+
+	/*
+	 * Returns the selector grid Element for a given TreeInfo if that
+	 * TreeInfo is configurable AND the selector grid can be found.
+	 * 
+	 * Otherwise, returns null;
+	 */
+	private static Element findConfigurableSelectorGrid(TreeInfo ti, String selectorGridId) {
+		boolean cantConfigure = ti.isActivityStream() || ti.isBinderCollection() || ti.isBucket() || ti.isBinderTrash();
+		if (!cantConfigure) {
+			Element selectorGrid = Document.get().getElementById(selectorGridId);
+			if (null != selectorGrid) {
+				return selectorGrid;
+			}
+		}
+		return null;
+	}
 	
 	/**
 	 * Called after a new context has been loaded.
@@ -1295,7 +1313,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			String selectedId_New = getSelectorId(ti);
 			Element selectorLabel_New = Document.get().getElementById(selectedId_New);
 			selectorLabel_New.addClassName(buildElementStyle(ti, "workspaceTreeBinderSelected"));
-			Element selectorPanel_New = Document.get().getElementById(EXTENSION_ID_SELECTOR_ANCHOR + selectedId_New);
+			String selectedPanelId_New = (EXTENSION_ID_SELECTOR_ANCHOR + selectedId_New);
+			Element selectorPanel_New = Document.get().getElementById(selectedPanelId_New);
 			if (null != selectorPanel_New) {
 				selectorPanel_New.addClassName(buildElementStyle(ti, "workspaceTreeControlRowSelected"));
 			}
@@ -1309,8 +1328,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					selectorLabel_Old.removeClassName("workspaceTreeBinderSelected"           );
 					selectorLabel_Old.removeClassName("workspaceTreeBinderSelected_collection");
 				}
-				
-				Element selectorPanel_Old = Document.get().getElementById(EXTENSION_ID_SELECTOR_ANCHOR + selectedId_Old);
+
+				String selectedPanelId_Old = (EXTENSION_ID_SELECTOR_ANCHOR + selectedId_Old);
+				Element selectorPanel_Old = Document.get().getElementById(selectedPanelId_Old);
 				if (null != selectorPanel_Old) {
 					selectorPanel_Old.removeClassName("workspaceTreeControlRowSelected"           );
 					selectorPanel_Old.removeClassName("workspaceTreeControlRowSelected_collection");
@@ -1319,6 +1339,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			
 			// ...and store the new ID as having been selected.
 			selectorId.setAttribute("value", selectedId_New);
+			showBinderConfig(ti, selectedId_New);
 		}
 	}
 
@@ -1687,5 +1708,28 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				m_busyInfo.setBusyTI(ti);
 			}
 		}
+	}
+
+	/*
+	 * Hides/shows the binder configuration widgets for binder
+	 * selection.
+	 */
+	private void showBinderConfig(TreeInfo selectedTI, String selectedId) {
+		// Clear any previous binder configuration panel we may be
+		// tracking.
+		if (null != m_binderConfigPanel) {
+			m_binderConfigPanel.removeFromParent();
+			m_binderConfigPanel.clear();
+			m_binderConfigPanel = null;
+		}
+
+		// Can we find the selector grid for a configurable binder?
+		Element selectorGrid = findConfigurableSelectorGrid(selectedTI, (EXTENSION_ID_SELECTOR_ANCHOR + selectedId));
+		if (null == selectorGrid) {
+			// No!  Then we don't show a binder configuration widget.
+			return;
+		}
+		
+//!		GwtClientHelper.deferredAlert("showBinderConfig( SHOW ):  " + selectedId);
 	}
 }
