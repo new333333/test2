@@ -627,9 +627,10 @@ public interface GwtTeamingMessages extends Messages
 	String loginDlgLoginFailed();
 	String loginDlgNovellHeader();
 	String loginDlgOpenIDIdentity();
-	String loginDlgUseOpenId();
 	String loginDlgPassword();
 	String loginDlgReset();
+	String loginDlgSelectAuthProviderLabel();
+	String loginDlgUseOpenId();
 	String loginDlgUserId();
 	
 	// Strings used in the personal preferences dialog.

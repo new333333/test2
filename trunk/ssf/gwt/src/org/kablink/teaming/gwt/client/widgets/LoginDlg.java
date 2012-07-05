@@ -570,8 +570,13 @@ public class LoginDlg extends DlgBox
 				if ( listOfProviders != null && listOfProviders.size() > 0 )
 				{
 					FlexTable table;
+					Label pleaseSelectLabel;
 					int row;
 					int i;
+					
+					pleaseSelectLabel = new Label( GwtTeaming.getMessages().loginDlgSelectAuthProviderLabel() );
+					pleaseSelectLabel.addStyleName( "loginDlg_pleaseSelectProviderLabel" );
+					m_openIdProvidersPanel.add( pleaseSelectLabel );
 					
 					table = new FlexTable();
 					m_openIdProvidersPanel.add( table );
