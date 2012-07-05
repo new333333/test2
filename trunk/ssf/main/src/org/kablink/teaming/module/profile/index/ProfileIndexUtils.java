@@ -36,12 +36,17 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
+import org.kablink.teaming.domain.EmailAddress;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.FieldFactory;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static org.kablink.util.search.Constants.*;
 /**
@@ -70,6 +75,19 @@ public class ProfileIndexUtils {
         Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(APPLICATION_GROUPNAME_FIELD, appGroup.getName());
         doc.add(docNumField);
     }      
+
+    public static void addEmails(Document doc, User user) {
+     	//Add the id of the creator (no, not that one...)
+        Set<String> emails = new HashSet<String>();
+        Map<String,EmailAddress> emailAddresses = user.getEmailAddresses();
+        for (EmailAddress addr : emailAddresses.values()) {
+            emails.add(addr.getAddress());
+        }
+        for (String email : emails) {
+            Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(EMAIL_FIELD, email);
+            doc.add(docNumField);
+        }
+    }
 
     public static void addWorkspaceId(Document doc, User user) {
     	if (user.getWorkspaceId() != null) {

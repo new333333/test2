@@ -84,8 +84,9 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
      */
     @DELETE
     @Path("{id}")
-    public void deleteBinder(@PathParam("id") long id) {
-        _deleteBinder(id);
+    public void deleteBinder(@PathParam("id") long id,
+                             @QueryParam("purge") @DefaultValue("false") boolean purge) {
+        _deleteBinder(id, purge);
     }
 
     /**
@@ -267,9 +268,13 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return ResourceUtil.buildBinder(binder, true);
     }
 
-    protected void _deleteBinder(long id) {
+    protected void _deleteBinder(long id, boolean purge) {
         _getBinder(id);
-        getBinderModule().preDeleteBinder(id, getLoggedInUserId());
+        if (purge) {
+            getBinderModule().deleteBinder(id);
+        } else {
+            getBinderModule().preDeleteBinder(id, getLoggedInUserId());
+        }
     }
 
     protected SearchResultList<FileProperties> getSubFiles(long id, boolean recursive, Integer offset, Integer maxCount, String nextUrl) {
