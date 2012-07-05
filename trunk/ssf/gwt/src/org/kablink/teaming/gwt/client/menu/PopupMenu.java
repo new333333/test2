@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.menu;
 
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
@@ -42,6 +44,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.MenuItemSeparator;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
@@ -105,7 +108,7 @@ public class PopupMenu extends TeamingPopupPanel
 	/**
 	 * 
 	 */
-	public void addMenuItem( VibeMenuItem menuItem )
+	public void addMenuItem( MenuItem menuItem )
 	{
 		final Command cmd = menuItem.getCommand();
 		menuItem.setCommand( new Command ()
@@ -121,6 +124,20 @@ public class PopupMenu extends TeamingPopupPanel
 		} );
 		m_menu.addItem( menuItem );
 	}
+
+	/**
+	 * 
+	 */
+	public void addMenuItems( List<MenuItem> miList )
+	{
+		if ( ( null != miList ) && ( ! ( miList.isEmpty() ) ) )
+		{
+			for ( MenuItem mi:  miList)
+			{
+				addMenuItem( mi );
+			}
+		}
+	}
 	
 	/**
 	 * 
@@ -133,7 +150,7 @@ public class PopupMenu extends TeamingPopupPanel
 	/**
 	 * Remove the given menu item from the menu.
 	 */
-	public void removeMenuItem( VibeMenuItem menuItem )
+	public void removeMenuItem( MenuItem menuItem )
 	{
 		m_menu.removeItem( menuItem );
 	}
@@ -147,6 +164,26 @@ public class PopupMenu extends TeamingPopupPanel
 	{
 		m_menu = menu;
 		setWidget( m_menu );
+		
+		List<MenuItem> miList = ( ( null == m_menu ) ? null : m_menu.getItems() );
+		if ( ( null != miList ) && ( ! ( miList.isEmpty() ) ) )
+		{
+			for ( MenuItem mi:  miList )
+			{
+				final Command cmd = mi.getCommand();
+				mi.setCommand( new Command ()
+				{
+					@Override
+					public void execute()
+					{
+						// Close this menu.
+						hide();
+						
+						Scheduler.get().scheduleDeferred( cmd );
+					}// end execute()
+				} );
+			}
+		}
 	}
 	
 	/*
