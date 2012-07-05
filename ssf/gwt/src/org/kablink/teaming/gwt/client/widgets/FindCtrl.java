@@ -393,20 +393,28 @@ public class FindCtrl extends Composite
 		@Override
 		public void onClick( ClickEvent clickEvent )
 		{
-			GwtTeamingItem selectedItem;
-			
 			// Get the item selected by the user.
 			if ( clickEvent.getSource() instanceof SearchResultItemWidget )
 			{
+				Scheduler.ScheduledCommand cmd;
 				SearchResultItemWidget tmp;
+				final GwtTeamingItem selectedItem;
 				
 				tmp = (SearchResultItemWidget) clickEvent.getSource();
 				selectedItem = tmp.getTeamingItem();
 				
-				// Update the text box with name of the selected item.
-				updateTextBoxWithSelectedItem( selectedItem );
-				
-				GwtTeaming.fireEvent( new SearchFindResultsEvent( m_containerWidget, selectedItem ) );
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute() 
+					{
+						// Update the text box with name of the selected item.
+						updateTextBoxWithSelectedItem( selectedItem );
+						
+						GwtTeaming.fireEvent( new SearchFindResultsEvent( m_containerWidget, selectedItem ) );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}
 		}// end onClick()
 		
@@ -1137,5 +1145,8 @@ public class FindCtrl extends Composite
 		
 		// Put the name of the selected item in the text box.
 		m_txtBox.setText( name );
+		
+		// Put the focus in the text box.
+		m_txtBox.setFocus( true );
 	}
 }// end FindCtrl
