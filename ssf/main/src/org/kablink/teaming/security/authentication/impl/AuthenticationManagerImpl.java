@@ -471,7 +471,11 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			throw new UserAccountNotActiveException("User account disabled or deleted [" 
 						+ zoneName + "," + username + "]", e);
     	}
-    	
+
+		if(user.isExternalUser())
+			throw new UserDoesNotExistException("Unauthorized user [" 
+				+ zoneName + "," + username + "]");
+
     	if(password != null) {
     		if(!EncryptUtil.checkPassword(password, user)) {
 	   			// Password does not match.
@@ -537,6 +541,9 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			throw new UserAccountNotActiveException("User account disabled or deleted [" 
 						+ zoneName + "," + username + "]", e);
     	}
+		if(!user.isExternalUser())
+			throw new UserDoesNotExistException("Unauthorized user [" 
+						+ zoneName + "," + username + "]");
 		return user;
 	}
 
