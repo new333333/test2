@@ -105,6 +105,15 @@ public class RelevanceDashboardHelper {
 					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW;
 				}
 			}
+			//Make sure the selected tab is legal in filr
+			if (Utils.checkIfFilr()) {
+				if (relevanceTab.equals(ObjectKeys.RELEVANCE_DASHBOARD_TASKS_AND_CALENDARS) ||
+						relevanceTab.equals(ObjectKeys.RELEVANCE_DASHBOARD_MINIBLOGS) ||
+						relevanceTab.equals(ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW)) {
+					//This tab is not shown, revert back to the filespaces tab
+					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_FILESPACES;
+				}
+			}
 			if (!type.equals("") && !type.equals(relevanceTab)) {
 				//Remember the last tab
 				bs.getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_RELEVANCE_TAB, type);
