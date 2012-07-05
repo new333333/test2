@@ -89,9 +89,8 @@ public class HideManageMenuEvent extends VibeEventBase<HideManageMenuEvent.Handl
 	/**
 	 * Fires a new one of these events.
 	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new HideManageMenuEvent());
-	}
+	public static void fireOne()      {GwtTeaming.fireEvent(     new HideManageMenuEvent());}
+	public static void fireOneAsync() {GwtTeaming.fireEventAsync(new HideManageMenuEvent());}
 
 	/**
 	 * Returns the TeamingEvents enumeration value corresponding to
