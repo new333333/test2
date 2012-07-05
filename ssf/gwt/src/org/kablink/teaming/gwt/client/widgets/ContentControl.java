@@ -438,6 +438,7 @@ public class ContentControl extends Composite
 		String url = getContentHistoryUrl( 0 );
 
 		// Reload the URL.
+		ContextChangingEvent.fireOne();						
 		setUrl(         "",  Instigator.FORCE_FULL_RELOAD );
 		setViewFromUrl( url, Instigator.FORCE_FULL_RELOAD );
 	}// end reload()
@@ -976,7 +977,8 @@ public class ContentControl extends Composite
 	@Override
 	public void onGotoUrl( GotoUrlEvent event )
 	{
-		setViewNow( null, event.getUrl(), Instigator.GOTO_CONTENT_URL );
+		ContextChangingEvent.fireOne();						
+		setViewAsync( null, event.getUrl(), Instigator.GOTO_CONTENT_URL );
 	}
 
 	

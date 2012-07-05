@@ -564,7 +564,7 @@ public class GwtMainPage extends ResizeComposite
 					{
 						// Yes
 						// Take the user to their workspace.
-						GotoMyWorkspaceEvent.fireOne();
+						GotoMyWorkspaceEvent.fireOneAsync();
 					}
 					
 					// Tell the user.  We do this as a deferred command
@@ -1656,53 +1656,35 @@ public class GwtMainPage extends ResizeComposite
 	 * This method will be called asynchronously goto a URL,
 	 * permalink or otherwise, received as a parameter.
 	 */
-	private void gotoUrlAsync( final String url, final boolean submitToContentFrame )
+	private void gotoUrlAsync( final String url )
 	{
 		ScheduledCommand gotoUrl = new ScheduledCommand() {
 			@Override
 			public void execute()
 			{
-				gotoUrlNow( url, submitToContentFrame );
+				gotoUrlNow( url );
 			}// end execute()
 		};
 		Scheduler.get().scheduleDeferred( gotoUrl );
 	}// end gotoUrlAsync()
 	
-	private void gotoUrlAsync( final String url )
-	{
-		// Default to submitting the URL to the content frame.
-		gotoUrlAsync( url, true );
-	}//end gotoUrlAsync()
-	
 	/*
 	 * This method will be called synchronously goto a URL,
 	 * permalink or otherwise, received as a parameter.
 	 */
-	private void gotoUrlNow( final String url, final boolean submitToContentFrame )
+	private void gotoUrlNow( final String url )
 	{
-		if ( submitToContentFrame )
+		// Change the browser's URL.
+		OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+			url,
+			Instigator.GOTO_CONTENT_URL );
+		
+		if ( GwtClientHelper.validateOSBI( osbInfo ) )
 		{
-			// Change the browser's URL.
-			OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
-				url,
-				Instigator.GOTO_CONTENT_URL );
-			if ( GwtClientHelper.validateOSBI( osbInfo ) )
-			{
-				GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
-			}
-		}
-		else
-		{
-			Window.Location.replace( url );
+			GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
 		}
 	}//end gotoUrlNow()
 	
-	private void gotoUrlNow( final String url )
-	{
-		// Default to submitting the URL to the content frame.
-		gotoUrlNow( url, true );
-	}// end gotoUrlNow()
-
 	/**
 	 * Save the current ui state.
 	 */
@@ -2448,8 +2430,8 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onSearchAdvanced( SearchAdvancedEvent event )
 	{
-		String searchUrl = (m_requestInfo.getAdvancedSearchUrl() + "&binderId=" + m_selectedBinderInfo.getBinderId());
-		gotoUrlAsync(searchUrl);
+		String searchUrl = ( m_requestInfo.getAdvancedSearchUrl() + "&binderId=" + m_selectedBinderInfo.getBinderId() );
+		gotoUrlAsync( searchUrl );
 	}// end onSearchAdvanced()
 	
 	/**
@@ -2463,8 +2445,8 @@ public class GwtMainPage extends ResizeComposite
 	public void onSearchRecentPlace( SearchRecentPlaceEvent event )
 	{
 		Integer searchFor = event.getSearchTabId();
-		String searchUrl = (m_requestInfo.getRecentPlaceSearchUrl() + "&tabId=" + String.valueOf(searchFor.intValue()));
-		gotoUrlAsync(searchUrl);
+		String  searchUrl = ( m_requestInfo.getRecentPlaceSearchUrl() + "&tabId=" + String.valueOf( searchFor.intValue() ) );
+		gotoUrlAsync( searchUrl );
 	}// end onSearchRecentPlace()
 	
 	/**
@@ -2494,7 +2476,7 @@ public class GwtMainPage extends ResizeComposite
 	public void onSearchSimple( SearchSimpleEvent event )
 	{		
 		String searchFor = event.getSimpleSearchString();
-		String searchUrl = (m_requestInfo.getSimpleSearchUrl() + "&searchText=" + GwtClientHelper.jsEncodeURIComponent( searchFor ));
+		String searchUrl = ( m_requestInfo.getSimpleSearchUrl() + "&searchText=" + GwtClientHelper.jsEncodeURIComponent( searchFor ) );
 		gotoUrlAsync( searchUrl );
 	}// end onSearchSimple()
 	
@@ -2509,7 +2491,7 @@ public class GwtMainPage extends ResizeComposite
 	public void onSearchTag( SearchTagEvent event )
 	{
 		String tagName = event.getTagName();
-		tagName = ( ( null == tagName ) ? "" : GwtClientHelper.jsEncodeURIComponent( tagName ));
+		tagName = ( ( null == tagName ) ? "" : GwtClientHelper.jsEncodeURIComponent( tagName ) );
 		String searchUrl = GwtClientHelper.jsBuildTagSearchUrl( tagName );
 		gotoUrlAsync( searchUrl );
 	}// end onSearchTag()

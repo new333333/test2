@@ -146,6 +146,7 @@ public class MainMenuControl extends Composite
 		ViewWhatsUnseenInBinderEvent.Handler
 {
 	private BinderInfo						m_contextBinder;
+	private boolean							m_manageBoxHidden;
 	private ClipboardDlg					m_clipboardDlg;
 	private ContextMenuSynchronizer			m_contextMenuSync;
 	private ContextLoadInfo					m_lastContextLoaded;
@@ -494,6 +495,9 @@ public class MainMenuControl extends Composite
 							// ...and tie it all together.
 							mmp.setMenuBox(m_manageBox);
 							m_mainMenu.addItem(m_manageBox);
+							if (m_manageBoxHidden) {
+								m_manageBox.setVisible(false);
+							}
 						}
 					}
 					
@@ -541,7 +545,7 @@ public class MainMenuControl extends Composite
 			new Command() {
 				@Override
 				public void execute() {
-					GotoMyWorkspaceEvent.fireOne();
+					GotoMyWorkspaceEvent.fireOneAsync();
 				}
 			});
 		menuPanel.addItem(m_myWorkspaceBox);
@@ -633,7 +637,7 @@ public class MainMenuControl extends Composite
 			}
 			
 			@Override
-			public void onSuccess(final ManageMenuPopup mmp) {
+			public void onSuccess(ManageMenuPopup mmp) {
 				mmp.setCurrentBinder(m_contextBinder);
 				mmp.setToolbarItemList(m_contextTBIList);
 				mmp.setTeamManagementInfo(m_contextTMI);
@@ -650,8 +654,9 @@ public class MainMenuControl extends Composite
 	 * so that invalid menu items (i.e., those based on a previous
 	 * context) are not available until the new context fully loads.
 	 */
-	private void clearContextMenus() {
+	private void clearContextMenus(boolean manageBoxHidden) {
 		// If we have a manage box...
+		m_manageBoxHidden = manageBoxHidden;
 		if (null != m_manageBox) {
 			// ...remove it...
 			m_mainMenu.removeItem(m_manageBox);
@@ -798,7 +803,7 @@ public class MainMenuControl extends Composite
 	 */
 	@Override
 	public void onContextChanging(final ContextChangingEvent event) {
-		clearContextMenus();
+		clearContextMenus(false);
 	}
 	
 	/**
@@ -824,6 +829,7 @@ public class MainMenuControl extends Composite
 	@Override
 	public void onHideManageMenu(final HideManageMenuEvent event) {
 		// If we have a manage menu, hide it.
+		m_manageBoxHidden = true;
 		GwtClientHelper.setVisibile(m_manageBox, false);
 	}
 	
@@ -1400,7 +1406,7 @@ public class MainMenuControl extends Composite
 			m_contextMenuSync.activateContextConstruction(isASActive, m_contextBinder.getCollectionType());
 			
 			// Clear any context menus currently displayed...
-			clearContextMenus();
+			clearContextMenus(m_manageBoxHidden);
 			
 			// ...and handle the variations based on the mode.
 			addRecentPlacesToContext(

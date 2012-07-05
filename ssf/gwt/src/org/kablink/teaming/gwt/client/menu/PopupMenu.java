@@ -30,9 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.menu;
-
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
@@ -49,12 +47,11 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.gwt.user.client.ui.UIObject;
 
-
 /**
  * This is the menu that holds the actions that can be taken with an item in the
  * Activity Stream control.  ie, Reply, Share, Tag,...
+ * 
  * @author jwootton
- *
  */
 public class PopupMenu extends TeamingPopupPanel
 {
@@ -75,9 +72,7 @@ public class PopupMenu extends TeamingPopupPanel
 		// box to be displayed because initially this control's width and height are 0.
 		addStyleName( "vibe-popupMenu" );
 		
-		m_menu = new VibeMenuBar( true, "vibe-mainMenuPopup" );
-		
-		setWidget( m_menu );
+		setMenu( new VibeMenuBar( true, "vibe-mainMenuPopup" ) );
 	}
 	
 
@@ -143,6 +138,17 @@ public class PopupMenu extends TeamingPopupPanel
 		m_menu.removeItem( menuItem );
 	}
 
+	/**
+	 * Sets/Replaces the VibeMenuBar in the Popup menu.
+	 * 
+	 * @param menu
+	 */
+	public void setMenu( VibeMenuBar menu )
+	{
+		m_menu = menu;
+		setWidget( m_menu );
+	}
+	
 	/*
 	 * Asynchronously gives the menu the focus.
 	 */
