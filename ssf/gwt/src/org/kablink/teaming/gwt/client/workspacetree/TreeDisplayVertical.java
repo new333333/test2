@@ -111,7 +111,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	private FlowPanel					m_rootPanel;				// The top level FlowPanel containing the tree's contents.
 	private FlowPanel					m_selectorConfig;			//
 	private HashMap<String, Integer>	m_renderDepths;				// A map of the depths the Binder's are are displayed at.
-	private ManageMenuPopup				m_manageMenuPopup;			//
+	private ManageMenuPopup				m_selectorConfigPopup;		//
 
 	// The following are used for widget IDs assigned to various
 	// objects in a running WorkspaceTreeControl.
@@ -139,8 +139,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 
 	// The following provide the adjustments used to position the
 	// binder configuration button properly over a selected binder.
-	private final static int CONFIG_LEFT_ADJUST	= (-50);
-	private final static int CONFIG_TOP_ADJUST	=    6;
+	private final static int CONFIG_LEFT_ADJUST			= (-50);
+	private final static int CONFIG_TOP_ADJUST_DIV		=    0;
+	private final static int CONFIG_TOP_ADJUST_TABLE	=    6;
 	
 	/*
 	 * Inner class that implements clicking on the various tree
@@ -193,7 +194,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				m_ti.clearChildBindersList();
 			}
 			m_ti.setBinderExpanded(false);
-			reRenderRow(m_grid, m_gridRow, m_ti, true);
+			rerenderRow(m_grid, m_gridRow, m_ti, true);
 			m_expanderImg.setResource(getImages().tree_opener());
 			
 			// ...and tell everybody that it's been collapsed.
@@ -224,7 +225,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			m_ti.setBinderExpanded(true);
 			m_ti.setChildBindersList(expandedTI.getChildBindersList());
 			if (0 < m_ti.getBinderChildren()) {
-				reRenderRow(m_grid, m_gridRow, m_ti, false);
+				rerenderRow(m_grid, m_gridRow, m_ti, false);
 			}
 			m_expanderImg.setResource(getImages().tree_closer());
 			
@@ -529,6 +530,49 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	}
 
 	/*
+	 * Asynchronously builds and runs the selector configuration menu.
+	 */
+	private void buildAndRunSelectorConfigMenuAsync(final Anchor selectorConfigA) {
+		ScheduledCommand doBuildAndRunMenu = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				buildAndRunSelectorConfigMenuNow(selectorConfigA);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doBuildAndRunMenu);
+	}
+	
+	/*
+	 * Synchronously builds and runs the selector configuration menu.
+	 */
+	private void buildAndRunSelectorConfigMenuNow(final Anchor selectorConfigA) {
+		GwtTeaming.fireEvent(
+			new GetManageMenuPopupEvent(new ManageMenuPopupCallback() {
+				@Override
+				public void manageMenuPopup(ManageMenuPopup mmp) {
+					// Is there anything in the selector configuration
+					// menu?
+					m_selectorConfigPopup = mmp;
+					if ((null == m_selectorConfigPopup) || (!(m_selectorConfigPopup.shouldShowMenu()))) {
+						// No!  Clear the selector widget, tell the
+						// user about the problem and bail.
+						clearSelectorConfig();
+						GwtClientHelper.deferredAlert(getMessages().treeErrorNoManageMenu());
+					}
+					
+					else {
+						// Yes, there's stuff in the selector
+						// configuration menu!  Complete populating it
+						// and run it.
+						m_selectorConfigPopup.setCurrentBinder(m_selectedBinderInfo);
+						m_selectorConfigPopup.populateMenu();
+						runSelectorConfigMenuAsync(selectorConfigA);
+					}
+				}
+			}));
+	}
+	
+	/*
 	 * Creates an Anchor containing the close push button for the
 	 * sidebar's header when in activity streams mode.
 	 */
@@ -627,14 +671,16 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	private void clearSelectorConfig() {
 		// Clear the previous binder configuration panel...
-		m_selectorConfig.removeFromParent();
-		m_selectorConfig.clear();
-		m_selectorConfig = null;
+		if (null != m_selectorConfig) {
+			m_selectorConfig.removeFromParent();
+			m_selectorConfig.clear();
+			m_selectorConfig = null;
+		}
 		
-		if (null != m_manageMenuPopup) {
-			// ...and menu.
-			m_manageMenuPopup.clearItems();
-			m_manageMenuPopup = null;
+		// ...and menu.
+		if (null != m_selectorConfigPopup) {
+			m_selectorConfigPopup.clearItems();
+			m_selectorConfigPopup = null;
 		}
 	}
 	
@@ -742,13 +788,15 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	private static Element findConfigurableSelectorGrid(TreeInfo ti, String selectorGridId) {
 		boolean cantConfigure = ti.isActivityStream() || ti.isBinderCollection() || ti.isBucket() || ti.isBinderTrash();
-		if (!cantConfigure) {
-			Element selectorGrid = Document.get().getElementById(selectorGridId);
-			if (null != selectorGrid) {
-				return selectorGrid;
-			}
+		if (cantConfigure) {
+			return null;
 		}
-		return null;
+		
+		Element selectorGrid = Document.get().getElementById(selectorGridId);
+		if ((null == selectorGrid) && selectorGridId.startsWith(EXTENSION_ID_SELECTOR_ANCHOR)) {
+			selectorGrid = Document.get().getElementById(selectorGridId.substring(EXTENSION_ID_SELECTOR_ANCHOR.length()));
+		}
+		return selectorGrid;
 	}
 	
 	/**
@@ -1080,6 +1128,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	private void rerootTreeNow(BinderInfo newRootBinderInfo, BinderInfo selectedBinderInfo, ExitMode exitingActivityStreamMode, TreeInfo rootTI) {
 		// Update the display with the TreeInfo.
 		setRootTreeInfo(rootTI);
+		clearSelectorConfig();
 		m_rootPanel.clear();
 		render(newRootBinderInfo, m_rootPanel);
 		
@@ -1087,7 +1136,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// re-rooting...
 		if (null != selectedBinderInfo) {
 			// ...and we can find that binder...
-			TreeInfo selectedBinderTI = TreeInfo.findBinderTI(rootTI, String.valueOf(selectedBinderInfo));
+			TreeInfo selectedBinderTI = TreeInfo.findBinderTI(rootTI, selectedBinderInfo.getBinderId());
 			if (null != selectedBinderTI) {
 				// ...select it.
 				selectBinder(selectedBinderTI);
@@ -1249,7 +1298,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	/*
 	 * Called to render an individual row in the WorkspaceTree control.
 	 */
-	private void renderRow(FlexTable grid, int row, TreeInfo ti, int renderDepth, boolean reRenderToCollapse) {
+	private void renderRow(FlexTable grid, int row, TreeInfo ti, int renderDepth, boolean rerenderToCollapse) {
 		// Store the depth at which we're rendering this Binder.
 		setRenderDepth(ti, renderDepth);
 		
@@ -1297,7 +1346,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		if (ti.getBinderIconWidth(BinderIconSize.getSidebarTreeIconSize()) > width) {
 			width = SELECTOR_GRID_WIDTH;
 		}
-		selectorGrid.setWidth(String.valueOf(width) + "px");
+		selectorGrid.setWidth(width + "px");
 		Anchor selectorA = new Anchor();
 		selectorA.getElement().appendChild(selectorGrid.getElement());
 		selectorA.addClickHandler(new BinderSelector(ti));
@@ -1343,7 +1392,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				HasVerticalAlignment.ALIGN_TOP);
 
 			// Is the row expanded?
-			if ((!reRenderToCollapse) && shouldBinderBeExpanded(ti)) {
+			if ((!rerenderToCollapse) && shouldBinderBeExpanded(ti)) {
 				// Yes!  Then we need to render its contents.
 				VerticalPanel vp = new VerticalPanel();
 				vp.setSpacing(0);
@@ -1375,9 +1424,32 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	/*
 	 * Clears and re-renders a TreeInfo object into a FlexTable row.
 	 */
-	private void reRenderRow(FlexTable grid, int row, TreeInfo ti, boolean reRenderToCollapse) {
+	private void rerenderRow(FlexTable grid, int row, TreeInfo ti, boolean rerenderToCollapse) {
 		clearRow(grid, row);
-		renderRow(grid, row, ti, getRenderDepth(ti), reRenderToCollapse);
+		renderRow(grid, row, ti, getRenderDepth(ti), rerenderToCollapse);
+	}
+	
+	/*
+	 * Asynchronously runs the selector configuration menu.
+	 */
+	private void runSelectorConfigMenuAsync(final Anchor selectorConfigA) {
+		ScheduledCommand doRunMenu = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				runSelectorConfigMenuNow(selectorConfigA);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doRunMenu);
+	}
+	
+	/*
+	 * Synchronously runs the selector configuration menu.
+	 */
+	private void runSelectorConfigMenuNow(final Anchor selectorConfigA) {
+		final PopupMenu configureDropdownMenu = new PopupMenu(true, false, false);
+		configureDropdownMenu.addStyleName("vibe-configureMenuBarDropDown");
+		configureDropdownMenu.setMenu(m_selectorConfigPopup.getMenuBar());
+		configureDropdownMenu.showRelativeToTarget(selectorConfigA);
 	}
 	
 	/**
@@ -1779,7 +1851,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorConfigA.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				if (null == m_manageMenuPopup)
+				if (null == m_selectorConfigPopup)
 				     buildAndRunSelectorConfigMenuAsync(selectorConfigA);
 				else runSelectorConfigMenuAsync(        selectorConfigA);
 			}
@@ -1792,7 +1864,11 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		m_selectorConfig.add(selectorConfigA);
 		
 		// ...show it...
-		double top  = (((selectorGrid.getAbsoluteTop() - m_rootPanel.getAbsoluteTop()) + m_rootPanel.getElement().getScrollTop()) + CONFIG_TOP_ADJUST );
+		int configTopAdjust;
+		if (selectorGrid.getTagName().equalsIgnoreCase("table"))
+		     configTopAdjust = CONFIG_TOP_ADJUST_TABLE;
+		else configTopAdjust = CONFIG_TOP_ADJUST_DIV;
+		double top  = (((selectorGrid.getAbsoluteTop() - m_rootPanel.getAbsoluteTop()) + m_rootPanel.getElement().getScrollTop()) + configTopAdjust   );
 		double left = (GwtConstants.SIDEBAR_TREE_WIDTH                                                                            + CONFIG_LEFT_ADJUST);
 		m_selectorConfig.getElement().getStyle().setTop( top,  Unit.PX);
 		m_selectorConfig.getElement().getStyle().setLeft(left, Unit.PX);
@@ -1800,71 +1876,5 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		
 		// ...and hide the manage menu in the main menu bar.
 		HideManageMenuEvent.fireOneAsync();
-	}
-
-	/*
-	 * Asynchronously builds and runs the selector configuration menu.
-	 */
-	private void buildAndRunSelectorConfigMenuAsync(final Anchor selectorConfigA) {
-		ScheduledCommand doBuildAndRunMenu = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				buildAndRunSelectorConfigMenuNow(selectorConfigA);
-			}
-		};
-		Scheduler.get().scheduleDeferred(doBuildAndRunMenu);
-	}
-	
-	/*
-	 * Synchronously builds and runs the selector configuration menu.
-	 */
-	private void buildAndRunSelectorConfigMenuNow(final Anchor selectorConfigA) {
-		GwtTeaming.fireEvent(
-			new GetManageMenuPopupEvent(new ManageMenuPopupCallback() {
-				@Override
-				public void manageMenuPopup(ManageMenuPopup mmp) {
-					// Is there anything in the selector configuration
-					// menu?
-					m_manageMenuPopup = mmp;
-					if ((null == m_manageMenuPopup) || (!(m_manageMenuPopup.shouldShowMenu()))) {
-						// No!  Clear the selector widget, tell the
-						// user about the problem and bail.
-						clearSelectorConfig();
-						GwtClientHelper.deferredAlert(getMessages().treeErrorNoManageMenu());
-					}
-					
-					else {
-						// Yes, there's stuff in the selector
-						// configuration menu!  Complete populating it
-						// and run it.
-						m_manageMenuPopup.setCurrentBinder(m_selectedBinderInfo);
-						m_manageMenuPopup.populateMenu();
-						runSelectorConfigMenuAsync(selectorConfigA);
-					}
-				}
-			}));
-	}
-	
-	/*
-	 * Asynchronously runs the selector configuration menu.
-	 */
-	private void runSelectorConfigMenuAsync(final Anchor selectorConfigA) {
-		ScheduledCommand doRunMenu = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				runSelectorConfigMenuNow(selectorConfigA);
-			}
-		};
-		Scheduler.get().scheduleDeferred(doRunMenu);
-	}
-	
-	/*
-	 * Synchronously runs the selector configuration menu.
-	 */
-	private void runSelectorConfigMenuNow(final Anchor selectorConfigA) {
-		final PopupMenu configureDropdownMenu = new PopupMenu(true, false, false);
-		configureDropdownMenu.addStyleName("vibe-configureMenuBarDropDown");
-		configureDropdownMenu.setMenu(m_manageMenuPopup.getMenuBar());
-		configureDropdownMenu.showRelativeToTarget(selectorConfigA);
 	}
 }

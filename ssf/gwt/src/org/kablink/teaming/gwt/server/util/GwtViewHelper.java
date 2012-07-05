@@ -3524,11 +3524,11 @@ public class GwtViewHelper {
 	 */
 	private static String getViewProfileEntryUrl(AllModulesInjected bs, HttpServletRequest request, Long userId) {
 		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
-		url.setParameter(WebKeys.URL_BINDER_ID,        String.valueOf(bs.getProfileModule().getProfileBinder().getId()));
-		url.setParameter(WebKeys.URL_ACTION,           WebKeys.ACTION_VIEW_PROFILE_ENTRY                               );
-		url.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, WebKeys.URL_ENTRY_VIEW_STYLE_FULL                               );
-		url.setParameter(WebKeys.URL_NEW_TAB,          "1"                                                             );
-		url.setParameter(WebKeys.URL_ENTRY_ID,         String.valueOf(userId)                                          );
+		url.setParameter(WebKeys.URL_BINDER_ID,        String.valueOf(bs.getProfileModule().getProfileBinderId()));
+		url.setParameter(WebKeys.URL_ACTION,           WebKeys.ACTION_VIEW_PROFILE_ENTRY                         );
+		url.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, WebKeys.URL_ENTRY_VIEW_STYLE_FULL                         );
+		url.setParameter(WebKeys.URL_NEW_TAB,          "1"                                                       );
+		url.setParameter(WebKeys.URL_ENTRY_ID,         String.valueOf(userId)                                    );
 		return url.toString();
 	}
 
