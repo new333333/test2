@@ -1132,10 +1132,13 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		m_rootPanel.clear();
 		render(newRootBinderInfo, m_rootPanel);
 		
-		// If we're supposed to select a binder as part of the
-		// re-rooting...
+		// If we weren't given a binder to select...
+		if (null == selectedBinderInfo) {
+			// ...select the one we're rooting to...
+			selectedBinderInfo = newRootBinderInfo;
+		}
 		if (null != selectedBinderInfo) {
-			// ...and we can find that binder...
+			// ...and if we can find that binder...
 			TreeInfo selectedBinderTI = TreeInfo.findBinderTI(rootTI, selectedBinderInfo.getBinderId());
 			if (null != selectedBinderTI) {
 				// ...select it.
@@ -1146,7 +1149,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// If we re-rooted the tree to exit activity stream
 		// mode...
 		if (ExitMode.SIMPLE_EXIT == exitingActivityStreamMode) {
-			// ...reset the menu so that it display what's
+			// ...reset the menu so that it displays what's
 			// ...appropriate for navigation mode.
 			resetMenuContext();
 		}
