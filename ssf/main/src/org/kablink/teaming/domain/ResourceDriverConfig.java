@@ -79,6 +79,45 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		}
 	};
 
+    public boolean equals(Object obj) {
+    	if(!(obj instanceof ResourceDriverConfig))
+    		return false;
+    	ResourceDriverConfig config = (ResourceDriverConfig)obj;
+    	if(!objectEquals(id, config.id))
+    		return false;
+    	if(!objectEquals(name, config.name))
+    		return false;
+    	if(!objectEquals(driverType, config.driverType))
+    		return false;
+    	if(!objectEquals(type, config.type))
+    		return false;
+    	if(!objectEquals(readOnly, config.readOnly))
+    		return false;
+    	if(!objectEquals(synchTopDelete, config.synchTopDelete))
+    		return false;
+    	if(!objectEquals(putRequiresContentLength, config.putRequiresContentLength))
+    		return false;
+    	if(!objectEquals(allowSelfSignedCertificate, config.allowSelfSignedCertificate))
+    		return false;
+    	if(!objectEquals(hostUrl, config.hostUrl))
+    		return false;
+    	if(!objectEquals(rootPath, config.rootPath))
+    		return false;
+    	if(!objectEquals(accountName, config.accountName))
+    		return false;
+    	if(!objectEquals(password, config.password))
+    		return false;
+    	if(!objectEquals(shareName, config.shareName))
+    		return false;
+    	if(!objectEquals(serverName, config.serverName))
+    		return false;
+    	if(!objectEquals(serverIP, config.serverIP))
+    		return false;
+    	if(!objectEquals(volume, config.volume))
+    		return false;
+    	return true;
+    }
+    
 	public void setZoneId(Long zoneId) {
 		this.zoneId = zoneId;
 	}
@@ -278,5 +317,27 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		this.volume = volume;
 	}
 	
-	
+	private boolean objectEquals(Object first, Object second) {
+		if(first != null) {
+			if(second != null) {
+				if(first.getClass().equals(second.getClass())) {
+					return first.equals(second);
+				}
+				else {
+					return false;
+				}
+			}
+			else {
+				return false;
+			}
+		}
+		else {
+			if(second != null) {
+				return false;
+			}
+			else {
+				return true;
+			}
+		}
+	}
 }
