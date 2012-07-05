@@ -157,9 +157,13 @@ public class FolderEntryResource extends AbstractDefinableEntityResource {
 	// Delete folder entry
 	@DELETE
     @Path("{id}")
-	public void deleteFolderEntry(@PathParam("id") long id) {
+	public void deleteFolderEntry(@PathParam("id") long id, @QueryParam("purge") @DefaultValue("false") boolean purge) {
         org.kablink.teaming.domain.FolderEntry folderEntry = _getFolderEntry(id);
-        getFolderModule().preDeleteEntry(folderEntry.getParentBinder().getId(), id, getLoggedInUserId());
+        if (purge) {
+            getFolderModule().deleteEntry(folderEntry.getParentBinder().getId(), id);
+        } else {
+            getFolderModule().preDeleteEntry(folderEntry.getParentBinder().getId(), id, getLoggedInUserId());
+        }
 	}
 
     @GET

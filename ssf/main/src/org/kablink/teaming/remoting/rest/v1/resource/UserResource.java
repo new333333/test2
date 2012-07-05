@@ -89,8 +89,13 @@ public class UserResource extends AbstractPrincipalResource {
 		@QueryParam("count") Integer maxCount) {
         Map<String, Object> options = new HashMap<String, Object>();
         SearchFilter searchTermFilter = new SearchFilter();
-        if (name!=null) {
-            searchTermFilter.addLoginNameFilter(name);
+        if (name!=null || email!=null) {
+            if (name!=null) {
+                searchTermFilter.addLoginNameFilter(name);
+            }
+            if (email!=null) {
+                searchTermFilter.addEmailFilter(email.replace('@', '?'));
+            }
             options.put( ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter() );
         }
         if (offset!=null) {
