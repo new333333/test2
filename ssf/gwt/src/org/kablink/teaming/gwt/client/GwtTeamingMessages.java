@@ -1109,9 +1109,10 @@ public interface GwtTeamingMessages extends Messages
 	String defaultShareTitle( String title );
 	String noShareRecipients();
 	String noShareRecipientsOrTeams();
-	String removeRecipientHint();
+	String removeShareHint();
 	String shareAccess();
 	String shareCaption();
+	String shareDlg_alreadySharedWithSelectedRecipient( String recipientName );
 	String shareDlg_contributor();
 	String shareDlg_owner();
 	String shareDlg_rightsLabel();
@@ -1123,11 +1124,12 @@ public interface GwtTeamingMessages extends Messages
 	String shareExpires();
 	String shareHint();
 	String shareName();
+	String shareRecipientType();
+	String shareRecipientTypeExternalUser();
+	String shareRecipientTypeGroup();
+	String shareRecipientTypeTeam();
+	String shareRecipientTypeUser();
 	String shareTheseItems();
-	String shareType();
-	String shareTypeExternalUser();
-	String shareTypeGroup();
-	String shareTypeUser();
 	String shareWithGroups();
 	String shareWithTeams();
 	String shareWithUsers();
