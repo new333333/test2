@@ -1250,22 +1250,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
    				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_ATTACHMENT))
      		);
 		// We use search engine to get the list of file names in the specified folder.
-        return getChildrenFileDataFromIndex(crit);
+        List<FileIndexData> results = getFileDataFromIndex(crit);
+        Map<String, FileIndexData> resultMap = new HashMap<String, FileIndexData>();
+        for (FileIndexData data : results) {
+            resultMap.put(data.getName(), data);
+        }
+        return resultMap;
 	}
 
-	public Map<String,FileIndexData> getChildrenFileDataFromIndexRecursively(Long binderId) {
-		// look for the specific binder id
-    	// look only for attachments
-    	Criteria crit = new Criteria()
-    	    .add(conjunction()
-    			.add(eq(Constants.ENTRY_ANCESTRY, binderId.toString()))
-   				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_ATTACHMENT))
-     		);
-		// We use search engine to get the list of file names in the specified folder.
-        return getChildrenFileDataFromIndex(crit);
-	}
-
-    private Map<String, FileIndexData> getChildrenFileDataFromIndex(Criteria crit) {
+    public List<FileIndexData> getFileDataFromIndex(Criteria crit) {
         QueryBuilder qb = new QueryBuilder(true, false);
         org.dom4j.Document qTree = crit.toQuery(); //save for debug
         SearchObject so = qb.buildQuery(qTree);
@@ -1289,7 +1282,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
             luceneSession.close();
         }
 
-        Map<String,FileIndexData> result = new HashMap<String,FileIndexData>();
+        List<FileIndexData> result = new ArrayList<FileIndexData>();
         int count = hits.length();
         org.apache.lucene.document.Document doc;
         String fileName;
@@ -1298,7 +1291,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         	fileName = doc.get(Constants.FILENAME_FIELD);
         	if(fileName != null) {
         		try {
-	        		result.put(fileName, new FileIndexData(doc));
+	        		result.add(new FileIndexData(doc));
         		}
         		catch(Exception ignore) {
         			// skip to next doc

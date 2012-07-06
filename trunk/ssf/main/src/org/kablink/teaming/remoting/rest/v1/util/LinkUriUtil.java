@@ -35,12 +35,7 @@ package org.kablink.teaming.remoting.rest.v1.util;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.rest.v1.model.BaseRestObject;
-import org.kablink.teaming.rest.v1.model.BinderBrief;
-import org.kablink.teaming.rest.v1.model.FileProperties;
-import org.kablink.teaming.rest.v1.model.FileVersionProperties;
-import org.kablink.teaming.rest.v1.model.Tag;
-import org.kablink.teaming.rest.v1.model.TemplateBrief;
+import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.search.Constants;
 
@@ -158,7 +153,9 @@ public class LinkUriUtil {
         model.addAdditionalLink("child_binders", model.getLink() + "/binders");
         model.addAdditionalLink("child_binder_tree", model.getLink() + "/binder_tree");
         model.addAdditionalLink("child_files", model.getLink() + "/files");
-        model.addAdditionalLink("child_library_folders", model.getLink() + "/library_folders");
+        if (isWorkspace(model) || isLibraryFolder(model)) {
+            model.addAdditionalLink("child_library_folders", model.getLink() + "/library_folders");
+        }
         model.addAdditionalLink("team_members", model.getLink() + "/team_members");
         model.addAdditionalLink("tags", model.getLink() + "/tags");
     }
@@ -262,5 +259,21 @@ public class LinkUriUtil {
 
     public static String getTeamMemberLinkUri(long teamId, Long memberId) {
         return getWorkspaceLinkUri(teamId) + "/team_members/" + memberId;
+    }
+
+    public static boolean isWorkspace(BaseRestObject model) {
+        return (model instanceof Workspace ||
+                (model instanceof BinderBrief && ((BinderBrief)model).isWorkspace()));
+    }
+
+    public static boolean isFolder(BaseRestObject model) {
+        return (model instanceof Folder ||
+                (model instanceof BinderBrief && ((BinderBrief)model).isFolder()));
+    }
+
+    public static boolean isLibraryFolder(BaseRestObject model) {
+        return isFolder(model) &&
+               ((model instanceof Folder && ((Folder)model).getLibrary()) ||
+               (model instanceof BinderBrief && ((BinderBrief)model).getLibrary()));
     }
 }

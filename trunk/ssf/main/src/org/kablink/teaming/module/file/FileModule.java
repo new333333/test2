@@ -49,7 +49,7 @@ import org.kablink.teaming.domain.FileAttachment.FileStatus;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.FileUploadItem;
-
+import org.kablink.util.search.Criteria;
 
 
 /**
@@ -468,19 +468,9 @@ public interface FileModule {
 	 */
 	public Map<String,FileIndexData> getChildrenFileDataFromIndex(Long binderId);
 
+    public List<FileIndexData> getFileDataFromIndex(Criteria crit);
+
     /**
-   	 * Returns a map of names of the files contained in the specified binder or any subbinder
-   	 * to its <code>FileIndexData</code> objects encapsulating more detailed information
-   	 * about files obtained from the Lucene index.
-   	 * It is important for the efficiency reason that the requested data be obtainable
-   	 * entirely from the Lucene index without querying the database.
-   	 *
-   	 * @param binderId
-   	 * @return
-   	 */
-    public Map<String,FileIndexData> getChildrenFileDataFromIndexRecursively(Long binderId);
-	
-	/**
 	 * Returns a map of names of the files contained in the specified binder
 	 * to its enclosing entry ids.
 	 * 

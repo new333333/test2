@@ -253,6 +253,12 @@ public class ResourceUtil {
     public static UserBrief buildUserBrief(org.kablink.teaming.domain.UserPrincipal user) {
         UserBrief model = new UserBrief();
         populatePrincipalBrief(model, user);
+        if (user instanceof org.kablink.teaming.domain.User) {
+            org.kablink.teaming.domain.User u = (org.kablink.teaming.domain.User) user;
+            model.setFirstName(u.getFirstName());
+            model.setMiddleName(u.getMiddleName());
+            model.setLastName(u.getLastName());
+        }
         model.setLink(LinkUriUtil.getUserLinkUri(model.getId()));
         LinkUriUtil.populateUserLinks(model);
         return model;
