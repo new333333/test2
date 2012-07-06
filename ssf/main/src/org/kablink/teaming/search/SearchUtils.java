@@ -46,9 +46,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.util.search.Constants;
-import org.kablink.util.search.Criteria;
-import org.kablink.util.search.Order;
+import org.kablink.util.search.*;
 import org.kablink.util.search.Junction.Disjunction;
 
 
@@ -491,7 +489,17 @@ public class SearchUtils {
 		return crit;
 	}
 
-	/*
+    public static Criterion libraryFolders() {
+        Junction crit = Restrictions.conjunction();
+        crit.add(Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER));
+        crit.add(Restrictions.eq(Constants.IS_LIBRARY_FIELD, "true"));
+        crit.add(Restrictions.disjunction()
+                .add(Restrictions.eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_FILE))
+                .add(Restrictions.eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_PHOTO)));
+        return crit;
+    }
+
+    /*
 	 * Returns the UserProperties based on a user and workspace ID.  If
 	 * no workspace ID is provided, an attempt to locate it based on
 	 * user's profile.

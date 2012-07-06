@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
@@ -102,6 +103,7 @@ import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+import org.kablink.util.search.FieldFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -1587,7 +1589,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
  
         // Add document type
         BasicIndexUtils.addDocType(indexDoc, Constants.DOC_TYPE_ENTRY, fieldsOnly);
-                
+
+        if (binder.isLibrary()) {
+            Field libraryField = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.IS_LIBRARY_FIELD, Boolean.toString(true));
+            indexDoc.add(libraryField);
+        }
+
         // Add the events - special indexing for calendar view
         EntityIndexUtils.addEvents(indexDoc, entry, fieldsOnly);
         
@@ -1608,7 +1615,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	//do common part first. Indexing a file overrides some values
     	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry, true);
         BasicIndexUtils.addAttachmentType(indexDoc, Constants.ATTACHMENT_TYPE_ENTRY, true);
-  		buildIndexDocumentFromFile(indexDoc, binder, entry, fa, fui, tags);
+  		buildIndexDocumentFromFile(indexDoc, binder, entry, fa, fui, tags, binder.isLibrary());
     	SimpleProfiler.stop("buildIndexDocumentFromEntryFile");
    		return indexDoc;
  

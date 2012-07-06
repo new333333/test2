@@ -1,6 +1,5 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoTagByTheIdException;
 import org.kablink.teaming.domain.Principal;
@@ -22,7 +21,7 @@ import org.kablink.teaming.rest.v1.model.PrincipalBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.rest.v1.model.TeamMember;
-import org.kablink.teaming.search.filter.SearchFilter;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -41,11 +40,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 
 /**
  * User: david
@@ -128,22 +123,37 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return getSubBinderTree(id, null);
 	}
 
+	@GET
+	@Path("{id}/library_tree")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	public BinderTree getLibraryTree(@PathParam("id") long id) {
+        Junction criteria = Restrictions.disjunction();
+        criteria.add(SearchUtils.libraryFolders());
+        criteria.add(Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_WORKSPACE));
+        return getSubBinderTree(id, criteria);
+	}
+
     @GET
    	@Path("{id}/library_folders")
        @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
    	public SearchResultList<BinderBrief> getLibraryFolders(@PathParam("id") long id,
    			@QueryParam("first") @DefaultValue("0") Integer offset,
    			@QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        Junction crit = Restrictions.conjunction();
-        crit.add(Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER));
-        crit.add(Restrictions.eq(Constants.IS_LIBRARY_FIELD, "true"));
-        crit.add(Restrictions.disjunction()
-                .add(Restrictions.eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_FILE))
-                .add(Restrictions.eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_PHOTO)));
-        return getSubBinders(id, crit, offset, maxCount, null);
+        return getSubBinders(id, SearchUtils.libraryFolders(), offset, maxCount, null);
    	}
 
-	// Read entries
+    // Read entries
+	@GET
+	@Path("{id}/library_files")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+	public SearchResultList<FileProperties> getLibraryFiles(@PathParam("id") long id,
+                                                  @QueryParam("recursive") @DefaultValue("false") boolean recursive,
+                                                  @QueryParam("first") Integer offset,
+                                                  @QueryParam("count") Integer maxCount) {
+        return getSubFiles(id, recursive, true, offset, maxCount, null);
+	}
+
+    // Read entries
 	@GET
 	@Path("{id}/files")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -151,7 +161,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                                   @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                   @QueryParam("first") Integer offset,
                                                   @QueryParam("count") Integer maxCount) {
-        return getSubFiles(id, recursive, offset, maxCount, null);
+        return getSubFiles(id, recursive, false, offset, maxCount, null);
 	}
 
     @GET
@@ -277,15 +287,25 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
     }
 
-    protected SearchResultList<FileProperties> getSubFiles(long id, boolean recursive, Integer offset, Integer maxCount, String nextUrl) {
+    protected SearchResultList<FileProperties> getSubFiles(long id, boolean recursive, boolean onlyLibraryFiles, Integer offset, Integer maxCount, String nextUrl) {
         _getBinder(id);
-        Map<String,FileIndexData> files = (recursive) ?
-                getFileModule().getChildrenFileDataFromIndexRecursively(id) : getFileModule().getChildrenFileDataFromIndex(id);
+        Junction criterion = Restrictions.conjunction()
+            .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT));
+
+        if (recursive) {
+            criterion.add(Restrictions.eq(Constants.ENTRY_ANCESTRY, ((Long)id).toString()));
+        } else {
+            criterion.add(Restrictions.eq(Constants.BINDER_ID_FIELD, ((Long)id).toString()));
+        }
+        if (onlyLibraryFiles) {
+            criterion.add(Restrictions.eq(Constants.IS_LIBRARY_FIELD, ((Boolean) onlyLibraryFiles).toString()));
+        }
+        List<FileIndexData> files = getFileModule().getFileDataFromIndex(new Criteria().add(criterion));
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
         results.setFirst(0);
         results.setCount(files.size());
         results.setTotal(files.size());
-        for (FileIndexData file : files.values()) {
+        for (FileIndexData file : files) {
             results.append(ResourceUtil.buildFileProperties(file));
         }
 
@@ -312,13 +332,15 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return results;
     }
 
-    protected BinderTree getSubBinderTree(long id, SearchFilter filter) {
-        org.kablink.teaming.domain.Binder workspace = _getBinder(id);
-        Map<String, Object> options = new HashMap<String, Object>();
+    protected BinderTree getSubBinderTree(long id, Criterion filter) {
+        _getBinder(id);
+        Criteria crit = new Criteria();
         if (filter!=null) {
-            options.put( ObjectKeys.SEARCH_SEARCH_FILTER, filter.getFilter() );
+            crit.add(filter);
         }
-        Map resultMap = getBinderModule().getBindersRecursively(workspace, options);
+        crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
+        crit.add(Restrictions.eq(Constants.ENTRY_ANCESTRY, ((Long) id).toString()));
+        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
         BinderTree results = new BinderTree();
         SearchResultBuilderUtil.buildSearchResultsTree(results, id, new BinderBriefBuilder(), resultMap);
         results.setItem(null);

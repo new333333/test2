@@ -139,6 +139,7 @@ import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
+import org.kablink.util.search.FieldFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -2292,7 +2293,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        	fillInIndexDocWithCommonPartFromBinder(indexDoc, binder, true);
         BasicIndexUtils.addAttachmentType(indexDoc, Constants.ATTACHMENT_TYPE_BINDER, true);
 
-  	  	buildIndexDocumentFromFile(indexDoc, binder, binder, fa, fui, tags);
+  	  	buildIndexDocumentFromFile(indexDoc, binder, binder, fa, fui, tags, false);
        	return indexDoc;
      }
 
@@ -2305,7 +2306,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * @return
      */
     protected void buildIndexDocumentFromFile
-    	(org.apache.lucene.document.Document indexDoc, Binder binder, DefinableEntity entity, FileAttachment fa, FileUploadItem fui, Collection tags) {
+    	(org.apache.lucene.document.Document indexDoc, Binder binder, DefinableEntity entity, FileAttachment fa, FileUploadItem fui, Collection tags, boolean isLibraryFile) {
 
 		// Get the Text converter from manager
 		String text = "";
@@ -2343,7 +2344,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         
         // Add file info
         EntityIndexUtils.addFileAttachment(indexDoc, fa, true);
-        
+
+        if (isLibraryFile) {
+            Field libraryField = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.IS_LIBRARY_FIELD, Boolean.toString(true));
+            indexDoc.add(libraryField);
+        }
+
         // Add creation-date from entity
         EntityIndexUtils.addCreation(indexDoc, entity.getCreation(), true);
         // Add modification-date from file

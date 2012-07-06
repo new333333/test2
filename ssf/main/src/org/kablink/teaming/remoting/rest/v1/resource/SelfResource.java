@@ -160,12 +160,7 @@ public class SelfResource extends AbstractResource {
                                                            @QueryParam("first") @DefaultValue("0") Integer offset,
                                                            @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         Criteria crit = new Criteria();
-        crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
-        crit.add(Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER));
-        crit.add(Restrictions.disjunction()
-                .add(Restrictions.eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_FILE))
-                .add(Restrictions.eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_PHOTO)));
-        crit.add(Restrictions.eq(Constants.IS_LIBRARY_FIELD, "true"));
+        crit.add(SearchUtils.libraryFolders());
         crit.add(Restrictions.not().add(Restrictions.eq(Constants.OWNERID_FIELD, getLoggedInUserId().toString())));
         Map map = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();

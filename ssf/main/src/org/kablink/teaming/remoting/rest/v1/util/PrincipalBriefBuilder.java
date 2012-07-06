@@ -36,6 +36,7 @@ import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
 import org.kablink.teaming.rest.v1.model.PrincipalBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.rest.v1.model.UserBrief;
+import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.util.search.Constants;
 
 import java.util.Map;
@@ -49,5 +50,9 @@ public abstract class PrincipalBriefBuilder extends DefinableEntityBriefBuilder 
     public void populatePrincipalBrief(PrincipalBrief model, Map entry) {
         populateDefinableEntityBrief(model, entry, Constants.BINDER_ID_FIELD);
         model.setName((String) entry.get(Constants.LOGINNAME_FIELD));
+        SearchFieldResult result = (SearchFieldResult) entry.get(Constants.EMAIL_FIELD);
+        if (result!=null) {
+            model.setEmailAddress(result.getValueSet().iterator().next());
+        }
     }
 }

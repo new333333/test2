@@ -76,15 +76,9 @@ public class ProfileIndexUtils {
         doc.add(docNumField);
     }      
 
-    public static void addEmails(Document doc, User user) {
-     	//Add the id of the creator (no, not that one...)
-        Set<String> emails = new HashSet<String>();
-        Map<String,EmailAddress> emailAddresses = user.getEmailAddresses();
-        for (EmailAddress addr : emailAddresses.values()) {
-            emails.add(addr.getAddress());
-        }
-        for (String email : emails) {
-            Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(EMAIL_FIELD, email);
+    public static void addEmail(Document doc, User user) {
+        if (user.getEmailAddress()!=null) {
+            Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(EMAIL_FIELD, user.getEmailAddress());
             doc.add(docNumField);
         }
     }

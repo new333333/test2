@@ -50,7 +50,6 @@ import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.Folder;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.Workspace;
-import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Restrictions;

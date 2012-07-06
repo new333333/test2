@@ -570,7 +570,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			ProfileIndexUtils.addWorkspaceId(indexDoc, user);
 			ProfileIndexUtils.addPersonFlag(indexDoc, user);
 			ProfileIndexUtils.addIdentitySource(indexDoc, user);
-			ProfileIndexUtils.addEmails(indexDoc, user);
+			ProfileIndexUtils.addEmail(indexDoc, user);
 		} else if(entry instanceof Group) {
 	        ProfileIndexUtils.addName(indexDoc, (Group)entry, false);	
 	        ProfileIndexUtils.addDynamic(indexDoc, (Group)entry, false);	
