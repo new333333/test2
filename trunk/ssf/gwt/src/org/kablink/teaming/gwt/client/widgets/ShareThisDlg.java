@@ -83,7 +83,6 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
-import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTMLTable;
@@ -121,11 +120,11 @@ public class ShareThisDlg extends DlgBox
 	private FindCtrl m_findCtrl;
 	private FlowPanel m_mainPanel;
 	private ImageResource m_deleteImgR;
-	private FlexTable m_recipientTable;
+	private FlexTable m_shareTable;
 	private FlowPanel m_shareWithTeamsPanel;
 	private FlowPanel m_myTeamsPanel;
-	private FlowPanel m_recipientTablePanel;
-	private FlexCellFormatter m_cellFormatter;
+	private FlowPanel m_shareTablePanel;
+	private FlexCellFormatter m_shareCellFormatter;
 	private List<EntityId> m_entityIds;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 	private AsyncCallback<VibeRpcResponse> m_readTeamsCallback;
@@ -204,44 +203,47 @@ public class ShareThisDlg extends DlgBox
 		USER,
 		GROUP,
 		EXTERNAL_USER,
+		TEAM,
 		
 		UNKNOWN,
 	}
 
 	
 	/**
-	 * This class is used to hold information about a recipient
+	 * This class is used to hold information about a share
 	 */
-	private class RecipientInfo
+	private class ShareInfo
 	{
+		private Long m_shareId;
 		private String m_recipientName;
-		private String m_id;
-		private RecipientType m_type;
+		private String m_recipientId;
+		private RecipientType m_recipientType;
 		private ShareRights m_shareRights;
 		
 		/**
 		 * 
 		 */
-		public RecipientInfo()
+		public ShareInfo()
 		{
+			m_shareId = null;
 			m_recipientName = null;
-			m_id = null;
-			m_type = RecipientType.UNKNOWN;
+			m_recipientId = null;
+			m_recipientType = RecipientType.UNKNOWN;
 			m_shareRights = ShareRights.VIEW;
 		}
 		
 		/**
 		 * 
 		 */
-		public String getId()
+		public String getRecipientId()
 		{
-			return m_id;
+			return m_recipientId;
 		}
 		
 		/**
 		 * 
 		 */
-		public String getName()
+		public String getRecipientName()
 		{
 			return m_recipientName;
 		}
@@ -266,23 +268,43 @@ public class ShareThisDlg extends DlgBox
 		/**
 		 * 
 		 */
-		public RecipientType getType()
+		public RecipientType getRecipientType()
 		{
-			return m_type;
+			return m_recipientType;
 		}
 		
 		/**
 		 * 
 		 */
-		public void setId( String id )
+		public String getRecipientTypeAsString()
 		{
-			m_id = id;
+			if ( m_recipientType == RecipientType.USER )
+				return GwtTeaming.getMessages().shareRecipientTypeUser();
+			
+			if ( m_recipientType == RecipientType.GROUP )
+				return GwtTeaming.getMessages().shareRecipientTypeGroup();
+			
+			if ( m_recipientType == RecipientType.EXTERNAL_USER )
+				return GwtTeaming.getMessages().shareRecipientTypeExternalUser();
+			
+			if ( m_recipientType == RecipientType.TEAM )
+				return GwtTeaming.getMessages().shareRecipientTypeTeam();
+			
+			return GwtTeaming.getMessages().unknownShareType();
 		}
 		
 		/**
 		 * 
 		 */
-		public void setName( String name )
+		public void setRecipientId( String id )
+		{
+			m_recipientId = id;
+		}
+		
+		/**
+		 * 
+		 */
+		public void setRecipientName( String name )
 		{
 			m_recipientName = name;
 		}
@@ -298,9 +320,9 @@ public class ShareThisDlg extends DlgBox
 		/**
 		 * 
 		 */
-		public void setType( RecipientType type )
+		public void setRecipientType( RecipientType type )
 		{
-			m_type = type;
+			m_recipientType = type;
 		}
 	}
 	
@@ -312,26 +334,26 @@ public class ShareThisDlg extends DlgBox
 	private class RecipientNameWidget extends Composite
 		implements ClickHandler, MouseOverHandler, MouseOutHandler
 	{
-		private RecipientInfo m_recipientInfo;
+		private ShareInfo m_shareInfo;
 		private InlineLabel m_nameLabel;
 		private GroupMembershipPopup m_groupMembershipPopup;
 		
 		/**
 		 * 
 		 */
-		public RecipientNameWidget( RecipientInfo recipientInfo )
+		public RecipientNameWidget( ShareInfo shareInfo )
 		{
 			FlowPanel panel;
 			
-			m_recipientInfo = recipientInfo;
+			m_shareInfo = shareInfo;
 			
 			panel = new FlowPanel();
 			
-			m_nameLabel = new InlineLabel( recipientInfo.getName() );
+			m_nameLabel = new InlineLabel( shareInfo.getRecipientName() );
 			panel.add( m_nameLabel );
 			
 			// If we are dealing with a group, let the user click on the group.
-			if ( recipientInfo.getType() == RecipientType.GROUP )
+			if ( shareInfo.getRecipientType() == RecipientType.GROUP )
 			{
 				m_nameLabel.addClickHandler( this );
 				m_nameLabel.addMouseOverHandler( this );
@@ -364,8 +386,8 @@ public class ShareThisDlg extends DlgBox
 				m_groupMembershipPopup = new GroupMembershipPopup(
 															false,
 															false,
-															m_recipientInfo.getName(),
-															m_recipientInfo.getId() );
+															m_shareInfo.getRecipientName(),
+															m_shareInfo.getRecipientId() );
 			}
 			
 			m_groupMembershipPopup.setPopupPosition( getAbsoluteLeft(), getAbsoluteTop() );
@@ -393,28 +415,28 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
-	 * This widget is used to remove a recipient from the list of recipients
+	 * This widget is used to remove a share from the list of shares
 	 */
-	private class RemoveRecipientWidget extends Composite
+	private class RemoveShareWidget extends Composite
 		implements ClickHandler
 	{
-		private RecipientInfo m_recipientInfo;
+		private ShareInfo m_shareInfo;
 		
 		/**
 		 * 
 		 */
-		public RemoveRecipientWidget( RecipientInfo recipientInfo )
+		public RemoveShareWidget( ShareInfo shareInfo )
 		{
 			FlowPanel panel;
 			Image delImg;
 			
-			m_recipientInfo = recipientInfo;
+			m_shareInfo = shareInfo;
 			
 			panel = new FlowPanel();
 			
 			delImg = new Image( m_deleteImgR );
 			delImg.addStyleName( "cursorPointer" );
-			delImg.getElement().setAttribute( "title", GwtTeaming.getMessages().removeRecipientHint() );
+			delImg.getElement().setAttribute( "title", GwtTeaming.getMessages().removeShareHint() );
 			delImg.addClickHandler( this );
 			
 			panel.add( delImg );
@@ -426,18 +448,18 @@ public class ShareThisDlg extends DlgBox
 		/**
 		 * 
 		 */
-		public RecipientInfo getRecipientInfo()
+		public ShareInfo getShareInfo()
 		{
-			return m_recipientInfo;
+			return m_shareInfo;
 		}
 
 		/**
-		 * This gets called when the user clicks on the remove recipient image.
+		 * This gets called when the user clicks on the remove share image.
 		 */
 		@Override
 		public void onClick( ClickEvent event )
 		{
-			removeRecipient( m_recipientInfo );
+			removeShare( m_shareInfo );
 		}
 	}
 	
@@ -463,112 +485,105 @@ public class ShareThisDlg extends DlgBox
 	}
 
 	/**
-	 * Add the "No recipients have been selected" text to the table
-	 * that holds the list of recipients.
+	 * Add the "This item has not been shared" text to the table
+	 * that holds the list of shares.
 	 */
-	private void addNoRecipientsMessage()
+	private void addNotSharedMessage()
 	{
 		int row;
 		
 		row = 1;
-		m_cellFormatter.setColSpan( row, 0, 5 );
-		m_cellFormatter.setWordWrap( row, 0, false );
-		m_cellFormatter.addStyleName( row, 0, "oltBorderLeft" );
-		m_cellFormatter.addStyleName( row, 0, "oltBorderRight" );
-		m_cellFormatter.addStyleName( row, 0, "oltContentPadding" );
-		m_cellFormatter.addStyleName( row, 0, "oltLastRowBorderBottom" );
+		m_shareCellFormatter.setColSpan( row, 0, 5 );
+		m_shareCellFormatter.setWordWrap( row, 0, false );
+		m_shareCellFormatter.addStyleName( row, 0, "oltBorderLeft" );
+		m_shareCellFormatter.addStyleName( row, 0, "oltBorderRight" );
+		m_shareCellFormatter.addStyleName( row, 0, "oltContentPadding" );
+		m_shareCellFormatter.addStyleName( row, 0, "oltLastRowBorderBottom" );
 
-		m_recipientTable.setText( row, 0, GwtTeaming.getMessages().noShareRecipients() );
+		m_shareTable.setText( row, 0, GwtTeaming.getMessages().noShareRecipients() );
 	}
 	
 	
 	/**
-	 * Add the given recipient to the end of the table that holds the list of recipients.
+	 * Add the given share to the end of the table that holds the list of shares
 	 */
-	private void addRecipient( RecipientInfo recipientInfo )
+	private void addShare( ShareInfo shareInfo )
 	{
 		String type;
 		int row;
-		RemoveRecipientWidget removeWidget;
+		RemoveShareWidget removeWidget;
 		RecipientNameWidget recipientNameWidget;
 		
-		row = m_recipientTable.getRowCount();
+		row = m_shareTable.getRowCount();
 		
-		// Do we have any recipients in the table?
+		// Do we have any shares in the table?
 		if ( row == 2 )
 		{
 			String text;
 			
 			// Maybe
-			// The first row might be the message, "No recipients have been selected"
+			// The first row might be the message, "This item has not been shared"
 			// Get the text from the first row.
-			text = m_recipientTable.getText( 1, 0 );
+			text = m_shareTable.getText( 1, 0 );
 			
 			// Does the first row contain a message?
 			if ( text != null && text.equalsIgnoreCase( GwtTeaming.getMessages().noShareRecipients() ) )
 			{
 				// Yes
-				m_recipientTable.removeRow( 1 );
+				m_shareTable.removeRow( 1 );
 				--row;
 			}
 		}
 		
-		// Add the recipient as the first recipient in the table.
+		// Add the share as the first share in the table.
 		row = 1;
-		m_recipientTable.insertRow( row );
+		m_shareTable.insertRow( row );
 		
 		// Add the recipient name in the first column.
-		m_cellFormatter.setColSpan( row, 0, 1 );
-		m_cellFormatter.setWordWrap( row, 0, false );
-		recipientNameWidget = new RecipientNameWidget( recipientInfo );
-		m_recipientTable.setWidget( row, 0,  recipientNameWidget );
+		m_shareCellFormatter.setColSpan( row, 0, 1 );
+		m_shareCellFormatter.setWordWrap( row, 0, false );
+		recipientNameWidget = new RecipientNameWidget( shareInfo );
+		m_shareTable.setWidget( row, 0,  recipientNameWidget );
 
 		// Add the recipient type in the second column.
-		m_cellFormatter.setWordWrap( row, 1, false );
-		if ( recipientInfo.getType() == RecipientType.USER )
-			type = GwtTeaming.getMessages().shareTypeUser();
-		else if ( recipientInfo.getType() == RecipientType.GROUP )
-			type = GwtTeaming.getMessages().shareTypeGroup();
-		else if ( recipientInfo.getType() == RecipientType.EXTERNAL_USER )
-			type = GwtTeaming.getMessages().shareTypeExternalUser();
-		else
-			type = GwtTeaming.getMessages().unknownShareType();
-		m_recipientTable.setText( row, 1, type );
+		m_shareCellFormatter.setWordWrap( row, 1, false );
+		type = shareInfo.getRecipientTypeAsString();
+		m_shareTable.setText( row, 1, type );
 		
 		// Add the share rights in the 3rd column
 		{
 			String rights;
 			
-			rights = recipientInfo.getShareRightsAsString();
-			m_recipientTable.setText( row, 2, rights );
+			rights = shareInfo.getShareRightsAsString();
+			m_shareTable.setText( row, 2, rights );
 		}
 
-		// Add the "remove recipient" widget to the 3rd column.
-		removeWidget = new RemoveRecipientWidget( recipientInfo );
-		m_recipientTable.setWidget( row, 4, removeWidget );
+		// Add the "remove share" widget to the 3rd column.
+		removeWidget = new RemoveShareWidget( shareInfo );
+		m_shareTable.setWidget( row, 4, removeWidget );
 
 		// Add the necessary styles to the cells in the row.
-		m_cellFormatter.addStyleName( row, 0, "oltBorderLeft" );
-		m_cellFormatter.addStyleName( row, 4, "oltBorderRight" );
-		m_cellFormatter.addStyleName( row, 0, "oltContentBorderBottom" );
-		m_cellFormatter.addStyleName( row, 1, "oltContentBorderBottom" );
-		m_cellFormatter.addStyleName( row, 2, "oltContentBorderBottom" );
-		m_cellFormatter.addStyleName( row, 3, "oltContentBorderBottom" );
-		m_cellFormatter.addStyleName( row, 4, "oltContentBorderBottom" );
-		m_cellFormatter.addStyleName( row, 0, "oltContentPadding" );
-		m_cellFormatter.addStyleName( row, 1, "oltContentPadding" );
-		m_cellFormatter.addStyleName( row, 2, "oltContentPadding" );
-		m_cellFormatter.addStyleName( row, 3, "oltContentPadding" );
-		m_cellFormatter.addStyleName( row, 4, "oltContentPadding" );
+		m_shareCellFormatter.addStyleName( row, 0, "oltBorderLeft" );
+		m_shareCellFormatter.addStyleName( row, 4, "oltBorderRight" );
+		m_shareCellFormatter.addStyleName( row, 0, "oltContentBorderBottom" );
+		m_shareCellFormatter.addStyleName( row, 1, "oltContentBorderBottom" );
+		m_shareCellFormatter.addStyleName( row, 2, "oltContentBorderBottom" );
+		m_shareCellFormatter.addStyleName( row, 3, "oltContentBorderBottom" );
+		m_shareCellFormatter.addStyleName( row, 4, "oltContentBorderBottom" );
+		m_shareCellFormatter.addStyleName( row, 0, "oltContentPadding" );
+		m_shareCellFormatter.addStyleName( row, 1, "oltContentPadding" );
+		m_shareCellFormatter.addStyleName( row, 2, "oltContentPadding" );
+		m_shareCellFormatter.addStyleName( row, 3, "oltContentPadding" );
+		m_shareCellFormatter.addStyleName( row, 4, "oltContentPadding" );
 		
-		adjustRecipientTablePanelHeight();
+		adjustShareTablePanelHeight();
 	}
 	
 	
 	/**
 	 * 
 	 */
-	private void adjustRecipientTablePanelHeight()
+	private void adjustShareTablePanelHeight()
 	{
 		Scheduler.ScheduledCommand cmd;
 		
@@ -579,15 +594,15 @@ public class ShareThisDlg extends DlgBox
 			{
 				int height;
 				
-				// Get the height of the table that holds the list of recipients.
-				height = m_recipientTable.getOffsetHeight();
+				// Get the height of the table that holds the list of shares.
+				height = m_shareTable.getOffsetHeight();
 				
-				// If the height is greater than 150 pixels put an overflow auto on the panel
-				// and give the panel a fixed height of 150 pixels.
-				if ( height >= 150 )
-					m_recipientTablePanel.addStyleName( "shareThisRecipientTablePanelHeight" );
+				// If the height is greater than 200 pixels put an overflow auto on the panel
+				// and give the panel a fixed height of 200 pixels.
+				if ( height >= 200 )
+					m_shareTablePanel.addStyleName( "shareThisRecipientTablePanelHeight" );
 				else
-					m_recipientTablePanel.removeStyleName( "shareThisRecipientTablePanelHeight" );
+					m_shareTablePanel.removeStyleName( "shareThisRecipientTablePanelHeight" );
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
@@ -607,7 +622,7 @@ public class ShareThisDlg extends DlgBox
 			{
 				int height;
 				
-				// Get the height of the panel that holds the list of recipients.
+				// Get the height of the panel that holds the list of teams.
 				height = m_myTeamsPanel.getOffsetHeight();
 				
 				// If the height is greater than 150 pixels put an overflow auto on the panel
@@ -636,23 +651,25 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
-	 * Create all the controls needed to identify who the recipients are.
+	 * Create all the controls needed to share this item with others.
 	 */
-	private FlowPanel createRecipientControls()
+	private FlowPanel createShareControls()
 	{
 		FlowPanel mainPanel;
 		FlexTable mainTable;
 		HTMLTable.RowFormatter mainRowFormatter;
+		FlexCellFormatter mainCellFormatter;
 		ClickHandler clickHandler;
 		int row;
 		
-		// Create a panel for all of the controls dealing with the recipients.
+		// Create a panel for all of the controls dealing with the shares.
 		mainPanel = new FlowPanel();
 		
 		mainTable = new FlexTable();
 		mainPanel.add( mainTable );
 		
 		mainRowFormatter = mainTable.getRowFormatter();
+		mainCellFormatter = mainTable.getFlexCellFormatter();
 		row = 0;
 		
 		// Add the "Users" and "Groups" radio buttons
@@ -784,7 +801,6 @@ public class ShareThisDlg extends DlgBox
 			
 			// Add an "add external user" image.
 			{
-				CellFormatter cellFormatter;
 				ImageResource imageResource;
 				Image addImg;
 				
@@ -793,8 +809,7 @@ public class ShareThisDlg extends DlgBox
 				addImg.addStyleName( "cursorPointer" );
 				addImg.getElement().setAttribute( "title", GwtTeaming.getMessages().shareDlg_addExternalUserTitle() );
 				mainTable.setWidget( row, 2, addImg );
-				cellFormatter = mainTable.getCellFormatter();
-				cellFormatter.getElement( row, 2 ).getStyle().setPaddingTop( 10, Unit.PX );
+				mainCellFormatter.getElement( row, 2 ).getStyle().setPaddingTop( 10, Unit.PX );
 		
 				// Add a click handler to the "add external user" image.
 				clickHandler = new ClickHandler()
@@ -857,59 +872,59 @@ public class ShareThisDlg extends DlgBox
 			++row;
 		}
 		
-		// Create a table to hold the list of recipients
+		// Create a table to hold the list of shares
 		{
 			HTMLTable.RowFormatter rowFormatter;
 			
-			m_recipientTablePanel = new FlowPanel();
-			m_recipientTablePanel.addStyleName( "shareThisRecipientTablePanel" );
+			m_shareTablePanel = new FlowPanel();
 			
-			m_recipientTable = new FlexTable();
-			m_recipientTable.addStyleName( "shareThisRecipientTable" );
-			m_recipientTable.setCellSpacing( 0 );
+			m_shareTable = new FlexTable();
+			m_shareTable.addStyleName( "shareThisRecipientTable" );
+			m_shareTable.setCellSpacing( 0 );
 
 			// Add the column headers.
 			{
-				m_recipientTable.setText( 0, 0, GwtTeaming.getMessages().shareName() );
-				m_recipientTable.setText( 0, 1, GwtTeaming.getMessages().shareType() );
-				m_recipientTable.setText( 0, 2, GwtTeaming.getMessages().shareAccess() );
-				m_recipientTable.setText( 0, 3, GwtTeaming.getMessages().shareExpires() );
-				m_recipientTable.setHTML( 0, 4, "&nbsp;" );	// The delete image will go in this column.
+				m_shareTable.setText( 0, 0, GwtTeaming.getMessages().shareName() );
+				m_shareTable.setText( 0, 1, GwtTeaming.getMessages().shareRecipientType() );
+				m_shareTable.setText( 0, 2, GwtTeaming.getMessages().shareAccess() );
+				m_shareTable.setText( 0, 3, GwtTeaming.getMessages().shareExpires() );
+				m_shareTable.setHTML( 0, 4, "&nbsp;" );	// The delete image will go in this column.
 				
-				rowFormatter = m_recipientTable.getRowFormatter();
+				rowFormatter = m_shareTable.getRowFormatter();
 				rowFormatter.addStyleName( 0, "oltHeader" );
 
-				m_cellFormatter = m_recipientTable.getFlexCellFormatter();
+				m_shareCellFormatter = m_shareTable.getFlexCellFormatter();
 				// On IE calling m_cellFormatter.setWidth( 0, 2, "*" ); throws an exception.
 				// That is why we are calling DOM.setElementAttribute(...) instead.
 				//!!!m_cellFormatter.setWidth( 0, 2, "*" );
-				DOM.setElementAttribute( m_cellFormatter.getElement( 0, 4 ), "width", "*" );
+				DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, 4 ), "width", "*" );
 				
-				m_cellFormatter.addStyleName( 0, 0, "oltBorderLeft" );
-				m_cellFormatter.addStyleName( 0, 0, "oltHeaderBorderTop" );
-				m_cellFormatter.addStyleName( 0, 0, "oltHeaderBorderBottom" );
-				m_cellFormatter.addStyleName( 0, 0, "oltHeaderPadding" );
-				m_cellFormatter.addStyleName( 0, 1, "oltHeaderBorderTop" );
-				m_cellFormatter.addStyleName( 0, 1, "oltHeaderBorderBottom" );
-				m_cellFormatter.addStyleName( 0, 1, "oltHeaderPadding" );
-				m_cellFormatter.addStyleName( 0, 2, "oltHeaderBorderTop" );
-				m_cellFormatter.addStyleName( 0, 2, "oltHeaderBorderBottom" );
-				m_cellFormatter.addStyleName( 0, 2, "oltHeaderPadding" );
-				m_cellFormatter.addStyleName( 0, 3, "oltHeaderBorderTop" );
-				m_cellFormatter.addStyleName( 0, 3, "oltHeaderBorderBottom" );
-				m_cellFormatter.addStyleName( 0, 3, "oltHeaderPadding" );
-				m_cellFormatter.addStyleName( 0, 4, "oltBorderRight" );
-				m_cellFormatter.addStyleName( 0, 4, "oltHeaderBorderTop" );
-				m_cellFormatter.addStyleName( 0, 4, "oltHeaderBorderBottom" );
-				m_cellFormatter.addStyleName( 0, 4, "oltHeaderPadding" );
+				m_shareCellFormatter.addStyleName( 0, 0, "oltBorderLeft" );
+				m_shareCellFormatter.addStyleName( 0, 0, "oltHeaderBorderTop" );
+				m_shareCellFormatter.addStyleName( 0, 0, "oltHeaderBorderBottom" );
+				m_shareCellFormatter.addStyleName( 0, 0, "oltHeaderPadding" );
+				m_shareCellFormatter.addStyleName( 0, 1, "oltHeaderBorderTop" );
+				m_shareCellFormatter.addStyleName( 0, 1, "oltHeaderBorderBottom" );
+				m_shareCellFormatter.addStyleName( 0, 1, "oltHeaderPadding" );
+				m_shareCellFormatter.addStyleName( 0, 2, "oltHeaderBorderTop" );
+				m_shareCellFormatter.addStyleName( 0, 2, "oltHeaderBorderBottom" );
+				m_shareCellFormatter.addStyleName( 0, 2, "oltHeaderPadding" );
+				m_shareCellFormatter.addStyleName( 0, 3, "oltHeaderBorderTop" );
+				m_shareCellFormatter.addStyleName( 0, 3, "oltHeaderBorderBottom" );
+				m_shareCellFormatter.addStyleName( 0, 3, "oltHeaderPadding" );
+				m_shareCellFormatter.addStyleName( 0, 4, "oltBorderRight" );
+				m_shareCellFormatter.addStyleName( 0, 4, "oltHeaderBorderTop" );
+				m_shareCellFormatter.addStyleName( 0, 4, "oltHeaderBorderBottom" );
+				m_shareCellFormatter.addStyleName( 0, 4, "oltHeaderPadding" );
 			}
 			
-			m_recipientTablePanel.add( m_recipientTable );
-			
+			m_shareTablePanel.add( m_shareTable );
+
 			mainRowFormatter.setVerticalAlign( row, HasVerticalAlignment.ALIGN_TOP );
 
 			mainTable.setText( row, 0, GwtTeaming.getMessages().shareDlg_sharingLabel() );
-			mainTable.setWidget( row, 1, m_recipientTablePanel );
+			mainTable.setWidget( row, 1, m_shareTablePanel );
+			mainCellFormatter.setColSpan( row, 1, 2 );
 			
 			++row;
 		}
@@ -952,15 +967,15 @@ public class ShareThisDlg extends DlgBox
 	{
 		int i;
 		
-		// Go through the list of recipients and close any "Group Membership" popups that may be open.
-		for (i = 1; i < m_recipientTable.getRowCount(); ++i)
+		// Go through the list of shares and close any "Group Membership" popups that may be open.
+		for (i = 1; i < m_shareTable.getRowCount(); ++i)
 		{
 			Widget widget;
 			
-			if ( m_recipientTable.getCellCount( i ) > 2 )
+			if ( m_shareTable.getCellCount( i ) > 2 )
 			{
 				// Get the RecipientNameWidget from the first column.
-				widget = m_recipientTable.getWidget( i, 0 );
+				widget = m_shareTable.getWidget( i, 0 );
 				if ( widget != null && widget instanceof RecipientNameWidget )
 				{
 					// Close any group membership popup that this widget may have open.
@@ -1127,33 +1142,33 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * Find the given recipient in the table that holds the recipients.
 	 */
-	private int findRecipientInTable( RecipientInfo recipientInfo )
+	private int findShareByRecipientName( ShareInfo shareInfo )
 	{
 		int i;
 		String name;
 		RecipientType type;
 		
-		name = recipientInfo.getName();
-		type = recipientInfo.getType();
+		name = shareInfo.getRecipientName();
+		type = shareInfo.getRecipientType();
 		
 		// Look through the table for the given recipient.
 		// Recipients start in row 1.
-		for (i = 1; i < m_recipientTable.getRowCount(); ++i)
+		for (i = 1; i < m_shareTable.getRowCount() && m_shareTable.getCellCount( i ) > 4; ++i)
 		{
 			Widget widget;
 			
 			// Get the RemoveRecipientWidget from the 5 column.
-			widget = m_recipientTable.getWidget( i, 4 );
-			if ( widget != null && widget instanceof RemoveRecipientWidget )
+			widget = m_shareTable.getWidget( i, 4 );
+			if ( widget != null && widget instanceof RemoveShareWidget )
 			{
-				RecipientInfo nextRecipientInfo;
+				ShareInfo nextShareInfo;
 				
-				nextRecipientInfo = ((RemoveRecipientWidget) widget).getRecipientInfo();
-				if ( nextRecipientInfo != null )
+				nextShareInfo = ((RemoveShareWidget) widget).getShareInfo();
+				if ( nextShareInfo != null )
 				{
-					if ( type == nextRecipientInfo.getType() )
+					if ( type == nextShareInfo.getRecipientType() )
 					{
-						if ( name != null && name.equalsIgnoreCase( nextRecipientInfo.getName() ) )
+						if ( name != null && name.equalsIgnoreCase( nextShareInfo.getRecipientName() ) )
 						{
 							// We found the recipient.
 							return i;
@@ -1225,22 +1240,22 @@ public class ShareThisDlg extends DlgBox
 		
 		// Look through the table for the given recipient.
 		// Recipients start in row 1.
-		for (i = 1; i < m_recipientTable.getRowCount(); ++i)
+		for (i = 1; i < m_shareTable.getRowCount(); ++i)
 		{
 			Widget widget;
 			
-			if ( m_recipientTable.getCellCount( i ) > 2 )
+			if ( m_shareTable.getCellCount( i ) > 2 )
 			{
 				// Get the RemoveRecipientWidget from the 5 column.
-				widget = m_recipientTable.getWidget( i, 4 );
-				if ( widget != null && widget instanceof RemoveRecipientWidget )
+				widget = m_shareTable.getWidget( i, 4 );
+				if ( widget != null && widget instanceof RemoveShareWidget )
 				{
-					RecipientInfo nextRecipientInfo;
+					ShareInfo nextShareInfo;
 					
-					nextRecipientInfo = ((RemoveRecipientWidget) widget).getRecipientInfo();
-					if ( nextRecipientInfo != null )
+					nextShareInfo = ((RemoveShareWidget) widget).getShareInfo();
+					if ( nextShareInfo != null )
 					{
-						recipientIds.add( nextRecipientInfo.getId() );
+						recipientIds.add( nextShareInfo.getRecipientId() );
 					}
 				}
 			}
@@ -1313,18 +1328,28 @@ public class ShareThisDlg extends DlgBox
 
 		if ( emailAddress != null && emailAddress.length() > 0 )
 		{
-			RecipientInfo recipientInfo;
+			ShareInfo shareInfo;
 			
 			// Clear what the user has typed.
 			m_findCtrl.clearText();
 			
-			recipientInfo = new RecipientInfo();
-			recipientInfo.setName( emailAddress );
-			recipientInfo.setType( RecipientType.EXTERNAL_USER );
-			recipientInfo.setShareRights( getSelectedShareRights() );
-			
-			addRecipient( recipientInfo );
+			shareInfo = new ShareInfo();
+			shareInfo.setRecipientName( emailAddress );
+			shareInfo.setRecipientType( RecipientType.EXTERNAL_USER );
+			shareInfo.setShareRights( getSelectedShareRights() );
 			//!!! Finish
+			
+			// Is this external user already in the list?
+			if ( findShareByRecipientName( shareInfo ) == -1 )
+			{
+				// No, add it
+				addShare( shareInfo );
+			}
+			else
+			{
+				// Tell the user the item has already been shared with the external user.
+				Window.alert( GwtTeaming.getMessages().shareDlg_alreadySharedWithSelectedRecipient( emailAddress ) );
+			}
 		}
 	}
 	
@@ -1355,16 +1380,16 @@ public class ShareThisDlg extends DlgBox
 
 		// Remove all of the rows from the table.
 		// We start at row 1 so we don't delete the header.
-		while ( m_recipientTable.getRowCount() > 1 )
+		while ( m_shareTable.getRowCount() > 1 )
 		{
-			// Remove the 1st row that holds recipient information.
-			m_recipientTable.removeRow( 1 );
+			// Remove the 1st row that holds share information.
+			m_shareTable.removeRow( 1 );
 		}
 		
-		// Add a message to the table telling the user no recipients have been selected.
-		addNoRecipientsMessage();
+		// Add a message to the table telling the user this item has not been shared.
+		addNotSharedMessage();
 
-		adjustRecipientTablePanelHeight();
+		adjustShareTablePanelHeight();
 		
 		if ( m_readTeamsCallback == null )
 		{
@@ -1406,31 +1431,31 @@ public class ShareThisDlg extends DlgBox
 	}
 
 	/**
-	 * Remove the given recipient from the table
+	 * Remove the given share from the table
 	 */
-	public void removeRecipient( RecipientInfo recipientInfo )
+	public void removeShare( ShareInfo shareInfo )
 	{
 		int row;
 		
-		// Find the row this recipient lives in.
-		row = findRecipientInTable( recipientInfo );
+		// Find the row this share lives in.
+		row = findShareByRecipientName( shareInfo );
 		
-		// Did we find the recipient in the table?
+		// Did we find the share in the table?
 		if ( row > 0 )
 		{
 			// Yes
-			// Remove the recipient from the table.
-			m_recipientTable.removeRow( row );
+			// Remove the share from the table.
+			m_shareTable.removeRow( row );
 			
-			// Did we remove the last recipient from the table?
-			if ( m_recipientTable.getRowCount() == 1 )
+			// Did we remove the last share from the table?
+			if ( m_shareTable.getRowCount() == 1 )
 			{
 				// Yes
 				// Add the "no recipients..." message to the table.
-				addNoRecipientsMessage();
+				addNotSharedMessage();
 			}
 			
-			adjustRecipientTablePanelHeight();
+			adjustShareTablePanelHeight();
 		}
 	}
 	
@@ -1527,6 +1552,9 @@ public class ShareThisDlg extends DlgBox
 	@Override
 	public void onSearchFindResults( SearchFindResultsEvent event )
 	{
+		final GwtTeamingItem selectedObj;
+		Scheduler.ScheduledCommand cmd;
+
 		// If the find results aren't for this share this dialog...
 		if ( !((Widget) event.getSource()).equals( this ) )
 		{
@@ -1534,50 +1562,70 @@ public class ShareThisDlg extends DlgBox
 			return;
 		}
 		
-		// Are we dealing with a User?
-		RecipientInfo recipientInfo = null;
-		GwtTeamingItem selectedObj = event.getSearchResults();
-		if ( selectedObj instanceof GwtUser )
+		selectedObj = event.getSearchResults();
+		
+		cmd = new Scheduler.ScheduledCommand()
 		{
-			GwtUser user;
-			
-			// Yes
-			user = (GwtUser) selectedObj;
-			
-			recipientInfo = new RecipientInfo();
-			recipientInfo.setName( user.getShortDisplayName() );
-			recipientInfo.setType( RecipientType.USER );
-			recipientInfo.setId( user.getUserId() );
-		}
-		// Are we dealing with a group?
-		else if ( selectedObj instanceof GwtGroup )
-		{
-			GwtGroup group;
-			
-			// Yes
-			group = (GwtGroup) selectedObj;
-			
-			recipientInfo = new RecipientInfo();
-			recipientInfo.setName( group.getShortDisplayName() );
-			recipientInfo.setType( RecipientType.GROUP );
-			recipientInfo.setId( group.getId() );
-		}
+			@Override
+			public void execute() 
+			{
+				ShareInfo shareInfo = null;
+				
+				// Are we dealing with a User?
+				if ( selectedObj instanceof GwtUser )
+				{
+					GwtUser user;
+					
+					// Yes
+					user = (GwtUser) selectedObj;
+					
+					shareInfo = new ShareInfo();
+					shareInfo.setRecipientName( user.getShortDisplayName() );
+					shareInfo.setRecipientType( RecipientType.USER );
+					shareInfo.setRecipientId( user.getUserId() );
+				}
+				// Are we dealing with a group?
+				else if ( selectedObj instanceof GwtGroup )
+				{
+					GwtGroup group;
+					
+					// Yes
+					group = (GwtGroup) selectedObj;
+					
+					shareInfo = new ShareInfo();
+					shareInfo.setRecipientName( group.getShortDisplayName() );
+					shareInfo.setRecipientType( RecipientType.GROUP );
+					shareInfo.setRecipientId( group.getId() );
+				}
 
-		// Do we have an object to add to our list of recipients?
-		if ( recipientInfo != null )
-		{
-			// Yes
-			recipientInfo.setShareRights( getSelectedShareRights() );
-			
-			// Add the recipient to our list of recipients
-			addRecipient( recipientInfo );
-			
-			// Hide the search-results widget.
-			m_findCtrl.hideSearchResults();
-			
-			// Clear the text from the find control.
-			m_findCtrl.clearText();
-		}
+				// Do we have an object to add to our list of shares?
+				if ( shareInfo != null )
+				{
+					// Yes
+					// Has the item already been shared with the recipient
+					if ( findShareByRecipientName( shareInfo ) == -1 )
+					{
+						// No
+						shareInfo.setShareRights( getSelectedShareRights() );
+						
+						// Add the recipient to our list of recipients
+						addShare( shareInfo );
+					}
+					else
+					{
+						// Yes, tell the user
+						Window.alert( GwtTeaming.getMessages().shareDlg_alreadySharedWithSelectedRecipient( shareInfo.getRecipientName() ) );
+					}
+				}
+
+				// Hide the search-results widget.
+				m_findCtrl.hideSearchResults();
+				
+				// Clear the text from the find control.
+				m_findCtrl.clearText();
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
 	}// end onSearchFindResults()
 	
 	/*
@@ -1680,7 +1728,7 @@ public class ShareThisDlg extends DlgBox
 	private void populateDlgNow()
 	{
 		FlowPanel inputPanel;
-		FlowPanel recipientPanel;
+		FlowPanel sharePanel;
 		Label comments;
 		
 		// No!  Add a textbox for the title
@@ -1691,9 +1739,9 @@ public class ShareThisDlg extends DlgBox
 		inputPanel.add( m_titleTextBox );
 		m_mainPanel.add( inputPanel );
 		
-		// Add the controls for defining the recipients
-		recipientPanel = createRecipientControls();
-		m_mainPanel.add( recipientPanel );
+		// Add the controls needed to manage sharing.
+		sharePanel = createShareControls();
+		m_mainPanel.add( sharePanel );
 		
 		// Add a "Comments:" label before the textbox.
 		comments = new Label( GwtTeaming.getMessages().commentsLabel() );

@@ -503,7 +503,13 @@
 	width: 315px;
 }
 
-.shareThisRecipientTablePanelHeight, .shareThisMyTeamsPanelHeight
+.shareThisRecipientTablePanelHeight
+{
+	height: 200px;
+	overflow: auto;
+}
+
+.shareThisMyTeamsPanelHeight
 {
 	height: 100px;
 	overflow: auto;
