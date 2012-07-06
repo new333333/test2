@@ -1,3 +1,3 @@
-drop database sitescape;
+-- drop database sitescape;
 create database sitescape;
 go
