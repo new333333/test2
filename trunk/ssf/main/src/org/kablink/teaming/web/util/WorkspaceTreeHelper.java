@@ -223,7 +223,7 @@ public class WorkspaceTreeHelper {
 				}
 				// Redirect to viewing the profile entry
 				PortletURL reloadUrl = response.createRenderURL();
-				reloadUrl.setParameter(WebKeys.URL_BINDER_ID, bs.getProfileModule().getProfileBinder().getId().toString());
+				reloadUrl.setParameter(WebKeys.URL_BINDER_ID, bs.getProfileModule().getProfileBinderId().toString());
 				reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_ENTRY);
 				reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 				reloadUrl.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, WebKeys.URL_ENTRY_VIEW_STYLE_FULL);

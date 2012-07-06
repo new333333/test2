@@ -473,11 +473,11 @@ public class ViewPermalinkController  extends SAbstractController {
 					if (isMobile) {
 						url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MOBILE_AJAX);
 						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_USER);
-			 			url.setParameter(WebKeys.URL_BINDER_ID, getProfileModule().getProfileBinder().getId().toString());
+			 			url.setParameter(WebKeys.URL_BINDER_ID, getProfileModule().getProfileBinderId().toString());
 			 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 					} else {
 			 			url.setParameter(WebKeys.URL_ACTION, "view_profile_entry");
-			 			url.setParameter(WebKeys.URL_BINDER_ID, getProfileModule().getProfileBinder().getId().toString());
+			 			url.setParameter(WebKeys.URL_BINDER_ID, getProfileModule().getProfileBinderId().toString());
 			 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 			 			url.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, "full");
 					}
