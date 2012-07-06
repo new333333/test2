@@ -1114,6 +1114,10 @@ public interface GwtTeamingMessages extends Messages
 	String shareCaption();
 	String shareDlg_alreadySharedWithSelectedRecipient( String recipientName );
 	String shareDlg_contributor();
+	String shareDlg_expiresAfter( String after );
+	String shareDlg_expiresLabel();
+	String shareDlg_expiresNever();
+	String shareDlg_expiresOn( String on );
 	String shareDlg_owner();
 	String shareDlg_rightsLabel();
 	String shareDlg_shareLabel();

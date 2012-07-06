@@ -118,6 +118,7 @@ public class ShareThisDlg extends DlgBox
 	private RadioButton m_contributorRB;
 	private RadioButton m_ownerRB;
 	private FindCtrl m_findCtrl;
+	private InlineLabel m_expiresLabel;
 	private FlowPanel m_mainPanel;
 	private ImageResource m_deleteImgR;
 	private FlexTable m_shareTable;
@@ -131,6 +132,7 @@ public class ShareThisDlg extends DlgBox
 	private AsyncCallback<VibeRpcResponse> m_shareEntryCallback;
 	private String m_title;
 	private UIObject m_target;
+	private ShareExpirationValue m_defaultShareExpirationValue;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -184,6 +186,110 @@ public class ShareThisDlg extends DlgBox
 	}
 
 	/**
+	 * This class represents the different share expiration values
+	 */
+	public enum ShareExpirationType implements IsSerializable
+	{
+		AFTER_DAYS,
+		NEVER,
+		ON_DATE,
+		
+		UNKNOWN
+	}
+	
+	/**
+	 * This class represents a share expiration value
+	 */
+	public class ShareExpirationValue
+	{
+		private ShareExpirationType m_expirationType;
+		private Long m_value;
+		
+		/**
+		 * 
+		 */
+		public ShareExpirationValue()
+		{
+			m_expirationType = ShareExpirationType.NEVER;
+			m_value = null;
+		}
+		
+		/**
+		 * 
+		 */
+		public ShareExpirationValue( ShareExpirationValue value )
+		{
+			m_expirationType = value.getExpirationType();
+			m_value = value.getValue();
+		}
+		
+		/**
+		 * 
+		 */
+		public ShareExpirationType getExpirationType()
+		{
+			return m_expirationType;
+		}
+		
+		/**
+		 * 
+		 */
+		public Long getValue()
+		{
+			return m_value;
+		}
+		
+		/**
+		 * 
+		 */
+		public String getValueAsString()
+		{
+			if ( m_expirationType == ShareExpirationType.NEVER )
+				return GwtTeaming.getMessages().shareDlg_expiresNever();
+			
+			if ( m_expirationType == ShareExpirationType.ON_DATE )
+			{
+				String on;
+				
+				on = "";
+				if ( m_value != null )
+					m_value.toString();
+				
+				return GwtTeaming.getMessages().shareDlg_expiresOn( on );
+			}
+			
+			if ( m_expirationType == ShareExpirationType.AFTER_DAYS )
+			{
+				String after;
+				
+				after = "";
+				if ( m_value != null )
+					after = m_value.toString();
+				
+				return GwtTeaming.getMessages().shareDlg_expiresAfter( after );
+			}
+			
+			return "Unknown expiration type";
+		}
+		
+		/**
+		 * 
+		 */
+		public void setType( ShareExpirationType type )
+		{
+			m_expirationType = type;
+		}
+		
+		/**
+		 * 
+		 */
+		public void setValue( Long value )
+		{
+			m_value = value;
+		}
+	}
+	
+	/**
 	 * This class represents the different share rights
 	 */
 	public enum ShareRights implements IsSerializable
@@ -219,6 +325,7 @@ public class ShareThisDlg extends DlgBox
 		private String m_recipientId;
 		private RecipientType m_recipientType;
 		private ShareRights m_shareRights;
+		private ShareExpirationValue m_shareExpirationValue;
 		
 		/**
 		 * 
@@ -230,6 +337,7 @@ public class ShareThisDlg extends DlgBox
 			m_recipientId = null;
 			m_recipientType = RecipientType.UNKNOWN;
 			m_shareRights = ShareRights.VIEW;
+			m_shareExpirationValue = null;
 		}
 		
 		/**
@@ -247,7 +355,17 @@ public class ShareThisDlg extends DlgBox
 		{
 			return m_recipientName;
 		}
-		
+
+		/**
+		 * 
+		 */
+		public String getShareExpirationValueAsString()
+		{
+			if ( m_shareExpirationValue != null )
+				return m_shareExpirationValue.getValueAsString();
+			
+			return "";
+		}
 		/**
 		 * 
 		 */
@@ -307,6 +425,14 @@ public class ShareThisDlg extends DlgBox
 		public void setRecipientName( String name )
 		{
 			m_recipientName = name;
+		}
+		
+		/**
+		 * 
+		 */
+		public void setShareExpirationValue( ShareExpirationValue value )
+		{
+			m_shareExpirationValue = new ShareExpirationValue( value );
 		}
 		
 		/**
@@ -411,6 +537,90 @@ public class ShareThisDlg extends DlgBox
 		public void onMouseOver( MouseOverEvent event )
 		{
 			m_nameLabel.addStyleName( "shareThisDlgNameHover" );
+		}
+	}
+	
+	/**
+	 * This widget is used to display the rights for a given share and allow the user
+	 * to change the rights.
+	 */
+	private class ShareAccessWidget extends Composite
+		implements ClickHandler
+	{
+		private ShareInfo m_shareInfo;
+		
+		/**
+		 * 
+		 */
+		public ShareAccessWidget( ShareInfo shareInfo )
+		{
+			InlineLabel rightsLabel;
+			ImageResource imageResource;
+			Image img;
+			
+			m_shareInfo = shareInfo;
+
+			rightsLabel = new InlineLabel( shareInfo.getShareRightsAsString() );
+			rightsLabel.addStyleName( "shareThis_RightsLabel" );
+			rightsLabel.addClickHandler( this );
+			
+			imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
+			img = new Image( imageResource );
+			img.getElement().setAttribute( "align", "absmiddle" );
+			rightsLabel.getElement().appendChild( img.getElement() );
+			
+			initWidget( rightsLabel );
+		}
+
+		/**
+		 * 
+		 */
+		@Override
+		public void onClick( ClickEvent event )
+		{
+			Window.alert( "Not yet implemented: " + m_shareInfo.getRecipientName() + " access: " + m_shareInfo.getShareRightsAsString() );
+		}
+	}
+	
+	/**
+	 * This widget is used to display the expiration for a given share and allow the user
+	 * to change the expiration.
+	 */
+	private class ShareExpirationWidget extends Composite
+		implements ClickHandler
+	{
+		private ShareInfo m_shareInfo;
+		
+		/**
+		 * 
+		 */
+		public ShareExpirationWidget( ShareInfo shareInfo )
+		{
+			InlineLabel expiresLabel;
+			ImageResource imageResource;
+			Image img;
+			
+			m_shareInfo = shareInfo;
+
+			expiresLabel = new InlineLabel( shareInfo.getShareExpirationValueAsString() );
+			expiresLabel.addStyleName( "shareThis_ExpiresLabel" );
+			expiresLabel.addClickHandler( this );
+			
+			imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
+			img = new Image( imageResource );
+			img.getElement().setAttribute( "align", "absmiddle" );
+			expiresLabel.getElement().appendChild( img.getElement() );
+			
+			initWidget( expiresLabel );
+		}
+
+		/**
+		 * 
+		 */
+		@Override
+		public void onClick( ClickEvent event )
+		{
+			Window.alert( "Not yet implemented: " + m_shareInfo.getRecipientName() + " expires: " + m_shareInfo.getShareExpirationValueAsString() );
 		}
 	}
 	
@@ -552,15 +762,25 @@ public class ShareThisDlg extends DlgBox
 		
 		// Add the share rights in the 3rd column
 		{
-			String rights;
+			ShareAccessWidget accessWidget;
 			
-			rights = shareInfo.getShareRightsAsString();
-			m_shareTable.setText( row, 2, rights );
+			accessWidget = new ShareAccessWidget( shareInfo );
+			m_shareTable.setWidget( row, 2, accessWidget );
+		}
+		
+		// Add the expires values in the 4th column
+		{
+			ShareExpirationWidget expirationWidget;
+			
+			expirationWidget = new ShareExpirationWidget( shareInfo );
+			m_shareTable.setWidget( row, 3, expirationWidget );
 		}
 
-		// Add the "remove share" widget to the 3rd column.
-		removeWidget = new RemoveShareWidget( shareInfo );
-		m_shareTable.setWidget( row, 4, removeWidget );
+		// Add the "remove share" widget to the 5th column.
+		{
+			removeWidget = new RemoveShareWidget( shareInfo );
+			m_shareTable.setWidget( row, 4, removeWidget );
+		}
 
 		// Add the necessary styles to the cells in the row.
 		m_shareCellFormatter.addStyleName( row, 0, "oltBorderLeft" );
@@ -659,13 +879,13 @@ public class ShareThisDlg extends DlgBox
 		FlexTable mainTable;
 		HTMLTable.RowFormatter mainRowFormatter;
 		FlexCellFormatter mainCellFormatter;
-		ClickHandler clickHandler;
 		int row;
 		
 		// Create a panel for all of the controls dealing with the shares.
 		mainPanel = new FlowPanel();
 		
 		mainTable = new FlexTable();
+		mainTable.setCellSpacing( 6 );
 		mainPanel.add( mainTable );
 		
 		mainRowFormatter = mainTable.getRowFormatter();
@@ -685,6 +905,8 @@ public class ShareThisDlg extends DlgBox
 
 			// Add a "Users" radio button.
 			{
+				ClickHandler clickHandler;
+
 				m_usersRB = new RadioButton( "recipient-type", GwtTeaming.getMessages().shareWithUsers() );
 				m_usersRB.setValue( Boolean.TRUE );
 				rbPanel.add( m_usersRB );
@@ -714,6 +936,8 @@ public class ShareThisDlg extends DlgBox
 			
 			// Add a "Groups" radio button
 			{
+				ClickHandler clickHandler;
+
 				m_groupsRB = new RadioButton( "recipient-type", GwtTeaming.getMessages().shareWithGroups() );
 				m_groupsRB.addStyleName( "paddingLeft1em" );
 				rbPanel.add( m_groupsRB );
@@ -801,6 +1025,7 @@ public class ShareThisDlg extends DlgBox
 			
 			// Add an "add external user" image.
 			{
+				ClickHandler clickHandler;
 				ImageResource imageResource;
 				Image addImg;
 				
@@ -858,6 +1083,50 @@ public class ShareThisDlg extends DlgBox
 			
 			mainTable.setText( row, 0, GwtTeaming.getMessages().shareDlg_rightsLabel() );
 			mainTable.setWidget( row, 1, rightsPanel );
+			
+			++row;
+		}
+		
+		// Add the expiration controls
+		{
+			ImageResource imageResource;
+			Image img;
+			ClickHandler clickHandler;
+			
+			mainTable.setText( row, 0, GwtTeaming.getMessages().shareDlg_expiresLabel() );
+		
+			m_expiresLabel = new InlineLabel( GwtTeaming.getMessages().shareDlg_expiresNever() );
+			m_expiresLabel.addStyleName( "shareThis_DefaultExpiresLabel" );
+
+			imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
+			img = new Image( imageResource );
+			img.getElement().setAttribute( "align", "absmiddle" );
+			m_expiresLabel.getElement().appendChild( img.getElement() );
+
+			m_defaultShareExpirationValue = new ShareExpirationValue();
+			m_defaultShareExpirationValue.setType( ShareExpirationType.NEVER );
+			
+			clickHandler = new ClickHandler()
+			{
+				@Override
+				public void onClick(ClickEvent event)
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							handleClickOnDefaultExpiration();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+			m_expiresLabel.addClickHandler( clickHandler );
+
+			mainTable.setWidget( row, 1, m_expiresLabel );
 			
 			++row;
 		}
@@ -1337,6 +1606,7 @@ public class ShareThisDlg extends DlgBox
 			shareInfo.setRecipientName( emailAddress );
 			shareInfo.setRecipientType( RecipientType.EXTERNAL_USER );
 			shareInfo.setShareRights( getSelectedShareRights() );
+			shareInfo.setShareExpirationValue( m_defaultShareExpirationValue );
 			//!!! Finish
 			
 			// Is this external user already in the list?
@@ -1351,6 +1621,14 @@ public class ShareThisDlg extends DlgBox
 				Window.alert( GwtTeaming.getMessages().shareDlg_alreadySharedWithSelectedRecipient( emailAddress ) );
 			}
 		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void handleClickOnDefaultExpiration()
+	{
+		Window.alert( "Not yet implemented" );
 	}
 	
 	/**
@@ -1607,6 +1885,7 @@ public class ShareThisDlg extends DlgBox
 					{
 						// No
 						shareInfo.setShareRights( getSelectedShareRights() );
+						shareInfo.setShareExpirationValue( m_defaultShareExpirationValue );
 						
 						// Add the recipient to our list of recipients
 						addShare( shareInfo );
