@@ -64,8 +64,12 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -79,6 +83,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTMLTable;
@@ -110,6 +115,9 @@ public class ShareThisDlg extends DlgBox
 	private TextArea m_msgTextArea;
 	private RadioButton m_usersRB;
 	private RadioButton m_groupsRB;
+	private RadioButton m_viewRB;
+	private RadioButton m_contributorRB;
+	private RadioButton m_ownerRB;
 	private FindCtrl m_findCtrl;
 	private FlowPanel m_mainPanel;
 	private ImageResource m_deleteImgR;
@@ -175,6 +183,18 @@ public class ShareThisDlg extends DlgBox
 			return m_checkbox.getValue();
 		}
 	}
+
+	/**
+	 * This class represents the different share rights
+	 */
+	public enum ShareRights implements IsSerializable
+	{
+		VIEW,
+		CONTRIBUTOR,
+		OWNER,
+		
+		UNKNOWN
+	}
 	
 	/**
 	 * This class represents the different types of recipients.
@@ -183,6 +203,7 @@ public class ShareThisDlg extends DlgBox
 	{
 		USER,
 		GROUP,
+		EXTERNAL_USER,
 		
 		UNKNOWN,
 	}
@@ -196,6 +217,7 @@ public class ShareThisDlg extends DlgBox
 		private String m_recipientName;
 		private String m_id;
 		private RecipientType m_type;
+		private ShareRights m_shareRights;
 		
 		/**
 		 * 
@@ -205,6 +227,7 @@ public class ShareThisDlg extends DlgBox
 			m_recipientName = null;
 			m_id = null;
 			m_type = RecipientType.UNKNOWN;
+			m_shareRights = ShareRights.VIEW;
 		}
 		
 		/**
@@ -221,6 +244,23 @@ public class ShareThisDlg extends DlgBox
 		public String getName()
 		{
 			return m_recipientName;
+		}
+		
+		/**
+		 * 
+		 */
+		public String getShareRightsAsString()
+		{
+			if ( m_shareRights == ShareRights.VIEW )
+				return GwtTeaming.getMessages().shareDlg_view();
+			
+			if ( m_shareRights == ShareRights.CONTRIBUTOR )
+				return GwtTeaming.getMessages().shareDlg_contributor();
+			
+			if ( m_shareRights == ShareRights.OWNER )
+				return GwtTeaming.getMessages().shareDlg_owner();
+			
+			return "Unknown";
 		}
 		
 		/**
@@ -245,6 +285,14 @@ public class ShareThisDlg extends DlgBox
 		public void setName( String name )
 		{
 			m_recipientName = name;
+		}
+		
+		/**
+		 * 
+		 */
+		public void setShareRights( ShareRights shareRights )
+		{
+			m_shareRights = shareRights;
 		}
 		
 		/**
@@ -423,7 +471,8 @@ public class ShareThisDlg extends DlgBox
 		int row;
 		
 		row = 1;
-		m_cellFormatter.setColSpan( row, 0, 3 );
+		m_cellFormatter.setColSpan( row, 0, 5 );
+		m_cellFormatter.setWordWrap( row, 0, false );
 		m_cellFormatter.addStyleName( row, 0, "oltBorderLeft" );
 		m_cellFormatter.addStyleName( row, 0, "oltBorderRight" );
 		m_cellFormatter.addStyleName( row, 0, "oltContentPadding" );
@@ -470,31 +519,47 @@ public class ShareThisDlg extends DlgBox
 		
 		// Add the recipient name in the first column.
 		m_cellFormatter.setColSpan( row, 0, 1 );
+		m_cellFormatter.setWordWrap( row, 0, false );
 		recipientNameWidget = new RecipientNameWidget( recipientInfo );
 		m_recipientTable.setWidget( row, 0,  recipientNameWidget );
 
 		// Add the recipient type in the second column.
+		m_cellFormatter.setWordWrap( row, 1, false );
 		if ( recipientInfo.getType() == RecipientType.USER )
 			type = GwtTeaming.getMessages().shareTypeUser();
 		else if ( recipientInfo.getType() == RecipientType.GROUP )
 			type = GwtTeaming.getMessages().shareTypeGroup();
+		else if ( recipientInfo.getType() == RecipientType.EXTERNAL_USER )
+			type = GwtTeaming.getMessages().shareTypeExternalUser();
 		else
 			type = GwtTeaming.getMessages().unknownShareType();
 		m_recipientTable.setText( row, 1, type );
+		
+		// Add the share rights in the 3rd column
+		{
+			String rights;
+			
+			rights = recipientInfo.getShareRightsAsString();
+			m_recipientTable.setText( row, 2, rights );
+		}
 
 		// Add the "remove recipient" widget to the 3rd column.
 		removeWidget = new RemoveRecipientWidget( recipientInfo );
-		m_recipientTable.setWidget( row, 2, removeWidget );
+		m_recipientTable.setWidget( row, 4, removeWidget );
 
 		// Add the necessary styles to the cells in the row.
 		m_cellFormatter.addStyleName( row, 0, "oltBorderLeft" );
-		m_cellFormatter.addStyleName( row, 2, "oltBorderRight" );
+		m_cellFormatter.addStyleName( row, 4, "oltBorderRight" );
 		m_cellFormatter.addStyleName( row, 0, "oltContentBorderBottom" );
 		m_cellFormatter.addStyleName( row, 1, "oltContentBorderBottom" );
 		m_cellFormatter.addStyleName( row, 2, "oltContentBorderBottom" );
+		m_cellFormatter.addStyleName( row, 3, "oltContentBorderBottom" );
+		m_cellFormatter.addStyleName( row, 4, "oltContentBorderBottom" );
 		m_cellFormatter.addStyleName( row, 0, "oltContentPadding" );
 		m_cellFormatter.addStyleName( row, 1, "oltContentPadding" );
 		m_cellFormatter.addStyleName( row, 2, "oltContentPadding" );
+		m_cellFormatter.addStyleName( row, 3, "oltContentPadding" );
+		m_cellFormatter.addStyleName( row, 4, "oltContentPadding" );
 		
 		adjustRecipientTablePanelHeight();
 	}
@@ -576,80 +641,210 @@ public class ShareThisDlg extends DlgBox
 	private FlowPanel createRecipientControls()
 	{
 		FlowPanel mainPanel;
+		FlexTable mainTable;
+		HTMLTable.RowFormatter mainRowFormatter;
 		ClickHandler clickHandler;
+		int row;
 		
 		// Create a panel for all of the controls dealing with the recipients.
 		mainPanel = new FlowPanel();
 		
-		// Add a "Users" radio button.
-		{
-			m_usersRB = new RadioButton( "recipient-type", GwtTeaming.getMessages().shareWithUsers() );
-			m_usersRB.setValue( Boolean.TRUE );
-			mainPanel.add( m_usersRB );
+		mainTable = new FlexTable();
+		mainPanel.add( mainTable );
 		
-			// Add a click handler for the users rb
-			clickHandler = new ClickHandler()
-			{
-				@Override
-				public void onClick( ClickEvent clickEvent )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							// Set the filter of the Find Control to only search for users.
-							m_findCtrl.setSearchType( SearchType.USER );
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			};
-			m_usersRB.addClickHandler( clickHandler );
-		}
+		mainRowFormatter = mainTable.getRowFormatter();
+		row = 0;
 		
-		// Add a "Groups" radio button
+		// Add the "Users" and "Groups" radio buttons
 		{
-			m_groupsRB = new RadioButton( "recipient-type", GwtTeaming.getMessages().shareWithGroups() );
-			m_groupsRB.addStyleName( "paddingLeft1em" );
-			mainPanel.add( m_groupsRB );
+			FlowPanel rbPanel;
+			
+			mainTable.setText( row, 0, GwtTeaming.getMessages().shareDlg_shareLabel() );
 
-			// Add a click handler for the groups rb
-			clickHandler = new ClickHandler()
+			rbPanel = new FlowPanel();
+			rbPanel.addStyleName( "shareThisFindRBPanel" );
+			mainTable.setWidget( row, 1, rbPanel );
+			mainRowFormatter.setVerticalAlign( row, HasVerticalAlignment.ALIGN_TOP );
+
+			// Add a "Users" radio button.
 			{
-				@Override
-				public void onClick( ClickEvent clickEvent )
+				m_usersRB = new RadioButton( "recipient-type", GwtTeaming.getMessages().shareWithUsers() );
+				m_usersRB.setValue( Boolean.TRUE );
+				rbPanel.add( m_usersRB );
+			
+				// Add a click handler for the users rb
+				clickHandler = new ClickHandler()
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					@Override
+					public void onClick( ClickEvent clickEvent )
 					{
-						@Override
-						public void execute()
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
 						{
-							// Set the filter of the Find Control to only search for groups.
-							m_findCtrl.setSearchType( SearchType.GROUP );
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			};
-			m_groupsRB.addClickHandler( clickHandler );
+							@Override
+							public void execute()
+							{
+								// Set the filter of the Find Control to only search for users.
+								m_findCtrl.setSearchType( SearchType.USER );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				};
+				m_usersRB.addClickHandler( clickHandler );
+			}
+			
+			// Add a "Groups" radio button
+			{
+				m_groupsRB = new RadioButton( "recipient-type", GwtTeaming.getMessages().shareWithGroups() );
+				m_groupsRB.addStyleName( "paddingLeft1em" );
+				rbPanel.add( m_groupsRB );
+
+				// Add a click handler for the groups rb
+				clickHandler = new ClickHandler()
+				{
+					@Override
+					public void onClick( ClickEvent clickEvent )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								// Set the filter of the Find Control to only search for groups.
+								m_findCtrl.setSearchType( SearchType.GROUP );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				};
+				m_groupsRB.addClickHandler( clickHandler );
+			}
+			
+			++row;
 		}
 
 		// Add the find control.
 		{
 			HTMLTable.RowFormatter rowFormatter;
-
-			final FlexTable table = new FlexTable();
-			rowFormatter = table.getRowFormatter();
-			rowFormatter.setVerticalAlign( 0, HasVerticalAlignment.ALIGN_TOP );
-			mainPanel.add( table );
+			FlexTable findTable;
 			
+			// Add a KeyUpHandler to the find control
+			{
+				KeyUpHandler keyUpHandler;
+
+				keyUpHandler = new KeyUpHandler()
+				{
+					@Override
+					public void onKeyUp( KeyUpEvent event )
+					{
+				        final int keyCode;
+
+				        // Get the key the user pressed
+				        keyCode = event.getNativeEvent().getKeyCode();
+
+				        // Did the user press Enter?
+				        if ( keyCode == KeyCodes.KEY_ENTER )
+				        {
+							// Yes, kill the keystroke.
+				        	event.stopPropagation();
+				        	event.preventDefault();
+				        }
+
+				        ScheduledCommand cmd = new ScheduledCommand()
+				        {
+							@Override
+							public void execute()
+							{
+						        // Did the user press Enter?
+						        if ( keyCode == KeyCodes.KEY_ENTER )
+						        {
+									// Yes, try to add a new tag.
+									handleClickOnAddExternalUser();
+						        }
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				};
+				m_findCtrl.addKeyUpHandler( keyUpHandler );
+			}
+
+			findTable = new FlexTable();
+			rowFormatter = findTable.getRowFormatter();
+			rowFormatter.setVerticalAlign( 0, HasVerticalAlignment.ALIGN_TOP );
 			m_findCtrl.setIsSendingEmail( true );
-			table.setWidget( 0, 0, m_findCtrl );
+			findTable.setWidget( 0, 0, m_findCtrl );
+			
+			mainTable.setWidget( row, 1, findTable );
+			mainRowFormatter.setVerticalAlign( row, HasVerticalAlignment.ALIGN_TOP );
+			
+			// Add an "add external user" image.
+			{
+				CellFormatter cellFormatter;
+				ImageResource imageResource;
+				Image addImg;
+				
+				imageResource = GwtTeaming.getImageBundle().add_btn();
+				addImg = new Image( imageResource );
+				addImg.addStyleName( "cursorPointer" );
+				addImg.getElement().setAttribute( "title", GwtTeaming.getMessages().shareDlg_addExternalUserTitle() );
+				mainTable.setWidget( row, 2, addImg );
+				cellFormatter = mainTable.getCellFormatter();
+				cellFormatter.getElement( row, 2 ).getStyle().setPaddingTop( 10, Unit.PX );
+		
+				// Add a click handler to the "add external user" image.
+				clickHandler = new ClickHandler()
+				{
+					@Override
+					public void onClick( ClickEvent clickEvent )
+					{
+						ScheduledCommand cmd = new ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								// Add the email address the user entered.
+								handleClickOnAddExternalUser();
+								
+								// Put the focus back in the find control.
+								m_findCtrl.getFocusWidget().setFocus( true );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				};
+				addImg.addClickHandler( clickHandler );
+			}
+
+			++row;
+		}
+		
+		// Add the radio button for the sharing rights
+		{
+			FlowPanel rightsPanel;
+			
+			rightsPanel = new FlowPanel();
+			
+			m_viewRB = new RadioButton( "sharing-rights", GwtTeaming.getMessages().shareDlg_view() );
+			m_viewRB.setValue( Boolean.TRUE );
+			rightsPanel.add( m_viewRB );
+			
+			m_contributorRB = new RadioButton( "sharing-rights", GwtTeaming.getMessages().shareDlg_contributor() );
+			m_contributorRB.setValue( Boolean.FALSE );
+			rightsPanel.add( m_contributorRB );
+			
+			m_ownerRB = new RadioButton( "sharing-rights", GwtTeaming.getMessages().shareDlg_owner() );
+			m_ownerRB.setValue( Boolean.FALSE );
+			rightsPanel.add( m_ownerRB );
+			
+			mainTable.setText( row, 0, GwtTeaming.getMessages().shareDlg_rightsLabel() );
+			mainTable.setWidget( row, 1, rightsPanel );
+			
+			++row;
 		}
 		
 		// Add some space
@@ -657,8 +852,9 @@ public class ShareThisDlg extends DlgBox
 			FlowPanel spacerPanel;
 			
 			spacerPanel = new FlowPanel();
-			spacerPanel.addStyleName( "paddingTop8px" );
-			mainPanel.add( spacerPanel );
+			spacerPanel.getElement().getStyle().setMarginTop( 10, Unit.PX );
+			mainTable.setWidget( row, 1, spacerPanel );
+			++row;
 		}
 		
 		// Create a table to hold the list of recipients
@@ -676,7 +872,9 @@ public class ShareThisDlg extends DlgBox
 			{
 				m_recipientTable.setText( 0, 0, GwtTeaming.getMessages().shareName() );
 				m_recipientTable.setText( 0, 1, GwtTeaming.getMessages().shareType() );
-				m_recipientTable.setHTML( 0, 2, "&nbsp;" );	// The delete image will go in this column.
+				m_recipientTable.setText( 0, 2, GwtTeaming.getMessages().shareAccess() );
+				m_recipientTable.setText( 0, 3, GwtTeaming.getMessages().shareExpires() );
+				m_recipientTable.setHTML( 0, 4, "&nbsp;" );	// The delete image will go in this column.
 				
 				rowFormatter = m_recipientTable.getRowFormatter();
 				rowFormatter.addStyleName( 0, "oltHeader" );
@@ -685,7 +883,7 @@ public class ShareThisDlg extends DlgBox
 				// On IE calling m_cellFormatter.setWidth( 0, 2, "*" ); throws an exception.
 				// That is why we are calling DOM.setElementAttribute(...) instead.
 				//!!!m_cellFormatter.setWidth( 0, 2, "*" );
-				DOM.setElementAttribute( m_cellFormatter.getElement( 0, 2 ), "width", "*" );
+				DOM.setElementAttribute( m_cellFormatter.getElement( 0, 4 ), "width", "*" );
 				
 				m_cellFormatter.addStyleName( 0, 0, "oltBorderLeft" );
 				m_cellFormatter.addStyleName( 0, 0, "oltHeaderBorderTop" );
@@ -694,14 +892,26 @@ public class ShareThisDlg extends DlgBox
 				m_cellFormatter.addStyleName( 0, 1, "oltHeaderBorderTop" );
 				m_cellFormatter.addStyleName( 0, 1, "oltHeaderBorderBottom" );
 				m_cellFormatter.addStyleName( 0, 1, "oltHeaderPadding" );
-				m_cellFormatter.addStyleName( 0, 2, "oltBorderRight" );
 				m_cellFormatter.addStyleName( 0, 2, "oltHeaderBorderTop" );
 				m_cellFormatter.addStyleName( 0, 2, "oltHeaderBorderBottom" );
 				m_cellFormatter.addStyleName( 0, 2, "oltHeaderPadding" );
+				m_cellFormatter.addStyleName( 0, 3, "oltHeaderBorderTop" );
+				m_cellFormatter.addStyleName( 0, 3, "oltHeaderBorderBottom" );
+				m_cellFormatter.addStyleName( 0, 3, "oltHeaderPadding" );
+				m_cellFormatter.addStyleName( 0, 4, "oltBorderRight" );
+				m_cellFormatter.addStyleName( 0, 4, "oltHeaderBorderTop" );
+				m_cellFormatter.addStyleName( 0, 4, "oltHeaderBorderBottom" );
+				m_cellFormatter.addStyleName( 0, 4, "oltHeaderPadding" );
 			}
 			
 			m_recipientTablePanel.add( m_recipientTable );
-			mainPanel.add( m_recipientTablePanel );
+			
+			mainRowFormatter.setVerticalAlign( row, HasVerticalAlignment.ALIGN_TOP );
+
+			mainTable.setText( row, 0, GwtTeaming.getMessages().shareDlg_sharingLabel() );
+			mainTable.setWidget( row, 1, m_recipientTablePanel );
+			
+			++row;
 		}
 
 		// Create a panel for all of the controls dealing with "my teams"
@@ -915,6 +1125,50 @@ public class ShareThisDlg extends DlgBox
 	}
 
 	/**
+	 * Find the given recipient in the table that holds the recipients.
+	 */
+	private int findRecipientInTable( RecipientInfo recipientInfo )
+	{
+		int i;
+		String name;
+		RecipientType type;
+		
+		name = recipientInfo.getName();
+		type = recipientInfo.getType();
+		
+		// Look through the table for the given recipient.
+		// Recipients start in row 1.
+		for (i = 1; i < m_recipientTable.getRowCount(); ++i)
+		{
+			Widget widget;
+			
+			// Get the RemoveRecipientWidget from the 5 column.
+			widget = m_recipientTable.getWidget( i, 4 );
+			if ( widget != null && widget instanceof RemoveRecipientWidget )
+			{
+				RecipientInfo nextRecipientInfo;
+				
+				nextRecipientInfo = ((RemoveRecipientWidget) widget).getRecipientInfo();
+				if ( nextRecipientInfo != null )
+				{
+					if ( type == nextRecipientInfo.getType() )
+					{
+						if ( name != null && name.equalsIgnoreCase( nextRecipientInfo.getName() ) )
+						{
+							// We found the recipient.
+							return i;
+						}
+					}
+				}
+			}
+		}
+		
+		// If we get here we did not find the recipient.
+		return -1;
+	}
+	
+
+	/**
 	 * Return the text the user entered for the comment.
 	 */
 	private String getComment()
@@ -977,8 +1231,8 @@ public class ShareThisDlg extends DlgBox
 			
 			if ( m_recipientTable.getCellCount( i ) > 2 )
 			{
-				// Get the RemoveRecipientWidget from the 3 column.
-				widget = m_recipientTable.getWidget( i, 2 );
+				// Get the RemoveRecipientWidget from the 5 column.
+				widget = m_recipientTable.getWidget( i, 4 );
 				if ( widget != null && widget instanceof RemoveRecipientWidget )
 				{
 					RecipientInfo nextRecipientInfo;
@@ -993,6 +1247,24 @@ public class ShareThisDlg extends DlgBox
 		}
 		
 		return recipientIds;
+	}
+	
+	/**
+	 * Return the selected share rights
+	 */
+	private ShareRights getSelectedShareRights()
+	{
+		if (  m_viewRB.getValue() == Boolean.TRUE )
+			return ShareRights.VIEW;
+		
+		if ( m_contributorRB.getValue() == Boolean.TRUE )
+			return ShareRights.CONTRIBUTOR;
+		
+		if ( m_ownerRB.getValue() == Boolean.TRUE )
+			return ShareRights.OWNER;
+		
+		return ShareRights.UNKNOWN;
+	
 	}
 	
 	/**
@@ -1031,48 +1303,30 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
-	 * Find the given recipient in the table that holds the recipients.
+	 * 
 	 */
-	private int findRecipientInTable( RecipientInfo recipientInfo )
+	private void handleClickOnAddExternalUser()
 	{
-		int i;
-		String name;
-		RecipientType type;
+		String emailAddress;
 		
-		name = recipientInfo.getName();
-		type = recipientInfo.getType();
-		
-		// Look through the table for the given recipient.
-		// Recipients start in row 1.
-		for (i = 1; i < m_recipientTable.getRowCount(); ++i)
+		emailAddress = m_findCtrl.getText();
+
+		if ( emailAddress != null && emailAddress.length() > 0 )
 		{
-			Widget widget;
+			RecipientInfo recipientInfo;
 			
-			// Get the RemoveRecipientWidget from the 3 column.
-			widget = m_recipientTable.getWidget( i, 2 );
-			if ( widget != null && widget instanceof RemoveRecipientWidget )
-			{
-				RecipientInfo nextRecipientInfo;
-				
-				nextRecipientInfo = ((RemoveRecipientWidget) widget).getRecipientInfo();
-				if ( nextRecipientInfo != null )
-				{
-					if ( type == nextRecipientInfo.getType() )
-					{
-						if ( name != null && name.equalsIgnoreCase( nextRecipientInfo.getName() ) )
-						{
-							// We found the recipient.
-							return i;
-						}
-					}
-				}
-			}
+			// Clear what the user has typed.
+			m_findCtrl.clearText();
+			
+			recipientInfo = new RecipientInfo();
+			recipientInfo.setName( emailAddress );
+			recipientInfo.setType( RecipientType.EXTERNAL_USER );
+			recipientInfo.setShareRights( getSelectedShareRights() );
+			
+			addRecipient( recipientInfo );
+			//!!! Finish
 		}
-		
-		// If we get here we did not find the recipient.
-		return -1;
 	}
-	
 	
 	/**
 	 * 
@@ -1313,6 +1567,7 @@ public class ShareThisDlg extends DlgBox
 		if ( recipientInfo != null )
 		{
 			// Yes
+			recipientInfo.setShareRights( getSelectedShareRights() );
 			
 			// Add the recipient to our list of recipients
 			addRecipient( recipientInfo );
