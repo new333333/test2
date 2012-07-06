@@ -1502,15 +1502,29 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	@Override
 	void selectBinder(TreeInfo ti) {
 		// We skip selecting a trash...
-		boolean skipSelection = ((null == ti) || ti.isBinderTrash());
-		if ((!skipSelection) && (!(WorkspaceTreeControl.showNavigationTrees()))) {
-			// ...or non-collection when not showing navigation trees.
+		boolean showNavigationTrees = WorkspaceTreeControl.showNavigationTrees();
+		boolean skipSelection       = ((null == ti) || ti.isBinderTrash());
+		if ((!skipSelection) && (!showNavigationTrees)) {
+			// ...or non-collection when navigation trees not being
+			// ...shown.
 			skipSelection = (!(ti.isBinderCollection()));
 		}
 
 		// Should we select this item?
-		if (!skipSelection) {
-			// Yes!  Mark it as having been selected.
+		if (skipSelection) {
+			// No!  Are navigation trees being shown?
+			if (!showNavigationTrees) {
+				// No!  Set/clear the selector configuration menu, as
+				// appropriate.
+				if ((null != ti) && ti.getBinderInfo().isEqual(getRootTreeInfo().getBinderInfo()))
+				     selectRootConfig();
+				else clearSelectorConfig();
+			}
+		}
+		
+		else {
+			// Yes, we need to select this item!  Mark it as having
+			// been selected.
 			if (!(ti.isActivityStream())) {
 				setSelectedBinderInfo(ti.getBinderInfo());
 			}
@@ -1545,6 +1559,17 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			selectorId.setAttribute("value", selectedId_New);
 			showBinderConfig(ti, selectedId_New);
 		}
+	}
+
+	/*
+	 * Shows the selector configuration menu on the root TreeInfo.
+	 */
+	private void selectRootConfig() {
+		// Show the selector configuration widget on the root.
+		TreeInfo rootTI = getRootTreeInfo();
+		String selectedId = getSelectorId(rootTI);
+//		Document.get().getElementById(EXTENSION_ID_SELECTOR_ID).setAttribute("value", selectedId);
+		showBinderConfig(rootTI, selectedId);
 	}
 
 	/**
@@ -1584,10 +1609,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			return;
 		}
 		
-		// Are we in a mode where we don't show navigation trees?
+		// If we are in a mode where we don't show navigation trees...
 		if (!(WorkspaceTreeControl.showNavigationTrees())) {
-			// Yes, navigation tress are not being show!  Simply
-			// ignore the select.
+			// ...select the binder.
+			selectBinder(
+				TreeInfo.findBinderTI(
+					getRootTreeInfo(),
+					osbInfo.getBinderInfo().getBinderId()));
+			
 			return;
 		}
 		
