@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class table="SS_ShareWith" discriminator-value="A" name="org.kablink.teaming.domain.ShareWith">
+    <id unsaved-value="null" name="id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <property name="zoneId" access="field"/>
+    <many-to-one name="sharer"/>
+    <any name="entity" id-type="java.lang.Long" meta-type="string">
+      <meta-value class="org.kablink.teaming.domain.FolderEntry" value="folderEntry"/>
+      <meta-value class="org.kablink.teaming.domain.User" value="user"/>
+      <meta-value class="org.kablink.teaming.domain.Group" value="group"/>
+      <meta-value class="org.kablink.teaming.domain.Folder" value="folder"/>
+      <meta-value class="org.kablink.teaming.domain.Workspace" value="workspace"/>
+      <meta-value class="org.kablink.teaming.domain.ProfileBinder" value="profileBinder"/>
+      <meta-value class="org.kablink.teaming.domain.TemplateBinder" value="template"/>
+      <column name="entityType"  length="16" index="entity_shared"/>
+      <column name="entityId" index="entity_shared"/>
+    </any>
+    <property name="startDate"/>
+    <property name="endDate"/>
+    <property name="recipientType" access="field"/>
+    <property name="recipientId"/>
+    <component name="description">
+      <property name="HDescription" column="description_text" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>
+      <property name="HFormat" column="description_format"/>
+    </component>
+    <component name="rightSet" class="org.kablink.teaming.domain.ShareWith$RightSet">
+    	<property name="createEntries" column="right_createEntries"/>
+    	<property name="modifyEntries" column="right_modifyEntries"/>
+    	<property name="modifyEntryFields" column="right_modifyEntryFields"/>
+    	<property name="deleteEntries" column="right_deleteEntries"/>
+    	<property name="readEntries" column="right_readEntries"/>
+    	<property name="addReplies" column="right_addReplies"/>
+    	<property name="generateReports" column="right_generateReports"/>
+    	<property name="binderAdministration" column="right_binderAdministration"/>
+    	<property name="createEntryAcls" column="right_createEntryAcls"/>
+    	<property name="changeAccessControl" column="right_changeAccessControl"/>
+    	<property name="createWorkspaces" column="right_createWorkspaces"/>
+    	<property name="createFolders" column="right_createFolders"/>
+    	<property name="manageEntryDefinitions" column="right_manageEntryDefs"/>
+    	<property name="manageWorkflowDefinitions" column="right_manageWorkflowDefs"/>
+    	<property name="creatorReadEntries" column="right_creatorReadEntries"/>
+    	<property name="creatorModifyEntries" column="right_creatorModifyEntries"/>
+    	<property name="creatorDeleteEntries" column="right_creatorDeleteEntries"/>
+    	<property name="ownerCreateEntryAcls" column="right_ownerCreateEntryAcls"/>
+    	<property name="addTags" column="right_addTags"/>
+    	<property name="viewBinderTitle" column="right_viewBinderTitle"/>
+    </component> 
+  </class>
+</hibernate-mapping>
