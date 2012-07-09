@@ -39,6 +39,9 @@ import org.kablink.teaming.util.SPropsUtil;
 
 @SuppressWarnings("unchecked")
 public class ZoneConfig extends ZonedObject implements WorkArea {
+	
+	public static final String WORKAREA_TYPE = "zone";
+	
 	public static Integer ZONE_LATEST_VERSION=9;  //This is used to introduce changes and fix things up between releases.
 	private Integer upgradeVersion=ZONE_LATEST_VERSION; 
 	private AuthenticationConfig authenticationConfig;
@@ -210,7 +213,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     	return getZoneId();
     }
     public String getWorkAreaType() {
-    	return EntityIdentifier.EntityType.zone.name();
+    	return WORKAREA_TYPE;
     }
     public WorkArea getParentWorkArea() {
     	return null;

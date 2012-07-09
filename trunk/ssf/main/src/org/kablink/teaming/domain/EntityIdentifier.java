@@ -56,11 +56,8 @@ public class EntityIdentifier implements Comparable<EntityIdentifier> {
 		user (4), 
 		group (5), 
 		folderEntry (6),
-		dashboard (7),
 		application (8),
-		applicationGroup (9),
-		zone (10),
-		resourceDriver (11);
+		applicationGroup (9);
 		int dbValue;
 		EntityType(int dbValue) {
 			this.dbValue = dbValue;
@@ -86,11 +83,11 @@ public class EntityIdentifier implements Comparable<EntityIdentifier> {
 			case 4: return EntityType.user;
 			case 5: return EntityType.group;
 			case 6: return EntityType.folderEntry;
-			case 7: return EntityType.dashboard;
+			case 7: throw new IllegalArgumentException("Illegal type value " + type + " for EntityType"); // return EntityType.dashboard;
 			case 8: return EntityType.application;
 			case 9: return EntityType.applicationGroup;
-			case 10: return EntityType.zone;
-			case 11: return EntityType.resourceDriver;
+			case 10: throw new IllegalArgumentException("Illegal type value " + type + " for EntityType"); // return EntityType.zone;
+			case 11: throw new IllegalArgumentException("Illegal type value " + type + " for EntityType"); // return EntityType.resourceDriver;
 			default: return EntityType.none;
 			}
 		}

@@ -102,7 +102,7 @@ public class WorkAreaHelper {
 		Map sortedUsersMapAll = new TreeMap();
 		Map sortedApplicationsMap = new TreeMap();
 		Map sortedApplicationGroupsMap = new TreeMap();
-		boolean zoneWide = wArea.getWorkAreaType().equals(EntityIdentifier.EntityType.zone.name());
+		boolean zoneWide = wArea.getWorkAreaType().equals(ZoneConfig.WORKAREA_TYPE);
 
 		String[] btnClicked = new String[] {""};
  		if (formData.containsKey("btnClicked")) btnClicked = (String[])formData.get("btnClicked");
