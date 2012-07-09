@@ -34,6 +34,7 @@
 package org.kablink.teaming.domain;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Date;
 
 import org.kablink.teaming.InternalException;
@@ -46,17 +47,17 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 public class ShareWith extends ZonedObject {
 
 	public enum RecipientType {
-		user(1),
-		group(2),
-		team(11);
-		int value;
-	    RecipientType(int value) {
+		user((byte)1),
+		group((byte)2),
+		team((byte)11);
+		byte value;
+	    RecipientType(byte value) {
 	    	this.value = value;
 	    }
-	    public int getValue() {
+	    public byte getValue() {
 	    	return value;
 	    }
-	    public static RecipientType valueOf(int value) {
+	    public static RecipientType valueOf(byte value) {
 	    	switch(value) {
 	    	case 1: return RecipientType.user;
 	    	case 2: return RecipientType.group;
@@ -71,7 +72,7 @@ public class ShareWith extends ZonedObject {
 	protected DefinableEntity entity;
 	protected Date startDate;
 	protected Date endDate;
-	protected int recipientType;
+	protected byte recipientType;
 	protected long recipientId;
 	protected Description description;
 	protected RightSet rightSet;
@@ -169,7 +170,7 @@ public class ShareWith extends ZonedObject {
 	protected void setRightSet(RightSet rightSet) {
 		this.rightSet = rightSet;
 	}
-
+	
 	public static class RightSet {
 		protected boolean createEntries = false;
 		protected boolean modifyEntries = false;
@@ -388,6 +389,62 @@ public class ShareWith extends ZonedObject {
 		public void setViewBinderTitle(boolean viewBinderTitle) {
 			this.viewBinderTitle = viewBinderTitle;
 		}
+		
+	}
+	
+	public static class SearchSpec {
+		private Long sharerId;
+		private Long entityId;
+		private Date startDateBegin;
+		private boolean startDateBeginInclusive;
+		private Date startDateEnd;
+		private boolean startDateEndInclusive;
+		private Date endDateBegin;
+		private boolean endDateBeginInclusive;
+		private Date endDateEnd;
+		private boolean endDateEndInclusive;
+		private byte[] recipientTypes;
+		private Collection<Long> recipientIds;
+		private Collection<String> onRights;
+		private boolean onRightsConjunctional;
+		
+		public Long getSharerId() {
+			return sharerId;
+		}
+		public void setSharerId(Long sharerId) {
+			this.sharerId = sharerId;
+		}
+		public Long getEntityId() {
+			return entityId;
+		}
+		public void setEntityId(Long entityId) {
+			this.entityId = entityId;
+		}
+		public void setStartDateRange(Date startDateBegin, boolean startDateBeginInclusive, Date startDateEnd, boolean startDateEndInclusive) {
+			this.startDateBegin = startDateBegin;
+			this.startDateBeginInclusive = startDateBeginInclusive;
+			this.startDateEnd = startDateEnd;
+			this.startDateEndInclusive = startDateEndInclusive;
+		}
+		public void setEndDateRange(Date endDateBegin, boolean endDateBeginInclusive, Date endDateEnd, boolean endDateEndInclusive) {
+			this.endDateBegin = endDateBegin;
+			this.endDateBeginInclusive = endDateBeginInclusive;
+			this.endDateEnd = endDateEnd;
+			this.endDateEndInclusive = endDateEndInclusive;
+		}
+		public byte[] getRecipientTypes() {
+			return recipientTypes;
+		}
+		public void setRecipientTypes(byte[] recipientTypes) {
+			this.recipientTypes = recipientTypes;
+		}
+		public Collection<Long> getRecipientIds() {
+			return recipientIds;
+		}
+		public void setRecipientIds(Collection<Long> recipientIds) {
+			this.recipientIds = recipientIds;
+		}
+		
 		
 	}
 	

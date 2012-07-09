@@ -39,6 +39,8 @@ import org.kablink.teaming.security.function.WorkArea;
 
 public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 
+	public static final String WORKAREA_TYPE = "resourceDriver";
+	
 	private Long id; // This is primary key
 	private String name;
 	private DriverType driverType;
@@ -230,7 +232,7 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 
 	@Override
 	public String getWorkAreaType() {
-		return EntityIdentifier.EntityType.resourceDriver.name();
+		return WORKAREA_TYPE;
 	}
 
 	@Override

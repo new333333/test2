@@ -57,6 +57,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.license.LicenseManager;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -254,7 +255,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				}
 				membersToLookup = getProfileDao().getPrincipalIds(user);
 				Long allUsersId = Utils.getAllUsersGroupId();
-				if (allUsersId != null && !workArea.getWorkAreaType().equals(EntityIdentifier.EntityType.zone.name()) 
+				if (allUsersId != null && !workArea.getWorkAreaType().equals(ZoneConfig.WORKAREA_TYPE) 
 						&& membersToLookup.contains(allUsersId) && 
 						Utils.canUserOnlySeeCommonGroupMembers(user)) {
 					if (Utils.isWorkareaInProfilesTree(workArea)) {

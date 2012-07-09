@@ -89,7 +89,7 @@ public class AccessControlController extends AbstractBinderController {
 		WorkArea workArea = null;
 		request.setAttribute("roleId", "");
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKAREA_TYPE, "");	
-		if (EntityIdentifier.EntityType.zone.name().equals(type)) {
+		if (ZoneConfig.WORKAREA_TYPE.equals(type)) {
 			workArea = getZoneModule().getZoneConfig(workAreaId);
 		} else if (EntityIdentifier.EntityType.folderEntry.name().equals(type)) {
 			FolderEntry entry = getFolderModule().getEntry(null, workAreaId);
@@ -167,7 +167,7 @@ public class AccessControlController extends AbstractBinderController {
 		Map model = new HashMap();
 		Map formData = request.getParameterMap();
 		try {
-			if (EntityIdentifier.EntityType.zone.name().equals(type)) {
+			if (ZoneConfig.WORKAREA_TYPE.equals(type)) {
 				ZoneConfig zone = getZoneModule().getZoneConfig(workAreaId);
 				model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(zone.getZoneId()));
 				wArea = zone;
@@ -291,7 +291,7 @@ public class AccessControlController extends AbstractBinderController {
 		if (wArea instanceof ZoneConfig) scope = ObjectKeys.ROLE_TYPE_ZONE;
 		List functions = bs.getAdminModule().getFunctions(scope);
 		List membership;
-		boolean zoneWide = wArea.getWorkAreaType().equals(EntityIdentifier.EntityType.zone.name());
+		boolean zoneWide = wArea.getWorkAreaType().equals(ZoneConfig.WORKAREA_TYPE);
 		if (wArea.isFunctionMembershipInherited()) {
 			membership = bs.getAdminModule().getWorkAreaFunctionMembershipsInherited(wArea);
 		} else {
