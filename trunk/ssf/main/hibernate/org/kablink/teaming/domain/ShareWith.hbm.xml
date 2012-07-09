@@ -3,9 +3,8 @@
 
 <hibernate-mapping auto-import="false">
   <class table="SS_ShareWith" discriminator-value="A" name="org.kablink.teaming.domain.ShareWith">
-    <id unsaved-value="null" name="id">
-      <column name="id" sql-type="char(32)"/>
-      <generator class="uuid.hex"/>
+    <id unsaved-value="null" name="id" type="long">
+      <generator class="native"/>
     </id>
     <property name="zoneId" access="field"/>
     <many-to-one name="sharer"/>
@@ -21,34 +20,39 @@
       <column name="entityId" index="entity_shared"/>
     </any>
     <property name="startDate"/>
-    <property name="endDate"/>
-    <property name="recipientType" access="field"/>
-    <property name="recipientId"/>
     <component name="description">
       <property name="HDescription" column="description_text" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>
       <property name="HFormat" column="description_format"/>
     </component>
-    <component name="rightSet" class="org.kablink.teaming.domain.ShareWith$RightSet">
-    	<property name="createEntries" column="right_createEntries"/>
-    	<property name="modifyEntries" column="right_modifyEntries"/>
-    	<property name="modifyEntryFields" column="right_modifyEntryFields"/>
-    	<property name="deleteEntries" column="right_deleteEntries"/>
-    	<property name="readEntries" column="right_readEntries"/>
-    	<property name="addReplies" column="right_addReplies"/>
-    	<property name="generateReports" column="right_generateReports"/>
-    	<property name="binderAdministration" column="right_binderAdministration"/>
-    	<property name="createEntryAcls" column="right_createEntryAcls"/>
-    	<property name="changeAccessControl" column="right_changeAccessControl"/>
-    	<property name="createWorkspaces" column="right_createWorkspaces"/>
-    	<property name="createFolders" column="right_createFolders"/>
-    	<property name="manageEntryDefinitions" column="right_manageEntryDefs"/>
-    	<property name="manageWorkflowDefinitions" column="right_manageWorkflowDefs"/>
-    	<property name="creatorReadEntries" column="right_creatorReadEntries"/>
-    	<property name="creatorModifyEntries" column="right_creatorModifyEntries"/>
-    	<property name="creatorDeleteEntries" column="right_creatorDeleteEntries"/>
-    	<property name="ownerCreateEntryAcls" column="right_ownerCreateEntryAcls"/>
-    	<property name="addTags" column="right_addTags"/>
-    	<property name="viewBinderTitle" column="right_viewBinderTitle"/>
-    </component> 
+    <bag inverse="false" cascade="all" lazy="false" table="SS_ShareWithMember" name="shareWithMembers">
+      <key column="shareWithId"/>
+      <composite-element class="org.kablink.teaming.domain.ShareWithMember">
+	    <property name="endDate"/>
+	    <property name="recipientType" access="field"/>
+	    <property name="recipientId"/>
+	    <nested-composite-element name="rightSet" class="org.kablink.teaming.domain.ShareWithMember$RightSet">
+	    	<property name="createEntries" column="right_createEntries"/>
+	    	<property name="modifyEntries" column="right_modifyEntries"/>
+	    	<property name="modifyEntryFields" column="right_modifyEntryFields"/>
+	    	<property name="deleteEntries" column="right_deleteEntries"/>
+	    	<property name="readEntries" column="right_readEntries"/>
+	    	<property name="addReplies" column="right_addReplies"/>
+	    	<property name="generateReports" column="right_generateReports"/>
+	    	<property name="binderAdministration" column="right_binderAdministration"/>
+	    	<property name="createEntryAcls" column="right_createEntryAcls"/>
+	    	<property name="changeAccessControl" column="right_changeAccessControl"/>
+	    	<property name="createWorkspaces" column="right_createWorkspaces"/>
+	    	<property name="createFolders" column="right_createFolders"/>
+	    	<property name="manageEntryDefinitions" column="right_manageEntryDefs"/>
+	    	<property name="manageWorkflowDefinitions" column="right_manageWorkflowDefs"/>
+	    	<property name="creatorReadEntries" column="right_creatorReadEntries"/>
+	    	<property name="creatorModifyEntries" column="right_creatorModifyEntries"/>
+	    	<property name="creatorDeleteEntries" column="right_creatorDeleteEntries"/>
+	    	<property name="ownerCreateEntryAcls" column="right_ownerCreateEntryAcls"/>
+	    	<property name="addTags" column="right_addTags"/>
+	    	<property name="viewBinderTitle" column="right_viewBinderTitle"/>
+	    </nested-composite-element> 
+      </composite-element>
+    </bag>
   </class>
 </hibernate-mapping>
