@@ -760,7 +760,6 @@ public class EntityIndexUtils {
     }
     private static String getWfEntryAccess(WorkflowSupport wEntry) {
     	@SuppressWarnings("unused")
-		Long allUsersId = Utils.getAllUsersGroupId();
     	boolean personal = false;
     	if (wEntry instanceof FolderEntry) 
     		personal = Utils.isWorkareaInProfilesTree(((FolderEntry)wEntry).getParentBinder());

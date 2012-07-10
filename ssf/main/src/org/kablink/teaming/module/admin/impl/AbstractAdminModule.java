@@ -1196,6 +1196,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     		if (!sendingToAllUsersIsAllowed && ids.contains(allUsersGroupId)) {
     			ids.remove(allUsersGroupId);
     		}
+    		Long allExtUsersGroupId = Utils.getAllExtUsersGroupId();
+    		if (!sendingToAllUsersIsAllowed && ids.contains(allExtUsersGroupId)) {
+    			ids.remove(allExtUsersGroupId);
+    		}
 			addrs = new HashSet();
  			Set<Long> cc = getProfileDao().explodeGroups(ids, 
  					RequestContextHolder.getRequestContext().getZoneId(), sendingToAllUsersIsAllowed);
@@ -1220,7 +1224,9 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	if (ids != null && !ids.isEmpty()) {
     		boolean sendingToAllUsersIsAllowed = SPropsUtil.getBoolean("mail.allowSendToAllUsers", false);
     		Long allUsersGroupId = Utils.getAllUsersGroupId();
-    		if (!sendingToAllUsersIsAllowed && ids.contains(allUsersGroupId)) {
+    		Long allExtUsersGroupId = Utils.getAllExtUsersGroupId();
+    		if (!sendingToAllUsersIsAllowed && 
+    				(ids.contains(allUsersGroupId) || ids.contains(allExtUsersGroupId))) {
     			return true;
     		}
     	}
