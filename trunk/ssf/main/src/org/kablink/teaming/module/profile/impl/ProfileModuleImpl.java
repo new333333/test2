@@ -90,6 +90,7 @@ import org.kablink.teaming.domain.NoApplicationByTheNameException;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
+import org.kablink.teaming.domain.NoShareWithByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -2238,6 +2239,16 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
     
 	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.profile.ProfileModule#getShareWith(java.lang.Long)
+	 */
+	@Override
+	public ShareWith getShareWith(Long shareWithId) {
+		// Access check?
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		return getProfileDao().loadShareWith(shareWithId, zoneId);
+	}
+
+	/* (non-Javadoc)
 	 * @see org.kablink.teaming.module.profile.ProfileModule#getShareWiths(java.lang.Long)
 	 */
 	@Override
@@ -2283,9 +2294,15 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	 */
     //RW transaction
 	@Override
-	public void deleteShareWith(ShareWith shareWith) {
+	public void deleteShareWith(Long shareWithId) {
 		// Access check?
-		getCoreDao().delete(shareWith);
+		try {
+			ShareWith shareWith = getShareWith(shareWithId);
+			getCoreDao().delete(shareWith);
+		}
+		catch(NoShareWithByTheIdException e) {
+			// already gone, ok
+		}
 	}
     
 }

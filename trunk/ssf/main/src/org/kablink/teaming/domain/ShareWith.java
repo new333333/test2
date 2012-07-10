@@ -43,7 +43,7 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
  * @author jong
  *
  */
-public class ShareWith extends StaticEntity {
+public class ShareWith extends AbstractEntity {
 
 	protected Long id;
 	protected Long sharerId;
@@ -57,15 +57,19 @@ public class ShareWith extends StaticEntity {
 	}
 	
 	// For user by application
-	public ShareWith(Long sharerId, EntityIdentifier sharedEntityIdentifier, Date startDate, Description description) {
+	public ShareWith(Long sharerId, EntityIdentifier sharedEntityIdentifier,
+			Date startDate, Description description,
+			Collection<ShareWithMember> shareWithMembers) {
 		if(sharerId == null) throw new IllegalArgumentException("Sharer ID must be specified");
 		if(sharedEntityIdentifier == null) throw new IllegalArgumentException("ID of the shared entity must be specified");
 		if(startDate == null) throw new IllegalArgumentException("Start date must be specified");
+		if(shareWithMembers == null) throw new IllegalArgumentException("Share members must be specified");
 		
 		this.sharerId = sharerId;
 		this.sharedEntityIdentifier = sharedEntityIdentifier;
 		this.startDate = startDate;
 		this.description = description;
+		this.shareWithMembers = shareWithMembers;
 	}
 
 	@Override

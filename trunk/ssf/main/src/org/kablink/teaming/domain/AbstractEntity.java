@@ -37,7 +37,7 @@ package org.kablink.teaming.domain;
  * @author jong
  *
  */
-public abstract class StaticEntity extends ZonedObject implements Entity {
+public abstract class AbstractEntity extends ZonedObject implements Entity {
 
 	protected Long id;
     protected EntityIdentifier entityIdentifier;
@@ -90,10 +90,10 @@ public abstract class StaticEntity extends ZonedObject implements Entity {
         if (obj == null)
             return false;
       
-        if (!(obj instanceof StaticEntity)) 
+        if (!(obj instanceof AbstractEntity)) 
         	return false;
 
-        StaticEntity o = (StaticEntity) obj;
+        AbstractEntity o = (AbstractEntity) obj;
         if (o.getId() == null) 
         	return false;
         if (getId() == null) 

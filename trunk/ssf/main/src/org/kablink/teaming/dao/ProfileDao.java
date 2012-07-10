@@ -52,6 +52,7 @@ import org.kablink.teaming.domain.NoApplicationByTheIdException;
 import org.kablink.teaming.domain.NoGroupByTheIdException;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
+import org.kablink.teaming.domain.NoShareWithByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
@@ -247,6 +248,8 @@ public interface ProfileDao {
  	 * Get the list of disabled user accounts.
  	 */
  	public List<Long> getDisabledUserAccounts(final long zoneId);
+ 	
+ 	public ShareWith loadShareWith(Long shareWithId, Long zoneId) throws NoShareWithByTheIdException;
  	
  	public List<ShareWith> loadShareWiths(ShareWithSelectSpec selectSpec);
  }

@@ -79,6 +79,7 @@ import org.kablink.teaming.domain.NoGroupByTheIdException;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
 import org.kablink.teaming.domain.NoPrincipalByTheIdException;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
+import org.kablink.teaming.domain.NoShareWithByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
@@ -2168,6 +2169,24 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
 	}
 	
+	@Override
+ 	public ShareWith loadShareWith(Long shareWithId, Long zoneId) {
+		long begin = System.nanoTime();
+		try {
+			ShareWith shareWith = (ShareWith)getHibernateTemplate().get(ShareWith.class, shareWithId);
+			if (shareWith == null) {throw new NoShareWithByTheIdException(shareWithId);}
+			//make sure from correct zone
+			if (!shareWith.getZoneId().equals(zoneId)) {
+				throw new NoShareWithByTheIdException(shareWithId);
+			}
+			return shareWith;
+		}
+		finally {
+			end(begin, "loadShareWith(Long,Long)");
+		}	        
+ 	}
+ 	
+	@Override
  	public List<ShareWith> loadShareWiths(final ShareWithSelectSpec selectSpec) {
 		long begin = System.nanoTime();
 		try {
