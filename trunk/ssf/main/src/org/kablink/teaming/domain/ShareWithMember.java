@@ -67,15 +67,17 @@ public class ShareWithMember {
 	
 	protected Date endDate;
 	protected byte recipientType;
-	protected long recipientId;
+	protected Long recipientId;
 	protected RightSet rightSet;
 
 	// For use by Hibernate only
 	protected ShareWithMember() {
 	}
 	
-	public ShareWithMember(Date endDate, RecipientType recipientType, long recipientId, RightSet rightSet) {
+	public ShareWithMember(Date endDate, RecipientType recipientType, Long recipientId, RightSet rightSet) {
 		if(rightSet == null) throw new IllegalArgumentException("Right set must be specified");
+		if(recipientType == null) throw new IllegalArgumentException("Recipient type must be specified");
+		if(recipientId == null) throw new IllegalArgumentException("Recipient ID must be specified");
 
 		this.endDate = endDate;
 		setRecipientType(recipientType);
@@ -91,11 +93,11 @@ public class ShareWithMember {
 		this.endDate = endDate;
 	}
 
-	public long getRecipientId() {
+	public Long getRecipientId() {
 		return recipientId;
 	}
 
-	protected void setRecipientId(long recipientId) {
+	protected void setRecipientId(Long recipientId) {
 		this.recipientId = recipientId;
 	}
 

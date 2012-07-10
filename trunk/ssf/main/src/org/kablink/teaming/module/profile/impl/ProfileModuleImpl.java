@@ -68,6 +68,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.dao.util.ShareWithSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.Attachment;
@@ -93,6 +94,7 @@ import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
+import org.kablink.teaming.domain.ShareWith;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.domain.TemplateBinder;
@@ -2234,6 +2236,57 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			return; // This user already logged in before. Shouldn't update it (or shall we throw an exception?)
 		user.setFirstLoginDate(new Date()); // Set it to current date/time.
     }
+    
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.profile.ProfileModule#getShareWiths(java.lang.Long)
+	 */
+	@Override
+	public List<ShareWith> getShareWiths(Long userId) {
+		ShareWithSelectSpec selectSpec = new ShareWithSelectSpec();
+		selectSpec.setEndDateRange(new Date(), null, null, null);
+		selectSpec.setRecipientsFromUserMembership(userId);
+		selectSpec.setOrder("startDate", true);
+		return getShareWiths(selectSpec);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.profile.ProfileModule#getShareWiths(org.kablink.teaming.dao.util.ShareWithSelectSpec)
+	 */
+	@Override
+	public List<ShareWith> getShareWiths(ShareWithSelectSpec selectSpec) {
+		// Access check?
+		return getProfileDao().loadShareWiths(selectSpec);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.profile.ProfileModule#addShareWith(org.kablink.teaming.domain.ShareWith)
+	 */
+    //RW transaction
+	@Override
+	public void addShareWith(ShareWith shareWith) {
+		// Access check?
+		getCoreDao().save(shareWith);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.profile.ProfileModule#modifyShareWith(org.kablink.teaming.domain.ShareWith)
+	 */
+    //RW transaction
+	@Override
+	public void modifyShareWith(ShareWith shareWith) {
+		// Access check?
+		// nothing to do
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.profile.ProfileModule#deleteShareWith(org.kablink.teaming.domain.ShareWith)
+	 */
+    //RW transaction
+	@Override
+	public void deleteShareWith(ShareWith shareWith) {
+		// Access check?
+		getCoreDao().delete(shareWith);
+	}
     
 }
 

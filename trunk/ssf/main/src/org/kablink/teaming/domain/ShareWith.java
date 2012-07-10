@@ -46,34 +46,26 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 public class ShareWith extends StaticEntity {
 
 	protected Long id;
-	protected User sharer;
-	protected DefinableEntity entity;
+	protected Long sharerId;
+	protected EntityIdentifier sharedEntityIdentifier;
 	protected Date startDate;
 	protected Description description;
 	protected Collection<ShareWithMember> shareWithMembers;
-    protected EntityIdentifier entityIdentifier;
 	
 	// For use by Hibernate only
 	protected ShareWith() {
 	}
 	
 	// For user by application
-	public ShareWith(User sharer, DefinableEntity entity, Date startDate, Description description) {
-		if(sharer == null) throw new IllegalArgumentException("Sharer must be specified");
-		if(entity == null) throw new IllegalArgumentException("Entity must be specified");
+	public ShareWith(Long sharerId, EntityIdentifier sharedEntityIdentifier, Date startDate, Description description) {
+		if(sharerId == null) throw new IllegalArgumentException("Sharer ID must be specified");
+		if(sharedEntityIdentifier == null) throw new IllegalArgumentException("ID of the shared entity must be specified");
 		if(startDate == null) throw new IllegalArgumentException("Start date must be specified");
 		
-		this.sharer = sharer;
-		this.entity = entity;
+		this.sharerId = sharerId;
+		this.sharedEntityIdentifier = sharedEntityIdentifier;
 		this.startDate = startDate;
 		this.description = description;
-	}
-	
-	@Override
-	public EntityIdentifier getEntityIdentifier() {
-		if (entityIdentifier == null) 
-			entityIdentifier = new EntityIdentifier(getId(), getEntityType());
-		return entityIdentifier;
 	}
 
 	@Override
@@ -89,20 +81,20 @@ public class ShareWith extends StaticEntity {
 		this.id = id;
 	}
 
-	public User getSharer() {
-		return sharer;
+	public Long getSharerId() {
+		return sharerId;
 	}
 
-	public void setSharer(User sharer) {
-		this.sharer = sharer;
+	public void setSharerId(Long sharerId) {
+		this.sharerId = sharerId;
 	}
 
-	public DefinableEntity getEntity() {
-		return entity;
+	public EntityIdentifier getSharedEntityIdentifier() {
+		return sharedEntityIdentifier;
 	}
 
-	public void setEntity(DefinableEntity entity) {
-		this.entity = entity;
+	public void setSharedEntityIdentifier(EntityIdentifier sharedEntityIdentifier) {
+		this.sharedEntityIdentifier = sharedEntityIdentifier;
 	}
 
 	public Date getStartDate() {
