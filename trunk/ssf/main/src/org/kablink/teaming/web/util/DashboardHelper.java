@@ -715,12 +715,28 @@ public class DashboardHelper extends AbstractAllModulesInjected {
    			if (isConfig) {
    				if (topWs != null && !topWs.isZone()) topWs = null;
    			}
-   			if (topWs == null) topWs = getWorkspaceModule().getTopWorkspace();
+   			if (topWs == null) {
+   				try {
+   					topWs = getWorkspaceModule().getTopWorkspace();
+   				} catch(Exception ex) {
+   	   	  			if (binder instanceof Workspace) {
+   	   	  				topWs = (Workspace)binder;   				
+   	   	  			} else  {
+   	   	  				try {
+	   	   	  				Folder topFolder = ((Folder)binder).getTopFolder();
+	   	   	  				if (topFolder == null) topFolder = (Folder)binder;
+	   	   	  				topWs = (Workspace)topFolder.getParentBinder();
+   	   	  				} catch(Exception ex2) {}
+   	    			} 				
+   				}
+   			}
    			idData.put(Workspace_topId, topWs.getId());
-   			if (isConfig)
-   				tree = getBinderModule().getDomBinderTree(topWs.getId(), new WsDomTreeBuilder(topWs, true, this, new WorkspaceConfigHelper()),1);
-   			else
-  				tree = getBinderModule().getDomBinderTree(topWs.getId(), new WsDomTreeBuilder(topWs, true, this),1);
+   			if (topWs != null) {
+	   			if (isConfig)
+	   				tree = getBinderModule().getDomBinderTree(topWs.getId(), new WsDomTreeBuilder(topWs, true, this, new WorkspaceConfigHelper()),1);
+	   			else
+	  				tree = getBinderModule().getDomBinderTree(topWs.getId(), new WsDomTreeBuilder(topWs, true, this),1);
+   			}
    		   				
    		} else {
    			Binder topWs = null;

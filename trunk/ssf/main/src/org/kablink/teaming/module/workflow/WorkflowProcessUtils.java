@@ -207,8 +207,10 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		    	}
 	    	}
 	    	Long allUsersId = Utils.getAllUsersGroupId();
+	    	Long allExtUsersId = Utils.getAllExtUsersGroupId();
 	    	boolean sendingToAllUsersIsAllowed = SPropsUtil.getBoolean("mail.allowSendToAllUsers", false);
 	    	if (allUsersId != null && !sendingToAllUsersIsAllowed) ids.remove(allUsersId);
+	    	if (allExtUsersId != null && !sendingToAllUsersIsAllowed) ids.remove(allExtUsersId);
 	    	return getUsers(ids);
  		} else return null;
     }
@@ -784,6 +786,7 @@ public static void resumeTimers(WorkflowSupport entry) {
 					}
 				} else if (type.equals("transitionOnResponse")) {
 					Long allUsersId = Utils.getAllUsersGroupId();
+					Long allExtUsersId = Utils.getAllExtUsersGroupId();
 					String question = DefinitionUtils.getPropertyValue(condition, "question");
 					String response = DefinitionUtils.getPropertyValue(condition, "response");
 					String responseRule = GetterUtil.get(DefinitionUtils.getPropertyValue(condition, "transition_rule"), "first");
@@ -791,6 +794,7 @@ public static void resumeTimers(WorkflowSupport entry) {
 					Set<Long> responders = getQuestionResponders(entry, state, question, false);
 					Set<Long> respondersPlusAllUsers = getQuestionResponders(entry, state, question, true);
 					boolean allUsersIncluded = respondersPlusAllUsers.contains(allUsersId);
+					boolean allExtUsersIncluded = respondersPlusAllUsers.contains(allExtUsersId);
 					Set<Long> respondersFound = new HashSet();
 					Set<Long> respondersWhoAnsweredThis = new HashSet();
 					boolean doTransition = false;
@@ -802,7 +806,8 @@ public static void resumeTimers(WorkflowSupport entry) {
 							if (state.getDefinition().getId().equals(wr.getDefinitionId()) &&
 									question.equals(wr.getName())) {
 								//Yes, Build lists of responders who answered and responders who answered with this response
-								if (allUsersIncluded || responders.contains(wr.getResponderId())) {
+								if (allUsersIncluded || allExtUsersIncluded || 
+										responders.contains(wr.getResponderId())) {
 									respondersFound.add(wr.getResponderId());
 									if (response.equals(wr.getResponse())) {
 										respondersWhoAnsweredThis.add(wr.getResponderId());
@@ -816,34 +821,34 @@ public static void resumeTimers(WorkflowSupport entry) {
 									//Transition as soon as one person gives this response.
 									doTransition = true;
 									break;
-								} else if (!allUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("all") 
+								} else if (!allUsersIncluded && !allExtUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("all") 
 										&& respondersWhoAnsweredThis.size() == responders.size()) {
 									//all of the responders have responded with exactly this value
 									doTransition = true;
 									break;
-								} else if (!allUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("one")
+								} else if (!allUsersIncluded && !allExtUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("one")
 										&& respondersWhoAnsweredThis.size() > 0) {
 									//all of the responders have responded and at least one has answered this
 									doTransition = true;
 									break;
-								} else if (!allUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("one_other")
+								} else if (!allUsersIncluded && !allExtUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("one_other")
 										&& respondersWhoAnsweredThis.size() < responders.size()) {
 									//all of the responders have responded and at least one did not answer with this
 									doTransition = true;
 									break;
-								} else if (!allUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("majority")
+								} else if (!allUsersIncluded && !allExtUsersIncluded && responders.size() == respondersFound.size() && responseRule.equals("majority")
 										&& respondersWhoAnsweredThis.size() > responders.size()/2) {
 									//All of the responders have answered and a majority have answered with this
 									doTransition = true;
 									break;
-								} else if (!allUsersIncluded && responseRule.equals("majority_immediate")
+								} else if (!allUsersIncluded && !allExtUsersIncluded && responseRule.equals("majority_immediate")
 										&& respondersWhoAnsweredThis.size() > responders.size()/2) {
 									//A majority have answered with this response
 									doTransition = true;
 									break;
 								} else {
 									//See if all responders answered
-									if (!allUsersIncluded && responders.size() == respondersFound.size()) {
+									if (!allUsersIncluded && !allExtUsersIncluded && responders.size() == respondersFound.size()) {
 										//all of the responders have responded and no conditions were met
 										doTransition = false;
 										break;

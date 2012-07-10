@@ -120,6 +120,11 @@ public class ManageQuotasController extends SAbstractController {
 					//Trying to set a quota for all users by using the All Users group is prohibited
 					groupIds.remove(allUsersGroupId);
 				}
+				Long allExtUsersGroupId = Utils.getAllExtUsersGroupId();
+				if (allExtUsersGroupId != null && groupIds.contains(allExtUsersGroupId)) {
+					//Trying to set a quota for all external users by using the All External Users group is prohibited
+					groupIds.remove(allExtUsersGroupId);
+				}
 				Set<Long> userIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addUsers"));
 				String s_userQuota = PortletRequestUtils.getStringParameter(request, "addUserQuota", "");
 				if (!s_userQuota.equals("")) {
@@ -315,6 +320,7 @@ public class ManageQuotasController extends SAbstractController {
 		SortedSet<Principal> group_principals = getProfileModule().getPrincipals(groups);
 		model.put(WebKeys.QUOTAS_GROUPS, group_principals);
 		model.put(WebKeys.ALL_USERS_GROUP_ID, String.valueOf(Utils.getAllUsersGroupId()));
+		model.put(WebKeys.ALL_EXTERNAL_USERS_GROUP_ID, String.valueOf(Utils.getAllExtUsersGroupId()));
 
 		model.put(WebKeys.QUOTAS_DEFAULT, getAdminModule().getQuotaDefault());
 		model.put(WebKeys.QUOTAS_ENABLED, getAdminModule().isQuotaEnabled());

@@ -255,8 +255,9 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				}
 				membersToLookup = getProfileDao().getPrincipalIds(user);
 				Long allUsersId = Utils.getAllUsersGroupId();
+				Long allExtUsersId = Utils.getAllExtUsersGroupId();
 				if (allUsersId != null && !workArea.getWorkAreaType().equals(ZoneConfig.WORKAREA_TYPE) 
-						&& membersToLookup.contains(allUsersId) && 
+						&& (membersToLookup.contains(allUsersId) || membersToLookup.contains(allExtUsersId)) && 
 						Utils.canUserOnlySeeCommonGroupMembers(user)) {
 					if (Utils.isWorkareaInProfilesTree(workArea)) {
 						//If this user does not share a group with the binder owner, remove the "All Users" group.
@@ -283,7 +284,10 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 								}
 							}
 						}
-						if (remove) membersToLookup.remove(allUsersId);
+						if (remove) {
+							membersToLookup.remove(allUsersId);
+							membersToLookup.remove(allExtUsersId);
+						}
 					}
 				}
 				//if current user is the workArea owner, add special Id to is membership

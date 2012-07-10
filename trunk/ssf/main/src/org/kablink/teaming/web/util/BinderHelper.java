@@ -4547,7 +4547,9 @@ public class BinderHelper {
  			Set<Long> responders = WorkflowProcessUtils.getQuestionResponders(entry, ws, questionName, true);
 	   		//See if this includes All Users
 	        Long allUsersId = Utils.getAllUsersGroupId();
-	        if (allUsersId != null && responders.contains(allUsersId)) {
+	        Long allExtUsersId = Utils.getAllExtUsersGroupId();
+	        if ((allUsersId != null && responders.contains(allUsersId) && !user.isExternalUser()) ||
+	        		(allExtUsersId != null && responders.contains(allExtUsersId) && user.isExternalUser())) {
 	        	//All Users can respond (leave the answer = true)
 	        } else if (!responders.contains(user.getId())) {
  				//This user is not on the responder list. Just ignore the request

@@ -699,8 +699,11 @@ public class QueryBuilder {
 		Long allUsersGroupId = Utils.getAllUsersGroupId();
       	Set principalIds2 = new HashSet(principalIds);
       	User user = null;
-      	if(userId != null)
+      	if (userId != null) {
       		user = getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());
+      	} else {
+      		user = RequestContextHolder.getRequestContext().getUser();
+      	}
       	
       	//Get the conditions that the current user passes
 		List<Condition> conditions = getSecurityDao().findFunctionConditions(RequestContextHolder.getRequestContext().getZoneId());
@@ -709,7 +712,7 @@ public class QueryBuilder {
 		//check user can see all users
       	boolean canOnlySeeCommonGroupMembers = Utils.canUserOnlySeeCommonGroupMembers(user);
 		if (canOnlySeeCommonGroupMembers) {
-			if (allUsersGroupId != null && principalIds2.contains(allUsersGroupId) ) {
+			if (allUsersGroupId != null && principalIds2.contains(allUsersGroupId)) {
 				//This user is not allowed to see all users, so remove the AllUsers group id
 				principalIds2.remove(allUsersGroupId);
 			}

@@ -466,14 +466,17 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		Set<Long> principalIds = getProfileDao().getPrincipalIds(user);
 
 		Long allUsersGroupId = Utils.getAllUsersGroupId();
+		Long allExtUsersGroupId = Utils.getAllExtUsersGroupId();
       	Set<Long> principalIds2 = new HashSet<Long>(principalIds);
       	
 		//check user can see all users
       	boolean canOnlySeeCommonGroupMembers = Utils.canUserOnlySeeCommonGroupMembers(user);
 		if (canOnlySeeCommonGroupMembers) {
-			if (allUsersGroupId != null && principalIds2.contains(allUsersGroupId) ) {
-				//This user is not allowed to see all users, so remove the AllUsers group id
+			if ((allUsersGroupId != null && principalIds2.contains(allUsersGroupId)) ||
+					(allExtUsersGroupId != null && principalIds2.contains(allExtUsersGroupId))) {
+				//This user is not allowed to see all users, so remove the AllUsers group ids
 				principalIds2.remove(allUsersGroupId);
+				principalIds2.remove(allExtUsersGroupId);
 			}
 		}
 		return principalIds2;

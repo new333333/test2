@@ -225,7 +225,7 @@ function ss_checkForAllUsersGroup() {
 	if (formObj != null && typeof formObj.addGroups.value != "undefined") {
 		var groups = formObj.addGroups.value.split(" ");
 		for (var i = 0; i < groups.length; i++) {
-			if (groups[i] == '${ssAllUsersGroupId}') {
+			if (groups[i] == '${ssAllUsersGroupId}' || groups[i] == '${ssAllExtUsersGroupId}') {
 				alert("<ssf:escapeQuotes><ssf:nlt tag="administration.quotas.allUsers.notAllowed"/></ssf:escapeQuotes>")
 				return;
 			}
@@ -234,7 +234,7 @@ function ss_checkForAllUsersGroup() {
 	if (formObj != null && typeof formObj.addFSLGroups.value != "undefined") {
 		var groups = formObj.addFSLGroups.value.split(" ");
 		for (var i = 0; i < groups.length; i++) {
-			if (groups[i] == '${ssAllUsersGroupId}') {
+			if (groups[i] == '${ssAllUsersGroupId}' || groups[i] == '${ssAllExtUsersGroupId}') {
 				alert("<ssf:escapeQuotes><ssf:nlt tag="administration.quotas.allUsers.notAllowed"/></ssf:escapeQuotes>")
 				return;
 			}
