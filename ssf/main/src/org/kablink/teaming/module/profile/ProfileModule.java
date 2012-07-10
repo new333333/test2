@@ -789,6 +789,8 @@ public interface ProfileModule {
     
     public void setFirstLoginDate(Long userId);
     
+    public ShareWith getShareWith(Long shareWithId);
+    
     /**
      * Return a list of <code>ShareWith</code> objects in descending order of creation date
      * (i.e., latest one first) representing unexpired entities shared with the specified 
@@ -811,5 +813,5 @@ public interface ProfileModule {
     
     public void modifyShareWith(ShareWith shareWith);
     
-    public void deleteShareWith(ShareWith shareWith);
+    public void deleteShareWith(Long shareWithId);
 }
