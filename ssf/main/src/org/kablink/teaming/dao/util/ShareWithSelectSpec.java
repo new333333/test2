@@ -41,6 +41,7 @@ import java.util.Set;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -53,44 +54,55 @@ import org.kablink.util.search.Constants;
  */
 public class ShareWithSelectSpec {
 	public Long sharerId;
-	public Long entityId;
-	public Date startDateBegin;
-	public boolean startDateBeginInclusive = true;
-	public Date startDateEnd;
-	public boolean startDateEndInclusive = false;
-	public Date endDateBegin;
-	public boolean endDateBeginInclusive = true;
-	public Date endDateEnd;
-	public boolean endDateEndInclusive = false;
+	public EntityIdentifier sharedEntityIdentifier;
+	public Date startDateMin;
+	public boolean startDateMinInclusive = true;
+	public Date startDateMax;
+	public boolean startDateMaxInclusive = false;
+	public Date endDateMin;
+	public boolean endDateMinInclusive = true;
+	public Date endDateMax;
+	public boolean endDateMaxInclusive = false;
 	public Collection<Long> recipientUsers;
 	public Collection<Long> recipientGroups;
 	public Collection<Long> recipientTeams;
 	public Collection<String> onRights;
 	public boolean onRightsDisjunctive = true;
+	public String orderByFieldName;
+	public boolean descending = true;
 	
 	public void setSharerId(Long sharerId) {
 		this.sharerId = sharerId;
 	}
-	public void setEntityId(Long entityId) {
-		this.entityId = entityId;
+	
+	public void setSharedEntityIdentifier(EntityIdentifier sharedEntityIdentifier) {
+		this.sharedEntityIdentifier = sharedEntityIdentifier;
 	}
-	public void setStartDateRange(Date startDateBegin, boolean startDateBeginInclusive, Date startDateEnd, boolean startDateEndInclusive) {
-		this.startDateBegin = startDateBegin;
-		this.startDateBeginInclusive = startDateBeginInclusive;
-		this.startDateEnd = startDateEnd;
-		this.startDateEndInclusive = startDateEndInclusive;
+	
+	public void setStartDateRange(Date startDateMin, Boolean startDateMinInclusive, Date startDateMax, Boolean startDateMaxInclusive) {
+		this.startDateMin = startDateMin;
+		if(startDateMinInclusive != null)
+			this.startDateMinInclusive = startDateMinInclusive.booleanValue();
+		this.startDateMax = startDateMax;
+		if(startDateMaxInclusive != null)
+			this.startDateMaxInclusive = startDateMaxInclusive.booleanValue();
 	}
-	public void setEndDateRange(Date endDateBegin, boolean endDateBeginInclusive, Date endDateEnd, boolean endDateEndInclusive) {
-		this.endDateBegin = endDateBegin;
-		this.endDateBeginInclusive = endDateBeginInclusive;
-		this.endDateEnd = endDateEnd;
-		this.endDateEndInclusive = endDateEndInclusive;
+	
+	public void setEndDateRange(Date endDateMin, Boolean endDateMinInclusive, Date endDateMax, Boolean endDateMaxInclusive) {
+		this.endDateMin = endDateMin;
+		if(endDateMinInclusive != null)
+			this.endDateMinInclusive = endDateMinInclusive.booleanValue();
+		this.endDateMax = endDateMax;
+		if(endDateMaxInclusive != null)
+			this.endDateMaxInclusive = endDateMaxInclusive.booleanValue();
 	}
+	
 	public void setRecipients(Collection<Long> recipientUsers,  Collection<Long> recipientGroups,  Collection<Long> recipientTeams) {
 		this.recipientUsers = recipientUsers;
 		this.recipientGroups = recipientGroups;
 		this.recipientTeams = recipientTeams;
 	}
+	
 	public void setRecipientsFromUserMembership(Long userId) {
 		User user = getProfileDao().loadUser(userId,  RequestContextHolder.getRequestContext().getZoneId());
 		Set<Long> userIds = new HashSet();
@@ -106,6 +118,7 @@ public class ShareWithSelectSpec {
 		}
 		setRecipients(userIds, groupIds, teamIds);
 	}
+	
 	public void setOnRightsWithNames(Collection<String> onRights, boolean onRightsDisjunctive) {
 		this.onRights = onRights;
 		this.onRightsDisjunctive = onRightsDisjunctive;
@@ -116,6 +129,11 @@ public class ShareWithSelectSpec {
 		for(WorkAreaOperation wao:onRights)
 			rightNames.add(wao.getName());
 		setOnRightsWithNames(rightNames, onRightsDisjunctive);
+	}
+	
+	public void setOrder(String orderByFieldName, boolean descending) {
+		this.orderByFieldName = orderByFieldName;
+		this.descending = descending;
 	}
 	
 	private ProfileDao getProfileDao() {

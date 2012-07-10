@@ -7,18 +7,11 @@
       <generator class="native"/>
     </id>
     <property name="zoneId" access="field"/>
-    <many-to-one name="sharer"/>
-    <any name="entity" id-type="java.lang.Long" meta-type="string">
-      <meta-value class="org.kablink.teaming.domain.FolderEntry" value="folderEntry"/>
-      <meta-value class="org.kablink.teaming.domain.User" value="user"/>
-      <meta-value class="org.kablink.teaming.domain.Group" value="group"/>
-      <meta-value class="org.kablink.teaming.domain.Folder" value="folder"/>
-      <meta-value class="org.kablink.teaming.domain.Workspace" value="workspace"/>
-      <meta-value class="org.kablink.teaming.domain.ProfileBinder" value="profileBinder"/>
-      <meta-value class="org.kablink.teaming.domain.TemplateBinder" value="template"/>
-      <column name="entityType"  length="16"/>
-      <column name="entityId"/>
-    </any>
+    <property name="sharerId"/>
+    <component name="sharedEntityIdentifier" class="org.kablink.teaming.domain.EntityIdentifier">
+   		<property name="type" column="sharedEntity_type"/>
+	    <property name="entityId" column="sharedEntity_id"/>
+    </component>
     <property name="startDate"/>
     <component name="description">
       <property name="HDescription" column="description_text" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>

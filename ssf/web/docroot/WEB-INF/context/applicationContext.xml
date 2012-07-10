@@ -737,6 +737,9 @@
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteUserByName">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="changePassword">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addShareWith">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="modifyShareWith">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="deleteShareWith">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 	</bean>

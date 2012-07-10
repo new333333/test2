@@ -86,6 +86,7 @@ import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.Rating;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.ShareWith;
+import org.kablink.teaming.domain.ShareWithMember;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
@@ -104,6 +105,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.dao.hibernate.DynamicDialect;
+import org.kablink.util.search.Junction.Disjunction;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateSystemException;
@@ -2166,7 +2168,95 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
 	}
 	
- 	public List<ShareWith> loadShareWiths(ShareWithSelectSpec selectSpec) {
- 		return null;
+ 	public List<ShareWith> loadShareWiths(final ShareWithSelectSpec selectSpec) {
+		long begin = System.nanoTime();
+		try {
+	      	List result = (List)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    	Criteria crit = session.createCriteria(ShareWith.class);
+	                    	if(selectSpec.sharerId != null)
+	                    		crit.add(Restrictions.eq("sharerId", selectSpec.sharerId));
+	                    	if(selectSpec.sharedEntityIdentifier != null) 
+	                    		crit.add(Restrictions.eq("sharedEntityIdentifier", selectSpec.sharedEntityIdentifier));
+	                    	if(selectSpec.startDateMin != null) {
+	                    		if(selectSpec.startDateMinInclusive)
+	                    			crit.add(Restrictions.ge("startDate", selectSpec.startDateMin));
+	                    		else
+	                    			crit.add(Restrictions.gt("startDate", selectSpec.startDateMin));
+	                    	}
+	                    	if(selectSpec.startDateMax != null) {
+	                    		if(selectSpec.startDateMaxInclusive)
+	                    			crit.add(Restrictions.le("startDate", selectSpec.startDateMax));
+	                    		else
+	                    			crit.add(Restrictions.lt("startDate", selectSpec.startDateMax));
+	                    	}
+	                    	if(selectSpec.endDateMin != null) {
+	                    		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();
+	                    		disjunction.add(Restrictions.isNull("shareWithMembers.endDate"));
+	                    		if(selectSpec.endDateMinInclusive)
+	                    			disjunction.add(Restrictions.ge("shareWithMembers.endDate", selectSpec.endDateMin));
+	                    		else
+	                    			disjunction.add(Restrictions.gt("shareWithMembers.endDate", selectSpec.endDateMin));
+	                    		crit.add(disjunction);
+	                    	}
+	                    	if(selectSpec.endDateMax != null) {
+	                    		org.hibernate.criterion.Conjunction conjunction = Restrictions.conjunction();
+	                    		conjunction.add(Restrictions.isNotNull("shareWithMembers.endDate"));
+	                    		if(selectSpec.endDateMaxInclusive)
+	                    			conjunction.add(Restrictions.le("shareWithMembers.endDate", selectSpec.endDateMax));
+	                    		else
+	                    			conjunction.add(Restrictions.lt("shareWithMembers.endDate", selectSpec.endDateMax));
+	                    		crit.add(conjunction);
+	                    	}
+	                    	if((selectSpec.recipientUsers != null && !selectSpec.recipientUsers.isEmpty()) ||
+	                    			(selectSpec.recipientGroups != null && !selectSpec.recipientGroups.isEmpty()) ||
+	                    			(selectSpec.recipientTeams != null && !selectSpec.recipientTeams.isEmpty())) {
+	                    		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();
+	                    		if(selectSpec.recipientUsers != null && !selectSpec.recipientUsers.isEmpty()) {
+	                    			disjunction.add(Restrictions.conjunction()
+	              							.add(Restrictions.in("shareWithMembers.recipientId", selectSpec.recipientUsers))
+	              							.add(Restrictions.eq("shareWithMembers.recipientType", ShareWithMember.RecipientType.user.getValue())));
+	                    		}
+	                    		if(selectSpec.recipientGroups != null && !selectSpec.recipientGroups.isEmpty()) {
+	                    			disjunction.add(Restrictions.conjunction()
+	              							.add(Restrictions.in("shareWithMembers.recipientId", selectSpec.recipientGroups))
+	              							.add(Restrictions.eq("shareWithMembers.recipientType", ShareWithMember.RecipientType.group.getValue())));
+	                    		}
+	                    		if(selectSpec.recipientTeams != null && !selectSpec.recipientTeams.isEmpty()) {
+	                    			disjunction.add(Restrictions.conjunction()
+	              							.add(Restrictions.in("shareWithMembers.recipientId", selectSpec.recipientTeams))
+	              							.add(Restrictions.eq("shareWithMembers.recipientType", ShareWithMember.RecipientType.team.getValue())));
+	                    		}
+	                    		crit.add(disjunction);
+	                    	}	               			
+	                    	if(selectSpec.onRights != null && !selectSpec.onRights.isEmpty()) {
+	                    		org.hibernate.criterion.Junction junction;
+	                    		if(selectSpec.onRightsDisjunctive)
+	                    			junction = Restrictions.disjunction();
+	                    		else
+	                    			junction = Restrictions.conjunction();
+	                    		for(String rightName:selectSpec.onRights)
+	                    			junction.add(Restrictions.eq("shareWithMembers.rightSet." + rightName, true));
+	                    		crit.add(junction);
+	                    	}
+	                    	if(selectSpec.orderByFieldName != null) {
+	                    		if(selectSpec.descending)
+	                    			crit.addOrder(Order.desc(selectSpec.orderByFieldName));
+	                    		else
+	                    			crit.addOrder(Order.asc(selectSpec.orderByFieldName));
+	                    	}
+	                       return crit.list();
+	                    }
+	                }
+	            );
+	      	
+	       return result;   	
+    	}
+    	finally {
+    		end(begin, "loadSharedEntities(Collection,Collection,Date,Long)");
+    	}	              	
+    	
+
  	}
 }

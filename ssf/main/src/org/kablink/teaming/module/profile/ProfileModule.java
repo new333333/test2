@@ -44,6 +44,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.dom4j.Document;
+import org.kablink.teaming.dao.util.ShareWithSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.Binder;
@@ -58,6 +59,7 @@ import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
+import org.kablink.teaming.domain.ShareWith;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.domain.User;
@@ -786,4 +788,28 @@ public interface ProfileModule {
     public List<TeamInfo> getUserTeams(Long userId);
     
     public void setFirstLoginDate(Long userId);
+    
+    /**
+     * Return a list of <code>ShareWith</code> objects in descending order of creation date
+     * (i.e., latest one first) representing unexpired entities shared with the specified 
+     * user either directly as individual or indirectly through group or team membership. 
+     * 
+     * @param userId
+     * @return
+     */
+    public List<ShareWith> getShareWiths(Long userId);
+    
+    /**
+     * Return a list of <code>ShareWith</code> objects meeting the specified selection criteria.
+     *  
+     * @param selectSpec
+     * @return
+     */
+    public List<ShareWith> getShareWiths(ShareWithSelectSpec selectSpec);
+    
+    public void addShareWith(ShareWith shareWith);
+    
+    public void modifyShareWith(ShareWith shareWith);
+    
+    public void deleteShareWith(ShareWith shareWith);
 }
