@@ -99,6 +99,11 @@ public class Tag extends ZonedObject {
  		if (entity.getEntityIdentifier().equals(ownerId)) return true;
  		return false;
  	}
+	public boolean isOwner(StaticEntity entity) {
+ 		if (entity == null) return false;
+ 		if (entity.getEntityIdentifier().equals(ownerId)) return true;
+ 		return false;
+ 	}
  	public boolean isOwner(EntityIdentifier entityId) {
  		if (entityId == null) return false;
  		if (this.entityId.equals(ownerId)) return true;

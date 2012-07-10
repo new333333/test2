@@ -178,7 +178,7 @@ public class FileRepositorySession implements RepositorySession {
 				
 				if(!workingFile.exists())
 					throw new RepositoryServiceException("Cannot update file " + 
-							relativeFilePath + " for entry " + entry.getTypedId() + 
+							relativeFilePath + " for entry " + entry.getEntityTypedId() + 
 							": It must be checked out first"); 
 	
 				copyData(in, workingFile);
@@ -190,7 +190,7 @@ public class FileRepositorySession implements RepositorySession {
 			}
 			else {
 				throw new RepositoryServiceException("Cannot update file " + relativeFilePath + 
-						" for entry " + entry.getTypedId() + ": It does not exist"); 
+						" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
 			}
 		}
 		catch (IOException e) {
@@ -278,7 +278,7 @@ public class FileRepositorySession implements RepositorySession {
 		
 		if(fileInfo == VERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It is versioned"); 
+					" for entry " + entry.getEntityTypedId() + ": It is versioned"); 
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
@@ -287,7 +287,7 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else {
 			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It does not exist"); 
+					" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
 		}
 	}
 
@@ -297,7 +297,7 @@ public class FileRepositorySession implements RepositorySession {
 		
 		if(fileInfo == VERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It is versioned"); 
+					" for entry " + entry.getEntityTypedId() + ": It is versioned"); 
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
@@ -310,7 +310,7 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else {
 			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It does not exist"); 
+					" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
 		}
 	}
 	
@@ -330,11 +330,11 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It is not versioned"); 
+					" for entry " + entry.getEntityTypedId() + ": It is not versioned"); 
 		}
 		else {
 			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It does not exist"); 
+					" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
 		}
 	}
 
@@ -358,11 +358,11 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It is not versioned"); 
+					" for entry " + entry.getEntityTypedId() + ": It is not versioned"); 
 		}
 		else {
 			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It does not exist"); 
+					" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
 		}
 	}
 
@@ -415,11 +415,11 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot checkout file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It is not versioned"); 			
+					" for entry " + entry.getEntityTypedId() + ": It is not versioned"); 			
 		}
 		else {
 			throw new RepositoryServiceException("Cannot checkout file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It does not exist"); 
+					" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
 		}
 	}
 
@@ -441,11 +441,11 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot uncheckout file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It is not versioned"); 			
+					" for entry " + entry.getEntityTypedId() + ": It is not versioned"); 			
 		}
 		else {
 			throw new RepositoryServiceException("Cannot uncheckout file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It does not exist"); 
+					" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
 		}
 	}
 
@@ -465,11 +465,11 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot checkin file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It is not versioned"); 			
+					" for entry " + entry.getEntityTypedId() + ": It is not versioned"); 			
 		}
 		else {
 			throw new RepositoryServiceException("Cannot checkin file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It does not exist"); 
+					" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
 		}		
 	}
 
@@ -497,7 +497,7 @@ public class FileRepositorySession implements RepositorySession {
 		
 		if(fileInfo == VERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot get length of file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It is versioned"); 			
+					" for entry " + entry.getEntityTypedId() + ": It is versioned"); 			
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			File unversionedFile = getUnversionedFile(binder, entry, relativeFilePath);
@@ -506,7 +506,7 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else {
 			throw new RepositoryServiceException("Cannot get length of file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It does not exist"); 
+					" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
 		}
 	}
 	
@@ -521,11 +521,11 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot get length of file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It is not versioned"); 			
+					" for entry " + entry.getEntityTypedId() + ": It is not versioned"); 			
 		}
 		else {
 			throw new RepositoryServiceException("Cannot get length of file " + relativeFilePath + 
-					" for entry " + entry.getTypedId() + ": It does not exist"); 
+					" for entry " + entry.getEntityTypedId() + ": It does not exist"); 
 		}
 	}
 	
@@ -607,11 +607,11 @@ public class FileRepositorySession implements RepositorySession {
 		}
 		else if(fileInfo == UNVERSIONED_FILE) {
 			throw new RepositoryServiceException("Cannot delete a version from the file " + 
-					relativeFilePath + " for entry " + entity.getTypedId() + ": It is not versioned"); 
+					relativeFilePath + " for entry " + entity.getEntityTypedId() + ": It is not versioned"); 
 		}
 		else {
 			throw new RepositoryServiceException("Cannot delete a version from the file " + 
-					relativeFilePath + " for entry " + entity.getTypedId() + ": It does not exist"); 
+					relativeFilePath + " for entry " + entity.getEntityTypedId() + ": It does not exist"); 
 		}	
 	}
 

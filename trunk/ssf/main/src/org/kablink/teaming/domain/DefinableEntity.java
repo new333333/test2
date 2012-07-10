@@ -90,12 +90,12 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject im
     	//cannot copy events,customattribute and attachments, since they need a ownerId
     	
     }
+    
+    @Override
 	public EntityIdentifier getEntityIdentifier() {
 		if (entityIdentifier == null) entityIdentifier = new EntityIdentifier(getId(), getEntityType());
 		return entityIdentifier;
 	}
-	public abstract EntityIdentifier.EntityType getEntityType();
-
    	
     /**
      * @hibernate.component prefix="description_"
@@ -593,7 +593,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject im
     	this.iCustomAttributes = iCustomAttributes;
     }
     
-    public String getTypedId() {
+    public String getEntityTypedId() {
     	return getEntityType().name() + "_" + getEntityIdentifier().getEntityId();
     }
     /**

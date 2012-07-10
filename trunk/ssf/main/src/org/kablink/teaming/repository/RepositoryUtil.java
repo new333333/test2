@@ -344,7 +344,7 @@ public class RepositoryUtil {
 			append(separator).
 			append(binder.getId()).
 			append(separator).
-			append(entry.getTypedId()).
+			append(entry.getEntityTypedId()).
 			append(separator).toString();
 	}
 	

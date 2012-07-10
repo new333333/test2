@@ -30,18 +30,50 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.domain;
 
 /**
  * @author jong
  *
  */
-public interface Entity {
+public abstract class StaticEntity extends ZonedObject implements Entity {
 
-    public Long getId();
-    public void setId(Long id);
-    
-	public EntityIdentifier getEntityIdentifier();
-	public EntityIdentifier.EntityType getEntityType();
-    public String getEntityTypedId();
+	protected Long id;
+    protected EntityIdentifier entityIdentifier;
+	
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.domain.Entity#getId()
+	 */
+	@Override
+	public Long getId() {
+		return id;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.domain.Entity#setId(java.lang.Long)
+	 */
+	@Override
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.domain.Entity#getEntityIdentifier()
+	 */
+	@Override
+	public EntityIdentifier getEntityIdentifier() {
+		if (entityIdentifier == null) 
+			entityIdentifier = new EntityIdentifier(getId(), getEntityType());
+		return entityIdentifier;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.domain.Entity#getEntityTypedId()
+	 */
+	@Override
+	public String getEntityTypedId() {
+	   	return getEntityType().name() + "_" + getEntityIdentifier().getEntityId();
+	}
+
 }
