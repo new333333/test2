@@ -40,6 +40,7 @@ import java.util.Set;
 
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.SFQuery;
+import org.kablink.teaming.dao.util.ShareWithSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.ApplicationPrincipal;
@@ -58,6 +59,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.Rating;
 import org.kablink.teaming.domain.SeenMap;
+import org.kablink.teaming.domain.ShareWith;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
@@ -245,4 +247,6 @@ public interface ProfileDao {
  	 * Get the list of disabled user accounts.
  	 */
  	public List<Long> getDisabledUserAccounts(final long zoneId);
+ 	
+ 	public List<ShareWith> loadShareWiths(ShareWithSelectSpec selectSpec);
  }

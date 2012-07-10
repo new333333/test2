@@ -76,4 +76,29 @@ public abstract class StaticEntity extends ZonedObject implements Entity {
 	   	return getEntityType().name() + "_" + getEntityIdentifier().getEntityId();
 	}
 
+    public int hashCode() {
+    	if(id != null)
+    		return id.hashCode();
+    	else
+    		return Long.valueOf(0).hashCode();
+    }
+    
+    public boolean equals(Object obj) {
+        if(this == obj)
+            return true;
+
+        if (obj == null)
+            return false;
+      
+        if (!(obj instanceof StaticEntity)) 
+        	return false;
+
+        StaticEntity o = (StaticEntity) obj;
+        if (o.getId() == null) 
+        	return false;
+        if (getId() == null) 
+        	return false;
+        return this.id.equals(o.getId());
+    }    
+
 }

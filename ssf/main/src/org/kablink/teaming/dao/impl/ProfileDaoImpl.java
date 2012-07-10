@@ -52,6 +52,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.LongIdComparator;
@@ -62,6 +63,7 @@ import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.SFQuery;
+import org.kablink.teaming.dao.util.ShareWithSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.ApplicationPrincipal;
@@ -83,6 +85,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.Rating;
 import org.kablink.teaming.domain.SeenMap;
+import org.kablink.teaming.domain.ShareWith;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
@@ -2162,4 +2165,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "getDisabledUserAccounts(long)");
     	}	        
 	}
+	
+ 	public List<ShareWith> loadShareWiths(ShareWithSelectSpec selectSpec) {
+ 		return null;
+ 	}
 }

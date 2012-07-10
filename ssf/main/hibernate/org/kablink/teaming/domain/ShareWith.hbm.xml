@@ -16,8 +16,8 @@
       <meta-value class="org.kablink.teaming.domain.Workspace" value="workspace"/>
       <meta-value class="org.kablink.teaming.domain.ProfileBinder" value="profileBinder"/>
       <meta-value class="org.kablink.teaming.domain.TemplateBinder" value="template"/>
-      <column name="entityType"  length="16" index="entity_shared"/>
-      <column name="entityId" index="entity_shared"/>
+      <column name="entityType"  length="16"/>
+      <column name="entityId"/>
     </any>
     <property name="startDate"/>
     <component name="description">
