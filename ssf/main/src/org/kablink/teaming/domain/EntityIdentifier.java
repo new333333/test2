@@ -49,6 +49,7 @@ public class EntityIdentifier implements Comparable<EntityIdentifier> {
 	 *
 	 */
 	public enum EntityType {
+		// WARNING: Do NOT reuse or fix the numeric holes that exist in the sequence.
 		none (0),
 		profiles (1),
 		folder (2), 
@@ -57,7 +58,8 @@ public class EntityIdentifier implements Comparable<EntityIdentifier> {
 		group (5), 
 		folderEntry (6),
 		application (8),
-		applicationGroup (9);
+		applicationGroup (9),
+		shareWith (12);
 		int dbValue;
 		EntityType(int dbValue) {
 			this.dbValue = dbValue;
@@ -88,6 +90,7 @@ public class EntityIdentifier implements Comparable<EntityIdentifier> {
 			case 9: return EntityType.applicationGroup;
 			case 10: throw new IllegalArgumentException("Illegal type value " + type + " for EntityType"); // return EntityType.zone;
 			case 11: throw new IllegalArgumentException("Illegal type value " + type + " for EntityType"); // return EntityType.resourceDriver;
+			case 12: return EntityType.shareWith;
 			default: return EntityType.none;
 			}
 		}

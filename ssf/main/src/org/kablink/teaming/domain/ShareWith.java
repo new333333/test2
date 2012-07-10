@@ -37,11 +37,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+
 /**
  * @author jong
  *
  */
-public class ShareWith extends ZonedObject {
+public class ShareWith extends StaticEntity {
 
 	protected Long id;
 	protected User sharer;
@@ -49,6 +51,7 @@ public class ShareWith extends ZonedObject {
 	protected Date startDate;
 	protected Description description;
 	protected Collection<ShareWithMember> shareWithMembers;
+    protected EntityIdentifier entityIdentifier;
 	
 	// For use by Hibernate only
 	protected ShareWith() {
@@ -66,11 +69,23 @@ public class ShareWith extends ZonedObject {
 		this.description = description;
 	}
 	
+	@Override
+	public EntityIdentifier getEntityIdentifier() {
+		if (entityIdentifier == null) 
+			entityIdentifier = new EntityIdentifier(getId(), getEntityType());
+		return entityIdentifier;
+	}
+
+	@Override
+	public EntityType getEntityType() {
+		return EntityIdentifier.EntityType.shareWith;
+	}
+	
 	public Long getId() {
 		return id;
 	}
 
-	protected void setId(Long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -78,7 +93,7 @@ public class ShareWith extends ZonedObject {
 		return sharer;
 	}
 
-	protected void setSharer(User sharer) {
+	public void setSharer(User sharer) {
 		this.sharer = sharer;
 	}
 
@@ -86,7 +101,7 @@ public class ShareWith extends ZonedObject {
 		return entity;
 	}
 
-	protected void setEntity(DefinableEntity entity) {
+	public void setEntity(DefinableEntity entity) {
 		this.entity = entity;
 	}
 
@@ -94,7 +109,7 @@ public class ShareWith extends ZonedObject {
 		return startDate;
 	}
 
-	protected void setStartDate(Date startDate) {
+	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 
@@ -102,10 +117,9 @@ public class ShareWith extends ZonedObject {
 		return description;
 	}
 
-	protected void setDescription(Description description) {
+	public void setDescription(Description description) {
 		this.description = description;
 	}
-
 	
 	public Collection<ShareWithMember> getShareWithMembers() {
 		if(shareWithMembers == null)
@@ -172,5 +186,5 @@ public class ShareWith extends ZonedObject {
 		
 		
 	}
-	
+
 }
