@@ -318,7 +318,7 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * This class is used to hold information about a share
 	 */
-	private class ShareInfo
+	public class ShareInfo
 	{
 		private Long m_shareId;
 		private String m_recipientName;
@@ -366,6 +366,15 @@ public class ShareThisDlg extends DlgBox
 			
 			return "";
 		}
+		
+		/**
+		 * 
+		 */
+		public ShareRights getShareRights()
+		{
+			return m_shareRights;
+		}
+		
 		/**
 		 * 
 		 */
@@ -541,48 +550,6 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
-	 * This widget is used to display the rights for a given share and allow the user
-	 * to change the rights.
-	 */
-	private class ShareAccessWidget extends Composite
-		implements ClickHandler
-	{
-		private ShareInfo m_shareInfo;
-		
-		/**
-		 * 
-		 */
-		public ShareAccessWidget( ShareInfo shareInfo )
-		{
-			InlineLabel rightsLabel;
-			ImageResource imageResource;
-			Image img;
-			
-			m_shareInfo = shareInfo;
-
-			rightsLabel = new InlineLabel( shareInfo.getShareRightsAsString() );
-			rightsLabel.addStyleName( "shareThis_RightsLabel" );
-			rightsLabel.addClickHandler( this );
-			
-			imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
-			img = new Image( imageResource );
-			img.getElement().setAttribute( "align", "absmiddle" );
-			rightsLabel.getElement().appendChild( img.getElement() );
-			
-			initWidget( rightsLabel );
-		}
-
-		/**
-		 * 
-		 */
-		@Override
-		public void onClick( ClickEvent event )
-		{
-			Window.alert( "Not yet implemented: " + m_shareInfo.getRecipientName() + " access: " + m_shareInfo.getShareRightsAsString() );
-		}
-	}
-	
-	/**
 	 * This widget is used to display the expiration for a given share and allow the user
 	 * to change the expiration.
 	 */
@@ -669,11 +636,21 @@ public class ShareThisDlg extends DlgBox
 		@Override
 		public void onClick( ClickEvent event )
 		{
-			removeShare( m_shareInfo );
+			Scheduler.ScheduledCommand cmd;
+			
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute() 
+				{
+					removeShare( m_shareInfo );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 	
-	
+
 	/*
 	 * Class constructor.
 	 * 
@@ -762,9 +739,9 @@ public class ShareThisDlg extends DlgBox
 		
 		// Add the share rights in the 3rd column
 		{
-			ShareAccessWidget accessWidget;
+			ShareRightsWidget accessWidget;
 			
-			accessWidget = new ShareAccessWidget( shareInfo );
+			accessWidget = new ShareRightsWidget( shareInfo );
 			m_shareTable.setWidget( row, 2, accessWidget );
 		}
 		

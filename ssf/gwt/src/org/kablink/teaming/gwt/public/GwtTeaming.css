@@ -544,6 +544,12 @@
 	color: #5691A6;
 }
 
+.shareThis_DefaultExpiresLabel
+{
+	color: #5691A6;
+	padding-left: 7px;
+}
+
 .shareThis_RightsLabel:hover, .shareThis_ExpiresLabel:hover, .shareThis_DefaultExpiresLabel:hover
 {
 	cursor: pointer;

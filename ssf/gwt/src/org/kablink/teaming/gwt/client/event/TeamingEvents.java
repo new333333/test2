@@ -149,6 +149,8 @@ public enum TeamingEvents implements IsSerializable {
 	SEARCH_SIMPLE,						// Performs a simple search on a string.
 	SEARCH_TAG,							// Executes a search using a string as a tag Name.
 	
+	SET_SHARE_RIGHTS,					// Set the share rights
+	
 	SHOW_BLOG_FOLDER,					// Show a blog folder.
 	SHOW_CALENDAR_FOLDER,				// Shows a calendar folder.
 	SHOW_COLLECTION,					// Shows a collection.
