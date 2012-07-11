@@ -46,7 +46,7 @@
         </addColumn>
     </changeSet>
     <changeSet author="peter" context="schema" failOnError="true" id="7">
-        <createTable tableName="SS_ResourceDriver">
+        <createTable tableName="SS_RESOURCEDRIVER">
             <column name="ID" type="NUMBER(19,0)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_RESOURCEDRIVER"/>
             </column>
@@ -66,22 +66,22 @@
         </createTable>
     </changeSet>
     <changeSet author="peter" context="schema" failOnError="true" id="8">
-        <addColumn tableName="SS_ResourceDriver">
+        <addColumn tableName="SS_RESOURCEDRIVER">
             <column name="shareName" type="VARCHAR2(255 CHAR)">
             	<constraints nullable="true" />
             </column>
         </addColumn>
-        <addColumn tableName="SS_ResourceDriver">
+        <addColumn tableName="SS_RESOURCEDRIVER">
             <column name="serverName" type="VARCHAR2(255 CHAR)">
             	<constraints nullable="true" />
             </column>
         </addColumn>
-        <addColumn tableName="SS_ResourceDriver">
+        <addColumn tableName="SS_RESOURCEDRIVER">
             <column name="serverIP" type="VARCHAR2(255 CHAR)">
             	<constraints nullable="true" />
             </column>
         </addColumn>
-        <addColumn tableName="SS_ResourceDriver">
+        <addColumn tableName="SS_RESOURCEDRIVER">
             <column name="volume" type="VARCHAR2(255 CHAR)">
             	<constraints nullable="true" />
             </column>
