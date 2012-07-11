@@ -131,6 +131,14 @@ public class ShareWithSelectSpec {
 		setOnRightsWithNames(rightNames, onRightsDisjunctive);
 	}
 	
+	/**
+	 * Specify order-by clause. Only a property from the <code>ShareWith</code>
+	 * can be specified (i.e., you can't order the result by a property in 
+	 * <code>ShareWithMember</code>). 
+	 * 
+	 * @param orderByFieldName
+	 * @param descending
+	 */
 	public void setOrder(String orderByFieldName, boolean descending) {
 		this.orderByFieldName = orderByFieldName;
 		this.descending = descending;

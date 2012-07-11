@@ -46,8 +46,8 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 public class ShareWith extends AbstractEntity {
 
 	protected Long id;
-	protected Long sharerId;
-	protected EntityIdentifier sharedEntityIdentifier;
+	protected User sharer;
+	protected DefinableEntity sharedEntity;
 	protected Date startDate;
 	protected Description description;
 	protected Collection<ShareWithMember> shareWithMembers;
@@ -57,16 +57,16 @@ public class ShareWith extends AbstractEntity {
 	}
 	
 	// For user by application
-	public ShareWith(Long sharerId, EntityIdentifier sharedEntityIdentifier,
+	public ShareWith(User sharer, DefinableEntity sharedEntity,
 			Date startDate, Description description,
 			Collection<ShareWithMember> shareWithMembers) {
-		if(sharerId == null) throw new IllegalArgumentException("Sharer ID must be specified");
-		if(sharedEntityIdentifier == null) throw new IllegalArgumentException("ID of the shared entity must be specified");
+		if(sharer == null) throw new IllegalArgumentException("Sharer must be specified");
+		if(sharedEntity == null) throw new IllegalArgumentException("Shared entity must be specified");
 		if(startDate == null) throw new IllegalArgumentException("Start date must be specified");
 		if(shareWithMembers == null) throw new IllegalArgumentException("Share members must be specified");
 		
-		this.sharerId = sharerId;
-		this.sharedEntityIdentifier = sharedEntityIdentifier;
+		this.sharer = sharer;
+		this.sharedEntity = sharedEntity;
 		this.startDate = startDate;
 		this.description = description;
 		this.shareWithMembers = shareWithMembers;
@@ -85,20 +85,20 @@ public class ShareWith extends AbstractEntity {
 		this.id = id;
 	}
 
-	public Long getSharerId() {
-		return sharerId;
+	public User getSharer() {
+		return sharer;
 	}
 
-	public void setSharerId(Long sharerId) {
-		this.sharerId = sharerId;
+	public void setSharer(User sharer) {
+		this.sharer = sharer;
 	}
 
-	public EntityIdentifier getSharedEntityIdentifier() {
-		return sharedEntityIdentifier;
+	public DefinableEntity getSharedEntity() {
+		return sharedEntity;
 	}
 
-	public void setSharedEntityIdentifier(EntityIdentifier sharedEntityIdentifier) {
-		this.sharedEntityIdentifier = sharedEntityIdentifier;
+	public void setSharedEntity(DefinableEntity sharedEntity) {
+		this.sharedEntity = sharedEntity;
 	}
 
 	public Date getStartDate() {
