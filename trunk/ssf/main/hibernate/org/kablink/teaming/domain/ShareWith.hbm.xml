@@ -7,11 +7,18 @@
       <generator class="native"/>
     </id>
     <property name="zoneId" access="field"/>
-    <property name="sharerId"/>
-    <component name="sharedEntityIdentifier" class="org.kablink.teaming.domain.EntityIdentifier">
-   		<property name="type" column="sharedEntity_type"/>
-	    <property name="entityId" column="sharedEntity_id"/>
-    </component>
+    <many-to-one class="org.kablink.teaming.domain.User" name="sharer"/>
+    <any name="sharedEntity" id-type="java.lang.Long" meta-type="string">
+      <meta-value class="org.kablink.teaming.domain.FolderEntry" value="folderEntry"/>
+      <meta-value class="org.kablink.teaming.domain.User" value="user"/>
+      <meta-value class="org.kablink.teaming.domain.Group" value="group"/>
+      <meta-value class="org.kablink.teaming.domain.Folder" value="folder"/>
+      <meta-value class="org.kablink.teaming.domain.Workspace" value="workspace"/>
+      <meta-value class="org.kablink.teaming.domain.ProfileBinder" value="profileBinder"/>
+      <meta-value class="org.kablink.teaming.domain.TemplateBinder" value="template"/>
+      <column name="sharedEntity_type"  length="16"/>
+      <column name="sharedEntity_id"/>
+    </any>    
     <property name="startDate"/>
     <component name="description">
       <property name="HDescription" column="description_text" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>
@@ -21,8 +28,8 @@
       <key column="shareWithId"/>
       <composite-element class="org.kablink.teaming.domain.ShareWithMember">
 	    <property name="endDate"/>
-	    <property name="recipientType" access="field" type="short"/>
-	    <property name="recipientId"/>
+	    <property name="recipientType" column="recipient_type" access="field" type="short"/>
+	    <property name="recipientId" column="recipient_id"/>
 	    <nested-composite-element name="rightSet" class="org.kablink.teaming.domain.ShareWithMember$RightSet">
 	    	<property name="createEntries" column="right_createEntries"/>
 	    	<property name="modifyEntries" column="right_modifyEntries"/>

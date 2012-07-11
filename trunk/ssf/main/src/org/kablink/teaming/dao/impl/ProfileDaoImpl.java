@@ -2210,23 +2210,31 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    		else
 	                    			crit.add(Restrictions.lt("startDate", selectSpec.startDateMax));
 	                    	}
+	                    	if(selectSpec.orderByFieldName != null) {
+	                    		if(selectSpec.descending)
+	                    			crit.addOrder(Order.desc(selectSpec.orderByFieldName));
+	                    		else
+	                    			crit.addOrder(Order.asc(selectSpec.orderByFieldName));
+	                    	}
+	                    	
+	                    	Criteria subCrit = crit.createCriteria("shareWithMembers");
 	                    	if(selectSpec.endDateMin != null) {
 	                    		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();
-	                    		disjunction.add(Restrictions.isNull("shareWithMembers.endDate"));
+	                    		disjunction.add(Restrictions.isNull("endDate"));
 	                    		if(selectSpec.endDateMinInclusive)
-	                    			disjunction.add(Restrictions.ge("shareWithMembers.endDate", selectSpec.endDateMin));
+	                    			disjunction.add(Restrictions.ge("endDate", selectSpec.endDateMin));
 	                    		else
-	                    			disjunction.add(Restrictions.gt("shareWithMembers.endDate", selectSpec.endDateMin));
-	                    		crit.add(disjunction);
+	                    			disjunction.add(Restrictions.gt("endDate", selectSpec.endDateMin));
+	                    		subCrit.add(disjunction);
 	                    	}
 	                    	if(selectSpec.endDateMax != null) {
 	                    		org.hibernate.criterion.Conjunction conjunction = Restrictions.conjunction();
-	                    		conjunction.add(Restrictions.isNotNull("shareWithMembers.endDate"));
+	                    		conjunction.add(Restrictions.isNotNull("endDate"));
 	                    		if(selectSpec.endDateMaxInclusive)
-	                    			conjunction.add(Restrictions.le("shareWithMembers.endDate", selectSpec.endDateMax));
+	                    			conjunction.add(Restrictions.le("endDate", selectSpec.endDateMax));
 	                    		else
-	                    			conjunction.add(Restrictions.lt("shareWithMembers.endDate", selectSpec.endDateMax));
-	                    		crit.add(conjunction);
+	                    			conjunction.add(Restrictions.lt("endDate", selectSpec.endDateMax));
+	                    		subCrit.add(conjunction);
 	                    	}
 	                    	if((selectSpec.recipientUsers != null && !selectSpec.recipientUsers.isEmpty()) ||
 	                    			(selectSpec.recipientGroups != null && !selectSpec.recipientGroups.isEmpty()) ||
@@ -2234,20 +2242,20 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();
 	                    		if(selectSpec.recipientUsers != null && !selectSpec.recipientUsers.isEmpty()) {
 	                    			disjunction.add(Restrictions.conjunction()
-	              							.add(Restrictions.in("shareWithMembers.recipientId", selectSpec.recipientUsers))
-	              							.add(Restrictions.eq("shareWithMembers.recipientType", ShareWithMember.RecipientType.user.getValue())));
+	              							.add(Restrictions.in("recipientId", selectSpec.recipientUsers))
+	              							.add(Restrictions.eq("recipientType", ShareWithMember.RecipientType.user.getValue())));
 	                    		}
 	                    		if(selectSpec.recipientGroups != null && !selectSpec.recipientGroups.isEmpty()) {
 	                    			disjunction.add(Restrictions.conjunction()
-	              							.add(Restrictions.in("shareWithMembers.recipientId", selectSpec.recipientGroups))
-	              							.add(Restrictions.eq("shareWithMembers.recipientType", ShareWithMember.RecipientType.group.getValue())));
+	              							.add(Restrictions.in("recipientId", selectSpec.recipientGroups))
+	              							.add(Restrictions.eq("recipientType", ShareWithMember.RecipientType.group.getValue())));
 	                    		}
 	                    		if(selectSpec.recipientTeams != null && !selectSpec.recipientTeams.isEmpty()) {
 	                    			disjunction.add(Restrictions.conjunction()
-	              							.add(Restrictions.in("shareWithMembers.recipientId", selectSpec.recipientTeams))
-	              							.add(Restrictions.eq("shareWithMembers.recipientType", ShareWithMember.RecipientType.team.getValue())));
+	              							.add(Restrictions.in("recipientId", selectSpec.recipientTeams))
+	              							.add(Restrictions.eq("recipientType", ShareWithMember.RecipientType.team.getValue())));
 	                    		}
-	                    		crit.add(disjunction);
+	                    		subCrit.add(disjunction);
 	                    	}	               			
 	                    	if(selectSpec.onRights != null && !selectSpec.onRights.isEmpty()) {
 	                    		org.hibernate.criterion.Junction junction;
@@ -2256,14 +2264,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    		else
 	                    			junction = Restrictions.conjunction();
 	                    		for(String rightName:selectSpec.onRights)
-	                    			junction.add(Restrictions.eq("shareWithMembers.rightSet." + rightName, true));
-	                    		crit.add(junction);
-	                    	}
-	                    	if(selectSpec.orderByFieldName != null) {
-	                    		if(selectSpec.descending)
-	                    			crit.addOrder(Order.desc(selectSpec.orderByFieldName));
-	                    		else
-	                    			crit.addOrder(Order.asc(selectSpec.orderByFieldName));
+	                    			junction.add(Restrictions.eq("rightSet." + rightName, true));
+	                    		subCrit.add(junction);
 	                    	}
 	                       return crit.list();
 	                    }
@@ -2273,7 +2275,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	       return result;   	
     	}
     	finally {
-    		end(begin, "loadSharedEntities(Collection,Collection,Date,Long)");
+    		end(begin, "loadShareWiths(ShareWithSelectSpec)");
     	}	              	
     	
 
