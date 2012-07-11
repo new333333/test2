@@ -45,17 +45,17 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 public class ShareWithMember {
 
 	public enum RecipientType {
-		user((byte)1),
-		group((byte)2),
-		team((byte)11);
-		byte value;
-	    RecipientType(byte value) {
+		user((short)1),
+		group((short)2),
+		team((short)11);
+		short value;
+	    RecipientType(short value) {
 	    	this.value = value;
 	    }
-	    public byte getValue() {
+	    public short getValue() {
 	    	return value;
 	    }
-	    public static RecipientType valueOf(byte value) {
+	    public static RecipientType valueOf(short value) {
 	    	switch(value) {
 	    	case 1: return RecipientType.user;
 	    	case 2: return RecipientType.group;
@@ -66,7 +66,7 @@ public class ShareWithMember {
 	}
 	
 	protected Date endDate;
-	protected byte recipientType;
+	protected short recipientType;
 	protected Long recipientId;
 	protected RightSet rightSet;
 

@@ -21,7 +21,7 @@
       <key column="shareWithId"/>
       <composite-element class="org.kablink.teaming.domain.ShareWithMember">
 	    <property name="endDate"/>
-	    <property name="recipientType" access="field"/>
+	    <property name="recipientType" access="field" type="short"/>
 	    <property name="recipientId"/>
 	    <nested-composite-element name="rightSet" class="org.kablink.teaming.domain.ShareWithMember$RightSet">
 	    	<property name="createEntries" column="right_createEntries"/>
