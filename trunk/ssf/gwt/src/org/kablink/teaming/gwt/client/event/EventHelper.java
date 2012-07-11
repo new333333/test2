@@ -1208,6 +1208,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case SET_SHARE_RIGHTS:
+				// A SetShareRightsEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof SetShareRightsEvent.Handler ) 
+				{
+					handlerNotDefined = false;
+					registrationHandler = SetShareRightsEvent.registerEvent( eventBus, ((SetShareRightsEvent.Handler) eventHandler) );
+				}
+				break;
+				
 			case SHARE_SELECTED_ENTRIES:
 				// A ShareSelectedEntriesEvent!  Can the event handler
 				// we were given handle that?
@@ -1974,7 +1983,9 @@ public class EventHelper {
 			case SEARCH_SAVED:                      	hasHandler = (eventHandler instanceof SearchSavedEvent.Handler);                   break;
 			case SEARCH_SIMPLE:                     	hasHandler = (eventHandler instanceof SearchSimpleEvent.Handler);                  break;
 			case SEARCH_TAG:                        	hasHandler = (eventHandler instanceof SearchTagEvent.Handler);                     break;
-			
+
+			case SET_SHARE_RIGHTS:						hasHandler = (eventHandler instanceof SetShareRightsEvent.Handler);                break;
+
 			case SHOW_BLOG_FOLDER:						hasHandler = (eventHandler instanceof ShowBlogFolderEvent.Handler);		   		   break;
 			case SHOW_CALENDAR_FOLDER:					hasHandler = (eventHandler instanceof ShowCalendarFolderEvent.Handler);		       break;
 			case SHOW_COLLECTION:					    hasHandler = (eventHandler instanceof ShowCollectionEvent.Handler);		           break;
