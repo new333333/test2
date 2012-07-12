@@ -24,7 +24,7 @@
       <property name="HDescription" column="description_text" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>
       <property name="HFormat" column="description_format"/>
     </component>
-    <bag inverse="false" cascade="all" lazy="false" table="SS_ShareWithMember" name="shareWithMembers">
+    <bag inverse="false" cascade="all" lazy="false" table="SS_ShareWithMember" name="members">
       <key column="shareWithId"/>
       <composite-element class="org.kablink.teaming.domain.ShareWithMember">
 	    <property name="endDate"/>

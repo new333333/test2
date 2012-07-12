@@ -2193,6 +2193,14 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	      	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    	if(1==1) {
+	                    		return session.createQuery("from org.kablink.teaming.domain.ShareWith s join s.members m where s.sharer=:sharer and m.recipientId=:recipientId")
+	                    				.setLong("sharer", 1L)
+	                    				.setLong("recipientId", 8L)
+	                    				.list();
+	                    	}
+	                    	
+	                    	
 	                    	Criteria crit = session.createCriteria(ShareWith.class);
 	                    	if(selectSpec.sharerId != null)
 	                    		crit.add(Restrictions.eq("sharerId", selectSpec.sharerId));
