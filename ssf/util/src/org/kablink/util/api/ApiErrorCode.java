@@ -173,8 +173,8 @@ public enum ApiErrorCode {
 	// OpenID errors
 	OPENID_PROVIDER_NOT_FOUND, // No OpenID provider object found with this name or id
 	
-	// ShareWith errors
-	SHAREWITH_NOT_FOUND, // No share found with this name or id
+	// ShareItem errors
+	SHAREITEM_NOT_FOUND, // No share found with this name or id
 
 	
 }

@@ -41,7 +41,7 @@ import java.util.Set;
 
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.SFQuery;
-import org.kablink.teaming.dao.util.ShareWithSelectSpec;
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.ApplicationPrincipal;
@@ -54,7 +54,7 @@ import org.kablink.teaming.domain.NoApplicationByTheIdException;
 import org.kablink.teaming.domain.NoGroupByTheIdException;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
-import org.kablink.teaming.domain.NoShareWithByTheIdException;
+import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
@@ -62,8 +62,8 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.Rating;
 import org.kablink.teaming.domain.SeenMap;
-import org.kablink.teaming.domain.ShareWith;
-import org.kablink.teaming.domain.ShareWithMember;
+import org.kablink.teaming.domain.ShareItem;
+import org.kablink.teaming.domain.ShareItemMember;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
@@ -253,45 +253,45 @@ public interface ProfileDao {
  	public List<Long> getDisabledUserAccounts(final long zoneId);
  	
  	/**
- 	 * Load a <code>ShareWith</code> given its id.
- 	 * If the object is not found, it throws <code>NoShareWithByTheIdException</code>.
+ 	 * Load a <code>ShareItem</code> given its id.
+ 	 * If the object is not found, it throws <code>NoShareItemByTheIdException</code>.
  	 * 
- 	 * @param shareWithId
+ 	 * @param shareItemId
  	 * @return
- 	 * @throws NoShareWithByTheIdException
+ 	 * @throws NoShareItemByTheIdException
  	 */
- 	public ShareWith loadShareWith(Long shareWithId) throws NoShareWithByTheIdException;
+ 	public ShareItem loadShareItem(Long shareItemId) throws NoShareItemByTheIdException;
  	
  	/**
- 	 * Load a list of <code>ShareWith</code> given their ids.
- 	 * Unlike <code>loadShareWith</code> method, this method does not return error when
+ 	 * Load a list of <code>ShareItem</code> given their ids.
+ 	 * Unlike <code>loadShareItem</code> method, this method does not return error when
  	 * not all of the objects are found by the specified ids. Instead, it will only return
  	 * those objects successfully found.
  	 * 
- 	 * @param shareWithIds
+ 	 * @param shareItemIds
  	 * @return
  	 */
- 	public List<ShareWith> loadShareWiths(Collection<Long> shareWithIds); 
+ 	public List<ShareItem> loadShareItems(Collection<Long> shareItemIds); 
  	
  	/**
- 	 * Find a list of <code>ShareWith</code> defined on the shared entity represented by the specified identifier.
+ 	 * Find a list of <code>ShareItem</code> defined on the shared entity represented by the specified identifier.
  	 * 
  	 * @param sharedEntity
  	 * @return
  	 */
- 	public List<ShareWith> findShareWithsBySharedEntity(EntityIdentifier sharedEntityIdentifier);
+ 	public List<ShareItem> findShareItemsBySharedEntity(EntityIdentifier sharedEntityIdentifier);
  	
  	/**
- 	 * Find a list of <code>ShareWith</code> that were created/shared by the specified user.
+ 	 * Find a list of <code>ShareItem</code> that were created/shared by the specified user.
  	 * 
  	 * @param sharerId
  	 * @return
  	 */
- 	public List<ShareWith> findShareWithsBySharer(Long sharerId);
+ 	public List<ShareItem> findShareItemsBySharer(Long sharerId);
  	 	
  	
  	/**
- 	 * Find a list of <code>ShareWith</code> that were created/shared by the specified user
+ 	 * Find a list of <code>ShareItem</code> that were created/shared by the specified user
  	 * and shared explicitly and directly with the specified recipient (as opposed to
  	 * indirectly through another group or team membership).
  	 * 
@@ -300,7 +300,7 @@ public interface ProfileDao {
  	 * @param recipientId
  	 * @return
  	 */
- 	public List<ShareWith> findShareWithsBySharerAndRecipient(Long sharerId, ShareWithMember.RecipientType recipientType, Long recipientId);
+ 	public List<ShareItem> findShareItemsBySharerAndRecipient(Long sharerId, ShareItemMember.RecipientType recipientType, Long recipientId);
  	
  	/**
  	 * Return IDs of users, groups, and teams that are granted read access to the specified entity.
@@ -308,5 +308,5 @@ public interface ProfileDao {
  	 * @param sharedEntityIdentifier
  	 * @return
  	 */
- 	public Map<ShareWithMember.RecipientType, Set<Long>> getMemberIdsWithReadAccessToSharedEntity(EntityIdentifier sharedEntityIdentifier);
+ 	public Map<ShareItemMember.RecipientType, Set<Long>> getMemberIdsWithReadAccessToSharedEntity(EntityIdentifier sharedEntityIdentifier);
  }

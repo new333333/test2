@@ -52,7 +52,7 @@ import org.kablink.util.search.Constants;
  * @author jong
  *
  */
-public class ShareWithSelectSpec {
+public class ShareItemSelectSpec {
 	public Long sharerId;
 	public EntityIdentifier sharedEntityIdentifier;
 	public Date startDateMin;
@@ -132,9 +132,9 @@ public class ShareWithSelectSpec {
 	}
 	
 	/**
-	 * Specify order-by clause. Only a property from the <code>ShareWith</code>
+	 * Specify order-by clause. Only a property from the <code>ShareItem</code>
 	 * can be specified (i.e., you can't order the result by a property in 
-	 * <code>ShareWithMember</code>). 
+	 * <code>ShareItemMember</code>). 
 	 * 
 	 * @param orderByFieldName
 	 * @param descending

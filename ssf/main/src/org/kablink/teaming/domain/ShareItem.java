@@ -42,18 +42,18 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
  * @author jong
  * 
  */
-public class ShareWith extends NotDefinableEntity {
+public class ShareItem extends NotDefinableEntity {
 
 	protected DefinableEntity sharedEntity;
-	protected Collection<ShareWithMember> members;
+	protected Collection<ShareItemMember> members;
 
 	// For use by Hibernate only
-	protected ShareWith() {
+	protected ShareItem() {
 	}
 
 	// For user by application
-	public ShareWith(User sharer, DefinableEntity sharedEntity, Description description,
-			Collection<ShareWithMember> members) {
+	public ShareItem(User sharer, DefinableEntity sharedEntity, Description description,
+			Collection<ShareItemMember> members) {
 		if (sharer == null)
 			throw new IllegalArgumentException("Sharer must be specified");
 		if (sharedEntity == null)
@@ -91,13 +91,13 @@ public class ShareWith extends NotDefinableEntity {
 		this.sharedEntity = sharedEntity;
 	}
 
-	public Collection<ShareWithMember> getMembers() {
+	public Collection<ShareItemMember> getMembers() {
 		if (members == null)
-			members = new ArrayList<ShareWithMember>();
+			members = new ArrayList<ShareItemMember>();
 		return members;
 	}
 
-	public void setMembers(Collection<ShareWithMember> members) {
+	public void setMembers(Collection<ShareItemMember> members) {
 		this.members = members;
 	}
 

@@ -63,7 +63,7 @@ import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.SFQuery;
-import org.kablink.teaming.dao.util.ShareWithSelectSpec;
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.ApplicationPrincipal;
@@ -80,15 +80,15 @@ import org.kablink.teaming.domain.NoGroupByTheIdException;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
 import org.kablink.teaming.domain.NoPrincipalByTheIdException;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
-import org.kablink.teaming.domain.NoShareWithByTheIdException;
+import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.Rating;
 import org.kablink.teaming.domain.SeenMap;
-import org.kablink.teaming.domain.ShareWith;
-import org.kablink.teaming.domain.ShareWithMember;
+import org.kablink.teaming.domain.ShareItem;
+import org.kablink.teaming.domain.ShareItemMember;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
@@ -2171,45 +2171,45 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 	
 	@Override
- 	public ShareWith loadShareWith(Long shareWithId) {
-		if(shareWithId == null)
+ 	public ShareItem loadShareItem(Long shareItemId) {
+		if(shareItemId == null)
 			throw new IllegalArgumentException("id must be specified");
 		long begin = System.nanoTime();
 		try {
-			ShareWith shareWith = (ShareWith)getHibernateTemplate().get(ShareWith.class, shareWithId);
-			if (shareWith == null) {
-				throw new NoShareWithByTheIdException(shareWithId);
+			ShareItem shareItem = (ShareItem)getHibernateTemplate().get(ShareItem.class, shareItemId);
+			if (shareItem == null) {
+				throw new NoShareItemByTheIdException(shareItemId);
 			}
-			return shareWith;
+			return shareItem;
 		}
 		finally {
-			end(begin, "loadShareWith(Long,Long)");
+			end(begin, "loadShareItem(Long,Long)");
 		}	        
  	}
  	
 	@Override
- 	public List<ShareWith> loadShareWiths(final Collection<Long> shareWithIds) {
-		if(shareWithIds == null || shareWithIds.isEmpty())
+ 	public List<ShareItem> loadShareItems(final Collection<Long> shareItemIds) {
+		if(shareItemIds == null || shareItemIds.isEmpty())
 			throw new IllegalArgumentException("ids must be specified");
 		long begin = System.nanoTime();
 		try {
 	        return (List)getHibernateTemplate().execute(
 		            new HibernateCallback() {
 		                    public Object doInHibernate(Session session) throws HibernateException {
-	                            return session.createCriteria(ShareWith.class)
-	                            	.add(Restrictions.in("id", shareWithIds))
+	                            return session.createCriteria(ShareItem.class)
+	                            	.add(Restrictions.in("id", shareItemIds))
 	                            	.list();
 		                    }
 		            }
 		        );
 		}
 		finally {
-			end(begin, "loadShareWiths(Collection<Long>,Long)");
+			end(begin, "loadShareItems(Collection<Long>,Long)");
 		}	        
  	}
  	
 	@Override
- 	public List<ShareWith> findShareWithsBySharedEntity(final EntityIdentifier sharedEntityIdentifier) {
+ 	public List<ShareItem> findShareItemsBySharedEntity(final EntityIdentifier sharedEntityIdentifier) {
 		if(sharedEntityIdentifier == null)
 			throw new IllegalArgumentException("shared entity identifier must be specified");
 		long begin = System.nanoTime();
@@ -2217,7 +2217,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	      	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
-                    		return session.createQuery("from org.kablink.teaming.domain.ShareWith where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
+                    		return session.createQuery("from org.kablink.teaming.domain.ShareItem where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
                     				.setString("sharedEntityType", sharedEntityIdentifier.getEntityType().name())
                     				.setLong("sharedEntityId", sharedEntityIdentifier.getEntityId())
                     				.list();
@@ -2228,12 +2228,12 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	       return result;   	
     	}
     	finally {
-    		end(begin, "findShareWithsBySharedEntity(EntityIdentifier, Long)");
+    		end(begin, "findShareItemsBySharedEntity(EntityIdentifier, Long)");
     	}	              	
  	}
 	
 	@Override
- 	public List<ShareWith> findShareWithsBySharer(final Long sharerId) {
+ 	public List<ShareItem> findShareItemsBySharer(final Long sharerId) {
 		if(sharerId == null)
 			throw new IllegalArgumentException("sharer id must be specified");
 		long begin = System.nanoTime();
@@ -2241,7 +2241,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	      	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
-                    		return session.createQuery("from org.kablink.teaming.domain.ShareWith where creation_principal=:sharerId")
+                    		return session.createQuery("from org.kablink.teaming.domain.ShareItem where creation_principal=:sharerId")
                     				.setLong("sharerId", sharerId)
                     				.list();
 	                    }
@@ -2251,18 +2251,18 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	       return result;   	
     	}
     	finally {
-    		end(begin, "findShareWithsBySharer(Long)");
+    		end(begin, "findShareItemsBySharer(Long)");
     	}	              	
 	}
 
 	@Override
- 	public List<ShareWith> findShareWithsBySharerAndRecipient(final Long sharerId, final ShareWithMember.RecipientType recipientType, final Long recipientId) {
+ 	public List<ShareItem> findShareItemsBySharerAndRecipient(final Long sharerId, final ShareItemMember.RecipientType recipientType, final Long recipientId) {
 		long begin = System.nanoTime();
 		try {
 	      	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
-                    		return session.createQuery("from org.kablink.teaming.domain.ShareWith s join s.members m where s.creation_principal=:sharerId and m.recipientType=:recipientType and m.recipientId=:recipientId")
+                    		return session.createQuery("from org.kablink.teaming.domain.ShareItem s join s.members m where s.creation_principal=:sharerId and m.recipientType=:recipientType and m.recipientId=:recipientId")
                     				.setLong("sharerId", sharerId)
                     				.setShort("recipientType", recipientType.getValue())
                     				.setLong("recipientId", recipientId)
@@ -2274,12 +2274,12 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	       return result;   	
     	}
     	finally {
-    		end(begin, "findShareWithsBySharerAndRecipient(Long,ShareWithMember.RecipientType,Long)");
+    		end(begin, "findShareItemsBySharerAndRecipient(Long,ShareItemMember.RecipientType,Long)");
     	}	              	
  	}
  	
 	@Override
- 	public Map<ShareWithMember.RecipientType, Set<Long>> getMemberIdsWithReadAccessToSharedEntity(final EntityIdentifier sharedEntityIdentifier) {
+ 	public Map<ShareItemMember.RecipientType, Set<Long>> getMemberIdsWithReadAccessToSharedEntity(final EntityIdentifier sharedEntityIdentifier) {
 		if(sharedEntityIdentifier == null)
 			throw new IllegalArgumentException("shared entity identifier must be specified");
 		long begin = System.nanoTime();
@@ -2287,7 +2287,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	      	List<Object[]> list = (List<Object[]>)getHibernateTemplate().execute(
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
-                    		return session.createQuery("select distinct m.recipientType, m.recipientId from org.kablink.teaming.domain.ShareWith s join s.members m where s.sharedEntity_type=:sharedEntityType and s.sharedEntity_id=:sharedEntityId and m.rightSet.readEntries=:readEntries")
+                    		return session.createQuery("select distinct m.recipientType, m.recipientId from org.kablink.teaming.domain.ShareItem s join s.members m where s.sharedEntity_type=:sharedEntityType and s.sharedEntity_id=:sharedEntityId and m.rightSet.readEntries=:readEntries")
                     				.setString("sharedEntityType", sharedEntityIdentifier.getEntityType().name())
                     				.setLong("sharedEntityId", sharedEntityIdentifier.getEntityId())
                     				.setBoolean("readEntries", true)
@@ -2297,10 +2297,10 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                }
 	            );
 	      	
-	      	Map<ShareWithMember.RecipientType, Set<Long>> result = new HashMap<ShareWithMember.RecipientType, Set<Long>>();
-	      	result.put(ShareWithMember.RecipientType.user, new TreeSet<Long>());
-	      	result.put(ShareWithMember.RecipientType.group, new TreeSet<Long>());
-	      	result.put(ShareWithMember.RecipientType.team, new TreeSet<Long>());
+	      	Map<ShareItemMember.RecipientType, Set<Long>> result = new HashMap<ShareItemMember.RecipientType, Set<Long>>();
+	      	result.put(ShareItemMember.RecipientType.user, new TreeSet<Long>());
+	      	result.put(ShareItemMember.RecipientType.group, new TreeSet<Long>());
+	      	result.put(ShareItemMember.RecipientType.team, new TreeSet<Long>());
 	      	Short recipientType;
 	      	Long recipientId;
 	       	for(Object[] o:list) {
@@ -2320,7 +2320,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	              	
 	}
  	
- 	public List<ShareWith> loadShareWiths(final ShareWithSelectSpec selectSpec) {
+ 	public List<ShareItem> loadShareItems(final ShareItemSelectSpec selectSpec) {
  		// This method doesn't work because, unfortunately, Hibernate doesn't yet support the use of 
  		// sub-criteria for relationship expressed by collection of values rather than entity association. 
 		long begin = System.nanoTime();
@@ -2328,7 +2328,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	      	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
-	                    	Criteria crit = session.createCriteria(ShareWith.class);
+	                    	Criteria crit = session.createCriteria(ShareItem.class);
 	                    	if(selectSpec.sharerId != null)
 	                    		crit.add(Restrictions.eq("sharerId", selectSpec.sharerId));
 	                    	if(selectSpec.sharedEntityIdentifier != null) 
@@ -2352,7 +2352,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    			crit.addOrder(Order.asc(selectSpec.orderByFieldName));
 	                    	}
 	                    	
-	                    	Criteria subCrit = crit.createCriteria("shareWithMembers");
+	                    	Criteria subCrit = crit.createCriteria("shareItemMembers");
 	                    	if(selectSpec.endDateMin != null) {
 	                    		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();
 	                    		disjunction.add(Restrictions.isNull("endDate"));
@@ -2378,17 +2378,17 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    		if(selectSpec.recipientUsers != null && !selectSpec.recipientUsers.isEmpty()) {
 	                    			disjunction.add(Restrictions.conjunction()
 	              							.add(Restrictions.in("recipientId", selectSpec.recipientUsers))
-	              							.add(Restrictions.eq("recipientType", ShareWithMember.RecipientType.user.getValue())));
+	              							.add(Restrictions.eq("recipientType", ShareItemMember.RecipientType.user.getValue())));
 	                    		}
 	                    		if(selectSpec.recipientGroups != null && !selectSpec.recipientGroups.isEmpty()) {
 	                    			disjunction.add(Restrictions.conjunction()
 	              							.add(Restrictions.in("recipientId", selectSpec.recipientGroups))
-	              							.add(Restrictions.eq("recipientType", ShareWithMember.RecipientType.group.getValue())));
+	              							.add(Restrictions.eq("recipientType", ShareItemMember.RecipientType.group.getValue())));
 	                    		}
 	                    		if(selectSpec.recipientTeams != null && !selectSpec.recipientTeams.isEmpty()) {
 	                    			disjunction.add(Restrictions.conjunction()
 	              							.add(Restrictions.in("recipientId", selectSpec.recipientTeams))
-	              							.add(Restrictions.eq("recipientType", ShareWithMember.RecipientType.team.getValue())));
+	              							.add(Restrictions.eq("recipientType", ShareItemMember.RecipientType.team.getValue())));
 	                    		}
 	                    		subCrit.add(disjunction);
 	                    	}	               			
@@ -2410,7 +2410,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	       return result;   	
     	}
     	finally {
-    		end(begin, "loadShareWiths(ShareWithSelectSpec)");
+    		end(begin, "loadShareItems(ShareItemSelectSpec)");
     	}	              	
  	}
 }
