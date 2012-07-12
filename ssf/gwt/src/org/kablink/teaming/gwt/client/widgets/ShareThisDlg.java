@@ -57,8 +57,11 @@ import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseData;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
+import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
+import org.kablink.teaming.gwt.client.widgets.ShareExpirationDlg.ShareExpirationDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -121,6 +124,7 @@ public class ShareThisDlg extends DlgBox
 	private InlineLabel m_expiresLabel;
 	private FlowPanel m_mainPanel;
 	private ImageResource m_deleteImgR;
+	private Image m_defaultExpirationImg;
 	private FlexTable m_shareTable;
 	private FlowPanel m_shareWithTeamsPanel;
 	private FlowPanel m_myTeamsPanel;
@@ -133,6 +137,8 @@ public class ShareThisDlg extends DlgBox
 	private String m_title;
 	private UIObject m_target;
 	private ShareExpirationValue m_defaultShareExpirationValue;
+	private ShareExpirationDlg m_shareExpirationDlg;
+	private EditSuccessfulHandler m_editDefaultExpirationHandler;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -185,110 +191,6 @@ public class ShareThisDlg extends DlgBox
 		}
 	}
 
-	/**
-	 * This class represents the different share expiration values
-	 */
-	public enum ShareExpirationType implements IsSerializable
-	{
-		AFTER_DAYS,
-		NEVER,
-		ON_DATE,
-		
-		UNKNOWN
-	}
-	
-	/**
-	 * This class represents a share expiration value
-	 */
-	public class ShareExpirationValue
-	{
-		private ShareExpirationType m_expirationType;
-		private Long m_value;
-		
-		/**
-		 * 
-		 */
-		public ShareExpirationValue()
-		{
-			m_expirationType = ShareExpirationType.NEVER;
-			m_value = null;
-		}
-		
-		/**
-		 * 
-		 */
-		public ShareExpirationValue( ShareExpirationValue value )
-		{
-			m_expirationType = value.getExpirationType();
-			m_value = value.getValue();
-		}
-		
-		/**
-		 * 
-		 */
-		public ShareExpirationType getExpirationType()
-		{
-			return m_expirationType;
-		}
-		
-		/**
-		 * 
-		 */
-		public Long getValue()
-		{
-			return m_value;
-		}
-		
-		/**
-		 * 
-		 */
-		public String getValueAsString()
-		{
-			if ( m_expirationType == ShareExpirationType.NEVER )
-				return GwtTeaming.getMessages().shareDlg_expiresNever();
-			
-			if ( m_expirationType == ShareExpirationType.ON_DATE )
-			{
-				String on;
-				
-				on = "";
-				if ( m_value != null )
-					m_value.toString();
-				
-				return GwtTeaming.getMessages().shareDlg_expiresOn( on );
-			}
-			
-			if ( m_expirationType == ShareExpirationType.AFTER_DAYS )
-			{
-				String after;
-				
-				after = "";
-				if ( m_value != null )
-					after = m_value.toString();
-				
-				return GwtTeaming.getMessages().shareDlg_expiresAfter( after );
-			}
-			
-			return "Unknown expiration type";
-		}
-		
-		/**
-		 * 
-		 */
-		public void setType( ShareExpirationType type )
-		{
-			m_expirationType = type;
-		}
-		
-		/**
-		 * 
-		 */
-		public void setValue( Long value )
-		{
-			m_value = value;
-		}
-	}
-	
 	/**
 	 * This class represents the different share rights
 	 */
@@ -356,6 +258,14 @@ public class ShareThisDlg extends DlgBox
 			return m_recipientName;
 		}
 
+		/**
+		 * 
+		 */
+		public ShareExpirationValue getShareExpirationValue()
+		{
+			return m_shareExpirationValue;
+		}
+		
 		/**
 		 * 
 		 */
@@ -557,28 +467,65 @@ public class ShareThisDlg extends DlgBox
 		implements ClickHandler
 	{
 		private ShareInfo m_shareInfo;
+		private InlineLabel m_expiresLabel;
+		private Image m_img;
+		private EditSuccessfulHandler m_editShareExpirationHandler;
 		
 		/**
 		 * 
 		 */
 		public ShareExpirationWidget( ShareInfo shareInfo )
 		{
-			InlineLabel expiresLabel;
 			ImageResource imageResource;
-			Image img;
 			
 			m_shareInfo = shareInfo;
 
-			expiresLabel = new InlineLabel( shareInfo.getShareExpirationValueAsString() );
-			expiresLabel.addStyleName( "shareThis_ExpiresLabel" );
-			expiresLabel.addClickHandler( this );
+			m_expiresLabel = new InlineLabel();
+			m_expiresLabel.addStyleName( "shareThis_ExpiresLabel" );
+			m_expiresLabel.addClickHandler( this );
 			
 			imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
-			img = new Image( imageResource );
-			img.getElement().setAttribute( "align", "absmiddle" );
-			expiresLabel.getElement().appendChild( img.getElement() );
+			m_img = new Image( imageResource );
+			m_img.getElement().setAttribute( "align", "absmiddle" );
 			
-			initWidget( expiresLabel );
+			updateExpirationLabel();
+			
+			initWidget( m_expiresLabel );
+		}
+		
+		/**
+		 * Invoke the "Share expiration" dialog
+		 */
+		private void editShareExpiration()
+		{
+			if ( m_shareExpirationDlg != null )
+			{
+				if ( m_editShareExpirationHandler == null )
+				{
+					m_editShareExpirationHandler = new EditSuccessfulHandler()
+					{
+						@Override
+						public boolean editSuccessful( Object obj )
+						{
+							if ( obj instanceof ShareExpirationValue )
+							{
+								ShareExpirationValue expirationValue;
+								
+								expirationValue = (ShareExpirationValue) obj;
+								m_shareInfo.setShareExpirationValue( expirationValue );
+								
+								updateExpirationLabel();
+							}
+							
+							return true;
+						}
+					};
+				}
+				
+				// Invoke the "share expiration" dialog.
+				m_shareExpirationDlg.init( m_shareInfo.getShareExpirationValue(), m_editShareExpirationHandler );
+				m_shareExpirationDlg.showRelativeToTarget( m_expiresLabel );
+			}
 		}
 
 		/**
@@ -587,7 +534,48 @@ public class ShareThisDlg extends DlgBox
 		@Override
 		public void onClick( ClickEvent event )
 		{
-			Window.alert( "Not yet implemented: " + m_shareInfo.getRecipientName() + " expires: " + m_shareInfo.getShareExpirationValueAsString() );
+			Scheduler.ScheduledCommand cmd;
+			
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute() 
+				{
+					if ( m_shareExpirationDlg == null )
+					{
+						ShareExpirationDlg.createAsync( true, true, new ShareExpirationDlgClient()
+						{
+							@Override
+							public void onUnavailable() 
+							{
+								// Nothing to do.  Error handled in asynchronous provider.
+							}
+							
+							@Override
+							public void onSuccess( ShareExpirationDlg seDlg )
+							{
+								m_shareExpirationDlg = seDlg;
+								editShareExpiration();
+							}
+						} );
+					}
+					else
+						editShareExpiration();
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
+		
+		/**
+		 * Update the text that shows the value of the share expiration
+		 */
+		private void updateExpirationLabel()
+		{
+			if ( m_shareInfo != null )
+			{
+				m_expiresLabel.setText( m_shareInfo.getShareExpirationValueAsString() );
+				m_expiresLabel.getElement().appendChild( m_img.getElement() );
+			}
 		}
 	}
 	
@@ -949,7 +937,7 @@ public class ShareThisDlg extends DlgBox
 		{
 			HTMLTable.RowFormatter rowFormatter;
 			FlexTable findTable;
-			
+
 			// Add a KeyUpHandler to the find control
 			{
 				KeyUpHandler keyUpHandler;
@@ -1005,13 +993,15 @@ public class ShareThisDlg extends DlgBox
 				ClickHandler clickHandler;
 				ImageResource imageResource;
 				Image addImg;
+				FlexCellFormatter findCellFormatter;
 				
 				imageResource = GwtTeaming.getImageBundle().add_btn();
 				addImg = new Image( imageResource );
 				addImg.addStyleName( "cursorPointer" );
 				addImg.getElement().setAttribute( "title", GwtTeaming.getMessages().shareDlg_addExternalUserTitle() );
-				mainTable.setWidget( row, 2, addImg );
-				mainCellFormatter.getElement( row, 2 ).getStyle().setPaddingTop( 10, Unit.PX );
+				findTable.setWidget( 0, 1, addImg );
+				findCellFormatter = findTable.getFlexCellFormatter();
+				findCellFormatter.getElement( 0, 1 ).getStyle().setPaddingTop( 8, Unit.PX );
 		
 				// Add a click handler to the "add external user" image.
 				clickHandler = new ClickHandler()
@@ -1064,10 +1054,9 @@ public class ShareThisDlg extends DlgBox
 			++row;
 		}
 		
-		// Add the expiration controls
+		// Add the default expiration controls
 		{
 			ImageResource imageResource;
-			Image img;
 			ClickHandler clickHandler;
 			
 			mainTable.setText( row, 0, GwtTeaming.getMessages().shareDlg_expiresLabel() );
@@ -1076,12 +1065,13 @@ public class ShareThisDlg extends DlgBox
 			m_expiresLabel.addStyleName( "shareThis_DefaultExpiresLabel" );
 
 			imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
-			img = new Image( imageResource );
-			img.getElement().setAttribute( "align", "absmiddle" );
-			m_expiresLabel.getElement().appendChild( img.getElement() );
+			m_defaultExpirationImg = new Image( imageResource );
+			m_defaultExpirationImg.getElement().setAttribute( "align", "absmiddle" );
 
 			m_defaultShareExpirationValue = new ShareExpirationValue();
 			m_defaultShareExpirationValue.setType( ShareExpirationType.NEVER );
+			
+			updateDefaultExpirationLabel();
 			
 			clickHandler = new ClickHandler()
 			{
@@ -1127,6 +1117,7 @@ public class ShareThisDlg extends DlgBox
 			m_shareTable = new FlexTable();
 			m_shareTable.addStyleName( "shareThisRecipientTable" );
 			m_shareTable.setCellSpacing( 0 );
+			m_shareTable.setWidth( "550px" );
 
 			// Add the column headers.
 			{
@@ -1234,6 +1225,41 @@ public class ShareThisDlg extends DlgBox
 		return true;
 	}
 
+	/**
+	 * 
+	 */
+	private void editDefaultExpiration()
+	{
+		if ( m_shareExpirationDlg != null )
+		{
+			if ( m_editDefaultExpirationHandler == null )
+			{
+				m_editDefaultExpirationHandler = new EditSuccessfulHandler()
+				{
+					@Override
+					public boolean editSuccessful( Object obj )
+					{
+						if ( obj instanceof ShareExpirationValue )
+						{
+							ShareExpirationValue expirationValue;
+							
+							expirationValue = (ShareExpirationValue) obj;
+							m_defaultShareExpirationValue.set( expirationValue );
+							
+							updateDefaultExpirationLabel();
+						}
+						
+						return true;
+					}
+				};
+			}
+			
+			// Invoke the "share expiration" dialog.
+			m_shareExpirationDlg.init( m_defaultShareExpirationValue, m_editDefaultExpirationHandler );
+			m_shareExpirationDlg.showRelativeToTarget( m_expiresLabel );
+		}
+	}
+	
 	/**
 	 * This method gets called when user user presses the OK push
 	 * button.  We will issue an ajax request to start the work of
@@ -1605,7 +1631,26 @@ public class ShareThisDlg extends DlgBox
 	 */
 	private void handleClickOnDefaultExpiration()
 	{
-		Window.alert( "Not yet implemented" );
+		if ( m_shareExpirationDlg == null )
+		{
+			ShareExpirationDlg.createAsync( true, true, new ShareExpirationDlgClient()
+			{
+				@Override
+				public void onUnavailable() 
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( ShareExpirationDlg seDlg )
+				{
+					m_shareExpirationDlg = seDlg;
+					editDefaultExpiration();
+				}
+			} );
+		}
+		else
+			editDefaultExpiration();
 	}
 	
 	/**
@@ -1716,6 +1761,7 @@ public class ShareThisDlg extends DlgBox
 	
 	
 	/*
+	 * 
 	 */
 	private void showDlg()
 	{
@@ -1728,6 +1774,18 @@ public class ShareThisDlg extends DlgBox
 		if ( null == m_target )
 		     show( true );	// true -> Show centered when not given a target.
 		else showRelativeToTarget( m_target );
+	}
+	
+	/**
+	 * Update the label that holds the default expiration value.
+	 */
+	private void updateDefaultExpirationLabel()
+	{
+		if ( m_defaultShareExpirationValue != null )
+		{
+			m_expiresLabel.setText( m_defaultShareExpirationValue.getValueAsString() );
+			m_expiresLabel.getElement().appendChild( m_defaultExpirationImg.getElement() );
+		}
 	}
 	
 	/**

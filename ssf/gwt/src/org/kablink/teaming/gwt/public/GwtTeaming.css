@@ -560,6 +560,21 @@
 	-webkit-border-radius: 5px;
 }
 
+
+
+/**
+ * Styles used with the share expiration dialog
+ */
+
+.shareExpirationDlg_expiresOnImg:hover
+{
+	cursor: pointer;
+}
+
+/* End */
+ 
+ 
+ 
 .unreadEntry
 {
 	font-weight: bold;
