@@ -89,6 +89,13 @@
     		</span>
     	</div>
     <% } %>
+    <% if (ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID.equals(ssGroup.getInternalId())) { %>
+    	<div style="padding:20px;">
+    		<span class="ss_italic">
+    			<ssf:nlt tag="group.allextusers.contains"/>
+    		</span>
+    	</div>
+    <% } %>
 </c:if>
 
 <div style="padding-top:30px;">

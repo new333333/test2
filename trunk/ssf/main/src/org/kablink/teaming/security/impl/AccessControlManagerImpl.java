@@ -257,7 +257,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				Long allUsersId = Utils.getAllUsersGroupId();
 				Long allExtUsersId = Utils.getAllExtUsersGroupId();
 				if (allUsersId != null && !workArea.getWorkAreaType().equals(ZoneConfig.WORKAREA_TYPE) 
-						&& (membersToLookup.contains(allUsersId) || membersToLookup.contains(allExtUsersId)) && 
+						&& membersToLookup.contains(allUsersId) && 
 						Utils.canUserOnlySeeCommonGroupMembers(user)) {
 					if (Utils.isWorkareaInProfilesTree(workArea)) {
 						//If this user does not share a group with the binder owner, remove the "All Users" group.
@@ -265,10 +265,10 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 						if (workArea.getWorkAreaType().equals(EntityType.workspace.name()) ||
 								workArea.getWorkAreaType().equals(EntityType.folder.name())) {
 							List<Group> groups = workArea.getOwner().getMemberOf();
-							List gIds = new ArrayList();
 							for (Group g : groups) {
-								gIds.add(g.getId());
-								if (membersToLookup.contains(g.getId())) {
+								//See if this group is not the allExtUsers group and is shared with the user
+								//Being in the allExtUsers group does not count as a "common" group
+								if (!g.getId().equals(allExtUsersId) && membersToLookup.contains(g.getId())) {
 									remove = false;
 									break;
 								}
@@ -277,7 +277,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 								//There wasn't a direct match of groups, go look in the exploded list
 								Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(workArea.getOwner().getId(), zoneId);
 								for (Long gId : userGroupIds) {
-									if (membersToLookup.contains(gId)) {
+									if (!gId.equals(allExtUsersId) && membersToLookup.contains(gId)) {
 										remove = false;
 										break;
 									}
@@ -286,7 +286,6 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 						}
 						if (remove) {
 							membersToLookup.remove(allUsersId);
-							membersToLookup.remove(allExtUsersId);
 						}
 					}
 				}
