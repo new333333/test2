@@ -94,12 +94,7 @@ public class Tag extends ZonedObject {
     public void setOwnerIdentifier(EntityIdentifier ownerId) {
     	this.ownerId = ownerId;
     }
-	public boolean isOwner(DefinableEntity entity) {
- 		if (entity == null) return false;
- 		if (entity.getEntityIdentifier().equals(ownerId)) return true;
- 		return false;
- 	}
-	public boolean isOwner(Entity entity) {
+	public boolean isOwner(EntityIdentifiable entity) {
  		if (entity == null) return false;
  		if (entity.getEntityIdentifier().equals(ownerId)) return true;
  		return false;

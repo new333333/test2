@@ -6,8 +6,15 @@
     <id unsaved-value="null" name="id" type="long">
       <generator class="native"/>
     </id>
+    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <property name="zoneId" access="field"/>
-    <many-to-one class="org.kablink.teaming.domain.User" name="sharer"/>
+	<property name="preDeleted"/>
+    <property name="preDeletedWhen"/>
+    <property name="preDeletedBy"/>
+    <component name="description">
+      <property name="HDescription" column="description_text" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>
+      <property name="HFormat" column="description_format"/>
+    </component>
     <any name="sharedEntity" id-type="java.lang.Long" meta-type="string">
       <meta-value class="org.kablink.teaming.domain.FolderEntry" value="folderEntry"/>
       <meta-value class="org.kablink.teaming.domain.User" value="user"/>
@@ -19,11 +26,6 @@
       <column name="sharedEntity_type"  length="16"/>
       <column name="sharedEntity_id"/>
     </any>    
-    <property name="startDate"/>
-    <component name="description">
-      <property name="HDescription" column="description_text" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>
-      <property name="HFormat" column="description_format"/>
-    </component>
     <bag inverse="false" cascade="all" lazy="false" table="SS_ShareWithMember" name="members">
       <key column="shareWithId"/>
       <composite-element class="org.kablink.teaming.domain.ShareWithMember">

@@ -30,75 +30,57 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.domain;
-
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 
 /**
  * @author jong
- * 
+ *
  */
-public class ShareWith extends NotDefinableEntity {
+public abstract class NotDefinableEntity extends BaseEntity {
 
-	protected DefinableEntity sharedEntity;
-	protected Collection<ShareWithMember> members;
-
-	// For use by Hibernate only
-	protected ShareWith() {
+	protected Description description;
+	protected boolean preDeleted = false;
+    protected Long preDeletedWhen;
+    protected Long preDeletedBy;
+	
+	public Description getDescription() {
+		return description;
 	}
 
-	// For user by application
-	public ShareWith(User sharer, DefinableEntity sharedEntity, Description description,
-			Collection<ShareWithMember> members) {
-		if (sharer == null)
-			throw new IllegalArgumentException("Sharer must be specified");
-		if (sharedEntity == null)
-			throw new IllegalArgumentException(
-					"Shared entity must be specified");
-		if (members == null)
-			throw new IllegalArgumentException(
-					"Share members must be specified");
-
-		this.setCreation(new HistoryStamp(sharer));
-		this.setModification(this.getCreation());
-		this.sharedEntity = sharedEntity;
+	public void setDescription(Description description) {
 		this.description = description;
-		this.members = members;
 	}
 
-	@Override
-	public EntityType getEntityType() {
-		return EntityIdentifier.EntityType.shareWith;
+    public void setDescription(String descriptionText) {
+		Description tmp = new Description(descriptionText);
+    	if (description != null) {
+    		if (description.equals(tmp)) return;
+    	}
+        this.description = tmp; 
+    }
+
+	public boolean isPreDeleted() {
+		return preDeleted;
 	}
 
-	public Long getId() {
-		return id;
+	public void setPreDeleted(boolean preDeleted) {
+		this.preDeleted = preDeleted;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public Long getPreDeletedWhen() {
+		return preDeletedWhen;
 	}
 
-	public DefinableEntity getSharedEntity() {
-		return sharedEntity;
+	public void setPreDeletedWhen(Long preDeletedWhen) {
+		this.preDeletedWhen = preDeletedWhen;
 	}
 
-	public void setSharedEntity(DefinableEntity sharedEntity) {
-		this.sharedEntity = sharedEntity;
+	public Long getPreDeletedBy() {
+		return preDeletedBy;
 	}
 
-	public Collection<ShareWithMember> getMembers() {
-		if (members == null)
-			members = new ArrayList<ShareWithMember>();
-		return members;
-	}
-
-	public void setMembers(Collection<ShareWithMember> members) {
-		this.members = members;
+	public void setPreDeletedBy(Long preDeletedBy) {
+		this.preDeletedBy = preDeletedBy;
 	}
 
 }

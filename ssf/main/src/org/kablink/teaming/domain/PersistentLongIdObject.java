@@ -45,8 +45,8 @@ import org.kablink.teaming.util.Constants;
 /**
  * Base class of objects with a Long id and hibernate version column
  */
-public class PersistentLongIdObject extends ZonedObject implements PersistentLongId {
-    private Long id;
+public abstract class PersistentLongIdObject extends ZonedObject implements PersistentLongId {
+    protected Long id;
     long lockVersion;
  
 	/**
@@ -68,7 +68,10 @@ public class PersistentLongIdObject extends ZonedObject implements PersistentLon
         this.lockVersion = lockVersion;
     }
     public int hashCode() {
-    	return id.hashCode();
+    	if(id != null)
+    		return id.hashCode();
+    	else
+    		return super.hashCode();
     }
     public boolean equals(Object obj) {
         if(this == obj)

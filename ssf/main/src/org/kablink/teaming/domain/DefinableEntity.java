@@ -58,7 +58,7 @@ import org.kablink.teaming.web.util.WebHelper;
  * this class.
  *
  */
-public abstract class DefinableEntity extends PersistentLongIdTimestampObject implements Entity {
+public abstract class DefinableEntity extends BaseEntity {
     protected String title=""; //initialized by hibernate access=field
     protected String normalTitle=""; 
     protected Description description;
