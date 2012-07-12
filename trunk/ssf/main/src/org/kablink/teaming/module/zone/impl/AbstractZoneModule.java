@@ -557,13 +557,18 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			}
  		}
 		//make sure zoneConfig upto date
-		if (version.intValue() <= 2 || zoneConfig.getUpgradeVersion() < ZoneConfig.ZONE_LATEST_VERSION) {
-			//Always do the following items
-			//Get any new definitions and templates
-			getAdminModule().updateDefaultDefinitions(top.getId(), true);
-			getTemplateModule().updateDefaultTemplates(RequestContextHolder.getRequestContext().getZoneId(), false);
-			zoneConfig.setUpgradeVersion(ZoneConfig.ZONE_LATEST_VERSION);
+ 		
+		//Always do the following items
+		//Get any new definitions and templates
+		getAdminModule().updateDefaultDefinitions(top.getId(), true);
+		getTemplateModule().updateDefaultTemplates(RequestContextHolder.getRequestContext().getZoneId(), false);
+		
+		//In general, make sure all of the global functions are there
+		//This call only adds roles that weren't there already
+		addGlobalFunctions(zoneConfig, new ArrayList());
 
+		if (version.intValue() <= 2 || zoneConfig.getUpgradeVersion() < ZoneConfig.ZONE_LATEST_VERSION) {
+			zoneConfig.setUpgradeVersion(ZoneConfig.ZONE_LATEST_VERSION);
 			// Whenever the zoneConfig version changes, there may be
 			// tasks the admin needs to perform, based on the version.
 			resetZoneUpgradeTasks(version.intValue(), superU.getId(), top.getId());
@@ -624,11 +629,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			setupInitialOpenIDProviderList();
 		}
 		
-		//In general, make sure all of the global functions are there
-		//This call only adds roles that aren't there
-		List ids = new ArrayList();
-		addGlobalFunctions(zoneConfig, ids);
-
   	}
  	/**
  	 * Fix up duplicate definitions.  1.0 allowed definitions with the same name

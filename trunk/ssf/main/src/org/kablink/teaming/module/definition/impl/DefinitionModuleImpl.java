@@ -847,6 +847,16 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				break;
 			}
 
+			case Definition.EXTERNAL_USER_WORKSPACE_VIEW: {
+				List result = getCoreDao().loadObjects(Definition.class,
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_EXTERNAL_USER_WORKSPACE_DEF, type}), zoneId);
+				if (!result.isEmpty()) return (Definition)result.get(0);
+				definitionTitle = "__definition_default_external_user_workspace";
+				internalId = ObjectKeys.DEFAULT_EXTERNAL_USER_WORKSPACE_DEF;
+				definitionName="_externalUserWorkspace";
+				break;
+			}
+
 			case Definition.PROFILE_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class,
 						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_PROFILES_DEF, type}), zoneId);
@@ -948,6 +958,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			if ((binder.getDefinitionType() != null) &&
 					(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
 				definitionType = Definition.USER_WORKSPACE_VIEW;
+			} else if ((binder.getDefinitionType() != null) &&
+					(binder.getDefinitionType().intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW)) {
+				definitionType = Definition.EXTERNAL_USER_WORKSPACE_VIEW;
 			} else {
 				definitionType = Definition.WORKSPACE_VIEW;
 			}

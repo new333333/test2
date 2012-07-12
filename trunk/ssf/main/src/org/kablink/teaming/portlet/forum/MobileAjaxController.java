@@ -555,7 +555,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				Binder binder = getBinderModule().getBinder(binderId);
 				if (type.equals("delete") && 
 						binder.getEntityType().equals(EntityType.workspace) && 
-						binder.getDefinitionType().equals(Definition.USER_WORKSPACE_VIEW)) 
+						(binder.getDefinitionType().equals(Definition.USER_WORKSPACE_VIEW) ||
+						 binder.getDefinitionType().equals(Definition.EXTERNAL_USER_WORKSPACE_VIEW))) 
 					//Also stop tracking the user if this is a user workspace
 					BinderHelper.trackThisBinder(bs, binder.getOwnerId(), "deletePerson");
 			}
@@ -1245,7 +1246,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 		//See if this is a user workspace
 		if (binder != null && binder.getDefinitionType() != null && 
-				Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType()) {
+				(Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType() ||
+				 Definition.EXTERNAL_USER_WORKSPACE_VIEW == binder.getDefinitionType())) {
 			Set wsUsers = new HashSet();
 			Long userId = binder.getCreation().getPrincipal().getId();
 			if (userId != null) wsUsers.add(userId);

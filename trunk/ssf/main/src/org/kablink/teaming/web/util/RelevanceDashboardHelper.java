@@ -692,7 +692,9 @@ public class RelevanceDashboardHelper {
 	
 	private static void setupTrackedItemsBeans(AllModulesInjected bs, Binder binder, Map model) {
 		if (binder != null && EntityType.workspace.equals(binder.getEntityType()) && 
-				binder.getDefinitionType() != null && Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue()) {
+				binder.getDefinitionType() != null && 
+				(Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue() ||
+						Definition.EXTERNAL_USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue())) {
 			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
 			Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
 			if (relevanceMap != null) {
@@ -719,7 +721,8 @@ public class RelevanceDashboardHelper {
 		//What is this user workspace tracking?
 		if (binder != null && EntityType.workspace.equals(binder.getEntityType()) && 
 				binder.getDefinitionType() != null && 
-				Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue()) {
+				(Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue() ||
+					Definition.EXTERNAL_USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue())) {
 			String page = "0";
 			page = (String) model.get(WebKeys.PAGE_NUMBER);
 			if (page == null || page.equals("")) page = "0";

@@ -972,7 +972,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    		// Make sure that the audit trail's timestamp is identical to the modification time of the binder. 
     	getReportModule().addAuditTrail(AuditType.delete, binder, binder.getModification().getDate());
     	if ((binder.getDefinitionType() != null) &&
-    			binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
+    			(binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW ||
+    				binder.getDefinitionType() == Definition.EXTERNAL_USER_WORKSPACE_VIEW)) {
     		//remove connection
    			Principal owner = binder.getCreation().getPrincipal(); //creator is user
    			if (binder.getId().equals(owner.getWorkspaceId()))

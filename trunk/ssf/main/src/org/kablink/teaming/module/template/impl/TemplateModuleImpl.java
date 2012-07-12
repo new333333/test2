@@ -202,7 +202,16 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				try {
 					in = new ClassPathResource(file).getInputStream();
 					Document doc = reader.read(in);
-					Long templateId = addTemplate(null, doc, true).getId();
+					Long templateId;
+					try {
+						templateId = addTemplate(null, doc, replace).getId();
+					} catch(Exception e) {
+						if (replace) {
+							//Failed to replace the template, throw error
+							throw e;
+						}
+						templateId = null;
+					}
 					if (templateId == null) result = false;
 					getCoreDao().flush();
 				} catch (Exception ex) {
@@ -258,6 +267,19 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				config.setTemplateTitle("__template_user_workspace");
 				config.setTemplateDescription("__template_user_workspace_description");
 				config.setInternalId(ObjectKeys.DEFAULT_USER_WORKSPACE_CONFIG);
+				entryDef = getDefinitionModule().addDefaultDefinition(type);
+				config.setEntryDef(entryDef);
+				defs.add(entryDef);
+				break;
+			}
+			case Definition.EXTERNAL_USER_WORKSPACE_VIEW: {
+				List result = getCoreDao().loadObjects(TemplateBinder.class, 
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_EXTERNAL_USER_WORKSPACE_CONFIG, Integer.valueOf(type)}), zoneId);
+				if (!result.isEmpty()) return (TemplateBinder)result.get(0);
+				
+				config.setTemplateTitle("__template_external_user_workspace");
+				config.setTemplateDescription("__template_external_user_workspace_description");
+				config.setInternalId(ObjectKeys.DEFAULT_EXTERNAL_USER_WORKSPACE_CONFIG);
 				entryDef = getDefinitionModule().addDefaultDefinition(type);
 				config.setEntryDef(entryDef);
 				defs.add(entryDef);

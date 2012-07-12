@@ -463,7 +463,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					&& ObjectKeys.PROFILE_ROOT_INTERNALID.equals(parentBinder
 							.getInternalId())) {
 				if ((def == null)
-						|| (def.getType() != Definition.USER_WORKSPACE_VIEW)) {
+						|| ((def.getType() != Definition.USER_WORKSPACE_VIEW) 
+						&& (def.getType() != Definition.EXTERNAL_USER_WORKSPACE_VIEW))) {
 					checkAccess(parentBinder, BinderOperation.addWorkspace);
 				}
 			} else {

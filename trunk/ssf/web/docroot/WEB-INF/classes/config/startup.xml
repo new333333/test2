@@ -33,6 +33,7 @@
 	<definitionFile>config/definitions/_wikiFolder.xml</definitionFile>
 	<definitionFile>config/definitions/_workspace.xml</definitionFile>
 	<definitionFile>config/definitions/_userWorkspace.xml</definitionFile>
+	<definitionFile>config/definitions/_externalUserWorkspace.xml</definitionFile>
 	<definitionFile>config/definitions/_projectWorkspace.xml</definitionFile>
 	<definitionFile>config/definitions/_team_workspace.xml</definitionFile>
 	<definitionFile>config/definitions/_team_root.xml</definitionFile>
@@ -55,6 +56,7 @@
 	<templateFile>config/templates/_workspace.xml</templateFile>
 	<templateFile>config/templates/_workspace_team.xml</templateFile>
 	<templateFile>config/templates/_workspace_user.xml</templateFile>
+	<templateFile>config/templates/_workspace_external_user.xml</templateFile>
 	<templateFile>config/templates/_workspace_project_management.xml</templateFile>
 	<templateFile>config/templates/_workspace_discussions.xml</templateFile>
 	<templateFile>config/templates/_workspace_welcome.xml</templateFile>

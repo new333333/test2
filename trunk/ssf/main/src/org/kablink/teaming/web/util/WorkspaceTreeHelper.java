@@ -276,7 +276,8 @@ public class WorkspaceTreeHelper {
 			//See if this is a user workspace
 			boolean showProfile = false;
 			if ((binder.getDefinitionType() != null) && 
-					(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
+					((binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) ||
+						(binder.getDefinitionType().intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW))) {
 				Principal owner = binder.getCreation().getPrincipal(); //creator is user
 				
 				boolean isBinderAdmin = false;
@@ -396,7 +397,8 @@ public class WorkspaceTreeHelper {
 			//Set up more standard beans
 			//See if this is a user workspace
 			if ((binder.getDefinitionType() != null) && 
-					(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
+					((binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) ||
+						(binder.getDefinitionType().intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW))) {
 				if (!showProfile && model.containsKey("ssRDCurrentTab")) {
 					if ( ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW.equalsIgnoreCase( (String)model.get("ssRDCurrentTab") ) ) {
 						//This user workspace is showing the accessories tab, so set up those beans
@@ -464,7 +466,9 @@ public class WorkspaceTreeHelper {
 					// No
 					// Are we dealing with a user workspace?
 					binderDefType = binder.getDefinitionType();
-					if ( binderDefType != null && binderDefType.intValue() == Definition.USER_WORKSPACE_VIEW )
+					if ( binderDefType != null && 
+							(binderDefType.intValue() == Definition.USER_WORKSPACE_VIEW ||
+							 binderDefType.intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW))
 					{
 						Long workspaceId;
 						
@@ -885,7 +889,8 @@ public class WorkspaceTreeHelper {
 		
 		//Move
 		if (!workspace.isReserved() && (workspace.getDefinitionType() == null || 
-				workspace.getDefinitionType().intValue() != Definition.USER_WORKSPACE_VIEW)) {
+				(workspace.getDefinitionType().intValue() != Definition.USER_WORKSPACE_VIEW) &&
+				 workspace.getDefinitionType().intValue() != Definition.EXTERNAL_USER_WORKSPACE_VIEW)) {
 			if (bs.getBinderModule().testAccess(workspace, BinderOperation.moveBinder)) {
 				adminMenuCreated=true;
 				qualifiers = new HashMap();
@@ -982,7 +987,8 @@ public class WorkspaceTreeHelper {
 		
 		//If this is a user workspace, add the "Manage this profile" menu
 		if ((workspace.getDefinitionType() != null) && 
-				(workspace.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
+				((workspace.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) ||
+				 (workspace.getDefinitionType().intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW))) {
 			Principal owner = workspace.getCreation().getPrincipal(); //creator is user
 		
 			boolean showModifyProfileMenu = false;
