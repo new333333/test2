@@ -37,35 +37,21 @@ package org.kablink.teaming.domain;
  * @author jong
  *
  */
-public abstract class AbstractEntity extends ZonedObject implements Entity {
+public abstract class BaseEntity extends PersistentLongIdTimestampObject implements EntityIdentifiable {
 
-	protected Long id;
-    protected EntityIdentifier entityIdentifier;
+    public BaseEntity() {
+    }
+    
+    public BaseEntity(BaseEntity entity) {
+    	super(entity);
+    }
 	
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.domain.Entity#getId()
-	 */
-	@Override
-	public Long getId() {
-		return id;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.domain.Entity#setId(java.lang.Long)
-	 */
-	@Override
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.domain.Entity#getEntityIdentifier()
 	 */
 	@Override
 	public EntityIdentifier getEntityIdentifier() {
-		if (entityIdentifier == null) 
-			entityIdentifier = new EntityIdentifier(getId(), getEntityType());
-		return entityIdentifier;
+		return new EntityIdentifier(getId(), getEntityType());
 	}
 
 	/* (non-Javadoc)
@@ -75,30 +61,5 @@ public abstract class AbstractEntity extends ZonedObject implements Entity {
 	public String getEntityTypedId() {
 	   	return getEntityType().name() + "_" + getEntityIdentifier().getEntityId();
 	}
-
-    public int hashCode() {
-    	if(id != null)
-    		return id.hashCode();
-    	else
-    		return Long.valueOf(0).hashCode();
-    }
-    
-    public boolean equals(Object obj) {
-        if(this == obj)
-            return true;
-
-        if (obj == null)
-            return false;
-      
-        if (!(obj instanceof AbstractEntity)) 
-        	return false;
-
-        AbstractEntity o = (AbstractEntity) obj;
-        if (o.getId() == null) 
-        	return false;
-        if (getId() == null) 
-        	return false;
-        return this.id.equals(o.getId());
-    }    
-
+  
 }

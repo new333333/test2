@@ -36,7 +36,7 @@ package org.kablink.teaming.domain;
  * @author jong
  *
  */
-public interface Entity {
+public interface EntityIdentifiable {
 
     public Long getId();
     public void setId(Long id);

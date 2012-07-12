@@ -40,14 +40,14 @@ import org.kablink.teaming.domain.HistoryStamp;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class PersistentLongIdTimestampObject extends PersistentLongIdObject 
+public abstract class PersistentLongIdTimestampObject extends PersistentLongIdObject 
 	implements PersistentLongIdTimestamp, Comparable {
     protected HistoryStamp creation;
     protected HistoryStamp modification;
     
     public PersistentLongIdTimestampObject() {
     }
-    public PersistentLongIdTimestampObject(DefinableEntity source) {
+    public PersistentLongIdTimestampObject(PersistentLongIdTimestampObject source) {
 		 creation = new HistoryStamp(source.getCreation().getPrincipal(), source.getCreation().getDate());
 		 modification = new HistoryStamp(source.getModification().getPrincipal(), source.getModification().getDate());
     }
