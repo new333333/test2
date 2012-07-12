@@ -411,7 +411,8 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					model.put(WebKeys.WORKSPACE_DOM_TREE, BinderHelper.buildTemplateTreeRoot(this, config, new BinderHelper.ConfigHelper(WebKeys.ACTION_CONFIGURATION)));
 
 					if (config.getDefinitionType() != null && 
-							config.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
+							(config.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) ||
+							 config.getDefinitionType() == Definition.EXTERNAL_USER_WORKSPACE_VIEW) {
 						//use current user as prototype
 						Document profileDef = user.getEntryDefDoc();
 						model.put(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);

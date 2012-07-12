@@ -75,6 +75,7 @@ public class Definition extends PersistentTimestampObject  {
 	public static final int USER_WORKSPACE_VIEW=12;
 	public static final int PROFILE_APPLICATION_VIEW=13;
 	public static final int PROFILE_APPLICATION_GROUP_VIEW=14;
+	public static final int EXTERNAL_USER_WORKSPACE_VIEW=15;
 	
 	public static final String VIEW_STYLE_DEFAULT="folder"; 
 	public static final String VIEW_STYLE_ACCESSIBLE="table"; 
@@ -109,6 +110,7 @@ public class Definition extends PersistentTimestampObject  {
 	public static final String FAMILY_TEAM="team"; 
 	public static final String FAMILY_PROJECT="project"; 
 	public static final String FAMILY_USER_WORKSPACE="user"; 
+	public static final String FAMILY_EXTERNAL_USER_WORKSPACE="external_user"; 
 	public static final String FAMILY_COMMENT="comment"; 
 	public static final String FAMILY_FILE_COMMENT="fileComment"; 
 	

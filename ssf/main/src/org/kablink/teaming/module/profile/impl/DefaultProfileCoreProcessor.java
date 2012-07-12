@@ -205,7 +205,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     protected void addBinder_fillIn(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     	super.addBinder_fillIn(parent,binder, inputData, entryData, ctx);
     	Integer type = binder.getDefinitionType();
-    	if ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW)) {
+    	if ((type != null) && ((type.intValue() == Definition.USER_WORKSPACE_VIEW) ||
+    			type.intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW)) {
     		Principal u = binder.getCreation().getPrincipal(); //creator is user
     		if (!(u instanceof User)) {
     			u = getProfileDao().loadUserPrincipal(u.getId(), u.getZoneId(), false);
@@ -219,7 +220,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     //inside write transaction    
     protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     	Integer type = binder.getDefinitionType();
-    	if ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW)) {
+    	if ((type != null) && ((type.intValue() == Definition.USER_WORKSPACE_VIEW) ||
+    			type.intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW)) {
     		Principal u = binder.getCreation().getPrincipal(); //creator is user
     		if (!(u instanceof User)) {
     			u = getProfileDao().loadUserPrincipal(u.getId(), u.getZoneId(), false);

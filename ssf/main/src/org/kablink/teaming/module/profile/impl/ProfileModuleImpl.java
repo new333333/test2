@@ -1272,7 +1272,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   			if (!entry.isReserved() || (!ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(entry.getInternalId()) &&
   					!ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(entry.getInternalId()) &&
  					!ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId()))) {
-  				List templates = getCoreDao().loadTemplates(entry.getZoneId(), Definition.USER_WORKSPACE_VIEW);
+  				List templates;
+  				if (entry.isExternalUser()) {
+  					templates = getCoreDao().loadTemplates(entry.getZoneId(), Definition.EXTERNAL_USER_WORKSPACE_VIEW);
+  				} else {
+  					templates = getCoreDao().loadTemplates(entry.getZoneId(), Definition.USER_WORKSPACE_VIEW);
+  				}
 
   				if (!templates.isEmpty()) {
   					//	pick the first
@@ -1284,7 +1289,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   			if (ws == null) {
   				//just load a workspace without all the stuff underneath
   				//processor handles transaction
-  				Definition userDef = getDefinitionModule().addDefaultDefinition(Definition.USER_WORKSPACE_VIEW);
+  				Definition userDef;
+  				if (entry.isExternalUser()) {
+  					userDef = getDefinitionModule().addDefaultDefinition(Definition.EXTERNAL_USER_WORKSPACE_VIEW);
+  				} else {
+  					userDef = getDefinitionModule().addDefaultDefinition(Definition.USER_WORKSPACE_VIEW);
+  				}
   				ProfileCoreProcessor processor=loadProcessor((ProfileBinder)entry.getParentBinder());
   				Map updates = new HashMap();
   				updates.put(ObjectKeys.FIELD_BINDER_NAME, entry.getName());

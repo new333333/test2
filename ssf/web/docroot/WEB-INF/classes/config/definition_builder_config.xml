@@ -83,6 +83,12 @@
 		</operations>
 	</definition>
 	
+	<definition name="externalUserWorkspaceViewDefinition" definitionType="15" caption="__external_user_workspace_view" canBeDeleted="false">
+		<operations>
+			<operation name="addDefinition" item="externalUserWorkspaceViewType" caption="__add_a_new_external_user_workspace_view" />
+		</operations>
+	</definition>
+
 	
 <!-- Items -->
 	<item name="title" caption="__title" type="data" dataType="title" canBeDeleted="true"
@@ -2457,6 +2463,22 @@
 			<property name="family" caption="__family" type="familySelectboxUserWorkspace" 
 				  default="user" value="user">
 				<option name="user" caption="__family_user" />
+				<help>ihelp.other.definition_family</help>
+			</property>
+		</properties>
+		<options>
+			<option name="userWorkspaceForm" initial="true" />
+			<option name="userWorkspaceView" initial="true" />
+		</options>
+	</item>
+	
+	<item name="externalUserWorkspaceViewType" definitionType="15" caption="__external_user_workspace_view">
+		<properties>
+			<property name="caption" caption="__caption" type="text" />
+			<property name="name" caption="__name" type="text" />
+			<property name="family" caption="__family" type="familySelectboxExternalUserWorkspace" 
+				  default="external_user" value="external_user">
+				<option name="external_user" caption="__family_external_user" />
 				<help>ihelp.other.definition_family</help>
 			</property>
 		</properties>

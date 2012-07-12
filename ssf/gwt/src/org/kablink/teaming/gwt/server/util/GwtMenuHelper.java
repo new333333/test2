@@ -1213,7 +1213,9 @@ public class GwtMenuHelper {
 			boolean allowCopyMove;
 			if (isWorkspace) {
 				Integer wsDefType = binder.getDefinitionType();
-				allowCopyMove = ((null == wsDefType) || (Definition.USER_WORKSPACE_VIEW != wsDefType.intValue()));
+				allowCopyMove = ((null == wsDefType) || 
+					((Definition.USER_WORKSPACE_VIEW != wsDefType.intValue()) &&
+						(Definition.EXTERNAL_USER_WORKSPACE_VIEW != wsDefType.intValue())));
 			}
 			else {
 				allowCopyMove = true;

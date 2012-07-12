@@ -970,7 +970,8 @@ public class BinderHelper {
 		String type = "add";
 		if (isTracked) {
 			if (binder.getEntityType().name().equals(EntityType.workspace.name())) {
-				if (Integer.valueOf(Definition.USER_WORKSPACE_VIEW).equals(binder.getDefinitionType())) {
+				if (Integer.valueOf(Definition.USER_WORKSPACE_VIEW).equals(binder.getDefinitionType()) ||
+						Integer.valueOf(Definition.EXTERNAL_USER_WORKSPACE_VIEW).equals(binder.getDefinitionType())) {
 					action.put("title", NLT.get("relevance.trackThisPersonNot"));
 				} else {
 					action.put("title", NLT.get("relevance.trackThisWorkspaceNot"));
@@ -983,7 +984,8 @@ public class BinderHelper {
 			type = "delete";
 		} else {
 			if (binder.getEntityType().name().equals(EntityType.workspace.name())) {
-				if (Integer.valueOf(Definition.USER_WORKSPACE_VIEW).equals(binder.getDefinitionType())) {
+				if (Integer.valueOf(Definition.USER_WORKSPACE_VIEW).equals(binder.getDefinitionType()) ||
+						Integer.valueOf(Definition.EXTERNAL_USER_WORKSPACE_VIEW).equals(binder.getDefinitionType())) {
 					action.put("title", NLT.get("relevance.trackThisPerson"));
 				} else {
 					action.put("title", NLT.get("relevance.trackThisWorkspace"));
@@ -1566,7 +1568,8 @@ public class BinderHelper {
 			// ...we consider it a User workspace if its type is
 			// ...user workspace view.
   		   	Integer type = binder.getDefinitionType();
-  		   	isUserWs = ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW));
+  		   	isUserWs = ((type != null) && ((type.intValue() == Definition.USER_WORKSPACE_VIEW) ||
+  		   		(type.intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW)));
 		}
 		return isUserWs;
 	}
@@ -2789,7 +2792,9 @@ public class BinderHelper {
 		// or the user is looking at a user workspace.
 		binderType = binder.getDefinitionType();
 		if (DefinitionHelper.checkIfBinderShowingDashboard(binder) ||
-			(binderType != null && binderType.intValue() == Definition.USER_WORKSPACE_VIEW) )
+			(binderType != null && 
+			 (binderType.intValue() == Definition.USER_WORKSPACE_VIEW ||
+			  binderType.intValue() == Definition.EXTERNAL_USER_WORKSPACE_VIEW)) )
 		{
 			Map ssDashboard = (Map)model.get(WebKeys.DASHBOARD);
 			boolean dashboardContentExists = DashboardHelper.checkIfAnyContentExists(ssDashboard);
@@ -4110,7 +4115,8 @@ public class BinderHelper {
 				if (!trackedBinders.contains(binderId)) trackedBinders.add(binderId);
 				if (binder.getEntityType().equals(EntityType.workspace) && 
 						binder.getDefinitionType() != null &&
-						binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
+						(binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW ||
+						 binder.getDefinitionType() == Definition.EXTERNAL_USER_WORKSPACE_VIEW)) {
 					//This is a user workspace, so also track this user
 					if (!trackedPeople.contains(binder.getOwnerId())) trackedPeople.add(binder.getOwnerId());
 				}
