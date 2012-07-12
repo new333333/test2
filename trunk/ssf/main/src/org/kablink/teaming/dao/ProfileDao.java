@@ -36,6 +36,7 @@ package org.kablink.teaming.dao;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.kablink.teaming.dao.util.FilterControls;
@@ -44,6 +45,7 @@ import org.kablink.teaming.dao.util.ShareWithSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.ApplicationPrincipal;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
@@ -61,6 +63,7 @@ import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.Rating;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.ShareWith;
+import org.kablink.teaming.domain.ShareWithMember;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
@@ -249,7 +252,61 @@ public interface ProfileDao {
  	 */
  	public List<Long> getDisabledUserAccounts(final long zoneId);
  	
- 	public ShareWith loadShareWith(Long shareWithId, Long zoneId) throws NoShareWithByTheIdException;
+ 	/**
+ 	 * Load a <code>ShareWith</code> given its id.
+ 	 * If the object is not found, it throws <code>NoShareWithByTheIdException</code>.
+ 	 * 
+ 	 * @param shareWithId
+ 	 * @return
+ 	 * @throws NoShareWithByTheIdException
+ 	 */
+ 	public ShareWith loadShareWith(Long shareWithId) throws NoShareWithByTheIdException;
  	
- 	public List<ShareWith> loadShareWiths(ShareWithSelectSpec selectSpec);
+ 	/**
+ 	 * Load a list of <code>ShareWith</code> given their ids.
+ 	 * Unlike <code>loadShareWith</code> method, this method does not return error when
+ 	 * not all of the objects are found by the specified ids. Instead, it will only return
+ 	 * those objects successfully found.
+ 	 * 
+ 	 * @param shareWithIds
+ 	 * @return
+ 	 */
+ 	public List<ShareWith> loadShareWiths(Collection<Long> shareWithIds); 
+ 	
+ 	/**
+ 	 * Find a list of <code>ShareWith</code> defined on the shared entity represented by the specified identifier.
+ 	 * 
+ 	 * @param sharedEntity
+ 	 * @return
+ 	 */
+ 	public List<ShareWith> findShareWithsBySharedEntity(EntityIdentifier sharedEntityIdentifier);
+ 	
+ 	/**
+ 	 * Find a list of <code>ShareWith</code> that were created/shared by the specified user.
+ 	 * 
+ 	 * @param sharerId
+ 	 * @return
+ 	 */
+ 	public List<ShareWith> findShareWithsBySharer(Long sharerId);
+ 	 	
+ 	
+ 	/**
+ 	 * Find a list of <code>ShareWith</code> that were created/shared by the specified user
+ 	 * and shared explicitly and directly with the specified recipient (as opposed to
+ 	 * indirectly through another group or team membership).
+ 	 * 
+ 	 * @param sharerId
+ 	 * @param recipientType
+ 	 * @param recipientId
+ 	 * @return
+ 	 */
+ 	public List<ShareWith> findShareWithsBySharerAndRecipient(Long sharerId, ShareWithMember.RecipientType recipientType, Long recipientId);
+ 	
+ 	/**
+ 	 * Return IDs of users, groups, and teams that are granted read access to the specified entity.
+ 	 * 
+ 	 * @param sharedEntityIdentifier
+ 	 * @return
+ 	 */
+ 	public Map<ShareWithMember.RecipientType, Set<Long>> getMemberIdsWithReadAccessToSharedEntity(EntityIdentifier sharedEntityIdentifier);
  }
