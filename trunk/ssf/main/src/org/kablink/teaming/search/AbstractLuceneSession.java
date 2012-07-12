@@ -57,6 +57,21 @@ public class AbstractLuceneSession {
 		}
 	}
 
+	// Used for read
+	protected void endRead(Log logger, long begin, String methodName, String aclQueryStr, int length) {
+		init();
+		if(logger.isTraceEnabled()) {
+			double diff = (System.nanoTime() - begin)/1000000.0;
+			if(diff >= (double) readFloor)
+				logger.trace(diff + " ms, " + methodName + ", result=" + length + ", aclQuery=[" + aclQueryStr + "]");			
+		}
+		else if(logger.isDebugEnabled()) {
+			double diff = (System.nanoTime() - begin)/1000000.0;
+			if(diff >= (double) readFloor)
+				logger.debug(diff + " ms, " + methodName + ", result=" + length);
+		}
+	}
+
 	// Used for write
 	protected void endWrite(Log logger, long begin, String methodName) {
 		init();

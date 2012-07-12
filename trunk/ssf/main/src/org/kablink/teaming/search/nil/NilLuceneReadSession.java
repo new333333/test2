@@ -47,12 +47,12 @@ public class NilLuceneReadSession implements LuceneReadSession {
 		return new ArrayList();
 	}
 
-	public ArrayList getTags(Query query, String tag, String type)
+	public ArrayList getTags(String aclQueryStr, String tag, String type)
 			throws LuceneException {
 		return new ArrayList();
 	}
 
-	public ArrayList getTagsWithFrequency(Query query, String tag, String type)
+	public ArrayList getTagsWithFrequency(String aclQueryStr, String tag, String type)
 			throws LuceneException {
 		return new ArrayList();
 	}

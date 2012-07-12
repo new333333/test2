@@ -111,25 +111,25 @@ public interface LuceneReadSession extends LuceneSession {
 	/**
 	 * Get all the unique tags that this user can see, based on the wordroot passed in.
 	 * 
-	 * @param query
+	 * @param aclQueryStr
 	 * @param wordroot
 	 * @param type  - if null or tags - all tags will be returnet, can be personalTags or communityTags
 	 * @return
 	 * @throws LuceneException
 	 */
-	public ArrayList getTags(Query query, String tag, String type)
+	public ArrayList getTags(String aclQueryStr, String tag, String type)
 			throws LuceneException;
 	
 	/**
 	 * Get all the unique tags and their frequencies that this user can see, based on the wordroot passed in.
 	 * 
-	 * @param query
+	 * @param aclQueryStr
 	 * @param wordroot
 	 * @param type  - if null or tags - all tags will be returnet, can be personalTags or communityTags
 	 * @return
 	 * @throws LuceneException
 	 */
-	public ArrayList getTagsWithFrequency(Query query, String tag, String type)
+	public ArrayList getTagsWithFrequency(String aclQueryStr, String tag, String type)
 			throws LuceneException;
 	
 	/**

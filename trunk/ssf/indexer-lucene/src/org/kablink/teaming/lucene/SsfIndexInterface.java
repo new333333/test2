@@ -74,10 +74,10 @@ public interface SsfIndexInterface extends java.rmi.Remote {
 	public org.kablink.teaming.lucene.Hits search(String indexname, Long contextUserId, String aclQueryStr, int mode, Query query,
 			Sort sort, int offset, int size) throws RemoteException;
 
-	public ArrayList getTags(String indexName, Query query, Long id, String tag, String type, boolean isSuper)
+	public ArrayList getTags(String indexName, String aclQueryStr, Long id, String tag, String type, boolean isSuper)
 	throws RemoteException;
 
-	public ArrayList getTagsWithFrequency(String indexName, Query query, Long id, String tag, String type, boolean isSuper)
+	public ArrayList getTagsWithFrequency(String indexName, String aclQueryStr, Long id, String tag, String type, boolean isSuper)
 	throws RemoteException;
 	
 	public String[] getSortedTitles(String indexName, Query query, String sortTitleFieldName, String start, String end,

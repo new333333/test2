@@ -1567,7 +1567,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				.openReadSession();
 
 		try {
-			tags = luceneSession.getTags(so != null ? so.getLuceneQuery() : null,
+			tags = luceneSession.getTags(so != null ? so.getAclQueryStr() : null,
 					wordroot, type);
 		} finally {
 			luceneSession.close();
@@ -1601,8 +1601,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				.openReadSession();
 
 		try {
-			tags = luceneSession.getTagsWithFrequency(so != null ? so
-					.getLuceneQuery() : null, wordroot, type);
+			tags = luceneSession.getTagsWithFrequency(so != null ? so.getAclQueryStr() : null, wordroot, type);
 		} finally {
 			luceneSession.close();
 		}

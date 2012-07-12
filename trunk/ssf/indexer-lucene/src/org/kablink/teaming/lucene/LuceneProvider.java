@@ -585,18 +585,18 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		}
 	}
 
-	public ArrayList getTags(Query query, String tag, String type, String userId, boolean isSuper)
+	public ArrayList getTags(String aclQueryStr, String tag, String type, String userId, boolean isSuper)
 	throws LuceneException {
 		long startTime = System.nanoTime();
 		
 		ArrayList<String> resultTags = new ArrayList<String>();
-		ArrayList tagObjects = getTagsWithFrequency(query, tag, type, userId, isSuper);
+		ArrayList tagObjects = getTagsWithFrequency(aclQueryStr, tag, type, userId, isSuper);
 		Iterator iter = tagObjects.iterator();
 		while (iter.hasNext()) {
 			resultTags.add(((TagObject)iter.next()).getTagName());
 		}
 		
-		end(startTime, "getTags(Query,String,String,String,boolean)", query, resultTags.size());
+		end(startTime, "getTags(String,String,String,String,boolean)", aclQueryStr, resultTags.size());
 		
 		return resultTags;
 	}	
@@ -612,7 +612,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	 * @return
 	 * getTags(Query query, Long id, String tag, String type, boolean isSuper)
 	 */
-	public ArrayList getTagsWithFrequency(Query query, String tag, String type, String userId, boolean isSuper)
+	public ArrayList getTagsWithFrequency(String aclQueryStr, String tag, String type, String userId, boolean isSuper)
 			throws LuceneException {
 		long startTime = System.nanoTime();
 		String tagOrig = tag;
@@ -627,26 +627,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		try {
 			final BitSet userDocIds = new BitSet(indexSearcherHandle.getIndexSearcher().getIndexReader().maxDoc());
 			if (!isSuper) {
-				indexSearcherHandle.getIndexSearcher().search(query, new Collector() {
-					@Override
-					public void collect(int doc) {
-						userDocIds.set(doc);
-					}
-
-					@Override
-					public boolean acceptsDocsOutOfOrder() {
-						return true;
-					}
-
-					@Override
-					public void setNextReader(IndexReader arg0, int arg1)
-							throws IOException {
-					}
-
-					@Override
-					public void setScorer(Scorer arg0) throws IOException {
-					}
-				});
+				markAccessibleDocs(indexSearcherHandle, aclQueryStr, userDocIds);
 			} else {
 				userDocIds.set(0, userDocIds.size());
 			}
@@ -722,7 +703,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 
 		resultTags.addAll(results);
 
-		end(startTime, "getTagsWithFrequency(Query,String,String,String,boolean)", query, tagOrig, tag, resultTags.size());
+		end(startTime, "getTagsWithFrequency(String,String,String,String,boolean)", aclQueryStr, tagOrig, tag, resultTags.size());
 
 		return resultTags;
 	}
@@ -938,6 +919,17 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		}
 	}
 
+	private void end(long begin, String methodName, String aclQueryStr, int length) {
+		endStat(begin, methodName);
+		if(logger.isTraceEnabled()) {
+			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length + 
+					", aclQuery=[" + ((aclQueryStr==null)? "" : aclQueryStr) + "]");			
+		}
+		else if(logger.isDebugEnabled()) {
+			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length);
+		}
+	}
+
 	private void end(long begin, String methodName, Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, int resultLength) {
 		endStat(begin, methodName);
 		if(logger.isTraceEnabled()) {
@@ -960,6 +952,19 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		if(logger.isTraceEnabled()) {
 			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length + 
 					", query=[" + ((query==null)? "" : query.toString()) + 
+					"], tag-before=[" + ((tagBefore==null)? "" : tagBefore) + 
+					"], tag-after=[" + ((tagAfter==null)? "" : tagAfter) + "]");
+		}
+		else if(logger.isDebugEnabled()) {
+			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length);
+		}
+	}
+	
+	private void end(long begin, String methodName, String aclQueryStr, String tagBefore, String tagAfter, int length) {
+		endStat(begin, methodName);
+		if(logger.isTraceEnabled()) {
+			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length + 
+					", aclQuery=[" + ((aclQueryStr==null)? "" : aclQueryStr) + 
 					"], tag-before=[" + ((tagBefore==null)? "" : tagBefore) + 
 					"], tag-after=[" + ((tagAfter==null)? "" : tagAfter) + "]");
 		}
@@ -1290,5 +1295,36 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		bq.add(aclQuery, BooleanClause.Occur.MUST);
 		
 		return bq;
+	}
+	
+	private void markAccessibleDocs(IndexSearcherHandle indexSearcherHandle , String aclQueryStr, final BitSet userDocIds) throws IOException {
+		Query aclQuery;
+		try {
+			aclQuery = parseAclQueryStr(aclQueryStr);
+		} catch (ParseException e) {
+			throw newLuceneException("Error parsing query", e);
+		}
+		
+		indexSearcherHandle.getIndexSearcher().search(aclQuery, new Collector() {
+			@Override
+			public void collect(int doc) {
+				userDocIds.set(doc);
+			}
+
+			@Override
+			public boolean acceptsDocsOutOfOrder() {
+				return true;
+			}
+
+			@Override
+			public void setNextReader(IndexReader arg0, int arg1)
+					throws IOException {
+			}
+
+			@Override
+			public void setScorer(Scorer arg0) throws IOException {
+			}
+		});
+
 	}
 }
