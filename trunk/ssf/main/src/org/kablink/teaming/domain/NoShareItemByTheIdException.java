@@ -40,19 +40,19 @@ import org.kablink.util.api.ApiErrorCode;
  * @author jong
  *
  */
-public class NoShareWithByTheIdException extends NoObjectByTheIdException {
-	   private static final String NoShareWithByTheIdException_ErrorCode = "errorcode.no.sharewith.by.the.id";
+public class NoShareItemByTheIdException extends NoObjectByTheIdException {
+	   private static final String NoShareWithByTheIdException_ErrorCode = "errorcode.no.shareitem.by.the.id";
 	    
-	    public NoShareWithByTheIdException(Long shareWithId) {
+	    public NoShareItemByTheIdException(Long shareWithId) {
 	        super(NoShareWithByTheIdException_ErrorCode, shareWithId);
 	    }
-	    public NoShareWithByTheIdException(Long shareWithId, String message) {
+	    public NoShareItemByTheIdException(Long shareWithId, String message) {
 	        super(NoShareWithByTheIdException_ErrorCode, shareWithId, message);
 	    }
-	    public NoShareWithByTheIdException(Long shareWithId, String message, Throwable cause) {
+	    public NoShareItemByTheIdException(Long shareWithId, String message, Throwable cause) {
 	        super(NoShareWithByTheIdException_ErrorCode,shareWithId, message, cause);
 	    }
-	    public NoShareWithByTheIdException(Long shareWithId, Throwable cause) {
+	    public NoShareItemByTheIdException(Long shareWithId, Throwable cause) {
 	        super(NoShareWithByTheIdException_ErrorCode, shareWithId, cause);
 	    }
 		/* (non-Javadoc)

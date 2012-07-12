@@ -68,7 +68,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.dao.util.ShareWithSelectSpec;
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.Attachment;
@@ -90,12 +90,12 @@ import org.kablink.teaming.domain.NoApplicationByTheNameException;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
-import org.kablink.teaming.domain.NoShareWithByTheIdException;
+import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
-import org.kablink.teaming.domain.ShareWith;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.domain.TemplateBinder;
@@ -2249,37 +2249,37 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
     
 	/* (non-Javadoc)
-	 * @see org.kablink.teaming.module.profile.ProfileModule#addShareWith(org.kablink.teaming.domain.ShareWith)
+	 * @see org.kablink.teaming.module.profile.ProfileModule#addShareItem(org.kablink.teaming.domain.ShareItem)
 	 */
     //RW transaction
 	@Override
-	public void addShareWith(ShareWith shareWith) {
+	public void addShareItem(ShareItem shareItem) {
 		// Access check?
-		getCoreDao().save(shareWith);
+		getCoreDao().save(shareItem);
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.kablink.teaming.module.profile.ProfileModule#modifyShareWith(org.kablink.teaming.domain.ShareWith)
+	 * @see org.kablink.teaming.module.profile.ProfileModule#modifyShareItem(org.kablink.teaming.domain.ShareItem)
 	 */
     //RW transaction
 	@Override
-	public void modifyShareWith(ShareWith shareWith) {
+	public void modifyShareItem(ShareItem shareItem) {
 		// Access check?
 		// nothing to do
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.kablink.teaming.module.profile.ProfileModule#deleteShareWith(org.kablink.teaming.domain.ShareWith)
+	 * @see org.kablink.teaming.module.profile.ProfileModule#deleteShareItem(org.kablink.teaming.domain.ShareItem)
 	 */
     //RW transaction
 	@Override
-	public void deleteShareWith(Long shareWithId) {
+	public void deleteShareItem(Long shareItemId) {
 		// Access check?
 		try {
-			ShareWith shareWith = getProfileDao().loadShareWith(shareWithId);
-			getCoreDao().delete(shareWith);
+			ShareItem shareItem = getProfileDao().loadShareItem(shareItemId);
+			getCoreDao().delete(shareItem);
 		}
-		catch(NoShareWithByTheIdException e) {
+		catch(NoShareItemByTheIdException e) {
 			// already gone, ok
 		}
 	}

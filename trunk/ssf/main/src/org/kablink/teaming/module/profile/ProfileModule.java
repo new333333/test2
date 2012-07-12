@@ -44,7 +44,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.dom4j.Document;
-import org.kablink.teaming.dao.util.ShareWithSelectSpec;
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.Binder;
@@ -59,7 +59,7 @@ import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
-import org.kablink.teaming.domain.ShareWith;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.domain.User;
@@ -789,9 +789,9 @@ public interface ProfileModule {
     
     public void setFirstLoginDate(Long userId);
     
-    public void addShareWith(ShareWith shareWith);
+    public void addShareItem(ShareItem shareItem);
     
-    public void modifyShareWith(ShareWith shareWith);
+    public void modifyShareItem(ShareItem shareItem);
     
-    public void deleteShareWith(Long shareWithId);
+    public void deleteShareItem(Long shareItemId);
 }

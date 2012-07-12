@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping auto-import="false">
-  <class table="SS_ShareWith" discriminator-value="A" name="org.kablink.teaming.domain.ShareWith">
+  <class table="SS_ShareItem" discriminator-value="A" name="org.kablink.teaming.domain.ShareItem">
     <id unsaved-value="null" name="id" type="long">
       <generator class="native"/>
     </id>
@@ -38,13 +38,13 @@
       <column name="sharedEntity_type"  length="16"/>
       <column name="sharedEntity_id"/>
     </any>    
-    <bag inverse="false" cascade="all" lazy="false" table="SS_ShareWithMember" name="members">
-      <key column="shareWithId"/>
-      <composite-element class="org.kablink.teaming.domain.ShareWithMember">
+    <bag inverse="false" cascade="all" lazy="false" table="SS_ShareItemMember" name="members">
+      <key column="shareItemId"/>
+      <composite-element class="org.kablink.teaming.domain.ShareItemMember">
 	    <property name="endDate"/>
 	    <property name="recipientType" column="recipient_type" access="field" type="short"/>
 	    <property name="recipientId" column="recipient_id"/>
-	    <nested-composite-element name="rightSet" class="org.kablink.teaming.domain.ShareWithMember$RightSet">
+	    <nested-composite-element name="rightSet" class="org.kablink.teaming.domain.ShareItemMember$RightSet">
 	    	<property name="createEntries" column="right_createEntries"/>
 	    	<property name="modifyEntries" column="right_modifyEntries"/>
 	    	<property name="modifyEntryFields" column="right_modifyEntryFields"/>

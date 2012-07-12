@@ -42,7 +42,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
  * @author jong
  *
  */
-public class ShareWithMember {
+public class ShareItemMember {
 
 	public enum RecipientType {
 		user((short)1),
@@ -71,10 +71,10 @@ public class ShareWithMember {
 	protected RightSet rightSet;
 
 	// For use by Hibernate only
-	protected ShareWithMember() {
+	protected ShareItemMember() {
 	}
 	
-	public ShareWithMember(Date endDate, RecipientType recipientType, Long recipientId, RightSet rightSet) {
+	public ShareItemMember(Date endDate, RecipientType recipientType, Long recipientId, RightSet rightSet) {
 		if(rightSet == null) throw new IllegalArgumentException("Right set must be specified");
 		if(recipientType == null) throw new IllegalArgumentException("Recipient type must be specified");
 		if(recipientId == null) throw new IllegalArgumentException("Recipient ID must be specified");
