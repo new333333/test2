@@ -15,6 +15,18 @@
       <property name="HDescription" column="description_text" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>
       <property name="HFormat" column="description_format"/>
     </component>
+    <component name="creation" class="org.kablink.teaming.domain.HistoryStamp">
+      <property name="date" column="creation_date" type="timestamp"/>
+      <many-to-one class="org.kablink.teaming.domain.UserPrincipal" name="principal">
+        <column name="creation_principal"/>
+      </many-to-one>
+    </component>
+    <component name="modification" class="org.kablink.teaming.domain.HistoryStamp">
+      <property name="date" column="modification_date" type="timestamp"/>
+      <many-to-one class="org.kablink.teaming.domain.UserPrincipal" name="principal">
+        <column name="modification_principal"/>
+      </many-to-one>
+    </component>
     <any name="sharedEntity" id-type="java.lang.Long" meta-type="string">
       <meta-value class="org.kablink.teaming.domain.FolderEntry" value="folderEntry"/>
       <meta-value class="org.kablink.teaming.domain.User" value="user"/>

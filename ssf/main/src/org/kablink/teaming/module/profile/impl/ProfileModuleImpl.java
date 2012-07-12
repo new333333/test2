@@ -2249,37 +2249,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
     
 	/* (non-Javadoc)
-	 * @see org.kablink.teaming.module.profile.ProfileModule#getShareWith(java.lang.Long)
-	 */
-	@Override
-	public ShareWith getShareWith(Long shareWithId) {
-		// Access check?
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		return getProfileDao().loadShareWith(shareWithId, zoneId);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.module.profile.ProfileModule#getShareWiths(java.lang.Long)
-	 */
-	@Override
-	public List<ShareWith> getShareWiths(Long userId) {
-		ShareWithSelectSpec selectSpec = new ShareWithSelectSpec();
-		selectSpec.setEndDateRange(new Date(), null, null, null);
-		selectSpec.setRecipientsFromUserMembership(userId);
-		selectSpec.setOrder("startDate", true);
-		return getShareWiths(selectSpec);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.module.profile.ProfileModule#getShareWiths(org.kablink.teaming.dao.util.ShareWithSelectSpec)
-	 */
-	@Override
-	public List<ShareWith> getShareWiths(ShareWithSelectSpec selectSpec) {
-		// Access check?
-		return getProfileDao().loadShareWiths(selectSpec);
-	}
-	
-	/* (non-Javadoc)
 	 * @see org.kablink.teaming.module.profile.ProfileModule#addShareWith(org.kablink.teaming.domain.ShareWith)
 	 */
     //RW transaction
@@ -2307,7 +2276,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	public void deleteShareWith(Long shareWithId) {
 		// Access check?
 		try {
-			ShareWith shareWith = getShareWith(shareWithId);
+			ShareWith shareWith = getProfileDao().loadShareWith(shareWithId);
 			getCoreDao().delete(shareWith);
 		}
 		catch(NoShareWithByTheIdException e) {

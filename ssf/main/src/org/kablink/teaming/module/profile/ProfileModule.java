@@ -789,26 +789,6 @@ public interface ProfileModule {
     
     public void setFirstLoginDate(Long userId);
     
-    public ShareWith getShareWith(Long shareWithId);
-    
-    /**
-     * Return a list of <code>ShareWith</code> objects in descending order of creation date
-     * (i.e., latest one first) representing unexpired entities shared with the specified 
-     * user either directly as individual or indirectly through group or team membership. 
-     * 
-     * @param userId
-     * @return
-     */
-    public List<ShareWith> getShareWiths(Long userId);
-    
-    /**
-     * Return a list of <code>ShareWith</code> objects meeting the specified selection criteria.
-     *  
-     * @param selectSpec
-     * @return
-     */
-    public List<ShareWith> getShareWiths(ShareWithSelectSpec selectSpec);
-    
     public void addShareWith(ShareWith shareWith);
     
     public void modifyShareWith(ShareWith shareWith);

@@ -68,6 +68,7 @@ import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.ApplicationPrincipal;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EmailAddress;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Group;
@@ -2170,13 +2171,13 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 	
 	@Override
- 	public ShareWith loadShareWith(Long shareWithId, Long zoneId) {
+ 	public ShareWith loadShareWith(Long shareWithId) {
+		if(shareWithId == null)
+			throw new IllegalArgumentException("id must be specified");
 		long begin = System.nanoTime();
 		try {
 			ShareWith shareWith = (ShareWith)getHibernateTemplate().get(ShareWith.class, shareWithId);
-			if (shareWith == null) {throw new NoShareWithByTheIdException(shareWithId);}
-			//make sure from correct zone
-			if (!shareWith.getZoneId().equals(zoneId)) {
+			if (shareWith == null) {
 				throw new NoShareWithByTheIdException(shareWithId);
 			}
 			return shareWith;
@@ -2187,20 +2188,146 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
  	}
  	
 	@Override
- 	public List<ShareWith> loadShareWiths(final ShareWithSelectSpec selectSpec) {
+ 	public List<ShareWith> loadShareWiths(final Collection<Long> shareWithIds) {
+		if(shareWithIds == null || shareWithIds.isEmpty())
+			throw new IllegalArgumentException("ids must be specified");
+		long begin = System.nanoTime();
+		try {
+	        return (List)getHibernateTemplate().execute(
+		            new HibernateCallback() {
+		                    public Object doInHibernate(Session session) throws HibernateException {
+	                            return session.createCriteria(ShareWith.class)
+	                            	.add(Restrictions.in("id", shareWithIds))
+	                            	.list();
+		                    }
+		            }
+		        );
+		}
+		finally {
+			end(begin, "loadShareWiths(Collection<Long>,Long)");
+		}	        
+ 	}
+ 	
+	@Override
+ 	public List<ShareWith> findShareWithsBySharedEntity(final EntityIdentifier sharedEntityIdentifier) {
+		if(sharedEntityIdentifier == null)
+			throw new IllegalArgumentException("shared entity identifier must be specified");
 		long begin = System.nanoTime();
 		try {
 	      	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
-	                    	if(1==1) {
-	                    		return session.createQuery("from org.kablink.teaming.domain.ShareWith s join s.members m where s.sharer=:sharer and m.recipientId=:recipientId")
-	                    				.setLong("sharer", 1L)
-	                    				.setLong("recipientId", 8L)
-	                    				.list();
-	                    	}
-	                    	
-	                    	
+                    		return session.createQuery("from org.kablink.teaming.domain.ShareWith where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
+                    				.setString("sharedEntityType", sharedEntityIdentifier.getEntityType().name())
+                    				.setLong("sharedEntityId", sharedEntityIdentifier.getEntityId())
+                    				.list();
+	                    }
+	                }
+	            );
+	      	
+	       return result;   	
+    	}
+    	finally {
+    		end(begin, "findShareWithsBySharedEntity(EntityIdentifier, Long)");
+    	}	              	
+ 	}
+	
+	@Override
+ 	public List<ShareWith> findShareWithsBySharer(final Long sharerId) {
+		if(sharerId == null)
+			throw new IllegalArgumentException("sharer id must be specified");
+		long begin = System.nanoTime();
+		try {
+	      	List result = (List)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    public Object doInHibernate(Session session) throws HibernateException {
+                    		return session.createQuery("from org.kablink.teaming.domain.ShareWith where creation_principal=:sharerId")
+                    				.setLong("sharerId", sharerId)
+                    				.list();
+	                    }
+	                }
+	            );
+	      	
+	       return result;   	
+    	}
+    	finally {
+    		end(begin, "findShareWithsBySharer(Long)");
+    	}	              	
+	}
+
+	@Override
+ 	public List<ShareWith> findShareWithsBySharerAndRecipient(final Long sharerId, final ShareWithMember.RecipientType recipientType, final Long recipientId) {
+		long begin = System.nanoTime();
+		try {
+	      	List result = (List)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    public Object doInHibernate(Session session) throws HibernateException {
+                    		return session.createQuery("from org.kablink.teaming.domain.ShareWith s join s.members m where s.creation_principal=:sharerId and m.recipientType=:recipientType and m.recipientId=:recipientId")
+                    				.setLong("sharerId", sharerId)
+                    				.setShort("recipientType", recipientType.getValue())
+                    				.setLong("recipientId", recipientId)
+                    				.list();
+	                    }
+	                }
+	            );
+	      	
+	       return result;   	
+    	}
+    	finally {
+    		end(begin, "findShareWithsBySharerAndRecipient(Long,ShareWithMember.RecipientType,Long)");
+    	}	              	
+ 	}
+ 	
+	@Override
+ 	public Map<ShareWithMember.RecipientType, Set<Long>> getMemberIdsWithReadAccessToSharedEntity(final EntityIdentifier sharedEntityIdentifier) {
+		if(sharedEntityIdentifier == null)
+			throw new IllegalArgumentException("shared entity identifier must be specified");
+		long begin = System.nanoTime();
+		try {
+	      	List<Object[]> list = (List<Object[]>)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    public Object doInHibernate(Session session) throws HibernateException {
+                    		return session.createQuery("select distinct m.recipientType, m.recipientId from org.kablink.teaming.domain.ShareWith s join s.members m where s.sharedEntity_type=:sharedEntityType and s.sharedEntity_id=:sharedEntityId and m.rightSet.readEntries=:readEntries")
+                    				.setString("sharedEntityType", sharedEntityIdentifier.getEntityType().name())
+                    				.setLong("sharedEntityId", sharedEntityIdentifier.getEntityId())
+                    				.setBoolean("readEntries", true)
+                    				.list();
+
+	                    }
+	                }
+	            );
+	      	
+	      	Map<ShareWithMember.RecipientType, Set<Long>> result = new HashMap<ShareWithMember.RecipientType, Set<Long>>();
+	      	result.put(ShareWithMember.RecipientType.user, new TreeSet<Long>());
+	      	result.put(ShareWithMember.RecipientType.group, new TreeSet<Long>());
+	      	result.put(ShareWithMember.RecipientType.team, new TreeSet<Long>());
+	      	Short recipientType;
+	      	Long recipientId;
+	       	for(Object[] o:list) {
+	       		recipientType = (Short) o[0];
+	       		recipientId = (Long) o[1];
+	       		try {
+	       			result.get(recipientType).add(recipientId);
+	       		}
+	       		catch(NullPointerException e) {
+	       			// This means that we encountered an invalid recipient type value in the database. Skip it.
+	       		}
+	       	}
+	       	return result;
+    	}
+    	finally {
+    		end(begin, "getMemberIdsWithReadAccessToSharedEntity(EntityIdentifier)");
+    	}	              	
+	}
+ 	
+ 	public List<ShareWith> loadShareWiths(final ShareWithSelectSpec selectSpec) {
+ 		// This method doesn't work because, unfortunately, Hibernate doesn't yet support the use of 
+ 		// sub-criteria for relationship expressed by collection of values rather than entity association. 
+		long begin = System.nanoTime();
+		try {
+	      	List result = (List)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    public Object doInHibernate(Session session) throws HibernateException {
 	                    	Criteria crit = session.createCriteria(ShareWith.class);
 	                    	if(selectSpec.sharerId != null)
 	                    		crit.add(Restrictions.eq("sharerId", selectSpec.sharerId));
@@ -2285,7 +2412,5 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	finally {
     		end(begin, "loadShareWiths(ShareWithSelectSpec)");
     	}	              	
-    	
-
  	}
 }
