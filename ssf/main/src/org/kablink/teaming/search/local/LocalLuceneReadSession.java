@@ -84,11 +84,11 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 		}
 	}
 
-	public ArrayList getTags(Query query, String tag, String type)
+	public ArrayList getTags(String aclQueryStr, String tag, String type)
 	throws LuceneException {
 		SimpleProfiler.start("LocalLuceneReadSession.getTags()");
 		try {
-			return luceneProvider.getTags(query, tag, type, 
+			return luceneProvider.getTags(aclQueryStr, tag, type, 
 				RequestContextHolder.getRequestContext().getUserId().toString(), 
 				RequestContextHolder.getRequestContext().getUser().isSuper());
 		}
@@ -106,11 +106,11 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 	 * @return
 	 * @throws LuceneException
 	 */
-	public ArrayList getTagsWithFrequency(Query query, String tag, String type)
+	public ArrayList getTagsWithFrequency(String aclQueryStr, String tag, String type)
 			throws LuceneException {
 		SimpleProfiler.start("LocalLuceneReadSession.getTagsWithFrequency()");
 		try {
-			return luceneProvider.getTagsWithFrequency(query, tag, type, 
+			return luceneProvider.getTagsWithFrequency(aclQueryStr, tag, type, 
 				RequestContextHolder.getRequestContext().getUserId().toString(), 
 				RequestContextHolder.getRequestContext().getUser().isSuper());
 		}
