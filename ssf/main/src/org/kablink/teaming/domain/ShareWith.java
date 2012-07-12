@@ -41,7 +41,7 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 
 /**
  * @author jong
- *
+ * 
  */
 public class ShareWith extends AbstractEntity {
 
@@ -50,33 +50,39 @@ public class ShareWith extends AbstractEntity {
 	protected DefinableEntity sharedEntity;
 	protected Date startDate;
 	protected Description description;
-	protected Collection<ShareWithMember> shareWithMembers;
-	
+	protected Collection<ShareWithMember> members;
+
 	// For use by Hibernate only
 	protected ShareWith() {
 	}
-	
+
 	// For user by application
-	public ShareWith(User sharer, DefinableEntity sharedEntity,
-			Date startDate, Description description,
-			Collection<ShareWithMember> shareWithMembers) {
-		if(sharer == null) throw new IllegalArgumentException("Sharer must be specified");
-		if(sharedEntity == null) throw new IllegalArgumentException("Shared entity must be specified");
-		if(startDate == null) throw new IllegalArgumentException("Start date must be specified");
-		if(shareWithMembers == null) throw new IllegalArgumentException("Share members must be specified");
-		
+	public ShareWith(User sharer, DefinableEntity sharedEntity, Date startDate,
+			Description description,
+			Collection<ShareWithMember> members) {
+		if (sharer == null)
+			throw new IllegalArgumentException("Sharer must be specified");
+		if (sharedEntity == null)
+			throw new IllegalArgumentException(
+					"Shared entity must be specified");
+		if (startDate == null)
+			throw new IllegalArgumentException("Start date must be specified");
+		if (members == null)
+			throw new IllegalArgumentException(
+					"Share members must be specified");
+
 		this.sharer = sharer;
 		this.sharedEntity = sharedEntity;
 		this.startDate = startDate;
 		this.description = description;
-		this.shareWithMembers = shareWithMembers;
+		this.members = members;
 	}
 
 	@Override
 	public EntityType getEntityType() {
 		return EntityIdentifier.EntityType.shareWith;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -116,15 +122,15 @@ public class ShareWith extends AbstractEntity {
 	public void setDescription(Description description) {
 		this.description = description;
 	}
-	
-	public Collection<ShareWithMember> getShareWithMembers() {
-		if(shareWithMembers == null)
-			shareWithMembers = new ArrayList<ShareWithMember>();
-		return shareWithMembers;
+
+	public Collection<ShareWithMember> getMembers() {
+		if (members == null)
+			members = new ArrayList<ShareWithMember>();
+		return members;
 	}
 
-	public void setShareWithMembers(Collection<ShareWithMember> shareWithMembers) {
-		this.shareWithMembers = shareWithMembers;
+	public void setMembers(Collection<ShareWithMember> members) {
+		this.members = members;
 	}
 
 }
