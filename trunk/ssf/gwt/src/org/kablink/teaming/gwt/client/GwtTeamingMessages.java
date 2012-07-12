@@ -548,6 +548,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_QuickViewDlg();
 	String codeSplitFailure_SearchOptionsComposite();
 	String codeSplitFailure_SurveyFolderView();
+	String codeSplitFailure_ShareExpirationDlg();
 	String codeSplitFailure_ShareThisDlg();
 	String codeSplitFailure_SizeColumnsDlg();
 	String codeSplitFailure_TagThisDlg();
@@ -1139,6 +1140,16 @@ public interface GwtTeamingMessages extends Messages
 	String shareWithUsers();
 	String unknownShareType();
 	String usersWithoutRights();
+	
+	// The following strings are using in the "share expiration" dialog
+	String shareExpirationDlg_caption();
+	String shareExpirationDlg_days();
+	String shareExpirationDlg_expiresAfter();
+	String shareExpirationDlg_expiresLabel();
+	String shareExpirationDlg_expiresNever();
+	String shareExpirationDlg_expiresOn();
+	String shareExpirationDlg_noDateEntered();
+	String shareExpirationDlg_noDaysEntered();
 	
 	// The following strings are used in the Group Membership popup
 	String allUsersGroupDesc();
