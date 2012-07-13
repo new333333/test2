@@ -59,6 +59,7 @@ import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Collector;
+import org.apache.lucene.search.FieldCache;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.NumericRangeQuery;
@@ -530,11 +531,9 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 					
 					QueryWrapperFilter aclInheritingEntriesPermissibleAclFilter = new QueryWrapperFilter(aclInheritingEntriesPermissibleAclQuery);
 					
-					TLongHashSet accessibleFolderIds = null;
-					
 					Query accessibleFoldersAclQuery = makeAccessibleFoldersAclQuery(parseAclQueryStr(aclQueryStr));
 						
-					accessibleFolderIds = obtainAccessibleFolderIds(indexSearcherHandle.getIndexSearcher(), contextUserId, accessibleFoldersAclQuery);
+					TLongHashSet accessibleFolderIds = obtainAccessibleFolderIds(indexSearcherHandle.getIndexSearcher(), contextUserId, accessibleFoldersAclQuery);
 
 					aclFilter = new AclFilter(aclInheritingEntriesPermissibleAclFilter, accessibleFolderIds);			
 				}
@@ -1298,33 +1297,61 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	}
 	
 	private void markAccessibleDocs(IndexSearcherHandle indexSearcherHandle , String aclQueryStr, final BitSet userDocIds) throws IOException {
-		Query aclQuery;
 		try {
-			aclQuery = parseAclQueryStr(aclQueryStr);
+			Query aclInheritingEntriesPermissibleAclQuery = makeAclInheritingEntriesPermissibleAclQuery(parseAclQueryStr(aclQueryStr));
+
+			Query accessibleFoldersAclQuery = makeAccessibleFoldersAclQuery(parseAclQueryStr(aclQueryStr));
+
+			final TLongHashSet accessibleFolderIds = obtainAccessibleFolderIds(indexSearcherHandle.getIndexSearcher(), null, accessibleFoldersAclQuery);
+
+			indexSearcherHandle.getIndexSearcher().search(aclInheritingEntriesPermissibleAclQuery, new Collector() {
+				private int docBase;
+				private long[] entryAclParentIds;
+				
+				@Override
+				public void collect(int doc) {
+					long entryAclParentId = entryAclParentIds[doc];
+					boolean hasAccess;
+					if(entryAclParentId > 0) {
+						// This doc represents an entry (or an attachment within that entry) that inherits ACL
+						// from its parent folder. We need to check if the user has access to the parent folder.
+						if(accessibleFolderIds.contains(entryAclParentId))
+							hasAccess = true; // The user has access to parent folder. Grant access to this entry.
+						else
+							hasAccess = false; // The user has no access to parent folder. Deny access to this entry.
+					}
+					else {
+						// This doc does not represent an entry that inherits ACL from its parent folder,
+						// which means that this doc represent either binder or entry that has its own
+						// set of ACL (such as folder entries with entry-level ACLs, or user objects).
+						// The query aclInheritingEntriesPermissibleAclQuery has already validate this 
+						// doc, so imply pass it on.
+						hasAccess = true;
+					}
+					if(hasAccess)
+						userDocIds.set(doc+docBase);
+				}
+
+				@Override
+				public boolean acceptsDocsOutOfOrder() {
+					return true;
+				}
+
+				@Override
+				public void setNextReader(IndexReader reader, int docBase)
+						throws IOException {
+					this.entryAclParentIds = FieldCache.DEFAULT.getLongs(reader, Constants.ENTRY_ACL_PARENT_ID_FIELD);
+					this.docBase = docBase;
+				}
+
+				@Override
+				public void setScorer(Scorer scorer) throws IOException {
+				}
+			});
 		} catch (ParseException e) {
 			throw newLuceneException("Error parsing query", e);
 		}
 		
-		indexSearcherHandle.getIndexSearcher().search(aclQuery, new Collector() {
-			@Override
-			public void collect(int doc) {
-				userDocIds.set(doc);
-			}
-
-			@Override
-			public boolean acceptsDocsOutOfOrder() {
-				return true;
-			}
-
-			@Override
-			public void setNextReader(IndexReader arg0, int arg1)
-					throws IOException {
-			}
-
-			@Override
-			public void setScorer(Scorer arg0) throws IOException {
-			}
-		});
 
 	}
 }
