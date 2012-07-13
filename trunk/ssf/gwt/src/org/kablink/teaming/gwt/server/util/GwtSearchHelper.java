@@ -47,6 +47,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.client.GwtFolder;
@@ -109,6 +110,7 @@ public class GwtSearchHelper
 		case PERSON:
 		case PERSONAL_TAGS:
 		case PLACES:
+		case PRINCIPAL:
 		case TAG:
 		case TEAMS:
 		case USER:
@@ -155,6 +157,7 @@ public class GwtSearchHelper
 		case PERSON:
 		case PERSONAL_TAGS:
 		case PLACES:
+		case PRINCIPAL:
 		case TAG:
 		case TEAMS:
 		case USER:
@@ -224,6 +227,7 @@ public class GwtSearchHelper
 
 		case PERSON:
 		case USER:
+		case PRINCIPAL:
 			searchTermFilter.addTitleFilter( searchText );
 			searchTermFilter.addLoginNameFilter( searchText );
 			if ( GwtSearchCriteria.SearchType.PERSON == searchType ) {
@@ -551,6 +555,88 @@ public class GwtSearchHelper
 						results.add( gwtUser );
 				}
 				searchResults.setResults( results);
+				break;
+			}
+			
+			case PRINCIPAL:
+			{
+				List principalEntries;
+				ArrayList<GwtTeamingItem> results;
+				Iterator it;
+				Integer count;
+				List<Long> principalIds = new ArrayList<Long>();
+				
+				retMap = ami.getProfileModule().getPrincipals( options );
+
+				// Add the search results to the GwtSearchResults object.
+				count = (Integer) retMap.get( ObjectKeys.SEARCH_COUNT_TOTAL );
+				searchResults.setCountTotal( count.intValue() );
+				
+				// Create a list of principal ids from the search results.
+				principalEntries = (List)retMap.get( ObjectKeys.SEARCH_ENTRIES );
+				results = new ArrayList( principalEntries.size() );
+				it = principalEntries.iterator();
+				while ( it.hasNext() )
+				{
+					Map<String,String> entry;
+
+					// Get the next principal in the search results.
+					entry = (Map) it.next();
+
+					if ( entry != null )
+					{
+						String id;
+
+						id = (String)entry.get( "_docId" );
+						principalIds.add( Long.valueOf( id ) );
+					}
+				}
+				
+				if ( principalIds.size() > 0 )
+				{
+					ProfileModule profileModule;
+					SortedSet<Principal> principals;
+
+					profileModule = ami.getProfileModule();
+					principals = profileModule.getPrincipals( principalIds );
+					if ( principals != null && principals.size() > 0 )
+					{
+						it = principals.iterator();
+						while (it.hasNext() )
+						{
+							Principal principal;
+							EntityType entityType;
+							String principalId;
+							
+							principal = (Principal) it.next();
+							principalId = principal.getId().toString();
+							
+							entityType = principal.getEntityType();
+							if ( entityType == EntityType.group )
+							{
+								GwtGroup gwtGroup;
+
+								// Create a GwtGroup item for this group.
+								gwtGroup = new GwtGroup();
+								gwtGroup.setId( principalId );
+								gwtGroup.setName( principal.getName() );
+								gwtGroup.setTitle( principal.getTitle() );
+								
+								results.add( gwtGroup );
+							}
+							else if ( entityType == EntityType.user )
+							{
+								GwtUser gwtUser;
+
+								gwtUser = getGwtUser( ami, request, searchType, principalId );
+								if ( gwtUser != null )
+									results.add( gwtUser );
+							}
+						}// end while()
+					}
+				}
+				
+				searchResults.setResults( results );
 				break;
 			}
 				
