@@ -856,20 +856,6 @@ public class EntityIndexUtils {
 	    			markEntryAsInheritingAcls(doc, binder, (Entry)entry);
 	    		}
        		}
-    	} else if (entry instanceof FolderEntry) {
-    		//(This case may no longer be valid now that workflow is included in the Kablink build)
-       		// Add the Entry_ACL field
-       		if (!((FolderEntry)entry).isTop()) {
-       			//Make sure to use the acl of the top entry since replies use the top entry acl
-       			entry = ((FolderEntry)entry).getTopEntry();
-       		}
-    		if (((Entry)entry).hasEntryAcl()) {
-    			addEntryAcls(doc, binder, (Entry)entry);
-           		//add binder access
-        		addBinderAcls(doc, binder);
-    		} else {
-    			markEntryAsInheritingAcls(doc, binder, (Entry)entry);
-    		}
     	} else if (entry instanceof User) {
             // Add the Entry_ACL field
     		String[] acls = StringUtil.split(getUserEntryAccess((User)entry), " ");
