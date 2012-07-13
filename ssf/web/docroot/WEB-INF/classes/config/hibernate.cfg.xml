@@ -75,7 +75,7 @@
 	    <mapping resource="org/kablink/teaming/domain/ResourceDriver.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/SeenMap.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/SharedEntity.hbm.xml"/>
-	    <!--<mapping resource="org/kablink/teaming/domain/ShareItem.hbm.xml"/>-->
+	    <mapping resource="org/kablink/teaming/domain/ShareItem.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/SimpleName.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Subscription.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Tag.hbm.xml"/>
@@ -229,7 +229,7 @@
  		<class-cache class="org.kablink.teaming.domain.Membership" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.PostingDef" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.Principal" usage="read-write"/>
- 		<!--<class-cache class="org.kablink.teaming.domain.ShareItem" usage="read-write"/>-->
+ 		<class-cache class="org.kablink.teaming.domain.ShareItem" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.SimpleName" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.Subscription" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.Tag" usage="read-write"/>
@@ -266,7 +266,7 @@
  		<collection-cache collection="org.kablink.teaming.domain.Group.members" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.domain.ApplicationPrincipal.memberOf" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.domain.ApplicationGroup.members" usage="read-write"/>
- 		<!--<collection-cache collection="org.kablink.teaming.domain.ShareItem.members" usage="read-write"/>-->
+ 		<collection-cache collection="org.kablink.teaming.domain.ShareItem.members" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.security.function.Function.operationNames" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.security.function.Function.conditionalClauses" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.security.function.WorkAreaFunctionMembership.memberIds" usage="read-write"/>
