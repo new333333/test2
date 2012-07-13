@@ -54,7 +54,6 @@ import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Description;
-import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
@@ -77,17 +76,13 @@ import org.kablink.teaming.gwt.client.GwtAttachment;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
-import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
-import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchScope;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
-import org.kablink.teaming.gwt.client.GwtTag;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
-import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
@@ -150,6 +145,7 @@ import org.kablink.teaming.gwt.server.util.GwtCalendarHelper;
 import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
 import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
+import org.kablink.teaming.gwt.server.util.GwtSearchHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.gwt.server.util.GwtTaskHelper;
 import org.kablink.teaming.gwt.server.util.GwtViewHelper;
@@ -162,8 +158,6 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.presence.PresenceInfo;
 import org.kablink.teaming.presence.PresenceManager;
-import org.kablink.teaming.search.filter.SearchFilter;
-import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
@@ -173,7 +167,6 @@ import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.Favorites;
@@ -437,7 +430,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			try
 			{
-				searchResults = executeSearch( ri, searchCriteria );
+				searchResults = GwtSearchHelper.executeSearch( this, req, searchCriteria );
 			}
 			catch (Exception ex)
 			{
@@ -2437,46 +2430,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}
 	
 	
-	/**
-	 * Execute a search based on the given search criteria.
-	 * 
-	 * @param ri
-	 * @param searchCriteria
-	 * 
-	 * @return
-	 * 
-	 * @throws Exception 
-	 */
-	private GwtSearchResults executeSearch( HttpRequestInfo ri, GwtSearchCriteria searchCriteria ) throws Exception
-	{
-		GwtSearchResults searchResults;
-		
-		switch ( searchCriteria.getSearchType() )
-		{
-		case APPLICATION:
-		case APPLICATION_GROUP:
-		case COMMUNITY_TAGS:
-		case ENTRIES:
-		case FOLDERS:
-		case GROUP:
-		case PERSON:
-		case PERSONAL_TAGS:
-		case PLACES:
-		case TAG:
-		case TEAMS:
-		case USER:
-			searchResults = doSearch( getRequest( ri ), searchCriteria );
-			break;
-				
-		default:
-			//!!! Finish.
-			searchResults = null;
-			break;
-		}
-		
-		return searchResults;
-	}// end executeSearch()
-	
 	/*
 	 * Marks the given task in the given binder as having its subtask
 	 * display collapsed.
@@ -2611,446 +2564,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SimpleProfiler.stop("GwtRpcServiceImpl.purgeTasks()");
 		}
 	}
-	
-	/*
-	 * This method is meant to search for applications or entries or groups or places or tags or teams or users.
-	 */
-	@SuppressWarnings({"unchecked", "unused"})
-	private GwtSearchResults doSearch( HttpServletRequest request, GwtSearchCriteria searchCriteria ) throws Exception
-	{
-		Map options;
-		List searchTerms;
-		SearchFilter searchTermFilter;
-		String searchText;
-		Integer startingCount;
-		Integer maxResults;
-		GwtSearchResults searchResults = null;
-		
-		// Make sure we are dealing with the right search type.
-		GwtSearchCriteria.SearchType searchType = searchCriteria.getSearchType();
-		switch ( searchType )
-		{
-		case APPLICATION:
-		case APPLICATION_GROUP:
-		case COMMUNITY_TAGS:
-		case ENTRIES:
-		case FOLDERS:
-		case GROUP:
-		case PERSON:
-		case PERSONAL_TAGS:
-		case PLACES:
-		case TAG:
-		case TEAMS:
-		case USER:
-			break;
-			
-		default:
-			return null;
-		}
-		
-		maxResults = new Integer( searchCriteria.getMaxResults() );
-		startingCount = new Integer( searchCriteria.getPageNumber() ) * maxResults;
-		
-		options = new HashMap();
-		options.put( ObjectKeys.SEARCH_MAX_HITS, maxResults );
-		options.put( ObjectKeys.SEARCH_OFFSET, startingCount );
-		options.put( ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD );
-		options.put( ObjectKeys.SEARCH_SORT_DESCEND, new Boolean( false ) );
-		
-		if ( searchCriteria.getSearchScope() == SearchScope.SEARCH_LOCAL )
-		{
-			String binderId;
-			
-			binderId = searchCriteria.getBinderId();
-			if ( binderId != null && binderId.length() > 0 )
-				options.put( ObjectKeys.SEARCH_ANCESTRY, binderId );;
-		}
-		
-		searchText = searchCriteria.getSearchText();
-	    searchText = searchText.replaceAll(" \\*", "\\*").trim();
-
-		searchTermFilter = new SearchFilter();
-		
-	    // Set up the search filter.
-		switch ( searchCriteria.getSearchType() )
-		{
-		case ENTRIES:
-			String binderId = null;
-			
-			//Add the title term
-			if ( searchText.length() > 0 )
-				searchTermFilter.addTitleFilter( searchText );
-
-			searchTerms = new ArrayList();
-			searchTerms.add( EntityIdentifier.EntityType.folderEntry.name() );
-			searchTermFilter.addAndNestedTerms( SearchFilterKeys.FilterTypeEntityTypes, SearchFilterKeys.FilterEntityType, searchTerms );
-			searchTermFilter.addAndFilter( SearchFilterKeys.FilterTypeTopEntry );
-			
-			break;
-
-		case FOLDERS:
-		case PLACES:
-			searchTermFilter.addPlacesFilter(
-				searchText,
-				(searchCriteria.getFoldersOnly() || (GwtSearchCriteria.SearchType.FOLDERS == searchCriteria.getSearchType())) );
-			break;
-			
-		case COMMUNITY_TAGS:
-		case PERSONAL_TAGS:
-		case TAG:
-			// this has been replaced by a getTags method in the search engine.
-			// searchTermFilter.addTagsFilter( null, searchText );
-			break;
-		
-		case TEAMS:
-			searchTermFilter.addTeamFilter( searchText );
-			break;
-
-		case PERSON:
-		case USER:
-			searchTermFilter.addTitleFilter( searchText );
-			searchTermFilter.addLoginNameFilter( searchText );
-			if ( GwtSearchCriteria.SearchType.PERSON == searchType ) {
-				searchTermFilter.addAndPersonFlagFilter( String.valueOf( Boolean.TRUE ) );
-			}
-			break;
-			
-		default:
-			//Add the login name term
-			if ( searchText.length() >0 ) {
-				searchTermFilter.addTitleFilter(searchText);
-				searchTermFilter.addLoginNameFilter(searchText);
-			}
-			break;
-		}// end switch()
-
-		try
-		{
-			Map retMap;
-
-			searchResults = new GwtSearchResults();
-		
-			options.put( ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter() );
-			
-			// Perform the search based on the search type.
-			switch ( searchType )
-			{
-			case APPLICATION:
-				//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
-				break;
-				
-			case APPLICATION_GROUP:
-				//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
-				break;
-				
-			case ENTRIES:
-			{
-				List placesWithCounters;
-				List entries;
-				ArrayList<GwtTeamingItem> results;
-				Iterator it;
-				Map foldersMap;
-				Integer count;
-				
-				retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), Constants.SEARCH_MODE_NORMAL, options );
-				entries = (List)retMap.get( ObjectKeys.SEARCH_ENTRIES );
-				placesWithCounters = BinderHelper.sortPlacesInEntriesSearchResults( getBinderModule(), entries );
-				foldersMap = BinderHelper.prepareFolderList( placesWithCounters, false );
-				BinderHelper.extendEntriesInfo( entries, foldersMap );
-				
-				// Add the search results to the GwtSearchResults object.
-				count = (Integer) retMap.get( ObjectKeys.SEARCH_COUNT_TOTAL );
-				searchResults.setCountTotal( count.intValue() );
-				
-				// Create a GwtFolderEntry item for each search result.
-				results = new ArrayList( entries.size() );
-				it = entries.iterator();
-				while ( it.hasNext() )
-				{
-					Map<String,String> entry;
-					GwtFolderEntry folderEntry;
-					String entryId;
-					String entryName;
-					String parentBinderName;
-
-					// Get the next entry in the search results.
-					entry = (Map) it.next();
-
-					// Pull information about this entry from the search results.
-					folderEntry = new GwtFolderEntry();
-					entryId = entry.get( "_docId" );
-					folderEntry.setEntryId( entryId );
-					entryName = entry.get( "title" );
-					folderEntry.setEntryName( entryName );
-					parentBinderName = entry.get( WebKeys.BINDER_PATH_NAME );
-					folderEntry.setParentBinderName( parentBinderName );
-					results.add( folderEntry );
-				}
-				searchResults.setResults( results);
-				break;
-			}
-
-			case GROUP:
-			{
-				Map entries;
-		    	List searchEntries;
-		    	Integer searchHits;
-		    	ArrayList<GwtTeamingItem> results = null;
-				
-				entries = getProfileModule().getGroups( options );
-				
-				// Do we get any search hits?
-		    	searchEntries = (List)entries.get( ObjectKeys.SEARCH_ENTRIES );
-		    	searchHits = (Integer)entries.get( ObjectKeys.SEARCH_COUNT_TOTAL );
-		    	if ( (null != searchEntries) && (null != searchHits) && (0 < searchHits) )
-		    	{
-					boolean sendingEmail;
-					boolean allowSendToAllUsers;
-					int size;
-
-					// Yes
-					results = new ArrayList( searchEntries.size() );
-
-					// Is this search a part of sending an email ui?
-					// And are we supposed to disallow sending email to the "all users" group?
-					sendingEmail = searchCriteria.getIsSendingEmail();
-					allowSendToAllUsers = SPropsUtil.getBoolean( "mail.allowSendToAllUsers", false );
-
-					// Create a GwtGroup object for each group returned by the search.
-					size = searchEntries.size();
-					for (int i = (size - 1); i >= 0; i -= 1)
-					{
-			    		Map entry;
-						String id;
-						boolean useGroup;
-
-						useGroup = true;
-			    		entry = (Map)searchEntries.get(i);
-			    		id = (String)entry.get(Constants.RESERVEDID_FIELD);
-						
-						// Is this search part of a sending email ui?
-						if ( sendingEmail )
-						{
-							// Is sending an email to all users allowed?
-							if ( allowSendToAllUsers == false )
-							{
-								// No
-								// Is this group the "all users" group?
-								if ( (null != id) && (id.equalsIgnoreCase( ObjectKeys.ALL_USERS_GROUP_INTERNALID ) ||
-										id.equalsIgnoreCase( ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID )) )
-								{
-									// Yes, skip it.
-									useGroup = false;
-									--searchHits;
-								}
-							}
-						}
-						
-						// Should we add this group to the search results?
-						if ( useGroup )
-						{
-							ProfileModule profileModule;
-							List<Long> groupId = new ArrayList<Long>();
-							SortedSet<Principal> groupPrincipals;
-
-							id = (String)entry.get( "_docId" );
-							groupId.add( Long.valueOf( id ) );
-							profileModule = getProfileModule();
-							groupPrincipals = profileModule.getPrincipals( groupId );
-							
-							if ( groupPrincipals.size() > 0  )
-							{
-								GwtGroup gwtGroup;
-								Principal group;
-								
-								group = groupPrincipals.first();
-								
-								// Create a GwtGroup item for this group.
-								gwtGroup = new GwtGroup();
-								gwtGroup.setId( id );
-								gwtGroup.setName( group.getName() );
-								gwtGroup.setTitle( group.getTitle() );
-								
-								results.add( gwtGroup );
-							}
-						}
-			    	}
-		    	}
-						
-				searchResults.setCountTotal( searchHits.intValue() );
-				searchResults.setResults( results );
-				break;
-			}
-				
-			case FOLDERS:
-			case PLACES:
-			{
-				List placesEntries;
-				ArrayList<GwtTeamingItem> results;
-				Iterator it;
-				Integer count;
-				
-				retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, options );
-
-				// Add the search results to the GwtSearchResults object.
-				count = (Integer) retMap.get( ObjectKeys.SEARCH_COUNT_TOTAL );
-				searchResults.setCountTotal( count.intValue() );
-				
-				// Create a GwtFolder item for each search result.
-				placesEntries = (List)retMap.get( ObjectKeys.SEARCH_ENTRIES );
-				results = new ArrayList( placesEntries.size() );
-				it = placesEntries.iterator();
-				while ( it.hasNext() )
-				{
-					Map<String,String> entry;
-					GwtFolder folder;
-					String folderId;
-					String folderTitle;
-
-					// Get the next folder in the search results.
-					entry = (Map) it.next();
-
-					// Pull information about this folder from the search results.
-					folderId = entry.get( "_docId" );
-					folderTitle = entry.get( "_extendedTitle" );
-					folder = getFolderImpl( request, null, folderId, folderTitle );
-					if ( folder != null )
-						results.add( folder );
-				}
-				searchResults.setResults( results);
-				break;
-			}
-
-			case COMMUNITY_TAGS:
-			case PERSONAL_TAGS:
-			case TAG:
-			{
-				ArrayList<GwtTeamingItem> results;
-				int count;
-				int i;
-				Iterator it;
-				List tags;
-				String tagType;
-				String searchRoot;
-				
-				searchRoot = searchText;
-				i = searchRoot.indexOf( "*" );
-				if ( i > 0 )
-				{
-					searchRoot = searchRoot.substring( 0, i );
-				}
-				
-				switch ( searchCriteria.getSearchType() )
-				{
-				default:
-				case TAG:             tagType = WebKeys.FIND_TYPE_TAGS;           break;
-				case COMMUNITY_TAGS:  tagType = WebKeys.FIND_TYPE_COMMUNITY_TAGS; break;
-				case PERSONAL_TAGS:   tagType = WebKeys.FIND_TYPE_PERSONAL_TAGS;  break;
-				}
-				
-				tags = getBinderModule().getSearchTags( searchRoot, tagType );
-				count = ((null == tags) ? 0 : tags.size());
-				searchResults.setCountTotal( count );
-				results = new ArrayList( count );
-				for ( it = tags.iterator(); it.hasNext(); )
-				{
-					GwtTag tag;
-					Map<String,String> tagInfo;
-					
-					tagInfo = (Map) it.next();
-					tag = new GwtTag();
-					tag.setTagName( tagInfo.get( "ssTag" ));
-					results.add( tag );
-				}
-				searchResults.setResults( results );
-				break;
-			}
-			
-			case TEAMS:
-			{
-				List teamEntries;
-				ArrayList<GwtTeamingItem> results;
-				Integer count;
-				Iterator it;
-
-				// Search for teams
-				retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, options );
-				
-				// Add the search results to the GwtSearchResults object.
-				count = (Integer) retMap.get( ObjectKeys.SEARCH_COUNT_TOTAL );
-				searchResults.setCountTotal( count.intValue() );
-				
-				// Create a GwtTeam item for each search result.
-				teamEntries = (List)retMap.get( ObjectKeys.SEARCH_ENTRIES );
-				results = new ArrayList( teamEntries.size() );
-				it = teamEntries.iterator();
-				while ( it.hasNext() )
-				{
-					Map<String,String> entry;
-					String teamId;
-
-					// Get the next team in the search results.
-					entry = (Map) it.next();
-
-					// Pull information about this team from the search results.
-					teamId = entry.get( "_docId" );
-					
-					//!!! Finish
-				}
-				searchResults.setResults( results );
-				break;
-			}
-
-			case PERSON:
-			case USER:
-			{
-				List userEntries;
-				ArrayList<GwtTeamingItem> results;
-				Iterator it;
-				Integer count;
-				
-				retMap = getProfileModule().getUsers(options);
-
-				// Add the search results to the GwtSearchResults object.
-				count = (Integer) retMap.get( ObjectKeys.SEARCH_COUNT_TOTAL );
-				searchResults.setCountTotal( count.intValue() );
-				
-				// Create a GwtUser item for each search result.
-				userEntries = (List)retMap.get( ObjectKeys.SEARCH_ENTRIES );
-				results = new ArrayList( userEntries.size() );
-				it = userEntries.iterator();
-				while ( it.hasNext() )
-				{
-					Map<String,String> entry;
-					GwtUser gwtUser;
-					String userId;
-
-					// Get the next user in the search results.
-					entry = (Map) it.next();
-
-					// Pull information about this user from the search results.
-					userId = entry.get( "_docId" );
-					gwtUser = getGwtUser( request, searchType, userId );
-					if ( gwtUser != null )
-						results.add( gwtUser );
-				}
-				searchResults.setResults( results);
-				break;
-			}
-				
-			default:
-				searchResults = null;
-			}// end switch()
-		}
-		catch( AccessControlException e )
-		{
-			//!!! What to do here?
-			searchResults = null;
-		}
-		
-		return searchResults;
-	}// end doSearch()
-	
 	
 	/*
 	 * Returns a ActivityStreamData of corresponding to activity stream
@@ -3560,84 +3073,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	private GwtFolder getFolder( HttpRequestInfo ri, String zoneUUID, String folderId ) throws GwtTeamingException
 	{
-		return getFolderImpl( getRequest( ri ), zoneUUID, folderId, null );
+		return GwtServerHelper.getFolderImpl( this, getRequest( ri ), zoneUUID, folderId, null );
 	}
-	
-	private GwtFolder getFolderImpl( HttpServletRequest request, String zoneUUID, String folderId, String folderTitle ) throws GwtTeamingException
-	{
-		BinderModule binderModule;
-		Binder binder = null;
-		GwtFolder folder = null;
-		Binder parentBinder;
-		
-		try
-		{
-			ZoneInfo zoneInfo;
-			String zoneInfoId;
-			Long folderIdL;
-
-			// Get the id of the zone we are running in.
-			zoneInfo = MiscUtil.getCurrentZone();
-			zoneInfoId = zoneInfo.getId();
-			if ( zoneInfoId == null )
-				zoneInfoId = "";
-
-			binderModule = getBinderModule();
-
-			folderIdL = new Long( folderId );
-			
-			// Are we looking for a folder that was imported from another zone?
-			if ( zoneUUID != null && zoneUUID.length() > 0 && !zoneInfoId.equals( zoneUUID ) )
-			{
-				// Yes, get the folder id for the folder in this zone.
-				folderIdL = binderModule.getZoneBinderId( folderIdL, zoneUUID, EntityType.folder.name() );
-			}
-
-			// Get the binder object.
-			if ( folderIdL != null )
-				binder = binderModule.getBinder( folderIdL );
-			
-			// Initialize the data members of the GwtFolder object.
-			folder = new GwtFolder();
-			if ( folderIdL != null )
-				folder.setFolderId( folderIdL.toString() );
-			if ( binder != null )
-			{
-				String url;
-				Description desc;
-
-				folder.setFolderName( MiscUtil.hasString( folderTitle ) ? folderTitle : binder.getTitle() );
-			
-				parentBinder = binder.getParentBinder();
-				if ( parentBinder != null )
-					folder.setParentBinderName( parentBinder.getPathName() );
-
-				// Create a url that can be used to view this folder.
-				url = PermaLinkUtil.getPermalink( request, binder );
-				folder.setViewFolderUrl( url );
-				
-				desc = binder.getDescription();
-				if ( desc != null )
-				{
-					String descStr;
-					
-					descStr = desc.getText();
-					
-					// Perform any fixups needed on the entry's description
-					descStr = markupStringReplacementImpl( request, folderId, descStr, "view" );
-					
-					folder.setFolderDesc( descStr );
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			throw GwtServerHelper.getGwtTeamingException( e );
-		}
-		
-		return folder;
-	}// end getFolder()
-	
 	
 	/**
 	 * Return a list of the first n entries in the given folder.
@@ -3738,106 +3175,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SimpleProfiler.stop( "GwtRpcServiceImpl.getFolderSortSetting()" );
 		}
 	}
-	
-	/*
-	 * Return a GwtUser object for the given user id
-	 */
-	private GwtUser getGwtUser( HttpServletRequest request, GwtSearchCriteria.SearchType searchType, String userId ) throws GwtTeamingException
-	{
-		Binder binder = null;
-		BinderModule bm = getBinderModule();
-		GwtUser reply = null;
-		ProfileModule pm = getProfileModule();
-		User user = null;
-		
-		try
-		{
-			Long userIdL;
-
-			// Do we have an ID we can access as a person?
-			userIdL = new Long( userId );
-			if ( userIdL != null )
-			{
-				ArrayList<Long> userAL;
-				Set<User> userSet;
-				User[] users;
-				
-				userAL = new ArrayList<Long>();
-				userAL.add( userIdL );
-				userSet = pm.getUsers( userAL );
-				users = userSet.toArray( new User[0] );
-				if ( 1 <= users.length )
-				{
-					// If we are searching for a person and this user
-					// is not a person...
-					user = users[0];
-					if ( ( searchType == GwtSearchCriteria.SearchType.PERSON ) && ( ! ( user.isPerson() ) ) )
-					{
-						// ...ignore it.
-						user = null;
-					}
-					
-					else {
-						Long wsId;
-
-						// Does this user have a workspace ID?
-						wsId = user.getWorkspaceId();
-						if ( null != wsId )
-						{
-							try
-							{
-								// Yes!  Can we access the workspace?
-								binder = bm.getBinder( user.getWorkspaceId() );
-							}
-							catch ( Exception ex )
-							{
-								// No!  Simply ignore it as this is a
-								// permissible condition if the user
-								// performing the search does NOT have
-								// access to the workspace in question.
-								binder = null;
-							}
-						}
-						
-						// Note:  Cases where a user won't have a workspace
-						//    ID include special user IDs such as the email
-						//    posting agent and others as well as users
-						//    that have never logged in.
-					}
-				}
-			}
-			
-			// Do we have access to a user?
-			if ( null != user )
-			{
-				// Yes!  Construct a GwtUser object for it.
-				reply = new GwtUser();
-				reply.setUserId( user.getId() );
-				reply.setName( user.getName() );
-				reply.setTitle( Utils.getUserTitle( user ) );
-				reply.setWorkspaceTitle( user.getWSTitle() );
-				
-				// Do we have access to this user's workspace?
-				if ( null == binder ) {
-					// No!  Provide a permalink to the user's profile.
-					reply.setViewWorkspaceUrl( PermaLinkUtil.getPermalink( request, user ) );
-				}
-				else {
-					// Yes, we have access to this user's workspace!
-					// Store the workspace's ID and a permalink to it. 
-					reply.setWorkspaceId( binder.getId() );
-					reply.setViewWorkspaceUrl( PermaLinkUtil.getPermalink( request, binder ) );
-				}
-			}
-		}
-		catch ( Exception e )
-		{
-			throw GwtServerHelper.getGwtTeamingException( e );
-		}
-	
-		return reply;
-	}// end getGwtUser()
-	
 	
 	/**
 	 * Return the "binder permalink" URL.
@@ -4849,47 +4186,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	private String markupStringReplacement( HttpRequestInfo ri, String binderId, String html, String type ) throws GwtTeamingException
 	{
-		return markupStringReplacementImpl( getRequest( ri ), binderId, html, type );
-	}
-	
-	
-	/*
-	 * Parse the given html and replace any markup with the appropriate url.  For example,
-	 * replace {{attachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
-	 */
-	private String markupStringReplacementImpl( HttpServletRequest request, String binderId, String html, String type ) throws GwtTeamingException
-	{
-		String newHtml;
-		
-		newHtml = "";
-		if ( html != null && html.length() > 0 )
-		{
-			try
-			{
-				Long binderIdL;
-				
-				binderIdL = new Long( binderId );
-				
-				if ( binderIdL != null )
-				{
-					BinderModule binderModule;
-					Binder binder;
-					
-					binderModule = getBinderModule();
-					binder = binderModule.getBinder( binderIdL );
-
-					// Parse the given html and replace any markup with the appropriate url.  For example,
-					// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
-					newHtml = MarkupUtil.markupStringReplacement( null, null, request, null, binder, html, type );
-				}
-			}
-			catch (Exception e)
-			{
-				throw GwtServerHelper.getGwtTeamingException( e );
-			}
-		}
-		
-		return newHtml;
+		return GwtServerHelper.markupStringReplacementImpl( this, getRequest( ri ), binderId, html, type );
 	}
 	
 	
