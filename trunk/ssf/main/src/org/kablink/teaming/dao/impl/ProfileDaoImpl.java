@@ -2324,6 +2324,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	              	
 	}
  	
+	/*
  	public List<ShareItem> loadShareItems(final ShareItemSelectSpec selectSpec) {
  		// This method doesn't work because, unfortunately, Hibernate doesn't yet support the use of 
  		// sub-criteria for relationship expressed by collection of values rather than entity association. 
@@ -2417,4 +2418,5 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "loadShareItems(ShareItemSelectSpec)");
     	}	              	
  	}
+ 	*/
 }
