@@ -35,15 +35,15 @@
       <meta-value class="org.kablink.teaming.domain.Workspace" value="workspace"/>
       <meta-value class="org.kablink.teaming.domain.ProfileBinder" value="profileBinder"/>
       <meta-value class="org.kablink.teaming.domain.TemplateBinder" value="template"/>
-      <column name="sharedEntity_type"  length="16"/>
-      <column name="sharedEntity_id"/>
+      <column name="sharedEntity_type"  length="16" index="sharedEntity_shareitem"/>
+      <column name="sharedEntity_id" index="sharedEntity_shareitem"/>
     </any>    
     <bag inverse="false" cascade="all" lazy="false" table="SS_ShareItemMember" name="members">
       <key column="shareItemId"/>
       <composite-element class="org.kablink.teaming.domain.ShareItemMember">
-	    <property name="endDate"/>
-	    <property name="recipientType" column="recipient_type" access="field" type="short"/>
-	    <property name="recipientId" column="recipient_id"/>
+	    <property name="endDate" index="endDate_shareitem"/>
+	    <property name="recipientType" column="recipient_type" access="field" type="short" index="recipient_shareitem"/>
+	    <property name="recipientId" column="recipient_id" index="recipient_shareitem"/>
 	    <nested-composite-element name="rightSet" class="org.kablink.teaming.domain.ShareItemMember$RightSet">
 	    	<property name="createEntries" column="right_createEntries"/>
 	    	<property name="modifyEntries" column="right_modifyEntries"/>

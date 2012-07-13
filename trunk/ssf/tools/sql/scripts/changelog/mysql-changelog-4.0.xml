@@ -141,4 +141,82 @@
             <column name="name"/>
         </createIndex>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="12">
+        <createTable tableName="SS_ShareItem">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="lockVersion" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="preDeleted" type="BIT"/>
+            <column name="preDeletedWhen" type="BIGINT"/>
+            <column name="preDeletedBy" type="BIGINT"/>
+            <column name="description_text" type="LONGTEXT"/>
+            <column name="description_format" type="INT"/>
+            <column name="creation_date" type="DATETIME"/>
+            <column name="creation_principal" type="BIGINT"/>
+            <column name="modification_date" type="DATETIME"/>
+            <column name="modification_principal" type="BIGINT"/>
+            <column name="sharedEntity_type" type="VARCHAR(16)"/>
+            <column name="sharedEntity_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="13">
+        <createTable tableName="SS_ShareItemMember">
+            <column name="shareItemId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="endDate" type="DATETIME"/>
+            <column name="recipient_type" type="SMALLINT"/>
+            <column name="recipient_id" type="BIGINT"/>
+            <column name="right_createEntries" type="BIT"/>
+            <column name="right_modifyEntries" type="BIT"/>
+            <column name="right_modifyEntryFields" type="BIT"/>
+            <column name="right_deleteEntries" type="BIT"/>
+            <column name="right_readEntries" type="BIT"/>
+            <column name="right_addReplies" type="BIT"/>
+            <column name="right_generateReports" type="BIT"/>
+            <column name="right_binderAdministration" type="BIT"/>
+            <column name="right_createEntryAcls" type="BIT"/>
+            <column name="right_changeAccessControl" type="BIT"/>
+            <column name="right_createWorkspaces" type="BIT"/>
+            <column name="right_createFolders" type="BIT"/>
+            <column name="right_manageEntryDefs" type="BIT"/>
+            <column name="right_manageWorkflowDefs" type="BIT"/>
+            <column name="right_creatorReadEntries" type="BIT"/>
+            <column name="right_creatorModifyEntries" type="BIT"/>
+            <column name="right_creatorDeleteEntries" type="BIT"/>
+            <column name="right_ownerCreateEntryAcls" type="BIT"/>
+            <column name="right_addTags" type="BIT"/>
+            <column name="right_viewBinderTitle" type="BIT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="14">
+        <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="SS_ShareItem" baseTableSchemaName="sitescape" constraintName="FK8520E45376767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="15">
+        <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="SS_ShareItem" baseTableSchemaName="sitescape" constraintName="FK8520E453BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="16">
+        <addForeignKeyConstraint baseColumnNames="shareItemId" baseTableName="SS_ShareItemMember" baseTableSchemaName="sitescape" constraintName="FKE9B290CD879F5430" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_ShareItem" referencedTableSchemaName="sitescape" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="17">
+        <createIndex indexName="sharedEntity_shareitem" tableName="SS_ShareItem" unique="false">
+            <column name="sharedEntity_type"/>
+            <column name="sharedEntity_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="18">
+        <createIndex indexName="endDate_shareitem" tableName="SS_ShareItemMember" unique="false">
+            <column name="endDate"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="19">
+        <createIndex indexName="recipient_shareitem" tableName="SS_ShareItemMember" unique="false">
+            <column name="recipient_type"/>
+            <column name="recipient_id"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
