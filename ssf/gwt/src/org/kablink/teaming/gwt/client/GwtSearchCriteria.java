@@ -77,6 +77,7 @@ public class GwtSearchCriteria
 		PERSON,
 		PERSONAL_TAGS,
 		PLACES,		// Folders and workspaces.
+		PRINCIPAL,	// Users and Groups
 		TAG,
 		TEAMS,
 		USER,

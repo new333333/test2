@@ -115,8 +115,6 @@ public class ShareThisDlg extends DlgBox
 {
 	private TextBox m_titleTextBox;
 	private TextArea m_msgTextArea;
-	private RadioButton m_usersRB;
-	private RadioButton m_groupsRB;
 	private RadioButton m_viewRB;
 	private RadioButton m_contributorRB;
 	private RadioButton m_ownerRB;
@@ -857,81 +855,8 @@ public class ShareThisDlg extends DlgBox
 		mainCellFormatter = mainTable.getFlexCellFormatter();
 		row = 0;
 		
-		// Add the "Users" and "Groups" radio buttons
-		{
-			FlowPanel rbPanel;
-			
-			mainTable.setText( row, 0, GwtTeaming.getMessages().shareDlg_shareLabel() );
-
-			rbPanel = new FlowPanel();
-			rbPanel.addStyleName( "shareThisFindRBPanel" );
-			mainTable.setWidget( row, 1, rbPanel );
-			mainRowFormatter.setVerticalAlign( row, HasVerticalAlignment.ALIGN_TOP );
-
-			// Add a "Users" radio button.
-			{
-				ClickHandler clickHandler;
-
-				m_usersRB = new RadioButton( "recipient-type", GwtTeaming.getMessages().shareWithUsers() );
-				m_usersRB.setValue( Boolean.TRUE );
-				rbPanel.add( m_usersRB );
-			
-				// Add a click handler for the users rb
-				clickHandler = new ClickHandler()
-				{
-					@Override
-					public void onClick( ClickEvent clickEvent )
-					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								// Set the filter of the Find Control to only search for users.
-								m_findCtrl.setSearchType( SearchType.USER );
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				};
-				m_usersRB.addClickHandler( clickHandler );
-			}
-			
-			// Add a "Groups" radio button
-			{
-				ClickHandler clickHandler;
-
-				m_groupsRB = new RadioButton( "recipient-type", GwtTeaming.getMessages().shareWithGroups() );
-				m_groupsRB.addStyleName( "paddingLeft1em" );
-				rbPanel.add( m_groupsRB );
-
-				// Add a click handler for the groups rb
-				clickHandler = new ClickHandler()
-				{
-					@Override
-					public void onClick( ClickEvent clickEvent )
-					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								// Set the filter of the Find Control to only search for groups.
-								m_findCtrl.setSearchType( SearchType.GROUP );
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				};
-				m_groupsRB.addClickHandler( clickHandler );
-			}
-			
-			++row;
-		}
+		mainTable.setText( row, 0, GwtTeaming.getMessages().shareDlg_shareLabel() );
+		mainCellFormatter.setVerticalAlignment( row, 0, HasVerticalAlignment.ALIGN_MIDDLE );
 
 		// Add the find control.
 		{
@@ -1672,11 +1597,9 @@ public class ShareThisDlg extends DlgBox
 
 		m_msgTextArea.setText( "" );
 		m_findCtrl.setInitialSearchString( "" );
-		m_usersRB.setValue( Boolean.TRUE );
-		m_groupsRB.setValue( Boolean.FALSE );
 
-		// Set the filter of the Find Control to only search for users.
-		m_findCtrl.setSearchType( SearchType.USER );
+		// Set the filter of the Find Control to only search for users and groups.
+		m_findCtrl.setSearchType( SearchType.PRINCIPAL );
 
 		// Remove all of the rows from the table.
 		// We start at row 1 so we don't delete the header.
