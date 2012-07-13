@@ -2262,7 +2262,9 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	      	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
-                    		return session.createQuery("from org.kablink.teaming.domain.ShareItem s join s.members m where s.creation_principal=:sharerId and m.recipientType=:recipientType and m.recipientId=:recipientId")
+	                    	// Don't use alias of the first table to refer to property/column name associated with entity, 
+	                    	// since HQL won't treat it as nicely as it does without alias. 
+                    		return session.createQuery("from org.kablink.teaming.domain.ShareItem s join s.members m where creation_principal=:sharerId and m.recipientType=:recipientType and m.recipientId=:recipientId")
                     				.setLong("sharerId", sharerId)
                     				.setShort("recipientType", recipientType.getValue())
                     				.setLong("recipientId", recipientId)
@@ -2287,7 +2289,9 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	      	List<Object[]> list = (List<Object[]>)getHibernateTemplate().execute(
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
-                    		return session.createQuery("select distinct m.recipientType, m.recipientId from org.kablink.teaming.domain.ShareItem s join s.members m where s.sharedEntity_type=:sharedEntityType and s.sharedEntity_id=:sharedEntityId and m.rightSet.readEntries=:readEntries")
+	                    	// Don't use alias of the first table to refer to property/column name associated with entity, 
+	                    	// since HQL won't treat it as nicely as it does without alias. 
+                    		return session.createQuery("select distinct m.recipientType, m.recipientId from org.kablink.teaming.domain.ShareItem s join s.members m where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId and m.rightSet.readEntries=:readEntries")
                     				.setString("sharedEntityType", sharedEntityIdentifier.getEntityType().name())
                     				.setLong("sharedEntityId", sharedEntityIdentifier.getEntityId())
                     				.setBoolean("readEntries", true)
@@ -2307,9 +2311,9 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	       		recipientType = (Short) o[0];
 	       		recipientId = (Long) o[1];
 	       		try {
-	       			result.get(recipientType).add(recipientId);
+	       			result.get(ShareItemMember.RecipientType.valueOf(recipientType)).add(recipientId);
 	       		}
-	       		catch(NullPointerException e) {
+	       		catch(Exception e) {
 	       			// This means that we encountered an invalid recipient type value in the database. Skip it.
 	       		}
 	       	}

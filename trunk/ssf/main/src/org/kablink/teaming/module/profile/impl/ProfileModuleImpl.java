@@ -2265,7 +2265,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	@Override
 	public void modifyShareItem(ShareItem shareItem) {
 		// Access check?
-		// nothing to do
+		// This should handle both persistent and detached instance.
+		getCoreDao().update(shareItem);
 	}
 	
 	/* (non-Javadoc)

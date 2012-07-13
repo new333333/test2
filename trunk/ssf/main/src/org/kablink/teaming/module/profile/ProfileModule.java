@@ -789,9 +789,24 @@ public interface ProfileModule {
     
     public void setFirstLoginDate(Long userId);
     
+    /**
+     * Add a share item.
+     * 
+     * @param shareItem
+     */
     public void addShareItem(ShareItem shareItem);
     
+    /**
+     * Modify an existing share item.
+     * 
+     * @param shareItem
+     */
     public void modifyShareItem(ShareItem shareItem);
     
+    /**
+     * Delete an existing share item.
+     * 
+     * @param shareItemId
+     */
     public void deleteShareItem(Long shareItemId);
 }
