@@ -110,10 +110,13 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.domain.ZoneInfo;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
+import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtOpenIDAuthenticationProvider;
@@ -4158,6 +4161,91 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * 
+	 * @param request
+	 * @param zoneUUID
+	 * @param folderId
+	 * @param folderTitle
+	 * @return
+	 * @throws GwtTeamingException
+	 */
+	public static GwtFolder getFolderImpl( AllModulesInjected ami, HttpServletRequest request, String zoneUUID, String folderId, String folderTitle ) throws GwtTeamingException
+	{
+		BinderModule binderModule;
+		Binder binder = null;
+		GwtFolder folder = null;
+		Binder parentBinder;
+		
+		try
+		{
+			ZoneInfo zoneInfo;
+			String zoneInfoId;
+			Long folderIdL;
+
+			// Get the id of the zone we are running in.
+			zoneInfo = MiscUtil.getCurrentZone();
+			zoneInfoId = zoneInfo.getId();
+			if ( zoneInfoId == null )
+				zoneInfoId = "";
+
+			binderModule = ami.getBinderModule();
+
+			folderIdL = new Long( folderId );
+			
+			// Are we looking for a folder that was imported from another zone?
+			if ( zoneUUID != null && zoneUUID.length() > 0 && !zoneInfoId.equals( zoneUUID ) )
+			{
+				// Yes, get the folder id for the folder in this zone.
+				folderIdL = binderModule.getZoneBinderId( folderIdL, zoneUUID, EntityType.folder.name() );
+			}
+
+			// Get the binder object.
+			if ( folderIdL != null )
+				binder = binderModule.getBinder( folderIdL );
+			
+			// Initialize the data members of the GwtFolder object.
+			folder = new GwtFolder();
+			if ( folderIdL != null )
+				folder.setFolderId( folderIdL.toString() );
+			if ( binder != null )
+			{
+				String url;
+				Description desc;
+
+				folder.setFolderName( MiscUtil.hasString( folderTitle ) ? folderTitle : binder.getTitle() );
+			
+				parentBinder = binder.getParentBinder();
+				if ( parentBinder != null )
+					folder.setParentBinderName( parentBinder.getPathName() );
+
+				// Create a url that can be used to view this folder.
+				url = PermaLinkUtil.getPermalink( request, binder );
+				folder.setViewFolderUrl( url );
+				
+				desc = binder.getDescription();
+				if ( desc != null )
+				{
+					String descStr;
+					
+					descStr = desc.getText();
+					
+					// Perform any fixups needed on the entry's description
+					descStr = markupStringReplacementImpl( ami, request, folderId, descStr, "view" );
+					
+					folder.setFolderDesc( descStr );
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			throw GwtServerHelper.getGwtTeamingException( e );
+		}
+		
+		return folder;
+	}// end getFolderImpl()
+	
+	
+	/**
 	 * Get the folder sort settings on the specified binder.
 	 * 
 	 */
@@ -6353,6 +6441,46 @@ public class GwtServerHelper {
 		// false.
 		return false;
 	}
+	
+	/*
+	 * Parse the given html and replace any markup with the appropriate url.  For example,
+	 * replace {{attachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
+	 */
+	public static String markupStringReplacementImpl( AllModulesInjected ami, HttpServletRequest request, String binderId, String html, String type ) throws GwtTeamingException
+	{
+		String newHtml;
+		
+		newHtml = "";
+		if ( html != null && html.length() > 0 )
+		{
+			try
+			{
+				Long binderIdL;
+				
+				binderIdL = new Long( binderId );
+				
+				if ( binderIdL != null )
+				{
+					BinderModule binderModule;
+					Binder binder;
+					
+					binderModule = ami.getBinderModule();
+					binder = binderModule.getBinder( binderIdL );
+
+					// Parse the given html and replace any markup with the appropriate url.  For example,
+					// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
+					newHtml = MarkupUtil.markupStringReplacement( null, null, request, null, binder, html, type );
+				}
+			}
+			catch (Exception e)
+			{
+				throw GwtServerHelper.getGwtTeamingException( e );
+			}
+		}
+		
+		return newHtml;
+	}
+	
 	
 	/*
 	 * Merges the expanded Binder list from the current User's
