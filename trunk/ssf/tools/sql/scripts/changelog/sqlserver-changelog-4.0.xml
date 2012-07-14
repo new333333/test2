@@ -141,4 +141,82 @@
             <column name="name"/>
         </createIndex>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="12">
+        <createTable schemaName="dbo" tableName="SS_ShareItem">
+            <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_ShareItem"/>
+            </column>
+            <column name="lockVersion" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="NUMERIC(19,0)"/>
+            <column name="preDeleted" type="TINYINT"/>
+            <column name="preDeletedWhen" type="NUMERIC(19,0)"/>
+            <column name="preDeletedBy" type="NUMERIC(19,0)"/>
+            <column name="description_text" type="NVARCHAR(MAX)"/>
+            <column name="description_format" type="INT"/>
+            <column name="creation_date" type="DATETIME"/>
+            <column name="creation_principal" type="NUMERIC(19,0)"/>
+            <column name="modification_date" type="DATETIME"/>
+            <column name="modification_principal" type="NUMERIC(19,0)"/>
+            <column name="sharedEntity_type" type="VARCHAR(16)"/>
+            <column name="sharedEntity_id" type="NUMERIC(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="13">
+        <createTable schemaName="dbo" tableName="SS_ShareItemMember">
+            <column name="shareItemId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="endDate" type="DATETIME"/>
+            <column name="recipient_type" type="SMALLINT"/>
+            <column name="recipient_id" type="NUMERIC(19,0)"/>
+            <column name="right_createEntries" type="TINYINT"/>
+            <column name="right_modifyEntries" type="TINYINT"/>
+            <column name="right_modifyEntryFields" type="TINYINT"/>
+            <column name="right_deleteEntries" type="TINYINT"/>
+            <column name="right_readEntries" type="TINYINT"/>
+            <column name="right_addReplies" type="TINYINT"/>
+            <column name="right_generateReports" type="TINYINT"/>
+            <column name="right_binderAdministration" type="TINYINT"/>
+            <column name="right_createEntryAcls" type="TINYINT"/>
+            <column name="right_changeAccessControl" type="TINYINT"/>
+            <column name="right_createWorkspaces" type="TINYINT"/>
+            <column name="right_createFolders" type="TINYINT"/>
+            <column name="right_manageEntryDefs" type="TINYINT"/>
+            <column name="right_manageWorkflowDefs" type="TINYINT"/>
+            <column name="right_creatorReadEntries" type="TINYINT"/>
+            <column name="right_creatorModifyEntries" type="TINYINT"/>
+            <column name="right_creatorDeleteEntries" type="TINYINT"/>
+            <column name="right_ownerCreateEntryAcls" type="TINYINT"/>
+            <column name="right_addTags" type="TINYINT"/>
+            <column name="right_viewBinderTitle" type="TINYINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="14">
+        <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="SS_ShareItem" baseTableSchemaName="dbo" constraintName="FK8520E45376767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencedTableSchemaName="dbo" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="15">
+        <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="SS_ShareItem" baseTableSchemaName="dbo" constraintName="FK8520E453BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencedTableSchemaName="dbo" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="16">
+        <addForeignKeyConstraint baseColumnNames="shareItemId" baseTableName="SS_ShareItemMember" baseTableSchemaName="dbo" constraintName="FKE9B290CD879F5430" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_ShareItem" referencedTableSchemaName="dbo" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="17">
+        <createIndex indexName="sharedEntity_shareitem" schemaName="dbo" tableName="SS_ShareItem" unique="false">
+            <column name="sharedEntity_type"/>
+            <column name="sharedEntity_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="18">
+        <createIndex indexName="endDate_shareitem" schemaName="dbo" tableName="SS_ShareItemMember" unique="false">
+            <column name="endDate"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="19">
+        <createIndex indexName="recipient_shareitem" schemaName="dbo" tableName="SS_ShareItemMember" unique="false">
+            <column name="recipient_type"/>
+            <column name="recipient_id"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
