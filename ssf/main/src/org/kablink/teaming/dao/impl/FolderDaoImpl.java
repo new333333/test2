@@ -479,6 +479,14 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 			   			  	.setEntity("folder", folder)
 			   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.name())
 			   				.executeUpdate();
+	 		   			//delete share items whose shared entities are entries in this folder
+	 		   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_id in " + 
+	 			   				"(select p.id from org.kablink.teaming.domain.FolderEntry p where " +
+			   			  			" p.parentBinder=:folder) and sharedEntity_type=:sharedEntityType")
+			   			  	.setEntity("folder", folder)
+			   			  	.setParameter("sharedEntityType", EntityIdentifier.EntityType.folderEntry.name())
+			   				.executeUpdate();
+	 		   			
 	 		   			//brute force delete of jbpm data structures
 	   		   			//load top level tokens
 	 		   		   	Set tokenIds = new HashSet(session.createQuery("select w.tokenId from org.kablink.teaming.domain.WorkflowState w where w.owner.owningBinderId=:id")
@@ -566,6 +574,11 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	     		   			session.createQuery("Delete org.kablink.teaming.domain.SharedEntity where entityId in (:pList) and entityType=:entityType")
 	         	   				.setParameterList("pList", ids)
 	    		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.name())
+	    		   				.executeUpdate();
+	       		   			//delete share items whose shared entities are these entries
+	     		   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_id in (:pList) and sharedEntity_type=:sharedEntityType")
+	         	   				.setParameterList("pList", ids)
+	    		   			  	.setParameter("sharedEntityType", EntityIdentifier.EntityType.folderEntry.name())
 	    		   				.executeUpdate();
 	       		   			//delete subscriptions to these entries
 	     		   			session.createQuery("Delete org.kablink.teaming.domain.Subscription where entityId in (:pList) and entityType=:entityType")
