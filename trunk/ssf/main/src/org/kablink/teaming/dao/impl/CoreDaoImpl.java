@@ -107,6 +107,7 @@ import org.kablink.teaming.domain.NoZoneByTheIdException;
 import org.kablink.teaming.domain.NotifyStatus;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
+import org.kablink.teaming.domain.ShareItemMember;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
@@ -437,6 +438,16 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 			   			session.createQuery("Delete org.kablink.teaming.domain.SharedEntity where accessId=:accessId and accessType=:accessType")
 		   				.setLong("accessId", binder.getId())
 		   				.setParameter("accessType", SharedEntity.ACCESS_TYPE_TEAM)
+		   				.executeUpdate();
+			   			//delete share items where shared entity is this binder
+			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
+                    	.setString("sharedEntityType", binder.getEntityType().name())
+                    	.setLong("sharedEntityId", binder.getId())
+		   				.executeUpdate();
+			   			//delete share item members where recipient is this team
+			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItemMember where recipient_type=:recipientType and recipient_id=:recipientId")
+                    	.setShort("recipientType", ShareItemMember.RecipientType.team.getValue())
+                    	.setLong("recipientId", binder.getId())
 		   				.executeUpdate();
 			   			//delete tags on this binder
 			   			session.createQuery("Delete org.kablink.teaming.domain.Tag where entity_id=:entityId and entity_type=:entityType")

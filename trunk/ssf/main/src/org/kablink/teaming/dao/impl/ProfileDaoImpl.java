@@ -208,6 +208,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			   				.executeUpdate();
 			   			session.createQuery("Delete org.kablink.teaming.domain.SharedEntity where zoneId=" + binder.getZoneId())
 		   				.executeUpdate();
+			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where zoneId=" + binder.getZoneId())
+		   				.executeUpdate();
 			   		/*Pre zoneId on each item
 	  
 	 		   			session.createQuery("Delete org.kablink.teaming.domain.SeenMap where principalId in " + 
@@ -380,6 +382,14 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		   					.setParameterList("pList", ids)
 		   				.setParameter("accessType", SharedEntity.ACCESS_TYPE_PRINCIPAL)
 		   				.executeUpdate();
+			   			//delete share item members where recipients are these principals
+			   			List<Short> accessTypes = new ArrayList<Short>();
+			   			accessTypes.add(ShareItemMember.RecipientType.user.getValue());
+			   			accessTypes.add(ShareItemMember.RecipientType.group.getValue());
+			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItemMember where recipientId in (:pList) and recipientType in (:aList)")
+	   					.setParameterList("pList", ids)
+	   					.setParameterList("aList", accessTypes)
+	   					.executeUpdate();
 	
 	 		   			List types = new ArrayList();
 		       			types.add(EntityIdentifier.EntityType.user.name());
