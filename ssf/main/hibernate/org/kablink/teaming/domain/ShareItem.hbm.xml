@@ -4,7 +4,9 @@
 <hibernate-mapping auto-import="false">
   <class table="SS_ShareItem" discriminator-value="A" name="org.kablink.teaming.domain.ShareItem">
     <id unsaved-value="null" name="id" type="long">
-      <generator class="native"/>
+      <generator class="native">
+      	<param name="sequence">ss_shareitem_id_sequence</param>
+      </generator>
     </id>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <property name="zoneId" access="field"/>

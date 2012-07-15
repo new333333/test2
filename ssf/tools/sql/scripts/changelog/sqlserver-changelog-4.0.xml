@@ -153,7 +153,7 @@
             <column name="preDeleted" type="TINYINT"/>
             <column name="preDeletedWhen" type="NUMERIC(19,0)"/>
             <column name="preDeletedBy" type="NUMERIC(19,0)"/>
-            <column name="description_text" type="NVARCHAR(MAX)"/>
+            <column name="description_text" type="NTEXT"/>
             <column name="description_format" type="INT"/>
             <column name="creation_date" type="DATETIME"/>
             <column name="creation_principal" type="NUMERIC(19,0)"/>
