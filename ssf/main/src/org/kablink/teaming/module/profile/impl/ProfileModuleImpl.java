@@ -2284,6 +2284,24 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			// already gone, ok
 		}
 	}
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.profile.ProfileModule#getShareItem(java.lang.Long)
+	 */
+	@Override
+	public ShareItem getShareItem(Long shareItemId)
+			throws NoShareItemByTheIdException {
+		// Access check?
+		return getProfileDao().loadShareItem(shareItemId);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.profile.ProfileModule#getShareItems(java.util.Collection)
+	 */
+	@Override
+	public List<ShareItem> getShareItems(Collection<Long> shareItemIds) {
+		// Access check?
+		return getProfileDao().loadShareItems(shareItemIds);
+	}
     
 }
 

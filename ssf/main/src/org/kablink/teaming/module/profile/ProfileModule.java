@@ -55,6 +55,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.IndividualPrincipal;
+import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -809,4 +810,26 @@ public interface ProfileModule {
      * @param shareItemId
      */
     public void deleteShareItem(Long shareItemId);
+    
+ 	/**
+ 	 * Get a share item by id.
+ 	 * If the object is not found, it throws <code>NoShareItemByTheIdException</code>.
+ 	 * 
+ 	 * @param shareItemId
+ 	 * @return
+ 	 * @throws NoShareItemByTheIdException
+ 	 */
+ 	public ShareItem getShareItem(Long shareItemId) throws NoShareItemByTheIdException;
+ 	
+ 	/**
+ 	 * Get a list of share items by their ids.
+ 	 * Unlike <code>getShareItem</code> method, this method does not return error when
+ 	 * not all of the objects are found by the specified ids. Instead, it will only return
+ 	 * those objects successfully found.
+ 	 * 
+ 	 * @param shareItemIds
+ 	 * @return
+ 	 */
+ 	public List<ShareItem> getShareItems(Collection<Long> shareItemIds); 
+
 }
