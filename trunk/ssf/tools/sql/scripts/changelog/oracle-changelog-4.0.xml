@@ -141,4 +141,85 @@
             <column name="NAME"/>
         </createIndex>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="12">
+        <createTable tableName="SS_SHAREITEM">
+            <column name="ID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_SHAREITEM"/>
+            </column>
+            <column name="LOCKVERSION" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="PREDELETED" type="NUMBER(1,0)"/>
+            <column name="PREDELETEDWHEN" type="NUMBER(19,0)"/>
+            <column name="PREDELETEDBY" type="NUMBER(19,0)"/>
+            <column name="DESCRIPTION_TEXT" type="CLOB"/>
+            <column name="DESCRIPTION_FORMAT" type="NUMBER(10,0)"/>
+            <column name="CREATION_DATE" type="TIMESTAMP(6)"/>
+            <column name="CREATION_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="MODIFICATION_DATE" type="TIMESTAMP(6)"/>
+            <column name="MODIFICATION_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="SHAREDENTITY_TYPE" type="VARCHAR2(16 CHAR)"/>
+            <column name="SHAREDENTITY_ID" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="13">
+        <createTable tableName="SS_SHAREITEMMEMBER">
+            <column name="SHAREITEMID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENDDATE" type="TIMESTAMP(6)"/>
+            <column name="RECIPIENT_TYPE" type="NUMBER(2,0)"/>
+            <column name="RECIPIENT_ID" type="NUMBER(19,0)"/>
+            <column name="RIGHT_CREATEENTRIES" type="NUMBER(1,0)"/>
+            <column name="RIGHT_MODIFYENTRIES" type="NUMBER(1,0)"/>
+            <column name="RIGHT_MODIFYENTRYFIELDS" type="NUMBER(1,0)"/>
+            <column name="RIGHT_DELETEENTRIES" type="NUMBER(1,0)"/>
+            <column name="RIGHT_READENTRIES" type="NUMBER(1,0)"/>
+            <column name="RIGHT_ADDREPLIES" type="NUMBER(1,0)"/>
+            <column name="RIGHT_GENERATEREPORTS" type="NUMBER(1,0)"/>
+            <column name="RIGHT_BINDERADMINISTRATION" type="NUMBER(1,0)"/>
+            <column name="RIGHT_CREATEENTRYACLS" type="NUMBER(1,0)"/>
+            <column name="RIGHT_CHANGEACCESSCONTROL" type="NUMBER(1,0)"/>
+            <column name="RIGHT_CREATEWORKSPACES" type="NUMBER(1,0)"/>
+            <column name="RIGHT_CREATEFOLDERS" type="NUMBER(1,0)"/>
+            <column name="RIGHT_MANAGEENTRYDEFS" type="NUMBER(1,0)"/>
+            <column name="RIGHT_MANAGEWORKFLOWDEFS" type="NUMBER(1,0)"/>
+            <column name="RIGHT_CREATORREADENTRIES" type="NUMBER(1,0)"/>
+            <column name="RIGHT_CREATORMODIFYENTRIES" type="NUMBER(1,0)"/>
+            <column name="RIGHT_CREATORDELETEENTRIES" type="NUMBER(1,0)"/>
+            <column name="RIGHT_OWNERCREATEENTRYACLS" type="NUMBER(1,0)"/>
+            <column name="RIGHT_ADDTAGS" type="NUMBER(1,0)"/>
+            <column name="RIGHT_VIEWBINDERTITLE" type="NUMBER(1,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="14">
+        <addForeignKeyConstraint baseColumnNames="CREATION_PRINCIPAL" baseTableName="SS_SHAREITEM" constraintName="FK8520E45376767782" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="15">
+        <addForeignKeyConstraint baseColumnNames="MODIFICATION_PRINCIPAL" baseTableName="SS_SHAREITEM" constraintName="FK8520E453BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="16">
+        <addForeignKeyConstraint baseColumnNames="SHAREITEMID" baseTableName="SS_SHAREITEMMEMBER" constraintName="FKE9B290CD879F5430" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_SHAREITEM" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="17">
+        <createIndex indexName="SHAREDENTITY_SHAREITEM" tableName="SS_SHAREITEM" unique="false">
+            <column name="SHAREDENTITY_TYPE"/>
+            <column name="SHAREDENTITY_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="18">
+        <createIndex indexName="ENDDATE_SHAREITEM" tableName="SS_SHAREITEMMEMBER" unique="false">
+            <column name="ENDDATE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="19">
+        <createIndex indexName="RECIPIENT_SHAREITEM" tableName="SS_SHAREITEMMEMBER" unique="false">
+            <column name="RECIPIENT_TYPE"/>
+            <column name="RECIPIENT_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="20">
+        <createSequence sequenceName="SS_SHAREITEM_ID_SEQUENCE"/>
+    </changeSet>
 </databaseChangeLog>
