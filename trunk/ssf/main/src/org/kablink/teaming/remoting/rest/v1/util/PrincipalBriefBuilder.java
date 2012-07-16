@@ -50,9 +50,6 @@ public abstract class PrincipalBriefBuilder extends DefinableEntityBriefBuilder 
     public void populatePrincipalBrief(PrincipalBrief model, Map entry) {
         populateDefinableEntityBrief(model, entry, Constants.BINDER_ID_FIELD);
         model.setName((String) entry.get(Constants.LOGINNAME_FIELD));
-        SearchFieldResult result = (SearchFieldResult) entry.get(Constants.EMAIL_FIELD);
-        if (result!=null) {
-            model.setEmailAddress(result.getValueSet().iterator().next());
-        }
+        model.setEmailAddress(getString(entry, Constants.EMAIL_FIELD));
     }
 }
