@@ -35,12 +35,12 @@ package org.kablink.teaming.remoting.rest.v1.util;
 import net.fortuna.ical4j.data.ParserException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.rest.v1.model.CustomField;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
+import org.kablink.teaming.rest.v1.model.Description;
 import org.kablink.teaming.rest.v1.model.Locale;
 import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.util.DateUtil;
@@ -214,8 +214,8 @@ public class RestModelInputData implements InputDataAccessor {
 		return null;
 	}
 
-	public Description getDescriptionValue(String key) {
-		return new Description(getSingleValue(key));
+	public org.kablink.teaming.domain.Description getDescriptionValue(String key) {
+		return new org.kablink.teaming.domain.Description(getSingleValue(key));
 	}
 
 	public String[] getValues(String key) {
