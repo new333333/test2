@@ -2299,7 +2299,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
  	}
  	
 	@Override
- 	public Map<ShareItemMember.RecipientType, Set<Long>> getMemberIdsWithReadAccessToSharedEntity(final EntityIdentifier sharedEntityIdentifier) {
+ 	public Map<ShareItemMember.RecipientType, Set<Long>> getMemberIdsWithGrantedRightToSharedEntity(final EntityIdentifier sharedEntityIdentifier, final String rightName) {
 		if(sharedEntityIdentifier == null)
 			throw new IllegalArgumentException("shared entity identifier must be specified");
 		long begin = System.nanoTime();
@@ -2309,12 +2309,11 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    public Object doInHibernate(Session session) throws HibernateException {
 	                    	// Don't use alias of the first table to refer to property/column name associated with entity, 
 	                    	// since HQL won't treat it as nicely as it does without alias. 
-                    		return session.createQuery("select distinct m.recipientType, m.recipientId from org.kablink.teaming.domain.ShareItem s join s.members m where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId and m.rightSet.readEntries=:readEntries")
+                    		return session.createQuery("select distinct m.recipientType, m.recipientId from org.kablink.teaming.domain.ShareItem s join s.members m where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId and m.rightSet." + rightName + "=:rightValue")
                     				.setString("sharedEntityType", sharedEntityIdentifier.getEntityType().name())
                     				.setLong("sharedEntityId", sharedEntityIdentifier.getEntityId())
-                    				.setBoolean("readEntries", true)
+                    				.setBoolean("rightValue", true)
                     				.list();
-
 	                    }
 	                }
 	            );

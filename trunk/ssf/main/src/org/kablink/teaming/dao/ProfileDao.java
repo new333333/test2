@@ -306,7 +306,8 @@ public interface ProfileDao {
  	 * Return IDs of users, groups, and teams that are granted read access to the specified entity.
  	 * 
  	 * @param sharedEntityIdentifier
+ 	 * @param rightName
  	 * @return
  	 */
- 	public Map<ShareItemMember.RecipientType, Set<Long>> getMemberIdsWithReadAccessToSharedEntity(EntityIdentifier sharedEntityIdentifier);
+ 	public Map<ShareItemMember.RecipientType, Set<Long>> getMemberIdsWithGrantedRightToSharedEntity(EntityIdentifier sharedEntityIdentifier, String rightName);
  }
