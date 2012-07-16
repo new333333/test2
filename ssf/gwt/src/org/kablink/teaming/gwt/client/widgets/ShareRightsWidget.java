@@ -39,8 +39,8 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.SetShareRightsEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.RecipientType;
-import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareInfo;
+import org.kablink.teaming.gwt.client.util.GwtRecipientType;
+import org.kablink.teaming.gwt.client.util.GwtShareItemMember;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -58,7 +58,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class ShareRightsWidget extends Composite
 	implements ClickHandler, SetShareRightsEvent.Handler
 {
-	private ShareInfo m_shareInfo;
+	private GwtShareItemMember m_shareInfo;
 	private InlineLabel m_rightsLabel;
 	private Image m_rightsImg;
 
@@ -79,7 +79,7 @@ public class ShareRightsWidget extends Composite
 	/**
 	 * 
 	 */
-	public ShareRightsWidget( ShareInfo shareInfo )
+	public ShareRightsWidget( GwtShareItemMember shareInfo )
 	{
 		ImageResource imageResource;
 		
@@ -170,13 +170,13 @@ public class ShareRightsWidget extends Composite
 	@Override
 	public void onSetShareRights( SetShareRightsEvent event )
 	{
-		ShareInfo targetShareInfo;
+		GwtShareItemMember targetShareInfo;
 		
 		targetShareInfo = event.getShareInfo();
 		if ( m_shareInfo != null && targetShareInfo != null )
 		{
 			String name;
-			RecipientType type;
+			GwtRecipientType type;
 			
 			name = m_shareInfo.getRecipientName();
 			type = m_shareInfo.getRecipientType();

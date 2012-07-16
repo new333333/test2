@@ -52,13 +52,18 @@ import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSharingInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseData;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.GwtRecipientType;
+import org.kablink.teaming.gwt.client.util.GwtShareItemMember;
+import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
+import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.ShareExpirationDlg.ShareExpirationDlgClient;
@@ -81,7 +86,6 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -129,9 +133,11 @@ public class ShareThisDlg extends DlgBox
 	private FlowPanel m_shareTablePanel;
 	private FlexCellFormatter m_shareCellFormatter;
 	private List<EntityId> m_entityIds;
+	private GwtSharingInfo m_sharingInfo;		// Holds all of the sharing info for the entities we are working with.
 	private List<HandlerRegistration> m_registeredEventHandlers;
 	private AsyncCallback<VibeRpcResponse> m_readTeamsCallback;
 	private AsyncCallback<VibeRpcResponse> m_shareEntryCallback;
+	private AsyncCallback<VibeRpcResponse> m_getSharingInfoCallback;
 	private String m_title;
 	private UIObject m_target;
 	private ShareExpirationValue m_defaultShareExpirationValue;
@@ -190,201 +196,20 @@ public class ShareThisDlg extends DlgBox
 	}
 
 	/**
-	 * This class represents the different share rights
-	 */
-	public enum ShareRights implements IsSerializable
-	{
-		VIEW,
-		CONTRIBUTOR,
-		OWNER,
-		
-		UNKNOWN
-	}
-	
-	/**
-	 * This class represents the different types of recipients.
-	 */
-	public enum RecipientType implements IsSerializable
-	{
-		USER,
-		GROUP,
-		EXTERNAL_USER,
-		TEAM,
-		
-		UNKNOWN,
-	}
-
-	
-	/**
-	 * This class is used to hold information about a share
-	 */
-	public class ShareInfo
-	{
-		private Long m_shareId;
-		private String m_recipientName;
-		private String m_recipientId;
-		private RecipientType m_recipientType;
-		private ShareRights m_shareRights;
-		private ShareExpirationValue m_shareExpirationValue;
-		
-		/**
-		 * 
-		 */
-		public ShareInfo()
-		{
-			m_shareId = null;
-			m_recipientName = null;
-			m_recipientId = null;
-			m_recipientType = RecipientType.UNKNOWN;
-			m_shareRights = ShareRights.VIEW;
-			m_shareExpirationValue = null;
-		}
-		
-		/**
-		 * 
-		 */
-		public String getRecipientId()
-		{
-			return m_recipientId;
-		}
-		
-		/**
-		 * 
-		 */
-		public String getRecipientName()
-		{
-			return m_recipientName;
-		}
-
-		/**
-		 * 
-		 */
-		public ShareExpirationValue getShareExpirationValue()
-		{
-			return m_shareExpirationValue;
-		}
-		
-		/**
-		 * 
-		 */
-		public String getShareExpirationValueAsString()
-		{
-			if ( m_shareExpirationValue != null )
-				return m_shareExpirationValue.getValueAsString();
-			
-			return "";
-		}
-		
-		/**
-		 * 
-		 */
-		public ShareRights getShareRights()
-		{
-			return m_shareRights;
-		}
-		
-		/**
-		 * 
-		 */
-		public String getShareRightsAsString()
-		{
-			if ( m_shareRights == ShareRights.VIEW )
-				return GwtTeaming.getMessages().shareDlg_view();
-			
-			if ( m_shareRights == ShareRights.CONTRIBUTOR )
-				return GwtTeaming.getMessages().shareDlg_contributor();
-			
-			if ( m_shareRights == ShareRights.OWNER )
-				return GwtTeaming.getMessages().shareDlg_owner();
-			
-			return "Unknown";
-		}
-		
-		/**
-		 * 
-		 */
-		public RecipientType getRecipientType()
-		{
-			return m_recipientType;
-		}
-		
-		/**
-		 * 
-		 */
-		public String getRecipientTypeAsString()
-		{
-			if ( m_recipientType == RecipientType.USER )
-				return GwtTeaming.getMessages().shareRecipientTypeUser();
-			
-			if ( m_recipientType == RecipientType.GROUP )
-				return GwtTeaming.getMessages().shareRecipientTypeGroup();
-			
-			if ( m_recipientType == RecipientType.EXTERNAL_USER )
-				return GwtTeaming.getMessages().shareRecipientTypeExternalUser();
-			
-			if ( m_recipientType == RecipientType.TEAM )
-				return GwtTeaming.getMessages().shareRecipientTypeTeam();
-			
-			return GwtTeaming.getMessages().unknownShareType();
-		}
-		
-		/**
-		 * 
-		 */
-		public void setRecipientId( String id )
-		{
-			m_recipientId = id;
-		}
-		
-		/**
-		 * 
-		 */
-		public void setRecipientName( String name )
-		{
-			m_recipientName = name;
-		}
-		
-		/**
-		 * 
-		 */
-		public void setShareExpirationValue( ShareExpirationValue value )
-		{
-			m_shareExpirationValue = new ShareExpirationValue( value );
-		}
-		
-		/**
-		 * 
-		 */
-		public void setShareRights( ShareRights shareRights )
-		{
-			m_shareRights = shareRights;
-		}
-		
-		/**
-		 * 
-		 */
-		public void setRecipientType( RecipientType type )
-		{
-			m_recipientType = type;
-		}
-	}
-	
-	
-	/**
 	 * This widget is used to display a recipient's name.  If the recipient is a group
 	 * then the user can click on the name and see the members of the group.
 	 */
 	private class RecipientNameWidget extends Composite
 		implements ClickHandler, MouseOverHandler, MouseOutHandler
 	{
-		private ShareInfo m_shareInfo;
+		private GwtShareItemMember m_shareInfo;
 		private InlineLabel m_nameLabel;
 		private GroupMembershipPopup m_groupMembershipPopup;
 		
 		/**
 		 * 
 		 */
-		public RecipientNameWidget( ShareInfo shareInfo )
+		public RecipientNameWidget( GwtShareItemMember shareInfo )
 		{
 			FlowPanel panel;
 			
@@ -396,7 +221,7 @@ public class ShareThisDlg extends DlgBox
 			panel.add( m_nameLabel );
 			
 			// If we are dealing with a group, let the user click on the group.
-			if ( shareInfo.getRecipientType() == RecipientType.GROUP )
+			if ( shareInfo.getRecipientType() == GwtRecipientType.GROUP )
 			{
 				m_nameLabel.addClickHandler( this );
 				m_nameLabel.addMouseOverHandler( this );
@@ -430,7 +255,7 @@ public class ShareThisDlg extends DlgBox
 															false,
 															false,
 															m_shareInfo.getRecipientName(),
-															m_shareInfo.getRecipientId() );
+															m_shareInfo.getRecipientId().toString() );
 			}
 			
 			m_groupMembershipPopup.setPopupPosition( getAbsoluteLeft(), getAbsoluteTop() );
@@ -464,7 +289,7 @@ public class ShareThisDlg extends DlgBox
 	private class ShareExpirationWidget extends Composite
 		implements ClickHandler
 	{
-		private ShareInfo m_shareInfo;
+		private GwtShareItemMember m_shareInfo;
 		private InlineLabel m_expiresLabel;
 		private Image m_img;
 		private EditSuccessfulHandler m_editShareExpirationHandler;
@@ -472,7 +297,7 @@ public class ShareThisDlg extends DlgBox
 		/**
 		 * 
 		 */
-		public ShareExpirationWidget( ShareInfo shareInfo )
+		public ShareExpirationWidget( GwtShareItemMember shareInfo )
 		{
 			ImageResource imageResource;
 			
@@ -583,12 +408,12 @@ public class ShareThisDlg extends DlgBox
 	private class RemoveShareWidget extends Composite
 		implements ClickHandler
 	{
-		private ShareInfo m_shareInfo;
+		private GwtShareItemMember m_shareInfo;
 		
 		/**
 		 * 
 		 */
-		public RemoveShareWidget( ShareInfo shareInfo )
+		public RemoveShareWidget( GwtShareItemMember shareInfo )
 		{
 			FlowPanel panel;
 			Image delImg;
@@ -611,7 +436,7 @@ public class ShareThisDlg extends DlgBox
 		/**
 		 * 
 		 */
-		public ShareInfo getShareInfo()
+		public GwtShareItemMember getShareInfo()
 		{
 			return m_shareInfo;
 		}
@@ -680,7 +505,7 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * Add the given share to the end of the table that holds the list of shares
 	 */
-	private void addShare( ShareInfo shareInfo )
+	private void addShare( GwtShareItemMember shareInfo )
 	{
 		String type;
 		int row;
@@ -1339,11 +1164,11 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * Find the given recipient in the table that holds the recipients.
 	 */
-	private int findShareByRecipientName( ShareInfo shareInfo )
+	private int findShareByRecipientName( GwtShareItemMember shareInfo )
 	{
 		int i;
 		String name;
-		RecipientType type;
+		GwtRecipientType type;
 		
 		name = shareInfo.getRecipientName();
 		type = shareInfo.getRecipientType();
@@ -1358,7 +1183,7 @@ public class ShareThisDlg extends DlgBox
 			widget = m_shareTable.getWidget( i, 4 );
 			if ( widget != null && widget instanceof RemoveShareWidget )
 			{
-				ShareInfo nextShareInfo;
+				GwtShareItemMember nextShareInfo;
 				
 				nextShareInfo = ((RemoveShareWidget) widget).getShareInfo();
 				if ( nextShareInfo != null )
@@ -1447,12 +1272,12 @@ public class ShareThisDlg extends DlgBox
 				widget = m_shareTable.getWidget( i, 4 );
 				if ( widget != null && widget instanceof RemoveShareWidget )
 				{
-					ShareInfo nextShareInfo;
+					GwtShareItemMember nextShareInfo;
 					
 					nextShareInfo = ((RemoveShareWidget) widget).getShareInfo();
 					if ( nextShareInfo != null )
 					{
-						recipientIds.add( nextShareInfo.getRecipientId() );
+						recipientIds.add( nextShareInfo.getRecipientId().toString() );
 					}
 				}
 			}
@@ -1525,14 +1350,14 @@ public class ShareThisDlg extends DlgBox
 
 		if ( emailAddress != null && emailAddress.length() > 0 )
 		{
-			ShareInfo shareInfo;
+			GwtShareItemMember shareInfo;
 			
 			// Clear what the user has typed.
 			m_findCtrl.clearText();
 			
-			shareInfo = new ShareInfo();
+			shareInfo = new GwtShareItemMember();
 			shareInfo.setRecipientName( emailAddress );
-			shareInfo.setRecipientType( RecipientType.EXTERNAL_USER );
+			shareInfo.setRecipientType( GwtRecipientType.EXTERNAL_USER );
 			shareInfo.setShareRights( getSelectedShareRights() );
 			shareInfo.setShareExpirationValue( m_defaultShareExpirationValue );
 			//!!! Finish
@@ -1583,7 +1408,8 @@ public class ShareThisDlg extends DlgBox
 	 */
 	private void init()
 	{
-		GetMyTeamsCmd cmd;
+		GetSharingInfoCmd rpcCmd1;
+		GetMyTeamsCmd rpcCmd2;
 		
 		if ( GwtClientHelper.hasString( m_title ))
 		{
@@ -1636,27 +1462,80 @@ public class ShareThisDlg extends DlgBox
 				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
-					List<TeamInfo> listOfTeams;
+					final List<TeamInfo> listOfTeams;
 					GetMyTeamsRpcResponseData responseData;
+					Scheduler.ScheduledCommand cmd;
 					
 					responseData = (GetMyTeamsRpcResponseData) response.getResponseData();
 					listOfTeams = responseData.getTeams();
 					
-					// Update the dialog with the list of teams.
-					updateListOfTeams( listOfTeams );
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							// Update the dialog with the list of teams.
+							updateListOfTeams( listOfTeams );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 			};
 		}
 		
+		if ( m_getSharingInfoCallback == null )
+		{
+			// Create a callback that will be used when we read the sharing information.
+			m_getSharingInfoCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+							t,
+							GwtTeaming.getMessages().rpcFailure_GetSharingInfo() );
+				}
+				
+				/**
+				 * 
+				 */
+				@Override
+				public void onSuccess( VibeRpcResponse response )
+				{
+					final GwtSharingInfo sharingInfo;
+					Scheduler.ScheduledCommand cmd;
+					
+					sharingInfo = (GwtSharingInfo) response.getResponseData();
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							updateSharingInfo( sharingInfo );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+		}
+		
+		// Issue an rpc request to get the share information for the entities we are working with.
+		rpcCmd1 = new GetSharingInfoCmd( m_entityIds );
+		GwtClientHelper.executeCommand( rpcCmd1, m_getSharingInfoCallback );
+
 		// Issue an rpc request to get the teams this user is a member of.
-		cmd = new GetMyTeamsCmd();
-		GwtClientHelper.executeCommand( cmd, m_readTeamsCallback );
+		rpcCmd2 = new GetMyTeamsCmd();
+		GwtClientHelper.executeCommand( rpcCmd2, m_readTeamsCallback );
 	}
 
 	/**
 	 * Remove the given share from the table
 	 */
-	public void removeShare( ShareInfo shareInfo )
+	public void removeShare( GwtShareItemMember shareInfo )
 	{
 		int row;
 		
@@ -1752,6 +1631,27 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
+	 * Update the sharing information with the given information
+	 */
+	private void updateSharingInfo( GwtSharingInfo sharingInfo )
+	{
+		m_sharingInfo = sharingInfo;
+		if ( sharingInfo != null )
+		{
+			ArrayList<GwtShareItemMember> listOfShareItemMembers;
+			
+			listOfShareItemMembers = sharingInfo.getListOfShareItemMembers();
+			if ( listOfShareItemMembers != null )
+			{
+				for (GwtShareItemMember nextShareItemMember : listOfShareItemMembers)
+				{
+					addShare( nextShareItemMember );
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Called when the dialog is attached.
 	 * 
 	 * Overrides the Widget.onAttach() method.
@@ -1805,7 +1705,7 @@ public class ShareThisDlg extends DlgBox
 			@Override
 			public void execute() 
 			{
-				ShareInfo shareInfo = null;
+				GwtShareItemMember shareInfo = null;
 				
 				// Are we dealing with a User?
 				if ( selectedObj instanceof GwtUser )
@@ -1815,10 +1715,10 @@ public class ShareThisDlg extends DlgBox
 					// Yes
 					user = (GwtUser) selectedObj;
 					
-					shareInfo = new ShareInfo();
+					shareInfo = new GwtShareItemMember();
 					shareInfo.setRecipientName( user.getShortDisplayName() );
-					shareInfo.setRecipientType( RecipientType.USER );
-					shareInfo.setRecipientId( user.getUserId() );
+					shareInfo.setRecipientType( GwtRecipientType.USER );
+					shareInfo.setRecipientId( Long.valueOf( user.getUserId() ) );
 				}
 				// Are we dealing with a group?
 				else if ( selectedObj instanceof GwtGroup )
@@ -1828,10 +1728,10 @@ public class ShareThisDlg extends DlgBox
 					// Yes
 					group = (GwtGroup) selectedObj;
 					
-					shareInfo = new ShareInfo();
+					shareInfo = new GwtShareItemMember();
 					shareInfo.setRecipientName( group.getShortDisplayName() );
-					shareInfo.setRecipientType( RecipientType.GROUP );
-					shareInfo.setRecipientId( group.getId() );
+					shareInfo.setRecipientType( GwtRecipientType.GROUP );
+					shareInfo.setRecipientId( Long.valueOf( group.getId() ) );
 				}
 
 				// Do we have an object to add to our list of shares?
