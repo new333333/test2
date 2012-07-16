@@ -208,8 +208,16 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			   				.executeUpdate();
 			   			session.createQuery("Delete org.kablink.teaming.domain.SharedEntity where zoneId=" + binder.getZoneId())
 		   				.executeUpdate();
+			   			//delete share items and share item members			   			
+			   			//it's important to delete share item members first due to foreign key constraint
+	    	   			String sql = SPropsUtil.getString("delete.shareitemmember.query4." + DynamicDialect.getDatabaseType().name(), 
+	    	   					"DELETE sim FROM SS_ShareItemMember sim INNER JOIN SS_ShareItem si ON sim.shareItemId=si.id WHERE si.zoneId=:zoneId");
+	    	   			session.createSQLQuery(sql)
+                    	.setLong("zoneId", binder.getZoneId())
+		   				.executeUpdate();
 			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where zoneId=" + binder.getZoneId())
 		   				.executeUpdate();
+			   			
 			   		/*Pre zoneId on each item
 	  
 	 		   			session.createQuery("Delete org.kablink.teaming.domain.SeenMap where principalId in " + 

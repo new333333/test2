@@ -71,6 +71,8 @@ import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.util.Constants;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.util.dao.hibernate.DynamicDialect;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
@@ -479,14 +481,20 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 			   			  	.setEntity("folder", folder)
 			   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.name())
 			   				.executeUpdate();
-	 		   			//delete share items whose shared entities are entries in this folder
+	 		   			//delete share items and associated share item members whose shared entities are entries in this folder
+			   			//it's important to delete share item members first due to foreign key constraint
+	    	   			String sql = SPropsUtil.getString("delete.shareitemmember.query2." + DynamicDialect.getDatabaseType().name(), 
+	    	   					"DELETE sim FROM SS_ShareItemMember sim INNER JOIN SS_ShareItem si ON sim.shareItemId=si.id WHERE si.sharedEntity_type=:sharedEntityType and si.sharedEntity_id in (select fe.id from SS_FolderEntries fe where fe.parentBinder=:folderId)");
+	    	   			session.createSQLQuery(sql)
+                    	.setString("sharedEntityType", EntityIdentifier.EntityType.folderEntry.name())
+                    	.setLong("folderId", folder.getId())
+		   				.executeUpdate();
 	 		   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_id in " + 
 	 			   				"(select p.id from org.kablink.teaming.domain.FolderEntry p where " +
 			   			  			" p.parentBinder=:folder) and sharedEntity_type=:sharedEntityType")
 			   			  	.setEntity("folder", folder)
 			   			  	.setParameter("sharedEntityType", EntityIdentifier.EntityType.folderEntry.name())
-			   				.executeUpdate();
-	 		   			
+			   				.executeUpdate(); 		   			
 	 		   			//brute force delete of jbpm data structures
 	   		   			//load top level tokens
 	 		   		   	Set tokenIds = new HashSet(session.createQuery("select w.tokenId from org.kablink.teaming.domain.WorkflowState w where w.owner.owningBinderId=:id")
@@ -575,7 +583,14 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	         	   				.setParameterList("pList", ids)
 	    		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.name())
 	    		   				.executeUpdate();
-	       		   			//delete share items whose shared entities are these entries
+	       		   			//delete share items and share item members whose shared entities are these entries
+				   			//it's important to delete share item members first due to foreign key constraint
+		    	   			String sql = SPropsUtil.getString("delete.shareitemmember.query3." + DynamicDialect.getDatabaseType().name(), 
+		    	   					"DELETE sim FROM SS_ShareItemMember sim INNER JOIN SS_ShareItem si ON sim.shareItemId=si.id WHERE si.sharedEntity_type=:sharedEntityType and si.sharedEntity_id in (:sharedEntityIds)");
+		    	   			session.createSQLQuery(sql)
+	                    	.setString("sharedEntityType", EntityIdentifier.EntityType.folderEntry.name())
+	                    	.setParameterList("sharedEntityIds", ids)
+			   				.executeUpdate();
 	     		   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_id in (:pList) and sharedEntity_type=:sharedEntityType")
 	         	   				.setParameterList("pList", ids)
 	    		   			  	.setParameter("sharedEntityType", EntityIdentifier.EntityType.folderEntry.name())
