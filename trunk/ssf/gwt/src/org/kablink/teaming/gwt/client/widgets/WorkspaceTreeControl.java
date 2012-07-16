@@ -749,9 +749,9 @@ public class WorkspaceTreeControl extends ResizeComposite
 	 * @return
 	 */
 	public static boolean showNavigationTrees() {
-		// We show the navigation tree for all license modes except
-		// Filr.
-		return (!(GwtClientHelper.isLicenseFilr()));
+		// We always show the navigation trees for site administrators
+		// as well as for all license modes except Filr.
+		return (GwtClientHelper.isSiteAdmin() || (!(GwtClientHelper.isLicenseFilr())));
 	}
 	
 	/**

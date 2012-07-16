@@ -56,6 +56,7 @@
 		isLicenseVibe:						'${isLicenseVibe}',
 		isQuotasDiskQuotaExceeded:			'${ss_diskQuotaExceeded}',
 		isQuotasEnabled:					'${ss_quotasEnabled}',
+		isSiteAdmin:						'${isSiteAdmin}',
 		isTinyMCECapable:					'${isTinyMCECapable}',
 		isUserLoggedIn:						'${isUserLoggedIn}',
 		jsPath:								'<ssf:escapeJavaScript><html:rootPath/>js/</ssf:escapeJavaScript>',

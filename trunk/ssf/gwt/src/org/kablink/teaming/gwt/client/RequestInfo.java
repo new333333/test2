@@ -404,6 +404,17 @@ public class RequestInfo extends JavaScriptObject
 	}
 
 	/**
+	 * Return the flag that tells us if the logged in user is a site
+	 * administrator.
+	 * 
+	 * @return
+	 */
+	public final native boolean isSiteAdmin()
+	/*-{
+		return (this.getBFromS( this.isSiteAdmin ));
+	}-*/;
+
+	/**
 	 * Return the name (Novell vs. Kablink) of the version of Teaming
 	 * that's running.
 	 * 

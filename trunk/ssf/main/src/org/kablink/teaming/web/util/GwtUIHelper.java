@@ -55,6 +55,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -1325,6 +1326,11 @@ public class GwtUIHelper {
 		// Put out the flag that tells us if we are running Vibe.
 		boolean isLicenseVibe = Utils.checkIfVibe();
 		model.put("isLicenseVibe", Boolean.toString(isLicenseVibe));
+		
+		// Put out the flag indicating if the user is a site
+		// administrator.
+		boolean isSiteAdmin = bs.getAdminModule().testAccess(AdminOperation.manageFunction);
+		model.put("isSiteAdmin", Boolean.toString(isSiteAdmin));
 		
 		// Put out the flag that tells us if the tinyMCE editor will
 		// work on the device we are running on.  Get the list of user
