@@ -2201,7 +2201,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			return shareItem;
 		}
 		finally {
-			end(begin, "loadShareItem(Long,Long)");
+			end(begin, "loadShareItem(Long)");
 		}	        
  	}
  	
@@ -2222,7 +2222,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		        );
 		}
 		finally {
-			end(begin, "loadShareItems(Collection<Long>,Long)");
+			end(begin, "loadShareItems(Collection<Long>)");
 		}	        
  	}
  	
@@ -2246,7 +2246,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	       return result;   	
     	}
     	finally {
-    		end(begin, "findShareItemsBySharedEntity(EntityIdentifier, Long)");
+    		end(begin, "findShareItemsBySharedEntity(EntityIdentifier)");
     	}	              	
  	}
 	
@@ -2295,6 +2295,33 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}
     	finally {
     		end(begin, "findShareItemsBySharerAndRecipient(Long,ShareItemMember.RecipientType,Long)");
+    	}	              	
+ 	}
+ 	
+	@Override
+ 	public List<ShareItem> findShareItemsBySharerAndSharedEntity(final Long sharerId, final EntityIdentifier sharedEntityIdentifier) {
+		if(sharerId == null)
+			throw new IllegalArgumentException("sharer id must be specified");
+		if(sharedEntityIdentifier == null)
+			throw new IllegalArgumentException("shared entity identifier must be specified");
+		long begin = System.nanoTime();
+		try {
+	      	List result = (List)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    public Object doInHibernate(Session session) throws HibernateException {
+                    		return session.createQuery("from org.kablink.teaming.domain.ShareItem where creation_principal=:sharerId and sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
+                    				.setLong("sharerId", sharerId)
+                    				.setString("sharedEntityType", sharedEntityIdentifier.getEntityType().name())
+                    				.setLong("sharedEntityId", sharedEntityIdentifier.getEntityId())
+                    				.list();
+	                    }
+	                }
+	            );
+	      	
+	       return result;   	
+    	}
+    	finally {
+    		end(begin, "findShareItemsBySharerAndSharedEntity(Long,EntityIdentifier)");
     	}	              	
  	}
  	

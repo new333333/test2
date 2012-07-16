@@ -303,6 +303,16 @@ public interface ProfileDao {
  	public List<ShareItem> findShareItemsBySharerAndRecipient(Long sharerId, ShareItemMember.RecipientType recipientType, Long recipientId);
  	
  	/**
+ 	 * Find a list of <code>ShareItem</code> that were created/shared by the specified user
+ 	 * and defined on the shared entity represented by the specified identifier.
+ 	 * 
+ 	 * @param sharerId
+ 	 * @param sharedEntityIdentifier
+ 	 * @return
+ 	 */
+ 	public List<ShareItem> findShareItemsBySharerAndSharedEntity(Long sharerId, EntityIdentifier sharedEntityIdentifier);
+ 	
+ 	/**
  	 * Return IDs of users, groups, and teams that are granted read access to the specified entity.
  	 * 
  	 * @param sharedEntityIdentifier
