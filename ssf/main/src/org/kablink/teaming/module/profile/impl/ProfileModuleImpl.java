@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -58,7 +58,6 @@ import org.kablink.teaming.ApplicationExistsException;
 import org.kablink.teaming.ApplicationGroupExistsException;
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.NotSupportedException;
-import org.kablink.teaming.ObjectExistsException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.PasswordMismatchException;
 import org.kablink.teaming.UserExistsException;
@@ -68,7 +67,6 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.Attachment;
@@ -96,6 +94,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.ShareItem;
+import org.kablink.teaming.domain.ShareItemMember;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.domain.TemplateBinder;
@@ -119,7 +118,6 @@ import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
-import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.AccessControlException;
@@ -130,7 +128,6 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
@@ -142,7 +139,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-
 
 @SuppressWarnings("unchecked")
 public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
@@ -213,7 +209,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	 * @see org.kablink.teaming.module.binder.BinderModule#checkAccess(org.kablink.teaming.domain.Binder, java.lang.String)
 	 */
     //NO transaction
-    public boolean testAccess( User user, ProfileBinder binder, ProfileOperation operation)
+    @Override
+	public boolean testAccess( User user, ProfileBinder binder, ProfileOperation operation)
     {
 		try
 		{
@@ -232,7 +229,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	 * @see org.kablink.teaming.module.binder.BinderModule#checkAccess(org.kablink.teaming.domain.Binder, java.lang.String)
 	 */
     //NO transaction
-    public boolean testAccess(ProfileBinder binder, ProfileOperation operation) {
+    @Override
+	public boolean testAccess(ProfileBinder binder, ProfileOperation operation) {
 		try {
 			checkAccess(binder, operation);
 			return true;
@@ -244,6 +242,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     /**
      * 
      */
+	@Override
 	public void checkAccess( User user, ProfileBinder binder, ProfileOperation operation) throws AccessControlException
 	{
 		switch (operation)
@@ -260,7 +259,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}// end checkAccess()
 	
 	
-    public void checkAccess(ProfileBinder binder, ProfileOperation operation) throws AccessControlException {
+    @Override
+	public void checkAccess(ProfileBinder binder, ProfileOperation operation) throws AccessControlException {
 		switch (operation) {
 			case addEntry:
 		    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_ENTRIES);
@@ -294,6 +294,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	 * @see org.kablink.teaming.module.profile.ProfileModule#testAccess(org.kablink.teaming.domain.Principal, java.lang.String)
 	 */
     //NO transaction
+	@Override
 	public boolean testAccess(Principal entry, ProfileOperation operation) {
 		try {
 			checkAccess(entry, operation);
@@ -302,6 +303,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			return false;
 		}
 	}
+	@Override
 	public void checkAccess(Principal entry, ProfileOperation operation) throws AccessControlException {
 		switch (operation) {
 			case modifyEntry:
@@ -331,6 +333,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	/**
 	 * Determine if the Guest user has "create entry" rights to the profile binder.
 	 */
+	@Override
 	public boolean doesGuestUserHaveAddRightsToProfileBinder()
 	{
 		ProfileBinder	profileBinder;
@@ -379,6 +382,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	/**
 	 * Return the guest user object.
 	 */
+	@Override
 	public User getGuestUser()
 	{
 		ProfileDao	profileDao;
@@ -446,6 +450,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		return uProps;
 	}
 	//RO transaction
+	@Override
 	public ProfileBinder getProfileBinder() {
 	   ProfileBinder binder = loadProfileBinder();
 		// Check if the user has "read" access to the folder.
@@ -453,11 +458,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	   return binder;
     }
 	//RO transaction
+	@Override
 	public Long getProfileBinderId() {
 	   return loadProfileBinder().getId();
     }
 
 	//RO transaction
+	@Override
 	public Map<String, Definition> getProfileBinderEntryDefsAsMap() {
 	   ProfileBinder binder = loadProfileBinder();
 	   try {
@@ -468,18 +475,21 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	   return DefinitionHelper.getEntryDefsAsMap(binder);
     }
 
-    public Long getEntryWorkspaceId(Long principalId) {
+    @Override
+	public Long getEntryWorkspaceId(Long principalId) {
         Principal p = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);              
         return  p.getWorkspaceId();
     }
     
+	@Override
 	public List reindexPersonalUserOwnedBinders(Set<Principal> userIds) {
     	List<Long> binderIds = new ArrayList<Long>();
     	if (userIds == null) return binderIds;
     	binderIds = getProfileDao().getOwnedBinders(userIds);
     	
     	//Limit this list to binders under the Profiles binder
-    	Long profileBinderId = getProfileBinderId();
+    	@SuppressWarnings("unused")
+		Long profileBinderId = getProfileBinderId();
     	Set<Binder> binders = getBinderModule().getBinders(binderIds);
     	for (Binder b : binders) {
     		if (!Utils.isWorkareaInProfilesTree(b)) binderIds.remove(b.getId());  //Remove any binder not under the profiles binder
@@ -494,6 +504,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
 
     //RW transaction
+	@Override
 	public UserProperties setUserProperty(Long userId, Long binderId, String property, Object value) {
    		User user = getUser(userId, true);
 		UserProperties uProps=getProperties(user, binderId);
@@ -506,6 +517,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
  		return uProps;
    }
     //RW transaction
+	@Override
 	public UserProperties setUserProperties(Long userId, Long binderId, Map<String, Object> values) {
    		User user = getUser(userId, true);
 		UserProperties uProps=getProperties(user, binderId);
@@ -523,13 +535,15 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	   
 	//RO transaction
-   public UserProperties getUserProperties(Long userId, Long binderId) {
+   @Override
+public UserProperties getUserProperties(Long userId, Long binderId) {
   		User user = getUser(userId, false);
 		return getProperties(user, binderId);
    }
 
    //RW transaction
-   public UserProperties setUserProperty(Long userId, String property, Object value) {
+   @Override
+public UserProperties setUserProperty(Long userId, String property, Object value) {
  		User user = getUser(userId, true);
 		UserProperties uProps = getProperties(user);
 		uProps.setProperty(property, value); 	
@@ -541,7 +555,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		return uProps;
     }
    //RW transaction
-   public UserProperties setUserProperties(Long userId, Map<String, Object> values) {
+   @Override
+public UserProperties setUserProperties(Long userId, Map<String, Object> values) {
 		User user = getUser(userId, true);
 		UserProperties uProps = getProperties(user);
 		UserProperties gProps = null;
@@ -557,25 +572,29 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	  
    }
 	//RO transaction
-   public UserProperties getUserProperties(Long userId) {
+   @Override
+public UserProperties getUserProperties(Long userId) {
 		User user = getUser(userId, false);
 		return getProperties(user);
    }
  	//RO transaction
-   public SeenMap getUserSeenMap(Long userId) {
+   @Override
+public SeenMap getUserSeenMap(Long userId) {
 		User user = getUser(userId, false);
 		if (user.isShared()) return new SharedSeenMap(user.getId());
  		return getProfileDao().loadSeenMap(user.getId());
    }
    //RW transaction
-   public void setSeen(Long userId, Entry entry) {
+   @Override
+public void setSeen(Long userId, Entry entry) {
 		User user = getUser(userId, true);
 		if (user.isShared()) return;
 		SeenMap seen = getProfileDao().loadSeenMap(user.getId());
 		seen.setSeen(entry);
   }
    //RW transaction
-   public void setSeen(Long userId, Collection<Entry> entries) {
+   @Override
+public void setSeen(Long userId, Collection<Entry> entries) {
 		User user = getUser(userId, true);
 		if (user.isShared()) return;
 		SeenMap	seen = getProfileDao().loadSeenMap(user.getId());
@@ -583,7 +602,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			seen.setSeen(reply);
 		}
   }  	
-   public void setSeenIds(Long userId, Collection<Long> entryIds) {
+   @Override
+public void setSeenIds(Long userId, Collection<Long> entryIds) {
 		User user = getUser(userId, true);
 		if (user.isShared()) return;
 		SeenMap	seen = getProfileDao().loadSeenMap(user.getId());
@@ -593,7 +613,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   }  	
 
    //RW transaction
-   public void setUnseen(Long userId, Collection<Long> entryIds) {
+   @Override
+public void setUnseen(Long userId, Collection<Long> entryIds) {
 		User user = getUser(userId, true);
 		if (user.isShared()) return;
 		SeenMap	seen = getProfileDao().loadSeenMap(user.getId());
@@ -603,39 +624,46 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    }  	
 
    //RW transaction
-   public void setStatus(String status) {
+   @Override
+public void setStatus(String status) {
 	    User user = RequestContextHolder.getRequestContext().getUser();
 	    user.setStatus(status);
    }  	
    //RW transaction
-   public void setStatusDate(Date statusDate) {
+   @Override
+public void setStatusDate(Date statusDate) {
 	    User user = RequestContextHolder.getRequestContext().getUser();
 	    user.setStatusDate(statusDate);
    }  
 
    //RW transaction
-   public void setDiskQuota(long megabytes) {
+   @Override
+public void setDiskQuota(long megabytes) {
 	    User user = RequestContextHolder.getRequestContext().getUser();
 	    user.setDiskQuota(megabytes);
    }  
 
    //RW transaction
-   public void resetDiskUsage() {
+   @Override
+public void resetDiskUsage() {
 	   getProfileDao().resetDiskUsage(RequestContextHolder.getRequestContext().getZoneId());
    }  
    
    //RO transaction
-   public long getDiskQuota() {
+   @Override
+public long getDiskQuota() {
 	    User user = RequestContextHolder.getRequestContext().getUser();
 	    return user.getDiskQuota();
    } 
    
-   public long getMaxUserQuota() {
+   @Override
+public long getMaxUserQuota() {
 	   Long userId = RequestContextHolder.getRequestContext().getUserId();
 	   return getMaxUserQuota(userId);
    }
 
-   public long getMaxUserQuota(Long userId) {
+   @Override
+public long getMaxUserQuota(Long userId) {
 		// first check properties to see if quotas are enabled on this system
 		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(
 				RequestContextHolder.getRequestContext().getZoneId());
@@ -658,7 +686,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
    
    // RW transaction
-   public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
+   @Override
+public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
 		//Set each users individual quota
      	for (Long id : userIds) {
 			User user = (User)getProfileDao().loadUserDeadOrAlive(id, RequestContextHolder.getRequestContext().getZoneId());
@@ -668,6 +697,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    
     //RW transaction
 	//Called when adding users to a group
+	@Override
 	public void setUserGroupDiskQuotas(Collection<Long> userIds, Group group) {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		Long newDiskQuota = group.getDiskQuota();
@@ -689,7 +719,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	   
 	//Called when deleting users from a group
-    public void deleteUserGroupDiskQuotas(Collection<Long> userIds, Group group) {
+    @Override
+	public void deleteUserGroupDiskQuotas(Collection<Long> userIds, Group group) {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		Long newDiskQuota = group.getDiskQuota();
 		List userList = getProfileDao().loadUserPrincipals(userIds, zoneId, false);
@@ -715,7 +746,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		}
 	}
 
-    public void setGroupDiskQuotas(Collection<Long> groupIds, long newQuotaMegabytes) {
+    @Override
+	public void setGroupDiskQuotas(Collection<Long> groupIds, long newQuotaMegabytes) {
 		// iterate through the members of a group - set each members max group quota to the 
 	    // maximum value of all the groups they're a member of.
 	   Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -763,7 +795,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
    
    // RW transaction
-   public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) {
+   @Override
+public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) {
 		//Set each users individual quota
      	for (Long id : userIds) {
 			User user = (User)getProfileDao().loadUserDeadOrAlive(id, RequestContextHolder.getRequestContext().getZoneId());
@@ -773,6 +806,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    
 	//RW transaction
 	//Called when adding users to a group
+	@Override
 	public void setUserGroupFileSizeLimits(Collection<Long> userIds, Group group) {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		Long newFileSizeLimit = group.getFileSizeLimit();	//can be null
@@ -796,6 +830,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	
 	//Called when removing users from a group
+	@Override
 	public void deleteUserGroupFileSizeLimits(Collection<Long> userIds, Group group) {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		Long newFileSizeLimit = group.getFileSizeLimit();	//can be null
@@ -830,6 +865,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		}
 	}
 	
+	@Override
 	public void setGroupFileSizeLimits(Collection<Long> groupIds, Long newFileSizeLimit) {
 		// iterate through the members of a group - set each member's max file size limit to the 
 	    // maximum value of all the groups they're a member of.
@@ -885,18 +921,21 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
    
    // This returns a list of all disabled user account ids 
-   public List<Long> getDisabledUserAccounts() {
+   @Override
+public List<Long> getDisabledUserAccounts() {
 	   return getProfileDao().getDisabledUserAccounts(RequestContextHolder.getRequestContext().getZoneId());
    }
    
    // this returns non-zero quotas (any quota which has been set by the admin)
-   public List getNonDefaultQuotas(String type) {
+   @Override
+public List getNonDefaultQuotas(String type) {
 	   return getProfileDao().getNonDefaultQuotas(type,
 				RequestContextHolder.getRequestContext().getZoneId());
    }
    
    // this returns non-zero file size limits (any limit which has been set by the admin)
-   public List getNonDefaultFileSizeLimits(String type) {
+   @Override
+public List getNonDefaultFileSizeLimits(String type) {
 	   return getProfileDao().getNonDefaultFileSizeLimits(type,
 				RequestContextHolder.getRequestContext().getZoneId());
    }
@@ -914,12 +953,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		user.setMaxGroupsQuota(maxGroupsQuota);
 	}
 
-   public boolean isDiskQuotaExceeded() {
+   @Override
+public boolean isDiskQuotaExceeded() {
 	   if (checkDiskQuota() == ObjectKeys.DISKQUOTA_EXCEEDED) return true;
 	   else return false;
    }
    
-   public boolean isDiskQuotaHighWaterMarkExceeded() {
+   @Override
+public boolean isDiskQuotaHighWaterMarkExceeded() {
 	   if (checkDiskQuota() == ObjectKeys.DISKQUOTA_HIGHWATERMARK_EXCEEDED) return true;
 	   else return false;
    }
@@ -957,29 +998,34 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    }
    
    // RO transaction
-   public Group getGroup(String name) {
+   @Override
+public Group getGroup(String name) {
 	  Principal p = getProfileDao().findPrincipalByName(name, RequestContextHolder.getRequestContext().getZoneId());
 	  if (!(p instanceof Group)) throw new NoGroupByTheNameException(name);
 	  checkReadAccess(p);			
 	  return (Group)p;
    }
 	//RO transaction
-   public Map getGroups() {
+   @Override
+public Map getGroups() {
 	   Map options = new HashMap();
 	   options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(DEFAULT_MAX_ENTRIES));
 	   return getGroups(options);
    }
  
 	//RO transaction
-   public Map getGroups(Map options) {
+   @Override
+public Map getGroups(Map options) {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
 		options.put(ObjectKeys.SEARCH_MODE, Integer.valueOf(Constants.SEARCH_MODE_SELF_CONTAINED_ONLY));
         return loadProcessor(binder).getBinderEntries(binder, groupDocType, options);        
     }
 	//RO transaction
+	@Override
 	public SortedSet<Group> getGroups(Collection<Long> entryIds) {
 		//does read access check
+		@SuppressWarnings("unused")
 		ProfileBinder binder = getProfileBinder();
 	    User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
@@ -989,10 +1035,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	
 	//RO transaction
+	@Override
 	public Principal getEntry(String name) {
 		return getProfileDao().findPrincipalByName(name, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	//RO transaction
+	@Override
 	public Principal getEntry(Long principalId) {
         Principal p = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);              
 		//give users read access to their own entry
@@ -1001,8 +1049,10 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         return p;
     }
 
+	@Override
 	public SortedSet<Principal> getPrincipals(Collection<Long> ids) {
 		//does read access check
+		@SuppressWarnings("unused")
 		ProfileBinder binder = getProfileBinder();
  	    User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
@@ -1012,6 +1062,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
     
     //***********************************************************************************************************	
+	@Override
 	public IndexErrors indexEntry(Principal entry) {
         ProfileCoreProcessor processor=loadProcessor((ProfileBinder)entry.getParentBinder());
         return processor.indexEntry(entry);
@@ -1021,6 +1072,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	 * Index all of the entries found in the given Collection
 	 * @param entries
 	 */
+	@Override
 	public IndexErrors indexEntries( Collection<Principal> entries )
 	{
         ProfileCoreProcessor processor;
@@ -1031,12 +1083,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 
     //NO transaction
-    public void modifyEntry(Long id, InputDataAccessor inputData) 
+    @Override
+	public void modifyEntry(Long id, InputDataAccessor inputData) 
 	throws AccessControlException, WriteFilesException, WriteEntryDataException {
     	modifyEntry(id, inputData, null, null, null, null);
     }
     //NO transaction
-   public void modifyEntry(Long entryId, InputDataAccessor inputData, 
+   @Override
+public void modifyEntry(Long entryId, InputDataAccessor inputData, 
 		   Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options) 
    		throws AccessControlException, WriteFilesException, WriteEntryDataException {
 	   Principal entry = getProfileDao().loadPrincipal(entryId, RequestContextHolder.getRequestContext().getZoneId(), false);              
@@ -1064,7 +1118,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
       }
 
    //NO transaction
-    public void addEntries(Document doc, Map options) {
+    @Override
+	public void addEntries(Document doc, Map options) {
        ProfileBinder binder = loadProfileBinder();
        checkAccess(binder, ProfileOperation.manageEntries);
        //process the document
@@ -1165,7 +1220,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   	//no transaction
     private void deleteEntries(final ProfileBinder binder, final Collection<Principal> entries, final Map options) {
 		getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
+        	@Override
+			public Object doInTransaction(TransactionStatus status) {
         		   try {
         			   for (Principal p:entries) {
         				   deleteEntry(p.getId(), options);
@@ -1255,7 +1311,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   	   }
     }
     //NO transaction
-    public Workspace addUserWorkspace(User entry, Map options) throws AccessControlException {
+    @Override
+	public Workspace addUserWorkspace(User entry, Map options) throws AccessControlException {
         if (entry.getWorkspaceId() != null) {
         	try {
         		return (Workspace)getCoreDao().loadBinder(entry.getWorkspaceId(), entry.getZoneId()); 
@@ -1319,7 +1376,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 
 
     //RW transaction
-    public Folder addUserMiniBlog(User entry) throws AccessControlException {
+    @Override
+	public Folder addUserMiniBlog(User entry) throws AccessControlException {
         if (entry.getMiniBlogId() != null) {
         	try {
         		Folder miniblog = (Folder)getCoreDao().loadBinder(entry.getMiniBlogId(), entry.getZoneId()); 
@@ -1407,7 +1465,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    }
 
    //RW transaction
-   public Folder setUserMiniBlog(User entry, Long folderId) throws AccessControlException {
+   @Override
+public Folder setUserMiniBlog(User entry, Long folderId) throws AccessControlException {
 		Folder miniBlog = null;
 		
 		entry.setMiniBlogId(folderId);
@@ -1418,7 +1477,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    }
 
    //RW transaction
-   public void disableEntry(Long principalId, boolean disabled) {
+   @Override
+public void disableEntry(Long principalId, boolean disabled) {
        Principal entry = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);
        checkAccess(entry, ProfileOperation.deleteEntry);
        if (entry.isReserved()) {
@@ -1428,11 +1488,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	   processor.disableEntry(entry, disabled);
    }
    //RW transaction
-   public void deleteEntry(Long principalId, Map options) {
+   @Override
+public void deleteEntry(Long principalId, Map options) {
 	   deleteEntry(principalId, options, false);
    }
    //RW transaction
-   public void deleteEntry(Long principalId, Map options, boolean phase1Only) {
+   @Override
+public void deleteEntry(Long principalId, Map options, boolean phase1Only) {
         Principal entry = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);
         checkAccess(entry, ProfileOperation.deleteEntry);
        	if (entry.isReserved()) 
@@ -1457,11 +1519,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         }
      }
    // no transaction
+	@Override
 	public void deleteEntryFinish() {
 		getBinderModule().deleteBinderFinish();
 	}
     //RO transaction
-    public User getUser(String name) {
+    @Override
+	public User getUser(String name) {
  	  Principal p = getProfileDao().findPrincipalByName(name, RequestContextHolder.getRequestContext().getZoneId());
  	  if (!(p instanceof User)) throw new NoUserByTheNameException(name);
  	  return (User)p;
@@ -1474,7 +1538,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
      * @return
      */
     //RO transaction
-    public User getUserDeadOrAlive( String name )
+    @Override
+	public User getUserDeadOrAlive( String name )
     {
  	  Principal principal;
  	  
@@ -1486,13 +1551,15 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
 
     //RO transaction
-   public Map getUsers() {
+   @Override
+public Map getUsers() {
     	Map options = new HashMap();
     	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(DEFAULT_MAX_ENTRIES));
     	return getUsers(options);
     }
 	//RO transaction
-    public Map getUsers(Map options) {
+    @Override
+	public Map getUsers(Map options) {
 		//does read check
 		ProfileBinder binder = getProfileBinder();
 		options.put(ObjectKeys.SEARCH_MODE, Integer.valueOf(Constants.SEARCH_MODE_SELF_CONTAINED_ONLY));
@@ -1500,6 +1567,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         
    }
 	//RO transaction 
+	@Override
 	public SortedSet<User> getUsers(Collection<Long> entryIds) {
 		//does read check on Profiles binder
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -1513,6 +1581,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	  
 	//RO transaction
+	@Override
 	public SortedSet<User> getUsersFromPrincipals(Collection<Long> principalIds) {
 		//does read check
 		ProfileBinder profile = getProfileBinder();
@@ -1520,6 +1589,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		return getUsers(ids);
 	}
 
+	@Override
 	public User findUserByName(String username)  throws NoUserByTheNameException {
 		return getProfileDao().findUserByName(username, RequestContextHolder.getRequestContext().getZoneId());
 	}
@@ -1527,11 +1597,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	/**
 	 * Find the User with the given ldap guid
 	 */
+	@Override
 	public User findUserByLdapGuid( String ldapGuid )  throws NoUserByTheNameException
 	{
 		return getProfileDao().findUserByLdapGuid( ldapGuid, RequestContextHolder.getRequestContext().getZoneId() );
 	}// end findUserByLdapGuid()
 	
+	@Override
 	public Collection<Principal> getPrincipalsByName(Collection<String> names) throws AccessControlException {
 		Map params = new HashMap();
 		params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());
@@ -1547,12 +1619,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			this.source = source;
 			this.fieldsOnly = false;
 		}
+		@Override
 		public String getSingleValue(String key) {
 			Element result = (Element)source.selectSingleNode("./attribute[@name='" + key + "'] | ./property[@name='" + key + "']");
 			if (result == null) return null;
 			else return result.getTextTrim();
 		}
 
+		@Override
 		public String[] getValues(String key) {
 			List<Element> result = source.selectNodes("./attribute[@name='" + key + "'] | ./property[@name='" + key + "']");
 			if ((result == null) || result.isEmpty()) return null;
@@ -1563,46 +1637,56 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			return resultVals;
 		}
 
+		@Override
 		public Date getDateValue(String key) {
 			return DateHelper.getDateFromInput(this, key);
 		}
 
+		@Override
 		public Event getEventValue(String key, boolean hasDuration, boolean hasRecurrence)
 		{
 			return EventHelper.getEventFromMap(this, key, hasDuration, hasRecurrence);
 		}
 
+		@Override
 		public Survey getSurveyValue(String key)
 		{
 			return new Survey(key);
 		}
 		
+		@Override
 		public Description getDescriptionValue(String key) {
 			return new Description(getSingleValue(key));
 		}
 
+		@Override
 		public boolean exists(String key) {
 			Element result = (Element)source.selectSingleNode("./attribute[@name='" + key + "'] | ./property[@name='" + key + "']");
 			if (result == null) return false;
 			return true;
 		}
 
+		@Override
 		public Object getSingleObject(String key) {
 			return (Element)source.selectSingleNode("./attribute[@name='" + key + "'] | ./property[@name='" + key + "']");
 		}
+		@Override
 		public int getCount() {
 			return source.nodeCount();
 		}
 
+		@Override
 		public void setFieldsOnly(Boolean fieldsOnly) {
 			this.fieldsOnly = fieldsOnly;
 		}
+		@Override
 		public boolean isFieldsOnly() {
 			return this.fieldsOnly;
 		}
 	}
 	
     //NO transaction
+	@Override
 	public User addUserFromPortal(int identitySource, String userName, String password, Map updates, Map options) {
 		if(updates == null)
 			updates = new HashMap();
@@ -1647,6 +1731,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 
     //No transaction
+	@Override
 	public void modifyUserFromPortal(User user, Map updates, Map options) {
 		if (updates == null)
 			return; // nothing to update with
@@ -1673,29 +1758,37 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		public SharedSeenMap(Long principalId) {
 			super(principalId);
 		}
-	    public void setSeen(Entry entry) {	    	
+	    @Override
+		public void setSeen(Entry entry) {	    	
 	    }
-	    public void setSeen(FolderEntry entry) {
+	    @Override
+		public void setSeen(FolderEntry entry) {
 	    }
-	    public boolean checkIfSeen(FolderEntry entry) {
+	    @Override
+		public boolean checkIfSeen(FolderEntry entry) {
 	    	return true;
 	    }
+		@Override
 		protected boolean checkAndSetSeen(FolderEntry entry, boolean setIt) {
 			return true;
 		}
+		@Override
 		public boolean checkAndSetSeen(Map entry, boolean setIt) {
 			return true;
 		}	
-	    public boolean checkIfSeen(Map entry) {
+	    @Override
+		public boolean checkIfSeen(Map entry) {
 	    	return true;
 	    }   
 	    
+		@Override
 		public boolean checkAndSetSeen(Long id, Date modDate, boolean setIt) {
 			return true;
 		}
     }
 
     //RW transaction
+	@Override
 	public void deleteUserByName(String userName,  Map options) {
 		try {
 			User user = getProfileDao().findUserByName(userName, 
@@ -1706,6 +1799,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	
 	//NO transaction
+	@Override
 	public User addUser(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
 	throws AccessControlException, WriteFilesException, WriteEntryDataException, PasswordMismatchException {
 		if (inputData.getSingleValue("password") == null || inputData.getSingleValue("password").equals(""))
@@ -1715,6 +1809,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		return (User) addIndividualPrincipal(definitionId, inputData, fileItems, options, User.class);
 	}
 	//NO transaction
+	@Override
 	public User addUser(InputDataAccessor inputData)
 				throws AccessControlException, WriteFilesException, WriteEntryDataException {
 		ProfileBinder binder = this.getProfileBinder();
@@ -1727,6 +1822,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		return this.addUser(definitionId, inputData, new HashMap(), null);
 	}
 	//NO transaction
+	@Override
 	public Application addApplication(String definitionId, 
 			InputDataAccessor inputData, Map fileItems, Map options) 
 	throws AccessControlException, WriteFilesException, WriteEntryDataException {
@@ -1735,7 +1831,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	return (Application) addIndividualPrincipal(definitionId, inputData, fileItems, options, Application.class);
 	}
     //NO transaction
-    public Group addGroup(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
+    @Override
+	public Group addGroup(String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
     	throws AccessControlException, WriteFilesException, WriteEntryDataException {
         ProfileBinder binder = loadProfileBinder();
         checkAccess(binder, ProfileOperation.manageEntries);
@@ -1743,6 +1840,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
 	
     //NO transaction
+	@Override
 	public ApplicationGroup addApplicationGroup(String definitionId, 
 			InputDataAccessor inputData, Map fileItems, Map options) 
 	throws AccessControlException, WriteFilesException, WriteEntryDataException {
@@ -1882,13 +1980,15 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         }
 	}
     //RO transaction
-    public ApplicationGroup getApplicationGroup(String name) {
+    @Override
+	public ApplicationGroup getApplicationGroup(String name) {
  	  Principal p = getProfileDao().findPrincipalByName(name, RequestContextHolder.getRequestContext().getZoneId());
  	  if (!(p instanceof ApplicationGroup)) throw new NoGroupByTheNameException(name);
  	  return (ApplicationGroup)p;
     }
 
 	//RO transaction
+	@Override
 	public Map getApplicationGroups() throws AccessControlException {
 		   Map options = new HashMap();
 		   options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(DEFAULT_MAX_ENTRIES));
@@ -1896,6 +1996,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	
 	//RO transaction
+	@Override
 	public Map getApplicationGroups(Map searchOptions) throws AccessControlException {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
@@ -1904,8 +2005,10 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	
 	//RO transaction
+	@Override
 	public SortedSet<ApplicationGroup> getApplicationGroups(Collection<Long> groupIds) throws AccessControlException {
 		//does read access check
+		@SuppressWarnings("unused")
 		ProfileBinder binder = getProfileBinder();
 	    User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
@@ -1915,6 +2018,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	
 	//RO transaction
+	@Override
 	public Map getGroupPrincipals() throws AccessControlException {
 		   Map options = new HashMap();
 		   options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(DEFAULT_MAX_ENTRIES));
@@ -1922,6 +2026,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	
 	//RO transaction
+	@Override
 	public Map getGroupPrincipals(Map searchOptions) throws AccessControlException {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
@@ -1930,8 +2035,10 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	
 	//RO transaction
+	@Override
 	public SortedSet<GroupPrincipal> getGroupPrincipals(Collection<Long> groupIds) throws AccessControlException {
 		//does read access check
+		@SuppressWarnings("unused")
 		ProfileBinder binder = getProfileBinder();
 	    User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
@@ -1941,18 +2048,21 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	
     //RO transaction
-    public Application getApplication(String name) {
+    @Override
+	public Application getApplication(String name) {
  	  Principal p = getProfileDao().findPrincipalByName(name, RequestContextHolder.getRequestContext().getZoneId());
  	  if (!(p instanceof Application)) throw new NoApplicationByTheNameException(name);
  	  return (Application)p;
     }
 	//RO transaction
+	@Override
 	public Map getApplications() {
     	Map options = new HashMap();
     	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(DEFAULT_MAX_ENTRIES));
     	return getApplications( options);
 	}
 	//RO transaction
+	@Override
 	public Map getApplications(Map searchOptions) {
 		Map result = new HashMap();
 		//does read access check
@@ -1964,6 +2074,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		return result;
 	}
 	//RO transaction
+	@Override
 	public SortedSet<Application> getApplications(Collection<Long> applicationIds) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
@@ -1979,12 +2090,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	
 	//RO transaction
+	@Override
 	public Map getIndividualPrincipals() {
 		   Map options = new HashMap();
 		   options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(DEFAULT_MAX_ENTRIES));
 		   return getIndividualPrincipals(options);	
 	}
 	//RO transaction
+	@Override
 	public Map getIndividualPrincipals( Map searchOptions) {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
@@ -1992,8 +2105,10 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         return loadProcessor(binder).getBinderEntries(binder, individualPrincipalDocType, searchOptions);        
 	}
 	//RO transaction
+	@Override
 	public SortedSet<IndividualPrincipal> getIndividualPrincipals(Collection<Long> individualIds) {
 		//does read access check
+		@SuppressWarnings("unused")
 		ProfileBinder binder = getProfileBinder();
 	    User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
@@ -2002,6 +2117,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		return result;	
 	}
 	//RO transaction
+	@Override
 	public Map getPrincipals( Map searchOptions) {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
@@ -2009,7 +2125,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         return loadProcessor(binder).getBinderEntries(binder, allPrincipalDocType, searchOptions);        
 	}
     //RO transaction
-    public List<SharedEntity> getShares(Long userId, Date after) {
+    @Override
+	public List<SharedEntity> getShares(Long userId, Date after) {
 	    User user = getUser(userId, false);
 	    //get list of all groups user is a member of.
 	    Set<Long> accessIds = getProfileDao().getPrincipalIds(user);
@@ -2065,7 +2182,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	  return shares;
     }
     //RW transaction
-    public void setShares(DefinableEntity entity, Collection<Long> principalIds, Collection<Long> binderIds) {
+    @Override
+	public void setShares(DefinableEntity entity, Collection<Long> principalIds, Collection<Long> binderIds) {
 	    User user = RequestContextHolder.getRequestContext().getUser();
     	if (principalIds != null) {
     		for (Long p: principalIds) {
@@ -2091,7 +2209,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 //  	return getAccessControlManager().testOperation(this.getProfileBinder(), WorkAreaOperation.USER_SEE_ALL);        
   }
 
-  public void changePassword(Long userId, String oldPassword, String newPassword) {
+  @Override
+public void changePassword(Long userId, String oldPassword, String newPassword) {
 	  if(newPassword == null || newPassword.equals(""))
 		  throw new PasswordMismatchException("errorcode.password.cannotBeNull");
 	  
@@ -2113,7 +2232,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   }
   
   //RO transaction
-  public SortedSet<User> getUsersByEmail(String emailAddress, String emailType) {
+  @Override
+public SortedSet<User> getUsersByEmail(String emailAddress, String emailType) {
 	  List<Principal> principals = getProfileDao().loadPrincipalByEmail(emailAddress, emailType, RequestContextHolder.getRequestContext().getZoneId());
       Comparator c = new PrincipalComparator(RequestContextHolder.getRequestContext().getUser().getLocale());
       TreeSet<User> result = new TreeSet(c);
@@ -2128,7 +2248,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	  return result;
   }
   
-  public String[] getUsernameAndDecryptedPassword(String username) {
+  @Override
+public String[] getUsernameAndDecryptedPassword(String username) {
 	  String[] result = new String[2];
 	  try {
 		  User user = findUserByName(username);
@@ -2140,14 +2261,17 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	  return result;
   }
   
+	@Override
 	public List<Group> getUserGroups(Long userId) throws AccessControlException {
 		//does read access check
+		@SuppressWarnings("unused")
 		ProfileBinder binder = getProfileBinder();
 		Set<Long> groupIds = getProfileDao().getAllGroupMembership(userId, RequestContextHolder.getRequestContext().getZoneId());
 		return getProfileDao().loadGroups(groupIds, RequestContextHolder.getRequestContext().getZoneId());
 	}
 
-    public List<Binder> getUserFavorites(Long userId) {
+    @Override
+	public List<Binder> getUserFavorites(Long userId) {
         List<Binder> binders = new ArrayList<Binder>();
         Document favorites = null;
         UserProperties userProperties = getUserProperties(userId);
@@ -2176,7 +2300,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         return binders;
     }
 
-    public List<TeamInfo> getUserTeams(Long userId) {
+    @Override
+	public List<TeamInfo> getUserTeams(Long userId) {
         List<Map> myTeams = getBinderModule().getTeamMemberships(userId);
 
         List<TeamInfo> teamList = new ArrayList<TeamInfo>();
@@ -2241,7 +2366,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    		}
    	}
 
-    public void setFirstLoginDate(Long userId) {
+    @Override
+	public void setFirstLoginDate(Long userId) {
 		User user = getUser(userId, true);
 		if(user.getFirstLoginDate() != null)
 			return; // This user already logged in before. Shouldn't update it (or shall we throw an exception?)
@@ -2301,6 +2427,15 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	public List<ShareItem> getShareItems(Collection<Long> shareItemIds) {
 		// Access check?
 		return getProfileDao().loadShareItems(shareItemIds);
+	}
+    
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.profile.ProfileModule#getShareItemsByRecipient(java.long.Long)
+	 */
+	@Override
+	public List<ShareItem> getShareItemsByRecipient(ShareItemMember.RecipientType recipientType, Long recipientId) {
+		// Access check?
+		return getProfileDao().findShareItemsByRecipient(recipientType, recipientId);
 	}
     
 }

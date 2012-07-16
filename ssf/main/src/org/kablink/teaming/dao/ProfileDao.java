@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.dao;
 
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -41,11 +40,9 @@ import java.util.Set;
 
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.SFQuery;
-import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.ApplicationPrincipal;
-import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
@@ -72,10 +69,12 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Visits;
 import org.springframework.dao.DataAccessException;
 
-
 /**
  * Interface to handle principals.
+ * 
+ * @author Jong Kim
  */
+@SuppressWarnings("unchecked")
 public interface ProfileDao {
 	/**
 	 * Optional optimization used to bulk load principal collections.  Used to
@@ -147,7 +146,7 @@ public interface ProfileDao {
     public List<UserPrincipal> loadUserPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive);
 	public Rating loadRating(Long userId, EntityIdentifier entityId);
     public SeenMap loadSeenMap(Long userId);
-    public List<SharedEntity> loadSharedEntities(Collection ids, Collection binderIds, Date after, Long zoneId); 	
+	public List<SharedEntity> loadSharedEntities(Collection ids, Collection binderIds, Date after, Long zoneId); 	
    	public Subscription loadSubscription(Long userId, EntityIdentifier entityId);
   /**
      * Load a user that is neither deleted or disabled. Check that user is in zone.
@@ -301,6 +300,17 @@ public interface ProfileDao {
  	 * @return
  	 */
  	public List<ShareItem> findShareItemsBySharerAndRecipient(Long sharerId, ShareItemMember.RecipientType recipientType, Long recipientId);
+ 	
+ 	/**
+ 	 * Find a list of <code>ShareItem</code> that were shared explicitly and directly with
+ 	 * the specified recipient (as opposed to indirectly through another group or team
+ 	 * membership).
+ 	 * 
+ 	 * @param recipientType
+ 	 * @param recipientId
+ 	 * @return
+ 	 */
+ 	public List<ShareItem> findShareItemsByRecipient(ShareItemMember.RecipientType recipientType, Long recipientId);
  	
  	/**
  	 * Find a list of <code>ShareItem</code> that were created/shared by the specified user

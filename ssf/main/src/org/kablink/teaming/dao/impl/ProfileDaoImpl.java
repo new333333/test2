@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -63,12 +63,10 @@ import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.SFQuery;
-import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.ApplicationPrincipal;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EmailAddress;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Group;
@@ -107,15 +105,14 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.dao.hibernate.DynamicDialect;
-import org.kablink.util.search.Junction.Disjunction;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateSystemException;
 
 /**
  * @author Jong Kim
- *
  */
+@SuppressWarnings({ "unchecked", "deprecation" })
 public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	protected int inClauseLimit=1000;
 	private CoreDao coreDao;
@@ -132,6 +129,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     /**
      * Called after bean is initialized.  
      */
+	@Override
 	protected void initDao() throws Exception {
 		//some database limit the number of terms 
 		inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
@@ -154,13 +152,15 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	 * Child binders should already have been deleted
 	 * This code assumes all users/groups are stored
 	 */	
+	@Override
 	public void delete(final ProfileBinder binder) {
 		long begin = System.nanoTime();
 		try {
 			//cleanup entries - the delete of the folder in coreDao will handle associations through owningBinderId + LibraryEntries
 		    getHibernateTemplate().execute(
 		    	new HibernateCallback() {
-		       		public Object doInHibernate(Session session) throws HibernateException {
+		       		@Override
+					public Object doInHibernate(Session session) throws HibernateException {
 	    	   			Statement s = null;
 	       	   			try {
 	       	   				s = session.connection().createStatement();
@@ -310,7 +310,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
      * Delete an object and its assocations 
      * @param entry
      */
-    public void delete(Principal entry) {
+    @Override
+	public void delete(Principal entry) {
 		long begin = System.nanoTime();
 		try {
 	    	List entries = new ArrayList();
@@ -327,13 +328,15 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
      * We only actually delete groups.  Users are left forever, but
      * there associations are deleted
      */
-    public void deleteEntries(final Collection<Principal> entries) {
+    @Override
+	public void deleteEntries(final Collection<Principal> entries) {
 		long begin = System.nanoTime();
 		try {
 	    	if (entries == null || entries.size() == 0) return;
 	      	getHibernateTemplate().execute(
 	        	   	new HibernateCallback() {
-	        	   		public Object doInHibernate(Session session) throws HibernateException {
+	        	   		@Override
+						public Object doInHibernate(Session session) throws HibernateException {
 	        	   	   	Set ids = new HashSet();
 	           			StringBuffer inList = new StringBuffer();
 	        			for (Principal p: entries) {
@@ -474,12 +477,14 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
        	
     }
         
-    public void disablePrincipals(final Collection<Long> ids, final Long zoneId) {
+    @Override
+	public void disablePrincipals(final Collection<Long> ids, final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 	    	getHibernateTemplate().execute(
 	        	new HibernateCallback() {
-	        		public Object doInHibernate(Session session) throws HibernateException {
+	        		@Override
+					public Object doInHibernate(Session session) throws HibernateException {
 	        			session.createQuery("UPDATE org.kablink.teaming.domain.Principal set disabled = :disable where zoneId = :zoneId and internalId is null and id in (:pList)")
 	        			.setBoolean("disable", true)
 	        			.setLong("zoneId", zoneId)
@@ -496,7 +501,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 
     }
     //used for login
-    public User findUserByName(final String userName, String zoneName) {
+    @Override
+	public User findUserByName(final String userName, String zoneName) {
 		long begin = System.nanoTime();
 		try {
 	    	final Binder top = getCoreDao().findTopWorkspace(zoneName);
@@ -507,7 +513,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
     }
     
-    public User findUserByNameDeadOrAlive(final String userName, String zoneName) {
+    @Override
+	public User findUserByNameDeadOrAlive(final String userName, String zoneName) {
 		long begin = System.nanoTime();
 		try {
 	    	final Binder top = getCoreDao().findTopWorkspace(zoneName);
@@ -518,13 +525,15 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
     }
     
- 	public User findUserByName(final String userName, final Long zoneId) 
+ 	@Override
+	public User findUserByName(final String userName, final Long zoneId) 
 	throws NoUserByTheNameException {
 	   long begin = System.nanoTime();
 	   try {
 	       User user = (User)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
 	                 	   	//only returns active users
 	                    	Query query;
 	                    	if(lookupByRange()) {
@@ -561,7 +570,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
  	/**
  	 * Find an user in the ss_principals table using the ldap guid.
  	 */
- 	public User findUserByLdapGuid( final String ldapGuid, final Long zoneId ) 
+ 	@Override
+	public User findUserByLdapGuid( final String ldapGuid, final Long zoneId ) 
 		throws NoPrincipalByTheNameException
 	{
 	   long begin = System.nanoTime();
@@ -570,7 +580,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	       User user = (User)getHibernateTemplate().execute(
                 new HibernateCallback()
                 {
-                    public Object doInHibernate(Session session) throws HibernateException
+                    @Override
+					public Object doInHibernate(Session session) throws HibernateException
                     {
                  	   //only returns active users
                  	   User user = (User)session.getNamedQuery( "find-User-By-LdapGuid-Company" )
@@ -602,7 +613,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	   }	        
 	}// end findUserByLdapGuid()
 
- 	public Principal findPrincipalByName(final String name, final Long zoneId) 
+ 	@Override
+	public Principal findPrincipalByName(final String name, final Long zoneId) 
  		throws NoPrincipalByTheNameException {
  		if(name.startsWith(FAKE_NAME_PREFIX)) {
  			Long id = Long.valueOf(name.substring(FAKE_NAME_PREFIX.length()));
@@ -615,7 +627,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			try {
 		        Principal principal = (Principal)getHibernateTemplate().execute(
 		                new HibernateCallback() {
-		                    public Object doInHibernate(Session session) throws HibernateException {
+		                    @Override
+							public Object doInHibernate(Session session) throws HibernateException {
 		                 	   //only returns active users
 		                    	Query query;
 		                    	if(lookupByRange()) {
@@ -667,7 +680,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
        return (Principal)session.get(ApplicationGroup.class, proxy.getId());
  	}
 
-    public ProfileBinder getProfileBinder(Long zoneId) {
+    @Override
+	public ProfileBinder getProfileBinder(Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 			return (ProfileBinder)getCoreDao().loadReservedBinder(ObjectKeys.PROFILE_ROOT_INTERNALID, zoneId);
@@ -681,12 +695,14 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
      *  (non-Javadoc)
      * @see org.kablink.teaming.dao.CoreDao#loadPrincipal(java.lang.Long, java.lang.Long)
      */
-    public UserPrincipal loadUserPrincipal(final Long prinId, final Long zoneId, final boolean checkActive) {
+    @Override
+	public UserPrincipal loadUserPrincipal(final Long prinId, final Long zoneId, final boolean checkActive) {
 		long begin = System.nanoTime();
 		try {
 	        UserPrincipal principal = (UserPrincipal)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
 	                    	//hoping for cache hit
 	                    	UserPrincipal principal = (UserPrincipal)session.get(UserPrincipal.class, prinId);
 	                        if (principal == null) {throw new NoPrincipalByTheIdException(prinId);}
@@ -713,7 +729,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
               
     }
-    public List<UserPrincipal> loadUserPrincipals(final Collection ids, final Long zoneId, boolean checkActive) {
+    @Override
+	public List<UserPrincipal> loadUserPrincipals(final Collection ids, final Long zoneId, boolean checkActive) {
 		long begin = System.nanoTime();
 		try {
 	    	List<UserPrincipal> result = loadPrincipals(ids, zoneId, UserPrincipal.class, true, checkActive);
@@ -735,12 +752,14 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "loadUserPrincipals(Collection,Long,boolean)");
     	}	        
     }
-    public List<Principal> loadPrincipalByEmail(final String email, final String emailType, final Long zoneId) {
+    @Override
+	public List<Principal> loadPrincipalByEmail(final String email, final String emailType, final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 	        List result = (List)getHibernateTemplate().execute(
 	               	new HibernateCallback() {
-	                		public Object doInHibernate(Session session) throws HibernateException {
+	                		@Override
+							public Object doInHibernate(Session session) throws HibernateException {
 	                			Query q;
 	                			if(lookupByRange()) {
 		                			String queryStr = "select x.principal from org.kablink.teaming.domain.EmailAddress x where " +
@@ -782,7 +801,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
         if ((ids == null) || ids.isEmpty()) return new ArrayList();
         List result = (List)getHibernateTemplate().execute(
            	new HibernateCallback() {
-            		public Object doInHibernate(Session session) throws HibernateException {
+            		@Override
+					public Object doInHibernate(Session session) throws HibernateException {
        					//some databases restrict the size of the inList
             			int useLimit = inClauseLimit-3;  //account for the 3 we add
             			if (ids.size() <= useLimit) {
@@ -845,7 +865,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	filter.add(ObjectKeys.FIELD_PRINCIPAL_DISABLED, Boolean.FALSE);
         List result = (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
+                    @Override
+					public Object doInHibernate(Session session) throws HibernateException {
                         //sqlqueries, filters and criteria don't help with frontbase problem
                         //
                         Query query = session.createQuery("from " + clazz.getName() + " u " + filter.getFilterString("u"));
@@ -861,6 +882,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
         return filterInaccessiblePrincipals(result);
     }    
   
+	@Override
 	public Group loadGroup(final Long groupId, Long zoneId)  {
 		long begin = System.nanoTime();
 		try {
@@ -876,6 +898,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			end(begin, "loadGroup(Long,Long)");
 		}	        
 	}
+	@Override
 	public ApplicationGroup loadApplicationGroup(final Long groupId, Long zoneId)  {
 		long begin = System.nanoTime();
 		try {
@@ -891,6 +914,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			end(begin, "loadApplicationGroup(Long,Long)");
 		}	        
 	}
+	@Override
 	public List<Group> loadGroups(Collection<Long> ids, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -901,7 +925,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
 	}
 
-    public List<Group> loadGroups(FilterControls filter, Long zoneId) throws DataAccessException { 
+    @Override
+	public List<Group> loadGroups(FilterControls filter, Long zoneId) throws DataAccessException { 
 		long begin = System.nanoTime();
 		try {
 			return loadPrincipals(filter, zoneId, Group.class);
@@ -910,6 +935,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "loadGroups(FilterControls,Long)");
     	}	        
     }  
+	@Override
 	public User loadUser(Long userId, String zoneName) {
 		long begin = System.nanoTime();
 		try {
@@ -920,7 +946,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "loadUser(Long,String)");
     	}	        
     }
-    public User loadUser(Long userId, Long zoneId) {
+    @Override
+	public User loadUser(Long userId, Long zoneId) {
 		long begin = System.nanoTime();
     	try {
     		User user = (User)getHibernateTemplate().get(User.class, userId);
@@ -940,7 +967,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			end(begin, "loadUser(Long,Long)");
 		}	        
     }
-    public User loadUserDeadOrAlive(Long userId, Long zoneId) {
+    @Override
+	public User loadUserDeadOrAlive(Long userId, Long zoneId) {
 		long begin = System.nanoTime();
     	// STOP!!! THIS METHOD IS FOR INTERNAL/SPECIAL USE ONLY. USE THE REGULAR loadUser() METHOD INSTEAD.
     	try {
@@ -959,6 +987,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		}	        
     }
     
+	@Override
 	public List<User> loadUsers(Collection<Long> ids, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -968,7 +997,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "loadUsers(Collection<Long>,Long)");
     	}	        
     }
-    public List<User> loadUsers(FilterControls filter, Long zoneId) throws DataAccessException { 
+    @Override
+	public List<User> loadUsers(FilterControls filter, Long zoneId) throws DataAccessException { 
 		long begin = System.nanoTime();
 		try {
 			return loadPrincipals(filter, zoneId, User.class);
@@ -979,7 +1009,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     }
 
      
-    public SFQuery queryUsers(FilterControls filter, Long zoneId) throws DataAccessException { 
+    @Override
+	public SFQuery queryUsers(FilterControls filter, Long zoneId) throws DataAccessException { 
 		long begin = System.nanoTime();
 		try {
 			return queryPrincipals(filter, zoneId, User.class);
@@ -988,7 +1019,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "queryUsers(FilterControls,Long)");
     	}	        
     }
-    public SFQuery queryGroups(FilterControls filter, Long zoneId) throws DataAccessException { 
+    @Override
+	public SFQuery queryGroups(FilterControls filter, Long zoneId) throws DataAccessException { 
 		long begin = System.nanoTime();
 		try {
 			return queryPrincipals(filter, zoneId, Group.class);
@@ -997,7 +1029,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "queryGroups(FilterControls,Long)");
     	}	        
     }  
-    public SFQuery queryAllPrincipals(FilterControls filter, Long zoneId) throws DataAccessException { 
+    @Override
+	public SFQuery queryAllPrincipals(FilterControls filter, Long zoneId) throws DataAccessException { 
 		long begin = System.nanoTime();
 		try {
 			return queryPrincipals(filter, zoneId, Principal.class);
@@ -1014,7 +1047,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		myFilter.add(ObjectKeys.FIELD_PRINCIPAL_DISABLED, Boolean.FALSE);
         Query query = (Query)getHibernateTemplate().execute(
                 new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
+                    @Override
+					public Object doInHibernate(Session session) throws HibernateException {
                         //sqlqueries, filters and criteria don't help with frontbase problem
                         //
                         Query query = session.createQuery("from " + clazz.getName() + " u " + myFilter.getFilterString("u"));
@@ -1028,13 +1062,15 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
             );  
        return new SFQuery(query);
     }    
- 	public void bulkLoadCollections(final Collection<Principal> entries) {
+ 	@Override
+	public void bulkLoadCollections(final Collection<Principal> entries) {
 		long begin = System.nanoTime();
 		try {
 	 		if (entries.size() > inClauseLimit) throw new IllegalArgumentException("Collection to large");
 	  	    getHibernateTemplate().execute(
 	            new HibernateCallback() {
-	                public Object doInHibernate(Session session) throws HibernateException {
+	                @Override
+					public Object doInHibernate(Session session) throws HibernateException {
 	                	//ids will be sorted
 	                 	TreeSet<Principal> sorted = new TreeSet(new LongIdComparator());
 	      		    	sorted.addAll(entries);
@@ -1109,7 +1145,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		
 	}
  	
-    public UserProperties loadUserProperties(Long userId) {
+    @Override
+	public UserProperties loadUserProperties(Long userId) {
 		long begin = System.nanoTime();
 		try {
 	    	UserPropertiesPK id = new UserPropertiesPK(userId);
@@ -1151,7 +1188,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
     }
  
-    public UserProperties loadUserProperties(Long userId, Long binderId) {
+    @Override
+	public UserProperties loadUserProperties(Long userId, Long binderId) {
 		long begin = System.nanoTime();
 		try {
 	    	UserPropertiesPK id = new UserPropertiesPK(userId, binderId);
@@ -1235,7 +1273,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	   	}
 
 	}
-    public Group getReservedGroup(String internalId, Long zoneId) {
+    @Override
+	public Group getReservedGroup(String internalId, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 	    	Long id = getReservedId(internalId, zoneId);
@@ -1252,7 +1291,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "getReservedGroup(String,Long)");
     	}	        
     }
-    public Long getReservedGroupId(String internalId, Long zoneId) {
+    @Override
+	public Long getReservedGroupId(String internalId, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 	    	Long id = getReservedId(internalId, zoneId);
@@ -1269,7 +1309,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "getReservedGroup(String,Long)");
     	}	        
     }
-    public ApplicationGroup getReservedApplicationGroup(String internalId, Long zoneId) {
+    @Override
+	public ApplicationGroup getReservedApplicationGroup(String internalId, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 	    	Long id = getReservedId(internalId, zoneId);
@@ -1286,7 +1327,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "getReservedApplicationGroup(String,Long)");
     	}	        
     }
-    public User getReservedUser(String internalId, Long zoneId) {
+    @Override
+	public User getReservedUser(String internalId, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 	    	Long id = getReservedId(internalId, zoneId);
@@ -1305,7 +1347,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "getReservedUser(String,Long)");
     	}	        
    }
-    public User getReservedUserDeadOrAlive(String internalId, Long zoneId) {
+    @Override
+	public User getReservedUserDeadOrAlive(String internalId, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 	    	Long id = getReservedId(internalId, zoneId);
@@ -1323,7 +1366,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
    }
     
-    public Set<Long> getPrincipalIds(Principal p) {
+    @Override
+	public Set<Long> getPrincipalIds(Principal p) {
 		long begin = System.nanoTime();
 		try {
 	    	if (p instanceof IndividualPrincipal) {
@@ -1362,16 +1406,19 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	 * @param Set of principalIds
 	 * @returns Set of userIds
 	 */
-    public Set<Long> explodeGroups(final Collection<Long> ids, Long zoneId) {
+    @Override
+	public Set<Long> explodeGroups(final Collection<Long> ids, Long zoneId) {
     	return explodeGroups(ids, zoneId, true);
     }
+	@Override
 	public Set<Long> explodeGroups(final Collection<Long> ids, Long zoneId, boolean allowAllUsersGroup) {   
 		long begin = System.nanoTime();
 		try {
 			if ((ids == null) || ids.isEmpty()) return new TreeSet();
 			Set users = (Set)getHibernateTemplate().execute(
 	            new HibernateCallback() {
-	                public Object doInHibernate(Session session) throws HibernateException {
+	                @Override
+					public Object doInHibernate(Session session) throws HibernateException {
 	                    Set<Long> result = new TreeSet(ids);
 	                    List mems;
 	                    Set loopDectector = new HashSet(ids);
@@ -1435,13 +1482,15 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	 * @param groupId
 	 * @result List of <code>Membership</code>
 	 */
+	@Override
 	public List<Long> getMembership(final Long groupId, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 			if (groupId == null) return new ArrayList();
 		    List membership = (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {
-	                public Object doInHibernate(Session session) throws HibernateException {
+	                @Override
+					public Object doInHibernate(Session session) throws HibernateException {
 	                   	Query query = session.createQuery("from org.kablink.teaming.domain.Membership m where m.groupId=?");
 	                   	query.setParameter(0, groupId);
 	                    return query.list();
@@ -1456,13 +1505,15 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		
 	}
 	
+	@Override
 	public List<Long> getOwnedBinders(final Set<Principal> users) {
 		long begin = System.nanoTime();
 		try {
 			if (users == null || (users.size() < 1)) return new ArrayList<Long>();
 		    List membership = (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {
-	                public Object doInHibernate(Session session) throws HibernateException {
+	                @Override
+					public Object doInHibernate(Session session) throws HibernateException {
 	                   	Query query = session.createQuery("select w.id from org.kablink.teaming.domain.Binder w where w.owner in (:pList)")
 	                   	.setParameterList("pList", users);
 	                    return query.list();
@@ -1486,13 +1537,15 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	 * @param principalId
 	 * @return Set of groupIds
 	 */
+	@Override
 	public Set<Long> getAllGroupMembership(final Long principalId, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 			if (principalId == null)  return new TreeSet();
 			return (Set)getHibernateTemplate().execute(
 	            new HibernateCallback() {
-	                public Object doInHibernate(Session session) throws HibernateException {
+	                @Override
+					public Object doInHibernate(Session session) throws HibernateException {
 	                    Principal principal = (Principal)session.get(Principal.class, principalId);
 	                    if (principal == null) {throw new NoPrincipalByTheIdException(principalId);}
 	                    Set result = new TreeSet();
@@ -1521,6 +1574,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
 	}
 
+	@Override
 	public SeenMap loadSeenMap(Long userId) {
 		long begin = System.nanoTime();
 		try {
@@ -1556,6 +1610,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "loadSeenMap(Long)");
     	}	        
 	}
+	@Override
 	public Visits loadVisit(Long userId, EntityIdentifier entityId) {
 		long begin = System.nanoTime();
 		try {
@@ -1566,6 +1621,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "loadVisit(Long,EntityIdentifier)");
     	}	        
 	}
+	@Override
 	public Rating loadRating(Long userId, EntityIdentifier entityId) {
 		long begin = System.nanoTime();
 		try {
@@ -1576,6 +1632,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "loadRating(Long,EntityIdentifier)");
     	}	        
 	}
+	@Override
 	public Subscription loadSubscription(Long userId, EntityIdentifier entityId) {
 		long begin = System.nanoTime();
 		try {
@@ -1589,12 +1646,14 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	//mark entries deleted - used when deleting entries in bulk and want
 	//to exclude some from future queries
 	//entries evicted from cache
+	@Override
 	public void markEntriesDeleted(final ProfileBinder binder, final Collection<Principal> entries) {
 		long begin = System.nanoTime();
 		try {
 			if (entries.isEmpty()) return;
 			getHibernateTemplate().execute(
 					new HibernateCallback() {
+						@Override
 						public Object doInHibernate(Session session) throws HibernateException {
 							Set ids = new HashSet();	               			
 							for (Principal p:entries) {
@@ -1614,6 +1673,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "markEntriesDeleted(ProfileBinder,Collection<Principal>)");
     	}	        
 	}
+	@Override
 	public Application loadApplication(Long applicationId, Long zoneId) throws NoApplicationByTheIdException {
 		long begin = System.nanoTime();
     	try {
@@ -1631,6 +1691,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			end(begin, "loadApplication(Long,Long)");
 		}	        
 	}
+	@Override
 	public Application loadApplication(Long applicationId, String zoneName) throws NoUserByTheIdException {
 		long begin = System.nanoTime();
 		try {
@@ -1642,12 +1703,14 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
 	}
 
-    public Principal loadPrincipal(final Long prinId, final Long zoneId, final boolean checkActive) {
+    @Override
+	public Principal loadPrincipal(final Long prinId, final Long zoneId, final boolean checkActive) {
 		long begin = System.nanoTime();
 		try {
 	        Principal principal = (Principal)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
 	                    	//hoping for cache hit
 	                    	Principal principal = (Principal)session.get(Principal.class, prinId);
 	                        if (principal == null) {throw new NoPrincipalByTheIdException(prinId);}
@@ -1672,6 +1735,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
               
     }
     
+	@Override
 	public List<ApplicationGroup> loadApplicationGroups(Collection<Long> groupsIds, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -1682,12 +1746,14 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
 	}
 
+	@Override
 	public ApplicationPrincipal loadApplicationPrincipal(final Long prinId, final Long zoneId, final boolean checkActive) {
 		long begin = System.nanoTime();
 		try {
 			ApplicationPrincipal principal = (ApplicationPrincipal)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
 	                    	//hoping for cache hit
 	                    	ApplicationPrincipal principal = (ApplicationPrincipal)session.get(ApplicationPrincipal.class, prinId);
 	                        if (principal == null) {throw new NoPrincipalByTheIdException(prinId);}
@@ -1712,6 +1778,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
 	}
 	
+	@Override
 	public List<ApplicationPrincipal> loadApplicationPrincipals(Collection<Long> ids, Long zoneId, boolean checkActive) {
 		long begin = System.nanoTime();
 		try {
@@ -1735,6 +1802,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
 	}
 	
+	@Override
 	public List loadGroupPrincipals(Collection<Long> ids, Long zoneId, boolean checkActive) {
 		long begin = System.nanoTime();
 		try {
@@ -1768,6 +1836,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
 	}
 	
+	@Override
 	public List loadIndividualPrincipals(Collection<Long> ids, Long zoneId, boolean checkActive) {
 		long begin = System.nanoTime();
 		try {
@@ -1801,7 +1870,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
 	}
 
-    public List<Application> loadApplications(Collection<Long> applicationIds, Long zoneId) {
+    @Override
+	public List<Application> loadApplications(Collection<Long> applicationIds, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 	    	// If applicationIds is null, load all principals of the specified type rather
@@ -1820,7 +1890,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
     }
     
-    public List<Principal> loadPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive) {
+    @Override
+	public List<Principal> loadPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive) {
 		long begin = System.nanoTime();
 		try {
 	    	List<Principal> result = loadPrincipals(ids, zoneId, Principal.class, true, checkActive);
@@ -1857,7 +1928,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     private List loadAllPrincipals(final Long zoneId, final Class clazz, final boolean cacheable, final boolean checkActive) {
         List result = (List)getHibernateTemplate().execute(
            	new HibernateCallback() {
-        		public Object doInHibernate(Session session) throws HibernateException {
+        		@Override
+				public Object doInHibernate(Session session) throws HibernateException {
        					Criteria crit = session.createCriteria(clazz)
     					.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
     					.setFetchMode("emailAddresses", FetchMode.JOIN)
@@ -1881,12 +1953,14 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 
 
     //get list representing entities that have been shared with ids and binderIds
-    public List<SharedEntity> loadSharedEntities(final Collection ids, final Collection binderIds, final Date after, Long zoneId) {   	
+    @Override
+	public List<SharedEntity> loadSharedEntities(final Collection ids, final Collection binderIds, final Date after, Long zoneId) {   	
 		long begin = System.nanoTime();
 		try {
 	      	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
 	                    	Criteria crit = session.createCriteria(SharedEntity.class)
 	                    	.add(Expression.gt("sharedDate", after))
 	             			.addOrder(Order.desc("sharedDate"));
@@ -1930,7 +2004,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	// STOP!!! THIS METHOD IS FOR INTERNAL/SPECIAL USE ONLY. USE THE REGULAR findUserByName() METHOD INSTEAD.
         return (User)getHibernateTemplate().execute(
                 new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
+                    @Override
+					public Object doInHibernate(Session session) throws HibernateException {
                  	   	//only returns active users
                     	Query query;
                     	if(lookupByRange()) {
@@ -1957,6 +2032,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
  	}
 
 	//If this user cannot see all users, then filter out the ones not allowed
+	@Override
 	public Principal filterInaccessiblePrincipal(Principal principal) {
 		long begin = System.nanoTime();
 		try {
@@ -1970,6 +2046,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "filterInaccessiblePrincipal(Principal)");
     	}	        
 	}
+	@Override
 	public List filterInaccessiblePrincipals(List principals) {
 		if (RequestContextHolder.getRequestContext() == null) return principals;
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -2041,12 +2118,14 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 	
 	//Initialize (or reset) the disk space used by each user
+	@Override
 	public void resetDiskUsage(Long zone) {
 		long begin = System.nanoTime();
 		try {
 			final Long zoneId = zone;
 			getHibernateTemplate().execute(
 					new HibernateCallback() {
+						@Override
 						public Object doInHibernate(Session session) throws HibernateException {
 							String sql ="Update SS_Principals " +
 										"SET diskSpaceUsed = " + 
@@ -2070,6 +2149,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 
 	// this returns non-zero quotas (any quota which has been set by the admin)
+	@Override
 	public List getNonDefaultQuotas(String type, final long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -2078,6 +2158,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			List results = null;
 			results = (List) getHibernateTemplate().execute(
 					new HibernateCallback() {
+						@Override
 						public Object doInHibernate(Session session)
 								throws HibernateException {
 							
@@ -2110,6 +2191,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 
 	// this returns non-zero file size limits (any limit which has been set by the admin)
+	@Override
 	public List getNonDefaultFileSizeLimits(String type, final long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -2118,6 +2200,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			List results = null;
 			results = (List) getHibernateTemplate().execute(
 					new HibernateCallback() {
+						@Override
 						public Object doInHibernate(Session session)
 								throws HibernateException {
 							
@@ -2149,6 +2232,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 
 	// This returns a list of all disabled user accounts
+	@Override
 	public List<Long> getDisabledUserAccounts(final long zoneId) {
 		long begin = System.nanoTime();
 		try {
@@ -2157,6 +2241,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			List results = null;
 			results = (List) getHibernateTemplate().execute(
 					new HibernateCallback() {
+						@Override
 						public Object doInHibernate(Session session)
 								throws HibernateException {
 							
@@ -2213,7 +2298,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		try {
 	        return (List)getHibernateTemplate().execute(
 		            new HibernateCallback() {
-		                    public Object doInHibernate(Session session) throws HibernateException {
+		                    @Override
+							public Object doInHibernate(Session session) throws HibernateException {
 	                            return session.createCriteria(ShareItem.class)
 	                            	.add(Restrictions.in("id", shareItemIds))
 	                            	.list();
@@ -2234,7 +2320,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		try {
 	      	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
                     		return session.createQuery("from org.kablink.teaming.domain.ShareItem where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
                     				.setString("sharedEntityType", sharedEntityIdentifier.getEntityType().name())
                     				.setLong("sharedEntityId", sharedEntityIdentifier.getEntityId())
@@ -2258,7 +2345,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		try {
 	      	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
                     		return session.createQuery("from org.kablink.teaming.domain.ShareItem where creation_principal=:sharerId")
                     				.setLong("sharerId", sharerId)
                     				.list();
@@ -2279,11 +2367,37 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		try {
 	      	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
 	                    	// Don't use alias of the first table to refer to property/column name associated with entity, 
 	                    	// since HQL won't treat it as nicely as it does without alias. 
                     		return session.createQuery("from org.kablink.teaming.domain.ShareItem s join s.members m where creation_principal=:sharerId and m.recipientType=:recipientType and m.recipientId=:recipientId")
                     				.setLong("sharerId", sharerId)
+                    				.setShort("recipientType", recipientType.getValue())
+                    				.setLong("recipientId", recipientId)
+                    				.list();
+	                    }
+	                }
+	            );
+	      	
+	       return result;   	
+    	}
+    	finally {
+    		end(begin, "findShareItemsBySharerAndRecipient(Long,ShareItemMember.RecipientType,Long)");
+    	}	              	
+ 	}
+ 	
+	@Override
+ 	public List<ShareItem> findShareItemsByRecipient(final ShareItemMember.RecipientType recipientType, final Long recipientId) {
+		long begin = System.nanoTime();
+		try {
+	      	List result = (List)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
+	                    	// Don't use alias of the first table to refer to property/column name associated with entity, 
+	                    	// since HQL won't treat it as nicely as it does without alias. 
+                    		return session.createQuery("from org.kablink.teaming.domain.ShareItem s join s.members m where m.recipientType=:recipientType and m.recipientId=:recipientId")
                     				.setShort("recipientType", recipientType.getValue())
                     				.setLong("recipientId", recipientId)
                     				.list();
@@ -2308,7 +2422,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		try {
 	      	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
                     		return session.createQuery("from org.kablink.teaming.domain.ShareItem where creation_principal=:sharerId and sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
                     				.setLong("sharerId", sharerId)
                     				.setString("sharedEntityType", sharedEntityIdentifier.getEntityType().name())
@@ -2333,7 +2448,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		try {
 	      	List<Object[]> list = (List<Object[]>)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
 	                    	// Don't use alias of the first table to refer to property/column name associated with entity, 
 	                    	// since HQL won't treat it as nicely as it does without alias. 
                     		return session.createQuery("select distinct m.recipientType, m.recipientId from org.kablink.teaming.domain.ShareItem s join s.members m where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId and m.rightSet." + rightName + "=:rightValue")
