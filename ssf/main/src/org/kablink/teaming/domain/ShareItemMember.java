@@ -117,6 +117,13 @@ public class ShareItemMember {
 		this.rightSet = rightSet;
 	}
 	
+	public boolean isExpired() {
+		if(endDate == null)
+			return false; // never expires
+		else
+			return endDate.before(new Date());
+	}
+	
 	public static class RightSet {
 		protected boolean createEntries = false;
 		protected boolean modifyEntries = false;
