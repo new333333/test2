@@ -37,10 +37,15 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyExitEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent;
+import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent.ManageMenuPopupCallback;
 import org.kablink.teaming.gwt.client.event.GetSidebarContextEvent;
 import org.kablink.teaming.gwt.client.event.GetSidebarContextEvent.ContextCallback;
+import org.kablink.teaming.gwt.client.event.HideManageMenuEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeCollapsedEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeExpandedEvent;
+import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
+import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.ExpandHorizontalBucketCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalNodeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -60,6 +65,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -80,7 +86,8 @@ import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
  * @author drfoster@novell.com
  */
 public class TreeDisplayHorizontal extends TreeDisplayBase {
-	private FlowPanel	m_rootPanel;	// The top level FlowPanel containing the tree's contents.
+	private FlowPanel		m_rootPanel;			// The top level FlowPanel containing the tree's contents.
+	private ManageMenuPopup	m_selectorConfigPopup;	//
 	
 	private final static String GRID_DEPTH_ATTRIBUTE	= "n-depth";
 	
@@ -131,7 +138,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			m_expanderImg.setResource(getImages().tree_closer());
 			m_ti.setBinderExpanded(true);
 			m_ti.setChildBindersList(expandedTI.getChildBindersList());
-			reRenderNode(m_ti, m_nodeGrid);
+			rerenderNode(m_ti, m_nodeGrid);
 			
 			// ...and tell everybody that it's been expanded.
 			GwtTeaming.fireEventAsync(
@@ -152,7 +159,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				// Yes!  Mark it as being closed and re-render it...
 				m_expanderImg.setResource(getImages().tree_opener());
 				m_ti.setBinderExpanded(false);
-				reRenderNode(m_ti, m_nodeGrid);
+				rerenderNode(m_ti, m_nodeGrid);
 				
 				// ...and tell everybody that it's been collapsed.
 				GwtTeaming.fireEventAsync(
@@ -257,11 +264,15 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 					clearGetContext();
 					m_handleSidebarContext = false;
 					
-					// ...and add the TreeInfo information since we
-					// ...didn't get a context that we'd normally add
-					// ...one from.
+					// ...add the TreeInfo information since we didn't
+					// ...get a context that we'd normally add one
+					// ...from.
 					addTIImageAndAnchor(m_fp, m_ti, m_selectorA);
 
+					// ...and add the access to the binder
+					// ...configuration menu.
+					addBinderConfig(m_fp, m_ti);
+					
 					// If we're in UI debug mode, display an alert
 					// about the problem.
 					GwtClientHelper.debugAlert(
@@ -310,6 +321,34 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	}
 
 	/*
+	 * Adds access to the binder configuration menu.
+	 */
+	private void addBinderConfig(FlowPanel fp, TreeInfo ti) {
+//!		...this needs to be implemented...
+		
+		// Create an anchor to run the configuration menu on this
+		// binder.
+		final Anchor  selectorConfigA  = new Anchor();
+		final Element selectorConfigAE = selectorConfigA.getElement();
+		selectorConfigA.setTitle(ti.getBinderInfo().isBinderFolder() ? getMessages().treeAltConfigureFolder() : getMessages().treeAltConfigureWorkspace());
+		Image selectorConfigImg = GwtClientHelper.buildImage(getImages().configOptions());
+		selectorConfigImg.addStyleName("breadCrumb_ContentTail_configureImg");
+		selectorConfigAE.appendChild(selectorConfigImg.getElement());
+		selectorConfigA.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				if (null == m_selectorConfigPopup)
+				     buildAndRunSelectorConfigMenuAsync(selectorConfigA);
+				else runSelectorConfigMenuAsync(        selectorConfigA);
+			}
+		});
+		fp.add(selectorConfigA);
+		
+		// ...and hide the manage menu in the main menu bar.
+		HideManageMenuEvent.fireOneAsync();
+	}
+	
+	/*
 	 * Adds an image and anchor for a TreeInfo to a flow panel.
 	 */
 	private void addTIImageAndAnchor(FlowPanel fp, TreeInfo ti, Anchor selectorA) {
@@ -343,6 +382,49 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		fp.add(upButton);
 	}
 	
+	/*
+	 * Asynchronously builds and runs the selector configuration menu.
+	 */
+	private void buildAndRunSelectorConfigMenuAsync(final Anchor selectorConfigA) {
+		ScheduledCommand doBuildAndRunMenu = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				buildAndRunSelectorConfigMenuNow(selectorConfigA);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doBuildAndRunMenu);
+	}
+	
+	/*
+	 * Synchronously builds and runs the selector configuration menu.
+	 */
+	private void buildAndRunSelectorConfigMenuNow(final Anchor selectorConfigA) {
+		GwtTeaming.fireEvent(
+			new GetManageMenuPopupEvent(new ManageMenuPopupCallback() {
+				@Override
+				public void manageMenuPopup(ManageMenuPopup mmp) {
+					// Is there anything in the selector configuration
+					// menu?
+					m_selectorConfigPopup = mmp;
+					if ((null == m_selectorConfigPopup) || (!(m_selectorConfigPopup.shouldShowMenu()))) {
+						// No!  Clear the selector widget, tell the
+						// user about the problem and bail.
+						clearSelectorConfig();
+						GwtClientHelper.deferredAlert(getMessages().treeErrorNoManageMenu());
+					}
+					
+					else {
+						// Yes, there's stuff in the selector
+						// configuration menu!  Complete populating it
+						// and run it.
+						m_selectorConfigPopup.setCurrentBinder(getSelectedBinderInfo());
+						m_selectorConfigPopup.populateMenu();
+						runSelectorConfigMenuAsync(selectorConfigA);
+					}
+				}
+			}));
+	}
+	
 	/**
 	 * Returns an OnSelectBinderInfo object that corresponds to a
 	 * TreeInfo object.
@@ -366,6 +448,17 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		nodeGrid.remove(nodeGrid.getWidget(0, 1));
 	}
 
+	/*
+	 * Clears an previous binder configuration panel and menu.
+	 */
+	private void clearSelectorConfig() {
+		// Clear the previous menu.
+		if (null != m_selectorConfigPopup) {
+			m_selectorConfigPopup.clearItems();
+			m_selectorConfigPopup = null;
+		}
+	}
+	
 	/*
 	 * Closes this WorkspaceTreeControl.
 	 */
@@ -676,8 +769,12 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 						}
 					});
 				
-				// ...and add the image and anchor for the binder.
+				// ...add the image and anchor for the binder...
 				addTIImageAndAnchor(fp, ti, selectorA);
+				
+				// ...and add the access to the binder configuration
+				// ...menu.
+				addBinderConfig(fp, ti);
 			}
 
 			// No the tail binder is not a folder!  Are we showing
@@ -741,18 +838,26 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 											});
 									}
 									
-									// ...and add the image and anchor
-									// ...for the binder.
+									// ...add the image and anchor for
+									// ...the binder...
 									addTIImageAndAnchor(fp, ti, selectorA);
+									
+									// ...and add the access to the
+									// ...binder configuration menu.
+									addBinderConfig(fp, ti);
 								}
 							}
 						}));
 			}
 
 			else {
-				// No, we must be showing navigation trees!  Simply add
-				// the image and anchor for the binder.
+				// No, we must be showing navigation trees!  Add the
+				// image and anchor for the binder...
 				addTIImageAndAnchor(fp, ti, selectorA);
+				
+				// ...and add the access to the
+				// ...binder configuration menu.
+				addBinderConfig(fp, ti);
 			}
 		}
 		
@@ -786,9 +891,32 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	/*
 	 * Clears and re-renders a TreeInfo object into a node's FlexTable.
 	 */
-	private void reRenderNode(TreeInfo ti, FlexTable nodeGrid) {
+	private void rerenderNode(TreeInfo ti, FlexTable nodeGrid) {
 		clearNode(nodeGrid);
 		renderNode(ti, nodeGrid);
+	}
+	
+	/*
+	 * Asynchronously runs the selector configuration menu.
+	 */
+	private void runSelectorConfigMenuAsync(final Anchor selectorConfigA) {
+		ScheduledCommand doRunMenu = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				runSelectorConfigMenuNow(selectorConfigA);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doRunMenu);
+	}
+	
+	/*
+	 * Synchronously runs the selector configuration menu.
+	 */
+	private void runSelectorConfigMenuNow(final Anchor selectorConfigA) {
+		final PopupMenu configureDropdownMenu = new PopupMenu(true, false, false);
+		configureDropdownMenu.addStyleName("vibe-configureMenuBarDropDown");
+		configureDropdownMenu.setMenu(m_selectorConfigPopup.getMenuBar());
+		configureDropdownMenu.showRelativeToTarget(selectorConfigA);
 	}
 	
 	/**

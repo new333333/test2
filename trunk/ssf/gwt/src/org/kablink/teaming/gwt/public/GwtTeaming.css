@@ -1788,24 +1788,15 @@ body, table td, select
 	font-size: 1.4em !important;
 	margin-top: 2px !important;
 	margin-left: 0px !important;
+	margin-right: 5px !important;
 	vertical-align: middle;
 }
-.breadCrumb_ContentTail_Img
-{
-	margin-right: 3px;
-	vertical-align: middle;
-}
-.breadCrumb_ContentTail_Panel
-{
-	display: block;
-	padding-top: 5px;
-	white-space: nowrap;
-}
-.breadCrumb_ContentTail_Up
-{
-	margin-right: 3px;
-	vertical-align: middle;
-}
+
+.breadCrumb_ContentTail_configureImg {cursor: pointer;}
+.breadCrumb_ContentTail_Img          {margin-right: 3px; vertical-align: middle;}
+.breadCrumb_ContentTail_Panel        {display: block; padding-top: 5px; white-space: nowrap;}
+.breadCrumb_ContentTail_Up           {margin-right: 3px; vertical-align: middle;}
+
 .breadCrumb_TrashLabel
 {
 	color: #135C8F;

@@ -1567,9 +1567,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	private void selectRootConfig() {
 		// Show the selector configuration widget on the root.
 		TreeInfo rootTI = getRootTreeInfo();
-		String selectedId = getSelectorId(rootTI);
-//		Document.get().getElementById(EXTENSION_ID_SELECTOR_ID).setAttribute("value", selectedId);
-		showBinderConfig(rootTI, selectedId);
+		showBinderConfig(rootTI, getSelectorId(rootTI));
 	}
 
 	/**
