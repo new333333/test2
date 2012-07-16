@@ -755,6 +755,16 @@ public class GwtClientHelper {
 	}
 
 	/**
+	 * Returns true if the logged in user is a site administrator and
+	 * false otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isSiteAdmin() {
+		return getRequestInfo().isSiteAdmin();
+	}
+
+	/**
 	 * Appends an HTML element to the top document.
 	 * 
 	 * @param htmlElement
