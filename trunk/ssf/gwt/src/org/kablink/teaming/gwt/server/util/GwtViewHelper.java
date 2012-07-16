@@ -83,6 +83,8 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SeenMap;
+import org.kablink.teaming.domain.ShareItem;
+import org.kablink.teaming.domain.ShareItemMember.RecipientType;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
@@ -489,6 +491,20 @@ public class GwtViewHelper {
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
+	}
+
+	/*
+	 * Condenses a List<ShareItem> so that share items only show up
+	 * once. 
+	 */
+	private static void condenseShareItems(AllModulesInjected bs, List<ShareItem> shareItems) {
+		// If we don't have any share items to condens...
+		if ((null == shareItems) || shareItems.isEmpty()) {
+			// ...bail.
+			return;
+		}
+		
+//!		...this needs to be implemented...
 	}
 	
 	/**
@@ -1487,7 +1503,7 @@ public class GwtViewHelper {
 	 * Returns the entries for the given collection.
 	 */
 	@SuppressWarnings("unchecked")
-	private static Map getCollectionEntries(AllModulesInjected bs, Binder binder, String quickFilter, Map options, CollectionType ct, List<SharedEntity> shares) {
+	private static Map getCollectionEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options, CollectionType ct, List<SharedEntity> shares, List<ShareItem> shareItems) {
 		// Several of the collections require the ID of the top
 		// workspace.
 		String topWSId = GwtUIHelper.getTopWSIdSafely(bs, false);
@@ -1564,7 +1580,7 @@ public class GwtViewHelper {
 				// No!  Bail.
 				return buildEmptyEntryMap();
 			}
-
+			
 			// Scan the entities that have been shared.
 			List<String>	sharedBinderIds = new ArrayList<String>();
 			List<String>	sharedEntryIds  = new ArrayList<String>();
@@ -2285,6 +2301,7 @@ public class GwtViewHelper {
 
 			// Are we working with a 'Shared with Me' collection?
 			List<SharedEntity> shares;
+			List<ShareItem>    shareItems;
 			boolean isCollectionSharedWithMe = (isCollection && CollectionType.SHARED_WITH_ME.equals(folderInfo.getCollectionType()));
 			if (isCollectionSharedWithMe) {
 				// Yes!  Has anything been shared with the current user
@@ -2292,9 +2309,14 @@ public class GwtViewHelper {
 				GregorianCalendar since = new GregorianCalendar();
 				since.add(Calendar.YEAR, (-2));
 				shares = bs.getProfileModule().getShares(GwtServerHelper.getCurrentUserId(), since.getTime());
+				
+//!				...this needs to be implemented...
+//!				shareItems = getShareItems(bs, request);
+				shareItems = null;
 			}
 			else {
-				shares = null;
+				shares     = null;
+				shareItems = null;
 			}
 
 			// Is the user currently viewing pinned entries?
@@ -2312,7 +2334,7 @@ public class GwtViewHelper {
 				Map searchResults;
 				if      (isTrash)          searchResults = TrashHelper.getTrashEntries(bs, binder, options);
 				else if (isProfilesRootWS) searchResults = bs.getProfileModule().getUsers(         options);
-				else if (isCollection)     searchResults = getCollectionEntries(bs, binder, quickFilter, options, folderInfo.getCollectionType(), shares);
+				else if (isCollection)     searchResults = getCollectionEntries(bs, request, binder, quickFilter, options, folderInfo.getCollectionType(), shares, shareItems);
 				else {
 					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
 					searchResults = bs.getFolderModule().getEntries(folderId, options);
@@ -3263,7 +3285,42 @@ public class GwtViewHelper {
 		}
 		return user;
 	}
+
+	/*
+	 * Returns a List<ShareItem> of the items shared with the current
+	 * user.
+	 */
+	@SuppressWarnings("unused")
+	private static List<ShareItem> getShareItems(AllModulesInjected bs, HttpServletRequest request) {
+		// Get the List<ShareItem> of those things shared directly with
+		// the user...
+		Long			userId = GwtServerHelper.getCurrentUserId();
+		ProfileModule	pm     = bs.getProfileModule();
+		List<ShareItem> reply  = pm.getShareItemsByRecipient(RecipientType.user, userId);
 		
+		// ...add to it the List<ShareItem> of those things shared
+		// ...directly with teams the user is a member of...
+		List<Long> teams = GwtServerHelper.getTeamIds(request, bs, userId);
+		for (Long team:  teams) {
+			reply.addAll(pm.getShareItemsByRecipient(RecipientType.team, team));
+		}
+		
+		// ...add to it the List<ShareItem> of those things shared
+		// ...directly with groups the user is a member of...
+		List<Long> groups = GwtServerHelper.getGroupIds(request, bs, userId);
+		for (Long group:  groups) {
+			reply.addAll(pm.getShareItemsByRecipient(RecipientType.group, group));
+		}
+
+		// ...and finally, condense the List<ShareItem> so that
+		// ...share items only show up once.
+		condenseShareItems(bs, reply);
+		
+		// If we get here, reply refers to the List<ShareItem> of the
+		// share items shared with the current user.  Return it.
+		return reply;
+	}
+	
 	/*
 	 * Returns the URL for a user's avatar.
 	 */

@@ -5450,7 +5450,8 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Returns information about the teams of a specific user
+	 * Returns information about the groups of a specific user.
+	 * 
 	 * @param bs
 	 * @param userId 
 	 * 
@@ -5486,6 +5487,28 @@ public class GwtServerHelper {
 		
 		// If we get here, reply refers to the ArrayList<GroupInfo> of
 		// the groups the current user is a member of.  Return it.
+		return reply;
+	}
+	
+	/**
+	 * Returns information about the of a specific user
+	 * 
+	 * @param bs
+	 * @param userId 
+	 * 
+	 * @return
+	 */
+	public static List<Long> getGroupIds(HttpServletRequest request, AllModulesInjected bs, Long userId) {
+		// Allocate an ArrayList<GroupInfo> to hold the groups.
+		List<Long> reply = new ArrayList<Long>();
+		
+		List<GroupInfo> groups = getGroups(request, bs, userId);
+		for (GroupInfo group:  groups) {
+			reply.add(group.getId());
+		}
+
+		// If we get here, reply refers to the List<Long> of the groups
+		// the user is a member of.  Return it.
 		return reply;
 	}
 	
@@ -5790,7 +5813,8 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Returns information about the teams of a specific user
+	 * Returns information about the teams of a specific user.
+	 * 
 	 * @param bs
 	 * @param userId 
 	 * 
@@ -5821,6 +5845,28 @@ public class GwtServerHelper {
 		
 		// If we get here, reply refers to the ArrayList<TeamInfo> of
 		// the teams the current user is a member of.  Return it.
+		return reply;
+	}
+	
+	/**
+	 * Returns information about the teams of a specific user
+	 * 
+	 * @param bs
+	 * @param userId 
+	 * 
+	 * @return
+	 */
+	public static List<Long> getTeamIds(HttpServletRequest request, AllModulesInjected bs, Long userId) {
+		// Allocate an List<Long> to hold the team IDs.
+		List<Long> reply = new ArrayList<Long>();
+		
+		List<TeamInfo> tiList = getTeams(request, bs, userId);
+		for (TeamInfo ti:  tiList) {
+			reply.add(Long.parseLong(ti.getBinderId()));
+		}
+		
+		// If we get here, reply refers to the List<Long> of the teams
+		// the user is a member of.  Return it.
 		return reply;
 	}
 	
