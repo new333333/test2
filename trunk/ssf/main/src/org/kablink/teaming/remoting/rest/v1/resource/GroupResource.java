@@ -89,7 +89,7 @@ public class GroupResource extends AbstractPrincipalResource {
 	@POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public Group createGroup(Group group)
+	public Group createGroup(Group group, @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
             throws WriteFilesException, WriteEntryDataException {
 		// optionally accept initial password
         String defId = null;
@@ -97,26 +97,28 @@ public class GroupResource extends AbstractPrincipalResource {
             defId = group.getDefinition().getId();
         }
 
-        return ResourceUtil.buildGroup(getProfileModule().addGroup(defId, new RestModelInputData(group), null, null), true);
+        return ResourceUtil.buildGroup(getProfileModule().addGroup(defId, new RestModelInputData(group), null, null), true, textDescriptions);
 	}
 
     @GET
     @Path("/name/{name}")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Group getGroup(@PathParam("name") String name,
-                          @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
+                          @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
+                          @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
         if (name==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing name query parameter.");
         }
-        return ResourceUtil.buildGroup(getProfileModule().getGroup(name), includeAttachments);
+        return ResourceUtil.buildGroup(getProfileModule().getGroup(name), includeAttachments, textDescriptions);
     }
 
     @GET
     @Path("/{id}")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Group getGroup(@PathParam("id") long id,
-                        @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
-        return ResourceUtil.buildGroup(_getGroup(id), includeAttachments);
+                        @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
+                        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+        return ResourceUtil.buildGroup(_getGroup(id), includeAttachments, textDescriptions);
     }
 
     @PUT

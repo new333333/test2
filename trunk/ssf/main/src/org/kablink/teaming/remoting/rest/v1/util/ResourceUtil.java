@@ -118,9 +118,9 @@ public class ResourceUtil {
         return model;
     }
 
-    public static FolderEntry buildFolderEntry(org.kablink.teaming.domain.FolderEntry entry, boolean includeAttachments) {
+    public static FolderEntry buildFolderEntry(org.kablink.teaming.domain.FolderEntry entry, boolean includeAttachments, boolean textDescriptions) {
         FolderEntry model = new FolderEntry();
-        populateEntry(model, entry, includeAttachments);
+        populateEntry(model, entry, includeAttachments, textDescriptions);
         model.setDocLevel(entry.getDocLevel());
         model.setDocNumber(entry.getDocNumber());
         model.setReservation(buildHistoryStamp(entry.getReservation()));
@@ -199,17 +199,17 @@ public class ResourceUtil {
         return model;
     }
 
-    public static Binder buildBinder(org.kablink.teaming.domain.Binder binder, boolean includeAttachments) {
+    public static Binder buildBinder(org.kablink.teaming.domain.Binder binder, boolean includeAttachments, boolean textDescriptions) {
         Binder model;
         if (binder instanceof org.kablink.teaming.domain.Folder) {
             model = new Folder();
-            populateFolder((Folder) model, (org.kablink.teaming.domain.Folder) binder, includeAttachments);
+            populateFolder((Folder) model, (org.kablink.teaming.domain.Folder) binder, includeAttachments, textDescriptions);
         } else if (binder instanceof org.kablink.teaming.domain.Workspace) {
             model = new Workspace();
-            populateWorkspace((Workspace)model, (org.kablink.teaming.domain.Workspace)binder, includeAttachments);
+            populateWorkspace((Workspace)model, (org.kablink.teaming.domain.Workspace)binder, includeAttachments, textDescriptions);
         } else {
             model = new Binder();
-            populateBinder(model, binder, includeAttachments);
+            populateBinder(model, binder, includeAttachments, textDescriptions);
         }
         return model;
     }
@@ -272,9 +272,9 @@ public class ResourceUtil {
         return model;
     }
 
-    public static User buildUser(org.kablink.teaming.domain.User user, boolean includeAttachments) {
+    public static User buildUser(org.kablink.teaming.domain.User user, boolean includeAttachments, boolean textDescriptions) {
         User model = new User();
-        populatePrincipal(model, user, includeAttachments);
+        populatePrincipal(model, user, includeAttachments, textDescriptions);
         model.setFirstName(user.getFirstName());
         model.setMiddleName(user.getMiddleName());
         model.setLastName(user.getLastName());
@@ -308,9 +308,9 @@ public class ResourceUtil {
         return model;
     }
 
-    public static Group buildGroup(org.kablink.teaming.domain.Group group, boolean includeAttachments) {
+    public static Group buildGroup(org.kablink.teaming.domain.Group group, boolean includeAttachments, boolean textDescriptions) {
         Group model = new Group();
-        populatePrincipal(model, group, includeAttachments);
+        populatePrincipal(model, group, includeAttachments, textDescriptions);
 
         LinkUriUtil.populateGroupLinks(model);
 
@@ -377,7 +377,7 @@ public class ResourceUtil {
         return new EntityId(id, type.name(), LinkUriUtil.getDefinableEntityLinkUri(type, id));
     }
 
-    private static void populateDefinableEntity(DefinableEntity model, org.kablink.teaming.domain.DefinableEntity entity, boolean includeAttachments) {
+    private static void populateDefinableEntity(DefinableEntity model, org.kablink.teaming.domain.DefinableEntity entity, boolean includeAttachments, boolean textDescriptions) {
         model.setId(entity.getId());
 
         if (entity.getParentBinder() != null) {
@@ -392,7 +392,7 @@ public class ResourceUtil {
 
         org.kablink.teaming.domain.Description desc = entity.getDescription();
         if(desc != null) {
-            model.setDescription(buildDescription(desc));
+            model.setDescription(buildDescription(desc, textDescriptions));
         }
 
         if(entity.getCreation() != null) {
@@ -428,10 +428,10 @@ public class ResourceUtil {
             model.setAttachments(props.toArray(new BaseFileProperties[props.size()]));
         }
 
-        populateCustomFields(model, entity);
+        populateCustomFields(model, entity, textDescriptions);
     }
 
-    private static void populateCustomFields(final DefinableEntity model, final org.kablink.teaming.domain.DefinableEntity entity) {
+    private static void populateCustomFields(final DefinableEntity model, final org.kablink.teaming.domain.DefinableEntity entity, final boolean textDescriptions) {
         final Map<String, CustomField> fields = new LinkedHashMap<String, CustomField>();
         DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
             public void visit(Element entryElement, Element flagElement, Map args) {
@@ -444,7 +444,7 @@ public class ResourceUtil {
                         CustomField field = new CustomField(nameValue, typeValue);
                         CustomAttribute attribute = entity.getCustomAttribute(nameValue);
                         if (attribute!=null) {
-                            Object value = attribute.getRawValue();
+                            Object value = attribute.getRawValue(textDescriptions);
                             if (value instanceof Collection) {
                                 field.setValues(((Collection) value).toArray());
                             } else {
@@ -478,8 +478,8 @@ public class ResourceUtil {
         model.setCustomFields(fieldList.toArray(new CustomField[fieldList.size()]));
     }
 
-    private static void populateEntry(Entry model, org.kablink.teaming.domain.Entry entry, boolean includeAttachments) {
-        populateDefinableEntity(model, entry, includeAttachments);
+    private static void populateEntry(Entry model, org.kablink.teaming.domain.Entry entry, boolean includeAttachments, boolean textDescriptions) {
+        populateDefinableEntity(model, entry, includeAttachments, textDescriptions);
     }
 
     private static void populatePrincipalBrief(PrincipalBrief model, org.kablink.teaming.domain.Principal principal) {
@@ -488,8 +488,8 @@ public class ResourceUtil {
         model.setEmailAddress(principal.getEmailAddress());
     }
 
-    private static void populatePrincipal(Principal model, org.kablink.teaming.domain.Principal principal, boolean includeAttachments) {
-        populateEntry(model, principal, includeAttachments);
+    private static void populatePrincipal(Principal model, org.kablink.teaming.domain.Principal principal, boolean includeAttachments, boolean textDescriptions) {
+        populateEntry(model, principal, includeAttachments, textDescriptions);
         model.setEmailAddress(principal.getEmailAddress());
         model.setDisabled(principal.isDeleted());
         model.setReserved(principal.isReserved());
@@ -497,8 +497,8 @@ public class ResourceUtil {
         model.setLink(LinkUriUtil.getPrincipalLinkUri(principal));
     }
 
-    private static void populateBinder(Binder model, org.kablink.teaming.domain.Binder binder, boolean includeAttachments) {
-        populateDefinableEntity(model, binder, includeAttachments);
+    private static void populateBinder(Binder model, org.kablink.teaming.domain.Binder binder, boolean includeAttachments, boolean textDescriptions) {
+        populateDefinableEntity(model, binder, includeAttachments, textDescriptions);
         model.setPath(binder.getPathName());
         org.dom4j.Document def = binder.getEntryDefDoc();
         if(def != null) {
@@ -512,12 +512,12 @@ public class ResourceUtil {
         }
     }
 
-    private static void populateWorkspace(Workspace model, org.kablink.teaming.domain.Workspace workspace, boolean includeAttachments) {
-        populateBinder(model, workspace, includeAttachments);
+    private static void populateWorkspace(Workspace model, org.kablink.teaming.domain.Workspace workspace, boolean includeAttachments, boolean textDescriptions) {
+        populateBinder(model, workspace, includeAttachments, textDescriptions);
     }
 
-    private static void populateFolder(Folder model, org.kablink.teaming.domain.Folder folder, boolean includeAttachments) {
-        populateBinder(model, folder, includeAttachments);
+    private static void populateFolder(Folder model, org.kablink.teaming.domain.Folder folder, boolean includeAttachments, boolean textDescriptions) {
+        populateBinder(model, folder, includeAttachments, textDescriptions);
         model.setLibrary(folder.isLibrary());
         model.setMirrored(folder.isMirrored());
     }
@@ -579,10 +579,15 @@ public class ResourceUtil {
         return new HistoryStamp(new LongIdLinkPair(userId, LinkUriUtil.getUserLinkUri(userId)), historyStamp.getDate());
     }
 
-    private static Description buildDescription(org.kablink.teaming.domain.Description description){
+    private static Description buildDescription(org.kablink.teaming.domain.Description description, boolean textDescriptions){
         Description model = new Description();
-        model.setText(description.getText());
-        model.setFormat(description.getFormat());
+        if (textDescriptions) {
+            model.setText(description.getStrippedText());
+            model.setFormat(org.kablink.teaming.domain.Description.FORMAT_NONE);
+        } else {
+            model.setText(description.getText());
+            model.setFormat(description.getFormat());
+        }
         return model;
     }
 

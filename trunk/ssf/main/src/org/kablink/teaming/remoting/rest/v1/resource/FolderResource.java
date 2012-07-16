@@ -173,7 +173,9 @@ public class FolderResource extends AbstractBinderResource {
    	@Path("{id}/folders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-   	public org.kablink.teaming.rest.v1.model.Binder createSubFolder(@PathParam("id") long id, org.kablink.teaming.rest.v1.model.Binder binder, @QueryParam("template") Long templateId)
+   	public org.kablink.teaming.rest.v1.model.Binder createSubFolder(@PathParam("id") long id, org.kablink.teaming.rest.v1.model.Binder binder,
+                                                                    @QueryParam("template") Long templateId,
+                                                                    @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
                throws WriteFilesException, WriteEntryDataException {
         if (templateId!=null) {
             TemplateBinder template = getTemplateModule().getTemplate(templateId);
@@ -181,7 +183,7 @@ public class FolderResource extends AbstractBinderResource {
                 throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The specified 'template' parameter must be a folder template.");
             }
         }
-        return createBinder(id, binder, templateId);
+        return createBinder(id, binder, templateId, textDescriptions);
     }
 
 	// Read entries
@@ -226,6 +228,7 @@ public class FolderResource extends AbstractBinderResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
    	public FolderEntry createFolderEntry(@PathParam("id") long id,
                                          @QueryParam("file_entry") @DefaultValue("false") boolean fileEntry,
+                                         @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                          FolderEntry entry) throws WriteFilesException, WriteEntryDataException {
         Folder folder = _getFolder(id);
 
@@ -253,7 +256,7 @@ public class FolderResource extends AbstractBinderResource {
         populateTimestamps(options, entry);
         org.kablink.teaming.domain.FolderEntry result = getFolderModule().addEntry(id, defId, new RestModelInputData(entry), null, options);
         SimpleProfiler.stop("REST_folder_createFolderEntry");
-        return ResourceUtil.buildFolderEntry(result, true);
+        return ResourceUtil.buildFolderEntry(result, true, textDescriptions);
     }
 
     @Override

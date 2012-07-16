@@ -116,7 +116,8 @@ public class UserResource extends AbstractPrincipalResource {
 	@POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public User createUser(User user, @QueryParam ("password") String password)
+	public User createUser(User user, @QueryParam ("password") String password,
+                           @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
             throws WriteFilesException, WriteEntryDataException {
         if (user.getName()==null || user.getName().length()==0) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No name specified for the user to be created.");
@@ -134,26 +135,28 @@ public class UserResource extends AbstractPrincipalResource {
             defId = user.getDefinition().getId();
         }
 
-        return ResourceUtil.buildUser(getProfileModule().addUser(defId, inputData, null, null), true);
+        return ResourceUtil.buildUser(getProfileModule().addUser(defId, inputData, null, null), true, textDescriptions);
 	}
 
     @GET
     @Path("/name/{name}")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public User getUser(@PathParam("name") String name,
-                        @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
+                        @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
+                        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
         if (name==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing name query parameter.");
         }
-        return ResourceUtil.buildUser(getProfileModule().getUser(name), includeAttachments);
+        return ResourceUtil.buildUser(getProfileModule().getUser(name), includeAttachments, textDescriptions);
     }
 
     @GET
     @Path("/{id}")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public User getUser(@PathParam("id") long userId,
-                        @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
-        return ResourceUtil.buildUser(_getUser(userId), includeAttachments);
+                        @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
+                        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+        return ResourceUtil.buildUser(_getUser(userId), includeAttachments, textDescriptions);
     }
 
     @PUT

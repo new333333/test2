@@ -59,8 +59,9 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @Path("{id}")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Binder getBinder(@PathParam("id") long id,
-                            @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
-        return ResourceUtil.buildBinder(_getBinder(id), includeAttachments);
+                            @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
+                            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+        return ResourceUtil.buildBinder(_getBinder(id), includeAttachments, textDescriptions);
     }
 
     @PUT
@@ -111,9 +112,10 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 	@Path("{id}/binders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public Binder createSubBinder(@PathParam("id") long id, Binder binder, @QueryParam("template") Long templateId)
+	public Binder createSubBinder(@PathParam("id") long id, Binder binder, @QueryParam("template") Long templateId,
+                                  @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
             throws WriteFilesException, WriteEntryDataException {
-        return createBinder(id, binder, templateId);
+        return createBinder(id, binder, templateId, textDescriptions);
 	}
 
 	@GET
@@ -269,13 +271,13 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         getFolderModule().deleteTag(null, id, tagId);
     }
 
-    protected Binder createBinder(long parentId, Binder newBinder, Long templateId) throws WriteFilesException, WriteEntryDataException {
+    protected Binder createBinder(long parentId, Binder newBinder, Long templateId, boolean textDescriptions) throws WriteFilesException, WriteEntryDataException {
         _getBinder(parentId);
         if (newBinder.getTitle()==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No binder title was supplied in the POST data.");
         }
         org.kablink.teaming.domain.Binder binder = BinderUtils.createBinder(parentId, newBinder.getTitle(), null, templateId);
-        return ResourceUtil.buildBinder(binder, true);
+        return ResourceUtil.buildBinder(binder, true, textDescriptions);
     }
 
     protected void _deleteBinder(long id, boolean purge) {
