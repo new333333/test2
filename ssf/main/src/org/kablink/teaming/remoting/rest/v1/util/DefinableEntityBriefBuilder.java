@@ -38,6 +38,7 @@ import org.kablink.teaming.rest.v1.model.DefinitionBrief;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
 import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
 import org.kablink.teaming.rest.v1.model.StringIdLinkPair;
+import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -107,5 +108,16 @@ abstract public class DefinableEntityBriefBuilder {
         if(Validator.isNotNull(parentBinderIdStr))
             parentBinderId = Long.valueOf(parentBinderIdStr);
         return parentBinderId;
+    }
+
+    public static String getString(Map entry, String fieldName) {
+        Object field = entry.get(fieldName);
+        String value = null;
+        if (field instanceof SearchFieldResult) {
+            value = ((SearchFieldResult)field).getValueSet().iterator().next();
+        } else if (field instanceof String) {
+            value = (String) field;
+        }
+        return value;
     }
 }

@@ -50,20 +50,9 @@ public class UserBriefBuilder extends PrincipalBriefBuilder implements SearchRes
     public UserBrief build(Map entry) {
         UserBrief user = new UserBrief();
         populatePrincipalBrief(user, entry);
-        SearchFieldResult result = (SearchFieldResult) entry.get(ObjectKeys.FIELD_USER_FIRSTNAME);
-        if (result!=null) {
-            user.setFirstName(result.getValueSet().iterator().next());
-        }
-
-        result = (SearchFieldResult) entry.get(ObjectKeys.FIELD_USER_MIDDLENAME);
-        if (result!=null) {
-            user.setMiddleName(result.getValueSet().iterator().next());
-        }
-
-        result = (SearchFieldResult) entry.get(ObjectKeys.FIELD_USER_LASTNAME);
-        if (result!=null) {
-            user.setLastName(result.getValueSet().iterator().next());
-        }
+        user.setFirstName(getString(entry, ObjectKeys.FIELD_USER_FIRSTNAME));
+        user.setMiddleName(getString(entry, ObjectKeys.FIELD_USER_MIDDLENAME));
+        user.setLastName(getString(entry, ObjectKeys.FIELD_USER_LASTNAME));
 
         user.setLink(LinkUriUtil.getUserLinkUri(user.getId()));
         LinkUriUtil.populateUserLinks(user);

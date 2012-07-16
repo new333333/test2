@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -45,18 +46,21 @@ public class UserBrief extends PrincipalBrief {
 	private String lastName;
 	private String middleName;
 	
+    @XmlElement(name = "first_name")
 	public String getFirstName() {
 		return firstName;
 	}
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
+    @XmlElement(name = "last_name")
 	public String getLastName() {
 		return lastName;
 	}
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+    @XmlElement(name = "middle_name")
 	public String getMiddleName() {
 		return middleName;
 	}
