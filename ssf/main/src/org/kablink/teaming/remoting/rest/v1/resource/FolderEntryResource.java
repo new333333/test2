@@ -132,9 +132,10 @@ public class FolderEntryResource extends AbstractDefinableEntityResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public FolderEntry getFolderEntry(
 			@PathParam("id") long id,
-            @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
+            @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
+            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
         org.kablink.teaming.domain.FolderEntry hEntry = _getFolderEntry(id);
-		return ResourceUtil.buildFolderEntry(hEntry, includeAttachments);
+		return ResourceUtil.buildFolderEntry(hEntry, includeAttachments, textDescriptions);
 	}
 
     // Update folder entry
@@ -142,7 +143,8 @@ public class FolderEntryResource extends AbstractDefinableEntityResource {
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public FolderEntry putFolderEntry(@PathParam("id") long id, FolderEntry entry)
+	public FolderEntry putFolderEntry(@PathParam("id") long id, FolderEntry entry,
+                                      @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
             throws WriteFilesException, WriteEntryDataException {
         SimpleProfiler.start("folderService_modifyEntry");
         HashMap options = new HashMap();
@@ -151,7 +153,7 @@ public class FolderEntryResource extends AbstractDefinableEntityResource {
         // Read it back from the database
         org.kablink.teaming.domain.Entry dEntry = getFolderModule().getEntry(null, id);
         SimpleProfiler.stop("folderService_modifyEntry");
-        return ResourceUtil.buildFolderEntry((org.kablink.teaming.domain.FolderEntry) dEntry, true);
+        return ResourceUtil.buildFolderEntry((org.kablink.teaming.domain.FolderEntry) dEntry, true, textDescriptions);
 	}
 
 	// Delete folder entry
@@ -190,23 +192,25 @@ public class FolderEntryResource extends AbstractDefinableEntityResource {
 
     @GET
     @Path("{id}/reply_tree")
-    public SearchResultTree<FolderEntry> getReplyTree(@PathParam("id") Long id) {
+    public SearchResultTree<FolderEntry> getReplyTree(@PathParam("id") Long id,
+                                                      @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
         org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
         SearchResultTree<FolderEntry> tree = new SearchResultTree<FolderEntry>();
-        populateReplies(entry, tree);
+        populateReplies(entry, tree, textDescriptions);
         return tree;
     }
 
     @GET
     @Path("{id}/replies")
-    public SearchResultList<FolderEntry> getReplies(@PathParam("id") Long id) {
+    public SearchResultList<FolderEntry> getReplies(@PathParam("id") Long id,
+                                                    @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
         org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
         List replies = entry.getReplies();
         SearchResultList<FolderEntry> results = new SearchResultList<FolderEntry>();
         for (Object o : replies) {
             org.kablink.teaming.domain.FolderEntry reply = (org.kablink.teaming.domain.FolderEntry) o;
             if (!reply.isPreDeleted()) {
-                results.append(ResourceUtil.buildFolderEntry(reply, false));
+                results.append(ResourceUtil.buildFolderEntry(reply, false, textDescriptions));
             }
         }
         return results;
@@ -217,7 +221,8 @@ public class FolderEntryResource extends AbstractDefinableEntityResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public FolderEntry addReply(@PathParam("id") Long id,
-                                FolderEntry entry) throws WriteFilesException, WriteEntryDataException {
+                                FolderEntry entry,
+                                @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) throws WriteFilesException, WriteEntryDataException {
         org.kablink.teaming.domain.FolderEntry parent = _getFolderEntry(id);
         String defId = null;
         if (entry.getDefinition()!=null) {
@@ -226,7 +231,7 @@ public class FolderEntryResource extends AbstractDefinableEntityResource {
         Map options = new HashMap();
       	populateTimestamps(options, entry);
         org.kablink.teaming.domain.FolderEntry newEntry = getFolderModule().addReply(null, id, defId, new RestModelInputData(entry), null, options);
-        return ResourceUtil.buildFolderEntry(newEntry, true);
+        return ResourceUtil.buildFolderEntry(newEntry, true, textDescriptions);
     }
 
     @GET
@@ -284,13 +289,13 @@ public class FolderEntryResource extends AbstractDefinableEntityResource {
         getFolderModule().deleteTag(null, id, tagId);
     }
 
-    private void populateReplies(org.kablink.teaming.domain.FolderEntry entry, SearchResultTreeNode<FolderEntry> node) {
+    private void populateReplies(org.kablink.teaming.domain.FolderEntry entry, SearchResultTreeNode<FolderEntry> node, boolean textDescriptions) {
         List replies = entry.getReplies();
         for (Object o : replies) {
             org.kablink.teaming.domain.FolderEntry reply = (org.kablink.teaming.domain.FolderEntry) o;
             if (!reply.isPreDeleted()) {
-                SearchResultTreeNode<FolderEntry> childNode = node.addChild(ResourceUtil.buildFolderEntry(reply, false));
-                populateReplies(reply, childNode);
+                SearchResultTreeNode<FolderEntry> childNode = node.addChild(ResourceUtil.buildFolderEntry(reply, false, textDescriptions));
+                populateReplies(reply, childNode, textDescriptions);
             }
         }
     }

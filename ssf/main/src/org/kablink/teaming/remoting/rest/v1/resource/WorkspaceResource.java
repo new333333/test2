@@ -90,7 +90,7 @@ public class WorkspaceResource extends AbstractBinderResource {
         org.kablink.teaming.domain.Workspace parent = _getWorkspace(parentId);
         Binder binder = getBinderModule().getBinderByParentAndTitle(parentId, name);
         if (binder instanceof org.kablink.teaming.domain.Workspace) {
-            return (Workspace) ResourceUtil.buildBinder(binder, true);
+            return (Workspace) ResourceUtil.buildBinder(binder, true, false);
         }
         throw new NoWorkspaceByTheNameException(name);
     }
@@ -110,7 +110,9 @@ public class WorkspaceResource extends AbstractBinderResource {
    	@Path("{id}/workspaces")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-   	public org.kablink.teaming.rest.v1.model.Workspace createSubWorkspace(@PathParam("id") long id, org.kablink.teaming.rest.v1.model.Workspace workspace, @QueryParam("template") Long templateId)
+   	public org.kablink.teaming.rest.v1.model.Workspace createSubWorkspace(@PathParam("id") long id, org.kablink.teaming.rest.v1.model.Workspace workspace,
+                                                                          @QueryParam("template") Long templateId,
+                                                                          @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
                throws WriteFilesException, WriteEntryDataException {
         if (templateId!=null) {
             TemplateBinder template = getTemplateModule().getTemplate(templateId);
@@ -118,7 +120,7 @@ public class WorkspaceResource extends AbstractBinderResource {
                 throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The specified 'template' parameter must be a workspace template.");
             }
         }
-        return (Workspace) createBinder(id, workspace, templateId);
+        return (Workspace) createBinder(id, workspace, templateId, textDescriptions);
     }
 
     // Read subfolders
@@ -136,7 +138,10 @@ public class WorkspaceResource extends AbstractBinderResource {
    	@Path("{id}/folders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-   	public org.kablink.teaming.rest.v1.model.Folder createSubFolder(@PathParam("id") long id, org.kablink.teaming.rest.v1.model.Binder binder, @QueryParam("template") Long templateId)
+   	public org.kablink.teaming.rest.v1.model.Folder createSubFolder(@PathParam("id") long id,
+                                                                    org.kablink.teaming.rest.v1.model.Binder binder,
+                                                                    @QueryParam("template") Long templateId,
+                                                                    @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
                throws WriteFilesException, WriteEntryDataException {
         if (templateId==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing required 'template' query string parameter.");
@@ -145,7 +150,7 @@ public class WorkspaceResource extends AbstractBinderResource {
         if (EntityIdentifier.EntityType.folder != template.getEntityType()) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The specified 'template' parameter must be a folder template.");
         }
-        return (Folder) createBinder(id, binder, templateId);
+        return (Folder) createBinder(id, binder, templateId, textDescriptions);
     }
 
     @GET
@@ -154,7 +159,7 @@ public class WorkspaceResource extends AbstractBinderResource {
         _getWorkspace(parentId);
         Binder binder = getBinderModule().getBinderByParentAndTitle(parentId, name);
         if (binder instanceof org.kablink.teaming.domain.Folder) {
-            return (Folder) ResourceUtil.buildBinder(binder, true);
+            return (Folder) ResourceUtil.buildBinder(binder, true, false);
         }
         throw new NoWorkspaceByTheNameException(name);
     }

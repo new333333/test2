@@ -541,14 +541,18 @@ public class CustomAttribute extends ZonedObject {
  	    }
 	    return null;
 	}
-	public Object getRawValue() {
+	public Object getRawValue(boolean textDescriptions) {
 	    switch(getValueType()) {
     		case STRING:
             case DESCRIPTION:
     		    if (!Validator.isNull(stringValue))
     		        return stringValue;
     		    else if (description != null)
-    		        return description.getText();
+                    if (textDescriptions) {
+                        return description.getStrippedText();
+                    } else {
+                        return description.getText();
+                    }
     		    return null;
        		case COMMASEPARATEDSTRING:
        			CommaSeparatedValue v1 = new CommaSeparatedValue();
@@ -580,11 +584,11 @@ public class CustomAttribute extends ZonedObject {
     	    	Set v = new LinkedHashSet();
     	    	if (iValues == null) {//probably not in order if bulk loaded, but not a problem for indexing
     	    		for (Iterator iter=values.iterator(); iter.hasNext();) {
-    	    			v.add(((CustomAttributeListElement)iter.next()).getRawValue());
+    	    			v.add(((CustomAttributeListElement)iter.next()).getRawValue(textDescriptions));
     	    		}
     	    	} else {
     	    		for (Iterator iter=iValues.iterator(); iter.hasNext();) {
-    	    			v.add(((CustomAttributeListElement)iter.next()).getRawValue());
+    	    			v.add(((CustomAttributeListElement)iter.next()).getRawValue(textDescriptions));
     	    		}
     	    	}
     	    	return v;
@@ -592,11 +596,11 @@ public class CustomAttribute extends ZonedObject {
     	    	Set s = new TreeSet();  // order naturally
     	    	if (iValues == null) {
     	    		for (Iterator iter=values.iterator(); iter.hasNext();) {
-    	    			s.add(((CustomAttributeListElement)iter.next()).getRawValue());
+    	    			s.add(((CustomAttributeListElement)iter.next()).getRawValue(textDescriptions));
     	    		}
     	    	} else {
     	    		for (Iterator iter=iValues.iterator(); iter.hasNext();) {
-    	    			s.add(((CustomAttributeListElement)iter.next()).getRawValue());
+    	    			s.add(((CustomAttributeListElement)iter.next()).getRawValue(textDescriptions));
     	    		}
     	    	}
     	    	return s;

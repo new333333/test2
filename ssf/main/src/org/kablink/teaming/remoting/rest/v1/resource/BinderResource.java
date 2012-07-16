@@ -84,8 +84,9 @@ public class BinderResource extends AbstractResource {
     @Path("{id}")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Binder getBinder(@PathParam("id") long id,
-                            @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
-        return ResourceUtil.buildBinder(_getBinder(id), includeAttachments);
+                            @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
+                            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+        return ResourceUtil.buildBinder(_getBinder(id), includeAttachments, textDescriptions);
     }
 
     protected org.kablink.teaming.domain.Binder _getBinder(long id) {

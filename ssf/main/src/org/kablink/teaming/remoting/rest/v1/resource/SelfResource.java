@@ -82,7 +82,8 @@ public class SelfResource extends AbstractResource {
      */
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public User getSelf(@QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments) {
+    public User getSelf(@QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
+                        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
         Long userId = getLoggedInUserId();
         // Retrieve the raw entry.
         Principal entry = getProfileModule().getEntry(userId);
@@ -90,7 +91,7 @@ public class SelfResource extends AbstractResource {
         if(!(entry instanceof org.kablink.teaming.domain.User))
             throw new IllegalArgumentException(userId + " does not represent an user. It is " + entry.getClass().getSimpleName());
 
-        User user = ResourceUtil.buildUser((org.kablink.teaming.domain.User) entry, includeAttachments);
+        User user = ResourceUtil.buildUser((org.kablink.teaming.domain.User) entry, includeAttachments, textDescriptions);
         user.setLink("/self");
         user.addAdditionalLink("roots", "/self/roots");
         if (user.getWorkspace()!=null) {
