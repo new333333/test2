@@ -116,6 +116,7 @@ import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderSortSetting;
+import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ProjectInfo;
 import org.kablink.teaming.gwt.client.util.TagSortOrder;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
@@ -147,6 +148,7 @@ import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtSearchHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
+import org.kablink.teaming.gwt.server.util.GwtShareHelper;
 import org.kablink.teaming.gwt.server.util.GwtTaskHelper;
 import org.kablink.teaming.gwt.server.util.GwtViewHelper;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -1438,6 +1440,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			url = getShareBinderPageUrl( ri, gsbpuCmd.getBinderId() );
 			responseData = new StringRpcResponseData( url );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_SHARING_INFO:
+		{
+			GetSharingInfoCmd gsiCmd;
+			GwtSharingInfo sharingInfo;
+			
+			gsiCmd = (GetSharingInfoCmd) cmd;
+			sharingInfo = GwtShareHelper.getSharingInfo( gsiCmd.getListOfEntities() );
+			response = new VibeRpcResponse( sharingInfo );
 			return response;
 		}
 		

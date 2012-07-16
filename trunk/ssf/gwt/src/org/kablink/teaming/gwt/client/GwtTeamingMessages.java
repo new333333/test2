@@ -386,6 +386,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetSelfRegInfo();
 	String rpcFailure_GetSendToFriendUrl();
 	String rpcFailure_GetShareBinderPageUrl();
+	String rpcFailure_GetSharingInfo();
 	String rpcFailure_GetSignGuestbookUrl();
 	String rpcFailure_GetSiteAdminUrl();
 	String rpcFailure_GetStatus();
