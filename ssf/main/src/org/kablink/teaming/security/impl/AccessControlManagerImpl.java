@@ -51,15 +51,19 @@ import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.AuthenticationConfig;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.ShareItemMember;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.license.LicenseManager;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
@@ -74,6 +78,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.util.search.Constants;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -228,36 +233,43 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			}
 			if (workArea.isFunctionMembershipInherited()) {
 				WorkArea parentWorkArea = workArea.getParentWorkArea();
-				if (parentWorkArea == null)
+				if (parentWorkArea == null) {
 					throw new InternalException(
 							"Cannot inherit function membership when it has no parent");
-				else
+				}
+				else {
 					// use the original workArea owner
-					return testOperation(user, workAreaStart, parentWorkArea, workAreaOperation);
+					if(testOperation(user, workAreaStart, parentWorkArea, workAreaOperation)) {
+						return true;
+					}
+					else {
+						return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, null);
+					}
+				}
 			} else {
-				Set membersToLookup = null;
+				Set<Long> applicationMembersToLookup = null;
 				if(application != null && !application.isTrusted()) {
-					membersToLookup = getProfileDao().getPrincipalIds(application);
+					applicationMembersToLookup = getProfileDao().getPrincipalIds(application);
 					// First, test against the zone-wide maximum set by the admin
 					if(!checkWorkAreaFunctionMembership(user.getZoneId(),
 									getCoreDao().loadZoneConfig(user.getZoneId()),
 									workAreaOperation,
-									membersToLookup)) {
+									applicationMembersToLookup)) {
 						return false;
 					}
 					// First test passed. Now test against the specified work area.
 					if(!checkWorkAreaFunctionMembership(user.getZoneId(),
 									workArea, 
 									workAreaOperation, 
-									membersToLookup)) {
+									applicationMembersToLookup)) {
 						return false;
 					}
 				}
-				membersToLookup = getProfileDao().getPrincipalIds(user);
+				Set<Long> userMembersToLookup = getProfileDao().getPrincipalIds(user);
 				Long allUsersId = Utils.getAllUsersGroupId();
 				Long allExtUsersId = Utils.getAllExtUsersGroupId();
 				if (allUsersId != null && !workArea.getWorkAreaType().equals(ZoneConfig.WORKAREA_TYPE) 
-						&& membersToLookup.contains(allUsersId) && 
+						&& userMembersToLookup.contains(allUsersId) && 
 						Utils.canUserOnlySeeCommonGroupMembers(user)) {
 					if (Utils.isWorkareaInProfilesTree(workArea)) {
 						//If this user does not share a group with the binder owner, remove the "All Users" group.
@@ -268,7 +280,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 							for (Group g : groups) {
 								//See if this group is not the allExtUsers group and is shared with the user
 								//Being in the allExtUsers group does not count as a "common" group
-								if (!g.getId().equals(allExtUsersId) && membersToLookup.contains(g.getId())) {
+								if (!g.getId().equals(allExtUsersId) && userMembersToLookup.contains(g.getId())) {
 									remove = false;
 									break;
 								}
@@ -277,7 +289,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 								//There wasn't a direct match of groups, go look in the exploded list
 								Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(workArea.getOwner().getId(), zoneId);
 								for (Long gId : userGroupIds) {
-									if (!gId.equals(allExtUsersId) && membersToLookup.contains(gId)) {
+									if (!gId.equals(allExtUsersId) && userMembersToLookup.contains(gId)) {
 										remove = false;
 										break;
 									}
@@ -285,21 +297,26 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 							}
 						}
 						if (remove) {
-							membersToLookup.remove(allUsersId);
+							userMembersToLookup.remove(allUsersId);
 						}
 					}
 				}
 				//if current user is the workArea owner, add special Id to is membership
-				if (user.getId().equals(workAreaStart.getOwnerId())) membersToLookup.add(ObjectKeys.OWNER_USER_ID);
+				if (user.getId().equals(workAreaStart.getOwnerId())) userMembersToLookup.add(ObjectKeys.OWNER_USER_ID);
 				Set<Long> teamMembers = null;
 				if (workAreaStart instanceof FolderEntry) {
 					teamMembers = ((FolderEntry)workAreaStart).getParentBinder().getTeamMemberIds();
 				} else {
 					teamMembers = workAreaStart.getTeamMemberIds();
 				}
-				if (!Collections.disjoint(teamMembers, membersToLookup)) membersToLookup.add(ObjectKeys.TEAM_MEMBER_ID);
-				return checkWorkAreaFunctionMembership(user.getZoneId(),
-								workArea, workAreaOperation, membersToLookup);
+				if (!Collections.disjoint(teamMembers, userMembersToLookup)) userMembersToLookup.add(ObjectKeys.TEAM_MEMBER_ID);
+				if(checkWorkAreaFunctionMembership(user.getZoneId(),
+								workArea, workAreaOperation, userMembersToLookup)) {
+					return true;
+				}
+				else {
+					return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userMembersToLookup);
+				}
 			}
 		}
 		finally {
@@ -414,4 +431,63 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     	(zoneId, workArea, workAreaOperation, membersToLookup);
     }
 
+    private boolean testRightGrantedBySharing(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation, Set<Long> userMembers) {
+    	// Unlike regular ACL checking, share right checking is not implemented using recursive invocation.
+    	if(workAreaStart != workArea)
+    		return false;
+    	
+    	// Share-granted access rights can be defined only on DefinableEntity
+    	if(!(workArea instanceof DefinableEntity))
+    		return false;
+    	
+    	List<EntityIdentifier> chain = new ArrayList<EntityIdentifier>();
+    	chain.add(((DefinableEntity) workArea).getEntityIdentifier());
+    	while(workArea.isFunctionMembershipInherited()) {
+    		workArea = workArea.getParentWorkArea();
+    		if(workArea instanceof DefinableEntity)
+    			chain.add(((DefinableEntity)workArea).getEntityIdentifier());
+    	}
+    	Map<ShareItemMember.RecipientType, Set<Long>> shareMembers = getProfileDao().getMemberIdsWithGrantedRightToSharedEntities(chain, workAreaOperation.getName());
+    	// Check if at least one entity in the ACL inheritance parentage chain grants the specified access to the user directly.
+    	if(shareMembers.get(ShareItemMember.RecipientType.user).contains(user.getId()))
+    		return true;
+    	
+    	// Check if at least one entity in the ACL inheritance parentage chain grants the specified access to the user through group membership.
+    	if(userMembers == null)
+    		userMembers = getProfileDao().getPrincipalIds(user);
+    	if(!Collections.disjoint(shareMembers.get(ShareItemMember.RecipientType.group), userMembers))
+    		return true;
+    	
+    	// Check if at least one entity in the ACL inheritance parentage chain grants the specified access to the user through team membership.
+    	if(SPropsUtil.getBoolean("share.based.access.check.use.search.index.for.team.membership", false)) {
+    		// Note: This implementation is used for testing/comparison purpose only.
+    		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId());
+    		Set<Long> teamBinderIds = new HashSet<Long>();
+    		for(Map binder : myTeams) {
+    			try {
+    				teamBinderIds.add(Long.valueOf((String)binder.get(Constants.DOCID_FIELD)));
+    			} catch (Exception ignore) {};
+    		}
+        	return (!Collections.disjoint(shareMembers.get(ShareItemMember.RecipientType.team), teamBinderIds));
+    	}
+    	else {
+    		// Note: This implementation is used in production system.
+    		Set<Long> teamBinderIds = shareMembers.get(ShareItemMember.RecipientType.team);
+    		Binder binder;
+    		Set<Long> teamMemberIds;
+    		for(Long teamBinderId:teamBinderIds) {
+    			binder = getBinderModule().getBinder(teamBinderId);
+    			teamMemberIds = binder.getTeamMemberIds();
+    	    	if(!Collections.disjoint(teamMemberIds, userMembers))
+    	    		return true;
+    		}
+    		return false;
+    	}
+    	
+    	
+    }
+    
+    private BinderModule getBinderModule() {
+    	return (BinderModule) SpringContextUtil.getBean("binderModule");
+    }
 }
