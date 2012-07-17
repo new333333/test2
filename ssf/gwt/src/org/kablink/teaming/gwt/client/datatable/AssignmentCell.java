@@ -255,6 +255,10 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 				continue;
 			}
 			
+			// Do we have any hover text for this assignment?
+			String	hover    = ai.getHover();
+			boolean	hasHover = GwtClientHelper.hasString(hover);
+			
 			// Generate a panel to hold the assignment...
 			VibeFlowPanel fp = new VibeFlowPanel();
 			fp.addStyleName("vibe-dataTableAssignment-panel displayBlock verticalAlignTop");
@@ -279,6 +283,9 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 				Label presenceLabel = new Label(ai.getTitle());
 				presenceLabel.addStyleName("vibe-dataTableAssignment-label vibe-dataTableAssignment-enabled");
 				presenceLabel.getElement().setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, (VibeDataTableConstants.CELL_WIDGET_PRESENCE_LABEL + assignmentIndexTail));
+				if (hasHover) {
+					presenceLabel.setTitle(hover);
+				}
 				fp.add(presenceLabel);
 				break;
 				
@@ -300,6 +307,9 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 				String assigneeLabel = (ai.getTitle() + " " + membersString);
 				Label assignee = new Label(assigneeLabel);
 				assignee.addStyleName("vibe-dataTableAssignment-label vibe-dataTableAssignment-enabled");
+				if (hasHover) {
+					assignee.setTitle(hover);
+				}
 				fp.add(assignee);
 				
 				break;
