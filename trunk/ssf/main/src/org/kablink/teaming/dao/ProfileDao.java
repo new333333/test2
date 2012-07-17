@@ -323,11 +323,20 @@ public interface ProfileDao {
  	public List<ShareItem> findShareItemsBySharerAndSharedEntity(Long sharerId, EntityIdentifier sharedEntityIdentifier);
  	
  	/**
- 	 * Return IDs of users, groups, and teams that are granted read access to the specified entity.
+ 	 * Return IDs of users, groups, and teams that are granted specified right to the specified entity.
  	 * 
  	 * @param sharedEntityIdentifier
  	 * @param rightName
  	 * @return
  	 */
  	public Map<ShareItemMember.RecipientType, Set<Long>> getMemberIdsWithGrantedRightToSharedEntity(EntityIdentifier sharedEntityIdentifier, String rightName);
+ 	
+ 	/**
+ 	 * Return IDs of users, groups, and teams that are granted specified right to at least one of the specified entities.
+ 	 * 
+ 	 * @param sharedEntityIdentifier
+ 	 * @param rightName
+ 	 * @return
+ 	 */
+ 	public Map<ShareItemMember.RecipientType, Set<Long>> getMemberIdsWithGrantedRightToSharedEntities(Collection<EntityIdentifier> sharedEntityIdentifiers, String rightName);
  }

@@ -2460,30 +2460,71 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    }
 	                }
 	            );
-	      	
-	      	Map<ShareItemMember.RecipientType, Set<Long>> result = new HashMap<ShareItemMember.RecipientType, Set<Long>>();
-	      	result.put(ShareItemMember.RecipientType.user, new TreeSet<Long>());
-	      	result.put(ShareItemMember.RecipientType.group, new TreeSet<Long>());
-	      	result.put(ShareItemMember.RecipientType.team, new TreeSet<Long>());
-	      	Short recipientType;
-	      	Long recipientId;
-	       	for(Object[] o:list) {
-	       		recipientType = (Short) o[0];
-	       		recipientId = (Long) o[1];
-	       		try {
-	       			result.get(ShareItemMember.RecipientType.valueOf(recipientType)).add(recipientId);
-	       		}
-	       		catch(Exception e) {
-	       			// This means that we encountered an invalid recipient type value in the database. Skip it.
-	       		}
-	       	}
-	       	return result;
+	      	return recipientResultListToMap(list);
     	}
     	finally {
-    		end(begin, "getMemberIdsWithReadAccessToSharedEntity(EntityIdentifier)");
+    		end(begin, "getMemberIdsWithReadAccessToSharedEntity(EntityIdentifier,String)");
     	}	              	
 	}
- 	
+	
+	private  Map<ShareItemMember.RecipientType, Set<Long>> recipientResultListToMap(List<Object[]> list) {
+      	Map<ShareItemMember.RecipientType, Set<Long>> result = new HashMap<ShareItemMember.RecipientType, Set<Long>>();
+      	result.put(ShareItemMember.RecipientType.user, new TreeSet<Long>());
+      	result.put(ShareItemMember.RecipientType.group, new TreeSet<Long>());
+      	result.put(ShareItemMember.RecipientType.team, new TreeSet<Long>());
+      	Short recipientType;
+      	Long recipientId;
+       	for(Object[] o:list) {
+       		recipientType = (Short) o[0];
+       		recipientId = (Long) o[1];
+       		try {
+       			result.get(ShareItemMember.RecipientType.valueOf(recipientType)).add(recipientId);
+       		}
+       		catch(Exception e) {
+       			// This means that we encountered an invalid recipient type value in the database. Skip it.
+       		}
+       	}
+       	return result;
+	}
+
+	@Override
+ 	public Map<ShareItemMember.RecipientType, Set<Long>> getMemberIdsWithGrantedRightToSharedEntities(final Collection<EntityIdentifier> sharedEntityIdentifiers, final String rightName) {
+		if(sharedEntityIdentifiers == null || sharedEntityIdentifiers.isEmpty())
+			throw new IllegalArgumentException("shared entity identifiers must be specified");
+		long begin = System.nanoTime();
+		try {
+	      	List<Object[]> list = (List<Object[]>)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    	// Don't use alias of the first table to refer to property/column name associated with entity, 
+	                    	// since HQL won't treat it as nicely as it does without alias. 
+	                    	StringBuilder sb = new StringBuilder("select distinct m.recipientType, m.recipientId from org.kablink.teaming.domain.ShareItem s join s.members m where m.rightSet." + rightName + "=:rightValue and (");
+	                        int i = 0;
+	                    	for(EntityIdentifier sharedEntityIdentifier:sharedEntityIdentifiers) {
+	                    		if(i > 0)
+	                    			sb.append(" or ");
+	                    		sb.append("(sharedEntity_type='")
+	                    		.append(sharedEntityIdentifier.getEntityType().name())
+	                    		.append("' and sharedEntity_id=")
+	                    		.append(String.valueOf(sharedEntityIdentifier.getEntityId()))
+	                    		.append(")");
+	                    		i++;
+	                    	}
+	                    	sb.append(")");
+                    		return session.createQuery(sb.toString())
+                    				.setBoolean("rightValue", true)
+                    				.list();
+	                    }
+	                }
+	            );
+	      	
+	      	return recipientResultListToMap(list);
+    	}
+    	finally {
+    		end(begin, "getMemberIdsWithGrantedRightToSharedEntities(Collection<EntityIdentifier>,String)");
+    	}	              	
+	}
+
 	/*
  	public List<ShareItem> loadShareItems(final ShareItemSelectSpec selectSpec) {
  		// This method doesn't work because, unfortunately, Hibernate doesn't yet support the use of 
