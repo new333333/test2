@@ -2653,53 +2653,60 @@ public class GwtViewHelper {
 						}
 						
 						// Are we working on a 'Shared with Me'
-						// collection that we might be able to resolve
-						// a sharedBy for?
-						if (isCollectionSharedWithMe && (csk.equals("sharedBy")) && (null == emValue) && (null != shareItems) && (!(shareItems.isEmpty()))) {
-							// Yes!  Scan the entities that have been
-							// shared with me.
-							boolean valueSet = false;
-							for (SharedWithMeItem si:  shareItems) {
-								// Are we working with an entry row?
-								DefinableEntity	de   = si.getItem();
-								Long			deId = de.getId();
-								if (isEntityFolderEntry) {
-									// Yes!  Is this the SharedEntity
-									// for it?
-									if ((!(de instanceof FolderEntry)) || (!(deId.equals(docId)))) {
-										// No!  Skip it.
-										continue;
+						// collection that we need resolve a sharedBy
+						// for?
+						if (isCollectionSharedWithMe && (csk.equals("sharedBy"))) {
+							// Yes!  Do we have any SharedWithMeItem's?
+							List<AssignmentInfo> sharerAIs = null;
+							if ((null != shareItems) && (!(shareItems.isEmpty()))) {
+								// Yes!  Scan the items that have been
+								// shared with me.
+								for (SharedWithMeItem si:  shareItems) {
+									// Are we working with an entry row?
+									DefinableEntity	de   = si.getItem();
+									Long			deId = de.getId();
+									if (isEntityFolderEntry) {
+										// Yes!  Is this the
+										// SharedWithMeItem for it?
+										if ((!(de instanceof FolderEntry)) || (!(deId.equals(docId)))) {
+											// No!  Skip it.
+											continue;
+										}
+										
+										// Yes, this is the
+										// SharedWithMeItem for it!
+										// Track who shared it as
+										// AssignmentInfo's.
+										sharerAIs = getAIListFromSharers(si.getSharerInfos());
+										break;
 									}
 									
-									// Yes, this is the SharedWithMeItem
-									// for it!  Track who shared it.
-									fr.setColumnValue_AssignmentInfos(fc, getAIListFromSharers(si.getSharerInfos()));
-									valueSet = true;
-									break;
-								}
-								
-								else {
-									// No, we must be working with a
-									// binder row!  Is this the
-									// SharedWithMeItem for it?
-									if ((de instanceof FolderEntry) || (!(deId.equals(docId)))) {
-										// No!  Skip it.
-										continue;
+									else {
+										// No, we must be working with
+										// a binder row!  Is this the
+										// SharedWithMeItem for it?
+										if ((de instanceof FolderEntry) || (!(deId.equals(docId)))) {
+											// No!  Skip it.
+											continue;
+										}
+										
+										// Yes, this is the
+										// SharedWithMeItem for it!
+										// Track who shared it as
+										// AssignmentInfo's.
+										sharerAIs = getAIListFromSharers(si.getSharerInfos());
+										break;
 									}
-									
-									// Yes, this is the SharedWithMeItem
-									// for it!  Track who shared it.
-									fr.setColumnValue_AssignmentInfos(fc, getAIListFromSharers(si.getSharerInfos()));
-									valueSet = true;
-									break;
 								}
 							}
 
-							// If we haven't set a value for this column yet...
-							if (!valueSet) {
-								// ...just set it empty.
-								fr.setColumnValue(fc, "");
+							// If we don't have any sharers for this column...
+							if (null == sharerAIs) {
+								// ...use an empty list.
+								sharerAIs = new ArrayList<AssignmentInfo>();
 							}
+							addedAssignments = (!(sharerAIs.isEmpty()));
+							fr.setColumnValue_AssignmentInfos(fc, sharerAIs);
 
 							// Continue with the next column.  We're
 							// done with this one.
