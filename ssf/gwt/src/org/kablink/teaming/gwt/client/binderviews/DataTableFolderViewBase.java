@@ -1237,9 +1237,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				};
 			}
 			
-			// No, this column doesn't show a custom column either!  Is
-			// it an assignment of some sort?
-			else if (AssignmentInfo.isColumnAssigneeInfo(cName)){
+			// No, this column doesn't show a custom column either!
+			// Does it display assignment information of some sort?
+			else if (AssignmentInfo.isColumnAssigneeInfo(cName) || FolderColumn.isColumnSharedBy(cName)) {
 				// Yes!  Create an AssignmentColumn for it.
 				column = new AssignmentColumn<FolderRow>(fc) {
 					@Override
