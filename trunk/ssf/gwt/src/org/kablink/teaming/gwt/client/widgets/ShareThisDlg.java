@@ -59,6 +59,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseDat
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
+import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.GwtShareItemMember;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
@@ -1596,6 +1597,32 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
+	 * Update the "comments" field from the given GwtSharingInfo object
+	 */
+	private void updateCommentFld( GwtSharingInfo sharingInfo )
+	{
+		ArrayList<GwtShareItem> listOfShareItems;
+		
+		// Get the list of GwtShareItems
+		listOfShareItems = sharingInfo.getListOfShareItems();
+		if ( listOfShareItems != null )
+		{
+			// Use the first non-empty comment
+			for (GwtShareItem nextShareItem : listOfShareItems)
+			{
+				String comment;
+				
+				comment = nextShareItem.getDesc();
+				if ( comment != null && comment.length() > 0 )
+				{
+					m_msgTextArea.setText( comment );
+					return;
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Update the sharing information with the given information
 	 */
 	private void updateSharingInfo( GwtSharingInfo sharingInfo )
@@ -1613,6 +1640,9 @@ public class ShareThisDlg extends DlgBox
 					addShare( nextShareItemMember );
 				}
 			}
+			
+			// Update the comment field
+			updateCommentFld( sharingInfo );
 		}
 	}
 	

@@ -48,7 +48,6 @@ public class GwtShareItemMember
 	private GwtRecipientType m_recipientType;
 	private ShareRights m_shareRights;
 	private ShareExpirationValue m_shareExpirationValue;
-	private boolean m_toBeDeleted;
 	
 	/**
 	 * 
@@ -61,7 +60,6 @@ public class GwtShareItemMember
 		m_recipientType = GwtRecipientType.UNKNOWN;
 		m_shareRights = ShareRights.VIEW;
 		m_shareExpirationValue = null;
-		m_toBeDeleted = false;
 	}
 	
 	/**
@@ -163,14 +161,6 @@ public class GwtShareItemMember
 	/**
 	 * 
 	 */
-	public boolean getToBeDeleted()
-	{
-		return m_toBeDeleted;
-	}
-	
-	/**
-	 * 
-	 */
 	public void setRecipientId( Long id )
 	{
 		m_recipientId = id;
@@ -214,14 +204,6 @@ public class GwtShareItemMember
 	public void setRecipientType( GwtRecipientType type )
 	{
 		m_recipientType = type;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setToBeDeleted( boolean toBeDeleted )
-	{
-		m_toBeDeleted = toBeDeleted;
 	}
 }
 
