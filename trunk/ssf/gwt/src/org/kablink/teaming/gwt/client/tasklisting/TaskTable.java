@@ -3094,8 +3094,15 @@ public class TaskTable extends Composite
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the view.
-//!			...this needs to be implemented...
-			GwtClientHelper.deferredAlert("TaskTable.onViewSelectedEntry():  ...this needs to be implemented...");
+			List<EntityId> eids = getTaskIdsChecked();
+			if ((null != eids) && (!(eids.isEmpty()))) {
+				for (EntityId eid:  eids) {
+					if (eid.isEntry()) {
+						BinderViewsHelper.viewEntry(eid);
+						return;
+					}
+				}
+			}
 		}
 	}
 	
