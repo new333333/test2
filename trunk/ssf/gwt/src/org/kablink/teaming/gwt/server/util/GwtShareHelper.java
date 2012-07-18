@@ -161,7 +161,7 @@ public class GwtShareHelper
 	}
 
 	/**
-	 * Return the appropriate RightSet object from the given ShareRights object
+	 * Return the appropriate RightSet object for the given ShareRights object
 	 */
 	private static RightSet getRightSetFromShareRights( ShareRights shareRights )
 	{
@@ -192,9 +192,9 @@ public class GwtShareHelper
 	}
 	
 	/**
-	 * Convert the share rights for the given ShareItemMember to "View", "Contributor" or "Owner"
+	 * Get a ShareRights object that corresponds to the given RightSet
 	 */
-	private static ShareRights getShareRightsFromRightSet( RightSet rightSet )
+	public static ShareRights getShareRightsFromRightSet( RightSet rightSet )
 	{
 		if ( rightSet != null )
 		{
