@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.util;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
@@ -45,6 +46,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GwtSharingInfo
 	implements IsSerializable, VibeRpcResponseData
 {
+	private ArrayList<EntityId> m_listOfEntityIds;
 	private ArrayList<GwtShareItem> m_listOfShareItems;
 	private ArrayList<GwtShareItemMember> m_listOfShareItemMembers;
 	
@@ -53,8 +55,20 @@ public class GwtSharingInfo
 	 */
 	public GwtSharingInfo()
 	{
+		m_listOfEntityIds = null;
 		m_listOfShareItems = null;
 		m_listOfShareItemMembers = null;
+	}
+	
+	/**
+	 * 
+	 */
+	public void addEntityId( EntityId entityId )
+	{
+		if ( m_listOfEntityIds == null )
+			m_listOfEntityIds = new ArrayList<EntityId>();
+		
+		m_listOfEntityIds.add( entityId );
 	}
 	
 	/**
@@ -82,6 +96,14 @@ public class GwtSharingInfo
 	/**
 	 * 
 	 */
+	public ArrayList<EntityId> getListOfEntityIds()
+	{
+		return m_listOfEntityIds;
+	}
+	
+	/**
+	 * 
+	 */
 	public ArrayList<GwtShareItem> getListOfShareItems()
 	{
 		return m_listOfShareItems;
@@ -93,6 +115,61 @@ public class GwtSharingInfo
 	public ArrayList<GwtShareItemMember> getListOfShareItemMembers()
 	{
 		return m_listOfShareItemMembers;
+	}
+	
+	/**
+	 * Get the GwtShareItem for the given EntityId
+	 */
+	public GwtShareItem getShareItem( EntityId entityId )
+	{
+		if ( m_listOfShareItems != null )
+		{
+			for (GwtShareItem nextShareItem : m_listOfShareItems)
+			{
+				// Does this GwtShareItem belong to the given EntityId
+				if ( nextShareItem.entityIdEquals( entityId ) )
+				{
+					// Yes
+					return nextShareItem;
+				}
+			}
+		}
+		
+		// If we get here we did not find the a GwtShareItem for the given EntityId
+		return null;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setListOfEntityIds( List<EntityId> entityIds )
+	{
+		if ( entityIds != null )
+		{
+			m_listOfEntityIds = new ArrayList<EntityId>();
+			for (EntityId nextEntityId : entityIds)
+			{
+				m_listOfEntityIds.add( nextEntityId );
+			}
+		}
+		else
+			m_listOfEntityIds = null;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setListOfShareItems( ArrayList<GwtShareItem> listOfShareItems )
+	{
+		m_listOfShareItems = listOfShareItems;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setListOfShareItemMembers( ArrayList<GwtShareItemMember> listOfShareItemMembers )
+	{
+		m_listOfShareItemMembers = listOfShareItemMembers;
 	}
 }
 
