@@ -452,7 +452,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
                     	.setLong("sharedEntityId", binder.getId())
 		   				.executeUpdate();
 			   			//delete share item members where recipient is this team
-			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItemMember where recipient_type=:recipientType and recipient_id=:recipientId")
+			   			session.createSQLQuery("DELETE FROM SS_ShareItemMember WHERE recipient_type=:recipientType AND recipient_id=:recipientId")
                     	.setShort("recipientType", ShareItemMember.RecipientType.team.getValue())
                     	.setLong("recipientId", binder.getId())
 		   				.executeUpdate();
