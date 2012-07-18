@@ -69,6 +69,7 @@ import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -588,7 +589,7 @@ public class GwtShareHelper
 					String comments,
 					GwtSharingInfo sharingData )
 	{
-		ProfileModule profileModule;
+		SharingModule sharingModule;
 		BinderModule binderModule;
 		FolderModule folderModule;
 		ProfileDao profileDao;
@@ -598,7 +599,7 @@ public class GwtShareHelper
 		profileDao = (ProfileDao)SpringContextUtil.getBean( "profileDao" );
 		binderModule = ami.getBinderModule();
 		folderModule = ami.getFolderModule();
-		profileModule = ami.getProfileModule();
+		sharingModule = ami.getSharingModule();
 
 		if ( sharingData == null )
 		{
@@ -739,7 +740,7 @@ public class GwtShareHelper
 										desc,
 										members );
 	
-					profileModule.addShareItem( shareItem );
+					sharingModule.addShareItem( shareItem );
 				}
 				else
 				{
@@ -752,7 +753,7 @@ public class GwtShareHelper
 						
 						shareItem.setDescription( desc );
 						shareItem.setMembers( members );
-						profileModule.modifyShareItem( shareItem );
+						sharingModule.modifyShareItem( shareItem );
 					}
 					catch ( NoShareItemByTheIdException e )
 					{

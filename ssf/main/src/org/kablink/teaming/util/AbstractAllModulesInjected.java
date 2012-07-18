@@ -50,6 +50,7 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.rss.RssModule;
+import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
@@ -80,6 +81,7 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	private RssModule rssModule;
 	private LicenseModule licenseModule;
 	private ZoneModule zoneModule;
+	private SharingModule sharingModule;
 
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
@@ -275,6 +277,15 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	}
 	public void setZoneModule(ZoneModule zoneModule) {
 		this.zoneModule = zoneModule;
+	}
+	
+	public SharingModule getSharingModule() {
+		if(sharingModule == null)
+			sharingModule = (SharingModule) SpringContextUtil.getBean("sharingModule");
+		return sharingModule;
+	}
+	public void setSharingModule(SharingModule sharingModule) {
+		this.sharingModule = sharingModule;
 	}
 
 }
