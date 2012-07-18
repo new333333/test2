@@ -100,6 +100,7 @@ import org.kablink.teaming.gwt.client.event.TrashRestoreAllEvent;
 import org.kablink.teaming.gwt.client.event.TrashRestoreSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewPinnedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
@@ -196,7 +197,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TrashRestoreAllEvent.Handler,
 		TrashRestoreSelectedEntriesEvent.Handler,
 		UnlockSelectedEntriesEvent.Handler,
-		ViewPinnedEntriesEvent.Handler
+		ViewPinnedEntriesEvent.Handler,
+		ViewSelectedEntryEvent.Handler
 {
 	private AddFilesDlg					m_addFilesDlg;				//
 	private boolean						m_fixedLayout;				//
@@ -260,6 +262,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.TRASH_RESTORE_SELECTED_ENTRIES,
 		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
 		TeamingEvents.VIEW_PINNED_ENTRIES,
+		TeamingEvents.VIEW_SELECTED_ENTRY,
 	};
 	
 	/*
@@ -691,7 +694,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				if (null != emp) {
 					// ...tell it to update the state of its items that
 					// ...require a selection.
-					EntryMenuPanel.setEntriesSelected(emp, checked);
+					EntryMenuPanel.setEntriesSelected(emp,  checked                                   );
+					EntryMenuPanel.setEntrySelected(  emp, (checked && (1 == getSelectedEntryCount())));
 				}
 			}
 		});
@@ -721,7 +725,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				if (null != emp) {
 					// ...tell it to update the state of its items that
 					// ...require a selection.
-					EntryMenuPanel.setEntriesSelected(emp, checked);
+					EntryMenuPanel.setEntriesSelected(emp,  checked                                   );
+					EntryMenuPanel.setEntrySelected(  emp, (checked && (1 == getSelectedEntryCount())));
 				}
 			};
 		});
@@ -1011,6 +1016,23 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		
 		// If we get here, reply refers to List<EntityId> of the entity
 		// IDs of the selected rows from the data table.  Return it.
+		return reply;
+	}
+
+	/*
+	 * Returns a count of the selected entries (i.e., folder entries,
+	 * not binders, ...)
+	 */
+	private int getSelectedEntryCount() {
+		int reply = 0;
+		List<EntityId> selectedEntities = getSelectedEntityIds();
+		if ((null != selectedEntities) && (!(selectedEntities.isEmpty()))) {
+			for (EntityId selectedEntity:  selectedEntities) {
+				if (selectedEntity.isEntry()) {
+					reply += 1;
+				}
+			}
+		}
 		return reply;
 	}
 	
@@ -2108,6 +2130,24 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					FullUIReloadEvent.fireOne();
 				}
 			});
+		}
+	}
+	
+	/**
+	 * Handles ViewSelectedEntryEvent's received by this class.
+	 * 
+	 * Implements the ViewSelectedEntryEvent.Handler.onViewSelectedEntry() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onViewSelectedEntry(ViewSelectedEntryEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Invoke the view.
+//!			...this needs to be implemented...
+			GwtClientHelper.deferredAlert("DataTableFolderViewBase.onViewSelectedEntry():  ...this needs to be implemented...");
 		}
 	}
 	

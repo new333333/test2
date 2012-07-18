@@ -218,6 +218,7 @@ public enum TeamingEvents implements IsSerializable {
 	VIEW_FORUM_ENTRY,					// Opens an entry for viewing.
 	VIEW_PINNED_ENTRIES,				// Toggles the state of viewing pinned entries.
 	VIEW_RESOURCE_LIBRARY,				// Shows the resource library page.
+	VIEW_SELECTED_ENTRY,				// Opens the selected entry for viewing.
 	VIEW_TEAMING_FEED,					// Opens the Teaming Feed window.
 	VIEW_UNREAD_ENTRIES,				// Show unread entries.
 	VIEW_WHATS_UNSEEN_IN_BINDER,		// Shows the items that are unseen in the current binder.

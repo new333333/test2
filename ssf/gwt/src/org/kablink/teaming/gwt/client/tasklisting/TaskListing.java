@@ -650,7 +650,7 @@ public class TaskListing extends Composite implements TaskProvider {
 	 * 
 	 * @param enable
 	 */
-	public void setEntriesSelected(boolean enable) {
+	public void setEntriesSelected(boolean enable, boolean singleTaskSelected) {
 		// If the task listing is embedded in a JSP page...
 		if (isEmbeddedInJSP()) {
 			// ...enabled/disable the buttons on its tool bar...
@@ -662,7 +662,8 @@ public class TaskListing extends Composite implements TaskProvider {
 			// ...otherwise, enable/disable them on the entry menu.
 			EntryMenuPanel emp = m_taskFolderView.getEntryMenuPanel();
 			if (null != emp) {
-				EntryMenuPanel.setEntriesSelected(emp, enable);
+				EntryMenuPanel.setEntriesSelected(emp, enable            );
+				EntryMenuPanel.setEntrySelected(  emp, singleTaskSelected);
 			}
 		}
 	}

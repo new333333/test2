@@ -640,6 +640,18 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Constructs a ToolbarItem for running the entry viewer the
+	 * selected entry.
+	 */
+	private static void constructEntryDetailsItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request) {
+		// Add a Details item.
+		ToolbarItem detailsTBI = new ToolbarItem("1_detailsSelected");
+		markTBITitle(detailsTBI, "toolbar.details");
+		markTBIEvent(detailsTBI, TeamingEvents.VIEW_SELECTED_ENTRY);
+		entryToolbar.addNestedItem(detailsTBI);
+	}
+	
+	/*
 	 * Constructs a ToolbarItem for miscellaneous operations against
 	 * the selected entries.
 	 * 
@@ -1966,6 +1978,14 @@ public class GwtMenuHelper {
 	
 	/*
 	 * Returns true if a folder (including its view type) supports
+	 * entry selection and false otherwise.
+	 */
+	private static boolean folderSupportsEntrySelection(Folder folder, String viewType) {
+		return folderSupportsSelection(folder, viewType);
+	}
+	
+	/*
+	 * Returns true if a folder (including its view type) supports
 	 * the operations in the 'More' entry menu and false otherwise.
 	 */
 	private static boolean folderSupportsMore(Folder folder, String viewType) {
@@ -2094,6 +2114,9 @@ public class GwtMenuHelper {
 					constructEntryAddFileFolderItem(entryToolbar, bs, request,                                      ws        );
 				    constructEntryShareItem(        entryToolbar, bs, request);
 				}
+				else if (CollectionType.SHARED_WITH_ME == folderInfo.getCollectionType()) {
+					constructEntryDetailsItem(      entryToolbar, bs, request                                                 );
+				}
 				constructEntryDeleteItem(           entryToolbar, bs, request,                           (myFiles ? ws : null));
 				constructEntryMoreItems(            entryToolbar, bs, request, folderId, viewType, null, (myFiles ? ws : null));
 			}
@@ -2106,13 +2129,16 @@ public class GwtMenuHelper {
 				boolean isMirrored           = (isFolder && folder.isMirrored());
 				boolean isMirroredConfigured = isMirrored && MiscUtil.hasString(folder.getResourceDriverName());
 				if ((!isMirrored) || isMirroredConfigured) {
-					// Yes!  Can the user can add entries to the
-					// folder?
+					// Yes!  If the folder supports entry selection...
+					if (folderSupportsEntrySelection(folder, viewType)) {
+						// ...construct then details menu item.
+						constructEntryDetailsItem(entryToolbar, bs, request);
+					}
+					
+					// Can the user can add entries to the folder?
 					FolderModule fm			= bs.getFolderModule();
 					boolean      hasVT      = MiscUtil.hasString(viewType);
 					boolean      addAllowed	= fm.testAccess(folder, FolderOperation.addEntry);
-					
-					// Can the user can add entries to the folder?
 					if (addAllowed) {				
 						// Yes!  If the folder is a guest book...
 						if (hasVT && isViewGuestBook(viewType)) {
