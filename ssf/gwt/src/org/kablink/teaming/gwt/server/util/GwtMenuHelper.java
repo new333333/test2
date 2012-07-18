@@ -2129,13 +2129,8 @@ public class GwtMenuHelper {
 				boolean isMirrored           = (isFolder && folder.isMirrored());
 				boolean isMirroredConfigured = isMirrored && MiscUtil.hasString(folder.getResourceDriverName());
 				if ((!isMirrored) || isMirroredConfigured) {
-					// Yes!  If the folder supports entry selection...
-					if (folderSupportsEntrySelection(folder, viewType)) {
-						// ...construct then details menu item.
-						constructEntryDetailsItem(entryToolbar, bs, request);
-					}
-					
-					// Can the user can add entries to the folder?
+					// Yes!  Can the user can add entries to the
+					// folder?
 					FolderModule fm			= bs.getFolderModule();
 					boolean      hasVT      = MiscUtil.hasString(viewType);
 					boolean      addAllowed	= fm.testAccess(folder, FolderOperation.addEntry);
@@ -2150,6 +2145,12 @@ public class GwtMenuHelper {
 						constructEntryAddItems(entryToolbar, bs, request, viewType, folder);
 					}
 		
+					// If the folder supports entry selection...
+					if (folderSupportsEntrySelection(folder, viewType)) {
+						// ...construct the details menu item.
+						constructEntryDetailsItem(entryToolbar, bs, request);
+					}
+					
 					// Constructs the items for sharing and deleting
 					// the selected entries.
 					constructEntryShareItem( entryToolbar, bs, request, viewType, folder);

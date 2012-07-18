@@ -43,14 +43,17 @@ import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg;
 import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg.CopyMoveEntriesDlgClient;
 import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
+import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg;
 import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg.EmailNotificationDlgClient;
 import org.kablink.teaming.gwt.client.rpc.shared.DisableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.EnableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.LockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UnlockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -326,7 +329,7 @@ public class BinderViewsHelper {
 				busy.hide();
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
-					m_messages.rpcFailure_DisableUsers());
+					m_messages.rpcFailure_GetViewFolderEntryUrl());
 			}
 
 			@Override
@@ -987,5 +990,54 @@ public class BinderViewsHelper {
 		// If we get here, the list contained entry references.  Return
 		// true.
 		return true;
+	}
+
+	/**
+	 * Runs the entry viewer on the given entity.
+	 * 
+	 * @param entityId
+	 */
+	public static void viewEntry(final EntityId entityId) {
+		ScheduledCommand doView = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				viewEntryNow(entityId);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doView);
+	}
+	
+	public static void viewEntry(Long folderId, Long entryId) {
+		// Always use the initialize form of the method.
+		viewEntry(new EntityId(folderId, entryId, EntityId.FOLDER_ENTRY));
+	}
+	
+	/*
+	 * Runs the entry viewer on the given entity.
+	 * 
+	 * @param entityId
+	 */
+	private static void viewEntryNow(final EntityId entityId) {
+		// Get the URL to view the entry...
+		GetViewFolderEntryUrlCmd cmd = new GetViewFolderEntryUrlCmd(entityId.getBinderId(), entityId.getEntityId());
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_GetViewFolderEntryUrl(),
+					String.valueOf(entityId.getEntityId()));
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// ...and fire the event to run the viewer.
+				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+				String viewUrl = responseData.getStringValue();
+				if (GwtClientHelper.hasString(viewUrl)) {
+					GwtTeaming.fireEventAsync(new ViewForumEntryEvent(viewUrl));
+				}
+			}
+		});
 	}
 }

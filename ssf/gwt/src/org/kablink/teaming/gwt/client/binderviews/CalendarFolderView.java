@@ -1584,8 +1584,15 @@ public class CalendarFolderView extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the view.
-//!			...this needs to be implemented...
-			GwtClientHelper.deferredAlert("CalendarFolderView.onViewSelectedEntry():  ...this needs to be implemented...");
+			List<EntityId> eids = getSelectedEntityIds();
+			if ((null != eids) && (!(eids.isEmpty()))) {
+				for (EntityId eid:  eids) {
+					if (eid.isEntry()) {
+						BinderViewsHelper.viewEntry(eid);
+						return;
+					}
+				}
+			}
 		}
 	}
 	
