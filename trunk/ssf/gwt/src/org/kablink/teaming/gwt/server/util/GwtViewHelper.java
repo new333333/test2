@@ -145,6 +145,7 @@ import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.SearchUtils;
+import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.RenderRequestImpl;
 import org.kablink.teaming.portletadapter.portlet.RenderResponseImpl;
@@ -3628,21 +3629,21 @@ public class GwtViewHelper {
 		// Get the List<ShareItem> of those things shared directly with
 		// the user...
 		Long			userId     = GwtServerHelper.getCurrentUserId();
-		ProfileModule	pm         = bs.getProfileModule();
-		List<ShareItem> shareItems = pm.getShareItemsByRecipient(RecipientType.user, userId);
+		SharingModule	sm         = bs.getSharingModule();
+		List<ShareItem> shareItems = sm.getShareItemsByRecipient(RecipientType.user, userId);
 		
 		// ...add to it the List<ShareItem> of those things shared
 		// ...directly with teams the user is a member of...
 		List<Long> teams = GwtServerHelper.getTeamIds(request, bs, userId);
 		for (Long team:  teams) {
-			shareItems.addAll(pm.getShareItemsByRecipient(RecipientType.team, team));
+			shareItems.addAll(sm.getShareItemsByRecipient(RecipientType.team, team));
 		}
 		
 		// ...add to it the List<ShareItem> of those things shared
 		// ...directly with groups the user is a member of...
 		List<Long> groups = GwtServerHelper.getGroupIds(request, bs, userId);
 		for (Long group:  groups) {
-			shareItems.addAll(pm.getShareItemsByRecipient(RecipientType.group, group));
+			shareItems.addAll(sm.getShareItemsByRecipient(RecipientType.group, group));
 		}
 
 		// ...and finally, condense the List<ShareItem> so that

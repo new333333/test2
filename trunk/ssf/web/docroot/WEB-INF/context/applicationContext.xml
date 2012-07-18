@@ -103,6 +103,7 @@
 		<property name="rssModule"><ref bean="rssModule"/></property>
 		<property name="licenseModule"><ref bean="licenseModule"/></property>
 		<property name="zoneModule"><ref bean="zoneModule"/></property>
+		<property name="sharingModule"><ref bean="sharingModule"/></property>
 	</bean>
 
 	<!-- Default lob handler.  Override this in applicationContext-ext.xml for specific databases -->
@@ -900,6 +901,21 @@
 				<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 				<property name="binderModule"><ref bean="binderModule"/></property>
 				<property name="folderModule"><ref bean="folderModule"/></property>
+			</bean>
+		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+			</props>
+		</property>
+	</bean>			
+
+	<bean id="sharingModule"  parent="moduleTransactionProxy">
+		<!--  dependences prevent inheriting from dependOnCommonServicesTemplate -->
+		<property name="target">
+			<bean class="org.kablink.teaming.module.sharing.impl.SharingModuleImpl">
+				<property name="coreDao"><ref bean="coreDao"/></property>
+				<property name="profileDao"><ref bean="profileDao"/></property>
 			</bean>
 		</property>
 		<property name="transactionAttributes">

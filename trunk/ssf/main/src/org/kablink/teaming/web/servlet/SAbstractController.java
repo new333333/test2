@@ -56,11 +56,13 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.rss.RssModule;
+import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -91,6 +93,7 @@ implements AllModulesInjected {
 	private RssModule rssModule;
 	private LicenseModule licenseModule;
 	private ZoneModule zoneModule;
+	private SharingModule sharingModule;
 	
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
@@ -243,6 +246,15 @@ implements AllModulesInjected {
 	}
 	public void setZoneModule(ZoneModule zoneModule) {
 		this.zoneModule = zoneModule;
+	}
+
+	public SharingModule getSharingModule() {
+		if(sharingModule == null)
+			sharingModule = (SharingModule) SpringContextUtil.getBean("sharingModule");
+		return sharingModule;
+	}
+	public void setSharingModule(SharingModule sharingModule) {
+		this.sharingModule = sharingModule;
 	}
 
 	protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
