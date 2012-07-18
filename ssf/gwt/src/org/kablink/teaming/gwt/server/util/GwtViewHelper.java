@@ -130,6 +130,7 @@ import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
+import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
@@ -206,7 +207,6 @@ public class GwtViewHelper {
 	 * Inner class used to track items for the 'Shared with Me'
 	 * collection point.
 	 */
-	@SuppressWarnings("unused")
 	private static class SharedWithMeItem {
 		private DefinableEntity		m_item;			//
 		private List<SharerInfo>	m_sharerInfos;	//
@@ -233,7 +233,7 @@ public class GwtViewHelper {
 		/*
 		 * Set'er methods.
 		 */
-		void setItem(       DefinableEntity item)        {m_item        = item;       }
+		void setItem(DefinableEntity item) {m_item = item;}
 		
 		/*
 		 * Adds information from a ShareItemMember to this object.
@@ -292,7 +292,7 @@ public class GwtViewHelper {
 		 * given DefinableEntity.  If one is found, it's returned.
 		 * Otherwise, null is returned.
 		 */
-		static SharedWithMeItem getItemInList(DefinableEntity item, List<SharedWithMeItem> siList) {
+		static SharedWithMeItem findItemInList(DefinableEntity item, List<SharedWithMeItem> siList) {
 			// If we have an item to find and there are any share items in
 			// the list...
 			if ((null != item) && (null != siList) && (!(siList.isEmpty()))) {
@@ -309,6 +309,51 @@ public class GwtViewHelper {
 
 			// If we get here, we couldn't find the item in question.
 			// Return null.
+			return null;
+		}
+
+		/*
+		 * Searches a List<SharedWithMeItem> for one referring to a
+		 * specific entity based on entity type and ID.  If one is
+		 * found, it's returned.  Otherwise, null is returned.
+		 */
+		static SharedWithMeItem findItemInList(boolean isEntityFolderEntry, Long docId, List<SharedWithMeItem> siList) {
+			// Do we have any SharedWithMeItem's to search?
+			if ((null != docId) && (null != siList) && (!(siList.isEmpty()))) {
+				// Yes!  Scan them.
+				for (SharedWithMeItem si:  siList) {
+					// Are we looking for a folder entry?
+					DefinableEntity	de   = si.getItem();
+					Long			deId = de.getId();
+					if (isEntityFolderEntry) {
+						// Yes!  Is this the SharedWithMeItem for it?
+						if ((!(de instanceof FolderEntry)) || (!(deId.equals(docId)))) {
+							// No!  Skip it.
+							continue;
+						}
+						
+						// Yes, this is the SharedWithMeItem for it!
+						// Return it.
+						return si;
+					}
+					
+					else {
+						// No, we must be looking for a binder!  Is
+						// this the SharedWithMeItem for it?
+						if ((de instanceof FolderEntry) || (!(deId.equals(docId)))) {
+							// No!  Skip it.
+							continue;
+						}
+						
+						// Yes, this is the SharedWithMeItem for it!
+						// Return it.
+						return si;
+					}
+				}
+			}
+
+			// If we get here, we couldn't find the SharedWithMeItem in
+			// question.  Return null.
 			return null;
 		}
 
@@ -362,7 +407,7 @@ public class GwtViewHelper {
 		 * sharer and false otherwise.
 		 */
 		private static boolean contains(List<SharerInfo> sharerInfos, Long id) {
-			if ((null != sharerInfos) && (!(sharerInfos.isEmpty()))) {
+			if ((null != id) && (null != sharerInfos) && (!(sharerInfos.isEmpty()))) {
 				for (SharerInfo si:  sharerInfos) {
 					if (si.getId().equals(id)) {
 						return true;
@@ -700,7 +745,7 @@ public class GwtViewHelper {
 			}
 			
 			// Are we already tracking this share item?
-			SharedWithMeItem si = SharedWithMeItem.getItemInList(siScanItem, reply);
+			SharedWithMeItem si = SharedWithMeItem.findItemInList(siScanItem, reply);
 			boolean newSI = (null == si);
 			if (newSI) {
 				// No!  Create a SharedWithMeItem to track it.
@@ -2663,64 +2708,69 @@ public class GwtViewHelper {
 						}
 						
 						// Are we working on a 'Shared with Me'
-						// collection that we need resolve a sharedBy
-						// for?
-						if (isCollectionSharedWithMe && (csk.equals("sharedBy"))) {
-							// Yes!  Do we have any SharedWithMeItem's?
-							List<AssignmentInfo> sharerAIs = null;
-							if ((null != shareItems) && (!(shareItems.isEmpty()))) {
-								// Yes!  Scan the items that have been
-								// shared with me.
-								for (SharedWithMeItem si:  shareItems) {
-									// Are we working with an entry row?
-									DefinableEntity	de   = si.getItem();
-									Long			deId = de.getId();
-									if (isEntityFolderEntry) {
-										// Yes!  Is this the
-										// SharedWithMeItem for it?
-										if ((!(de instanceof FolderEntry)) || (!(deId.equals(docId)))) {
-											// No!  Skip it.
-											continue;
-										}
-										
-										// Yes, this is the
-										// SharedWithMeItem for it!
-										// Track who shared it as
-										// AssignmentInfo's.
-										sharerAIs = getAIListFromSharers(si.getSharerInfos());
-										break;
-									}
-									
-									else {
-										// No, we must be working with
-										// a binder row!  Is this the
-										// SharedWithMeItem for it?
-										if ((de instanceof FolderEntry) || (!(deId.equals(docId)))) {
-											// No!  Skip it.
-											continue;
-										}
-										
-										// Yes, this is the
-										// SharedWithMeItem for it!
-										// Track who shared it as
-										// AssignmentInfo's.
-										sharerAIs = getAIListFromSharers(si.getSharerInfos());
-										break;
+						// collection?
+						if (isCollectionSharedWithMe) {
+							// Yes!  Is this the sharedBy column?
+							if (csk.equals("sharedBy")) {
+								// Yes!  Can we find the
+								// SharedWithMeItem for this row?
+								List<AssignmentInfo> sharerAIs = null;
+								SharedWithMeItem si = SharedWithMeItem.findItemInList(isEntityFolderEntry, docId, shareItems);
+								if (null != si) {
+									// Yes!  Use it to construct a
+									// List<AssignmentInfo>.
+									sharerAIs = getAIListFromSharers(si.getSharerInfos());
+								}
+	
+								// If we don't have any sharers for this column...
+								if (null == sharerAIs) {
+									// ...use an empty list.
+									sharerAIs = new ArrayList<AssignmentInfo>();
+								}
+								addedAssignments = (!(sharerAIs.isEmpty()));
+								fr.setColumnValue_AssignmentInfos(fc, sharerAIs);
+	
+								// Continue with the next column.
+								// We're done with this one.
+								continue;
+							}
+							
+							// No, this isn't the sharedBy column!  Is
+							// it the access column?
+							else if (csk.equals("access")) {
+								// Yes!  Can we find the
+								// SharedWithMeItem for this row?
+								ShareRights rights = null;
+								SharedWithMeItem si = SharedWithMeItem.findItemInList(isEntityFolderEntry, docId, shareItems);
+								if (null != si) {
+									// Yes!  Get the share rights from
+									// it...
+									rights = GwtShareHelper.getShareRightsFromRightSet(si.getRightSet());
+								}
+
+								// ...map the share rights to an access
+								// ...string we can display...
+								String access;
+								if (null == rights) {
+									access = "";
+								}
+								else {
+									switch (rights) {
+									default:
+									case UNKNOWN:      access = "";                                        break;
+									case VIEW:         access = NLT.get("collections.access.view");        break;
+									case CONTRIBUTOR:  access = NLT.get("collections.access.contributor"); break;
+									case OWNER:        access = NLT.get("collections.access.owner");       break;
 									}
 								}
+								
+								// ...and set the column value.
+								fr.setColumnValue(fc, access);
+								
+								// Continue with the next column.
+								// We're done with this one.
+								continue;
 							}
-
-							// If we don't have any sharers for this column...
-							if (null == sharerAIs) {
-								// ...use an empty list.
-								sharerAIs = new ArrayList<AssignmentInfo>();
-							}
-							addedAssignments = (!(sharerAIs.isEmpty()));
-							fr.setColumnValue_AssignmentInfos(fc, sharerAIs);
-
-							// Continue with the next column.  We're
-							// done with this one.
-							continue;
 						}
 						
 						GuestInfo     gi = null;
