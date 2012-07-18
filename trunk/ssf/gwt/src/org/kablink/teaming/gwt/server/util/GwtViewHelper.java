@@ -530,6 +530,12 @@ public class GwtViewHelper {
 			for (AssignmentInfo ai:  getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME)) {
 				MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
 			}
+			
+			// Scan this FolderRow's shared by's tracking each unique
+			// ID.
+			for (AssignmentInfo ai:  getAIListFromFR(fr, FolderColumn.COLUMN_SHARED_BY)) {
+				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+			}
 		}
 
 		// If we don't have any assignees to complete...
@@ -585,6 +591,8 @@ public class GwtViewHelper {
 			fixupAITeams( getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       teamTitles,      teamCounts                     );
 			fixupAITeams( getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  teamTitles,      teamCounts                     );
 			fixupAITeams( getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            teamTitles,      teamCounts                     );
+			
+			fixupAIs(     getAIListFromFR(fr, FolderColumn.COLUMN_SHARED_BY),                               principalTitles, userPresence, presenceUserWSIds);
 		}		
 
 		// Finally, one last scan through the List<FolderRow>'s...
@@ -602,6 +610,8 @@ public class GwtViewHelper {
 			Collections.sort(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       comparator);
 			Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  comparator);
 			Collections.sort(getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            comparator);
+			
+			Collections.sort(getAIListFromFR(fr, FolderColumn.COLUMN_SHARED_BY),                               comparator);
 		}
 	}
 
@@ -1508,7 +1518,7 @@ public class GwtViewHelper {
 	 */
 	private static List<AssignmentInfo> getAIListFromFR(FolderRow fr, String attrName) {
 		Map<String, List<AssignmentInfo>> aiMap = fr.getRowAssigneeInfoListsMap();
-		List<AssignmentInfo> reply = aiMap.get(attrName);
+		List<AssignmentInfo> reply = aiMap.get(attrName.toLowerCase());
 		return ((null == reply) ? new ArrayList<AssignmentInfo>() : reply);
 	}
 

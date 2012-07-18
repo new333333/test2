@@ -1136,7 +1136,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			
 			// No, this column doesn't show a download link!  Does it
 			// show presence?
-			else if (FolderColumn.isColumnPresence(cName) || FolderColumn.isColumnSharedBy(cName) || FolderColumn.isColumnFullName(cName)) {
+			else if (FolderColumn.isColumnPresence(cName) || FolderColumn.isColumnFullName(cName)) {
 				// Yes!  Create a PresenceColumn for it.
 				column = new PresenceColumn<FolderRow>(fc, showProfileEntryForPresenceWithNoWS()) {
 					@Override
