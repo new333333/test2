@@ -146,6 +146,61 @@ public class ShareItemMember {
 		protected boolean addTags = false;
 		protected boolean viewBinderTitle = false;
 		
+		@Override
+	    public int hashCode() {
+			int result = 14;
+			result = 29 * result + (createEntries ? 1231 : 1237);
+			result = 29 * result + (modifyEntries ? 1231 : 1237);
+			result = 29 * result + (modifyEntryFields ? 1231 : 1237);
+			result = 29 * result + (deleteEntries ? 1231 : 1237);
+			result = 29 * result + (readEntries ? 1231 : 1237);
+			result = 29 * result + (addReplies ? 1231 : 1237);
+			result = 29 * result + (generateReports ? 1231 : 1237);
+			result = 29 * result + (binderAdministration ? 1231 : 1237);
+			result = 29 * result + (createEntryAcls ? 1231 : 1237);
+			result = 29 * result + (changeAccessControl ? 1231 : 1237);
+			result = 29 * result + (createWorkspaces ? 1231 : 1237);
+			result = 29 * result + (createFolders ? 1231 : 1237);
+			result = 29 * result + (manageEntryDefinitions ? 1231 : 1237);
+			result = 29 * result + (manageWorkflowDefinitions ? 1231 : 1237);
+			result = 29 * result + (creatorReadEntries ? 1231 : 1237);
+			result = 29 * result + (creatorModifyEntries ? 1231 : 1237);
+			result = 29 * result + (creatorDeleteEntries ? 1231 : 1237);
+			result = 29 * result + (ownerCreateEntryAcls ? 1231 : 1237);
+			result = 29 * result + (addTags ? 1231 : 1237);
+			result = 29 * result + (viewBinderTitle ? 1231 : 1237);
+			return result;
+		}
+
+		@Override
+	    public boolean equals(Object obj) {
+			if(this==obj) return true;
+			if(obj == null) return false;
+			if(!(obj instanceof RightSet)) return false;
+			RightSet that = (RightSet) obj;
+			if(this.createEntries != that.createEntries) return false;
+			if(this.modifyEntries != that.modifyEntries) return false;
+			if(this.modifyEntryFields != that.modifyEntryFields) return false;
+			if(this.deleteEntries != that.deleteEntries) return false;
+			if(this.readEntries != that.readEntries) return false;
+			if(this.addReplies != that.addReplies) return false;
+			if(this.generateReports != that.generateReports) return false;
+			if(this.binderAdministration != that.binderAdministration) return false;
+			if(this.createEntryAcls != that.createEntryAcls) return false;
+			if(this.changeAccessControl != that.changeAccessControl) return false;
+			if(this.createWorkspaces != that.createWorkspaces) return false;
+			if(this.createFolders != that.createFolders) return false;
+			if(this.manageEntryDefinitions != that.manageEntryDefinitions) return false;
+			if(this.manageWorkflowDefinitions != that.manageWorkflowDefinitions) return false;
+			if(this.creatorReadEntries != that.creatorReadEntries) return false;
+			if(this.creatorModifyEntries != that.creatorModifyEntries) return false;
+			if(this.creatorDeleteEntries != that.creatorDeleteEntries) return false;
+			if(this.ownerCreateEntryAcls != that.ownerCreateEntryAcls) return false;
+			if(this.addTags != that.addTags) return false;
+			if(this.viewBinderTitle != that.viewBinderTitle) return false;
+			return true;
+		}
+		
 		// The following four methods provide read and update on any right using
 		// its right name as argument. Useful as generic getter/setter.
 		
