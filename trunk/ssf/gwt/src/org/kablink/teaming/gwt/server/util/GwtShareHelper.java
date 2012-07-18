@@ -35,13 +35,16 @@ package org.kablink.teaming.gwt.server.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -67,7 +70,10 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 
 
 /**
@@ -482,8 +488,101 @@ public class GwtShareHelper
 	}
 	
 	/**
+	 * Send an email to the given list of recipients informing them that an item has
+	 * been shared with them.
+	 */
+	@SuppressWarnings("rawtypes")
+	private static List sendEmailToRecipients(
+		AllModulesInjected ami,
+		DefinableEntity sharedEntity,
+		User currentUser,
+		String comments,
+		ArrayList<ShareItemMember> listOfShareItemMembers )
+	{
+		String title;
+		String shortTitle;
+		String desc;
+		Description body;
+		String mailTitle;
+		Set<String> emailAddress;
+		String bccEmailAddress;
+		List emailErrors;
+		Set<Long> teamIds;
+		Set<Long> principalIds;
+
+		teamIds = new HashSet<Long>();
+		
+		// Get the list of the ids of the users we should send an email to.
+		principalIds = new HashSet<Long>();
+		if ( listOfShareItemMembers != null )
+		{
+			for (ShareItemMember nextShareItemMember : listOfShareItemMembers)
+			{
+				if ( nextShareItemMember.getRecipientType() == RecipientType.user || 
+					 nextShareItemMember.getRecipientType() == RecipientType.group )
+				{
+					principalIds.add( nextShareItemMember.getRecipientId() );
+				}
+			}
+		}
+		
+		title = sharedEntity.getTitle();
+		shortTitle = title;
+		
+		if ( sharedEntity.getParentBinder() != null )
+			title = sharedEntity.getParentBinder().getPathName() + "/" + title;
+
+		// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
+		desc = "<a href=\"" + PermaLinkUtil.getPermalinkForEmail( sharedEntity ) + "\">" + title + "</a><br/><br/>" + comments;
+		body = new Description( desc );
+
+		mailTitle = NLT.get( "relevance.mailShared", new Object[]{Utils.getUserTitle( currentUser )} );
+		mailTitle += " (" + shortTitle +")";
+		
+		emailAddress = new HashSet<String>();
+		
+		//See if this user wants to be BCC'd on all mail sent out
+		bccEmailAddress = currentUser.getBccEmailAddress();
+		if ( bccEmailAddress != null && !bccEmailAddress.equals("") )
+		{
+			if ( !emailAddress.contains( bccEmailAddress.trim() ) )
+			{
+				//Add the user's chosen bcc email address
+				emailAddress.add( bccEmailAddress.trim() );
+			}
+		}
+		
+		emailErrors = null;
+		try
+		{
+			Map<String,Object> errorMap;
+			
+			// Send the email notification
+			errorMap = ami.getAdminModule().sendMail(
+													principalIds,
+													teamIds,
+													emailAddress,
+													null,
+													null,
+													mailTitle,
+													body );
+			if ( errorMap != null )
+			{
+				emailErrors = (List) errorMap.get( ObjectKeys.SENDMAIL_ERRORS );
+			}
+		}
+		catch ( Exception ex )
+		{
+			m_logger.error( "adminModule.sendMail() threw an exception: " + ex.getMessage() );
+		}
+		
+		return emailErrors;
+	}
+	
+	/**
 	 * Save the given share data. 
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static GwtShareEntryResults shareEntry(
 					AllModulesInjected ami,
 					String comments,
@@ -507,12 +606,15 @@ public class GwtShareHelper
 			return new GwtShareEntryResults();
 		}
 
+		results = new GwtShareEntryResults();
+		
 		listOfEntityIds = sharingData.getListOfEntityIds();
 		if ( listOfEntityIds != null )
 		{
 			User currentUser;
 			Description desc;
 			ArrayList<ShareItemMember> members;
+			List emailErrors;
 
 			currentUser = GwtServerHelper.getCurrentUser();
 
@@ -608,10 +710,13 @@ public class GwtShareHelper
 				desc = new Description( comments );
 			}
 			
+			emailErrors = null;
+			
 			for (EntityId nextEntityId : listOfEntityIds)
 			{
 				GwtShareItem gwtShareItem;
 				DefinableEntity sharedEntity;
+				List entityEmailErrors;
 				
 				// Get the entity that is being shared.
 				if ( nextEntityId.isBinder() )
@@ -653,10 +758,29 @@ public class GwtShareHelper
 					{
 					}
 				}
+				
+				// Send an email to each of the recipients
+				entityEmailErrors = sendEmailToRecipients( ami, sharedEntity, currentUser, comments, members );
+				
+				if ( emailErrors == null )
+				{
+					emailErrors = entityEmailErrors;
+				}
+				else
+				{
+					if ( entityEmailErrors != null )
+					{
+						emailErrors.addAll( entityEmailErrors );
+					}
+				}
+			}// end for()
+			
+			// Add any errors that happened to the results.
+			if ( null != emailErrors )
+			{
+				results.setErrors( (String[])emailErrors.toArray( new String[0]) );
 			}
 		}
-		
-		results = new GwtShareEntryResults();
 		
 		return results;
 	}
