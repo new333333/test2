@@ -1449,7 +1449,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GwtSharingInfo sharingInfo;
 			
 			gsiCmd = (GetSharingInfoCmd) cmd;
-			sharingInfo = GwtShareHelper.getSharingInfo( gsiCmd.getListOfEntities() );
+			sharingInfo = GwtShareHelper.getSharingInfo( this, gsiCmd.getListOfEntities() );
 			response = new VibeRpcResponse( sharingInfo );
 			return response;
 		}
@@ -2243,9 +2243,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case SHARE_ENTRY:
 		{
-			ShareEntryCmd seCmd = ((ShareEntryCmd) cmd);
-			GwtShareEntryResults results = shareEntry(
-					ri, seCmd.getEntityIds(), seCmd.getComment(), seCmd.getPrincipalIds(), seCmd.getTeamIds() );
+			ShareEntryCmd seCmd;
+			GwtShareEntryResults results;
+
+			seCmd = ((ShareEntryCmd) cmd);
+			results = GwtShareHelper.shareEntry( this, seCmd.getComment(), seCmd.getSharingInfo() );
 			ShareEntryResultsRpcResponseData responseData = new ShareEntryResultsRpcResponseData( results );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -4841,26 +4843,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return GwtServerHelper.saveSubscriptionData( this, entryId, subscriptionData );
 	}
 	
-
-	/*
-	 * Send an email notification to the given recipients for the given entry.
-	 */
-	private GwtShareEntryResults shareEntry( HttpRequestInfo ri, List<EntityId> entityIds, String comment, List<String> principalIds, List<String> teamIds )
-		throws GwtTeamingException
-	{
-		GwtShareEntryResults retValue;
-		
-		try
-		{
-			retValue = GwtServerHelper.shareEntry( this, entityIds, comment, principalIds, teamIds );
-		}
-		catch ( Exception ex )
-		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
-		}
-		
-		return retValue;
-	}
 
 	/**
 	 * Called to mark that the current user is tracking the specified

@@ -33,9 +33,7 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import java.util.List;
-
-import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 
 
 /**
@@ -45,10 +43,8 @@ import org.kablink.teaming.gwt.client.util.EntityId;
  * @author drfoster@novell.com
  */
 public class ShareEntryCmd extends VibeRpcCmd {
-	private List<String> m_principalIds;
-	private List<String> m_teamIds;
 	private String m_comment;
-	private List<EntityId> m_entityIds;
+	private GwtSharingInfo m_sharingData;
 	
 	/**
 	 * Class constructor.
@@ -68,13 +64,13 @@ public class ShareEntryCmd extends VibeRpcCmd {
 	 * @param principalIds
 	 * @param teamIds
 	 */
-	public ShareEntryCmd(List<EntityId> entityIds, String comment, List<String> principalIds, List<String> teamIds) {
+	public ShareEntryCmd(
+			String comment,
+			GwtSharingInfo sharingData ) {
 		this();
 		
 		m_comment      = comment;
-		m_entityIds    = entityIds;
-		m_principalIds = principalIds;
-		m_teamIds      = teamIds;
+		m_sharingData = sharingData;
 	}
 	
 	/**
@@ -82,10 +78,8 @@ public class ShareEntryCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public List<String>   getPrincipalIds() {return m_principalIds;}	
-	public List<String>   getTeamIds()      {return m_teamIds;     }	
 	public String         getComment()      {return m_comment;     }	
-	public List<EntityId> getEntityIds()    {return m_entityIds;   }	
+	public GwtSharingInfo getSharingInfo() { return m_sharingData; }
 	
 	/**
 	 * Returns the command's enumeration value.

@@ -48,6 +48,7 @@ public class GwtShareItemMember
 	private GwtRecipientType m_recipientType;
 	private ShareRights m_shareRights;
 	private ShareExpirationValue m_shareExpirationValue;
+	private boolean m_toBeDeleted;
 	
 	/**
 	 * 
@@ -60,6 +61,7 @@ public class GwtShareItemMember
 		m_recipientType = GwtRecipientType.UNKNOWN;
 		m_shareRights = ShareRights.VIEW;
 		m_shareExpirationValue = null;
+		m_toBeDeleted = false;
 	}
 	
 	/**
@@ -78,50 +80,6 @@ public class GwtShareItemMember
 		return m_recipientName;
 	}
 
-	/**
-	 * 
-	 */
-	public ShareExpirationValue getShareExpirationValue()
-	{
-		return m_shareExpirationValue;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getShareExpirationValueAsString()
-	{
-		if ( m_shareExpirationValue != null )
-			return m_shareExpirationValue.getValueAsString();
-		
-		return "";
-	}
-	
-	/**
-	 * 
-	 */
-	public ShareRights getShareRights()
-	{
-		return m_shareRights;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getShareRightsAsString()
-	{
-		if ( m_shareRights == ShareRights.VIEW )
-			return GwtTeaming.getMessages().shareDlg_view();
-		
-		if ( m_shareRights == ShareRights.CONTRIBUTOR )
-			return GwtTeaming.getMessages().shareDlg_contributor();
-		
-		if ( m_shareRights == ShareRights.OWNER )
-			return GwtTeaming.getMessages().shareDlg_owner();
-		
-		return "Unknown";
-	}
-	
 	/**
 	 * 
 	 */
@@ -153,6 +111,66 @@ public class GwtShareItemMember
 	/**
 	 * 
 	 */
+	public ShareExpirationValue getShareExpirationValue()
+	{
+		return m_shareExpirationValue;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getShareExpirationValueAsString()
+	{
+		if ( m_shareExpirationValue != null )
+			return m_shareExpirationValue.getValueAsString();
+		
+		return "";
+	}
+	
+	/**
+	 * Return the GwtShareItem this object is associated with.
+	 */
+	public GwtShareItem getShareItem()
+	{
+		return m_shareItem;
+	}
+	
+	/**
+	 * 
+	 */
+	public ShareRights getShareRights()
+	{
+		return m_shareRights;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getShareRightsAsString()
+	{
+		if ( m_shareRights == ShareRights.VIEW )
+			return GwtTeaming.getMessages().shareDlg_view();
+		
+		if ( m_shareRights == ShareRights.CONTRIBUTOR )
+			return GwtTeaming.getMessages().shareDlg_contributor();
+		
+		if ( m_shareRights == ShareRights.OWNER )
+			return GwtTeaming.getMessages().shareDlg_owner();
+		
+		return "Unknown";
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getToBeDeleted()
+	{
+		return m_toBeDeleted;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setRecipientId( Long id )
 	{
 		m_recipientId = id;
@@ -175,6 +193,14 @@ public class GwtShareItemMember
 	}
 	
 	/**
+	 * Set the GwtShareItem this member is associated with. 
+	 */
+	public void setShareItem( GwtShareItem shareItem )
+	{
+		m_shareItem = shareItem;
+	}
+	
+	/**
 	 * 
 	 */
 	public void setShareRights( ShareRights shareRights )
@@ -188,6 +214,14 @@ public class GwtShareItemMember
 	public void setRecipientType( GwtRecipientType type )
 	{
 		m_recipientType = type;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setToBeDeleted( boolean toBeDeleted )
+	{
+		m_toBeDeleted = toBeDeleted;
 	}
 }
 

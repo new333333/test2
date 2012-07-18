@@ -59,6 +59,19 @@ public class GwtShareItem
 	}
 
 	/**
+	 * Does this GwtShareItem belong to the given EntityId
+	 */
+	public boolean entityIdEquals( EntityId entityId )
+	{
+		if ( entityId != null && m_entityId != null )
+		{
+			return m_entityId.equalsEntityId( entityId );
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * 
 	 */
 	public String getDesc()

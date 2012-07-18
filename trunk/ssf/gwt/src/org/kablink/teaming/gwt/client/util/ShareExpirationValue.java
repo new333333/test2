@@ -44,6 +44,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * This class represents a share expiration value
  */
 public class ShareExpirationValue
+	implements IsSerializable
 {
 	private ShareExpirationType m_expirationType;
 	private Long m_value;
