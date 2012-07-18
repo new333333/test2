@@ -423,13 +423,7 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
     }
 	public boolean isFunctionMembershipInheritanceSupported() {
-    	if (this.isTop()) {
-    		//The top entry does not inherit
-    		return false;
-    	} else {
-    		//Replies always inherit from the parent
-    		return true;
-    	}
+		return true;
     }
     public Long getOwnerId() {
     	Principal owner = getOwner();
