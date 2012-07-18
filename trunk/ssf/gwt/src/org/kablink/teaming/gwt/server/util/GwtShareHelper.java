@@ -76,6 +76,159 @@ import org.kablink.teaming.util.SpringContextUtil;
 public class GwtShareHelper 
 {
 	protected static Log m_logger = LogFactory.getLog( GwtShareHelper.class );
+	private static RightSet m_viewRightSet;
+	private static RightSet m_contributorRightSet;
+	private static RightSet m_ownerRightSet;
+	
+
+	/**
+	 * Compare the 2 RightSet objects to see if they have the same rights
+	 */
+	private static boolean areRightSetsEqual( RightSet rightSet1, RightSet rightSet2 )
+	{
+		if ( rightSet1 == null || rightSet2 == null )
+		{
+			m_logger.error( "In GwtShareHelper.areRightSetsEqual(), one of the RightSet parameters is null" );
+			return false;
+		}
+	
+		return rightSet1.equals( rightSet2 );
+	}
+	
+	/**
+	 * Return the RightSet that corresponds to the "Contributor" rights
+	 */
+	private static RightSet getContributorRightSet()
+	{
+		if ( m_contributorRightSet == null )
+		{
+			m_contributorRightSet = new RightSet();
+			m_contributorRightSet.setReadEntries( true );
+			m_contributorRightSet.setCreateEntries( true );
+			m_contributorRightSet.setModifyEntries( true );
+			m_contributorRightSet.setDeleteEntries( true );
+		}
+		
+		return m_contributorRightSet;
+	}
+	
+	/**
+	 * Return the RightSet that corresponds to the "Owner" rights
+	 */
+	private static RightSet getOwnerRightSet()
+	{
+		if ( m_ownerRightSet == null )
+		{
+			m_ownerRightSet = new RightSet();
+			m_ownerRightSet.setReadEntries( true );
+			m_ownerRightSet.setCreateEntries( true );
+			m_ownerRightSet.setModifyEntries( true );
+			m_ownerRightSet.setDeleteEntries( true );
+			m_ownerRightSet.setAddReplies( true );
+			m_ownerRightSet.setBinderAdministration( true );
+			m_ownerRightSet.setCreateEntryAcls( true );
+			m_ownerRightSet.setChangeAccessControl( true );
+		}
+		
+		return m_ownerRightSet;
+	}
+	
+	/**
+	 * Return the name of the given principal
+	 */
+	private static String getRecipientName( AllModulesInjected ami, ShareItemMember shareItemMember )
+	{
+		String name = null;
+		
+		if ( shareItemMember != null )
+		{
+			// Set the recipient's name
+			try 
+			{
+				Principal principal;
+				
+				//!!! Finish.  How do we construct the name
+				principal = ami.getProfileModule().getEntry( shareItemMember.getRecipientId() );
+				name = principal.getName();
+			}
+			catch ( Exception e )
+			{
+				m_logger.error( "Could find the user: " + shareItemMember.getRecipientId().toString() );
+			}
+		}
+		
+		return name;
+	}
+
+	/**
+	 * Return the appropriate RightSet object from the given ShareRights object
+	 */
+	private static RightSet getRightSetFromShareRights( ShareRights shareRights )
+	{
+		RightSet rightSet;
+		
+		switch ( shareRights )
+		{
+		case CONTRIBUTOR:
+			rightSet = getContributorRightSet(); 
+			break;
+		
+		case OWNER:
+			rightSet = getOwnerRightSet();
+			break;
+		
+		case VIEW:
+			rightSet = getViewRightSet();
+			break;
+			
+		case UNKNOWN:
+		default:
+			rightSet = new RightSet();
+			m_logger.error( "In GwtShareHelper.getRightSet(), unknown share rights" );
+			break;
+		}
+	
+		return rightSet;
+	}
+	
+	/**
+	 * Convert the share rights for the given ShareItemMember to "View", "Contributor" or "Owner"
+	 */
+	private static ShareRights getShareRightsFromRightSet( RightSet rightSet )
+	{
+		if ( rightSet != null )
+		{
+			RightSet tmpRightSet;
+			
+			// Is the given RightSet equal to the "View" RightSet
+			tmpRightSet = getViewRightSet();
+			if ( areRightSetsEqual( rightSet, tmpRightSet ) )
+			{
+				// Yes
+				return ShareRights.VIEW;
+			}
+			
+			// Is the given RightSet equal to the "Contributor" RightSet
+			tmpRightSet = getContributorRightSet();
+			if ( areRightSetsEqual( rightSet, tmpRightSet ) )
+			{
+				// Yes
+				return ShareRights.CONTRIBUTOR;
+			}
+			
+			// Is the given RightSet equal to the "Owner" RightSet
+			tmpRightSet = getOwnerRightSet();
+			if ( areRightSetsEqual( rightSet, tmpRightSet ) )
+			{
+				// Yes
+				return ShareRights.OWNER;
+			}
+			
+		}
+		
+		// If we get here we didn't find a match.
+		return ShareRights.UNKNOWN;
+	}
 
 	/**
 	 * Return sharing information for the given entities
@@ -96,12 +249,13 @@ public class GwtShareHelper
 			profileDao = (ProfileDao)SpringContextUtil.getBean( "profileDao" );
 			if ( profileDao != null )
 			{
+				// For each given entity, get the sharing information.
 				for (EntityId nextEntityId : listOfEntityIds)
 				{
 					List<ShareItem> listOfShareItems;
 					EntityIdentifier entityIdentifier;
 					
-					// Set the entity type
+					// Get the entity type
 					{
 						EntityType entityType;
 						Long entityId;
@@ -208,14 +362,13 @@ public class GwtShareHelper
 									{
 										ShareRights shareRights;
 										
-										shareRights = getShareRights( nextMember );
+										shareRights = getShareRightsFromRightSet( nextMember.getRightSet() );
 										gwtShareItemMember.setShareRights( shareRights );
 									}
 								}
 							}
 						}
 					}
-					
 				}
 			}
 		}
@@ -225,7 +378,21 @@ public class GwtShareHelper
 
 
 	/**
-	 * 
+	 * Return the RightSet that corresponds to the "View" rights
+	 */
+	private static RightSet getViewRightSet()
+	{
+		if ( m_viewRightSet == null )
+		{
+			m_viewRightSet = new RightSet();
+			m_viewRightSet.setReadEntries( true );
+		}
+		
+		return m_viewRightSet;
+	}
+	
+	/**
+	 * Save the given share data. 
 	 */
 	public static GwtShareEntryResults shareEntry(
 					AllModulesInjected ami,
@@ -246,7 +413,7 @@ public class GwtShareHelper
 
 		if ( sharingData == null )
 		{
-			//!!! Finish
+			m_logger.error( "In GwtShareHelper.shareEntry(), sharingData is null." );
 			return new GwtShareEntryResults();
 		}
 
@@ -265,6 +432,7 @@ public class GwtShareHelper
 
 				members = new ArrayList<ShareItemMember>();
 				
+				//!!! Get the list of members this entity has already been shared with.
 				listOfMembers = sharingData.getListOfShareItemMembers();
 				if ( listOfMembers != null )
 				{
@@ -309,38 +477,7 @@ public class GwtShareHelper
 						recipientId = nextMember.getRecipientId();
 						
 						// Get the appropriate RightSet
-						{
-							rightSet = new RightSet();
-							
-							switch ( nextMember.getShareRights() )
-							{
-							case CONTRIBUTOR:
-								rightSet.setReadEntries( true );
-								rightSet.setCreateEntries( true );
-								rightSet.setModifyEntries( true );
-								rightSet.setDeleteEntries( true );
-								break;
-							
-							case OWNER:
-								rightSet.setReadEntries( true );
-								rightSet.setCreateEntries( true );
-								rightSet.setModifyEntries( true );
-								rightSet.setDeleteEntries( true );
-								rightSet.setAddReplies( true );
-								rightSet.setBinderAdministration( true );
-								rightSet.setCreateEntryAcls( true );
-								rightSet.setChangeAccessControl( true );
-								break;
-							
-							case VIEW:
-								rightSet.setReadEntries( true );
-								break;
-								
-							case UNKNOWN:
-							default:
-								break;
-							}
-						}
+						rightSet = getRightSetFromShareRights( nextMember.getShareRights() );
 						
 						shareItemMember = new ShareItemMember(
 														endDate,
@@ -407,95 +544,9 @@ public class GwtShareHelper
 				}
 			}
 		}
+		
 		results = new GwtShareEntryResults();
 		
 		return results;
-	}
-	
-	/**
-	 * Return the name of the given principal
-	 */
-	private static String getRecipientName( AllModulesInjected ami, ShareItemMember shareItemMember )
-	{
-		String name = null;
-		
-		if ( shareItemMember != null )
-		{
-			// Set the recipient's name
-			try 
-			{
-				Principal principal;
-				
-				//!!! Finish.  How do we construct the name
-				principal = ami.getProfileModule().getEntry( shareItemMember.getRecipientId() );
-				name = principal.getName();
-			}
-			catch ( Exception e )
-			{
-				m_logger.error( "Could find the user: " + shareItemMember.getRecipientId().toString() );
-			}
-		}
-		
-		return name;
-	}
-	
-	/**
-	 * Convert the share rights for the given ShareItemMember to "View", "Contributor" or "Owner"
-	 */
-	private static ShareRights getShareRights( ShareItemMember shareItemMember )
-	{
-		RightSet rightSet;
-		ShareRights shareRights;
-		
-		shareRights = ShareRights.UNKNOWN;
-		
-		rightSet = shareItemMember.getRightSet();
-		if ( rightSet != null )
-		{
-			boolean canCreateEntries;
-			boolean canModifyEntries;
-			boolean canDeleteEntries;
-			boolean canReadEntries;
-			boolean canAddReplies;
-			boolean isBinderAdmin;
-			boolean canCreateEntryAcls;
-			boolean canChangeAccessControl;
-			boolean canCreateWorkspace;
-			boolean canCreateFolders;
-			boolean canManageEntryDefs;
-			boolean canManageWorkflowDefs;
-			boolean canAddTags;
-			
-			canCreateEntries = rightSet.isCreateEntries();
-			canModifyEntries = rightSet.isModifyEntries();
-			canDeleteEntries = rightSet.isDeleteEntries();
-			canReadEntries = rightSet.isReadEntries();
-			canAddReplies = rightSet.isAddReplies();
-			isBinderAdmin = rightSet.isBinderAdministration();
-			canCreateEntryAcls = rightSet.isCreateEntryAcls();
-			canChangeAccessControl = rightSet.isChangeAccessControl();
-			canCreateWorkspace = rightSet.isCreateWorkspaces();
-			canCreateFolders = rightSet.isCreateFolders();
-			canManageEntryDefs = rightSet.isManageEntryDefinitions();
-			canManageWorkflowDefs = rightSet.isManageWorkflowDefinitions();
-			canAddTags = rightSet.isAddTags();
-			
-			if ( canReadEntries )
-			{
-				shareRights = ShareRights.VIEW;
-				
-				if ( canCreateEntries && canModifyEntries && canDeleteEntries )
-				{
-					shareRights = ShareRights.CONTRIBUTOR;
-					
-					if ( canAddReplies && isBinderAdmin && canCreateEntryAcls && canChangeAccessControl )
-					{
-						shareRights = ShareRights.OWNER;
-					}
-				}
-			}
-		}
-		
-		return shareRights;
 	}
 }
