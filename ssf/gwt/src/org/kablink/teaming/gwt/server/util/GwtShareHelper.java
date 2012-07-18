@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
 
 import org.apache.commons.logging.Log;
@@ -82,6 +84,98 @@ public class GwtShareHelper
 	
 
 	/**
+	 * For the given ShareItem, add the information about the recipients to the
+	 * given GwtSharingInfo
+	 */
+	private static void addRecipientInfo(
+		AllModulesInjected ami,
+		ShareItem shareItem,
+		GwtShareItem gwtShareItem,
+		GwtSharingInfo sharingInfo )
+	{
+		Collection<ShareItemMember> listOfMembers;
+
+		if ( shareItem == null || gwtShareItem == null || sharingInfo == null )
+		{
+			m_logger.error( "In GwtShareHelper.addRecipientInfo(), a required parameter is null" );
+			return;
+		}
+		
+		listOfMembers = shareItem.getMembers();
+		if ( listOfMembers == null ) 
+			return;
+		
+		for (ShareItemMember nextMember : listOfMembers)
+		{
+			GwtShareItemMember gwtShareItemMember;
+			
+			gwtShareItemMember = new GwtShareItemMember();
+			
+			sharingInfo.addShareItemMember( gwtShareItemMember );
+			
+			gwtShareItemMember.setShareItem( gwtShareItem );
+			gwtShareItemMember.setRecipientId( nextMember.getRecipientId() );
+			
+			// Set the recipient type and name.
+			{
+				String name;
+				
+				switch ( nextMember.getRecipientType() )
+				{
+				case group:
+					name = getGroupName( ami, nextMember );
+					gwtShareItemMember.setRecipientName( name );
+					gwtShareItemMember.setRecipientType( GwtRecipientType.GROUP );
+					break;
+					
+				case user:
+					name = getUserName( ami, nextMember );
+					gwtShareItemMember.setRecipientName( name );
+					gwtShareItemMember.setRecipientType( GwtRecipientType.USER );
+					break;
+				
+				case team:
+					//!!! Finish
+					gwtShareItemMember.setRecipientType( GwtRecipientType.TEAM );
+					break;
+					
+				default:
+					gwtShareItemMember.setRecipientType( GwtRecipientType.UNKNOWN );
+					m_logger.error( "unknown recipient type for user: " + nextMember.getRecipientId().toString() );
+					break;
+				}
+			}
+			
+			// Set the expiration value
+			{
+				ShareExpirationValue expirationValue;
+				Date endDate;
+				
+				expirationValue = new ShareExpirationValue();
+				expirationValue.setType( ShareExpirationType.NEVER );
+				
+				// Is there an expiration specified?
+				endDate = nextMember.getEndDate();
+				if ( endDate != null )
+				{
+					expirationValue.setType( ShareExpirationType.ON_DATE );
+					expirationValue.setValue( endDate.getTime() );
+				}
+				
+				gwtShareItemMember.setShareExpirationValue( expirationValue );
+			}
+			
+			// Set the share rights
+			{
+				ShareRights shareRights;
+				
+				shareRights = getShareRightsFromRightSet( nextMember.getRightSet() );
+				gwtShareItemMember.setShareRights( shareRights );
+			}
+		}
+	}
+	
+	/**
 	 * Compare the 2 RightSet objects to see if they have the same rights
 	 */
 	private static boolean areRightSetsEqual( RightSet rightSet1, RightSet rightSet2 )
@@ -113,6 +207,78 @@ public class GwtShareHelper
 	}
 	
 	/**
+	 * Return an EntityIdentifier for the given EntityId
+	 */
+	private static EntityIdentifier getEntityIdentifierFromEntityId( EntityId entityId )
+	{
+		EntityIdentifier entityIdentifier;
+		EntityType entityType;
+		Long entityIdL;
+	
+		if ( entityId.isEntry() )
+		{
+			entityIdL = entityId.getEntityId();
+			entityType = EntityType.folderEntry;
+		}
+		else
+		{
+			String entityTypeS;
+
+			entityTypeS = entityId.getEntityType();
+			
+			//!!! Finish
+			if ( entityTypeS.equalsIgnoreCase( EntityType.folder.toString() ) )
+				entityType = EntityType.folder;
+			else if ( entityTypeS.equalsIgnoreCase( EntityType.workspace.toString() ) )
+				entityType = EntityType.workspace;
+			else
+				entityType = EntityType.none;
+				
+			entityIdL = entityId.getBinderId();
+		}
+		
+		entityIdentifier = new EntityIdentifier( entityIdL, entityType );
+		
+		return entityIdentifier;
+	}
+	
+	/**
+	 * Return the name of the given group
+	 */
+	private static String getGroupName( AllModulesInjected ami, ShareItemMember shareItemMember )
+	{
+		String name = null;
+		
+		if ( shareItemMember != null )
+		{
+			// Set the recipient's name
+			try 
+			{
+				List<Long> groupId = new ArrayList<Long>();
+				SortedSet<Principal> groupPrincipals;
+
+				groupId.add( shareItemMember.getRecipientId() );
+				groupPrincipals = ami.getProfileModule().getPrincipals( groupId );
+				
+				if ( groupPrincipals.size() == 1  )
+				{
+					Principal group;
+					
+					group = groupPrincipals.first();
+					
+					name = group.getName();
+				}
+			}
+			catch ( Exception e )
+			{
+				m_logger.error( "Could not find the group: " + shareItemMember.getRecipientId().toString() );
+			}
+		}
+		
+		return name;
+	}
+
+	/**
 	 * Return the RightSet that corresponds to the "Owner" rights
 	 */
 	private static RightSet getOwnerRightSet()
@@ -133,33 +299,6 @@ public class GwtShareHelper
 		return m_ownerRightSet;
 	}
 	
-	/**
-	 * Return the name of the given principal
-	 */
-	private static String getRecipientName( AllModulesInjected ami, ShareItemMember shareItemMember )
-	{
-		String name = null;
-		
-		if ( shareItemMember != null )
-		{
-			// Set the recipient's name
-			try 
-			{
-				Principal principal;
-				
-				//!!! Finish.  How do we construct the name
-				principal = ami.getProfileModule().getEntry( shareItemMember.getRecipientId() );
-				name = principal.getName();
-			}
-			catch ( Exception e )
-			{
-				m_logger.error( "Could find the user: " + shareItemMember.getRecipientId().toString() );
-			}
-		}
-		
-		return name;
-	}
-
 	/**
 	 * Return the appropriate RightSet object for the given ShareRights object
 	 */
@@ -237,138 +376,53 @@ public class GwtShareHelper
 	{
 		GwtSharingInfo sharingInfo;
 		User currentUser;
+		ProfileDao profileDao;
 
 		sharingInfo = new GwtSharingInfo();
 
 		currentUser = GwtServerHelper.getCurrentUser();
 
-		if ( listOfEntityIds != null && listOfEntityIds.size() > 0 )
+		if ( listOfEntityIds == null || listOfEntityIds.size() == 0 )
 		{
-			ProfileDao profileDao;
-
-			profileDao = (ProfileDao)SpringContextUtil.getBean( "profileDao" );
-			if ( profileDao != null )
+			m_logger.error( "In GwtShareHelper.getSharingInfo(), listOfEntityIds is null or empty" );
+			return sharingInfo;
+		}
+		
+		profileDao = (ProfileDao)SpringContextUtil.getBean( "profileDao" );
+		if ( profileDao == null )
+		{
+			m_logger.error( "In GwtShareHelper.getSharingInfo(), profileDao is null" );
+			return sharingInfo;
+		}
+		
+		// For each given entity, get the sharing information.
+		for (EntityId nextEntityId : listOfEntityIds)
+		{
+			List<ShareItem> listOfShareItems;
+			EntityIdentifier entityIdentifier;
+			
+			// Get the entity type
+			entityIdentifier = getEntityIdentifierFromEntityId( nextEntityId );
+			
+			// Get the ShareItem for the given entity
+			listOfShareItems = profileDao.findShareItemsBySharerAndSharedEntity(
+													currentUser.getId(),
+													entityIdentifier );
+			if ( listOfShareItems != null )
 			{
-				// For each given entity, get the sharing information.
-				for (EntityId nextEntityId : listOfEntityIds)
+				for (ShareItem nextShareItem : listOfShareItems)
 				{
-					List<ShareItem> listOfShareItems;
-					EntityIdentifier entityIdentifier;
+					GwtShareItem gwtShareItem;
 					
-					// Get the entity type
-					{
-						EntityType entityType;
-						Long entityId;
+					gwtShareItem = new GwtShareItem();
+					gwtShareItem.setDesc( nextShareItem.getDescription().getText() );
+					gwtShareItem.setEntityId( nextEntityId );
+					gwtShareItem.setId( nextShareItem.getId() );
 					
-						if ( nextEntityId.isEntry() )
-						{
-							entityId = nextEntityId.getEntityId();
-							entityType = EntityType.folderEntry;
-						}
-						else
-						{
-							String entityTypeS;
-
-							entityTypeS = nextEntityId.getEntityType();
-							
-							//!!! Finish
-							if ( entityTypeS.equalsIgnoreCase( EntityType.folder.toString() ) )
-								entityType = EntityType.folder;
-							else if ( entityTypeS.equalsIgnoreCase( EntityType.workspace.toString() ) )
-								entityType = EntityType.workspace;
-							else
-								entityType = EntityType.none;
-								
-							entityId = nextEntityId.getBinderId();
-						}
-						
-						entityIdentifier = new EntityIdentifier( entityId, entityType );
-					}
+					sharingInfo.addShareItem( gwtShareItem );
 					
-					// Get the ShareItem for the given entity
-					listOfShareItems = profileDao.findShareItemsBySharerAndSharedEntity(
-															currentUser.getId(),
-															entityIdentifier );
-					if ( listOfShareItems != null )
-					{
-						for (ShareItem nextShareItem : listOfShareItems)
-						{
-							GwtShareItem gwtShareItem;
-							Collection<ShareItemMember> listOfMembers;
-							
-							gwtShareItem = new GwtShareItem();
-							gwtShareItem.setDesc( nextShareItem.getDescription().getText() );
-							gwtShareItem.setEntityId( nextEntityId );
-							gwtShareItem.setId( nextShareItem.getId() );
-							
-							sharingInfo.addShareItem( gwtShareItem );
-							
-							// Get all of the information about how this entity is shared.
-							listOfMembers = nextShareItem.getMembers();
-							if ( listOfMembers != null )
-							{
-								for (ShareItemMember nextMember : listOfMembers)
-								{
-									GwtShareItemMember gwtShareItemMember;
-									
-									gwtShareItemMember = new GwtShareItemMember();
-									
-									sharingInfo.addShareItemMember( gwtShareItemMember );
-									
-									gwtShareItemMember.setShareItem( gwtShareItem );
-									gwtShareItemMember.setRecipientId( nextMember.getRecipientId() );
-									
-									// Set the recipient type and name.
-									{
-										String name;
-										
-										switch ( nextMember.getRecipientType() )
-										{
-										case group:
-											name = getRecipientName( ami, nextMember );
-											gwtShareItemMember.setRecipientName( name );
-											gwtShareItemMember.setRecipientType( GwtRecipientType.GROUP );
-											break;
-											
-										case user:
-											name = getRecipientName( ami, nextMember );
-											gwtShareItemMember.setRecipientName( name );
-											gwtShareItemMember.setRecipientType( GwtRecipientType.USER );
-											break;
-										
-										case team:
-											//!!! Finish
-											gwtShareItemMember.setRecipientType( GwtRecipientType.TEAM );
-											break;
-											
-										default:
-											gwtShareItemMember.setRecipientType( GwtRecipientType.UNKNOWN );
-											m_logger.error( "unknown recipient type for user: " + nextMember.getRecipientId().toString() );
-											break;
-										}
-									}
-									
-									// Set the expiration value
-									{
-										ShareExpirationValue expirationValue;
-										
-										//!!! Finish
-										expirationValue = new ShareExpirationValue();
-										expirationValue.setType( ShareExpirationType.NEVER );
-										gwtShareItemMember.setShareExpirationValue( expirationValue );
-									}
-									
-									// Set the share rights
-									{
-										ShareRights shareRights;
-										
-										shareRights = getShareRightsFromRightSet( nextMember.getRightSet() );
-										gwtShareItemMember.setShareRights( shareRights );
-									}
-								}
-							}
-						}
-					}
+					// Get all of the information about how this entity is shared.
+					addRecipientInfo( ami, nextShareItem, gwtShareItem, sharingInfo );
 				}
 			}
 		}
@@ -376,6 +430,42 @@ public class GwtShareHelper
 		return sharingInfo;
 	}
 
+	/**
+	 * Return the name of the given user
+	 */
+	private static String getUserName( AllModulesInjected ami, ShareItemMember shareItemMember )
+	{
+		String name = null;
+		
+		if ( shareItemMember != null )
+		{
+			// Set the recipient's name
+			try 
+			{
+				ArrayList<Long> userAL;
+				Set<User> userSet;
+				User[] users;
+				
+				userAL = new ArrayList<Long>();
+				userAL.add( shareItemMember.getRecipientId() );
+				userSet = ami.getProfileModule().getUsers( userAL );
+				users = userSet.toArray( new User[0] );
+				if ( users.length == 1 )
+				{
+					User user;
+					
+					user = users[0];
+					name = user.getWSTitle();
+				}
+			}
+			catch ( Exception e )
+			{
+				m_logger.error( "Could not find the user: " + shareItemMember.getRecipientId().toString() );
+			}
+		}
+		
+		return name;
+	}
 
 	/**
 	 * Return the RightSet that corresponds to the "View" rights
@@ -446,7 +536,28 @@ public class GwtShareHelper
 
 						// Get the share expiration value
 						{
-							//!!! Finish
+							ShareExpirationValue expirationValue;
+							
+							expirationValue = nextMember.getShareExpirationValue();
+							switch ( expirationValue.getExpirationType() )
+							{
+							case AFTER_DAYS:
+								endDate = null;
+								break;
+
+							case NEVER:
+								endDate = null;
+								break;
+
+							case ON_DATE:
+								endDate = new Date( expirationValue.getValue() );
+								break;
+								
+							case UNKNOWN:
+							default:
+								endDate = null;
+								break;
+							}
 						}
 						
 						// Get the recipient type
