@@ -397,7 +397,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			   			List<Short> accessTypes = new ArrayList<Short>();
 			   			accessTypes.add(ShareItemMember.RecipientType.user.getValue());
 			   			accessTypes.add(ShareItemMember.RecipientType.group.getValue());
-			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItemMember where recipientId in (:pList) and recipientType in (:aList)")
+			   			session.createSQLQuery("DELETE FROM SS_ShareItemMember WHERE recipient_id in (:pList) and recipient_type in (:aList)")
 	   					.setParameterList("pList", ids)
 	   					.setParameterList("aList", accessTypes)
 	   					.executeUpdate();
