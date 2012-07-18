@@ -146,6 +146,10 @@ public interface ObjectKeys {
 	public static final String FUNCTION_MANAGE_RESOURCE_DRIVERS_INTERNALID="402883b90d0de1f3010d0df5582b0022";
 	//reserved id for _createFileSpaces pseudo role  
 	public static final String FUNCTION_CREATE_FILESPACES_INTERNALID="402883b90d0de1f3010d0df5582b0023";
+	//reserved id for _enableSharing pseudo role  
+	public static final String FUNCTION_ENABLE_SHARING_INTERNALID="402883b90d0de1f3010d0df5582b0024";
+	//reserved id for _enableExternalSharing pseudo role  
+	public static final String FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID="402883b90d0de1f3010d0df5582b0025";
 	
 	//reserved id put in acls/membership to indicate owner of object has access
 	//search engine stores the ownerId of the entity in place of this
@@ -216,6 +220,8 @@ public interface ObjectKeys {
     public static final String ROLE_TITLE_BINDER_ADMIN="__role.binderAdmin";
     public static final String ROLE_TITLE_WORKSPACE_CREATOR="__role.workspaceCreator";
     public static final String ROLE_TITLE_SITE_ADMIN="__role.siteAdmin"; //Depreciated
+    public static final String ROLE_TITLE_ALLOW_SHARING="__role.allowSharing"; 
+    public static final String ROLE_TITLE_ALLOW_EXTERNAL_SHARING="__role.allowExternalSharing"; 
     
     //reserved pseudo roles. Only have 1 right each and cannot be edited by user.
     //Used to simulate a group of users without actually using the group facility.
@@ -226,6 +232,8 @@ public interface ObjectKeys {
     public static final String ROLE_ONLY_SEE_GROUP_MEMBERS="__role.onlySeeGroupMembers";
     public static final String ROLE_OVERRIDE_ONLY_SEE_GROUP_MEMBERS="__role.overrideOnlySeeGroupMembers";
     public static final String ROLE_MANAGE_RESOURCE_DRIVERS="__role.manageResourceDrivers";
+    public static final String ROLE_ENABLE_SHARING="__role.enableSharing";
+    public static final String ROLE_ENABLE_EXTERNAL_SHARING="__role.enableExternalSharing";
     //map keys from admin/sendMail
     public static final String SENDMAIL_ERRORS="errors";
     public static final String SENDMAIL_DISTRIBUTION="distributionList";
