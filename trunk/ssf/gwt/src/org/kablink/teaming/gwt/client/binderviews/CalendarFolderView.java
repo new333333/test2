@@ -68,6 +68,7 @@ import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarAppointmentsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteFolderEntriesCmd;
@@ -153,7 +154,8 @@ public class CalendarFolderView extends FolderViewBase
 		QuickFilterEvent.Handler,
 		ShareSelectedEntriesEvent.Handler,
 		SubscribeSelectedEntriesEvent.Handler,
-		UnlockSelectedEntriesEvent.Handler
+		UnlockSelectedEntriesEvent.Handler,
+		ViewSelectedEntryEvent.Handler
 {
 	private ArrayList<Appointment>				m_appointments;				//
 	private AddFilesDlg							m_addFilesDlg;				//
@@ -192,6 +194,7 @@ public class CalendarFolderView extends FolderViewBase
 		TeamingEvents.SHARE_SELECTED_ENTRIES,
 		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
 		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
+		TeamingEvents.VIEW_SELECTED_ENTRY,
 	};
 	
 	/**
@@ -301,7 +304,9 @@ public class CalendarFolderView extends FolderViewBase
 				if (null != emp) {
 					// ...tell it to update the state of its items that
 					// ...require entries be available.
-					EntryMenuPanel.setEntriesSelected(emp, (null != m_selectedEvent));
+					boolean haveSelection = (null != m_selectedEvent);
+					EntryMenuPanel.setEntrySelected(  emp, haveSelection);
+					EntryMenuPanel.setEntriesSelected(emp, haveSelection);
 				}
 			}
 		});
@@ -1563,6 +1568,24 @@ public class CalendarFolderView extends FolderViewBase
 			BinderViewsHelper.unlockEntries(
 				getFolderInfo().getFolderType(),
 				getSelectedEntityIds());
+		}
+	}
+	
+	/**
+	 * Handles ViewSelectedEntryEvent's received by this class.
+	 * 
+	 * Implements the ViewSelectedEntryEvent.Handler.onViewSelectedEntry() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onViewSelectedEntry(ViewSelectedEntryEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Invoke the view.
+//!			...this needs to be implemented...
+			GwtClientHelper.deferredAlert("CalendarFolderView.onViewSelectedEntry():  ...this needs to be implemented...");
 		}
 	}
 	

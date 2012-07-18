@@ -64,6 +64,7 @@ import org.kablink.teaming.gwt.client.event.TaskMoveUpEvent;
 import org.kablink.teaming.gwt.client.event.TaskPurgeEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
@@ -177,7 +178,8 @@ public class TaskTable extends Composite
 		TaskMoveRightEvent.Handler,
 		TaskMoveUpEvent.Handler,
 		TaskPurgeEvent.Handler,
-		UnlockSelectedEntriesEvent.Handler
+		UnlockSelectedEntriesEvent.Handler,
+		ViewSelectedEntryEvent.Handler
 {
 	private boolean						m_sortAscending;			//
 	private Column						m_sortColumn;				//
@@ -262,6 +264,7 @@ public class TaskTable extends Composite
 		TeamingEvents.TASK_MOVE_UP,
 		TeamingEvents.TASK_PURGE,
 		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
+		TeamingEvents.VIEW_SELECTED_ENTRY,
 	};
 	
 	/*
@@ -3078,6 +3081,24 @@ public class TaskTable extends Composite
 		}
 	}
 	
+	/**
+	 * Handles ViewSelectedEntryEvent's received by this class.
+	 * 
+	 * Implements the ViewSelectedEntryEvent.Handler.onViewSelectedEntry() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onViewSelectedEntry(ViewSelectedEntryEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
+			// Yes!  Invoke the view.
+//!			...this needs to be implemented...
+			GwtClientHelper.deferredAlert("TaskTable.onViewSelectedEntry():  ...this needs to be implemented...");
+		}
+	}
+	
 	/*
 	 * Called to write the change in linkage to the folder preferences.
 	 */
@@ -4436,6 +4457,6 @@ public class TaskTable extends Composite
 		m_taskListing.getMoveLeftButton().setEnabled( moveStates.canMoveLeft(),  arrowHint);
 		m_taskListing.getMoveRightButton().setEnabled(moveStates.canMoveRight(), arrowHint);
 		m_taskListing.getMoveUpButton().setEnabled(   moveStates.canMoveUp(),    arrowHint);
-		m_taskListing.setEntriesSelected(enableTrash || enablePurge);
+		m_taskListing.setEntriesSelected((enableTrash || enablePurge), (1 == tasksCheckedCount));
 	}
 }

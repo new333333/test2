@@ -1741,6 +1741,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case VIEW_SELECTED_ENTRY:
+				// A ViewSelectedEntryEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ViewSelectedEntryEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ViewSelectedEntryEvent.registerEvent(eventBus, ((ViewSelectedEntryEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case VIEW_TEAMING_FEED:
 				// A ViewTeamingFeedEvent!  Can the event handler we
 				// were given handle that?
@@ -2053,6 +2062,7 @@ public class EventHelper {
 			case VIEW_FORUM_ENTRY:                  	hasHandler = (eventHandler instanceof ViewForumEntryEvent.Handler);                break;
 			case VIEW_PINNED_ENTRIES:                  	hasHandler = (eventHandler instanceof ViewPinnedEntriesEvent.Handler);             break;
 			case VIEW_RESOURCE_LIBRARY:             	hasHandler = (eventHandler instanceof ViewResourceLibraryEvent.Handler);           break;
+			case VIEW_SELECTED_ENTRY:                  	hasHandler = (eventHandler instanceof ViewSelectedEntryEvent.Handler);             break;
 			case VIEW_TEAMING_FEED:                 	hasHandler = (eventHandler instanceof ViewTeamingFeedEvent.Handler);               break;
 			case VIEW_UNREAD_ENTRIES:               	hasHandler = (eventHandler instanceof ViewUnreadEntriesEvent.Handler);             break;
 			case VIEW_WHATS_NEW_IN_BINDER:				hasHandler = (eventHandler instanceof ViewWhatsNewInBinderEvent.Handler);          break;

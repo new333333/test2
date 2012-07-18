@@ -71,6 +71,7 @@ import org.kablink.teaming.gwt.client.event.TrashRestoreSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.ViewPinnedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
@@ -134,6 +135,7 @@ public class EntryMenuPanel extends ToolPanelBase
 	private VibeMenuBar						m_entryMenu;				//
 	private VibeMenuItem					m_addFilesMenu;				//
 	private VibeMenuItem					m_deleteMenu;				//
+	private VibeMenuItem					m_detailsMenu;				//
 	private VibeMenuItem					m_moreMenu;					//
 	private VibeMenuItem					m_shareMenu;				//
 	private VibeMenuItem					m_trashPurgeAllMenu;		//
@@ -359,6 +361,7 @@ public class EntryMenuPanel extends ToolPanelBase
 			}
 		}
 		setEntriesSelectedImpl(false);
+		setEntrySelectedImpl(  false);
 		
 		// Render the various right end capabilities applicable to the
 		// current binder.
@@ -816,6 +819,7 @@ public class EntryMenuPanel extends ToolPanelBase
 					case TRASH_RESTORE_ALL:                   event = new TrashRestoreAllEvent(               folderId   ); break;
 					case TRASH_RESTORE_SELECTED_ENTRIES:      event = new TrashRestoreSelectedEntriesEvent(   folderId   ); break;
 					case VIEW_PINNED_ENTRIES:                 event = new ViewPinnedEntriesEvent(             folderId   ); break;
+					case VIEW_SELECTED_ENTRY:                 event = new ViewSelectedEntryEvent(             folderId   ); break;
 					
 					case CALENDAR_SHOW:
 						int calendarShow = Integer.parseInt(simpleTBI.getQualifierValue("calendarShow"));
@@ -852,6 +856,7 @@ public class EntryMenuPanel extends ToolPanelBase
 		case TRASH_PURGE_SELECTED_ENTRIES:    m_trashPurgeSelectedMenu   = menuItem; break;
 		case TRASH_RESTORE_ALL:               m_trashRestoreAllMenu      = menuItem; break;
 		case TRASH_RESTORE_SELECTED_ENTRIES:  m_trashRestoreSelectedMenu = menuItem; break;
+		case VIEW_SELECTED_ENTRY:             m_detailsMenu              = menuItem; break;
 		}
 		menuItem.addStyleName((menuBar == m_entryMenu) ? "vibe-entryMenuBarItem" : "vibe-entryMenuPopupItem");
 		if (null != menuBar)
@@ -1014,6 +1019,21 @@ public class EntryMenuPanel extends ToolPanelBase
 	}
 	
 	/*
+	 * Called to enable/disable the menu items that require a single
+	 * entry to be selected.
+	 */
+	private void setEntrySelectedImpl(boolean enable) {
+		// If we have a details menu item...
+		if (null != m_detailsMenu) {
+			// ...enable disable it.
+			m_detailsMenu.setEnabled(enable);
+			if (enable)
+			     m_detailsMenu.removeStyleName("vibe-menuDisabled");
+			else m_detailsMenu.addStyleName(   "vibe-menuDisabled");
+		}
+	}
+	
+	/*
 	 * Returns true if the binder this menu is running against supports
 	 * quick filtering and false otherwise.
 	 */
@@ -1081,6 +1101,8 @@ public class EntryMenuPanel extends ToolPanelBase
 			// setEntriesAvailable/Selected parameters.
 			final EntryMenuPanel	emp,
 			final boolean			setAvailable,
+			final boolean			setEntries,
+			final boolean			setEntry,
 			final boolean			enable) {
 		GWT.runAsync(EntryMenuPanel.class, new RunAsyncCallback() {
 			@Override
@@ -1104,9 +1126,9 @@ public class EntryMenuPanel extends ToolPanelBase
 					// No, it's not a request to create an entry menu
 					// panel!  It must be a notification about entries
 					// being available or selected.
-					if (setAvailable)
-					     emp.setEntriesAvailableImpl(enable);
-					else emp.setEntriesSelectedImpl( enable);
+					if      (setAvailable) emp.setEntriesAvailableImpl(enable);
+					else if (setEntries)   emp.setEntriesSelectedImpl( enable);
+					else if (setEntry)     emp.setEntrySelectedImpl(   enable);
 				}
 			}
 		});
@@ -1123,7 +1145,7 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * @param tpClient
 	 */
 	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final boolean viewingPinnedEntries, final boolean includeColumnResizer, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
-		doAsyncOperation(containerResizer, binderInfo, viewingPinnedEntries, includeColumnResizer, toolPanelReady, tpClient, null, false, false);
+		doAsyncOperation(containerResizer, binderInfo, viewingPinnedEntries, includeColumnResizer, toolPanelReady, tpClient, null, false, false, false, false);
 	}
 	
 	/**
@@ -1134,17 +1156,28 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * @param enable
 	 */
 	public static void setEntriesAvailable(final EntryMenuPanel emp, final boolean enable) {
-		doAsyncOperation(null, null, false, false, null, null, emp, true, enable);
+		doAsyncOperation(null, null, false, false, null, null, emp, true, false, false, enable);
 	}
 	
 	/**
 	 * Called to enable/disable the menu items that require something
 	 * to be selected.
 	 *
-	 * @param
+	 * @param emp
 	 * @param enable
 	 */
 	public static void setEntriesSelected(final EntryMenuPanel emp, final boolean enable) {
-		doAsyncOperation(null, null, false, false, null, null, emp, false, enable);
+		doAsyncOperation(null, null, false, false, null, null, emp, false, true, false, enable);
+	}
+	
+	/**
+	 * Called to enable/disable the menu items that require a single
+	 * entry to be selected.
+	 *
+	 * @param emp
+	 * @param enable
+	 */
+	public static void setEntrySelected(final EntryMenuPanel emp, final boolean enable) {
+		doAsyncOperation(null, null, false, false, null, null, emp, false, false, true, enable);
 	}
 }
