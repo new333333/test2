@@ -41,6 +41,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster
  */
 public class EntryTitleInfo implements IsSerializable {
+	private boolean		m_file;			//
 	private boolean 	m_trash;		//
 	private boolean		m_seen;			//
 	private EntityId	m_entityId;		//
@@ -65,8 +66,9 @@ public class EntryTitleInfo implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean  getSeen()            {return m_seen;           }
-	public boolean  getTrash()           {return m_trash;          }
+	public boolean  isFile()             {return m_file;           }
+	public boolean  isSeen()             {return m_seen;           }
+	public boolean  isTrash()            {return m_trash;          }
 	public EntityId getEntityId()        {return m_entityId;       }
 	public String   getDescription()     {return m_description;    }
 	public String   getTitle()           {return m_title;          }
@@ -77,6 +79,7 @@ public class EntryTitleInfo implements IsSerializable {
 	 * 
 	 * @param
 	 */
+	public void setFile(           boolean  file)            {m_file            = file;           }
 	public void setSeen(           boolean  seen)            {m_seen            = seen;           }
 	public void setTrash(          boolean  trash)           {m_trash           = trash;          }
 	public void setEntityId(       EntityId entityId)        {m_entityId        = entityId;       }

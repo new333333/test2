@@ -1390,8 +1390,6 @@ public class GwtViewHelper {
 	private static void fixupFCs(List<FolderColumn> fcList, boolean isTrash) {
 		// We need to handle the columns that were added for
 		// collections.
-//!		...this needs to be implemented...
-		
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
 			if      (colName.equals("access"))          {fc.setColumnSearchKey("access");                               fc.setColumnSortable(false);                        }
@@ -2239,12 +2237,12 @@ public class GwtViewHelper {
 						// folder_column_defaults.jsp.
 						String[] defaultCols;
 						switch (folderType) {
-						case FILE:       defaultCols = new String[]{"title", "comments", "size", "download", "html", "state", "author", "date"}; break;
-						case GUESTBOOK:  defaultCols = new String[]{"guest", "title", "date", "descriptionHtml"};                                break;
-						case MILESTONE:  defaultCols = new String[]{"title", "responsible", "tasks", "status", "dueDate"};                       break;
-						case MINIBLOG:   defaultCols = new String[]{"title", "description"};                                                     break;
-						case SURVEY:     defaultCols = new String[]{"title", "author", "dueDate"};                                               break;
-						default:         defaultCols = new String[]{"number", "title", "comments", "state", "author", "date", "rating"};         break;
+						case FILE:       defaultCols = new String[]{"title", "comments", "size", "html", "state", "author", "date"};     break;
+						case GUESTBOOK:  defaultCols = new String[]{"guest", "title", "date", "descriptionHtml"};                        break;
+						case MILESTONE:  defaultCols = new String[]{"title", "responsible", "tasks", "status", "dueDate"};               break;
+						case MINIBLOG:   defaultCols = new String[]{"title", "description"};                                             break;
+						case SURVEY:     defaultCols = new String[]{"title", "author", "dueDate"};                                       break;
+						default:         defaultCols = new String[]{"number", "title", "comments", "state", "author", "date", "rating"}; break;
 						}
 						columnNames = getColumnsLHMFromAS(defaultCols);
 					}
@@ -2890,6 +2888,12 @@ public class GwtViewHelper {
 									eti.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
 									eti.setEntityId(entityId);
 									eti.setDescription(getEntryDescriptionFromMap(request, entryMap));
+									String family = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FAMILY_FIELD);
+									boolean file = (MiscUtil.hasString(family) && family.equals(Definition.FAMILY_FILE));
+									if (file) {
+										file = MiscUtil.hasString(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD));
+									}
+									eti.setFile(file);
 									fr.setColumnValue(fc, eti);
 								}
 								
