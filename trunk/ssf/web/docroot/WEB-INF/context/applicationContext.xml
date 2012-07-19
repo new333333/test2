@@ -738,9 +738,6 @@
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteUserByName">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="changePassword">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="addShareItem">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="modifyShareItem">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="deleteShareItem">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 	</bean>
@@ -920,7 +917,9 @@
 		</property>
 		<property name="transactionAttributes">
 			<props>
-				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addShareItem">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="modifyShareItem">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="deleteShareItem">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 	</bean>			
