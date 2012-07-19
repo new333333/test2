@@ -156,6 +156,8 @@ public class LinkUriUtil {
         if (isWorkspace(model) || isLibraryFolder(model)) {
             model.addAdditionalLink("child_library_folders", model.getLink() + "/library_folders");
         }
+        model.addAdditionalLink("child_library_tree", model.getLink() + "/library_tree");
+        model.addAdditionalLink("child_library_files", model.getLink() + "/library_files");
         model.addAdditionalLink("team_members", model.getLink() + "/team_members");
         model.addAdditionalLink("tags", model.getLink() + "/tags");
     }
