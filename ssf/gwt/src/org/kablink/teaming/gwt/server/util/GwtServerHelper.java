@@ -90,6 +90,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
@@ -3755,6 +3756,34 @@ public class GwtServerHelper {
 		return currentFilters;
 	}
 
+	/**
+	 * Return a download file URL that can be used to download an
+	 * entry's file.
+	 * 
+	 * @param request
+	 * @param bs
+	 * @param binderId
+	 * @param entryId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static String getDownloadFileUrl(HttpServletRequest request, AllModulesInjected bs, Long binderId, Long entryId) throws GwtTeamingException {
+		try {
+			FolderEntry entry = bs.getFolderModule().getEntry(null, entryId);
+			Set<FileAttachment> atts = entry.getFileAttachments(); 
+			String reply;
+			if (!(atts.isEmpty()))
+				 reply = WebUrlUtil.getFileUrl(request, WebKeys.ACTION_READ_FILE, atts.iterator().next(), false, true);
+			else reply = null;
+			return reply;
+		}
+		catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}		
+	}
+	
 	/**
 	 * Return the groups ldap query
 	 */

@@ -37,6 +37,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDownloadFileUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
@@ -86,6 +87,29 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
 	}
 
+	/*
+	 * Invokes a file download on an entry's file.
+	 */
+	private void invokeFileDownload(final EntryTitleInfo eti, Element pElement) {
+		final Long entryId = eti.getEntityId().getEntityId();
+		GetDownloadFileUrlCmd cmd = new GetDownloadFileUrlCmd(eti.getEntityId().getBinderId(), entryId);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetDownloadFileUrl(),
+					String.valueOf(entryId));
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				String downloadFileUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
+				GwtClientHelper.jsLaunchUrlInWindow(downloadFileUrl, "_blank");
+			}
+		});
+	}
+	
 	/*
 	 * Invokes an entry viewer on the entry.
 	 */
@@ -231,7 +255,9 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
     		if (isLabel) {
     			// Yes!  Strip off any over style.
     			eventTarget.removeClassName("vibe-dataTableLink-hover");
-    			invokeViewEntry(eti, eventTarget);
+    			if (eti.isFile())
+        		     invokeFileDownload(eti, eventTarget);
+    			else invokeViewEntry(   eti, eventTarget);
     		}
     		
     		else if (isUnseenImg) {
@@ -284,8 +310,11 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
      * Overrides AbstractCell.onEnterKeyDown()
      */
     @Override
-    protected void onEnterKeyDown(Context context, Element parent, EntryTitleInfo value, NativeEvent event, ValueUpdater<EntryTitleInfo> valueUpdater) {
-    	invokeViewEntry(value, Element.as(event.getEventTarget()));
+    protected void onEnterKeyDown(Context context, Element parent, EntryTitleInfo eti, NativeEvent event, ValueUpdater<EntryTitleInfo> valueUpdater) {
+    	Element eventTarget = Element.as(event.getEventTarget());
+    	if (eti.isFile())
+             invokeFileDownload(eti, eventTarget);
+    	else invokeViewEntry(   eti, eventTarget);
     }
     
 	/**
@@ -312,8 +341,8 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		String entryIdS = String.valueOf(eti.getEntityId().getEntityId());
 		VibeFlowPanel fp = new VibeFlowPanel();
 		String entityType   = eti.getEntityId().getEntityType();
-		boolean entryUnseen = (!(eti.getSeen()));
-		boolean isTrash     = eti.getTrash();
+		boolean entryUnseen = (!(eti.isSeen()));
+		boolean isTrash     = eti.isTrash();
 		boolean isEntry     = entityType.equals("folderEntry");
 		if (isTrash) {
 			// ...and we know what type of item it is...

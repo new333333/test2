@@ -804,7 +804,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_DOWNLOAD_FILE_URL:
 		{
 			GetDownloadFileUrlCmd gdfuCmd = ((GetDownloadFileUrlCmd) cmd);
-			String result = getDownloadFileUrl( ri, gdfuCmd.getBinderId(), gdfuCmd.getEntryId() );
+			String result = GwtServerHelper.getDownloadFileUrl( getRequest( ri ), this, gdfuCmd.getBinderId(), gdfuCmd.getEntryId() );
 			StringRpcResponseData responseData = new StringRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -2725,35 +2725,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return baseUrl;
 	}// end getDocumentBaseUrl()
 	
-	
-	/**
-	 * Return a download file URL that can be used to download an
-	 * entry's file.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * @param entryId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	private String getDownloadFileUrl( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
-		try
-		{
-			FolderEntry entry = getFolderModule().getEntry( null, entryId );
-			Set<FileAttachment> atts = entry.getFileAttachments(); 
-			String reply;
-			if ( !atts.isEmpty() )
-				 reply = WebUrlUtil.getFileUrl( getRequest( ri ), WebKeys.ACTION_READ_FILE, atts.iterator().next(), false, true );
-			else reply = null;
-			return reply;
-		}
-		catch ( Exception ex )
-		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
-		}		
-	}// end getDownloadFileUrl()
 	
 	/**
 	 * Return an Entry object for the given zone and entry id
