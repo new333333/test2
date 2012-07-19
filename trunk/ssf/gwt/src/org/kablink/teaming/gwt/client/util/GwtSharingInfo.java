@@ -49,6 +49,7 @@ public class GwtSharingInfo
 	private ArrayList<EntityId> m_listOfEntityIds;
 	private ArrayList<GwtShareItem> m_listOfShareItems;
 	private ArrayList<GwtShareItemMember> m_listOfShareItemMembers;
+	private boolean m_sendEmailToAll;
 	
 	/**
 	 * 
@@ -58,6 +59,7 @@ public class GwtSharingInfo
 		m_listOfEntityIds = null;
 		m_listOfShareItems = null;
 		m_listOfShareItemMembers = null;
+		m_sendEmailToAll = false;
 	}
 	
 	/**
@@ -118,6 +120,14 @@ public class GwtSharingInfo
 	}
 	
 	/**
+	 * 
+	 */
+	public boolean getSendEmailToAll()
+	{
+		return m_sendEmailToAll;
+	}
+	
+	/**
 	 * Get the GwtShareItem for the given EntityId
 	 */
 	public GwtShareItem getShareItem( EntityId entityId )
@@ -170,6 +180,14 @@ public class GwtSharingInfo
 	public void setListOfShareItemMembers( ArrayList<GwtShareItemMember> listOfShareItemMembers )
 	{
 		m_listOfShareItemMembers = listOfShareItemMembers;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setSendEmailToAll( boolean sendEmailToAll )
+	{
+		m_sendEmailToAll = sendEmailToAll;
 	}
 }
 

@@ -48,6 +48,7 @@ public class GwtShareItemMember
 	private GwtRecipientType m_recipientType;
 	private ShareRights m_shareRights;
 	private ShareExpirationValue m_shareExpirationValue;
+	private boolean m_isDirty;
 	
 	/**
 	 * 
@@ -60,6 +61,15 @@ public class GwtShareItemMember
 		m_recipientType = GwtRecipientType.UNKNOWN;
 		m_shareRights = ShareRights.VIEW;
 		m_shareExpirationValue = null;
+		m_isDirty = false;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean isDirty()
+	{
+		return m_isDirty;
 	}
 	
 	/**
@@ -156,6 +166,14 @@ public class GwtShareItemMember
 			return GwtTeaming.getMessages().shareDlg_owner();
 		
 		return "Unknown";
+	}
+	
+	/**
+	 * 
+	 */
+	public void setIsDirty( boolean isDirty )
+	{
+		m_isDirty = isDirty;
 	}
 	
 	/**
