@@ -188,6 +188,7 @@ public class ShareRightsWidget extends Composite
 				{
 					// Yes
 					m_shareInfo.setShareRights( event.getShareRights() );
+					m_shareInfo.setIsDirty( true );
 			
 					updateRightsLabel();
 				}

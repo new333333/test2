@@ -68,7 +68,6 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationT
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -241,7 +240,7 @@ public class GwtShareHelper
 			else
 				entityType = EntityType.none;
 				
-			entityIdL = entityId.getBinderId();
+			entityIdL = entityId.getEntityId();
 		}
 		
 		entityIdentifier = new EntityIdentifier( entityIdL, entityType );
@@ -497,8 +496,9 @@ public class GwtShareHelper
 		AllModulesInjected ami,
 		DefinableEntity sharedEntity,
 		User currentUser,
+		boolean sendToAll,
 		String comments,
-		ArrayList<ShareItemMember> listOfShareItemMembers )
+		ArrayList<GwtShareItemMember> listOfGwtShareItemMembers )
 	{
 		String title;
 		String shortTitle;
@@ -515,14 +515,37 @@ public class GwtShareHelper
 		
 		// Get the list of the ids of the users we should send an email to.
 		principalIds = new HashSet<Long>();
-		if ( listOfShareItemMembers != null )
+		if ( listOfGwtShareItemMembers != null )
 		{
-			for (ShareItemMember nextShareItemMember : listOfShareItemMembers)
+			for (GwtShareItemMember nextShareItemMember : listOfGwtShareItemMembers)
 			{
-				if ( nextShareItemMember.getRecipientType() == RecipientType.user || 
-					 nextShareItemMember.getRecipientType() == RecipientType.group )
+				if ( nextShareItemMember.getRecipientType() == GwtRecipientType.USER || 
+					 nextShareItemMember.getRecipientType() == GwtRecipientType.GROUP )
 				{
-					principalIds.add( nextShareItemMember.getRecipientId() );
+					boolean addPrincipal;
+					
+					addPrincipal = sendToAll;
+					
+					// We only want to send an email to those users whose share has been
+					// modified or they are new recipients.
+					if ( sendToAll == false )
+					{
+						// Is this a new recipient?
+						if ( nextShareItemMember.getShareItem() == null )
+						{
+							// Yes
+							addPrincipal = true;
+						}
+						// Has this share item been modified
+						else if ( nextShareItemMember.isDirty() )
+						{
+							// Yes
+							addPrincipal = true;
+						}
+					}
+					
+					if ( addPrincipal )
+						principalIds.add( nextShareItemMember.getRecipientId() );
 				}
 			}
 		}
@@ -554,27 +577,30 @@ public class GwtShareHelper
 		}
 		
 		emailErrors = null;
-		try
+		if ( principalIds != null && principalIds.size() > 0 )
 		{
-			Map<String,Object> errorMap;
-			
-			// Send the email notification
-			errorMap = ami.getAdminModule().sendMail(
-													principalIds,
-													teamIds,
-													emailAddress,
-													null,
-													null,
-													mailTitle,
-													body );
-			if ( errorMap != null )
+			try
 			{
-				emailErrors = (List) errorMap.get( ObjectKeys.SENDMAIL_ERRORS );
+				Map<String,Object> errorMap;
+				
+				// Send the email notification
+				errorMap = ami.getAdminModule().sendMail(
+														principalIds,
+														teamIds,
+														emailAddress,
+														null,
+														null,
+														mailTitle,
+														body );
+				if ( errorMap != null )
+				{
+					emailErrors = (List) errorMap.get( ObjectKeys.SENDMAIL_ERRORS );
+				}
 			}
-		}
-		catch ( Exception ex )
-		{
-			m_logger.error( "adminModule.sendMail() threw an exception: " + ex.getMessage() );
+			catch ( Exception ex )
+			{
+				m_logger.error( "adminModule.sendMail() threw an exception: " + ex.getMessage() );
+			}
 		}
 		
 		return emailErrors;
@@ -614,22 +640,21 @@ public class GwtShareHelper
 		{
 			User currentUser;
 			Description desc;
-			ArrayList<ShareItemMember> members;
+			ArrayList<ShareItemMember> listOfShareItemMembers;
+			ArrayList<GwtShareItemMember> listOfGwtShareItemMembers;
 			List emailErrors;
 
 			currentUser = GwtServerHelper.getCurrentUser();
 
 			// Get the list of members for this share
 			{
-				ArrayList<GwtShareItemMember> listOfMembers;
-
-				members = new ArrayList<ShareItemMember>();
+				listOfShareItemMembers = new ArrayList<ShareItemMember>();
 				
 				//!!! Get the list of members this entity has already been shared with.
-				listOfMembers = sharingData.getListOfShareItemMembers();
-				if ( listOfMembers != null )
+				listOfGwtShareItemMembers = sharingData.getListOfShareItemMembers();
+				if ( listOfGwtShareItemMembers != null )
 				{
-					for (GwtShareItemMember nextMember : listOfMembers)
+					for (GwtShareItemMember nextMember : listOfGwtShareItemMembers)
 					{
 						ShareItemMember shareItemMember;
 						Date endDate = null;
@@ -698,7 +723,7 @@ public class GwtShareHelper
 														recipientType,
 														recipientId,
 														rightSet );
-						members.add( shareItemMember );
+						listOfShareItemMembers.add( shareItemMember );
 					}
 				}
 			}
@@ -738,7 +763,7 @@ public class GwtShareHelper
 										currentUser,
 										sharedEntity,
 										desc,
-										members );
+										listOfShareItemMembers );
 	
 					sharingModule.addShareItem( shareItem );
 				}
@@ -752,7 +777,7 @@ public class GwtShareHelper
 						shareItem = profileDao.loadShareItem( gwtShareItem.getId() );
 						
 						shareItem.setDescription( desc );
-						shareItem.setMembers( members );
+						shareItem.setMembers( listOfShareItemMembers );
 						sharingModule.modifyShareItem( shareItem );
 					}
 					catch ( NoShareItemByTheIdException e )
@@ -761,7 +786,13 @@ public class GwtShareHelper
 				}
 				
 				// Send an email to each of the recipients
-				entityEmailErrors = sendEmailToRecipients( ami, sharedEntity, currentUser, comments, members );
+				entityEmailErrors = sendEmailToRecipients(
+														ami,
+														sharedEntity,
+														currentUser,
+														sharingData.getSendEmailToAll(),
+														comments,
+														listOfGwtShareItemMembers );
 				
 				if ( emailErrors == null )
 				{

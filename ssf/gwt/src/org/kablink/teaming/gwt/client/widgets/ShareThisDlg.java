@@ -345,6 +345,7 @@ public class ShareThisDlg extends DlgBox
 								
 								expirationValue = (ShareExpirationValue) obj;
 								m_shareItemMember.setShareExpirationValue( expirationValue );
+								m_shareItemMember.setIsDirty( true );
 								
 								updateExpirationLabel();
 							}
