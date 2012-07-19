@@ -121,7 +121,6 @@ public class ShareThisDlg extends DlgBox
 	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
-	private FlowPanel m_headerPanel;
 	private Image m_headerImg;
 	private Label m_headerNameLabel;
 	private Label m_headerPathLabel;
@@ -225,7 +224,17 @@ public class ShareThisDlg extends DlgBox
 			panel = new FlowPanel();
 			
 			m_nameLabel = new InlineLabel( shareItemMember.getRecipientName() );
+			m_nameLabel.addStyleName( "shareThisDlg_RecipientNameLabel" );
 			panel.add( m_nameLabel );
+			
+			// Has the share expired?
+			if ( shareItemMember.isExpired() )
+			{
+				// Yes
+				m_nameLabel.addStyleName( "shareThisDlg_ShareExpired" );
+			}
+			else
+				m_nameLabel.removeStyleName( "shareThisDlg_ShareExpired" );
 			
 			// If we are dealing with a group, let the user click on the group.
 			if ( shareItemMember.getRecipientType() == GwtRecipientType.GROUP )
@@ -321,6 +330,15 @@ public class ShareThisDlg extends DlgBox
 			m_expiresLabel = new InlineLabel();
 			m_expiresLabel.addStyleName( "shareThis_ExpiresLabel" );
 			m_expiresLabel.addClickHandler( this );
+			
+			// Has the share expired?
+			if ( shareItemMember.isExpired() )
+			{
+				// Yes
+				m_expiresLabel.addStyleName( "shareThisDlg_ShareExpired" );
+			}
+			else
+				m_expiresLabel.removeStyleName( "shareThisDlg_ShareExpired" );
 			
 			imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
 			m_img = new Image( imageResource );
@@ -705,106 +723,8 @@ public class ShareThisDlg extends DlgBox
 		mainCellFormatter = mainTable.getFlexCellFormatter();
 		row = 0;
 		
-		mainTable.setText( row, 0, GwtTeaming.getMessages().shareDlg_shareLabel() );
 		mainCellFormatter.setVerticalAlignment( row, 0, HasVerticalAlignment.ALIGN_MIDDLE );
 
-		// Add the find control.
-		{
-			HTMLTable.RowFormatter rowFormatter;
-			FlexTable findTable;
-
-			// Add a KeyUpHandler to the find control
-			{
-				KeyUpHandler keyUpHandler;
-
-				keyUpHandler = new KeyUpHandler()
-				{
-					@Override
-					public void onKeyUp( KeyUpEvent event )
-					{
-				        final int keyCode;
-
-				        // Get the key the user pressed
-				        keyCode = event.getNativeEvent().getKeyCode();
-
-				        // Did the user press Enter?
-				        if ( keyCode == KeyCodes.KEY_ENTER )
-				        {
-							// Yes, kill the keystroke.
-				        	event.stopPropagation();
-				        	event.preventDefault();
-				        }
-
-				        ScheduledCommand cmd = new ScheduledCommand()
-				        {
-							@Override
-							public void execute()
-							{
-						        // Did the user press Enter?
-						        if ( keyCode == KeyCodes.KEY_ENTER )
-						        {
-									// Yes, try to add a new tag.
-									handleClickOnAddExternalUser();
-						        }
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				};
-				m_findCtrl.addKeyUpHandler( keyUpHandler );
-			}
-
-			findTable = new FlexTable();
-			rowFormatter = findTable.getRowFormatter();
-			rowFormatter.setVerticalAlign( 0, HasVerticalAlignment.ALIGN_TOP );
-			m_findCtrl.setIsSendingEmail( true );
-			findTable.setWidget( 0, 0, m_findCtrl );
-			
-			mainTable.setWidget( row, 1, findTable );
-			mainRowFormatter.setVerticalAlign( row, HasVerticalAlignment.ALIGN_TOP );
-			
-			// Add an "add external user" image.
-			{
-				ClickHandler clickHandler;
-				ImageResource imageResource;
-				Image addImg;
-				FlexCellFormatter findCellFormatter;
-				
-				imageResource = GwtTeaming.getImageBundle().add_btn();
-				addImg = new Image( imageResource );
-				addImg.addStyleName( "cursorPointer" );
-				addImg.getElement().setAttribute( "title", GwtTeaming.getMessages().shareDlg_addExternalUserTitle() );
-				findTable.setWidget( 0, 1, addImg );
-				findCellFormatter = findTable.getFlexCellFormatter();
-				findCellFormatter.getElement( 0, 1 ).getStyle().setPaddingTop( 8, Unit.PX );
-		
-				// Add a click handler to the "add external user" image.
-				clickHandler = new ClickHandler()
-				{
-					@Override
-					public void onClick( ClickEvent clickEvent )
-					{
-						ScheduledCommand cmd = new ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								// Add the email address the user entered.
-								handleClickOnAddExternalUser();
-								
-								// Put the focus back in the find control.
-								m_findCtrl.getFocusWidget().setFocus( true );
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				};
-				addImg.addClickHandler( clickHandler );
-			}
-
-			++row;
-		}
-		
 		// Add the radio button for the sharing rights
 		{
 			FlowPanel rightsPanel;
@@ -883,6 +803,107 @@ public class ShareThisDlg extends DlgBox
 			++row;
 		}
 		
+		// Add the find control.
+		{
+			Label shareLabel;
+			HTMLTable.RowFormatter rowFormatter;
+			FlexTable findTable;
+
+			// Add a KeyUpHandler to the find control
+			{
+				KeyUpHandler keyUpHandler;
+
+				keyUpHandler = new KeyUpHandler()
+				{
+					@Override
+					public void onKeyUp( KeyUpEvent event )
+					{
+				        final int keyCode;
+
+				        // Get the key the user pressed
+				        keyCode = event.getNativeEvent().getKeyCode();
+
+				        // Did the user press Enter?
+				        if ( keyCode == KeyCodes.KEY_ENTER )
+				        {
+							// Yes, kill the keystroke.
+				        	event.stopPropagation();
+				        	event.preventDefault();
+				        }
+
+				        ScheduledCommand cmd = new ScheduledCommand()
+				        {
+							@Override
+							public void execute()
+							{
+						        // Did the user press Enter?
+						        if ( keyCode == KeyCodes.KEY_ENTER )
+						        {
+									// Yes, try to add a new tag.
+									handleClickOnAddExternalUser();
+						        }
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				};
+				m_findCtrl.addKeyUpHandler( keyUpHandler );
+			}
+
+			findTable = new FlexTable();
+			rowFormatter = findTable.getRowFormatter();
+			rowFormatter.setVerticalAlign( 0, HasVerticalAlignment.ALIGN_TOP );
+			m_findCtrl.setIsSendingEmail( true );
+			findTable.setWidget( 0, 0, m_findCtrl );
+			
+			shareLabel = new Label( GwtTeaming.getMessages().shareDlg_shareLabel() );
+			shareLabel.addStyleName( "shareThisDlg_shareLabel" );
+			mainTable.setWidget( row, 0, shareLabel );
+			mainTable.setWidget( row, 1, findTable );
+			mainRowFormatter.setVerticalAlign( row, HasVerticalAlignment.ALIGN_TOP );
+			
+			// Add an "add external user" image.
+			{
+				ClickHandler clickHandler;
+				ImageResource imageResource;
+				Image addImg;
+				FlexCellFormatter findCellFormatter;
+				
+				imageResource = GwtTeaming.getImageBundle().add_btn();
+				addImg = new Image( imageResource );
+				addImg.addStyleName( "cursorPointer" );
+				addImg.getElement().setAttribute( "title", GwtTeaming.getMessages().shareDlg_addExternalUserTitle() );
+				findTable.setWidget( 0, 1, addImg );
+				findCellFormatter = findTable.getFlexCellFormatter();
+				findCellFormatter.getElement( 0, 1 ).getStyle().setPaddingTop( 8, Unit.PX );
+		
+				// Add a click handler to the "add external user" image.
+				clickHandler = new ClickHandler()
+				{
+					@Override
+					public void onClick( ClickEvent clickEvent )
+					{
+						ScheduledCommand cmd = new ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								// Add the email address the user entered.
+								handleClickOnAddExternalUser();
+								
+								// Put the focus back in the find control.
+								m_findCtrl.getFocusWidget().setFocus( true );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				};
+				addImg.addClickHandler( clickHandler );
+			}
+
+			++row;
+		}
+		
 		// Create a table to hold the list of shares
 		{
 			m_shareTablePanel = new FlowPanel();
@@ -932,7 +953,7 @@ public class ShareThisDlg extends DlgBox
 
 			mainRowFormatter.setVerticalAlign( row, HasVerticalAlignment.ALIGN_TOP );
 
-			mainTable.setText( row, 0, GwtTeaming.getMessages().shareDlg_sharingLabel() );
+			//!!!mainTable.setText( row, 0, GwtTeaming.getMessages().shareDlg_sharingLabel() );
 			mainTable.setWidget( row, 1, m_shareTablePanel );
 			mainCellFormatter.setColSpan( row, 1, 2 );
 			
@@ -1693,11 +1714,19 @@ public class ShareThisDlg extends DlgBox
 	 */
 	private void updateHeader()
 	{
+		ImageResource imgResource;
+		int numItems;
+
+		if ( m_entityIds == null )
+		{
+			return;
+		}
+		
 		// Are we dealing with > 1 entities?
-		if ( m_entityIds != null && m_entityIds.size() == 1 )
+		numItems = m_entityIds.size();
+		if ( numItems == 1 )
 		{
 			EntityId entityId;
-			ImageResource imgResource;
 			
 			// No
 			entityId = m_entityIds.get( 0 );
@@ -1719,14 +1748,17 @@ public class ShareThisDlg extends DlgBox
 				// We must be dealing with a binder.
 				imgResource = GwtTeaming.getFilrImageBundle().folder_large();
 			}
-
-			m_headerImg.setResource( imgResource );
-			m_headerPanel.setVisible( true );
 		}
 		else
 		{
-			m_headerPanel.setVisible( false );
+			// We are sharing mulitiple items.  Use the entry image.
+			imgResource = GwtTeaming.getFilrImageBundle().entry_large();
+			
+			m_headerNameLabel.setText( GwtTeaming.getMessages().sharingMultipleItems( numItems ) );
+			m_headerPathLabel.setText( "" );
 		}
+
+		m_headerImg.setResource( imgResource );
 	}
 	
 	/**
@@ -2037,14 +2069,15 @@ public class ShareThisDlg extends DlgBox
 		
 		// Create the controls needed in the header
 		{
+			FlowPanel headerPanel;
 			FlowPanel namePanel;
 			
-			m_headerPanel = new FlowPanel();
-			m_headerPanel.addStyleName( "shareThisDlg_HeaderPanel" );
+			headerPanel = new FlowPanel();
+			headerPanel.addStyleName( "shareThisDlg_HeaderPanel" );
 		
 			m_headerImg = new Image();
 			m_headerImg.addStyleName( "shareThisDlg_HeaderImg" );
-			m_headerPanel.add( m_headerImg );
+			headerPanel.add( m_headerImg );
 			
 			namePanel = new FlowPanel();
 			namePanel.addStyleName( "shareThisDlg_HeaderNamePanel" );
@@ -2057,9 +2090,9 @@ public class ShareThisDlg extends DlgBox
 			m_headerPathLabel.addStyleName( "shareThisDlg_HeaderPathLabel" );
 			namePanel.add( m_headerPathLabel );
 			
-			m_headerPanel.add( namePanel );
+			headerPanel.add( namePanel );
 			
-			m_mainPanel.add( m_headerPanel );
+			m_mainPanel.add( headerPanel );
 		}
 		
 		// Add the controls needed to manage sharing.

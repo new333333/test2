@@ -77,6 +77,14 @@ public class GwtShareItemMember
 	/**
 	 * 
 	 */
+	public boolean isExpired()
+	{
+		return m_isExpired;
+	}
+	
+	/**
+	 * 
+	 */
 	public Long getRecipientId()
 	{
 		return m_recipientId;
@@ -176,6 +184,14 @@ public class GwtShareItemMember
 	public void setIsDirty( boolean isDirty )
 	{
 		m_isDirty = isDirty;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setIsExpired( boolean isExpired )
+	{
+		m_isExpired = isExpired;
 	}
 	
 	/**

@@ -123,6 +123,7 @@ public class GwtShareHelper
 			
 			gwtShareItemMember.setShareItem( gwtShareItem );
 			gwtShareItemMember.setRecipientId( nextMember.getRecipientId() );
+			gwtShareItemMember.setIsExpired( nextMember.isExpired() );
 			
 			// Set the recipient type and name.
 			{
