@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.server.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +69,7 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationT
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -135,10 +137,20 @@ public class GwtShareHelper
 					break;
 					
 				case user:
-					name = getUserName( ami, nextMember );
+				{
+					User user;
+					
+					user = getUser( ami, nextMember );
+					
+					name = user.getTitle();
 					gwtShareItemMember.setRecipientName( name );
-					gwtShareItemMember.setRecipientType( GwtRecipientType.USER );
+					
+					if ( user.getIdentitySource() == User.IDENTITY_SOURCE_EXTERNAL )
+						gwtShareItemMember.setRecipientType( GwtRecipientType.EXTERNAL_USER );
+					else
+						gwtShareItemMember.setRecipientType( GwtRecipientType.USER );
 					break;
+				}
 				
 				case team:
 					//!!! Finish
@@ -306,6 +318,62 @@ public class GwtShareHelper
 	}
 	
 	/**
+	 * Return the id of the given user.  If the user is an external user we will see if their
+	 * user account has been created.  If it hasn't we will create it.
+	 */
+	private static Long getRecipientId( AllModulesInjected ami, GwtShareItemMember gwtShareItemMember )
+	{
+		Long id;
+		
+		id = null;
+		
+		if ( gwtShareItemMember.getRecipientType() == GwtRecipientType.EXTERNAL_USER )
+		{
+			User user;
+			String recipientName;
+			ProfileModule profileModule;
+
+			profileModule = ami.getProfileModule();
+			
+			recipientName = gwtShareItemMember.getRecipientName();
+			
+			try
+			{
+				// Does this external user already have an account in Vibe?
+				user = profileModule.getUser( recipientName );
+				if ( user != null )
+				{
+					id = user.getId();
+				}
+			}
+			catch ( Exception ex )
+			{
+				HashMap updates;
+				
+				// If we get here the external user does not have a Vibe account yet.
+				// Create one.
+				updates = new HashMap();
+				updates.put( ObjectKeys.FIELD_USER_EMAIL, recipientName );
+				updates.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, recipientName );
+ 				user = profileModule.addUserFromPortal(
+ 													User.IDENTITY_SOURCE_EXTERNAL,
+ 													recipientName,
+ 													null,
+ 													updates,
+ 													null );
+ 				
+ 				id = user.getId();
+			}
+		}
+		else
+		{
+			id = gwtShareItemMember.getRecipientId();
+		}
+		
+		return id;
+	}
+	
+	/**
 	 * Return the appropriate RightSet object for the given ShareRights object
 	 */
 	private static RightSet getRightSetFromShareRights( ShareRights shareRights )
@@ -437,12 +505,10 @@ public class GwtShareHelper
 	}
 
 	/**
-	 * Return the name of the given user
+	 * Return the given user
 	 */
-	private static String getUserName( AllModulesInjected ami, ShareItemMember shareItemMember )
+	private static User getUser( AllModulesInjected ami, ShareItemMember shareItemMember )
 	{
-		String name = null;
-		
 		if ( shareItemMember != null )
 		{
 			// Set the recipient's name
@@ -461,7 +527,7 @@ public class GwtShareHelper
 					User user;
 					
 					user = users[0];
-					name = user.getWSTitle();
+					return user;
 				}
 			}
 			catch ( Exception e )
@@ -470,7 +536,8 @@ public class GwtShareHelper
 			}
 		}
 		
-		return name;
+		// If we get here we did not find the user
+		return null;
 	}
 
 	/**
@@ -713,7 +780,7 @@ public class GwtShareHelper
 							break;
 						}
 						
-						recipientId = nextMember.getRecipientId();
+						recipientId = getRecipientId( ami, nextMember );
 						
 						// Get the appropriate RightSet
 						rightSet = getRightSetFromShareRights( nextMember.getShareRights() );
