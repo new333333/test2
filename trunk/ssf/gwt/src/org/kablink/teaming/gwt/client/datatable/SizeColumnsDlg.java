@@ -89,7 +89,6 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-
 /**
  * Implements Vibe's data table column sizing dialog.
  *  
@@ -585,6 +584,9 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 		m_dataTableCF.addStyleName(rowIndex, COL_COLUMN, "vibe-sizeColumnsDlg-rowCell");
 
 		// Create a resizing slider for the column.
+		if (null == cw) {
+			cw = m_defaultColumnWidth;
+		}
 		int unitMax = getUnitMax(cw.getUnits());
 		SliderBar vSizeSlider = new SliderBar(0, unitMax);
 		vSizeSlider.addStyleName("vibe-sizeColumnsDlg-sizeSlider");

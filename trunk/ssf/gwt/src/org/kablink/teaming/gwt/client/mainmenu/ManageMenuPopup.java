@@ -421,11 +421,12 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	
 	private void showFolderOptionsAsync(String foId, ToolbarItem folderViewsTBI, ToolbarItem calendarImportTBI) {
 		// Run the folder options dialog.
+		final int x = getRelativeX();
+		final int y = getRelativeY();
 		FolderOptionsDlg.createAsync(
 				false,	// false -> Don't auto hide.
 				true,	// true  -> Modal.
-				getRelativeX(),
-				getRelativeY(),
+				x, y,
 				m_currentBinder.getBinderId(),
 				((null == calendarImportTBI) ? null : calendarImportTBI.getNestedItemsList()),
 				((null == folderViewsTBI)    ? null : folderViewsTBI.getNestedItemsList()),
@@ -440,7 +441,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				public void onSuccess(FolderOptionsDlg dlg) {
 					// ...and run the folder options dialog.
 					dlg.addStyleName("folderOptionsDlg");
-					dlg.show();
+					dlg.show((0 == x) && (0 == y));
 				}
 			});
 	}
@@ -553,13 +554,14 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 
 	private void showTagThisAsync(String menuId, String dlgCaption) {
 		// Show the tag this dialog.
+		final int x = getRelativeX();
+		final int y = getRelativeY();
 		if (null == m_tagThisDlg) {
 			TagThisDlg.createAsync(
 					false,	// false -> Don't auto hide.
 					true,	// true  -> Modal.
 					null,
-					getRelativeX(),
-					getRelativeY(),
+					x, y,
 					dlgCaption,
 					new TagThisDlgClient() {						
 				@Override
