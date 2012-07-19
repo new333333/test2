@@ -102,7 +102,8 @@ Liquibase MS SQL Server Extensions 1.2.0
 Liquibase Oracle Extensions 1.2.0
 Log4j 1.2.15 (from spring distribution)
 Lucene 3.4.0
-Lucene analyzers 3.4.0 (previous Lucene snowball library is removed because it is contained in this new library)
+Lucene contrib analyzers 3.4.0 (previous Lucene snowball library is removed because it is contained in this new library)
+Lucene contrib queries 3.4.0
 Milton 1.7.3 snapshot build
 Mime Type Detection Utility 2.1.3 (http://sourceforge.net/projects/mime-util/files/mime-util) 
 MINA (Apache) mina-core.jar 1.1.6
