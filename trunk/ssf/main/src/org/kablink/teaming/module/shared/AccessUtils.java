@@ -548,7 +548,11 @@ public class AccessUtils  {
 	       	try {
 	       		getInstance().getAccessControlManager().checkOperation(user, binder, operation);
 	       		return;
-	       	} catch (OperationAccessControlException ex3) {ace = ex3;}
+	       	} catch (OperationAccessControlException ex3) {
+	       		ace = ex3;
+       		} catch (OperationAccessControlExceptionNoName ex4) {
+       			ace2 = ex4;
+       		}
 	       	
 	      //Next, see if binder allows other operations such as CREATOR_MODIFY
 	       	if (WorkAreaOperation.READ_ENTRIES.equals(operation) && entry.getCreation() != null && 
@@ -571,6 +575,17 @@ public class AccessUtils  {
       			} catch (OperationAccessControlException ex3) {}
 	      	}
        	}
+       	
+       	//See if the entry was shared 
+       	try {
+       		getInstance().getAccessControlManager().checkOperation(user, entry, operation);
+       		return;
+       	} catch (OperationAccessControlException ex) {
+       		ace = ex;
+       	} catch (OperationAccessControlExceptionNoName ex2) {
+       		ace2 = ex2;
+       	}
+       	
        	//Nothing allowed the operation, so throw an error
        	if (ace != null) {
        		throw ace;
