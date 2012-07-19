@@ -86,7 +86,6 @@ import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.ShareItemMember;
 import org.kablink.teaming.domain.ShareItemMember.RecipientType;
-import org.kablink.teaming.domain.ShareItemMember.RightSet;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -209,9 +208,10 @@ public class GwtViewHelper {
 	 * collection point.
 	 */
 	private static class SharedWithMeItem {
+		private Date				m_rightsExpire;	//
 		private DefinableEntity		m_item;			//
 		private List<SharerInfo>	m_sharerInfos;	//
-		private RightSet			m_rights;		//
+		private ShareRights			m_rights;		//
 		
 		/*
 		 * Constructor method.
@@ -227,60 +227,18 @@ public class GwtViewHelper {
 		/*
 		 * Get'er methods.
 		 */
-		DefinableEntity  getItem()        {return m_item;       }
-		List<SharerInfo> getSharerInfos() {return m_sharerInfos;}
-		RightSet         getRightSet()    {return m_rights;     }
+		Date             getRightsExpire() {return m_rightsExpire;}
+		DefinableEntity  getItem()         {return m_item;        }
+		List<SharerInfo> getSharerInfos()  {return m_sharerInfos; }
+		ShareRights      getRights()       {return m_rights;      }
 		
 		/*
 		 * Set'er methods.
 		 */
-		void setItem(DefinableEntity item) {m_item = item;}
+		void setRightsExpire(Date            rightsExpire) {m_rightsExpire = rightsExpire;}
+		void setItem(        DefinableEntity item)         {m_item         = item;        }
+		void setRights(      ShareRights     rights)       {m_rights       = rights;      }
 		
-		/*
-		 * Adds information from a ShareItemMember to this object.
-		 */
-		void addRights(ShareItemMember siMember) {
-			// If we haven't added any rights to this object yet...
-			if (null == m_rights) {
-				// ...allocate its RightSet object...
-				m_rights = new RightSet();
-			}
-
-			// ...and add the individual rights.
-			RightSet siRights = siMember.getRightSet();
-			addRight("createEntries",             siRights);
-			addRight("modifyEntries",             siRights);
-			addRight("modifyEntryFields",         siRights);
-			addRight("deleteEntries",             siRights);
-			addRight("readEntries",               siRights);
-			addRight("addReplies",                siRights);
-			addRight("generateReports",           siRights);
-			addRight("binderAdministration",      siRights);
-			addRight("createEntryAcls",           siRights);
-			addRight("changeAccessControl",       siRights);
-			addRight("createWorkspaces",          siRights);
-			addRight("createFolders",             siRights);
-			addRight("manageEntryDefinitions",    siRights);
-			addRight("manageWorkflowDefinitions", siRights);
-			addRight("creatorReadEntries",        siRights);
-			addRight("creatorModifyEntries",      siRights);
-			addRight("creatorDeleteEntries",      siRights);
-			addRight("ownerCreateEntryAcls",      siRights);
-			addRight("addTags",                   siRights);
-			addRight("viewBinderTitle",           siRights);
-		}
-		
-		/*
-		 * Adds a rights setting from the given RightSet into this
-		 * object's RightSet.
-		 */
-		private void addRight(String rightName, RightSet srcRights) {
-			boolean srcRight = srcRights.getRight(rightName);
-			if (srcRight) {
-				m_rights.setRight(rightName, true);
-			}
-		}
-
 		/*
 		 * Adds a new ShareInfo object to the List<SharerInfo>.
 		 */
@@ -364,6 +322,55 @@ public class GwtViewHelper {
 		 */
 		boolean hasRights() {
 			return (null != m_rights);
+		}
+
+		/*
+		 * Updates the rights on this SharedWithMeItem based on the
+		 * rights in a ShareItemMember.
+		 * 
+		 * The logic is to always track the highest level of rights
+		 * granted.
+		 */
+		void updateRights(ShareItemMember siMember) {
+			boolean		storeRights  = false;
+			ShareRights rights       = GwtShareHelper.getShareRightsFromRightSet(siMember.getRightSet());
+			Date		rightsExpire = siMember.getEndDate();
+			if (hasRights()) {
+				switch (getRights()) {
+				case VIEW:
+					switch (rights) {
+					default:
+					case VIEW:                             break;
+					case CONTRIBUTOR:
+					case OWNER:        storeRights = true; break;	// Overwrite View with Contributor or Owner.
+					}
+					break;
+					
+				case CONTRIBUTOR:
+					switch (rights) {
+					default:
+					case VIEW:
+					case CONTRIBUTOR:                      break;
+					case OWNER:        storeRights = true; break;	// Overwrite Contributor with Owner.
+					}
+					break;
+					
+				case OWNER:
+					break;											// Never overwrite Owner.
+					
+				default:
+					storeRights = true;								// Always overwrite what we don't undertand.
+					break;
+				}
+			}
+			else {
+				storeRights = true;
+			}
+			
+			if (storeRights ){
+				setRights(      rights      );
+				setRightsExpire(rightsExpire);
+			}
 		}
 	}
 	
@@ -778,7 +785,7 @@ public class GwtViewHelper {
 					// The member isn't expired and it belongs with
 					// this user!  Add the rights information about it
 					// to the SharedWithMeItem.
-					si.addRights(siScanMember);
+					si.updateRights(siScanMember);
 				}
 
 				// Do we have rights information for this
@@ -2741,12 +2748,14 @@ public class GwtViewHelper {
 							else if (csk.equals("access")) {
 								// Yes!  Can we find the
 								// SharedWithMeItem for this row?
-								ShareRights rights = null;
+								Date		rightsExpire = null;
+								ShareRights	rights       = null;
 								SharedWithMeItem si = SharedWithMeItem.findItemInList(isEntityFolderEntry, docId, shareItems);
 								if (null != si) {
 									// Yes!  Get the share rights from
 									// it...
-									rights = GwtShareHelper.getShareRightsFromRightSet(si.getRightSet());
+									rights       = si.getRights();
+									rightsExpire = si.getRightsExpire();
 								}
 
 								// ...map the share rights to an access
@@ -2763,6 +2772,14 @@ public class GwtViewHelper {
 									case CONTRIBUTOR:  access = NLT.get("collections.access.contributor"); break;
 									case OWNER:        access = NLT.get("collections.access.owner");       break;
 									}
+								}
+								if (MiscUtil.hasString(access) && (null != rightsExpire)) {
+									access += (" " +
+										NLT.get(
+											"collections.access.expires",
+											new String[] {
+												GwtServerHelper.getDateString(rightsExpire)
+											}));
 								}
 								
 								// ...and set the column value.
