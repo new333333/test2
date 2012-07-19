@@ -45,11 +45,15 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
+import org.kablink.teaming.gwt.client.GwtFolder;
+import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSharingInfoCmd;
@@ -101,7 +105,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -118,7 +121,10 @@ public class ShareThisDlg extends DlgBox
 	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
-	private TextBox m_titleTextBox;
+	private FlowPanel m_headerPanel;
+	private Image m_headerImg;
+	private Label m_headerNameLabel;
+	private Label m_headerPathLabel;
 	private TextArea m_msgTextArea;
 	private RadioButton m_viewRB;
 	private RadioButton m_contributorRB;
@@ -133,13 +139,13 @@ public class ShareThisDlg extends DlgBox
 	private FlowPanel m_myTeamsPanel;
 	private FlowPanel m_shareTablePanel;
 	private FlexCellFormatter m_shareCellFormatter;
+	private HTMLTable.RowFormatter m_shareRowFormatter;
 	private List<EntityId> m_entityIds;
 	private GwtSharingInfo m_sharingInfo;		// Holds all of the sharing info for the entities we are working with.
 	private List<HandlerRegistration> m_registeredEventHandlers;
 	private AsyncCallback<VibeRpcResponse> m_readTeamsCallback;
 	private AsyncCallback<VibeRpcResponse> m_shareEntryCallback;
 	private AsyncCallback<VibeRpcResponse> m_getSharingInfoCallback;
-	private String m_title;
 	private UIObject m_target;
 	private ShareExpirationValue m_defaultShareExpirationValue;
 	private ShareExpirationDlg m_shareExpirationDlg;
@@ -515,7 +521,7 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * Add the given share to the end of the table that holds the list of shares
 	 */
-	private void addShare( GwtShareItemMember shareItemMember )
+	private void addShare( GwtShareItemMember shareItemMember, boolean highlight )
 	{
 		String type;
 		int row;
@@ -539,13 +545,22 @@ public class ShareThisDlg extends DlgBox
 			{
 				// Yes
 				m_shareTable.removeRow( 1 );
-				--row;
 			}
 		}
+		
+		// Remove any highlight that may be on the first row.
+		unhighlightRecipient( 1 );
 		
 		// Add the share as the first share in the table.
 		row = 1;
 		m_shareTable.insertRow( row );
+		
+		// Should we highlight the row?
+		if ( highlight )
+		{
+			// Yes
+			highlightRecipient( row );
+		}
 		
 		// Add the recipient name in the first column.
 		m_shareCellFormatter.setColSpan( row, 0, 1 );
@@ -870,8 +885,6 @@ public class ShareThisDlg extends DlgBox
 		
 		// Create a table to hold the list of shares
 		{
-			HTMLTable.RowFormatter rowFormatter;
-			
 			m_shareTablePanel = new FlowPanel();
 			
 			m_shareTable = new FlexTable();
@@ -887,8 +900,8 @@ public class ShareThisDlg extends DlgBox
 				m_shareTable.setText( 0, 3, GwtTeaming.getMessages().shareExpires() );
 				m_shareTable.setHTML( 0, 4, "&nbsp;" );	// The delete image will go in this column.
 				
-				rowFormatter = m_shareTable.getRowFormatter();
-				rowFormatter.addStyleName( 0, "oltHeader" );
+				m_shareRowFormatter = m_shareTable.getRowFormatter();
+				m_shareRowFormatter.addStyleName( 0, "oltHeader" );
 
 				m_shareCellFormatter = m_shareTable.getFlexCellFormatter();
 				// On IE calling m_cellFormatter.setWidth( 0, 2, "*" ); throws an exception.
@@ -1192,6 +1205,122 @@ public class ShareThisDlg extends DlgBox
 	}
 
 	/**
+	 * Issue an rpc request to get information about the given entity.
+	 */
+	private void getEntityInfoFromServer( final EntityId entityId )
+	{
+		if ( entityId == null )
+			return;
+		
+		// Are we working with a folder entry?
+		if ( entityId.isEntry() )
+		{
+			GetEntryCmd cmd;
+			AsyncCallback<VibeRpcResponse> callback;
+
+			// Yes
+			callback = new AsyncCallback<VibeRpcResponse>()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetFolderEntry(),
+						entityId.getEntityId() );
+				}
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				@Override
+				public void onSuccess( VibeRpcResponse response )
+				{
+					final GwtFolderEntry gwtFolderEntry;
+					
+					gwtFolderEntry = (GwtFolderEntry) response.getResponseData();
+					
+					if ( gwtFolderEntry != null )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								// Update the name of the entity in the header.
+								m_headerNameLabel.setText( gwtFolderEntry.getEntryName() );
+								m_headerPathLabel.setText( gwtFolderEntry.getParentBinderName() );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				}
+			};
+
+			cmd = new GetEntryCmd( null, entityId.getEntityId().toString() );
+			GwtClientHelper.executeCommand( cmd, callback );
+		}
+		else
+		{
+			GetFolderCmd cmd;
+			AsyncCallback<VibeRpcResponse> callback;
+			
+			callback = new AsyncCallback<VibeRpcResponse>()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetFolder(),
+						entityId.getEntityId() );
+				}
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				@Override
+				public void onSuccess( VibeRpcResponse response )
+				{
+					final GwtFolder gwtFolder;
+					
+					gwtFolder = (GwtFolder) response.getResponseData();
+					
+					if ( gwtFolder != null )
+					{
+						Scheduler.ScheduledCommand cmd;
+
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								// Update the name of the entity in the header
+								m_headerNameLabel.setText( gwtFolder.getFolderName() );
+								m_headerPathLabel.setText( gwtFolder.getParentBinderName() );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				}
+			};
+
+			cmd = new GetFolderCmd( null, entityId.getEntityId().toString() );
+			GwtClientHelper.executeCommand( cmd, callback );
+		}
+	}
+	
+	/**
 	 * Returns the Widget to give the focus to.
 	 * 
 	 * Implements the DlgBox.getFocusWidget() abstract method.
@@ -1333,7 +1462,7 @@ public class ShareThisDlg extends DlgBox
 			if ( findShareByRecipientName( shareItemMember ) == -1 )
 			{
 				// No, add it
-				addShare( shareItemMember );
+				addShare( shareItemMember, true );
 			}
 			else
 			{
@@ -1373,20 +1502,21 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * 
 	 */
+	private void highlightRecipient( int row )
+	{
+		if ( row < m_shareTable.getRowCount() )
+			m_shareRowFormatter.addStyleName( row, "shareThisRecipientTable_highlightRow" );
+	}
+	
+	/**
+	 * 
+	 */
 	private void init()
 	{
 		GetSharingInfoCmd rpcCmd1;
 		GetMyTeamsCmd rpcCmd2;
 		
-		if ( GwtClientHelper.hasString( m_title ))
-		{
-			m_titleTextBox.setVisible( true    );
-			m_titleTextBox.setText(    m_title );
-		}
-		else
-		{
-			m_titleTextBox.setVisible( false );
-		}
+		updateHeader();
 
 		m_msgTextArea.setText( "" );
 		m_findCtrl.setInitialSearchString( "" );
@@ -1558,6 +1688,48 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
+	 * Update the header that displays the name of the entity we are working with.
+	 * If we are dealing with > 1 entity we don't show a header.
+	 */
+	private void updateHeader()
+	{
+		// Are we dealing with > 1 entities?
+		if ( m_entityIds != null && m_entityIds.size() == 1 )
+		{
+			EntityId entityId;
+			ImageResource imgResource;
+			
+			// No
+			entityId = m_entityIds.get( 0 );
+
+			m_headerNameLabel.setText( "" );
+			m_headerPathLabel.setText( "" );
+
+			// Issue an rpc request to get information about this entity
+			getEntityInfoFromServer( entityId );
+
+			// Are we dealing with a folder entry?
+			if ( entityId .isEntry() )
+			{
+				// Yes
+				imgResource = GwtTeaming.getFilrImageBundle().entry_large();
+			}
+			else
+			{
+				// We must be dealing with a binder.
+				imgResource = GwtTeaming.getFilrImageBundle().folder_large();
+			}
+
+			m_headerImg.setResource( imgResource );
+			m_headerPanel.setVisible( true );
+		}
+		else
+		{
+			m_headerPanel.setVisible( false );
+		}
+	}
+	
+	/**
 	 * Create a checkbox for every team so the user can select the teams that should
 	 * receive an email.
 	 */
@@ -1638,7 +1810,7 @@ public class ShareThisDlg extends DlgBox
 			{
 				for (GwtShareItemMember nextShareItemMember : listOfShareItemMembers)
 				{
-					addShare( nextShareItemMember );
+					addShare( nextShareItemMember, false );
 				}
 			}
 			
@@ -1742,7 +1914,7 @@ public class ShareThisDlg extends DlgBox
 						shareItemMember.setShareExpirationValue( m_defaultShareExpirationValue );
 						
 						// Add the recipient to our list of recipients
-						addShare( shareItemMember );
+						addShare( shareItemMember, true );
 					}
 					else
 					{
@@ -1829,7 +2001,6 @@ public class ShareThisDlg extends DlgBox
 		
 		// ...and store the parameters.
 		m_target    = target;
-		m_title     = title;
 		m_entityIds = entityIds;
 		
 		// If we haven't completed construction of the dialog yet,
@@ -1864,13 +2035,32 @@ public class ShareThisDlg extends DlgBox
 		FlowPanel sharePanel;
 		Label comments;
 		
-		// No!  Add a textbox for the title
-		inputPanel = new FlowPanel();
-		inputPanel.addStyleName( "shareThisTitlePanel" );
-		m_titleTextBox = new TextBox();
-		m_titleTextBox.addStyleName( "shareThisTitleTextBox" );
-		inputPanel.add( m_titleTextBox );
-		m_mainPanel.add( inputPanel );
+		// Create the controls needed in the header
+		{
+			FlowPanel namePanel;
+			
+			m_headerPanel = new FlowPanel();
+			m_headerPanel.addStyleName( "shareThisDlg_HeaderPanel" );
+		
+			m_headerImg = new Image();
+			m_headerImg.addStyleName( "shareThisDlg_HeaderImg" );
+			m_headerPanel.add( m_headerImg );
+			
+			namePanel = new FlowPanel();
+			namePanel.addStyleName( "shareThisDlg_HeaderNamePanel" );
+			
+			m_headerNameLabel = new Label();
+			m_headerNameLabel.addStyleName( "shareThisDlg_HeaderNameLabel" );
+			namePanel.add( m_headerNameLabel );
+			
+			m_headerPathLabel = new Label();
+			m_headerPathLabel.addStyleName( "shareThisDlg_HeaderPathLabel" );
+			namePanel.add( m_headerPathLabel );
+			
+			m_headerPanel.add( namePanel );
+			
+			m_mainPanel.add( m_headerPanel );
+		}
 		
 		// Add the controls needed to manage sharing.
 		sharePanel = createShareControls();
@@ -1918,6 +2108,15 @@ public class ShareThisDlg extends DlgBox
 		}
 	}
 
+	/**
+	 * Unlighlight the given row in the table that holds the list of recipients
+	 */
+	private void unhighlightRecipient( int row )
+	{
+		if ( row < m_shareTable.getRowCount() )
+			m_shareRowFormatter.removeStyleName( row, "shareThisRecipientTable_highlightRow" );
+	}
+	
 	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */

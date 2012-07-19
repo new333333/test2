@@ -498,6 +498,11 @@
 	position: absolute;
 }
 
+.shareThisRecipientTable_highlightRow
+{
+	background: none repeat scroll 0 0 #CCE9EE;
+}
+
 .shareThisRecipientTablePanel
 {
 	width: 315px;
@@ -538,6 +543,40 @@
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: 1px;
+}
+
+.shareThisDlg_HeaderPanel
+{
+	position: relative;
+}
+
+.shareThisDlg_HeaderImg
+{
+	left: 0px;
+	margin-right: 5px;
+	position: absolute;
+	top: -8px;
+}
+
+.shareThisDlg_HeaderNamePanel
+{
+	left: 50px;
+	position: absolute;
+	top: 6px;
+}
+
+.shareThisDlg_HeaderNameLabel
+{
+	font-size: 1.2em;
+	color: #333333;
+}
+
+.shareThisDlg_HeaderPathLabel
+{
+	color: gray;
+	font-size: 0.75em;
+	line-height: 1.1em;
+	padding-left: 2px;
 }
 
 .groupMembershipGroupNameLabel
