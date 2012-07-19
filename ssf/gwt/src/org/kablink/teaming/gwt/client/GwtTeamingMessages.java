@@ -1139,6 +1139,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareWithGroups();
 	String shareWithTeams();
 	String shareWithUsers();
+	String sharingMultipleItems( int numItems );
 	String unknownShareType();
 	String usersWithoutRights();
 	

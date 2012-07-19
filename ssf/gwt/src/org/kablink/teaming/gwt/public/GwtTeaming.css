@@ -525,6 +525,20 @@
 	width: 100%;
 }
 
+.shareThisDlg_RecipientNameLabel
+{
+}
+
+.shareThisDlg_ShareExpired
+{
+	color: #ED1C24 !important;
+}
+
+.shareThisDlg_shareLabel
+{
+	padding-top: 6px;
+}
+
 .shareThisTextArea
 {
 	background-color: transparent;
