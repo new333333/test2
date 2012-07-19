@@ -320,7 +320,7 @@ public interface ProfileDao {
  	 * @param sharedEntityIdentifier
  	 * @return
  	 */
- 	public List<ShareItem> findShareItemsBySharerAndSharedEntity(Long sharerId, EntityIdentifier sharedEntityIdentifier);
+ 	public List<ShareItem> findShareItemsBySharerAndSharedEntity(Long sharerId, EntityIdentifier sharedEntityIdentifier); 
  	
  	/**
  	 * Return IDs of users, groups, and teams that are granted specified right to the specified entity.
