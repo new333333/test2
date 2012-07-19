@@ -1074,8 +1074,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Add the widths for predefined column names...
 		m_columnWidths.put(FolderColumn.COLUMN_AUTHOR,   new ColumnWidth(24));	// Unless otherwise specified...
 		m_columnWidths.put(FolderColumn.COLUMN_COMMENTS, new ColumnWidth( 8));	// ...the widths default to...
-		m_columnWidths.put(FolderColumn.COLUMN_DATE,     new ColumnWidth(20));	// ...be a percentage value.
-		m_columnWidths.put(FolderColumn.COLUMN_DOWNLOAD, new ColumnWidth( 8));
+		m_columnWidths.put(FolderColumn.COLUMN_DOWNLOAD, new ColumnWidth( 8));	// ...be a percentage value.
 		m_columnWidths.put(FolderColumn.COLUMN_HTML,     new ColumnWidth(10));
 		m_columnWidths.put(FolderColumn.COLUMN_LOCATION, new ColumnWidth(30));
 		m_columnWidths.put(FolderColumn.COLUMN_NUMBER,   new ColumnWidth( 5));
