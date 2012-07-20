@@ -46,15 +46,15 @@ import org.kablink.util.search.Constants;
  * @author jong
  *
  */
-public class AclFilter extends Filter {
+public class AclInheritingAccessibleEntriesFilter extends Filter {
 
 	private static final long serialVersionUID = 1L;
 	
-	Filter aclInheritingEntriesPermissibleAclFilter;
+	Filter aclInheritingEntriesFilter;
 	TLongHashSet accessibleFolderIds;
 	
-	public AclFilter(Filter aclInheritingEntriesPermissibleAclFilter, TLongHashSet accessibleFolderIds) {
-		this.aclInheritingEntriesPermissibleAclFilter = aclInheritingEntriesPermissibleAclFilter;
+	public AclInheritingAccessibleEntriesFilter(Filter aclInheritingEntriesFilter, TLongHashSet accessibleFolderIds) {
+		this.aclInheritingEntriesFilter = aclInheritingEntriesFilter;
 		this.accessibleFolderIds = accessibleFolderIds;
 	}
 
@@ -65,27 +65,24 @@ public class AclFilter extends Filter {
 	public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
 		final long[] entryAclParentIds = FieldCache.DEFAULT.getLongs(reader, Constants.ENTRY_ACL_PARENT_ID_FIELD);
 		
-		final DocIdSet innerSet = aclInheritingEntriesPermissibleAclFilter.getDocIdSet(reader);
+		final DocIdSet innerSet = aclInheritingEntriesFilter.getDocIdSet(reader);
 		
 		return new NullSafeFilteredDocIdSet(innerSet, accessibleFolderIds, entryAclParentIds) {
 			@Override
 			protected boolean match(int docid) throws IOException {
 				long entryAclParentId = entryAclParentIds[docid];
 				if(entryAclParentId > 0) {
-					// This doc represents an entry (or an attachment within that entry) that inherits ACL
+					// This doc represents an entry (or an attachment within an entry) that inherits ACL
 					// from its parent folder. We need to check if the user has access to the parent folder.
 					if(accessibleFolderIds.contains(entryAclParentId))
-						return true; // The user has access to parent folder. Grant access to this entry.
+						return true; // The user has access to parent folder. Grant access to this entry/attachment.
 					else
-						return false; // The user has no access to parent folder. Deny access to this entry.
+						return false; // The user has no access to parent folder. Deny access to this entry/attachment.
 				}
 				else {
-					// This doc does not represent an entry that inherits ACL from its parent folder,
-					// which means that this doc represent either binder or entry that has its own
-					// set of ACL (such as folder entries with entry-level ACLs, or user objects).
-					// The previous filter in the chain (aclInheritingEntriesPermissibleAclFilter)
-					// has already validated this doc, so simply pass it on.
-					return true;
+					// In the current usage, this can not occur, because previous filter in the chain
+					// (aclInheritingEntriesFilter) will have already excluded this possibility.
+					return false;
 				}
 			}			
 		};
