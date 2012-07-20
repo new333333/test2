@@ -534,11 +534,11 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 					
 					QueryWrapperFilter aclQueryFilter = new QueryWrapperFilter(aclQuery);
 					
-					Filter aclInheritingEntriesFilter = makeAclInheritingEntriesFilter();
-					
 					Query accessibleFoldersAclQuery = makeAccessibleFoldersAclQuery(aclQueryCopy);
 					
 					TLongHashSet accessibleFolderIds = obtainAccessibleFolderIds(indexSearcherHandle.getIndexSearcher(), contextUserId, accessibleFoldersAclQuery);
+					
+					Filter aclInheritingEntriesFilter = makeAclInheritingEntriesFilter();
 					
 					AclInheritingAccessibleEntriesFilter aclInheritingAccessibleEntriesFilter = new AclInheritingAccessibleEntriesFilter(aclInheritingEntriesFilter, accessibleFolderIds);
 					
@@ -1280,7 +1280,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	}
 	
 	private Query makeAclInheritingEntriesPermissibleAclQuery(Query aclQuery) {
-		Query aclInheritingEntriesClause = makeAclInheritingEntriesClause();
+		Query aclInheritingEntriesClause = makeAclInheritingEntriesQuery();
 		
 		if(!(aclQuery instanceof BooleanQuery)) {
 			BooleanQuery bq = new BooleanQuery();
@@ -1293,7 +1293,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		return aclQuery;
 	}
 	
-	private Query makeAclInheritingEntriesClause() {
+	private Query makeAclInheritingEntriesQuery() {
 		return NumericRangeQuery.newLongRange(Constants.ENTRY_ACL_PARENT_ID_FIELD, 1L, Long.MAX_VALUE, true, true);		
 	}
 	
@@ -1313,13 +1313,43 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	
 	private void markAccessibleDocs(IndexSearcherHandle indexSearcherHandle , String aclQueryStr, final BitSet userDocIds) throws IOException {
 		try {
-			Query aclInheritingEntriesPermissibleAclQuery = makeAclInheritingEntriesPermissibleAclQuery(parseAclQueryStr(aclQueryStr));
+			Query aclQuery = parseAclQueryStr(aclQueryStr);
+			
+			Query aclQueryCopy = (Query) aclQuery.clone();
 
-			Query accessibleFoldersAclQuery = makeAccessibleFoldersAclQuery(parseAclQueryStr(aclQueryStr));
+			Query accessibleFoldersAclQuery = makeAccessibleFoldersAclQuery(aclQueryCopy);
 
 			final TLongHashSet accessibleFolderIds = obtainAccessibleFolderIds(indexSearcherHandle.getIndexSearcher(), null, accessibleFoldersAclQuery);
 
-			indexSearcherHandle.getIndexSearcher().search(aclInheritingEntriesPermissibleAclQuery, new Collector() {
+			Query aclInheritingEntriesQuery = makeAclInheritingEntriesQuery();
+
+			// Pass I
+			indexSearcherHandle.getIndexSearcher().search(aclQuery, new Collector() {
+				private int docBase;
+				
+				@Override
+				public void collect(int doc) {
+					userDocIds.set(doc+docBase);
+				}
+
+				@Override
+				public boolean acceptsDocsOutOfOrder() {
+					return true;
+				}
+
+				@Override
+				public void setNextReader(IndexReader reader, int docBase)
+						throws IOException {
+					this.docBase = docBase;
+				}
+
+				@Override
+				public void setScorer(Scorer scorer) throws IOException {
+				}
+			});
+			
+			// Pass II
+			indexSearcherHandle.getIndexSearcher().search(aclInheritingEntriesQuery, new Collector() {
 				private int docBase;
 				private long[] entryAclParentIds;
 				
@@ -1336,12 +1366,9 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 							hasAccess = false; // The user has no access to parent folder. Deny access to this entry.
 					}
 					else {
-						// This doc does not represent an entry that inherits ACL from its parent folder,
-						// which means that this doc represent either binder or entry that has its own
-						// set of ACL (such as folder entries with entry-level ACLs, or user objects).
-						// The query aclInheritingEntriesPermissibleAclQuery has already validate this 
-						// doc, so imply pass it on.
-						hasAccess = true;
+						// In the current usage, this can not occur, because the query (aclInheritingEntriesQuery)
+						// will have already excluded this possibility.
+						hasAccess = false;
 					}
 					if(hasAccess)
 						userDocIds.set(doc+docBase);
@@ -1355,8 +1382,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 				@Override
 				public void setNextReader(IndexReader reader, int docBase)
 						throws IOException {
-					this.entryAclParentIds = FieldCache.DEFAULT.getLongs(reader, Constants.ENTRY_ACL_PARENT_ID_FIELD);
 					this.docBase = docBase;
+					this.entryAclParentIds = FieldCache.DEFAULT.getLongs(reader, Constants.ENTRY_ACL_PARENT_ID_FIELD);
 				}
 
 				@Override
