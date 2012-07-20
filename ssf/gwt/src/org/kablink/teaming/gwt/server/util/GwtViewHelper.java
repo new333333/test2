@@ -77,6 +77,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
@@ -193,6 +194,7 @@ import org.kablink.util.search.Junction.Disjunction;
  *
  * @author drfoster@novell.com
  */
+@SuppressWarnings("unused")
 public class GwtViewHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtViewHelper.class);
 
@@ -202,6 +204,8 @@ public class GwtViewHelper {
 	public static final String RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME		= "responsible_teams";
 	
 	private static final String CACHED_VIEW_PINNED_ENTRIES_BASE = "viewPinnedEntries_";
+	
+	private static final boolean SEARCH_FOR_SHARED_WITH_ME	= true;
 
 	/*
 	 * Inner class used to track items for the 'Shared with Me'
@@ -211,16 +215,20 @@ public class GwtViewHelper {
 		private Date				m_rightsExpire;	//
 		private DefinableEntity		m_item;			//
 		private List<SharerInfo>	m_sharerInfos;	//
+		private Long				m_id;			//
 		private ShareRights			m_rights;		//
 		
 		/*
 		 * Constructor method.
 		 */
-		SharedWithMeItem() {
+		SharedWithMeItem(Long id) {
 			// Initialize the super class...
 			super();
 			
-			// ...and initialize everything else.
+			// ...store the parameter...
+			setId(id);
+			
+			// ...initialize everything else.
 			m_sharerInfos = new ArrayList<SharerInfo>();
 		}
 		
@@ -230,6 +238,7 @@ public class GwtViewHelper {
 		Date             getRightsExpire() {return m_rightsExpire;}
 		DefinableEntity  getItem()         {return m_item;        }
 		List<SharerInfo> getSharerInfos()  {return m_sharerInfos; }
+		Long             getId()           {return m_id;          }
 		ShareRights      getRights()       {return m_rights;      }
 		
 		/*
@@ -237,6 +246,7 @@ public class GwtViewHelper {
 		 */
 		void setRightsExpire(Date            rightsExpire) {m_rightsExpire = rightsExpire;}
 		void setItem(        DefinableEntity item)         {m_item         = item;        }
+		void setId(          Long            id)           {m_id           = id;          }
 		void setRights(      ShareRights     rights)       {m_rights       = rights;      }
 		
 		/*
@@ -276,11 +286,25 @@ public class GwtViewHelper {
 		 * specific entity based on entity type and ID.  If one is
 		 * found, it's returned.  Otherwise, null is returned.
 		 */
-		static SharedWithMeItem findItemInList(boolean isEntityFolderEntry, Long docId, List<SharedWithMeItem> siList) {
+		static SharedWithMeItem findItemInList(Long searchId, boolean isEntityFolderEntry, Long docId, List<SharedWithMeItem> siList) {
 			// Do we have any SharedWithMeItem's to search?
 			if ((null != docId) && (null != siList) && (!(siList.isEmpty()))) {
 				// Yes!  Scan them.
+				boolean bySearchId = (null != searchId);
 				for (SharedWithMeItem si:  siList) {
+					// Were we given a searchId to find?
+					if (bySearchId) {
+						// Yes!  Is this one were looking for?
+						if (searchId.equals(si.getId())) {
+							// Yes!  Return it.
+							return si;
+						}
+						
+						// Skip it.  With a searchId, we only match by
+						// that.
+						continue;
+					}
+					
 					// Are we looking for a folder entry?
 					DefinableEntity	de   = si.getItem();
 					Long			deId = de.getId();
@@ -377,7 +401,6 @@ public class GwtViewHelper {
 	/*
 	 * Inner class used to track sharers in a SharedWithMeItem.
 	 */
-	@SuppressWarnings("unused")
 	private static class SharerInfo {
 		private Date	m_date;		//
 		private Long	m_id;		//
@@ -520,6 +543,83 @@ public class GwtViewHelper {
 	}
 	
 	/*
+	 * Returns an entry map that represents a List<SharedWithMeItem>.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Map buildSearchMapFromSharedWithMeList(AllModulesInjected bs, List<SharedWithMeItem> shareItems, String quickFilter, boolean sortDescend, String sortBy) {
+		List<Map> searchEntries = new ArrayList<Map>();
+		for (SharedWithMeItem si:  shareItems) {
+			// Create an entry Map for this SharedWithMeItem.
+			Map entryMap = new HashMap();
+			searchEntries.add(entryMap);
+
+			// Store the item's ID.
+			entryMap.put("shareId",  String.valueOf(si.getId()));
+
+			// Are we processing a entry?
+			DefinableEntity	item    = si.getItem();
+			Definition		itemDef = null;
+			entryMap.put(Constants.DOCID_FIELD,  String.valueOf(item.getId()));
+			entryMap.put(Constants.ENTITY_FIELD, item.getEntityType().name());
+			entryMap.put(Constants.TITLE_FIELD,  item.getTitle());
+			if (item instanceof FolderEntry) {
+				// Yes!  Get it's Definition...
+				FolderEntry fe = ((FolderEntry) item);
+				String defId = fe.getEntryDefId();
+				if (MiscUtil.hasString(defId)) {
+					itemDef = DefinitionHelper.getDefinition(defId);
+				}
+				
+				Collection<FileAttachment> atts = fe.getFileAttachments();
+		        for (FileAttachment fa : atts) {
+		        	String fName = fa.getFileItem().getName();
+		        	if (MiscUtil.hasString(fName)) {
+						entryMap.put(Constants.FILENAME_FIELD, fName);
+						break;
+		        	}
+		        }
+				
+				// ...and store its parent binder's ID in the Map.
+				entryMap.put(Constants.BINDER_ID_FIELD, String.valueOf(fe.getParentBinder().getId()));
+			}
+			
+			else {
+				// No, we aren't processing an entry!  Are we
+				// processing a Folder?
+				if (item instanceof Folder) {
+					// Yes!  Can we get its Definition?
+					Folder folder = ((Folder) item);
+					itemDef = BinderHelper.getFolderDefinitionFromView(bs, folder.getId());
+					if (null == itemDef) {
+						// No!  Use the default from the folder.
+						itemDef = folder.getDefaultViewDef();
+					}
+				}
+				
+				// ...and store the binder's parent ID in the Map.
+				Binder binder = ((Binder) item);
+				entryMap.put(Constants.BINDERS_PARENT_ID_FIELD, String.valueOf(binder.getParentBinder().getId()));
+			}
+
+			// If we have a definition for the item...
+			if (null != itemDef) {
+				// ...and we can determine its family...
+				String family = BinderHelper.getFamilyNameFromDef(itemDef);
+				if (MiscUtil.hasString(family)) {
+					// ...store that in the entry map.
+					entryMap.put(Constants.FAMILY_FIELD, family);
+				}
+			}
+		}
+
+		// Finally, construct the search results Map and return that.
+		Map reply = new HashMap();
+		reply.put(ObjectKeys.SEARCH_ENTRIES,                 searchEntries        );
+		reply.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(searchEntries.size()));
+		return reply;
+	}
+	
+	/*
 	 * Extracts the ID's of the entry contributors and adds them to the
 	 * contributor ID's list if they're not already there. 
 	 */
@@ -586,7 +686,7 @@ public class GwtViewHelper {
 			
 			// Scan this FolderRow's shared by's tracking each unique
 			// ID.
-			for (AssignmentInfo ai:  getAIListFromFR(fr, FolderColumn.COLUMN_SHARED_BY)) {
+			for (AssignmentInfo ai:  getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY)) {
 				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
 		}
@@ -645,7 +745,7 @@ public class GwtViewHelper {
 			fixupAITeams( getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  teamTitles,      teamCounts                     );
 			fixupAITeams( getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            teamTitles,      teamCounts                     );
 			
-			fixupAIs(     getAIListFromFR(fr, FolderColumn.COLUMN_SHARED_BY),                               principalTitles, userPresence, presenceUserWSIds);
+			fixupAIs(     getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY),                               principalTitles, userPresence, presenceUserWSIds);
 		}		
 
 		// Finally, one last scan through the List<FolderRow>'s...
@@ -664,7 +764,7 @@ public class GwtViewHelper {
 			Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  comparator);
 			Collections.sort(getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            comparator);
 			
-			Collections.sort(getAIListFromFR(fr, FolderColumn.COLUMN_SHARED_BY),                               comparator);
+			Collections.sort(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY),                               comparator);
 		}
 	}
 
@@ -732,7 +832,7 @@ public class GwtViewHelper {
 	 * Condenses a List<ShareItem> so that share items only show up
 	 * once. 
 	 */
-	private static List<SharedWithMeItem> condenseSIList(AllModulesInjected bs, List<ShareItem> shareItems, Long userId, List<Long> teams, List<Long> groups) {
+	private static List<SharedWithMeItem> condenseSIList_Search(AllModulesInjected bs, List<ShareItem> shareItems, Long userId, List<Long> teams, List<Long> groups) {
 		// Allocate a List<SharedWIthMeItem> to hold the condensed
 		// List<ShareItem> information.
 		List<SharedWithMeItem> reply = new ArrayList<SharedWithMeItem>();
@@ -757,7 +857,7 @@ public class GwtViewHelper {
 			boolean newSI = (null == si);
 			if (newSI) {
 				// No!  Create a SharedWithMeItem to track it.
-				si = new SharedWithMeItem();
+				si = new SharedWithMeItem(siScan.getId());
 				si.setItem(siScan.getSharedEntity());
 			}
 
@@ -798,6 +898,84 @@ public class GwtViewHelper {
 						// return.
 						reply.add(si);
 					}
+					
+					// Store it in the SharedWithMeItem.
+					HistoryStamp siScanCreation = siScan.getCreation();
+					si.addSharerInfo(
+						siScanCreation.getPrincipal().getId(),
+						siScanCreation.getDate(),
+						siScan.getDescription().getStrippedText());
+				}
+			}
+		}
+		
+		// If we get here, reply refers to the List<SharedWithMeItem>
+		// built from condensing the List<ShareItem>.  Return it.
+		return reply;
+	}
+	
+	/*
+	 * Condenses a List<ShareItem> so that share items only show up
+	 * once. 
+	 */
+	private static List<SharedWithMeItem> condenseSIList_NoSearch(AllModulesInjected bs, List<ShareItem> shareItems, Long userId, List<Long> teams, List<Long> groups) {
+		// Allocate a List<SharedWIthMeItem> to hold the condensed
+		// List<ShareItem> information.
+		List<SharedWithMeItem> reply = new ArrayList<SharedWithMeItem>();
+		
+		// If we don't have any share items to condense...
+		if ((null == shareItems) || shareItems.isEmpty()) {
+			// ...return the empty reply list.
+			return reply;
+		}
+
+		// Scan the share items in the List<ShareItem>.
+		for (ShareItem siScan:  shareItems) {
+			// Is this item in the trash?
+			DefinableEntity siScanItem = siScan.getSharedEntity();
+			if (GwtServerHelper.isItemPreDeleted(siScanItem)) {
+				// Yes!  Skip it.
+				continue;
+			}
+			
+			// Create a new SharedWithMeItem?
+			SharedWithMeItem si = new SharedWithMeItem(siScan.getId());
+			si.setItem(siScan.getSharedEntity());
+
+			// Are there any members of this share item?
+			Collection<ShareItemMember> siScanMembers = siScan.getMembers();
+			if ((null != siScanMembers) && (!(siScanMembers.isEmpty()))) {
+				// Yes!  Scan them.
+				for (ShareItemMember siScanMember:  siScanMembers) {
+					// Is this member expired?
+					if (siScanMember.isExpired()) {
+						// Yes!  Skip it.
+						continue;
+					}
+
+					// Is this member directed to this user, one of the
+					// user's groups or one of the user's teams?
+					Long rId = siScanMember.getRecipientId();
+					switch (siScanMember.getRecipientType()) {
+					case user:   if (userId.equals(  rId)) break; continue;	// Checks the user...
+					case group:  if (groups.contains(rId)) break; continue;	// ...check the user's groups...
+					case team:   if (teams.contains( rId)) break; continue;	// ...and check the user's teams.
+					default:                                      continue;
+					}
+					
+					// The member isn't expired and it belongs with
+					// this user!  Add the rights information about it
+					// to the SharedWithMeItem.
+					si.updateRights(siScanMember);
+				}
+
+				// Do we have rights information for this
+				// SharedWithMeItem?
+				if (si.hasRights()) {
+					// Yes!  Add it to the reply
+					// List<SharedWithMeItem> we're building to
+					// return.
+					reply.add(si);
 					
 					// Store it in the SharedWithMeItem.
 					HistoryStamp siScanCreation = siScan.getCreation();
@@ -1392,32 +1570,35 @@ public class GwtViewHelper {
 		// collections.
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
-			if      (colName.equals("access"))          {fc.setColumnSearchKey("access");                               fc.setColumnSortable(false);                        }
-			else if (colName.equals("author"))          {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
-			else if (colName.equals("comments"))        {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                            }
-			else if (colName.equals("date"))            {fc.setColumnSearchKey(Constants.MODIFICATION_DATE_FIELD);                                                          }
-			else if (colName.equals("description"))     {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                       }
-			else if (colName.equals("descriptionHtml")) {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                       }
-			else if (colName.equals("download"))        {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                   }
-			else if (colName.equals("dueDate"))         {fc.setColumnSearchKey(Constants.DUE_DATE_FIELD);                                                                   }
-			else if (colName.equals("emailAddress"))    {fc.setColumnSearchKey(Constants.EMAIL_FIELD);                                                                      }
-			else if (colName.equals("family"))          {fc.setColumnSearchKey(Constants.FAMILY_FIELD);                 fc.setColumnSortable(false);                        }
-			else if (colName.equals("fullName"))        {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);    }
-			else if (colName.equals("guest"))           {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
-			else if (colName.equals("html"))            {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                    }
-			else if (colName.equals("location"))        {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                }
-			else if (colName.equals("loginId"))         {fc.setColumnSearchKey(Constants.LOGINNAME_FIELD);                                                                  }
-			else if (colName.equals("number"))          {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);    }
-			else if (colName.equals("rating"))          {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                     }
-			else if (colName.equals("responsible"))     {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                }
-			else if (colName.equals("rights"))          {fc.setColumnSearchKey("rights");                               fc.setColumnSortable(false);                        }
-			else if (colName.equals("size"))            {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                  }
-			else if (colName.equals("sharedBy"))        {fc.setColumnSearchKey("sharedBy");                             fc.setColumnSortable(false);                        }
-			else if (colName.equals("sharedWith"))      {fc.setColumnSearchKey("sharedWith");                           fc.setColumnSortable(false);                        }
-			else if (colName.equals("state"))           {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD); fc.setColumnSortKey(Constants.WORKFLOW_STATE_FIELD);}
-			else if (colName.equals("status"))          {fc.setColumnSearchKey(Constants.STATUS_FIELD);                                                                     }
-			else if (colName.equals("tasks"))           {fc.setColumnSearchKey(Constants.TASKS_FIELD);                                                                      }
-			else if (colName.equals("title"))           {fc.setColumnSearchKey(Constants.TITLE_FIELD);                  fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);    }
+			if      (colName.equals("author"))           {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
+			else if (colName.equals("comments"))         {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                            }
+			else if (colName.equals("date"))             {fc.setColumnSearchKey(Constants.MODIFICATION_DATE_FIELD);                                                          }
+			else if (colName.equals("description"))      {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                       }
+			else if (colName.equals("descriptionHtml"))  {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                       }
+			else if (colName.equals("download"))         {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                   }
+			else if (colName.equals("dueDate"))          {fc.setColumnSearchKey(Constants.DUE_DATE_FIELD);                                                                   }
+			else if (colName.equals("emailAddress"))     {fc.setColumnSearchKey(Constants.EMAIL_FIELD);                                                                      }
+			else if (colName.equals("family"))           {fc.setColumnSearchKey(Constants.FAMILY_FIELD);                 fc.setColumnSortable(false);                        }
+			else if (colName.equals("fullName"))         {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);    }
+			else if (colName.equals("guest"))            {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
+			else if (colName.equals("html"))             {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                    }
+			else if (colName.equals("location"))         {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                }
+			else if (colName.equals("loginId"))          {fc.setColumnSearchKey(Constants.LOGINNAME_FIELD);                                                                  }
+			else if (colName.equals("number"))           {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);    }
+			else if (colName.equals("rating"))           {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                     }
+			else if (colName.equals("responsible"))      {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                }
+			else if (colName.equals("rights"))           {fc.setColumnSearchKey(FolderColumn.COLUMN_RIGHTS);             fc.setColumnSortable(false);                        }
+			else if (colName.equals("size"))             {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                  }
+			else if (colName.equals("share_access"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_ACCESS);       fc.setColumnSortable(false);                        }
+			else if (colName.equals("share_date"))       {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_DATE);         fc.setColumnSortable(false);                        }
+			else if (colName.equals("share_expiration")) {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_EXPIRATION);   fc.setColumnSortable(false);                        }
+			else if (colName.equals("share_message"))    {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_MESSAGE);      fc.setColumnSortable(false);                        }
+			else if (colName.equals("share_sharedBy"))   {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_SHARED_BY);    fc.setColumnSortable(false);                        }
+			else if (colName.equals("share_sharedWith")) {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_SHARED_WITH);  fc.setColumnSortable(false);                        }
+			else if (colName.equals("state"))            {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD); fc.setColumnSortKey(Constants.WORKFLOW_STATE_FIELD);}
+			else if (colName.equals("status"))           {fc.setColumnSearchKey(Constants.STATUS_FIELD);                                                                     }
+			else if (colName.equals("tasks"))            {fc.setColumnSearchKey(Constants.TASKS_FIELD);                                                                      }
+			else if (colName.equals("title"))            {fc.setColumnSearchKey(Constants.TITLE_FIELD);                  fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);    }
 			else {
 				// Does the column name contain multiple parts wrapped
 				// in a single value?
@@ -1931,6 +2112,16 @@ public class GwtViewHelper {
 				// No!  Bail.
 				return buildEmptyEntryMap();
 			}
+			
+			if (!SEARCH_FOR_SHARED_WITH_ME) {
+				return
+					buildSearchMapFromSharedWithMeList(
+						bs,
+						shareItems,
+						quickFilter,
+						GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false),
+						GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD));
+			}
 
 			// Add the shared binder and entry IDs to the search criteria.
 			crit.add(in(Constants.ENTRY_ANCESTRY, new String[]{topWSId}));
@@ -2200,10 +2391,15 @@ public class GwtViewHelper {
 				String[] columns;
 				switch (folderInfo.getCollectionType()) {
 				default:
-				case FILE_SPACES:     baseNameKey += "filespaces.";   columns = new String[]{"title", "rights", "descriptionHtml"}; break;
-				case MY_FILES:        baseNameKey += "myfiles.";      columns = new String[]{"title", "family", "date"};            break;
-				case SHARED_BY_ME:    baseNameKey += "sharedByMe.";   columns = new String[]{"title", "access", "sharedWith"};      break;
-				case SHARED_WITH_ME:  baseNameKey += "sharedWithMe."; columns = new String[]{"title", "access", "sharedBy"};        break;
+				case FILE_SPACES:   baseNameKey += "filespaces.";   columns = new String[]{"title", "rights", "descriptionHtml"};                                                         break;
+				case MY_FILES:      baseNameKey += "myfiles.";      columns = new String[]{"title", "family", "date"};                                                                    break;
+				case SHARED_BY_ME:  baseNameKey += "sharedByMe.";   columns = new String[]{"title", "share_access", "share_sharedWith"};                                                  break;
+				case SHARED_WITH_ME:
+					baseNameKey += "sharedWithMe.";
+					if (SEARCH_FOR_SHARED_WITH_ME)
+					     columns = new String[]{"title", "share_access", "share_sharedBy"};
+					else columns = new String[]{"title", "share_sharedBy", "share_message", "share_date", "share_expiration", "share_access"};
+					break;
 				}
 				columnNames = getColumnsLHMFromAS(columns);
 			}
@@ -2371,7 +2567,6 @@ public class GwtViewHelper {
 				//Build a list of all possible columns
 				Map<String,Definition> entryDefs = DefinitionHelper.getEntryDefsAsMap(((Folder) bs.getBinderModule().getBinder(folderId)));
 				for (Definition def :  entryDefs.values()) {
-					@SuppressWarnings("unused")
 					Document defDoc = def.getDefinition();
 					Map<String,Map> elementData = bs.getDefinitionModule().getEntryDefinitionElements(def.getId());
 					for (Map.Entry me : elementData.entrySet()) {
@@ -2676,7 +2871,7 @@ public class GwtViewHelper {
 				String   docIdS   = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
 				Long     docId    = Long.parseLong(docIdS);
 				EntityId entityId = new EntityId(Long.parseLong(locationBinderId), docId, entityType);
-				if (isEntityInList(entityId, folderRows)) {
+				if ((!isCollectionSharedWithMe) && isEntityInList(entityId, folderRows)) {
 					// Yes!  Skip it now.  Note that we may have
 					// duplicates because of pinning.
 					continue;
@@ -2717,11 +2912,13 @@ public class GwtViewHelper {
 						// collection?
 						if (isCollectionSharedWithMe) {
 							// Yes!  Is this the sharedBy column?
-							if (csk.equals("sharedBy")) {
+							String	searchIdS = GwtServerHelper.getStringFromEntryMap(entryMap, "shareId");
+							Long	searchId  = (MiscUtil.hasString(searchIdS) ? Long.parseLong(searchIdS) : null);
+							if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_BY)) {
 								// Yes!  Can we find the
 								// SharedWithMeItem for this row?
 								List<AssignmentInfo> sharerAIs = null;
-								SharedWithMeItem si = SharedWithMeItem.findItemInList(isEntityFolderEntry, docId, shareItems);
+								SharedWithMeItem si = SharedWithMeItem.findItemInList(searchId, isEntityFolderEntry, docId, shareItems);
 								if (null != si) {
 									// Yes!  Use it to construct a
 									// List<AssignmentInfo>.
@@ -2743,12 +2940,12 @@ public class GwtViewHelper {
 							
 							// No, this isn't the sharedBy column!  Is
 							// it the access column?
-							else if (csk.equals("access")) {
+							else if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_ACCESS)) {
 								// Yes!  Can we find the
 								// SharedWithMeItem for this row?
 								Date		rightsExpire = null;
 								ShareRights	rights       = null;
-								SharedWithMeItem si = SharedWithMeItem.findItemInList(isEntityFolderEntry, docId, shareItems);
+								SharedWithMeItem si = SharedWithMeItem.findItemInList(searchId, isEntityFolderEntry, docId, shareItems);
 								if (null != si) {
 									// Yes!  Get the share rights from
 									// it...
@@ -3580,7 +3777,6 @@ public class GwtViewHelper {
 	 * If the value can't be found or it can't be parsed, null is
 	 * returned. 
 	 */
-	@SuppressWarnings("unused")
 	private static int getQueryParameterInt(Map<String, String> nvMap, String name) {
 		String v = getQueryParameterString(nvMap, name);
 		if (0 < v.length()) {
@@ -3669,7 +3865,11 @@ public class GwtViewHelper {
 
 		// ...and finally, condense the List<ShareItem> so that
 		// ...share items only show up once and return that.
-		return condenseSIList(bs, shareItems, userId, teams, groups);
+		List<SharedWithMeItem> siList;
+		if (SEARCH_FOR_SHARED_WITH_ME)
+		     siList = condenseSIList_Search(  bs, shareItems, userId, teams, groups);
+		else siList = condenseSIList_NoSearch(bs, shareItems, userId, teams, groups);
+		return siList;
 	}
 	
 	/*
