@@ -58,10 +58,12 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.ChainedFilter;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.FieldCache;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.NumericRangeFilter;
 import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
@@ -72,7 +74,6 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
-import org.apache.lucene.util.Version;
 import org.kablink.teaming.lucene.analyzer.VibeIndexAnalyzer;
 import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.lucene.util.TagObject;
@@ -527,15 +528,21 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			if(aclQueryStr != null && aclQueryStr.length() > 0) {
 				// The query result must be filtered by ACL restriction.
 				if(mode == Constants.SEARCH_MODE_NORMAL) {
-					Query aclInheritingEntriesPermissibleAclQuery = makeAclInheritingEntriesPermissibleAclQuery(parseAclQueryStr(aclQueryStr));
+					Query aclQuery = parseAclQueryStr(aclQueryStr);
 					
-					QueryWrapperFilter aclInheritingEntriesPermissibleAclFilter = new QueryWrapperFilter(aclInheritingEntriesPermissibleAclQuery);
+					Query aclQueryCopy = (Query) aclQuery.clone();
 					
-					Query accessibleFoldersAclQuery = makeAccessibleFoldersAclQuery(parseAclQueryStr(aclQueryStr));
-						
+					QueryWrapperFilter aclQueryFilter = new QueryWrapperFilter(aclQuery);
+					
+					Filter aclInheritingEntriesFilter = makeAclInheritingEntriesFilter();
+					
+					Query accessibleFoldersAclQuery = makeAccessibleFoldersAclQuery(aclQueryCopy);
+					
 					TLongHashSet accessibleFolderIds = obtainAccessibleFolderIds(indexSearcherHandle.getIndexSearcher(), contextUserId, accessibleFoldersAclQuery);
-
-					aclFilter = new AclFilter(aclInheritingEntriesPermissibleAclFilter, accessibleFolderIds);			
+					
+					AclInheritingAccessibleEntriesFilter aclInheritingAccessibleEntriesFilter = new AclInheritingAccessibleEntriesFilter(aclInheritingEntriesFilter, accessibleFolderIds);
+					
+					aclFilter = new ChainedFilter(new Filter[] {aclQueryFilter, aclInheritingAccessibleEntriesFilter}, ChainedFilter.OR);		
 				}
 				else if(mode == Constants.SEARCH_MODE_SELF_CONTAINED_ONLY) {
 					aclFilter = new QueryWrapperFilter(parseAclQueryStr(aclQueryStr));
@@ -1273,7 +1280,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	}
 	
 	private Query makeAclInheritingEntriesPermissibleAclQuery(Query aclQuery) {
-		NumericRangeQuery<Long> nrq = NumericRangeQuery.newLongRange(Constants.ENTRY_ACL_PARENT_ID_FIELD, 1L, Long.MAX_VALUE, true, true);
+		Query aclInheritingEntriesClause = makeAclInheritingEntriesClause();
 		
 		if(!(aclQuery instanceof BooleanQuery)) {
 			BooleanQuery bq = new BooleanQuery();
@@ -1281,9 +1288,17 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			aclQuery = bq;
 		}
 		
-		((BooleanQuery)aclQuery).add(nrq, BooleanClause.Occur.SHOULD);
+		((BooleanQuery)aclQuery).add(aclInheritingEntriesClause, BooleanClause.Occur.SHOULD);
 		
 		return aclQuery;
+	}
+	
+	private Query makeAclInheritingEntriesClause() {
+		return NumericRangeQuery.newLongRange(Constants.ENTRY_ACL_PARENT_ID_FIELD, 1L, Long.MAX_VALUE, true, true);		
+	}
+	
+	private Filter makeAclInheritingEntriesFilter() {
+		return NumericRangeFilter.newLongRange(Constants.ENTRY_ACL_PARENT_ID_FIELD, 1L, Long.MAX_VALUE, true, true);				
 	}
 	
 	private Query makeAccessibleFoldersAclQuery(Query aclQuery) {
