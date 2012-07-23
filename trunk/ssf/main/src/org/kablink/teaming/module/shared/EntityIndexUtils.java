@@ -828,8 +828,6 @@ public class EntityIndexUtils {
 	       		for(String acl:acls) {
 	       			doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.ENTRY_ACL_FIELD, acl));
 	       		}
-	       		//add binder access
-	    		addBinderAcls(doc, binder);
        		} else {
 	       		//add entry access. 
 	       		if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop()) {
@@ -843,13 +841,14 @@ public class EntityIndexUtils {
 	       			for(String acl:acls) {
 	       				doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.ENTRY_ACL_FIELD, acl));
 	       			}
-	           		//add binder access
-	        		addBinderAcls(doc, binder);
 	       		} else if (((Entry)entry).hasEntryAcl()) {
+	       			Entry e = (Entry)entry;
 	    			//The entry has its own ACL specified
-	       			addEntryAcls(doc, binder, (Entry)entry);
-	           		//add binder access
-	        		addBinderAcls(doc, binder);
+	       			addEntryAcls(doc, binder, e);
+	       			if(e.isIncludeFolderAcl()) {
+	       				// In addition to entry-level ACL, this entry is also inheriting ACLs from its parent folder.
+		    			markEntryAsInheritingAcls(doc, binder, (Entry)entry);
+	       			}
 	    		} else {
 	    			// The entry has neither workflow ACL nor its own ACL.
 	    			//The entry is using the folder's ACL
