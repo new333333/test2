@@ -69,6 +69,7 @@ public class ShareItemMember extends ZonedObject {
 	protected Long id;
 	protected ShareItem shareItem;
 	protected String comment;
+	protected int daysToExpire;
 	protected Date endDate;
 	protected short recipientType;
 	protected Long recipientId;
@@ -115,6 +116,14 @@ public class ShareItemMember extends ZonedObject {
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	public int getDaysToExpire() {
+		return daysToExpire;
+	}
+
+	public void setDaysToExpire(int daysToExpire) {
+		this.daysToExpire = daysToExpire;
 	}
 
 	public Date getEndDate() {

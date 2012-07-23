@@ -13,6 +13,7 @@
       <column name="shareItemId"/>
     </many-to-one>
     <property name="comment" length="255"/>
+    <property name="daysToExpire" type="int"/>
     <property name="endDate" index="endDate_shareitemmember"/>
     <property name="recipientType" column="recipient_type" access="field" type="short" index="recipient_shareitemmember"/>
     <property name="recipientId" column="recipient_id" index="recipient_shareitemmember"/>
