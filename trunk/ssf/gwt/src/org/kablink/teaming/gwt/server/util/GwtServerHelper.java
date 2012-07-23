@@ -32,10 +32,6 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
-import static org.kablink.util.search.Constants.DOCID_FIELD;
-import static org.kablink.util.search.Constants.ENTRY_ANCESTRY;
-import static org.kablink.util.search.Constants.MODIFICATION_DATE_FIELD;
-
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.text.Collator;
@@ -71,11 +67,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
+
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.HttpSessionContext;
@@ -155,7 +153,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserStatusCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmdType;
@@ -376,24 +373,22 @@ public class GwtServerHelper {
 		 * 
 		 * @param
 		 */
-		private void setBucketInfo( BucketInfo bucketInfo) {m_bucketInfo  = bucketInfo;}
-		private void setBinderId(   Long       binderId)   {m_binderId    = binderId;  }
+		private void setBucketInfo(BucketInfo bucketInfo) {m_bucketInfo  = bucketInfo;}
+		private void setBinderId(  Long       binderId)   {m_binderId    = binderId;  }
 	}
 	   
-	/**
+	/*
 	 * Inner class used to compare two Principal object.
 	 */
-	public static class PrincipalComparator implements Comparator<Principal> 
-	{
-		private boolean m_ascending;
+	public static class PrincipalComparator implements Comparator<Principal> {
+		private boolean	m_ascending;	//
 		
 		/**
 		 * Class constructor.
 		 * 
 		 * @param ascending
 		 */
-		public PrincipalComparator( boolean ascending ) 
-		{
+		public PrincipalComparator(boolean ascending) {
 			m_ascending = ascending;
 		}
 
@@ -405,18 +400,13 @@ public class GwtServerHelper {
 		 * @return
 		 */
 		@Override
-		public int compare( Principal principal1, Principal principal2 ) 
-		{
+		public int compare(Principal principal1, Principal principal2) {
+			String title1 = principal1.getTitle();
+			String title2 = principal2.getTitle();
 			int reply;
-			String title1;
-			String title2;
-
-			title1 = principal1.getTitle();
-			title2 = principal2.getTitle();
-			if ( m_ascending )
-				reply = MiscUtil.safeSColatedCompare( title1, title2 );
-			else
-				reply = MiscUtil.safeSColatedCompare( title2, title1 );
+			if (m_ascending)
+			     reply = MiscUtil.safeSColatedCompare(title1, title2);
+			else reply = MiscUtil.safeSColatedCompare(title2, title1);
 
 			// If we get here, reply contains the appropriate value for
 			// the compare.  Return it.
@@ -427,18 +417,16 @@ public class GwtServerHelper {
 	/*
 	 * Inner class used compare two GwtAdminAction objects.
 	 */
-	private static class GwtAdminActionComparator implements Comparator<GwtAdminAction>
-	{
-		private Collator m_collator;
+	private static class GwtAdminActionComparator implements Comparator<GwtAdminAction> {
+		private Collator	m_collator;	//
 		
 		/**
 		 * Class constructor.
 		 */
-		public GwtAdminActionComparator()
-		{
+		public GwtAdminActionComparator() {
 			m_collator = Collator.getInstance();
-			m_collator.setStrength( Collator.IDENTICAL );
-		}// end GwtAdminActionComparator()
+			m_collator.setStrength(Collator.IDENTICAL);
+		}
 
 	      
 		/**
@@ -450,21 +438,20 @@ public class GwtServerHelper {
 		 *     1 if adminAction1 >  adminAction2.
 		 */
 		@Override
-		public int compare( GwtAdminAction adminAction1, GwtAdminAction adminAction2 )
-		{
-			String s1, s2;
-
-			s1 = adminAction1.getLocalizedName();
-			if ( s1 == null )
+		public int compare(GwtAdminAction adminAction1, GwtAdminAction adminAction2) {
+			String s1 = adminAction1.getLocalizedName();
+			if (null == s1) {
 				s1 = "";
+			}
 
-			s2 = adminAction2.getLocalizedName();
-			if ( s2 == null )
+			String s2 = adminAction2.getLocalizedName();
+			if (null == s2) {
 				s2 = "";
+			}
 
-			return 	m_collator.compare( s1, s2 );
-		}// end compare()
-	}// end GwtAdminActionComparator
+			return 	m_collator.compare(s1, s2);
+		}
+	}
 
 	/**
 	 * Inner class used within the GWT server code to dump profiling
@@ -670,18 +657,17 @@ public class GwtServerHelper {
 
 	/**
 	 * Add a tag to the given binder.
+	 * 
+	 * @param bm
+	 * @param binder
+	 * @param tagInfo
 	 */
-	public static void addBinderTag( BinderModule bm, Binder binder, TagInfo tagInfo )
-	{
-		boolean community;
-		Long binderId;
-		String tagName;
-
+	public static void addBinderTag(BinderModule bm, Binder binder, TagInfo tagInfo) {
 		// Define the new tag.
-		community = tagInfo.isCommunityTag();
-		binderId = binder.getId();
-		tagName = tagInfo.getTagName();
-		bm.setTag( binderId, tagName, community );
+		boolean	community = tagInfo.isCommunityTag();
+		Long	binderId  = binder.getId();
+		String	tagName   = tagInfo.getTagName();
+		bm.setTag(binderId, tagName, community);
 	}
 	
 	/**
@@ -755,21 +741,17 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Add a tag to the given entry
+	 * Add a tag to the given entry.
+	 * 
+	 * @param fm
+	 * @param entryId
+	 * @param tagInfo
 	 */
-	public static void addEntryTag( FolderModule fm, Long entryId, TagInfo tagInfo )
-	{
-		String tagName;
-		TagType tagType;
-		boolean community;
-		
-		tagName = tagInfo.getTagName();
-		tagType = tagInfo.getTagType();
-		community = false;
-		if ( tagType == TagType.COMMUNITY )
-			community = true;
-		
-		fm.setTag( null, entryId, tagName, community );
+	public static void addEntryTag(FolderModule fm, Long entryId, TagInfo tagInfo) {
+		String	tagName   = tagInfo.getTagName();
+		TagType	tagType   = tagInfo.getTagType();
+		boolean	community = (tagType == TagType.COMMUNITY);
+		fm.setTag(null, entryId, tagName, community);
 	}
 	
 	/**
@@ -4931,7 +4913,7 @@ public class GwtServerHelper {
 			startDate = DateTools.dateToString( creationDate, DateTools.Resolution.SECOND );
 			now = DateTools.dateToString( new Date(), DateTools.Resolution.SECOND );
 			crit = SearchUtils.newEntriesDescendants( binderIds );
-			crit.add( org.kablink.util.search.Restrictions.between( MODIFICATION_DATE_FIELD, startDate, now ) );
+			crit.add( org.kablink.util.search.Restrictions.between( Constants.MODIFICATION_DATE_FIELD, startDate, now ) );
 			results = ami.getBinderModule().executeSearchQuery( crit, Constants.SEARCH_MODE_NORMAL, 0, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS );
 	    	entries = (List) results.get( ObjectKeys.SEARCH_ENTRIES );
 
@@ -4943,11 +4925,11 @@ public class GwtServerHelper {
 				String entryIdString;
 				Iterator itAncestors;
 
-	    		entryAncestors = (SearchFieldResult) entry.get( ENTRY_ANCESTRY );
+	    		entryAncestors = (SearchFieldResult) entry.get( Constants.ENTRY_ANCESTRY );
 				if ( entryAncestors == null )
 					continue;
 				
-				entryIdString = (String) entry.get( DOCID_FIELD );
+				entryIdString = (String) entry.get( Constants.DOCID_FIELD );
 				if ( entryIdString == null || ( seen.checkIfSeen( entry ) ) )
 					continue;
 				
@@ -5006,7 +4988,7 @@ public class GwtServerHelper {
 					Binder childBinder;
 					
 					// Get the next child binder
-					childBinderId = (String) child.get( DOCID_FIELD );
+					childBinderId = (String) child.get( Constants.DOCID_FIELD );
 					childBinder = GwtUIHelper.getBinderSafely( ami.getBinderModule(), childBinderId );
 					
 					if ( childBinder != null )

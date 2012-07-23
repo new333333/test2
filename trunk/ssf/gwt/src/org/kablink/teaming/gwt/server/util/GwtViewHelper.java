@@ -64,11 +64,6 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import static org.kablink.util.search.Restrictions.conjunction;
-import static org.kablink.util.search.Restrictions.disjunction;
-import static org.kablink.util.search.Restrictions.in;
-import static org.kablink.util.search.Restrictions.like;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -87,7 +82,6 @@ import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.ShareItemMember;
-import org.kablink.teaming.domain.ShareItemMember.RecipientType;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -137,6 +131,7 @@ import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
+import org.kablink.teaming.gwt.server.util.SharedWithMeItem.SharerInfo;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -190,12 +185,16 @@ import org.kablink.util.search.Order;
 import org.kablink.util.search.Junction.Conjunction;
 import org.kablink.util.search.Junction.Disjunction;
 
+import static org.kablink.util.search.Restrictions.conjunction;
+import static org.kablink.util.search.Restrictions.disjunction;
+import static org.kablink.util.search.Restrictions.in;
+import static org.kablink.util.search.Restrictions.like;
+
 /**
  * Helper methods for the GWT binder views.
  *
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
 public class GwtViewHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtViewHelper.class);
 
@@ -205,251 +204,7 @@ public class GwtViewHelper {
 	public static final String RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME		= "responsible_teams";
 	
 	private static final String CACHED_VIEW_PINNED_ENTRIES_BASE = "viewPinnedEntries_";
-	
-	private static final boolean SEARCH_FOR_SHARED_WITH_ME	= false;
 
-	/*
-	 * Inner class used to track items for the 'Shared with Me'
-	 * collection point.
-	 */
-	private static class SharedWithMeItem {
-		private Date				m_rightsExpire;	//
-		private DefinableEntity		m_item;			//
-		private List<SharerInfo>	m_sharerInfos;	//
-		private Long				m_id;			//
-		private ShareRights			m_rights;		//
-		
-		/*
-		 * Constructor method.
-		 */
-		SharedWithMeItem(Long id) {
-			// Initialize the super class...
-			super();
-			
-			// ...store the parameter...
-			setId(id);
-			
-			// ...initialize everything else.
-			m_sharerInfos = new ArrayList<SharerInfo>();
-		}
-		
-		/*
-		 * Get'er methods.
-		 */
-		Date             getRightsExpire() {return m_rightsExpire;}
-		DefinableEntity  getItem()         {return m_item;        }
-		List<SharerInfo> getSharerInfos()  {return m_sharerInfos; }
-		Long             getId()           {return m_id;          }
-		ShareRights      getRights()       {return m_rights;      }
-		
-		/*
-		 * Set'er methods.
-		 */
-		void setRightsExpire(Date            rightsExpire) {m_rightsExpire = rightsExpire;}
-		void setItem(        DefinableEntity item)         {m_item         = item;        }
-		void setId(          Long            id)           {m_id           = id;          }
-		void setRights(      ShareRights     rights)       {m_rights       = rights;      }
-		
-		/*
-		 * Adds a new ShareInfo object to the List<SharerInfo>.
-		 */
-		void addSharerInfo(Long id, Date date, String comment) {
-			m_sharerInfos.add(new SharerInfo(id, date, comment));
-		}
-		
-		/*
-		 * Searches a List<SharedWithMeItem> for one referring to the
-		 * given DefinableEntity.  If one is found, it's returned.
-		 * Otherwise, null is returned.
-		 */
-		static SharedWithMeItem findItemInList(DefinableEntity item, List<SharedWithMeItem> siList) {
-			// If we have an item to find and there are any share items in
-			// the list...
-			if ((null != item) && (null != siList) && (!(siList.isEmpty()))) {
-				// ...scan them.
-				for (SharedWithMeItem si:  siList) {
-					// Is this share item the item in question?
-					DefinableEntity siItem = si.getItem(); 
-					if ((siItem.getId().equals(item.getId())) && siItem.getEntityType().equals(item.getEntityType())) {
-						// Yes!  Return it.
-						return si;
-					}
-				}
-			}
-
-			// If we get here, we couldn't find the item in question.
-			// Return null.
-			return null;
-		}
-
-		/*
-		 * Searches a List<SharedWithMeItem> for one referring to a
-		 * specific entity based on entity type and ID.  If one is
-		 * found, it's returned.  Otherwise, null is returned.
-		 */
-		static SharedWithMeItem findItemInList(Long searchId, boolean isEntityFolderEntry, Long docId, List<SharedWithMeItem> siList) {
-			// Do we have any SharedWithMeItem's to search?
-			if ((null != docId) && (null != siList) && (!(siList.isEmpty()))) {
-				// Yes!  Scan them.
-				boolean bySearchId = (null != searchId);
-				for (SharedWithMeItem si:  siList) {
-					// Were we given a searchId to find?
-					if (bySearchId) {
-						// Yes!  Is this one were looking for?
-						if (searchId.equals(si.getId())) {
-							// Yes!  Return it.
-							return si;
-						}
-						
-						// Skip it.  With a searchId, we only match by
-						// that.
-						continue;
-					}
-					
-					// Are we looking for a folder entry?
-					DefinableEntity	de   = si.getItem();
-					Long			deId = de.getId();
-					if (isEntityFolderEntry) {
-						// Yes!  Is this the SharedWithMeItem for it?
-						if ((!(de instanceof FolderEntry)) || (!(deId.equals(docId)))) {
-							// No!  Skip it.
-							continue;
-						}
-						
-						// Yes, this is the SharedWithMeItem for it!
-						// Return it.
-						return si;
-					}
-					
-					else {
-						// No, we must be looking for a binder!  Is
-						// this the SharedWithMeItem for it?
-						if ((de instanceof FolderEntry) || (!(deId.equals(docId)))) {
-							// No!  Skip it.
-							continue;
-						}
-						
-						// Yes, this is the SharedWithMeItem for it!
-						// Return it.
-						return si;
-					}
-				}
-			}
-
-			// If we get here, we couldn't find the SharedWithMeItem in
-			// question.  Return null.
-			return null;
-		}
-
-		/*
-		 * Returns true if this object is tracking any rights
-		 * information and false otherwise.
-		 */
-		boolean hasRights() {
-			return (null != m_rights);
-		}
-
-		/*
-		 * Updates the rights on this SharedWithMeItem based on the
-		 * rights in a ShareItemMember.
-		 * 
-		 * The logic is to always track the highest level of rights
-		 * granted.
-		 */
-		void updateRights(ShareItemMember siMember) {
-			boolean		storeRights  = false;
-			ShareRights rights       = GwtShareHelper.getShareRightsFromRightSet(siMember.getRightSet());
-			Date		rightsExpire = siMember.getEndDate();
-			if (hasRights()) {
-				switch (getRights()) {
-				case VIEW:
-					switch (rights) {
-					default:
-					case VIEW:                             break;
-					case CONTRIBUTOR:
-					case OWNER:        storeRights = true; break;	// Overwrite View with Contributor or Owner.
-					}
-					break;
-					
-				case CONTRIBUTOR:
-					switch (rights) {
-					default:
-					case VIEW:
-					case CONTRIBUTOR:                      break;
-					case OWNER:        storeRights = true; break;	// Overwrite Contributor with Owner.
-					}
-					break;
-					
-				case OWNER:
-					break;											// Never overwrite Owner.
-					
-				default:
-					storeRights = true;								// Always overwrite what we don't undertand.
-					break;
-				}
-			}
-			else {
-				storeRights = true;
-			}
-			
-			if (storeRights ){
-				setRights(      rights      );
-				setRightsExpire(rightsExpire);
-			}
-		}
-	}
-	
-	/*
-	 * Inner class used to track sharers in a SharedWithMeItem.
-	 */
-	private static class SharerInfo {
-		private Date	m_date;		//
-		private Long	m_id;		//
-		private String	m_comment;	//
-		
-		/*
-		 * Constructor method.
-		 */
-		SharerInfo(Long id, Date date, String comment) {
-			// Initialize the super class...
-			super();
-			
-			// ...and store the parameters.
-			setId(     id     );
-			setDate(   date   );
-			setComment(comment);
-		}
-		
-		/*
-		 * Get'er methods.
-		 */
-		Date   getDate()    {return m_date;   }
-		Long   getId()      {return m_id;     }
-		String getComment() {return m_comment;}
-		
-		/*
-		 * Set'er methods.
-		 */
-		void setDate(   Date   date)    {m_date    = date;   }
-		void setId(     Long   id)      {m_id      = id;     }
-		void setComment(String comment) {m_comment = comment;}
-		
-		/*
-		 * Returns true if a List<SharerInfo> contains a specific
-		 * sharer and false otherwise.
-		 */
-		private static boolean contains(List<SharerInfo> sharerInfos, Long id) {
-			if ((null != id) && (null != sharerInfos) && (!(sharerInfos.isEmpty()))) {
-				for (SharerInfo si:  sharerInfos) {
-					if (si.getId().equals(id)) {
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-	}
-	
 	/*
 	 * Class constructor that prevents this class from being
 	 * instantiated.
@@ -820,96 +575,7 @@ public class GwtViewHelper {
 	 * Condenses a List<ShareItem> so that share items only show up
 	 * once. 
 	 */
-	private static List<SharedWithMeItem> condenseSIList_Search(AllModulesInjected bs, List<ShareItem> shareItems, Long userId, List<Long> teams, List<Long> groups) {
-		// Allocate a List<SharedWIthMeItem> to hold the condensed
-		// List<ShareItem> information.
-		List<SharedWithMeItem> reply = new ArrayList<SharedWithMeItem>();
-		
-		// If we don't have any share items to condense...
-		if ((null == shareItems) || shareItems.isEmpty()) {
-			// ...return the empty reply list.
-			return reply;
-		}
-
-		// Scan the share items in the List<ShareItem>.
-		SharingModule sm = bs.getSharingModule();
-		for (ShareItem siScan:  shareItems) {
-			// Is this item in the trash?
-			DefinableEntity siScanItem = sm.getSharedEntity(siScan);
-			if (GwtServerHelper.isItemPreDeleted(siScanItem)) {
-				// Yes!  Skip it.
-				continue;
-			}
-			
-			// Are we already tracking this share item?
-			SharedWithMeItem si = SharedWithMeItem.findItemInList(siScanItem, reply);
-			boolean newSI = (null == si);
-			if (newSI) {
-				// No!  Create a SharedWithMeItem to track it.
-				si = new SharedWithMeItem(siScan.getId());
-				si.setItem(siScanItem);
-			}
-
-			// Are there any members of this share item?
-			Collection<ShareItemMember> siScanMembers = siScan.getMembers();
-			if ((null != siScanMembers) && (!(siScanMembers.isEmpty()))) {
-				// Yes!  Scan them.
-				for (ShareItemMember siScanMember:  siScanMembers) {
-					// Is this member expired?
-					if (siScanMember.isExpired()) {
-						// Yes!  Skip it.
-						continue;
-					}
-
-					// Is this member directed to this user, one of the
-					// user's groups or one of the user's teams?
-					Long rId = siScanMember.getRecipientId();
-					switch (siScanMember.getRecipientType()) {
-					case user:   if (userId.equals(  rId)) break; continue;	// Checks the user...
-					case group:  if (groups.contains(rId)) break; continue;	// ...check the user's groups...
-					case team:   if (teams.contains( rId)) break; continue;	// ...and check the user's teams.
-					default:                                      continue;
-					}
-					
-					// The member isn't expired and it belongs with
-					// this user!  Add the rights information about it
-					// to the SharedWithMeItem.
-					si.updateRights(siScanMember);
-				}
-
-				// Do we have rights information for this
-				// SharedWithMeItem?
-				if (si.hasRights()) {
-					// Yes!  Is it a new SharedWithMeItem?
-					if (newSI) {
-						// Yes!  Add it to the reply
-						// List<SharedWithMeItem> we're building to
-						// return.
-						reply.add(si);
-					}
-					
-					// Store it in the SharedWithMeItem.
-					HistoryStamp siScanCreation = siScan.getCreation();
-					si.addSharerInfo(
-						siScanCreation.getPrincipal().getId(),
-						siScanCreation.getDate(),
-						//siScan.getDescription().getStrippedText()
-						null // Added by JK
-						);
-				}
-			}
-		}
-		
-		// If we get here, reply refers to the List<SharedWithMeItem>
-		// built from condensing the List<ShareItem>.  Return it.
-		return reply;
-	}
-	
-	/*
-	 * Condenses a List<ShareItem> so that share items only show up
-	 * once. 
-	 */
-	private static List<SharedWithMeItem> condenseSIList_NoSearch(AllModulesInjected bs, List<ShareItem> shareItems, Long userId, List<Long> teams, List<Long> groups) {
+	private static List<SharedWithMeItem> condenseSIList(AllModulesInjected bs, List<ShareItem> shareItems, Long userId, List<Long> teams, List<Long> groups) {
 		// Allocate a List<SharedWIthMeItem> to hold the condensed
 		// List<ShareItem> information.
 		List<SharedWithMeItem> reply = new ArrayList<SharedWithMeItem>();
@@ -2107,42 +1773,13 @@ public class GwtViewHelper {
 				return buildEmptyEntryMap();
 			}
 			
-			if (!SEARCH_FOR_SHARED_WITH_ME) {
-				return
-					buildSearchMapFromSharedWithMeList(
-						bs,
-						shareItems,
-						quickFilter,
-						GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false),
-						GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD));
-			}
-
-			// Add the shared binder and entry IDs to the search criteria.
-			crit.add(in(Constants.ENTRY_ANCESTRY, new String[]{topWSId}));
-			
-    		disj = disjunction();
-			crit.add(disj);
-			
-			if (hasSharedBinders) {
-				// Limit the search to file folders.
-	    		conj = conjunction();
-				conj.add(in(Constants.DOC_TYPE_FIELD,   new String[]{Constants.DOC_TYPE_BINDER}));
-				conj.add(in(Constants.FAMILY_FIELD,     fileFamilies));
-				conj.add(in(Constants.DOCID_FIELD,      sharedBinderIds.toArray(new String[0])));
-				conj.add(in(Constants.IS_LIBRARY_FIELD, new String[]{Constants.TRUE}));
-				disj.add(conj);
-			}
-			
-			if (hasSharedEntries) {
-				// Limit the search to file entries.
-	    		conj = conjunction();
-				conj.add(in(Constants.DOC_TYPE_FIELD, new String[]{Constants.DOC_TYPE_ENTRY}));
-				conj.add(in(Constants.FAMILY_FIELD,   fileFamilies));
-				conj.add(in(Constants.DOCID_FIELD,    sharedEntryIds.toArray(new String[0])));
-				disj.add(conj);
-			}
-			
-			break;
+			return
+				buildSearchMapFromSharedWithMeList(
+					bs,
+					shareItems,
+					quickFilter,
+					GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false),
+					GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD));
 			
 		case FILE_SPACES:
 			// Can we access the ID of the top workspace?
@@ -2385,15 +2022,10 @@ public class GwtViewHelper {
 				String[] columns;
 				switch (folderInfo.getCollectionType()) {
 				default:
-				case FILE_SPACES:   baseNameKey += "filespaces.";   columns = new String[]{"title", "rights", "descriptionHtml"};                                                         break;
-				case MY_FILES:      baseNameKey += "myfiles.";      columns = new String[]{"title", "family", "date"};                                                                    break;
-				case SHARED_BY_ME:  baseNameKey += "sharedByMe.";   columns = new String[]{"title", "share_access", "share_sharedWith"};                                                  break;
-				case SHARED_WITH_ME:
-					baseNameKey += "sharedWithMe.";
-					if (SEARCH_FOR_SHARED_WITH_ME)
-					     columns = new String[]{"title", "share_access", "share_sharedBy"};
-					else columns = new String[]{"title", "share_sharedBy", "share_message", "share_date", "share_expiration", "share_access"};
-					break;
+				case FILE_SPACES:     baseNameKey += "filespaces.";   columns = new String[]{"title", "rights", "descriptionHtml"};                                                         break;
+				case MY_FILES:        baseNameKey += "myfiles.";      columns = new String[]{"title", "family", "date"};                                                                    break;
+				case SHARED_BY_ME:    baseNameKey += "sharedByMe.";   columns = new String[]{"title", "share_access", "share_sharedWith"};                                                  break;
+				case SHARED_WITH_ME:  baseNameKey += "sharedWithMe."; columns = new String[]{"title", "share_sharedBy", "share_message", "share_date", "share_expiration", "share_access"}; break;
 				}
 				columnNames = getColumnsLHMFromAS(columns);
 			}
@@ -2561,6 +2193,7 @@ public class GwtViewHelper {
 				//Build a list of all possible columns
 				Map<String,Definition> entryDefs = DefinitionHelper.getEntryDefsAsMap(((Folder) bs.getBinderModule().getBinder(folderId)));
 				for (Definition def :  entryDefs.values()) {
+					@SuppressWarnings("unused")
 					Document defDoc = def.getDefinition();
 					Map<String,Map> elementData = bs.getDefinitionModule().getEntryDefinitionElements(def.getId());
 					for (Map.Entry me : elementData.entrySet()) {
@@ -3811,6 +3444,7 @@ public class GwtViewHelper {
 	 * If the value can't be found or it can't be parsed, null is
 	 * returned. 
 	 */
+	@SuppressWarnings("unused")
 	private static int getQueryParameterInt(Map<String, String> nvMap, String name) {
 		String v = getQueryParameterString(nvMap, name);
 		if (0 < v.length()) {
@@ -3903,10 +3537,7 @@ public class GwtViewHelper {
 
 		// ...and finally, condense the List<ShareItem> so that
 		// ...share items only show up once and return that.
-		List<SharedWithMeItem> siList;
-		if (SEARCH_FOR_SHARED_WITH_ME)
-		     siList = condenseSIList_Search(  bs, shareItems, userId, teams, groups);
-		else siList = condenseSIList_NoSearch(bs, shareItems, userId, teams, groups);
+		List<SharedWithMeItem> siList = condenseSIList(bs, shareItems, userId, teams, groups);
 		return siList;
 	}
 	
