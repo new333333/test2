@@ -2322,7 +2322,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    @Override
 						public Object doInHibernate(Session session) throws HibernateException {
                     		return session.createQuery("from org.kablink.teaming.domain.ShareItem where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
-                    				.setString("sharedEntityType", sharedEntityIdentifier.getEntityType().name())
+                    				.setInteger("sharedEntityType", sharedEntityIdentifier.getEntityType().getValue())
                     				.setLong("sharedEntityId", sharedEntityIdentifier.getEntityId())
                     				.list();
 	                    }
@@ -2425,7 +2425,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 						public Object doInHibernate(Session session) throws HibernateException {
                     		return session.createQuery("from org.kablink.teaming.domain.ShareItem where creation_principal=:sharerId and sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
                     				.setLong("sharerId", sharerId)
-                    				.setString("sharedEntityType", sharedEntityIdentifier.getEntityType().name())
+                    				.setInteger("sharedEntityType", sharedEntityIdentifier.getEntityType().getValue())
                     				.setLong("sharedEntityId", sharedEntityIdentifier.getEntityId())
                     				.list();
 	                    }
@@ -2453,7 +2453,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    	// Don't use alias of the first table to refer to property/column name associated with entity, 
 	                    	// since HQL won't treat it as nicely as it does without alias. 
                     		return session.createQuery("select distinct m.recipientType, m.recipientId from org.kablink.teaming.domain.ShareItem s join s.members m where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId and m.rightSet." + rightName + "=:rightValue")
-                    				.setString("sharedEntityType", sharedEntityIdentifier.getEntityType().name())
+                    				.setInteger("sharedEntityType", sharedEntityIdentifier.getEntityType().getValue())
                     				.setLong("sharedEntityId", sharedEntityIdentifier.getEntityId())
                     				.setBoolean("rightValue", true)
                     				.list();
