@@ -2538,7 +2538,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    	if(selectSpec.sharerIds != null && !selectSpec.sharerIds.isEmpty()) {
 	                    		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();
 	                    		for(Long sharerId:selectSpec.sharerIds)
-	                    			disjunction.add(Restrictions.eq("sharerId", sharerId));
+	                    			disjunction.add(Restrictions.eq("creation.principal.id", sharerId));
 	                    		crit.add(disjunction);
 	                    	}
 	                    	if(selectSpec.sharedEntityIdentifiers != null && !selectSpec.sharedEntityIdentifiers.isEmpty()) {
