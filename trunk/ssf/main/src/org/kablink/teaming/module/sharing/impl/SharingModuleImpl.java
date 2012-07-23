@@ -31,42 +31,30 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.module.sharing.impl;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-import org.dom4j.Element;
-import org.kablink.teaming.context.request.RequestContext;
+import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Dashboard;
-import org.kablink.teaming.domain.DashboardPortlet;
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.EntityDashboard;
 import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.ShareItemMember;
-import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.UserDashboard;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.dashboard.DashboardModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
-import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
+import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.util.InvokeUtil;
-import org.kablink.teaming.util.ObjectPropertyNotFoundException;
-import org.kablink.util.Validator;
+import org.kablink.teaming.util.SPropsUtil;
 
 /**
  * This module gives us the transaction semantics to deal with the "Shared with Me" features.  
@@ -79,13 +67,128 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	private FolderModule folderModule;
 	private BinderModule binderModule;
 	
-	/* (non-Javadoc)
+    public void checkAccess(ShareItem shareItem, SharingOperation operation)
+	    	throws AccessControlException {
+    	User user = RequestContextHolder.getRequestContext().getUser();
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+    	ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+		EntityIdentifier entityIdentifier = shareItem.getEntityIdentifier();
+    	
+		switch (operation) {
+		case addShareItem:
+			//Make sure sharing is enabled at the zone level for this type of user
+			if (user.isExternalUser()) {
+				getAccessControlManager().checkOperation(zoneConfig, WorkAreaOperation.ENABLE_EXTERNAL_SHARING);
+			}
+			else {
+				getAccessControlManager().checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING);
+			}
+			//Check that the user is either the entity owner, or has the right to share entities
+			if (user.isExternalUser()) {
+				if (getAccessControlManager().testOperation(user, (WorkArea) shareItem, WorkAreaOperation.ALLOW_EXTERNAL_SHARING)) {
+					return;
+				}
+			} else {
+				if (getAccessControlManager().testOperation(user, (WorkArea) shareItem, WorkAreaOperation.ALLOW_SHARING)) {
+					return;
+				}
+			}
+			//User didn't have AllowSharing, so now check if user is owner of the entity
+			if (entityIdentifier.getEntityType().equals(EntityType.folderEntry)) {
+				FolderEntry fe = getFolderModule().getEntry(null, entityIdentifier.getEntityId());
+				if (user.getId().equals(fe.getCreation().getPrincipal().getId())) {
+					//This is the owner of the entry. Allow the sharing.
+					return;
+				}
+			} else if (entityIdentifier.getEntityType().equals(EntityType.folder) ||
+					entityIdentifier.getEntityType().equals(EntityType.workspace)) {
+				Binder binder = getBinderModule().getBinder(entityIdentifier.getEntityId());
+				if (user.getId().equals(binder.getCreation().getPrincipal().getId())) {
+					//This is the owner of the binder. Allow the sharing.
+					return;
+				}
+			}
+			break;
+		case modifyShareItem:
+			//The share creator and the entity owner can modify a shareItem
+			if (user.getId().equals(shareItem.getCreation().getPrincipal().getId())) {
+				//The user is the creator of the share
+				return;
+			}
+			//Check if this is the owner of the entity
+			if (entityIdentifier.getEntityType().equals(EntityType.folderEntry)) {
+				FolderEntry fe = getFolderModule().getEntry(null, entityIdentifier.getEntityId());
+				if (user.getId().equals(fe.getCreation().getPrincipal().getId())) {
+					//This is the owner of the entry. Allow the modification.
+					return;
+				}
+			} else if (entityIdentifier.getEntityType().equals(EntityType.folder) ||
+					entityIdentifier.getEntityType().equals(EntityType.workspace)) {
+				Binder binder = getBinderModule().getBinder(entityIdentifier.getEntityId());
+				if (user.getId().equals(binder.getCreation().getPrincipal().getId())) {
+					//This is the owner of the binder. Allow the modification.
+					return;
+				}
+			}
+			break;
+		case deleteShareItem:
+			//The share creator, the entity owner, or the site admin can delete a shareItem
+			if (user.getId().equals(shareItem.getCreation().getPrincipal().getId())) {
+				//The user is the creator of the share
+				return;
+			}
+			//Check if this is the owner of the entity
+			if (entityIdentifier.getEntityType().equals(EntityType.folderEntry)) {
+				FolderEntry fe = getFolderModule().getEntry(null, entityIdentifier.getEntityId());
+				if (user.getId().equals(fe.getCreation().getPrincipal().getId())) {
+					//This is the owner of the entry. Allow the modification.
+					return;
+				}
+			} else if (entityIdentifier.getEntityType().equals(EntityType.folder) ||
+					entityIdentifier.getEntityType().equals(EntityType.workspace)) {
+				Binder binder = getBinderModule().getBinder(entityIdentifier.getEntityId());
+				if (user.getId().equals(binder.getCreation().getPrincipal().getId())) {
+					//This is the owner of the binder. Allow the modification.
+					return;
+				}
+			}
+			//Check for site administrator
+			if (getAccessControlManager().testOperation(user, zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION)) {
+				//This is a site administrator
+				return;
+			}
+			break;
+		default:
+			throw new NotSupportedException(operation.toString(),
+					"checkAccess");
+		}
+		//No access was found
+		throw new AccessControlException();
+	}
+
+    public void checkAccess(Long shareItemId, User user)
+    		throws AccessControlException {
+    	if (user == null) {
+        	//if no user specified, assume the current user
+    		user = RequestContextHolder.getRequestContext().getUser();
+    	}
+		try {
+		    ShareItem shareItem = getProfileDao().loadShareItem(shareItemId);
+		} catch(NoShareItemByTheIdException ex) {
+		    throw new AccessControlException();
+		}
+		//Check if owner of the share, owner of the entity, or recipient of the share
+	}
+
+    /* (non-Javadoc)
 	 * @see org.kablink.teaming.module.profile.ProfileModule#addShareItem(org.kablink.teaming.domain.ShareItem)
 	 */
     //RW transaction
 	@Override
 	public void addShareItem(ShareItem shareItem) {
-		// Access check?
+		// Access check (throws error if not allowed)
+		checkAccess(shareItem, SharingOperation.addShareItem);
+		
 		Collection<ShareItemMember> members = shareItem.getMembers();
 		for(ShareItemMember member:members) {
 			member.setShareItem(shareItem);
@@ -99,7 +202,9 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     //RW transaction
 	@Override
 	public void modifyShareItem(ShareItem shareItem) {
-		// Access check?
+		// Access check (throws error if not allowed)
+		checkAccess(shareItem, SharingOperation.modifyShareItem);
+
 		// This should handle both persistent and detached instance.
 		Collection<ShareItemMember> members = shareItem.getMembers();
 		for(ShareItemMember member:members) {
@@ -114,9 +219,11 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     //RW transaction
 	@Override
 	public void deleteShareItem(Long shareItemId) {
-		// Access check?
 		try {
 			ShareItem shareItem = getProfileDao().loadShareItem(shareItemId);
+			// Access check (throws error if not allowed)
+			checkAccess(shareItem, SharingOperation.deleteShareItem);
+			
 			Collection<ShareItemMember> members = shareItem.getMembers();
 			for(ShareItemMember member:members) {
 				member.setShareItem(null);
@@ -133,7 +240,10 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	@Override
 	public ShareItem getShareItem(Long shareItemId)
 			throws NoShareItemByTheIdException {
-		// Access check?
+		// Access check
+		// There is no access check on getting shareItems. 
+		// We are counting on the UI to not show items that the user is not allowed to see.
+		
 		return getProfileDao().loadShareItem(shareItemId);
 	}
 	
@@ -143,6 +253,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	@Override
 	public List<ShareItem> getShareItems(Collection<Long> shareItemIds) {
 		// Access check?
+		// There is no access check on getting shareItems. 
+		// We are counting on the UI to not show items that the user is not allowed to see.
 		return getProfileDao().loadShareItems(shareItemIds);
 	}
     
@@ -152,6 +264,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	@Override
 	public List<ShareItem> getShareItems(ShareItemSelectSpec selectSpec) {
 		// Access check?
+		// There is no access check on getting shareItems. 
+		// We are counting on the UI to not show items that the user is not allowed to see.
 		return getProfileDao().findShareItems(selectSpec);
 	}
     
