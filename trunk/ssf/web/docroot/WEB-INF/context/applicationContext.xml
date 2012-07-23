@@ -913,6 +913,8 @@
 			<bean class="org.kablink.teaming.module.sharing.impl.SharingModuleImpl">
 				<property name="coreDao"><ref bean="coreDao"/></property>
 				<property name="profileDao"><ref bean="profileDao"/></property>
+				<property name="folderModule"><ref bean="folderModule"/></property>
+				<property name="binderModule"><ref bean="binderModule"/></property>
 			</bean>
 		</property>
 		<property name="transactionAttributes">

@@ -53,30 +53,49 @@ import org.kablink.util.search.Constants;
  *
  */
 public class ShareItemSelectSpec {
-	public Long sharerId;
-	public EntityIdentifier sharedEntityIdentifier;
+	public Collection<Long> sharerIds;
+	
+	public Collection<EntityIdentifier> sharedEntityIdentifiers;
+	
 	public Date startDateMin;
 	public boolean startDateMinInclusive = true;
 	public Date startDateMax;
 	public boolean startDateMaxInclusive = false;
+	
+	public String[] commentLikes;
+	public boolean commentLikesDisjunctive = false;
+	
 	public Date endDateMin;
 	public boolean endDateMinInclusive = true;
 	public Date endDateMax;
 	public boolean endDateMaxInclusive = false;
-	public Collection<Long> recipientUsers;
-	public Collection<Long> recipientGroups;
-	public Collection<Long> recipientTeams;
+	
+	public Collection<Long> recipientUserIds;
+	public Collection<Long> recipientGroupIds;
+	public Collection<Long> recipientTeamIds;
+	
 	public Collection<String> onRights;
 	public boolean onRightsDisjunctive = true;
+	
 	public String orderByFieldName;
-	public boolean descending = true;
+	public boolean orderByDescending = true;
 	
 	public void setSharerId(Long sharerId) {
-		this.sharerId = sharerId;
+		this.sharerIds = new HashSet();
+		this.sharerIds.add(sharerId);
+	}
+	
+	public void setSharerIds(Collection<Long> sharerIds) {
+		this.sharerIds = sharerIds;
 	}
 	
 	public void setSharedEntityIdentifier(EntityIdentifier sharedEntityIdentifier) {
-		this.sharedEntityIdentifier = sharedEntityIdentifier;
+		this.sharedEntityIdentifiers = new HashSet();
+		this.sharedEntityIdentifiers.add(sharedEntityIdentifier);
+	}
+	
+	public void setSharedEntityIdentifiers(Collection<EntityIdentifier> sharedEntityIdentifiers) {
+		this.sharedEntityIdentifiers = sharedEntityIdentifiers;
 	}
 	
 	public void setStartDateRange(Date startDateMin, Boolean startDateMinInclusive, Date startDateMax, Boolean startDateMaxInclusive) {
@@ -88,6 +107,11 @@ public class ShareItemSelectSpec {
 			this.startDateMaxInclusive = startDateMaxInclusive.booleanValue();
 	}
 	
+	public void setCommentLikes(String[] commentLikes, boolean commentLikesDisjunctive) {
+		this.commentLikes = commentLikes;
+		this.commentLikesDisjunctive = commentLikesDisjunctive;
+	}
+	
 	public void setEndDateRange(Date endDateMin, Boolean endDateMinInclusive, Date endDateMax, Boolean endDateMaxInclusive) {
 		this.endDateMin = endDateMin;
 		if(endDateMinInclusive != null)
@@ -97,10 +121,28 @@ public class ShareItemSelectSpec {
 			this.endDateMaxInclusive = endDateMaxInclusive.booleanValue();
 	}
 	
-	public void setRecipients(Collection<Long> recipientUsers,  Collection<Long> recipientGroups,  Collection<Long> recipientTeams) {
-		this.recipientUsers = recipientUsers;
-		this.recipientGroups = recipientGroups;
-		this.recipientTeams = recipientTeams;
+	public void setRecipients(Long recipientUserId, Long recipientGroupId, Long recipientTeamId) {
+		this.recipientUserIds = null;
+		this.recipientGroupIds = null;
+		this.recipientTeamIds = null;
+		if(recipientUserId != null) {
+			this.recipientUserIds = new HashSet();
+			this.recipientUserIds.add(recipientUserId);
+		}
+		if(recipientGroupId != null) {
+			this.recipientGroupIds = new HashSet();
+			this.recipientGroupIds.add(recipientGroupId);
+		}
+		if(recipientTeamId != null) {
+			this.recipientTeamIds = new HashSet();
+			this.recipientTeamIds.add(recipientTeamId);
+		}
+	}
+	
+	public void setRecipients(Collection<Long> recipientUserIds,  Collection<Long> recipientGroupIds,  Collection<Long> recipientTeamIds) {
+		this.recipientUserIds = recipientUserIds;
+		this.recipientGroupIds = recipientGroupIds;
+		this.recipientTeamIds = recipientTeamIds;
 	}
 	
 	public void setRecipientsFromUserMembership(Long userId) {
@@ -139,9 +181,9 @@ public class ShareItemSelectSpec {
 	 * @param orderByFieldName
 	 * @param descending
 	 */
-	public void setOrder(String orderByFieldName, boolean descending) {
+	public void setOrder(String orderByFieldName, boolean orderByDescending) {
 		this.orderByFieldName = orderByFieldName;
-		this.descending = descending;
+		this.orderByDescending = orderByDescending;
 	}
 	
 	private ProfileDao getProfileDao() {

@@ -47,6 +47,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Principal;
@@ -451,7 +452,7 @@ public class GwtShareHelper
 	{
 		GwtSharingInfo sharingInfo;
 		User currentUser;
-		ProfileDao profileDao;
+		SharingModule sharingModule;
 
 		sharingInfo = new GwtSharingInfo();
 
@@ -463,10 +464,10 @@ public class GwtShareHelper
 			return sharingInfo;
 		}
 		
-		profileDao = (ProfileDao)SpringContextUtil.getBean( "profileDao" );
-		if ( profileDao == null )
+		sharingModule = (SharingModule)SpringContextUtil.getBean( "sharingModule" );
+		if ( sharingModule == null )
 		{
-			m_logger.error( "In GwtShareHelper.getSharingInfo(), profileDao is null" );
+			m_logger.error( "In GwtShareHelper.getSharingInfo(), sharingModule is null" );
 			return sharingInfo;
 		}
 		
@@ -480,9 +481,11 @@ public class GwtShareHelper
 			entityIdentifier = getEntityIdentifierFromEntityId( nextEntityId );
 			
 			// Get the ShareItem for the given entity
-			listOfShareItems = profileDao.findShareItemsBySharerAndSharedEntity(
-													currentUser.getId(),
-													entityIdentifier );
+			ShareItemSelectSpec spec = new ShareItemSelectSpec();
+			spec.setSharerId(currentUser.getId());
+			spec.setSharedEntityIdentifier(entityIdentifier);
+			listOfShareItems = sharingModule.getShareItems(spec);
+													
 			if ( listOfShareItems != null )
 			{
 				for (ShareItem nextShareItem : listOfShareItems)
@@ -490,7 +493,8 @@ public class GwtShareHelper
 					GwtShareItem gwtShareItem;
 					
 					gwtShareItem = new GwtShareItem();
-					gwtShareItem.setDesc( nextShareItem.getDescription().getText() );
+					// Commented out by JK
+					//gwtShareItem.setDesc( nextShareItem.getDescription().getText() );
 					gwtShareItem.setEntityId( nextEntityId );
 					gwtShareItem.setId( nextShareItem.getId() );
 					
@@ -787,6 +791,7 @@ public class GwtShareHelper
 						rightSet = getRightSetFromShareRights( nextMember.getShareRights() );
 						
 						shareItemMember = new ShareItemMember(
+														null, // Added by JK
 														endDate,
 														recipientType,
 														recipientId,
@@ -829,8 +834,9 @@ public class GwtShareHelper
 					// No, create one.
 					shareItem = new ShareItem(
 										currentUser,
-										sharedEntity,
-										desc,
+										sharedEntity.getEntityIdentifier(), // Changed by JK
+										// Commented out by JK
+										//desc,
 										listOfShareItemMembers );
 	
 					sharingModule.addShareItem( shareItem );
@@ -844,7 +850,8 @@ public class GwtShareHelper
 					{
 						shareItem = profileDao.loadShareItem( gwtShareItem.getId() );
 						
-						shareItem.setDescription( desc );
+						// Commented out by JK
+						//shareItem.setDescription( desc );
 						shareItem.setMembers( listOfShareItemMembers );
 						sharingModule.modifyShareItem( shareItem );
 					}

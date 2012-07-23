@@ -63,6 +63,7 @@ import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.SFQuery;
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.ApplicationPrincipal;
@@ -210,10 +211,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		   				.executeUpdate();
 			   			//delete share items and share item members			   			
 			   			//it's important to delete share item members first due to foreign key constraint
-	    	   			String sql = SPropsUtil.getString("delete.shareitemmember.query4." + DynamicDialect.getDatabaseType().name(), 
-	    	   					"DELETE sim FROM SS_ShareItemMember sim INNER JOIN SS_ShareItem si ON sim.shareItemId=si.id WHERE si.zoneId=:zoneId");
-	    	   			session.createSQLQuery(sql)
-                    	.setLong("zoneId", binder.getZoneId())
+			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItemMember where zoneId=" + binder.getZoneId())
 		   				.executeUpdate();
 			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where zoneId=" + binder.getZoneId())
 		   				.executeUpdate();
@@ -2312,6 +2310,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		}	        
  	}
  	
+	/*
 	@Override
  	public List<ShareItem> findShareItemsBySharedEntity(final EntityIdentifier sharedEntityIdentifier) {
 		if(sharedEntityIdentifier == null)
@@ -2439,6 +2438,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "findShareItemsBySharerAndSharedEntity(Long,EntityIdentifier)");
     	}	              	
  	}
+ 	*/
  	
 	@Override
  	public Map<ShareItemMember.RecipientType, Set<Long>> getMemberIdsWithGrantedRightToSharedEntity(final EntityIdentifier sharedEntityIdentifier, final String rightName) {
@@ -2525,20 +2525,30 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	              	
 	}
 
-	/*
- 	public List<ShareItem> loadShareItems(final ShareItemSelectSpec selectSpec) {
- 		// This method doesn't work because, unfortunately, Hibernate doesn't yet support the use of 
- 		// sub-criteria for relationship expressed by collection of values rather than entity association. 
+ 	public List<ShareItem> findShareItems(final ShareItemSelectSpec selectSpec) {
+ 		// This method utilizes sub-criteria which requires relationship to be expressed using
+ 		// association rather than collection of values.
 		long begin = System.nanoTime();
 		try {
 	      	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
 	                    	Criteria crit = session.createCriteria(ShareItem.class);
-	                    	if(selectSpec.sharerId != null)
-	                    		crit.add(Restrictions.eq("sharerId", selectSpec.sharerId));
-	                    	if(selectSpec.sharedEntityIdentifier != null) 
-	                    		crit.add(Restrictions.eq("sharedEntityIdentifier", selectSpec.sharedEntityIdentifier));
+	                    	if(selectSpec.sharerIds != null && !selectSpec.sharerIds.isEmpty()) {
+	                    		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();
+	                    		for(Long sharerId:selectSpec.sharerIds)
+	                    			disjunction.add(Restrictions.eq("sharerId", sharerId));
+	                    		crit.add(disjunction);
+	                    	}
+	                    	if(selectSpec.sharedEntityIdentifiers != null && !selectSpec.sharedEntityIdentifiers.isEmpty()) {
+	                    		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();                    		
+	                    		for(EntityIdentifier sharedEntityIdentifier:selectSpec.sharedEntityIdentifiers) {
+	                    			disjunction.add(Restrictions.conjunction()
+		                    		.add(Restrictions.eq("sharedEntityIdentifier.type", sharedEntityIdentifier.getEntityType().getValue()))
+		                    		.add(Restrictions.eq("sharedEntityIdentifier.entityId", sharedEntityIdentifier.getEntityId())));
+	                    		}
+	                    		crit.add(disjunction);
+	                    	}
 	                    	if(selectSpec.startDateMin != null) {
 	                    		if(selectSpec.startDateMinInclusive)
 	                    			crit.add(Restrictions.ge("startDate", selectSpec.startDateMin));
@@ -2552,13 +2562,13 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    			crit.add(Restrictions.lt("startDate", selectSpec.startDateMax));
 	                    	}
 	                    	if(selectSpec.orderByFieldName != null) {
-	                    		if(selectSpec.descending)
+	                    		if(selectSpec.orderByDescending)
 	                    			crit.addOrder(Order.desc(selectSpec.orderByFieldName));
 	                    		else
 	                    			crit.addOrder(Order.asc(selectSpec.orderByFieldName));
 	                    	}
 	                    	
-	                    	Criteria subCrit = crit.createCriteria("shareItemMembers");
+	                    	Criteria subCrit = crit.createCriteria("members");
 	                    	if(selectSpec.endDateMin != null) {
 	                    		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();
 	                    		disjunction.add(Restrictions.isNull("endDate"));
@@ -2577,23 +2587,23 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    			conjunction.add(Restrictions.lt("endDate", selectSpec.endDateMax));
 	                    		subCrit.add(conjunction);
 	                    	}
-	                    	if((selectSpec.recipientUsers != null && !selectSpec.recipientUsers.isEmpty()) ||
-	                    			(selectSpec.recipientGroups != null && !selectSpec.recipientGroups.isEmpty()) ||
-	                    			(selectSpec.recipientTeams != null && !selectSpec.recipientTeams.isEmpty())) {
+	                    	if((selectSpec.recipientUserIds != null && !selectSpec.recipientUserIds.isEmpty()) ||
+	                    			(selectSpec.recipientGroupIds != null && !selectSpec.recipientGroupIds.isEmpty()) ||
+	                    			(selectSpec.recipientTeamIds != null && !selectSpec.recipientTeamIds.isEmpty())) {
 	                    		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();
-	                    		if(selectSpec.recipientUsers != null && !selectSpec.recipientUsers.isEmpty()) {
+	                    		if(selectSpec.recipientUserIds != null && !selectSpec.recipientUserIds.isEmpty()) {
 	                    			disjunction.add(Restrictions.conjunction()
-	              							.add(Restrictions.in("recipientId", selectSpec.recipientUsers))
+	              							.add(Restrictions.in("recipientId", selectSpec.recipientUserIds))
 	              							.add(Restrictions.eq("recipientType", ShareItemMember.RecipientType.user.getValue())));
 	                    		}
-	                    		if(selectSpec.recipientGroups != null && !selectSpec.recipientGroups.isEmpty()) {
+	                    		if(selectSpec.recipientGroupIds != null && !selectSpec.recipientGroupIds.isEmpty()) {
 	                    			disjunction.add(Restrictions.conjunction()
-	              							.add(Restrictions.in("recipientId", selectSpec.recipientGroups))
+	              							.add(Restrictions.in("recipientId", selectSpec.recipientGroupIds))
 	              							.add(Restrictions.eq("recipientType", ShareItemMember.RecipientType.group.getValue())));
 	                    		}
-	                    		if(selectSpec.recipientTeams != null && !selectSpec.recipientTeams.isEmpty()) {
+	                    		if(selectSpec.recipientTeamIds != null && !selectSpec.recipientTeamIds.isEmpty()) {
 	                    			disjunction.add(Restrictions.conjunction()
-	              							.add(Restrictions.in("recipientId", selectSpec.recipientTeams))
+	              							.add(Restrictions.in("recipientId", selectSpec.recipientTeamIds))
 	              							.add(Restrictions.eq("recipientType", ShareItemMember.RecipientType.team.getValue())));
 	                    		}
 	                    		subCrit.add(disjunction);
@@ -2608,7 +2618,12 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    			junction.add(Restrictions.eq("rightSet." + rightName, true));
 	                    		subCrit.add(junction);
 	                    	}
-	                       return crit.list();
+	                    	// Eager fetching of collections returns duplicates of the root objects, so we need to weed them out using a set.
+	                    	Set resultSet = new HashSet();
+	                    	resultSet.addAll(crit.list());
+	                    	List resultList = new ArrayList<ShareItem>();
+	                    	resultList.addAll(resultSet);
+	                    	return resultList;
 	                    }
 	                }
 	            );
@@ -2616,8 +2631,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	       return result;   	
     	}
     	finally {
-    		end(begin, "loadShareItems(ShareItemSelectSpec)");
+    		end(begin, "findShareItems(ShareItemSelectSpec)");
     	}	              	
  	}
- 	*/
 }

@@ -35,6 +35,8 @@ package org.kablink.teaming.module.sharing;
 import java.util.Collection;
 import java.util.List;
 
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.ShareItemMember;
@@ -89,15 +91,19 @@ public interface SharingModule {
  	 */
  	public List<ShareItem> getShareItems(Collection<Long> shareItemIds); 
 
- 	/**
- 	 * Gets a list of <code>ShareItem</code> that were shared explicitly and directly with
- 	 * the specified recipient (as opposed to indirectly through another group or team
- 	 * membership).
+ 	/** 
+ 	 * Find a list of <code>ShareItem</code> meeting the specified selection criteria.
  	 * 
- 	 * @param recipientType
- 	 * @param recipientId
+ 	 * @param selectSpec
  	 * @return
  	 */
- 	public List<ShareItem> getShareItemsByRecipient(ShareItemMember.RecipientType recipientType, Long recipientId);
- 
+ 	public List<ShareItem> getShareItems(ShareItemSelectSpec selectSpec);
+
+ 	/**
+ 	 * Get a shared entity associated with the share item.
+ 	 * 
+ 	 * @param shareItem
+ 	 * @return
+ 	 */
+ 	public DefinableEntity getSharedEntity(ShareItem shareItem);
 }

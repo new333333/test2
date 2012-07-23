@@ -37,12 +37,13 @@ import java.util.Date;
 
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.util.SPropsUtil;
 
 /**
  * @author jong
  *
  */
-public class ShareItemMember {
+public class ShareItemMember extends ZonedObject {
 
 	public enum RecipientType {
 		user((short)1),
@@ -65,6 +66,9 @@ public class ShareItemMember {
 	    }
 	}
 	
+	protected Long id;
+	protected ShareItem shareItem;
+	protected String comment;
 	protected Date endDate;
 	protected short recipientType;
 	protected Long recipientId;
@@ -74,17 +78,45 @@ public class ShareItemMember {
 	protected ShareItemMember() {
 	}
 	
-	public ShareItemMember(Date endDate, RecipientType recipientType, Long recipientId, RightSet rightSet) {
-		if(rightSet == null) throw new IllegalArgumentException("Right set must be specified");
+	public ShareItemMember(String comment, Date endDate, RecipientType recipientType, Long recipientId, RightSet rightSet) {
 		if(recipientType == null) throw new IllegalArgumentException("Recipient type must be specified");
 		if(recipientId == null) throw new IllegalArgumentException("Recipient ID must be specified");
+		if(rightSet == null) throw new IllegalArgumentException("Right set must be specified");
 
+		int commentMax = SPropsUtil.getInt("shareitemmember.comment.max.length", 255);
+		if(comment != null && comment.length() > commentMax)
+			comment = comment.substring(0, 255);
+		this.comment = comment;
 		this.endDate = endDate;
 		setRecipientType(recipientType);
 		this.recipientId = recipientId;
 		this.rightSet = rightSet;
 	}
 	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public ShareItem getShareItem() {
+		return shareItem;
+	}
+
+	public void setShareItem(ShareItem shareItem) {
+		this.shareItem = shareItem;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
 	public Date getEndDate() {
 		return endDate;
 	}
