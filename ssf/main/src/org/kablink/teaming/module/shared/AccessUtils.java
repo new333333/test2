@@ -45,6 +45,7 @@ import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -58,6 +59,7 @@ import org.kablink.teaming.domain.WfAcl;
 import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
@@ -85,6 +87,7 @@ public class AccessUtils  {
 	protected AccessControlManager accessControlManager;
 	protected FunctionManager functionManager;
 	protected ProfileDao profileDao;
+	protected CoreDao coreDao;
 	public AccessUtils() {
 		if(instance != null)
 			throw new SingletonViolationException(AccessUtils.class);
@@ -119,6 +122,16 @@ public class AccessUtils  {
 	}
 	protected ProfileDao getProfileDao() {
 		return profileDao;
+	}
+	public void setCoreDao(CoreDao coreDao) {
+		this.coreDao = coreDao;
+	}
+	protected CoreDao getCoreDao() {
+		if (coreDao != null) {
+			return coreDao;
+		} else {
+			return (CoreDao) SpringContextUtil.getBean("coreDao");
+		}
 	}
 
 	/**
@@ -578,8 +591,16 @@ public class AccessUtils  {
        	
        	//See if the entry was shared 
        	try {
-       		getInstance().getAccessControlManager().checkOperation(user, entry, operation);
-       		return;
+			//Make sure sharing is enabled for this user before testing for a share
+       		ZoneConfig zoneConfig = getInstance().getCoreDao().loadZoneConfig(user.getZoneId());
+			if ((!user.isExternalUser() && 
+					getInstance().getAccessControlManager().testOperation(user, zoneConfig, WorkAreaOperation.ENABLE_SHARING))
+					||
+					(user.isExternalUser() && 
+					getInstance().getAccessControlManager().testOperation(user, zoneConfig, WorkAreaOperation.ENABLE_EXTERNAL_SHARING))) {
+				getInstance().getAccessControlManager().checkOperation(user, entry, operation);
+				return;
+			}
        	} catch (OperationAccessControlException ex) {
        		ace = ex;
        	} catch (OperationAccessControlExceptionNoName ex2) {

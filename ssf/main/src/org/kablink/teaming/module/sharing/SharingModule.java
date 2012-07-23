@@ -40,6 +40,8 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.ShareItemMember;
+import org.kablink.teaming.domain.User;
+import org.kablink.teaming.security.AccessControlException;
 
 
 /**
@@ -49,6 +51,18 @@ import org.kablink.teaming.domain.ShareItemMember;
  */
 public interface SharingModule {
 
+	public enum SharingOperation {
+		addShareItem,
+		modifyShareItem,
+		deleteShareItem
+	}
+	
+	public void checkAccess(ShareItem shareItem, SharingOperation operation)
+    	throws AccessControlException;
+
+    public void checkAccess(Long shareItemId, User user)
+		throws AccessControlException;
+    
     /**
      * Add a share item.
      * 
