@@ -2503,9 +2503,9 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    	for(EntityIdentifier sharedEntityIdentifier:sharedEntityIdentifiers) {
 	                    		if(i > 0)
 	                    			sb.append(" or ");
-	                    		sb.append("(sharedEntity_type='")
-	                    		.append(sharedEntityIdentifier.getEntityType().name())
-	                    		.append("' and sharedEntity_id=")
+	                    		sb.append("(sharedEntity_type=")
+	                    		.append(sharedEntityIdentifier.getEntityType().getValue())
+	                    		.append(" and sharedEntity_id=")
 	                    		.append(String.valueOf(sharedEntityIdentifier.getEntityId()))
 	                    		.append(")");
 	                    		i++;
