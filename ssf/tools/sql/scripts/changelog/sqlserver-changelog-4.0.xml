@@ -146,28 +146,26 @@
             <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_ShareItem"/>
             </column>
-            <column name="lockVersion" type="NUMERIC(19,0)">
-                <constraints nullable="false"/>
-            </column>
             <column name="zoneId" type="NUMERIC(19,0)"/>
-            <column name="preDeleted" type="TINYINT"/>
-            <column name="preDeletedWhen" type="NUMERIC(19,0)"/>
-            <column name="preDeletedBy" type="NUMERIC(19,0)"/>
-            <column name="description_text" type="NTEXT"/>
-            <column name="description_format" type="INT"/>
             <column name="creation_date" type="DATETIME"/>
             <column name="creation_principal" type="NUMERIC(19,0)"/>
             <column name="modification_date" type="DATETIME"/>
             <column name="modification_principal" type="NUMERIC(19,0)"/>
-            <column name="sharedEntity_type" type="VARCHAR(16)"/>
+            <column name="sharedEntity_type" type="INT"/>
             <column name="sharedEntity_id" type="NUMERIC(19,0)"/>
         </createTable>
     </changeSet>
     <changeSet author="jong" context="schema" failOnError="true" id="13">
         <createTable schemaName="dbo" tableName="SS_ShareItemMember">
+            <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_ShareItemMember"/>
+            </column>
             <column name="shareItemId" type="NUMERIC(19,0)">
                 <constraints nullable="false"/>
             </column>
+            <column name="zoneId" type="NUMERIC(19,0)"/>
+            <column name="comment" type="NVARCHAR(255)"/>
+            <column name="daysToExpire" type="INT"/>
             <column name="endDate" type="DATETIME"/>
             <column name="recipient_type" type="SMALLINT"/>
             <column name="recipient_id" type="NUMERIC(19,0)"/>
