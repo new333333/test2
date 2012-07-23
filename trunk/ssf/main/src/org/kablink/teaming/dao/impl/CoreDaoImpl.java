@@ -444,11 +444,11 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	    	   			String sql = SPropsUtil.getString("delete.shareitemmember.query1." + DynamicDialect.getDatabaseType().name(), 
 	    	   					"DELETE sim FROM SS_ShareItemMember sim INNER JOIN SS_ShareItem si ON sim.shareItemId=si.id WHERE si.sharedEntity_type=:sharedEntityType and si.sharedEntity_id=:sharedEntityId");
 	    	   			session.createSQLQuery(sql)
-                    	.setString("sharedEntityType", binder.getEntityType().name())
+                    	.setInteger("sharedEntityType", binder.getEntityType().getValue())
                     	.setLong("sharedEntityId", binder.getId())
 		   				.executeUpdate();
 			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
-                    	.setString("sharedEntityType", binder.getEntityType().name())
+                    	.setInteger("sharedEntityType", binder.getEntityType().getValue())
                     	.setLong("sharedEntityId", binder.getId())
 		   				.executeUpdate();
 			   			//delete share item members where recipient is this team
