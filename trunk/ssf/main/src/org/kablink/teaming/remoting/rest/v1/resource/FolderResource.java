@@ -86,16 +86,22 @@ import java.util.Map;
 public class FolderResource extends AbstractBinderResource {
 
 	// Read sub-folders
-	@GET
-	public SearchResultList<BinderBrief> getFolders() {
-        return new SearchResultList<BinderBrief>();
-	}
+    @GET
+    public SearchResultList<BinderBrief> getFolders(@QueryParam("first") @DefaultValue("0") Integer offset,
+                                                    @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        Document queryDoc = buildQueryDocument("<query/>", buildFoldersCriterion());
+        Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultsMap, "/folders", offset);
+        return results;
+    }
+
 
     @POST
     @Path("/legacy_query")
-   	public SearchResultList<BinderBrief> getFolders(@Context HttpServletRequest request,
-                                                            @QueryParam("first") @DefaultValue("0") Integer offset,
-   			                                             @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+   	public SearchResultList<BinderBrief> getFoldersViaLegacyQuery(@Context HttpServletRequest request,
+                                                    @QueryParam("first") @DefaultValue("0") Integer offset,
+   			                                        @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
            String query = getRawInputStreamAsString(request);
            Document queryDoc = buildQueryDocument(query, buildFoldersCriterion());
            Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);

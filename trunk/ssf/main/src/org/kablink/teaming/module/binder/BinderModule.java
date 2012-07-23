@@ -369,7 +369,6 @@ public interface BinderModule {
     public Map getBinders(Binder binder, Map searchOptions);
     public Map getBinders(Binder binder, List binderIds, Map searchOptions);
 
-    public Map getBindersRecursively(Binder binder, Map searchOptions);
     /**
      * Finds a binder by path name. If no binder exists with the path name,
      * it returns <code>null</code>. If a matching binder exists but the
