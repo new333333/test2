@@ -6962,16 +6962,6 @@ public class GwtServerHelper {
 			break;
 		}
 			
-		case SHARE_ENTRY:
-		{
-			ShareEntryCmd seCmd = ((ShareEntryCmd) cmd);
-			String comment = seCmd.getComment();
-			if (MiscUtil.hasString(comment)) {
-				seCmd.setComment(StringCheckUtil.check(comment));
-			}
-			break;
-		}
-			
 		case REPLY_TO_ENTRY:
 		{
 			ReplyToEntryCmd rteCmd = ((ReplyToEntryCmd) cmd);
@@ -7179,6 +7169,7 @@ public class GwtServerHelper {
 		case SET_ENTRIES_PIN_STATE:
 		case SET_SEEN:
 		case SET_UNSEEN:
+		case SHARE_ENTRY:
 		case TEST_GROUP_MEMBERSHIP_LDAP_QUERY:
 		case TRACK_BINDER:
 		case TRASH_PURGE_ALL:

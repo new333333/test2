@@ -2247,7 +2247,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GwtShareEntryResults results;
 
 			seCmd = ((ShareEntryCmd) cmd);
-			results = GwtShareHelper.shareEntry( this, seCmd.getComment(), seCmd.getSharingInfo() );
+			results = GwtShareHelper.shareEntry( this, seCmd.getSharingInfo() );
 			ShareEntryResultsRpcResponseData responseData = new ShareEntryResultsRpcResponseData( results );
 			response = new VibeRpcResponse( responseData );
 			return response;
