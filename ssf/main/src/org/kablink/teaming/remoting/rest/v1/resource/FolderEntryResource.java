@@ -81,9 +81,19 @@ import java.util.Map;
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class FolderEntryResource extends AbstractDefinableEntityResource {
 
+	@GET
+	public SearchResultList<FolderEntryBrief> getFolderEntries(@QueryParam("first") @DefaultValue("0") Integer offset,
+			                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        Document queryDoc = buildQueryDocument("<query/>", buildEntriesCriterion());
+        Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(), folderEntries, "/folder_entries", offset);
+        return results;
+	}
+
 	@POST
-    @Path("/legacy_query")
-	public SearchResultList<FolderEntryBrief> getFolders(@Context HttpServletRequest request,
+    @Path("legacy_query")
+	public SearchResultList<FolderEntryBrief> getFolderEntriesViaLegacyQuery(@Context HttpServletRequest request,
                                                          @QueryParam("first") @DefaultValue("0") Integer offset,
 			                                             @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         String query = getRawInputStreamAsString(request);

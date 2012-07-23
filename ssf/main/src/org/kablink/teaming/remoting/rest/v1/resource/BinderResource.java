@@ -61,9 +61,19 @@ import java.util.Map;
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class BinderResource extends AbstractResource {
+    @GET
+    public SearchResultList<BinderBrief> getBinders(@QueryParam("first") @DefaultValue("0") Integer offset,
+                                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        Document queryDoc = buildQueryDocument("<query/>", buildBindersCriterion());
+        Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultsMap, "/binders", offset);
+        return results;
+    }
+
     @POST
     @Path("/legacy_query")
-   	public SearchResultList<BinderBrief> getWorkspaces(@Context HttpServletRequest request,
+   	public SearchResultList<BinderBrief> getBindersViaLegacyQuery(@Context HttpServletRequest request,
                                                        @QueryParam("first") @DefaultValue("0") Integer offset,
                                                        @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
            String query = getRawInputStreamAsString(request);
