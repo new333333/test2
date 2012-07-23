@@ -46,6 +46,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.util.StringUtil;
 import org.kablink.util.search.Constants;
 
 /**
@@ -62,6 +63,9 @@ public class ShareItemSelectSpec {
 	public Date startDateMax;
 	public boolean startDateMaxInclusive = false;
 	
+	public String orderByFieldName;
+	public boolean orderByDescending = true;
+	
 	public String[] commentLikes;
 	public boolean commentLikesDisjunctive = false;
 	
@@ -76,9 +80,6 @@ public class ShareItemSelectSpec {
 	
 	public Collection<String> onRights;
 	public boolean onRightsDisjunctive = true;
-	
-	public String orderByFieldName;
-	public boolean orderByDescending = true;
 	
 	public void setSharerId(Long sharerId) {
 		this.sharerIds = new HashSet();
@@ -105,6 +106,17 @@ public class ShareItemSelectSpec {
 		this.startDateMax = startDateMax;
 		if(startDateMaxInclusive != null)
 			this.startDateMaxInclusive = startDateMaxInclusive.booleanValue();
+	}
+	
+	public void setCommentLikes(String quickFilter) {
+		String[] strs = StringUtil.split(quickFilter);
+		if(strs != null && strs.length > 0) {
+			this.commentLikes = strs;
+			this.commentLikesDisjunctive = false;
+		}
+		else {
+			this.commentLikes = null;
+		}
 	}
 	
 	public void setCommentLikes(String[] commentLikes, boolean commentLikesDisjunctive) {

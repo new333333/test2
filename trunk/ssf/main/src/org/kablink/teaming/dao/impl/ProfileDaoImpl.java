@@ -51,6 +51,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.SessionFactoryImplementor;
@@ -2569,6 +2570,19 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    	}
 	                    	
 	                    	Criteria subCrit = crit.createCriteria("members");
+	                    	
+	                    	if(selectSpec.commentLikes != null && selectSpec.commentLikes.length > 0) {
+	                    		org.hibernate.criterion.Junction junction;
+	                    		if(selectSpec.commentLikesDisjunctive) 
+	                    			junction =  Restrictions.disjunction(); 
+	                    		else
+	                    			junction =  Restrictions.conjunction();
+	                    		for(String commentLike:selectSpec.commentLikes) {
+	                    			junction.add(Restrictions.like("comment", commentLike, MatchMode.ANYWHERE));
+	                    		}
+	                    		crit.add(junction);
+	                    	}
+	                    	
 	                    	if(selectSpec.endDateMin != null) {
 	                    		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();
 	                    		disjunction.add(Restrictions.isNull("endDate"));
