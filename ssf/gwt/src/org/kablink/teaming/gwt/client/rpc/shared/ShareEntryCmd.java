@@ -43,7 +43,6 @@ import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
  * @author drfoster@novell.com
  */
 public class ShareEntryCmd extends VibeRpcCmd {
-	private String m_comment;
 	private GwtSharingInfo m_sharingData;
 	
 	/**
@@ -64,12 +63,9 @@ public class ShareEntryCmd extends VibeRpcCmd {
 	 * @param principalIds
 	 * @param teamIds
 	 */
-	public ShareEntryCmd(
-			String comment,
-			GwtSharingInfo sharingData ) {
+	public ShareEntryCmd( GwtSharingInfo sharingData ) {
 		this();
 		
-		m_comment      = comment;
 		m_sharingData = sharingData;
 	}
 	
@@ -78,7 +74,6 @@ public class ShareEntryCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public String         getComment()      {return m_comment;     }	
 	public GwtSharingInfo getSharingInfo() { return m_sharingData; }
 	
 	/**
@@ -92,11 +87,4 @@ public class ShareEntryCmd extends VibeRpcCmd {
 	public int getCmdType() {
 		return VibeRpcCmdType.SHARE_ENTRY.ordinal();
 	}
-	
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param comment
-	 */
-	public void setComment(String comment) {m_comment = comment;}
 }

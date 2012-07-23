@@ -63,7 +63,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseDat
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
-import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.GwtShareItemMember;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
@@ -1069,7 +1068,6 @@ public class ShareThisDlg extends DlgBox
 	@Override
 	public boolean editSuccessful( Object callbackData )
 	{
-		String comment;
 		GwtSharingInfo sharingData;
 		ArrayList<GwtShareItemMember> listOfShareItemMembers;
 		
@@ -1142,9 +1140,6 @@ public class ShareThisDlg extends DlgBox
 			};
 		}
 		
-		// Get the comment the user entered.
-		comment = getComment();
-		
 		// Get a list of all the users/groups/teams that the entities are being shared with.
 		listOfShareItemMembers = getListOfShareItemMembers();
 
@@ -1154,7 +1149,7 @@ public class ShareThisDlg extends DlgBox
 		sharingData.setListOfShareItems( m_sharingInfo.getListOfShareItems() );
 		
 		// Issue an ajax request to share the entities.
-		ShareEntryCmd cmd = new ShareEntryCmd( comment, sharingData );
+		ShareEntryCmd cmd = new ShareEntryCmd( sharingData );
 		GwtClientHelper.executeCommand( cmd, m_shareEntryCallback );
 		
 		// Returning false will prevent the dialog from closing.  We will close
@@ -1802,32 +1797,6 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
-	 * Update the "comments" field from the given GwtSharingInfo object
-	 */
-	private void updateCommentFld( GwtSharingInfo sharingInfo )
-	{
-		ArrayList<GwtShareItem> listOfShareItems;
-		
-		// Get the list of GwtShareItems
-		listOfShareItems = sharingInfo.getListOfShareItems();
-		if ( listOfShareItems != null )
-		{
-			// Use the first non-empty comment
-			for (GwtShareItem nextShareItem : listOfShareItems)
-			{
-				String comment;
-				
-				comment = nextShareItem.getDesc();
-				if ( comment != null && comment.length() > 0 )
-				{
-					m_msgTextArea.setText( comment );
-					return;
-				}
-			}
-		}
-	}
-	
-	/**
 	 * Update the sharing information with the given information
 	 */
 	private void updateSharingInfo( GwtSharingInfo sharingInfo )
@@ -1845,9 +1814,6 @@ public class ShareThisDlg extends DlgBox
 					addShare( nextShareItemMember, false );
 				}
 			}
-			
-			// Update the comment field
-			updateCommentFld( sharingInfo );
 		}
 	}
 	

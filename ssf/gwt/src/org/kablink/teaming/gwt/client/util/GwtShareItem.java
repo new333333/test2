@@ -43,7 +43,6 @@ public class GwtShareItem
 	implements IsSerializable
 {
 	private Long m_id;
-	private String m_desc;
 	private EntityId m_entityId;	// Id of the item being shared.
 	private String m_entityName;	// Name of the item being shared.
 	
@@ -53,7 +52,6 @@ public class GwtShareItem
 	public GwtShareItem()
 	{
 		m_id = null;
-		m_desc = null;
 		m_entityId = null;
 		m_entityName = null;
 	}
@@ -69,14 +67,6 @@ public class GwtShareItem
 		}
 		
 		return false;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getDesc()
-	{
-		return m_desc;
 	}
 	
 	/**
@@ -103,14 +93,6 @@ public class GwtShareItem
 		return m_id;
 	}
 
-	/**
-	 * 
-	 */
-	public void setDesc( String desc )
-	{
-		m_desc = desc;
-	}
-	
 	/**
 	 * 
 	 */

@@ -48,6 +48,7 @@ public class GwtShareItemMember
 	private GwtRecipientType m_recipientType;
 	private ShareRights m_shareRights;
 	private ShareExpirationValue m_shareExpirationValue;
+	private String m_comments;
 	private boolean m_isDirty;
 	private boolean m_isExpired;
 	
@@ -62,6 +63,7 @@ public class GwtShareItemMember
 		m_recipientType = GwtRecipientType.UNKNOWN;
 		m_shareRights = ShareRights.VIEW;
 		m_shareExpirationValue = null;
+		m_comments = null;
 		m_isDirty = false;
 		m_isExpired = false;
 	}
@@ -80,6 +82,14 @@ public class GwtShareItemMember
 	public boolean isExpired()
 	{
 		return m_isExpired;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getComments()
+	{
+		return m_comments;
 	}
 	
 	/**
@@ -176,6 +186,14 @@ public class GwtShareItemMember
 			return GwtTeaming.getMessages().shareDlg_owner();
 		
 		return "Unknown";
+	}
+	
+	/**
+	 * 
+	 */
+	public void setComments( String comments )
+	{
+		m_comments = comments;
 	}
 	
 	/**
