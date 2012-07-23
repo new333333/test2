@@ -206,7 +206,7 @@ public class GwtViewHelper {
 	
 	private static final String CACHED_VIEW_PINNED_ENTRIES_BASE = "viewPinnedEntries_";
 	
-	private static final boolean SEARCH_FOR_SHARED_WITH_ME	= true;
+	private static final boolean SEARCH_FOR_SHARED_WITH_ME	= false;
 
 	/*
 	 * Inner class used to track items for the 'Shared with Me'
@@ -557,59 +557,46 @@ public class GwtViewHelper {
 			// Store the item's ID.
 			entryMap.put("shareId",  String.valueOf(si.getId()));
 
-			// Are we processing a entry?
-			DefinableEntity	item    = si.getItem();
-			Definition		itemDef = null;
+			// Are we processing an entry?
+			DefinableEntity	item = si.getItem();
 			entryMap.put(Constants.DOCID_FIELD,  String.valueOf(item.getId()));
 			entryMap.put(Constants.ENTITY_FIELD, item.getEntityType().name());
 			entryMap.put(Constants.TITLE_FIELD,  item.getTitle());
 			if (item instanceof FolderEntry) {
-				// Yes!  Get it's Definition...
-				FolderEntry fe = ((FolderEntry) item);
-				String defId = fe.getEntryDefId();
-				if (MiscUtil.hasString(defId)) {
-					itemDef = DefinitionHelper.getDefinition(defId);
-				}
-				
-				Collection<FileAttachment> atts = fe.getFileAttachments();
+				// Yes!  Scan its attachments.
+				FolderEntry					fe   = ((FolderEntry) item);
+				Collection<FileAttachment>	atts = fe.getFileAttachments();
 		        for (FileAttachment fa : atts) {
+		        	// Does this attachment have a filename?
 		        	String fName = fa.getFileItem().getName();
 		        	if (MiscUtil.hasString(fName)) {
+		        		// Yes!  Store it in the Map and stop scanning
+		        		// the attachments.
 						entryMap.put(Constants.FILENAME_FIELD, fName);
 						break;
 		        	}
 		        }
 				
-				// ...and store its parent binder's ID in the Map.
-				entryMap.put(Constants.BINDER_ID_FIELD, String.valueOf(fe.getParentBinder().getId()));
+				// Store the entry's parent binder's ID in the Map.
+				entryMap.put(
+					Constants.BINDER_ID_FIELD,
+					String.valueOf(fe.getParentBinder().getId()));
 			}
 			
 			else {
-				// No, we aren't processing an entry!  Are we
-				// processing a Folder?
-				if (item instanceof Folder) {
-					// Yes!  Can we get its Definition?
-					Folder folder = ((Folder) item);
-					itemDef = BinderHelper.getFolderDefinitionFromView(bs, folder.getId());
-					if (null == itemDef) {
-						// No!  Use the default from the folder.
-						itemDef = folder.getDefaultViewDef();
-					}
-				}
-				
-				// ...and store the binder's parent ID in the Map.
+				// No, we aren't processing an entry!  It must be a
+				// binder!  Store its parent's ID in the Map.
 				Binder binder = ((Binder) item);
-				entryMap.put(Constants.BINDERS_PARENT_ID_FIELD, String.valueOf(binder.getParentBinder().getId()));
+				entryMap.put(
+					Constants.BINDERS_PARENT_ID_FIELD,
+					String.valueOf(binder.getParentBinder().getId()));
 			}
 
-			// If we have a definition for the item...
-			if (null != itemDef) {
-				// ...and we can determine its family...
-				String family = BinderHelper.getFamilyNameFromDef(itemDef);
-				if (MiscUtil.hasString(family)) {
-					// ...store that in the entry map.
-					entryMap.put(Constants.FAMILY_FIELD, family);
-				}
+			// If we can get a family for the entity...
+			String family = getFolderEntityFamily(bs, item);
+			if (MiscUtil.hasString(family)) {
+				// ...store it in the entry map.
+				entryMap.put(Constants.FAMILY_FIELD, family);
 			}
 		}
 
@@ -845,9 +832,10 @@ public class GwtViewHelper {
 		}
 
 		// Scan the share items in the List<ShareItem>.
+		SharingModule sm = bs.getSharingModule();
 		for (ShareItem siScan:  shareItems) {
 			// Is this item in the trash?
-			DefinableEntity siScanItem = bs.getSharingModule().getSharedEntity(siScan);
+			DefinableEntity siScanItem = sm.getSharedEntity(siScan);
 			if (GwtServerHelper.isItemPreDeleted(siScanItem)) {
 				// Yes!  Skip it.
 				continue;
@@ -859,7 +847,7 @@ public class GwtViewHelper {
 			if (newSI) {
 				// No!  Create a SharedWithMeItem to track it.
 				si = new SharedWithMeItem(siScan.getId());
-				si.setItem(bs.getSharingModule().getSharedEntity(siScan));
+				si.setItem(siScanItem);
 			}
 
 			// Are there any members of this share item?
@@ -933,9 +921,10 @@ public class GwtViewHelper {
 		}
 
 		// Scan the share items in the List<ShareItem>.
+		SharingModule sm = bs.getSharingModule();
 		for (ShareItem siScan:  shareItems) {
 			// Is this item in the trash?
-			DefinableEntity siScanItem = bs.getSharingModule().getSharedEntity(siScan);
+			DefinableEntity siScanItem = sm.getSharedEntity(siScan);
 			if (GwtServerHelper.isItemPreDeleted(siScanItem)) {
 				// Yes!  Skip it.
 				continue;
@@ -943,7 +932,7 @@ public class GwtViewHelper {
 			
 			// Create a new SharedWithMeItem?
 			SharedWithMeItem si = new SharedWithMeItem(siScan.getId());
-			si.setItem(bs.getSharingModule().getSharedEntity(siScan));
+			si.setItem(siScanItem);
 
 			// Are there any members of this share item?
 			Collection<ShareItemMember> siScanMembers = siScan.getMembers();
@@ -2729,6 +2718,50 @@ public class GwtViewHelper {
 		}
 	}
 	
+	/*
+	 * Determines the family of a FolderEntry or Folder entity and
+	 * returns it.  If the family can't be determined, null is
+	 * returned.
+	 */
+	private static String getFolderEntityFamily(AllModulesInjected bs, DefinableEntity entity) {
+		// Is the entity a folder entry?
+		Definition entityDef = null;
+		if (entity instanceof FolderEntry) {
+			// Yes!  Does it have a definition ID?
+			FolderEntry fe = ((FolderEntry) entity);
+			String defId = fe.getEntryDefId();
+			if (MiscUtil.hasString(defId)) {
+				// Yes!  Use that to get its definition.
+				entityDef = DefinitionHelper.getDefinition(defId);
+			}
+		}
+
+		// No, the entity is not a folder entry!  Is it a folder?
+		else if (entity instanceof Folder) {
+			// Yes!  Can we get its definition?
+			Folder folder = ((Folder) entity);
+			entityDef = BinderHelper.getFolderDefinitionFromView(bs, folder.getId());
+			if (null == entityDef) {
+				// No!  Use the default from the folder.
+				entityDef = folder.getDefaultViewDef();
+			}
+		}
+		
+		// If we have a definition for the entity...
+		if (null != entityDef) {
+			// ...and we can determine the family from it...
+			String family = BinderHelper.getFamilyNameFromDef(entityDef);
+			if (MiscUtil.hasString(family)) {
+				// ...return it.
+				return family;
+			}
+		}
+		
+		// If we get here, we couldn't determine the family of the
+		// entity.  Return null.
+		return null;
+	}
+	
 	/**
 	 * Reads the row data from a folder and returns it as a
 	 * FolderRowsRpcResponseData.
@@ -2822,17 +2855,13 @@ public class GwtViewHelper {
 				pinnedEntrySearchMaps = null;
 			}
 
-			// Are we working with a 'Shared with Me' collection?
+			// If we're working with a 'Shared with Me' collection, get
+			// the shared items.
 			List<SharedWithMeItem> 	shareItems;
 			boolean isCollectionSharedWithMe = (isCollection && CollectionType.SHARED_WITH_ME.equals(folderInfo.getCollectionType()));
-			if (isCollectionSharedWithMe) {
-				// Yes!  Has anything been shared with the current
-				// user?
-				shareItems = getSharedWithMeItems(bs, request);
-			}
-			else {
-				shareItems = null;
-			}
+			if (isCollectionSharedWithMe)
+			     shareItems = getSharedWithMeItems(bs, request);
+			else shareItems = null;
 
 			// Is the user currently viewing pinned entries?
 			List<Map>  searchEntries;
@@ -2840,7 +2869,7 @@ public class GwtViewHelper {
 			if (viewPinnedEntries) {
 				// Yes!  Use the pinned entries as the search entries.
 				searchEntries = pinnedEntrySearchMaps;
-				totalRecords = searchEntries.size();
+				totalRecords  = searchEntries.size();
 			}
 			
 			else {
