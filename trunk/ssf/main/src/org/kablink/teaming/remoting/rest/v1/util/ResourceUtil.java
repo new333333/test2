@@ -517,9 +517,9 @@ public class ResourceUtil {
     }
 
     private static void populateFolder(Folder model, org.kablink.teaming.domain.Folder folder, boolean includeAttachments, boolean textDescriptions) {
-        populateBinder(model, folder, includeAttachments, textDescriptions);
         model.setLibrary(folder.isLibrary());
         model.setMirrored(folder.isMirrored());
+        populateBinder(model, folder, includeAttachments, textDescriptions);
     }
 
     private static void populateBinderBrief(BinderBrief model, org.kablink.teaming.domain.Binder binder) {
