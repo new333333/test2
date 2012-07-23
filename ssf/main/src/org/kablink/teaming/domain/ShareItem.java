@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+' * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -42,9 +42,9 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
  * @author jong
  * 
  */
-public class ShareItem extends NotDefinableEntity {
+public class ShareItem extends BaseEntity {
 
-	protected DefinableEntity sharedEntity;
+	protected EntityIdentifier sharedEntityIdentifier;
 	protected Collection<ShareItemMember> members;
 
 	// For use by Hibernate only
@@ -52,21 +52,19 @@ public class ShareItem extends NotDefinableEntity {
 	}
 
 	// For user by application
-	public ShareItem(User sharer, DefinableEntity sharedEntity, Description description,
-			Collection<ShareItemMember> members) {
+	public ShareItem(User sharer, EntityIdentifier sharedEntityIdentifier, Collection<ShareItemMember> members) {
 		if (sharer == null)
 			throw new IllegalArgumentException("Sharer must be specified");
-		if (sharedEntity == null)
+		if (sharedEntityIdentifier == null)
 			throw new IllegalArgumentException(
-					"Shared entity must be specified");
+					"Shared entity identifier must be specified");
 		if (members == null)
 			throw new IllegalArgumentException(
 					"Share members must be specified");
 
 		this.setCreation(new HistoryStamp(sharer));
 		this.setModification(this.getCreation());
-		this.sharedEntity = sharedEntity;
-		this.description = description;
+		this.sharedEntityIdentifier = sharedEntityIdentifier;
 		this.members = members;
 	}
 
@@ -83,12 +81,12 @@ public class ShareItem extends NotDefinableEntity {
 		this.id = id;
 	}
 
-	public DefinableEntity getSharedEntity() {
-		return sharedEntity;
+	public EntityIdentifier getSharedEntityIdentifier() {
+		return sharedEntityIdentifier;
 	}
 
-	public void setSharedEntity(DefinableEntity sharedEntity) {
-		this.sharedEntity = sharedEntity;
+	public void setSharedEntityIdentifier(EntityIdentifier sharedEntityIdentifier) {
+		this.sharedEntityIdentifier = sharedEntityIdentifier;
 	}
 
 	public Collection<ShareItemMember> getMembers() {

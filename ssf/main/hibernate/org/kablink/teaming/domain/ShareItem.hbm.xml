@@ -8,15 +8,10 @@
       	<param name="sequence">ss_shareitem_id_sequence</param>
       </generator>
     </id>
-    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
+    <!-- Note that ShareItem domain class contains lockVersion property in memory. However, there is no
+         mapping element that maps it to a database column, meaning that optimistic locking is not used
+         for this class. -->
     <property name="zoneId" access="field"/>
-	<property name="preDeleted"/>
-    <property name="preDeletedWhen"/>
-    <property name="preDeletedBy"/>
-    <component name="description">
-      <property name="HDescription" column="description_text" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>
-      <property name="HFormat" column="description_format"/>
-    </component>
     <component name="creation" class="org.kablink.teaming.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>
       <many-to-one class="org.kablink.teaming.domain.UserPrincipal" name="principal">
@@ -29,46 +24,13 @@
         <column name="modification_principal"/>
       </many-to-one>
     </component>
-    <any name="sharedEntity" id-type="java.lang.Long" meta-type="string">
-      <meta-value class="org.kablink.teaming.domain.FolderEntry" value="folderEntry"/>
-      <meta-value class="org.kablink.teaming.domain.User" value="user"/>
-      <meta-value class="org.kablink.teaming.domain.Group" value="group"/>
-      <meta-value class="org.kablink.teaming.domain.Folder" value="folder"/>
-      <meta-value class="org.kablink.teaming.domain.Workspace" value="workspace"/>
-      <meta-value class="org.kablink.teaming.domain.ProfileBinder" value="profileBinder"/>
-      <meta-value class="org.kablink.teaming.domain.TemplateBinder" value="template"/>
-      <column name="sharedEntity_type"  length="16" index="sharedEntity_shareitem"/>
-      <column name="sharedEntity_id" index="sharedEntity_shareitem"/>
-    </any>    
-    <bag inverse="false" cascade="all" lazy="false" table="SS_ShareItemMember" name="members">
+    <component name="sharedEntityIdentifier" class="org.kablink.teaming.domain.EntityIdentifier">
+      <property name="type" column="sharedEntity_type" type="int" index="sharedEntity_shareitem"/>
+      <property name="entityId" column="sharedEntity_id" index="sharedEntity_shareitem"/>
+    </component>
+    <bag inverse="false" access="field" cascade="all,delete-orphan" lazy="false" name="members">
       <key column="shareItemId"/>
-      <composite-element class="org.kablink.teaming.domain.ShareItemMember">
-	    <property name="endDate" index="endDate_shareitem"/>
-	    <property name="recipientType" column="recipient_type" access="field" type="short" index="recipient_shareitem"/>
-	    <property name="recipientId" column="recipient_id" index="recipient_shareitem"/>
-	    <nested-composite-element name="rightSet" class="org.kablink.teaming.domain.ShareItemMember$RightSet">
-	    	<property name="createEntries" column="right_createEntries"/>
-	    	<property name="modifyEntries" column="right_modifyEntries"/>
-	    	<property name="modifyEntryFields" column="right_modifyEntryFields"/>
-	    	<property name="deleteEntries" column="right_deleteEntries"/>
-	    	<property name="readEntries" column="right_readEntries"/>
-	    	<property name="addReplies" column="right_addReplies"/>
-	    	<property name="generateReports" column="right_generateReports"/>
-	    	<property name="binderAdministration" column="right_binderAdministration"/>
-	    	<property name="createEntryAcls" column="right_createEntryAcls"/>
-	    	<property name="changeAccessControl" column="right_changeAccessControl"/>
-	    	<property name="createWorkspaces" column="right_createWorkspaces"/>
-	    	<property name="createFolders" column="right_createFolders"/>
-	    	<property name="manageEntryDefinitions" column="right_manageEntryDefs"/>
-	    	<property name="manageWorkflowDefinitions" column="right_manageWorkflowDefs"/>
-	    	<property name="creatorReadEntries" column="right_creatorReadEntries"/>
-	    	<property name="creatorModifyEntries" column="right_creatorModifyEntries"/>
-	    	<property name="creatorDeleteEntries" column="right_creatorDeleteEntries"/>
-	    	<property name="ownerCreateEntryAcls" column="right_ownerCreateEntryAcls"/>
-	    	<property name="addTags" column="right_addTags"/>
-	    	<property name="viewBinderTitle" column="right_viewBinderTitle"/>
-	    </nested-composite-element> 
-      </composite-element>
+      <one-to-many class="org.kablink.teaming.domain.ShareItemMember"/>
     </bag>
   </class>
 </hibernate-mapping>

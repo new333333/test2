@@ -41,9 +41,11 @@ import java.util.Map;
 import org.dom4j.Element;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Dashboard;
 import org.kablink.teaming.domain.DashboardPortlet;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityDashboard;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.HistoryStamp;
@@ -55,6 +57,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserDashboard;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.dashboard.DashboardModule;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
@@ -73,6 +76,9 @@ import org.kablink.util.Validator;
  */
 public class SharingModuleImpl extends CommonDependencyInjection implements SharingModule {
 
+	private FolderModule folderModule;
+	private BinderModule binderModule;
+	
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.module.profile.ProfileModule#addShareItem(org.kablink.teaming.domain.ShareItem)
 	 */
@@ -80,6 +86,10 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	@Override
 	public void addShareItem(ShareItem shareItem) {
 		// Access check?
+		Collection<ShareItemMember> members = shareItem.getMembers();
+		for(ShareItemMember member:members) {
+			member.setShareItem(shareItem);
+		}
 		getCoreDao().save(shareItem);
 	}
 	
@@ -91,6 +101,10 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	public void modifyShareItem(ShareItem shareItem) {
 		// Access check?
 		// This should handle both persistent and detached instance.
+		Collection<ShareItemMember> members = shareItem.getMembers();
+		for(ShareItemMember member:members) {
+			member.setShareItem(shareItem);
+		}
 		getCoreDao().update(shareItem);
 	}
 	
@@ -103,6 +117,10 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		// Access check?
 		try {
 			ShareItem shareItem = getProfileDao().loadShareItem(shareItemId);
+			Collection<ShareItemMember> members = shareItem.getMembers();
+			for(ShareItemMember member:members) {
+				member.setShareItem(null);
+			}
 			getCoreDao().delete(shareItem);
 		}
 		catch(NoShareItemByTheIdException e) {
@@ -129,13 +147,45 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	}
     
 	/* (non-Javadoc)
-	 * @see org.kablink.teaming.module.profile.ProfileModule#getShareItemsByRecipient(java.long.Long)
+	 * @see org.kablink.teaming.module.sharing.SharingModule#getShareItems(org.kablink.teaming.dao.util.ShareItemSelectSpec)
 	 */
 	@Override
-	public List<ShareItem> getShareItemsByRecipient(ShareItemMember.RecipientType recipientType, Long recipientId) {
+	public List<ShareItem> getShareItems(ShareItemSelectSpec selectSpec) {
 		// Access check?
-		return getProfileDao().findShareItemsByRecipient(recipientType, recipientId);
+		return getProfileDao().findShareItems(selectSpec);
 	}
     
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.sharing.SharingModule#getSharedEntity(org.kablink.teaming.domain.ShareItem)
+	 */
+	@Override
+	public DefinableEntity getSharedEntity(ShareItem shareItem) {
+		EntityIdentifier.EntityType entityType = shareItem.getSharedEntityIdentifier().getEntityType();
+		if(entityType == EntityIdentifier.EntityType.folderEntry) {
+			return getFolderModule().getEntry(null, shareItem.getSharedEntityIdentifier().getEntityId());
+		}
+		else if(entityType == EntityIdentifier.EntityType.folder || entityType == EntityIdentifier.EntityType.workspace) {
+			return getBinderModule().getBinder(shareItem.getSharedEntityIdentifier().getEntityId());
+		}
+		else {
+			throw new IllegalArgumentException("Unsupported entity type '" + entityType.name() + "' for sharing");
+		}
+	}
+
+	protected FolderModule getFolderModule() {
+		return folderModule;
+	}
+
+	public void setFolderModule(FolderModule folderModule) {
+		this.folderModule = folderModule;
+	}
+
+	protected BinderModule getBinderModule() {
+		return binderModule;
+	}
+
+	public void setBinderModule(BinderModule binderModule) {
+		this.binderModule = binderModule;
+	}
 
 }

@@ -40,6 +40,7 @@ import java.util.Set;
 
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.SFQuery;
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.ApplicationPrincipal;
@@ -273,56 +274,6 @@ public interface ProfileDao {
  	public List<ShareItem> loadShareItems(Collection<Long> shareItemIds); 
  	
  	/**
- 	 * Find a list of <code>ShareItem</code> defined on the shared entity represented by the specified identifier.
- 	 * 
- 	 * @param sharedEntity
- 	 * @return
- 	 */
- 	public List<ShareItem> findShareItemsBySharedEntity(EntityIdentifier sharedEntityIdentifier);
- 	
- 	/**
- 	 * Find a list of <code>ShareItem</code> that were created/shared by the specified user.
- 	 * 
- 	 * @param sharerId
- 	 * @return
- 	 */
- 	public List<ShareItem> findShareItemsBySharer(Long sharerId);
- 	 	
- 	
- 	/**
- 	 * Find a list of <code>ShareItem</code> that were created/shared by the specified user
- 	 * and shared explicitly and directly with the specified recipient (as opposed to
- 	 * indirectly through another group or team membership).
- 	 * 
- 	 * @param sharerId
- 	 * @param recipientType
- 	 * @param recipientId
- 	 * @return
- 	 */
- 	public List<ShareItem> findShareItemsBySharerAndRecipient(Long sharerId, ShareItemMember.RecipientType recipientType, Long recipientId);
- 	
- 	/**
- 	 * Find a list of <code>ShareItem</code> that were shared explicitly and directly with
- 	 * the specified recipient (as opposed to indirectly through another group or team
- 	 * membership).
- 	 * 
- 	 * @param recipientType
- 	 * @param recipientId
- 	 * @return
- 	 */
- 	public List<ShareItem> findShareItemsByRecipient(ShareItemMember.RecipientType recipientType, Long recipientId);
- 	
- 	/**
- 	 * Find a list of <code>ShareItem</code> that were created/shared by the specified user
- 	 * and defined on the shared entity represented by the specified identifier.
- 	 * 
- 	 * @param sharerId
- 	 * @param sharedEntityIdentifier
- 	 * @return
- 	 */
- 	public List<ShareItem> findShareItemsBySharerAndSharedEntity(Long sharerId, EntityIdentifier sharedEntityIdentifier); 
- 	
- 	/**
  	 * Return IDs of users, groups, and teams that are granted specified right to the specified entity.
  	 * 
  	 * @param sharedEntityIdentifier
@@ -339,4 +290,13 @@ public interface ProfileDao {
  	 * @return
  	 */
  	public Map<ShareItemMember.RecipientType, Set<Long>> getMemberIdsWithGrantedRightToSharedEntities(Collection<EntityIdentifier> sharedEntityIdentifiers, String rightName);
+ 	
+ 	/** 
+ 	 * Find a list of <code>ShareItem</code> meeting the specified selection criteria.
+ 	 * 
+ 	 * @param selectSpec
+ 	 * @return
+ 	 */
+ 	public List<ShareItem> findShareItems(final ShareItemSelectSpec selectSpec);
+
  }

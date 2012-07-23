@@ -72,6 +72,7 @@ import static org.kablink.util.search.Restrictions.like;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
@@ -846,7 +847,7 @@ public class GwtViewHelper {
 		// Scan the share items in the List<ShareItem>.
 		for (ShareItem siScan:  shareItems) {
 			// Is this item in the trash?
-			DefinableEntity siScanItem = siScan.getSharedEntity();
+			DefinableEntity siScanItem = bs.getSharingModule().getSharedEntity(siScan);
 			if (GwtServerHelper.isItemPreDeleted(siScanItem)) {
 				// Yes!  Skip it.
 				continue;
@@ -858,7 +859,7 @@ public class GwtViewHelper {
 			if (newSI) {
 				// No!  Create a SharedWithMeItem to track it.
 				si = new SharedWithMeItem(siScan.getId());
-				si.setItem(siScan.getSharedEntity());
+				si.setItem(bs.getSharingModule().getSharedEntity(siScan));
 			}
 
 			// Are there any members of this share item?
@@ -904,7 +905,9 @@ public class GwtViewHelper {
 					si.addSharerInfo(
 						siScanCreation.getPrincipal().getId(),
 						siScanCreation.getDate(),
-						siScan.getDescription().getStrippedText());
+						//siScan.getDescription().getStrippedText()
+						null // Added by JK
+						);
 				}
 			}
 		}
@@ -932,7 +935,7 @@ public class GwtViewHelper {
 		// Scan the share items in the List<ShareItem>.
 		for (ShareItem siScan:  shareItems) {
 			// Is this item in the trash?
-			DefinableEntity siScanItem = siScan.getSharedEntity();
+			DefinableEntity siScanItem = bs.getSharingModule().getSharedEntity(siScan);
 			if (GwtServerHelper.isItemPreDeleted(siScanItem)) {
 				// Yes!  Skip it.
 				continue;
@@ -940,7 +943,7 @@ public class GwtViewHelper {
 			
 			// Create a new SharedWithMeItem?
 			SharedWithMeItem si = new SharedWithMeItem(siScan.getId());
-			si.setItem(siScan.getSharedEntity());
+			si.setItem(bs.getSharingModule().getSharedEntity(siScan));
 
 			// Are there any members of this share item?
 			Collection<ShareItemMember> siScanMembers = siScan.getMembers();
@@ -982,7 +985,9 @@ public class GwtViewHelper {
 					si.addSharerInfo(
 						siScanCreation.getPrincipal().getId(),
 						siScanCreation.getDate(),
-						siScan.getDescription().getStrippedText());
+						//siScan.getDescription().getStrippedText()
+						null // Added by JK
+						);
 				}
 			}
 		}
@@ -3847,20 +3852,24 @@ public class GwtViewHelper {
 		// the user...
 		Long			userId     = GwtServerHelper.getCurrentUserId();
 		SharingModule	sm         = bs.getSharingModule();
-		List<ShareItem> shareItems = sm.getShareItemsByRecipient(RecipientType.user, userId);
+		ShareItemSelectSpec spec = new ShareItemSelectSpec();
+		spec.setRecipients(userId, null, null);
+		List<ShareItem> shareItems = sm.getShareItems(spec);
 		
 		// ...add to it the List<ShareItem> of those things shared
 		// ...directly with teams the user is a member of...
 		List<Long> teams = GwtServerHelper.getTeamIds(request, bs, userId);
 		for (Long team:  teams) {
-			shareItems.addAll(sm.getShareItemsByRecipient(RecipientType.team, team));
+			spec.setRecipients(null, null, team);
+			shareItems.addAll(sm.getShareItems(spec));
 		}
 		
 		// ...add to it the List<ShareItem> of those things shared
 		// ...directly with groups the user is a member of...
 		List<Long> groups = GwtServerHelper.getGroupIds(request, bs, userId);
 		for (Long group:  groups) {
-			shareItems.addAll(sm.getShareItemsByRecipient(RecipientType.group, group));
+			spec.setRecipients(null, group, null);
+			shareItems.addAll(sm.getShareItems(spec));
 		}
 
 		// ...and finally, condense the List<ShareItem> so that
