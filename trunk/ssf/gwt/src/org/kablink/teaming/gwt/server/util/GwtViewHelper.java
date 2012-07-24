@@ -76,7 +76,6 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SeenMap;
@@ -124,6 +123,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
+import org.kablink.teaming.gwt.server.util.GwtSharedMeItem;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
@@ -131,7 +131,6 @@ import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
-import org.kablink.teaming.gwt.server.util.SharedWithMeItem.SharerInfo;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -299,13 +298,13 @@ public class GwtViewHelper {
 	}
 	
 	/*
-	 * Returns an entry map that represents a List<SharedWithMeItem>.
+	 * Returns an entry map that represents a List<GwtSharedMeItem>.
 	 */
 	@SuppressWarnings("unchecked")
-	private static Map buildSearchMapFromSharedWithMeList(AllModulesInjected bs, List<SharedWithMeItem> shareItems, String quickFilter, boolean sortDescend, String sortBy) {
+	private static Map buildSearchMapFromSharedWithMeList(AllModulesInjected bs, List<GwtSharedMeItem> shareItems, String quickFilter, boolean sortDescend, String sortBy) {
 		List<Map> searchEntries = new ArrayList<Map>();
-		for (SharedWithMeItem si:  shareItems) {
-			// Create an entry Map for this SharedWithMeItem.
+		for (GwtSharedMeItem si:  shareItems) {
+			// Create an entry Map for this GwtSharedMeItem.
 			Map entryMap = new HashMap();
 			searchEntries.add(entryMap);
 
@@ -572,13 +571,75 @@ public class GwtViewHelper {
 	}
 
 	/*
-	 * Condenses a List<ShareItem> so that share items only show up
-	 * once. 
+	 * Converts a List<ShareItem> into a List<GwtShareMeItem>
+	 * representing the 'Shared by Me' items.
 	 */
-	private static List<SharedWithMeItem> condenseSIList(AllModulesInjected bs, List<ShareItem> shareItems, Long userId, List<Long> teams, List<Long> groups) {
-		// Allocate a List<SharedWIthMeItem> to hold the condensed
+	private static List<GwtSharedMeItem> convertSIListToByMeList(AllModulesInjected bs, List<ShareItem> shareItems, Long userId) {
+		// Allocate a List<GwtSharedMeItem> to hold the converted
 		// List<ShareItem> information.
-		List<SharedWithMeItem> reply = new ArrayList<SharedWithMeItem>();
+		List<GwtSharedMeItem> reply = new ArrayList<GwtSharedMeItem>();
+		
+		// If we don't have any share items to convert...
+		if ((null == shareItems) || shareItems.isEmpty()) {
+			// ...return the empty reply list.
+			return reply;
+		}
+
+		// Scan the share items in the List<ShareItem>.
+		SharingModule sm = bs.getSharingModule();
+		for (ShareItem siScan:  shareItems) {
+			// Is this item in the trash?
+			DefinableEntity siScanItem = sm.getSharedEntity(siScan);
+			if (GwtServerHelper.isItemPreDeleted(siScanItem)) {
+				// Yes!  Skip it.
+				continue;
+			}
+			
+			// Create a new GwtSharedMeItem?
+			GwtSharedMeItem si = new GwtSharedMeItem(
+				siScan.getId(),										// ID of the share.
+				siScan.getModification().getPrincipal().getId());	// ID of the sharer.
+			si.setItem(siScanItem);
+
+			// Are there any members of this share item?
+			Collection<ShareItemMember> siScanMembers = siScan.getMembers();
+			if ((null != siScanMembers) && (!(siScanMembers.isEmpty()))) {
+				// Yes!  Scan them.
+				for (ShareItemMember siScanMember:  siScanMembers) {
+					// Is this member expired?
+					if (siScanMember.isExpired()) {
+						// Yes!  Skip it.
+						continue;
+					}
+
+					// The member isn't expired!  Add the rights
+					// information about it to the GwtSharedMeItem.
+					si.addPerShareInfo(siScanMember);
+				}
+
+				// Has the GwtSharedMeItem actually been shared by the
+				// current user?
+				if (si.isShared()) {
+					// Yes!  Add it to the reply
+					// List<GwtSharedMeItem> we're building to return.
+					reply.add(si);
+				}
+			}
+		}
+		
+		// If we get here, reply refers to the List<GwtSharedMeItem>
+		// built from condensing the List<ShareItem>.  Return it.
+		return reply;
+	}
+	
+	/*
+	 * Converts a List<ShareItem> into a List<GwtShareMeItem>
+	 * representing the 'Shared With Me' items.
+	 */
+	private static List<GwtSharedMeItem> convertSIListToWithMeList(AllModulesInjected bs, List<ShareItem> shareItems, Long userId, List<Long> teams, List<Long> groups) {
+		// Allocate a List<GwtSharedMeItem> to hold the condensed
+		// List<ShareItem> information.
+		List<GwtSharedMeItem> reply = new ArrayList<GwtSharedMeItem>();
 		
 		// If we don't have any share items to condense...
 		if ((null == shareItems) || shareItems.isEmpty()) {
@@ -596,8 +657,10 @@ public class GwtViewHelper {
 				continue;
 			}
 			
-			// Create a new SharedWithMeItem?
-			SharedWithMeItem si = new SharedWithMeItem(siScan.getId());
+			// Create a new GwtSharedMeItem?
+			GwtSharedMeItem si = new GwtSharedMeItem(
+				siScan.getId(),										// ID of the share.
+				siScan.getModification().getPrincipal().getId());	// ID of the sharer.
 			si.setItem(siScanItem);
 
 			// Are there any members of this share item?
@@ -623,31 +686,21 @@ public class GwtViewHelper {
 					
 					// The member isn't expired and it belongs with
 					// this user!  Add the rights information about it
-					// to the SharedWithMeItem.
-					si.updateRights(siScanMember);
+					// to the GwtSharedMeItem.
+					si.addPerShareInfo(siScanMember);
 				}
 
-				// Do we have rights information for this
-				// SharedWithMeItem?
-				if (si.hasRights()) {
+				// Has the GwtSharedMeItem actually been shared with
+				// the current user?
+				if (si.isShared()) {
 					// Yes!  Add it to the reply
-					// List<SharedWithMeItem> we're building to
-					// return.
+					// List<GwtSharedMeItem> we're building to return.
 					reply.add(si);
-					
-					// Store it in the SharedWithMeItem.
-					HistoryStamp siScanCreation = siScan.getCreation();
-					si.addSharerInfo(
-						siScanCreation.getPrincipal().getId(),
-						siScanCreation.getDate(),
-						//siScan.getDescription().getStrippedText()
-						null // Added by JK
-						);
 				}
 			}
 		}
 		
-		// If we get here, reply refers to the List<SharedWithMeItem>
+		// If we get here, reply refers to the List<GwtSharedMeItem>
 		// built from condensing the List<ShareItem>.  Return it.
 		return reply;
 	}
@@ -1416,25 +1469,47 @@ public class GwtViewHelper {
 
 	/*
 	 * Returns a non-null List<AssignmentInfo> build from a
-	 * List<SharerInfo>.
+	 * sharer's ID.
 	 */
-	private static List<AssignmentInfo> getAIListFromSharers(List<SharerInfo> siList) {
+	private static List<AssignmentInfo> getAIListFromRecipients(List<GwtPerShareInfo> perShareInfos) {
 		// Allocate a List<AssignmentInfo> to return.
 		List<AssignmentInfo> reply = new ArrayList<AssignmentInfo>();
 
-		// Do we have any sharers to process?
-		if ((null != siList) && (!(siList.isEmpty()))) {
-			// Yes!  Scan them...
-			for (SharerInfo si:  siList) {
-				// ...creating an individual AssignmentInfo for each.
-				AssignmentInfo ai = AssignmentInfo.construct(si.getId(), AssigneeType.INDIVIDUAL);
-				ai.setHover(si.getComment());
-				reply.add(ai);
+		// Scan the shares...
+		for (GwtPerShareInfo si:  perShareInfos) {
+			// ...creating an individual AssignmentInfo for each
+			// ...recipient.
+			AssigneeType at;
+			switch (si.getRecipientType()) {
+			default:     at = null;                    continue;
+			case user:   at = AssigneeType.INDIVIDUAL; break;
+			case group:  at = AssigneeType.GROUP;      break;
+			case team:   at = AssigneeType.TEAM;       break;
 			}
+			AssignmentInfo ai = AssignmentInfo.construct(si.getRecipientId(), at);
+			reply.add(ai);
 		}
 
 		// If we get here, reply refers to the List<AssignmentInfo>
-		// corresponding to the given List<SharerInfo>.  Return it.
+		// corresponding to the given List<GwtPerShareInfo>.  Return
+		// it.
+		return reply;
+	}
+	
+	/*
+	 * Returns a non-null List<AssignmentInfo> build from a
+	 * sharer's ID.
+	 */
+	private static List<AssignmentInfo> getAIListFromSharer(Long sharerId) {
+		// Allocate a List<AssignmentInfo> to return.
+		List<AssignmentInfo> reply = new ArrayList<AssignmentInfo>();
+
+		// Create an individual AssignmentInfo for the sharer.
+		AssignmentInfo ai = AssignmentInfo.construct(sharerId, AssigneeType.INDIVIDUAL);
+		reply.add(ai);
+
+		// If we get here, reply refers to the List<AssignmentInfo>
+		// corresponding to the given sharer ID.  Return it.
 		return reply;
 	}
 	
@@ -1673,7 +1748,7 @@ public class GwtViewHelper {
 	 * Returns the entries for the given collection.
 	 */
 	@SuppressWarnings("unchecked")
-	private static Map getCollectionEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options, CollectionType ct, List<SharedWithMeItem> shareItems) {
+	private static Map getCollectionEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options, CollectionType ct, List<GwtSharedMeItem> shareItems) {
 		// Several of the collections require the ID of the top
 		// workspace.
 		String topWSId = GwtUIHelper.getTopWSIdSafely(bs, false);
@@ -1755,7 +1830,7 @@ public class GwtViewHelper {
 			// user...
 			List<String>	sharedBinderIds = new ArrayList<String>();
 			List<String>	sharedEntryIds  = new ArrayList<String>();
-			for (SharedWithMeItem si:  shareItems) {
+			for (GwtSharedMeItem si:  shareItems) {
 				// ...tracking each as a binder or entry.
 				DefinableEntity de = si.getItem();
 				String deId = String.valueOf(de.getId());
@@ -2022,10 +2097,10 @@ public class GwtViewHelper {
 				String[] columns;
 				switch (folderInfo.getCollectionType()) {
 				default:
-				case FILE_SPACES:     baseNameKey += "filespaces.";   columns = new String[]{"title", "rights", "descriptionHtml"};                                                         break;
-				case MY_FILES:        baseNameKey += "myfiles.";      columns = new String[]{"title", "family", "date"};                                                                    break;
-				case SHARED_BY_ME:    baseNameKey += "sharedByMe.";   columns = new String[]{"title", "share_access", "share_sharedWith"};                                                  break;
-				case SHARED_WITH_ME:  baseNameKey += "sharedWithMe."; columns = new String[]{"title", "share_sharedBy", "share_message", "share_date", "share_expiration", "share_access"}; break;
+				case FILE_SPACES:     baseNameKey += "filespaces.";   columns = new String[]{"title", "rights", "descriptionHtml"};                                                           break;
+				case MY_FILES:        baseNameKey += "myfiles.";      columns = new String[]{"title", "family", "date"};                                                                      break;
+				case SHARED_BY_ME:    baseNameKey += "sharedByMe.";   columns = new String[]{"title", "share_sharedWith", "share_message", "share_date", "share_expiration", "share_access"}; break;
+				case SHARED_WITH_ME:  baseNameKey += "sharedWithMe."; columns = new String[]{"title", "share_sharedBy",   "share_message", "share_date", "share_expiration", "share_access"}; break;
 				}
 				columnNames = getColumnsLHMFromAS(columns);
 			}
@@ -2490,11 +2565,12 @@ public class GwtViewHelper {
 
 			// If we're working with a 'Shared with Me' collection, get
 			// the shared items.
-			List<SharedWithMeItem> 	shareItems;
-			boolean isCollectionSharedWithMe = (isCollection && CollectionType.SHARED_WITH_ME.equals(folderInfo.getCollectionType()));
-			if (isCollectionSharedWithMe)
-			     shareItems = getSharedWithMeItems(bs, request);
-			else shareItems = null;
+			List<GwtSharedMeItem> 	shareItems;
+			boolean					isCollectionSharedByMe   = (isCollection && CollectionType.SHARED_BY_ME.equals(  folderInfo.getCollectionType()));
+			boolean					isCollectionSharedWithMe = (isCollection && CollectionType.SHARED_WITH_ME.equals(folderInfo.getCollectionType()));
+			if      (isCollectionSharedByMe)   shareItems = getSharedByMeItems(  bs, request);
+			else if (isCollectionSharedWithMe) shareItems = getSharedWithMeItems(bs, request);
+			else                               shareItems = null;
 
 			// Is the user currently viewing pinned entries?
 			List<Map>  searchEntries;
@@ -2575,21 +2651,21 @@ public class GwtViewHelper {
 							}
 						}
 						
-						// Are we working on a 'Shared with Me'
+						// Are we working on a 'Shared by/with Me'
 						// collection?
-						if (isCollectionSharedWithMe) {
+						if (isCollectionSharedByMe || isCollectionSharedWithMe) {
 							// Yes!  Is this the sharedBy column?
 							String	searchIdS = GwtServerHelper.getStringFromEntryMap(entryMap, "shareId");
 							Long	searchId  = (MiscUtil.hasString(searchIdS) ? Long.parseLong(searchIdS) : null);
 							if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_BY)) {
 								// Yes!  Can we find the
-								// SharedWithMeItem for this row?
-								List<AssignmentInfo> sharerAIs = null;
-								SharedWithMeItem si = SharedWithMeItem.findItemInList(searchId, isEntityFolderEntry, docId, shareItems);
+								// GwtSharedMeItem for this row?
+								List<AssignmentInfo>	sharerAIs = null;
+								GwtSharedMeItem			si        = GwtSharedMeItem.findItemInList(searchId, isEntityFolderEntry, docId, shareItems);
 								if (null != si) {
 									// Yes!  Use it to construct a
 									// List<AssignmentInfo>.
-									sharerAIs = getAIListFromSharers(si.getSharerInfos());
+									sharerAIs = getAIListFromSharer(si.getSharerId());
 								}
 	
 								// If we don't have any sharers for this column...
@@ -2606,18 +2682,45 @@ public class GwtViewHelper {
 							}
 							
 							// No, this isn't the sharedBy column!  Is
-							// it the access column?
+							// it the sharedWith column?
+							if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_WITH)) {
+								// Yes!  Can we find the
+								// GwtSharedMeItem for this row?
+								List<AssignmentInfo>	recipientAIs = null;
+								GwtSharedMeItem			si           = GwtSharedMeItem.findItemInList(searchId, isEntityFolderEntry, docId, shareItems);
+								if (null != si) {
+									// Yes!  Use it to construct a
+									// List<AssignmentInfo>.
+									recipientAIs = getAIListFromRecipients(si.getPerShareInfos());
+								}
+	
+								// If we don't have any recipients for
+								// this column...
+								if (null == recipientAIs) {
+									// ...use an empty list.
+									recipientAIs = new ArrayList<AssignmentInfo>();
+								}
+								addedAssignments = (!(recipientAIs.isEmpty()));
+								fr.setColumnValue_AssignmentInfos(fc, recipientAIs);
+	
+								// Continue with the next column.
+								// We're done with this one.
+								continue;
+							}
+							
+							// No, this isn't the sharedWith column
+							// either!  Is it the access column?
 							else if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_ACCESS)) {
 								// Yes!  Can we find the
-								// SharedWithMeItem for this row?
-								Date		rightsExpire = null;
-								ShareRights	rights       = null;
-								SharedWithMeItem si = SharedWithMeItem.findItemInList(searchId, isEntityFolderEntry, docId, shareItems);
+								// GwtSharedMeItem for this row?
+								Date			rightsExpire = null;
+								ShareRights		rights       = null;
+								GwtSharedMeItem	si           = GwtSharedMeItem.findItemInList(searchId, isEntityFolderEntry, docId, shareItems);
 								if (null != si) {
 									// Yes!  Get the share rights from
 									// it...
-									rights       = si.getRights();
-									rightsExpire = si.getRightsExpire();
+									rights       = si.getPerShareInfos().get(0).getRights();
+									rightsExpire = si.getPerShareInfos().get(0).getRightsExpire();
 								}
 
 								// ...map the share rights to an access
@@ -3507,37 +3610,51 @@ public class GwtViewHelper {
 	}
 
 	/*
-	 * Returns a List<SharedWithMeItem> of the items shared with the
+	 * Returns a List<GwtSharedMeItem> of the items shared by the
 	 * current user.
 	 */
-	private static List<SharedWithMeItem> getSharedWithMeItems(AllModulesInjected bs, HttpServletRequest request) {
-		// Get the List<ShareItem> of those things shared directly with
-		// the user...
-		Long			userId     = GwtServerHelper.getCurrentUserId();
-		SharingModule	sm         = bs.getSharingModule();
-		ShareItemSelectSpec spec = new ShareItemSelectSpec();
-		spec.setRecipients(userId, null, null);
-		List<ShareItem> shareItems = sm.getShareItems(spec);
-		
-		// ...add to it the List<ShareItem> of those things shared
-		// ...directly with teams the user is a member of...
-		List<Long> teams = GwtServerHelper.getTeamIds(request, bs, userId);
-		for (Long team:  teams) {
-			spec.setRecipients(null, null, team);
-			shareItems.addAll(sm.getShareItems(spec));
-		}
-		
-		// ...add to it the List<ShareItem> of those things shared
-		// ...directly with groups the user is a member of...
-		List<Long> groups = GwtServerHelper.getGroupIds(request, bs, userId);
-		for (Long group:  groups) {
-			spec.setRecipients(null, group, null);
-			shareItems.addAll(sm.getShareItems(spec));
-		}
+	private static List<GwtSharedMeItem> getSharedByMeItems(AllModulesInjected bs, HttpServletRequest request) {
+		// Construct a list containing just this user's ID...
+		Long		userId = GwtServerHelper.getCurrentUserId();
+		List<Long>	users  = new ArrayList<Long>();
+		users.add(userId);
 
-		// ...and finally, condense the List<ShareItem> so that
-		// ...share items only show up once and return that.
-		List<SharedWithMeItem> siList = condenseSIList(bs, shareItems, userId, teams, groups);
+		// ...get the List<ShareItem> of those things shared by the
+		// ...user...
+		ShareItemSelectSpec	spec = new ShareItemSelectSpec();
+		spec.setSharerIds(users);
+		List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
+
+		// ...and finally, convert the List<ShareItem> into a
+		// ...List<GwtShareMeItem> and return that.
+		List<GwtSharedMeItem> siList = convertSIListToByMeList(bs, shareItems, userId);
+		return siList;
+	}
+	
+	/*
+	 * Returns a List<GwtSharedMeItem> of the items shared with the
+	 * current user.
+	 */
+	private static List<GwtSharedMeItem> getSharedWithMeItems(AllModulesInjected bs, HttpServletRequest request) {
+		// Construct a list containing just this user's ID...
+		Long		userId = GwtServerHelper.getCurrentUserId();
+		List<Long>	users  = new ArrayList<Long>();
+		users.add(userId);
+
+		// ...get ID's of the groups and teams the user is a member
+		// ...of...
+		List<Long>	groups = GwtServerHelper.getGroupIds(request, bs, userId);
+		List<Long>	teams  = GwtServerHelper.getTeamIds( request, bs, userId);
+		
+		// ...get the List<ShareItem> of those things shared with the
+		// ...user...
+		ShareItemSelectSpec	spec = new ShareItemSelectSpec();
+		spec.setRecipients(users, groups, teams);
+		List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
+
+		// ...and finally, convert the List<ShareItem> into a
+		// ...List<GwtShareMeItem> and return that.
+		List<GwtSharedMeItem> siList = convertSIListToWithMeList(bs, shareItems, userId, teams, groups);
 		return siList;
 	}
 	
