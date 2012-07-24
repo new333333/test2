@@ -2496,12 +2496,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    			junction.add(Restrictions.eq("rightSet." + rightName, true));
 	                    		crit.add(junction);
 	                    	}
-	                    	// Eager fetching of collections returns duplicates of the root objects, so we need to weed them out using a set.
-	                    	Set resultSet = new HashSet();
-	                    	resultSet.addAll(crit.list());
-	                    	List resultList = new ArrayList<ShareItem>();
-	                    	resultList.addAll(resultSet);
-	                    	return resultList;
+	                    	return crit.list();
 	                    }
 	                }
 	            );
