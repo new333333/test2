@@ -160,9 +160,7 @@
             <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_ShareItemMember"/>
             </column>
-            <column name="shareItemId" type="NUMERIC(19,0)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="shareItemId" type="NUMERIC(19,0)"/>
             <column name="zoneId" type="NUMERIC(19,0)"/>
             <column name="comment" type="NVARCHAR(255)"/>
             <column name="daysToExpire" type="INT"/>

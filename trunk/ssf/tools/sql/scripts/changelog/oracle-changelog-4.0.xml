@@ -160,9 +160,7 @@
             <column name="ID" type="NUMBER(19,0)">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_SHAREITEMMEMBER"/>
             </column>
-            <column name="SHAREITEMID" type="NUMBER(19,0)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="SHAREITEMID" type="NUMBER(19,0)"/>
             <column name="ZONEID" type="NUMBER(19,0)"/>
             <column name="COMMENT" type="VARCHAR2(255 CHAR)"/>
             <column name="DAYSTOEXPIRE" type="NUMBER(10,0)"/>

@@ -160,9 +160,7 @@
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="shareItemId" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
+            <column name="shareItemId" type="BIGINT"/>
             <column name="zoneId" type="BIGINT"/>
             <column name="comment" type="VARCHAR(255)"/>
             <column name="daysToExpire" type="INT"/>
