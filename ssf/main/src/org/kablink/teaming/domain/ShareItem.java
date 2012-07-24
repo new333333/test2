@@ -81,7 +81,13 @@ public class ShareItem extends BaseEntity {
 	}
 
 	// For user by application
-	public ShareItem(User sharer, EntityIdentifier sharedEntityIdentifier, String comment, Date endDate, RecipientType recipientType, Long recipientId, RightSet rightSet) {
+	public ShareItem(User sharer, 
+			EntityIdentifier sharedEntityIdentifier, 
+			String comment, 
+			Date endDate, 
+			RecipientType recipientType, 
+			Long recipientId, 
+			RightSet rightSet) {
 		if (sharer == null) throw new IllegalArgumentException("Sharer must be specified");
 		if (sharedEntityIdentifier == null) throw new IllegalArgumentException("Shared entity identifier must be specified");
 		if(recipientType == null) throw new IllegalArgumentException("Recipient type must be specified");
@@ -143,7 +149,7 @@ public class ShareItem extends BaseEntity {
 		return endDate;
 	}
 
-	protected void setEndDate(Date endDate) {
+	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
 
@@ -151,7 +157,7 @@ public class ShareItem extends BaseEntity {
 		return recipientId;
 	}
 
-	protected void setRecipientId(Long recipientId) {
+	public void setRecipientId(Long recipientId) {
 		this.recipientId = recipientId;
 	}
 
@@ -159,7 +165,7 @@ public class ShareItem extends BaseEntity {
 		return RecipientType.valueOf(recipientType);
 	}
 
-	protected void setRecipientType(RecipientType recipientType) {
+	public void setRecipientType(RecipientType recipientType) {
 		this.recipientType = recipientType.getValue();
 	}
 
@@ -167,7 +173,7 @@ public class ShareItem extends BaseEntity {
 		return rightSet;
 	}
 
-	protected void setRightSet(RightSet rightSet) {
+	public void setRightSet(RightSet rightSet) {
 		this.rightSet = rightSet;
 	}
 	
