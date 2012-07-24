@@ -593,11 +593,7 @@ public class AccessUtils  {
        	try {
 			//Make sure sharing is enabled for this user before testing for a share
        		ZoneConfig zoneConfig = getInstance().getCoreDao().loadZoneConfig(user.getZoneId());
-			if ((!user.isExternalUser() && 
-					getInstance().getAccessControlManager().testOperation(user, zoneConfig, WorkAreaOperation.ENABLE_SHARING))
-					||
-					(user.isExternalUser() && 
-					getInstance().getAccessControlManager().testOperation(user, zoneConfig, WorkAreaOperation.ENABLE_EXTERNAL_SHARING))) {
+			if (getInstance().getAccessControlManager().testOperation(user, zoneConfig, WorkAreaOperation.ENABLE_SHARING)) {
 				getInstance().getAccessControlManager().checkOperation(user, entry, operation);
 				return;
 			}
