@@ -481,14 +481,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 			   			  	.setEntity("folder", folder)
 			   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.name())
 			   				.executeUpdate();
-	 		   			//delete share items and associated share item members whose shared entities are entries in this folder
-			   			//it's important to delete share item members first due to foreign key constraint
-	    	   			String sql = SPropsUtil.getString("delete.shareitemmember.query2." + DynamicDialect.getDatabaseType().name(), 
-	    	   					"DELETE sim FROM SS_ShareItemMember sim INNER JOIN SS_ShareItem si ON sim.shareItemId=si.id WHERE si.sharedEntity_type=:sharedEntityType and si.sharedEntity_id in (select fe.id from SS_FolderEntries fe where fe.parentBinder=:folderId)");
-	    	   			session.createSQLQuery(sql)
-                    	.setInteger("sharedEntityType", EntityIdentifier.EntityType.folderEntry.getValue())
-                    	.setLong("folderId", folder.getId())
-		   				.executeUpdate();
+	 		   			//delete share items whose shared entities are entries in this folder
 	 		   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_id in " + 
 	 			   				"(select p.id from org.kablink.teaming.domain.FolderEntry p where " +
 			   			  			" p.parentBinder=:folder) and sharedEntity_type=:sharedEntityType")
@@ -583,14 +576,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	         	   				.setParameterList("pList", ids)
 	    		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.name())
 	    		   				.executeUpdate();
-	       		   			//delete share items and share item members whose shared entities are these entries
-				   			//it's important to delete share item members first due to foreign key constraint
-		    	   			String sql = SPropsUtil.getString("delete.shareitemmember.query3." + DynamicDialect.getDatabaseType().name(), 
-		    	   					"DELETE sim FROM SS_ShareItemMember sim INNER JOIN SS_ShareItem si ON sim.shareItemId=si.id WHERE si.sharedEntity_type=:sharedEntityType and si.sharedEntity_id in (:sharedEntityIds)");
-		    	   			session.createSQLQuery(sql)
-	                    	.setInteger("sharedEntityType", EntityIdentifier.EntityType.folderEntry.getValue())
-	                    	.setParameterList("sharedEntityIds", ids)
-			   				.executeUpdate();
+	       		   			//delete share items whose shared entities are these entries
 	     		   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_id in (:pList) and sharedEntity_type=:sharedEntityType")
 	         	   				.setParameterList("pList", ids)
 	    		   			  	.setParameter("sharedEntityType", EntityIdentifier.EntityType.folderEntry.name())

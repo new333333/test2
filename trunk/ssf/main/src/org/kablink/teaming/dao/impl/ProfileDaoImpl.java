@@ -88,7 +88,6 @@ import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.Rating;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.ShareItem;
-import org.kablink.teaming.domain.ShareItemMember;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
@@ -210,10 +209,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			   				.executeUpdate();
 			   			session.createQuery("Delete org.kablink.teaming.domain.SharedEntity where zoneId=" + binder.getZoneId())
 		   				.executeUpdate();
-			   			//delete share items and share item members			   			
-			   			//it's important to delete share item members first due to foreign key constraint
-			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItemMember where zoneId=" + binder.getZoneId())
-		   				.executeUpdate();
+			   			//delete share items		   			
 			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where zoneId=" + binder.getZoneId())
 		   				.executeUpdate();
 			   			
@@ -392,11 +388,11 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		   					.setParameterList("pList", ids)
 		   				.setParameter("accessType", SharedEntity.ACCESS_TYPE_PRINCIPAL)
 		   				.executeUpdate();
-			   			//delete share item members where recipients are these principals
+			   			//delete share items where recipients are these principals
 			   			List<Short> accessTypes = new ArrayList<Short>();
-			   			accessTypes.add(ShareItemMember.RecipientType.user.getValue());
-			   			accessTypes.add(ShareItemMember.RecipientType.group.getValue());
-			   			session.createSQLQuery("DELETE FROM SS_ShareItemMember WHERE recipient_id in (:pList) and recipient_type in (:aList)")
+			   			accessTypes.add(ShareItem.RecipientType.user.getValue());
+			   			accessTypes.add(ShareItem.RecipientType.group.getValue());
+			   			session.createSQLQuery("DELETE FROM SS_ShareItem WHERE recipient_id in (:pList) and recipient_type in (:aList)")
 	   					.setParameterList("pList", ids)
 	   					.setParameterList("aList", accessTypes)
 	   					.executeUpdate();
@@ -2310,139 +2306,9 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			end(begin, "loadShareItems(Collection<Long>)");
 		}	        
  	}
- 	
-	/*
+ 	 	
 	@Override
- 	public List<ShareItem> findShareItemsBySharedEntity(final EntityIdentifier sharedEntityIdentifier) {
-		if(sharedEntityIdentifier == null)
-			throw new IllegalArgumentException("shared entity identifier must be specified");
-		long begin = System.nanoTime();
-		try {
-	      	List result = (List)getHibernateTemplate().execute(
-	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
-                    		return session.createQuery("from org.kablink.teaming.domain.ShareItem where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
-                    				.setInteger("sharedEntityType", sharedEntityIdentifier.getEntityType().getValue())
-                    				.setLong("sharedEntityId", sharedEntityIdentifier.getEntityId())
-                    				.list();
-	                    }
-	                }
-	            );
-	      	
-	       return result;   	
-    	}
-    	finally {
-    		end(begin, "findShareItemsBySharedEntity(EntityIdentifier)");
-    	}	              	
- 	}
-	
-	@Override
- 	public List<ShareItem> findShareItemsBySharer(final Long sharerId) {
-		if(sharerId == null)
-			throw new IllegalArgumentException("sharer id must be specified");
-		long begin = System.nanoTime();
-		try {
-	      	List result = (List)getHibernateTemplate().execute(
-	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
-                    		return session.createQuery("from org.kablink.teaming.domain.ShareItem where creation_principal=:sharerId")
-                    				.setLong("sharerId", sharerId)
-                    				.list();
-	                    }
-	                }
-	            );
-	      	
-	       return result;   	
-    	}
-    	finally {
-    		end(begin, "findShareItemsBySharer(Long)");
-    	}	              	
-	}
-
-	@Override
- 	public List<ShareItem> findShareItemsBySharerAndRecipient(final Long sharerId, final ShareItemMember.RecipientType recipientType, final Long recipientId) {
-		long begin = System.nanoTime();
-		try {
-	      	List result = (List)getHibernateTemplate().execute(
-	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
-	                    	// Don't use alias of the first table to refer to property/column name associated with entity, 
-	                    	// since HQL won't treat it as nicely as it does without alias. 
-                    		return session.createQuery("from org.kablink.teaming.domain.ShareItem s join s.members m where creation_principal=:sharerId and m.recipientType=:recipientType and m.recipientId=:recipientId")
-                    				.setLong("sharerId", sharerId)
-                    				.setShort("recipientType", recipientType.getValue())
-                    				.setLong("recipientId", recipientId)
-                    				.list();
-	                    }
-	                }
-	            );
-	      	
-	       return result;   	
-    	}
-    	finally {
-    		end(begin, "findShareItemsBySharerAndRecipient(Long,ShareItemMember.RecipientType,Long)");
-    	}	              	
- 	}
- 	
-	@Override
- 	public List<ShareItem> findShareItemsByRecipient(final ShareItemMember.RecipientType recipientType, final Long recipientId) {
-		long begin = System.nanoTime();
-		try {
-	      	List result = (List)getHibernateTemplate().execute(
-	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
-	                    	// Don't use alias of the first table to refer to property/column name associated with entity, 
-	                    	// since HQL won't treat it as nicely as it does without alias. 
-                    		return session.createQuery("from org.kablink.teaming.domain.ShareItem s join s.members m where m.recipientType=:recipientType and m.recipientId=:recipientId")
-                    				.setShort("recipientType", recipientType.getValue())
-                    				.setLong("recipientId", recipientId)
-                    				.list();
-	                    }
-	                }
-	            );
-	      	
-	       return result;   	
-    	}
-    	finally {
-    		end(begin, "findShareItemsBySharerAndRecipient(Long,ShareItemMember.RecipientType,Long)");
-    	}	              	
- 	}
- 	
-	@Override
- 	public List<ShareItem> findShareItemsBySharerAndSharedEntity(final Long sharerId, final EntityIdentifier sharedEntityIdentifier) {
-		if(sharerId == null)
-			throw new IllegalArgumentException("sharer id must be specified");
-		if(sharedEntityIdentifier == null)
-			throw new IllegalArgumentException("shared entity identifier must be specified");
-		long begin = System.nanoTime();
-		try {
-	      	List result = (List)getHibernateTemplate().execute(
-	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
-                    		return session.createQuery("from org.kablink.teaming.domain.ShareItem where creation_principal=:sharerId and sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
-                    				.setLong("sharerId", sharerId)
-                    				.setInteger("sharedEntityType", sharedEntityIdentifier.getEntityType().getValue())
-                    				.setLong("sharedEntityId", sharedEntityIdentifier.getEntityId())
-                    				.list();
-	                    }
-	                }
-	            );
-	      	
-	       return result;   	
-    	}
-    	finally {
-    		end(begin, "findShareItemsBySharerAndSharedEntity(Long,EntityIdentifier)");
-    	}	              	
- 	}
- 	*/
- 	
-	@Override
- 	public Map<ShareItemMember.RecipientType, Set<Long>> getMemberIdsWithGrantedRightToSharedEntity(final EntityIdentifier sharedEntityIdentifier, final String rightName) {
+ 	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightToSharedEntity(final EntityIdentifier sharedEntityIdentifier, final String rightName) {
 		if(sharedEntityIdentifier == null)
 			throw new IllegalArgumentException("shared entity identifier must be specified");
 		long begin = System.nanoTime();
@@ -2453,7 +2319,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 						public Object doInHibernate(Session session) throws HibernateException {
 	                    	// Don't use alias of the first table to refer to property/column name associated with entity, 
 	                    	// since HQL won't treat it as nicely as it does without alias. 
-                    		return session.createQuery("select distinct m.recipientType, m.recipientId from org.kablink.teaming.domain.ShareItem s join s.members m where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId and m.rightSet." + rightName + "=:rightValue")
+                    		return session.createQuery("select distinct recipientType, recipientId from org.kablink.teaming.domain.ShareItem where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId and rightSet." + rightName + "=:rightValue")
                     				.setInteger("sharedEntityType", sharedEntityIdentifier.getEntityType().getValue())
                     				.setLong("sharedEntityId", sharedEntityIdentifier.getEntityId())
                     				.setBoolean("rightValue", true)
@@ -2468,18 +2334,18 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	              	
 	}
 	
-	private  Map<ShareItemMember.RecipientType, Set<Long>> recipientResultListToMap(List<Object[]> list) {
-      	Map<ShareItemMember.RecipientType, Set<Long>> result = new HashMap<ShareItemMember.RecipientType, Set<Long>>();
-      	result.put(ShareItemMember.RecipientType.user, new TreeSet<Long>());
-      	result.put(ShareItemMember.RecipientType.group, new TreeSet<Long>());
-      	result.put(ShareItemMember.RecipientType.team, new TreeSet<Long>());
+	private  Map<ShareItem.RecipientType, Set<Long>> recipientResultListToMap(List<Object[]> list) {
+      	Map<ShareItem.RecipientType, Set<Long>> result = new HashMap<ShareItem.RecipientType, Set<Long>>();
+      	result.put(ShareItem.RecipientType.user, new TreeSet<Long>());
+      	result.put(ShareItem.RecipientType.group, new TreeSet<Long>());
+      	result.put(ShareItem.RecipientType.team, new TreeSet<Long>());
       	Short recipientType;
       	Long recipientId;
        	for(Object[] o:list) {
        		recipientType = (Short) o[0];
        		recipientId = (Long) o[1];
        		try {
-       			result.get(ShareItemMember.RecipientType.valueOf(recipientType)).add(recipientId);
+       			result.get(ShareItem.RecipientType.valueOf(recipientType)).add(recipientId);
        		}
        		catch(Exception e) {
        			// This means that we encountered an invalid recipient type value in the database. Skip it.
@@ -2489,7 +2355,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 
 	@Override
- 	public Map<ShareItemMember.RecipientType, Set<Long>> getMemberIdsWithGrantedRightToSharedEntities(final Collection<EntityIdentifier> sharedEntityIdentifiers, final String rightName) {
+ 	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightToSharedEntities(final Collection<EntityIdentifier> sharedEntityIdentifiers, final String rightName) {
 		if(sharedEntityIdentifiers == null || sharedEntityIdentifiers.isEmpty())
 			throw new IllegalArgumentException("shared entity identifiers must be specified");
 		long begin = System.nanoTime();
@@ -2499,7 +2365,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    public Object doInHibernate(Session session) throws HibernateException {
 	                    	// Don't use alias of the first table to refer to property/column name associated with entity, 
 	                    	// since HQL won't treat it as nicely as it does without alias. 
-	                    	StringBuilder sb = new StringBuilder("select distinct m.recipientType, m.recipientId from org.kablink.teaming.domain.ShareItem s join s.members m where m.rightSet." + rightName + "=:rightValue and (");
+	                    	StringBuilder sb = new StringBuilder("select distinct recipientType, recipientId from org.kablink.teaming.domain.ShareItem where rightSet." + rightName + "=:rightValue and (");
 	                        int i = 0;
 	                    	for(EntityIdentifier sharedEntityIdentifier:sharedEntityIdentifiers) {
 	                    		if(i > 0)
@@ -2569,8 +2435,6 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    			crit.addOrder(Order.asc(selectSpec.orderByFieldName));
 	                    	}
 	                    	
-	                    	Criteria subCrit = crit.createCriteria("members");
-	                    	
 	                    	if(selectSpec.commentLikes != null && selectSpec.commentLikes.length > 0) {
 	                    		org.hibernate.criterion.Junction junction;
 	                    		if(selectSpec.commentLikesDisjunctive) 
@@ -2590,7 +2454,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    			disjunction.add(Restrictions.ge("endDate", selectSpec.endDateMin));
 	                    		else
 	                    			disjunction.add(Restrictions.gt("endDate", selectSpec.endDateMin));
-	                    		subCrit.add(disjunction);
+	                    		crit.add(disjunction);
 	                    	}
 	                    	if(selectSpec.endDateMax != null) {
 	                    		org.hibernate.criterion.Conjunction conjunction = Restrictions.conjunction();
@@ -2599,7 +2463,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    			conjunction.add(Restrictions.le("endDate", selectSpec.endDateMax));
 	                    		else
 	                    			conjunction.add(Restrictions.lt("endDate", selectSpec.endDateMax));
-	                    		subCrit.add(conjunction);
+	                    		crit.add(conjunction);
 	                    	}
 	                    	if((selectSpec.recipientUserIds != null && !selectSpec.recipientUserIds.isEmpty()) ||
 	                    			(selectSpec.recipientGroupIds != null && !selectSpec.recipientGroupIds.isEmpty()) ||
@@ -2608,19 +2472,19 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    		if(selectSpec.recipientUserIds != null && !selectSpec.recipientUserIds.isEmpty()) {
 	                    			disjunction.add(Restrictions.conjunction()
 	              							.add(Restrictions.in("recipientId", selectSpec.recipientUserIds))
-	              							.add(Restrictions.eq("recipientType", ShareItemMember.RecipientType.user.getValue())));
+	              							.add(Restrictions.eq("recipientType", ShareItem.RecipientType.user.getValue())));
 	                    		}
 	                    		if(selectSpec.recipientGroupIds != null && !selectSpec.recipientGroupIds.isEmpty()) {
 	                    			disjunction.add(Restrictions.conjunction()
 	              							.add(Restrictions.in("recipientId", selectSpec.recipientGroupIds))
-	              							.add(Restrictions.eq("recipientType", ShareItemMember.RecipientType.group.getValue())));
+	              							.add(Restrictions.eq("recipientType", ShareItem.RecipientType.group.getValue())));
 	                    		}
 	                    		if(selectSpec.recipientTeamIds != null && !selectSpec.recipientTeamIds.isEmpty()) {
 	                    			disjunction.add(Restrictions.conjunction()
 	              							.add(Restrictions.in("recipientId", selectSpec.recipientTeamIds))
-	              							.add(Restrictions.eq("recipientType", ShareItemMember.RecipientType.team.getValue())));
+	              							.add(Restrictions.eq("recipientType", ShareItem.RecipientType.team.getValue())));
 	                    		}
-	                    		subCrit.add(disjunction);
+	                    		crit.add(disjunction);
 	                    	}	               			
 	                    	if(selectSpec.onRights != null && !selectSpec.onRights.isEmpty()) {
 	                    		org.hibernate.criterion.Junction junction;
@@ -2630,7 +2494,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    			junction = Restrictions.conjunction();
 	                    		for(String rightName:selectSpec.onRights)
 	                    			junction.add(Restrictions.eq("rightSet." + rightName, true));
-	                    		subCrit.add(junction);
+	                    		crit.add(junction);
 	                    	}
 	                    	// Eager fetching of collections returns duplicates of the root objects, so we need to weed them out using a set.
 	                    	Set resultSet = new HashSet();
