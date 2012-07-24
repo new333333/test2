@@ -69,7 +69,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.ShareItemMember.RecipientType;
+import org.kablink.teaming.domain.ShareItem.RecipientType;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WfAcl;
@@ -678,7 +678,7 @@ public class EntityIndexUtils {
     	Set<EntityIdentifier> entityIdentifiers = new HashSet<EntityIdentifier>();
     	entityIdentifiers.add(entity.getEntityIdentifier());
      	ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
-     	Map<RecipientType, Set<Long>> idMap = profileDao.getMemberIdsWithGrantedRightToSharedEntities(
+     	Map<RecipientType, Set<Long>> idMap = profileDao.getRecipientIdsWithGrantedRightToSharedEntities(
      			entityIdentifiers, WorkAreaOperation.READ_ENTRIES.getName());
      	for (Long id : idMap.get(RecipientType.user)) {
      		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(entryAclField, id.toString())); 

@@ -107,7 +107,7 @@ import org.kablink.teaming.domain.NoZoneByTheIdException;
 import org.kablink.teaming.domain.NotifyStatus;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
-import org.kablink.teaming.domain.ShareItemMember;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
@@ -439,21 +439,14 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		   				.setLong("accessId", binder.getId())
 		   				.setParameter("accessType", SharedEntity.ACCESS_TYPE_TEAM)
 		   				.executeUpdate();
-			   			//delete share items and associated share item members where shared entity is this binder
-			   			//it's important to delete share item members first due to foreign key constraint
-	    	   			String sql = SPropsUtil.getString("delete.shareitemmember.query1." + DynamicDialect.getDatabaseType().name(), 
-	    	   					"DELETE sim FROM SS_ShareItemMember sim INNER JOIN SS_ShareItem si ON sim.shareItemId=si.id WHERE si.sharedEntity_type=:sharedEntityType and si.sharedEntity_id=:sharedEntityId");
-	    	   			session.createSQLQuery(sql)
-                    	.setInteger("sharedEntityType", binder.getEntityType().getValue())
-                    	.setLong("sharedEntityId", binder.getId())
-		   				.executeUpdate();
+			   			//delete share items where shared entity is this binder
 			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
                     	.setInteger("sharedEntityType", binder.getEntityType().getValue())
                     	.setLong("sharedEntityId", binder.getId())
 		   				.executeUpdate();
 			   			//delete share item members where recipient is this team
 			   			session.createSQLQuery("DELETE FROM SS_ShareItemMember WHERE recipient_type=:recipientType AND recipient_id=:recipientId")
-                    	.setShort("recipientType", ShareItemMember.RecipientType.team.getValue())
+                    	.setShort("recipientType", ShareItem.RecipientType.team.getValue())
                     	.setLong("recipientId", binder.getId())
 		   				.executeUpdate();
 			   			//delete tags on this binder
@@ -481,7 +474,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 				   				.executeUpdate();
 			   				
 		    	   			//delete folderentrystats associated with those affected entries
-		    	   			sql = SPropsUtil.getString("delete.folderentrystats.query." + DynamicDialect.getDatabaseType().name(), 
+		    	   			String sql = SPropsUtil.getString("delete.folderentrystats.query." + DynamicDialect.getDatabaseType().name(), 
 		    	   					"DELETE fes FROM SS_FolderEntryStats fes INNER JOIN SS_FolderEntries fe ON fes.id=fe.id WHERE fe.parentBinder=:binderId");
 		    	   			session.createSQLQuery(sql).setParameter("binderId", binder.getId()).executeUpdate();
 		    	   			

@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping auto-import="false">
-  <class table="SS_ShareItem" discriminator-value="A" name="org.kablink.teaming.domain.ShareItem">
+  <class table="SS_ShareItem" dynamic-update="true" lazy="false" dynamic-insert="false" name="org.kablink.teaming.domain.ShareItem">
     <id unsaved-value="null" name="id" type="long">
       <generator class="native">
       	<param name="sequence">ss_shareitem_id_sequence</param>
@@ -28,9 +28,32 @@
       <property name="type" column="sharedEntity_type" type="int" index="sharedEntity_shareitem"/>
       <property name="entityId" column="sharedEntity_id" index="sharedEntity_shareitem"/>
     </component>
-    <bag inverse="false" access="field" cascade="all,delete-orphan" lazy="false" name="members">
-      <key column="shareItemId"/>
-      <one-to-many class="org.kablink.teaming.domain.ShareItemMember"/>
-    </bag>
+    <property name="comment" length="255"/>
+    <property name="daysToExpire" type="int"/>
+    <property name="endDate" index="endDate_shareitem"/>
+    <property name="recipientType" column="recipient_type" access="field" type="short" index="recipient_shareitem"/>
+    <property name="recipientId" column="recipient_id" index="recipient_shareitem"/>
+    <component name="rightSet" class="org.kablink.teaming.domain.ShareItem$RightSet">
+    	<property name="createEntries" column="right_createEntries"/>
+    	<property name="modifyEntries" column="right_modifyEntries"/>
+    	<property name="modifyEntryFields" column="right_modifyEntryFields"/>
+    	<property name="deleteEntries" column="right_deleteEntries"/>
+    	<property name="readEntries" column="right_readEntries"/>
+    	<property name="addReplies" column="right_addReplies"/>
+    	<property name="generateReports" column="right_generateReports"/>
+    	<property name="binderAdministration" column="right_binderAdministration"/>
+    	<property name="createEntryAcls" column="right_createEntryAcls"/>
+    	<property name="changeAccessControl" column="right_changeAccessControl"/>
+    	<property name="createWorkspaces" column="right_createWorkspaces"/>
+    	<property name="createFolders" column="right_createFolders"/>
+    	<property name="manageEntryDefinitions" column="right_manageEntryDefs"/>
+    	<property name="manageWorkflowDefinitions" column="right_manageWorkflowDefs"/>
+    	<property name="creatorReadEntries" column="right_creatorReadEntries"/>
+    	<property name="creatorModifyEntries" column="right_creatorModifyEntries"/>
+    	<property name="creatorDeleteEntries" column="right_creatorDeleteEntries"/>
+    	<property name="ownerCreateEntryAcls" column="right_ownerCreateEntryAcls"/>
+    	<property name="addTags" column="right_addTags"/>
+    	<property name="viewBinderTitle" column="right_viewBinderTitle"/>
+    </component> 
   </class>
 </hibernate-mapping>

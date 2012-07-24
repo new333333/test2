@@ -57,7 +57,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
-import org.kablink.teaming.domain.ShareItemMember;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.ZoneConfig;
@@ -447,15 +447,15 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     		if(workArea instanceof DefinableEntity)
     			chain.add(((DefinableEntity)workArea).getEntityIdentifier());
     	}
-    	Map<ShareItemMember.RecipientType, Set<Long>> shareMembers = getProfileDao().getMemberIdsWithGrantedRightToSharedEntities(chain, workAreaOperation.getName());
+    	Map<ShareItem.RecipientType, Set<Long>> shareMembers = getProfileDao().getRecipientIdsWithGrantedRightToSharedEntities(chain, workAreaOperation.getName());
     	// Check if at least one entity in the ACL inheritance parentage chain grants the specified access to the user directly.
-    	if(shareMembers.get(ShareItemMember.RecipientType.user).contains(user.getId()))
+    	if(shareMembers.get(ShareItem.RecipientType.user).contains(user.getId()))
     		return true;
     	
     	// Check if at least one entity in the ACL inheritance parentage chain grants the specified access to the user through group membership.
     	if(userMembers == null)
     		userMembers = getProfileDao().getPrincipalIds(user);
-    	if(!Collections.disjoint(shareMembers.get(ShareItemMember.RecipientType.group), userMembers))
+    	if(!Collections.disjoint(shareMembers.get(ShareItem.RecipientType.group), userMembers))
     		return true;
     	
     	// Check if at least one entity in the ACL inheritance parentage chain grants the specified access to the user through team membership.
@@ -468,11 +468,11 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     				teamBinderIds.add(Long.valueOf((String)binder.get(Constants.DOCID_FIELD)));
     			} catch (Exception ignore) {};
     		}
-        	return (!Collections.disjoint(shareMembers.get(ShareItemMember.RecipientType.team), teamBinderIds));
+        	return (!Collections.disjoint(shareMembers.get(ShareItem.RecipientType.team), teamBinderIds));
     	}
     	else {
     		// Note: This implementation is used in production system.
-    		Set<Long> teamBinderIds = shareMembers.get(ShareItemMember.RecipientType.team);
+    		Set<Long> teamBinderIds = shareMembers.get(ShareItem.RecipientType.team);
     		Binder binder;
     		Set<Long> teamMemberIds;
     		for(Long teamBinderId:teamBinderIds) {

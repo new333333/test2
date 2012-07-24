@@ -31,12 +31,12 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.module.sharing.impl;
+
 import java.util.Collection;
 import java.util.List;
 
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -45,7 +45,6 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.ShareItem;
-import org.kablink.teaming.domain.ShareItemMember;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -54,9 +53,7 @@ import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
-import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 
 /**
@@ -177,10 +174,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		// Access check (throws error if not allowed)
 		checkAccess(shareItem, SharingOperation.addShareItem);
 		
-		Collection<ShareItemMember> members = shareItem.getMembers();
-		for(ShareItemMember member:members) {
-			member.setShareItem(shareItem);
-		}
 		getCoreDao().save(shareItem);
 		
 		//Index the entity that is being shared
@@ -197,10 +190,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		checkAccess(shareItem, SharingOperation.modifyShareItem);
 
 		// This should handle both persistent and detached instance.
-		Collection<ShareItemMember> members = shareItem.getMembers();
-		for(ShareItemMember member:members) {
-			member.setShareItem(shareItem);
-		}
 		getCoreDao().update(shareItem);
 		
 		//Index the entity that is being shared
@@ -218,10 +207,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			// Access check (throws error if not allowed)
 			checkAccess(shareItem, SharingOperation.deleteShareItem);
 			
-			Collection<ShareItemMember> members = shareItem.getMembers();
-			for(ShareItemMember member:members) {
-				member.setShareItem(null);
-			}
 			getCoreDao().delete(shareItem);
 			
 			//Index the entity that is being shared
