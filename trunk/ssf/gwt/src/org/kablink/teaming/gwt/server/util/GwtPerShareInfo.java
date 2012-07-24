@@ -34,7 +34,7 @@ package org.kablink.teaming.gwt.server.util;
 
 import java.util.Date;
 
-import org.kablink.teaming.domain.ShareItemMember.RecipientType;
+import org.kablink.teaming.domain.ShareItem.RecipientType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 
 /**
