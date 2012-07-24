@@ -38,7 +38,7 @@ import org.kablink.teaming.domain.ShareItem.RecipientType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 
 /**
- * Used to track shares in SharedWithMeItem and SharedByMeItem.
+ * Used to track shares in a GwtSharedMeItem.
  *
  * @author drfoster@novell.com
  */

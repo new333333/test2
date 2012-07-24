@@ -6391,6 +6391,22 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Returns true if a DefinableEntity is in the trash and false
+	 * otherwise.
+	 * 
+	 * @param item
+	 * 
+	 * @return
+	 */
+	public static boolean isEntityPreDeleted(DefinableEntity item) {
+		boolean reply;
+		if      (item instanceof Binder)      reply = GwtUIHelper.isBinderPreDeleted((Binder) item);
+		else if (item instanceof FolderEntry) reply = ((FolderEntry) item).isPreDeleted();
+		else                                  reply = false;
+		return reply;
+	}
+	
+	/**
 	 * Return true if the given group's membership is dynamic.
 	 */
 	public static Boolean isGroupMembershipDynamic( AllModulesInjected ami, Long groupId )
@@ -6409,22 +6425,6 @@ public class GwtServerHelper {
 		return Boolean.FALSE;
 	}
 
-	/**
-	 * Returns true if a DefinableEntity is pre-deleted and false
-	 * otherwise.
-	 * 
-	 * @param item
-	 * 
-	 * @return
-	 */
-	public static boolean isItemPreDeleted(DefinableEntity item) {
-		boolean reply;
-		if      (item instanceof Binder)      reply = GwtUIHelper.isBinderPreDeleted((Binder) item);
-		else if (item instanceof FolderEntry) reply = ((FolderEntry) item).isPreDeleted();
-		else                                  reply = false;
-		return reply;
-	}
-	
 	/*
 	 * Returns true if a Long is in a List<Long> and false otherwise.
 	 */
