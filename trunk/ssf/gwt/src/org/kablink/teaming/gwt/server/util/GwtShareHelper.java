@@ -425,9 +425,9 @@ public class GwtShareHelper
 	private static ShareItem getShareItemInfo(
 		AllModulesInjected ami,
 		User sharer,
+		ShareItem shareItem,
 		GwtShareItem gwtShareItem )
 	{
-		ShareItem shareItem;
 		Date endDate = null;
 		RecipientType recipientType;
 		Long recipientId;
@@ -504,7 +504,11 @@ public class GwtShareHelper
 		// Get the appropriate RightSet
 		rightSet = getRightSetFromShareRights( gwtShareItem.getShareRights() );
 		
-		shareItem = new ShareItem(
+		// Should we create a new ShareItem object?
+		if ( shareItem == null )
+		{
+			// Yes
+			shareItem = new ShareItem(
 								sharer,
 								entityIdentifier,
 								comments,
@@ -512,6 +516,12 @@ public class GwtShareHelper
 								recipientType,
 								recipientId,
 								rightSet );
+		}
+		else
+		{
+			// No, just update the given ShareItem.
+			shareItem.setComment( comments );
+		}
 		
 		return shareItem;
 	}
@@ -809,6 +819,7 @@ public class GwtShareHelper
 		SharingModule sharingModule;
 		GwtShareEntryResults results;
 		ArrayList<GwtShareItem> listOfGwtShareItems;
+		ArrayList<GwtShareItem> listOfGwtShareItemsToDelete;
 		User currentUser;
 		List emailErrors;
 
@@ -832,6 +843,22 @@ public class GwtShareHelper
 		currentUser = GwtServerHelper.getCurrentUser();
 		emailErrors = null;
 		
+		// Delete ShareItems that the user removed.
+		listOfGwtShareItemsToDelete = sharingData.getListOfToBeDeletedShareItems();
+		if ( listOfGwtShareItemsToDelete != null )
+		{
+			for ( GwtShareItem nextShareItem : listOfGwtShareItemsToDelete )
+			{
+				Long shareItemId;
+				
+				shareItemId = nextShareItem.getId();
+				if ( shareItemId != null )
+				{
+					sharingModule.deleteShareItem( shareItemId );
+				}
+			}
+		}
+		
 		// For each GwtShareItem, make the necessary updates to the database.
 		for (GwtShareItem nextGwtShareItem : listOfGwtShareItems)
 		{
@@ -843,7 +870,7 @@ public class GwtShareHelper
 			if ( shareItemId == null )
 			{
 				// No, create a ShareItem object
-				shareItem = getShareItemInfo( ami, currentUser, nextGwtShareItem );
+				shareItem = getShareItemInfo( ami, currentUser, null, nextGwtShareItem );
 
 				sharingModule.addShareItem( shareItem );
 			}
@@ -854,7 +881,10 @@ public class GwtShareHelper
 				if ( nextGwtShareItem.isDirty() )
 				{
 					// Yes
-					shareItem = getShareItemInfo( ami, currentUser, nextGwtShareItem );
+					
+					shareItem = sharingModule.getShareItem( shareItemId );
+					
+					getShareItemInfo( ami, currentUser, shareItem, nextGwtShareItem );
 					
 					sharingModule.modifyShareItem( shareItem );
 				}
