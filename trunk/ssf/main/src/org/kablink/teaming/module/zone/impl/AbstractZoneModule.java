@@ -631,8 +631,21 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		
 		if(version.intValue() <= 9) {
 			Function allowSharingRole = addAllowSharingRole(top);
-			Function allowExternalSharingRole = addAllowExternalSharingRole(top);
 		}
+		//Remove unused eEnableExternalSharing and AllowExternalSharing roles
+		WorkAreaOperation enableExternalSharing = WorkAreaOperation.getInstance("enableExternalSharing");
+		WorkAreaOperation allowExternalSharing = WorkAreaOperation.getInstance("allowExternalSharing");
+		//now remove the unused rights
+		List<Function>fns = getFunctionManager().findFunctions(top.getId(), enableExternalSharing);
+		for (Function fn:fns) {
+			fn.removeOperation(enableExternalSharing);
+		}
+		WorkAreaOperation.deleteInstance(enableExternalSharing.getName());
+		fns = getFunctionManager().findFunctions(top.getId(), allowExternalSharing);
+		for (Function fn:fns) {
+			fn.removeOperation(allowExternalSharing);
+		}
+		WorkAreaOperation.deleteInstance(allowExternalSharing.getName());
 		
   	}
  	/**
@@ -940,7 +953,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		Function binderRole = addBinderRole(top);
     		Function teamWsRole = addTeamWorkspaceRole(top);
     		Function allowSharingRole = addAllowSharingRole(top);
-    		Function allowExternalSharingRole = addAllowExternalSharingRole(top);
     		
     		//make sure allusers group and roles are defined, may be referenced by templates
     		getAdminModule().updateDefaultDefinitions(top.getId(), false);
@@ -1469,16 +1481,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getFunctionManager().addFunction(function);		
 		return function;
 	}
-	private Function addAllowExternalSharingRole(Workspace top) {
-		Function function = new Function();
-		function.setZoneId(top.getId());
-		function.setName(ObjectKeys.ROLE_TITLE_ALLOW_EXTERNAL_SHARING);
-		function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
-		function.addOperation(WorkAreaOperation.ALLOW_EXTERNAL_SHARING);
-		//generate functionId
-		getFunctionManager().addFunction(function);		
-		return function;
-	}
 	
 	private User getSynchronizationAgent(Long zoneId) {
 		try {
@@ -1623,17 +1625,14 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
 		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID)) {
-			function = new Function();
-			function.setZoneId(zoneConfig.getZoneId());
-			function.setName(ObjectKeys.ROLE_ENABLE_EXTERNAL_SHARING);
-			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
-			function.setInternalId(ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID);
-			function.addOperation(WorkAreaOperation.ENABLE_EXTERNAL_SHARING);
-			function.setZoneWide(true);
-			//generate functionId
-			getFunctionManager().addFunction(function);
-			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		if (functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID)) {
+			//This role is not used and should be deleted
+			function = (Function) functionInternalIds.get(ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID);
+			try{
+				getFunctionManager().deleteFunction(function);
+			} catch(Exception e) {
+				logger.warn("Could not delete 'Enable External Sharing' role");
+			}
 		}
 	}
 	

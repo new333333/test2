@@ -60,6 +60,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
@@ -68,6 +69,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ShareItemMember.RecipientType;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WfAcl;
@@ -78,6 +80,7 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -661,6 +664,32 @@ public class EntityIndexUtils {
     	}
     }
     
+    //Routine to add the sharing ids into the index doc
+    private static void addSharingIds(Document doc, DefinableEntity entity) {
+    	String entryAclField, teamAclField;
+    	if (entity instanceof FolderEntry) {
+    		entryAclField = Constants.ENTRY_ACL_FIELD;
+    		teamAclField = Constants.TEAM_ACL_FIELD;
+    	} else {
+    		entryAclField = Constants.FOLDER_ACL_FIELD;
+    		teamAclField = Constants.TEAM_ACL_FIELD;
+    	}
+    	Set<EntityIdentifier> entityIdentifiers = new HashSet<EntityIdentifier>();
+    	entityIdentifiers.add(entity.getEntityIdentifier());
+     	ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
+     	Map<RecipientType, Set<Long>> idMap = profileDao.getMemberIdsWithGrantedRightToSharedEntities(
+     			entityIdentifiers, WorkAreaOperation.READ_ENTRIES.getName());
+     	for (Long id : idMap.get(RecipientType.user)) {
+     		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(entryAclField, id.toString())); 
+     	}
+     	for (Long id : idMap.get(RecipientType.group)) {
+     		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(entryAclField, id.toString())); 
+     	}
+     	for (Long id : idMap.get(RecipientType.team)) {
+     		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(teamAclField, id.toString())); 
+     	}
+    }
+    
     private static void addEntryAcls(Document doc, Binder binder, Entry entry) {
 		//get real entry access
     	String[] acls = StringUtil.split(getEntryAclString(binder, entry), " ");
@@ -707,6 +736,8 @@ public class EntityIndexUtils {
 		String ownerStr = Constants.EMPTY_ACL_FIELD;
 		if (owner != null) ownerStr = owner.toString();  //TODO fix this
 		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.BINDER_OWNER_ACL_FIELD, ownerStr));    	
+		//Add sharing acls
+		addSharingIds(doc, binder);
     }
     //Add acl fields for binder for storage in dom4j documents.
     //In this case replace owner with real owner in _folderAcl
@@ -855,6 +886,8 @@ public class EntityIndexUtils {
 	    			markEntryAsInheritingAcls(doc, binder, (Entry)entry);
 	    		}
        		}
+       		//Finally, add in the sharing acls
+       		addSharingIds(doc, entry);
     	} else if (entry instanceof User) {
             // Add the Entry_ACL field
     		String[] acls = StringUtil.split(getUserEntryAccess((User)entry), " ");
@@ -865,6 +898,8 @@ public class EntityIndexUtils {
 
     	} else {
     		addReadAccess(doc, binder, fieldsOnly);
+       		//Finally, add in the sharing acls
+       		addSharingIds(doc, binder);
     	}
 	}
     //This is used to store the "read" acls in a document that is not a search document

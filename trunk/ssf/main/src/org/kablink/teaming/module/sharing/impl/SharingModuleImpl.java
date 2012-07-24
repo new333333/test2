@@ -85,25 +85,15 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		switch (operation) {
 		case addShareItem:
 			//Make sure sharing is enabled at the zone level for this type of user
-			if (user.isExternalUser()) {
-				accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_EXTERNAL_SHARING);
-			}
-			else {
-				accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING);
-			}
+			accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING);
+
 			//Check that the user is either the entity owner, or has the right to share entities
-			if (user.isExternalUser()) {
-				if (accessControlManager.testOperation(user, (WorkArea) shareItem, WorkAreaOperation.ALLOW_EXTERNAL_SHARING)) {
-					return;
-				}
-			} else {
-				if (accessControlManager.testOperation(user, (WorkArea) shareItem, WorkAreaOperation.ALLOW_SHARING)) {
-					return;
-				}
-			}
-			//User didn't have AllowSharing, so now check if user is owner of the entity
 			if (entityIdentifier.getEntityType().equals(EntityType.folderEntry)) {
 				FolderEntry fe = getFolderModule().getEntry(null, entityIdentifier.getEntityId());
+				if (accessControlManager.testOperation(user, fe, WorkAreaOperation.ALLOW_SHARING)) {
+					return;
+				}
+				//User didn't have AllowSharing, so now check if user is owner of the entity
 				if (user.getId().equals(fe.getCreation().getPrincipal().getId())) {
 					//This is the owner of the entry. Allow the sharing.
 					return;
@@ -111,6 +101,10 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			} else if (entityIdentifier.getEntityType().equals(EntityType.folder) ||
 					entityIdentifier.getEntityType().equals(EntityType.workspace)) {
 				Binder binder = getBinderModule().getBinder(entityIdentifier.getEntityId());
+				if (accessControlManager.testOperation(user, binder, WorkAreaOperation.ALLOW_SHARING)) {
+					return;
+				}
+				//User didn't have AllowSharing, so now check if user is owner of the entity
 				if (user.getId().equals(binder.getCreation().getPrincipal().getId())) {
 					//This is the owner of the binder. Allow the sharing.
 					return;
@@ -188,6 +182,9 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			member.setShareItem(shareItem);
 		}
 		getCoreDao().save(shareItem);
+		
+		//Index the entity that is being shared
+		indexSharedEntity(shareItem);
 	}
 	
 	/* (non-Javadoc)
@@ -205,6 +202,9 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			member.setShareItem(shareItem);
 		}
 		getCoreDao().update(shareItem);
+		
+		//Index the entity that is being shared
+		indexSharedEntity(shareItem);
 	}
 	
 	/* (non-Javadoc)
@@ -223,6 +223,9 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				member.setShareItem(null);
 			}
 			getCoreDao().delete(shareItem);
+			
+			//Index the entity that is being shared
+			indexSharedEntity(shareItem);
 		}
 		catch(NoShareItemByTheIdException e) {
 			// already gone, ok
@@ -235,9 +238,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	public ShareItem getShareItem(Long shareItemId)
 			throws NoShareItemByTheIdException {
 		// Access check
-		// There is no access check on getting shareItems. 
+		// There is no access check on getting shareItems due to performance concerns. 
 		// We are counting on the UI to not show items that the user is not allowed to see.
-		
 		return getProfileDao().loadShareItem(shareItemId);
 	}
 	
@@ -247,7 +249,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	@Override
 	public List<ShareItem> getShareItems(Collection<Long> shareItemIds) {
 		// Access check?
-		// There is no access check on getting shareItems. 
+		// There is no access check on getting shareItems due to performance concerns. 
 		// We are counting on the UI to not show items that the user is not allowed to see.
 		return getProfileDao().loadShareItems(shareItemIds);
 	}
@@ -258,7 +260,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	@Override
 	public List<ShareItem> getShareItems(ShareItemSelectSpec selectSpec) {
 		// Access check?
-		// There is no access check on getting shareItems. 
+		// There is no access check on getting shareItems due to performance concerns. 
 		// We are counting on the UI to not show items that the user is not allowed to see.
 		return getProfileDao().findShareItems(selectSpec);
 	}
@@ -294,6 +296,18 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
+	}
+	
+	//Routine to re-index an entity after a change in sharing
+	protected void indexSharedEntity(ShareItem shareItem) {
+		DefinableEntity entity = getSharedEntity(shareItem);
+		if (entity.getEntityType() == EntityType.folderEntry) {
+			folderModule.indexEntry((FolderEntry) entity, Boolean.TRUE);
+		}
+		else if (entity.getEntityType() == EntityIdentifier.EntityType.folder || 
+				entity.getEntityType() == EntityIdentifier.EntityType.workspace) {
+			binderModule.indexBinder(entity.getId());
+		}
 	}
 
 }
