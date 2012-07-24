@@ -60,9 +60,6 @@ public interface SharingModule {
 	public void checkAccess(ShareItem shareItem, SharingOperation operation)
     	throws AccessControlException;
 
-    public void checkAccess(Long shareItemId, User user)
-		throws AccessControlException;
-    
     /**
      * Add a share item.
      * 

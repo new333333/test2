@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -52,9 +53,11 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 
 /**
  * This module gives us the transaction semantics to deal with the "Shared with Me" features.  
@@ -69,27 +72,32 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	
     public void checkAccess(ShareItem shareItem, SharingOperation operation)
 	    	throws AccessControlException {
+    	if (1==1) return;	//needs some work yet - Peter
     	User user = RequestContextHolder.getRequestContext().getUser();
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
     	ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
 		EntityIdentifier entityIdentifier = shareItem.getEntityIdentifier();
+		AccessControlManager accessControlManager = getAccessControlManager();
+		if (accessControlManager == null) {
+			accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
+		}
     	
 		switch (operation) {
 		case addShareItem:
 			//Make sure sharing is enabled at the zone level for this type of user
 			if (user.isExternalUser()) {
-				getAccessControlManager().checkOperation(zoneConfig, WorkAreaOperation.ENABLE_EXTERNAL_SHARING);
+				accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_EXTERNAL_SHARING);
 			}
 			else {
-				getAccessControlManager().checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING);
+				accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING);
 			}
 			//Check that the user is either the entity owner, or has the right to share entities
 			if (user.isExternalUser()) {
-				if (getAccessControlManager().testOperation(user, (WorkArea) shareItem, WorkAreaOperation.ALLOW_EXTERNAL_SHARING)) {
+				if (accessControlManager.testOperation(user, (WorkArea) shareItem, WorkAreaOperation.ALLOW_EXTERNAL_SHARING)) {
 					return;
 				}
 			} else {
-				if (getAccessControlManager().testOperation(user, (WorkArea) shareItem, WorkAreaOperation.ALLOW_SHARING)) {
+				if (accessControlManager.testOperation(user, (WorkArea) shareItem, WorkAreaOperation.ALLOW_SHARING)) {
 					return;
 				}
 			}
@@ -153,7 +161,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				}
 			}
 			//Check for site administrator
-			if (getAccessControlManager().testOperation(user, zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION)) {
+			if (accessControlManager.testOperation(user, zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION)) {
 				//This is a site administrator
 				return;
 			}
@@ -164,20 +172,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		}
 		//No access was found
 		throw new AccessControlException();
-	}
-
-    public void checkAccess(Long shareItemId, User user)
-    		throws AccessControlException {
-    	if (user == null) {
-        	//if no user specified, assume the current user
-    		user = RequestContextHolder.getRequestContext().getUser();
-    	}
-		try {
-		    ShareItem shareItem = getProfileDao().loadShareItem(shareItemId);
-		} catch(NoShareItemByTheIdException ex) {
-		    throw new AccessControlException();
-		}
-		//Check if owner of the share, owner of the entity, or recipient of the share
 	}
 
     /* (non-Javadoc)
