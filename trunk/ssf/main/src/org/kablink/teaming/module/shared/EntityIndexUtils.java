@@ -690,6 +690,48 @@ public class EntityIndexUtils {
      	}
     }
     
+    //Routine to add the sharing ids into the index doc
+    private static void addSharingIds(org.dom4j.Element parent, DefinableEntity entity) {
+    	String entryAclField, teamAclField;
+    	if (entity instanceof FolderEntry) {
+    		entryAclField = Constants.ENTRY_ACL_FIELD;
+    		teamAclField = Constants.TEAM_ACL_FIELD;
+    	} else {
+    		entryAclField = Constants.FOLDER_ACL_FIELD;
+    		teamAclField = Constants.TEAM_ACL_FIELD;
+    	}
+    	Set<EntityIdentifier> entityIdentifiers = new HashSet<EntityIdentifier>();
+    	entityIdentifiers.add(entity.getEntityIdentifier());
+     	ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
+     	Map<RecipientType, Set<Long>> idMap = profileDao.getMemberIdsWithGrantedRightToSharedEntities(
+     			entityIdentifiers, WorkAreaOperation.READ_ENTRIES.getName());
+     	org.dom4j.Element aclEle = (org.dom4j.Element) parent.selectSingleNode(entryAclField);
+     	if (!idMap.get(RecipientType.user).isEmpty() || !idMap.get(RecipientType.group).isEmpty()) {
+     		if (aclEle == null) {
+     			aclEle = parent.addElement(entryAclField);
+     		}
+	     	String text = aclEle.getText().trim();
+	     	for (Long id : idMap.get(RecipientType.user)) {
+	     		text += " " + id.toString(); 
+	     	}
+	     	for (Long id : idMap.get(RecipientType.group)) {
+	     		text += " " + id.toString(); 
+	     	}
+	     	aclEle.setText(text);
+     	}
+     	aclEle = (org.dom4j.Element) parent.selectSingleNode(teamAclField);
+     	if (!idMap.get(RecipientType.team).isEmpty()) {
+     		if (aclEle == null) {
+     			aclEle = parent.addElement(teamAclField);
+     		}
+	     	String text = aclEle.getText().trim();
+	     	for (Long id : idMap.get(RecipientType.team)) {
+	     		text += " " + id.toString(); 
+	     	}
+	     	aclEle.setText(text);
+     	}
+    }
+    
     private static void addEntryAcls(Document doc, Binder binder, Entry entry) {
 		//get real entry access
     	String[] acls = StringUtil.split(getEntryAclString(binder, entry), " ");
@@ -759,6 +801,8 @@ public class EntityIndexUtils {
    			tms = tms + " " + Constants.READ_ACL_GLOBAL + " " + Constants.READ_ACL_ALL;
    		}
    		acl.setText(tms);
+   		//Add sharing ids
+   		addSharingIds(parent, binder);
     }
     
     public static void addReadAccess(Document doc, Binder binder, boolean fieldsOnly) {
@@ -922,6 +966,8 @@ public class EntityIndexUtils {
 	       		}
 	       		acl.setText(getWfEntryAccess(wEntry));
 	       	}
+     		//Add sharing ids
+     		addSharingIds(parent, entry);
        		//add binder access
     		addBinderAcls(parent, binder);
 
