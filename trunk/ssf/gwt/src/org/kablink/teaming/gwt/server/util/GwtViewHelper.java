@@ -300,25 +300,25 @@ public class GwtViewHelper {
 	 * Returns an entry map that represents a List<GwtSharedMeItem>.
 	 */
 	@SuppressWarnings("unchecked")
-	private static Map buildSearchMapFromSharedWithMeList(AllModulesInjected bs, List<GwtSharedMeItem> shareItems, String quickFilter, boolean sortDescend, String sortBy) {
+	private static Map buildSearchMapFromSharedMeList(AllModulesInjected bs, List<GwtSharedMeItem> shareItems, String quickFilter, boolean sortDescend, String sortBy) {
 		List<Map> searchEntries = new ArrayList<Map>();
 		for (GwtSharedMeItem si:  shareItems) {
 			// Create an entry Map for this GwtSharedMeItem.
 			Map entryMap = new HashMap();
 			searchEntries.add(entryMap);
 
-			// Store the item's ID.
+			// Store the share item's ID.
 			entryMap.put("shareId",  String.valueOf(si.getId()));
 
 			// Are we processing an entry?
-			DefinableEntity	item = si.getItem();
-			entryMap.put(Constants.DOCID_FIELD,  String.valueOf(item.getId()));
-			entryMap.put(Constants.ENTITY_FIELD, item.getEntityType().name());
-			entryMap.put(Constants.TITLE_FIELD,  item.getTitle());
-			if (item instanceof FolderEntry) {
+			DefinableEntity	entity = si.getEntity();
+			entryMap.put(Constants.DOCID_FIELD,  String.valueOf(entity.getId()));
+			entryMap.put(Constants.ENTITY_FIELD, entity.getEntityType().name());
+			entryMap.put(Constants.TITLE_FIELD,  entity.getTitle());
+			String binderIdField;
+			if (entity instanceof FolderEntry) {
 				// Yes!  Scan its attachments.
-				FolderEntry					fe   = ((FolderEntry) item);
-				Collection<FileAttachment>	atts = fe.getFileAttachments();
+				Collection<FileAttachment>	atts = entity.getFileAttachments();
 		        for (FileAttachment fa : atts) {
 		        	// Does this attachment have a filename?
 		        	String fName = fa.getFileItem().getName();
@@ -331,22 +331,22 @@ public class GwtViewHelper {
 		        }
 				
 				// Store the entry's parent binder's ID in the Map.
-				entryMap.put(
-					Constants.BINDER_ID_FIELD,
-					String.valueOf(fe.getParentBinder().getId()));
+				binderIdField = Constants.BINDER_ID_FIELD;
 			}
 			
 			else {
 				// No, we aren't processing an entry!  It must be a
 				// binder!  Store its parent's ID in the Map.
-				Binder binder = ((Binder) item);
-				entryMap.put(
-					Constants.BINDERS_PARENT_ID_FIELD,
-					String.valueOf(binder.getParentBinder().getId()));
+				binderIdField = Constants.BINDERS_PARENT_ID_FIELD;
 			}
+			
+			// Store the binder ID in the Map.
+			entryMap.put(
+				binderIdField,
+				String.valueOf(entity.getParentBinder().getId()));
 
 			// If we can get a family for the entity...
-			String family = getFolderEntityFamily(bs, item);
+			String family = getFolderEntityFamily(bs, entity);
 			if (MiscUtil.hasString(family)) {
 				// ...store it in the entry map.
 				entryMap.put(Constants.FAMILY_FIELD, family);
@@ -425,9 +425,12 @@ public class GwtViewHelper {
 				MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
 			}
 			
-			// Scan this FolderRow's shared by's tracking each unique
+			// Scan this FolderRow's shared by/with's tracking each unique
 			// ID.
 			for (AssignmentInfo ai:  getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY)) {
+				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+			}
+			for (AssignmentInfo ai:  getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH)) {
 				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
 		}
@@ -486,7 +489,8 @@ public class GwtViewHelper {
 			fixupAITeams( getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  teamTitles,      teamCounts                     );
 			fixupAITeams( getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            teamTitles,      teamCounts                     );
 			
-			fixupAIs(     getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY),                               principalTitles, userPresence, presenceUserWSIds);
+			fixupAIs(     getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY),                         principalTitles, userPresence, presenceUserWSIds);
+			fixupAIs(     getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       principalTitles, userPresence, presenceUserWSIds);
 		}		
 
 		// Finally, one last scan through the List<FolderRow>'s...
@@ -505,7 +509,8 @@ public class GwtViewHelper {
 			Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  comparator);
 			Collections.sort(getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            comparator);
 			
-			Collections.sort(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY),                               comparator);
+			Collections.sort(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY),                         comparator);
+			Collections.sort(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       comparator);
 		}
 	}
 
@@ -573,7 +578,7 @@ public class GwtViewHelper {
 	 * Converts a List<ShareItem> into a List<GwtShareMeItem>
 	 * representing the 'Shared by Me' items.
 	 */
-	private static List<GwtSharedMeItem> convertSIListToByMeList(AllModulesInjected bs, List<ShareItem> shareItems, Long userId) {
+	private static List<GwtSharedMeItem> convertItemListToByMeList(AllModulesInjected bs, List<ShareItem> shareItems, Long userId) {
 		// Allocate a List<GwtSharedMeItem> to hold the converted
 		// List<ShareItem> information.
 		List<GwtSharedMeItem> reply = new ArrayList<GwtSharedMeItem>();
@@ -584,34 +589,29 @@ public class GwtViewHelper {
 			return reply;
 		}
 
-		// Scan the share items in the List<ShareItem>.
+		// Scan the share items.
 		SharingModule sm = bs.getSharingModule();
-		for (ShareItem siScan:  shareItems) {
-			// Is this item in the trash?
-			DefinableEntity siScanItem = sm.getSharedEntity(siScan);
-			if (GwtServerHelper.isItemPreDeleted(siScanItem)) {
-				// Yes!  Skip it.
-				continue;
-			}
-			
-			// Is this item expired?
-			if (siScan.isExpired()) {
+		for (ShareItem si:  shareItems) {
+			// Is this share item's entity in the trash?
+			DefinableEntity siEntity = sm.getSharedEntity(si);
+			if (GwtServerHelper.isEntityPreDeleted(siEntity)) {
 				// Yes!  Skip it.
 				continue;
 			}
 			
 			// Create a new GwtSharedMeItem?
-			GwtSharedMeItem si = new GwtSharedMeItem(
-				siScan.getId(),										// ID of the share.
-				siScan.getModification().getPrincipal().getId());	// ID of the sharer.
-			si.setItem(siScanItem);
+			GwtSharedMeItem meItem = new GwtSharedMeItem(
+				si.getId(),	// ID of the share.
+				userId);	// ID of the sharer.
+			meItem.setEntity(      siEntity);
+			meItem.addPerShareInfo(si      );
 
 			// Has the GwtSharedMeItem actually been shared by the
 			// current user?
-			if (si.isShared()) {
+			if (meItem.isShared()) {
 				// Yes!  Add it to the reply
 				// List<GwtSharedMeItem> we're building to return.
-				reply.add(si);
+				reply.add(meItem);
 			}
 		}
 		
@@ -622,62 +622,61 @@ public class GwtViewHelper {
 	
 	/*
 	 * Converts a List<ShareItem> into a List<GwtShareMeItem>
-	 * representing the 'Shared With Me' items.
+	 * representing the 'Shared with Me' items.
 	 */
-	private static List<GwtSharedMeItem> convertSIListToWithMeList(AllModulesInjected bs, List<ShareItem> shareItems, Long userId, List<Long> teams, List<Long> groups) {
-		// Allocate a List<GwtSharedMeItem> to hold the condensed
+	private static List<GwtSharedMeItem> convertItemListToWithMeList(AllModulesInjected bs, List<ShareItem> shareItems, Long userId, List<Long> teams, List<Long> groups) {
+		// Allocate a List<GwtSharedMeItem> to hold the converted
 		// List<ShareItem> information.
 		List<GwtSharedMeItem> reply = new ArrayList<GwtSharedMeItem>();
 		
-		// If we don't have any share items to condense...
+		// If we don't have any share items to convert...
 		if ((null == shareItems) || shareItems.isEmpty()) {
 			// ...return the empty reply list.
 			return reply;
 		}
 
-		// Scan the share items in the List<ShareItem>.
+		// Scan the share items.
 		SharingModule sm = bs.getSharingModule();
-		for (ShareItem siScan:  shareItems) {
-			// Is this item in the trash?
-			DefinableEntity siScanItem = sm.getSharedEntity(siScan);
-			if (GwtServerHelper.isItemPreDeleted(siScanItem)) {
+		for (ShareItem si:  shareItems) {
+			// Is this share item expired?
+			if (si.isExpired()) {
 				// Yes!  Skip it.
 				continue;
 			}
 			
-			// Is this item expired?
-			if (siScan.isExpired()) {
+			// Is this share item's entity in the trash?
+			DefinableEntity siEntity = sm.getSharedEntity(si);
+			if (GwtServerHelper.isEntityPreDeleted(siEntity)) {
 				// Yes!  Skip it.
 				continue;
 			}
 			
 			// Create a new GwtSharedMeItem?
-			GwtSharedMeItem si = new GwtSharedMeItem(
-				siScan.getId(),										// ID of the share.
-				siScan.getModification().getPrincipal().getId());	// ID of the sharer.
-			si.setItem(siScanItem);
+			GwtSharedMeItem meItem = new GwtSharedMeItem(
+				si.getId(),										// ID of the share.
+				si.getModification().getPrincipal().getId());	// ID of the sharer.
+			meItem.setEntity(siEntity);
 
 			// Is this member directed to this user, one of the
 			// user's groups or one of the user's teams?
-			Long rId = siScan.getRecipientId();
-			switch (siScan.getRecipientType()) {
+			Long rId = si.getRecipientId();
+			switch (si.getRecipientType()) {
 			case user:   if (userId.equals(  rId)) break; continue;	// Checks the user...
 			case group:  if (groups.contains(rId)) break; continue;	// ...check the user's groups...
 			case team:   if (teams.contains( rId)) break; continue;	// ...and check the user's teams.
 			default:                                      continue;
 			}
 					
-			// The member isn't expired and it belongs with
-			// this user!  Add the rights information about it
-			// to the GwtSharedMeItem.
-			si.addPerShareInfo(siScan);
+			// The recipient belongs with this user!  Add the
+			// information about it to the GwtSharedMeItem.
+			meItem.addPerShareInfo(si);
 
 			// Has the GwtSharedMeItem actually been shared with
 			// the current user?
-			if (si.isShared()) {
+			if (meItem.isShared()) {
 				// Yes!  Add it to the reply
 				// List<GwtSharedMeItem> we're building to return.
-				reply.add(si);
+				reply.add(meItem);
 			}
 		}
 		
@@ -1460,14 +1459,16 @@ public class GwtViewHelper {
 		for (GwtPerShareInfo si:  perShareInfos) {
 			// ...creating an individual AssignmentInfo for each
 			// ...recipient.
-			AssigneeType at;
+			AssigneeType assigneeType;
 			switch (si.getRecipientType()) {
-			default:     at = null;                    continue;
-			case user:   at = AssigneeType.INDIVIDUAL; break;
-			case group:  at = AssigneeType.GROUP;      break;
-			case team:   at = AssigneeType.TEAM;       break;
+			default:     assigneeType = null;                    continue;
+			case user:   assigneeType = AssigneeType.INDIVIDUAL; break;
+			case group:  assigneeType = AssigneeType.GROUP;      break;
+			case team:   assigneeType = AssigneeType.TEAM;       break;
 			}
-			AssignmentInfo ai = AssignmentInfo.construct(si.getRecipientId(), at);
+			AssignmentInfo ai = AssignmentInfo.construct(
+				si.getRecipientId(),
+				assigneeType);
 			reply.add(ai);
 		}
 
@@ -1486,7 +1487,9 @@ public class GwtViewHelper {
 		List<AssignmentInfo> reply = new ArrayList<AssignmentInfo>();
 
 		// Create an individual AssignmentInfo for the sharer.
-		AssignmentInfo ai = AssignmentInfo.construct(sharerId, AssigneeType.INDIVIDUAL);
+		AssignmentInfo ai = AssignmentInfo.construct(
+			sharerId,
+			AssigneeType.INDIVIDUAL);
 		reply.add(ai);
 
 		// If we get here, reply refers to the List<AssignmentInfo>
@@ -1770,58 +1773,28 @@ public class GwtViewHelper {
 			break;
 
 		case SHARED_BY_ME:
-//!			...this needs to be implemented...
-
-			// Search for anything in within the binder or below...
-			crit.add(in(Constants.ENTRY_ANCESTRY,   new String[]{String.valueOf(binder.getId())}));
-
-			// ...thats a file folder...
-    		disj = disjunction();
-			crit.add(disj);
-    		conj = conjunction();
-			conj.add(in(Constants.DOC_TYPE_FIELD,   new String[]{Constants.DOC_TYPE_BINDER}));
-			conj.add(in(Constants.FAMILY_FIELD,     fileFamilies));
-			conj.add(in(Constants.IS_LIBRARY_FIELD, new String[]{Constants.TRUE}));
-			disj.add(conj);
-
-			// ...or a top level file entry (no replies.)
-    		conj = conjunction();
-			conj.add(in(Constants.DOC_TYPE_FIELD,   new String[]{Constants.DOC_TYPE_ENTRY}));
-			conj.add(in(Constants.FAMILY_FIELD,     fileFamilies));
-			conj.add(in(Constants.ENTRY_TYPE_FIELD, new String[]{Constants.ENTRY_TYPE_ENTRY}));
-			disj.add(conj);
-			
-			break;
-			
 		case SHARED_WITH_ME:
-			// Can we access the ID of the top workspace?
-			if (!(MiscUtil.hasString(topWSId))) {
-				// No!  Then we can't search for things that have been
-				// shared with me.  Bail.
-				return buildEmptyEntryMap();
-			}
-
 			// Do we have any shares to analyze?
 			if ((null == shareItems) || shareItems.isEmpty()) {
 				// No!  Bail.
 				return buildEmptyEntryMap();
 			}
 			
-			// Scan the item that have been shared with the current
+			// Scan the items that have been shared by/with the current
 			// user...
 			List<String>	sharedBinderIds = new ArrayList<String>();
 			List<String>	sharedEntryIds  = new ArrayList<String>();
 			for (GwtSharedMeItem si:  shareItems) {
 				// ...tracking each as a binder or entry.
-				DefinableEntity de = si.getItem();
-				String deId = String.valueOf(de.getId());
-				if (de.getEntityType().equals(EntityType.folderEntry))
-				     sharedEntryIds.add( deId);
-				else sharedBinderIds.add(deId);
+				DefinableEntity	entity = si.getEntity();
+				String			entityId = String.valueOf(entity.getId());
+				if (entity.getEntityType().equals(EntityType.folderEntry))
+				     sharedEntryIds.add( entityId);
+				else sharedBinderIds.add(entityId);
 			}
 			
 			// Do we have any binders or entries that have been shared
-			// with the current user?
+			// by/with the current user?
 			boolean hasSharedBinders = (!(sharedBinderIds.isEmpty()));
 			boolean hasSharedEntries = (!(sharedEntryIds.isEmpty()));
 			if ((!hasSharedBinders) && (!hasSharedEntries)) {
@@ -1830,7 +1803,7 @@ public class GwtViewHelper {
 			}
 			
 			return
-				buildSearchMapFromSharedWithMeList(
+				buildSearchMapFromSharedMeList(
 					bs,
 					shareItems,
 					quickFilter,
@@ -1969,7 +1942,7 @@ public class GwtViewHelper {
 			// types for the requested binders.
 			EntryTypesRpcResponseData reply = new EntryTypesRpcResponseData();
 			
-			// Scan the binder's whose entry types are being requested.
+			// Scan the binders whose entry types are being requested.
 			for (Long binderId:  binderIds) {
 				// Scan this binder's entry definitions...
 				SortedMap<String, Definition> binderDefs = DefinitionHelper.getAvailableDefinitions(binderId, Definition.FOLDER_ENTRY);
@@ -2544,8 +2517,8 @@ public class GwtViewHelper {
 				pinnedEntrySearchMaps = null;
 			}
 
-			// If we're working with a 'Shared with Me' collection, get
-			// the shared items.
+			// If we're working with a 'Shared by/with Me' collection,
+			// get the shared items.
 			List<GwtSharedMeItem> 	shareItems;
 			boolean					isCollectionSharedByMe   = (isCollection && CollectionType.SHARED_BY_ME.equals(  folderInfo.getCollectionType()));
 			boolean					isCollectionSharedWithMe = (isCollection && CollectionType.SHARED_WITH_ME.equals(folderInfo.getCollectionType()));
@@ -2642,7 +2615,7 @@ public class GwtViewHelper {
 								// Yes!  Can we find the
 								// GwtSharedMeItem for this row?
 								List<AssignmentInfo>	sharerAIs = null;
-								GwtSharedMeItem			si        = GwtSharedMeItem.findItemInList(searchId, isEntityFolderEntry, docId, shareItems);
+								GwtSharedMeItem			si        = GwtSharedMeItem.findEntityInList(searchId, isEntityFolderEntry, docId, shareItems);
 								if (null != si) {
 									// Yes!  Use it to construct a
 									// List<AssignmentInfo>.
@@ -2668,7 +2641,7 @@ public class GwtViewHelper {
 								// Yes!  Can we find the
 								// GwtSharedMeItem for this row?
 								List<AssignmentInfo>	recipientAIs = null;
-								GwtSharedMeItem			si           = GwtSharedMeItem.findItemInList(searchId, isEntityFolderEntry, docId, shareItems);
+								GwtSharedMeItem			si           = GwtSharedMeItem.findEntityInList(searchId, isEntityFolderEntry, docId, shareItems);
 								if (null != si) {
 									// Yes!  Use it to construct a
 									// List<AssignmentInfo>.
@@ -2696,7 +2669,7 @@ public class GwtViewHelper {
 								// GwtSharedMeItem for this row?
 								Date			rightsExpire = null;
 								ShareRights		rights       = null;
-								GwtSharedMeItem	si           = GwtSharedMeItem.findItemInList(searchId, isEntityFolderEntry, docId, shareItems);
+								GwtSharedMeItem	si           = GwtSharedMeItem.findEntityInList(searchId, isEntityFolderEntry, docId, shareItems);
 								if (null != si) {
 									// Yes!  Get the share rights from
 									// it...
@@ -3608,7 +3581,7 @@ public class GwtViewHelper {
 
 		// ...and finally, convert the List<ShareItem> into a
 		// ...List<GwtShareMeItem> and return that.
-		List<GwtSharedMeItem> siList = convertSIListToByMeList(bs, shareItems, userId);
+		List<GwtSharedMeItem> siList = convertItemListToByMeList(bs, shareItems, userId);
 		return siList;
 	}
 	
@@ -3635,7 +3608,7 @@ public class GwtViewHelper {
 
 		// ...and finally, convert the List<ShareItem> into a
 		// ...List<GwtShareMeItem> and return that.
-		List<GwtSharedMeItem> siList = convertSIListToWithMeList(bs, shareItems, userId, teams, groups);
+		List<GwtSharedMeItem> siList = convertItemListToWithMeList(bs, shareItems, userId, teams, groups);
 		return siList;
 	}
 	
