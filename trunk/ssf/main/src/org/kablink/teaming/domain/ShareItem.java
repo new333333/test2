@@ -110,6 +110,22 @@ public class ShareItem extends BaseEntity {
 			getMembers().remove(memberToDelete);
 	}
 	
+	public void updateMember(ShareItemMember updatedMember) {
+		ShareItemMember existingMember = getMember(updatedMember.getId());
+		if(existingMember == null)
+			return; // It doesn't represent an existing member
+		if(existingMember == updatedMember)
+			return; // They are the same. Nothing to do.
+		// Update the member by copying the state.
+		existingMember.setId(updatedMember.getId());
+		existingMember.setShareItem(updatedMember.getShareItem());
+		existingMember.setComment(updatedMember.getComment());
+		existingMember.setDaysToExpire(updatedMember.getDaysToExpire());
+		existingMember.setRecipientType(updatedMember.getRecipientType());
+		existingMember.setRecipientId(updatedMember.getRecipientId());
+		existingMember.setRightSet((ShareItemMember.RightSet) updatedMember.getRightSet().clone());
+	}
+	
 	public ShareItemMember getMember(Long shareItemMemberId) {
 		for(ShareItemMember member:getMembers()) {
 			if(shareItemMemberId.equals(member.getId())) {

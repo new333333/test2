@@ -43,7 +43,7 @@ import org.kablink.teaming.util.SPropsUtil;
  * @author jong
  *
  */
-public class ShareItemMember extends ZonedObject {
+public class ShareItemMember extends ZonedObject implements Cloneable {
 
 	public enum RecipientType {
 		user((short)1),
@@ -79,6 +79,7 @@ public class ShareItemMember extends ZonedObject {
 	protected ShareItemMember() {
 	}
 	
+	// For user by application
 	public ShareItemMember(String comment, Date endDate, RecipientType recipientType, Long recipientId, RightSet rightSet) {
 		if(recipientType == null) throw new IllegalArgumentException("Recipient type must be specified");
 		if(recipientId == null) throw new IllegalArgumentException("Recipient ID must be specified");
@@ -94,6 +95,15 @@ public class ShareItemMember extends ZonedObject {
 		this.rightSet = rightSet;
 	}
 	
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException("Clone not supported: " + e.getMessage());
+		}
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -165,7 +175,7 @@ public class ShareItemMember extends ZonedObject {
 			return endDate.before(new Date());
 	}
 	
-	public static class RightSet {
+	public static class RightSet implements Cloneable {
 		protected boolean createEntries = false;
 		protected boolean modifyEntries = false;
 		protected boolean modifyEntryFields = false;
@@ -187,6 +197,15 @@ public class ShareItemMember extends ZonedObject {
 		protected boolean addTags = false;
 		protected boolean viewBinderTitle = false;
 		
+		@Override
+		public Object clone() {
+			try {
+				return super.clone();
+			} catch (CloneNotSupportedException e) {
+				throw new RuntimeException("Clone not supported: " + e.getMessage());
+			}
+		}
+
 		@Override
 	    public int hashCode() {
 			int result = 14;
