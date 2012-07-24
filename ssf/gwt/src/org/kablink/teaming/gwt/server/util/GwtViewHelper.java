@@ -80,7 +80,6 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.ShareItem;
-import org.kablink.teaming.domain.ShareItemMember;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -595,35 +594,24 @@ public class GwtViewHelper {
 				continue;
 			}
 			
+			// Is this item expired?
+			if (siScan.isExpired()) {
+				// Yes!  Skip it.
+				continue;
+			}
+			
 			// Create a new GwtSharedMeItem?
 			GwtSharedMeItem si = new GwtSharedMeItem(
 				siScan.getId(),										// ID of the share.
 				siScan.getModification().getPrincipal().getId());	// ID of the sharer.
 			si.setItem(siScanItem);
 
-			// Are there any members of this share item?
-			Collection<ShareItemMember> siScanMembers = siScan.getMembers();
-			if ((null != siScanMembers) && (!(siScanMembers.isEmpty()))) {
-				// Yes!  Scan them.
-				for (ShareItemMember siScanMember:  siScanMembers) {
-					// Is this member expired?
-					if (siScanMember.isExpired()) {
-						// Yes!  Skip it.
-						continue;
-					}
-
-					// The member isn't expired!  Add the rights
-					// information about it to the GwtSharedMeItem.
-					si.addPerShareInfo(siScanMember);
-				}
-
-				// Has the GwtSharedMeItem actually been shared by the
-				// current user?
-				if (si.isShared()) {
-					// Yes!  Add it to the reply
-					// List<GwtSharedMeItem> we're building to return.
-					reply.add(si);
-				}
+			// Has the GwtSharedMeItem actually been shared by the
+			// current user?
+			if (si.isShared()) {
+				// Yes!  Add it to the reply
+				// List<GwtSharedMeItem> we're building to return.
+				reply.add(si);
 			}
 		}
 		
@@ -657,46 +645,39 @@ public class GwtViewHelper {
 				continue;
 			}
 			
+			// Is this item expired?
+			if (siScan.isExpired()) {
+				// Yes!  Skip it.
+				continue;
+			}
+			
 			// Create a new GwtSharedMeItem?
 			GwtSharedMeItem si = new GwtSharedMeItem(
 				siScan.getId(),										// ID of the share.
 				siScan.getModification().getPrincipal().getId());	// ID of the sharer.
 			si.setItem(siScanItem);
 
-			// Are there any members of this share item?
-			Collection<ShareItemMember> siScanMembers = siScan.getMembers();
-			if ((null != siScanMembers) && (!(siScanMembers.isEmpty()))) {
-				// Yes!  Scan them.
-				for (ShareItemMember siScanMember:  siScanMembers) {
-					// Is this member expired?
-					if (siScanMember.isExpired()) {
-						// Yes!  Skip it.
-						continue;
-					}
-
-					// Is this member directed to this user, one of the
-					// user's groups or one of the user's teams?
-					Long rId = siScanMember.getRecipientId();
-					switch (siScanMember.getRecipientType()) {
-					case user:   if (userId.equals(  rId)) break; continue;	// Checks the user...
-					case group:  if (groups.contains(rId)) break; continue;	// ...check the user's groups...
-					case team:   if (teams.contains( rId)) break; continue;	// ...and check the user's teams.
-					default:                                      continue;
-					}
+			// Is this member directed to this user, one of the
+			// user's groups or one of the user's teams?
+			Long rId = siScan.getRecipientId();
+			switch (siScan.getRecipientType()) {
+			case user:   if (userId.equals(  rId)) break; continue;	// Checks the user...
+			case group:  if (groups.contains(rId)) break; continue;	// ...check the user's groups...
+			case team:   if (teams.contains( rId)) break; continue;	// ...and check the user's teams.
+			default:                                      continue;
+			}
 					
-					// The member isn't expired and it belongs with
-					// this user!  Add the rights information about it
-					// to the GwtSharedMeItem.
-					si.addPerShareInfo(siScanMember);
-				}
+			// The member isn't expired and it belongs with
+			// this user!  Add the rights information about it
+			// to the GwtSharedMeItem.
+			si.addPerShareInfo(siScan);
 
-				// Has the GwtSharedMeItem actually been shared with
-				// the current user?
-				if (si.isShared()) {
-					// Yes!  Add it to the reply
-					// List<GwtSharedMeItem> we're building to return.
-					reply.add(si);
-				}
+			// Has the GwtSharedMeItem actually been shared with
+			// the current user?
+			if (si.isShared()) {
+				// Yes!  Add it to the reply
+				// List<GwtSharedMeItem> we're building to return.
+				reply.add(si);
 			}
 		}
 		

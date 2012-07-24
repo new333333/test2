@@ -38,8 +38,8 @@ import java.util.List;
 
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.ShareItemMember;
-import org.kablink.teaming.domain.ShareItemMember.RecipientType;
+import org.kablink.teaming.domain.ShareItem;
+import org.kablink.teaming.domain.ShareItem.RecipientType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 
 /**
@@ -113,17 +113,17 @@ public class GwtSharedMeItem {
 	/**
 	 * Adds a new GwtPerShareInfo object to the List<GwtPerShareInfo>.
 	 * 
-	 * @param siMember
+	 * @param si
 	 */
-	public void addPerShareInfo(ShareItemMember siMember) {
+	public void addPerShareInfo(ShareItem si) {
 		// Always use the initial form of the method.
 		addPerShareInfo(
-			siMember.getRecipientId(),
-			siMember.getRecipientType(),
-			new Date(),	//! ...this needs to be implemented...
-			GwtShareHelper.getShareRightsFromRightSet(siMember.getRightSet()),
-			siMember.getEndDate(),
-			siMember.getComment());
+			si.getRecipientId(),
+			si.getRecipientType(),
+			si.getCreation().getDate(),
+			null,	//! GwtShareHelper.getShareRightsFromRightSet(si.getRightSet()),
+			si.getEndDate(),
+			si.getComment());
 	}
 	
 	/**
