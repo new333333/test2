@@ -110,9 +110,9 @@ public class ShareItem extends BaseEntity {
 			getMembers().remove(memberToDelete);
 	}
 	
-	public ShareItemMember getMember(Long memberId) {
+	public ShareItemMember getMember(Long shareItemMemberId) {
 		for(ShareItemMember member:getMembers()) {
-			if(memberId.equals(member.getId())) {
+			if(shareItemMemberId.equals(member.getId())) {
 				return member;
 			}
 		}
