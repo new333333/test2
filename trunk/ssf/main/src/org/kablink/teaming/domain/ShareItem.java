@@ -104,8 +104,8 @@ public class ShareItem extends BaseEntity {
 		getMembers().add(newMember);
 	}
 	
-	public void deleteMember(Long memberIdToDelete) {
-		ShareItemMember memberToDelete = getMember(memberIdToDelete);
+	public void deleteMember(Long shareItemMemberIdToDelete) {
+		ShareItemMember memberToDelete = getMember(shareItemMemberIdToDelete);
 		if(memberToDelete != null)
 			getMembers().remove(memberToDelete);
 	}
