@@ -99,4 +99,23 @@ public class ShareItem extends BaseEntity {
 		this.members = members;
 	}
 
+	public void addMember(ShareItemMember newMember) {
+		newMember.setShareItem(this);
+		getMembers().add(newMember);
+	}
+	
+	public void deleteMember(Long memberIdToDelete) {
+		ShareItemMember memberToDelete = getMember(memberIdToDelete);
+		if(memberToDelete != null)
+			getMembers().remove(memberToDelete);
+	}
+	
+	public ShareItemMember getMember(Long memberId) {
+		for(ShareItemMember member:getMembers()) {
+			if(memberId.equals(member.getId())) {
+				return member;
+			}
+		}
+		return null;
+	}
 }
