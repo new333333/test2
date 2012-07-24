@@ -63,7 +63,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseDat
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
-import org.kablink.teaming.gwt.client.util.GwtShareItemMember;
+import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
@@ -207,27 +207,27 @@ public class ShareThisDlg extends DlgBox
 	private class RecipientNameWidget extends Composite
 		implements ClickHandler, MouseOverHandler, MouseOutHandler
 	{
-		private GwtShareItemMember m_shareItemMember;
+		private GwtShareItem m_shareItem;
 		private InlineLabel m_nameLabel;
 		private GroupMembershipPopup m_groupMembershipPopup;
 		
 		/**
 		 * 
 		 */
-		public RecipientNameWidget( GwtShareItemMember shareItemMember )
+		public RecipientNameWidget( GwtShareItem shareItem )
 		{
 			FlowPanel panel;
 			
-			m_shareItemMember = shareItemMember;
+			m_shareItem = shareItem;
 			
 			panel = new FlowPanel();
 			
-			m_nameLabel = new InlineLabel( shareItemMember.getRecipientName() );
+			m_nameLabel = new InlineLabel( shareItem.getRecipientName() );
 			m_nameLabel.addStyleName( "shareThisDlg_RecipientNameLabel" );
 			panel.add( m_nameLabel );
 			
 			// Has the share expired?
-			if ( shareItemMember.isExpired() )
+			if ( shareItem.isExpired() )
 			{
 				// Yes
 				m_nameLabel.addStyleName( "shareThisDlg_ShareExpired" );
@@ -236,7 +236,7 @@ public class ShareThisDlg extends DlgBox
 				m_nameLabel.removeStyleName( "shareThisDlg_ShareExpired" );
 			
 			// If we are dealing with a group, let the user click on the group.
-			if ( shareItemMember.getRecipientType() == GwtRecipientType.GROUP )
+			if ( shareItem.getRecipientType() == GwtRecipientType.GROUP )
 			{
 				m_nameLabel.addClickHandler( this );
 				m_nameLabel.addMouseOverHandler( this );
@@ -257,14 +257,6 @@ public class ShareThisDlg extends DlgBox
 		}
 		
 		/**
-		 * 
-		 */
-		public GwtShareItemMember getShareItemMember()
-		{
-			return m_shareItemMember;
-		}
-
-		/**
 		 * This gets called when the user clicks on the recipient's name.  This will only
 		 * be called if the recipient is a group.
 		 */
@@ -277,8 +269,8 @@ public class ShareThisDlg extends DlgBox
 				m_groupMembershipPopup = new GroupMembershipPopup(
 															false,
 															false,
-															m_shareItemMember.getRecipientName(),
-															m_shareItemMember.getRecipientId().toString() );
+															m_shareItem.getRecipientName(),
+															m_shareItem.getRecipientId().toString() );
 			}
 			
 			m_groupMembershipPopup.setPopupPosition( getAbsoluteLeft(), getAbsoluteTop() );
@@ -312,7 +304,7 @@ public class ShareThisDlg extends DlgBox
 	private class ShareExpirationWidget extends Composite
 		implements ClickHandler
 	{
-		private GwtShareItemMember m_shareItemMember;
+		private GwtShareItem m_shareItem;
 		private InlineLabel m_expiresLabel;
 		private Image m_img;
 		private EditSuccessfulHandler m_editShareExpirationHandler;
@@ -320,18 +312,18 @@ public class ShareThisDlg extends DlgBox
 		/**
 		 * 
 		 */
-		public ShareExpirationWidget( GwtShareItemMember shareItemMember )
+		public ShareExpirationWidget( GwtShareItem shareItem )
 		{
 			ImageResource imageResource;
 			
-			m_shareItemMember = shareItemMember;
+			m_shareItem = shareItem;
 
 			m_expiresLabel = new InlineLabel();
 			m_expiresLabel.addStyleName( "shareThis_ExpiresLabel" );
 			m_expiresLabel.addClickHandler( this );
 			
 			// Has the share expired?
-			if ( shareItemMember.isExpired() )
+			if ( shareItem.isExpired() )
 			{
 				// Yes
 				m_expiresLabel.addStyleName( "shareThisDlg_ShareExpired" );
@@ -367,8 +359,8 @@ public class ShareThisDlg extends DlgBox
 								ShareExpirationValue expirationValue;
 								
 								expirationValue = (ShareExpirationValue) obj;
-								m_shareItemMember.setShareExpirationValue( expirationValue );
-								m_shareItemMember.setIsDirty( true );
+								m_shareItem.setShareExpirationValue( expirationValue );
+								m_shareItem.setIsDirty( true );
 								
 								updateExpirationLabel();
 							}
@@ -379,7 +371,7 @@ public class ShareThisDlg extends DlgBox
 				}
 				
 				// Invoke the "share expiration" dialog.
-				m_shareExpirationDlg.init( m_shareItemMember.getShareExpirationValue(), m_editShareExpirationHandler );
+				m_shareExpirationDlg.init( m_shareItem.getShareExpirationValue(), m_editShareExpirationHandler );
 				m_shareExpirationDlg.showRelativeToTarget( m_expiresLabel );
 			}
 		}
@@ -427,9 +419,9 @@ public class ShareThisDlg extends DlgBox
 		 */
 		private void updateExpirationLabel()
 		{
-			if ( m_shareItemMember != null )
+			if ( m_shareItem != null )
 			{
-				m_expiresLabel.setText( m_shareItemMember.getShareExpirationValueAsString() );
+				m_expiresLabel.setText( m_shareItem.getShareExpirationValueAsString() );
 				m_expiresLabel.getElement().appendChild( m_img.getElement() );
 			}
 		}
@@ -441,17 +433,17 @@ public class ShareThisDlg extends DlgBox
 	private class RemoveShareWidget extends Composite
 		implements ClickHandler
 	{
-		private GwtShareItemMember m_shareItemMember;
+		private GwtShareItem m_shareItem;
 		
 		/**
 		 * 
 		 */
-		public RemoveShareWidget( GwtShareItemMember shareItemMember )
+		public RemoveShareWidget( GwtShareItem shareItem )
 		{
 			FlowPanel panel;
 			Image delImg;
 			
-			m_shareItemMember = shareItemMember;
+			m_shareItem = shareItem;
 			
 			panel = new FlowPanel();
 			
@@ -469,9 +461,9 @@ public class ShareThisDlg extends DlgBox
 		/**
 		 * 
 		 */
-		public GwtShareItemMember getShareItemMember()
+		public GwtShareItem getShareItem()
 		{
-			return m_shareItemMember;
+			return m_shareItem;
 		}
 
 		/**
@@ -487,7 +479,7 @@ public class ShareThisDlg extends DlgBox
 				@Override
 				public void execute() 
 				{
-					removeShare( m_shareItemMember );
+					removeShare( m_shareItem );
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
@@ -538,7 +530,7 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * Add the given share to the end of the table that holds the list of shares
 	 */
-	private void addShare( GwtShareItemMember shareItemMember, boolean highlight )
+	private void addShare( GwtShareItem shareItem, boolean highlight )
 	{
 		String type;
 		int row;
@@ -582,19 +574,19 @@ public class ShareThisDlg extends DlgBox
 		// Add the recipient name in the first column.
 		m_shareCellFormatter.setColSpan( row, 0, 1 );
 		m_shareCellFormatter.setWordWrap( row, 0, false );
-		recipientNameWidget = new RecipientNameWidget( shareItemMember );
+		recipientNameWidget = new RecipientNameWidget( shareItem );
 		m_shareTable.setWidget( row, 0,  recipientNameWidget );
 
 		// Add the recipient type in the second column.
 		m_shareCellFormatter.setWordWrap( row, 1, false );
-		type = shareItemMember.getRecipientTypeAsString();
+		type = shareItem.getRecipientTypeAsString();
 		m_shareTable.setText( row, 1, type );
 		
 		// Add the share rights in the 3rd column
 		{
 			ShareRightsWidget accessWidget;
 			
-			accessWidget = new ShareRightsWidget( shareItemMember );
+			accessWidget = new ShareRightsWidget( shareItem );
 			m_shareTable.setWidget( row, 2, accessWidget );
 		}
 		
@@ -602,13 +594,13 @@ public class ShareThisDlg extends DlgBox
 		{
 			ShareExpirationWidget expirationWidget;
 			
-			expirationWidget = new ShareExpirationWidget( shareItemMember );
+			expirationWidget = new ShareExpirationWidget( shareItem );
 			m_shareTable.setWidget( row, 3, expirationWidget );
 		}
 
 		// Add the "remove share" widget to the 5th column.
 		{
-			removeWidget = new RemoveShareWidget( shareItemMember );
+			removeWidget = new RemoveShareWidget( shareItem );
 			m_shareTable.setWidget( row, 4, removeWidget );
 		}
 
@@ -1056,7 +1048,7 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * This method gets called when user user presses the OK push
 	 * button.  We will issue an ajax request to start the work of
-	 * sending an email to each of the recipients.
+	 * sharing the selected entities with the selected users/groups/teams.
 	 * 
 	 * Implements the EditSuccessfulHandler.editSuccessful() interface
 	 * method.
@@ -1069,7 +1061,7 @@ public class ShareThisDlg extends DlgBox
 	public boolean editSuccessful( Object callbackData )
 	{
 		GwtSharingInfo sharingData;
-		ArrayList<GwtShareItemMember> listOfShareItemMembers;
+		ArrayList<GwtShareItem> listOfShareItems;
 		
 		if ( m_shareEntryCallback == null )
 		{
@@ -1140,13 +1132,10 @@ public class ShareThisDlg extends DlgBox
 			};
 		}
 		
-		// Get a list of all the users/groups/teams that the entities are being shared with.
-		listOfShareItemMembers = getListOfShareItemMembers();
-
 		sharingData = new GwtSharingInfo();
-		sharingData.setListOfEntityIds( m_entityIds );
-		sharingData.setListOfShareItemMembers( listOfShareItemMembers );
-		sharingData.setListOfShareItems( m_sharingInfo.getListOfShareItems() );
+		listOfShareItems = getListOfShareItemsFromDlg();
+		sharingData.setListOfShareItems( listOfShareItems );
+		sharingData.setListOfToBeDeletedShareItems( m_sharingInfo.getListOfToBeDeletedShareItems() );
 		
 		// Issue an ajax request to share the entities.
 		ShareEntryCmd cmd = new ShareEntryCmd( sharingData );
@@ -1160,16 +1149,18 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * Find the given recipient in the table that holds the recipients.
 	 */
-	private int findShareByRecipientName( GwtShareItemMember shareItemMember )
+	private int findShareItem( GwtShareItem shareItem )
 	{
 		int i;
+		EntityId entityId;
 		String name;
 		GwtRecipientType type;
 		
-		name = shareItemMember.getRecipientName();
-		type = shareItemMember.getRecipientType();
+		name = shareItem.getRecipientName();
+		type = shareItem.getRecipientType();
+		entityId = shareItem.getEntityId();
 		
-		// Look through the table for the given recipient.
+		// Look through the table for the given GwtShareItem.
 		// Recipients start in row 1.
 		for (i = 1; i < m_shareTable.getRowCount() && m_shareTable.getCellCount( i ) > 4; ++i)
 		{
@@ -1179,17 +1170,20 @@ public class ShareThisDlg extends DlgBox
 			widget = m_shareTable.getWidget( i, 4 );
 			if ( widget != null && widget instanceof RemoveShareWidget )
 			{
-				GwtShareItemMember nextShareItemMember;
+				GwtShareItem nextShareItem;
 				
-				nextShareItemMember = ((RemoveShareWidget) widget).getShareItemMember();
-				if ( nextShareItemMember != null )
+				nextShareItem = ((RemoveShareWidget) widget).getShareItem();
+				if ( nextShareItem != null )
 				{
-					if ( type == nextShareItemMember.getRecipientType() )
+					if ( type == nextShareItem.getRecipientType() )
 					{
-						if ( name != null && name.equalsIgnoreCase( nextShareItemMember.getRecipientName() ) )
+						if ( name != null && name.equalsIgnoreCase( nextShareItem.getRecipientName() ) )
 						{
-							// We found the recipient.
-							return i;
+							if ( nextShareItem.entityIdEquals( entityId ) )
+							{
+								// We found the recipient.
+								return i;
+							}
 						}
 					}
 				}
@@ -1354,42 +1348,36 @@ public class ShareThisDlg extends DlgBox
 	
 
 	/**
-	 * Return the a list of all the user/groups/teams the user has selected to share
-	 * the entities with.
+	 * Return the list of GwtShareItem objects from the table that holds the
+	 * list of recipients
 	 */
-	private ArrayList<GwtShareItemMember> getListOfShareItemMembers()
+	private ArrayList<GwtShareItem> getListOfShareItemsFromDlg()
 	{
-		ArrayList<GwtShareItemMember> listOfShareItemMembers;
 		int i;
+		ArrayList<GwtShareItem> listOfShareItems;
 		
-		listOfShareItemMembers = new ArrayList<GwtShareItemMember>();
+		listOfShareItems = new ArrayList<GwtShareItem>();
 		
-		// Get all of the GwtShareItemMember objects from the table that holds the list.
-		// Recipients start in row 1.
-		for (i = 1; i < m_shareTable.getRowCount(); ++i)
+		// Look through the table and add each GwtShareItem to the list.
+		for (i = 1; i < m_shareTable.getRowCount() && m_shareTable.getCellCount( i ) > 4; ++i)
 		{
 			Widget widget;
 			
-			if ( m_shareTable.getCellCount( i ) > 2 )
+			// Get the RemoveRecipientWidget from the 5 column.
+			widget = m_shareTable.getWidget( i, 4 );
+			if ( widget != null && widget instanceof RemoveShareWidget )
 			{
-				// Get the RecipientNameWidget from the first column.
-				widget = m_shareTable.getWidget( i, 0 );
-				if ( widget != null && widget instanceof RecipientNameWidget )
-				{
-					GwtShareItemMember shareItemMember;
-					
-					shareItemMember = ((RecipientNameWidget) widget).getShareItemMember();
-					if ( shareItemMember != null )
-					{
-						listOfShareItemMembers.add( shareItemMember );
-					}
-				}
+				GwtShareItem nextShareItem;
+				
+				nextShareItem = ((RemoveShareWidget) widget).getShareItem();
+				listOfShareItems.add( nextShareItem );
 			}
 		}
 		
-		return listOfShareItemMembers;
+		return listOfShareItems;
 	}
 	
+
 	/**
 	 * Return the text the user has entered for the message.
 	 */
@@ -1462,28 +1450,35 @@ public class ShareThisDlg extends DlgBox
 
 		if ( emailAddress != null && emailAddress.length() > 0 )
 		{
-			GwtShareItemMember shareItemMember;
-			
 			// Clear what the user has typed.
 			m_findCtrl.clearText();
 			
-			shareItemMember = new GwtShareItemMember();
-			shareItemMember.setRecipientName( emailAddress );
-			shareItemMember.setRecipientType( GwtRecipientType.EXTERNAL_USER );
-			shareItemMember.setShareRights( getSelectedShareRights() );
-			shareItemMember.setShareExpirationValue( m_defaultShareExpirationValue );
-			//!!! Finish
-			
-			// Is this external user already in the list?
-			if ( findShareByRecipientName( shareItemMember ) == -1 )
+			// Create a GwtShareItem for every entity we are sharing with.
+			for ( EntityId nextEntityId : m_entityIds )
 			{
-				// No, add it
-				addShare( shareItemMember, true );
-			}
-			else
-			{
-				// Tell the user the item has already been shared with the external user.
-				Window.alert( GwtTeaming.getMessages().shareDlg_alreadySharedWithSelectedRecipient( emailAddress ) );
+				GwtShareItem shareItem;
+
+				shareItem = new GwtShareItem();
+				shareItem.setEntityId( nextEntityId );
+				shareItem.setRecipientName( emailAddress );
+				shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
+				shareItem.setShareRights( getSelectedShareRights() );
+				shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
+				shareItem.setComments( getComment() );
+				//!!! Finish
+				
+				// Is this external user already in the list?
+				//!!! Find by entity id too.
+				if ( findShareItem( shareItem ) == -1 )
+				{
+					// No, add it
+					addShare( shareItem, true );
+				}
+				else
+				{
+					// Tell the user the item has already been shared with the external user.
+					Window.alert( GwtTeaming.getMessages().shareDlg_alreadySharedWithSelectedRecipient( emailAddress ) );
+				}
 			}
 		}
 	}
@@ -1648,12 +1643,15 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * Remove the given share from the table
 	 */
-	public void removeShare( GwtShareItemMember shareItemMember )
+	public void removeShare( GwtShareItem shareItem )
 	{
 		int row;
 		
+		// Mark this share as "to be deleted"
+		m_sharingInfo.addToBeDeleted( shareItem );
+		
 		// Find the row this share lives in.
-		row = findShareByRecipientName( shareItemMember );
+		row = findShareItem( shareItem );
 		
 		// Did we find the share in the table?
 		if ( row > 0 )
@@ -1804,14 +1802,14 @@ public class ShareThisDlg extends DlgBox
 		m_sharingInfo = sharingInfo;
 		if ( sharingInfo != null )
 		{
-			ArrayList<GwtShareItemMember> listOfShareItemMembers;
+			ArrayList<GwtShareItem> listOfShareItems;
 			
-			listOfShareItemMembers = sharingInfo.getListOfShareItemMembers();
-			if ( listOfShareItemMembers != null )
+			listOfShareItems = sharingInfo.getListOfShareItems();
+			if ( listOfShareItems != null )
 			{
-				for (GwtShareItemMember nextShareItemMember : listOfShareItemMembers)
+				for (GwtShareItem nextShareItem : listOfShareItems)
 				{
-					addShare( nextShareItemMember, false );
+					addShare( nextShareItem, false );
 				}
 			}
 		}
@@ -1871,61 +1869,68 @@ public class ShareThisDlg extends DlgBox
 			@Override
 			public void execute() 
 			{
-				GwtShareItemMember shareItemMember = null;
-				
-				// Are we dealing with a User?
-				if ( selectedObj instanceof GwtUser )
-				{
-					GwtUser user;
-					
-					// Yes
-					user = (GwtUser) selectedObj;
-					
-					shareItemMember = new GwtShareItemMember();
-					shareItemMember.setRecipientName( user.getShortDisplayName() );
-					shareItemMember.setRecipientType( GwtRecipientType.USER );
-					shareItemMember.setRecipientId( Long.valueOf( user.getUserId() ) );
-				}
-				// Are we dealing with a group?
-				else if ( selectedObj instanceof GwtGroup )
-				{
-					GwtGroup group;
-					
-					// Yes
-					group = (GwtGroup) selectedObj;
-					
-					shareItemMember = new GwtShareItemMember();
-					shareItemMember.setRecipientName( group.getShortDisplayName() );
-					shareItemMember.setRecipientType( GwtRecipientType.GROUP );
-					shareItemMember.setRecipientId( Long.valueOf( group.getId() ) );
-				}
-
-				// Do we have an object to add to our list of shares?
-				if ( shareItemMember != null )
-				{
-					// Yes
-					// Has the item already been shared with the recipient
-					if ( findShareByRecipientName( shareItemMember ) == -1 )
-					{
-						// No
-						shareItemMember.setShareRights( getSelectedShareRights() );
-						shareItemMember.setShareExpirationValue( m_defaultShareExpirationValue );
-						
-						// Add the recipient to our list of recipients
-						addShare( shareItemMember, true );
-					}
-					else
-					{
-						// Yes, tell the user
-						Window.alert( GwtTeaming.getMessages().shareDlg_alreadySharedWithSelectedRecipient( shareItemMember.getRecipientName() ) );
-					}
-				}
-
 				// Hide the search-results widget.
 				m_findCtrl.hideSearchResults();
 				
 				// Clear the text from the find control.
 				m_findCtrl.clearText();
+
+				// Create a GwtShareItem for every entity we are sharing with.
+				for ( EntityId nextEntityId : m_entityIds )
+				{
+					GwtShareItem shareItem = null;
+					
+					// Are we dealing with a User?
+					if ( selectedObj instanceof GwtUser )
+					{
+						GwtUser user;
+						
+						// Yes
+						user = (GwtUser) selectedObj;
+						
+						shareItem = new GwtShareItem();
+						shareItem.setRecipientName( user.getShortDisplayName() );
+						shareItem.setRecipientType( GwtRecipientType.USER );
+						shareItem.setRecipientId( Long.valueOf( user.getUserId() ) );
+					}
+					// Are we dealing with a group?
+					else if ( selectedObj instanceof GwtGroup )
+					{
+						GwtGroup group;
+						
+						// Yes
+						group = (GwtGroup) selectedObj;
+						
+						shareItem = new GwtShareItem();
+						shareItem.setRecipientName( group.getShortDisplayName() );
+						shareItem.setRecipientType( GwtRecipientType.GROUP );
+						shareItem.setRecipientId( Long.valueOf( group.getId() ) );
+					}
+	
+					// Do we have an object to add to our list of shares?
+					if ( shareItem != null )
+					{
+						// Yes
+						shareItem.setEntityId( nextEntityId );
+						
+						// Has the item already been shared with the recipient
+						if ( findShareItem( shareItem ) == -1 )
+						{
+							// No
+							shareItem.setShareRights( getSelectedShareRights() );
+							shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
+							shareItem.setComments( getComment() );
+							
+							// Add the recipient to our list of recipients
+							addShare( shareItem, true );
+						}
+						else
+						{
+							// Yes, tell the user
+							Window.alert( GwtTeaming.getMessages().shareDlg_alreadySharedWithSelectedRecipient( shareItem.getRecipientName() ) );
+						}
+					}
+				}// end for()
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );

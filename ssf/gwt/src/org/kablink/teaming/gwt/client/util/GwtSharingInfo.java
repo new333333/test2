@@ -34,7 +34,6 @@
 package org.kablink.teaming.gwt.client.util;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
@@ -46,9 +45,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GwtSharingInfo
 	implements IsSerializable, VibeRpcResponseData
 {
-	private ArrayList<EntityId> m_listOfEntityIds;
 	private ArrayList<GwtShareItem> m_listOfShareItems;
-	private ArrayList<GwtShareItemMember> m_listOfShareItemMembers;
+	private ArrayList<GwtShareItem> m_listOfToBeDeletedShareItems;
 	private boolean m_sendEmailToAll;
 	
 	/**
@@ -56,21 +54,9 @@ public class GwtSharingInfo
 	 */
 	public GwtSharingInfo()
 	{
-		m_listOfEntityIds = null;
 		m_listOfShareItems = null;
-		m_listOfShareItemMembers = null;
+		m_listOfToBeDeletedShareItems = null;
 		m_sendEmailToAll = false;
-	}
-	
-	/**
-	 * 
-	 */
-	public void addEntityId( EntityId entityId )
-	{
-		if ( m_listOfEntityIds == null )
-			m_listOfEntityIds = new ArrayList<EntityId>();
-		
-		m_listOfEntityIds.add( entityId );
 	}
 	
 	/**
@@ -87,20 +73,18 @@ public class GwtSharingInfo
 	/**
 	 * 
 	 */
-	public void addShareItemMember( GwtShareItemMember shareItemMember )
+	public void addToBeDeleted( GwtShareItem shareItem )
 	{
-		if ( m_listOfShareItemMembers == null )
-			m_listOfShareItemMembers = new ArrayList<GwtShareItemMember>();
+		if ( m_listOfToBeDeletedShareItems == null )
+			m_listOfToBeDeletedShareItems = new ArrayList<GwtShareItem>();
 		
-		m_listOfShareItemMembers.add( shareItemMember );
-	}
-	
-	/**
-	 * 
-	 */
-	public ArrayList<EntityId> getListOfEntityIds()
-	{
-		return m_listOfEntityIds;
+		// Does this ShareItem exist in the db?
+		if ( shareItem.getId() != null )
+		{
+			// Yes, add it to the list of ShareItems to be deleted.
+			shareItem.setToBeDeleted( true );
+			m_listOfToBeDeletedShareItems.add( shareItem );
+		}
 	}
 	
 	/**
@@ -114,9 +98,9 @@ public class GwtSharingInfo
 	/**
 	 * 
 	 */
-	public ArrayList<GwtShareItemMember> getListOfShareItemMembers()
+	public ArrayList<GwtShareItem> getListOfToBeDeletedShareItems()
 	{
-		return m_listOfShareItemMembers;
+		return m_listOfToBeDeletedShareItems;
 	}
 	
 	/**
@@ -125,45 +109,6 @@ public class GwtSharingInfo
 	public boolean getSendEmailToAll()
 	{
 		return m_sendEmailToAll;
-	}
-	
-	/**
-	 * Get the GwtShareItem for the given EntityId
-	 */
-	public GwtShareItem getShareItem( EntityId entityId )
-	{
-		if ( m_listOfShareItems != null )
-		{
-			for (GwtShareItem nextShareItem : m_listOfShareItems)
-			{
-				// Does this GwtShareItem belong to the given EntityId
-				if ( nextShareItem.entityIdEquals( entityId ) )
-				{
-					// Yes
-					return nextShareItem;
-				}
-			}
-		}
-		
-		// If we get here we did not find the a GwtShareItem for the given EntityId
-		return null;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setListOfEntityIds( List<EntityId> entityIds )
-	{
-		if ( entityIds != null )
-		{
-			m_listOfEntityIds = new ArrayList<EntityId>();
-			for (EntityId nextEntityId : entityIds)
-			{
-				m_listOfEntityIds.add( nextEntityId );
-			}
-		}
-		else
-			m_listOfEntityIds = null;
 	}
 	
 	/**
@@ -177,9 +122,9 @@ public class GwtSharingInfo
 	/**
 	 * 
 	 */
-	public void setListOfShareItemMembers( ArrayList<GwtShareItemMember> listOfShareItemMembers )
+	public void setListOfToBeDeletedShareItems( ArrayList<GwtShareItem> listOfToBeDeletedShareItems )
 	{
-		m_listOfShareItemMembers = listOfShareItemMembers;
+		m_listOfToBeDeletedShareItems = listOfToBeDeletedShareItems;
 	}
 	
 	/**

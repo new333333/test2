@@ -38,7 +38,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.SetShareRightsEvent;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
-import org.kablink.teaming.gwt.client.util.GwtShareItemMember;
+import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 
 
@@ -78,7 +78,7 @@ public class ShareRightsPopupMenu extends PopupMenu
 	/**
 	 * Set the ShareInfo this pop-up menu is dealing with.
 	 */
-	public void setShareInfo( GwtShareItemMember shareInfo )
+	public void setShareInfo( GwtShareItem shareInfo )
 	{
 		if ( shareInfo != null )
 		{
