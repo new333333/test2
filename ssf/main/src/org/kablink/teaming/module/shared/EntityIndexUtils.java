@@ -709,7 +709,7 @@ public class EntityIndexUtils {
     	Set<EntityIdentifier> entityIdentifiers = new HashSet<EntityIdentifier>();
     	entityIdentifiers.add(entity.getEntityIdentifier());
      	ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
-     	Map<RecipientType, Set<Long>> idMap = profileDao.getMemberIdsWithGrantedRightToSharedEntities(
+     	Map<RecipientType, Set<Long>> idMap = profileDao.getRecipientIdsWithGrantedRightToSharedEntities(
      			entityIdentifiers, WorkAreaOperation.READ_ENTRIES.getName());
      	org.dom4j.Element aclEle = (org.dom4j.Element) parent.selectSingleNode(entryAclField);
      	if (!idMap.get(RecipientType.user).isEmpty() || !idMap.get(RecipientType.group).isEmpty()) {
