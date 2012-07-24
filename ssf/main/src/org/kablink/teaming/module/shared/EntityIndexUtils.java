@@ -674,6 +674,7 @@ public class EntityIndexUtils {
     		entryAclField = Constants.FOLDER_ACL_FIELD;
     		teamAclField = Constants.TEAM_ACL_FIELD;
     	}
+    	Long allUsersId = Utils.getAllUsersGroupId();
     	Set<EntityIdentifier> entityIdentifiers = new HashSet<EntityIdentifier>();
     	entityIdentifiers.add(entity.getEntityIdentifier());
      	ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
@@ -683,7 +684,11 @@ public class EntityIndexUtils {
      		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(entryAclField, id.toString())); 
      	}
      	for (Long id : idMap.get(RecipientType.group)) {
-     		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(entryAclField, id.toString())); 
+     		if (id.equals(allUsersId)) {
+     			doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(entryAclField, Constants.READ_ACL_ALL)); 
+     		} else {
+     			doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(entryAclField, id.toString())); 
+     		}
      	}
      	for (Long id : idMap.get(RecipientType.team)) {
      		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(teamAclField, id.toString())); 
@@ -700,6 +705,7 @@ public class EntityIndexUtils {
     		entryAclField = Constants.FOLDER_ACL_FIELD;
     		teamAclField = Constants.TEAM_ACL_FIELD;
     	}
+    	Long allUsersId = Utils.getAllUsersGroupId();
     	Set<EntityIdentifier> entityIdentifiers = new HashSet<EntityIdentifier>();
     	entityIdentifiers.add(entity.getEntityIdentifier());
      	ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
@@ -715,7 +721,11 @@ public class EntityIndexUtils {
 	     		text += " " + id.toString(); 
 	     	}
 	     	for (Long id : idMap.get(RecipientType.group)) {
-	     		text += " " + id.toString(); 
+	     		if (id.equals(allUsersId)) {
+	     			text += " " + Constants.READ_ACL_ALL; 
+	     		} else {
+	     			text += " " + id.toString(); 
+	     		}
 	     	}
 	     	aclEle.setText(text);
      	}
