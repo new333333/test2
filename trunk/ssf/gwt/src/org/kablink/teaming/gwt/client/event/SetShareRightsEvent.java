@@ -33,7 +33,7 @@
 package org.kablink.teaming.gwt.client.event;
 
 
-import org.kablink.teaming.gwt.client.util.GwtShareItemMember;
+import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 
 import com.google.gwt.event.shared.EventHandler;
@@ -49,7 +49,7 @@ public class SetShareRightsEvent extends VibeEventBase<SetShareRightsEvent.Handl
 {
     public static Type<Handler> TYPE = new Type<Handler>();
     private ShareRights m_shareRights;
-    private GwtShareItemMember m_shareInfo;
+    private GwtShareItem m_shareInfo;
     
 
 	/**
@@ -113,7 +113,7 @@ public class SetShareRightsEvent extends VibeEventBase<SetShareRightsEvent.Handl
 	/**
 	 * Get the ShareInfo object associated with this event.
 	 */
-	public GwtShareItemMember getShareInfo()
+	public GwtShareItem getShareInfo()
 	{
 		return m_shareInfo;
 	}
@@ -143,7 +143,7 @@ public class SetShareRightsEvent extends VibeEventBase<SetShareRightsEvent.Handl
 	/**
 	 * Set the ShareInfo object associated with this event.
 	 */
-	public void setShareInfo( GwtShareItemMember shareInfo )
+	public void setShareInfo( GwtShareItem shareInfo )
 	{
 		m_shareInfo = shareInfo;
 	}

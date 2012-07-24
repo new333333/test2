@@ -40,7 +40,7 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.SetShareRightsEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
-import org.kablink.teaming.gwt.client.util.GwtShareItemMember;
+import org.kablink.teaming.gwt.client.util.GwtShareItem;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -58,7 +58,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class ShareRightsWidget extends Composite
 	implements ClickHandler, SetShareRightsEvent.Handler
 {
-	private GwtShareItemMember m_shareInfo;
+	private GwtShareItem m_shareInfo;
 	private InlineLabel m_rightsLabel;
 	private Image m_rightsImg;
 
@@ -79,7 +79,7 @@ public class ShareRightsWidget extends Composite
 	/**
 	 * 
 	 */
-	public ShareRightsWidget( GwtShareItemMember shareInfo )
+	public ShareRightsWidget( GwtShareItem shareInfo )
 	{
 		ImageResource imageResource;
 		
@@ -170,7 +170,7 @@ public class ShareRightsWidget extends Composite
 	@Override
 	public void onSetShareRights( SetShareRightsEvent event )
 	{
-		GwtShareItemMember targetShareInfo;
+		GwtShareItem targetShareInfo;
 		
 		targetShareInfo = event.getShareInfo();
 		if ( m_shareInfo != null && targetShareInfo != null )

@@ -32,11 +32,13 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * This class is used to hold information about a GwtShareItem.
- * When an item is shared a row is created in the SS_ShareItem table.  This class
+ * When an item is shared, a row is created in the SS_ShareItem table.  This class
  * is the GWT representation of a row in that table.
  */
 public class GwtShareItem
@@ -45,6 +47,15 @@ public class GwtShareItem
 	private Long m_id;
 	private EntityId m_entityId;	// Id of the item being shared.
 	private String m_entityName;	// Name of the item being shared.
+	private Long m_recipientId;
+	private String m_recipientName;
+	private GwtRecipientType m_recipientType;
+	private ShareRights m_shareRights;
+	private ShareExpirationValue m_shareExpirationValue;
+	private String m_comments;
+	private boolean m_isDirty;
+	private boolean m_isExpired;
+	private boolean m_toBeDeleted;
 	
 	/**
 	 * 
@@ -54,6 +65,15 @@ public class GwtShareItem
 		m_id = null;
 		m_entityId = null;
 		m_entityName = null;
+		m_recipientName = null;
+		m_recipientId = null;
+		m_recipientType = GwtRecipientType.UNKNOWN;
+		m_shareRights = ShareRights.VIEW;
+		m_shareExpirationValue = null;
+		m_comments = null;
+		m_isDirty = false;
+		m_isExpired = false;
+		m_toBeDeleted = false;
 	}
 
 	/**
@@ -67,6 +87,14 @@ public class GwtShareItem
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getComments()
+	{
+		return m_comments;
 	}
 	
 	/**
@@ -96,6 +124,126 @@ public class GwtShareItem
 	/**
 	 * 
 	 */
+	public Long getRecipientId()
+	{
+		return m_recipientId;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getRecipientName()
+	{
+		return m_recipientName;
+	}
+
+	/**
+	 * 
+	 */
+	public GwtRecipientType getRecipientType()
+	{
+		return m_recipientType;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getRecipientTypeAsString()
+	{
+		if ( m_recipientType == GwtRecipientType.USER )
+			return GwtTeaming.getMessages().shareRecipientTypeUser();
+		
+		if ( m_recipientType == GwtRecipientType.GROUP )
+			return GwtTeaming.getMessages().shareRecipientTypeGroup();
+		
+		if ( m_recipientType == GwtRecipientType.EXTERNAL_USER )
+			return GwtTeaming.getMessages().shareRecipientTypeExternalUser();
+		
+		if ( m_recipientType == GwtRecipientType.TEAM )
+			return GwtTeaming.getMessages().shareRecipientTypeTeam();
+		
+		return GwtTeaming.getMessages().unknownShareType();
+	}
+	
+	/**
+	 * 
+	 */
+	public ShareExpirationValue getShareExpirationValue()
+	{
+		return m_shareExpirationValue;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getShareExpirationValueAsString()
+	{
+		if ( m_shareExpirationValue != null )
+			return m_shareExpirationValue.getValueAsString();
+		
+		return "";
+	}
+	
+	/**
+	 * 
+	 */
+	public ShareRights getShareRights()
+	{
+		return m_shareRights;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getShareRightsAsString()
+	{
+		if ( m_shareRights == ShareRights.VIEW )
+			return GwtTeaming.getMessages().shareDlg_view();
+		
+		if ( m_shareRights == ShareRights.CONTRIBUTOR )
+			return GwtTeaming.getMessages().shareDlg_contributor();
+		
+		if ( m_shareRights == ShareRights.OWNER )
+			return GwtTeaming.getMessages().shareDlg_owner();
+		
+		return "Unknown";
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getToBeDeleted()
+	{
+		return m_toBeDeleted;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean isDirty()
+	{
+		return m_isDirty;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean isExpired()
+	{
+		return m_isExpired;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setComments( String comments )
+	{
+		m_comments = comments;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setEntityId( EntityId id )
 	{
 		m_entityId = id;
@@ -104,7 +252,7 @@ public class GwtShareItem
 	/**
 	 * 
 	 */
-	public void getEntityName( String name )
+	public void setEntityName( String name )
 	{
 		m_entityName = name;
 	}
@@ -116,6 +264,69 @@ public class GwtShareItem
 	{
 		m_id = id;
 	}
-}
 
+	/**
+	 * 
+	 */
+	public void setIsDirty( boolean isDirty )
+	{
+		m_isDirty = isDirty;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setIsExpired( boolean isExpired )
+	{
+		m_isExpired = isExpired;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setRecipientId( Long id )
+	{
+		m_recipientId = id;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setRecipientName( String name )
+	{
+		m_recipientName = name;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setRecipientType( GwtRecipientType type )
+	{
+		m_recipientType = type;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setShareExpirationValue( ShareExpirationValue value )
+	{
+		m_shareExpirationValue = new ShareExpirationValue( value );
+	}
+	
+	/**
+	 * 
+	 */
+	public void setShareRights( ShareRights shareRights )
+	{
+		m_shareRights = shareRights;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setToBeDeleted( boolean toBeDeleted )
+	{
+		m_toBeDeleted = toBeDeleted;
+	}
+}
 
