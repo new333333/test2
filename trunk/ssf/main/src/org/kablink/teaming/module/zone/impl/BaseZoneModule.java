@@ -36,7 +36,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.module.zone.ZoneException;
 import org.kablink.teaming.security.AccessControlException;
@@ -117,4 +116,7 @@ public class BaseZoneModule extends AbstractZoneModule {
 		logger.info("Cannot modify zone " + zoneName + " under portal - Open source edition does not support multi zone");
 	}
 
+	protected void setupInitialOpenIDProviderList() {
+		// Noop
+	}
 }

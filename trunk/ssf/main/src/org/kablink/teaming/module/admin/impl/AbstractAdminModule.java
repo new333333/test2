@@ -34,16 +34,13 @@ package org.kablink.teaming.module.admin.impl;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -74,9 +71,6 @@ import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
-import org.kablink.teaming.domain.NoOpenIDProviderByTheIdException;
-import org.kablink.teaming.domain.OpenIDConfig;
-import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
@@ -1574,59 +1568,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		checkAccess(AdminOperation.manageRuntime);
 		RuntimeStatistics rs = (RuntimeStatistics) SpringContextUtil.getBean("runtimeStatistics");
 		rs.setSimpleProfilerEnabled(false);
-	}
-
-	public void addOpenIDProvider(OpenIDProvider openIDProvider) {
-		checkAccess(AdminOperation.manageOpenID);
-		getCoreDao().save(openIDProvider);		
-	}
-	
-	public void modifyOpenIDProvider(OpenIDProvider openIDProvider) {
-		checkAccess(AdminOperation.manageOpenID);
-		getCoreDao().update(openIDProvider);
-	}
-	
-	public void deleteOpenIDProvider(String openIDProviderId) {
-		checkAccess(AdminOperation.manageOpenID);
-		try {
-			OpenIDProvider openIDProvider = getCoreDao().loadOpenIDProvider(RequestContextHolder.getRequestContext().getZoneId(), openIDProviderId);
-			getCoreDao().delete(openIDProvider);
-		}
-		catch(NoOpenIDProviderByTheIdException e) {
-			// already gone - no problem
-		}
-	}
-	
-	public OpenIDProvider getOpenIDProvider(String openIDProviderId) {
-		// let anyone read it?
-		return getCoreDao().loadOpenIDProvider(RequestContextHolder.getRequestContext().getZoneId(), openIDProviderId);	
-	}
-	
-	public List<OpenIDProvider> getOpenIDProviders() {
-		// let anyone read them - is this right?
-		return getCoreDao().findOpenIDProviders(RequestContextHolder.getRequestContext().getZoneId());
-	}
-	
-	public boolean isExternalUserEnabled() {
-  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-  		return zoneConfig.isExternalUserEnabled();
-	}
-	
-	public void setExternalUserEnabled(boolean enabled) {
-		checkAccess(AdminOperation.manageExternalUser);
-  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-  		zoneConfig.setExternalUserEnabled(enabled);
-	}
-
-	public OpenIDConfig getOpenIDConfig() {
-  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-  		return zoneConfig.getOpenIDConfig();
-	}
-	
-	public void setOpenIDConfig(OpenIDConfig openIDConfig) {
-		checkAccess(AdminOperation.manageOpenID);
-  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-  		zoneConfig.setOpenIDConfig(openIDConfig);
 	}
 
 }
