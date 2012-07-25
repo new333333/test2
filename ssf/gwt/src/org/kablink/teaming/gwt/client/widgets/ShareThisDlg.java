@@ -80,6 +80,8 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -1152,13 +1154,9 @@ public class ShareThisDlg extends DlgBox
 	private int findShareItem( GwtShareItem shareItem )
 	{
 		int i;
-		EntityId entityId;
-		String name;
-		GwtRecipientType type;
-		
-		name = shareItem.getRecipientName();
-		type = shareItem.getRecipientType();
-		entityId = shareItem.getEntityId();
+
+		if ( shareItem == null )
+			return -1;
 		
 		// Look through the table for the given GwtShareItem.
 		// Recipients start in row 1.
@@ -1175,20 +1173,14 @@ public class ShareThisDlg extends DlgBox
 				nextShareItem = ((RemoveShareWidget) widget).getShareItem();
 				if ( nextShareItem != null )
 				{
-					if ( type == nextShareItem.getRecipientType() )
+					if ( shareItem.equals( nextShareItem ) )
 					{
-						if ( name != null && name.equalsIgnoreCase( nextShareItem.getRecipientName() ) )
-						{
-							if ( nextShareItem.entityIdEquals( entityId ) )
-							{
-								// We found the recipient.
-								return i;
-							}
-						}
+						// We found the recipient
+						return i;
 					}
 				}
 			}
-		}
+		}// end for()
 		
 		// If we get here we did not find the recipient.
 		return -1;
@@ -1200,7 +1192,15 @@ public class ShareThisDlg extends DlgBox
 	 */
 	private String getComment()
 	{
-		return m_msgTextArea.getText();
+		String text;
+		
+		text = m_msgTextArea.getText();
+		if ( text != null && text.length() >= 254 )
+		{
+			text = text.substring( 0, 253 );
+		}
+		
+		return text; 
 	}
 	
 	/**
@@ -1379,14 +1379,6 @@ public class ShareThisDlg extends DlgBox
 	
 
 	/**
-	 * Return the text the user has entered for the message.
-	 */
-	public String getMsg()
-	{
-		return m_msgTextArea.getText();
-	}
-	
-	/**
 	 * Return the selected share rights
 	 */
 	private ShareRights getSelectedShareRights()
@@ -1468,7 +1460,6 @@ public class ShareThisDlg extends DlgBox
 				//!!! Finish
 				
 				// Is this external user already in the list?
-				//!!! Find by entity id too.
 				if ( findShareItem( shareItem ) == -1 )
 				{
 					// No, add it
@@ -2078,6 +2069,30 @@ public class ShareThisDlg extends DlgBox
 		// Create a textbox
 		inputPanel = new FlowPanel();
 		m_msgTextArea = new TextArea();
+		m_msgTextArea.addKeyPressHandler( new KeyPressHandler()
+		{
+			@Override
+			public void onKeyPress( KeyPressEvent event )
+			{
+				int keyCode;
+				
+		        keyCode = event.getNativeEvent().getKeyCode();
+		        if ( (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
+		             && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
+		             && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
+		             && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN) )
+		        {
+					String text;
+					
+					text = m_msgTextArea.getText(); 
+					if ( text != null && text.length() > 253 )
+					{
+		        		// Suppress the current keyboard event.
+		        		m_msgTextArea.cancelKey();
+					}
+		        }
+			}
+		} );
 		m_msgTextArea.addStyleName( "shareThisTextArea" );
 		m_msgTextArea.addStyleName( "shareThisTextAreaBorder" );
 		inputPanel.add( m_msgTextArea );

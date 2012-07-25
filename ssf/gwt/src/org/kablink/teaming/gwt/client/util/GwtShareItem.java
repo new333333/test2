@@ -90,6 +90,56 @@ public class GwtShareItem
 	}
 	
 	/**
+	 * Compare the given GwtShareItem object to this object.
+	 */
+	public boolean equals( GwtShareItem shareItem )
+	{
+		Long recipientId;
+		EntityId entityId;
+		String name;
+		GwtRecipientType type;
+		
+		if ( shareItem == null )
+			return false;
+		
+		name = shareItem.getRecipientName();
+		type = shareItem.getRecipientType();
+		entityId = shareItem.getEntityId();
+		recipientId = shareItem.getRecipientId();
+
+		// Are the entities the same?
+		if ( entityIdEquals( entityId ) )
+		{
+			// Yes
+			// Do we have a recipient id?
+			if ( recipientId != null )
+			{
+				Long nextRecipientId;
+				
+				// Yes
+				nextRecipientId = getRecipientId();
+				if ( nextRecipientId != null && recipientId.compareTo( nextRecipientId ) == 0 )
+				{
+					// We found the recipient
+					return true;
+				}
+			}
+			else
+			{
+				if ( type == getRecipientType() &&
+					 name != null && name.equalsIgnoreCase( getRecipientName() ) )
+				{
+					// We found the recipient.
+					return true;
+				}
+			}
+		}
+		
+		// If we get here the two GwtShareItem objects are not the same.
+		return false;
+	}
+	
+	/**
 	 * 
 	 */
 	public String getComments()
