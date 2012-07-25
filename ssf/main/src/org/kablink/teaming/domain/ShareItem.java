@@ -98,7 +98,7 @@ public class ShareItem extends BaseEntity {
 		this.setCreation(new HistoryStamp(sharer));
 		this.setModification(this.getCreation());
 		this.sharedEntityIdentifier = sharedEntityIdentifier;
-		int commentMax = SPropsUtil.getInt("shareitemmember.comment.max.length", 255);
+		int commentMax = SPropsUtil.getInt("shareitem.comment.max.length", 255);
 		if(comment != null && comment.length() > commentMax)
 			comment = comment.substring(0, 255);
 		this.comment = comment;

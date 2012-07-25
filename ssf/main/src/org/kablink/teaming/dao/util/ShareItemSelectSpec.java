@@ -186,9 +186,7 @@ public class ShareItemSelectSpec {
 	}
 	
 	/**
-	 * Specify order-by clause. Only a property from the <code>ShareItem</code>
-	 * can be specified (i.e., you can't order the result by a property in 
-	 * <code>ShareItemMember</code>). 
+	 * Specify order-by clause.
 	 * 
 	 * @param orderByFieldName
 	 * @param descending
