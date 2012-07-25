@@ -2896,9 +2896,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 						model.put(WebKeys.AJAX_ERROR_DETAIL, entry.getTitle());
 					}
 					// 	Next check intra-entry integrity
-					else if(Validator.isNotNull(repositoryName)) {
+					else {
 						if(folder.isMirrored()) {
-							if(!ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
+							if(Validator.isNotNull(repositoryName) && !ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
 								model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.regularFileInMirroredFolder");					
 							}
 							else if(entryId != 0L) {
@@ -2917,7 +2917,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 							}
 						}
 						else {
-							if(ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
+							if(Validator.isNotNull(repositoryName) && ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
 								model.put(WebKeys.AJAX_ERROR_MESSAGE, "entry.mirroredFileInRegularFolder");							
 							}							
 						}

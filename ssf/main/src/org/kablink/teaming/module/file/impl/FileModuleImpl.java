@@ -49,6 +49,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1691,10 +1692,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
             		getCoreDao().save(fAtt);    		
         		}
             	if (fui.getType() == FileUploadItem.TYPE_FILE) {
-            		setCustomAttribute(entry, fui, fAtt);
+            		setCustomAttribute(entry, fui, fAtt, true);
         		} else if (fui.getType() == FileUploadItem.TYPE_ATTACHMENT) {
         			// Add the file attachment to the entry only if new file. 
-            		setCustomAttribute(entry, fui, fAtt);
+            		setCustomAttribute(entry, fui, fAtt, false);
         			if(isNew) {
         				entry.addAttachment(fAtt);
         			}
@@ -2786,7 +2787,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     }
     
     @SuppressWarnings("unchecked")
-	private void setCustomAttribute(DefinableEntity entry, FileUploadItem fui, FileAttachment fAtt) {
+	private void setCustomAttribute(DefinableEntity entry, FileUploadItem fui, FileAttachment fAtt, boolean addToFront) {
     	// Is the FileUploadItem named?
 		Set fAtts = null;
 		String fuiName = fui.getName();
@@ -2809,16 +2810,31 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
 		// Find custom attribute by the attribute name. 
 		CustomAttribute ca = entry.getCustomAttribute(fuiName);
-		if(ca != null) fAtts = ((Set) ca.getValueSet());
-		else           fAtts = new HashSet();
+		if (ca != null) {
+			fAtts = ((Set) ca.getValueSet());
+		} else {
+			fAtts = new LinkedHashSet();
+		}
 
 		// Simply because the file already exists for the entry does
 		// not mean that it is known through this particular data
 		// element (i.e., custom attribute). So we need to make
 		// sure that it is made visible through this element.
-		fAtts.add(fAtt); // If it is already in the set, this will have no effect.
-		if(ca != null) ca.setValue(fAtts);
-		else           entry.addCustomAttribute(fuiName, fAtts);
+		if (!addToFront || fAtts.isEmpty() || !(fAtts instanceof LinkedHashSet)) {
+			//Just add this item. It will be put at the back of the set
+			fAtts.add(fAtt); // If it is already in the set, this will have no effect.
+		} else {
+			//We want to add this attachment to the front of the set
+			LinkedHashSet fAttsOrdered = new LinkedHashSet();
+			fAttsOrdered.add(fAtt);      //Put the new item at the front
+			fAttsOrdered.addAll(fAtts);  //Add the rest of the items in the order they were in
+			fAtts = fAttsOrdered;
+		}
+		if (ca != null) {
+			ca.setValue(fAtts);
+		} else {
+			entry.addCustomAttribute(fuiName, fAtts);
+		}
    }
     
     private void incrementDiskSpaceUsed(FileAttachment fAtt) {
