@@ -54,7 +54,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="NAME" type="VARCHAR2(64 CHAR)"/>
-            <column name="TYPE" type="VARCHAR2(64 CHAR)"/>
+            <column name="TYPE" type="NUMBER(10,0)"/>
             <column name="READONLY" type="NUMBER(1,0)"/>
             <column name="SYNCHTOPDELETE" type="NUMBER(1,0)"/>
             <column name="PUTREQUIRESCONTENTLENGTH" type="NUMBER(1,0)"/>
