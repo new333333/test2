@@ -50,6 +50,18 @@ import org.kablink.util.StringUtil;
 import org.kablink.util.search.Constants;
 
 /**
+ * This object encapsulates select specifications used to retrieve only those share items
+ * that fulfill specified criteria.
+ * 
+ * Each specification deals only with a single attribute of share item, and there might be
+ * multiple methods offered in this class that manipulate the same attribute. In such case,
+ * the last method invoked overrides all the effects of other method invocations made earlier
+ * for the same attribute.
+ * 
+ * When multiple specifications are made for multiple attributes of share item, those 
+ * specifications are combined together through logical operator AND. In other word, only
+ * those share items that meet ALL of the specifications will be retrieved from the database.
+ * 
  * @author jong
  *
  */
@@ -61,7 +73,7 @@ public class ShareItemSelectSpec {
 	public Date startDateMin;
 	public boolean startDateMinInclusive = true;
 	public Date startDateMax;
-	public boolean startDateMaxInclusive = false;
+	public boolean startDateMaxInclusive = true;
 	
 	public String orderByFieldName;
 	public boolean orderByDescending = true;
@@ -70,7 +82,7 @@ public class ShareItemSelectSpec {
 	public boolean commentLikesDisjunctive = false;
 	
 	public Date endDateMin;
-	public boolean endDateMinInclusive = true;
+	public boolean endDateMinInclusive = false;
 	public Date endDateMax;
 	public boolean endDateMaxInclusive = false;
 	
@@ -81,24 +93,52 @@ public class ShareItemSelectSpec {
 	public Collection<String> onRights;
 	public boolean onRightsDisjunctive = true;
 	
+	/**
+	 * Defines selection criterion around 'sharer' attribute of share item.
+	 * 
+	 * @param sharerId
+	 */
 	public void setSharerId(Long sharerId) {
 		this.sharerIds = new HashSet();
 		this.sharerIds.add(sharerId);
 	}
 	
+	/**
+	 * Defines selection criterion around 'sharer' attribute of share item.
+	 * 
+	 * @param sharerIds
+	 */
 	public void setSharerIds(Collection<Long> sharerIds) {
 		this.sharerIds = sharerIds;
 	}
 	
+	/**
+	 * Defines selection criterion around 'shared entity' attribute of share item.
+	 * 
+	 * @param sharedEntityIdentifier
+	 */
 	public void setSharedEntityIdentifier(EntityIdentifier sharedEntityIdentifier) {
 		this.sharedEntityIdentifiers = new HashSet();
 		this.sharedEntityIdentifiers.add(sharedEntityIdentifier);
 	}
 	
+	/**
+	 * Defines selection criterion around 'shared entity' attribute of share item.
+	 * 
+	 * @param sharedEntityIdentifiers
+	 */
 	public void setSharedEntityIdentifiers(Collection<EntityIdentifier> sharedEntityIdentifiers) {
 		this.sharedEntityIdentifiers = sharedEntityIdentifiers;
 	}
 	
+	/**
+	 * Defines selection criterion around 'start date' attribute of share item.
+	 * 
+	 * @param startDateMin
+	 * @param startDateMinInclusive
+	 * @param startDateMax
+	 * @param startDateMaxInclusive
+	 */
 	public void setStartDateRange(Date startDateMin, Boolean startDateMinInclusive, Date startDateMax, Boolean startDateMaxInclusive) {
 		this.startDateMin = startDateMin;
 		if(startDateMinInclusive != null)
@@ -107,7 +147,12 @@ public class ShareItemSelectSpec {
 		if(startDateMaxInclusive != null)
 			this.startDateMaxInclusive = startDateMaxInclusive.booleanValue();
 	}
-	
+
+	/**
+	 * Defines selection criterion around 'comment' attribute of share item.
+	 * 
+	 * @param quickFilter
+	 */
 	public void setCommentLikes(String quickFilter) {
 		String[] strs = StringUtil.split(quickFilter);
 		if(strs != null && strs.length > 0) {
@@ -119,11 +164,25 @@ public class ShareItemSelectSpec {
 		}
 	}
 	
+	/**
+	 * Defines selection criterion around 'comment' attribute of share item.
+	 * 
+	 * @param commentLikes
+	 * @param commentLikesDisjunctive
+	 */
 	public void setCommentLikes(String[] commentLikes, boolean commentLikesDisjunctive) {
 		this.commentLikes = commentLikes;
 		this.commentLikesDisjunctive = commentLikesDisjunctive;
 	}
 	
+	/**
+	 * Defines selection criterion around 'end date' attribute of share item.
+	 * 
+	 * @param endDateMin
+	 * @param endDateMinInclusive
+	 * @param endDateMax
+	 * @param endDateMaxInclusive
+	 */
 	public void setEndDateRange(Date endDateMin, Boolean endDateMinInclusive, Date endDateMax, Boolean endDateMaxInclusive) {
 		this.endDateMin = endDateMin;
 		if(endDateMinInclusive != null)
@@ -133,6 +192,21 @@ public class ShareItemSelectSpec {
 			this.endDateMaxInclusive = endDateMaxInclusive.booleanValue();
 	}
 	
+	/**
+	 * Defines selection criterion around 'end date' attribute of share item.
+	 * 
+	 */
+	public void excludeExpired() {
+		setEndDateRange(new Date(), null, null, null);
+	}
+	
+	/**
+	 * Defines selection criterion around 'recipient' attribute of share item.
+	 * 
+	 * @param recipientUserId
+	 * @param recipientGroupId
+	 * @param recipientTeamId
+	 */
 	public void setRecipients(Long recipientUserId, Long recipientGroupId, Long recipientTeamId) {
 		this.recipientUserIds = null;
 		this.recipientGroupIds = null;
@@ -150,13 +224,25 @@ public class ShareItemSelectSpec {
 			this.recipientTeamIds.add(recipientTeamId);
 		}
 	}
-	
+
+	/**
+	 * Defines selection criterion around 'recipient' attribute of share item.
+	 * 
+	 * @param recipientUserIds
+	 * @param recipientGroupIds
+	 * @param recipientTeamIds
+	 */
 	public void setRecipients(Collection<Long> recipientUserIds,  Collection<Long> recipientGroupIds,  Collection<Long> recipientTeamIds) {
 		this.recipientUserIds = recipientUserIds;
 		this.recipientGroupIds = recipientGroupIds;
 		this.recipientTeamIds = recipientTeamIds;
 	}
 	
+	/**
+	 * Defines selection criterion around 'recipient' attribute of share item.
+	 * 
+	 * @param userId
+	 */
 	public void setRecipientsFromUserMembership(Long userId) {
 		User user = getProfileDao().loadUser(userId,  RequestContextHolder.getRequestContext().getZoneId());
 		Set<Long> userIds = new HashSet();
@@ -173,11 +259,23 @@ public class ShareItemSelectSpec {
 		setRecipients(userIds, groupIds, teamIds);
 	}
 	
+	/**
+	 * Defines selection criterion around 'right' attribute of share item.
+	 * 
+	 * @param onRights
+	 * @param onRightsDisjunctive
+	 */
 	public void setOnRightsWithNames(Collection<String> onRights, boolean onRightsDisjunctive) {
 		this.onRights = onRights;
 		this.onRightsDisjunctive = onRightsDisjunctive;
 	}
 	
+	/**
+	 * Defines selection criterion around 'right' attribute of share item.
+	 * 
+	 * @param onRights
+	 * @param onRightsDisjunctive
+	 */
 	public void setOnRightsWithOperations(Collection<WorkAreaOperation> onRights, boolean onRightsDisjunctive) {
 		Set<String> rightNames = new HashSet<String>();
 		for(WorkAreaOperation wao:onRights)
