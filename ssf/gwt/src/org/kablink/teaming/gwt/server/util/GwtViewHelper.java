@@ -202,6 +202,7 @@ public class GwtViewHelper {
 	public static final String RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME		= "responsible_teams";
 	
 	private static final String CACHED_VIEW_PINNED_ENTRIES_BASE = "viewPinnedEntries_";
+	private static final String CACHED_VIEW_SHARED_FILES_BASE	= "viewSharedFiles_";
 
 	/*
 	 * Class constructor that prevents this class from being
@@ -2357,7 +2358,17 @@ public class GwtViewHelper {
 			// What do we know about pinning of entries on this folder?
 			boolean folderSupportsPinning = getFolderSupportsPinning(folderInfo);
 			boolean viewPinnedEntries     = (folderSupportsPinning && getUserViewPinnedEntries(request, folderId));
-			
+
+			// What do we know about the view state on the
+			// 'Shared by/with Me' collections?
+			boolean viewSharedFiles;
+			CollectionType collectionType = folderInfo.getCollectionType();
+			switch (collectionType) {
+			case SHARED_BY_ME:
+			case SHARED_WITH_ME:  viewSharedFiles = getUserViewSharedFiles(request, collectionType); break;
+			default:              viewSharedFiles = false;                                           break;
+			}
+
 			// Finally, use the data we obtained to create a
 			// FolderDisplayDataRpcResponseData and return that. 
 			return
@@ -2367,7 +2378,8 @@ public class GwtViewHelper {
 					pageSize,
 					cwData.getColumnWidths(),
 					folderSupportsPinning,
-					viewPinnedEntries);
+					viewPinnedEntries,
+					viewSharedFiles);
 		}
 		
 		catch (Exception e) {
@@ -3636,7 +3648,8 @@ public class GwtViewHelper {
 	}
 
 	/**
-	 * Returns true if the user is viewing pinned entries on a given folder and false other wiser.
+	 * Returns true if the user is viewing pinned entries on a given
+	 * folder and false otherwise.
 	 * 
 	 * @param request
 	 * @param folderId
@@ -3647,6 +3660,21 @@ public class GwtViewHelper {
 		HttpSession session = WebHelper.getRequiredSession(request);
 		Boolean viewPinnedEntries = ((Boolean) session.getAttribute(CACHED_VIEW_PINNED_ENTRIES_BASE + folderId));
 		return ((null != viewPinnedEntries) && viewPinnedEntries);
+	}
+	
+	/**
+	 * Returns true if the user is viewing shared files (vs. all
+	 * entries) on a given collection and false otherwise.
+	 * 
+	 * @param request
+	 * @param collectionType
+	 * 
+	 * @return
+	 */
+	public static boolean getUserViewSharedFiles(HttpServletRequest request, CollectionType collectionType) {
+		HttpSession session = WebHelper.getRequiredSession(request);
+		Boolean viewSharedFiles = ((Boolean) session.getAttribute(CACHED_VIEW_SHARED_FILES_BASE + collectionType.name()));
+		return ((null == viewSharedFiles) || viewSharedFiles);
 	}
 	
 	/**
@@ -4602,15 +4630,29 @@ public class GwtViewHelper {
 	}
 
 	/**
-	 * Stores whether the user is viewing pinned entries on a given folder.
+	 * Stores whether the user is viewing pinned entries on a given
+	 * folder.
 	 * 
 	 * @param request
 	 * @param folderId
-	 * @param viewingPinnedEntries;
+	 * @param viewingPinnedEntries
 	 */
 	public static void saveUserViewPinnedEntries(HttpServletRequest request, Long folderId, boolean viewingPinnedEntries) {
 		HttpSession session = WebHelper.getRequiredSession(request);
 		session.setAttribute((CACHED_VIEW_PINNED_ENTRIES_BASE + folderId), new Boolean(viewingPinnedEntries));
+	}
+	
+	/**
+	 * Stores whether the user is viewing shared files on a given
+	 * collection.
+	 * 
+	 * @param request
+	 * @param collectionType
+	 * @param viewingSharedFiles
+	 */
+	public static void saveUserViewSharedFiles(HttpServletRequest request, CollectionType collectionType, boolean viewingSharedFiles) {
+		HttpSession session = WebHelper.getRequiredSession(request);
+		session.setAttribute((CACHED_VIEW_SHARED_FILES_BASE + collectionType.name()), new Boolean(viewingSharedFiles));
 	}
 	
 	/**

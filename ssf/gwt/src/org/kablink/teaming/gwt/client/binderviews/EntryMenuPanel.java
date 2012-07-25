@@ -124,6 +124,8 @@ public class EntryMenuPanel extends ToolPanelBase
 	private boolean							m_isIE;						//
 	private boolean							m_panelInitialized;			// Set true after the panel has completed initializing.
 	private boolean							m_viewingPinnedEntries;		//
+	@SuppressWarnings("unused")
+	private boolean							m_viewingSharedFiles;		//
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private List<ToolbarItem>				m_configureToolbarItems;	//
 	private List<ToolbarItem>				m_toolbarIems;				//
@@ -157,13 +159,14 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private EntryMenuPanel(RequiresResize containerResizer, BinderInfo binderInfo, boolean viewingPinnedEntries, boolean includeColumnResizer, ToolPanelReady toolPanelReady) {
+	private EntryMenuPanel(RequiresResize containerResizer, BinderInfo binderInfo, boolean viewingPinnedEntries, boolean viewingSharedFiles, boolean includeColumnResizer, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
 		super(containerResizer, binderInfo, toolPanelReady);
 		
 		// ...store the parameters...
 		m_binderInfo           = binderInfo;
 		m_viewingPinnedEntries = viewingPinnedEntries;
+		m_viewingSharedFiles   = viewingSharedFiles;
 		m_includeColumnResizer = includeColumnResizer;
 
 		// ...initialize any other data members...
@@ -738,9 +741,17 @@ public class EntryMenuPanel extends ToolPanelBase
 			menuTextIsHTML = true;
 		}
 		
+		// No, this isn't a view pinned entries item!  Is it a toggle
+		// shared view item?
+		else if ((null != simpleEvent) && TeamingEvents.TOGGLE_SHARED_VIEW.equals(simpleEvent)) {
+			// Yes!
+//!			...this needs to be implemented...
+			return;
+		}
+		
 		else {
-			// No, this isn't a view pinned entries item!  Generate the
-			// text to display for the menu item...
+			// No, this isn't a toggle shared view item either!
+			// Generate the text to display for the menu item...
 			if (contentsSelectable) {
 				String contentsCheckedS = simpleTBI.getQualifierValue("selected");
 				boolean contentsChecked = (GwtClientHelper.hasString(contentsCheckedS) && contentsCheckedS.equals("true"));
@@ -835,6 +846,11 @@ public class EntryMenuPanel extends ToolPanelBase
 						String sortKey        = simpleTBI.getQualifierValue("sortKey"       );
 						String sortDescending = simpleTBI.getQualifierValue("sortDescending");
 						event = new SetFolderSortEvent(folderId, sortKey, Boolean.parseBoolean(sortDescending));
+						break;
+						
+					case TOGGLE_SHARED_VIEW:
+//!						...this needs to be implemented...
+						event = null;
 						break;
 						
 					case UNDEFINED:
@@ -1094,6 +1110,7 @@ public class EntryMenuPanel extends ToolPanelBase
 			final RequiresResize	containerResizer,
 			final BinderInfo		binderInfo,
 			final boolean			viewingPinnedEntries,
+			final boolean			viewingSharedFiles,
 			final boolean			includeColumnResizer,
 			final ToolPanelReady	toolPanelReady,
 			final ToolPanelClient 	tpClient,
@@ -1118,7 +1135,7 @@ public class EntryMenuPanel extends ToolPanelBase
 				// Is this a request to create an entry menu panel?
 				if (null != tpClient) {
 					// Yes!  Create it and return it via the callback.
-					EntryMenuPanel emp = new EntryMenuPanel(containerResizer, binderInfo, viewingPinnedEntries, includeColumnResizer, toolPanelReady);
+					EntryMenuPanel emp = new EntryMenuPanel(containerResizer, binderInfo, viewingPinnedEntries, viewingSharedFiles, includeColumnResizer, toolPanelReady);
 					tpClient.onSuccess(emp);
 				}
 				
@@ -1140,12 +1157,14 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * 
 	 * @param containerResizer
 	 * @param binderInfo
+	 * @param viewPinnedEntries
+	 * @param viewSharedFiles
 	 * @param includeColumnResizer
 	 * @param toolPanelReady
 	 * @param tpClient
 	 */
-	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final boolean viewingPinnedEntries, final boolean includeColumnResizer, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
-		doAsyncOperation(containerResizer, binderInfo, viewingPinnedEntries, includeColumnResizer, toolPanelReady, tpClient, null, false, false, false, false);
+	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final boolean viewingPinnedEntries, final boolean viewingSharedFiles, final boolean includeColumnResizer, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+		doAsyncOperation(containerResizer, binderInfo, viewingPinnedEntries, viewingSharedFiles, includeColumnResizer, toolPanelReady, tpClient, null, false, false, false, false);
 	}
 	
 	/**
@@ -1156,7 +1175,7 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * @param enable
 	 */
 	public static void setEntriesAvailable(final EntryMenuPanel emp, final boolean enable) {
-		doAsyncOperation(null, null, false, false, null, null, emp, true, false, false, enable);
+		doAsyncOperation(null, null, false, false, false, null, null, emp, true, false, false, enable);
 	}
 	
 	/**
@@ -1167,7 +1186,7 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * @param enable
 	 */
 	public static void setEntriesSelected(final EntryMenuPanel emp, final boolean enable) {
-		doAsyncOperation(null, null, false, false, null, null, emp, false, true, false, enable);
+		doAsyncOperation(null, null, false, false, false, null, null, emp, false, true, false, enable);
 	}
 	
 	/**
@@ -1178,6 +1197,6 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * @param enable
 	 */
 	public static void setEntrySelected(final EntryMenuPanel emp, final boolean enable) {
-		doAsyncOperation(null, null, false, false, null, null, emp, false, false, true, enable);
+		doAsyncOperation(null, null, false, false, false, null, null, emp, false, false, true, enable);
 	}
 }

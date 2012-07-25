@@ -1062,6 +1062,17 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Constructs a ToolbarItem for toggling the 'Shared by/with Me'
+	 * views between files and all entries.
+	 */
+	private static void constructEntryToggleSharedViewItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request) {
+		// Add the toggle shared item.
+		ToolbarItem shareTBI = new ToolbarItem("1_toggleShared");
+		markTBIEvent(shareTBI, TeamingEvents.TOGGLE_SHARED_VIEW);
+		entryToolbar.addNestedItem(shareTBI);
+	}
+	
+	/*
 	 * Constructs a ToolbarItem for view operations against a calendar
 	 * folder.
 	 * 
@@ -2104,17 +2115,20 @@ public class GwtMenuHelper {
 				boolean isCollectionMyFiles      = (CollectionType.MY_FILES       == folderInfo.getCollectionType());
 				boolean isCollectionSharedByMe   = (CollectionType.SHARED_BY_ME   == folderInfo.getCollectionType());
 				boolean isCollectionSharedWithMe = (CollectionType.SHARED_WITH_ME == folderInfo.getCollectionType());
+				if ((!(Utils.checkIfFilr())) && (isCollectionSharedByMe || isCollectionSharedWithMe)) {
+					constructEntryToggleSharedViewItem(entryToolbar, bs, request                                                             );
+				}
 				if (isCollectionMyFiles) {
-					constructEntryAddFileFolderItem(entryToolbar, bs, request,                                                  ws        );
+					constructEntryAddFileFolderItem(   entryToolbar, bs, request,                                                  ws        );
 				}
 				if (isCollectionMyFiles || isCollectionSharedByMe) {
-				    constructEntryShareItem(        entryToolbar, bs, request                                                             );
+				    constructEntryShareItem(           entryToolbar, bs, request                                                             );
 				}
 				if (isCollectionSharedByMe || isCollectionSharedWithMe) {
-					constructEntryDetailsItem(      entryToolbar, bs, request                                                             );
+					constructEntryDetailsItem(         entryToolbar, bs, request                                                             );
 				}
-				constructEntryDeleteItem(           entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null));
-				constructEntryMoreItems(            entryToolbar, bs, request, folderId, viewType, null, (isCollectionMyFiles ? ws : null));
+				constructEntryDeleteItem(              entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null));
+				constructEntryMoreItems(               entryToolbar, bs, request, folderId, viewType, null, (isCollectionMyFiles ? ws : null));
 			}
 			
 			else {

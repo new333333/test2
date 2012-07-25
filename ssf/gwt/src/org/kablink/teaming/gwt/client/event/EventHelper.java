@@ -1597,6 +1597,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case TOGGLE_SHARED_VIEW:
+				// A ToggleSharedViewEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ToggleSharedViewEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ToggleSharedViewEvent.registerEvent(eventBus, ((ToggleSharedViewEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case TRACK_CURRENT_BINDER:
 				// A TrackCurrentBinderEvent!  Can the event handler we
 				// were given handle that?
@@ -2084,6 +2093,7 @@ public class EventHelper {
 			case SET_FOLDER_SORT:                       hasHandler = (eventHandler instanceof SetFolderSortEvent.Handler);                 break;
 			case SHARE_SELECTED_ENTRIES:                hasHandler = (eventHandler instanceof ShareSelectedEntriesEvent.Handler);          break;
 			case SUBSCRIBE_SELECTED_ENTRIES:            hasHandler = (eventHandler instanceof SubscribeSelectedEntriesEvent.Handler);      break;
+			case TOGGLE_SHARED_VIEW:                  	hasHandler = (eventHandler instanceof ToggleSharedViewEvent.Handler);              break;
 			case UNLOCK_SELECTED_ENTRIES:               hasHandler = (eventHandler instanceof UnlockSelectedEntriesEvent.Handler);         break;
 			
 			case UNDEFINED:
