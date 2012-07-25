@@ -64,6 +64,7 @@ import org.kablink.teaming.gwt.client.event.ShowAccessoriesEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.ToggleSharedViewEvent;
 import org.kablink.teaming.gwt.client.event.TrashPurgeAllEvent;
 import org.kablink.teaming.gwt.client.event.TrashPurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TrashRestoreAllEvent;
@@ -124,7 +125,6 @@ public class EntryMenuPanel extends ToolPanelBase
 	private boolean							m_isIE;						//
 	private boolean							m_panelInitialized;			// Set true after the panel has completed initializing.
 	private boolean							m_viewingPinnedEntries;		//
-	@SuppressWarnings("unused")
 	private boolean							m_viewingSharedFiles;		//
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private List<ToolbarItem>				m_configureToolbarItems;	//
@@ -744,9 +744,18 @@ public class EntryMenuPanel extends ToolPanelBase
 		// No, this isn't a view pinned entries item!  Is it a toggle
 		// shared view item?
 		else if ((null != simpleEvent) && TeamingEvents.TOGGLE_SHARED_VIEW.equals(simpleEvent)) {
-			// Yes!
-//!			...this needs to be implemented...
-			return;
+			// Yes!  Generate the appropriate HTML for the item.
+			Image sharedFilesImg = new Image(m_viewingSharedFiles ? m_images.sharedAll() : m_images.sharedFiles());
+			sharedFilesImg.addStyleName("vibe-entryMenuBarSharedFiles");
+			sharedFilesImg.getElement().setAttribute("align", "absmiddle");
+			sharedFilesImg.setTitle(
+				m_viewingSharedFiles                              ?
+					m_messages.vibeEntryMenu_Alt_Shared_ShowAll() :
+					m_messages.vibeEntryMenu_Alt_Shared_ShowFiles());
+			VibeFlowPanel html = new VibeFlowPanel();
+			html.add(sharedFilesImg);
+			menuText       = html.getElement().getInnerHTML();
+			menuTextIsHTML = true;
 		}
 		
 		else {
@@ -849,8 +858,7 @@ public class EntryMenuPanel extends ToolPanelBase
 						break;
 						
 					case TOGGLE_SHARED_VIEW:
-//!						...this needs to be implemented...
-						event = null;
+						event = new ToggleSharedViewEvent(m_binderInfo.getCollectionType());
 						break;
 						
 					case UNDEFINED:

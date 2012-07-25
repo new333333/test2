@@ -94,6 +94,7 @@ import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.ToggleSharedViewEvent;
 import org.kablink.teaming.gwt.client.event.TrashPurgeAllEvent;
 import org.kablink.teaming.gwt.client.event.TrashPurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TrashRestoreAllEvent;
@@ -112,6 +113,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntryPinInfo;
@@ -192,6 +194,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		QuickFilterEvent.Handler,
 		ShareSelectedEntriesEvent.Handler,
 		SubscribeSelectedEntriesEvent.Handler,
+		ToggleSharedViewEvent.Handler,
 		TrashPurgeAllEvent.Handler,
 		TrashPurgeSelectedEntriesEvent.Handler,
 		TrashRestoreAllEvent.Handler,
@@ -256,6 +259,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.QUICK_FILTER,
 		TeamingEvents.SHARE_SELECTED_ENTRIES,
 		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
+		TeamingEvents.TOGGLE_SHARED_VIEW,
 		TeamingEvents.TRASH_PURGE_ALL,
 		TeamingEvents.TRASH_PURGE_SELECTED_ENTRIES,
 		TeamingEvents.TRASH_RESTORE_ALL,
@@ -1982,6 +1986,24 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			BinderViewsHelper.subscribeToEntries(
 				getFolderType(),
 				getSelectedEntityIds());
+		}
+	}
+	
+	/**
+	 * Handles ToggleSharedViewEvent's received by this class.
+	 * 
+	 * Implements the ToggleSharedViewEvent.Handler.onToggleSharedView() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onToggleSharedView(ToggleSharedViewEvent event) {
+		// Is the event targeted to this view's collection?
+		CollectionType eventCollectionType = event.getCollectionType();
+		if (eventCollectionType.equals(getFolderInfo().getCollectionType())) {
+			// Yes!
+//!			...this needs to be implemented...
+			GwtClientHelper.deferredAlert("DataTableFolderViewBase.onToggleSharedView():  ...this needs to be implemented...");
 		}
 	}
 	

@@ -1402,6 +1402,8 @@ public interface GwtTeamingMessages extends Messages
 	String vibeEntryMenu_Alt_PersonalFilter();
 	String vibeEntryMenu_Alt_Pin_ShowAll();
 	String vibeEntryMenu_Alt_Pin_ShowPinned();
+	String vibeEntryMenu_Alt_Shared_ShowAll();
+	String vibeEntryMenu_Alt_Shared_ShowFiles();
 	String vibeEntryMenu_ClearFilters();
 	String vibeEntryMenu_GlobalizeFilter(String filterName);
 	String vibeEntryMenu_ManageFilters();
