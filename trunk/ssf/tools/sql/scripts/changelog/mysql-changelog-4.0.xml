@@ -54,7 +54,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="name" type="VARCHAR(64)"/>
-            <column name="type" type="VARCHAR(64)"/>
+            <column name="type" type="INT"/>
             <column name="readonly" type="BIT"/>
             <column name="synchTopDelete" type="BIT"/>
             <column name="putRequiresContentLength" type="BIT"/>

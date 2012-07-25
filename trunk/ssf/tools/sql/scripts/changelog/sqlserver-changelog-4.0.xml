@@ -54,7 +54,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="name" type="NVARCHAR(64)"/>
-            <column name="type" type="NVARCHAR(64)"/>
+            <column name="type" type="INT"/>
             <column name="readonly" type="TINYINT"/>
             <column name="synchTopDelete" type="TINYINT"/>
             <column name="putRequiresContentLength" type="TINYINT"/>
