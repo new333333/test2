@@ -153,15 +153,6 @@
             <column name="modification_principal" type="NUMERIC(19,0)"/>
             <column name="sharedEntity_type" type="INT"/>
             <column name="sharedEntity_id" type="NUMERIC(19,0)"/>
-        </createTable>
-    </changeSet>
-    <changeSet author="jong" context="schema" failOnError="true" id="13">
-        <createTable schemaName="dbo" tableName="SS_ShareItemMember">
-            <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_ShareItemMember"/>
-            </column>
-            <column name="shareItemId" type="NUMERIC(19,0)"/>
-            <column name="zoneId" type="NUMERIC(19,0)"/>
             <column name="comment" type="NVARCHAR(255)"/>
             <column name="daysToExpire" type="INT"/>
             <column name="endDate" type="DATETIME"/>
@@ -189,28 +180,25 @@
             <column name="right_viewBinderTitle" type="TINYINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="jong" context="schema" failOnError="true" id="14">
+    <changeSet author="jong" context="schema" failOnError="true" id="13">
         <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="SS_ShareItem" baseTableSchemaName="dbo" constraintName="FK8520E45376767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencedTableSchemaName="dbo" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong" context="schema" failOnError="true" id="15">
+    <changeSet author="jong" context="schema" failOnError="true" id="14">
         <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="SS_ShareItem" baseTableSchemaName="dbo" constraintName="FK8520E453BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencedTableSchemaName="dbo" referencesUniqueColumn="false"/>
     </changeSet>
-    <changeSet author="jong" context="schema" failOnError="true" id="16">
-        <addForeignKeyConstraint baseColumnNames="shareItemId" baseTableName="SS_ShareItemMember" baseTableSchemaName="dbo" constraintName="FKE9B290CD879F5430" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_ShareItem" referencedTableSchemaName="dbo" referencesUniqueColumn="false"/>
-    </changeSet>
-    <changeSet author="jong" context="schema" failOnError="true" id="17">
+    <changeSet author="jong" context="schema" failOnError="true" id="15">
         <createIndex indexName="sharedEntity_shareitem" schemaName="dbo" tableName="SS_ShareItem" unique="false">
             <column name="sharedEntity_type"/>
             <column name="sharedEntity_id"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong" context="schema" failOnError="true" id="18">
-        <createIndex indexName="endDate_shareitem" schemaName="dbo" tableName="SS_ShareItemMember" unique="false">
+    <changeSet author="jong" context="schema" failOnError="true" id="16">
+        <createIndex indexName="endDate_shareitem" schemaName="dbo" tableName="SS_ShareItem" unique="false">
             <column name="endDate"/>
         </createIndex>
     </changeSet>
-    <changeSet author="jong" context="schema" failOnError="true" id="19">
-        <createIndex indexName="recipient_shareitem" schemaName="dbo" tableName="SS_ShareItemMember" unique="false">
+    <changeSet author="jong" context="schema" failOnError="true" id="17">
+        <createIndex indexName="recipient_shareitem" schemaName="dbo" tableName="SS_ShareItem" unique="false">
             <column name="recipient_type"/>
             <column name="recipient_id"/>
         </createIndex>
