@@ -246,6 +246,7 @@
 									<th><ssf:nlt tag="license.table.date"/>&nbsp;</th>
 									<th>&nbsp;<ssf:nlt tag="license.table.localUsers"/>&nbsp;</th>
 									<th>&nbsp;<ssf:nlt tag="license.table.syncdUsers"/>&nbsp;</th>
+									<th>&nbsp;<ssf:nlt tag="license.table.openIdUsers"/>&nbsp;</th>
 									<th>&nbsp;<ssf:nlt tag="license.table.activeUsers"/>&nbsp;</th>
 									<th>&nbsp;<ssf:nlt tag="license.table.check"/>&nbsp;</th>
 								</tr>
@@ -254,6 +255,7 @@
 										<td><fmt:formatDate value="${datum.snapshotDate}" timeZone="${ssUser.timeZone.ID}" type="date" dateStyle="medium"/></td>
 										<td align="center">${datum.internalUserCount}</td>
 										<td align="center">${datum.externalUserCount}</td>
+										<td align="center">${datum.openIdUserCount}</td>
 										<td align="center">${datum.activeUserCount}</td>
 										<td align="center">${datum.checksum}</td>
 									</tr>

@@ -48,6 +48,7 @@ public class LicenseStats extends ZonedObject {
     protected Date snapshotDate;
 	protected long internalUserCount;
 	protected long externalUserCount;
+	protected Long openIdUserCount;
 	protected Long activeUserCount;
 	protected long checksum;
 
@@ -64,7 +65,8 @@ public class LicenseStats extends ZonedObject {
 	 * @param externalUserCount
 	 * @param checksum
 	 */
-	public LicenseStats(Long zoneId, Date snapshotDate, long internalUserCount, long externalUserCount, long activeUserCount, long checksum) {
+	public LicenseStats(Long zoneId, Date snapshotDate, long internalUserCount, long externalUserCount, 
+			long openIdUserCount, long activeUserCount, long checksum) {
 		super();
 		setZoneId(zoneId);
 		setSnapshotDate(snapshotDate);
@@ -152,6 +154,16 @@ public class LicenseStats extends ZonedObject {
 	 */
 	public void setActiveUserCount(Long activeUserCount) {
 		this.activeUserCount = activeUserCount;
+	}
+
+	
+	public long getOpenIdUserCount() {
+		if (openIdUserCount == null) return 0;
+		return openIdUserCount;
+	}
+
+	public void setOpenIdUserCount(Long openIdUserCount) {
+		this.openIdUserCount = openIdUserCount;
 	}
 
 	/**

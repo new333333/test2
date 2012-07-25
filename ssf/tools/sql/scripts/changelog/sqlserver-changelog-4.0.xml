@@ -203,4 +203,12 @@
             <column name="recipient_id"/>
         </createIndex>
     </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="18">
+        <comment>Count of OpenId user accounts</comment>
+        <addColumn tableName="SS_LicenseStats">
+            <column name="openIdUserCount" type="NUMERIC(19,0)">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

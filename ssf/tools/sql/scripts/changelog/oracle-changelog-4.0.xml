@@ -206,4 +206,12 @@
     <changeSet author="jong" context="schema" failOnError="true" id="18">
         <createSequence sequenceName="SS_SHAREITEM_ID_SEQUENCE"/>
     </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="19">
+        <comment>Count of OpenId user accounts</comment>
+        <addColumn tableName="SS_LICENSESTATS">
+            <column name="OPENIDUSERCOUNT" type="NUMERIC(19,0)">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
