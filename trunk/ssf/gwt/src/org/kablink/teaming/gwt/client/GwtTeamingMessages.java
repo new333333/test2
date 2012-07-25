@@ -607,6 +607,7 @@ public interface GwtTeamingMessages extends Messages
 	String invalidTextColor( String color );
 	String kablinkTeaming();
 	String noImagesAvailable();
+	String novellFilr();
 	String novellTeaming();
 	String sampleText();
 	String siteAndBinderBrandingLabel();

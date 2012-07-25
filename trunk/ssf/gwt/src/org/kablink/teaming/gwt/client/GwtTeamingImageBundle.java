@@ -357,6 +357,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource mastheadActions2();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/mast_head_filr_graphic.png")
+	public ImageResource mastHeadFilrGraphic();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/mast_head_kablink_graphic.png")
 	public ImageResource mastHeadKablinkGraphic();
 
