@@ -3353,6 +3353,18 @@ public class GwtServerHelper {
 		                                    reply.setBinderType(   getBinderType(                         binder ));
 		if      (reply.isBinderFolder())    reply.setFolderType(   getFolderTypeFromViewDef(bs, ((Folder) binder)));
 		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(getWorkspaceType(                      binder ));
+		try
+		{
+			Binder binderParent = binder.getParentBinder();
+			if ( null != binderParent )
+			{
+				reply.setParentBinderId( binderParent.getId() );
+			}
+		}
+		catch ( Exception e )
+		{
+			// Ignore.
+		}
 
 		// If this is a mirrored file...
 		if (FolderType.MIRROREDFILE.equals(reply.getFolderType())) {
@@ -7077,7 +7089,6 @@ public class GwtServerHelper {
 		case GET_ROOT_WORKSPACE_ID:
 		case GET_SAVED_SEARCHES:
 		case GET_SEND_TO_FRIEND_URL:
-		case GET_SHARE_BINDER_PAGE_URL:
 		case GET_SHARING_INFO:
 		case GET_SIGN_GUESTBOOK_URL:
 		case GET_SITE_ADMIN_URL:

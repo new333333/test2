@@ -40,22 +40,19 @@ import org.kablink.teaming.gwt.client.util.ClientEventParameter;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
  * Class used to communicate toolbar item information between the
- * client (i.e., the MainMenuControl) and the server (i.e.,
- * GwtRpcServiceImpl.getToolbarItems().)
+ * client and the server.
  * 
  * @author drfoster@novell.com
- *
  */
 public class ToolbarItem implements IsSerializable {
-	private List<NameValuePair> m_qualifiersAL = new ArrayList<NameValuePair>();	// Qualifier name/value pairs for this toolbar item.
-	private List<ToolbarItem> m_nestedItemsAL = new ArrayList<ToolbarItem>();		// Toolbar items nested within this one.
-	private String m_name;															// The name of this toolbar item.
-	private String m_title;															// The display name for this toolbar item.
-	private String m_url;															// The URL to launch for this toolbar item.
-	private TeamingEvents m_teamingEvent  = TeamingEvents.UNDEFINED;				// If the toolbar item is to fire is an event.
+	private List<NameValuePair>	m_qualifiersAL  = new ArrayList<NameValuePair>();	// Qualifier name/value pairs for this toolbar item.
+	private List<ToolbarItem>	m_nestedItemsAL = new ArrayList<ToolbarItem>();		// Toolbar items nested within this one.
+	private String				m_name;												// The name of this toolbar item.
+	private String				m_title;											// The display name for this toolbar item.
+	private String				m_url;												// The URL to launch for this toolbar item.
+	private TeamingEvents		m_teamingEvent  = TeamingEvents.UNDEFINED;			// If the toolbar item is to fire is an event.
 	
 	// The Client*Parameter's can only be specified and used
 	// on the client side.
@@ -77,7 +74,8 @@ public class ToolbarItem implements IsSerializable {
 		 * No parameters as per GWT serialization requirements.
 		 */
 		public NameValuePair() {
-			// Nothing to do.
+			// Initialize the super class.
+			super();
 		}
 
 		/**
@@ -87,13 +85,16 @@ public class ToolbarItem implements IsSerializable {
 		 * @param value
 		 */
 		public NameValuePair(String name, String value) {
+			// Initialize this object...
 			this();
-			m_name  = name;
-			m_value = value;
+			
+			// ...and store the parameters.
+			setName( name );
+			setValue(value);
 		}
 
 		/**
-		 * Public get'er methods.
+		 * Get'er methods.
 		 * 
 		 * @return
 		 */
@@ -101,7 +102,7 @@ public class ToolbarItem implements IsSerializable {
 		public String getValue() {return m_value;}
 
 		/**
-		 * Public set'er methods.
+		 * Set'er methods.
 		 * 
 		 * @param s
 		 */
@@ -115,7 +116,8 @@ public class ToolbarItem implements IsSerializable {
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public ToolbarItem() {
-		// Nothing to do.
+		// Initialize the super class.
+		super();
 	}
 
 	/**
@@ -124,7 +126,10 @@ public class ToolbarItem implements IsSerializable {
 	 * @param name
 	 */
 	public ToolbarItem(String name) {
+		// Initialize this object...
 		this();
+		
+		// ...and store the parameter.
 		setName(name);
 	}
 
@@ -232,9 +237,9 @@ public class ToolbarItem implements IsSerializable {
 	/*
 	 * Returns the name/value pair for a qualifier based on its name.
 	 */
-	private NameValuePair getQualifier(String name) {
+	private static NameValuePair getQualifier(String name, List<NameValuePair> qualifiersAL) {
 		name = name.toLowerCase();
-		for (NameValuePair nvp:  m_qualifiersAL) {
+		for (NameValuePair nvp:  qualifiersAL) {
 			String nvpName = nvp.getName().toLowerCase();
 			if (nvpName.endsWith(name)) {
 				return nvp;
@@ -260,7 +265,20 @@ public class ToolbarItem implements IsSerializable {
 	 * @return
 	 */
 	public String getQualifierValue(String name) {
-		NameValuePair nvp = getQualifier(name);
+		NameValuePair nvp = getQualifier(name, m_qualifiersAL);
+		return ((null == nvp) ? null : nvp.getValue());
+	}
+	
+	/**
+	 * Returns the value for a qualifier based on its name.
+	 * 
+	 * @param name
+	 * @param qualifiersAL
+	 * 
+	 * @return
+	 */
+	public static String getQualifierValueFromList(String name, List<NameValuePair> qualifiersAL) {
+		NameValuePair nvp = getQualifier(name, qualifiersAL);
 		return ((null == nvp) ? null : nvp.getValue());
 	}
 	

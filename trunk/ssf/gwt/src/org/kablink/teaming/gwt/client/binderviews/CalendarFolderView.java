@@ -1529,7 +1529,7 @@ public class CalendarFolderView extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the share.
-			BinderViewsHelper.shareEntries(getSelectedEntityIds());
+			BinderViewsHelper.shareEntities(getSelectedEntityIds());
 		}
 	}
 	

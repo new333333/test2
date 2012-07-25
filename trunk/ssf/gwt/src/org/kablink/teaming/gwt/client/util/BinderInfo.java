@@ -38,8 +38,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * Class used to communicate information about a Binder between the
- * client (i.e., the MainMenuControl) and the server (i.e.,
- * GwtRpcServiceImpl.)
+ * client and server.
  * 
  * @author drfoster@novell.com
  */
@@ -57,6 +56,7 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	private String		  	m_binderDesc	           = "";							//
 	private String        	m_entityType               = "";							//
 	private WorkspaceType 	m_wsType                   = WorkspaceType.NOT_A_WORKSPACE;	//
+	private String        	m_parentBinderId           = "";							//
 	
 	/**
 	 * Constructor method.
@@ -64,7 +64,8 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public BinderInfo() {
-		// Nothing to do.
+		// Initialize the super class.
+		super();
 	}
 
 	/**
@@ -79,6 +80,7 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		reply.setBinderDesc(              m_binderDesc              );
 		reply.setBinderDescExpanded(      m_binderDescExpanded      );
 		reply.setBinderDescHTML(          m_binderDescHTML          );
+		reply.setParentBinderId(          m_parentBinderId          );
 		reply.setNumUnread(               m_numUnread               );
 		reply.setEntityType(              m_entityType              );
 		reply.setBinderType(              m_binderType              );
@@ -104,11 +106,19 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	public FolderType     getFolderType()              {return                m_folderType;              }
 	public Long           getBinderIdAsLong()          {return Long.parseLong(m_binderId);               }
 	public String         getBinderId()                {return                m_binderId;                }
+	public String         getParentBinderId()          {return                m_parentBinderId;          }
 	public String         getBinderTitle()             {return                m_binderTitle;             }
 	public String		  getBinderDesc()              {return                m_binderDesc;              }
 	public Long           getNumUnread()               {return                m_numUnread;               }
 	public String         getEntityType()              {return                m_entityType;              }
 	public WorkspaceType  getWorkspaceType()           {return                m_wsType;                  }
+	public Long           getParentBinderIdAsLong()    {
+		Long reply;
+		if ((null == m_parentBinderId) || (0 == m_parentBinderId.length()))
+		     reply = null;
+		else reply = Long.parseLong(m_parentBinderId);
+		return reply;
+	}
 	
 	/**
 	 * Returns true of this BinderInfo defines a Collection and false
@@ -217,6 +227,19 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	
 	public void setBinderId(Long binderId) {
 		setBinderId(String.valueOf(binderId));
+	}
+	
+	/**
+	 * Stores the ID of a Binder's parent Binder.
+	 * 
+	 * @param parentBinderId
+	 */
+	public void setParentBinderId(String parentBinderId) {
+		m_parentBinderId = parentBinderId;
+	}
+	
+	public void setParentBinderId(Long parentBinderId) {
+		setParentBinderId((null == parentBinderId) ? "" : String.valueOf(parentBinderId));
 	}
 	
 	/**

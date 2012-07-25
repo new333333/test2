@@ -1430,19 +1430,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_SHARE_BINDER_PAGE_URL:
-		{
-			GetShareBinderPageUrlCmd gsbpuCmd;
-			String url;
-			StringRpcResponseData responseData;
-			
-			gsbpuCmd = (GetShareBinderPageUrlCmd) cmd;
-			url = getShareBinderPageUrl( ri, gsbpuCmd.getBinderId() );
-			responseData = new StringRpcResponseData( url );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
 		case GET_SHARING_INFO:
 		{
 			GetSharingInfoCmd gsiCmd;
@@ -3397,22 +3384,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
 		throw ex;
 	}// end getSiteAdministrationUrl()
-	
-	/**
-	 * Return the url needed to invoke the "Share binder" page.
-	 */
-	private String getShareBinderPageUrl( HttpRequestInfo ri, String binderId )
-	{
-		AdaptedPortletURL url;
-		
-		url = new AdaptedPortletURL( getRequest( ri ), "ss_forum", true );
-		url.setParameter( WebKeys.ACTION, "__ajax_relevance" );
-		url.setParameter( WebKeys.URL_OPERATION, "share_this_binder" );
-		url.setParameter( WebKeys.URL_BINDER_ID, binderId );
-		
-		return url.toString();
-	}
-	
 	
 	/**
 	 * Return a GwtBrandingData object for the home workspace.

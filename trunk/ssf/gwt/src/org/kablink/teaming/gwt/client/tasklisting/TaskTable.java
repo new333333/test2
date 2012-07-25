@@ -2955,7 +2955,7 @@ public class TaskTable extends Composite
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the share.
-			BinderViewsHelper.shareEntries(getTaskIdsChecked());
+			BinderViewsHelper.shareEntities(getTaskIdsChecked());
 		}
 	}
 	

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,12 +32,16 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
+import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem.NameValuePair;
 import org.kablink.teaming.gwt.client.util.ClientEventParameter;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
@@ -50,9 +54,8 @@ import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 
-
 /**
- * Class used to wrap a context base menu item.  
+ * Class used to wrap a context based menu item.
  * 
  * @author drfoster@novell.com
  */
@@ -74,15 +77,18 @@ public class ContextMenuItem extends VibeMenuItem {
 	/*
 	 * Inner class that handles selecting the menu items.
 	 */
+	@SuppressWarnings("unused")
 	private static class ContextItemCommand implements Command {
-		private boolean			m_hideEntryView;	
-		private CommandType 	m_type = CommandType.UNDEFINED;
-		private FormPanel 		m_fp;
-		private int				m_popupHeight;
-		private int				m_popupWidth;
-		private String			m_onClickJS;
-		private String			m_url;
-		private TeamingEvents	m_teamingEvent;
+		private boolean					m_hideEntryView;				//
+		private ClientEventParameter	m_clientEventParameter;			//
+		private CommandType 			m_type = CommandType.UNDEFINED;	//
+		private FormPanel 				m_fp;							//
+		private int						m_popupHeight;					//
+		private int						m_popupWidth;					//
+		private List<NameValuePair>		m_eventQualifiers;				//
+		private String					m_onClickJS;					//
+		private String					m_url;							//
+		private TeamingEvents			m_teamingEvent;					//
 		
 		/**
 		 * Constructor method.
@@ -92,6 +98,7 @@ public class ContextMenuItem extends VibeMenuItem {
 		 */
 		ContextItemCommand(boolean hideEntryView, String url) {
 			// Store the type of command...
+			super();
 			m_type = CommandType.URL_IN_CONTENT_FRAME;
 			
 			// ...and the parameters.
@@ -109,6 +116,7 @@ public class ContextMenuItem extends VibeMenuItem {
 		 */
 		ContextItemCommand(boolean hideEntryView, String url, int popupHeight, int popupWidth) {
 			// Store the type of command...
+			super();
 			m_type = CommandType.URL_IN_POPUP_NO_FORM;
 			
 			// ...and the parameters.
@@ -128,6 +136,7 @@ public class ContextMenuItem extends VibeMenuItem {
 		 */
 		ContextItemCommand(boolean hideEntryView, FormPanel fp, int popupHeight, int popupWidth) {
 			// Store the type of command...
+			super();
 			m_type = CommandType.URL_IN_POPUP_WITH_FORM;
 			
 			// ...and the parameters.
@@ -146,6 +155,7 @@ public class ContextMenuItem extends VibeMenuItem {
 		 */
 		ContextItemCommand(boolean hideEntryView, String url, String onClickJS) {
 			// Store the type of command...
+			super();
 			m_type = CommandType.JAVASCRIPT_STRING;
 			
 			// ...and the parameters.
@@ -160,16 +170,20 @@ public class ContextMenuItem extends VibeMenuItem {
 		 * @param hideEntryView
 		 * @param url
 		 * @param teamingEvent
+		 * @param eventQualifiers
 		 * @param clientEventParameter
 		 */
-		ContextItemCommand(boolean hideEntryView, String url, TeamingEvents teamingEvent, ClientEventParameter clientEventParameter) {
+		ContextItemCommand(boolean hideEntryView, String url, TeamingEvents teamingEvent, List<NameValuePair> eventQualifiers, ClientEventParameter clientEventParameter) {
 			// Store the type of command...
+			super();
 			m_type = CommandType.TEAMING_EVENT;
 			
 			// ...and the parameters.
-			m_hideEntryView = hideEntryView;
-			m_url           = url;
-			m_teamingEvent  = teamingEvent;
+			m_hideEntryView        = hideEntryView;
+			m_url                  = url;
+			m_teamingEvent         = teamingEvent;
+			m_eventQualifiers      = eventQualifiers;
+			m_clientEventParameter = clientEventParameter;
 		}
 		
 		/**
@@ -178,11 +192,11 @@ public class ContextMenuItem extends VibeMenuItem {
 		 * @param hideEntryView
 		 * @param url
 		 * @param teamingEvent
+		 * @param eventQualifiers
 		 */
-		@SuppressWarnings("unused")
-		ContextItemCommand(boolean hideEntryView, String url, TeamingEvents teamingEvent) {
+		ContextItemCommand(boolean hideEntryView, String url, TeamingEvents teamingEvent, List<NameValuePair> eventQualifiers) {
 			// Always use one of the initial forms of the constructor.
-			this(hideEntryView, url, teamingEvent, null);
+			this(hideEntryView, url, teamingEvent, eventQualifiers, null);
 		}
 		
 		/**
@@ -213,6 +227,14 @@ public class ContextMenuItem extends VibeMenuItem {
 
 				case INVOKE_SEND_EMAIL_TO_TEAM:
 					GwtTeaming.fireEvent(new InvokeSendEmailToTeamEvent(m_url));
+					break;
+
+				case INVOKE_SHARE_BINDER:
+					GwtTeaming.fireEvent(
+						new InvokeShareBinderEvent(
+							ToolbarItem.getQualifierValueFromList(
+								"binderId",
+								m_eventQualifiers)));
 					break;
 					
 				case EDIT_CURRENT_BINDER_BRANDING:
@@ -312,7 +334,12 @@ public class ContextMenuItem extends VibeMenuItem {
 		else {
 			// It's based on an event!  Generate the appropriate
 			// command for it.
-			reply = new ContextItemCommand(hideEntryView, url, te, cep);
+			reply = new ContextItemCommand(
+				hideEntryView,
+				url,
+				te,
+				tbi.getQualifiersList(),
+				cep);
 		}
 
 		// If we get here, reply refers to the appropriate command
