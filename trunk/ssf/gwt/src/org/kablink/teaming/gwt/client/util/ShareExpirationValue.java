@@ -126,7 +126,12 @@ public class ShareExpirationValue
 			
 			after = "";
 			if ( m_value != null )
+			{
+				if ( m_value < 0 )
+					m_value = Long.valueOf( 0 );
+				
 				after = m_value.toString();
+			}
 			
 			return GwtTeaming.getMessages().shareDlg_expiresAfter( after );
 		}

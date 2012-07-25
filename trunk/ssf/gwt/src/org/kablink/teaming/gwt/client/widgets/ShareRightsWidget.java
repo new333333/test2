@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.SetShareRightsEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
 
@@ -175,23 +176,14 @@ public class ShareRightsWidget extends Composite
 		targetShareInfo = event.getShareInfo();
 		if ( m_shareInfo != null && targetShareInfo != null )
 		{
-			String name;
-			GwtRecipientType type;
-			
-			name = m_shareInfo.getRecipientName();
-			type = m_shareInfo.getRecipientType();
-			
 			// Was this event meant for us?
-			if ( type == targetShareInfo.getRecipientType() )
+			if ( m_shareInfo.equals( targetShareInfo ) )
 			{
-				if ( name != null && name.equalsIgnoreCase( targetShareInfo.getRecipientName() ) )
-				{
-					// Yes
-					m_shareInfo.setShareRights( event.getShareRights() );
-					m_shareInfo.setIsDirty( true );
-			
-					updateRightsLabel();
-				}
+				// Yes
+				m_shareInfo.setShareRights( event.getShareRights() );
+				m_shareInfo.setIsDirty( true );
+		
+				updateRightsLabel();
 			}
 		}
 	}

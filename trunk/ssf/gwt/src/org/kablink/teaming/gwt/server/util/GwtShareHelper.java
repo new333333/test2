@@ -48,6 +48,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem.RecipientType;
 import org.kablink.teaming.domain.ShareItem.RightSet;
@@ -83,6 +84,7 @@ public class GwtShareHelper
 	private static RightSet m_viewRightSet;
 	private static RightSet m_contributorRightSet;
 	private static RightSet m_ownerRightSet;
+	private static long MILLISEC_IN_A_DAY = 86400000; 
 	
 
 	/**
@@ -223,7 +225,11 @@ public class GwtShareHelper
 		// Do we have a list of ShareItem objects for the given entity?
 		if ( listOfShareItems != null )
 		{
+			Date today;
+
 			// Yes
+			today = new Date();
+
 			for ( ShareItem nextShareItem : listOfShareItems )
 			{
 				GwtShareItem gwtShareItem;
@@ -287,8 +293,32 @@ public class GwtShareHelper
 					endDate = nextShareItem.getEndDate();
 					if ( endDate != null )
 					{
-						expirationValue.setType( ShareExpirationType.ON_DATE );
-						expirationValue.setValue( endDate.getTime() );
+						int expiresAfterDays;
+						
+						// Do we have an "expires after" value?
+						expiresAfterDays = nextShareItem.getDaysToExpire();
+						if ( expiresAfterDays > 0 )
+						{
+							long milliSecLeft;
+							
+							// Yes
+							// Calculate how many days are left before the share expires.
+							milliSecLeft = endDate.getTime() - today.getTime();
+							expiresAfterDays = (int)(milliSecLeft / MILLISEC_IN_A_DAY);
+							if ( expiresAfterDays >= 0 )
+							{
+								if ( (milliSecLeft % MILLISEC_IN_A_DAY) > 0 )
+									++expiresAfterDays;
+							}
+							expirationValue.setType( ShareExpirationType.AFTER_DAYS );
+							expirationValue.setValue( Long.valueOf( expiresAfterDays ) );
+						}
+						else
+						{
+							// We are dealing with "expires on"
+							expirationValue.setType( ShareExpirationType.ON_DATE );
+							expirationValue.setValue( endDate.getTime() );
+						}
 					}
 					
 					gwtShareItem.setShareExpirationValue( expirationValue );
@@ -435,6 +465,7 @@ public class GwtShareHelper
 		String comments;
 		EntityId entityId;
 		EntityIdentifier entityIdentifier;
+		int daysToExpire = -1;
 
 		if ( ami == null || gwtShareItem == null )
 		{
@@ -454,11 +485,26 @@ public class GwtShareHelper
 			switch ( expirationValue.getExpirationType() )
 			{
 			case AFTER_DAYS:
-				endDate = null;
+			{
+				HistoryStamp historyStamp;
+				long milliSecToExpire;
+				Date creationDate;
+
+				daysToExpire = expirationValue.getValue().intValue();
+				milliSecToExpire = daysToExpire * MILLISEC_IN_A_DAY;
+
+				// Calculate the end date based on the days-to-expire.
+				historyStamp = shareItem.getCreation();
+				if ( historyStamp != null )
+					creationDate = historyStamp.getDate();
+				else
+					creationDate = new Date();
+
+				endDate = new Date( creationDate.getTime() + milliSecToExpire );
 				break;
+			}
 
 			case NEVER:
-				endDate = null;
 				break;
 
 			case ON_DATE:
@@ -467,7 +513,6 @@ public class GwtShareHelper
 				
 			case UNKNOWN:
 			default:
-				endDate = null;
 				break;
 			}
 		}
@@ -516,11 +561,16 @@ public class GwtShareHelper
 								recipientType,
 								recipientId,
 								rightSet );
+			
+			shareItem.setDaysToExpire( daysToExpire );
 		}
 		else
 		{
 			// No, just update the given ShareItem.
 			shareItem.setComment( comments );
+			shareItem.setRightSet( rightSet );
+			shareItem.setEndDate( endDate );
+			shareItem.setDaysToExpire( daysToExpire );
 		}
 		
 		return shareItem;
@@ -667,9 +717,8 @@ public class GwtShareHelper
 	@SuppressWarnings("rawtypes")
 	private static List sendEmailToRecipient(
 		AllModulesInjected ami,
-		User currentUser,
-		DefinableEntity sharedEntity,
-		ShareItem shareItem )
+		GwtShareItem shareItem,
+		User currentUser )
 	{
 		List emailErrors;
 		Set<Long> principalIds;
@@ -682,8 +731,10 @@ public class GwtShareHelper
 		Description body;
 		HashSet<String> emailAddress;
 		String bccEmailAddress;
+		EntityId entityId;
+		DefinableEntity sharedEntity;
 
-		if ( ami == null || currentUser == null || sharedEntity == null || shareItem == null )
+		if ( ami == null || currentUser == null || shareItem == null )
 		{
 			m_logger.error( "invalid parameter in sendEmailToRecipient()" );
 			return null;
@@ -694,12 +745,12 @@ public class GwtShareHelper
 		
 		switch ( shareItem.getRecipientType() )
 		{
-		case group:
-		case user:
+		case GROUP:
+		case USER:
 			principalIds.add( shareItem.getRecipientId() );
 			break;
 		
-		case team:
+		case TEAM:
 			teamIds.add( shareItem.getRecipientId() );
 			break;
 		
@@ -708,8 +759,14 @@ public class GwtShareHelper
 			break;
 		}
 		
-		comments = shareItem.getComment();
+		comments = shareItem.getComments();
 
+		entityId = shareItem.getEntityId();
+		if ( entityId.isBinder() )
+			sharedEntity = ami.getBinderModule().getBinder( entityId.getEntityId() );
+		else
+			sharedEntity = ami.getFolderModule().getEntry( entityId.getBinderId(), entityId.getEntityId() );
+		
 		title = sharedEntity.getTitle();
 		shortTitle = title;
 		
@@ -763,51 +820,6 @@ public class GwtShareHelper
 		return emailErrors;
 	}
 		
-	/**
-	 * Send an email to the given list of recipients informing them that an item has
-	 * been shared with them.
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static List sendEmailToRecipients(
-		AllModulesInjected ami,
-		DefinableEntity sharedEntity,
-		User currentUser,
-		ArrayList<ShareItem> listOfShareItems )
-	{
-		List emailErrors;
-
-		emailErrors = null;
-		
-		// Send an email to each of the recipients
-		if ( listOfShareItems != null )
-		{
-			for (ShareItem nextShareItem : listOfShareItems)
-			{
-				if ( nextShareItem.getRecipientType() == RecipientType.user || 
-					 nextShareItem.getRecipientType() == RecipientType.group )
-				{
-					List errors;
-
-					errors = sendEmailToRecipient(
-												ami,
-												currentUser,
-												sharedEntity,
-												nextShareItem );
-
-					if ( errors != null )
-					{
-						if ( emailErrors == null )
-							emailErrors = errors;
-						else
-							emailErrors.addAll( errors );
-					}
-				}
-			}
-		}
-		
-		return emailErrors;
-	}
-	
 	/**
 	 * Save the given share data. 
 	 */
@@ -864,6 +876,10 @@ public class GwtShareHelper
 		{
 			ShareItem shareItem;
 			Long shareItemId;
+			boolean sendEmail;
+			
+			shareItem = null;
+			sendEmail = false;
 			
 			// Does this ShareItem exists?
 			shareItemId = nextGwtShareItem.getId();
@@ -873,42 +889,41 @@ public class GwtShareHelper
 				shareItem = getShareItemInfo( ami, currentUser, null, nextGwtShareItem );
 
 				sharingModule.addShareItem( shareItem );
+				sendEmail = true;
 			}
 			else
 			{
-				// The ShareItem exists?
+				// The ShareItem exists.
 				// Was it modified?
 				if ( nextGwtShareItem.isDirty() )
 				{
 					// Yes
-					
 					shareItem = sharingModule.getShareItem( shareItemId );
 					
 					getShareItemInfo( ami, currentUser, shareItem, nextGwtShareItem );
 					
 					sharingModule.modifyShareItem( shareItem );
+					sendEmail = true;
 				}
 			}
-
-			// The list returned by updateListOfMembers() only included those members
-			// that are new to the share or whose sharing data was modified.
+			
 			// Are we suppose to send an email to everyone and not just new or modified shares?
 			if ( sharingData.getSendEmailToAll() )
 			{
 				// Yes
-				// Get the complete list of members.
+				sendEmail = true;
 			}
 
-			// Send an email to each of the recipients
+			// Send an email to this recipient
+			if ( sendEmail )
 			{
 				List entityEmailErrors = null;
 				
 				// Send an email to each of the recipients
-//				entityEmailErrors = sendEmailToRecipients(
-//														ami,
-//														sharedEntity,
-//														currentUser,
-//														listOfGwtShareItemMembers );
+				entityEmailErrors = sendEmailToRecipient(
+														ami,
+														nextGwtShareItem,
+														currentUser );
 				
 				if ( emailErrors == null )
 				{
