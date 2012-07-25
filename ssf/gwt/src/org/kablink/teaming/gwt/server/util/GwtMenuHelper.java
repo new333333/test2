@@ -1989,7 +1989,9 @@ public class GwtMenuHelper {
 	private static boolean folderSupportsPinning(Folder folder, String viewType) {
 		boolean reply = ((null != folder) && MiscUtil.hasString(viewType));
 		if (reply) {
-			reply = viewType.equals(Definition.VIEW_STYLE_DISCUSSION);
+			reply =
+				(viewType.equals(Definition.VIEW_STYLE_DISCUSSION) ||	// Discussion - Standard View.
+				 viewType.equals(Definition.VIEW_STYLE_TABLE));			// Discussion - Movable Columns.
 		}
 		return reply;
 	}
