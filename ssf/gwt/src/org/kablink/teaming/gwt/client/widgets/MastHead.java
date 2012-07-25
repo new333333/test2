@@ -144,7 +144,17 @@ public class MastHead extends Composite
 		// Create a place for the beta text to go.
 		if ( beta )
 		{
-			String productName = m_requestInfo.getProductName();
+			String productName;
+			
+			if ( m_requestInfo.isLicenseFilr() )
+			{
+				productName = GwtTeaming.getMessages().novellFilr();
+			}
+			else
+			{
+				productName = m_requestInfo.getProductName();
+			}
+			
 			m_betaLabel = new Label( GwtTeaming.getMessages().betaWithProduct( productName ) );
 			m_betaLabel.addStyleName( "mastheadBeta" );
 			m_mainMastheadPanel.add( m_betaLabel );
