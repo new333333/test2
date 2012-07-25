@@ -59,7 +59,6 @@ import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
-import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -1723,10 +1722,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		return results;
 	}
 
-	private void setupInitialOpenIDProviderList() {
-		getCoreDao().save(new OpenIDProvider("google", "Google", "https://google.com/accounts/o8/id", ".*google.com.*"));
-		getCoreDao().save(new OpenIDProvider("yahoo", "Yahoo", "https://me.yahoo.com", ".*yahoo.com.*"));
-		getCoreDao().save(new OpenIDProvider("aol", "AOL", "https://openid.aol.com", ".*openid.aol.com.*"));
-		getCoreDao().save(new OpenIDProvider("myopenid", "myOpenID", "https://myopenid.com", ".*myopenid.com.*"));
-	}
+	abstract protected void setupInitialOpenIDProviderList();
+	
 }

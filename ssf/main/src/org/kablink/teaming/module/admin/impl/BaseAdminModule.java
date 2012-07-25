@@ -35,7 +35,8 @@ package org.kablink.teaming.module.admin.impl;
 import java.util.List;
 
 import org.kablink.teaming.domain.IndexNode;
-
+import org.kablink.teaming.domain.OpenIDConfig;
+import org.kablink.teaming.domain.OpenIDProvider;
 
 public class BaseAdminModule extends AbstractAdminModule {
 
@@ -56,6 +57,51 @@ public class BaseAdminModule extends AbstractAdminModule {
 	}
 	
 	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl) {
+		// Noop
+	}
+
+	@Override
+	public void addOpenIDProvider(OpenIDProvider openIDProvider) {
+		// Noop
+	}
+
+	@Override
+	public void modifyOpenIDProvider(OpenIDProvider openIDProvider) {
+		// Noop
+	}
+
+	@Override
+	public void deleteOpenIDProvider(String openIDProviderId) {
+		// Noop
+	}
+
+	@Override
+	public OpenIDProvider getOpenIDProvider(String openIDProviderId) {
+		return null;
+	}
+
+	@Override
+	public List<OpenIDProvider> getOpenIDProviders() {
+		return null;
+	}
+
+	@Override
+	public boolean isExternalUserEnabled() {
+		return false;
+	}
+
+	@Override
+	public void setExternalUserEnabled(boolean enabled) {
+		// Noop
+	}
+
+	@Override
+	public OpenIDConfig getOpenIDConfig() {
+		return null;
+	}
+
+	@Override
+	public void setOpenIDConfig(OpenIDConfig openIDConfig) {
 		// Noop
 	}
 	
