@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -146,7 +145,6 @@ public enum VibeRpcCmdType implements IsSerializable
 	GET_ROOT_WORKSPACE_ID,
 	GET_SAVED_SEARCHES,
 	GET_SEND_TO_FRIEND_URL,
-	GET_SHARE_BINDER_PAGE_URL,
 	GET_SHARING_INFO,
 	GET_SIGN_GUESTBOOK_URL,
 	GET_SITE_ADMIN_URL,

@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
+import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
@@ -89,7 +90,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CanModifyBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetShareBinderPageUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
@@ -104,6 +104,7 @@ import org.kablink.teaming.gwt.client.util.Agent;
 import org.kablink.teaming.gwt.client.util.AgentBase;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfoHelper;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -2503,59 +2504,40 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onInvokeShareBinder( InvokeShareBinderEvent event )
 	{
-		GetShareBinderPageUrlCmd gsbpuCmd;
-		String binderId;
-		
-		// Issue an rpc request to get the url for the "share binder" page.
-		binderId = event.getBinderId();
-		gsbpuCmd = new GetShareBinderPageUrlCmd( binderId );
-		GwtClientHelper.executeCommand( gsbpuCmd, new AsyncCallback<VibeRpcResponse>()
+		BinderInfoHelper.getBinderInfo( event.getBinderId(), new BinderInfoCallback()
 		{
-			/**
-			 * 
-			 */
 			@Override
-			public void onFailure( Throwable t )
+			public void onFailure()
 			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetShareBinderPageUrl() );
-			}
-			
-			/**
-			 * 
-			 */
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				final String url;
-				StringRpcResponseData responseData;
-				ScheduledCommand cmd;
+				// Nothing to do!  The user will already have been
+				// told about the problem.
+			}// end onFailure()
 
-				responseData = (StringRpcResponseData) response.getResponseData();
-				url = responseData.getStringValue();
-				
-				// Open the "share binder" page.
-				if ( url != null && url.length() > 0 )
+			@Override
+			public void onSuccess( final BinderInfo binderInfo )
+			{
+				ScheduledCommand doShare = new ScheduledCommand()
 				{
-					cmd = new ScheduledCommand()
+					@Override
+					public void execute()
 					{
-						@Override
-						public void execute()
+						String eidType;
+						switch ( binderInfo.getBinderType() )
 						{
-							int height;
-							int width;
-	
-							// Yes
-							width = 550;
-							height = 750;
-							Window.open( url, "sharebinder", "height=" + String.valueOf( height ) + ",resizeable,scrollbars,width=" + String.valueOf( width ) );
+						case FOLDER:     eidType = EntityId.FOLDER;    break;
+						case WORKSPACE:  eidType = EntityId.WORKSPACE; break;
+						default:         eidType = "";                 break;
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			}
-		});
+						BinderViewsHelper.shareEntity(
+							new EntityId(
+								binderInfo.getParentBinderIdAsLong(),
+								binderInfo.getBinderIdAsLong(),
+								eidType ) );
+					}// end execute()
+				};
+				Scheduler.get().scheduleDeferred( doShare );		
+			}// end onSuccess()
+		} );
 	}
 	
 	/**

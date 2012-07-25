@@ -30,9 +30,9 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.binderviews.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -755,12 +755,12 @@ public class BinderViewsHelper {
 	}
 
 	/**
-	 * Invokes the appropriate UI to share the entries based on a
+	 * Invokes the appropriate UI to share the entities based on a
 	 * List<EntityId> of the entries.
 	 *
 	 * @param entityIds
 	 */
-	public static void shareEntries(final List<EntityId> entityIds) {
+	public static void shareEntities(final List<EntityId> entityIds) {
 		// If we weren't given any entity IDs to be shared...
 		if ((null == entityIds) || entityIds.isEmpty()) {
 			// ...bail.
@@ -791,6 +791,18 @@ public class BinderViewsHelper {
 			// it with the given entry IDs.
 			showShareDlgAsync(entityIds);
 		}
+	}
+	
+	/**
+	 * Invokes the appropriate UI to share an entity based on an
+	 * EntityId.
+	 *
+	 * @param entityId
+	 */
+	public static void shareEntity(EntityId entityId) {
+		List<EntityId> entityIds = new ArrayList<EntityId>();
+		entityIds.add(entityId);
+		shareEntities(entityIds);
 	}
 
 	/*

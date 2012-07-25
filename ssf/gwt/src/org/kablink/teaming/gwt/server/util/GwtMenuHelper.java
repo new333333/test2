@@ -107,7 +107,6 @@ import org.kablink.teaming.web.util.Tabs.TabEntry;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.search.Constants;
 
-
 /**
  * Helper methods for the GWT UI server code that services menu bar
  * requests.
@@ -1740,20 +1739,11 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem to run the share binder dialog.
 	 */
 	private static ToolbarItem constructShareBinderItem(HttpServletRequest request, Binder binder) {
-		// Create the base ToolbarItem for the share binder...
-		ToolbarItem sbTBI = new ToolbarItem(SHARE);
-		markTBIPopup(sbTBI, "550", "750");
-		markTBITitle(sbTBI, GwtUIHelper.buildRelevanceKey(binder, "relevance.shareThis"));
-		
-		// ...generate the URL to share it...
-		AdaptedPortletURL url = new AdaptedPortletURL(request, SS_FORUM, true);
-		url.setParameter(WebKeys.ACTION,        "__ajax_relevance"            );
-		url.setParameter(WebKeys.URL_OPERATION, "share_this_binder"           );
-		url.setParameter(WebKeys.URL_BINDER_ID, String.valueOf(binder.getId()));
-		markTBIUrl(sbTBI, url);
-		
-		// ...and return the item.
-		return sbTBI;
+		ToolbarItem     shareTBI = new ToolbarItem(SHARE);
+		markTBITitle(   shareTBI, GwtUIHelper.buildRelevanceKey(binder, "relevance.shareThis"));
+		markTBIEvent(   shareTBI, TeamingEvents.INVOKE_SHARE_BINDER                           );
+		markTBIBinderId(shareTBI, binder.getId()                                              );
+		return shareTBI;
 	}
 	
 	/*
@@ -2535,6 +2525,18 @@ public class GwtMenuHelper {
 	 */
 	private static boolean isViewPhotoAlbum(String viewType) {
 		return MiscUtil.hasString(viewType) && viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM);
+	}
+	
+	/*
+	 * Marks a ToolbarItem with a binder ID.
+	 */
+	private static void markTBIBinderId(ToolbarItem tbi, String binderId) {
+		tbi.addQualifier("binderId", binderId);
+	}
+	
+	private static void markTBIBinderId(ToolbarItem tbi, Long binderId) {
+		// Always use the initial form of the method.
+		markTBIBinderId(tbi, String.valueOf(binderId));
 	}
 	
 	/*
