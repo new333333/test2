@@ -55,7 +55,6 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
-import org.kablink.util.Validator;
 
 public class BaseAuthenticationModule extends CommonDependencyInjection
 		implements AuthenticationModule {

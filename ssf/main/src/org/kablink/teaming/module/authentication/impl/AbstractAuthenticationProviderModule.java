@@ -62,7 +62,6 @@ import org.kablink.teaming.spring.security.ldap.LdapAuthenticationProvider;
 import org.kablink.teaming.spring.security.ldap.PreAuthenticatedAuthenticator;
 import org.kablink.teaming.spring.security.ldap.PreAuthenticatedFilterBasedLdapUserSearch;
 import org.kablink.teaming.spring.security.ldap.PreAuthenticatedLdapAuthenticationProvider;
-import org.kablink.teaming.spring.security.openid.OpenIDAuthenticationUserDetailsService;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
@@ -93,7 +92,7 @@ import org.springframework.security.openid.OpenIDAuthenticationToken;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-public class AuthenticationModuleImpl extends BaseAuthenticationModule
+public abstract class AbstractAuthenticationProviderModule extends BaseAuthenticationModule
 		implements AuthenticationProvider, InitializingBean {
 	protected Log logger = LogFactory.getLog(getClass());
 
@@ -105,7 +104,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	protected Class localAuthenticationProviderClass;
 	protected boolean authenticateLdapMatchingUsersUsingLdapOnly = true;
 	
-	public AuthenticationModuleImpl() throws ClassNotFoundException {
+	public AbstractAuthenticationProviderModule() throws ClassNotFoundException {
 		nonLocalAuthenticators = new HashMap<Long, ProviderManager>();
 		localProviders = new HashMap<Long, ZoneAwareLocalAuthenticationProvider>();
 		lastUpdates = new ConcurrentHashMap<Long, Long>();
@@ -258,7 +257,9 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		}
 		
 		// Build OpenID authentication provider
-		providers.add(createOpenIDAuthenticationProvider(zoneId));
+		OpenIDAuthenticationProvider openIdAuthProvider = createOpenIDAuthenticationProvider(zoneId);
+		if(openIdAuthProvider != null)
+			providers.add(openIdAuthProvider);
 		
 		/*
 		 * Don't forget to allow for custom authenticators. This isn't how to do
@@ -275,12 +276,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		return providers;
 	}
 	
-	protected OpenIDAuthenticationProvider createOpenIDAuthenticationProvider(Long zoneId) throws Exception {
-		OpenIDAuthenticationProvider openidAuthenticationProvider = new OpenIDAuthenticationProvider(zoneId);
-		openidAuthenticationProvider.setAuthenticationUserDetailsService(new OpenIDAuthenticationUserDetailsService());
-		openidAuthenticationProvider.afterPropertiesSet();
-		return openidAuthenticationProvider;
-	}
+	abstract protected OpenIDAuthenticationProvider createOpenIDAuthenticationProvider(Long zoneId) throws Exception;
 
 	protected AuthenticationProvider createLdapAuthenticationProvider
 		(DefaultSpringSecurityContextSource contextSource, 
