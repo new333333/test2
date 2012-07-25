@@ -485,6 +485,14 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource resumeActivityStream();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/sharedAll.gif")
+	public ImageResource sharedAll();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/sharedFiles.gif")
+	public ImageResource sharedFiles();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Widgets/sizingArrows.png")
 	public ImageResource sizingArrows();
 	
