@@ -241,6 +241,7 @@ public enum TeamingEvents implements IsSerializable {
 	SET_FOLDER_SORT,					// Sets a folder sort options.
 	SHARE_SELECTED_ENTRIES,				// Shares the Selected Entries.
 	SUBSCRIBE_SELECTED_ENTRIES,			// Subscribes the Current User to the Selected Entries.
+	TOGGLE_SHARED_VIEW,					// Toggles the 'Shared by/with Me' Views Between Files and All Entries.
 	UNLOCK_SELECTED_ENTRIES,			// Unlocks the Selected Entries.
 		
 	UNDEFINED;							// Undefined event - Should never be fired !!!

@@ -30,99 +30,44 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.event;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.event.shared.EventHandler;
-import com.google.web.bindery.event.shared.HandlerRegistration;
-import com.google.web.bindery.event.shared.SimpleEventBus;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 
 /**
- * The ViewPinnedEntriesEvent is used to toggle the state of view
- * pinned entries in a folder.
+ * This class holds all of the information necessary to execute the
+ * 'save shared files state' command.
  * 
  * @author drfoster@novell.com
  */
-public class ViewPinnedEntriesEvent extends VibeEventBase<ViewPinnedEntriesEvent.Handler> {
-    public static Type<Handler> TYPE = new Type<Handler>();
-    
-    public Long	m_folderId;	// The ID of the folder whose pinned entry viewing is to be toggled.
-
-	/**
-	 * Handler interface for this event.
-	 */
-	public interface Handler extends EventHandler {
-		void onViewPinnedEntries(ViewPinnedEntriesEvent event);
-	}
+public class SaveSharedFilesStateCmd extends VibeRpcCmd {
+	private boolean			m_viewSharedFiles;	// true -> Shared files are being viewed.  false -> All shares are being viewed.
+	private CollectionType	m_collectionType;	// The collection type of the shared collection whose state is being saved.
 	
 	/**
 	 * Class constructor.
+	 * 
+	 * For GWT serialization, must have a zero parameter
+	 * constructor.
 	 */
-	public ViewPinnedEntriesEvent() {
+	public SaveSharedFilesStateCmd() {
 		// Initialize the super class.
-		super();
+		super();		
 	}
 
 	/**
 	 * Class constructor.
 	 * 
-	 * @param folderId
+	 * @param collectionType
+	 * @param viewSharedFiles
 	 */
-	public ViewPinnedEntriesEvent(Long folderId) {
+	public SaveSharedFilesStateCmd(CollectionType collectionType, boolean viewSharedFiles) {
 		// Initialize this object...
-		this();
+		this();		
 		
 		// ...and store the parameters.
-		setFolderId(folderId);
-	}
-
-	/**
-	 * Dispatches this event when one is triggered.
-	 * 
-	 * Implements GwtEvent.dispatch()
-	 * 
-	 * @param handler
-	 */
-    @Override
-    protected void dispatch(Handler handler) {
-        handler.onViewPinnedEntries(this);
-    }
-	
-	/**
-	 * Returns the GwtEvent.Type of this event.
-	 *
-	 * Implements GwtEvent.getAssociatedType()
-	 * 
-	 * @return
-	 */
-    @Override
-    public Type<Handler> getAssociatedType() {
-        return TYPE;
-    }
-    
-	/**
-	 * Returns the TeamingEvents enumeration value corresponding to
-	 * this event.
-	 * 
-	 * Implements VibeBaseEvent.getEventEnum()
-	 * 
-	 * @return
-	 */
-	@Override
-	public TeamingEvents getEventEnum() {
-		return TeamingEvents.VIEW_PINNED_ENTRIES;
-	}
-		
-	/**
-	 * Registers this event on the given event bus and returns its
-	 * HandlerRegistration.
-	 * 
-	 * @param eventBus
-	 * @param handler
-	 * 
-	 * @return
-	 */
-	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
-		return eventBus.addHandler(TYPE, handler);
+		setCollectionType( collectionType );
+		setViewSharedFiles(viewSharedFiles);
 	}
 	
 	/**
@@ -130,12 +75,26 @@ public class ViewPinnedEntriesEvent extends VibeEventBase<ViewPinnedEntriesEvent
 	 * 
 	 * @return
 	 */
-	public Long getFolderId() {return m_folderId;}
+	public boolean        getViewSharedFiles() {return m_viewSharedFiles;}	
+	public CollectionType getCollectionType()  {return m_collectionType; }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderId(Long folderId) {m_folderId = folderId;}
+	public void setViewSharedFiles(boolean        viewSharedFiles) {m_viewSharedFiles = viewSharedFiles;}
+	public void setCollectionType( CollectionType collectionType)  {m_collectionType  = collectionType; }
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SAVE_SHARED_FILES_STATE.ordinal();
+	}
 }

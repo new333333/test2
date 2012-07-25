@@ -36,7 +36,6 @@ import java.util.Map;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
  * This class holds the response data for the 'get folder display data'
  * RPC command.
@@ -47,6 +46,7 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	private boolean				m_folderSortDescend;		//
 	private boolean				m_folderSupportsPinning;	//
 	private boolean				m_viewPinnedEntries;		//
+	private boolean				m_viewSharedFiles;			//
 	private int					m_folderPageSize;			//
 	private Map<String, String>	m_folderColumnWidths;		//
 	private String				m_folderSortBy;				//
@@ -70,8 +70,9 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	 * @param folderColumnWidths
 	 * @param folderSupportsPinning
 	 * @param viewPinnedEntries
+	 * @param viewSharedFiles
 	 */
-	public FolderDisplayDataRpcResponseData(String folderSortBy, boolean folderSortDescend, int folderPageSize, Map<String, String> folderColumnWidths, boolean folderSupportsPinning, boolean viewPinnedEntries) {
+	public FolderDisplayDataRpcResponseData(String folderSortBy, boolean folderSortDescend, int folderPageSize, Map<String, String> folderColumnWidths, boolean folderSupportsPinning, boolean viewPinnedEntries, boolean viewSharedFiles) {
 		// Initialize this object...
 		this();
 		
@@ -82,6 +83,7 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 		setFolderColumnWidths(   folderColumnWidths   );
 		setFolderSupportsPinning(folderSupportsPinning);
 		setViewPinnedEntries(    viewPinnedEntries    );
+		setViewSharedFiles(      viewSharedFiles      );
 	}
 	
 	/**
@@ -92,6 +94,7 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	public boolean             getFolderSortDescend()     {return m_folderSortDescend;    }
 	public boolean             getFolderSupportsPinning() {return m_folderSupportsPinning;}
 	public boolean             getViewPinnedEntries()     {return m_viewPinnedEntries;    }
+	public boolean             getViewSharedFiles()       {return m_viewSharedFiles;      }
 	public int                 getFolderPageSize()        {return m_folderPageSize;       }
 	public Map<String, String> getFolderColumnWidths()    {return m_folderColumnWidths;   }
 	public String              getFolderSortBy()          {return m_folderSortBy;         }
@@ -104,6 +107,7 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	public void setFolderSortDescend(    boolean             folderSortDescend)     {m_folderSortDescend     = folderSortDescend;    }
 	public void setFolderSupportsPinning(boolean             folderSupportsPinning) {m_folderSupportsPinning = folderSupportsPinning;}
 	public void setViewPinnedEntries(    boolean             viewPinnedEntries)     {m_viewPinnedEntries     = viewPinnedEntries;    }
+	public void setViewSharedFiles(      boolean             viewSharedFiles)       {m_viewSharedFiles       = viewSharedFiles;      }
 	public void setFolderPageSize(       int                 folderPageSize)        {m_folderPageSize        = folderPageSize;       }
 	public void setFolderColumnWidths(   Map<String, String> folderColumnWidths)    {m_folderColumnWidths    = folderColumnWidths;   }
 	public void setFolderSortBy(         String              folderSortBy)          {m_folderSortBy          = folderSortBy;         }

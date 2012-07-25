@@ -2072,8 +2072,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case SAVE_FOLDER_PINNING_STATE:
 		{
-			SaveFolderPinningStateCmd sfsCmd = ((SaveFolderPinningStateCmd) cmd);
-			GwtViewHelper.saveUserViewPinnedEntries( getRequest( ri ), sfsCmd.getFolderId(), sfsCmd.getViewPinnedEntries() );
+			SaveFolderPinningStateCmd sfpsCmd = ((SaveFolderPinningStateCmd) cmd);
+			GwtViewHelper.saveUserViewPinnedEntries( getRequest( ri ), sfpsCmd.getFolderId(), sfpsCmd.getViewPinnedEntries() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( true ));
 			return response;
 		}
@@ -2083,6 +2083,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SaveFolderSortCmd sfsCmd = ((SaveFolderSortCmd) cmd);
 			Boolean result = saveFolderSort( ri, sfsCmd.getBinderInfo(), sfsCmd.getSortKey(), sfsCmd.getSortAscending() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			return response;
+		}
+		
+		case SAVE_SHARED_FILES_STATE:
+		{
+			SaveSharedFilesStateCmd ssfsCmd = ((SaveSharedFilesStateCmd) cmd);
+			GwtViewHelper.saveUserViewSharedFiles( getRequest( ri ), ssfsCmd.getCollectionType(), ssfsCmd.getViewSharedFiles() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( true ));
 			return response;
 		}
 		

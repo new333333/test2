@@ -32,32 +32,34 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
+import org.kablink.teaming.gwt.client.util.CollectionType;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ViewPinnedEntriesEvent is used to toggle the state of view
- * pinned entries in a folder.
+ * The ToggleSharedViewEvent is used to toggle the 'Shared by/with Me'
+ * views between files and all entries.
  * 
  * @author drfoster@novell.com
  */
-public class ViewPinnedEntriesEvent extends VibeEventBase<ViewPinnedEntriesEvent.Handler> {
+public class ToggleSharedViewEvent extends VibeEventBase<ToggleSharedViewEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
-    public Long	m_folderId;	// The ID of the folder whose pinned entry viewing is to be toggled.
+    public CollectionType	m_collectionType;	// The collection type of the view being toggled.
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onViewPinnedEntries(ViewPinnedEntriesEvent event);
+		void onToggleSharedView(ToggleSharedViewEvent event);
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public ViewPinnedEntriesEvent() {
+	public ToggleSharedViewEvent() {
 		// Initialize the super class.
 		super();
 	}
@@ -65,14 +67,14 @@ public class ViewPinnedEntriesEvent extends VibeEventBase<ViewPinnedEntriesEvent
 	/**
 	 * Class constructor.
 	 * 
-	 * @param folderId
+	 * @param collectionType
 	 */
-	public ViewPinnedEntriesEvent(Long folderId) {
+	public ToggleSharedViewEvent(CollectionType collectionType) {
 		// Initialize this object...
 		this();
 		
-		// ...and store the parameters.
-		setFolderId(folderId);
+		// ...and store the parameter.
+		setCollectionType(collectionType);
 	}
 
 	/**
@@ -84,7 +86,7 @@ public class ViewPinnedEntriesEvent extends VibeEventBase<ViewPinnedEntriesEvent
 	 */
     @Override
     protected void dispatch(Handler handler) {
-        handler.onViewPinnedEntries(this);
+        handler.onToggleSharedView(this);
     }
 	
 	/**
@@ -109,7 +111,7 @@ public class ViewPinnedEntriesEvent extends VibeEventBase<ViewPinnedEntriesEvent
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.VIEW_PINNED_ENTRIES;
+		return TeamingEvents.TOGGLE_SHARED_VIEW;
 	}
 		
 	/**
@@ -130,12 +132,12 @@ public class ViewPinnedEntriesEvent extends VibeEventBase<ViewPinnedEntriesEvent
 	 * 
 	 * @return
 	 */
-	public Long getFolderId() {return m_folderId;}
+	public CollectionType getCollectionType() {return m_collectionType;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderId(Long folderId) {m_folderId = folderId;}
+	public void setCollectionType(CollectionType collectionType) {m_collectionType = collectionType;}
 }

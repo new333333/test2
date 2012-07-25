@@ -80,6 +80,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	private boolean								m_allowColumnSizing;			// true -> Add the column sizing entry menu item.  false -> Don't.
 	private boolean								m_viewReady;					// Set true once the view and all its components are ready.
 	private boolean								m_pinning;						//
+	private boolean								m_sharedFiles;					//
 	private CalendarDisplayDataProvider			m_calendarDisplayDataProvider;	// A CalendarDisplayDataProvider to use to obtain a CalendarDisplayDataRpcResponseData object.
 	private FolderDisplayDataRpcResponseData	m_folderDisplayData;			// Various pieces of display information about the folder (sorting, page size, column widths, ...) 
 	private int									m_readyComponents;				// Tracks items as they become ready.
@@ -164,6 +165,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	final public BinderInfo                       getFolderInfo()        {return m_folderInfo;                         }	// The binder being viewed.
 	final public boolean                          isPinning()            {return m_pinning;                            }	//
 	final public boolean                          isProfilesRootWS()     {return m_folderInfo.isBinderProfilesRootWS();}	//
+	final public boolean                          isSharedFiles()        {return m_sharedFiles;                        }	//
 	final public boolean                          isTrash()              {return m_folderInfo.isBinderTrash();         }	//
 	final public FolderDisplayDataRpcResponseData getFolderDisplayData() {return m_folderDisplayData;                  }	//
 	final public Long                             getFolderId()          {return m_folderInfo.getBinderIdAsLong();     }	//
@@ -475,6 +477,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 					// to construct itself.
 					m_folderDisplayData = ((FolderDisplayDataRpcResponseData) response.getResponseData());
 					m_pinning           = m_folderDisplayData.getViewPinnedEntries();
+					m_sharedFiles       = m_folderDisplayData.getViewSharedFiles();
 					loadPart2Async();
 				}
 			});
@@ -731,7 +734,7 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Loads the EntryMenuPanel.
 	 */
 	private void loadPart7Now() {
-		EntryMenuPanel.createAsync(this, m_folderInfo, isPinning(), m_allowColumnSizing, this, new ToolPanelClient() {			
+		EntryMenuPanel.createAsync(this, m_folderInfo, isPinning(), isSharedFiles(), m_allowColumnSizing, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -962,6 +965,15 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 */
 	public void setPinning(boolean pinning) {
 		m_pinning = pinning;
+	}
+	
+	/**
+	 * Sets the current shared files state.
+	 * 
+	 * @param sharedFiles
+	 */
+	public void setSharedFiles(boolean sharedFiles) {
+		m_sharedFiles = sharedFiles;
 	}
 	
 	/**
