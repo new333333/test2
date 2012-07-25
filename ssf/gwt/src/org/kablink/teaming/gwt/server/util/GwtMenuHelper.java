@@ -2099,16 +2099,20 @@ public class GwtMenuHelper {
 			// profiles workspace view either!  Are we returning them
 			// for a collection view?
 			else if (isBinderCollection) {
-				boolean myFiles = (CollectionType.MY_FILES == folderInfo.getCollectionType());
-				if (myFiles) {
-					constructEntryAddFileFolderItem(entryToolbar, bs, request,                                      ws        );
-				    constructEntryShareItem(        entryToolbar, bs, request);
+				boolean isCollectionMyFiles      = (CollectionType.MY_FILES       == folderInfo.getCollectionType());
+				boolean isCollectionSharedByMe   = (CollectionType.SHARED_BY_ME   == folderInfo.getCollectionType());
+				boolean isCollectionSharedWithMe = (CollectionType.SHARED_WITH_ME == folderInfo.getCollectionType());
+				if (isCollectionMyFiles) {
+					constructEntryAddFileFolderItem(entryToolbar, bs, request,                                                  ws        );
 				}
-				else if (CollectionType.SHARED_WITH_ME == folderInfo.getCollectionType()) {
-					constructEntryDetailsItem(      entryToolbar, bs, request                                                 );
+				if (isCollectionMyFiles || isCollectionSharedByMe) {
+				    constructEntryShareItem(        entryToolbar, bs, request                                                             );
 				}
-				constructEntryDeleteItem(           entryToolbar, bs, request,                           (myFiles ? ws : null));
-				constructEntryMoreItems(            entryToolbar, bs, request, folderId, viewType, null, (myFiles ? ws : null));
+				if (isCollectionSharedByMe || isCollectionSharedWithMe) {
+					constructEntryDetailsItem(      entryToolbar, bs, request                                                             );
+				}
+				constructEntryDeleteItem(           entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null));
+				constructEntryMoreItems(            entryToolbar, bs, request, folderId, viewType, null, (isCollectionMyFiles ? ws : null));
 			}
 			
 			else {
