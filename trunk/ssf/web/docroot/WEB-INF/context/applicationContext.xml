@@ -1427,4 +1427,44 @@ text/calendar											  ics
 	<bean id="groovyScriptService" class="org.kablink.teaming.groovy.GroovyScriptService" depends-on="sPropsUtil">
 	</bean>
 	
+    <!-- ========== Defines security related beans that are common across different authentication mechanisms ========== -->
+
+	<!-- Portal Login Support -->
+	<bean id="portalLoginBean" class="org.kablink.teaming.portal.StandaloneLogin"/>
+	
+	<!--<bean id="zoneGrabbingFilter" class="org.kablink.teaming.spring.security.ZoneGrabbingFilter">
+		<security:custom-filter position="FIRST"/>
+	</bean>-->
+	
+	<bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
+		<constructor-arg>
+		    <list>
+                <!-- Vibe's custom authentication provider -->
+		        <ref bean="authenticationModule"/>
+		    </list>
+		</constructor-arg>
+		<property name="authenticator"><value>web</value></property>
+	</bean>
+
+	<bean id="_anonymousProcessingFilter"
+	      class="org.kablink.teaming.spring.security.ZoneAwareAnonymousProcessingFilter">
+		<property name="key" value="thisIsIgnored"/>
+		<property name="userAttribute" value="guest,ROLE_ANONYMOUS"/>
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+		<property name="authenticationModule"><ref bean="authenticationModule"/></property>
+	</bean>
+
+    <security:http pattern="/ws/**" security="none" />
+    <security:http pattern="/rss/**" security="none" />
+    <security:http pattern="/atom/**" security="none" />
+    <security:http pattern="/ical/**" security="none" />
+    <security:http pattern="/static/**" security="none" />
+    <security:http pattern="/ext/**" security="none" />
+    <security:http pattern="/help/**" security="none" />
+    <security:http pattern="/help_doc/**" security="none" />
+    <security:http pattern="/validate/**" security="none" />        
+    <security:http pattern="/redirect/**" security="none" />
+    <security:http pattern="/bitbucket/**" security="none" />
+    <security:http pattern="/html/**" security="none" />
+          
 </beans>

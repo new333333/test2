@@ -30,28 +30,26 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.spring.security.openid;
+package org.kablink.teaming.module.authentication.impl;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.security.openid.OpenIDAttribute;
+import org.kablink.teaming.spring.security.OpenIDAuthenticationProvider;
 
 /**
- * This interface provides last chance to modify the mapping from OpenID attributes
- * to Vibe attributes before the data is passed further downstream.
- * 
  * @author jong
  *
  */
-public interface AttributesPostProcessing {
+public class BaseAuthenticationProviderModule extends AbstractAuthenticationProviderModule {
 
 	/**
-	 * This method can modify <code>vibeAttributes</code> directly.
-	 * 
-	 * @param openidAttributes OpenID attributes from OpenID provider
-	 * @param vibeAttributes Vibe attributes built from the OpenID attributes
+	 * @throws ClassNotFoundException
 	 */
-	public void postProcess(List<OpenIDAttribute> openidAttributes, Map<String, String> vibeAttributes); 
-	
+	public BaseAuthenticationProviderModule() throws ClassNotFoundException {
+		super();
+	}
+
+	@Override
+	protected OpenIDAuthenticationProvider createOpenIDAuthenticationProvider(Long zoneId) throws Exception {
+		return null; 
+	}
+
 }

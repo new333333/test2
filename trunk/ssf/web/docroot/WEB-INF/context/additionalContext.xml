@@ -142,4 +142,14 @@
 		</property>
 	</bean>
 	
+	<!-- ============================== Security related beans ============================== -->
+
+	<bean id="authenticationModule" parent="baseTransactionProxy" depends-on="sPropsUtil">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.authentication.impl.BaseAuthenticationProviderModule">
+				<property name="zoneModule"><ref bean="zoneModule"/></property>
+			</bean>
+		</property>
+	</bean>
+	
 </beans>
