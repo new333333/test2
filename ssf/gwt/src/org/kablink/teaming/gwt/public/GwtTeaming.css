@@ -1,4 +1,4 @@
-/* */
+.activityStreamNumCommentsPanel/* */
 
 /* ########################################################################################################### */
 
@@ -421,7 +421,7 @@
 .activityStreamNumCommentsPanel
 {
     background: url(images/comments_25.png) no-repeat scroll center center transparent;
-    color: #333333;
+    color: #135c8f;
     cursor: pointer;
     font-size: 12px;
     font-weight: bold;
