@@ -46,6 +46,7 @@ import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.Restrictions;
 import org.kablink.teaming.domain.LicenseStats;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.jobs.LicenseMonitor;
 import org.kablink.teaming.jobs.ZoneSchedule;
@@ -165,7 +166,7 @@ implements LicenseModule, ZoneSchedule {
 		filterControls.add(Restrictions.eq("type", "user"));
 		filterControls.add(Restrictions.eq("disabled", Boolean.FALSE));
 		filterControls.add(Restrictions.eq("deleted", Boolean.FALSE));
-	 	filterControls.add( Restrictions.notNull( "identitySource" ) );
+	 	filterControls.add( Restrictions.eq("identitySource", Integer.valueOf(User.IDENTITY_SOURCE_EXTERNAL)) );
 		
 		return getCoreDao().countObjects(Principal.class, filterControls, zoneId);
 	}
