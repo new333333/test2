@@ -49,18 +49,17 @@ import org.dom4j.dom.DOMDocument;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.ws.model.Timestamp;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.util.api.ApiErrorCode;
-import org.kablink.util.search.Constants;
-import org.kablink.util.search.Criteria;
-import org.kablink.util.search.Criterion;
-import org.kablink.util.search.Restrictions;
+import org.kablink.util.search.*;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -87,6 +86,14 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     protected Long getLoggedInUserId() {
         return RequestContextHolder.getRequestContext().getUserId();
+    }
+
+    protected org.kablink.teaming.domain.User _getUser(long userId) {
+        Principal entry = getProfileModule().getEntry(userId);
+
+        if(!(entry instanceof org.kablink.teaming.domain.User))
+            throw new IllegalArgumentException(userId + " does not represent an user. It is " + entry.getClass().getSimpleName());
+        return (org.kablink.teaming.domain.User) entry;
     }
 
     protected Document getDocument(String xml) {
@@ -168,6 +175,13 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
    				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modification.getDate());
    		}
    	}
+
+    protected Criterion buildLibraryTreeCriterion() {
+        Junction criteria = Restrictions.disjunction();
+        criteria.add(SearchUtils.libraryFolders());
+        criteria.add(buildWorkspacesCriterion());
+        return criteria;
+    }
 
     protected Criterion buildEntriesCriterion() {
         return Restrictions.conjunction()
