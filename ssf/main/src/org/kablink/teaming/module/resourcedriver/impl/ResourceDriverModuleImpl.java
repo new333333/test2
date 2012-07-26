@@ -43,6 +43,7 @@ import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
@@ -61,6 +62,7 @@ import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.FunctionManager;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
@@ -74,43 +76,47 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 
-public class ResourceDriverModuleImpl extends CommonDependencyInjection implements ResourceDriverModule {
+public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	
+	private CoreDao coreDao;
     private FunctionManager functionManager;
     private WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
     private ResourceDriverManager resourceDriverManager;
-
-    public FunctionManager getFunctionManager() {
-    	if (functionManager == null) {
-    		functionManager = (FunctionManager) SpringContextUtil.getBean("functionManager");
-    	}
-		return functionManager;
-    }
-    public void setFunctionManager(FunctionManager functionManager) {
-        this.functionManager = functionManager;
-    }
-    
-    public WorkAreaFunctionMembershipManager getWorkAreaFunctionMembershipManager() {
-    	if (workAreaFunctionMembershipManager == null) {
-    		workAreaFunctionMembershipManager = (WorkAreaFunctionMembershipManager) SpringContextUtil.getBean("workAreaFunctionMembershipManager");
-    	}
-		return workAreaFunctionMembershipManager;
-    }
-    public void setWorkAreaFunctionMembershipManager(WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager) {
-        this.workAreaFunctionMembershipManager = workAreaFunctionMembershipManager;
-    }
-    public ResourceDriverManager getResourceDriverManager() {
-    	if (resourceDriverManager == null) {
-    		resourceDriverManager = (ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager");
-    	}
-		return resourceDriverManager;
-    }
-
+    private AccessControlManager accessControlManager;
 	private TransactionTemplate transactionTemplate;
-    protected TransactionTemplate getTransactionTemplate() {
-    	if (transactionTemplate == null) {
-    		transactionTemplate = (TransactionTemplate) SpringContextUtil.getBean("transactionTemplate");
-    	}
+	
+    protected CoreDao getCoreDao() {
+		return coreDao;
+	}
+	public void setCoreDao(CoreDao coreDao) {
+		this.coreDao = coreDao;
+	}
+	protected FunctionManager getFunctionManager() {
+		return functionManager;
+	}
+	public void setFunctionManager(FunctionManager functionManager) {
+		this.functionManager = functionManager;
+	}
+	protected WorkAreaFunctionMembershipManager getWorkAreaFunctionMembershipManager() {
+		return workAreaFunctionMembershipManager;
+	}
+	public void setWorkAreaFunctionMembershipManager(
+			WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager) {
+		this.workAreaFunctionMembershipManager = workAreaFunctionMembershipManager;
+	}
+	protected ResourceDriverManager getResourceDriverManager() {
+		return resourceDriverManager;
+	}
+	public void setResourceDriverManager(ResourceDriverManager resourceDriverManager) {
+		this.resourceDriverManager = resourceDriverManager;
+	}
+	protected AccessControlManager getAccessControlManager() {
+		return accessControlManager;
+	}
+	public void setAccessControlManager(AccessControlManager accessControlManager) {
+		this.accessControlManager = accessControlManager;
+	}
+	protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
 	}
 	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
