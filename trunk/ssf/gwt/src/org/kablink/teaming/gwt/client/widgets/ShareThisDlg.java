@@ -697,27 +697,30 @@ public class ShareThisDlg extends DlgBox
 	 */
 	private void adjustMyTeamsPanelHeight()
 	{
-		Scheduler.ScheduledCommand cmd;
-		
-		cmd = new Scheduler.ScheduledCommand()
+		if ( GwtClientHelper.getRequestInfo().isLicenseFilr() == false )
 		{
-			@Override
-			public void execute()
+			Scheduler.ScheduledCommand cmd;
+			
+			cmd = new Scheduler.ScheduledCommand()
 			{
-				int height;
-				
-				// Get the height of the panel that holds the list of teams.
-				height = m_myTeamsPanel.getOffsetHeight();
-				
-				// If the height is greater than 150 pixels put an overflow auto on the panel
-				// and give the panel a fixed height of 150 pixels.
-				if ( height >= 150 )
-					m_myTeamsPanel.addStyleName( "shareThisMyTeamsPanelHeight" );
-				else
-					m_myTeamsPanel.removeStyleName( "shareThisMyTeamsPanelHeight" );
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+				@Override
+				public void execute()
+				{
+					int height;
+					
+					// Get the height of the panel that holds the list of teams.
+					height = m_myTeamsPanel.getOffsetHeight();
+					
+					// If the height is greater than 150 pixels put an overflow auto on the panel
+					// and give the panel a fixed height of 150 pixels.
+					if ( height >= 150 )
+						m_myTeamsPanel.addStyleName( "shareThisMyTeamsPanelHeight" );
+					else
+						m_myTeamsPanel.removeStyleName( "shareThisMyTeamsPanelHeight" );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
 	}
 	
 	/**
@@ -960,6 +963,8 @@ public class ShareThisDlg extends DlgBox
 		// Create a panel for all of the controls dealing with "my teams"
 		// Later, we will issue an ajax request to get the list of teams.  updateListOfTeams()
 		// will populate the ui.
+		// We don't do anything with Teams if we are running Filr
+		if ( GwtClientHelper.getRequestInfo().isLicenseFilr() == false )
 		{
 			Label label;
 
@@ -1417,25 +1422,28 @@ public class ShareThisDlg extends DlgBox
 		int i;
 		
 		teamIds = new ArrayList<String>();
-		
-		for (i = 0; i < m_myTeamsPanel.getWidgetCount(); ++i)
+
+		if ( GwtClientHelper.getRequestInfo().isLicenseFilr() == false )
 		{
-			Widget nextWidget;
-			
-			// Get the next widget in the "my teams" panel.
-			nextWidget = m_myTeamsPanel.getWidget( i );
-			
-			// Is this widget a TeamCheckbox widget? 
-			if ( nextWidget instanceof TeamCheckBox )
+			for (i = 0; i < m_myTeamsPanel.getWidgetCount(); ++i)
 			{
-				TeamCheckBox teamCheckbox;
+				Widget nextWidget;
 				
-				// Yes, is the team selected?
-				teamCheckbox = (TeamCheckBox) nextWidget;
-				if ( teamCheckbox.getValue() == Boolean.TRUE )
+				// Get the next widget in the "my teams" panel.
+				nextWidget = m_myTeamsPanel.getWidget( i );
+				
+				// Is this widget a TeamCheckbox widget? 
+				if ( nextWidget instanceof TeamCheckBox )
 				{
-					// Yes, add it to the list.
-					teamIds.add( teamCheckbox.getTeamInfo().getBinderId() );
+					TeamCheckBox teamCheckbox;
+					
+					// Yes, is the team selected?
+					teamCheckbox = (TeamCheckBox) nextWidget;
+					if ( teamCheckbox.getValue() == Boolean.TRUE )
+					{
+						// Yes, add it to the list.
+						teamIds.add( teamCheckbox.getTeamInfo().getBinderId() );
+					}
 				}
 			}
 		}
@@ -1556,47 +1564,50 @@ public class ShareThisDlg extends DlgBox
 
 		adjustShareTablePanelHeight();
 		
-		if ( m_readTeamsCallback == null )
+		if ( GwtClientHelper.getRequestInfo().isLicenseFilr() == false )
 		{
-			// Create a callback that will be used when we read the teams the user is a member of
-			m_readTeamsCallback = new AsyncCallback<VibeRpcResponse>()
+			if ( m_readTeamsCallback == null )
 			{
-				/**
-				 * 
-				 */
-				@Override
-				public void onFailure( Throwable t )
+				// Create a callback that will be used when we read the teams the user is a member of
+				m_readTeamsCallback = new AsyncCallback<VibeRpcResponse>()
 				{
-					GwtClientHelper.handleGwtRPCFailure(
-							t,
-							GwtTeaming.getMessages().rpcFailure_GetMyTeams() );
-				}
-				
-				/**
-				 * 
-				 */
-				@Override
-				public void onSuccess( VibeRpcResponse response )
-				{
-					final List<TeamInfo> listOfTeams;
-					GetMyTeamsRpcResponseData responseData;
-					Scheduler.ScheduledCommand cmd;
-					
-					responseData = (GetMyTeamsRpcResponseData) response.getResponseData();
-					listOfTeams = responseData.getTeams();
-					
-					cmd = new Scheduler.ScheduledCommand()
+					/**
+					 * 
+					 */
+					@Override
+					public void onFailure( Throwable t )
 					{
-						@Override
-						public void execute() 
+						GwtClientHelper.handleGwtRPCFailure(
+								t,
+								GwtTeaming.getMessages().rpcFailure_GetMyTeams() );
+					}
+					
+					/**
+					 * 
+					 */
+					@Override
+					public void onSuccess( VibeRpcResponse response )
+					{
+						final List<TeamInfo> listOfTeams;
+						GetMyTeamsRpcResponseData responseData;
+						Scheduler.ScheduledCommand cmd;
+						
+						responseData = (GetMyTeamsRpcResponseData) response.getResponseData();
+						listOfTeams = responseData.getTeams();
+						
+						cmd = new Scheduler.ScheduledCommand()
 						{
-							// Update the dialog with the list of teams.
-							updateListOfTeams( listOfTeams );
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			};
+							@Override
+							public void execute() 
+							{
+								// Update the dialog with the list of teams.
+								updateListOfTeams( listOfTeams );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				};
+			}
 		}
 		
 		if ( m_getSharingInfoCallback == null )
@@ -1644,8 +1655,11 @@ public class ShareThisDlg extends DlgBox
 		GwtClientHelper.executeCommand( rpcCmd1, m_getSharingInfoCallback );
 
 		// Issue an rpc request to get the teams this user is a member of.
-		rpcCmd2 = new GetMyTeamsCmd();
-		GwtClientHelper.executeCommand( rpcCmd2, m_readTeamsCallback );
+		if ( GwtClientHelper.getRequestInfo().isLicenseFilr() == false )
+		{
+			rpcCmd2 = new GetMyTeamsCmd();
+			GwtClientHelper.executeCommand( rpcCmd2, m_readTeamsCallback );
+		}
 	}
 
 	/**
@@ -1771,34 +1785,37 @@ public class ShareThisDlg extends DlgBox
 		int count = 0;
 		Iterator<TeamInfo> teamIT;
 		
-		m_myTeamsPanel.clear();
-		m_myTeamsPanel.removeStyleName( "shareThisMyTeamsPanelHeight" );
-		
-		teamIT = listOfTeams.iterator();
-		while ( teamIT.hasNext() )
+		if ( GwtClientHelper.getRequestInfo().isLicenseFilr() == false )
 		{
-			TeamInfo nextTeamInfo;
-			TeamCheckBox checkbox;
-
-			nextTeamInfo = teamIT.next();
-
-			// Create a checkbox for this team.
-			checkbox = new TeamCheckBox( nextTeamInfo, nextTeamInfo.getTitle() );
-			m_myTeamsPanel.add( checkbox );
+			m_myTeamsPanel.clear();
+			m_myTeamsPanel.removeStyleName( "shareThisMyTeamsPanelHeight" );
 			
-			++count;
-		}
-
-		// Do we have any teams?
-		if ( count == 0 )
-		{
-			// No, Hide the panel that holds the teams.
-			m_shareWithTeamsPanel.setVisible( false );
-		}
-		else
-		{
-			m_shareWithTeamsPanel.setVisible( true );
-			adjustMyTeamsPanelHeight();
+			teamIT = listOfTeams.iterator();
+			while ( teamIT.hasNext() )
+			{
+				TeamInfo nextTeamInfo;
+				TeamCheckBox checkbox;
+	
+				nextTeamInfo = teamIT.next();
+	
+				// Create a checkbox for this team.
+				checkbox = new TeamCheckBox( nextTeamInfo, nextTeamInfo.getTitle() );
+				m_myTeamsPanel.add( checkbox );
+				
+				++count;
+			}
+	
+			// Do we have any teams?
+			if ( count == 0 )
+			{
+				// No, Hide the panel that holds the teams.
+				m_shareWithTeamsPanel.setVisible( false );
+			}
+			else
+			{
+				m_shareWithTeamsPanel.setVisible( true );
+				adjustMyTeamsPanelHeight();
+			}
 		}
 	}
 	
@@ -1892,9 +1909,19 @@ public class ShareThisDlg extends DlgBox
 					if ( selectedObj instanceof GwtUser )
 					{
 						GwtUser user;
+						String userId;
 						
 						// Yes
 						user = (GwtUser) selectedObj;
+						
+						// Is the user trying to share the item with themselves?
+						userId = GwtClientHelper.getRequestInfo().getUserId();
+						if ( userId != null && userId.equalsIgnoreCase( user.getUserId() ) )
+						{
+							// Yes, tell them they can't.
+							Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithYourself() );
+							return;
+						}
 						
 						shareItem = new GwtShareItem();
 						shareItem.setRecipientName( user.getShortDisplayName() );
