@@ -138,24 +138,24 @@
         <property name="caption" value="__entry_workflow"/> 
       </properties> 
     </item>  
-    <item name="entryBlogAttachments" caption="__entry_attachments" category="blogEntryViewData" display="view" id="28">
-      <properties>
-        <property name="caption" value="__entry_attachments"/>
-      </properties>
-    </item>
-    <item name="entryBlogComments" caption="__entry_blog_comments" category="blogEntryViewData" display="view" id="29">
-      <properties>
-        <property name="caption" value="__entry_comments"/>
-      </properties>
-    </item>
+    <item name="entryBlogAttachments" caption="__entry_attachments" category="blogEntryViewData" display="view" id="28"> 
+      <properties> 
+        <property name="caption" value="__entry_attachments"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogComments" caption="__entry_blog_comments" category="blogEntryViewData" display="view" id="29"> 
+      <properties> 
+        <property name="caption" value="__entry_comments"/> 
+      </properties> 
+    </item> 
   </item>  
-  <properties> 
-    <property name="caption" value="__definition_default_mirrored_file_entry"/>  
-    <property name="name" value="_mirroredFileEntry"/>  
-    <property name="family" value="file"/>  
-    <property name="replyStyle" value="402883c6115753d801115777f284000b"/> 
-  </properties>  
+  <properties>
+    <property name="caption" value="__definition_default_mirrored_file_entry"/>
+    <property name="name" value="_mirroredFileEntry"/>
+    <property name="family" value="file"/>
+    <property name="replyStyle" value="402883c6115753d801115777f284000c"/>
+  </properties>
   <export-mappings>
-    <export definitionId="402883c6115753d801115777f284000b">_comment</export>
+    <export definitionId="402883c6115753d801115777f284000c">_libraryEntryComment</export>
   </export-mappings>
 </definition>
