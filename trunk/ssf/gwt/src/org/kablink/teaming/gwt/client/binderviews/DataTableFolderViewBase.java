@@ -108,6 +108,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderRowsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderPinningStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveSharedFilesStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetEntriesPinStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
@@ -2001,9 +2002,23 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this view's collection?
 		CollectionType eventCollectionType = event.getCollectionType();
 		if (eventCollectionType.equals(getFolderInfo().getCollectionType())) {
-			// Yes!
-//!			...this needs to be implemented...
-			GwtClientHelper.deferredAlert("DataTableFolderViewBase.onToggleSharedView():  ...this needs to be implemented...");
+			// Yes!  Save the toggled shared view state for the
+			// collection.
+			final SaveSharedFilesStateCmd cmd = new SaveSharedFilesStateCmd(getFolderInfo().getCollectionType(), (!(isSharedFiles())));
+			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_SaveSharedFilesState());
+				}
+
+				@Override
+				public void onSuccess(VibeRpcResponse result) {
+					// ...and reload the view to redisplay things.
+					FullUIReloadEvent.fireOne();
+				}
+			});
 		}
 	}
 	
