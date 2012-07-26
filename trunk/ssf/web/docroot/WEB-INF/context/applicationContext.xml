@@ -931,15 +931,12 @@
 		<property name="target">
 			<bean class="org.kablink.teaming.module.resourcedriver.impl.ResourceDriverModuleImpl" depends-on="sPropsUtil">
 				<property name="coreDao"><ref bean="coreDao"/></property>
-				<property name="accessControlManager"><ref bean="accessControlManager"/></property>
 				<property name="functionManager"><ref bean="functionManager"/></property>
 				<property name="workAreaFunctionMembershipManager"><ref bean="workAreaFunctionMembershipManager"/></property>
+				<property name="resourceDriverManager"><ref bean="resourceDriverManager"/></property>
+				<property name="accessControlManager"><ref bean="accessControlManager"/></property>
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
 			</bean>
-		</property>
-		<property name="transactionAttributes">
-			<props>
-				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-			</props>
 		</property>
 	</bean>			
 
