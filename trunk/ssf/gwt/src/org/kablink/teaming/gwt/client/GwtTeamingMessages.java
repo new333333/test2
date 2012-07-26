@@ -1128,6 +1128,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_sharingLabel();
 	String shareDlg_addExternalUserTitle();
 	String shareDlg_view();
+	String shareEntityName();
 	String shareErrors();
 	String shareExpires();
 	String shareHint();

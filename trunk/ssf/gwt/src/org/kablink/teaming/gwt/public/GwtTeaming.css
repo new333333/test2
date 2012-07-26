@@ -505,7 +505,7 @@
 
 .shareThisRecipientTablePanel
 {
-	width: 315px;
+	width: 570px;
 }
 
 .shareThisRecipientTablePanelHeight
@@ -514,19 +514,30 @@
 	overflow: auto;
 }
 
+.shareThisRecipientTable
+{
+	width: 550px;
+	table-layout: fixed;
+}
+
+.shareThisRecipientTable_Cell
+{
+	overflow: hidden;
+}
+
 .shareThisMyTeamsPanelHeight
 {
 	height: 100px;
 	overflow: auto;
 }
 
-.shareThisRecipientTable
-{
-	width: 100%;
-}
-
 .shareThisDlg_RecipientNameLabel
 {
+}
+
+.shareThisDlg_RemoveRecipientPanel
+{
+	margin-left: 4px;
 }
 
 .shareThisDlg_ShareExpired
@@ -611,15 +622,16 @@
 	padding-top: 10px;
 }
 
-.shareThis_RightsLabel, .shareThis_ExpiresLabel, .shareThis_DefaultExpiresLabel
+.shareThis_RightsLabel
 {
 	color: #5691A6;
+	padding-left: 4px;
 }
 
-.shareThis_DefaultExpiresLabel
+.shareThis_ExpiresLabel, .shareThis_DefaultExpiresLabel
 {
 	color: #5691A6;
-	padding-left: 7px;
+	padding-left: 4px;
 }
 
 .shareThis_RightsLabel:hover, .shareThis_ExpiresLabel:hover, .shareThis_DefaultExpiresLabel:hover

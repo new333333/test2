@@ -122,6 +122,8 @@ public class ShareThisDlg extends DlgBox
 	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
+	private int m_numCols = 0;
+	
 	private Image m_headerImg;
 	private Label m_headerNameLabel;
 	private Label m_headerPathLabel;
@@ -225,6 +227,7 @@ public class ShareThisDlg extends DlgBox
 			panel = new FlowPanel();
 			
 			m_nameLabel = new InlineLabel( shareItem.getRecipientName() );
+			m_nameLabel.setTitle( shareItem.getRecipientName() );
 			m_nameLabel.addStyleName( "shareThisDlg_RecipientNameLabel" );
 			panel.add( m_nameLabel );
 			
@@ -448,6 +451,7 @@ public class ShareThisDlg extends DlgBox
 			m_shareItem = shareItem;
 			
 			panel = new FlowPanel();
+			panel.addStyleName( "shareThisDlg_RemoveRecipientPanel" );
 			
 			delImg = new Image( m_deleteImgR );
 			delImg.addStyleName( "cursorPointer" );
@@ -518,7 +522,7 @@ public class ShareThisDlg extends DlgBox
 		int row;
 		
 		row = 1;
-		m_shareCellFormatter.setColSpan( row, 0, 5 );
+		m_shareCellFormatter.setColSpan( row, 0, m_numCols );
 		m_shareCellFormatter.setWordWrap( row, 0, false );
 		m_shareCellFormatter.addStyleName( row, 0, "oltBorderLeft" );
 		m_shareCellFormatter.addStyleName( row, 0, "oltBorderRight" );
@@ -536,6 +540,8 @@ public class ShareThisDlg extends DlgBox
 	{
 		String type;
 		int row;
+		int col;
+		int i;
 		RemoveShareWidget removeWidget;
 		RecipientNameWidget recipientNameWidget;
 		
@@ -573,52 +579,86 @@ public class ShareThisDlg extends DlgBox
 			highlightRecipient( row );
 		}
 		
-		// Add the recipient name in the first column.
-		m_shareCellFormatter.setColSpan( row, 0, 1 );
-		m_shareCellFormatter.setWordWrap( row, 0, false );
-		recipientNameWidget = new RecipientNameWidget( shareItem );
-		m_shareTable.setWidget( row, 0,  recipientNameWidget );
-
-		// Add the recipient type in the second column.
-		m_shareCellFormatter.setWordWrap( row, 1, false );
-		type = shareItem.getRecipientTypeAsString();
-		m_shareTable.setText( row, 1, type );
+		col = 0;
 		
-		// Add the share rights in the 3rd column
+		// Add the recipient name
+		m_shareCellFormatter.setColSpan( row, col, 1 );
+		m_shareCellFormatter.setWordWrap( row, col, false );
+		m_shareCellFormatter.addStyleName( row, col, "shareThisRecipientTable_Cell" );
+		recipientNameWidget = new RecipientNameWidget( shareItem );
+		m_shareTable.setWidget( row, col,  recipientNameWidget );
+		++col;
+
+		// Add the recipient type
+		m_shareCellFormatter.setWordWrap( row, col, false );
+		m_shareCellFormatter.addStyleName( row, col, "shareThisRecipientTable_Cell" );
+		type = shareItem.getRecipientTypeAsString();
+		m_shareTable.setText( row, col, type );
+		++col;
+		
+		// Are we sharing more than 1 entity?
+		if ( m_entityIds != null && m_entityIds.size() > 1 )
+		{
+			String entityName;
+			InlineLabel label;
+			
+			// Yes
+			// Add the "Item name"
+			m_shareCellFormatter.setWordWrap( row, col, false );
+			m_shareCellFormatter.addStyleName( row, col, "shareThisRecipientTable_Cell" );
+			
+			label = new InlineLabel();
+			
+			// Only show the first 15 characters
+			entityName = shareItem.getEntityName();
+			label.setTitle( entityName );
+			if ( entityName != null && entityName.length() > 15 )
+			{
+				entityName = entityName.substring( 0, 12 );
+				entityName += "...";
+				label.setText( entityName );
+			}
+			m_shareTable.setWidget( row, col, label );
+			++col;
+		}
+		
+		// Add the share rights
 		{
 			ShareRightsWidget accessWidget;
 			
+			m_shareCellFormatter.setWordWrap( row, col, false );
+			m_shareCellFormatter.addStyleName( row, col, "shareThisRecipientTable_Cell" );
 			accessWidget = new ShareRightsWidget( shareItem );
-			m_shareTable.setWidget( row, 2, accessWidget );
+			m_shareTable.setWidget( row, col, accessWidget );
+			++col;
 		}
 		
-		// Add the expires values in the 4th column
+		// Add the expires values
 		{
 			ShareExpirationWidget expirationWidget;
 			
+			m_shareCellFormatter.setWordWrap( row, col, false );
+			m_shareCellFormatter.addStyleName( row, col, "shareThisRecipientTable_Cell" );
 			expirationWidget = new ShareExpirationWidget( shareItem );
-			m_shareTable.setWidget( row, 3, expirationWidget );
+			m_shareTable.setWidget( row, col, expirationWidget );
+			++col;
 		}
 
-		// Add the "remove share" widget to the 5th column.
+		// Add the "remove share" widget
 		{
 			removeWidget = new RemoveShareWidget( shareItem );
-			m_shareTable.setWidget( row, 4, removeWidget );
+			m_shareTable.setWidget( row, col, removeWidget );
+			++col;
 		}
-
+		
 		// Add the necessary styles to the cells in the row.
 		m_shareCellFormatter.addStyleName( row, 0, "oltBorderLeft" );
-		m_shareCellFormatter.addStyleName( row, 4, "oltBorderRight" );
-		m_shareCellFormatter.addStyleName( row, 0, "oltContentBorderBottom" );
-		m_shareCellFormatter.addStyleName( row, 1, "oltContentBorderBottom" );
-		m_shareCellFormatter.addStyleName( row, 2, "oltContentBorderBottom" );
-		m_shareCellFormatter.addStyleName( row, 3, "oltContentBorderBottom" );
-		m_shareCellFormatter.addStyleName( row, 4, "oltContentBorderBottom" );
-		m_shareCellFormatter.addStyleName( row, 0, "oltContentPadding" );
-		m_shareCellFormatter.addStyleName( row, 1, "oltContentPadding" );
-		m_shareCellFormatter.addStyleName( row, 2, "oltContentPadding" );
-		m_shareCellFormatter.addStyleName( row, 3, "oltContentPadding" );
-		m_shareCellFormatter.addStyleName( row, 4, "oltContentPadding" );
+		m_shareCellFormatter.addStyleName( row, m_numCols-1, "oltBorderRight" );
+		for (i = 0; i < m_numCols; ++i)
+		{
+			m_shareCellFormatter.addStyleName( row, i, "oltContentBorderBottom" );
+			m_shareCellFormatter.addStyleName( row, i, "oltContentPadding" );
+		}
 		
 		adjustShareTablePanelHeight();
 	}
@@ -900,48 +940,12 @@ public class ShareThisDlg extends DlgBox
 		// Create a table to hold the list of shares
 		{
 			m_shareTablePanel = new FlowPanel();
+			m_shareTablePanel.addStyleName( "shareThisRecipientTablePanel" );
 			
 			m_shareTable = new FlexTable();
 			m_shareTable.addStyleName( "shareThisRecipientTable" );
 			m_shareTable.setCellSpacing( 0 );
-			m_shareTable.setWidth( "550px" );
 
-			// Add the column headers.
-			{
-				m_shareTable.setText( 0, 0, GwtTeaming.getMessages().shareName() );
-				m_shareTable.setText( 0, 1, GwtTeaming.getMessages().shareRecipientType() );
-				m_shareTable.setText( 0, 2, GwtTeaming.getMessages().shareAccess() );
-				m_shareTable.setText( 0, 3, GwtTeaming.getMessages().shareExpires() );
-				m_shareTable.setHTML( 0, 4, "&nbsp;" );	// The delete image will go in this column.
-				
-				m_shareRowFormatter = m_shareTable.getRowFormatter();
-				m_shareRowFormatter.addStyleName( 0, "oltHeader" );
-
-				m_shareCellFormatter = m_shareTable.getFlexCellFormatter();
-				// On IE calling m_cellFormatter.setWidth( 0, 2, "*" ); throws an exception.
-				// That is why we are calling DOM.setElementAttribute(...) instead.
-				//!!!m_cellFormatter.setWidth( 0, 2, "*" );
-				DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, 4 ), "width", "*" );
-				
-				m_shareCellFormatter.addStyleName( 0, 0, "oltBorderLeft" );
-				m_shareCellFormatter.addStyleName( 0, 0, "oltHeaderBorderTop" );
-				m_shareCellFormatter.addStyleName( 0, 0, "oltHeaderBorderBottom" );
-				m_shareCellFormatter.addStyleName( 0, 0, "oltHeaderPadding" );
-				m_shareCellFormatter.addStyleName( 0, 1, "oltHeaderBorderTop" );
-				m_shareCellFormatter.addStyleName( 0, 1, "oltHeaderBorderBottom" );
-				m_shareCellFormatter.addStyleName( 0, 1, "oltHeaderPadding" );
-				m_shareCellFormatter.addStyleName( 0, 2, "oltHeaderBorderTop" );
-				m_shareCellFormatter.addStyleName( 0, 2, "oltHeaderBorderBottom" );
-				m_shareCellFormatter.addStyleName( 0, 2, "oltHeaderPadding" );
-				m_shareCellFormatter.addStyleName( 0, 3, "oltHeaderBorderTop" );
-				m_shareCellFormatter.addStyleName( 0, 3, "oltHeaderBorderBottom" );
-				m_shareCellFormatter.addStyleName( 0, 3, "oltHeaderPadding" );
-				m_shareCellFormatter.addStyleName( 0, 4, "oltBorderRight" );
-				m_shareCellFormatter.addStyleName( 0, 4, "oltHeaderBorderTop" );
-				m_shareCellFormatter.addStyleName( 0, 4, "oltHeaderBorderBottom" );
-				m_shareCellFormatter.addStyleName( 0, 4, "oltHeaderPadding" );
-			}
-			
 			m_shareTablePanel.add( m_shareTable );
 
 			mainRowFormatter.setVerticalAlign( row, HasVerticalAlignment.ALIGN_TOP );
@@ -1160,12 +1164,12 @@ public class ShareThisDlg extends DlgBox
 		
 		// Look through the table for the given GwtShareItem.
 		// Recipients start in row 1.
-		for (i = 1; i < m_shareTable.getRowCount() && m_shareTable.getCellCount( i ) > 4; ++i)
+		for (i = 1; i < m_shareTable.getRowCount() && m_shareTable.getCellCount( i ) == m_numCols; ++i)
 		{
 			Widget widget;
 			
-			// Get the RemoveRecipientWidget from the 5 column.
-			widget = m_shareTable.getWidget( i, 4 );
+			// Get the RemoveRecipientWidget from the last column.
+			widget = m_shareTable.getWidget( i, m_numCols-1 );
 			if ( widget != null && widget instanceof RemoveShareWidget )
 			{
 				GwtShareItem nextShareItem;
@@ -1331,6 +1335,14 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
+	 * Return the name of the given entity
+	 */
+	private String getEntityName( EntityId entityId )
+	{
+		return m_sharingInfo.getEntityName( entityId );
+	}
+	
+	/**
 	 * Returns the Widget to give the focus to.
 	 * 
 	 * Implements the DlgBox.getFocusWidget() abstract method.
@@ -1359,12 +1371,12 @@ public class ShareThisDlg extends DlgBox
 		listOfShareItems = new ArrayList<GwtShareItem>();
 		
 		// Look through the table and add each GwtShareItem to the list.
-		for (i = 1; i < m_shareTable.getRowCount() && m_shareTable.getCellCount( i ) > 4; ++i)
+		for (i = 1; i < m_shareTable.getRowCount() && m_shareTable.getCellCount( i ) == m_numCols; ++i)
 		{
 			Widget widget;
 			
-			// Get the RemoveRecipientWidget from the 5 column.
-			widget = m_shareTable.getWidget( i, 4 );
+			// Get the RemoveRecipientWidget from the last column.
+			widget = m_shareTable.getWidget( i, m_numCols-1 );
 			if ( widget != null && widget instanceof RemoveShareWidget )
 			{
 				GwtShareItem nextShareItem;
@@ -1452,6 +1464,7 @@ public class ShareThisDlg extends DlgBox
 
 				shareItem = new GwtShareItem();
 				shareItem.setEntityId( nextEntityId );
+				shareItem.setEntityName( getEntityName( nextEntityId ) );
 				shareItem.setRecipientName( emailAddress );
 				shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
 				shareItem.setShareRights( getSelectedShareRights() );
@@ -1519,7 +1532,11 @@ public class ShareThisDlg extends DlgBox
 		GetMyTeamsCmd rpcCmd2;
 		
 		updateHeader();
-
+		
+		// Set the column headers.  We do this now because the column headers vary
+		// depending on how many entities we are sharing.
+		setColumnHeaders();
+		
 		m_msgTextArea.setText( "" );
 		m_findCtrl.setInitialSearchString( "" );
 
@@ -1903,6 +1920,7 @@ public class ShareThisDlg extends DlgBox
 					{
 						// Yes
 						shareItem.setEntityId( nextEntityId );
+						shareItem.setEntityName( getEntityName( nextEntityId ) );
 						
 						// Has the item already been shared with the recipient
 						if ( findShareItem( shareItem ) == -1 )
@@ -2127,6 +2145,72 @@ public class ShareThisDlg extends DlgBox
 		}
 	}
 
+	/**
+	 * Set the text in each of the header of each column.
+	 */
+	private void setColumnHeaders()
+	{
+		int col;
+
+		// On IE calling m_cellFormatter.setWidth( 0, 2, "*" ); throws an exception.
+		// That is why we are calling DOM.setElementAttribute(...) instead.
+
+		m_shareRowFormatter = m_shareTable.getRowFormatter();
+		m_shareRowFormatter.addStyleName( 0, "oltHeader" );
+
+		m_shareCellFormatter = m_shareTable.getFlexCellFormatter();
+
+		// Remove all the columns from the table.
+		if ( m_shareTable.getRowCount() > 0 )
+		{
+			while ( m_shareTable.getCellCount( 0 ) > 0 )
+			{
+				m_shareTable.removeCell( 0, 0 );
+			}
+		}
+		
+		col = 0;
+		m_shareTable.setText( 0, col, GwtTeaming.getMessages().shareName() );
+		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "25%" );
+		++col;
+		
+		m_shareTable.setText( 0, col, GwtTeaming.getMessages().shareRecipientType() );
+		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "15%" );
+		++col;
+		
+		// Are we sharing more than 1 item?
+		if ( m_entityIds != null && m_entityIds.size() > 1 )
+		{
+			// Yes, add the "Item Name" column header
+			m_shareTable.setText( 0, col, GwtTeaming.getMessages().shareEntityName() );
+			DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "80px" );
+			++col;
+		}
+		
+		m_shareTable.setText( 0, col, GwtTeaming.getMessages().shareAccess() );
+		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "85px" );
+		++col;
+		
+		m_shareTable.setText( 0, col, GwtTeaming.getMessages().shareExpires() );
+		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "90px" );
+		++col;
+		
+		m_shareTable.setHTML( 0, col, "&nbsp;" );	// The delete image will go in this column.
+		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "14px" );
+		++col;
+
+		m_numCols = col;
+		
+		m_shareCellFormatter.addStyleName( 0, 0, "oltBorderLeft" );
+		for (col=0; col < m_numCols; ++col)
+		{
+			m_shareCellFormatter.addStyleName( 0, col, "oltHeaderBorderTop" );
+			m_shareCellFormatter.addStyleName( 0, col, "oltHeaderBorderBottom" );
+			m_shareCellFormatter.addStyleName( 0, col, "oltHeaderPadding" );
+		}
+		m_shareCellFormatter.addStyleName( 0, m_numCols-1, "oltBorderRight" );
+	}
+	
 	/**
 	 * Unlighlight the given row in the table that holds the list of recipients
 	 */
