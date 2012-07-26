@@ -84,7 +84,10 @@ public class ActivityStreamInfo
 		MY_TEAM(         9),
 		SITE_WIDE(      10),
 		SPECIFIC_BINDER(11),
-		SPECIFIC_FOLDER(12);
+		SPECIFIC_FOLDER(12),
+		FILE_SPACES(    13),
+		MY_FILES(       14),
+		SHARED_WITH_ME( 15);
 
 		private int m_asValue;
 		
