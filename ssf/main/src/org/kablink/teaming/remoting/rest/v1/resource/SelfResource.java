@@ -34,10 +34,9 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.TeamInfo;
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
+import org.kablink.teaming.domain.*;
+import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
@@ -97,8 +96,8 @@ public class SelfResource extends AbstractResource {
         if (user.getWorkspace()!=null) {
             user.addAdditionalLink("my_file_folders", user.getWorkspace().getLink() + "/library_folders");
         }
-        user.addAdditionalLink("accessible_library_folders", "/self/accessible_library_folders");
         user.addAdditionalLink("file_spaces", "/self/file_spaces");
+        user.addAdditionalLink("shared_with_me", "/self/shared_with_me");
         return user;
     }
 
@@ -155,18 +154,10 @@ public class SelfResource extends AbstractResource {
     }
 
     @GET
-    @Path("/accessible_library_folders")
+    @Path("/shared_with_me")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResultList<BinderBrief> getAccessibleLibraryFolders(
-                                                           @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                           @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        Criteria crit = new Criteria();
-        crit.add(SearchUtils.libraryFolders());
-        crit.add(Restrictions.not().add(Restrictions.eq(Constants.OWNERID_FIELD, getLoggedInUserId().toString())));
-        Map map = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount);
-        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), map, "/self/accessible_library_folders", offset);
-        return results;
+    public BinderBrief getSharesWithMe() {
+        return getFakeSharedWithMe();
     }
 
     @GET
@@ -211,6 +202,23 @@ public class SelfResource extends AbstractResource {
         binder.setTitle("My Favorites");
         binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace_star.png"));
         binder.addAdditionalLink("child_binders", "/self/favorites");
+        return binder;
+    }
+
+    private BinderBrief getFakeSharedWithMe() {
+        BinderBrief binder = new BinderBrief();
+        //TODO: localize
+        binder.setTitle("Shared with Me");
+        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
+        Long userId = getLoggedInUserId();
+        String baseUri = "/shares/with_user/" + userId;
+        binder.addAdditionalLink("child_binders", baseUri + "/binders");
+        binder.addAdditionalLink("child_binder_tree", baseUri + "/binder_tree");
+        binder.addAdditionalLink("child_entries", baseUri + "/entries");
+        binder.addAdditionalLink("child_files", baseUri + "/files");
+        binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
+        binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
+        binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
         return binder;
     }
 }

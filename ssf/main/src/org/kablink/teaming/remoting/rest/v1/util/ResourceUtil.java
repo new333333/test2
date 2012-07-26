@@ -154,29 +154,40 @@ public class ResourceUtil {
     }
 
     public static FileProperties buildFileProperties(FileAttachment fa) {
+        FileProperties fp = new FileProperties();
+        populateFileProperties(fp, fa);
+        return fp;
+    }
+
+    public static void populateFileProperties(FileProperties fp, FileAttachment fa) {
         FileAttachment.FileLock fl = fa.getFileLock();
         Long creatorId = fa.getCreation().getPrincipal().getId();
         Long modifierId = fa.getModification().getPrincipal().getId();
-        FileProperties fp = new FileProperties(fa.getId(),
-      				fa.getFileItem().getName(),
-      				new HistoryStamp(new LongIdLinkPair(creatorId, LinkUriUtil.getUserLinkUri(creatorId)),
-                              fa.getCreation().getDate()),
-      				new HistoryStamp(new LongIdLinkPair(modifierId, LinkUriUtil.getUserLinkUri(modifierId)),
-                              fa.getModification().getDate()),
-      				fa.getFileItem().getLength(),
-      				fa.getHighestVersionNumber(),
-      				fa.getMajorVersion(),
-      				fa.getMinorVersion(),
-      				fa.getFileItem().getDescription().getText(),
-      				fa.getFileStatus(),
-      				(fl != null && fl.getOwner() != null)? fl.getOwner().getId():null,
-      				(fl!= null)? fl.getExpirationDate():null);
+        fp.setId(fa.getId());
+        fp.setName(fa.getFileItem().getName());
+        fp.setCreation(new HistoryStamp(new LongIdLinkPair(creatorId, LinkUriUtil.getUserLinkUri(creatorId)),
+                fa.getCreation().getDate()));
+        fp.setModification(new HistoryStamp(new LongIdLinkPair(modifierId, LinkUriUtil.getUserLinkUri(modifierId)),
+                fa.getModification().getDate()));
+        fp.setLength(fa.getFileItem().getLength());
+        fp.setVersionNumber(fa.getHighestVersionNumber());
+        fp.setMajorVersion(fa.getMajorVersion());
+        fp.setMinorVersion(fa.getMinorVersion());
+        fp.setNote(fa.getFileItem().getDescription().getText());
+        fp.setStatus(fa.getFileStatus());
+        if (fl!=null) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(fl.getExpirationDate());
+            fp.setLockExpiration(cal);
+            if (fl.getOwner()!=null) {
+                fp.setLockedBy(fl.getOwner().getId());
+            }
+        }
         org.kablink.teaming.domain.DefinableEntity entity = fa.getOwner().getEntity();
         fp.setOwningEntity(buildEntityId(entity.getEntityType(), entity.getId()));
         Long binderId = entity.getParentBinder().getId();
         fp.setBinder(new LongIdLinkPair(binderId, LinkUriUtil.getBinderLinkUri(binderId)));
         LinkUriUtil.populateFileLinks(fp);
-        return fp;
     }
 
     public static TeamBrief buildTeamBrief(org.kablink.teaming.domain.TeamInfo binder) {
@@ -371,6 +382,10 @@ public class ResourceUtil {
         model.setEntity(buildEntityId(entityIdentifier.getEntityType(), entityIdentifier.getEntityId()));
         model.setLink(LinkUriUtil.getTagLinkUri(model));
         return model;
+    }
+
+    public static EntityId buildEntityId(EntityIdentifier entityId) {
+        return new EntityId(entityId.getEntityId(), entityId.getEntityType().name(), LinkUriUtil.getDefinableEntityLinkUri(entityId));
     }
 
     public static EntityId buildEntityId(EntityIdentifier.EntityType type, Long id) {
@@ -636,4 +651,51 @@ public class ResourceUtil {
    			definitionModule = (DefinitionModule) SpringContextUtil.getBean("definitionModule");
    		return definitionModule;
    	}
+
+    public static Share buildShare(ShareItem shareItem) {
+        Share model = new Share();
+        model.setComment(shareItem.getComment());
+        model.setCreation(buildHistoryStamp(shareItem.getCreation()));
+        model.setDaysToExpire(shareItem.getDaysToExpire());
+        model.setEndDate(shareItem.getEndDate());
+        model.setId(shareItem.getId());
+        model.setModification(buildHistoryStamp(shareItem.getModification()));
+
+        Long recipientId = shareItem.getRecipientId();
+        ShareItem.RecipientType recipType = shareItem.getRecipientType();
+        String link = null;
+        if (recipType==ShareItem.RecipientType.user) {
+            link = LinkUriUtil.getDefinableEntityLinkUri(EntityIdentifier.EntityType.user, recipientId);
+        } else if (recipType==ShareItem.RecipientType.group) {
+            link = LinkUriUtil.getDefinableEntityLinkUri(EntityIdentifier.EntityType.group, recipientId);
+        } else if (recipType==ShareItem.RecipientType.team) {
+            link = LinkUriUtil.getBinderLinkUri(recipientId);
+        }
+        if (link!=null) {
+            model.setRecipient(new LongIdLinkPair(recipientId, link));
+        }
+        model.setSharedEntity(buildEntityId(shareItem.getSharedEntityIdentifier()));
+        return model;
+    }
+
+    public static SharedBinderBrief buildSharedBinderBrief(ShareItem shareItem, org.kablink.teaming.domain.Binder binder) {
+        SharedBinderBrief model = new SharedBinderBrief();
+        populateBinderBrief(model, binder);
+        model.setShareInfo(buildShare(shareItem));
+        return model;
+    }
+
+    public static SharedFileProperties buildSharedFileProperties(ShareItem shareItem, FileAttachment attachment) {
+        SharedFileProperties model = new SharedFileProperties();
+        populateFileProperties(model, attachment);
+        model.setShareInfo(buildShare(shareItem));
+        return model;
+    }
+
+    public static SharedFolderEntryBrief buildSharedFolderEntryBrief(ShareItem shareItem, org.kablink.teaming.domain.FolderEntry entry) {
+        SharedFolderEntryBrief model = new SharedFolderEntryBrief();
+        populateEntryBrief(model, entry);
+        model.setShareInfo(buildShare(shareItem));
+        return model;
+    }
 }

@@ -240,6 +240,10 @@ public class LinkUriUtil {
         return null;
     }
 
+    public static String getDefinableEntityLinkUri(EntityIdentifier entityId) {
+        return getDefinableEntityLinkUri(entityId.getEntityType(), entityId.getEntityId());
+    }
+
     public static String getDefinableEntityLinkUri(EntityIdentifier.EntityType type, Long id) {
         if (type==EntityIdentifier.EntityType.folderEntry) {
             return "/folder_entries/" + id;

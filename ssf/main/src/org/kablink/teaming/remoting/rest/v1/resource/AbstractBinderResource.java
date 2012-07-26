@@ -129,10 +129,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 	@Path("{id}/library_tree")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public BinderTree getLibraryTree(@PathParam("id") long id) {
-        Junction criteria = Restrictions.disjunction();
-        criteria.add(SearchUtils.libraryFolders());
-        criteria.add(Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_WORKSPACE));
-        return getSubBinderTree(id, criteria);
+        return getSubBinderTree(id, buildLibraryTreeCriterion());
 	}
 
     @GET

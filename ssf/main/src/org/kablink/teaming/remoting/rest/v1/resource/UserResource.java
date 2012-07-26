@@ -205,14 +205,6 @@ public class UserResource extends AbstractPrincipalResource {
         return results;
     }
 
-    private org.kablink.teaming.domain.User _getUser(long userId) {
-        Principal entry = getProfileModule().getEntry(userId);
-
-        if(!(entry instanceof org.kablink.teaming.domain.User))
-            throw new IllegalArgumentException(userId + " does not represent an user. It is " + entry.getClass().getSimpleName());
-        return (org.kablink.teaming.domain.User) entry;
-    }
-
     @Override
     protected EntityIdentifier.EntityType _getEntityType() {
         return EntityIdentifier.EntityType.user;

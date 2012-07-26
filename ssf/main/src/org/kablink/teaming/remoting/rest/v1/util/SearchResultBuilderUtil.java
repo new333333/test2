@@ -43,6 +43,36 @@ public class SearchResultBuilderUtil {
         }
     }
 
+    public static <T> void buildSearchResultsTree(SearchResultTree<T> tree, T [] rootObjects, SearchResultBuilder<T> builder, Map resultMap) {
+        Map<Object, SearchResultTreeNode<T>> nodesById = new HashMap<Object, SearchResultTreeNode<T>>();
+        for (T rootObj : rootObjects) {
+            SearchResultTreeNode<T> node = builder.factoryTreeNode(rootObj);
+            nodesById.put(builder.getId(rootObj), node);
+            tree.addChild(node);
+        }
+        List<Map> entries = (List<Map>)resultMap.get(ObjectKeys.SEARCH_ENTRIES);
+        if (entries!=null) {
+            for (Map entry : entries) {
+                T obj = builder.build(entry);
+                if (obj!=null) {
+                    Object id = builder.getId(obj);
+                    if (!nodesById.containsKey(id)) {
+                        nodesById.put(id, builder.factoryTreeNode(obj));
+                    }
+                }
+            }
+        }
+        for (SearchResultTreeNode<T> node : nodesById.values()) {
+            T item = node.getItem();
+            if (item!=null) {
+                SearchResultTreeNode<T> parentNode = nodesById.get(builder.getParentId(item));
+                if (parentNode!=null) {
+                    parentNode.addChild(node);
+                }
+            }
+        }
+    }
+
     public static <T> void buildSearchResults(SearchResultList<T> results, SearchResultBuilder<T> builder, Map resultMap) {
         buildSearchResults(results, builder, resultMap, null, 0);
     }
