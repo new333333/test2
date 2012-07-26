@@ -72,6 +72,7 @@ public class LicenseStats extends ZonedObject {
 		setSnapshotDate(snapshotDate);
 		setInternalUserCount(internalUserCount);
 		setExternalUserCount(externalUserCount);
+		setOpenIdUserCount(openIdUserCount);
 		setActiveUserCount(activeUserCount);
 		setChecksum(checksum);
 	}
