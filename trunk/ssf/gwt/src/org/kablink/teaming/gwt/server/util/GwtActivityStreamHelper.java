@@ -53,12 +53,17 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SeenMap;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -75,6 +80,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper.GwtServerProfiler;
@@ -92,7 +98,13 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Html;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Junction.Conjunction;
+import org.kablink.util.search.Junction.Disjunction;
 import org.kablink.util.search.Restrictions;
+
+import static org.kablink.util.search.Restrictions.conjunction;
+import static org.kablink.util.search.Restrictions.disjunction;
+import static org.kablink.util.search.Restrictions.in;
 
 /**
  * Helper methods for the GWT UI server code that services activity
@@ -1017,21 +1029,46 @@ public class GwtActivityStreamHelper {
 	 * Constructs and returns the base Criteria object for performing
 	 * the search for activity stream data.
 	 */
-	private static Criteria buildSearchCriteria(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedUsersAL) {
-		return 
+	@SuppressWarnings("unused")
+	private static Criteria buildSearchCriteria(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedEntriesAL, List<String> trackedUsersAL) {
+		// Create the base search criteria for the places and people.
+		Criteria reply =
 			SearchUtils.entriesForTrackedPlacesAndPeople(
 				bs,
 				trackedPlacesAL,
 				trackedUsersAL,
 				true,	// true -> Entries only (no replies.)
 				Constants.LASTACTIVITY_FIELD);
+		
+//!		...this needs to be implemented...
+		// Are there any entries to factor into the search?
+		if (false) {	//! (null != trackedEntriesAL) && (!(trackedEntriesAL.isEmpty()))) {
+			// Yes!  Factor them into the search criteria.  Logic should be:
+			// - Entries for tracked people and places;
+			// - OR
+			//		- In the set of specific IDs
+			//		- AND entry type is entries/replies AND document type is entry
+			Conjunction conj = conjunction();
+			reply.add(conj);
+			
+			Disjunction disj = disjunction();
+    		conj.add(disj);
+    		
+			disj.add(in(Constants.DOCID_FIELD,      trackedEntriesAL.toArray(new String[0])));
+			disj.add(in(Constants.ENTRY_TYPE_FIELD, new String[] {Constants.ENTRY_TYPE_ENTRY, Constants.ENTRY_TYPE_REPLY}));
+			disj.add(in(Constants.DOC_TYPE_FIELD,   new String[] {Constants.DOC_TYPE_ENTRY}));
+		}
+
+		// If we get here, reply refers to the search criteria for the
+		// places, entries and users.  Return it.
+		return reply;
 	}
 	
 	private static Criteria buildSearchCriteria(AllModulesInjected bs, Long entryId) {
 		Criteria reply = new Criteria();
 		reply.add(Restrictions.in(Constants.ENTRY_TYPE_FIELD, new String[] {Constants.ENTRY_TYPE_ENTRY}))
-			.add(Restrictions.in(Constants.DOC_TYPE_FIELD,   new String[] {Constants.DOC_TYPE_ENTRY  }))
-			.add(Restrictions.in(Constants.DOCID_FIELD,      new String[] {String.valueOf(entryId)}));
+		     .add(Restrictions.in(Constants.DOC_TYPE_FIELD,   new String[] {Constants.DOC_TYPE_ENTRY  }))
+		     .add(Restrictions.in(Constants.DOCID_FIELD,      new String[] {String.valueOf(entryId)}));
 		return reply;
 	}
 	
@@ -1111,6 +1148,146 @@ public class GwtActivityStreamHelper {
 	private static Document buildSearchQuery(AllModulesInjected bs, Long sfId, SpecificFolderData sfData) {
 		// Always use the initial form of the method.
 		return buildSearchQuery(bs, sfId, sfData, null, null);	// nulls -> No activity date range.
+	}
+	
+	/*
+	 * Returns a List<String> of the IDs of the folders associated
+	 * with a collection.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void fillCollectionLists(AllModulesInjected bs, CollectionType collectionType, List<String> folderIds, List<String> entryIds) {
+		if (null == folderIds) folderIds = new ArrayList<String>();
+		if (null == entryIds)  entryIds  = new ArrayList<String>();
+		
+		User	user     = GwtServerHelper.getCurrentUser();
+		String	userWSId = String.valueOf(user.getWorkspaceId());
+		
+		// Based on the installed license, what definition families do
+		// we consider as 'file'?
+		String[] fileFamilies;
+		if (Utils.checkIfFilrAndVibe() || Utils.checkIfVibe())
+		     fileFamilies = new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO};
+		else fileFamilies = new String[]{Definition.FAMILY_FILE                         };
+		
+		switch (collectionType) {
+		default:
+		case MY_FILES: {
+			// Search for file folders within the binder...
+			Criteria crit = new Criteria();
+			crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
+			crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{userWSId}));
+			crit.add(in(Constants.FAMILY_FIELD,            fileFamilies));
+			crit.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
+
+			// ...that are non-mirrored...
+			Disjunction disj = disjunction();
+			crit.add(disj);
+			Conjunction conj = conjunction();
+			conj.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
+			disj.add(conj);
+
+			// ...or configured mirrored File Folders.
+    		conj = conjunction();
+			conj.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
+			conj.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
+			disj.add(conj);
+			
+			Map searchResults = bs.getBinderModule().executeSearchQuery(
+				crit,
+				Constants.SEARCH_MODE_NORMAL,
+				0,
+				ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+			
+			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+			for (Map entryMap:  searchEntries) {
+				folderIds.add(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD));
+			}
+			
+			break;
+		}
+
+		case SHARED_BY_ME: {
+			// Scan the SharedItem's shared by the current user.
+			ShareItemSelectSpec	spec   = new ShareItemSelectSpec();
+			Long				userId = GwtServerHelper.getCurrentUserId();
+			List<Long>			users  = new ArrayList<Long>();
+			users.add(userId);
+			spec.setSharerIds(users);
+			List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
+			for (ShareItem si:  shareItems) {
+				// Is this share expired?
+				if (si.isExpired()) {
+					// Yes!  Skip it.
+					continue;
+				}
+				
+				// Add the share's entity ID to the appropriate list. 
+				EntityIdentifier	siEntityIdentifier = si.getSharedEntityIdentifier();
+				EntityType			siEntityType       = siEntityIdentifier.getEntityType();
+				String				siEntityId         = String.valueOf(siEntityIdentifier.getEntityId());
+				if      (siEntityType.equals(EntityType.folder))      folderIds.add(siEntityId);
+				else if (siEntityType.equals(EntityType.folderEntry)) entryIds.add( siEntityId);
+			}
+			
+			break;
+		}
+			
+		case SHARED_WITH_ME: {
+			// Scan the SharedItem's shared with the current user (or
+			// their teams or groups.)
+			ShareItemSelectSpec	spec = new ShareItemSelectSpec();
+			spec.setRecipientsFromUserMembership(user.getId());
+			List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
+			for (ShareItem si:  shareItems) {
+				// Is this share expired?
+				if (si.isExpired()) {
+					// Yes!  Skip it.
+					continue;
+				}
+				
+				// Add the share's entity ID to the appropriate list. 
+				EntityIdentifier	siEntityIdentifier = si.getSharedEntityIdentifier();
+				EntityType			siEntityType       = siEntityIdentifier.getEntityType();
+				String				siEntityId         = String.valueOf(siEntityIdentifier.getEntityId());
+				if      (siEntityType.equals(EntityType.folder))      folderIds.add(siEntityId);
+				else if (siEntityType.equals(EntityType.folderEntry)) entryIds.add( siEntityId);
+			}
+			
+			break;
+		}
+			
+		case FILE_SPACES: {
+			// Can we access the ID of the top workspace?
+			String	topWSId  = GwtUIHelper.getTopWSIdSafely(bs, false);
+			if (!(MiscUtil.hasString(topWSId))) {
+				// No!  Then use the ID of the user's workspace.
+				topWSId = userWSId;
+			}
+
+			// Add the criteria for top level mirrored file folders
+			// that have been configured.
+			Criteria crit = new Criteria();
+			crit.add(in(Constants.DOC_TYPE_FIELD,            new String[]{Constants.DOC_TYPE_BINDER}));
+			crit.add(in(Constants.ENTRY_ANCESTRY,            new String[]{topWSId}));
+			crit.add(in(Constants.FAMILY_FIELD,              new String[]{Definition.FAMILY_FILE}));
+			crit.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
+			crit.add(in(Constants.IS_TOP_FOLDER_FIELD,       new String[]{Constants.TRUE}));
+    		crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
+			
+			Map searchResults = bs.getBinderModule().executeSearchQuery(
+				crit,
+				Constants.SEARCH_MODE_NORMAL,
+				0,
+				ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+			
+			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+			for (Map entryMap:  searchEntries) {
+				folderIds.add(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD));
+			}
+			
+			break;
+		}
+		}
 	}
 	
 	/*
@@ -1522,7 +1699,45 @@ public class GwtActivityStreamHelper {
 			String id;
 			TreeInfo asTI;
 			TreeInfo asTIChild;
-	
+			
+			// Add TreeInfo's for the various collection points we
+			// support in the activity streams list.  First, 'My
+			// Files'...
+			asTI = new TreeInfo();
+			asTI.setActivityStream(true);
+			asTI.setBinderTitle(NLT.get("asTreeMyFiles"));
+			asTI.setActivityStreamEvent(
+				TeamingEvents.ACTIVITY_STREAM,
+				buildASI(
+					ActivityStream.MY_FILES,
+					((List<String>) null),
+					asTI.getBinderTitle()));
+			rootASList.add(asTI);
+			
+			// ...then 'Shared with Me'...
+			asTI = new TreeInfo();
+			asTI.setActivityStream(true);
+			asTI.setBinderTitle(NLT.get("asTreeSharedWithMe"));
+			asTI.setActivityStreamEvent(
+				TeamingEvents.ACTIVITY_STREAM,
+				buildASI(
+					ActivityStream.SHARED_WITH_ME,
+					((List<String>) null),
+					asTI.getBinderTitle()));
+			rootASList.add(asTI);
+			
+			// ...and finally, 'File Spaces'.
+			asTI = new TreeInfo();
+			asTI.setActivityStream(true);
+			asTI.setBinderTitle(NLT.get("asTreeFileSpaces"));
+			asTI.setActivityStreamEvent(
+				TeamingEvents.ACTIVITY_STREAM,
+				buildASI(
+					ActivityStream.FILE_SPACES,
+					((List<String>) null),
+					asTI.getBinderTitle()));
+			rootASList.add(asTI);
+			
 			// Does the user have any favorites defined?
 			asTI = new TreeInfo();
 			asTI.setActivityStream(true);
@@ -1573,7 +1788,7 @@ public class GwtActivityStreamHelper {
 					TeamingEvents.ACTIVITY_STREAM,
 					buildASI(
 						ActivityStream.MY_FAVORITES,
-						((ArrayList<String>) null),
+						((List<String>) null),
 						asTI.getBinderTitle()));
 			}
 			
@@ -1630,7 +1845,7 @@ public class GwtActivityStreamHelper {
 					TeamingEvents.ACTIVITY_STREAM,
 					buildASI(
 						ActivityStream.MY_TEAMS,
-						((ArrayList<String>) null),
+						((List<String>) null),
 						asTI.getBinderTitle()));
 			}
 			
@@ -1687,7 +1902,7 @@ public class GwtActivityStreamHelper {
 					TeamingEvents.ACTIVITY_STREAM,
 					buildASI(
 						ActivityStream.FOLLOWED_PEOPLE,
-						((ArrayList<String>) null),
+						((List<String>) null),
 						asTI.getBinderTitle()));
 			}
 			
@@ -1744,7 +1959,7 @@ public class GwtActivityStreamHelper {
 					TeamingEvents.ACTIVITY_STREAM,
 					buildASI(
 						ActivityStream.FOLLOWED_PLACES,
-						((ArrayList<String>) null),
+						((List<String>) null),
 						asTI.getBinderTitle()));
 			}
 			
@@ -1913,6 +2128,29 @@ public class GwtActivityStreamHelper {
 	 * tracked places and users lists. 
 	 */
 	@SuppressWarnings("unchecked")
+	private static ASSearchResults performASSearch_All(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedEntriesAL, List<String> trackedUsersAL, int pageStart, int entriesPerPage) {
+		// Build the base search criteria for the activity stream.
+		Criteria searchCriteria = buildSearchCriteria(bs, trackedPlacesAL, trackedEntriesAL, trackedUsersAL);
+		
+		// Perform the search...
+		Map searchResults = bs.getBinderModule().executeSearchQuery(
+			searchCriteria,
+			Constants.SEARCH_MODE_NORMAL,
+			pageStart,
+			entriesPerPage);
+		
+		// ...and return an appropriate ASSearchResults.
+		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
+		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+		return new ASSearchResults(searchEntries, totalRecords);
+	}
+	
+	/*
+	 * Returns an ASSearchResults object containing the search results
+	 * from performing an activity stream search for all entries in the
+	 * tracked places and users lists. 
+	 */
+	@SuppressWarnings("unchecked")
 	private static ASSearchResults performASSearch_All(AllModulesInjected bs, Long sfId, int pageStart, int entriesPerPage, SpecificFolderData sfData) {
 		// Create the search options map with the paging setup.
 		Map options = new HashMap();
@@ -1937,6 +2175,100 @@ public class GwtActivityStreamHelper {
 		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
 		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
 		return new ASSearchResults(searchEntries, totalRecords);
+	}
+	
+	/*
+	 * Returns an ASSearchResults object containing the search results
+	 * from performing an activity stream search for a single entry. 
+	 */
+	@SuppressWarnings("unchecked")
+	private static ASSearchResults performASSearch_One(AllModulesInjected bs, Long entryId) {
+		// Perform the search...
+		Criteria searchCriteria = buildSearchCriteria(bs, entryId);
+		Map searchResults = bs.getBinderModule().executeSearchQuery(
+			searchCriteria,
+			Constants.SEARCH_MODE_NORMAL,
+			0,
+			Integer.MAX_VALUE);
+
+		// ...and return an appropriate ASSearchResults.
+		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
+		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+		return new ASSearchResults(searchEntries, totalRecords);
+	}
+	
+	/*
+	 * Returns an ASSearchResults object containing the search results
+	 * from performing an activity stream search for the read or unread
+	 * entries in the tracked places and users lists. 
+	 */
+	@SuppressWarnings("unchecked")
+	private static ASSearchResults performASSearch_ReadUnread(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedEntriesAL, List<String> trackedUsersAL, int pageStart, int entriesPerPage, boolean read, ActivityStreamParams asp) {
+		// Build the base search criteria for the activity string.
+		Criteria searchCriteria = buildSearchCriteria(bs, trackedPlacesAL, trackedEntriesAL, trackedUsersAL);
+		
+	    // Return up to the maximum number entries that have had
+		// activity within last n days.
+		Date activityDate = new Date();
+		activityDate.setTime(activityDate.getTime() - (((long) asp.getReadEntryDays()) * 24L * 60L * 60L * 1000L));
+		String startDate = DateTools.dateToString(activityDate, DateTools.Resolution.SECOND);
+		String now       = DateTools.dateToString(new Date(),   DateTools.Resolution.SECOND);
+		searchCriteria.add(
+			Restrictions.between(
+				Constants.LASTACTIVITY_FIELD,
+				startDate,
+				now));
+		
+		Map searchResults = bs.getBinderModule().executeSearchQuery(
+			searchCriteria,
+			Constants.SEARCH_MODE_NORMAL,
+			pageStart,
+			asp.getReadEntryMax());
+
+		// Get the user's seen map...
+		SeenMap seen = bs.getProfileModule().getUserSeenMap(null);
+		
+		// ...and scan the entries we read.
+		List<Map> targetEntries = new ArrayList<Map>();
+		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+		boolean   readSatisfied = false;
+		for (Map searchEntry: searchEntries) {
+			// If the user has seen this entry and we're looking for
+			// read entries or the user has not seen it and we're
+			// looking for unread entries...
+			boolean hasSeen = seen.checkIfSeen(searchEntry);
+			if (hasSeen == read) {
+				// ...and we haven't satisfied the number of records
+				// ...requested...
+				if (!readSatisfied) {
+					// ...keep track of it until we've got all the entries
+					// ...we need.
+					targetEntries.add(searchEntry);
+					readSatisfied = (targetEntries.size() >= (pageStart + entriesPerPage));
+				}
+			}
+			
+			else {
+				// Otherwise, this is read when were looking for unread
+				// or unread while we're looking for read!  In either
+				// case, we don't want to include it in the total
+				// record count.
+				totalRecords -= 1;
+			}
+		}
+
+		// Ensure that we've only got the entries we need from the
+		// list...
+		if (targetEntries.size() > pageStart && targetEntries.size() >= pageStart + entriesPerPage) {
+			targetEntries = targetEntries.subList(pageStart, pageStart + entriesPerPage);
+		}		
+		else if (targetEntries.size() > pageStart) {
+			targetEntries = targetEntries.subList(pageStart, targetEntries.size());
+		}
+				
+		// ...and return an appropriate ASSearchResults.
+		return new ASSearchResults(targetEntries, totalRecords);
 	}
 	
 	/*
@@ -2017,120 +2349,6 @@ public class GwtActivityStreamHelper {
 	}
 	
 	/*
-	 * Returns an ASSearchResults object containing the search results
-	 * from performing an activity stream search for all entries in the
-	 * tracked places and users lists. 
-	 */
-	@SuppressWarnings("unchecked")
-	private static ASSearchResults performASSearch_All(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedUsersAL, int pageStart, int entriesPerPage) {
-		// Perform the search...
-		Criteria searchCriteria = buildSearchCriteria(bs, trackedPlacesAL, trackedUsersAL);
-		Map searchResults = bs.getBinderModule().executeSearchQuery(
-			searchCriteria,
-			Constants.SEARCH_MODE_NORMAL,
-			pageStart,
-			entriesPerPage);
-
-		// ...and return an appropriate ASSearchResults.
-		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
-		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
-		return new ASSearchResults(searchEntries, totalRecords);
-	}
-	
-	/*
-	 * Returns an ASSearchResults object containing the search results
-	 * from performing an activity stream search for a single entry. 
-	 */
-	@SuppressWarnings("unchecked")
-	private static ASSearchResults performASSearch_One(AllModulesInjected bs, Long entryId) {
-		// Perform the search...
-		Criteria searchCriteria = buildSearchCriteria(bs, entryId);
-		Map searchResults = bs.getBinderModule().executeSearchQuery(
-			searchCriteria,
-			Constants.SEARCH_MODE_NORMAL,
-			0,
-			Integer.MAX_VALUE);
-
-		// ...and return an appropriate ASSearchResults.
-		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
-		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
-		return new ASSearchResults(searchEntries, totalRecords);
-	}
-	
-	/*
-	 * Returns an ASSearchResults object containing the search results
-	 * from performing an activity stream search for the read or unread
-	 * entries in the tracked places and users lists. 
-	 */
-	@SuppressWarnings("unchecked")
-	private static ASSearchResults performASSearch_ReadUnread(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedUsersAL, int pageStart, int entriesPerPage, boolean read, ActivityStreamParams asp) {
-	    // Return up to the maximum number entries that have had
-		// activity within last n days.
-		Date activityDate = new Date();
-		activityDate.setTime(activityDate.getTime() - (((long) asp.getReadEntryDays()) * 24L * 60L * 60L * 1000L));
-		String startDate = DateTools.dateToString(activityDate, DateTools.Resolution.SECOND);
-		String now       = DateTools.dateToString(new Date(),   DateTools.Resolution.SECOND);
-		
-		Criteria searchCriteria = buildSearchCriteria(bs, trackedPlacesAL, trackedUsersAL);
-		searchCriteria.add(
-			Restrictions.between(
-				Constants.LASTACTIVITY_FIELD,
-				startDate,
-				now));
-		
-		Map searchResults = bs.getBinderModule().executeSearchQuery(
-			searchCriteria,
-			Constants.SEARCH_MODE_NORMAL,
-			pageStart,
-			asp.getReadEntryMax());
-
-		// Get the user's seen map...
-		SeenMap seen = bs.getProfileModule().getUserSeenMap(null);
-		
-		// ...and scan the entries we read.
-		List<Map> targetEntries = new ArrayList<Map>();
-		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
-		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
-		boolean   readSatisfied = false;
-		for (Map searchEntry: searchEntries) {
-			// If the user has seen this entry and we're looking for
-			// read entries or the user has not seen it and we're
-			// looking for unread entries...
-			boolean hasSeen = seen.checkIfSeen(searchEntry);
-			if (hasSeen == read) {
-				// ...and we haven't satisfied the number of records
-				// ...requested...
-				if (!readSatisfied) {
-					// ...keep track of it until we've got all the entries
-					// ...we need.
-					targetEntries.add(searchEntry);
-					readSatisfied = (targetEntries.size() >= (pageStart + entriesPerPage));
-				}
-			}
-			
-			else {
-				// Otherwise, this is read when were looking for unread
-				// or unread while we're looking for read!  In either
-				// case, we don't want to include it in the total
-				// record count.
-				totalRecords -= 1;
-			}
-		}
-
-		// Ensure that we've only got the entries we need from the
-		// list...
-		if (targetEntries.size() > pageStart && targetEntries.size() >= pageStart + entriesPerPage) {
-			targetEntries = targetEntries.subList(pageStart, pageStart + entriesPerPage);
-		}		
-		else if (targetEntries.size() > pageStart) {
-			targetEntries = targetEntries.subList(pageStart, targetEntries.size());
-		}
-				
-		// ...and return an appropriate ASSearchResults.
-		return new ASSearchResults(targetEntries, totalRecords);
-	}
-	
-	/*
 	 * Reads the activity stream data based on an activity stream
 	 * information object and the current paging data.
 	 */
@@ -2142,9 +2360,10 @@ public class GwtActivityStreamHelper {
 		int        pageIndex		= pd.getPageIndex();
 		int        pageStart		= (pageIndex * entriesPerPage);
 
-		// Initialize lists for the tracked places and users.
-		List<String> trackedPlacesAL = new ArrayList<String>();
-		List<String> trackedUsersAL  = new ArrayList<String>();
+		// Initialize lists for the tracked places, entries and users.
+		List<String> trackedPlacesAL  = new ArrayList<String>();
+		List<String> trackedEntriesAL = new ArrayList<String>();
+		List<String> trackedUsersAL   = new ArrayList<String>();
 
 		// Initialize the variables for processing a specific folder.
 		boolean	asIsSpecificFolder = false;
@@ -2158,6 +2377,7 @@ public class GwtActivityStreamHelper {
 			// Followed people:
 			// 1. There are no tracked places; and
 			// 2. The tracked users are the owner IDs of the places.
+			// 3. There are no tracked entries.
 			sATosL(trackedPlaces, trackedUsersAL);
 			trackedPlaces = new String[0];
 			
@@ -2181,13 +2401,34 @@ public class GwtActivityStreamHelper {
 			// A place of some sort:
 			// 1. The tracked places is used unchanged; and
 			// 2. There are no tracked users.
+			// 3. There are no tracked entries.
 			break;
 
+		case FILE_SPACES:
+		case MY_FILES:
+		case SHARED_WITH_ME:
+			// A collection point:
+			// 1. The tracked places are the IDs of the folders from
+			//    the collection point.
+			// 2. There are no tracked users.
+			// 3. The tracked entries are the IDs of the entries from
+			//    the collection point.
+			CollectionType collectionType;
+			switch (asi.getActivityStream()) {
+			default:
+			case MY_FILES:        collectionType = CollectionType.MY_FILES;       break;
+			case SHARED_WITH_ME:  collectionType = CollectionType.SHARED_WITH_ME; break;
+			case FILE_SPACES:     collectionType = CollectionType.FILE_SPACES;    break;
+			}
+			fillCollectionLists(bs, collectionType, trackedPlacesAL, trackedEntriesAL);
+			break;
+			
 		default:
 		case SITE_WIDE:
 			// The entire site:
 			// 1. The tracked places is the ID of the top workspace; and
 			// 2. There are no tracked users.
+			// 3. There are no tracked entries.
 			trackedPlaces = new String[]{GwtUIHelper.getTopWSIdSafely(bs)};
 			break;
 		}
@@ -2258,9 +2499,9 @@ public class GwtActivityStreamHelper {
 			
 			switch (asdt) {
 			default:
-			case ALL:     searchResults = performASSearch_All(       bs, trackedPlacesAL, trackedUsersAL, pageStart, entriesPerPage            ); break;
-			case READ:    searchResults = performASSearch_ReadUnread(bs, trackedPlacesAL, trackedUsersAL, pageStart, entriesPerPage, true,  asp); break;
-			case UNREAD:  searchResults = performASSearch_ReadUnread(bs, trackedPlacesAL, trackedUsersAL, pageStart, entriesPerPage, false, asp); break;
+			case ALL:     searchResults = performASSearch_All(       bs, trackedPlacesAL, trackedEntriesAL, trackedUsersAL, pageStart, entriesPerPage            ); break;
+			case READ:    searchResults = performASSearch_ReadUnread(bs, trackedPlacesAL, trackedEntriesAL, trackedUsersAL, pageStart, entriesPerPage, true,  asp); break;
+			case UNREAD:  searchResults = performASSearch_ReadUnread(bs, trackedPlacesAL, trackedEntriesAL, trackedUsersAL, pageStart, entriesPerPage, false, asp); break;
 			}
 		}
 		
