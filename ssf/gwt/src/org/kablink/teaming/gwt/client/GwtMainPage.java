@@ -869,6 +869,9 @@ public class GwtMainPage extends ResizeComposite
 		// Initialize the JavaScript that invokes the Tag dialog
 		initInvokeTagDlgJS( this );
 		
+		// Initialize the JavaScript that invokes the Share dialog
+		initInvokeShareDlgJS( this );
+		
 		// Initialize the JavaScript that invokes the admin page.
 		initInvokeAdminPageJS( this );
 	}
@@ -883,6 +886,16 @@ public class GwtMainPage extends ResizeComposite
 		}//end ss_gotoContentUrl
 	}-*/;
 	
+	/*
+	 * Called to create a JavaScript method that can be called to invoke the Share dialog.
+	 */
+	private native void initInvokeShareDlgJS( GwtMainPage gwtMainPage ) /*-{
+		$wnd.ss_invokeShareDlg = function( entryId )
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::invokeShareDlg(Ljava/lang/String;)( entryId );
+		}
+	}-*/;
+
 	/*
 	 * Invoke the Simple User Profile or Quick View
 	 */
@@ -1485,6 +1498,23 @@ public class GwtMainPage extends ResizeComposite
 		LoginDlg.initAndShow( m_loginDlg, allowCancel, showLoginFailedMsg );
 	}//end involeLoginDlgImpl()
 	
+	
+	/**
+	 * This method is used to invoke the "Share this" dialog from jsp code.
+	 */
+	private void invokeShareDlg( String entryId )
+	{
+		EntityId entityId;
+		
+		if ( entryId == null || entryId.length() == 0 )
+			return;
+		
+		entityId = new EntityId();
+		entityId.setEntityId( Long.valueOf( entryId ) );
+		entityId.setEntityType( EntityId.FOLDER_ENTRY );
+		
+		BinderViewsHelper.shareEntity( entityId );
+	}
 	
 	/**
 	 * This method is used to invoke the "Tag this" dialog from the old jsp code.
