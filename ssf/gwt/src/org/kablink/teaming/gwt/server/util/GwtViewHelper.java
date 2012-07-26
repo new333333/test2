@@ -346,8 +346,8 @@ public class GwtViewHelper {
 				binderIdField,
 				String.valueOf(entity.getParentBinder().getId()));
 
-			// If we can get a family for the entity...
-			String family = getFolderEntityFamily(bs, entity);
+			// If the entity has a family...
+			String family = si.getEntityFamily();
 			if (MiscUtil.hasString(family)) {
 				// ...store it in the entry map.
 				entryMap.put(Constants.FAMILY_FIELD, family);
@@ -579,7 +579,7 @@ public class GwtViewHelper {
 	 * Converts a List<ShareItem> into a List<GwtShareMeItem>
 	 * representing the 'Shared by Me' items.
 	 */
-	private static List<GwtSharedMeItem> convertItemListToByMeList(AllModulesInjected bs, List<ShareItem> shareItems, Long userId) {
+	private static List<GwtSharedMeItem> convertItemListToByMeList(AllModulesInjected bs, HttpServletRequest request, List<ShareItem> shareItems, Long userId) {
 		// Allocate a List<GwtSharedMeItem> to hold the converted
 		// List<ShareItem> information.
 		List<GwtSharedMeItem> reply = new ArrayList<GwtSharedMeItem>();
@@ -589,9 +589,10 @@ public class GwtViewHelper {
 			// ...return the empty reply list.
 			return reply;
 		}
-
+		
 		// Scan the share items.
-		SharingModule sm = bs.getSharingModule();
+		boolean			sharedFiles = getUserViewSharedFiles(request, CollectionType.SHARED_BY_ME);
+		SharingModule	sm          = bs.getSharingModule();
 		for (ShareItem si:  shareItems) {
 			// Is this share item's entity in the trash?
 			DefinableEntity siEntity = sm.getSharedEntity(si);
@@ -600,12 +601,22 @@ public class GwtViewHelper {
 				continue;
 			}
 			
+			// Is this entity other than a file entity while we're only
+			// showing files in the collection?
+			String siEntityFamily = getFolderEntityFamily(bs, siEntity);
+			if (sharedFiles &&
+					((!(MiscUtil.hasString(siEntityFamily))) || (!(siEntityFamily.equals(Definition.FAMILY_FILE))))) {
+				// Yes!  Skip it.
+				continue;
+			}
+			
 			// Create a new GwtSharedMeItem?
 			GwtSharedMeItem meItem = new GwtSharedMeItem(
-				si.getId(),	// ID of the share.
-				userId);	// ID of the sharer.
-			meItem.setEntity(      siEntity);
-			meItem.addPerShareInfo(si      );
+				si.getId(),			// ID of the share.
+				userId,				// ID of the sharer.
+				siEntity,			// The entity being shared.
+				siEntityFamily);	// The family of the entity.
+			meItem.addPerShareInfo(si);
 
 			// Has the GwtSharedMeItem actually been shared by the
 			// current user?
@@ -625,7 +636,7 @@ public class GwtViewHelper {
 	 * Converts a List<ShareItem> into a List<GwtShareMeItem>
 	 * representing the 'Shared with Me' items.
 	 */
-	private static List<GwtSharedMeItem> convertItemListToWithMeList(AllModulesInjected bs, List<ShareItem> shareItems, Long userId, List<Long> teams, List<Long> groups) {
+	private static List<GwtSharedMeItem> convertItemListToWithMeList(AllModulesInjected bs, HttpServletRequest request, List<ShareItem> shareItems, Long userId, List<Long> teams, List<Long> groups) {
 		// Allocate a List<GwtSharedMeItem> to hold the converted
 		// List<ShareItem> information.
 		List<GwtSharedMeItem> reply = new ArrayList<GwtSharedMeItem>();
@@ -637,7 +648,8 @@ public class GwtViewHelper {
 		}
 
 		// Scan the share items.
-		SharingModule sm = bs.getSharingModule();
+		boolean			sharedFiles = getUserViewSharedFiles(request, CollectionType.SHARED_WITH_ME);
+		SharingModule	sm          = bs.getSharingModule();
 		for (ShareItem si:  shareItems) {
 			// Is this share item expired?
 			if (si.isExpired()) {
@@ -651,12 +663,22 @@ public class GwtViewHelper {
 				// Yes!  Skip it.
 				continue;
 			}
+
+			// Is this entity other than a file entity while we're only
+			// showing files in the collection?
+			String siEntityFamily = getFolderEntityFamily(bs, siEntity);
+			if (sharedFiles &&
+					((!(MiscUtil.hasString(siEntityFamily))) || (!(siEntityFamily.equals(Definition.FAMILY_FILE))))) {
+				// Yes!  Skip it.
+				continue;
+			}
 			
 			// Create a new GwtSharedMeItem?
 			GwtSharedMeItem meItem = new GwtSharedMeItem(
 				si.getId(),										// ID of the share.
-				si.getModification().getPrincipal().getId());	// ID of the sharer.
-			meItem.setEntity(siEntity);
+				si.getModification().getPrincipal().getId(),	// ID of the sharer.
+				siEntity,										// The entity being shared.
+				siEntityFamily);								// The family of the entity.
 
 			// Is this member directed to this user, one of the
 			// user's groups or one of the user's teams?
@@ -3593,7 +3615,7 @@ public class GwtViewHelper {
 
 		// ...and finally, convert the List<ShareItem> into a
 		// ...List<GwtShareMeItem> and return that.
-		List<GwtSharedMeItem> siList = convertItemListToByMeList(bs, shareItems, userId);
+		List<GwtSharedMeItem> siList = convertItemListToByMeList(bs, request, shareItems, userId);
 		return siList;
 	}
 	
@@ -3620,7 +3642,7 @@ public class GwtViewHelper {
 
 		// ...and finally, convert the List<ShareItem> into a
 		// ...List<GwtShareMeItem> and return that.
-		List<GwtSharedMeItem> siList = convertItemListToWithMeList(bs, shareItems, userId, teams, groups);
+		List<GwtSharedMeItem> siList = convertItemListToWithMeList(bs, request, shareItems, userId, teams, groups);
 		return siList;
 	}
 	

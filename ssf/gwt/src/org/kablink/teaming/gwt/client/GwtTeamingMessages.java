@@ -447,6 +447,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveFolderSort();
 	String rpcFailure_SavePersonalPreferences();
 	String rpcFailure_SaveSearch();
+	String rpcFailure_SaveSharedFilesState();
 	String rpcFailure_SaveSubscriptionData();
 	String rpcFailure_SaveTags();
 	String rpcFailure_SaveTagSortOrder();

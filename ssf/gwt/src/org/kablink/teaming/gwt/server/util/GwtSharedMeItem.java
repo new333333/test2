@@ -52,19 +52,25 @@ public class GwtSharedMeItem {
 	private List<GwtPerShareInfo>	m_perShareInfos;	//
 	private Long					m_id;				//
 	private Long					m_sharerId;			//
+	private String					m_entityFamily;		//
 	
 	/**
 	 * Constructor method.
 	 * 
 	 * @param id
+	 * @param sharerId
+	 * @param entity
+	 * @param entityFamily
 	 */
-	public GwtSharedMeItem(Long id, Long sharerId) {
+	public GwtSharedMeItem(Long id, Long sharerId, DefinableEntity entity, String entityFamily) {
 		// Initialize the super class...
 		super();
 		
 		// ...store the parameters...
-		setId(      id      );
-		setSharerId(sharerId);
+		setId(          id          );
+		setSharerId(    sharerId    );
+		setEntity(      entity      );
+		setEntityFamily(entityFamily);
 		
 		// ...initialize everything else.
 		m_perShareInfos = new ArrayList<GwtPerShareInfo>();
@@ -79,15 +85,17 @@ public class GwtSharedMeItem {
 	public List<GwtPerShareInfo> getPerShareInfos()  {return m_perShareInfos;}
 	public Long                  getId()             {return m_id;           }
 	public Long                  getSharerId()       {return m_sharerId;     }
+	public String                getEntityFamily()   {return m_entityFamily; }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setEntity(  DefinableEntity entity)   {m_entity   = entity;  }
-	public void setId(      Long            id)       {m_id       = id;      }
-	public void setSharerId(Long            sharerId) {m_sharerId = sharerId;}
+	public void setEntity(      DefinableEntity entity)       {m_entity       = entity;      }
+	public void setId(          Long            id)           {m_id           = id;          }
+	public void setSharerId(    Long            sharerId)     {m_sharerId     = sharerId;    }
+	public void setEntityFamily(String          entityFamily) {m_entityFamily = entityFamily;}
 	
 	/**
 	 * Adds a new GwtPerShareInfo object to the List<GwtPerShareInfo>.
