@@ -155,6 +155,21 @@ public class GwtShareHelper
 	}
 	
 	/**
+	 * Return the name of the given entity
+	 */
+	private static String getEntityName( AllModulesInjected ami, EntityId entityId )
+	{
+		DefinableEntity entity;
+		
+		if ( entityId.isBinder() )
+			entity = ami.getBinderModule().getBinder( entityId.getEntityId() );
+		else
+			entity = ami.getFolderModule().getEntry( entityId.getBinderId(), entityId.getEntityId() );
+		
+		return entity.getTitle();
+	}
+	
+	/**
 	 * Return the name of the given group
 	 */
 	private static String getGroupName( AllModulesInjected ami, ShareItem shareItem )
@@ -237,6 +252,7 @@ public class GwtShareHelper
 				gwtShareItem = new GwtShareItem();
 				gwtShareItem.setComments( nextShareItem.getComment() );
 				gwtShareItem.setEntityId( entityId );
+				gwtShareItem.setEntityName( getEntityName( ami, entityId ) );
 				gwtShareItem.setId( nextShareItem.getId() );
 				gwtShareItem.setIsExpired( nextShareItem.isExpired() );
 				gwtShareItem.setRecipientId( nextShareItem.getRecipientId() );
@@ -645,6 +661,11 @@ public class GwtShareHelper
 		for (EntityId nextEntityId : listOfEntityIds)
 		{
 			ArrayList<GwtShareItem> listOfGwtShareItems;
+			String entityName;
+			
+			// Get the name of the entity
+			entityName = getEntityName( ami, nextEntityId );
+			sharingInfo.setEntityName( nextEntityId, entityName );
 			
 			// Get the list of GwtShareItem objects for the given user/entity
 			listOfGwtShareItems = getListOfGwtShareItems( ami, currentUser, nextEntityId );

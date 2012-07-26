@@ -34,6 +34,8 @@
 package org.kablink.teaming.gwt.client.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
@@ -47,6 +49,7 @@ public class GwtSharingInfo
 {
 	private ArrayList<GwtShareItem> m_listOfShareItems;
 	private ArrayList<GwtShareItem> m_listOfToBeDeletedShareItems;
+	private HashMap<EntityId, String> m_entityNamesMap;
 	private boolean m_sendEmailToAll;
 	
 	/**
@@ -56,6 +59,7 @@ public class GwtSharingInfo
 	{
 		m_listOfShareItems = null;
 		m_listOfToBeDeletedShareItems = null;
+		m_entityNamesMap = null;
 		m_sendEmailToAll = false;
 	}
 	
@@ -88,6 +92,33 @@ public class GwtSharingInfo
 	}
 	
 	/**
+	 * Return the name of the given entity
+	 */
+	public String getEntityName( EntityId entityId )
+	{
+		Set<EntityId> entityIds;
+		
+		if ( entityId == null || m_entityNamesMap == null )
+			return null;
+		
+		entityIds = m_entityNamesMap.keySet();
+		if ( entityIds != null )
+		{
+			for ( EntityId nextEntityId : entityIds )
+			{
+				// Is this the EntityId we are looking for?
+				if ( entityId.equalsEntityId( nextEntityId ) )
+				{
+					// Yes
+					return m_entityNamesMap.get( nextEntityId );
+				}
+			}
+		}
+		
+		// If we get here we did not find the entityId
+		return null;
+	}
+	/**
 	 * 
 	 */
 	public ArrayList<GwtShareItem> getListOfShareItems()
@@ -109,6 +140,17 @@ public class GwtSharingInfo
 	public boolean getSendEmailToAll()
 	{
 		return m_sendEmailToAll;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setEntityName( EntityId entityId, String entityName )
+	{
+		if ( m_entityNamesMap == null )
+			m_entityNamesMap = new HashMap<EntityId, String>();
+		
+		m_entityNamesMap.put( entityId, entityName );
 	}
 	
 	/**
