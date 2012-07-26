@@ -130,9 +130,7 @@ implements LicenseModule, ZoneSchedule {
 		filterControls.add(Restrictions.eq("type", "user"));
 		filterControls.add(Restrictions.eq("disabled", Boolean.FALSE));
 		filterControls.add(Restrictions.eq("deleted", Boolean.FALSE));
-	 	filterControls.add( Restrictions.isNull( "identitySource" ) );
-		StringBuffer buf = new StringBuffer(" and x.name = x.foreignName");
-		
+	 	StringBuffer buf = new StringBuffer(" and ((x.identitySource is null and x.name = x.foreignName) or (x.identitySource = 1))");		
 		return getCoreDao().countObjects(Principal.class, filterControls, zoneId, buf);
 	}
 	
@@ -150,8 +148,7 @@ implements LicenseModule, ZoneSchedule {
 	 	filterControls.add( Restrictions.eq( "type", "user" ) );
 	 	filterControls.add( Restrictions.eq( "disabled", Boolean.FALSE ) );
 	 	filterControls.add( Restrictions.eq( "deleted", Boolean.FALSE ) );
-	 	filterControls.add( Restrictions.isNull( "identitySource" ) );
-	 	StringBuffer buf = new StringBuffer(" and x.name <> x.foreignName");
+	 	StringBuffer buf = new StringBuffer(" and ((x.identitySource is null and x.name <> x.foreignName) or (x.identitySource = 2))");
 
 	 	return getCoreDao().countObjects( Principal.class, filterControls, zoneId, buf );
 	}// end countUsersSyncdFromLdapSource()
