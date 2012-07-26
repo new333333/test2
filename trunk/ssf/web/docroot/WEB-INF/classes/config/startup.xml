@@ -11,6 +11,7 @@
 	<definitionFile>config/definitions/_discussionReply.xml</definitionFile>		
 	<definitionFile>config/definitions/_discussions.xml</definitionFile>		
 	<definitionFile>config/definitions/_libraryEntry.xml</definitionFile>		
+	<definitionFile>config/definitions/_libraryEntryComment.xml</definitionFile>		
 	<definitionFile>config/definitions/_guestbookEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_milestoneEntry.xml</definitionFile>	
 	<definitionFile>config/definitions/_taskEntry.xml</definitionFile>		
