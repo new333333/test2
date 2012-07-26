@@ -604,8 +604,7 @@ public class GwtViewHelper {
 			// Is this entity other than a file entity while we're only
 			// showing files in the collection?
 			String siEntityFamily = getFolderEntityFamily(bs, siEntity);
-			if (sharedFiles &&
-					((!(MiscUtil.hasString(siEntityFamily))) || (!(siEntityFamily.equals(Definition.FAMILY_FILE))))) {
+			if (sharedFiles && (!(isFamilyFile(siEntityFamily)))) {
 				// Yes!  Skip it.
 				continue;
 			}
@@ -667,8 +666,7 @@ public class GwtViewHelper {
 			// Is this entity other than a file entity while we're only
 			// showing files in the collection?
 			String siEntityFamily = getFolderEntityFamily(bs, siEntity);
-			if (sharedFiles &&
-					((!(MiscUtil.hasString(siEntityFamily))) || (!(siEntityFamily.equals(Definition.FAMILY_FILE))))) {
+			if (sharedFiles && (!(isFamilyFile(siEntityFamily)))) {
 				// Yes!  Skip it.
 				continue;
 			}
@@ -2843,8 +2841,7 @@ public class GwtViewHelper {
 									eti.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
 									eti.setEntityId(entityId);
 									eti.setDescription(getEntryDescriptionFromMap(request, entryMap));
-									String family = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FAMILY_FIELD);
-									boolean file = (MiscUtil.hasString(family) && family.equals(Definition.FAMILY_FILE));
+									boolean file = isFamilyFile(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FAMILY_FIELD));
 									if (file) {
 										file = MiscUtil.hasString(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD));
 									}
@@ -4011,6 +4008,33 @@ public class GwtViewHelper {
 		
 		// If we get here, we couldn't find the entry in question.
 		// Return false.
+		return false;
+	}
+
+	/*
+	 * Returns true if a family string represents a 'file' entity or
+	 * false otherwise.
+	 */
+	private static boolean isFamilyFile(String family) {
+		// Do we have a family string?
+		if (MiscUtil.hasString(family)) {
+			// Yes!  Is it file?
+			if (family.equals(Definition.FAMILY_FILE)) {
+				// Yes!  Return true.
+				return true;
+			}
+
+			// No, it's not file!  If we're not in simple Filr mode,
+			// is it photo?
+			if ((Utils.checkIfFilrAndVibe() || Utils.checkIfVibe()) &&
+					family.equals(Definition.FAMILY_PHOTO)) {
+				// Yes!  Return true.
+				return true;
+			}
+		}
+		
+		// If we get here, the family string doesn't refer to what we
+		// consider a file entity.  Return false.
 		return false;
 	}
 
