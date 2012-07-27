@@ -84,8 +84,8 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
         	// TODO We should really make the handling of this static description element identical to that of custom description element. 
         	// From indexing point of view, it is easy enough. But fixing application accordingly requires some work, so deferred to the
         	// later release.
-        	Field descField = new Field(Constants.DESC_FIELD, text, Field.Store.YES, Field.Index.NO); 
-        	Field descTextField = new Field(Constants.DESC_TEXT_FIELD, strippedText, Field.Store.NO, Field.Index.ANALYZED); 
+        	Field descField = FieldFactory.createApplicationField(Constants.DESC_FIELD, text, Field.Store.YES, Field.Index.NO); 
+        	Field descTextField = FieldFactory.createApplicationField(Constants.DESC_TEXT_FIELD, strippedText, Field.Store.NO, Field.Index.ANALYZED); 
         	Field descFormatField = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.DESC_FORMAT_FIELD, String.valueOf(val.getFormat())); 
         	// For the built-in description field, avoid indexing the same text twice. So don't add it in the catch-all field.
      		return new Field[] {descField, descTextField, descFormatField};
@@ -95,8 +95,8 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
         	// Use a single field to store the original text and also to index the stipped text.
         	// We will not bother with the format information for now.
         	// TODO We eventually want a single handling for both static and custom description element.
-        	Field descField = new Field(dataElemName, text, Field.Store.YES, Field.Index.NO); 
-        	Field descTextField = new Field(dataElemName, strippedText, Field.Store.NO, Field.Index.ANALYZED); 
+        	Field descField = FieldFactory.createApplicationField(dataElemName, text, Field.Store.YES, Field.Index.NO); 
+        	Field descTextField = FieldFactory.createApplicationField(dataElemName, strippedText, Field.Store.NO, Field.Index.ANALYZED); 
          	if (isFieldsOnly(args)) {
          		return new Field[] {descField, descTextField};
          	} else {

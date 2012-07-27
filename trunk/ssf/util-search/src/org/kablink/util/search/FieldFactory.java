@@ -33,7 +33,6 @@
 package org.kablink.util.search;
 
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Store;
 
 import org.kablink.util.PropsUtil;
 
@@ -43,27 +42,54 @@ import org.kablink.util.PropsUtil;
  */
 public class FieldFactory {
 
-	public static Field createAnalyzedNoNorms(String name, String value, Store store) {
-		Field field = new Field(name, value, store, Field.Index.ANALYZED_NO_NORMS);
-		field.setOmitTermFreqAndPositions(true);
-		return field;
-	}
+	private static final float APPLICATION_FIELD_BOOST_DEFAULT 	= 1.0f;
+	private static final float SYSTEM_FIELD_BOOST_DEFAULT 		= 0.1f;
 
 	public static Field createStoredNotAnalyzedNoNorms(String name, String value) {
-		Field field = new Field(name, value, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+		Field field = createFieldWithBoost(name, value, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 		field.setOmitTermFreqAndPositions(true);
 		return field;
 	}
 
-	public static Field createNotStoredNotAnalyzedNoNorms(String name, String value) {
-		Field field = new Field(name, value, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
-		field.setOmitTermFreqAndPositions(true);
+	/**
+	 * Create a field holding application data such as title, description, name, telephone number,
+	 * etc. that are directly meaningful to application users. Typically this field corresponds
+	 * to a data field or attribute that is part of the entry or binder composed by an user.
+	 * 
+	 * @param name
+	 * @param value
+	 * @param store
+	 * @param index
+	 * @return
+	 */
+	public static Field createApplicationField(String name, String value, Field.Store store, Field.Index index) {
+		Field field = new Field(name, value, store, index);
+		float boost = PropsUtil.getFloat("lucene.index.field.boost." + name, APPLICATION_FIELD_BOOST_DEFAULT);
+		field.setBoost(boost);
 		return field;
 	}
 	
-	public static Field createTitle(String value) {
-		Field field = new Field(Constants.TITLE_FIELD, value, Field.Store.YES, Field.Index.ANALYZED);
-		float boost = PropsUtil.getFloat("lucene.index.field.boost.title", 10.0f);
+	/**
+	 * Create a field holding system data such as ACL, doc type, binder id, library flag, pre-delete flag, etc.
+	 * or derived/computed data such as reply count, etc. that only aid with implementation. 
+	 * 
+	 * @param name
+	 * @param value
+	 * @param store
+	 * @param index
+	 * @return
+	 */
+	public static Field createSystemField(String name, String value, Field.Store store, Field.Index index) {
+		Field field = new Field(name, value, store, index);
+		float boost = PropsUtil.getFloat("lucene.index.field.boost." + name, SYSTEM_FIELD_BOOST_DEFAULT);
+		field.setBoost(boost);
+		field.setOmitTermFreqAndPositions(true);
+		return field;
+	}
+		
+	private static Field createFieldWithBoost(String name, String value, Field.Store store, Field.Index index) {
+		Field field = new Field(name, value, store, index);
+		float boost = PropsUtil.getFloat("lucene.index.field.boost." + name, 1.0f);
 		field.setBoost(boost);
 		return field;
 	}

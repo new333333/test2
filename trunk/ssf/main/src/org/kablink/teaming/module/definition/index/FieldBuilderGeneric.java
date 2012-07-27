@@ -46,7 +46,7 @@ public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 		String strToIndex = getStringToIndex(dataElemValue);
 		if(strToIndex != null && !strToIndex.equals("")) {
 			// Handle primary field
-           	Field field = new Field(getSearchFieldName(dataElemName), strToIndex, getFieldStore(), getFieldIndex());
+           	Field field = FieldFactory.createApplicationField(getSearchFieldName(dataElemName), strToIndex, getFieldStore(), getFieldIndex());
            	// Handle optional sort field
 			Field sortField = null;
 			if(getSortFieldName(dataElemName) != null && 

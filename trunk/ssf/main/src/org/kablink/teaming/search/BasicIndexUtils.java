@@ -82,7 +82,7 @@ public class BasicIndexUtils {
     
     public static void addUid(Document doc, String uid, boolean fieldsOnly) {
         doc.add(FieldFactory.createStoredNotAnalyzedNoNorms(UID_FIELD, uid));    
-        doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(THIS_CLASS_FIELD, getClassName(uid)));
+        doc.add(FieldFactory.createSystemField(THIS_CLASS_FIELD, getClassName(uid), Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
     }
     
     public static void addDocType(Document doc, String docType, boolean fieldsOnly) {
@@ -143,12 +143,12 @@ public class BasicIndexUtils {
     }
     
     public static  void addFileContents(Document doc, String text) {
-    	Field contents = new Field(TEMP_FILE_CONTENTS_FIELD, text, Field.Store.NO, Field.Index.ANALYZED);
+    	Field contents = FieldFactory.createApplicationField(TEMP_FILE_CONTENTS_FIELD, text, Field.Store.NO, Field.Index.ANALYZED);
         doc.add(contents);
     }
     
     public static  Field generalTextField(String text) {
-        return new Field(GENERAL_TEXT_FIELD, text, Field.Store.NO, Field.Index.ANALYZED);
+        return FieldFactory.createApplicationField(GENERAL_TEXT_FIELD, text, Field.Store.NO, Field.Index.ANALYZED);
     }   
    
     public static String buildAclTag(String tag, String aclId)
