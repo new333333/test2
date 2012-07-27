@@ -1227,11 +1227,11 @@ body, table td, select
 }
 
 /* Styles used by the WorkspaceTreeControl. */
-.workspaceTreeBinderAnchor            {color: #414648; text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-size: .9em;}
-.workspaceTreeBinderAnchor_collection {font-size: 14px; padding-left: 2px;}
+.workspaceTreeBinderAnchor            {color: #353838; text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-size: .9em;}
+.workspaceTreeBinderAnchor_collection {font-size: 14px; padding-left: 2px; color: #000;}
 
 .workspaceTreeBinderAnchor:hover            {color: #135c8f;}
-.workspaceTreeBinderAnchor_collection:hover {}
+.workspaceTreeBinderAnchor_collection:hover {color: #135c8f;}
 
 .workspaceTreeBinderExpanderImg            {cursor: pointer; margin-top: 4px; margin-left: 2px;}
 .workspaceTreeBinderExpanderImg_collection {}
@@ -1239,7 +1239,7 @@ body, table td, select
 .workspaceTreeBinderImg            {padding-right: 2px;}
 .workspaceTreeBinderImg_collection {}
 
-.workspaceTreeBinderSelected            {color: #5691a6; padding-left: 2px;}
+.workspaceTreeBinderSelected            {color: #135c8f; padding-left: 2px;}
 .workspaceTreeBinderSelected_collection {font-size: 14px;}
 
 /* Must match the definition of GwtConstants.WORKSPACE_TREE_WIDTH. */
@@ -1249,10 +1249,10 @@ body, table td, select
 
 .workspaceTreeControl
 {
-	background-color: #EAEBE8;
+	background-color: #f6f6f6;
 	padding: 0 0 8px;
-	-moz-border-radius: 5px;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	overflow: auto;
 	position: relative;
