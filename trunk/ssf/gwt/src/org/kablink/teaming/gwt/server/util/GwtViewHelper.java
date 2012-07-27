@@ -168,6 +168,7 @@ import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
+import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -367,8 +368,8 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static void collectContributorIds(Map entryMap, List<Long> contributorIds) {
-		MiscUtil.addLongToListLongIfUnique(contributorIds, getLongFromMap(entryMap, Constants.CREATORID_FIELD)     );
-		MiscUtil.addLongToListLongIfUnique(contributorIds, getLongFromMap(entryMap, Constants.MODIFICATIONID_FIELD));
+		ListUtil.addLongToListLongIfUnique(contributorIds, getLongFromMap(entryMap, Constants.CREATORID_FIELD)     );
+		ListUtil.addLongToListLongIfUnique(contributorIds, getLongFromMap(entryMap, Constants.MODIFICATIONID_FIELD));
 	}
 	
 	/*
@@ -393,46 +394,46 @@ public class GwtViewHelper {
 			// Scan this FolderRow's individual assignees tracking each
 			// unique ID.
 			for (AssignmentInfo ai:  getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME)) {
-				MiscUtil.addLongToListLongIfUnique(((AssigneeType.TEAM == ai.getAssigneeType()) ? teamIds : principalIds), ai.getId());
+				ListUtil.addLongToListLongIfUnique(((AssigneeType.TEAM == ai.getAssigneeType()) ? teamIds : principalIds), ai.getId());
 			}
 			for (AssignmentInfo ai:  getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
-				MiscUtil.addLongToListLongIfUnique(((AssigneeType.TEAM == ai.getAssigneeType()) ? teamIds : principalIds), ai.getId());
+				ListUtil.addLongToListLongIfUnique(((AssigneeType.TEAM == ai.getAssigneeType()) ? teamIds : principalIds), ai.getId());
 			}
 			for (AssignmentInfo ai:  getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME)) {
-				MiscUtil.addLongToListLongIfUnique(((AssigneeType.TEAM == ai.getAssigneeType()) ? teamIds : principalIds), ai.getId());
+				ListUtil.addLongToListLongIfUnique(((AssigneeType.TEAM == ai.getAssigneeType()) ? teamIds : principalIds), ai.getId());
 			}
 			
 			// Scan this FolderRow's group assignees tracking each
 			// unique ID.
 			for (AssignmentInfo ai:  getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME)) {
-				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
 			for (AssignmentInfo ai:  getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
-				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
 			for (AssignmentInfo ai:  getAIListFromFR(fr, RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME)) {
-				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
 			
 			// Scan this FolderRow's team assignees tracking each
 			// unique ID.
 			for (AssignmentInfo ai:  getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME)) {
-				MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
+				ListUtil.addLongToListLongIfUnique(teamIds, ai.getId());
 			}
 			for (AssignmentInfo ai:  getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME)) {
-				MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
+				ListUtil.addLongToListLongIfUnique(teamIds, ai.getId());
 			}
 			for (AssignmentInfo ai:  getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME)) {
-				MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
+				ListUtil.addLongToListLongIfUnique(teamIds, ai.getId());
 			}
 			
 			// Scan this FolderRow's shared by/with's tracking each unique
 			// ID.
 			for (AssignmentInfo ai:  getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY)) {
-				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
 			for (AssignmentInfo ai:  getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH)) {
-				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
 		}
 

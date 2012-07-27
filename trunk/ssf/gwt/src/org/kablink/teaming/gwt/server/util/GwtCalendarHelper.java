@@ -98,6 +98,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
+import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
@@ -327,19 +328,19 @@ public class GwtCalendarHelper {
 			CalendarAppointment ca = ((CalendarAppointment) a);
 			for (AssignmentInfo ai:  ca.getVibeAttendees()) {
 				// ...tracking each unique ID.
-				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
 			
 			// Scan this Appointment's group attendees...
 			for (AssignmentInfo ai:  ca.getVibeAttendeeGroups()) {
 				// ...tracking each unique ID.
-				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
 			
 			// Scan this Appointment's team attendees...
 			for (AssignmentInfo ai:  ca.getVibeAttendeeTeams()) {
 				// ...tracking each unique ID.
-				MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
+				ListUtil.addLongToListLongIfUnique(teamIds, ai.getId());
 			}
 		}
 		
