@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.web.util;
 
-
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,7 +70,6 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.springframework.web.multipart.MultipartFile;
 
-
 /**
  * This class contains a collection of miscellaneous utility methods.
  * 
@@ -103,20 +101,6 @@ public final class MiscUtil
 	}// end MiscUtil()
 	
 	
-	/**
-	 * Adds a Long to a List<Long> if it's not already there.
-	 * 
-	 * @param lList
-	 * @param l
-	 */
-	public static void addLongToListLongIfUnique(List<Long> lList, Long l) {
-		// If the List<Long> doesn't contain the Long...
-		if (!(lList.contains(l))) {
-			// ...add it.
-			lList.add(l);
-		}
-	}
-
 	/**
 	 * Add all of the information needed to support the "Create new account" ui to the response.
 	 */

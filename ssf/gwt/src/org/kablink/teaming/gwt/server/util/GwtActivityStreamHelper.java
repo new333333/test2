@@ -92,6 +92,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Html;
@@ -555,14 +556,14 @@ public class GwtActivityStreamHelper {
 			for (Long authorUserId:  userMap.keySet()) {
 				// If we're not already tracking this author's
 				// workspace ID as a binder ID, track it now.
-				addLToLLIfUnique(binderIds, userMap.get(authorUserId).getWorkspaceId());
+				ListUtil.addLongToListLongIfUnique(binderIds, userMap.get(authorUserId).getWorkspaceId());
 			}
 			
 			// Scan the List<ASEntryData>.
 			for (ASEntryData entryData:  entryDataList) {
 				// If we're not already tracking this ASEntryData's
 				// binder ID, track it now.
-				addLToLLIfUnique(binderIds, entryData.getBinderId());
+				ListUtil.addLongToListLongIfUnique(binderIds, entryData.getBinderId());
 				
 				// Note that we don't have to process the comments on
 				// an entry for their binders since comments must be
@@ -606,13 +607,13 @@ public class GwtActivityStreamHelper {
 			for (ASEntryData entryData:  entryDataList) {
 				// If we're not tracking this ASEntryData's author ID
 				// yet, track it now.
-				addLToLLIfUnique(authorIds, entryData.getAuthorId());
+				ListUtil.addLongToListLongIfUnique(authorIds, entryData.getAuthorId());
 				
 				// Scan this ASEntryData's comments List<ASEntryData>.
 				for (ASEntryData commentEntryData:  entryData.getCommentEntryDataList()) {
 					// If we're not tracking this comment ASEntryData's
 					// author ID yet, track it now.
-					addLToLLIfUnique(authorIds, commentEntryData.getAuthorId());
+					ListUtil.addLongToListLongIfUnique(authorIds, commentEntryData.getAuthorId());
 				}
 			}
 			
@@ -760,14 +761,14 @@ public class GwtActivityStreamHelper {
 			// being referenced.
 			List<Long> binderIds = new ArrayList<Long>();
 			binderIds.add(binderId);
-			for (String       placeId:  td.m_followedPlacesList) addLToLLIfUnique(binderIds, placeId);			
-			for (FavoriteInfo fi:       td.m_myFavoritesList)    addLToLLIfUnique(binderIds, fi.getValue());			
-			for (TeamInfo     ti:       td.m_myTeamsList)        addLToLLIfUnique(binderIds, ti.getBinderId());
+			for (String       placeId:  td.m_followedPlacesList) ListUtil.addLongToListLongIfUnique(binderIds, placeId);			
+			for (FavoriteInfo fi:       td.m_myFavoritesList)    ListUtil.addLongToListLongIfUnique(binderIds, fi.getValue());			
+			for (TeamInfo     ti:       td.m_myTeamsList)        ListUtil.addLongToListLongIfUnique(binderIds, ti.getBinderId());
 			
-			for (String collectionId:  td.m_collection_MyFilesList)      addLToLLIfUnique(binderIds, collectionId);			
-			for (String collectionId:  td.m_collection_SharedByMeList)   addLToLLIfUnique(binderIds, collectionId);			
-			for (String collectionId:  td.m_collection_SharedWithMeList) addLToLLIfUnique(binderIds, collectionId);			
-			for (String collectionId:  td.m_collection_FileSpacesList)   addLToLLIfUnique(binderIds, collectionId);			
+			for (String collectionId:  td.m_collection_MyFilesList)      ListUtil.addLongToListLongIfUnique(binderIds, collectionId);			
+			for (String collectionId:  td.m_collection_SharedByMeList)   ListUtil.addLongToListLongIfUnique(binderIds, collectionId);			
+			for (String collectionId:  td.m_collection_SharedWithMeList) ListUtil.addLongToListLongIfUnique(binderIds, collectionId);			
+			for (String collectionId:  td.m_collection_FileSpacesList)   ListUtil.addLongToListLongIfUnique(binderIds, collectionId);			
 			
 			// Read the binders that we're tracking (in a single
 			// database read) and scan them...
@@ -810,7 +811,7 @@ public class GwtActivityStreamHelper {
 			// being referenced.
 			List<Long> userIds = new ArrayList<Long>();
 			for (String userId:  td.m_followedUsersList) {
-				addLToLLIfUnique(userIds, userId);
+				ListUtil.addLongToListLongIfUnique(userIds, userId);
 			}			
 			
 			// Read them (in single database read) and scan them...
@@ -849,26 +850,6 @@ public class GwtActivityStreamHelper {
 		super();
 	}
 
-	/*
-	 * Adds a Long to a List<Long> if it's not already there.
-	 */
-	private static void addLToLLIfUnique(List<Long> lList, Long l) {
-		if (null != l) {
-			// If the List<Long> doesn't contain the Long...
-			if (!(lList.contains(l))) {
-				// ...add it.
-				lList.add(l);
-			}
-		}
-	}
-	
-	private static void addLToLLIfUnique(List<Long> lList, String l) {
-		if (MiscUtil.hasString(l)) {
-			// Always use the initial form of the method.
-			addLToLLIfUnique(lList, Long.parseLong(l));
-		}
-	}
-	
 	/*
 	 * Returns true if two activity stream information objects are
 	 * compatible (i,e., they refer to the same, valid activity stream
@@ -1075,11 +1056,13 @@ public class GwtActivityStreamHelper {
 	private static TreeInfo buildCollectionPointTI(AllModulesInjected bs, HttpServletRequest request, ASTreeData td, CollectionType ct) {
 		ActivityStream	ctFolderAS;
 		ActivityStream	ctRootAS;
+		boolean			ctBorderTop;
 		List<String>	ctFoldersList;
 		String			ctTitleKey;
 		switch (ct) {
 		default:
 		case MY_FILES:
+			ctBorderTop   = true;
 			ctTitleKey    = "asTreeMyFiles";
 			ctFolderAS    = ActivityStream.MY_FILE;
 			ctRootAS      = ActivityStream.MY_FILES;
@@ -1087,6 +1070,7 @@ public class GwtActivityStreamHelper {
 			break;
 			
 		case SHARED_BY_ME:
+			ctBorderTop   = false;
 			ctTitleKey    = "asTreeSharedByMe";
 			ctFolderAS    = ActivityStream.SHARED_BY_ME_FOLDER;
 			ctRootAS      = ActivityStream.SHARED_BY_ME;
@@ -1094,6 +1078,7 @@ public class GwtActivityStreamHelper {
 			break;
 			
 		case SHARED_WITH_ME:
+			ctBorderTop   = false;
 			ctTitleKey    = "asTreeSharedWithMe";
 			ctFolderAS    = ActivityStream.SHARED_WITH_ME_FOLDER;
 			ctRootAS      = ActivityStream.SHARED_WITH_ME;
@@ -1101,6 +1086,7 @@ public class GwtActivityStreamHelper {
 			break;
 			
 		case FILE_SPACES:
+			ctBorderTop   = false;
 			ctTitleKey    = "asTreeFileSpaces";
 			ctFolderAS    = ActivityStream.FILE_SPACE;
 			ctRootAS      = ActivityStream.FILE_SPACES;
@@ -1111,6 +1097,7 @@ public class GwtActivityStreamHelper {
 		TreeInfo asTI = new TreeInfo();
 		asTI.setActivityStream(true);
 		asTI.setBinderTitle(NLT.get(ctTitleKey));
+		asTI.setBinderBorderTop(ctBorderTop);
 		int idCount = ctFoldersList.size();
 		if (0 < idCount) {
 			// Yes!  Scan them.
@@ -1296,6 +1283,7 @@ public class GwtActivityStreamHelper {
 		TreeInfo asTI = new TreeInfo();
 		asTI.setActivityStream(true);
 		asTI.setBinderTitle(NLT.get("asTreeMyFavorites"));
+		asTI.setBinderBorderTop(true);
 		List<FavoriteInfo> myFavoritesList = td.getMyFavoritesList();
 		int idCount = ((null == myFavoritesList) ? 0 : myFavoritesList.size());
 		if (0 < idCount) {
@@ -2151,10 +2139,13 @@ public class GwtActivityStreamHelper {
 			// Add a 'My Favorites' TreeInfo to the root TreeInfo.
 			TreeInfo asTI = buildMyFavoritesTI(bs, request, td);
 			rootASList.add(asTI);
-			
-			// Add a 'My Teams' TreeInfo to the root TreeInfo.
-			asTI = buildMyTeamsTI(bs, request, td);
-			rootASList.add(asTI);
+
+			// If we not in pure Filr mode...
+			if (Utils.checkIfFilrAndVibe() || Utils.checkIfVibe()) {
+				// ...add a 'My Teams' TreeInfo to the root TreeInfo.
+				asTI = buildMyTeamsTI(bs, request, td);
+				rootASList.add(asTI);
+			}
 
 			// Add a 'Followed People' TreeInfo to the root TreeInfo.
 			asTI = buildFollowedPeopleTI(bs, request, td, isOtherUserAccessRestricted);
@@ -2576,7 +2567,7 @@ public class GwtActivityStreamHelper {
 			// 1. There are no tracked places; and
 			// 2. The tracked users are the owner IDs of the places.
 			// 3. There are no tracked entries.
-			sATosL(trackedPlaces, trackedUsersAL);
+			ListUtil.arrayStringToListString(trackedPlaces, trackedUsersAL);
 			trackedPlaces = new String[0];
 			
 			break;
@@ -2638,7 +2629,7 @@ public class GwtActivityStreamHelper {
 		}
 
 		// Store the tracked places into the ArrayList for them.
-		sATosL(trackedPlaces, trackedPlacesAL);
+		ListUtil.arrayStringToListString(trackedPlaces, trackedPlacesAL);
 
 		// Is this an activity stream request for a specific folder?
 		if (asIsSpecificFolder) {
@@ -2724,10 +2715,9 @@ public class GwtActivityStreamHelper {
 			}
 		}
 		
-		List<Map> searchEntries  = searchResults.getSearchEntries();
-		int  totalRecords        = searchResults.getTotalRecords();
-
 		// Update the paging data in the activity stream data.
+		List<Map>	searchEntries = searchResults.getSearchEntries();
+		int			totalRecords  = searchResults.getTotalRecords();
     	pd.setTotalRecords(totalRecords);
     	asd.setPagingData(pd);
 
@@ -2757,8 +2747,8 @@ public class GwtActivityStreamHelper {
 
     	// Store the places and users we're tracking in the session
     	// cache....
-    	ActivityStreamCache.setTrackedBinderIds(request, sLTolL(trackedPlacesAL));
-    	ActivityStreamCache.setTrackedUserIds(  request, sLTolL(trackedUsersAL ));
+    	ActivityStreamCache.setTrackedBinderIds(request, ListUtil.listStringToListLong(trackedPlacesAL));
+    	ActivityStreamCache.setTrackedUserIds(  request, ListUtil.listStringToListLong(trackedUsersAL ));
     	
     	// ...and store the date we saved the tracking data.
     	ActivityStreamCache.setUpdateDate(request);
@@ -2783,30 +2773,6 @@ public class GwtActivityStreamHelper {
     	}
 	}
 	
-	/*
-	 * Stores the strings from a String[] into a List<String>.
-	 */
-	private static void sATosL(String[] sA, List<String> sL) {
-		int c = ((null == sA) ? 0 : sA.length);
-		for (int i = 0; i < c; i += 1) {
-			sL.add(sA[i]);
-		}
-	}
-
-	/*
-	 * Converts the strings from a List<String> into a List<Long>.
-	 */
-	private static List<Long> sLTolL(List<String> sL) {
-		List<Long> reply = new ArrayList<Long>();
-		int c = ((null == sL) ? 0 : sL.size());
-		if (0 < c) {
-			for (String s: sL) {
-				reply.add(Long.parseLong(s));
-			}
-		}
-		return reply;
-	}
-
 	/**
 	 * Writes a string to the debug log as the current user.
 	 * 

@@ -115,6 +115,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.GwtUISessionData;
+import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebHelper;
@@ -340,19 +341,19 @@ public class GwtTaskHelper {
 			// Scan this TaskInfo's individual assignees...
 			for (AssignmentInfo ai:  ti.getAssignments()) {
 				// ...tracking each unique ID.
-				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
 			
 			// Scan this TaskInfo's group assignees...
 			for (AssignmentInfo ai:  ti.getAssignmentGroups()) {
 				// ...tracking each unique ID.
-				MiscUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 			}
 			
 			// Scan this TaskInfo's team assignees...
 			for (AssignmentInfo ai:  ti.getAssignmentTeams()) {
 				// ...tracking each unique ID.
-				MiscUtil.addLongToListLongIfUnique(teamIds, ai.getId());
+				ListUtil.addLongToListLongIfUnique(teamIds, ai.getId());
 			}
 		}
 
@@ -461,7 +462,7 @@ public class GwtTaskHelper {
 		// Generate an List<Long> of the unique binder IDs.
 		List<Long> binderIds = new ArrayList<Long>();		
 		for (TaskInfo ti:  tasks) {
-			MiscUtil.addLongToListLongIfUnique(binderIds, ti.getTaskId().getBinderId());
+			ListUtil.addLongToListLongIfUnique(binderIds, ti.getTaskId().getBinderId());
 		}
 
 		// Do we have any binder IDs?
@@ -657,7 +658,7 @@ public class GwtTaskHelper {
 			for (EntityId taskId:  taskIds) {
 				// ...deleting each...
 				Long binderId = taskId.getBinderId();
-				MiscUtil.addLongToListLongIfUnique(binderIds, binderId);
+				ListUtil.addLongToListLongIfUnique(binderIds, binderId);
 				try {
 					TrashHelper.preDeleteEntry(bs, taskId.getBinderId(), taskId.getEntityId());
 				}
@@ -1712,7 +1713,7 @@ public class GwtTaskHelper {
 			for (EntityId taskId:  taskIds) {
 				// ...purging each...
 				Long binderId = taskId.getBinderId();
-				MiscUtil.addLongToListLongIfUnique(binderIds, binderId);
+				ListUtil.addLongToListLongIfUnique(binderIds, binderId);
 				try {
 					fm.deleteEntry(
 						binderId,
