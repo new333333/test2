@@ -84,7 +84,6 @@ import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper.GwtServerProfiler;
-import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
@@ -680,13 +679,17 @@ public class GwtActivityStreamHelper {
 	 * to construct the TreeInfo object returned for display.
 	 */
 	private static class ASTreeData {
-		private List<FavoriteInfo> m_myFavoritesList;		// The current user's favorites.
-		private List<String>       m_followedPlacesList;	// The current user's followed places.
-		private List<String>       m_followedUsersList;		// The current user's followed users.
-		private List<TeamInfo>     m_myTeamsList;			// The teams the current user is a member of.
-		private Long               m_baseBinderId;			// The ID of the base binder this ASTreeData was constructed for.
-		private Map<Long, Binder>  m_bindersMap;			// Map of the Binder's referenced by the lists.
-		private Map<Long, User>    m_usersMap;				// Map of the User's   referenced by the lists.
+		private List<FavoriteInfo> m_myFavoritesList;				// The current user's favorites.
+		private List<String>       m_followedPlacesList;			// The current user's followed places.
+		private List<String>       m_followedUsersList;				// The current user's followed users.
+		private List<String>       m_collection_MyFilesList;		// The 'My Files'       collection point binder list.
+		private List<String>       m_collection_SharedByMeList;		// The 'Shared by Me'   collection point binder list.
+		private List<String>       m_collection_SharedWithMeList;	// The 'Shared with Me' collection point binder list.
+		private List<String>       m_collection_FileSpacesList;		// The 'File Spaces'    collection point binder list.
+		private List<TeamInfo>     m_myTeamsList;					// The teams the current user is a member of.
+		private Long               m_baseBinderId;					// The ID of the base binder this ASTreeData was constructed for.
+		private Map<Long, Binder>  m_bindersMap;					// Map of the Binder's referenced by the lists.
+		private Map<Long, User>    m_usersMap;						// Map of the User's   referenced by the lists.
 
 		/*
 		 * Constructor method.
@@ -702,15 +705,19 @@ public class GwtActivityStreamHelper {
 		/*
 		 * Get'er/Set'er methods.
 		 */
-		private Binder             getBinder(Long   binderId) {return m_bindersMap.get(        binderId );}
-		private Binder             getBinder(String binderId) {return getBinder(Long.parseLong(binderId));}
-		private User               getUser(  Long   userId)   {return m_usersMap.get(          userId   );}
-		private User               getUser(  String userId)   {return getUser(Long.parseLong(  userId  ));}
-		private List<FavoriteInfo> getMyFavoritesList()       {return m_myFavoritesList;                  }
-		private List<TeamInfo>     getMyTeamsList()           {return m_myTeamsList;                      }
-		private List<String>       getFollowedPlacesList()    {return m_followedPlacesList;               }
-		private List<String>       getFollowedUsersList()     {return m_followedUsersList;                }
-		private Long               getBaseBinderId()          {return m_baseBinderId;                     }
+		private Binder             getBinder(Long   binderId)      {return m_bindersMap.get(        binderId );}
+		private Binder             getBinder(String binderId)      {return getBinder(Long.parseLong(binderId));}
+		private User               getUser(  Long   userId)        {return m_usersMap.get(          userId   );}
+		private User               getUser(  String userId)        {return getUser(Long.parseLong(  userId  ));}
+		private List<FavoriteInfo> getMyFavoritesList()            {return m_myFavoritesList;                  }
+		private List<TeamInfo>     getMyTeamsList()                {return m_myTeamsList;                      }
+		private List<String>       getFollowedPlacesList()         {return m_followedPlacesList;               }
+		private List<String>       getFollowedUsersList()          {return m_followedUsersList;                }
+		private List<String>       getCollectionMyFilesList()      {return m_collection_MyFilesList;           }
+		private List<String>       getCollectionSharedByMeList()   {return m_collection_SharedByMeList;        }
+		private List<String>       getCollectionSharedWithMeList() {return m_collection_SharedWithMeList;      }
+		private List<String>       getCollectionFileSpacesList()   {return m_collection_FileSpacesList;        }
+		private Long               getBaseBinderId()               {return m_baseBinderId;                     }
 
 		/*
 		 * Constructs an ASTreeData object containing the information
@@ -727,6 +734,11 @@ public class GwtActivityStreamHelper {
 			reply.m_followedUsersList  = GwtServerHelper.getTrackedPeople(   bs);
 			reply.m_myFavoritesList    = GwtServerHelper.getFavorites(       bs);
 			reply.m_myTeamsList        = GwtServerHelper.getMyTeams(request, bs);
+			
+			reply.m_collection_MyFilesList      = new ArrayList<String>(); fillCollectionLists(bs, CollectionType.MY_FILES,       reply.m_collection_MyFilesList     );
+			reply.m_collection_SharedByMeList   = new ArrayList<String>(); fillCollectionLists(bs, CollectionType.SHARED_BY_ME,   reply.m_collection_SharedByMeList  );
+			reply.m_collection_SharedWithMeList = new ArrayList<String>(); fillCollectionLists(bs, CollectionType.SHARED_WITH_ME, reply.m_collection_SharedWithMeList);
+			reply.m_collection_FileSpacesList   = new ArrayList<String>(); fillCollectionLists(bs, CollectionType.FILE_SPACES,    reply.m_collection_FileSpacesList  );
 			
 			// Read the required User's and Binder's.
 			reply.m_usersMap   = readUsers(  bs,           reply);
@@ -751,6 +763,11 @@ public class GwtActivityStreamHelper {
 			for (String       placeId:  td.m_followedPlacesList) addLToLLIfUnique(binderIds, placeId);			
 			for (FavoriteInfo fi:       td.m_myFavoritesList)    addLToLLIfUnique(binderIds, fi.getValue());			
 			for (TeamInfo     ti:       td.m_myTeamsList)        addLToLLIfUnique(binderIds, ti.getBinderId());
+			
+			for (String collectionId:  td.m_collection_MyFilesList)      addLToLLIfUnique(binderIds, collectionId);			
+			for (String collectionId:  td.m_collection_SharedByMeList)   addLToLLIfUnique(binderIds, collectionId);			
+			for (String collectionId:  td.m_collection_SharedWithMeList) addLToLLIfUnique(binderIds, collectionId);			
+			for (String collectionId:  td.m_collection_FileSpacesList)   addLToLLIfUnique(binderIds, collectionId);			
 			
 			// Read the binders that we're tracking (in a single
 			// database read) and scan them...
@@ -1053,6 +1070,348 @@ public class GwtActivityStreamHelper {
 	}
 
 	/*
+	 * Builds a TreeInfo for a collection point activity stream.
+	 */
+	private static TreeInfo buildCollectionPointTI(AllModulesInjected bs, HttpServletRequest request, ASTreeData td, CollectionType ct) {
+		ActivityStream	ctFolderAS;
+		ActivityStream	ctRootAS;
+		List<String>	ctFoldersList;
+		String			ctTitleKey;
+		switch (ct) {
+		default:
+		case MY_FILES:
+			ctTitleKey    = "asTreeMyFiles";
+			ctFolderAS    = ActivityStream.MY_FILE;
+			ctRootAS      = ActivityStream.MY_FILES;
+			ctFoldersList = td.getCollectionMyFilesList();
+			break;
+			
+		case SHARED_BY_ME:
+			ctTitleKey    = "asTreeSharedByMe";
+			ctFolderAS    = ActivityStream.SHARED_BY_ME_FOLDER;
+			ctRootAS      = ActivityStream.SHARED_BY_ME;
+			ctFoldersList = td.getCollectionSharedByMeList();
+			break;
+			
+		case SHARED_WITH_ME:
+			ctTitleKey    = "asTreeSharedWithMe";
+			ctFolderAS    = ActivityStream.SHARED_WITH_ME_FOLDER;
+			ctRootAS      = ActivityStream.SHARED_WITH_ME;
+			ctFoldersList = td.getCollectionSharedWithMeList();
+			break;
+			
+		case FILE_SPACES:
+			ctTitleKey    = "asTreeFileSpaces";
+			ctFolderAS    = ActivityStream.FILE_SPACE;
+			ctRootAS      = ActivityStream.FILE_SPACES;
+			ctFoldersList = td.getCollectionFileSpacesList();
+			break;
+		}
+		
+		TreeInfo asTI = new TreeInfo();
+		asTI.setActivityStream(true);
+		asTI.setBinderTitle(NLT.get(ctTitleKey));
+		int idCount = ctFoldersList.size();
+		if (0 < idCount) {
+			// Yes!  Scan them.
+			List<TreeInfo>	asTIChildren = asTI.getChildBindersList();
+			List<String>	asIdsList    = new ArrayList<String>();
+			for (String ctFolderId: ctFoldersList) {
+				// Can we access the next one's Binder?
+				String	id     = ctFolderId;
+				Binder	binder = td.getBinder(id);
+				if (null != binder) {
+					// Yes!  Add an appropriate TreeInfo for it.
+					asIdsList.add(id);					
+					TreeInfo asTIChild = buildASTI(
+						request,
+						bs,
+						true,
+						id,
+						binder.getTitle(),
+						binder.getPathName(),
+						ctFolderAS);					
+					asTIChildren.add(asTIChild);
+				}
+			}
+			
+			// If we processed any entries...
+			if (!(asIdsList.isEmpty())) {
+				// ...update the parent TreeInfo.
+				asTI.updateChildBindersCount();
+				asTI.setActivityStreamEvent(
+					TeamingEvents.ACTIVITY_STREAM,
+					buildASI(
+						ctRootAS,
+						asIdsList,
+						asTI.getBinderTitle()));
+			}
+		}
+		
+		// If we didn't add any folders...
+		if (TeamingEvents.UNDEFINED == asTI.getActivityStreamEvent()) {
+			// ...we need a base event so that we can display no
+			// ...selections in the control.
+			asTI.setActivityStreamEvent(
+				TeamingEvents.ACTIVITY_STREAM,
+				buildASI(
+					ctRootAS,
+					((List<String>) null),
+					asTI.getBinderTitle()));
+		}
+
+		// Return the TreeInfo just build.
+		return asTI;
+	}
+	
+	/*
+	 * Builds a TreeInfo for the user's Followed People activity
+	 * stream.
+	 */
+	private static TreeInfo buildFollowedPeopleTI(AllModulesInjected bs, HttpServletRequest request, ASTreeData td, boolean isOtherUserAccessRestricted) {
+		TreeInfo asTI = new TreeInfo();
+		asTI.setActivityStream(true);
+		asTI.setBinderTitle(NLT.get("asTreeFollowedPeople"));
+		List<String> followedUsersList = td.getFollowedUsersList();
+		int idCount = ((null == followedUsersList) ? 0 : followedUsersList.size());
+		if (0 < idCount) {
+			// Yes!  Scan them.
+			List<TreeInfo>	asTIChildren = asTI.getChildBindersList();
+			List<String>	asIdsList    = new ArrayList<String>();
+			for (String followedUserId: followedUsersList) {
+				// Can we access the next one's User?
+				String	id   = followedUserId;
+				User	user = td.getUser(id);
+				if (null != user) {
+					// Yes!  Add an appropriate TreeInfo for it.
+					asIdsList.add(id);					
+					TreeInfo asTIChild = buildASTI(
+						request,
+						bs,
+						false,
+						id,
+						GwtServerHelper.getUserTitle(bs.getProfileModule(), isOtherUserAccessRestricted, id, user.getTitle()),
+						null,
+						ActivityStream.FOLLOWED_PERSON);					
+					asTIChildren.add(asTIChild);
+				}
+			}
+			
+			// If we processed any entries...
+			if (!(asIdsList.isEmpty())) {
+				// ...update the parent TreeInfo.
+				asTI.updateChildBindersCount();
+				asTI.setActivityStreamEvent(
+					TeamingEvents.ACTIVITY_STREAM,
+					buildASI(
+						ActivityStream.FOLLOWED_PEOPLE,
+						asIdsList,
+						asTI.getBinderTitle()));
+			}
+		}
+		
+		// If we didn't add any people...
+		if (TeamingEvents.UNDEFINED == asTI.getActivityStreamEvent()) {
+			// ...we need a base event so that we can display no
+			// ...selections in the control.
+			asTI.setActivityStreamEvent(
+				TeamingEvents.ACTIVITY_STREAM,
+				buildASI(
+					ActivityStream.FOLLOWED_PEOPLE,
+					((List<String>) null),
+					asTI.getBinderTitle()));
+		}
+
+		// Return the TreeInfo just build.
+		return asTI;
+	}
+	
+	/*
+	 * Builds a TreeInfo for the user's Followed Places activity
+	 * stream.
+	 */
+	private static TreeInfo buildFollowedPlacesTI(AllModulesInjected bs, HttpServletRequest request, ASTreeData td) {
+		TreeInfo asTI = new TreeInfo();
+		asTI.setActivityStream(true);
+		asTI.setBinderTitle(NLT.get("asTreeFollowedPlaces"));
+		List<String> followedPlacesList = td.getFollowedPlacesList();
+		int idCount = ((null == followedPlacesList) ? 0 : followedPlacesList.size());
+		if (0 < idCount) {
+			// Yes!  Scan them.
+			List<TreeInfo>	asTIChildren = asTI.getChildBindersList();
+			List<String>	asIdsList    = new ArrayList<String>();
+			for (String followedPlaceId: followedPlacesList) {
+				// Can we access the next one's Binder?
+				String	id     = followedPlaceId;
+				Binder	binder = td.getBinder(id);
+				if (null != binder) {
+					// Yes!  Add an appropriate TreeInfo for it.
+					asIdsList.add(id);					
+					TreeInfo asTIChild = buildASTI(
+						request,
+						bs,
+						true,
+						id,
+						binder.getTitle(),
+						binder.getPathName(),
+						ActivityStream.FOLLOWED_PLACE);					
+					asTIChildren.add(asTIChild);
+				}
+			}
+			
+			// If we processed any entries...
+			if (!(asIdsList.isEmpty())) {
+				// ...update the parent TreeInfo.
+				asTI.updateChildBindersCount();
+				asTI.setActivityStreamEvent(
+					TeamingEvents.ACTIVITY_STREAM,
+					buildASI(
+						ActivityStream.FOLLOWED_PLACES,
+						asIdsList,
+						asTI.getBinderTitle()));
+			}
+		}
+		
+		// If we didn't add any places...
+		if (TeamingEvents.UNDEFINED == asTI.getActivityStreamEvent()) {
+			// ...we need a base event so that we can display no
+			// ...selections in the control.
+			asTI.setActivityStreamEvent(
+				TeamingEvents.ACTIVITY_STREAM,
+				buildASI(
+					ActivityStream.FOLLOWED_PLACES,
+					((List<String>) null),
+					asTI.getBinderTitle()));
+		}
+
+		// Return the TreeInfo just build.
+		return asTI;
+	}
+	
+	/*
+	 * Builds a TreeInfo for the user's My Favorites activity stream.
+	 */
+	private static TreeInfo buildMyFavoritesTI(AllModulesInjected bs, HttpServletRequest request, ASTreeData td) {
+		// Does the user have any favorites defined?
+		TreeInfo asTI = new TreeInfo();
+		asTI.setActivityStream(true);
+		asTI.setBinderTitle(NLT.get("asTreeMyFavorites"));
+		List<FavoriteInfo> myFavoritesList = td.getMyFavoritesList();
+		int idCount = ((null == myFavoritesList) ? 0 : myFavoritesList.size());
+		if (0 < idCount) {
+			// Yes!  Scan them.
+			List<TreeInfo>	asTIChildren = asTI.getChildBindersList();
+			List<String>	asIdsList    = new ArrayList<String>();
+			for (FavoriteInfo myFavorite: myFavoritesList) {
+				// Can we access the next one's Binder?
+				String	id     = myFavorite.getValue();
+				Binder	binder = td.getBinder(id);
+				if (null != binder) {
+					// Yes!  Add an appropriate TreeInfo for it.
+					asIdsList.add(id);					
+					TreeInfo asTIChild = buildASTI(
+						request,
+						bs,
+						true,
+						id,
+						myFavorite.getName(),
+						myFavorite.getHover(),
+						ActivityStream.MY_FAVORITE);
+					asTIChildren.add(asTIChild);
+				}
+			}
+
+			// If we processed any entries...
+			if (!(asIdsList.isEmpty())) {
+				// ...update the parent TreeInfo.
+				asTI.updateChildBindersCount();
+				asTI.setActivityStreamEvent(
+					TeamingEvents.ACTIVITY_STREAM,
+					buildASI(
+						ActivityStream.MY_FAVORITES,
+						asIdsList,
+						asTI.getBinderTitle()));
+			}
+		}
+
+		// If we didn't add any favorites...
+		if (TeamingEvents.UNDEFINED == asTI.getActivityStreamEvent()) {
+			// ...we need a base event so that we can display no
+			// ...selections in the control.
+			asTI.setActivityStreamEvent(
+				TeamingEvents.ACTIVITY_STREAM,
+				buildASI(
+					ActivityStream.MY_FAVORITES,
+					((List<String>) null),
+					asTI.getBinderTitle()));
+		}
+
+		// Return the TreeInfo just build.
+		return asTI;
+	}
+	
+	/*
+	 * Builds a TreeInfo for the user's My Teams activity stream.
+	 */
+	private static TreeInfo buildMyTeamsTI(AllModulesInjected bs, HttpServletRequest request, ASTreeData td) {
+		TreeInfo asTI = new TreeInfo();
+		asTI.setActivityStream(true);
+		asTI.setBinderTitle(NLT.get("asTreeMyTeams"));
+		List<TeamInfo> myTeamsList = td.getMyTeamsList();
+		int idCount = ((null == myTeamsList) ? 0 : myTeamsList.size());
+		if (0 < idCount) {
+			// Yes!  Scan them.
+			List<TreeInfo>	asTIChildren = asTI.getChildBindersList();
+			List<String>	asIdsList    = new ArrayList<String>();
+			for (TeamInfo myTeam: myTeamsList) {
+				// Can we access the next one's Binder?
+				String	id     = myTeam.getBinderId();
+				Binder	binder = td.getBinder(id);
+				if (null != binder) {
+					// Yes!  Add an appropriate TreeInfo for it.
+					asIdsList.add(id);					
+					TreeInfo asTIChild = buildASTI(
+						request,
+						bs,
+						true,
+						id,
+						myTeam.getTitle(),
+						binder.getPathName(),
+						ActivityStream.MY_TEAM);					
+					asTIChildren.add(asTIChild);
+				}
+			}
+			
+			// If we processed any entries...
+			if (!(asIdsList.isEmpty())) {
+				// ...update the parent TreeInfo.
+				asTI.updateChildBindersCount();
+				asTI.setActivityStreamEvent(
+					TeamingEvents.ACTIVITY_STREAM,
+					buildASI(
+						ActivityStream.MY_TEAMS,
+						asIdsList,
+						asTI.getBinderTitle()));
+			}
+		}
+		
+		// If we didn't add any teams...
+		if (TeamingEvents.UNDEFINED == asTI.getActivityStreamEvent()) {
+			// ...we need a base event so that we can display no
+			// ...selections in the control.
+			asTI.setActivityStreamEvent(
+				TeamingEvents.ACTIVITY_STREAM,
+				buildASI(
+					ActivityStream.MY_TEAMS,
+					((List<String>) null),
+					asTI.getBinderTitle()));
+		}
+		
+		// Return the TreeInfo just build.
+		return asTI;
+	}
+	
+	/*
 	 * Constructs and returns the base Criteria object for performing
 	 * the search for activity stream data.
 	 */
@@ -1164,8 +1523,13 @@ public class GwtActivityStreamHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static void fillCollectionLists(AllModulesInjected bs, CollectionType collectionType, List<String> folderIds, List<String> entryIds) {
-		if (null == folderIds) folderIds = new ArrayList<String>();
-		if (null == entryIds)  entryIds  = new ArrayList<String>();
+		// If we don't have lists to track the folders or entries...
+		boolean	trackFolders = (null != folderIds);
+		boolean	trackEntries = (null != entryIds);
+		if ((!trackFolders) && (!trackEntries)) {
+			// ...bail.
+			return;
+		}
 		
 		User	user     = GwtServerHelper.getCurrentUser();
 		String	userWSId = String.valueOf(user.getWorkspaceId());
@@ -1208,7 +1572,9 @@ public class GwtActivityStreamHelper {
 			
 			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
 			for (Map entryMap:  searchEntries) {
-				folderIds.add(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD));
+				if (trackFolders) {
+					folderIds.add(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD));
+				}
 			}
 			
 			break;
@@ -1233,8 +1599,8 @@ public class GwtActivityStreamHelper {
 				EntityIdentifier	siEntityIdentifier = si.getSharedEntityIdentifier();
 				EntityType			siEntityType       = siEntityIdentifier.getEntityType();
 				String				siEntityId         = String.valueOf(siEntityIdentifier.getEntityId());
-				if      (siEntityType.equals(EntityType.folder))      folderIds.add(siEntityId);
-				else if (siEntityType.equals(EntityType.folderEntry)) entryIds.add( siEntityId);
+				if      (trackFolders && siEntityType.equals(EntityType.folder))      folderIds.add(siEntityId);
+				else if (trackEntries && siEntityType.equals(EntityType.folderEntry)) entryIds.add( siEntityId);
 			}
 			
 			break;
@@ -1257,8 +1623,8 @@ public class GwtActivityStreamHelper {
 				EntityIdentifier	siEntityIdentifier = si.getSharedEntityIdentifier();
 				EntityType			siEntityType       = siEntityIdentifier.getEntityType();
 				String				siEntityId         = String.valueOf(siEntityIdentifier.getEntityId());
-				if      (siEntityType.equals(EntityType.folder))      folderIds.add(siEntityId);
-				else if (siEntityType.equals(EntityType.folderEntry)) entryIds.add( siEntityId);
+				if      (trackFolders && siEntityType.equals(EntityType.folder))      folderIds.add(siEntityId);
+				else if (trackEntries && siEntityType.equals(EntityType.folderEntry)) entryIds.add( siEntityId);
 			}
 			
 			break;
@@ -1290,12 +1656,19 @@ public class GwtActivityStreamHelper {
 			
 			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
 			for (Map entryMap:  searchEntries) {
-				folderIds.add(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD));
+				if (trackFolders) {
+					folderIds.add(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD));
+				}
 			}
 			
 			break;
 		}
 		}
+	}
+	
+	private static void fillCollectionLists(AllModulesInjected bs, CollectionType collectionType, List<String> folderIds) {
+		// Always use the initial form of the method.
+		fillCollectionLists(bs, collectionType, folderIds, null);
 	}
 	
 	/*
@@ -1746,15 +2119,13 @@ public class GwtActivityStreamHelper {
 			"GwtActivityStreamHelper.getVerticalActivityStreamsTree()");
 			
 		try {
-			ASTreeData td = ASTreeData.buildTreeData(request, bs, binderIdS);
-			Binder binder;
-			boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
-			TreeInfo reply = new TreeInfo();
+			ASTreeData		td = ASTreeData.buildTreeData(request, bs, binderIdS);
+			Binder			binder;
+			boolean			isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
+			TreeInfo		reply                       = new TreeInfo();
 			reply.setActivityStream(true);
 			reply.setBinderTitle(NLT.get("asTreeWhatsNew"));
-			List<TreeInfo> rootASList = reply.getChildBindersList();
-			ProfileModule pm = bs.getProfileModule();
-			User user;
+			List<TreeInfo>	rootASList = reply.getChildBindersList();
 							
 			// Can we access the Binder?
 			binder = td.getBinder(td.getBaseBinderId());
@@ -1771,279 +2142,26 @@ public class GwtActivityStreamHelper {
 						ActivityStream.CURRENT_BINDER));
 			}
 	
-			// Define the variables required to build the TreeInfo's
-			// for the other activity stream's.
-			int idCount;
-			List<String> asIdsList;
-			List<TreeInfo> asTIChildren;
-			String id;
-			TreeInfo asTI;
-			TreeInfo asTIChild;
+			// Add TreeInfo's for the various collection points.
+			rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.MY_FILES)      );
+			rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.SHARED_WITH_ME));
+			rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.SHARED_BY_ME)  );
+			rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.FILE_SPACES)   );
 			
-			// Add TreeInfo's for the various collection points we
-			// support in the activity streams list.  First, 'My
-			// Files'...
-			asTI = new TreeInfo();
-			asTI.setActivityStream(true);
-			asTI.setBinderTitle(NLT.get("asTreeMyFiles"));
-			asTI.setActivityStreamEvent(
-				TeamingEvents.ACTIVITY_STREAM,
-				buildASI(
-					ActivityStream.MY_FILES,
-					((List<String>) null),
-					asTI.getBinderTitle()));
+			// Add a 'My Favorites' TreeInfo to the root TreeInfo.
+			TreeInfo asTI = buildMyFavoritesTI(bs, request, td);
 			rootASList.add(asTI);
 			
-			// ...then 'Shared with Me'...
-			asTI = new TreeInfo();
-			asTI.setActivityStream(true);
-			asTI.setBinderTitle(NLT.get("asTreeSharedWithMe"));
-			asTI.setActivityStreamEvent(
-				TeamingEvents.ACTIVITY_STREAM,
-				buildASI(
-					ActivityStream.SHARED_WITH_ME,
-					((List<String>) null),
-					asTI.getBinderTitle()));
+			// Add a 'My Teams' TreeInfo to the root TreeInfo.
+			asTI = buildMyTeamsTI(bs, request, td);
+			rootASList.add(asTI);
+
+			// Add a 'Followed People' TreeInfo to the root TreeInfo.
+			asTI = buildFollowedPeopleTI(bs, request, td, isOtherUserAccessRestricted);
 			rootASList.add(asTI);
 			
-			// ...and finally, 'File Spaces'.
-			asTI = new TreeInfo();
-			asTI.setActivityStream(true);
-			asTI.setBinderTitle(NLT.get("asTreeFileSpaces"));
-			asTI.setActivityStreamEvent(
-				TeamingEvents.ACTIVITY_STREAM,
-				buildASI(
-					ActivityStream.FILE_SPACES,
-					((List<String>) null),
-					asTI.getBinderTitle()));
-			rootASList.add(asTI);
-			
-			// Does the user have any favorites defined?
-			asTI = new TreeInfo();
-			asTI.setActivityStream(true);
-			asTI.setBinderTitle(NLT.get("asTreeMyFavorites"));
-			List<FavoriteInfo> myFavoritesList = td.getMyFavoritesList();
-			idCount = ((null == myFavoritesList) ? 0 : myFavoritesList.size());
-			if (0 < idCount) {
-				// Yes!  Scan them.
-				asTIChildren = asTI.getChildBindersList();
-				asIdsList = new ArrayList<String>();
-				for (FavoriteInfo myFavorite: myFavoritesList) {
-					// Can we access the next one's Binder?
-					id = myFavorite.getValue();
-					binder = td.getBinder(id);
-					if (null != binder) {
-						// Yes!  Add an appropriate TreeInfo for it.
-						asIdsList.add(id);					
-						asTIChild = buildASTI(
-							request,
-							bs,
-							true,
-							id,
-							myFavorite.getName(),
-							myFavorite.getHover(),
-							ActivityStream.MY_FAVORITE);
-						asTIChildren.add(asTIChild);
-					}
-				}
-	
-				// If we processed any entries...
-				if (!(asIdsList.isEmpty())) {
-					// ...update the parent TreeInfo.
-					asTI.updateChildBindersCount();
-					asTI.setActivityStreamEvent(
-						TeamingEvents.ACTIVITY_STREAM,
-						buildASI(
-							ActivityStream.MY_FAVORITES,
-							asIdsList,
-							asTI.getBinderTitle()));
-				}
-			}
-	
-			// If we didn't add any favorites...
-			if (TeamingEvents.UNDEFINED == asTI.getActivityStreamEvent()) {
-				// ...we need a base event so that we can display no
-				// ...selections in the control.
-				asTI.setActivityStreamEvent(
-					TeamingEvents.ACTIVITY_STREAM,
-					buildASI(
-						ActivityStream.MY_FAVORITES,
-						((List<String>) null),
-						asTI.getBinderTitle()));
-			}
-			
-			// Add the favorites TreeInfo to the root TreeInfo.
-			rootASList.add(asTI);
-			
-			// Is the user a member of any teams?
-			asTI = new TreeInfo();
-			asTI.setActivityStream(true);
-			asTI.setBinderTitle(NLT.get("asTreeMyTeams"));
-			List<TeamInfo> myTeamsList = td.getMyTeamsList();
-			idCount = ((null == myTeamsList) ? 0 : myTeamsList.size());
-			if (0 < idCount) {
-				// Yes!  Scan them.
-				asTIChildren = asTI.getChildBindersList();
-				asIdsList = new ArrayList<String>();
-				for (TeamInfo myTeam: myTeamsList) {
-					// Can we access the next one's Binder?
-					id = myTeam.getBinderId();
-					binder = td.getBinder(id);
-					if (null != binder) {
-						// Yes!  Add an appropriate TreeInfo for it.
-						asIdsList.add(id);					
-						asTIChild = buildASTI(
-							request,
-							bs,
-							true,
-							id,
-							myTeam.getTitle(),
-							binder.getPathName(),
-							ActivityStream.MY_TEAM);					
-						asTIChildren.add(asTIChild);
-					}
-				}
-				
-				// If we processed any entries...
-				if (!(asIdsList.isEmpty())) {
-					// ...update the parent TreeInfo.
-					asTI.updateChildBindersCount();
-					asTI.setActivityStreamEvent(
-						TeamingEvents.ACTIVITY_STREAM,
-						buildASI(
-							ActivityStream.MY_TEAMS,
-							asIdsList,
-							asTI.getBinderTitle()));
-				}
-			}
-			
-			// If we didn't add any teams...
-			if (TeamingEvents.UNDEFINED == asTI.getActivityStreamEvent()) {
-				// ...we need a base event so that we can display no
-				// ...selections in the control.
-				asTI.setActivityStreamEvent(
-					TeamingEvents.ACTIVITY_STREAM,
-					buildASI(
-						ActivityStream.MY_TEAMS,
-						((List<String>) null),
-						asTI.getBinderTitle()));
-			}
-			
-			// Add the teams TreeInfo to the root TreeInfo.
-			rootASList.add(asTI);
-			
-			// Is the user following any users?
-			asTI = new TreeInfo();
-			asTI.setActivityStream(true);
-			asTI.setBinderTitle(NLT.get("asTreeFollowedPeople"));
-			List<String> followedUsersList = td.getFollowedUsersList();
-			idCount = ((null == followedUsersList) ? 0 : followedUsersList.size());
-			if (0 < idCount) {
-				// Yes!  Scan them.
-				asTIChildren = asTI.getChildBindersList();
-				asIdsList = new ArrayList<String>();
-				for (String followedUserId: followedUsersList) {
-					// Can we access the next one's User?
-					id = followedUserId;
-					user = td.getUser(id);
-					if (null != user) {
-						// Yes!  Add an appropriate TreeInfo for it.
-						asIdsList.add(id);					
-						asTIChild = buildASTI(
-							request,
-							bs,
-							false,
-							id,
-							GwtServerHelper.getUserTitle(pm, isOtherUserAccessRestricted, id, user.getTitle()),
-							null,
-							ActivityStream.FOLLOWED_PERSON);					
-						asTIChildren.add(asTIChild);
-					}
-				}
-				
-				// If we processed any entries...
-				if (!(asIdsList.isEmpty())) {
-					// ...update the parent TreeInfo.
-					asTI.updateChildBindersCount();
-					asTI.setActivityStreamEvent(
-						TeamingEvents.ACTIVITY_STREAM,
-						buildASI(
-							ActivityStream.FOLLOWED_PEOPLE,
-							asIdsList,
-							asTI.getBinderTitle()));
-				}
-			}
-			
-			// If we didn't add any people...
-			if (TeamingEvents.UNDEFINED == asTI.getActivityStreamEvent()) {
-				// ...we need a base event so that we can display no
-				// ...selections in the control.
-				asTI.setActivityStreamEvent(
-					TeamingEvents.ACTIVITY_STREAM,
-					buildASI(
-						ActivityStream.FOLLOWED_PEOPLE,
-						((List<String>) null),
-						asTI.getBinderTitle()));
-			}
-			
-			// Add the followed users TreeInfo to the root TreeInfo.
-			rootASList.add(asTI);
-			
-			// Is the user following any places?
-			asTI = new TreeInfo();
-			asTI.setActivityStream(true);
-			asTI.setBinderTitle(NLT.get("asTreeFollowedPlaces"));
-			List<String> followedPlacesList = td.getFollowedPlacesList();
-			idCount = ((null == followedPlacesList) ? 0 : followedPlacesList.size());
-			if (0 < idCount) {
-				// Yes!  Scan them.
-				asTIChildren = asTI.getChildBindersList();
-				asIdsList = new ArrayList<String>();
-				for (String followedPlaceId: followedPlacesList) {
-					// Can we access the next one's Binder?
-					id = followedPlaceId;
-					binder = td.getBinder(id);
-					if (null != binder) {
-						// Yes!  Add an appropriate TreeInfo for it.
-						asIdsList.add(id);					
-						asTIChild = buildASTI(
-							request,
-							bs,
-							true,
-							id,
-							binder.getTitle(),
-							binder.getPathName(),
-							ActivityStream.FOLLOWED_PLACE);					
-						asTIChildren.add(asTIChild);
-					}
-				}
-				
-				// If we processed any entries...
-				if (!(asIdsList.isEmpty())) {
-					// ...update the parent TreeInfo.
-					asTI.updateChildBindersCount();
-					asTI.setActivityStreamEvent(
-						TeamingEvents.ACTIVITY_STREAM,
-						buildASI(
-							ActivityStream.FOLLOWED_PLACES,
-							asIdsList,
-							asTI.getBinderTitle()));
-				}
-			}
-			
-			// If we didn't add any places...
-			if (TeamingEvents.UNDEFINED == asTI.getActivityStreamEvent()) {
-				// ...we need a base event so that we can display no
-				// ...selections in the control.
-				asTI.setActivityStreamEvent(
-					TeamingEvents.ACTIVITY_STREAM,
-					buildASI(
-						ActivityStream.FOLLOWED_PLACES,
-						((List<String>) null),
-						asTI.getBinderTitle()));
-			}
-			
-			// Add the followed places TreeInfo to the root TreeInfo.
+			// Add a 'Followed Places' TreeInfo to the root TreeInfo.
+			asTI = buildFollowedPlacesTI(bs, request, td);
 			rootASList.add(asTI);
 			
 			// We always have a Site Wide.
@@ -2471,12 +2589,16 @@ public class GwtActivityStreamHelper {
 			// * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 			
 		case CURRENT_BINDER:
+		case FILE_SPACE:
 		case FOLLOWED_PLACES:
 		case FOLLOWED_PLACE:
 		case MY_FAVORITES:
 		case MY_FAVORITE:
+		case MY_FILE:
 		case MY_TEAMS:
 		case MY_TEAM:
+		case SHARED_BY_ME_FOLDER:
+		case SHARED_WITH_ME_FOLDER:
 		case SPECIFIC_BINDER:
 			// A place of some sort:
 			// 1. The tracked places is used unchanged; and
@@ -2486,6 +2608,7 @@ public class GwtActivityStreamHelper {
 
 		case FILE_SPACES:
 		case MY_FILES:
+		case SHARED_BY_ME:
 		case SHARED_WITH_ME:
 			// A collection point:
 			// 1. The tracked places are the IDs of the folders from
@@ -2497,6 +2620,7 @@ public class GwtActivityStreamHelper {
 			switch (asi.getActivityStream()) {
 			default:
 			case MY_FILES:        collectionType = CollectionType.MY_FILES;       break;
+			case SHARED_BY_ME:    collectionType = CollectionType.SHARED_BY_ME;   break;
 			case SHARED_WITH_ME:  collectionType = CollectionType.SHARED_WITH_ME; break;
 			case FILE_SPACES:     collectionType = CollectionType.FILE_SPACES;    break;
 			}
@@ -2576,12 +2700,27 @@ public class GwtActivityStreamHelper {
 		else {
 			forcePlainTextDescriptions = false;
 			returnComments             = true;
+
+			// Do we have anything to populate the activity stream
+			// from?
+			int tracks  = ((null == trackedPlacesAL)  ? 0 : trackedPlacesAL.size() );
+			    tracks += ((null == trackedEntriesAL) ? 0 : trackedEntriesAL.size());
+			    tracks += ((null == trackedUsersAL)   ? 0 : trackedUsersAL.size()  );
+			    
+			if (0 == tracks) {
+				// No!  Generate an empty ASSearchResults.
+				searchResults = new ASSearchResults(new ArrayList<Map>(), 0);
+			}
 			
-			switch (asdt) {
-			default:
-			case ALL:     searchResults = performASSearch_All(       bs, trackedPlacesAL, trackedEntriesAL, trackedUsersAL, pageStart, entriesPerPage            ); break;
-			case READ:    searchResults = performASSearch_ReadUnread(bs, trackedPlacesAL, trackedEntriesAL, trackedUsersAL, pageStart, entriesPerPage, true,  asp); break;
-			case UNREAD:  searchResults = performASSearch_ReadUnread(bs, trackedPlacesAL, trackedEntriesAL, trackedUsersAL, pageStart, entriesPerPage, false, asp); break;
+			else {
+				// Yes, we have something to populate the activity
+				// stream from!  Perform the search.
+				switch (asdt) {
+				default:
+				case ALL:     searchResults = performASSearch_All(       bs, trackedPlacesAL, trackedEntriesAL, trackedUsersAL, pageStart, entriesPerPage            ); break;
+				case READ:    searchResults = performASSearch_ReadUnread(bs, trackedPlacesAL, trackedEntriesAL, trackedUsersAL, pageStart, entriesPerPage, true,  asp); break;
+				case UNREAD:  searchResults = performASSearch_ReadUnread(bs, trackedPlacesAL, trackedEntriesAL, trackedUsersAL, pageStart, entriesPerPage, false, asp); break;
+				}
 			}
 		}
 		
