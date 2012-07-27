@@ -1591,7 +1591,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         BasicIndexUtils.addDocType(indexDoc, Constants.DOC_TYPE_ENTRY, fieldsOnly);
 
         if (binder.isLibrary()) {
-            Field libraryField = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.IS_LIBRARY_FIELD, Boolean.toString(true));
+            Field libraryField = FieldFactory.createSystemFieldStoredNotAnalyzed(Constants.IS_LIBRARY_FIELD, Boolean.toString(true));
             indexDoc.add(libraryField);
         }
 

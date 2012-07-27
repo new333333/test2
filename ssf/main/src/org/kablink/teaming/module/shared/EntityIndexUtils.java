@@ -166,7 +166,7 @@ public class EntityIndexUtils {
     			//rateField.setDoubleValue(entry.getAverageRating().getAverage());
     			// With rating, there is always only one digit to the left of the decimal point.
     			// So we don't need to pad the number.
-    			Field rateField = FieldFactory.createStoredNotAnalyzedNoNorms(RATING_FIELD, entry.getAverageRating().getAverage().toString());
+    			Field rateField = FieldFactory.createSystemFieldStoredNotAnalyzed(RATING_FIELD, entry.getAverageRating().getAverage().toString());
 	        	doc.add(rateField);
     		}
         } catch (Exception ex) {};
@@ -230,24 +230,24 @@ public class EntityIndexUtils {
     		// Yes!  If we know who it was deleted by by...
         	if (null != preDeletedBy) {
         		// ...add both their ID and title to the index.
-        		field = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.PRE_DELETED_BY_ID_FIELD, String.valueOf(preDeletedBy.getId().intValue()));
+        		field = FieldFactory.createSystemFieldStoredNotAnalyzed(Constants.PRE_DELETED_BY_ID_FIELD, String.valueOf(preDeletedBy.getId().intValue()));
         		doc.add(field);
         		
-            	field = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.PRE_DELETED_BY_TITLE_FIELD, preDeletedBy.getTitle());
+            	field = FieldFactory.createSystemFieldStoredNotAnalyzed(Constants.PRE_DELETED_BY_TITLE_FIELD, preDeletedBy.getTitle());
             	doc.add(field);
         	}
         	
         	// If we know when the item was deleted...
         	if (null != preDeletedWhen) {
         		// ...add it to the index
-        		field = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.PRE_DELETED_WHEN_FIELD, String.valueOf(preDeletedWhen));
+        		field = FieldFactory.createSystemFieldStoredNotAnalyzed(Constants.PRE_DELETED_WHEN_FIELD, String.valueOf(preDeletedWhen));
         		doc.add(field);
         	}
         	
         	// If we know where the item was deleted from... 
         	if (null != preDeletedFrom) {
         		// ...add it to the index
-        		field = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.PRE_DELETED_FROM_FIELD, preDeletedFrom);
+        		field = FieldFactory.createSystemFieldStoredNotAnalyzed(Constants.PRE_DELETED_FROM_FIELD, preDeletedFrom);
         		doc.add(field);
         	}
     	}
@@ -269,46 +269,46 @@ public class EntityIndexUtils {
     }
     
     public static void addEntityType(Document doc, DefinableEntity entry, boolean fieldsOnly) {
-      	Field eField = FieldFactory.createStoredNotAnalyzedNoNorms(ENTITY_FIELD, entry.getEntityType().name());
+      	Field eField = FieldFactory.createSystemFieldStoredNotAnalyzed(ENTITY_FIELD, entry.getEntityType().name());
        	doc.add(eField);
     }
     public static void addDefinitionType(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	Integer definitionType = entry.getDefinitionType();
     	if (definitionType == null) definitionType = 0;
-      	Field eField = FieldFactory.createStoredNotAnalyzedNoNorms(DEFINITION_TYPE_FIELD, definitionType.toString());
+      	Field eField = FieldFactory.createSystemFieldStoredNotAnalyzed(DEFINITION_TYPE_FIELD, definitionType.toString());
        	doc.add(eField);
     }
     public static void addEntryType(Document doc, DefinableEntity entry, boolean fieldsOnly) {
         // Add the entry type (entry or reply)
     	if (entry instanceof FolderEntry) {
 	        if (((FolderEntry)entry).isTop()) {
-	        	Field entryTypeField = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY);
+	        	Field entryTypeField = FieldFactory.createSystemFieldStoredNotAnalyzed(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY);
 	        	doc.add(entryTypeField);
 	        } else {
-	        	Field entryTypeField = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_REPLY);
+	        	Field entryTypeField = FieldFactory.createSystemFieldStoredNotAnalyzed(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_REPLY);
 	        	doc.add(entryTypeField);
 	        	
 	        	FolderEntry folderEntry = (FolderEntry)entry;
-	        	Field entryParentEntryId = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.ENTRY_PARENT_ID_FIELD, folderEntry.getParentEntry().getId().toString());
+	        	Field entryParentEntryId = FieldFactory.createSystemFieldStoredNotAnalyzed(Constants.ENTRY_PARENT_ID_FIELD, folderEntry.getParentEntry().getId().toString());
 	        	doc.add(entryParentEntryId);
-	        	Field entryTopEntryId = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.ENTRY_TOP_ENTRY_ID_FIELD, folderEntry.getTopEntry().getId().toString());
+	        	Field entryTopEntryId = FieldFactory.createSystemFieldStoredNotAnalyzed(Constants.ENTRY_TOP_ENTRY_ID_FIELD, folderEntry.getTopEntry().getId().toString());
 	        	doc.add(entryTopEntryId);
 	        	String topEntryTitle = folderEntry.getTopEntry().getTitle().toString();
 	        	if (topEntryTitle.trim().equals("")) topEntryTitle = EntityIndexUtils.DEFAULT_NOTITLE_TITLE;
-	        	Field entryTopEntryTitle = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.ENTRY_TOP_ENTRY_TITLE_FIELD, topEntryTitle);
+	        	Field entryTopEntryTitle = FieldFactory.createSystemFieldStoredNotAnalyzed(Constants.ENTRY_TOP_ENTRY_TITLE_FIELD, topEntryTitle);
 	        	doc.add(entryTopEntryTitle);
 	        }
     	} else if (entry instanceof User) {
-        	Field entryTypeField = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_USER);
+        	Field entryTypeField = FieldFactory.createSystemFieldStoredNotAnalyzed(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_USER);
         	doc.add(entryTypeField);
     	} else if (entry instanceof Group) {
-    		Field entryTypeField = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_GROUP);
+    		Field entryTypeField = FieldFactory.createSystemFieldStoredNotAnalyzed(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_GROUP);
     		doc.add(entryTypeField);
     	} else if (entry instanceof Application) {
-        	Field entryTypeField = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_APPLICATION);
+        	Field entryTypeField = FieldFactory.createSystemFieldStoredNotAnalyzed(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_APPLICATION);
         	doc.add(entryTypeField);
     	} else if (entry instanceof ApplicationGroup) {
-    		Field entryTypeField = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_APPLICATION_GROUP);
+    		Field entryTypeField = FieldFactory.createSystemFieldStoredNotAnalyzed(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_APPLICATION_GROUP);
     		doc.add(entryTypeField);
     	} 
    }
@@ -317,30 +317,30 @@ public class EntityIndexUtils {
     	Date creationDate = stamp.getDate();
     	Principal principal = stamp.getPrincipal();
     	if (creationDate != null) {		
-    		Field creationDateField = FieldFactory.createStoredNotAnalyzedNoNorms(CREATION_DATE_FIELD, DateTools.dateToString(creationDate,DateTools.Resolution.SECOND));
+    		Field creationDateField = FieldFactory.createSystemFieldStoredNotAnalyzed(CREATION_DATE_FIELD, DateTools.dateToString(creationDate,DateTools.Resolution.SECOND));
     		doc.add(creationDateField);
     		//index the YYYYMMDD string
     		String dayString = formatDayString(creationDate);
-    		Field creationDayField = FieldFactory.createStoredNotAnalyzedNoNorms(CREATION_DAY_FIELD, dayString);
+    		Field creationDayField = FieldFactory.createSystemFieldStoredNotAnalyzed(CREATION_DAY_FIELD, dayString);
     		doc.add(creationDayField);
     		// index the YYYYMM string
     		String yearMonthString = dayString.substring(0,6);
-    		Field creationYearMonthField = FieldFactory.createStoredNotAnalyzedNoNorms(CREATION_YEAR_MONTH_FIELD, yearMonthString);
+    		Field creationYearMonthField = FieldFactory.createSystemFieldStoredNotAnalyzed(CREATION_YEAR_MONTH_FIELD, yearMonthString);
     		doc.add(creationYearMonthField);
     		// index the YYYY string
     		String yearString = dayString.substring(0,4);
-    		Field creationYearField = FieldFactory.createStoredNotAnalyzedNoNorms(CREATION_YEAR_FIELD, yearString);
+    		Field creationYearField = FieldFactory.createSystemFieldStoredNotAnalyzed(CREATION_YEAR_FIELD, yearString);
     		doc.add(creationYearField);
     	}
     	//Add the id of the creator (no, not that one...)
     	if (principal != null) {
-            Field creationIdField = FieldFactory.createStoredNotAnalyzedNoNorms(CREATORID_FIELD, principal.getId().toString());
+            Field creationIdField = FieldFactory.createSystemFieldStoredNotAnalyzed(CREATORID_FIELD, principal.getId().toString());
             doc.add(creationIdField);
-            Field creationNameField = FieldFactory.createStoredNotAnalyzedNoNorms(CREATOR_NAME_FIELD, principal.getName().toString());
+            Field creationNameField = FieldFactory.createSystemFieldStoredNotAnalyzed(CREATOR_NAME_FIELD, principal.getName().toString());
             doc.add(creationNameField);
             Field creationTitleField = FieldFactory.createApplicationField(CREATOR_TITLE_FIELD, principal.getTitle().toString(), Field.Store.YES, Field.Index.ANALYZED);
             doc.add(creationTitleField);
-            Field creationSortTitleField = FieldFactory.createStoredNotAnalyzedNoNorms(SORT_CREATOR_TITLE_FIELD, principal.getTitle().toString().toLowerCase());
+            Field creationSortTitleField = FieldFactory.createSystemFieldStoredNotAnalyzed(SORT_CREATOR_TITLE_FIELD, principal.getTitle().toString().toLowerCase());
             doc.add(creationSortTitleField);
         }
     }
@@ -351,28 +351,28 @@ public class EntityIndexUtils {
      	if (modDate != null) {
      	
      		// Add modification-date field
-     		Field modificationDateField = FieldFactory.createStoredNotAnalyzedNoNorms(MODIFICATION_DATE_FIELD, DateTools.dateToString(modDate,DateTools.Resolution.SECOND));
+     		Field modificationDateField = FieldFactory.createSystemFieldStoredNotAnalyzed(MODIFICATION_DATE_FIELD, DateTools.dateToString(modDate,DateTools.Resolution.SECOND));
      		doc.add(modificationDateField);        
      		// index the YYYYMMDD string
      		String dayString = formatDayString(modDate);
-     		Field modificationDayField = FieldFactory.createStoredNotAnalyzedNoNorms(MODIFICATION_DAY_FIELD, dayString);
+     		Field modificationDayField = FieldFactory.createSystemFieldStoredNotAnalyzed(MODIFICATION_DAY_FIELD, dayString);
      		doc.add(modificationDayField);
      		// index the YYYYMM string
      		String yearMonthString = dayString.substring(0,6);
-     		Field modificationYearMonthField = FieldFactory.createStoredNotAnalyzedNoNorms(MODIFICATION_YEAR_MONTH_FIELD, yearMonthString);
+     		Field modificationYearMonthField = FieldFactory.createSystemFieldStoredNotAnalyzed(MODIFICATION_YEAR_MONTH_FIELD, yearMonthString);
      		doc.add(modificationYearMonthField);
      		// index the YYYY string
      		String yearString = dayString.substring(0,4);
-     		Field modificationYearField = FieldFactory.createStoredNotAnalyzedNoNorms(MODIFICATION_YEAR_FIELD, yearString);
+     		Field modificationYearField = FieldFactory.createSystemFieldStoredNotAnalyzed(MODIFICATION_YEAR_FIELD, yearString);
      		doc.add(modificationYearField);
      	}
        	//Add the id of the modifier 
         if (principal != null) {
-        	Field modificationIdField = FieldFactory.createStoredNotAnalyzedNoNorms(MODIFICATIONID_FIELD, principal.getId().toString());
+        	Field modificationIdField = FieldFactory.createSystemFieldStoredNotAnalyzed(MODIFICATIONID_FIELD, principal.getId().toString());
             doc.add(modificationIdField);
-            Field modificationNameField = FieldFactory.createStoredNotAnalyzedNoNorms(MODIFICATION_NAME_FIELD, principal.getName().toString());
+            Field modificationNameField = FieldFactory.createSystemFieldStoredNotAnalyzed(MODIFICATION_NAME_FIELD, principal.getName().toString());
             doc.add(modificationNameField);
-            Field modificationTitleField = FieldFactory.createStoredNotAnalyzedNoNorms(MODIFICATION_TITLE_FIELD, principal.getTitle().toString());
+            Field modificationTitleField = FieldFactory.createSystemFieldStoredNotAnalyzed(MODIFICATION_TITLE_FIELD, principal.getTitle().toString());
             doc.add(modificationTitleField);
         }   
    } 
@@ -382,7 +382,7 @@ public class EntityIndexUtils {
 			HistoryStamp historyStamp = ((FolderEntry)entry).getReservation();
 			if (historyStamp != null) {
 				Principal lockedByUser = historyStamp.getPrincipal();
-	        	Field reservedField = FieldFactory.createStoredNotAnalyzedNoNorms(RESERVEDBY_ID_FIELD, lockedByUser.getId().toString());
+	        	Field reservedField = FieldFactory.createSystemFieldStoredNotAnalyzed(RESERVEDBY_ID_FIELD, lockedByUser.getId().toString());
 	            doc.add(reservedField);
 			}
     	}
@@ -390,11 +390,11 @@ public class EntityIndexUtils {
      
     public static void addOwner(Document doc, Principal owner, boolean fieldsOnly) {
         if (owner != null) {
-        	Field ownerIdField = FieldFactory.createStoredNotAnalyzedNoNorms(OWNERID_FIELD, owner.getId().toString());
+        	Field ownerIdField = FieldFactory.createSystemFieldStoredNotAnalyzed(OWNERID_FIELD, owner.getId().toString());
             doc.add(ownerIdField);
-            Field ownerNameField = FieldFactory.createStoredNotAnalyzedNoNorms(OWNER_NAME_FIELD, owner.getName().toString());
+            Field ownerNameField = FieldFactory.createSystemFieldStoredNotAnalyzed(OWNER_NAME_FIELD, owner.getName().toString());
             doc.add(ownerNameField);
-            Field ownerTitleField = FieldFactory.createStoredNotAnalyzedNoNorms(OWNER_TITLE_FIELD, owner.getTitle().toString());
+            Field ownerTitleField = FieldFactory.createSystemFieldStoredNotAnalyzed(OWNER_TITLE_FIELD, owner.getTitle().toString());
             doc.add(ownerTitleField);
         }   
    } 
@@ -407,10 +407,10 @@ public class EntityIndexUtils {
     		if (workflowStates != null) {
     			for (Iterator iter=workflowStates.iterator(); iter.hasNext();) {
     				WorkflowState ws = (WorkflowState)iter.next();
-    				Field workflowStateField = FieldFactory.createStoredNotAnalyzedNoNorms(WORKFLOW_STATE_FIELD, 
+    				Field workflowStateField = FieldFactory.createSystemFieldStoredNotAnalyzed(WORKFLOW_STATE_FIELD, 
    						ws.getState());
     				String workflowCaption = WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState());
-    				Field workflowStateCaptionField = FieldFactory.createStoredNotAnalyzedNoNorms(WORKFLOW_STATE_CAPTION_FIELD, 
+    				Field workflowStateCaptionField = FieldFactory.createSystemFieldStoredNotAnalyzed(WORKFLOW_STATE_CAPTION_FIELD, 
     						workflowCaption);
     				//Index the workflow state
     				doc.add(workflowStateField);
@@ -463,8 +463,8 @@ public class EntityIndexUtils {
 					entryEventsDates.addAll(allEventDays);
 									
 					if (att.getValue() != null) {
-						doc.add(FieldFactory.createStoredNotAnalyzedNoNorms(EVENT_FIELD + count, att.getName()));
-						doc.add(FieldFactory.createStoredNotAnalyzedNoNorms(event.getName() + BasicIndexUtils.DELIMITER + Constants.EVENT_ID, event.getId()));
+						doc.add(FieldFactory.createSystemFieldStoredNotAnalyzed(EVENT_FIELD + count, att.getName()));
+						doc.add(FieldFactory.createSystemFieldStoredNotAnalyzed(event.getName() + BasicIndexUtils.DELIMITER + Constants.EVENT_ID, event.getId()));
 						doc.add(getEntryEventDaysField(event.getName() + BasicIndexUtils.DELIMITER + Constants.EVENT_DATES, new HashSet(allEventDays)));
 						count++;
 					}
@@ -474,7 +474,7 @@ public class EntityIndexUtils {
 				Date dateValue = ((Date)att.getValue());
 				if (att.getName().equals(TaskHelper.TASK_COMPLETED_DATE_ATTRIBUTE)) {
 					doc.add(
-							FieldFactory.createStoredNotAnalyzedNoNorms(
+							FieldFactory.createSystemFieldStoredNotAnalyzed(
 							TASK_COMPLETED_DATE_FIELD,
 							DateTools.dateToString(dateValue, DateTools.Resolution.SECOND)));
 				}
@@ -489,7 +489,7 @@ public class EntityIndexUtils {
 		doc.add(getEntryEventDaysField(EVENT_DATES_FIELD, entryEventsDates));
 		
 		// Add event count field
-    	Field eventCountField = FieldFactory.createStoredNotAnalyzedNoNorms(EVENT_COUNT_FIELD, Integer.toString(count));
+    	Field eventCountField = FieldFactory.createSystemFieldStoredNotAnalyzed(EVENT_COUNT_FIELD, Integer.toString(count));
     	doc.add(eventCountField);
     }
     
@@ -524,19 +524,19 @@ public class EntityIndexUtils {
 		if (sb.length() > 0)
 			sb.deleteCharAt(sb.length() - 1);
 
-		return FieldFactory.createStoredNotAnalyzedNoNorms(event.getName() + BasicIndexUtils.DELIMITER + Constants.EVENT_RECURRENCE_DATES_FIELD, sb.toString());
+		return FieldFactory.createSystemFieldStoredNotAnalyzed(event.getName() + BasicIndexUtils.DELIMITER + Constants.EVENT_RECURRENCE_DATES_FIELD, sb.toString());
 	}
         
     public static void addCommandDefinition(Document doc, DefinableEntity entry, boolean fieldsOnly) {
         if (entry.getEntryDefId() != null) {
-        	Field cdefField = FieldFactory.createStoredNotAnalyzedNoNorms(COMMAND_DEFINITION_FIELD, entry.getEntryDefId());
+        	Field cdefField = FieldFactory.createSystemFieldStoredNotAnalyzed(COMMAND_DEFINITION_FIELD, entry.getEntryDefId());
             doc.add(cdefField);
         }
     }
         
     public static void addCreatedWithDefinition(Document doc, DefinableEntity entry, boolean fieldsOnly) {
         if (entry.getCreatedWithDefinitionId() != null) {
-        	Field field = FieldFactory.createStoredNotAnalyzedNoNorms(CREATED_WITH_DEFINITION_FIELD, entry.getCreatedWithDefinitionId());
+        	Field field = FieldFactory.createSystemFieldStoredNotAnalyzed(CREATED_WITH_DEFINITION_FIELD, entry.getCreatedWithDefinitionId());
             doc.add(field);
         }
     }
@@ -560,7 +560,7 @@ public class EntityIndexUtils {
         	org.dom4j.Document def = entry.getEntryDefDoc();
         	String family = DefinitionUtils.getFamily(def);
         	if (Validator.isNotNull(family)) {
-      			Field eField = FieldFactory.createStoredNotAnalyzedNoNorms(FAMILY_FIELD, family);
+      			Field eField = FieldFactory.createSystemFieldStoredNotAnalyzed(FAMILY_FIELD, family);
     	       	doc.add(eField);	
         	}
         }
@@ -569,7 +569,7 @@ public class EntityIndexUtils {
 
      public static void addDocId(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
-        Field docIdField = FieldFactory.createStoredNotAnalyzedNoNorms(DOCID_FIELD, entry.getId().toString());
+        Field docIdField = FieldFactory.createSystemFieldStoredNotAnalyzed(DOCID_FIELD, entry.getId().toString());
         doc.add(docIdField);
        	
        	if(entry instanceof Folder) { // Folder gets another field containing its ID value, but this time as a numeric field.
@@ -581,12 +581,12 @@ public class EntityIndexUtils {
     	Field binderIdField;
     	if (entry instanceof Binder) {
     		if (entry.getParentBinder() == null) return;
-       		binderIdField = FieldFactory.createStoredNotAnalyzedNoNorms(BINDERS_PARENT_ID_FIELD, entry.getParentBinder().getId().toString());
+       		binderIdField = FieldFactory.createSystemFieldStoredNotAnalyzed(BINDERS_PARENT_ID_FIELD, entry.getParentBinder().getId().toString());
        	    		
     	} else if (entry != null) {
-    		binderIdField = FieldFactory.createStoredNotAnalyzedNoNorms(BINDER_ID_FIELD, entry.getParentBinder().getId().toString());
+    		binderIdField = FieldFactory.createSystemFieldStoredNotAnalyzed(BINDER_ID_FIELD, entry.getParentBinder().getId().toString());
     	} else {
-    		binderIdField = FieldFactory.createStoredNotAnalyzedNoNorms(BINDER_ID_FIELD, "");
+    		binderIdField = FieldFactory.createSystemFieldStoredNotAnalyzed(BINDER_ID_FIELD, "");
     	}
        	doc.add(binderIdField);
     }   
@@ -1019,7 +1019,7 @@ public class EntityIndexUtils {
 			aclTags += " " + aclTag;
 			lowerAclTag = BasicIndexUtils.buildAclTag(thisTag.getName().toLowerCase(), Constants.READ_ACL_ALL);
 			aclTag = lowerAclTag + ":" + aclTag;
-			ttfTagField = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.ACL_TAG_FIELD_TTF, aclTag);
+			ttfTagField = FieldFactory.createSystemFieldStoredNotAnalyzed(Constants.ACL_TAG_FIELD_TTF, aclTag);
 			doc.add(ttfTagField);
 		}
 	
@@ -1031,7 +1031,7 @@ public class EntityIndexUtils {
 			// type to find fields.
 			lowerAclTag = BasicIndexUtils.buildAclTag(tag.toLowerCase(), thisTag.getOwnerIdentifier().getEntityId().toString());
 			aclTag = lowerAclTag + ":" + aclTag;
-			ttfTagField = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.ACL_TAG_FIELD_TTF, aclTag);
+			ttfTagField = FieldFactory.createSystemFieldStoredNotAnalyzed(Constants.ACL_TAG_FIELD_TTF, aclTag);
 			doc.add(ttfTagField);
 		}
     
@@ -1069,7 +1069,7 @@ public class EntityIndexUtils {
 		List nodes = document.selectNodes("/searchml");
 		
       	
-		Field fileTypeField = FieldFactory.createStoredNotAnalyzedNoNorms(FILE_TYPE_FIELD, x.getText());
+		Field fileTypeField = FieldFactory.createSystemFieldStoredNotAnalyzed(FILE_TYPE_FIELD, x.getText());
        	doc.add(fileTypeField);   	
 	
 		
@@ -1098,47 +1098,47 @@ public class EntityIndexUtils {
 	public static void addAttachedFileIds(Document doc, DefinableEntity entry, boolean fieldsOnly) {
 		Collection<FileAttachment> atts = entry.getFileAttachments();
         for (FileAttachment fa : atts) {
-        	Field fileIDField = FieldFactory.createStoredNotAnalyzedNoNorms(FILE_ID_FIELD, fa.getId());
+        	Field fileIDField = FieldFactory.createSystemFieldStoredNotAnalyzed(FILE_ID_FIELD, fa.getId());
         	doc.add(fileIDField); 
-        	Field fileOwnerIdField = FieldFactory.createStoredNotAnalyzedNoNorms(FILE_CREATOR_ID_FIELD, String.valueOf(fa.getCreation().getPrincipal().getId()));
+        	Field fileOwnerIdField = FieldFactory.createSystemFieldStoredNotAnalyzed(FILE_CREATOR_ID_FIELD, String.valueOf(fa.getCreation().getPrincipal().getId()));
         	doc.add(fileOwnerIdField); 
-        	Field fileSizeField = FieldFactory.createStoredNotAnalyzedNoNorms(FILE_SIZE_FIELD, getSortableNumber(String.valueOf(fa.getFileItem().getLengthKB()), ObjectKeys.MAX_FILE_SIZE_DECIMAL_PLACES));
+        	Field fileSizeField = FieldFactory.createSystemFieldStoredNotAnalyzed(FILE_SIZE_FIELD, getSortableNumber(String.valueOf(fa.getFileItem().getLengthKB()), ObjectKeys.MAX_FILE_SIZE_DECIMAL_PLACES));
         	doc.add(fileSizeField); 
-        	Field fileSizeInBytesField = FieldFactory.createStoredNotAnalyzedNoNorms(FILE_SIZE_IN_BYTES_FIELD, String.valueOf(fa.getFileItem().getLength()));
+        	Field fileSizeInBytesField = FieldFactory.createSystemFieldStoredNotAnalyzed(FILE_SIZE_IN_BYTES_FIELD, String.valueOf(fa.getFileItem().getLength()));
         	doc.add(fileSizeInBytesField); 
-        	Field fileTimeField = FieldFactory.createStoredNotAnalyzedNoNorms(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()));
+        	Field fileTimeField = FieldFactory.createSystemFieldStoredNotAnalyzed(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()));
         	doc.add(fileTimeField); 
-        	Field fileNameField = FieldFactory.createStoredNotAnalyzedNoNorms(FILENAME_FIELD, fa.getFileItem().getName());
+        	Field fileNameField = FieldFactory.createSystemFieldStoredNotAnalyzed(FILENAME_FIELD, fa.getFileItem().getName());
         	doc.add(fileNameField);
         	//create names that groups all the related values together for parsing in displays
         	//doc.add(new Field(FILE_SIZE_AND_ID_FIELD, fa.getId()+fileSizeField.stringValue()));
-        	doc.add(FieldFactory.createStoredNotAnalyzedNoNorms(FILE_TIME_AND_ID_FIELD, Constants.UNIQUE_PREFIX + fa.getId() + fileTimeField.stringValue()));
-        	doc.add(FieldFactory.createStoredNotAnalyzedNoNorms(FILENAME_AND_ID_FIELD, Constants.UNIQUE_PREFIX + fa.getId() + fileNameField.stringValue()));
+        	doc.add(FieldFactory.createSystemFieldStoredNotAnalyzed(FILE_TIME_AND_ID_FIELD, Constants.UNIQUE_PREFIX + fa.getId() + fileTimeField.stringValue()));
+        	doc.add(FieldFactory.createSystemFieldStoredNotAnalyzed(FILENAME_AND_ID_FIELD, Constants.UNIQUE_PREFIX + fa.getId() + fileNameField.stringValue()));
         }
         //While we are here, make sure the version agingEnabled flags are set properly
         FileUtils.setFileVersionAging(entry);
     }    
     //Used to index the file.  Only want info about this file, so remove extraneous stuff
     public static void addFileAttachment(Document doc, FileAttachment fa, boolean fieldsOnly) {
-    	Field fileIDField = FieldFactory.createStoredNotAnalyzedNoNorms(FILE_ID_FIELD, fa.getId());
+    	Field fileIDField = FieldFactory.createSystemFieldStoredNotAnalyzed(FILE_ID_FIELD, fa.getId());
     	doc.add(fileIDField); 
-    	Field fileOwnerIdField = FieldFactory.createStoredNotAnalyzedNoNorms(FILE_CREATOR_ID_FIELD, String.valueOf(fa.getCreation().getPrincipal().getId()));
+    	Field fileOwnerIdField = FieldFactory.createSystemFieldStoredNotAnalyzed(FILE_CREATOR_ID_FIELD, String.valueOf(fa.getCreation().getPrincipal().getId()));
     	doc.add(fileOwnerIdField); 
-    	Field fileSizeField = FieldFactory.createStoredNotAnalyzedNoNorms(FILE_SIZE_FIELD, getSortableNumber(String.valueOf(fa.getFileItem().getLengthKB()), ObjectKeys.MAX_FILE_SIZE_DECIMAL_PLACES));
+    	Field fileSizeField = FieldFactory.createSystemFieldStoredNotAnalyzed(FILE_SIZE_FIELD, getSortableNumber(String.valueOf(fa.getFileItem().getLengthKB()), ObjectKeys.MAX_FILE_SIZE_DECIMAL_PLACES));
     	doc.add(fileSizeField); 
-    	Field fileSizeInBytesField = FieldFactory.createStoredNotAnalyzedNoNorms(FILE_SIZE_IN_BYTES_FIELD, String.valueOf(fa.getFileItem().getLength()));
+    	Field fileSizeInBytesField = FieldFactory.createSystemFieldStoredNotAnalyzed(FILE_SIZE_IN_BYTES_FIELD, String.valueOf(fa.getFileItem().getLength()));
     	doc.add(fileSizeInBytesField); 
-    	Field fileTimeField = FieldFactory.createStoredNotAnalyzedNoNorms(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()));
+    	Field fileTimeField = FieldFactory.createSystemFieldStoredNotAnalyzed(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()));
     	doc.add(fileTimeField); 
-      	Field fileNameField = FieldFactory.createStoredNotAnalyzedNoNorms(FILENAME_FIELD, fa.getFileItem().getName());
+      	Field fileNameField = FieldFactory.createSystemFieldStoredNotAnalyzed(FILENAME_FIELD, fa.getFileItem().getName());
        	doc.add(fileNameField);
-      	Field fileDescField = FieldFactory.createStoredNotAnalyzedNoNorms(FILE_DESCRIPTION_FIELD, fa.getFileItem().getDescription().getText());
+      	Field fileDescField = FieldFactory.createSystemFieldStoredNotAnalyzed(FILE_DESCRIPTION_FIELD, fa.getFileItem().getDescription().getText());
        	doc.add(fileDescField);
-      	Field fileStatusField = FieldFactory.createStoredNotAnalyzedNoNorms(FILE_STATUS_FIELD, String.valueOf(fa.getFileStatus()));
+      	Field fileStatusField = FieldFactory.createSystemFieldStoredNotAnalyzed(FILE_STATUS_FIELD, String.valueOf(fa.getFileStatus()));
        	doc.add(fileStatusField);
-       	Field fileExtField = FieldFactory.createStoredNotAnalyzedNoNorms(FILE_EXT_FIELD, getFileExtension(fa.getFileItem().getName()));
+       	Field fileExtField = FieldFactory.createSystemFieldStoredNotAnalyzed(FILE_EXT_FIELD, getFileExtension(fa.getFileItem().getName()));
        	doc.add(fileExtField);   	
-       	Field uniqueField = FieldFactory.createStoredNotAnalyzedNoNorms(FILE_UNIQUE_FIELD, Boolean.toString(fa.isCurrentlyLocked()));
+       	Field uniqueField = FieldFactory.createSystemFieldStoredNotAnalyzed(FILE_UNIQUE_FIELD, Boolean.toString(fa.isCurrentlyLocked()));
        	doc.add(uniqueField);     	
     }
     
@@ -1179,43 +1179,43 @@ public class EntityIndexUtils {
     	}
     	
     	while (parentBinder != null) {	
-    		Field ancestry = FieldFactory.createStoredNotAnalyzedNoNorms(ENTRY_ANCESTRY, parentBinder.getId().toString());
+    		Field ancestry = FieldFactory.createSystemFieldStoredNotAnalyzed(ENTRY_ANCESTRY, parentBinder.getId().toString());
     		doc.add(ancestry);
     		parentBinder = ((Binder)parentBinder).getParentBinder();
     	}
     }
 
     public static void addBinderIconName(Document doc, Binder binder, boolean fieldsOnly) {
-		Field path = FieldFactory.createStoredNotAnalyzedNoNorms(ICON_NAME_FIELD, binder.getIconName());
+		Field path = FieldFactory.createSystemFieldStoredNotAnalyzed(ICON_NAME_FIELD, binder.getIconName());
 		doc.add(path);
     }
 
     public static void addBinderPath(Document doc, Binder binder, boolean fieldsOnly) {
-		Field path = FieldFactory.createStoredNotAnalyzedNoNorms(ENTITY_PATH, binder.getPathName());
+		Field path = FieldFactory.createSystemFieldStoredNotAnalyzed(ENTITY_PATH, binder.getPathName());
 		doc.add(path);
     }
 
     public static void addBinderIsLibrary(Document doc, Binder binder, boolean fieldsOnly) {
-		Field path = FieldFactory.createStoredNotAnalyzedNoNorms(IS_LIBRARY_FIELD, (binder.isLibrary() ? Constants.TRUE : Constants.FALSE));
+		Field path = FieldFactory.createSystemFieldStoredNotAnalyzed(IS_LIBRARY_FIELD, (binder.isLibrary() ? Constants.TRUE : Constants.FALSE));
 		doc.add(path);
     }
 
     public static void addBinderIsMirrored(Document doc, Binder binder, boolean fieldsOnly) {
-		Field path = FieldFactory.createStoredNotAnalyzedNoNorms(IS_MIRRORED_FIELD, (binder.isMirrored() ? Constants.TRUE : Constants.FALSE));
+		Field path = FieldFactory.createSystemFieldStoredNotAnalyzed(IS_MIRRORED_FIELD, (binder.isMirrored() ? Constants.TRUE : Constants.FALSE));
 		doc.add(path);
     }
 
     public static void addBinderHasResourceDriver(Document doc, Binder binder, boolean fieldsOnly) {
     	if ((binder instanceof Folder) && binder.isMirrored()) {
     		boolean hasResourceDriver = MiscUtil.hasString(binder.getResourceDriverName());
-    		Field path = FieldFactory.createStoredNotAnalyzedNoNorms(HAS_RESOURCE_DRIVER_FIELD, (hasResourceDriver ? Constants.TRUE : Constants.FALSE));
+    		Field path = FieldFactory.createSystemFieldStoredNotAnalyzed(HAS_RESOURCE_DRIVER_FIELD, (hasResourceDriver ? Constants.TRUE : Constants.FALSE));
     		doc.add(path);
     	}
     }
 
     public static void addBinderIsTopFolder(Document doc, Binder binder, boolean fieldsOnly) {
     	if (binder instanceof Folder) {
-    		Field path = FieldFactory.createStoredNotAnalyzedNoNorms(IS_TOP_FOLDER_FIELD, (((Folder)binder).isTop() ? Constants.TRUE : Constants.FALSE));
+    		Field path = FieldFactory.createSystemFieldStoredNotAnalyzed(IS_TOP_FOLDER_FIELD, (((Folder)binder).isTop() ? Constants.TRUE : Constants.FALSE));
     		doc.add(path);
     	}
     }

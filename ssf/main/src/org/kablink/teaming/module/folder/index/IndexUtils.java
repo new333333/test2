@@ -59,26 +59,26 @@ public class IndexUtils  {
 		if (modDate == null) modDate= entry.getModification().getDate();
 		if (modDate == null) modDate= entry.getCreation().getDate();
     	if (modDate != null ) {
-        	Field modificationDateField = FieldFactory.createStoredNotAnalyzedNoNorms(LASTACTIVITY_FIELD, DateTools.dateToString(modDate,DateTools.Resolution.SECOND));
+        	Field modificationDateField = FieldFactory.createSystemFieldStoredNotAnalyzed(LASTACTIVITY_FIELD, DateTools.dateToString(modDate,DateTools.Resolution.SECOND));
         	doc.add(modificationDateField);        
             // index the YYYYMMDD string
             String dayString = EntityIndexUtils.formatDayString(modDate);
-            Field modificationDayField = FieldFactory.createStoredNotAnalyzedNoNorms(LASTACTIVITY_DAY_FIELD, dayString);
+            Field modificationDayField = FieldFactory.createSystemFieldStoredNotAnalyzed(LASTACTIVITY_DAY_FIELD, dayString);
             doc.add(modificationDayField);
             // index the YYYYMM string
             String yearMonthString = dayString.substring(0,6);
-            Field modificationYearMonthField = FieldFactory.createStoredNotAnalyzedNoNorms(LASTACTIVITY_YEAR_MONTH_FIELD, yearMonthString);
+            Field modificationYearMonthField = FieldFactory.createSystemFieldStoredNotAnalyzed(LASTACTIVITY_YEAR_MONTH_FIELD, yearMonthString);
             doc.add(modificationYearMonthField);
             // index the YYYY string
             String yearString = dayString.substring(0,4);
-            Field modificationYearField = FieldFactory.createStoredNotAnalyzedNoNorms(LASTACTIVITY_YEAR_FIELD, yearString);
+            Field modificationYearField = FieldFactory.createSystemFieldStoredNotAnalyzed(LASTACTIVITY_YEAR_FIELD, yearString);
             doc.add(modificationYearField);   	}
     } 
 
 
     public static void addDocNumber(Document doc, FolderEntry entry, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
-        Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(DOCNUMBER_FIELD, entry.getDocNumber());
+        Field docNumField = FieldFactory.createSystemFieldStoredNotAnalyzed(DOCNUMBER_FIELD, entry.getDocNumber());
         doc.add(docNumField);
     }    
     public static void addTotalReplyCount(Document doc, FolderEntry entry, boolean fieldsOnly) {
@@ -92,7 +92,7 @@ public class IndexUtils  {
     }    
     public static void addSortNumber(Document doc, FolderEntry entry, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
-        Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(SORTNUMBER_FIELD, entry.getHKey().getSortKey());
+        Field docNumField = FieldFactory.createSystemFieldStoredNotAnalyzed(SORTNUMBER_FIELD, entry.getHKey().getSortKey());
         doc.add(docNumField);
     } 
     public static void addFolderId(Document doc, Folder folder, boolean fieldsOnly) {
@@ -100,14 +100,14 @@ public class IndexUtils  {
     	//Add the top folder id to the document in the index
         Folder topFolder = folder.getTopFolder();
         if (topFolder == null) topFolder = folder;
-        Field topFolderField = FieldFactory.createStoredNotAnalyzedNoNorms(TOP_FOLDERID_FIELD, topFolder.getId().toString());
+        Field topFolderField = FieldFactory.createSystemFieldStoredNotAnalyzed(TOP_FOLDERID_FIELD, topFolder.getId().toString());
         doc.add(topFolderField);
     }   
     
     public static void addReservedByPrincipalId(Document doc, FolderEntry entry, boolean fieldsOnly) {
     	//Add the id of the reserver
         if (entry.getReservation() != null && entry.getReservation().getPrincipal() != null) {
-        	Field reservedByIdField = FieldFactory.createStoredNotAnalyzedNoNorms(RESERVEDBYID_FIELD, entry.getReservation().getPrincipal().getId().toString());
+        	Field reservedByIdField = FieldFactory.createSystemFieldStoredNotAnalyzed(RESERVEDBYID_FIELD, entry.getReservation().getPrincipal().getId().toString());
         	doc.add(reservedByIdField);
         }
     }   
