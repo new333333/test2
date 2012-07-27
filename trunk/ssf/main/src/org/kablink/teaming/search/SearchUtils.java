@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,9 +31,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.search;
-
-import static org.kablink.util.search.Constants.*;
-import static org.kablink.util.search.Restrictions.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,6 +46,8 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.util.search.*;
 import org.kablink.util.search.Junction.Disjunction;
 
+import static org.kablink.util.search.Constants.*;
+import static org.kablink.util.search.Restrictions.*;
 
 @SuppressWarnings("unchecked")
 public class SearchUtils {
@@ -166,8 +165,8 @@ public class SearchUtils {
 		return crit;
 	}
 	
-	public static Criteria entriesForTrackedPlacesAndPeople(AllModulesInjected bs, List userWorkspaces, 
-			List<String> trackedPeopleIds, boolean entriesOnly, String searchDateField)
+	public static Criteria entriesForTrackedPlacesEntriesAndPeople(AllModulesInjected bs, List userWorkspaces, 
+			List<String> trackedEntryIds, List<String> trackedPeopleIds, boolean entriesOnly, String searchDateField)
 	{
 		String[] entryTypes;
 		if (entriesOnly)
@@ -175,17 +174,31 @@ public class SearchUtils {
 		else entryTypes = new String[] {Constants.ENTRY_TYPE_ENTRY, Constants.ENTRY_TYPE_REPLY};
 		
 		Criteria crit = new Criteria();
-		crit.add(in(ENTRY_TYPE_FIELD,entryTypes))
-			.add(in(DOC_TYPE_FIELD,new String[] {Constants.DOC_TYPE_ENTRY}));
+		crit.add(in(ENTRY_TYPE_FIELD, entryTypes                             ))
+			.add(in(DOC_TYPE_FIELD,   new String[] {Constants.DOC_TYPE_ENTRY}));
 		crit.addOrder(Order.desc(searchDateField));
 		
 		Disjunction disjunction = disjunction();
-		if (!userWorkspaces.isEmpty()) disjunction.add(in(ENTRY_ANCESTRY, userWorkspaces));
+		if ((null != userWorkspaces) && (!(userWorkspaces.isEmpty()))) {
+			disjunction.add(in(ENTRY_ANCESTRY, userWorkspaces));
+		}
 		
-		if (!trackedPeopleIds.isEmpty()) disjunction.add(in(CREATORID_FIELD, trackedPeopleIds));
+		if ((null != trackedEntryIds) && (!(trackedEntryIds.isEmpty()))) {
+			disjunction.add(in(Constants.DOCID_FIELD, trackedEntryIds));
+		}
+		
+		if ((null != trackedPeopleIds) && (!(trackedPeopleIds.isEmpty()))) {
+			disjunction.add(in(CREATORID_FIELD, trackedPeopleIds));
+		}
 		crit.add(disjunction);
 
 		return crit;
+	}
+	
+	public static Criteria entriesForTrackedPlacesAndPeople(AllModulesInjected bs, List userWorkspaces, 
+			List<String> trackedPeopleIds, boolean entriesOnly, String searchDateField)
+	{
+		return entriesForTrackedPlacesEntriesAndPeople(bs, userWorkspaces, null, trackedPeopleIds, entriesOnly, searchDateField);
 	}
 	
 	public static Criteria entriesForTrackedPlacesAndPeople(AllModulesInjected bs, List userWorkspaces, 

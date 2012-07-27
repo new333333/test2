@@ -160,9 +160,13 @@ public class GwtActivityStreamHelper {
 		private String          m_authorTitle;		// The author's title, given visibility by the current user.
 
 		/*
-		 * Class constructor.
+		 * Constructor method.
 		 */
 		private ASAuthorInfo() {
+			// Initialize the super class...
+			super();
+			
+			// ...and initialize everything else.
 			m_authorPresence  = GwtServerHelper.getPresenceInfoDefault();
 			m_authorAvatarUrl =
 			m_authorId        =
@@ -233,9 +237,13 @@ public class GwtActivityStreamHelper {
 		private String m_binderName;	// The binder's name.
 
 		/*
-		 * Class constructor.
+		 * Constructor method.
 		 */
 		private ASBinderInfo() {
+			// Initialize the super class...
+			super();
+
+			// ...and initialize everything else.
 			m_binderHover =
 			m_binderId    =
 			m_binderName  = "";
@@ -276,10 +284,13 @@ public class GwtActivityStreamHelper {
 		private String            m_authorTitle;			// The title of this entry's author.  (Does NOT account for visibility restrictions.)
 		
 		/*
-		 * Class constructor.
+		 * Constructor method.
 		 */
 		private ASEntryData(Map entryMap, Long binderId, Long entryId) {
-			// Store the parameters...
+			// Initialize the super class...
+			super();
+			
+			// ...store the parameters...
 			m_entryMap = entryMap;
 			m_binderId = binderId;
 			m_entryId  = entryId;
@@ -639,14 +650,24 @@ public class GwtActivityStreamHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static class ASSearchResults {
-		private int m_totalRecords;
-		private List<Map> m_searchEntries;
+		private int			m_totalRecords;		//
+		private List<Map>	m_searchEntries;	//
 		
+		/*
+		 * Constructor method.
+		 */
 		private ASSearchResults(List<Map> searchEntries, int totalRecords) {
+			// Initialize the super class...
+			super();
+			
+			// ...and initialize everything else.
 			m_searchEntries = searchEntries;
-			m_totalRecords = totalRecords;
+			m_totalRecords  = totalRecords;
 		}
-		
+
+		/*
+		 * Get'er methods.
+		 */
 		private int       getTotalRecords()  {return m_totalRecords; }
 		private List<Map> getSearchEntries() {return m_searchEntries;}
 	}
@@ -668,10 +689,13 @@ public class GwtActivityStreamHelper {
 		private Map<Long, User>    m_usersMap;				// Map of the User's   referenced by the lists.
 
 		/*
-		 * Class constructor.
+		 * Constructor method.
 		 */
 		private ASTreeData(Long binderId) {
-			// Simply store the parameter.
+			// Initialize the super class...
+			super();
+			
+			// ...and store the parameter.
 			m_baseBinderId = binderId;
 		}
 
@@ -799,10 +823,13 @@ public class GwtActivityStreamHelper {
 	}
 	
 	/*
-	 * Inhibits this class from being instantiated. 
+	 * Constructor method.
+	 * 
+	 * Private to inhibits this class from being instantiated. 
 	 */
 	private GwtActivityStreamHelper() {
 		// Nothing to do.
+		super();
 	}
 
 	/*
@@ -1029,38 +1056,19 @@ public class GwtActivityStreamHelper {
 	 * Constructs and returns the base Criteria object for performing
 	 * the search for activity stream data.
 	 */
-	@SuppressWarnings("unused")
 	private static Criteria buildSearchCriteria(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedEntriesAL, List<String> trackedUsersAL) {
-		// Create the base search criteria for the places and people.
+		// Create the search criteria for the places, entries and
+		// people...
 		Criteria reply =
-			SearchUtils.entriesForTrackedPlacesAndPeople(
+			SearchUtils.entriesForTrackedPlacesEntriesAndPeople(
 				bs,
 				trackedPlacesAL,
+				trackedEntriesAL,
 				trackedUsersAL,
 				true,	// true -> Entries only (no replies.)
 				Constants.LASTACTIVITY_FIELD);
-		
-//!		...this needs to be implemented...
-		// Are there any entries to factor into the search?
-		if (false) {	//! (null != trackedEntriesAL) && (!(trackedEntriesAL.isEmpty()))) {
-			// Yes!  Factor them into the search criteria.  Logic should be:
-			// - Entries for tracked people and places;
-			// - OR
-			//		- In the set of specific IDs
-			//		- AND entry type is entries/replies AND document type is entry
-			Conjunction conj = conjunction();
-			reply.add(conj);
-			
-			Disjunction disj = disjunction();
-    		conj.add(disj);
-    		
-			disj.add(in(Constants.DOCID_FIELD,      trackedEntriesAL.toArray(new String[0])));
-			disj.add(in(Constants.ENTRY_TYPE_FIELD, new String[] {Constants.ENTRY_TYPE_ENTRY, Constants.ENTRY_TYPE_REPLY}));
-			disj.add(in(Constants.DOC_TYPE_FIELD,   new String[] {Constants.DOC_TYPE_ENTRY}));
-		}
 
-		// If we get here, reply refers to the search criteria for the
-		// places, entries and users.  Return it.
+		// ...and return it.
 		return reply;
 	}
 	
@@ -1068,7 +1076,7 @@ public class GwtActivityStreamHelper {
 		Criteria reply = new Criteria();
 		reply.add(Restrictions.in(Constants.ENTRY_TYPE_FIELD, new String[] {Constants.ENTRY_TYPE_ENTRY}))
 		     .add(Restrictions.in(Constants.DOC_TYPE_FIELD,   new String[] {Constants.DOC_TYPE_ENTRY  }))
-		     .add(Restrictions.in(Constants.DOCID_FIELD,      new String[] {String.valueOf(entryId)}));
+		     .add(Restrictions.in(Constants.DOCID_FIELD,      new String[] {String.valueOf(entryId)   }));
 		return reply;
 	}
 	
@@ -1433,6 +1441,78 @@ public class GwtActivityStreamHelper {
 		}
 	}
 
+	/**
+	 * Create an ActivityStreamEntry from the given FolderEntry object.
+	 * 
+	 * @param request
+	 * @param bs
+	 * @param folderEntry
+	 */
+	public static ActivityStreamEntry getActivityStreamEntry(HttpServletRequest request, AllModulesInjected bs, FolderEntry folderEntry) {
+		// Gather the information from the FolderEntry and return an
+		// ActivityStreamEntry.
+		ActivityStreamEntry asEntry = new ActivityStreamEntry();
+		if (null != folderEntry) {
+			// Initialize the author information.
+			User			author     = ((User) folderEntry.getCreation().getPrincipal());
+			ASAuthorInfo	authorInfo = ASAuthorInfo.buildAuthorInfo(
+				request,
+				bs,
+				GwtServerHelper.isPresenceEnabled(),
+				Utils.canUserOnlySeeCommonGroupMembers(),
+				folderEntry.getOwnerId(),
+				author,
+				author.getTitle());
+
+			asEntry.setAuthorPresence(   authorInfo.m_authorPresence );
+			asEntry.setAuthorAvatarUrl(  authorInfo.m_authorAvatarUrl);
+			asEntry.setAuthorId(         authorInfo.m_authorId       );
+			asEntry.setAuthorName(       authorInfo.m_authorTitle    );
+			asEntry.setAuthorWorkspaceId(authorInfo.m_authorWsId     );
+			asEntry.setAuthorLogin(      author.getName()            );
+			
+			// Initialize parent binder information.
+			Binder parentBinder = folderEntry.getParentBinder();
+			if (null != parentBinder) {
+				asEntry.setParentBinderId(String.valueOf(parentBinder.getId())     );
+				asEntry.setParentBinderHover(            parentBinder.getPathName());
+				asEntry.setParentBinderName(             parentBinder.getTitle()   );
+			}
+			
+			// Initialize the entry information.
+			Description	desc    = folderEntry.getDescription();
+			String		entryId = String.valueOf(folderEntry.getId());
+			asEntry.setEntryId(               entryId                           );
+			asEntry.setEntryComments(         0                                 );
+			asEntry.setEntryDescription(      desc.getText()                    );	
+			asEntry.setEntryDescriptionFormat(desc.getFormat()                  );	
+			asEntry.setEntryDocNum(           folderEntry.getDocNumber()        );
+			asEntry.setEntryTitle(            folderEntry.getTitle()            );
+			asEntry.setEntryType(             folderEntry.getEntityType().name());
+			
+			// Set the modification date.
+			Date	date    = folderEntry.getLastActivity();
+			String	dateStr = GwtServerHelper.getDateTimeString(date);
+			asEntry.setEntryModificationDate(dateStr);
+			
+			// Set the top entry.
+			FolderEntry topEntry = folderEntry.getParentEntry();
+			while (null != topEntry.getParentEntry()) {
+				topEntry = topEntry.getParentEntry();
+			}
+			
+			if (null != topEntry) {
+				asEntry.setEntryTopEntryId(String.valueOf(topEntry.getId()));
+			}
+
+			// Set whether this entry has been seen.
+			SeenMap seenMap = bs.getProfileModule().getUserSeenMap(null);
+			asEntry.setEntrySeen(seenMap.checkIfSeen(folderEntry));
+		}
+	
+		return asEntry;
+	}
+	
 	/**
 	 * Returns an ActivityStreamParams object containing information
 	 * the current activity stream setup.
@@ -2603,105 +2683,5 @@ public class GwtActivityStreamHelper {
 			// ...and write it to the log.
 			m_logger.debug(userId + s);
 		}
-	}
-	
-	
-	/**
-	 * Create an ActivityStreamEntry from the given FolderEntry object.
-	 */
-	public static ActivityStreamEntry getActivityStreamEntry( HttpServletRequest request, AllModulesInjected bs, FolderEntry folderEntry )
-	{
-		ActivityStreamEntry asEntry;
-		
-		asEntry = new ActivityStreamEntry();
-
-		// Gather the information from the FolderEntry and return an ActivityStreamEntry
-		if ( folderEntry != null )
-		{
-			Binder parentBinder;
-			
-			// Initialize the author information
-			{
-				ASAuthorInfo authorInfo;
-				User author;
-				
-				author = (User) folderEntry.getCreation().getPrincipal();
-				
-				authorInfo = ASAuthorInfo.buildAuthorInfo(
-													request,
-													bs,
-													GwtServerHelper.isPresenceEnabled(),
-													Utils.canUserOnlySeeCommonGroupMembers(),
-													folderEntry.getOwnerId(),
-													author,
-													author.getTitle() );
-
-				asEntry.setAuthorPresence( authorInfo.m_authorPresence );
-				asEntry.setAuthorAvatarUrl( authorInfo.m_authorAvatarUrl);
-				asEntry.setAuthorId( authorInfo.m_authorId );
-				asEntry.setAuthorName( authorInfo.m_authorTitle );
-				asEntry.setAuthorWorkspaceId( authorInfo.m_authorWsId );
-				asEntry.setAuthorLogin( author.getName() );
-			}
-			
-			// Initialize parent binder information.
-			parentBinder = folderEntry.getParentBinder();
-			if ( parentBinder != null )
-			{
-				asEntry.setParentBinderId( String.valueOf( parentBinder.getId() ) );
-				asEntry.setParentBinderHover( parentBinder.getPathName() );
-				asEntry.setParentBinderName( parentBinder.getTitle() );
-			}
-			
-			// Initialize the entry information
-			{
-				Description desc;
-				String entryId;
-				SeenMap seenMap;
-				
-				desc = folderEntry.getDescription();
-				entryId = String.valueOf( folderEntry.getId() );
-				asEntry.setEntryId( entryId );
-				asEntry.setEntryComments( 0 );
-				asEntry.setEntryDescription( desc.getText() );	
-				asEntry.setEntryDescriptionFormat( desc.getFormat() );	
-				asEntry.setEntryDocNum( folderEntry.getDocNumber() );
-				asEntry.setEntryTitle( folderEntry.getTitle() );
-				asEntry.setEntryType( folderEntry.getEntityType().name() );
-				
-				// Set the modification date
-				{
-					Date date;
-					String dateStr;
-					
-					date = folderEntry.getLastActivity();
-					dateStr = GwtServerHelper.getDateTimeString( date );
-					asEntry.setEntryModificationDate( dateStr );
-				}
-				
-				// Set the top entry.
-				{
-					FolderEntry topEntry;
-
-					topEntry = folderEntry.getParentEntry();
-					while ( topEntry.getParentEntry() != null )
-					{
-						topEntry = topEntry.getParentEntry();
-					}
-					
-					if ( topEntry != null )
-						asEntry.setEntryTopEntryId( String.valueOf( topEntry.getId() ) );
-					
-				}
-
-				// Set whether this entry has been seen.
-				{
-					seenMap = bs.getProfileModule().getUserSeenMap( null );
-					asEntry.setEntrySeen( seenMap.checkIfSeen( folderEntry ) );
-				}
-			}
-		}
-	
-		return asEntry;
 	}
 }
