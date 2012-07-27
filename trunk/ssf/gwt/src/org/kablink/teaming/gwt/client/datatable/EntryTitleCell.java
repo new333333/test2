@@ -338,12 +338,14 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		}
 
 		// If we're dealing with an item in the trash...
-		String entryIdS = String.valueOf(eti.getEntityId().getEntityId());
-		VibeFlowPanel fp = new VibeFlowPanel();
-		String entityType   = eti.getEntityId().getEntityType();
-		boolean entryUnseen = (!(eti.isSeen()));
-		boolean isTrash     = eti.isTrash();
-		boolean isEntry     = entityType.equals("folderEntry");
+		Image			binderImg    = ((Image) eti.getClientItemImage());
+		String			entryIdS     = String.valueOf(eti.getEntityId().getEntityId());
+		VibeFlowPanel	fp           = new VibeFlowPanel();
+		String			entityType   = eti.getEntityId().getEntityType();
+		boolean			entryUnseen  = (!(eti.isSeen()));
+		boolean			hasBinderImg = (null != binderImg);
+		boolean			isTrash      = eti.isTrash();
+		boolean			isEntry      = entityType.equals("folderEntry");
 		if (isTrash) {
 			// ...and we know what type of item it is...
 			if (null != entityType) {
@@ -356,8 +358,9 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 				else if (entityType.equals("folder"))    {entityImage = images.folder();           entityAlt = messages.treeAltFolder();   }
 				else if (entityType.equals("workspace")) {entityImage = images.folder_workspace(); entityAlt = messages.treeAltWorkspace();}
 				else                                     {entityImage = null;                      entityAlt = null;                       }
-				if (null != entityImage) {
-					Image i = GwtClientHelper.buildImage(entityImage, entityAlt);
+				if (hasBinderImg || (null != entityImage)) {
+					Image i = (hasBinderImg ? binderImg : GwtClientHelper.buildImage(entityImage));
+					i.setTitle(entityAlt);
 					i.addStyleName("vibe-dataTableEntity-Marker");
 					fp.add(i);
 				}
@@ -378,8 +381,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		}
 		
 		// Do we have a client image for this item?
-		Image binderImg = ((Image) eti.getClientItemImage());
-		if (null != binderImg) {
+		if ((!isTrash) && hasBinderImg) {
 			// Yes!  Add it to the flow panel.
 			binderImg.addStyleName("vibe-dataTableItem-Img");
 			fp.add(binderImg);
