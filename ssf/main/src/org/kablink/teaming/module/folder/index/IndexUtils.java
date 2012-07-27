@@ -85,8 +85,8 @@ public class IndexUtils  {
     	//Add the id of the creator (no, not that one...)
     	//NumericField countNumField = new NumericField(TOTALREPLYCOUNT_FIELD, Field.Store.YES, true);
     	//countNumField.setIntValue(entry.getTotalReplyCount());
-    	Field countNumField1 = FieldFactory.createNotStoredNotAnalyzedNoNorms(TOTALREPLYCOUNT_FIELD, getTotalReplyCountPadded(entry.getTotalReplyCount()));
-    	Field countNumField2 = new Field(TOTALREPLYCOUNT_FIELD, String.valueOf(entry.getTotalReplyCount()), Field.Store.YES, Field.Index.NO);
+    	Field countNumField1 = FieldFactory.createSystemField(TOTALREPLYCOUNT_FIELD, getTotalReplyCountPadded(entry.getTotalReplyCount()), Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
+    	Field countNumField2 = FieldFactory.createSystemField(TOTALREPLYCOUNT_FIELD, String.valueOf(entry.getTotalReplyCount()), Field.Store.YES, Field.Index.NO);
         doc.add(countNumField1);
         doc.add(countNumField2);
     }    

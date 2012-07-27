@@ -115,7 +115,7 @@ public class EntityIndexUtils {
             if(title.length() > 0) {
             	// For the built-in title field, avoid indexing the same text twice. So don't add it in the catch-all field.
             	// Bug 740533 - Store original title rather than trimmed one in the title field
-            	Field titleField = FieldFactory.createTitle(entry.getTitle());
+            	Field titleField = FieldFactory.createApplicationField(Constants.TITLE_FIELD, entry.getTitle(), Field.Store.YES, Field.Index.ANALYZED);
     	        Field sortTitleField = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.SORT_TITLE_FIELD, title.toLowerCase());
     	        Field title1Field = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.TITLE1_FIELD, title.substring(0, 1));
     	        doc.add(titleField);
@@ -129,7 +129,7 @@ public class EntityIndexUtils {
                 		extendedTitle = title + " (" + entry.getParentBinder().getTitle() + ")";
                 	} 
                 	
-        	        Field extendedTitleField = new Field(Constants.EXTENDED_TITLE_FIELD, extendedTitle, Field.Store.YES, Field.Index.ANALYZED);
+        	        Field extendedTitleField = FieldFactory.createApplicationField(Constants.EXTENDED_TITLE_FIELD, extendedTitle, Field.Store.YES, Field.Index.ANALYZED);
         	        doc.add(extendedTitleField);
         	        Field binderSortTitleField = FieldFactory.createStoredNotAnalyzedNoNorms(Constants.BINDER_SORT_TITLE_FIELD, title.toLowerCase());
         	        doc.add(binderSortTitleField);
@@ -222,7 +222,7 @@ public class EntityIndexUtils {
       	}
       	
       	// Add the preDeleted flag itself.
-    	Field field = FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.PRE_DELETED_FIELD, (preDeleted ? Constants.TRUE : Constants.FALSE));
+    	Field field = FieldFactory.createSystemField(Constants.PRE_DELETED_FIELD, (preDeleted ? Constants.TRUE : Constants.FALSE), Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
     	doc.add(field);
     	
     	// Is entry preDeleted?
@@ -338,7 +338,7 @@ public class EntityIndexUtils {
             doc.add(creationIdField);
             Field creationNameField = FieldFactory.createStoredNotAnalyzedNoNorms(CREATOR_NAME_FIELD, principal.getName().toString());
             doc.add(creationNameField);
-            Field creationTitleField = new Field(CREATOR_TITLE_FIELD, principal.getTitle().toString(), Field.Store.YES, Field.Index.ANALYZED);
+            Field creationTitleField = FieldFactory.createApplicationField(CREATOR_TITLE_FIELD, principal.getTitle().toString(), Field.Store.YES, Field.Index.ANALYZED);
             doc.add(creationTitleField);
             Field creationSortTitleField = FieldFactory.createStoredNotAnalyzedNoNorms(SORT_CREATOR_TITLE_FIELD, principal.getTitle().toString().toLowerCase());
             doc.add(creationSortTitleField);
@@ -422,8 +422,8 @@ public class EntityIndexUtils {
    				
     				Definition def = ws.getDefinition();
     				if (def != null) {
-    					Field workflowProcessField = FieldFactory.createNotStoredNotAnalyzedNoNorms(WORKFLOW_PROCESS_FIELD, 
-    							def.getId());
+    					Field workflowProcessField = FieldFactory.createSystemField(WORKFLOW_PROCESS_FIELD, 
+    							def.getId(), Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
     					//	Index the workflow title (which is always the id of the workflow definition)
     					doc.add(workflowProcessField);
     				}
@@ -508,7 +508,7 @@ public class EntityIndexUtils {
 		if (sb.length() > 0)
 			sb.deleteCharAt(sb.length() - 1);
 		
-		return FieldFactory.createAnalyzedNoNorms(fieldName, sb.toString(), Field.Store.YES);
+		return FieldFactory.createApplicationField(fieldName, sb.toString(), Field.Store.YES, Field.Index.ANALYZED_NO_NORMS);
 	}
 	
 	private static Field getRecurrenceDatesField(Event event, List recurencesDates) {
@@ -550,7 +550,7 @@ public class EntityIndexUtils {
 				Definition def = (Definition) folderEntryDefinitions.get(i);
 				entryDefs += " " + def.getId();
 			}    		
-        	Field cdefField = FieldFactory.createNotStoredNotAnalyzedNoNorms(ENTRY_DEFINITIONS_FIELD, entryDefs);
+        	Field cdefField = FieldFactory.createSystemField(ENTRY_DEFINITIONS_FIELD, entryDefs, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
             doc.add(cdefField);
     	}
     }
@@ -605,8 +605,8 @@ public class EntityIndexUtils {
     }
     public static void addTeamMembership(Document doc, Set<Long> ids, boolean fieldsOnly) {
     	if ((ids == null) || ids.isEmpty()) return;
-		doc.add(FieldFactory.createAnalyzedNoNorms(TEAM_MEMBERS_FIELD, LongIdUtil.getIdsAsString(ids), Field.Store.NO));
-		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(IS_TEAM_FIELD, "true"));
+		doc.add(FieldFactory.createSystemField(TEAM_MEMBERS_FIELD, LongIdUtil.getIdsAsString(ids), Field.Store.NO, Field.Index.ANALYZED_NO_NORMS));
+		doc.add(FieldFactory.createSystemField(IS_TEAM_FIELD, "true", Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
    	
     }
     // Get ids for folder read access.  Replace owner indicator with search owner search flag. Replace team indicator with team owner search flag
@@ -681,17 +681,17 @@ public class EntityIndexUtils {
      	Map<RecipientType, Set<Long>> idMap = profileDao.getRecipientIdsWithGrantedRightToSharedEntities(
      			entityIdentifiers, WorkAreaOperation.READ_ENTRIES.getName());
      	for (Long id : idMap.get(RecipientType.user)) {
-     		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(entryAclField, id.toString())); 
+     		doc.add(FieldFactory.createSystemField(entryAclField, id.toString(), Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS)); 
      	}
      	for (Long id : idMap.get(RecipientType.group)) {
      		if (id.equals(allUsersId)) {
-     			doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(entryAclField, Constants.READ_ACL_ALL)); 
+     			doc.add(FieldFactory.createSystemField(entryAclField, Constants.READ_ACL_ALL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS)); 
      		} else {
-     			doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(entryAclField, id.toString())); 
+     			doc.add(FieldFactory.createSystemField(entryAclField, id.toString(), Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS)); 
      		}
      	}
      	for (Long id : idMap.get(RecipientType.team)) {
-     		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(teamAclField, id.toString())); 
+     		doc.add(FieldFactory.createSystemField(teamAclField, id.toString(), Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS)); 
      	}
     }
     
@@ -746,21 +746,21 @@ public class EntityIndexUtils {
 		//get real entry access
     	String[] acls = StringUtil.split(getEntryAclString(binder, entry), " ");
     	for(String acl:acls)
-    		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.ENTRY_ACL_FIELD, acl));
+    		doc.add(FieldFactory.createSystemField(Constants.ENTRY_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 		//add entry owner
 		Long owner = entry.getOwnerId();
 		String ownerStr = Constants.EMPTY_ACL_FIELD;
 		if (owner != null) ownerStr = String.valueOf(owner);  
-		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.ENTRY_OWNER_ACL_FIELD, ownerStr));    	
+		doc.add(FieldFactory.createSystemField(Constants.ENTRY_OWNER_ACL_FIELD, ownerStr, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));    	
     }
 
     @SuppressWarnings("unused")
 	private static void addDefaultEntryAcls(Document doc, Binder binder, Entry entry) {
     	boolean personal = Utils.isWorkareaInProfilesTree(binder);
 		//get default entry access
-		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL));
+		doc.add(FieldFactory.createSystemField(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 		if (!personal) {
-			doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_GLOBAL));
+			doc.add(FieldFactory.createSystemField(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_GLOBAL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 		}
     }
 
@@ -778,16 +778,16 @@ public class EntityIndexUtils {
 		//get real binder access
     	String[] acls = StringUtil.split(getFolderAclString(binder, includeTitleAcl), " ");
     	for(String acl:acls)
-    		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.FOLDER_ACL_FIELD, acl));
+    		doc.add(FieldFactory.createSystemField(Constants.FOLDER_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 		//get team members
     	acls = StringUtil.split(getFolderTeamAclString(binder), " ");
     	for(String acl:acls)
-    		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.TEAM_ACL_FIELD, acl));
+    		doc.add(FieldFactory.createSystemField(Constants.TEAM_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 		//add binder owner
 		Long owner = binder.getOwnerId();
 		String ownerStr = Constants.EMPTY_ACL_FIELD;
 		if (owner != null) ownerStr = owner.toString();  //TODO fix this
-		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.BINDER_OWNER_ACL_FIELD, ownerStr));    	
+		doc.add(FieldFactory.createSystemField(Constants.BINDER_OWNER_ACL_FIELD, ownerStr, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));    	
 		//Add sharing acls
 		addSharingIds(doc, binder);
     }
@@ -821,9 +821,9 @@ public class EntityIndexUtils {
     public static void addReadAccess(Document doc, Binder binder, boolean fieldsOnly, boolean includeTitleAcl) {
     	boolean personal = Utils.isWorkareaInProfilesTree(binder);
     	//set entryAcl to "all" and 
-		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL));
+		doc.add(FieldFactory.createSystemField(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 		if (!personal) {
-			doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_GLOBAL));
+			doc.add(FieldFactory.createSystemField(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_GLOBAL, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 		}
 		//add binder acls
 		addBinderAcls(doc, binder, includeTitleAcl);
@@ -911,7 +911,7 @@ public class EntityIndexUtils {
        		if (wEntry.hasAclSet()) {
        			String[] acls = StringUtil.split(getWfEntryAccess(wEntry), " ");
 	       		for(String acl:acls) {
-	       			doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.ENTRY_ACL_FIELD, acl));
+	       			doc.add(FieldFactory.createSystemField(Constants.ENTRY_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 	       		}
        		} else {
 	       		//add entry access. 
@@ -924,7 +924,7 @@ public class EntityIndexUtils {
 	       			//This must have been a reply not running a workflow, so check the top entry workflow ACL
 	       			String[] acls = StringUtil.split(getWfEntryAccess(wEntry), " ");
 	       			for(String acl:acls) {
-	       				doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.ENTRY_ACL_FIELD, acl));
+	       				doc.add(FieldFactory.createSystemField(Constants.ENTRY_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 	       			}
 	       		} else if (((Entry)entry).hasEntryAcl()) {
 	       			Entry e = (Entry)entry;
@@ -946,7 +946,7 @@ public class EntityIndexUtils {
             // Add the Entry_ACL field
     		String[] acls = StringUtil.split(getUserEntryAccess((User)entry), " ");
     		for(String acl:acls)
-    			doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.ENTRY_ACL_FIELD, acl));
+    			doc.add(FieldFactory.createSystemField(Constants.ENTRY_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
            	//add binder access
         	addBinderAcls(doc, binder);
 
@@ -1003,7 +1003,7 @@ public class EntityIndexUtils {
     	Map<String, List<Tag>> uniqueTags = TagUtil.splitTags(allTags);
     	List<Tag> pubTags = uniqueTags.get(ObjectKeys.COMMUNITY_ENTITY_TAGS);
     	List<Tag> privTags = uniqueTags.get(ObjectKeys.PERSONAL_ENTITY_TAGS);
-    	Field ttfTagField = FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.TAG_FIELD_TTF, "");
+    	Field ttfTagField = FieldFactory.createSystemField(Constants.TAG_FIELD_TTF, "", Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
     	// index all the public tags (allTags field and tag_acl field)
 		for (Tag thisTag: pubTags) {
 			tag = thisTag.getName();
@@ -1013,7 +1013,7 @@ public class EntityIndexUtils {
 			// this field for the type to find searches, but keep the original fields for 
 			// display.
 			tag = tag.toLowerCase() + ":" + tag; 
-			ttfTagField = FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.TAG_FIELD_TTF, tag);
+			ttfTagField = FieldFactory.createSystemField(Constants.TAG_FIELD_TTF, tag, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
 			doc.add(ttfTagField);
 			aclTag = BasicIndexUtils.buildAclTag(thisTag.getName(), Constants.READ_ACL_ALL);
 			aclTags += " " + aclTag;
@@ -1035,11 +1035,11 @@ public class EntityIndexUtils {
 			doc.add(ttfTagField);
 		}
     
-    	Field tagField = new Field(Constants.TAG_FIELD, indexableTags, Field.Store.YES, Field.Index.NO);
+    	Field tagField = FieldFactory.createSystemField(Constants.TAG_FIELD, indexableTags, Field.Store.YES, Field.Index.NO);
     	doc.add(tagField);
     	String[] its = StringUtil.split(indexableTags, " ");
     	for(String it:its)
-    		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.TAG_FIELD, it));
+    		doc.add(FieldFactory.createSystemField(Constants.TAG_FIELD, it, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
     	
     	if (!fieldsOnly) {
     		tagField = BasicIndexUtils.generalTextField(indexableTags);
@@ -1048,7 +1048,7 @@ public class EntityIndexUtils {
     	
     	String[] acls = StringUtil.split(aclTags, " ");
     	for(String acl:acls)
-    		doc.add(FieldFactory.createNotStoredNotAnalyzedNoNorms(Constants.ACL_TAG_FIELD, acl));
+    		doc.add(FieldFactory.createSystemField(Constants.ACL_TAG_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
     }
 	
     @SuppressWarnings("unused")

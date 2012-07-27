@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.lucene.document.Field;
+import org.kablink.util.search.FieldFactory;
 
 public abstract class FieldBuilderGenericNotAnalyzed extends FieldBuilderGeneric {
 	
@@ -47,7 +48,7 @@ public abstract class FieldBuilderGenericNotAnalyzed extends FieldBuilderGeneric
 			if(strToIndex != null) {
 				String lower = strToIndex.toLowerCase();
 				if(!lower.equals(strToIndex)) {
-					Field lowerField = new Field(getSearchFieldName(dataElemName), lower, Field.Store.NO, getFieldIndex());
+					Field lowerField = FieldFactory.createApplicationField(getSearchFieldName(dataElemName), lower, Field.Store.NO, getFieldIndex());
 					Field[] newFields = new Field[fields.length+1];
 					int i;
 					for(i = 0; i < fields.length; i++)

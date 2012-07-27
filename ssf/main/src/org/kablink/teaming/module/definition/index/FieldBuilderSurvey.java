@@ -44,6 +44,7 @@ import org.kablink.teaming.survey.Question;
 import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.survey.SurveyModel;
 import org.kablink.util.Html;
+import org.kablink.util.search.FieldFactory;
 
 public class FieldBuilderSurvey extends AbstractFieldBuilder {
     
@@ -54,7 +55,7 @@ public class FieldBuilderSurvey extends AbstractFieldBuilder {
         	List<String> textsToIndex = extractsTextsToIndex((Survey) obj);
         	List<Field> fields = new ArrayList<Field>();
     		for(String text : textsToIndex) {
-    			fields.add(new Field(fieldName, text, Field.Store.NO, Field.Index.ANALYZED));
+    			fields.add(FieldFactory.createApplicationField(fieldName, text, Field.Store.NO, Field.Index.ANALYZED));
         		if(!isFieldsOnly(args))
         			fields.add(BasicIndexUtils.generalTextField(text));
     		}
