@@ -51,10 +51,15 @@ public class FieldFactory {
 		return field;
 	}
 
+	public static Field createSystemFieldStoredNotAnalyzed(String name, String value) {
+		return createSystemField(name, value, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+	}
+
 	/**
 	 * Create a field holding application data such as title, description, name, telephone number,
-	 * etc. that are directly meaningful to application users. Typically this field corresponds
-	 * to a data field or attribute that is part of the entry or binder composed by an user.
+	 * etc. that are plainly meaningful to application users. Typically these fields correspond
+	 * directly to data fields or attributes for which users enter data as they create or modify 
+	 * entries and binders.
 	 * 
 	 * @param name
 	 * @param value
@@ -70,8 +75,10 @@ public class FieldFactory {
 	}
 	
 	/**
-	 * Create a field holding system data such as ACL, doc type, binder id, library flag, pre-delete flag, etc.
-	 * or derived/computed data such as reply count, etc. that only aid with implementation. 
+	 * Create a field holding system data such as ACL, doc type, binder id, library flag, etc. or 
+	 * derived/computed data such as reply count, document number, etc. that are used by system.
+	 * Majority of index fields belong in this category. The distinction between application and 
+	 * system field isn't always clear cut. When in doubt, choose system field.
 	 * 
 	 * @param name
 	 * @param value

@@ -85,28 +85,28 @@ public class ProfileIndexUtils {
 
     public static void addWorkspaceId(Document doc, User user) {
     	if (user.getWorkspaceId() != null) {
-    		Field workspaceIdField = FieldFactory.createStoredNotAnalyzedNoNorms(WORKSPACE_ID_FIELD, user.getWorkspaceId().toString());
+    		Field workspaceIdField = FieldFactory.createSystemFieldStoredNotAnalyzed(WORKSPACE_ID_FIELD, user.getWorkspaceId().toString());
     		doc.add(workspaceIdField);
     	}
     }      
     public static void addReservedId(Document doc, Principal principal, boolean fieldsOnly) {
     	if (Validator.isNotNull(principal.getInternalId())) {
-    		Field docNumField =  FieldFactory.createStoredNotAnalyzedNoNorms(RESERVEDID_FIELD, principal.getInternalId());
+    		Field docNumField =  FieldFactory.createSystemFieldStoredNotAnalyzed(RESERVEDID_FIELD, principal.getInternalId());
     		doc.add(docNumField);
     	}
     } 
     public static void addPersonFlag(Document doc, User user) {
-        Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(PERSONFLAG_FIELD, String.valueOf(user.isPerson()));
+        Field docNumField = FieldFactory.createSystemFieldStoredNotAnalyzed(PERSONFLAG_FIELD, String.valueOf(user.isPerson()));
         doc.add(docNumField);
     }
     
     public static void addIdentitySource(Document doc, User user) {
-        Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(IDENTITY_SOURCE_FIELD, String.valueOf(user.getIdentitySource()));
+        Field docNumField = FieldFactory.createSystemFieldStoredNotAnalyzed(IDENTITY_SOURCE_FIELD, String.valueOf(user.getIdentitySource()));
         doc.add(docNumField);    	
     }
     
     public static void addDynamic(Document doc, Group group, boolean fieldsOnly) {
-    	Field dynamicField = FieldFactory.createStoredNotAnalyzedNoNorms(IS_GROUP_DYNAMIC_FIELD, (group.isDynamic() ? Constants.TRUE : Constants.FALSE));
+    	Field dynamicField = FieldFactory.createSystemFieldStoredNotAnalyzed(IS_GROUP_DYNAMIC_FIELD, (group.isDynamic() ? Constants.TRUE : Constants.FALSE));
     	doc.add(dynamicField);
     }
 }

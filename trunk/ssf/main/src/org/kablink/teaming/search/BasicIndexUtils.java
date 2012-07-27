@@ -81,16 +81,16 @@ public class BasicIndexUtils {
     }
     
     public static void addUid(Document doc, String uid, boolean fieldsOnly) {
-        doc.add(FieldFactory.createStoredNotAnalyzedNoNorms(UID_FIELD, uid));    
+        doc.add(FieldFactory.createSystemFieldStoredNotAnalyzed(UID_FIELD, uid));    
         doc.add(FieldFactory.createSystemField(THIS_CLASS_FIELD, getClassName(uid), Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
     }
     
     public static void addDocType(Document doc, String docType, boolean fieldsOnly) {
-        doc.add(FieldFactory.createStoredNotAnalyzedNoNorms(DOC_TYPE_FIELD, docType));
+        doc.add(FieldFactory.createSystemFieldStoredNotAnalyzed(DOC_TYPE_FIELD, docType));
     }
     
     public static void addAttachmentType(Document doc, String attType, boolean fieldsOnly) {
-        doc.add(FieldFactory.createStoredNotAnalyzedNoNorms(ATTACHMENT_TYPE_FIELD, attType));
+        doc.add(FieldFactory.createSystemFieldStoredNotAnalyzed(ATTACHMENT_TYPE_FIELD, attType));
     }
     /*
     public static Document createDocument(String uid, String docType, String className) {
