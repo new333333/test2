@@ -77,14 +77,14 @@ public abstract class FieldBuilderSelect extends AbstractFieldBuilder {
         int i = 1;
         for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
             val = (String) it.next();
-	        field = FieldFactory.createStoredNotAnalyzedNoNorms(fieldName, val);
+	        field = FieldFactory.createFieldStoredNotAnalyzed(fieldName, val);
 	        fields[i] = field;
         }
         
         fieldName = DefinitionModule.CAPTION_FIELD_PREFIX + fieldName;
         for(Iterator it = dataElemValueCaptions.iterator(); it.hasNext(); i++) {
             val = (String) it.next();
-	        field = FieldFactory.createStoredNotAnalyzedNoNorms(fieldName, val);
+	        field = FieldFactory.createFieldStoredNotAnalyzed(fieldName, val);
 	        fields[i] = field;
 	        // Do NOT include translated text for the selection into the all text field. See bug#682072 
 	        //generalText += " " + getNltTagInAllLanguages(val);

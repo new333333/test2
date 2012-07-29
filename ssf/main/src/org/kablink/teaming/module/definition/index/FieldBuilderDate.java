@@ -48,7 +48,7 @@ public class FieldBuilderDate extends AbstractFieldBuilder {
             return new Field[0];
         }
         else {
-            Field field = FieldFactory.createStoredNotAnalyzedNoNorms(getSearchFieldName(dataElemName), DateTools.dateToString(val,getResolution(args)));
+            Field field = FieldFactory.createField(getSearchFieldName(dataElemName), DateTools.dateToString(val,getResolution(args)), getFieldStore(), getFieldIndex());
             return new Field[] {field};
         }
     }

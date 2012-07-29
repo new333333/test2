@@ -55,7 +55,7 @@ public class FieldBuilderSurvey extends AbstractFieldBuilder {
         	List<String> textsToIndex = extractsTextsToIndex((Survey) obj);
         	List<Field> fields = new ArrayList<Field>();
     		for(String text : textsToIndex) {
-    			fields.add(FieldFactory.createApplicationField(fieldName, text, Field.Store.NO, Field.Index.ANALYZED));
+    			fields.add(FieldFactory.createFullTextFieldIndexed(fieldName, text, false));
         		if(!isFieldsOnly(args))
         			fields.add(BasicIndexUtils.generalTextField(text));
     		}

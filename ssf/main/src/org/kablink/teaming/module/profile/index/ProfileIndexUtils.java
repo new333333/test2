@@ -59,54 +59,54 @@ import static org.kablink.util.search.Constants.*;
 public class ProfileIndexUtils {
 	  public static void addName(Document doc, User user, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
-        Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(LOGINNAME_FIELD, user.getName());
+        Field docNumField = FieldFactory.createFieldStoredNotAnalyzed(LOGINNAME_FIELD, user.getName());
         doc.add(docNumField);
     }    
     public static void addName(Document doc, Group user, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
-        Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(GROUPNAME_FIELD, user.getName());
+        Field docNumField = FieldFactory.createFieldStoredNotAnalyzed(GROUPNAME_FIELD, user.getName());
         doc.add(docNumField);
     }      
     public static void addName(Document doc, Application application, boolean fieldsOnly) {
-        Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(APPLICATION_NAME_FIELD, application.getName());
+        Field docNumField = FieldFactory.createFieldStoredNotAnalyzed(APPLICATION_NAME_FIELD, application.getName());
         doc.add(docNumField);
     }    
     public static void addName(Document doc, ApplicationGroup appGroup, boolean fieldsOnly) {
-        Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(APPLICATION_GROUPNAME_FIELD, appGroup.getName());
+        Field docNumField = FieldFactory.createFieldStoredNotAnalyzed(APPLICATION_GROUPNAME_FIELD, appGroup.getName());
         doc.add(docNumField);
     }      
 
     public static void addEmail(Document doc, User user) {
         if (user.getEmailAddress()!=null) {
-            Field docNumField = FieldFactory.createStoredNotAnalyzedNoNorms(EMAIL_FIELD, user.getEmailAddress());
+            Field docNumField = FieldFactory.createFieldStoredNotAnalyzed(EMAIL_FIELD, user.getEmailAddress());
             doc.add(docNumField);
         }
     }
 
     public static void addWorkspaceId(Document doc, User user) {
     	if (user.getWorkspaceId() != null) {
-    		Field workspaceIdField = FieldFactory.createSystemFieldStoredNotAnalyzed(WORKSPACE_ID_FIELD, user.getWorkspaceId().toString());
+    		Field workspaceIdField = FieldFactory.createFieldStoredNotAnalyzed(WORKSPACE_ID_FIELD, user.getWorkspaceId().toString());
     		doc.add(workspaceIdField);
     	}
     }      
     public static void addReservedId(Document doc, Principal principal, boolean fieldsOnly) {
     	if (Validator.isNotNull(principal.getInternalId())) {
-    		Field docNumField =  FieldFactory.createSystemFieldStoredNotAnalyzed(RESERVEDID_FIELD, principal.getInternalId());
+    		Field docNumField =  FieldFactory.createFieldStoredNotAnalyzed(RESERVEDID_FIELD, principal.getInternalId());
     		doc.add(docNumField);
     	}
     } 
     public static void addPersonFlag(Document doc, User user) {
-        Field docNumField = FieldFactory.createSystemFieldStoredNotAnalyzed(PERSONFLAG_FIELD, String.valueOf(user.isPerson()));
+        Field docNumField = FieldFactory.createFieldStoredNotAnalyzed(PERSONFLAG_FIELD, String.valueOf(user.isPerson()));
         doc.add(docNumField);
     }
     
     public static void addIdentitySource(Document doc, User user) {
-        Field docNumField = FieldFactory.createSystemFieldStoredNotAnalyzed(IDENTITY_SOURCE_FIELD, String.valueOf(user.getIdentitySource()));
+        Field docNumField = FieldFactory.createFieldStoredNotAnalyzed(IDENTITY_SOURCE_FIELD, String.valueOf(user.getIdentitySource()));
         doc.add(docNumField);    	
     }
     
     public static void addDynamic(Document doc, Group group, boolean fieldsOnly) {
-    	Field dynamicField = FieldFactory.createSystemFieldStoredNotAnalyzed(IS_GROUP_DYNAMIC_FIELD, (group.isDynamic() ? Constants.TRUE : Constants.FALSE));
+    	Field dynamicField = FieldFactory.createFieldStoredNotAnalyzed(IS_GROUP_DYNAMIC_FIELD, (group.isDynamic() ? Constants.TRUE : Constants.FALSE));
     	doc.add(dynamicField);
     }
 }

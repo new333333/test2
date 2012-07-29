@@ -2323,7 +2323,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         EntityIndexUtils.addFileAttachment(indexDoc, fa, true);
 
         if (isLibraryFile) {
-            Field libraryField = FieldFactory.createSystemFieldStoredNotAnalyzed(Constants.IS_LIBRARY_FIELD, Boolean.toString(true));
+            Field libraryField = FieldFactory.createFieldStoredNotAnalyzed(Constants.IS_LIBRARY_FIELD, Boolean.toString(true));
             indexDoc.add(libraryField);
         }
 

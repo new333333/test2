@@ -48,7 +48,7 @@ public abstract class FieldBuilderGenericNotAnalyzed extends FieldBuilderGeneric
 			if(strToIndex != null) {
 				String lower = strToIndex.toLowerCase();
 				if(!lower.equals(strToIndex)) {
-					Field lowerField = FieldFactory.createApplicationField(getSearchFieldName(dataElemName), lower, Field.Store.NO, getFieldIndex());
+					Field lowerField = FieldFactory.createField(getSearchFieldName(dataElemName), lower, Field.Store.NO, getFieldIndex());
 					Field[] newFields = new Field[fields.length+1];
 					int i;
 					for(i = 0; i < fields.length; i++)
