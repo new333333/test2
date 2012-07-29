@@ -41,44 +41,42 @@ import org.kablink.util.PropsUtil;
  *
  */
 public class FieldFactory {
-
-	private static final float APPLICATION_FIELD_BOOST_DEFAULT 	= 1.0f;
-	private static final float SYSTEM_FIELD_BOOST_DEFAULT 		= 0.1f;
-
-	public static Field createStoredNotAnalyzedNoNorms(String name, String value) {
-		Field field = createFieldWithBoost(name, value, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
-		field.setOmitTermFreqAndPositions(true);
-		return field;
-	}
-
-	public static Field createSystemFieldStoredNotAnalyzed(String name, String value) {
-		return createSystemField(name, value, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
-	}
-
+	
+	private static final float FULL_TEXT_FIELD_BOOST_DEFAULT 		= 1.0f;
+	
+	private static final float NON_FULL_TEXT_FIELD_BOOST_DEFAULT 	= 0.1f;
+	
 	/**
-	 * Create a field holding application data such as title, description, name, telephone number,
-	 * etc. that are plainly meaningful to application users. Typically these fields correspond
-	 * directly to data fields or attributes for which users enter data as they create or modify 
-	 * entries and binders.
+	 * Create a field to index full-text data such as title, description, file content, etc.
+	 * that are plainly meaningful to application users. Typically these fields correspond
+	 * directly to data entered by users as they create or modify entries, binders, and files.
+	 * This field is always analyzed and indexed. Optionally the value can be stored.
+	 * <p>
+	 * Use the following guideline when determining whether a field is a full-text field or
+	 * non full-text field. If not full-text field, one of the <code>createField*</code> methods
+	 * must be used instead.
+	 * <p>
+	 * 1. The field contains unstructured textual data.<br>
+	 * 2. The field is not a single-token field.<br>
+	 * 3. The field represents application/business data not system data.<br>
 	 * 
 	 * @param name
 	 * @param value
 	 * @param store
-	 * @param index
 	 * @return
 	 */
-	public static Field createApplicationField(String name, String value, Field.Store store, Field.Index index) {
-		Field field = new Field(name, value, store, index);
-		float boost = PropsUtil.getFloat("lucene.index.field.boost." + name, APPLICATION_FIELD_BOOST_DEFAULT);
+	public static Field createFullTextFieldIndexed(String name, String value, boolean store) {
+		Field field = new Field(name, value, (store? Field.Store.YES:Field.Store.NO), Field.Index.ANALYZED);
+		float boost = PropsUtil.getFloat("lucene.index.field.boost." + name, FULL_TEXT_FIELD_BOOST_DEFAULT);
 		field.setBoost(boost);
 		return field;
 	}
 	
 	/**
-	 * Create a field holding system data such as ACL, doc type, binder id, library flag, etc. or 
-	 * derived/computed data such as reply count, document number, etc. that are used by system.
-	 * Majority of index fields belong in this category. The distinction between application and 
-	 * system field isn't always clear cut. When in doubt, choose system field.
+	 * Create a field that is not used to index full-text data. For full-text indexed field containing
+	 * application data, use <code>createFullTextFieldIndexed</code> method instead.
+	 * <p>
+	 * Most fields in the system belong in this category.
 	 * 
 	 * @param name
 	 * @param value
@@ -86,18 +84,34 @@ public class FieldFactory {
 	 * @param index
 	 * @return
 	 */
-	public static Field createSystemField(String name, String value, Field.Store store, Field.Index index) {
+	public static Field createField(String name, String value, Field.Store store, Field.Index index) {
 		Field field = new Field(name, value, store, index);
-		float boost = PropsUtil.getFloat("lucene.index.field.boost." + name, SYSTEM_FIELD_BOOST_DEFAULT);
+		float boost = PropsUtil.getFloat("lucene.index.field.boost." + name, NON_FULL_TEXT_FIELD_BOOST_DEFAULT);
 		field.setBoost(boost);
 		field.setOmitTermFreqAndPositions(true);
 		return field;
 	}
-		
-	private static Field createFieldWithBoost(String name, String value, Field.Store store, Field.Index index) {
-		Field field = new Field(name, value, store, index);
-		float boost = PropsUtil.getFloat("lucene.index.field.boost." + name, 1.0f);
-		field.setBoost(boost);
-		return field;
+
+	/**
+	 * Convenience method that uses <code>createField</code> method underneath.
+	 * 
+	 * @param name
+	 * @param value
+	 * @return
+	 */
+	public static Field createFieldStoredNotAnalyzed(String name, String value) {
+		return createField(name, value, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 	}
+
+	/**
+	 * Convenience method that uses <code>createField</code> method underneath.
+	 * 
+	 * @param name
+	 * @param value
+	 * @return
+	 */
+	public static Field createFieldNotStoredNotAnalyzed(String name, String value) {
+		return createField(name, value, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
+	}
+
 }

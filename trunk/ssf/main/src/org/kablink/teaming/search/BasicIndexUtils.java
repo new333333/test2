@@ -81,16 +81,16 @@ public class BasicIndexUtils {
     }
     
     public static void addUid(Document doc, String uid, boolean fieldsOnly) {
-        doc.add(FieldFactory.createSystemFieldStoredNotAnalyzed(UID_FIELD, uid));    
-        doc.add(FieldFactory.createSystemField(THIS_CLASS_FIELD, getClassName(uid), Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
+        doc.add(FieldFactory.createFieldStoredNotAnalyzed(UID_FIELD, uid));    
+        doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(THIS_CLASS_FIELD, getClassName(uid)));
     }
     
     public static void addDocType(Document doc, String docType, boolean fieldsOnly) {
-        doc.add(FieldFactory.createSystemFieldStoredNotAnalyzed(DOC_TYPE_FIELD, docType));
+        doc.add(FieldFactory.createFieldStoredNotAnalyzed(DOC_TYPE_FIELD, docType));
     }
     
     public static void addAttachmentType(Document doc, String attType, boolean fieldsOnly) {
-        doc.add(FieldFactory.createSystemFieldStoredNotAnalyzed(ATTACHMENT_TYPE_FIELD, attType));
+        doc.add(FieldFactory.createFieldStoredNotAnalyzed(ATTACHMENT_TYPE_FIELD, attType));
     }
     /*
     public static Document createDocument(String uid, String docType, String className) {
@@ -143,12 +143,12 @@ public class BasicIndexUtils {
     }
     
     public static  void addFileContents(Document doc, String text) {
-    	Field contents = FieldFactory.createApplicationField(TEMP_FILE_CONTENTS_FIELD, text, Field.Store.NO, Field.Index.ANALYZED);
+    	Field contents = FieldFactory.createFullTextFieldIndexed(TEMP_FILE_CONTENTS_FIELD, text, false);
         doc.add(contents);
     }
     
     public static  Field generalTextField(String text) {
-        return FieldFactory.createApplicationField(GENERAL_TEXT_FIELD, text, Field.Store.NO, Field.Index.ANALYZED);
+        return FieldFactory.createFullTextFieldIndexed(GENERAL_TEXT_FIELD, text, false);
     }   
    
     public static String buildAclTag(String tag, String aclId)

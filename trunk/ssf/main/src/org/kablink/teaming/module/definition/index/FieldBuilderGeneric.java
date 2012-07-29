@@ -46,13 +46,13 @@ public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 		String strToIndex = getStringToIndex(dataElemValue);
 		if(strToIndex != null && !strToIndex.equals("")) {
 			// Handle primary field
-           	Field field = FieldFactory.createApplicationField(getSearchFieldName(dataElemName), strToIndex, getFieldStore(), getFieldIndex());
+           	Field field = FieldFactory.createField(getSearchFieldName(dataElemName), strToIndex, getFieldStore(), getFieldIndex());
            	// Handle optional sort field
 			Field sortField = null;
 			if(getSortFieldName(dataElemName) != null && 
 					!getSearchFieldName(dataElemName).equals(getSortFieldName(dataElemName))) {
 				// This data element requires a separate sort field.
-				sortField = FieldFactory.createStoredNotAnalyzedNoNorms(getSortFieldName(dataElemName), strToIndex.toLowerCase());
+				sortField = FieldFactory.createFieldStoredNotAnalyzed(getSortFieldName(dataElemName), strToIndex.toLowerCase());
 			}
 			// Handle optional generalText field.
            	Field generalTextField = null;
@@ -98,7 +98,7 @@ public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 
 	// Default implementation.
 	public Field.Index getFieldIndex() {
-		return Field.Index.ANALYZED;
+		return Field.Index.ANALYZED_NO_NORMS;
 	}
 	
 	// Default implementation.

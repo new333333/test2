@@ -52,7 +52,7 @@ public class FieldBuilderGrouplist extends AbstractFieldBuilder {
         int i = 0;
         for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
 	        val = Long.valueOf(((String)it.next()).trim());
-	        field = FieldFactory.createStoredNotAnalyzedNoNorms(fieldName, val.toString());
+	        field = FieldFactory.createField(fieldName, val.toString(), getFieldStore(), getFieldIndex());
 	        fields[i] = field;
         }
         

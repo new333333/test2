@@ -63,7 +63,7 @@ public class FieldBuilderCheckbox extends AbstractFieldBuilder {
         if (val == null) {
             return new Field[0];
         }
-        Field field = FieldFactory.createStoredNotAnalyzedNoNorms(getSearchFieldName(dataElemName), val.toString());
+        Field field = FieldFactory.createField(getSearchFieldName(dataElemName), val.toString(), getFieldStore(), getFieldIndex());
         if (!isFieldsOnly(args)) {
             Field generalTextField = BasicIndexUtils.generalTextField(caption);
         	return new Field[] {generalTextField, field};
