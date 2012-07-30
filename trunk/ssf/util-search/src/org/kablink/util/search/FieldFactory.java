@@ -110,6 +110,17 @@ public class FieldFactory {
 	 * @param value
 	 * @return
 	 */
+	public static Field createFieldStoredNotIndexed(String name, String value) {
+		return createField(name, value, Field.Store.YES, Field.Index.NO);
+	}
+
+	/**
+	 * Convenience method that uses <code>createField</code> method underneath.
+	 * 
+	 * @param name
+	 * @param value
+	 * @return
+	 */
 	public static Field createFieldNotStoredNotAnalyzed(String name, String value) {
 		return createField(name, value, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
 	}
