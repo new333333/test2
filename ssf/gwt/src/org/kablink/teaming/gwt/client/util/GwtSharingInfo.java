@@ -51,6 +51,7 @@ public class GwtSharingInfo
 	private ArrayList<GwtShareItem> m_listOfToBeDeletedShareItems;
 	private HashMap<EntityId, String> m_entityNamesMap;
 	private boolean m_sendEmailToAll;
+	private boolean m_canShareWithExternalUsers;
 	
 	/**
 	 * 
@@ -61,6 +62,7 @@ public class GwtSharingInfo
 		m_listOfToBeDeletedShareItems = null;
 		m_entityNamesMap = null;
 		m_sendEmailToAll = false;
+		m_canShareWithExternalUsers = false;
 	}
 	
 	/**
@@ -89,6 +91,14 @@ public class GwtSharingInfo
 			shareItem.setToBeDeleted( true );
 			m_listOfToBeDeletedShareItems.add( shareItem );
 		}
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getCanShareWithExternalUsers()
+	{
+		return m_canShareWithExternalUsers;
 	}
 	
 	/**
@@ -140,6 +150,14 @@ public class GwtSharingInfo
 	public boolean getSendEmailToAll()
 	{
 		return m_sendEmailToAll;
+	}
+
+	/**
+	 * 
+	 */
+	public void setCanShareWithExternalUsers( boolean canShareWithExternalUsers )
+	{
+		m_canShareWithExternalUsers = canShareWithExternalUsers;
 	}
 	
 	/**

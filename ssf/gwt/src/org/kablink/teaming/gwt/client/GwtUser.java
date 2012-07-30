@@ -48,6 +48,14 @@ public class GwtUser extends GwtTeamingItem implements IsSerializable {
 	private String m_viewUrl;
 	private String m_wsId;
 	private String m_wsTitle;
+	private IdentitySource m_identitySource;
+	
+	public enum IdentitySource implements IsSerializable {
+		EXTERNAL,
+		LDAP,
+		LOCAL,
+		UNKNOWN
+	}
 	
 	/**
 	 * Constructor method. 
@@ -57,6 +65,13 @@ public class GwtUser extends GwtTeamingItem implements IsSerializable {
 	public GwtUser() {
 		// Nothing to do.
 	}	
+	
+	/**
+	 * 
+	 */
+	public IdentitySource getIdentitySource() {
+		return m_identitySource;
+	}
 	
 	/**
 	 * Returns the user's name.
@@ -121,6 +136,13 @@ public class GwtUser extends GwtTeamingItem implements IsSerializable {
 	 */
 	public String getViewWorkspaceUrl() {
 		return m_viewUrl;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setIdentitySource( IdentitySource identitySource ) {
+		m_identitySource = identitySource;
 	}
 	
 	/**

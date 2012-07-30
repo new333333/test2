@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,6 +46,7 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
+import org.kablink.teaming.gwt.client.GwtUser.IdentitySource;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
@@ -132,6 +134,7 @@ public class ShareThisDlg extends DlgBox
 	private RadioButton m_contributorRB;
 	private RadioButton m_ownerRB;
 	private FindCtrl m_findCtrl;
+	private Image m_addExternalUserImg;
 	private InlineLabel m_expiresLabel;
 	private FlowPanel m_mainPanel;
 	private ImageResource m_deleteImgR;
@@ -902,14 +905,13 @@ public class ShareThisDlg extends DlgBox
 			{
 				ClickHandler clickHandler;
 				ImageResource imageResource;
-				Image addImg;
 				FlexCellFormatter findCellFormatter;
 				
 				imageResource = GwtTeaming.getImageBundle().add_btn();
-				addImg = new Image( imageResource );
-				addImg.addStyleName( "cursorPointer" );
-				addImg.getElement().setAttribute( "title", GwtTeaming.getMessages().shareDlg_addExternalUserTitle() );
-				findTable.setWidget( 0, 1, addImg );
+				m_addExternalUserImg = new Image( imageResource );
+				m_addExternalUserImg.addStyleName( "cursorPointer" );
+				m_addExternalUserImg.getElement().setAttribute( "title", GwtTeaming.getMessages().shareDlg_addExternalUserTitle() );
+				findTable.setWidget( 0, 1, m_addExternalUserImg );
 				findCellFormatter = findTable.getFlexCellFormatter();
 				findCellFormatter.getElement( 0, 1 ).getStyle().setPaddingTop( 8, Unit.PX );
 		
@@ -934,7 +936,7 @@ public class ShareThisDlg extends DlgBox
 						Scheduler.get().scheduleDeferred( cmd );
 					}
 				};
-				addImg.addClickHandler( clickHandler );
+				m_addExternalUserImg.addClickHandler( clickHandler );
 			}
 
 			++row;
@@ -1457,6 +1459,13 @@ public class ShareThisDlg extends DlgBox
 	private void handleClickOnAddExternalUser()
 	{
 		String emailAddress;
+
+		// Is sharing with an external user ok to do?
+		if ( m_sharingInfo.getCanShareWithExternalUsers() == false )
+		{
+			// No, bail.
+			return;
+		}
 		
 		emailAddress = m_findCtrl.getText();
 
@@ -1712,6 +1721,17 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
+	 * Sort the given list of GwtShareItem objects
+	 */
+	private void sortShareItems( ArrayList<GwtShareItem> listOfGwtShareItems )
+	{
+		if ( listOfGwtShareItems != null && listOfGwtShareItems.size() > 0 )
+		{
+			Collections.sort( listOfGwtShareItems, new GwtShareItem.GwtShareItemComparator() );
+		}
+	}
+	
+	/**
 	 * Update the label that holds the default expiration value.
 	 */
 	private void updateDefaultExpirationLabel()
@@ -1828,10 +1848,25 @@ public class ShareThisDlg extends DlgBox
 		if ( sharingInfo != null )
 		{
 			ArrayList<GwtShareItem> listOfShareItems;
+
+			// Is sharing with an external user available?
+			if ( sharingInfo.getCanShareWithExternalUsers() == false )
+			{
+				// No
+				m_addExternalUserImg.setVisible( false );
+			}
+			else
+			{
+				// Yes
+				m_addExternalUserImg.setVisible( true );
+			}
 			
 			listOfShareItems = sharingInfo.getListOfShareItems();
 			if ( listOfShareItems != null )
 			{
+				// Sort the list of share items.
+				sortShareItems( listOfShareItems );
+
 				for (GwtShareItem nextShareItem : listOfShareItems)
 				{
 					addShare( nextShareItem, false );
@@ -1921,6 +1956,18 @@ public class ShareThisDlg extends DlgBox
 							// Yes, tell them they can't.
 							Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithYourself() );
 							return;
+						}
+						
+						// Is this an external user?
+						if ( user.getIdentitySource() == IdentitySource.EXTERNAL )
+						{
+							// Yes, is sharing this entity with an external user allowed?
+							if ( m_sharingInfo.getCanShareWithExternalUsers() == false )
+							{
+								// No, tell the user they can't do this.
+								Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithExternalUser() );
+								return;
+							}
 						}
 						
 						shareItem = new GwtShareItem();

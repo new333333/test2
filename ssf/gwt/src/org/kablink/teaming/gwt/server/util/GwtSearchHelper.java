@@ -60,6 +60,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchScope;
+import org.kablink.teaming.gwt.client.GwtUser.IdentitySource;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.search.filter.SearchFilter;
@@ -729,8 +730,19 @@ public class GwtSearchHelper
 			// Do we have access to a user?
 			if ( null != user )
 			{
+				int identitySource;
+				
 				// Yes!  Construct a GwtUser object for it.
 				reply = new GwtUser();
+				identitySource = user.getIdentitySource();
+				if ( identitySource == User.IDENTITY_SOURCE_LOCAL )
+					reply.setIdentitySource( IdentitySource.LOCAL );
+				else if ( identitySource == User.IDENTITY_SOURCE_LDAP )
+					reply.setIdentitySource( IdentitySource.LDAP );
+				else if ( identitySource == User.IDENTITY_SOURCE_EXTERNAL )
+					reply.setIdentitySource( IdentitySource.EXTERNAL );
+				else
+					reply.setIdentitySource( IdentitySource.UNKNOWN );
 				reply.setUserId( user.getId() );
 				reply.setName( user.getName() );
 				reply.setTitle( Utils.getUserTitle( user ) );
