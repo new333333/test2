@@ -1105,12 +1105,14 @@ public class EntityIndexUtils {
         	doc.add(fileSizeInBytesField); 
         	Field fileTimeField = FieldFactory.createFieldStoredNotAnalyzed(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()));
         	doc.add(fileTimeField); 
-        	Field fileNameField = FieldFactory.createFieldStoredNotAnalyzed(FILENAME_FIELD, fa.getFileItem().getName());
-        	doc.add(fileNameField);
+        	Field fileNameFieldStored = FieldFactory.createFieldStoredNotIndexed(FILENAME_FIELD, fa.getFileItem().getName());
+        	doc.add(fileNameFieldStored);
+        	Field fileNameFieldIndexed = FieldFactory.createFullTextFieldIndexed(FILENAME_FIELD, fa.getFileItem().getName(), false);
+        	doc.add(fileNameFieldIndexed);
         	//create names that groups all the related values together for parsing in displays
         	//doc.add(new Field(FILE_SIZE_AND_ID_FIELD, fa.getId()+fileSizeField.stringValue()));
         	doc.add(FieldFactory.createFieldStoredNotAnalyzed(FILE_TIME_AND_ID_FIELD, Constants.UNIQUE_PREFIX + fa.getId() + fileTimeField.stringValue()));
-        	doc.add(FieldFactory.createFieldStoredNotAnalyzed(FILENAME_AND_ID_FIELD, Constants.UNIQUE_PREFIX + fa.getId() + fileNameField.stringValue()));
+        	doc.add(FieldFactory.createFieldStoredNotAnalyzed(FILENAME_AND_ID_FIELD, Constants.UNIQUE_PREFIX + fa.getId() + fa.getFileItem().getName()));
         }
         //While we are here, make sure the version agingEnabled flags are set properly
         FileUtils.setFileVersionAging(entry);
@@ -1126,9 +1128,11 @@ public class EntityIndexUtils {
     	Field fileSizeInBytesField = FieldFactory.createFieldStoredNotAnalyzed(FILE_SIZE_IN_BYTES_FIELD, String.valueOf(fa.getFileItem().getLength()));
     	doc.add(fileSizeInBytesField); 
     	Field fileTimeField = FieldFactory.createFieldStoredNotAnalyzed(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()));
-    	doc.add(fileTimeField); 
-      	Field fileNameField = FieldFactory.createFieldStoredNotAnalyzed(FILENAME_FIELD, fa.getFileItem().getName());
-       	doc.add(fileNameField);
+    	doc.add(fileTimeField);
+    	Field fileNameFieldStored = FieldFactory.createFieldStoredNotIndexed(FILENAME_FIELD, fa.getFileItem().getName());
+    	doc.add(fileNameFieldStored);
+    	Field fileNameFieldIndexed = FieldFactory.createFullTextFieldIndexed(FILENAME_FIELD, fa.getFileItem().getName(), false);
+    	doc.add(fileNameFieldIndexed);    	
       	Field fileDescField = FieldFactory.createFieldStoredNotAnalyzed(FILE_DESCRIPTION_FIELD, fa.getFileItem().getDescription().getText());
        	doc.add(fileDescField);
       	Field fileStatusField = FieldFactory.createFieldStoredNotAnalyzed(FILE_STATUS_FIELD, String.valueOf(fa.getFileStatus()));

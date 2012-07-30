@@ -441,8 +441,18 @@ public class QueryBuilder {
 		// Deal with deprecated _allText field
 		if("_allText".equals(fieldName)) 
 			fieldName = null;
+		
 		String exactPhrase = element.attributeValue(EXACT_PHRASE_ATTRIBUTE);
 
+		// Deal with exactphrase attribute. The name of the attribute is slightly mis-leading for
+		// historical reason, but regardless of that, here's the semantics as currently defined:
+		// If exactphrase=true, it means that the supplied term value is NOT parsed or analyzed,
+		// and instead treated as a single term irrespective of whether the value contains spaces or not.
+		// Furthermore, if exactphrase=false, then it's possible to use some additional advanced
+		// search techniques. For example, you can specify phrase term by enclosing term value with
+		// a pair of double quotes. Also, wildcard match is available by appending * or ? character
+		// to the term.
+		
 		// Make exactphrase=true as the default.
 		if ((exactPhrase != null)
 				&& (exactPhrase.equalsIgnoreCase(EXACT_PHRASE_FALSE)))
