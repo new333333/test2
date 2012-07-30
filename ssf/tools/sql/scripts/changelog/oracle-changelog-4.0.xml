@@ -214,4 +214,11 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="20">
+        <addColumn tableName="SS_RESOURCEDRIVER">
+			<column name="modifiedOn" type="TIMESTAMP(6)">
+				<constraints nullable="true" />
+			</column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

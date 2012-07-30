@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.domain;
 
+import java.util.Date;
 import java.util.Set;
 
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -57,6 +58,7 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	private String serverName;
 	private String serverIP;
 	private String volume;
+	private Date modifiedOn;
 		
 	public enum DriverType {
 		filesystem (0),
@@ -117,6 +119,8 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
     		return false;
     	if(!objectEquals(volume, config.volume))
     		return false;
+    	if(!objectEquals(modifiedOn, config.getModifiedOn()))
+    		return false;
     	return true;
     }
     
@@ -161,6 +165,10 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	}
 	
 	public Boolean getReadOnly() {
+		return readOnly;
+	}
+
+	public Boolean isReadOnly() {
 		return readOnly;
 	}
 
@@ -317,6 +325,18 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 
 	public void setVolume(String volume) {
 		this.volume = volume;
+	}
+	
+	public Date getModifiedOn() {
+		if (modifiedOn == null) {
+			modifiedOn = new Date();
+			modifiedOn.setTime(0);
+		}
+		return modifiedOn;
+	}
+
+	public void setModifiedOn(Date modifiedOn) {
+		this.modifiedOn = modifiedOn;
 	}
 	
 	private boolean objectEquals(Object first, Object second) {

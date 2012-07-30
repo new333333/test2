@@ -33,6 +33,7 @@
 package org.kablink.teaming.module.resourcedriver.impl;
 
 import java.io.InputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -237,6 +238,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_VOLUME)) {
 			   		newResourceDriver.setVolume((String)options.get(ObjectKeys.RESOURCE_DRIVER_VOLUME));
 			   	}
+			   	newResourceDriver.setModifiedOn(new Date());	//Set the date of last modification to "now"
 				getCoreDao().save(newResourceDriver);
 				
 				//Set up the access controls for this new resource driver
@@ -326,6 +328,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_VOLUME)) {
 			   		rdc.setVolume((String)options.get(ObjectKeys.RESOURCE_DRIVER_VOLUME));
 			   	}
+			   	rdc.setModifiedOn(new Date());	//Set the date of last modification to "now"
 				getCoreDao().save(rdc);
     			return null;
     		}
