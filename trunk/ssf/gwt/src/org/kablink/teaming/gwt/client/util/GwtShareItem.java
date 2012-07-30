@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import java.util.Comparator;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -56,7 +58,39 @@ public class GwtShareItem
 	private boolean m_isDirty;
 	private boolean m_isExpired;
 	private boolean m_toBeDeleted;
-	
+
+	/**
+	 * Inner class used to compare two GwtShareItem objects
+	 */
+	public static class GwtShareItemComparator implements Comparator<GwtShareItem> 
+	{
+		/**
+		 * Class constructor.
+		 */
+		public GwtShareItemComparator() 
+		{
+		}
+
+		/**
+		 * Compares two GwtShareItem objects by the recipient's name.
+		 * 
+		 * Implements the Comparator.compare() method.
+		 */
+		@Override
+		public int compare( GwtShareItem gwtShareItem1, GwtShareItem gwtShareItem2 ) 
+		{
+			int reply;
+			String name1;
+			String name2;
+
+			name1 = gwtShareItem1.getRecipientName();
+			name2 = gwtShareItem2.getRecipientName();
+			reply = GwtClientHelper.safeSColatedCompare( name2, name1 );
+
+			return reply;
+		}
+	}
+
 	/**
 	 * 
 	 */
