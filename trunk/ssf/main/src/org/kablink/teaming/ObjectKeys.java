@@ -427,6 +427,7 @@ public interface ObjectKeys {
 	public static final String RESOURCE_DRIVER_SERVER_NAME = "serverName";
 	public static final String RESOURCE_DRIVER_SERVER_IP = "serverIP";
 	public static final String RESOURCE_DRIVER_VOLUME = "volume";
+	public static final String RESOURCE_DRIVER_MODIFIED_ON = "modifiedOn";
 	
     //User and Principal objects
     public static final int USER_STATUS_DATABASE_FIELD_LENGTH = 256;

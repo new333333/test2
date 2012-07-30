@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.fi.connection;
 
+import java.util.Date;
+
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.fi.FIException;
 
@@ -163,4 +165,13 @@ public interface ResourceDriver {
 	 * @return
 	 */
 	public boolean getSynchTopDelete();
+	
+	/**
+	 * Returns the date that the driver config was last set.
+	 * This is used to figure out if the driver needs to be re-initialized.
+	 * 
+	 * @return
+	 */
+	public Date getModifiedOn();
+
 }

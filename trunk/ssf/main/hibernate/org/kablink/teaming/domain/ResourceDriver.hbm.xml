@@ -28,5 +28,6 @@
     <property name="serverName"/>
     <property name="serverIP"/>
     <property name="volume"/>
+    <property name="modifiedOn"/>
   </class>
 </hibernate-mapping>
