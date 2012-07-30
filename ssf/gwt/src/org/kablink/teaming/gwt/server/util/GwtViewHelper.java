@@ -1648,7 +1648,7 @@ public class GwtViewHelper {
 			
 			// Store the current filters, if any, that the user
 			// currently has selected on this binder.
-			reply.setCurrentFilters(GwtServerHelper.getCurrentUserFilters(userBinderProperties));
+			reply.setCurrentFilters(GwtServerHelper.getCurrentUserFilters(userBinderProperties, true));
 
 			// Store a URL to turn off filtering on the binder.
 			url = new AdaptedPortletURL(request, "ss_forum", true);
@@ -3865,7 +3865,7 @@ public class GwtViewHelper {
 					pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE, filterScope);
 	
 					String filterName = getQueryParameterString(nvMap, WebKeys.URL_CLEAR_FILTER);
-					String filterSpec = BinderFilter.buildFilterSpec(filterName, filterScope);
+					String filterSpec = BinderFilter.buildFilterSpec(MiscUtil.replace(filterName, "+", " "), filterScope);
 					UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUserId(), binderId);
 					List<String> currentFilters = ((List<String>) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTERS));
 					if (null == currentFilters) {

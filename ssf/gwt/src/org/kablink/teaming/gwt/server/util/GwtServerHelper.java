@@ -3731,7 +3731,7 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static List<String> getCurrentUserFilters(UserProperties userFolderProperties) {
+	public static List<String> getCurrentUserFilters(UserProperties userFolderProperties, boolean unescapeName) {
 		List<String> currentFilters = ((List<String>) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTERS));
 		if (null == currentFilters) {
 			currentFilters = new ArrayList<String>();
@@ -3742,12 +3742,20 @@ public class GwtServerHelper {
 			if (!(MiscUtil.hasString(filterScope))) {
 				filterScope = ObjectKeys.USER_PROPERTY_USER_FILTER_PERSONAL;
 			}
+			if (unescapeName) {
+				filterName = MiscUtil.replace(filterName, "+", " ");
+			}
 			String filterSpec = BinderFilter.buildFilterSpec(filterName, filterScope);
 			if (!(currentFilters.contains(filterSpec))) {
 				currentFilters.add(filterSpec);
 			}
 		}
 		return currentFilters;
+	}
+	
+	public static List<String> getCurrentUserFilters(UserProperties userFolderProperties) {
+		// Always use the initial form of the method.
+		return getCurrentUserFilters(userFolderProperties, false);
 	}
 
 	/**
