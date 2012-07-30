@@ -354,6 +354,9 @@ public class GwtViewHelper {
 				entryMap.put(Constants.FAMILY_FIELD, family);
 			}
 		}
+		
+		// Apply the sorting to the search entries.
+//!		...this needs to be implemented..
 
 		// Finally, construct the search results Map and return that.
 		Map reply = new HashMap();
@@ -2577,6 +2580,10 @@ public class GwtViewHelper {
 				else if (isCollection)     searchResults = getCollectionEntries(bs, request, binder, quickFilter, options, folderInfo.getCollectionType(), shareItems);
 				else {
 					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
+					options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD    );
+					options.put(ObjectKeys.SEARCH_SORT_DESCEND,           false                     );
+					options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY,      fdd.getFolderSortBy()     );
+					options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, fdd.getFolderSortDescend());
 					searchResults = bs.getFolderModule().getEntries(folderId, options);
 				}
 				searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
