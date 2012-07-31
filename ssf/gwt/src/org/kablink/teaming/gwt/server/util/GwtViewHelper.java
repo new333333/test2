@@ -122,6 +122,10 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
+import org.kablink.teaming.gwt.client.util.ShareAccessInfo;
+import org.kablink.teaming.gwt.client.util.ShareDateInfo;
+import org.kablink.teaming.gwt.client.util.ShareExpirationInfo;
+import org.kablink.teaming.gwt.client.util.ShareMessageInfo;
 import org.kablink.teaming.gwt.server.util.GwtSharedMeItem;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ShareRights;
@@ -308,9 +312,6 @@ public class GwtViewHelper {
 			// Create an entry Map for this GwtSharedMeItem.
 			Map entryMap = new HashMap();
 			searchEntries.add(entryMap);
-
-			// Store the share item's ID.
-			entryMap.put("shareId",  String.valueOf(si.getId()));
 
 			// Are we processing an entry?
 			DefinableEntity	entity = si.getEntity();
@@ -513,9 +514,6 @@ public class GwtViewHelper {
 			Collections.sort(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       comparator);
 			Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  comparator);
 			Collections.sort(getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            comparator);
-			
-			Collections.sort(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY),                         comparator);
-			Collections.sort(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       comparator);
 		}
 	}
 
@@ -612,22 +610,22 @@ public class GwtViewHelper {
 				// Yes!  Skip it.
 				continue;
 			}
-			
-			// Create a new GwtSharedMeItem?
-			GwtSharedMeItem meItem = new GwtSharedMeItem(
-				si.getId(),			// ID of the share.
-				userId,				// ID of the sharer.
-				siEntity,			// The entity being shared.
-				siEntityFamily);	// The family of the entity.
-			meItem.addPerShareInfo(si);
 
-			// Has the GwtSharedMeItem actually been shared by the
-			// current user?
-			if (meItem.isShared()) {
-				// Yes!  Add it to the reply
-				// List<GwtSharedMeItem> we're building to return.
+			// Is this an additional share item on an existed
+			// GwtSharedMeItem?
+			GwtSharedMeItem meItem = GwtSharedMeItem.findShareMeInList(siEntity, reply);
+			if (null == meItem) {
+				// No!  Create a new GwtSharedMeItem for it...
+				meItem = new GwtSharedMeItem(
+					siEntity,			// The entity being shared.
+					siEntityFamily);	// The family of the entity.
+				
+				// ...and add it to the reply list.
 				reply.add(meItem);
 			}
+			
+			// Add information about this share item as a 
+			meItem.addPerShareInfo(si);
 		}
 		
 		// If we get here, reply refers to the List<GwtSharedMeItem>
@@ -676,11 +674,13 @@ public class GwtViewHelper {
 			}
 			
 			// Create a new GwtSharedMeItem?
-			GwtSharedMeItem meItem = new GwtSharedMeItem(
-				si.getId(),										// ID of the share.
-				si.getModification().getPrincipal().getId(),	// ID of the sharer.
-				siEntity,										// The entity being shared.
-				siEntityFamily);								// The family of the entity.
+			GwtSharedMeItem meItem = GwtSharedMeItem.findShareMeInList(siEntity, reply);
+			boolean newMeItem = (null == meItem);
+			if (newMeItem) {
+				meItem = new GwtSharedMeItem(
+					siEntity,			// The entity being shared.
+					siEntityFamily);	// The family of the entity.
+			}
 
 			// Is this member directed to this user, one of the
 			// user's groups or one of the user's teams?
@@ -698,7 +698,7 @@ public class GwtViewHelper {
 
 			// Has the GwtSharedMeItem actually been shared with
 			// the current user?
-			if (meItem.isShared()) {
+			if (meItem.isShared() && newMeItem) {
 				// Yes!  Add it to the reply
 				// List<GwtSharedMeItem> we're building to return.
 				reply.add(meItem);
@@ -1482,8 +1482,7 @@ public class GwtViewHelper {
 
 		// Scan the shares...
 		for (GwtPerShareInfo si:  perShareInfos) {
-			// ...creating an individual AssignmentInfo for each
-			// ...recipient.
+			// ...creating an AssignmentInfo for each recipient.
 			AssigneeType assigneeType;
 			switch (si.getRecipientType()) {
 			default:     assigneeType = null;                    continue;
@@ -1507,15 +1506,18 @@ public class GwtViewHelper {
 	 * Returns a non-null List<AssignmentInfo> build from a
 	 * sharer's ID.
 	 */
-	private static List<AssignmentInfo> getAIListFromSharer(Long sharerId) {
+	private static List<AssignmentInfo> getAIListFromSharers(List<GwtPerShareInfo> perShareInfos) {
 		// Allocate a List<AssignmentInfo> to return.
 		List<AssignmentInfo> reply = new ArrayList<AssignmentInfo>();
 
-		// Create an individual AssignmentInfo for the sharer.
-		AssignmentInfo ai = AssignmentInfo.construct(
-			sharerId,
-			AssigneeType.INDIVIDUAL);
-		reply.add(ai);
+		// Scan the shares...
+		for (GwtPerShareInfo si:  perShareInfos) {
+			// ...creating an AssignmentInfo for each sharer.
+			AssignmentInfo ai = AssignmentInfo.construct(
+				si.getSharerId(),
+				AssigneeType.INDIVIDUAL);
+			reply.add(ai);
+		}
 
 		// If we get here, reply refers to the List<AssignmentInfo>
 		// corresponding to the given sharer ID.  Return it.
@@ -1811,7 +1813,7 @@ public class GwtViewHelper {
 			List<String>	sharedEntryIds  = new ArrayList<String>();
 			for (GwtSharedMeItem si:  shareItems) {
 				// ...tracking each as a binder or entry.
-				DefinableEntity	entity = si.getEntity();
+				DefinableEntity	entity   = si.getEntity();
 				String			entityId = String.valueOf(entity.getId());
 				if (entity.getEntityType().equals(EntityType.folderEntry))
 				     sharedEntryIds.add( entityId);
@@ -1867,9 +1869,10 @@ public class GwtViewHelper {
 		}
 
 		// Add in the sort information...
-		boolean sortDescend = GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false);
-		String  sortBy      = GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
-		crit.addOrder(new Order(sortBy, (!sortDescend)));
+		boolean sortAscend = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
+		String  sortBy     =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
+		crit.addOrder(new Order(Constants.ENTITY_FIELD, sortAscend));
+		crit.addOrder(new Order(sortBy,                 sortAscend));
 		
 		// ...and issue the query and return the entries.
 		return
@@ -2555,9 +2558,10 @@ public class GwtViewHelper {
 
 			// If we're working with a 'Shared by/with Me' collection,
 			// get the shared items.
+			CollectionType			collectionType           = folderInfo.getCollectionType();
+			boolean					isCollectionSharedByMe   = (isCollection && CollectionType.SHARED_BY_ME.equals(  collectionType));
+			boolean					isCollectionSharedWithMe = (isCollection && CollectionType.SHARED_WITH_ME.equals(collectionType));
 			List<GwtSharedMeItem> 	shareItems;
-			boolean					isCollectionSharedByMe   = (isCollection && CollectionType.SHARED_BY_ME.equals(  folderInfo.getCollectionType()));
-			boolean					isCollectionSharedWithMe = (isCollection && CollectionType.SHARED_WITH_ME.equals(folderInfo.getCollectionType()));
 			if      (isCollectionSharedByMe)   shareItems = getSharedByMeItems(  bs, request);
 			else if (isCollectionSharedWithMe) shareItems = getSharedWithMeItems(bs, request);
 			else                               shareItems = null;
@@ -2577,13 +2581,14 @@ public class GwtViewHelper {
 				Map searchResults;
 				if      (isTrash)          searchResults = TrashHelper.getTrashEntries(bs, binder, options);
 				else if (isProfilesRootWS) searchResults = bs.getProfileModule().getUsers(         options);
-				else if (isCollection)     searchResults = getCollectionEntries(bs, request, binder, quickFilter, options, folderInfo.getCollectionType(), shareItems);
+				else if (isCollection)     searchResults = getCollectionEntries(bs, request, binder, quickFilter, options, collectionType, shareItems);
 				else {
+					boolean sortDescend = fdd.getFolderSortDescend();
 					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
-					options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD    );
-					options.put(ObjectKeys.SEARCH_SORT_DESCEND,           fdd.getFolderSortDescend());
-					options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY,      fdd.getFolderSortBy()     );
-					options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, fdd.getFolderSortDescend());
+					options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD);
+					options.put(ObjectKeys.SEARCH_SORT_DESCEND,           sortDescend           );
+					options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY,      fdd.getFolderSortBy() );
+					options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, sortDescend           );
 					searchResults = bs.getFolderModule().getEntries(folderId, options);
 				}
 				searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
@@ -2648,104 +2653,100 @@ public class GwtViewHelper {
 						// Are we working on a 'Shared by/with Me'
 						// collection?
 						if (isCollectionSharedByMe || isCollectionSharedWithMe) {
-							// Yes!  Is this the sharedBy column?
-							String	searchIdS = GwtServerHelper.getStringFromEntryMap(entryMap, "shareId");
-							Long	searchId  = (MiscUtil.hasString(searchIdS) ? Long.parseLong(searchIdS) : null);
-							if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_BY)) {
-								// Yes!  Can we find the
-								// GwtSharedMeItem for this row?
-								List<AssignmentInfo>	sharerAIs = null;
-								GwtSharedMeItem			si        = GwtSharedMeItem.findEntityInList(searchId, isEntityFolderEntry, docId, shareItems);
-								if (null != si) {
-									// Yes!  Use it to construct a
-									// List<AssignmentInfo>.
-									sharerAIs = getAIListFromSharer(si.getSharerId());
-								}
-	
-								// If we don't have any sharers for this column...
-								if (null == sharerAIs) {
-									// ...use an empty list.
-									sharerAIs = new ArrayList<AssignmentInfo>();
-								}
-								addedAssignments = (!(sharerAIs.isEmpty()));
-								fr.setColumnValue_AssignmentInfos(fc, sharerAIs);
-	
-								// Continue with the next column.
-								// We're done with this one.
-								continue;
-							}
+							// Yes!  Find the GwtSharedMeItem for this row.
+							GwtSharedMeItem si = GwtSharedMeItem.findShareMeInList(
+								docId,
+								entityType,
+								shareItems);
 							
-							// No, this isn't the sharedBy column!  Is
-							// it the sharedWith column?
-							if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_WITH)) {
-								// Yes!  Can we find the
-								// GwtSharedMeItem for this row?
-								List<AssignmentInfo>	recipientAIs = null;
-								GwtSharedMeItem			si           = GwtSharedMeItem.findEntityInList(searchId, isEntityFolderEntry, docId, shareItems);
-								if (null != si) {
-									// Yes!  Use it to construct a
-									// List<AssignmentInfo>.
-									recipientAIs = getAIListFromRecipients(si.getPerShareInfos());
-								}
-	
-								// If we don't have any recipients for
-								// this column...
-								if (null == recipientAIs) {
-									// ...use an empty list.
-									recipientAIs = new ArrayList<AssignmentInfo>();
-								}
-								addedAssignments = (!(recipientAIs.isEmpty()));
-								fr.setColumnValue_AssignmentInfos(fc, recipientAIs);
-	
-								// Continue with the next column.
-								// We're done with this one.
-								continue;
-							}
-							
-							// No, this isn't the sharedWith column
-							// either!  Is it the access column?
-							else if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_ACCESS)) {
-								// Yes!  Can we find the
-								// GwtSharedMeItem for this row?
-								Date			rightsExpire = null;
-								ShareRights		rights       = null;
-								GwtSharedMeItem	si           = GwtSharedMeItem.findEntityInList(searchId, isEntityFolderEntry, docId, shareItems);
-								if (null != si) {
-									// Yes!  Get the share rights from
-									// it...
-									rights       = si.getPerShareInfos().get(0).getRights();
-									rightsExpire = si.getPerShareInfos().get(0).getRightsExpire();
-								}
-
-								// ...map the share rights to an access
-								// ...string we can display...
-								String access;
-								if (null == rights) {
-									access = "";
+							// Is this the sharedBy/With column?
+							if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_BY) ||
+								csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_WITH)) {
+								// Yes!  Build a
+								// List<AssignmentInfo> for this row...
+								List<AssignmentInfo> aiList;
+								if (null == si) {
+									aiList = new ArrayList<AssignmentInfo>();
 								}
 								else {
-									switch (rights) {
-									default:
-									case UNKNOWN:      access = "";                                        break;
-									case VIEW:         access = NLT.get("collections.access.view");        break;
-									case CONTRIBUTOR:  access = NLT.get("collections.access.contributor"); break;
-									case OWNER:        access = NLT.get("collections.access.owner");       break;
-									}
+									if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_SHARED_BY))
+									     aiList = getAIListFromSharers(   si.getPerShareInfos());
+									else aiList = getAIListFromRecipients(si.getPerShareInfos());
 								}
-								if (MiscUtil.hasString(access) && (null != rightsExpire)) {
-									access += (" " +
-										NLT.get(
-											"collections.access.expires",
-											new String[] {
-												GwtServerHelper.getDateString(rightsExpire)
-											}));
-								}
+								addedAssignments = (!(aiList.isEmpty()));
+								fr.setColumnValue_AssignmentInfos(fc, aiList);
+	
+								// ...and continue with the next
+								// ...column.
+								continue;
+							}
+							
+							// No, this isn't the sharedBy/With column!
+							// Is it the sharedMessage column?
+							else if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_MESSAGE)) {
+								// Yes!  Build a
+								// List<ShareMessageInfo> for this
+								// row...
+								List<ShareMessageInfo> smiList;
+								if (null == si)
+								     smiList = new ArrayList<ShareMessageInfo>();
+								else smiList = getShareMessageListFromShares(si.getPerShareInfos());
+								fr.setColumnValue_ShareMessageInfos(fc, smiList);
 								
-								// ...and set the column value.
-								fr.setColumnValue(fc, access);
+								// ...and continue with the next
+								// ...column.
+								continue;
+							}
+							
+							// No, this isn't the sharedMessage column
+							// either!  Is it the sharedDate column?
+							else if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_DATE)) {
+								// Yes!  Build a
+								// List<ShareDateInfo> for this row...
+								List<ShareDateInfo> sdiList;
+								if (null == si)
+								     sdiList = new ArrayList<ShareDateInfo>();
+								else sdiList = getShareDateListFromShares(si.getPerShareInfos());
+								fr.setColumnValue_ShareDateInfos(fc, sdiList);
 								
-								// Continue with the next column.
-								// We're done with this one.
+								// ...and continue with the next
+								// ...column.
+								continue;
+							}
+							
+							// No, this isn't the sharedDate column
+							// either!  Is it the sharedExpiration
+							// column?
+							else if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_EXPIRATION)) {
+								// Yes!  Build a
+								// List<ShareExpirationInfo> for this
+								// row...
+								List<ShareExpirationInfo> seiList;
+								if (null == si)
+								     seiList = new ArrayList<ShareExpirationInfo>();
+								else seiList = getShareExpirationListFromShares(si.getPerShareInfos());
+								fr.setColumnValue_ShareExpirationInfos(fc, seiList);
+								
+								// ...and continue with the next
+								// ...column.
+								continue;
+							}
+							
+							// No, this isn't the sharedExpiration
+							// column either!  Is it the sharedAccess
+							// column?
+							else if (csk.equalsIgnoreCase(FolderColumn.COLUMN_SHARE_ACCESS)) {
+								// Yes!  Build a
+								// List<ShareAccessInfo> for this
+								// row...
+								List<ShareAccessInfo> saiList;
+								if (null == si)
+								     saiList = new ArrayList<ShareAccessInfo>();
+								else saiList = getShareAccessListFromShares(si.getPerShareInfos());
+								fr.setColumnValue_ShareAccessInfos(fc, saiList);
+								
+								// ...and continue with the next
+								// ...column.
 								continue;
 							}
 						}
@@ -3649,6 +3650,113 @@ public class GwtViewHelper {
 		// ...List<GwtShareMeItem> and return that.
 		List<GwtSharedMeItem> siList = convertItemListToWithMeList(bs, request, shareItems, userId, teams, groups);
 		return siList;
+	}
+	
+	/*
+	 * Returns a non-null List<ShareAccessInfo> build from a share
+	 * list.
+	 */
+	@SuppressWarnings("unused")
+	private static List<ShareAccessInfo> getShareAccessListFromShares(List<GwtPerShareInfo> perShareInfos) {
+		// Allocate a List<ShareAccessInfo> to return.
+		List<ShareAccessInfo> reply = new ArrayList<ShareAccessInfo>();
+
+		// Scan the shares...
+		for (GwtPerShareInfo si:  perShareInfos) {
+			// ...creating a ShareAccessInfo for each share.
+			ShareRights	rights       = si.getRights();
+			Date		rightsExpire = null;	//! si.getRightsExpire();
+
+			// Map the share rights to an access string we can
+			// display...
+			String access;
+			if (null == rights) {
+				access = "";
+			}
+			else {
+				switch (rights) {
+				default:
+				case UNKNOWN:      access = "";                                        break;
+				case VIEW:         access = NLT.get("collections.access.view");        break;
+				case CONTRIBUTOR:  access = NLT.get("collections.access.contributor"); break;
+				case OWNER:        access = NLT.get("collections.access.owner");       break;
+				}
+			}
+			if (MiscUtil.hasString(access) && (null != rightsExpire)) {
+				access += (" " +
+					NLT.get(
+						"collections.access.expires",
+						new String[] {
+							GwtServerHelper.getDateString(rightsExpire)
+						}));
+			}
+			reply.add(new ShareAccessInfo(access));
+		}
+
+		// If we get here, reply refers to the List<ShareAccessInfo>
+		// corresponding to the share list.  Return it.
+		return reply;
+	}
+	
+	/*
+	 * Returns a non-null List<ShareDateInfo> build from a share
+	 * list.
+	 */
+	private static List<ShareDateInfo> getShareDateListFromShares(List<GwtPerShareInfo> perShareInfos) {
+		// Allocate a List<ShareDateInfo> to return.
+		List<ShareDateInfo> reply = new ArrayList<ShareDateInfo>();
+
+		// Scan the shares...
+		for (GwtPerShareInfo si:  perShareInfos) {
+			// ...creating an ShareDateInfo for each share.
+			Date	date       = si.getShareDate();
+			String	dateString = ((null == date) ? "" : GwtServerHelper.getDateString(date));
+			reply.add(new ShareDateInfo(dateString));
+		}
+
+		// If we get here, reply refers to the List<ShareDateInfo>
+		// corresponding to the share list.  Return it.
+		return reply;
+	}
+	
+	/*
+	 * Returns a non-null List<ShareExpirationInfo> build from a share
+	 * list.
+	 */
+	private static List<ShareExpirationInfo> getShareExpirationListFromShares(List<GwtPerShareInfo> perShareInfos) {
+		// Allocate a List<ShareExpirationInfo> to return.
+		List<ShareExpirationInfo> reply = new ArrayList<ShareExpirationInfo>();
+
+		// Scan the shares...
+		for (GwtPerShareInfo si:  perShareInfos) {
+			// ...creating an ShareExpirationInfo for each share.
+			Date	date       = si.getRightsExpire();
+			String	dateString = ((null == date) ? NLT.get("collections.access.expires.never") : GwtServerHelper.getDateString(date));
+			reply.add(new ShareExpirationInfo(dateString));
+		}
+
+		// If we get here, reply refers to the List<ShareExpirationInfo>
+		// corresponding to the share list.  Return it.
+		return reply;
+	}
+	
+	/*
+	 * Returns a non-null List<ShareMessageInfo> build from a share
+	 * list.
+	 */
+	private static List<ShareMessageInfo> getShareMessageListFromShares(List<GwtPerShareInfo> perShareInfos) {
+		// Allocate a List<ShareMessageInfo> to return.
+		List<ShareMessageInfo> reply = new ArrayList<ShareMessageInfo>();
+
+		// Scan the shares...
+		for (GwtPerShareInfo si:  perShareInfos) {
+			// ...creating an ShareMessageInfo for each share.
+			reply.add(new ShareMessageInfo(si.getComment()));
+		}
+
+		// If we get here, reply refers to the List<ShareMessageInfo>
+		// corresponding to the share list.  Return it.
+		return reply;
 	}
 	
 	/*

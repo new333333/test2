@@ -46,6 +46,8 @@ public class GwtPerShareInfo {
 	private Date			m_rightsExpire;		//
 	private Date			m_shareDate;		//
 	private Long			m_recipientId;		//
+	private Long			m_shareId;			//
+	private Long			m_sharerId;			//
 	private RecipientType	m_recipientType;	//
 	private ShareRights		m_rights;			//
 	private String			m_comment;			//
@@ -53,6 +55,8 @@ public class GwtPerShareInfo {
 	/**
 	 * Constructor method.
 	 * 
+	 * @param shareId
+	 * @param sharerId
 	 * @param recipientId
 	 * @param recipientType
 	 * @param shareDate
@@ -60,11 +64,13 @@ public class GwtPerShareInfo {
 	 * @param rightsExpire
 	 * @param comment
 	 */
-	public GwtPerShareInfo(Long recipientId, RecipientType recipientType, Date shareDate, ShareRights rights, Date rightsExpire, String comment) {
+	public GwtPerShareInfo(Long shareId, Long sharerId, Long recipientId, RecipientType recipientType, Date shareDate, ShareRights rights, Date rightsExpire, String comment) {
 		// Initialize the super class...
 		super();
 		
 		// ...and store the parameters.
+		setShareId(      shareId      );
+		setSharerId(     sharerId     );
 		setRecipientId(  recipientId  );
 		setRecipientType(recipientType);
 		setShareDate(    shareDate    );
@@ -81,6 +87,8 @@ public class GwtPerShareInfo {
 	public Date          getRightsExpire()  {return m_rightsExpire; }
 	public Date          getShareDate()     {return m_shareDate;    }
 	public Long          getRecipientId()   {return m_recipientId;  }
+	public Long          getShareId()       {return m_shareId;      }
+	public Long          getSharerId()      {return m_sharerId;     }
 	public RecipientType getRecipientType() {return m_recipientType;}
 	public ShareRights   getRights()        {return m_rights;       }
 	public String        getComment()       {return m_comment;      }
@@ -93,6 +101,8 @@ public class GwtPerShareInfo {
 	public void setRightsExpire( Date          rightsExpire)  {m_rightsExpire  = rightsExpire; }
 	public void setShareDate(    Date          shareDate)     {m_shareDate     = shareDate;    }
 	public void setRecipientId(  Long          recipientId)   {m_recipientId   = recipientId;  }
+	public void setShareId(      Long          shareId)       {m_shareId       = shareId;      }
+	public void setSharerId(     Long          sharerId)      {m_sharerId      = sharerId;     }
 	public void setRecipientType(RecipientType recipientType) {m_recipientType = recipientType;}
 	public void setRights(       ShareRights   rights)        {m_rights        = rights;       }
 	public void setComment(      String        comment)       {m_comment       = comment;      }
