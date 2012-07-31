@@ -552,6 +552,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_SurveyFolderView();
 	String codeSplitFailure_ShareExpirationDlg();
 	String codeSplitFailure_ShareThisDlg();
+	String codeSplitFailure_ShareWithTeamsDlg();
 	String codeSplitFailure_SizeColumnsDlg();
 	String codeSplitFailure_TagThisDlg();
 	String codeSplitFailure_TaskFolderView();
@@ -1124,6 +1125,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_expiresLabel();
 	String shareDlg_expiresNever();
 	String shareDlg_expiresOn( String on );
+	String shareDlg_noTeamsToShareWith();
 	String shareDlg_owner();
 	String shareDlg_rightsLabel();
 	String shareDlg_shareLabel();
@@ -1157,6 +1159,10 @@ public interface GwtTeamingMessages extends Messages
 	String shareExpirationDlg_expiresOn();
 	String shareExpirationDlg_noDateEntered();
 	String shareExpirationDlg_noDaysEntered();
+	
+	// The following strings are used in the "share with teams" dialog
+	String shareWithTeamsDlg_caption();
+	String shareWithTeamsDlg_Instructions();
 	
 	// The following strings are used in the Group Membership popup
 	String allUsersGroupDesc();

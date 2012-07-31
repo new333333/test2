@@ -47,10 +47,8 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem.RecipientType;
@@ -68,10 +66,6 @@ import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
-import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
-import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -120,64 +114,7 @@ public class GwtShareHelper
 		
 		// Is sharing with external users turned on at the zone level?
 		zoneConfig = ami.getZoneModule().getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-		if ( zoneConfig.isExternalUserEnabled() == false )
-			return false;
-		
-		// If we get here, sharing with external users is turned on at the zone level.
-		// Make sure the user can share each entity with an external user.
-		if ( listOfEntityIds != null )
-		{
-			BinderModule binderModule;
-			FolderModule folderModule;
-			
-			binderModule = ami.getBinderModule();
-			folderModule = ami.getFolderModule();
-			
-			for ( EntityId nextEntityId : listOfEntityIds )
-			{
-				if ( nextEntityId.isBinder() )
-				{
-					try
-					{
-						Binder binder;
-						
-						binder = binderModule.getBinder( nextEntityId.getEntityId() );
-						if ( binderModule.testAccess( binder, BinderOperation.addFolder ) == false )
-						{
-							// The user can't share this binder so return false.
-							return false;
-						}
-						
-					}
-					catch( Exception ex )
-					{
-						m_logger.error( "In canShareWithExternalUsers(), can't find binder: " + nextEntityId.getEntityId() );
-					}
-				}
-				else
-				{
-					try
-					{
-						FolderEntry folderEntry;
-						
-						folderEntry = folderModule.getEntry( nextEntityId.getBinderId(), nextEntityId.getEntityId() );
-						if ( folderModule.testAccess( folderEntry, FolderOperation.copyEntry ) == false )
-						{
-							// The user can't share this entry so return false.
-							return false;
-						}
-					}
-					catch ( Exception ex )
-					{
-						m_logger.error( "In canShareWithExternalUsers(), can't find entry: " + nextEntityId.getEntityId() );
-					}
-				}
-			}
-		}
-		
-		// If we get here, sharing with an external user is turned on at the zone level
-		// and the user has rights to share the list of entities with an external user.
-		return true;
+		return zoneConfig.isExternalUserEnabled();
 	}
 
 	/**
@@ -365,7 +302,8 @@ public class GwtShareHelper
 					}
 					
 					case team:
-						//!!! Finish
+						name = getTeamName( ami, nextShareItem );
+						gwtShareItem.setRecipientName( name );
 						gwtShareItem.setRecipientType( GwtRecipientType.TEAM );
 						break;
 						
@@ -762,6 +700,32 @@ public class GwtShareHelper
 		}
 		
 		return sharingInfo;
+	}
+
+	/**
+	 * Return the name of the given team
+	 */
+	private static String getTeamName( AllModulesInjected ami, ShareItem shareItem )
+	{
+		String name = null;
+		
+		if ( shareItem != null )
+		{
+			try 
+			{
+				DefinableEntity entity;
+				
+				entity = ami.getBinderModule().getBinder( shareItem.getRecipientId() );
+				
+				name = entity.getTitle();
+			}
+			catch ( Exception e )
+			{
+				m_logger.error( "Could not find the team: " + shareItem.getRecipientId().toString() );
+			}
+		}
+		
+		return name;
 	}
 
 	/**

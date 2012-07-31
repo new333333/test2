@@ -199,7 +199,7 @@
 }
  
 
-.activityStreamHover, .shareThisDlgNameHover, .groupMembershipNameHover
+.activityStreamHover, .shareThisDlg_NameHover, .groupMembershipNameHover
 {
 	cursor: pointer;
 	background: url(images/blends/teal_slice.png) repeat-x;
@@ -444,12 +444,12 @@
 	width: 450px;
 }
 
-.activityStreamReplyTitlePanel, .shareThisTitlePanel
+.activityStreamReplyTitlePanel, .shareThisDlg_TitlePanel
 {
 	padding-bottom: 5px;
 }
 
-.activityStreamReplyTitleTextBox, .shareThisTitleTextBox
+.activityStreamReplyTitleTextBox, .shareThisDlg_TitleTextBox
 {
 	background-color: transparent;
 	border: 0 none;
@@ -498,76 +498,20 @@
 	position: absolute;
 }
 
-.shareThisRecipientTable_highlightRow
+
+
+/* Styles used in the Share dialog */
+
+.shareThisDlg_CommentsLabel, .shareThisDlg_ShareWithTeamsLabel
 {
-	background: none repeat scroll 0 0 #CCE9EE;
+	font-size: 12px;
+	padding-top: 8px;
 }
 
-.shareThisRecipientTablePanel
+.shareThisDlg_ExpiresLabel, .shareThisDlg_DefaultExpiresLabel
 {
-	width: 570px;
-}
-
-.shareThisRecipientTablePanelHeight
-{
-	height: 200px;
-	overflow: auto;
-}
-
-.shareThisRecipientTable
-{
-	width: 550px;
-	table-layout: fixed;
-}
-
-.shareThisRecipientTable_Cell
-{
-	overflow: hidden;
-}
-
-.shareThisMyTeamsPanelHeight
-{
-	height: 100px;
-	overflow: auto;
-}
-
-.shareThisDlg_RecipientNameLabel
-{
-}
-
-.shareThisDlg_RemoveRecipientPanel
-{
-	margin-left: 4px;
-}
-
-.shareThisDlg_ShareExpired
-{
-	color: #ED1C24 !important;
-}
-
-.shareThisDlg_shareLabel
-{
-	padding-top: 6px;
-}
-
-.shareThisTextArea
-{
-	background-color: transparent;
-	border: 0 none;
-	color: #353838;
-	font-family: Arial,Helvetica,sans-serif;
-	font-size: 14px;
-	height: 100px;
-	padding: 5px;
-	resize: none;
-	width: 95%;
-}
-
-.shareThisTextAreaBorder
-{
-	border-color: #BABDB6;
-	border-style: solid solid solid;
-	border-width: 1px;
+	color: #5691A6;
+	padding-left: 4px;
 }
 
 .shareThisDlg_HeaderPanel
@@ -604,37 +548,49 @@
 	padding-left: 2px;
 }
 
-.groupMembershipGroupNameLabel
+.shareThisDlg_RecipientNameLabel
 {
-	font-size: 12px;
-	font-weight: bold;
-	padding-top: 8px;
 }
 
-.shareThisCommentsLabel, .shareThisShareWithTeamsLabel
+.shareThisDlg_RecipientTable_highlightRow
 {
-	font-size: 12px;
-	padding-top: 8px;
+	background: none repeat scroll 0 0 #CCE9EE;
 }
 
-.shareThisShareWithTeamsPanel
+.shareThisDlg_RecipientTablePanel
 {
-	padding-top: 10px;
+	width: 570px;
 }
 
-.shareThis_RightsLabel
+.shareThisDlg_RecipientTablePanelHeight
+{
+	height: 200px;
+	overflow: auto;
+}
+
+.shareThisDlg_RecipientTable
+{
+	width: 550px;
+	table-layout: fixed;
+}
+
+.shareThisDlg_RecipientTable_Cell
+{
+	overflow: hidden;
+}
+
+.shareThisDlg_RemoveRecipientPanel
+{
+	margin-left: 4px;
+}
+
+.shareThisDlg_RightsLabel
 {
 	color: #5691A6;
 	padding-left: 4px;
 }
 
-.shareThis_ExpiresLabel, .shareThis_DefaultExpiresLabel
-{
-	color: #5691A6;
-	padding-left: 4px;
-}
-
-.shareThis_RightsLabel:hover, .shareThis_ExpiresLabel:hover, .shareThis_DefaultExpiresLabel:hover
+.shareThisDlg_RightsLabel:hover, .shareThisDlg_ExpiresLabel:hover, .shareThisDlg_DefaultExpiresLabel:hover, .shareThisDlg_shareWithTeamsLink:hover
 {
 	cursor: pointer;
 	background: url(images/blends/teal_slice.png) repeat-x;
@@ -643,6 +599,78 @@
 	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
+
+.shareThisDlg_RightsRB
+{
+	padding-right: 8px;
+}
+
+.shareThisDlg_ShareExpired
+{
+	color: #ED1C24 !important;
+}
+
+.shareThisDlg_shareLabel
+{
+	padding-top: 6px;
+}
+
+.shareThisDlg_shareWithTeamsLink
+{
+	color: #5691A6;
+	margin-left: 30px;
+}
+
+.shareThisDlg_ShareWithTeamsPanel
+{
+	padding-top: 10px;
+}
+
+.shareThisDlg_TextArea
+{
+	background-color: transparent;
+	border: 0 none;
+	color: #353838;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 14px;
+	height: 100px;
+	padding: 5px;
+	resize: none;
+	width: 95%;
+}
+
+.shareThisDlg_TextAreaBorder
+{
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: 1px;
+}
+
+
+.shareWithTeamsDlg_InstructionsLabel
+{
+	color: #4D6D8B;
+	font-size: 0.8em;
+	margin-bottom: 6px;
+}
+
+.shareWithTeamsDlg_MyTeamsPanel
+{
+	height: 150px;
+	overflow: auto;
+}
+
+/* End of styles used with the Share dialog */
+
+
+
+.groupMembershipGroupNameLabel
+{
+	font-size: 12px;
+	font-weight: bold;
+	padding-top: 8px;
+}
+
 
 
 

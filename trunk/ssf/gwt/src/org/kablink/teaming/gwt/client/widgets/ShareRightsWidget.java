@@ -87,7 +87,7 @@ public class ShareRightsWidget extends Composite
 		m_shareInfo = shareInfo;
 
 		m_rightsLabel = new InlineLabel( shareInfo.getShareRightsAsString() );
-		m_rightsLabel.addStyleName( "shareThis_RightsLabel" );
+		m_rightsLabel.addStyleName( "shareThisDlg_RightsLabel" );
 		m_rightsLabel.addClickHandler( this );
 		
 		imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
