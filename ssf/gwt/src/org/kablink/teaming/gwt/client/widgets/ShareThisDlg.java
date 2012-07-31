@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
@@ -73,6 +72,7 @@ import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.ShareExpirationDlg.ShareExpirationDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ShareWithTeamsDlg.ShareWithTeamsDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -94,7 +94,6 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
@@ -140,13 +139,13 @@ public class ShareThisDlg extends DlgBox
 	private ImageResource m_deleteImgR;
 	private Image m_defaultExpirationImg;
 	private FlexTable m_shareTable;
-	private FlowPanel m_shareWithTeamsPanel;
-	private FlowPanel m_myTeamsPanel;
+	private InlineLabel m_shareWithTeamsLabel;
 	private FlowPanel m_shareTablePanel;
 	private FlexCellFormatter m_shareCellFormatter;
 	private HTMLTable.RowFormatter m_shareRowFormatter;
 	private List<EntityId> m_entityIds;
 	private GwtSharingInfo m_sharingInfo;		// Holds all of the sharing info for the entities we are working with.
+	private List<TeamInfo> m_listOfTeams;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 	private AsyncCallback<VibeRpcResponse> m_readTeamsCallback;
 	private AsyncCallback<VibeRpcResponse> m_shareEntryCallback;
@@ -155,6 +154,8 @@ public class ShareThisDlg extends DlgBox
 	private ShareExpirationValue m_defaultShareExpirationValue;
 	private ShareExpirationDlg m_shareExpirationDlg;
 	private EditSuccessfulHandler m_editDefaultExpirationHandler;
+	private ShareWithTeamsDlg m_shareWithTeamsDlg;
+	private EditSuccessfulHandler m_editShareWithTeamsHandler;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -165,48 +166,6 @@ public class ShareThisDlg extends DlgBox
 		TeamingEvents.SEARCH_FIND_RESULTS,
 	};
 	
-	/**
-	 * This class is a checkbox with a TeamInfo object associated with it.
-	 */
-	public class TeamCheckBox extends Composite
-	{
-		private TeamInfo m_teamInfo;
-		private CheckBox m_checkbox;
-		
-		/**
-		 * 
-		 */
-		public TeamCheckBox( TeamInfo teamInfo, String label )
-		{
-			FlowPanel panel;
-			
-			panel = new FlowPanel();
-			m_checkbox = new CheckBox( label );
-			m_checkbox.addStyleName( "fontSize75em" );
-			panel.add( m_checkbox );
-			
-			m_teamInfo = teamInfo;
-			
-			initWidget( panel );
-		}
-		
-		/**
-		 * 
-		 */
-		public TeamInfo getTeamInfo()
-		{
-			return m_teamInfo;
-		}
-		
-		/**
-		 * 
-		 */
-		public Boolean getValue()
-		{
-			return m_checkbox.getValue();
-		}
-	}
-
 	/**
 	 * This widget is used to display a recipient's name.  If the recipient is a group
 	 * then the user can click on the name and see the members of the group.
@@ -291,7 +250,7 @@ public class ShareThisDlg extends DlgBox
 		@Override
 		public void onMouseOut( MouseOutEvent event )
 		{
-			m_nameLabel.removeStyleName( "shareThisDlgNameHover" );
+			m_nameLabel.removeStyleName( "shareThisDlg_NameHover" );
 		}
 
 		
@@ -301,7 +260,7 @@ public class ShareThisDlg extends DlgBox
 		@Override
 		public void onMouseOver( MouseOverEvent event )
 		{
-			m_nameLabel.addStyleName( "shareThisDlgNameHover" );
+			m_nameLabel.addStyleName( "shareThisDlg_NameHover" );
 		}
 	}
 	
@@ -327,7 +286,7 @@ public class ShareThisDlg extends DlgBox
 			m_shareItem = shareItem;
 
 			m_expiresLabel = new InlineLabel();
-			m_expiresLabel.addStyleName( "shareThis_ExpiresLabel" );
+			m_expiresLabel.addStyleName( "shareThisDlg_ExpiresLabel" );
 			m_expiresLabel.addClickHandler( this );
 			
 			// Has the share expired?
@@ -587,14 +546,14 @@ public class ShareThisDlg extends DlgBox
 		// Add the recipient name
 		m_shareCellFormatter.setColSpan( row, col, 1 );
 		m_shareCellFormatter.setWordWrap( row, col, false );
-		m_shareCellFormatter.addStyleName( row, col, "shareThisRecipientTable_Cell" );
+		m_shareCellFormatter.addStyleName( row, col, "shareThisDlg_RecipientTable_Cell" );
 		recipientNameWidget = new RecipientNameWidget( shareItem );
 		m_shareTable.setWidget( row, col,  recipientNameWidget );
 		++col;
 
 		// Add the recipient type
 		m_shareCellFormatter.setWordWrap( row, col, false );
-		m_shareCellFormatter.addStyleName( row, col, "shareThisRecipientTable_Cell" );
+		m_shareCellFormatter.addStyleName( row, col, "shareThisDlg_RecipientTable_Cell" );
 		type = shareItem.getRecipientTypeAsString();
 		m_shareTable.setText( row, col, type );
 		++col;
@@ -608,7 +567,7 @@ public class ShareThisDlg extends DlgBox
 			// Yes
 			// Add the "Item name"
 			m_shareCellFormatter.setWordWrap( row, col, false );
-			m_shareCellFormatter.addStyleName( row, col, "shareThisRecipientTable_Cell" );
+			m_shareCellFormatter.addStyleName( row, col, "shareThisDlg_RecipientTable_Cell" );
 			
 			label = new InlineLabel();
 			
@@ -619,8 +578,8 @@ public class ShareThisDlg extends DlgBox
 			{
 				entityName = entityName.substring( 0, 12 );
 				entityName += "...";
-				label.setText( entityName );
 			}
+			label.setText( entityName );
 			m_shareTable.setWidget( row, col, label );
 			++col;
 		}
@@ -630,7 +589,7 @@ public class ShareThisDlg extends DlgBox
 			ShareRightsWidget accessWidget;
 			
 			m_shareCellFormatter.setWordWrap( row, col, false );
-			m_shareCellFormatter.addStyleName( row, col, "shareThisRecipientTable_Cell" );
+			m_shareCellFormatter.addStyleName( row, col, "shareThisDlg_RecipientTable_Cell" );
 			accessWidget = new ShareRightsWidget( shareItem );
 			m_shareTable.setWidget( row, col, accessWidget );
 			++col;
@@ -641,7 +600,7 @@ public class ShareThisDlg extends DlgBox
 			ShareExpirationWidget expirationWidget;
 			
 			m_shareCellFormatter.setWordWrap( row, col, false );
-			m_shareCellFormatter.addStyleName( row, col, "shareThisRecipientTable_Cell" );
+			m_shareCellFormatter.addStyleName( row, col, "shareThisDlg_RecipientTable_Cell" );
 			expirationWidget = new ShareExpirationWidget( shareItem );
 			m_shareTable.setWidget( row, col, expirationWidget );
 			++col;
@@ -687,43 +646,12 @@ public class ShareThisDlg extends DlgBox
 				// If the height is greater than 200 pixels put an overflow auto on the panel
 				// and give the panel a fixed height of 200 pixels.
 				if ( height >= 200 )
-					m_shareTablePanel.addStyleName( "shareThisRecipientTablePanelHeight" );
+					m_shareTablePanel.addStyleName( "shareThisDlg_RecipientTablePanelHeight" );
 				else
-					m_shareTablePanel.removeStyleName( "shareThisRecipientTablePanelHeight" );
+					m_shareTablePanel.removeStyleName( "shareThisDlg_RecipientTablePanelHeight" );
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
-	}
-	
-	/**
-	 * 
-	 */
-	private void adjustMyTeamsPanelHeight()
-	{
-		if ( GwtClientHelper.getRequestInfo().isLicenseFilr() == false )
-		{
-			Scheduler.ScheduledCommand cmd;
-			
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				@Override
-				public void execute()
-				{
-					int height;
-					
-					// Get the height of the panel that holds the list of teams.
-					height = m_myTeamsPanel.getOffsetHeight();
-					
-					// If the height is greater than 150 pixels put an overflow auto on the panel
-					// and give the panel a fixed height of 150 pixels.
-					if ( height >= 150 )
-						m_myTeamsPanel.addStyleName( "shareThisMyTeamsPanelHeight" );
-					else
-						m_myTeamsPanel.removeStyleName( "shareThisMyTeamsPanelHeight" );
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
-		}
 	}
 	
 	/**
@@ -771,14 +699,17 @@ public class ShareThisDlg extends DlgBox
 			rightsPanel = new FlowPanel();
 			
 			m_viewRB = new RadioButton( "sharing-rights", GwtTeaming.getMessages().shareDlg_view() );
+			m_viewRB.addStyleName( "shareThisDlg_RightsRB" );
 			m_viewRB.setValue( Boolean.TRUE );
 			rightsPanel.add( m_viewRB );
 			
 			m_contributorRB = new RadioButton( "sharing-rights", GwtTeaming.getMessages().shareDlg_contributor() );
+			m_contributorRB.addStyleName( "shareThisDlg_RightsRB" );
 			m_contributorRB.setValue( Boolean.FALSE );
 			rightsPanel.add( m_contributorRB );
 			
 			m_ownerRB = new RadioButton( "sharing-rights", GwtTeaming.getMessages().shareDlg_owner() );
+			m_ownerRB.addStyleName( "shareThisDlg_RightsRB" );
 			m_ownerRB.setValue( Boolean.FALSE );
 			rightsPanel.add( m_ownerRB );
 			
@@ -796,7 +727,7 @@ public class ShareThisDlg extends DlgBox
 			mainTable.setText( row, 0, GwtTeaming.getMessages().shareDlg_expiresLabel() );
 		
 			m_expiresLabel = new InlineLabel( GwtTeaming.getMessages().shareDlg_expiresNever() );
-			m_expiresLabel.addStyleName( "shareThis_DefaultExpiresLabel" );
+			m_expiresLabel.addStyleName( "shareThisDlg_DefaultExpiresLabel" );
 
 			imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
 			m_defaultExpirationImg = new Image( imageResource );
@@ -938,6 +869,41 @@ public class ShareThisDlg extends DlgBox
 				};
 				m_addExternalUserImg.addClickHandler( clickHandler );
 			}
+			
+			// Add a "Share with teams" link
+			{
+				// Are we running Filr?
+				if ( GwtClientHelper.getRequestInfo().isLicenseFilr() == false )
+				{
+					ClickHandler clickHandler;
+					
+					// No, add a link the user can click on to invoke the "Share with teams" dialog
+					m_shareWithTeamsLabel = new InlineLabel( GwtTeaming.getMessages().shareWithTeams() );
+					m_shareWithTeamsLabel.addStyleName( "shareThisDlg_shareWithTeamsLink" );
+
+					// Add a click handler to the "add external user" image.
+					clickHandler = new ClickHandler()
+					{
+						@Override
+						public void onClick( ClickEvent clickEvent )
+						{
+							ScheduledCommand cmd = new ScheduledCommand()
+							{
+								@Override
+								public void execute()
+								{
+									// Invoke the "Share with teams" dialog.
+									invokeShareWithTeamsDlg();
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+					};
+					m_shareWithTeamsLabel.addClickHandler( clickHandler );
+
+					findTable.setWidget( 0, 2, m_shareWithTeamsLabel );
+				}
+			}
 
 			++row;
 		}
@@ -945,43 +911,22 @@ public class ShareThisDlg extends DlgBox
 		// Create a table to hold the list of shares
 		{
 			m_shareTablePanel = new FlowPanel();
-			m_shareTablePanel.addStyleName( "shareThisRecipientTablePanel" );
+			m_shareTablePanel.addStyleName( "shareThisDlg_RecipientTablePanel" );
 			
 			m_shareTable = new FlexTable();
-			m_shareTable.addStyleName( "shareThisRecipientTable" );
+			m_shareTable.addStyleName( "shareThisDlg_RecipientTable" );
 			m_shareTable.setCellSpacing( 0 );
 
 			m_shareTablePanel.add( m_shareTable );
 
 			mainRowFormatter.setVerticalAlign( row, HasVerticalAlignment.ALIGN_TOP );
 
-			//!!!mainTable.setText( row, 0, GwtTeaming.getMessages().shareDlg_sharingLabel() );
 			mainTable.setWidget( row, 1, m_shareTablePanel );
 			mainCellFormatter.setColSpan( row, 1, 2 );
 			
 			++row;
 		}
 
-		// Create a panel for all of the controls dealing with "my teams"
-		// Later, we will issue an ajax request to get the list of teams.  updateListOfTeams()
-		// will populate the ui.
-		// We don't do anything with Teams if we are running Filr
-		if ( GwtClientHelper.getRequestInfo().isLicenseFilr() == false )
-		{
-			Label label;
-
-			m_shareWithTeamsPanel = new FlowPanel();
-			m_shareWithTeamsPanel.addStyleName( "shareThisShareWithTeamsPanel" );
-			label = new Label( GwtTeaming.getMessages().shareWithTeams() );
-			label.addStyleName( "shareThisShareWithTeamsLabel" );
-			m_shareWithTeamsPanel.add( label );
-			
-			mainPanel.add( m_shareWithTeamsPanel );
-			
-			m_myTeamsPanel = new FlowPanel();
-			m_shareWithTeamsPanel.add( m_myTeamsPanel );
-		}
-		
 		// Create an image resource for the delete image.
 		m_deleteImgR = GwtTeaming.getImageBundle().delete();
 
@@ -1396,6 +1341,59 @@ public class ShareThisDlg extends DlgBox
 		return listOfShareItems;
 	}
 	
+	/**
+	 * Return a list of teams that have not been shared with.
+	 */
+	private List<TeamInfo> getListOfTeamsNotSharedWith()
+	{
+		ArrayList<TeamInfo> listOfTeams;
+		
+		listOfTeams = new ArrayList<TeamInfo>();
+		
+		// Do we have any teams?
+		if ( m_listOfTeams != null && m_listOfTeams.size() > 0 )
+		{
+			GwtShareItem shareItem;
+
+			shareItem = new GwtShareItem();
+			shareItem.setRecipientType( GwtRecipientType.TEAM );
+
+			// Yes
+			// Go through each team and see if the entities have already been shared with that team.
+			for ( TeamInfo nextTeamInfo : m_listOfTeams )
+			{
+				boolean alreadySharedWithTeam;
+				
+				shareItem.setRecipientName( nextTeamInfo.getTitle() );
+				shareItem.setRecipientId( Long.valueOf( nextTeamInfo.getBinderId() ) );
+				alreadySharedWithTeam = true;
+				
+				for ( EntityId nextEntityId : m_entityIds )
+				{
+					shareItem.setEntityId( nextEntityId );
+					shareItem.setEntityName( getEntityName( nextEntityId ) );
+					
+					// Has this entity already been shared with this team?
+					if ( findShareItem( shareItem ) == -1 )
+					{
+						// No
+						alreadySharedWithTeam = false;
+						break;
+					}
+				}
+				
+				// Have the entities already been shared with this team?
+				if ( alreadySharedWithTeam == false )
+				{
+					// No
+					listOfTeams.add( nextTeamInfo );
+				}
+			}
+		}
+		
+		return listOfTeams;
+	}
+	
 
 	/**
 	 * Return the selected share rights
@@ -1413,44 +1411,6 @@ public class ShareThisDlg extends DlgBox
 		
 		return ShareRights.UNKNOWN;
 	
-	}
-	
-	/**
-	 * Return the ids of each of the teams the user selected.
-	 */
-	private ArrayList<String> getTeamIds()
-	{
-		ArrayList<String> teamIds;
-		int i;
-		
-		teamIds = new ArrayList<String>();
-
-		if ( GwtClientHelper.getRequestInfo().isLicenseFilr() == false )
-		{
-			for (i = 0; i < m_myTeamsPanel.getWidgetCount(); ++i)
-			{
-				Widget nextWidget;
-				
-				// Get the next widget in the "my teams" panel.
-				nextWidget = m_myTeamsPanel.getWidget( i );
-				
-				// Is this widget a TeamCheckbox widget? 
-				if ( nextWidget instanceof TeamCheckBox )
-				{
-					TeamCheckBox teamCheckbox;
-					
-					// Yes, is the team selected?
-					teamCheckbox = (TeamCheckBox) nextWidget;
-					if ( teamCheckbox.getValue() == Boolean.TRUE )
-					{
-						// Yes, add it to the list.
-						teamIds.add( teamCheckbox.getTeamInfo().getBinderId() );
-					}
-				}
-			}
-		}
-		
-		return teamIds;
 	}
 	
 	/**
@@ -1537,7 +1497,7 @@ public class ShareThisDlg extends DlgBox
 	private void highlightRecipient( int row )
 	{
 		if ( row < m_shareTable.getRowCount() )
-			m_shareRowFormatter.addStyleName( row, "shareThisRecipientTable_highlightRow" );
+			m_shareRowFormatter.addStyleName( row, "shareThisDlg_RecipientTable_highlightRow" );
 	}
 	
 	/**
@@ -1597,23 +1557,23 @@ public class ShareThisDlg extends DlgBox
 					@Override
 					public void onSuccess( VibeRpcResponse response )
 					{
-						final List<TeamInfo> listOfTeams;
 						GetMyTeamsRpcResponseData responseData;
-						Scheduler.ScheduledCommand cmd;
 						
 						responseData = (GetMyTeamsRpcResponseData) response.getResponseData();
-						listOfTeams = responseData.getTeams();
-						
-						cmd = new Scheduler.ScheduledCommand()
+						m_listOfTeams = responseData.getTeams();
+						if ( m_shareWithTeamsLabel != null )
 						{
-							@Override
-							public void execute() 
+							if ( m_listOfTeams == null || m_listOfTeams.size() == 0 )
 							{
-								// Update the dialog with the list of teams.
-								updateListOfTeams( listOfTeams );
+								// Hide the "share with my teams" link.
+								m_shareWithTeamsLabel.setVisible( false );
 							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
+							else
+							{
+								// Show the "share with my teams" link
+								m_shareWithTeamsLabel.setVisible( true );
+							}
+						}
 					}
 				};
 			}
@@ -1668,6 +1628,114 @@ public class ShareThisDlg extends DlgBox
 		{
 			rpcCmd2 = new GetMyTeamsCmd();
 			GwtClientHelper.executeCommand( rpcCmd2, m_readTeamsCallback );
+		}
+	}
+	
+	/**
+	 * Invoke the "Share with teams" dialog
+	 */
+	private void invokeShareWithTeamsDlg()
+	{
+		if ( m_editShareWithTeamsHandler == null )
+		{
+			m_editShareWithTeamsHandler = new EditSuccessfulHandler()
+			{
+				@SuppressWarnings("unchecked")
+				@Override
+				public boolean editSuccessful( Object obj )
+				{
+					if ( obj != null && obj instanceof List )
+					{
+						Scheduler.ScheduledCommand cmd;
+						final List<TeamInfo> listOfSelectedTeams;
+						
+						listOfSelectedTeams = (List<TeamInfo>) obj;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								for ( TeamInfo nextTeamInfo : listOfSelectedTeams )
+								{
+									// Create a GwtShareItem for every entity we are sharing with.
+									for ( EntityId nextEntityId : m_entityIds )
+									{
+										GwtShareItem shareItem;
+
+										shareItem = new GwtShareItem();
+										shareItem.setEntityId( nextEntityId );
+										shareItem.setEntityName( getEntityName( nextEntityId ) );
+										shareItem.setRecipientId( Long.valueOf( nextTeamInfo.getBinderId() ) );
+										shareItem.setRecipientName( nextTeamInfo.getTitle() );
+										shareItem.setRecipientType( GwtRecipientType.TEAM );
+										shareItem.setShareRights( getSelectedShareRights() );
+										shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
+										shareItem.setComments( getComment() );
+										
+										// Is this external user already in the list?
+										if ( findShareItem( shareItem ) == -1 )
+										{
+											// No, add it
+											addShare( shareItem, true );
+										}
+										else
+										{
+											// Tell the user the item has already been shared with the team.
+											Window.alert( GwtTeaming.getMessages().shareDlg_alreadySharedWithSelectedRecipient( nextTeamInfo.getTitle() ) );
+										}
+									}
+								}
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+					
+					return true;
+				}
+			};
+		}
+
+		if ( m_shareWithTeamsDlg == null )
+		{
+			
+			ShareWithTeamsDlg.createAsync(
+										true,
+										true,
+										m_editShareWithTeamsHandler,
+										new ShareWithTeamsDlgClient()
+			{
+				@Override
+				public void onUnavailable() 
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( ShareWithTeamsDlg swtDlg )
+				{
+					m_shareWithTeamsDlg = swtDlg;
+					invokeShareWithTeamsDlg();
+				}
+			} );
+		}
+		else
+		{
+			List<TeamInfo> listOfTeams;
+			
+			// Get the list of teams that have not been shared with.
+			listOfTeams = getListOfTeamsNotSharedWith();
+			
+			if ( listOfTeams == null || listOfTeams.size() == 0 )
+			{
+				Window.alert( GwtTeaming.getMessages().shareDlg_noTeamsToShareWith() );
+			}
+			else
+			{
+				// Invoke the "share with teams" dialog.
+				m_shareWithTeamsDlg.init( listOfTeams );
+				m_shareWithTeamsDlg.show( true );
+			}
 		}
 	}
 
@@ -1794,49 +1862,6 @@ public class ShareThisDlg extends DlgBox
 		}
 
 		m_headerImg.setResource( imgResource );
-	}
-	
-	/**
-	 * Create a checkbox for every team so the user can select the teams that should
-	 * receive an email.
-	 */
-	private void updateListOfTeams( List<TeamInfo> listOfTeams )
-	{
-		int count = 0;
-		Iterator<TeamInfo> teamIT;
-		
-		if ( GwtClientHelper.getRequestInfo().isLicenseFilr() == false )
-		{
-			m_myTeamsPanel.clear();
-			m_myTeamsPanel.removeStyleName( "shareThisMyTeamsPanelHeight" );
-			
-			teamIT = listOfTeams.iterator();
-			while ( teamIT.hasNext() )
-			{
-				TeamInfo nextTeamInfo;
-				TeamCheckBox checkbox;
-	
-				nextTeamInfo = teamIT.next();
-	
-				// Create a checkbox for this team.
-				checkbox = new TeamCheckBox( nextTeamInfo, nextTeamInfo.getTitle() );
-				m_myTeamsPanel.add( checkbox );
-				
-				++count;
-			}
-	
-			// Do we have any teams?
-			if ( count == 0 )
-			{
-				// No, Hide the panel that holds the teams.
-				m_shareWithTeamsPanel.setVisible( false );
-			}
-			else
-			{
-				m_shareWithTeamsPanel.setVisible( true );
-				adjustMyTeamsPanelHeight();
-			}
-		}
 	}
 	
 	/**
@@ -1972,7 +1997,10 @@ public class ShareThisDlg extends DlgBox
 						
 						shareItem = new GwtShareItem();
 						shareItem.setRecipientName( user.getShortDisplayName() );
-						shareItem.setRecipientType( GwtRecipientType.USER );
+						if ( user.getIdentitySource() == GwtUser.IdentitySource.EXTERNAL )
+							shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
+						else
+							shareItem.setRecipientType( GwtRecipientType.USER );
 						shareItem.setRecipientId( Long.valueOf( user.getUserId() ) );
 					}
 					// Are we dealing with a group?
@@ -2155,7 +2183,7 @@ public class ShareThisDlg extends DlgBox
 		
 		// Add a "Comments:" label before the textbox.
 		comments = new Label( GwtTeaming.getMessages().commentsLabel() );
-		comments.addStyleName( "shareThisCommentsLabel" );
+		comments.addStyleName( "shareThisDlg_CommentsLabel" );
 		m_mainPanel.add( comments );
 		
 		// Create a textbox
@@ -2185,8 +2213,8 @@ public class ShareThisDlg extends DlgBox
 		        }
 			}
 		} );
-		m_msgTextArea.addStyleName( "shareThisTextArea" );
-		m_msgTextArea.addStyleName( "shareThisTextAreaBorder" );
+		m_msgTextArea.addStyleName( "shareThisDlg_TextArea" );
+		m_msgTextArea.addStyleName( "shareThisDlg_TextAreaBorder" );
 		inputPanel.add( m_msgTextArea );
 		m_mainPanel.add( inputPanel );
 		
@@ -2291,7 +2319,7 @@ public class ShareThisDlg extends DlgBox
 	private void unhighlightRecipient( int row )
 	{
 		if ( row < m_shareTable.getRowCount() )
-			m_shareRowFormatter.removeStyleName( row, "shareThisRecipientTable_highlightRow" );
+			m_shareRowFormatter.removeStyleName( row, "shareThisDlg_RecipientTable_highlightRow" );
 	}
 	
 	/*
