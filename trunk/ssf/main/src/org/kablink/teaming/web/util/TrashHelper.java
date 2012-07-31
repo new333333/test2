@@ -1247,7 +1247,8 @@ public class TrashHelper {
 			// ...add in the sort information...
 			boolean sortDescend = GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false);
 			String  sortBy      = GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
-			crit.addOrder(new Order(sortBy, sortDescend));
+			crit.addOrder(new Order(Constants.ENTITY_FIELD, (!sortDescend)));
+			crit.addOrder(new Order(sortBy,                 (!sortDescend)));
 		}
 		
 		// ...and issue the query and return the entries.
