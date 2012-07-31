@@ -2581,7 +2581,7 @@ public class GwtViewHelper {
 				else {
 					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
 					options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD    );
-					options.put(ObjectKeys.SEARCH_SORT_DESCEND,           false                     );
+					options.put(ObjectKeys.SEARCH_SORT_DESCEND,           fdd.getFolderSortDescend());
 					options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY,      fdd.getFolderSortBy()     );
 					options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, fdd.getFolderSortDescend());
 					searchResults = bs.getFolderModule().getEntries(folderId, options);
