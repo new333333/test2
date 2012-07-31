@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -519,7 +520,7 @@ public class GwtShareHelper
 			{
 			case AFTER_DAYS:
 			{
-				HistoryStamp historyStamp;
+				HistoryStamp historyStamp = null;
 				long milliSecToExpire;
 				Date creationDate;
 
@@ -527,7 +528,9 @@ public class GwtShareHelper
 				milliSecToExpire = daysToExpire * MILLISEC_IN_A_DAY;
 
 				// Calculate the end date based on the days-to-expire.
-				historyStamp = shareItem.getCreation();
+				if ( shareItem != null )
+					historyStamp = shareItem.getCreation();
+				
 				if ( historyStamp != null )
 					creationDate = historyStamp.getDate();
 				else
@@ -842,6 +845,48 @@ public class GwtShareHelper
 
 		// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
 		desc = "<a href=\"" + PermaLinkUtil.getPermalinkForEmail( sharedEntity ) + "\">" + title + "</a><br/><br/>" + comments;
+		desc += "<br/>";
+		// Append when the share expires
+		{
+			ShareExpirationValue expirationValue;
+			
+			expirationValue = shareItem.getShareExpirationValue();
+			switch ( expirationValue.getExpirationType() )
+			{
+			case NEVER:
+				desc += NLT.get( "share.expires.never" );
+				break;
+			
+			case AFTER_DAYS:
+			{
+				int daysToExpire;
+
+				daysToExpire = expirationValue.getValue().intValue();
+				desc += NLT.get( "share.expires.after", new Object[]{ daysToExpire } );
+				break;
+			}
+			
+			case ON_DATE:
+			{
+				Long endDate;
+				
+				endDate = expirationValue.getValue();
+				if ( endDate != null )
+				{
+					Date date;
+					DateFormat dateFmt;
+					String dateText;
+					
+					date = new Date( endDate );
+					dateFmt = DateFormat.getDateTimeInstance( DateFormat.MEDIUM, DateFormat.SHORT, NLT.getTeamingLocale() );
+					dateText = dateFmt.format( date );
+					
+					desc += NLT.get( "share.expires.on", new Object[]{ dateText } );
+				}
+				break;
+			}
+			}
+		}
 		body = new Description( desc );
 
 		mailTitle = NLT.get( "relevance.mailShared", new Object[]{Utils.getUserTitle( currentUser )} );
