@@ -33,14 +33,11 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.ShareItem;
-import org.kablink.teaming.domain.ShareItem.RecipientType;
-import org.kablink.teaming.gwt.client.util.ShareRights;
+import org.kablink.teaming.web.util.MiscUtil;
 
 /**
  * Used to track items for the 'Shared by/with Me' collection points.
@@ -50,25 +47,19 @@ import org.kablink.teaming.gwt.client.util.ShareRights;
 public class GwtSharedMeItem {
 	private DefinableEntity			m_entity;			//
 	private List<GwtPerShareInfo>	m_perShareInfos;	//
-	private Long					m_id;				//
-	private Long					m_sharerId;			//
 	private String					m_entityFamily;		//
 	
 	/**
 	 * Constructor method.
 	 * 
-	 * @param id
-	 * @param sharerId
 	 * @param entity
 	 * @param entityFamily
 	 */
-	public GwtSharedMeItem(Long id, Long sharerId, DefinableEntity entity, String entityFamily) {
+	public GwtSharedMeItem(DefinableEntity entity, String entityFamily) {
 		// Initialize the super class...
 		super();
 		
 		// ...store the parameters...
-		setId(          id          );
-		setSharerId(    sharerId    );
 		setEntity(      entity      );
 		setEntityFamily(entityFamily);
 		
@@ -83,8 +74,6 @@ public class GwtSharedMeItem {
 	 */
 	public DefinableEntity       getEntity()         {return m_entity;       }
 	public List<GwtPerShareInfo> getPerShareInfos()  {return m_perShareInfos;}
-	public Long                  getId()             {return m_id;           }
-	public Long                  getSharerId()       {return m_sharerId;     }
 	public String                getEntityFamily()   {return m_entityFamily; }
 	
 	/**
@@ -93,30 +82,7 @@ public class GwtSharedMeItem {
 	 * @param
 	 */
 	public void setEntity(      DefinableEntity entity)       {m_entity       = entity;      }
-	public void setId(          Long            id)           {m_id           = id;          }
-	public void setSharerId(    Long            sharerId)     {m_sharerId     = sharerId;    }
 	public void setEntityFamily(String          entityFamily) {m_entityFamily = entityFamily;}
-	
-	/**
-	 * Adds a new GwtPerShareInfo object to the List<GwtPerShareInfo>.
-	 * 
-	 * @param recipientId
-	 * @param recipientType
-	 * @param shareDate
-	 * @param rights
-	 * @param rightsExpire
-	 * @param comment
-	 */
-	public void addPerShareInfo(Long recipientId, RecipientType recipientType, Date shareDate, ShareRights rights, Date rightsExpire, String comment) {
-		m_perShareInfos.add(
-			new GwtPerShareInfo(
-				recipientId,
-				recipientType,
-				shareDate,
-				rights,
-				rightsExpire,
-				comment));
-	}
 	
 	/**
 	 * Adds a new GwtPerShareInfo object to the List<GwtPerShareInfo>.
@@ -124,14 +90,19 @@ public class GwtSharedMeItem {
 	 * @param si
 	 */
 	public void addPerShareInfo(ShareItem si) {
-		// Always use the initial form of the method.
-		addPerShareInfo(
+		// Construct a new per share info for the share item...
+		GwtPerShareInfo psi = new GwtPerShareInfo(
+			si.getId(),
+			si.getModification().getPrincipal().getId(),
 			si.getRecipientId(),
 			si.getRecipientType(),
 			si.getCreation().getDate(),
 			GwtShareHelper.getShareRightsFromRightSet(si.getRightSet()),
 			si.getEndDate(),
 			si.getComment());
+		
+		// ...and add it to the list.
+		m_perShareInfos.add(psi);
 	}
 	
 	/**
@@ -139,20 +110,21 @@ public class GwtSharedMeItem {
 	 * given DefinableEntity.  If one is found, it's returned.
 	 * Otherwise, null is returned.
 	 * 
-	 * @param entity
+	 * @param entityId
+	 * @param entityType
 	 * @param siList
 	 * 
 	 * @return
 	 */
-	public static GwtSharedMeItem findEntityInList(DefinableEntity entity, List<GwtSharedMeItem> siList) {
+	public static GwtSharedMeItem findShareMeInList(Long entityId, String entityType, List<GwtSharedMeItem> siList) {
 		// If we have an entity to find and there are any share
 		// items in the list...
-		if ((null != entity) && (null != siList) && (!(siList.isEmpty()))) {
+		if ((null != entityId) && MiscUtil.hasString(entityType) && (null != siList) && (!(siList.isEmpty()))) {
 			// ...scan them.
 			for (GwtSharedMeItem si:  siList) {
 				// Is this share item the entity in question?
 				DefinableEntity siEntity = si.getEntity(); 
-				if ((siEntity.getId().equals(entity.getId())) && siEntity.getEntityType().equals(entity.getEntityType())) {
+				if ((siEntity.getId().equals(entityId)) && siEntity.getEntityType().name().equalsIgnoreCase(entityType)) {
 					// Yes!  Return it.
 					return si;
 				}
@@ -165,62 +137,49 @@ public class GwtSharedMeItem {
 	}
 
 	/**
-	 * Searches a List<GwtSharedMeItem> for one referring to a
-	 * specific entity based on an entity type and ID.  If one is
-	 * found, it's returned.  Otherwise, null is returned.
+	 * Searches a List<GwtSharedMeItem> for one referring to the
+	 * given DefinableEntity.  If one is found, it's returned.
+	 * Otherwise, null is returned.
 	 * 
-	 * @param searchId
-	 * @param isEntityFolderEntry
-	 * @param docId
+	 * @param entity
 	 * @param siList
 	 * 
 	 * @return
 	 */
-	public static GwtSharedMeItem findEntityInList(Long searchId, boolean isEntityFolderEntry, Long docId, List<GwtSharedMeItem> siList) {
+	public static GwtSharedMeItem findShareMeInList(DefinableEntity entity, List<GwtSharedMeItem> siList) {
+		// If we have an entity to find...
+		if (null != entity) {
+			// ...always use the initial form of the method.
+			return findShareMeInList(entity.getId(), entity.getEntityType().name(), siList);
+		}
+
+		// If we get here, we couldn't find the entity in question.
+		// Return null.
+		return null;
+	}
+
+	/**
+	 * Searches a List<GwtSharedMeItem> for one referring to a
+	 * specific share item.  If one is found, it's returned.
+	 * Otherwise, null is returned.
+	 * 
+	 * @param shareId
+	 * @param siList
+	 * 
+	 * @return
+	 */
+	public static GwtSharedMeItem findShareMeInList(Long shareId, List<GwtSharedMeItem> siList) {
 		// Do we have any GwtSharedMeItem's to search?
-		if ((null != docId) && (null != siList) && (!(siList.isEmpty()))) {
+		if ((null != siList) && (!(siList.isEmpty()))) {
 			// Yes!  Scan them.
-			boolean bySearchId = (null != searchId);
 			for (GwtSharedMeItem si:  siList) {
-				// Were we given a searchId to find?
-				if (bySearchId) {
-					// Yes!  Is this one were looking for?
-					if (searchId.equals(si.getId())) {
-						// Yes!  Return it.
+				// Scan this GwtSharedMeItem's GwtPerShareInfo's.
+				for (GwtPerShareInfo siPSI:  si.getPerShareInfos()) {
+					// Is this one were looking for?
+					if (shareId.equals(siPSI.getShareId())) {
+						// Yes!  Return its GwtSharedMeItem.
 						return si;
 					}
-					
-					// Skip it.  With a searchId, we only match by
-					// that.
-					continue;
-				}
-				
-				// Are we looking for a folder entry?
-				DefinableEntity	entity   = si.getEntity();
-				Long			entityId = entity.getId();
-				if (isEntityFolderEntry) {
-					// Yes!  Is this the GwtSharedMeItem for it?
-					if ((!(entity instanceof FolderEntry)) || (!(entityId.equals(docId)))) {
-						// No!  Skip it.
-						continue;
-					}
-					
-					// Yes, this is the GwtSharedMeItem for it!
-					// Return it.
-					return si;
-				}
-				
-				else {
-					// No, we must be looking for a binder!  Is
-					// this the GwtSharedMeItem for it?
-					if ((entity instanceof FolderEntry) || (!(entityId.equals(docId)))) {
-						// No!  Skip it.
-						continue;
-					}
-					
-					// Yes, this is the GwtSharedMeItem for it!
-					// Return it.
-					return si;
 				}
 			}
 		}

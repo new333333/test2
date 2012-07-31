@@ -293,6 +293,7 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 			case TEAM:
 				// Group or team assignee!  Generate an appropriate
 				// image...
+				assignmentIndex += 1;
 				VibeFlowPanel imgPanel = new VibeFlowPanel();
 				imgPanel.addStyleName("vibe-dataTableAssignment-control displayInline verticalAlignTop");
 				Image assigneeImg = new Image();

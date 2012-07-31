@@ -62,6 +62,7 @@ import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.GuestColumn;
 import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
 import org.kablink.teaming.gwt.client.datatable.RatingColumn;
+import org.kablink.teaming.gwt.client.datatable.ShareStringValueColumn;
 import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg;
 import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg.SizeColumnsDlgClient;
 import org.kablink.teaming.gwt.client.datatable.StringColumn;
@@ -122,6 +123,7 @@ import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
+import org.kablink.teaming.gwt.client.util.ShareStringValue;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -1144,7 +1146,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// sort for each one.  Is this a column that should show
 			// a download link for? 
 			VibeColumn<FolderRow, ?> column;
-			String cName = fc.getColumnEleName();
+			final String cName = fc.getColumnEleName();
 			if (FolderColumn.isColumnDownload(cName)) {
 				// Yes!  Create a DownloadColumn for it.
 				column = new DownloadColumn<FolderRow>(fc) {
@@ -1265,7 +1267,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			
 			// No, this column doesn't show a custom column either!
 			// Does it display assignment information of some sort?
-			else if (AssignmentInfo.isColumnAssigneeInfo(cName) || FolderColumn.isColumnSharedBy(cName)) {
+			else if (AssignmentInfo.isColumnAssigneeInfo(cName) ||
+			         FolderColumn.isColumnSharedBy(      cName) ||
+			         FolderColumn.isColumnSharedWith(    cName)) {
 				// Yes!  Create an AssignmentColumn for it.
 				column = new AssignmentColumn<FolderRow>(fc) {
 					@Override
@@ -1323,9 +1327,27 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				};
 			}
 			
+			// No, this column isn't an email address either!  Is it a
+			// share string value?
+			else if (FolderColumn.isColumnShareStringValue(cName)) {
+				// Yes!  Create a ShareStringValueColumn for it.
+				column = new ShareStringValueColumn<FolderRow>(fc) {
+					@Override
+					public List<ShareStringValue> getValue(FolderRow fr) {
+						List<ShareStringValue> reply;
+						if      (cName.equals(FolderColumn.COLUMN_SHARE_ACCESS))     reply = fr.getColumnValueAsShareAccessInfos(    fc);
+						else if (cName.equals(FolderColumn.COLUMN_SHARE_DATE))       reply = fr.getColumnValueAsShareDateInfos(      fc);
+						else if (cName.equals(FolderColumn.COLUMN_SHARE_EXPIRATION)) reply = fr.getColumnValueAsShareExpirationInfos(fc);
+						else if (cName.equals(FolderColumn.COLUMN_SHARE_MESSAGE))    reply = fr.getColumnValueAsShareMessageInfos(   fc);
+						else                                                         reply = null;
+						return reply;
+					}
+				};
+			}
+			
 			else {
-				// No, this column isn't an email address either!
-				// Define a StringColumn for it.
+				// No, this column isn't a shared value either!  Define
+				// a StringColumn for it.
 				column = new StringColumn<FolderRow>(fc) {
 					@Override
 					public String getValue(FolderRow fr) {

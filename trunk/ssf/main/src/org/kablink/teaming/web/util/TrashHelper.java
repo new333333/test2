@@ -1245,10 +1245,10 @@ public class TrashHelper {
 		boolean sortDisabled = GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_NONE, false);
 		if (!sortDisabled) {
 			// ...add in the sort information...
-			boolean sortDescend = GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false);
-			String  sortBy      = GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
-			crit.addOrder(new Order(Constants.ENTITY_FIELD, (!sortDescend)));
-			crit.addOrder(new Order(sortBy,                 (!sortDescend)));
+			boolean sortAscend = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
+			String  sortBy     =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
+			crit.addOrder(new Order(Constants.ENTITY_FIELD, sortAscend));
+			crit.addOrder(new Order(sortBy,                 sortAscend));
 		}
 		
 		// ...and issue the query and return the entries.
