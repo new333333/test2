@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.util.ShareRights;
  * @author drfoster@novell.com
  */
 public class GwtPerShareInfo {
+	private boolean			m_rightsExpired;	//
 	private Date			m_rightsExpire;		//
 	private Date			m_shareDate;		//
 	private Long			m_recipientId;		//
@@ -54,7 +55,7 @@ public class GwtPerShareInfo {
 	
 	/**
 	 * Constructor method.
-	 * 
+	 *
 	 * @param shareId
 	 * @param sharerId
 	 * @param recipientId
@@ -62,9 +63,10 @@ public class GwtPerShareInfo {
 	 * @param shareDate
 	 * @param rights
 	 * @param rightsExpire
+	 * @param rightsExpired
 	 * @param comment
 	 */
-	public GwtPerShareInfo(Long shareId, Long sharerId, Long recipientId, RecipientType recipientType, Date shareDate, ShareRights rights, Date rightsExpire, String comment) {
+	public GwtPerShareInfo(Long shareId, Long sharerId, Long recipientId, RecipientType recipientType, Date shareDate, ShareRights rights, Date rightsExpire, boolean rightsExpired, String comment) {
 		// Initialize the super class...
 		super();
 		
@@ -76,6 +78,7 @@ public class GwtPerShareInfo {
 		setShareDate(    shareDate    );
 		setRights(       rights       );
 		setRightsExpire( rightsExpire );
+		setRightsExpired(rightsExpired);
 		setComment(      comment      );
 	}
 	
@@ -84,6 +87,7 @@ public class GwtPerShareInfo {
 	 * 
 	 * @return
 	 */
+	public boolean       isRightsExpired()  {return m_rightsExpired;}
 	public Date          getRightsExpire()  {return m_rightsExpire; }
 	public Date          getShareDate()     {return m_shareDate;    }
 	public Long          getRecipientId()   {return m_recipientId;  }
@@ -98,6 +102,7 @@ public class GwtPerShareInfo {
 	 * 
 	 * @param
 	 */
+	public void setRightsExpired(boolean       rightsExpired) {m_rightsExpired = rightsExpired;}
 	public void setRightsExpire( Date          rightsExpire)  {m_rightsExpire  = rightsExpire; }
 	public void setShareDate(    Date          shareDate)     {m_shareDate     = shareDate;    }
 	public void setRecipientId(  Long          recipientId)   {m_recipientId   = recipientId;  }

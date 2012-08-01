@@ -45,8 +45,8 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
- * Data table cell that represents a list of assignments (for calendar
- * entries, tasks or milestones.)
+ * Data table cell that represents a list of string values 
+ * corresponding to a list of values for a share item.
  * 
  * @author drfoster@novell.com
  */
@@ -94,7 +94,10 @@ public class ShareStringValueCell extends AbstractCell<List<ShareStringValue>> {
 			svsIndex += 1;
 			InlineLabel il = new InlineLabel(ssv.getValue());
 			il.addStyleName("vibe-dataTableShareStringValue-label");
-			il.setWordWrap(false);
+			String addedStyle = ssv.getAddedStyle();
+			if (GwtClientHelper.hasString(addedStyle)) {
+				il.addStyleName(addedStyle);
+			}
 			fp.add(il);
 			renderPanel.add(fp);
 		}

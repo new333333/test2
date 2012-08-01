@@ -33,7 +33,11 @@
 
 package org.kablink.teaming.gwt.client.binderviews;
 
+import java.util.Map;
+
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 import com.google.gwt.core.client.GWT;
@@ -58,6 +62,27 @@ public class CollectionView extends DataTableFolderViewBase {
 		super(folderInfo, viewReady, "vibe-collectionDataTable");
 	}
 	
+	/**
+	 * Resets the columns as appropriate for the collection view.
+	 * 
+	 * Unless otherwise specified the widths default to be a percentage
+	 * value.
+	 * 
+	 * Overrides the DataTableFolderViewBase.adjustFixedColumnWidths() method.
+	 * 
+	 * @param columnWidths
+	 */
+	@Override
+	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
+		columnWidths.put(FolderColumn.COLUMN_TITLE,             new ColumnWidth(20));
+		columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_BY,   new ColumnWidth(13));
+		columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_WITH, new ColumnWidth(13));
+		columnWidths.put(FolderColumn.COLUMN_SHARE_DATE,        new ColumnWidth( 8));
+		columnWidths.put(FolderColumn.COLUMN_SHARE_EXPIRATION,  new ColumnWidth(12));
+		columnWidths.put(FolderColumn.COLUMN_SHARE_ACCESS,      new ColumnWidth( 7));
+		columnWidths.put(FolderColumn.COLUMN_SHARE_MESSAGE,     new ColumnWidth(40));
+	}
+
 	/**
 	 * Called from the base class to complete the construction of this
 	 * collection view.

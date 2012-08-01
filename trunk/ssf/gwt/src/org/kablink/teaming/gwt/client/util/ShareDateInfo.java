@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import java.util.Date;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -40,7 +42,11 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *  
  * @author drfoster
  */
-public class ShareDateInfo extends ShareStringValue implements IsSerializable {
+public class ShareDateInfo implements IsSerializable, ShareStringValue {
+	private Date	m_shareDate;	//
+	private String	m_addedStyle;	//
+	private String	m_stringValue;	//
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -53,15 +59,17 @@ public class ShareDateInfo extends ShareStringValue implements IsSerializable {
 	
 	/**
 	 * Constructor method.
-	 * 
+	 *
 	 * @param shareDate
+	 * @param dateString
 	 */
-	public ShareDateInfo(String shareDate) {
+	public ShareDateInfo(Date shareDate, String dateString) {
 		// Initialize this object...
 		this();
 
 		// ...and store the parameters.
-		setShareDate(shareDate);
+		setShareDate( shareDate  );
+		setDateString(dateString);
 	}
 	
 	/**
@@ -69,12 +77,46 @@ public class ShareDateInfo extends ShareStringValue implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public String getShareDate() {return getValue();}
+	public Date   getShareDate()  {return m_shareDate;}
+	public String getDateString() {return getValue(); }
+	
+	/**
+	 * Implements the ShareStringValue.getAddedStyle() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public String getAddedStyle() {return m_addedStyle;}
+	
+	/**
+	 * Implements the ShareStringValue.getValue() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public String getValue() {return m_stringValue;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setShareDate(String shareDate) {setValue(shareDate);}
+	public void setShareDate( Date   shareDate)  {m_shareDate = shareDate;}
+	public void setDateString(String dateString) {setValue(dateString);   }
+	
+	/**
+	 * Implements the ShareStringValue.setAddedStyle() method.
+	 * 
+	 * @param addedStyle
+	 */
+	@Override
+	public void setAddedStyle(String addedStyle) {m_addedStyle = addedStyle;}
+	
+	/**
+	 * Implements the ShareStringValue.setValue() method.
+	 * 
+	 * @param stringValue
+	 */
+	@Override
+	public void setValue(String stringValue) {m_stringValue = stringValue;}
 }

@@ -652,12 +652,6 @@ public class GwtViewHelper {
 		boolean			sharedFiles = getUserViewSharedFiles(request, CollectionType.SHARED_WITH_ME);
 		SharingModule	sm          = bs.getSharingModule();
 		for (ShareItem si:  shareItems) {
-			// Is this share item expired?
-			if (si.isExpired()) {
-				// Yes!  Skip it.
-				continue;
-			}
-			
 			// Is this share item's entity in the trash?
 			DefinableEntity siEntity = sm.getSharedEntity(si);
 			if (GwtServerHelper.isEntityPreDeleted(siEntity)) {
@@ -2081,8 +2075,8 @@ public class GwtViewHelper {
 				default:
 				case FILE_SPACES:     baseNameKey += "filespaces.";   columns = new String[]{"title", "rights", "descriptionHtml"};                                                           break;
 				case MY_FILES:        baseNameKey += "myfiles.";      columns = new String[]{"title", "family", "date"};                                                                      break;
-				case SHARED_BY_ME:    baseNameKey += "sharedByMe.";   columns = new String[]{"title", "share_sharedWith", "share_message", "share_date", "share_expiration", "share_access"}; break;
-				case SHARED_WITH_ME:  baseNameKey += "sharedWithMe."; columns = new String[]{"title", "share_sharedBy",   "share_message", "share_date", "share_expiration", "share_access"}; break;
+				case SHARED_BY_ME:    baseNameKey += "sharedByMe.";   columns = new String[]{"title", "share_sharedWith", "share_date", "share_expiration", "share_access", "share_message"}; break;
+				case SHARED_WITH_ME:  baseNameKey += "sharedWithMe."; columns = new String[]{"title", "share_sharedBy",   "share_date", "share_expiration", "share_access", "share_message"}; break;
 				}
 				columnNames = getColumnsLHMFromAS(columns);
 			}
@@ -3656,7 +3650,6 @@ public class GwtViewHelper {
 	 * Returns a non-null List<ShareAccessInfo> build from a share
 	 * list.
 	 */
-	@SuppressWarnings("unused")
 	private static List<ShareAccessInfo> getShareAccessListFromShares(List<GwtPerShareInfo> perShareInfos) {
 		// Allocate a List<ShareAccessInfo> to return.
 		List<ShareAccessInfo> reply = new ArrayList<ShareAccessInfo>();
@@ -3664,12 +3657,8 @@ public class GwtViewHelper {
 		// Scan the shares...
 		for (GwtPerShareInfo si:  perShareInfos) {
 			// ...creating a ShareAccessInfo for each share.
-			ShareRights	rights       = si.getRights();
-			Date		rightsExpire = null;	//! si.getRightsExpire();
-
-			// Map the share rights to an access string we can
-			// display...
 			String access;
+			ShareRights	rights = si.getRights();
 			if (null == rights) {
 				access = "";
 			}
@@ -3681,14 +3670,6 @@ public class GwtViewHelper {
 				case CONTRIBUTOR:  access = NLT.get("collections.access.contributor"); break;
 				case OWNER:        access = NLT.get("collections.access.owner");       break;
 				}
-			}
-			if (MiscUtil.hasString(access) && (null != rightsExpire)) {
-				access += (" " +
-					NLT.get(
-						"collections.access.expires",
-						new String[] {
-							GwtServerHelper.getDateString(rightsExpire)
-						}));
 			}
 			reply.add(new ShareAccessInfo(access));
 		}
@@ -3709,9 +3690,9 @@ public class GwtViewHelper {
 		// Scan the shares...
 		for (GwtPerShareInfo si:  perShareInfos) {
 			// ...creating an ShareDateInfo for each share.
-			Date	date       = si.getShareDate();
-			String	dateString = ((null == date) ? "" : GwtServerHelper.getDateString(date));
-			reply.add(new ShareDateInfo(dateString));
+			Date	shareDate  = si.getShareDate();
+			String	dateString = ((null == shareDate) ? "" : GwtServerHelper.getDateString(shareDate));
+			reply.add(new ShareDateInfo(shareDate, dateString));
 		}
 
 		// If we get here, reply refers to the List<ShareDateInfo>
@@ -3730,9 +3711,17 @@ public class GwtViewHelper {
 		// Scan the shares...
 		for (GwtPerShareInfo si:  perShareInfos) {
 			// ...creating an ShareExpirationInfo for each share.
-			Date	date       = si.getRightsExpire();
-			String	dateString = ((null == date) ? NLT.get("collections.access.expires.never") : GwtServerHelper.getDateString(date));
-			reply.add(new ShareExpirationInfo(dateString));
+			boolean	isExpired        = si.isRightsExpired();
+			Date	expirationDate   = si.getRightsExpire();
+			String	expirationString = ((null == expirationDate) ? NLT.get("collections.access.expires.never") : GwtServerHelper.getDateString(expirationDate));
+			if (isExpired) {
+				expirationString = NLT.get("collections.access.expired", new String[]{expirationString});
+			}
+			ShareExpirationInfo	sei = new ShareExpirationInfo(expirationDate, isExpired, expirationString);
+			if (isExpired) {
+				sei.setAddedStyle("vibe-dataTableShareStringValue-expired");
+			}
+			reply.add(sei);
 		}
 
 		// If we get here, reply refers to the List<ShareExpirationInfo>
