@@ -57,6 +57,7 @@ import org.kablink.teaming.domain.ShareItem.RightSet;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.ShareItem;
+import org.kablink.teaming.domain.ShareItem.ShareRole;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
@@ -125,11 +126,8 @@ public class GwtShareHelper
 	{
 		if ( m_contributorRightSet == null )
 		{
-			m_contributorRightSet = new RightSet();
-			m_contributorRightSet.setReadEntries( true );
-			m_contributorRightSet.setCreateEntries( true );
-			m_contributorRightSet.setModifyEntries( true );
-			m_contributorRightSet.setDeleteEntries( true );
+			ShareRole shareRole = new ShareRole(ShareRole.Role.CONTRIBUTOR);
+			m_contributorRightSet = shareRole.getRightSet();
 		}
 		
 		return m_contributorRightSet;
@@ -380,7 +378,8 @@ public class GwtShareHelper
 	{
 		if ( m_ownerRightSet == null )
 		{
-			m_ownerRightSet = new RightSet();
+			ShareRole shareRole = new ShareRole(ShareRole.Role.OWNER);
+			m_ownerRightSet = shareRole.getRightSet();
 			m_ownerRightSet.setReadEntries( true );
 			m_ownerRightSet.setCreateEntries( true );
 			m_ownerRightSet.setModifyEntries( true );
@@ -774,8 +773,8 @@ public class GwtShareHelper
 	{
 		if ( m_viewRightSet == null )
 		{
-			m_viewRightSet = new RightSet();
-			m_viewRightSet.setReadEntries( true );
+			ShareRole shareRole = new ShareRole(ShareRole.Role.VIEW);
+			m_viewRightSet = shareRole.getRightSet();
 		}
 		
 		return m_viewRightSet;
