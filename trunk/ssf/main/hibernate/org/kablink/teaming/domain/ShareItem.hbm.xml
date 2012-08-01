@@ -34,26 +34,27 @@
     <property name="recipientType" column="recipient_type" access="field" type="short" index="recipient_shareitem"/>
     <property name="recipientId" column="recipient_id" index="recipient_shareitem"/>
     <component name="rightSet" class="org.kablink.teaming.domain.ShareItem$RightSet">
-    	<property name="createEntries" column="right_createEntries"/>
-    	<property name="modifyEntries" column="right_modifyEntries"/>
-    	<property name="modifyEntryFields" column="right_modifyEntryFields"/>
-    	<property name="deleteEntries" column="right_deleteEntries"/>
-    	<property name="readEntries" column="right_readEntries"/>
-    	<property name="addReplies" column="right_addReplies"/>
-    	<property name="generateReports" column="right_generateReports"/>
-    	<property name="binderAdministration" column="right_binderAdministration"/>
-    	<property name="createEntryAcls" column="right_createEntryAcls"/>
-    	<property name="changeAccessControl" column="right_changeAccessControl"/>
-    	<property name="createWorkspaces" column="right_createWorkspaces"/>
-    	<property name="createFolders" column="right_createFolders"/>
-    	<property name="manageEntryDefinitions" column="right_manageEntryDefs"/>
-    	<property name="manageWorkflowDefinitions" column="right_manageWorkflowDefs"/>
-    	<property name="creatorReadEntries" column="right_creatorReadEntries"/>
-    	<property name="creatorModifyEntries" column="right_creatorModifyEntries"/>
-    	<property name="creatorDeleteEntries" column="right_creatorDeleteEntries"/>
-    	<property name="ownerCreateEntryAcls" column="right_ownerCreateEntryAcls"/>
-    	<property name="addTags" column="right_addTags"/>
-    	<property name="viewBinderTitle" column="right_viewBinderTitle"/>
+    	<property name="createEntries" column="right_createEntries" access="field"/>
+    	<property name="modifyEntries" column="right_modifyEntries" access="field"/>
+    	<property name="modifyEntryFields" column="right_modifyEntryFields" access="field"/>
+    	<property name="deleteEntries" column="right_deleteEntries" access="field"/>
+    	<property name="readEntries" column="right_readEntries" access="field"/>
+    	<property name="addReplies" column="right_addReplies" access="field"/>
+    	<property name="generateReports" column="right_generateReports" access="field"/>
+    	<property name="binderAdministration" column="right_binderAdministration" access="field"/>
+    	<property name="createEntryAcls" column="right_createEntryAcls" access="field"/>
+    	<property name="changeAccessControl" column="right_changeAccessControl" access="field"/>
+    	<property name="createWorkspaces" column="right_createWorkspaces" access="field"/>
+    	<property name="createFolders" column="right_createFolders" access="field"/>
+    	<property name="manageEntryDefinitions" column="right_manageEntryDefs" access="field"/>
+    	<property name="manageWorkflowDefinitions" column="right_manageWorkflowDefs" access="field"/>
+    	<property name="creatorReadEntries" column="right_creatorReadEntries" access="field"/>
+    	<property name="creatorModifyEntries" column="right_creatorModifyEntries" access="field"/>
+    	<property name="creatorDeleteEntries" column="right_creatorDeleteEntries" access="field"/>
+    	<property name="ownerCreateEntryAcls" column="right_ownerCreateEntryAcls" access="field"/>
+    	<property name="addTags" column="right_addTags" access="field"/>
+    	<property name="viewBinderTitle" column="right_viewBinderTitle" access="field"/>
+    	<property name="allowSharing " column="right_allowSharing" access="field"/>
     </component> 
   </class>
 </hibernate-mapping>
