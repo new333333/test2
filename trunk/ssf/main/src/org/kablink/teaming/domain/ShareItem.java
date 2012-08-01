@@ -39,6 +39,7 @@ import java.util.Date;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 
 /**
@@ -66,6 +67,26 @@ public class ShareItem extends BaseEntity {
 	    	default: throw new IllegalArgumentException("Invalid db value " + value + " for enum RecipientType");
 	    	}
 	    }
+	    //Routine to get recipient title
+		public String getTitle() {
+			String tag;
+	    	switch(value) {
+	    	case 1: tag = "share.recipientType.title.user";
+	    	case 2: tag = "share.recipientType.title.group";
+	    	case 11: tag = "share.recipientType.title.team";
+	    	default: tag = "share.recipientType.title.unknown";
+	    	}
+			return NLT.get(tag);
+		}
+	    //Routine to get recipient icon
+		public String getIcon() {
+	    	switch(value) {
+	    	case 1: return "User_16.png";
+	    	case 2: return "group_16.png";
+	    	case 11: return "team_16.png";
+	    	default: return "";
+	    	}
+		}
 	}
 
 	protected EntityIdentifier sharedEntityIdentifier;
@@ -184,6 +205,20 @@ public class ShareItem extends BaseEntity {
 			return endDate.before(new Date());
 	}
 	
+	//Routine to get the ShareRole that best matches the RightSet for this ShareItem
+	public ShareRole getShareRole() {
+		ShareRole sr = new ShareRole(ShareRole.Role.VIEW);
+		if (this.getRightSet().equals(sr.getRightSet())) return sr;
+		sr = new ShareRole(ShareRole.Role.CONTRIBUTOR);
+		if (this.getRightSet().equals(sr.getRightSet())) return sr;
+		sr = new ShareRole(ShareRole.Role.OWNER);
+		if (this.getRightSet().equals(sr.getRightSet())) return sr;
+		sr = new ShareRole(ShareRole.Role.NONE);
+		if (this.getRightSet().equals(sr.getRightSet())) return sr;
+		sr = new ShareRole(ShareRole.Role.CUSTOM);
+		return sr;
+	}
+	
 	public static class RightSet implements Cloneable {
 		protected Boolean createEntries = Boolean.FALSE;
 		protected Boolean modifyEntries = Boolean.FALSE;
@@ -243,6 +278,14 @@ public class ShareItem extends BaseEntity {
 			return result;
 		}
 
+		private boolean equalRights(Boolean right1, Boolean right2) {
+			if(right1 == null)
+				right1 = Boolean.FALSE;
+			if(right2 == null)
+				right2 = Boolean.FALSE;
+			return right1.equals(right2);
+		}
+		
 		@Override
 	    public boolean equals(Object obj) {
 			if(this==obj) return true;
@@ -491,21 +534,82 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isAllowSharing() {
-			if(allowSharing == null) return false;
 			return allowSharing;
 		}
 
 		public void setAllowSharing(boolean allowSharing) {
 			this.allowSharing = allowSharing;
 		}
+	}
+	
+	public static class ShareRole {
+		private Role role;
 		
-		private boolean equalRights(Boolean right1, Boolean right2) {
-			if(right1 == null)
-				right1 = Boolean.FALSE;
-			if(right2 == null)
-				right2 = Boolean.FALSE;
-			return right1.equals(right2);
+		public enum Role {
+			VIEW(0),
+			CONTRIBUTOR(1),
+			OWNER(2),
+			NONE(3),
+			CUSTOM(4);
+			
+			private int roleValue;
+			private Role(int roleValue) {
+				this.roleValue = roleValue;
+			}
+
+			public int getValue() {
+				return roleValue;
+			}
 		}
 		
+		// Message codes corresponding to each role.
+		public static String[] roleTitles = {
+			"share.role.title.view",
+			"share.role.title.contributor",
+			"share.role.title.owner",
+			"share.role.title.none",
+			"share.role.title.custom"
+		};
+		
+		//Constructor
+		public ShareRole(Role role) {
+			this.role = role;
+		}
+		
+		//Get the rights for this role
+		public RightSet getRightSet() {
+			RightSet rightSet = new RightSet();
+			switch (role) {
+			case VIEW:
+				rightSet.setReadEntries( true );
+				break;
+			case CONTRIBUTOR:
+				rightSet.setReadEntries( true );
+				rightSet.setCreateEntries( true );
+				rightSet.setModifyEntries( true );
+				rightSet.setDeleteEntries( true );
+				break;
+			case OWNER:
+				rightSet.setReadEntries( true );
+				rightSet.setCreateEntries( true );
+				rightSet.setModifyEntries( true );
+				rightSet.setDeleteEntries( true );
+				rightSet.setAddReplies( true );
+				rightSet.setBinderAdministration( true );
+				rightSet.setCreateEntryAcls( true );
+				rightSet.setChangeAccessControl( true );
+				break;
+			case NONE:
+			case CUSTOM:
+			default:
+				break;
+			}
+			return rightSet;
+		}
+		
+		public String getTitle() {
+			return NLT.get(this.roleTitles[role.getValue()]);
+		}
 	}
+	
 }

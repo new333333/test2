@@ -216,6 +216,39 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   <br/>
 </c:if>
 
+<ssf:box style="rounded">
+  <div style="padding:4px 8px;">
+    <div>
+      <span class="ss_bold"><ssf:nlt tag="binder.configure.access_control.sharing"/></span>
+    </div>
+    <c:if test="${empty ss_accessControlShareItems}">
+      <div style="padding-top:6px;">
+        <span><ssf:nlt tag="binder.configure.access_control.sharing.none"/></span>
+      </div>
+    </c:if>
+    <c:if test="${!empty ss_accessControlShareItems}">
+      <div style="padding-top:6px;">
+        <c:if test="${fn:length(ss_accessControlShareItems) == 1}">
+          <span><ssf:nlt tag="binder.configure.access_control.sharing.one"/></span>
+        </c:if>
+        <c:if test="${fn:length(ss_accessControlShareItems) gt 1}">
+          <span><ssf:nlt tag="binder.configure.access_control.sharing.more"><ssf:param 
+            name="value" value="${fn:length(ss_accessControlShareItems)}"/></ssf:nlt>
+          </span>
+        </c:if>
+        <span style="padding-left:10px;">
+          <a class="ss_button" href="<ssf:url><ssf:param 
+	  		name="action" value="configure_access_control"/><ssf:param 
+	  		name="actionUrl" value="true"/><ssf:param 
+	  		name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
+	  		name="workAreaType" value="${ssWorkArea.workAreaType}"/><ssf:param
+	  		name="operation" value="manage_sharing"/></ssf:url>"
+          ><ssf:nlt tag="binder.configure.access_control.sharing.manageShares"/></a>
+        </span>
+      </div>
+    </c:if>
+  </div>
+</ssf:box>
 
 
 <ssf:box style="rounded">

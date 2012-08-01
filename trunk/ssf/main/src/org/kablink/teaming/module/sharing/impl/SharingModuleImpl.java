@@ -45,11 +45,13 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.ShareItem;
+import org.kablink.teaming.domain.ShareItem.RecipientType;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
@@ -66,14 +68,14 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 
 	private FolderModule folderModule;
 	private BinderModule binderModule;
+	private ProfileModule profileModule;
 	
     public void checkAccess(ShareItem shareItem, SharingOperation operation)
 	    	throws AccessControlException {
-    	if (1==1) return;	//needs some work yet - Peter
     	User user = RequestContextHolder.getRequestContext().getUser();
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
     	ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
-		EntityIdentifier entityIdentifier = shareItem.getEntityIdentifier();
+		EntityIdentifier entityIdentifier = shareItem.getSharedEntityIdentifier();
 		AccessControlManager accessControlManager = getAccessControlManager();
 		if (accessControlManager == null) {
 			accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
@@ -267,7 +269,23 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		}
 	}
 
+	public DefinableEntity getSharedRecipient(ShareItem shareItem) {
+		ShareItem.RecipientType recipientType = shareItem.getRecipientType();
+		if(recipientType == RecipientType.user || recipientType == RecipientType.group) {
+			return getProfileModule().getEntry(shareItem.getRecipientId());
+			
+		} else if(recipientType == RecipientType.team) {
+			return getBinderModule().getBinder(shareItem.getRecipientId());
+			
+		} else {
+			throw new IllegalArgumentException("Unsupported recipient type '" + recipientType.name() + "' for sharing");
+		}
+	}
+
 	protected FolderModule getFolderModule() {
+		if (folderModule == null) {
+			folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
+		}
 		return folderModule;
 	}
 
@@ -276,11 +294,24 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	}
 
 	protected BinderModule getBinderModule() {
+		if (binderModule == null) {
+			binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
+		}
 		return binderModule;
 	}
 
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
+	}
+	
+	protected ProfileModule getProfileModule() {
+		if (profileModule == null) {
+			profileModule = (ProfileModule) SpringContextUtil.getBean("profileModule");
+		}
+		return profileModule;
+	}
+	public void setProfileModule(ProfileModule profileModule) {
+		this.profileModule = profileModule;
 	}
 	
 	//Routine to re-index an entity after a change in sharing
@@ -291,7 +322,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		}
 		else if (entity.getEntityType() == EntityIdentifier.EntityType.folder || 
 				entity.getEntityType() == EntityIdentifier.EntityType.workspace) {
-			binderModule.indexBinder(entity.getId());
+			getBinderModule().indexBinder(entity.getId());
 		}
 	}
 
