@@ -400,6 +400,19 @@ public final class MiscUtil
 	}
 
 	/**
+	 * Returns true if a Collection has anything in it and false
+	 * otherwise.
+	 * 
+	 * @param c
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static boolean hasItems(Collection c) {
+		return ((null != c) && (!(c.isEmpty())));
+	}
+	
+	/**
 	 * Returns true is s refers to a non null, non 0 length String and
 	 * false otherwise.
 	 * 
