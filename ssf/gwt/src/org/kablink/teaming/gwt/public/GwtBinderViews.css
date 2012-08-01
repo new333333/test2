@@ -176,6 +176,7 @@
 		.vibe-dataTablePresence-label             {display: inline; font-weight: bold; padding-left: 2px !important;}
 		.vibe-dataTablePresence-disabled          {color: #c4c4c4;}
 		.vibe-dataTablePresence-enabled           {color: #353838;}
+		.vibe-dataTableShareStringValue-expired   {color: red; font-weight: bold;}
 		.vibe-dataTableShareStringValue-label     {white-space: nowrap;}
 		.vibe-dataTableShareStringValue-panel     {white-space: nowrap; height: 15px}
 		.vibe-dataTableTaskFolder-disabled        {color: #c4c4c4;}

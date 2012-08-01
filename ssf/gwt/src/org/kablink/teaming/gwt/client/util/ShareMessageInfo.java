@@ -40,7 +40,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *  
  * @author drfoster
  */
-public class ShareMessageInfo extends ShareStringValue implements IsSerializable {
+public class ShareMessageInfo implements IsSerializable, ShareStringValue {
+	private String	m_addedStyle;	//
+	private String	m_stringValue;	//
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -72,9 +75,41 @@ public class ShareMessageInfo extends ShareStringValue implements IsSerializable
 	public String getShareMessage() {return getValue();}
 	
 	/**
+	 * Implements the ShareStringValue.getAddedStyle() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public String getAddedStyle() {return m_addedStyle;}
+	
+	/**
+	 * Implements the ShareStringValue.getValue() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public String getValue() {return m_stringValue;}
+	
+	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
 	public void setShareMessage(String shareMessage) {setValue(shareMessage);}
+	
+	/**
+	 * Implements the ShareStringValue.setAddedStyle() method.
+	 * 
+	 * @param addedStyle
+	 */
+	@Override
+	public void setAddedStyle(String addedStyle) {m_addedStyle = addedStyle;}
+	
+	/**
+	 * Implements the ShareStringValue.setValue() method.
+	 * 
+	 * @param stringValue
+	 */
+	@Override
+	public void setValue(String stringValue) {m_stringValue = stringValue;}
 }

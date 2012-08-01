@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import java.util.Date;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -40,7 +42,12 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *  
  * @author drfoster
  */
-public class ShareExpirationInfo extends ShareStringValue implements IsSerializable {
+public class ShareExpirationInfo implements IsSerializable, ShareStringValue {
+	private boolean	m_expired;			//
+	private Date	m_expirationDate;	//
+	private String	m_addedStyle;		//
+	private String	m_stringValue;		//
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -54,14 +61,17 @@ public class ShareExpirationInfo extends ShareStringValue implements IsSerializa
 	/**
 	 * Constructor method.
 	 * 
-	 * @param shareExpiration
+	 * @param expirationDate
+	 * @param expirationString
 	 */
-	public ShareExpirationInfo(String shareExpiration) {
+	public ShareExpirationInfo(Date expirationDate, boolean expired, String expirationString) {
 		// Initialize this object...
 		this();
 
 		// ...and store the parameters.
-		setShareExpiration(shareExpiration);
+		setExpirationDate(  expirationDate  );
+		setExpired(expired);
+		setExpirationString(expirationString);
 	}
 	
 	/**
@@ -69,12 +79,48 @@ public class ShareExpirationInfo extends ShareStringValue implements IsSerializa
 	 * 
 	 * @return
 	 */
-	public String getShareExpiration() {return getValue();}
+	public boolean isExpired()           {return m_expired;       }
+	public Date    getExpirationDate()   {return m_expirationDate;}
+	public String  getExpirationString() {return getValue();      }
+	
+	/**
+	 * Implements the ShareStringValue.getAddedStyle() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public String getAddedStyle() {return m_addedStyle;}
+	
+	/**
+	 * Implements the ShareStringValue.getValue() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public String getValue() {return m_stringValue;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setShareExpiration(String shareExpiration) {setValue(shareExpiration);}
+	public void setExpired(         boolean expired)          {m_expired        = expired;       }
+	public void setExpirationDate(  Date    expirationDate)   {m_expirationDate = expirationDate;}
+	public void setExpirationString(String  expirationString) {setValue(expirationString);       }
+	
+	/**
+	 * Implements the ShareStringValue.setAddedStyle() method.
+	 * 
+	 * @param addedStyle
+	 */
+	@Override
+	public void setAddedStyle(String addedStyle) {m_addedStyle = addedStyle;}
+	
+	/**
+	 * Implements the ShareStringValue.setValue() method.
+	 * 
+	 * @param stringValue
+	 */
+	@Override
+	public void setValue(String stringValue) {m_stringValue = stringValue;}
 }

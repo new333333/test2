@@ -99,6 +99,7 @@ public class GwtSharedMeItem {
 			si.getCreation().getDate(),
 			GwtShareHelper.getShareRightsFromRightSet(si.getRightSet()),
 			si.getEndDate(),
+			si.isExpired(),
 			si.getComment());
 		
 		// ...and add it to the list.

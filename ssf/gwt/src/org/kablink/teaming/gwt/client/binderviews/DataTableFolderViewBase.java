@@ -1088,7 +1088,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		m_columnWidths.put(FolderColumn.COLUMN_RATING,   new ColumnWidth(10));
 		m_columnWidths.put(FolderColumn.COLUMN_SIZE,     new ColumnWidth( 8));
 		m_columnWidths.put(FolderColumn.COLUMN_STATE,    new ColumnWidth( 8));
-		m_columnWidths.put(FolderColumn.COLUMN_RATING,   new ColumnWidth(10));
 		m_columnWidths.put(FolderColumn.COLUMN_TITLE,    new ColumnWidth(28));
 
 		// ...and then add the widths for everything else.

@@ -32,51 +32,16 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
- * Class used to bundle information required to view a share item
- * value through * GWT RPC requests.
+ * Interface used to bundle information required to view a share item
+ * value as a string through GWT RPC requests.
  *  
  * @author drfoster
  */
-public class ShareStringValue implements IsSerializable {
-	private String m_value;	//
-
-	/**
-	 * Constructor method.
-	 * 
-	 * No parameters as per GWT serialization requirements.
-	 */
-	public ShareStringValue() {
-		// Initialize the super class.
-		super();
-	}
+public interface ShareStringValue {
+	public String getAddedStyle();
+	public String getValue(     );
 	
-	/**
-	 * Constructor method.
-	 * 
-	 * @param value
-	 */
-	public ShareStringValue(String value) {
-		// Initialize this object...
-		this();
-
-		// ...and store the parameters.
-		setValue(value);
-	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public String getValue() {return m_value;}
-	
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setValue(String value) {m_value = value;}
+	public void   setAddedStyle(String addedStyle );
+	public void   setValue(     String stringValue);
 }
