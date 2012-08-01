@@ -78,7 +78,6 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation ADD_COMMUNITY_TAGS = new WorkAreaOperation("addTags");
     public final static WorkAreaOperation VIEW_BINDER_TITLE = new WorkAreaOperation("viewBinderTitle");
     public final static WorkAreaOperation ALLOW_SHARING = new WorkAreaOperation("allowSharing");
-    public final static WorkAreaOperation ALLOW_EXTERNAL_SHARING = new WorkAreaOperation("allowExternalSharing");
 
     //The following rights should not be used in access management of workareas.  Used to give access to zone-wide functions to a
     //group of users
@@ -90,7 +89,6 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation MANAGE_RESOURCE_DRIVERS = new WorkAreaOperation("manageResourceDrivers", true);
     public final static WorkAreaOperation CREATE_FILESPACE = new WorkAreaOperation("createFilespace", true);
     public final static WorkAreaOperation ENABLE_SHARING = new WorkAreaOperation("enableSharing", true);
-    public final static WorkAreaOperation ENABLE_EXTERNAL_SHARING = new WorkAreaOperation("enableExternalSharing", true);
 
     private String name;
     private boolean zoneWide=false;

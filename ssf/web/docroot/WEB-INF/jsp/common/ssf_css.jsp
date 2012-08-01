@@ -4248,17 +4248,55 @@ a.ss_pageNumberCurrent {
 div.ss_options_container {border-bottom:1px solid #afc8e3; margin:0px 0px 0px 0px;padding:0px 12px 12px 12px;}
 div.ss_options {padding: 6px 0px 6px 0px;}
 div.ss_options_container h4 {margin:6px 0px 6px 0px;}
-a.ss_button {
-	background: url(<html:imagesPath/>pics/trans10_black_blend.png) repeat;
-	background-position:bottom;
-	border: 1px solid #ccc;
+a.ss_button, a.ss_button:visited {
+	color:#fff;
+ 	font-family: ${ss_style_folder_view_font_family};
+ 	font-size: 11px;
+	background: #949494 none repeat scroll 0 0;
+	margin-right:3px;
 	padding: 2px 10px;
+	text-decoration:none;
+  	cursor: pointer;
+  	white-space: nowrap;
+	border: 0px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
-}
+    text-align: center !important;
+	<c:if test="<%= isIE %>">
+  		margin-left: 1px; 
+  		margin-right: 1px;
+	</c:if>
+	}
 a.ss_button:hover {
-	color: #FFFFFF;
-	background: url(<html:imagesPath/>pics/teal_slice.png) repeat-x;
+	color: #135c8f !important;
+    text-align: center !important;
+    font-size: 11px !important;
+    font-family: Arial, sans-serif !important;
+    white-space: nowrap !important;
+    text-decoration: none !important;
+  	padding: 2px 10px !important;
+	border: 0px solid #81b2bd;
+	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.47, #A8D4DD),
+		color-stop(0.53, #D5EDF1),
+		color-stop(1, #C8E4E9));
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+  	<c:if test="<%= isIE %>">
+  		padding: 0px;
+  		padding-top: -2px;
+  		padding-bottom: 1px;
+  		padding-left: 1px; 
+  		padding-right: 1px;
+	</c:if>
 }
 #ss_filterSummary_content {float:left;}
 #ss_filterSummary_content p, #ss_searchForm_changeBox p {

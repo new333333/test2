@@ -624,6 +624,7 @@ public class WebKeys {
 	public static final String OPERATION_SET_UI_THEME = "set_ui_theme";
 	public static final String OPERATION_FIND_PLACE_FORM = "find_place_form";
     public static final String OPERATION_VIEW_ACCESS = "view_access";
+    public static final String OPERATION_MANAGE_ACCESS_SHARING = "manage_sharing";
     public static final String OPERATION_VIEW_ERROR_MESSAGE = "view_error_message";
     public static final String OPERATION_VIEW_EDIT_HISTORY = "view_edit_history";
 	public static final String OPERATION_WIKILINK_FORM = "wikilink_form";
@@ -685,6 +686,8 @@ public class WebKeys {
 	public static final String ACCESS_CONTROL_MAP = "ss_accessControlMap";
 	public static final String ACCESS_CONTROL_CONFIGURE_ALLOWED = "ss_accessControlConfigureAllowed";
 	public static final String ACCESS_CONTROL_EXCEPTION = "ss_accessControlException";
+	public static final String ACCESS_CONTROL_SHARE_ITEMS = "ss_accessControlShareItems";
+	public static final String ACCESS_CONTROL_SHARE_ITEM_RECIPIENTS = "ss_accessControlShareItemRecipients";
 	public static final String ACCESS_FUNCTIONS_COUNT = "ss_accessFunctionsCount";
 	public static final String ACCESS_GROUPS_COUNT = "ss_accessGroupsCount";
 	public static final String ACCESS_USERS_COUNT = "ss_accessUsersCount";
@@ -1533,6 +1536,7 @@ public class WebKeys {
     //View names
     public static final String VIEW_ACCESS_TO_BINDER = "binder/view_access";
     public static final String VIEW_ACCESS_CONTROL = "binder/access_control";
+    public static final String VIEW_ACCESS_CONTROL_SHARING = "binder/view_access_control_sharing";
     public static final String VIEW_ACCESS_CONTROL_ENTRY = "binder/access_control_entry";
     public static final String VIEW_ACCESS_CONTROL_NO_MORE = "binder/access_control_no_more";
     public static final String VIEW_ACCESS_DENIED = "forum/access_not_allowed";

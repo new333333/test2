@@ -116,4 +116,12 @@ public interface SharingModule {
  	 * @return
  	 */
  	public DefinableEntity getSharedEntity(ShareItem shareItem);
+ 	
+ 	/**
+ 	 * Get the recipient associated with the share item.
+ 	 * 
+ 	 * @param shareItem
+ 	 * @return
+ 	 */
+ 	public DefinableEntity getSharedRecipient(ShareItem shareItem);
 }

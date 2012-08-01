@@ -46,10 +46,13 @@ import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
@@ -229,6 +232,9 @@ public class AccessControlController extends AbstractBinderController {
 		setupAccess(this, request, response, wArea, model);
 		model.put(WebKeys.ACCESS_ALL_USERS_GROUP, Utils.getAllUsersGroupId());
 		model.put(WebKeys.ACCESS_WORKAREA_IS_PERSONAL, Utils.isWorkareaInProfilesTree(wArea));		
+		
+		//Set up the beans for shared requests
+		setupSharedBeans(this, wArea, model);
 
 		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			//Cannot do these things as guest
@@ -237,6 +243,8 @@ public class AccessControlController extends AbstractBinderController {
 		}
 		if (operation.equals(WebKeys.OPERATION_VIEW_ACCESS)) {
 			return new ModelAndView(WebKeys.VIEW_ACCESS_TO_BINDER, model);
+		} else if (operation.equals(WebKeys.OPERATION_MANAGE_ACCESS_SHARING)) {
+			return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL_SHARING, model);
 		} else {
 			if (wArea instanceof Entry) {
 				return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL_ENTRY, model);
@@ -319,6 +327,24 @@ public class AccessControlController extends AbstractBinderController {
 		
 		//Set up the role beans
 		WorkAreaHelper.buildAccessControlRoleBeans(bs, model, zoneWide);
+	}
+	
+	//Routine to build the beans for the report of share requests for this workarea
+	public void setupSharedBeans(AllModulesInjected bs, WorkArea wArea, Map model) {
+		//Get the list of ShareItems that reference this workarea
+		if (wArea instanceof DefinableEntity) {
+			ShareItemSelectSpec spec = new ShareItemSelectSpec();
+			spec.setSharedEntityIdentifier(((DefinableEntity)wArea).getEntityIdentifier());
+			List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
+			model.put(WebKeys.ACCESS_CONTROL_SHARE_ITEMS, shareItems);
+			
+			//Now load in the recipient objects
+			Map<Long, DefinableEntity> recipients = new HashMap<Long, DefinableEntity>();
+			for (ShareItem shareItem : shareItems) {
+				recipients.put(shareItem.getId(), getSharingModule().getSharedRecipient(shareItem));
+			}
+			model.put(WebKeys.ACCESS_CONTROL_SHARE_ITEM_RECIPIENTS, recipients);
+		}
 	}
 
 }
