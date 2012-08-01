@@ -209,6 +209,162 @@ public class GwtViewHelper {
 	private static final String CACHED_VIEW_PINNED_ENTRIES_BASE = "viewPinnedEntries_";
 	private static final String CACHED_VIEW_SHARED_FILES_BASE	= "viewSharedFiles_";
 
+	// The following are used as the return values for the various
+	// comparators.
+	private final static int COMPARE_EQUAL		=   0;
+	private final static int COMPARE_GREATER	=   1;
+	private final static int COMPARE_LESS		= (-1);
+	
+	/*
+	 * Inner class used to compare two GwtPerShareInfo's.
+	 * 
+	 * Two GwtPerShareInfo's are sorted by their share date.
+	 */
+	private static class PerShareInfoComparator implements Comparator<GwtPerShareInfo> {
+		/**
+		 * Constructor method.
+		 */
+		public PerShareInfoComparator() {
+			// Initialize the super class.
+			super();
+		}
+
+		/**
+		 * Compares two GwtPerShareInfo objects.
+		 * 
+		 * Implements the Comparator.compare() method.
+		 * 
+		 * @param psi1
+		 * @param entryMap2
+		 * 
+		 * @return
+		 */
+		@Override
+		public int compare(GwtPerShareInfo psi1, GwtPerShareInfo psi2) {
+			int  reply;
+			Date d1    = psi1.getShareDate(); long l1 = ((null == d1) ? 0 : d1.getTime());
+			Date d2    = psi2.getShareDate(); long l2 = ((null == d2) ? 0 : d2.getTime());
+			if (l1 < l2)
+				 reply = COMPARE_LESS;
+			else reply = COMPARE_GREATER;
+
+			// If we get here, reply contains the appropriate value for
+			// the compare.  Return it.
+			return reply;
+		}
+
+		/**
+		 * Sorts the List<GwtPerShareInfo> attached to the
+		 * GwtSharedMeItem's in a List<GwtSharedMeItem>.
+		 * 
+		 * @param shareItems
+		 */
+		public static void sortPerShareInfoLists(List<GwtSharedMeItem> shareItems) {
+			// Scan the List<GwtSharedMeItem>.
+			Comparator<GwtPerShareInfo> psiComparator = new PerShareInfoComparator();
+			for (GwtSharedMeItem meItem:  shareItems) {
+				// If this GwtSharedMeItem has any GwtPerShareInfo's...
+				List<GwtPerShareInfo> psiList = meItem.getPerShareInfos();
+				if ((null != psiList) && (!(psiList.isEmpty()))) {
+					// ...sort them.
+					Collections.sort(psiList, psiComparator);
+				}
+			}
+		}
+	}
+
+	/*
+	 * Inner class used to compare two Map's of 'Shared by/with Me'
+	 * entry maps.
+	 */
+	@SuppressWarnings("unchecked")
+	private static class SharedMeEntriesMapComparator implements Comparator<Map> {
+		private boolean 				m_sortDescend;	//
+		@SuppressWarnings("unused")
+		private List<GwtSharedMeItem>	m_shareItems;	//
+		private String					m_sortBy;		//
+		
+		/**
+		 * Constructor method.
+		 *
+		 * @param shareItems
+		 * @param sortKey
+		 * @param sortDescend
+		 */
+		public SharedMeEntriesMapComparator(List<GwtSharedMeItem> shareItems, String sortBy, boolean sortDescend) {
+			// Initialize the super class...
+			super();
+
+			// ...and store the parameters.
+			m_shareItems  = shareItems;
+			m_sortBy      = sortBy;
+			m_sortDescend = sortDescend;
+		}
+
+		/**
+		 * Compares two search entry Map's based on the criteria passed
+		 * into the constructor.
+		 * 
+		 * Implements the Comparator.compare() method.
+		 * 
+		 * @param entryMap1
+		 * @param entryMap2
+		 * 
+		 * @return
+		 */
+		@Override
+		public int compare(Map entryMap1, Map entryMap2) {
+			int reply = COMPARE_EQUAL;
+
+			// Do the entry maps refer to different entity types?
+			String  et1 = getSafeStringFromEntryMap(entryMap1, Constants.ENTITY_FIELD);
+			String  et2 = getSafeStringFromEntryMap(entryMap2, Constants.ENTITY_FIELD);
+			if (!(et1.equals(et2))) {
+				// Yes!  Simply sort them, that's all we need to apply.
+				if (et1.equals(EntityType.folder.name()))
+				     reply = COMPARE_LESS;
+				else reply = COMPARE_GREATER;
+			}
+			
+			else {
+				String s1;
+				String s2;
+				
+				// No, the entry maps refer to the same entity types!
+				// What field are we sorting on?
+				if (m_sortBy.equalsIgnoreCase(Constants.SORT_TITLE_FIELD)) {
+					s1    = getSafeStringFromEntryMap(entryMap1, Constants.TITLE_FIELD);
+					s2    = getSafeStringFromEntryMap(entryMap2, Constants.TITLE_FIELD);
+					reply = MiscUtil.safeSColatedCompare(s1, s2);
+				}
+				
+				// Sort on any other columns that make sense here.
+//!				...this needs to be implemented...
+			}
+
+			// If we're doing a descending sort...
+			if (m_sortDescend) {
+				// ...invert the reply.
+				reply = (-reply);
+			}
+
+			// If we get here, reply contains the appropriate value for
+			// the compare.  Return it.
+			return reply;
+		}
+		
+		/*
+		 * Returns a non-null string from an entry map.
+		 */
+		private String getSafeStringFromEntryMap(Map map, String key) {
+			String reply = GwtServerHelper.getStringFromEntryMap(map, key);
+			if (null == reply) {
+				reply = "";
+			}
+			return reply;
+		}
+	}
+
 	/*
 	 * Class constructor that prevents this class from being
 	 * instantiated.
@@ -356,10 +512,17 @@ public class GwtViewHelper {
 			}
 		}
 		
-		// Apply the sorting to the search entries.
-//!		...this needs to be implemented..
-
-		// Finally, construct the search results Map and return that.
+		// Finally, apply the, filtering, sorting, ... to the search
+		// entries...
+		searchEntries = postProcessSharedMeMap(
+			searchEntries,
+			shareItems,
+			quickFilter,
+			sortDescend,
+			sortBy);
+		
+		// ...and use them to construct the search results Map and
+		// ...return that.
 		Map reply = new HashMap();
 		reply.put(ObjectKeys.SEARCH_ENTRIES,                 searchEntries        );
 		reply.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(searchEntries.size()));
@@ -627,6 +790,10 @@ public class GwtViewHelper {
 			// Add information about this share item as a 
 			meItem.addPerShareInfo(si);
 		}
+
+		// Sort the GwtPerShareInfo's attached to the
+		// List<GwtSharedMeItem> we're going to return.
+		PerShareInfoComparator.sortPerShareInfoLists(reply);
 		
 		// If we get here, reply refers to the List<GwtSharedMeItem>
 		// built from condensing the List<ShareItem>.  Return it.
@@ -698,6 +865,10 @@ public class GwtViewHelper {
 				reply.add(meItem);
 			}
 		}
+		
+		// Sort the GwtPerShareInfo's attached to the
+		// List<GwtSharedMeItem> we're going to return.
+		PerShareInfoComparator.sortPerShareInfoLists(reply);
 		
 		// If we get here, reply refers to the List<GwtSharedMeItem>
 		// built from condensing the List<ShareItem>.  Return it.
@@ -3713,10 +3884,7 @@ public class GwtViewHelper {
 			// ...creating an ShareExpirationInfo for each share.
 			boolean	isExpired        = si.isRightsExpired();
 			Date	expirationDate   = si.getRightsExpire();
-			String	expirationString = ((null == expirationDate) ? NLT.get("collections.access.expires.never") : GwtServerHelper.getDateString(expirationDate));
-			if (isExpired) {
-				expirationString = NLT.get("collections.access.expired", new String[]{expirationString});
-			}
+			String	expirationString = ((null == expirationDate) ? "" : GwtServerHelper.getDateString(expirationDate));
 			ShareExpirationInfo	sei = new ShareExpirationInfo(expirationDate, isExpired, expirationString);
 			if (isExpired) {
 				sei.setAddedStyle("vibe-dataTableShareStringValue-expired");
@@ -4256,6 +4424,35 @@ public class GwtViewHelper {
 			}
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
+	}
+
+	/*
+	 * Performs any post processing on the search entries being
+	 * returned for a 'Shared by/with Me' collection view.
+	 */
+	@SuppressWarnings("rawtypes")
+	private static List<Map> postProcessSharedMeMap(List<Map> searchEntries, List<GwtSharedMeItem> shareItems, String quickFilter, boolean sortDescend, String sortBy) {
+		// Do we have any search entries to process?
+		if ((null != searchEntries) && (!(searchEntries.isEmpty()))) {
+			// Yes!  Do we have a quick filter to apply to the list?
+			if (MiscUtil.hasString(quickFilter)) {
+				// Yes!  Apply it.
+//!				...this needs to be implemented..
+			}
+	
+			// Sort the list, based on the the information we have for
+			// sorting it.
+			Collections.sort(
+				searchEntries,
+				new SharedMeEntriesMapComparator(
+					shareItems,
+					sortBy,
+					sortDescend));
+		}
+
+		// If we get here, searchEntries refers to the post processed
+		// search entries Map.  Return it. 
+		return searchEntries;
 	}
 	
 	/**
