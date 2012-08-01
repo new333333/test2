@@ -178,6 +178,7 @@
             <column name="RIGHT_OWNERCREATEENTRYACLS" type="NUMBER(1,0)"/>
             <column name="RIGHT_ADDTAGS" type="NUMBER(1,0)"/>
             <column name="RIGHT_VIEWBINDERTITLE" type="NUMBER(1,0)"/>
+            <column name="RIGHT_ALLOWSHARING" type="NUMBER(1,0)"/>
         </createTable>
     </changeSet>
     <changeSet author="jong" context="schema" failOnError="true" id="13">

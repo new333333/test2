@@ -178,6 +178,7 @@
             <column name="right_ownerCreateEntryAcls" type="TINYINT"/>
             <column name="right_addTags" type="TINYINT"/>
             <column name="right_viewBinderTitle" type="TINYINT"/>
+            <column name="right_allowSharing" type="TINYINT"/>
         </createTable>
     </changeSet>
     <changeSet author="jong" context="schema" failOnError="true" id="13">
