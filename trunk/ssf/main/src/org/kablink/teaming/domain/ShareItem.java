@@ -243,14 +243,6 @@ public class ShareItem extends BaseEntity {
 			return result;
 		}
 
-		private boolean equalRights(Boolean right1, Boolean right2) {
-			if(right1 == null)
-				right1 = Boolean.FALSE;
-			if(right2 == null)
-				right2 = Boolean.FALSE;
-			return right1.equals(right2);
-		}
-		
 		@Override
 	    public boolean equals(Object obj) {
 			if(this==obj) return true;
@@ -485,5 +477,14 @@ public class ShareItem extends BaseEntity {
 		public void setAllowSharing(boolean allowSharing) {
 			this.allowSharing = allowSharing;
 		}
+		
+		private boolean equalRights(Boolean right1, Boolean right2) {
+			if(right1 == null)
+				right1 = Boolean.FALSE;
+			if(right2 == null)
+				right2 = Boolean.FALSE;
+			return right1.equals(right2);
+		}
+		
 	}
 }
