@@ -126,6 +126,7 @@ import org.kablink.teaming.gwt.client.util.ShareAccessInfo;
 import org.kablink.teaming.gwt.client.util.ShareDateInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationInfo;
 import org.kablink.teaming.gwt.client.util.ShareMessageInfo;
+import org.kablink.teaming.gwt.client.util.ShareStringValue;
 import org.kablink.teaming.gwt.server.util.GwtSharedMeItem;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ShareRights;
@@ -265,7 +266,7 @@ public class GwtViewHelper {
 			for (GwtSharedMeItem meItem:  shareItems) {
 				// If this GwtSharedMeItem has any GwtPerShareInfo's...
 				List<GwtPerShareInfo> psiList = meItem.getPerShareInfos();
-				if ((null != psiList) && (!(psiList.isEmpty()))) {
+				if (MiscUtil.hasItems(psiList)) {
 					// ...sort them.
 					Collections.sort(psiList, psiComparator);
 				}
@@ -356,7 +357,7 @@ public class GwtViewHelper {
 		/*
 		 * Returns a non-null string from an entry map.
 		 */
-		private String getSafeStringFromEntryMap(Map map, String key) {
+		private static String getSafeStringFromEntryMap(Map map, String key) {
 			String reply = GwtServerHelper.getStringFromEntryMap(map, key);
 			if (null == reply) {
 				reply = "";
@@ -462,7 +463,7 @@ public class GwtViewHelper {
 	 * Returns an entry map that represents a List<GwtSharedMeItem>.
 	 */
 	@SuppressWarnings("unchecked")
-	private static Map buildSearchMapFromSharedMeList(AllModulesInjected bs, List<GwtSharedMeItem> shareItems, String quickFilter, boolean sortDescend, String sortBy) {
+	private static Map buildSearchMapFromSharedMeList(AllModulesInjected bs, List<GwtSharedMeItem> shareItems, boolean sortDescend, String sortBy) {
 		List<Map> searchEntries = new ArrayList<Map>();
 		for (GwtSharedMeItem si:  shareItems) {
 			// Create an entry Map for this GwtSharedMeItem.
@@ -517,7 +518,6 @@ public class GwtViewHelper {
 		searchEntries = postProcessSharedMeMap(
 			searchEntries,
 			shareItems,
-			quickFilter,
 			sortDescend,
 			sortBy);
 		
@@ -546,7 +546,7 @@ public class GwtViewHelper {
 	 */
 	private static void completeAIs(AllModulesInjected bs, List<FolderRow> folderRows) {
 		// If we don't have any FolderRows's to complete...
-		if ((null == folderRows) || folderRows.isEmpty()) {
+		if (!(MiscUtil.hasItems(folderRows))) {
 			// ..bail.
 			return;
 		}
@@ -699,7 +699,7 @@ public class GwtViewHelper {
 			
 			// Were we given the IDs of any entries to change their
 			// entry types and the entry type to change them to?
-			if ((null != entityIds) && (!(entityIds.isEmpty())) && MiscUtil.hasString(defId)) {
+			if (MiscUtil.hasItems(entityIds) && MiscUtil.hasString(defId)) {
 				// Yes!  Scan them.
 				FolderModule fm = bs.getFolderModule();
 				for (EntityId entityId:  entityIds) {
@@ -750,7 +750,7 @@ public class GwtViewHelper {
 		List<GwtSharedMeItem> reply = new ArrayList<GwtSharedMeItem>();
 		
 		// If we don't have any share items to convert...
-		if ((null == shareItems) || shareItems.isEmpty()) {
+		if (!(MiscUtil.hasItems(shareItems))) {
 			// ...return the empty reply list.
 			return reply;
 		}
@@ -810,7 +810,7 @@ public class GwtViewHelper {
 		List<GwtSharedMeItem> reply = new ArrayList<GwtSharedMeItem>();
 		
 		// If we don't have any share items to convert...
-		if ((null == shareItems) || shareItems.isEmpty()) {
+		if (!(MiscUtil.hasItems(shareItems))) {
 			// ...return the empty reply list.
 			return reply;
 		}
@@ -893,7 +893,7 @@ public class GwtViewHelper {
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// Were we given the IDs of any entries to copy?
-			if ((null != entityIds) && (!(entityIds.isEmpty()))) {
+			if (MiscUtil.hasItems(entityIds)) {
 				// Yes!  Scan them.
 				for (EntityId entityId:  entityIds) {
 					try {
@@ -948,7 +948,7 @@ public class GwtViewHelper {
 
 			// Were we given the IDs of any users to delete?
 			Long currentUserId = GwtServerHelper.getCurrentUserId(); 
-			if ((null != userIds) && (!(userIds.isEmpty()))) {
+			if (MiscUtil.hasItems(userIds)) {
 				// Yes!  Scan them.
 				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
 				for (Long userId:  userIds) {
@@ -1026,7 +1026,7 @@ public class GwtViewHelper {
 
 			// Were we given the IDs of any users to disable?
 			Long currentUserId = GwtServerHelper.getCurrentUserId(); 
-			if ((null != userIds) && (!(userIds.isEmpty()))) {
+			if (MiscUtil.hasItems(userIds)) {
 				// Yes!  Scan them.
 				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
 				for (Long userId:  userIds) {
@@ -1162,7 +1162,7 @@ public class GwtViewHelper {
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// Were we given the IDs of any users to enable?
-			if ((null != userIds) && (!(userIds.isEmpty()))) {
+			if (MiscUtil.hasItems(userIds)) {
 				// Yes!  Scan them.
 				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
 				for (Long userId:  userIds) {
@@ -1219,7 +1219,7 @@ public class GwtViewHelper {
 		
 		// Are there any assignments for the given column search key?
 		List<AssignmentInfo> addList = GwtEventHelper.getAssignmentInfoListFromEntryMap(entryMap, csk, assigneeType);
-		if ((null != addList) && (!(addList.isEmpty()))) {
+		if (MiscUtil.hasItems(addList)) {
 			// Yes!  Copy them into the assignment list we were given.
 			for (AssignmentInfo ai:  addList) {
 				assignmentList.add(ai);
@@ -1268,7 +1268,104 @@ public class GwtViewHelper {
 			factorInAssignments(entryMap, folderColumns, teamCSK, AssigneeType.TEAM, assignmentList);
 		}
 	}
-	
+
+	/*
+	 * Applies a quick filter to a List<FolderRow> of
+	 * 'Shared by/with Me' rows.  A List<FolderRow> of the the
+	 * FolderRow's from the input list that matches the filter is
+	 * returned.
+	 */
+	public static List<FolderRow> filterSharedMeFolderRows(List<FolderColumn> folderColumns, List<FolderRow> folderRows, String quickFilter) {
+		// Do we have a string to filter with and some FolderRow's to
+		// be filtered?
+		if (null != quickFilter) {
+			quickFilter = quickFilter.trim().toLowerCase();
+		}
+		if (MiscUtil.hasString(quickFilter) && MiscUtil.hasItems(folderRows)) {
+			// Yes!  Yes!  Scan the rows.
+			List<FolderRow> reply = new ArrayList<FolderRow>();
+			for (FolderRow fr:  folderRows) {
+				// Scan the columns.
+				for (FolderColumn fc:  folderColumns) {
+					// What column is this?
+					String cName = fc.getColumnName();
+					if (FolderColumn.isColumnTitle(cName)) {
+						// The title column!  If the title contains the
+						// quick filter...
+						EntryTitleInfo eti = fr.getColumnValueAsEntryTitle(fc);
+						if (null != eti) {
+							if (valueContainsQuickFilter(eti.getTitle(), quickFilter)) {
+								// ...add it to the reply list.
+								reply.add(fr);
+								break;
+							}
+						}
+					}
+						
+					else if (FolderColumn.isColumnSharedBy(cName) || FolderColumn.isColumnSharedWith(cName)) {
+						// The sharedBy/With column!  Scan the assignments.
+						List<AssignmentInfo> aiList = fr.getColumnValueAsAssignmentInfos(fc);
+						if (MiscUtil.hasItems(aiList)) {
+							boolean found = false;
+							for (AssignmentInfo ai:  aiList) {
+								// ...if this assignee's title contains
+								// ...the quick filter...
+								if (valueContainsQuickFilter(ai.getTitle(), quickFilter)) {
+									// ...add it to the reply list.
+									reply.add(fr);
+									found = true;
+									break;
+								}
+							}
+							
+							// Once we move the row to the reply...
+							if (found) {
+								// ...stop scanning the columns.
+								break;
+							}
+						}
+					}
+					
+					else if (FolderColumn.isColumnShareStringValue(cName)) {
+						// The sharedDate, sharedExpiration,
+						// sharedAccess or sharedMessage column!  Scan
+						// the string values...
+						List<ShareStringValue> svList;
+						if      (cName.equals(FolderColumn.COLUMN_SHARE_ACCESS))     svList = fr.getColumnValueAsShareAccessInfos(    fc);
+						else if (cName.equals(FolderColumn.COLUMN_SHARE_DATE))       svList = fr.getColumnValueAsShareDateInfos(      fc);
+						else if (cName.equals(FolderColumn.COLUMN_SHARE_EXPIRATION)) svList = fr.getColumnValueAsShareExpirationInfos(fc);
+						else if (cName.equals(FolderColumn.COLUMN_SHARE_MESSAGE))    svList = fr.getColumnValueAsShareMessageInfos(   fc);
+						else                                                         svList = null;
+						if (MiscUtil.hasItems(svList)) {
+							boolean found = false;
+							for (ShareStringValue sv:  svList) {
+								// ...if this value contains the quick
+								// ...filter...
+								if (valueContainsQuickFilter(sv.getValue(), quickFilter)) {
+									// ...add it to the reply list.
+									reply.add(fr);
+									found = true;
+									break;
+								}
+							}
+							
+							// Once we move the row to the reply...
+							if (found) {
+								// ...stop scanning the columns.
+								break;
+							}
+						}
+					}
+				}
+			}
+			folderRows = reply;
+		}
+		
+		// If we get here, searchEntries refers to the filtered list of
+		// entry maps.  Return it. 
+		return folderRows;
+	}
+
 	/**
 	 * Return true of the accessory panel should be visible on the
 	 * given binder and false otherwise.
@@ -1343,7 +1440,7 @@ public class GwtViewHelper {
 	 */
 	private static void fixupAIGroups(List<AssignmentInfo> aiGroupsList, Map<Long, String> principalTitles, Map<Long, Integer> groupCounts) {
 		// If don't have a list to fixup...
-		if ((null == aiGroupsList) || aiGroupsList.isEmpty()) {
+		if (!(MiscUtil.hasItems(aiGroupsList))) {
 			// ...bail.
 			return;
 		}
@@ -1377,7 +1474,7 @@ public class GwtViewHelper {
 	 */
 	private static void fixupAITeams(List<AssignmentInfo> aiTeamsList, Map<Long, String> teamTitles, Map<Long, Integer> teamCounts) {
 		// If don't have a list to fixup...
-		if ((null == aiTeamsList) || aiTeamsList.isEmpty()) {
+		if (!(MiscUtil.hasItems(aiTeamsList))) {
 			// ...bail.
 			return;
 		}
@@ -1411,7 +1508,7 @@ public class GwtViewHelper {
 	 */
 	private static void fixupAIs(List<AssignmentInfo> aiList, Map<Long, String> principalTitles, Map<Long, GwtPresenceInfo> userPresence, Map<Long, Long> presenceUserWSIds) {
 		// If don't have a list to fixup...
-		if ((null == aiList) || aiList.isEmpty()) {
+		if (!(MiscUtil.hasItems(aiList))) {
 			// ...bail.
 			return;
 		}
@@ -1547,7 +1644,7 @@ public class GwtViewHelper {
 	 */
 	private static void fixupFRs(AllModulesInjected bs, List<FolderRow> frList) {
 		// If we don't have any FolderRow's to complete...
-		if ((null == frList) || frList.isEmpty()) {
+		if (!(MiscUtil.hasItems(frList))) {
 			// ..bail.
 			return;
 		}
@@ -1967,7 +2064,7 @@ public class GwtViewHelper {
 		case SHARED_BY_ME:
 		case SHARED_WITH_ME:
 			// Do we have any shares to analyze?
-			if ((null == shareItems) || shareItems.isEmpty()) {
+			if (!(MiscUtil.hasItems(shareItems))) {
 				// No!  Bail.
 				return buildEmptyEntryMap();
 			}
@@ -1998,7 +2095,6 @@ public class GwtViewHelper {
 				buildSearchMapFromSharedMeList(
 					bs,
 					shareItems,
-					quickFilter,
 					GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false),
 					GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD));
 			
@@ -3191,6 +3287,18 @@ public class GwtViewHelper {
 				
 				Collections.sort(folderRows, comparator);
 			}
+
+			// If we have a quick filter and we processing a
+			// 'Shared by/with Me' collection and we have some rows...
+			if (MiscUtil.hasString(quickFilter) && (isCollectionSharedByMe || isCollectionSharedWithMe) && (!(folderRows.isEmpty()))) {
+				// ...we need to apply the quick filter to the
+				// ...List<FolderRow>.
+				folderRows = filterSharedMeFolderRows(
+					folderColumns,
+					folderRows,
+					quickFilter);
+				totalRecords = folderRows.size();
+			}
 			
 			// Finally, return the List<FolderRow> wrapped in a
 			// FolderRowsRpcResponseData.
@@ -3257,7 +3365,7 @@ public class GwtViewHelper {
 		List principals = null;
 		try {principals = ResolveIds.getPrincipals(principalIds, false);}
 		catch (Exception ex) {/* Ignored. */}
-		if ((null != principals) && (!(principals.isEmpty()))) {
+		if (MiscUtil.hasItems(principals)) {
 			for (Object o:  principals) {
 				// Yes!  Is it a User?
 				Principal p = ((Principal) o);
@@ -3326,7 +3434,7 @@ public class GwtViewHelper {
 			String userIdS = String.valueOf(userId);
 			userIdList.add(userIdS);
 			List resolvedList = ResolveIds.getPrincipals(userIdList, false);
-			if ((null != resolvedList) && (!(resolvedList.isEmpty()))) {
+			if (MiscUtil.hasItems(resolvedList)) {
 				// Yes!  Extract the profile information we need to
 				// display.
 				User user = ((User) resolvedList.get(0));
@@ -3759,7 +3867,7 @@ public class GwtViewHelper {
 		List<String> userIdList = new ArrayList<String>();
 		userIdList.add(userIdS);
 		List resolvedList = ResolveIds.getPrincipals(userIdList, false);
-		if ((null != resolvedList) && (!(resolvedList.isEmpty()))) {
+		if (MiscUtil.hasItems(resolvedList)) {
 			Object o = resolvedList.get(0);
 			if (o instanceof User) {
 				user = ((User) o);
@@ -3927,7 +4035,7 @@ public class GwtViewHelper {
 		try                  {pa = GwtProfileHelper.getProfileAvatars(request, bs, user);}
 		catch (Exception ex) {pa = null;                                                 }
 		List<ProfileAttributeListElement> paValue = ((null == pa) ? null : ((List<ProfileAttributeListElement>) pa.getValue()));
-		if((null != paValue) && (!(paValue.isEmpty()))) {
+		if (MiscUtil.hasItems(paValue)) {
 			// Yes!  We'll use the first one as the URL.  Does it
 			// have a URL?
 			ProfileAttributeListElement paValueItem = paValue.get(0);
@@ -4328,7 +4436,7 @@ public class GwtViewHelper {
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// Were we given the IDs of any entries to lock?
-			if ((null != entityIds) && (!(entityIds.isEmpty()))) {
+			if (MiscUtil.hasItems(entityIds)) {
 				// Yes!  Scan them.
 				for (EntityId entityId:  entityIds) {
 					// If the entity is a binder...
@@ -4389,7 +4497,7 @@ public class GwtViewHelper {
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// Were we given the IDs of any entries to move?
-			if ((null != entityIds) && (!(entityIds.isEmpty()))) {
+			if (MiscUtil.hasItems(entityIds)) {
 				// Yes!  Scan them.
 				for (EntityId entityId:  entityIds) {
 					try {
@@ -4431,17 +4539,11 @@ public class GwtViewHelper {
 	 * returned for a 'Shared by/with Me' collection view.
 	 */
 	@SuppressWarnings("rawtypes")
-	private static List<Map> postProcessSharedMeMap(List<Map> searchEntries, List<GwtSharedMeItem> shareItems, String quickFilter, boolean sortDescend, String sortBy) {
+	private static List<Map> postProcessSharedMeMap(List<Map> searchEntries, List<GwtSharedMeItem> shareItems, boolean sortDescend, String sortBy) {
 		// Do we have any search entries to process?
-		if ((null != searchEntries) && (!(searchEntries.isEmpty()))) {
-			// Yes!  Do we have a quick filter to apply to the list?
-			if (MiscUtil.hasString(quickFilter)) {
-				// Yes!  Apply it.
-//!				...this needs to be implemented..
-			}
-	
-			// Sort the list, based on the the information we have for
-			// sorting it.
+		if (MiscUtil.hasItems(searchEntries)) {
+			// Yes!  Sort the list, based on the the information we
+			// have for sorting it.
 			Collections.sort(
 				searchEntries,
 				new SharedMeEntriesMapComparator(
@@ -4475,7 +4577,7 @@ public class GwtViewHelper {
 
 			// Were we given the IDs of any users to purge?
 			Long currentUserId = GwtServerHelper.getCurrentUserId(); 
-			if ((null != userIds) && (!(userIds.isEmpty()))) {
+			if (MiscUtil.hasItems(userIds)) {
 				// Yes!  Scan them.
 				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
 				for (Long userId:  userIds) {
@@ -4559,7 +4661,7 @@ public class GwtViewHelper {
 
 			// Were we given the IDs of any users to purge?
 			Long currentUserId = GwtServerHelper.getCurrentUserId(); 
-			if ((null != userIds) && (!(userIds.isEmpty()))) {
+			if (MiscUtil.hasItems(userIds)) {
 				// Yes!  Scan them.
 				boolean isOtherUserAccessRestricted = Utils.canUserOnlySeeCommonGroupMembers();
 				for (Long userId:  userIds) {
@@ -4636,7 +4738,7 @@ public class GwtViewHelper {
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
 
 			// Were we given the IDs of any entries to unlock?
-			if ((null != entityIds) && (!(entityIds.isEmpty()))) {
+			if (MiscUtil.hasItems(entityIds)) {
 				// Yes!  Scan them.
 				for (EntityId entityId:  entityIds) {
 					// If this entity is a binder...
@@ -5211,5 +5313,19 @@ public class GwtViewHelper {
 	        }
 		}
 		return value;
+	}
+
+	/*
+	 * Returns true if a string values contains a quick filter and
+	 * false otherwise.
+	 */
+	public static boolean valueContainsQuickFilter(String value, String quickFilter) {
+		if (null != value) {
+			value = value.trim().toLowerCase();
+		}
+		
+		if (MiscUtil.hasString(value))
+		     return value.contains(quickFilter);
+		else return false;
 	}
 }
