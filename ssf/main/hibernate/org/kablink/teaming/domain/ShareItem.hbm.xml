@@ -54,7 +54,7 @@
     	<property name="ownerCreateEntryAcls" column="right_ownerCreateEntryAcls" access="field"/>
     	<property name="addTags" column="right_addTags" access="field"/>
     	<property name="viewBinderTitle" column="right_viewBinderTitle" access="field"/>
-    	<property name="allowSharing " column="right_allowSharing" access="field"/>
+    	<property name="allowSharing" column="right_allowSharing" access="field"/>
     </component> 
   </class>
 </hibernate-mapping>
