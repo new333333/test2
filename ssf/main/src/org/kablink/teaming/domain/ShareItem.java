@@ -311,6 +311,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isCreateEntries() {
+			if(createEntries == null) return false;
 			return createEntries;
 		}
 
@@ -319,6 +320,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isModifyEntries() {
+			if(modifyEntries == null) return false;
 			return modifyEntries;
 		}
 
@@ -327,6 +329,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isModifyEntryFields() {
+			if(modifyEntryFields == null) return false;
 			return modifyEntryFields;
 		}
 
@@ -335,6 +338,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isDeleteEntries() {
+			if(deleteEntries == null) return false;
 			return deleteEntries;
 		}
 
@@ -343,6 +347,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isReadEntries() {
+			if(readEntries == null) return false;
 			return readEntries;
 		}
 
@@ -351,6 +356,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isAddReplies() {
+			if(addReplies == null) return false;
 			return addReplies;
 		}
 
@@ -359,6 +365,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isGenerateReports() {
+			if(generateReports == null) return false;
 			return generateReports;
 		}
 
@@ -367,6 +374,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isBinderAdministration() {
+			if(binderAdministration == null) return false;
 			return binderAdministration;
 		}
 
@@ -375,6 +383,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isCreateEntryAcls() {
+			if(createEntryAcls == null) return false;
 			return createEntryAcls;
 		}
 
@@ -383,6 +392,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isChangeAccessControl() {
+			if(changeAccessControl == null) return false;
 			return changeAccessControl;
 		}
 
@@ -391,6 +401,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isCreateWorkspaces() {
+			if(createWorkspaces == null) return false;
 			return createWorkspaces;
 		}
 
@@ -399,6 +410,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isCreateFolders() {
+			if(createFolders == null) return false;
 			return createFolders;
 		}
 
@@ -407,6 +419,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isManageEntryDefinitions() {
+			if(manageEntryDefinitions == null) return false;
 			return manageEntryDefinitions;
 		}
 
@@ -415,6 +428,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isManageWorkflowDefinitions() {
+			if(manageWorkflowDefinitions == null) return false;
 			return manageWorkflowDefinitions;
 		}
 
@@ -423,6 +437,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isCreatorReadEntries() {
+			if(creatorReadEntries == null) return false;
 			return creatorReadEntries;
 		}
 
@@ -431,6 +446,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isCreatorModifyEntries() {
+			if(creatorModifyEntries == null) return false;
 			return creatorModifyEntries;
 		}
 
@@ -439,6 +455,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isCreatorDeleteEntries() {
+			if(creatorDeleteEntries == null) return false;
 			return creatorDeleteEntries;
 		}
 
@@ -447,6 +464,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isOwnerCreateEntryAcls() {
+			if(ownerCreateEntryAcls == null) return false;
 			return ownerCreateEntryAcls;
 		}
 
@@ -455,6 +473,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isAddTags() {
+			if(addTags == null) return false;
 			return addTags;
 		}
 
@@ -463,6 +482,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isViewBinderTitle() {
+			if(viewBinderTitle == null) return false;
 			return viewBinderTitle;
 		}
 
@@ -471,6 +491,7 @@ public class ShareItem extends BaseEntity {
 		}
 
 		public boolean isAllowSharing() {
+			if(allowSharing == null) return false;
 			return allowSharing;
 		}
 
