@@ -57,7 +57,6 @@ import org.kablink.teaming.domain.ShareItem.RightSet;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.ShareItem;
-import org.kablink.teaming.domain.ShareItem.ShareRole;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
@@ -126,8 +125,7 @@ public class GwtShareHelper
 	{
 		if ( m_contributorRightSet == null )
 		{
-			ShareRole shareRole = new ShareRole(ShareRole.Role.CONTRIBUTOR);
-			m_contributorRightSet = shareRole.getRightSet();
+			m_contributorRightSet = ShareItem.Role.CONTRIBUTOR.getRightSet();
 		}
 		
 		return m_contributorRightSet;
@@ -378,16 +376,7 @@ public class GwtShareHelper
 	{
 		if ( m_ownerRightSet == null )
 		{
-			ShareRole shareRole = new ShareRole(ShareRole.Role.OWNER);
-			m_ownerRightSet = shareRole.getRightSet();
-			m_ownerRightSet.setReadEntries( true );
-			m_ownerRightSet.setCreateEntries( true );
-			m_ownerRightSet.setModifyEntries( true );
-			m_ownerRightSet.setDeleteEntries( true );
-			m_ownerRightSet.setAddReplies( true );
-			m_ownerRightSet.setBinderAdministration( true );
-			m_ownerRightSet.setCreateEntryAcls( true );
-			m_ownerRightSet.setChangeAccessControl( true );
+			m_ownerRightSet = ShareItem.Role.OWNER.getRightSet();
 		}
 		
 		return m_ownerRightSet;
@@ -773,8 +762,7 @@ public class GwtShareHelper
 	{
 		if ( m_viewRightSet == null )
 		{
-			ShareRole shareRole = new ShareRole(ShareRole.Role.VIEW);
-			m_viewRightSet = shareRole.getRightSet();
+			m_viewRightSet = ShareItem.Role.VIEW.getRightSet();
 		}
 		
 		return m_viewRightSet;
