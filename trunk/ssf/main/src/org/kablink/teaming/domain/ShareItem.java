@@ -333,7 +333,7 @@ public class ShareItem extends BaseEntity {
 			Field f;
 			try {
 				f = c.getDeclaredField(rightName);
-				f.setBoolean(this, Boolean.valueOf(rightValue));
+				f.set(this, Boolean.valueOf(rightValue));
 			} catch (NoSuchFieldException e) {
 				throw new IllegalArgumentException("Invalid right name '" + rightName + "'", e);
 			} catch (IllegalAccessException e) {
@@ -573,5 +573,5 @@ public class ShareItem extends BaseEntity {
 			return rightSet;
 		}
 	}
-	
+
 }
