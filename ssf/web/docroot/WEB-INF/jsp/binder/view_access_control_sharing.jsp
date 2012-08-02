@@ -95,27 +95,32 @@ function setItemToDelete(id) {
 	  <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"/>
 	</div>
 		
-<fieldset class="ss_fieldset">
+<ssf:box style="rounded">
 
   <div style="padding:4px 8px;">
-	<table border="1" cellspacing="4" cellpadding="4">
+	<table class="ss_table">
+	 <thead>
+	 <tr>
 	  <th><ssf:nlt tag="binder.configure.access_control.sharing.sharer"/></th>
 	  <th><ssf:nlt tag="binder.configure.access_control.sharing.recipient"/></th>
 	  <th><ssf:nlt tag="binder.configure.access_control.sharing.right"/></th>
 	  <th><ssf:nlt tag="binder.configure.access_control.sharing.expiration"/></th>
 	  <th><ssf:nlt tag="binder.configure.access_control.sharing.revokeHeader"/></th>
+	 </tr>
+	 </thead>
+	 
       <c:forEach var="shareItem" items="${ss_accessControlShareItems}">
         <c:set var="recipient" value="${ss_accessControlShareItemRecipients[shareItem.id]}"/>
         <tr>
-          <td>${shareItem.creation.principal.title }</td>
-          <td>
+          <td class="ss_table_paragraph">${shareItem.creation.principal.title }</td>
+          <td class="ss_table_paragraph">
 			<img src="<html:imagesPath/>icons/${shareItem.recipientType.icon}"/> ${recipient.title} 
             <c:if test="${recipient.entityType == 'user' || recipient.entityType == 'group'}">
               <span class="ss_small">&nbsp;(${recipient.name})</span>
             </c:if>
           </td>
-          <td>${shareItem.shareRole.title}</td>
-          <td>
+          <td class="ss_table_paragraph">${shareItem.shareRole.title}</td>
+          <td class="ss_table_paragraph">
             <c:if test="${!empty shareItem.endDate}">
               <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 			     value="${shareItem.endDate}" type="date" dateStyle="medium" />
@@ -126,7 +131,7 @@ function setItemToDelete(id) {
               </c:if>
             </c:if>
           </td>
-          <td>
+          <td class="ss_table_paragraph">
               <input type="submit" name="revokeBtn" 
                 value="<ssf:nlt tag='button.delete'/>"
                 onClick="setItemToDelete('${shareItem.id}');"
@@ -139,6 +144,8 @@ function setItemToDelete(id) {
   </div>
 </fieldset>
 <input type="hidden" name="shareItemId"/>
+
+</ssf:box>
 
 <div style="padding-top:10px;">
   <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"/>
