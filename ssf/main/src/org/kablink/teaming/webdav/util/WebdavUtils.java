@@ -84,7 +84,7 @@ public class WebdavUtils {
 		//return new MimetypesFileTypeMap().getContentType(name);
 		
 		String mime = ContentTypeUtils.findContentTypes(fileName);
-		String s = ContentTypeUtils.findAcceptableContentType(fileName, accepts);
+		String s = ContentTypeUtils.findAcceptableContentType(mime, accepts);
 		
 		if(logger.isTraceEnabled())
 			logger.trace("getContentType: preferred: " + accepts + " mime: " + mime + " selected: " + s);
