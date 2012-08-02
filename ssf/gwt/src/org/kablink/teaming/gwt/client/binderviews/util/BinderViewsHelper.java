@@ -100,7 +100,7 @@ public class BinderViewsHelper {
 	public static void changeEntryTypes(final FolderType folderType, final List<EntityId> entityIds) {
 		// If we weren't given any entity IDs to entry whose types
 		// are to be changed...
-		if ((null == entityIds) || entityIds.isEmpty()) {
+		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
 			return;
 		}
@@ -175,7 +175,7 @@ public class BinderViewsHelper {
 	 */
 	public static void copyEntries(final FolderType folderType, final List<EntityId> entityIds) {
 		// If we weren't given any entity IDs to be copied...
-		if ((null == entityIds) || entityIds.isEmpty()) {
+		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
 			return;
 		}
@@ -214,7 +214,7 @@ public class BinderViewsHelper {
 	 */
 	public static void deleteFolderEntries(final List<EntityId> entityIds, final DeletePurgeEntriesCallback dpeCallback) {
 		// If we weren't given any entity IDs to be deleted...
-		if ((null == entityIds) || entityIds.isEmpty()) {
+		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
 			return;
 		}
@@ -264,7 +264,7 @@ public class BinderViewsHelper {
 	 */
 	public static void deleteUserWorkspaces(final List<Long> userIds) {
 		// If we weren't given any user IDs to be deleted...
-		if ((null == userIds) || userIds.isEmpty()) {
+		if (!(GwtClientHelper.hasItems(userIds))) {
 			// ...bail.
 			return;
 		}
@@ -312,7 +312,7 @@ public class BinderViewsHelper {
 	 */
 	public static void disableUsers(final List<Long> userIds) {
 		// If we weren't given any user IDs to be disabled...
-		if ((null == userIds) || userIds.isEmpty()) {
+		if (!(GwtClientHelper.hasItems(userIds))) {
 			// ...bail.
 			return;
 		}
@@ -361,7 +361,7 @@ public class BinderViewsHelper {
 	 */
 	public static void enableUsers(final List<Long> userIds) {
 		// If we weren't given any user IDs to be enabled...
-		if ((null == userIds) || userIds.isEmpty()) {
+		if (!(GwtClientHelper.hasItems(userIds))) {
 			// ...bail.
 			return;
 		}
@@ -411,7 +411,7 @@ public class BinderViewsHelper {
 	 */
 	public static void lockEntries(final FolderType folderType, final List<EntityId> entityIds) {
 		// If we weren't given any entity IDs to be locked...
-		if ((null == entityIds) || entityIds.isEmpty()) {
+		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
 			return;
 		}
@@ -469,7 +469,7 @@ public class BinderViewsHelper {
 	 */
 	public static void markEntriesRead(List<EntityId> entityIds) {
 		// If we weren't given any entity IDs to be marked read...
-		if ((null == entityIds) || entityIds.isEmpty()) {
+		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
 			return;
 		}
@@ -515,7 +515,7 @@ public class BinderViewsHelper {
 	 */
 	public static void markEntriesUnread(List<EntityId> entityIds) {
 		// If we weren't given any entity IDs to be marked unread...
-		if ((null == entityIds) || entityIds.isEmpty()) {
+		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
 			return;
 		}
@@ -562,7 +562,7 @@ public class BinderViewsHelper {
 	 */
 	public static void moveEntries(final FolderType folderType, final List<EntityId> entityIds) {
 		// If we weren't given any entity IDs to be moved...
-		if ((null == entityIds) || entityIds.isEmpty()) {
+		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
 			return;
 		}
@@ -601,7 +601,7 @@ public class BinderViewsHelper {
 	 */
 	public static void purgeFolderEntries(final List<EntityId> entityIds, final DeletePurgeEntriesCallback dpeCallback) {
 		// If we weren't given any entity IDs to be purged...
-		if ((null == entityIds) || entityIds.isEmpty()) {
+		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
 			return;
 		}
@@ -660,7 +660,7 @@ public class BinderViewsHelper {
 	 */
 	public static void purgeUsers(final List<Long> userIds) {
 		// If we weren't given any user IDs to be purged...
-		if ((null == userIds) || userIds.isEmpty()) {
+		if (!(GwtClientHelper.hasItems(userIds))) {
 			// ...bail.
 			return;
 		}
@@ -711,7 +711,7 @@ public class BinderViewsHelper {
 	 */
 	public static void purgeUserWorkspaces(final List<Long> userIds) {
 		// If we weren't given any user IDs to be purged...
-		if ((null == userIds) || userIds.isEmpty()) {
+		if (!(GwtClientHelper.hasItems(userIds))) {
 			// ...bail.
 			return;
 		}
@@ -762,7 +762,7 @@ public class BinderViewsHelper {
 	 */
 	public static void shareEntities(final List<EntityId> entityIds) {
 		// If we weren't given any entity IDs to be shared...
-		if ((null == entityIds) || entityIds.isEmpty()) {
+		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
 			return;
 		}
@@ -861,7 +861,7 @@ public class BinderViewsHelper {
 	 */
 	public static void subscribeToEntries(final FolderType folderType, final List<EntityId> entityIds) {
 		// If we weren't given any entity IDs to be subscribed to...
-		if ((null == entityIds) || entityIds.isEmpty()) {
+		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
 			return;
 		}
@@ -928,7 +928,7 @@ public class BinderViewsHelper {
 	 */
 	public static void unlockEntries(final FolderType folderType, final List<EntityId> entityIds) {
 		// If we weren't given any entity IDs to be unlocked...
-		if ((null == entityIds) || entityIds.isEmpty()) {
+		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
 			return;
 		}

@@ -1721,7 +1721,7 @@ public class TaskTable extends Composite
 				tasksChecked.remove(i);
 			}
 		}
-		if ((null == tasksChecked) || tasksChecked.isEmpty()) {
+		if (!(GwtClientHelper.hasItems(tasksChecked))) {
 			// ...there's nothing to delete.
 			return;
 		}
@@ -2256,7 +2256,7 @@ public class TaskTable extends Composite
 				tasksChecked.remove(i);
 			}
 		}
-		if ((null == tasksChecked) || tasksChecked.isEmpty()) {
+		if (!(GwtClientHelper.hasItems(tasksChecked))) {
 			// ...there's nothing to purge.
 			return;
 		}
@@ -3095,7 +3095,7 @@ public class TaskTable extends Composite
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the view.
 			List<EntityId> eids = getTaskIdsChecked();
-			if ((null != eids) && (!(eids.isEmpty()))) {
+			if (GwtClientHelper.hasItems(eids)) {
 				for (EntityId eid:  eids) {
 					if (eid.isEntry()) {
 						BinderViewsHelper.viewEntry(eid);
@@ -4284,7 +4284,7 @@ public class TaskTable extends Composite
 	 */
 	private void unregisterEvents() {
 		// If we have a non-empty list of registered events...
-		if ((null != m_registeredEventHandlers) && (!(m_registeredEventHandlers.isEmpty()))) {
+		if (GwtClientHelper.hasItems(m_registeredEventHandlers)) {
 			// ...unregister them.  (Note that this will also empty the
 			// ...list.)
 			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
@@ -4326,7 +4326,7 @@ public class TaskTable extends Composite
 				
 				// Did any tasks have the logical end dates changed?
 				m_dueDateBusy.setResource(m_images.spacer());
-				if ((null != updatedTaskInfo) && (!(updatedTaskInfo.isEmpty()))) {
+				if (GwtClientHelper.hasItems(updatedTaskInfo)) {
 					// Yes!  Scan them...
 					Date now = new Date();
 					long nowMS = now.getTime();

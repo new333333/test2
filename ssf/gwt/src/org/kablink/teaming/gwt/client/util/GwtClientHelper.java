@@ -32,8 +32,10 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -348,7 +350,7 @@ public class GwtClientHelper {
 	 */
 	private static void displayMultipleErrorsAsync(final String baseError, final List<String> multiErrors, final int delay) {
 		// Do we have anything to display?
-		if (hasString(baseError) && (null != multiErrors) && (!(multiErrors.isEmpty()))) {
+		if (hasString(baseError) && hasItems(multiErrors)) {
 			// Yes!  If we don't have a specific amount of time to
 			// delay...
 			if (0 >= delay) {
@@ -607,6 +609,31 @@ public class GwtClientHelper {
 	public static void handleGwtRPCFailure(Throwable t) {
 		// Always use the initial form of the method.
 		handleGwtRPCFailure(t, null, ((String[]) null));
+	}
+	
+	/**
+	 * Returns true if a Collection has anything in it and false
+	 * otherwise.
+	 * 
+	 * @param c
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static boolean hasItems(Collection c) {
+		return ((null != c) && (!(c.isEmpty())));
+	}
+	
+	/**
+	 * Returns true if a Map has anything in it and false otherwise.
+	 * 
+	 * @param m
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static boolean hasItems(Map m) {
+		return ((null != m) && (!(m.isEmpty())));
 	}
 	
 	/**

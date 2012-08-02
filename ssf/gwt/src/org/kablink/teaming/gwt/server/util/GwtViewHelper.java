@@ -1685,6 +1685,7 @@ public class GwtViewHelper {
 					fr.setCanModify(fm.testAccess(entry, FolderOperation.modifyEntry   ));
 					fr.setCanPurge( fm.testAccess(entry, FolderOperation.deleteEntry   ));
 					fr.setCanTrash( fm.testAccess(entry, FolderOperation.preDeleteEntry));
+					fr.setCanShare( GwtShareHelper.isEntitySharable(bs, entry          ));
 				}
 			}
 
@@ -1717,6 +1718,7 @@ public class GwtViewHelper {
 					fr.setCanModify(bm.testAccess(binder, BinderOperation.modifyBinder   ));
 					fr.setCanPurge( bm.testAccess(binder, BinderOperation.deleteBinder   ));
 					fr.setCanTrash( bm.testAccess(binder, BinderOperation.preDeleteBinder));
+					fr.setCanShare( GwtShareHelper.isEntitySharable(bs, binder           ));
 				}
 			}
 		}
@@ -1845,7 +1847,7 @@ public class GwtViewHelper {
 			// Are there any global filters defined?
 			TreeMap<String, String>	filterMap = new TreeMap<String, String>(new StringComparator(user.getLocale()));
 			Map searchFilters = ((Map) binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS));
-			if ((null != searchFilters) && (!(searchFilters.isEmpty()))) {
+			if (MiscUtil.hasItems(searchFilters)) {
 				// Yes!  Add them to the sort map.
 				Set<String> keySet = searchFilters.keySet();
 				for (Iterator<String> ksIT = keySet.iterator(); ksIT.hasNext(); ) {
@@ -1856,7 +1858,7 @@ public class GwtViewHelper {
 			// Does the user have any personal filters defined?
 			UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
 			searchFilters = ((Map) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS));
-			if ((null != searchFilters) && (!(searchFilters.isEmpty()))) {
+			if (MiscUtil.hasItems(searchFilters)) {
 				// Yes!  Add them to the sort map.
 				Set<String> keySet = searchFilters.keySet();
 				for (Iterator<String> ksIT = keySet.iterator(); ksIT.hasNext(); ) {
@@ -3851,7 +3853,7 @@ public class GwtViewHelper {
 	 */
 	private static String getQueryParameterString(Map<String, String> nvMap, String name) {
 		String reply;
-		if ((null != nvMap) && (!(nvMap.isEmpty())))
+		if (MiscUtil.hasItems(nvMap))
 		     reply = nvMap.get(name.toLowerCase());
 		else reply = null;
 		return ((null == reply) ? "" : reply);
@@ -4095,8 +4097,8 @@ public class GwtViewHelper {
 
 		// Can we parse the URL?
 		Map<String, String> nvMap = getQueryParameters(url);
-		if ((null == nvMap) || nvMap.isEmpty()) {
-			// No!  Then we can't get a BinderInfo.
+		if (!(MiscUtil.hasItems(nvMap))) {
+			// No!  Then we can't get a ViewInfo.
 			m_logger.debug("GwtViewHelper.getViewInfo():  1:Could not determine a view.");
 			return null;
 		}

@@ -205,12 +205,14 @@ public class GwtMenuHelper {
 			if (EntityIdentifier.EntityType.profiles != binder.getEntityType()) {
 				// Yes!  Add the various binder based
 				// ToolbarItem's.
-				miscTBI.addNestedItem( constructClipboardItem()                 );
-				miscTBI.addNestedItem( constructSendEmailToItem(request, binder));
-				miscTBI.addNestedItem( constructShareBinderItem(request, binder));
-				miscTBI.addNestedItem( constructMobileUiItem(   request, binder));
-				miscTBI.addNestedItems(constructTrackBinderItem(bs,      binder));
-				miscTBI.addNestedItem( constructTrashItem(      request, binder));
+				miscTBI.addNestedItem( constructClipboardItem()                    );
+				miscTBI.addNestedItem( constructSendEmailToItem(    request, binder));
+				if (GwtShareHelper.isEntitySharable(bs, binder)) {
+					miscTBI.addNestedItem( constructShareBinderItem(request, binder));
+				}
+				miscTBI.addNestedItem( constructMobileUiItem(       request, binder));
+				miscTBI.addNestedItems(constructTrackBinderItem(    bs,      binder));
+				miscTBI.addNestedItem( constructTrashItem(          request, binder));
 			}
 		}
 	}
@@ -805,7 +807,7 @@ public class GwtMenuHelper {
 		if (pm.testAccess(((ProfileBinder) ws), ProfileOperation.addEntry)) {
 			// ...and we can find the entry definition...
 			List defaultEntryDefinitions = ws.getEntryDefinitions();
-			if ((null != defaultEntryDefinitions) && (!(defaultEntryDefinitions.isEmpty()))) {
+			if (MiscUtil.hasItems(defaultEntryDefinitions)) {
 				// ...add the 'new user' option (only one option
 				// ...available.)
 				Definition def = ((Definition) defaultEntryDefinitions.get(0));
@@ -894,7 +896,7 @@ public class GwtMenuHelper {
 	private static void constructEntryShareItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
 		// For the view types that support it...
 		if (MiscUtil.hasString(viewType)) {
-			if (folderSupportsShare(folder, viewType)) {
+			if (folderSupportsShare(bs, folder, viewType)) {
 				// ...construct the share item.
 				constructEntryShareItem(entryToolbar, bs, request);
 			}
@@ -2032,8 +2034,12 @@ public class GwtMenuHelper {
 	 * Returns true if a folder (including its view type) supports
 	 * share operations and false otherwise.
 	 */
-	private static boolean folderSupportsShare(Folder folder, String viewType) {
-		return folderSupportsSelection(folder, viewType);
+	private static boolean folderSupportsShare(AllModulesInjected bs, Folder folder, String viewType) {
+		boolean reply = folderSupportsSelection(folder, viewType);
+		if (reply) {
+			reply = GwtShareHelper.isSharingEnabled(bs);
+		}
+		return reply;
 	}
 	
 	/*

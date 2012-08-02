@@ -1447,6 +1447,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_UnpinEntry();
 	String vibeDataTable_Alt_View();
 	String vibeDataTable_ColumnResizer();
+	String vibeDataTable_Confirm_CantShareSomeSelections();
 	String vibeDataTable_Download();
 	String vibeDataTable_Error_MirroredDriverNotConfigured();
 	String vibeDataTable_Empty();
@@ -1467,6 +1468,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_TrashConfirmRestoreAllWithSelections();
 	String vibeDataTable_TrashInternalErrorOverrideMissing(String methodName);
 	String vibeDataTable_View();
+	String vibeDataTable_Warning_ShareNoRights();
 	
 	// String used in the Landing Page
 	String nowFollowingBinder();

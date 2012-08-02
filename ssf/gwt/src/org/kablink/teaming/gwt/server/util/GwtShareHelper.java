@@ -75,7 +75,6 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 
-
 /**
  * Helper methods for the GWT UI server code that services share requests.
  *
@@ -386,7 +385,7 @@ public class GwtShareHelper
 	 * Return the id of the given user.  If the user is an external user we will see if their
 	 * user account has been created.  If it hasn't we will create it.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings("unchecked")
 	private static Long getRecipientId( AllModulesInjected ami, GwtShareItem gwtShareItem )
 	{
 		Long id;
@@ -1045,5 +1044,31 @@ public class GwtShareHelper
 		}
 		
 		return results;
+	}
+
+	/**
+	 * Returns true if an entity can be shared and false otherwise.
+	 * 
+	 * @param bs
+	 * @param de
+	 * 
+	 * @return
+	 */
+	public static boolean isEntitySharable( AllModulesInjected bs, DefinableEntity de )
+	{
+		return bs.getSharingModule().testAddShareEntity( de );
+	}
+
+	/**
+	 * Returns true if sharing is currently enabled and false
+	 * otherwise.
+	 * 
+	 * @param bs
+	 * 
+	 * @return
+	 */
+	public static boolean isSharingEnabled( AllModulesInjected bs )
+	{
+		return bs.getSharingModule().isSharingEnabled();
 	}
 }

@@ -2830,7 +2830,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 							authorIdList = new ArrayList<String>();
 							authorIdList.add( authorIdS );
 							resolvedList = ResolveIds.getPrincipals( authorIdList );
-							if ( resolvedList != null && resolvedList.isEmpty() == false )
+							if ( MiscUtil.hasItems( resolvedList ) )
 							{
 								User author;
 								
@@ -2856,7 +2856,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 							authorIds.add( authorId );
 							authorPrincipals = getProfileModule().getPrincipals( authorIds );
 							
-							if ( authorPrincipals != null && authorPrincipals.isEmpty() == false )
+							if ( MiscUtil.hasItems( authorPrincipals ) )
 							{
 								Principal authorPrincipal;
 								

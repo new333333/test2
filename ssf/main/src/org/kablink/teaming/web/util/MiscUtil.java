@@ -413,6 +413,18 @@ public final class MiscUtil
 	}
 	
 	/**
+	 * Returns true if a Map has anything in it and false otherwise.
+	 * 
+	 * @param m
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static boolean hasItems(Map m) {
+		return ((null != m) && (!(m.isEmpty())));
+	}
+	
+	/**
 	 * Returns true is s refers to a non null, non 0 length String and
 	 * false otherwise.
 	 * 

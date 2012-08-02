@@ -312,7 +312,7 @@ public class GwtCalendarHelper {
 	 */
 	private static void completeAIs(AllModulesInjected bs, ArrayList<Appointment> appointments) {
 		// If we don't have any appointments to complete...
-		if ((null == appointments) || appointments.isEmpty()) {
+		if (!(MiscUtil.hasItems(appointments))) {
 			// ..bail.
 			return;
 		}
@@ -484,7 +484,7 @@ public class GwtCalendarHelper {
 	 */
 	private static void fixupAppointments(AllModulesInjected bs, List<Appointment> appointments) {
 		// If we don't have any Appointment's to complete...
-		if ((null == appointments) || appointments.isEmpty()) {
+		if (!(MiscUtil.hasItems(appointments))) {
 			// ..bail.
 			return;
 		}
@@ -646,7 +646,7 @@ public class GwtCalendarHelper {
 					searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, null, modeType, folderIds, folder, SearchUtils.AssigneeType.TASK);
 					retMap = bm.executeSearchQuery(searchFilter, Constants.SEARCH_MODE_NORMAL, options);
 					List<Map> tasks = ((List) retMap.get(ObjectKeys.SEARCH_ENTRIES));
-					if ((null != tasks) && (!(tasks.isEmpty()))) {
+					if (MiscUtil.hasItems(tasks)) {
 						// Yes!  Build a list of appointment IDs we're
 						// already tracking.
 						Set<String> appointmentIds = new HashSet();
@@ -672,7 +672,7 @@ public class GwtCalendarHelper {
 			
 			// Do we have any events?
 			CalendarAppointmentsRpcResponseData reply = new CalendarAppointmentsRpcResponseData();
-			if ((null != events) && (!(events.isEmpty()))) {
+			if (MiscUtil.hasItems(events)) {
 				// Yes!  We need to construct Appointment's for each.
 				// Scan the events
 				SeenMap seenMap = bs.getProfileModule().getUserSeenMap(null);

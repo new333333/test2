@@ -66,6 +66,7 @@ public class FolderRow implements IsSerializable {
 	private BinderIcons								m_binderIcons = new BinderIcons();
 	private boolean									m_canModify;				//
 	private boolean									m_canPurge;					//
+	private boolean									m_canShare;					//
 	private boolean									m_canTrash;					//
 	private boolean									m_pinned;					//
 	private EntityId								m_entityId;					// The entity ID of the FolderEntry this FolderRow corresponds to.
@@ -119,6 +120,7 @@ public class FolderRow implements IsSerializable {
 	 */
 	public boolean                                 getCanModify()                         {                               return m_canModify;          }
 	public boolean                                 getCanPurge()                          {                               return m_canPurge;           }
+	public boolean                                 getCanShare()                          {                               return m_canShare;           }
 	public boolean                                 getCanTrash()                          {                               return m_canTrash;           }
 	public boolean                                 getPinned()                            {                               return m_pinned;             }
 	public EntityId                                getEntityId()                          {                               return m_entityId;           }
@@ -144,6 +146,7 @@ public class FolderRow implements IsSerializable {
 	 */
 	public void setCanModify( boolean canModify)                           {m_canModify = canModify;                          }
 	public void setCanPurge(  boolean canPurge)                            {m_canPurge  = canPurge;                           }
+	public void setCanShare(  boolean canShare)                            {m_canShare  = canShare;                           }
 	public void setCanTrash(  boolean canTrash)                            {m_canTrash  = canTrash;                           }
 	public void setPinned(    boolean pinned)                              {m_pinned    = pinned;                             }
 	public void setBinderIcon(String  binderIcon, BinderIconSize iconSize) {m_binderIcons.setBinderIcon(binderIcon, iconSize);}

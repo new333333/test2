@@ -836,7 +836,7 @@ public class GwtServerHelper {
 				replyStyles = DefinitionUtils.getPropertyValueList( entryDefDoc.getRootElement(), "replyStyle" );
 
 				// Do we have any reply styles?
-				if ( replyStyles != null && replyStyles.isEmpty() == false )
+				if ( MiscUtil.hasItems( replyStyles ) )
 				{
 					int i;
 
@@ -934,7 +934,7 @@ public class GwtServerHelper {
 	
 				// ...construct a List<TaskListItem> from the tasks...
 				List<TaskListItem> tliList = new ArrayList<TaskListItem>();
-				if ((null != tiList) && (!(tiList.isEmpty()))) {
+				if (MiscUtil.hasItems(tiList)) {
 					for (TaskInfo task:  tiList) {
 						tliList.add(new TaskListItem(task));
 					}
@@ -6120,7 +6120,7 @@ public class GwtServerHelper {
 			List<String> targetUserIdList = new ArrayList<String>();
 			targetUserIdList.add(targetUserId);
 			List targetUsersList = ResolveIds.getPrincipals(targetUserIdList, false);
-			if ((null != targetUsersList) && (!(targetUsersList.isEmpty()))) {
+			if (MiscUtil.hasItems(targetUsersList)) {
 				// Yes!  Return the title from the user we resolved to.
 				// This will either be the actual title, if the current
 				// user has rights to see it, or the secured title.
@@ -7397,7 +7397,7 @@ public class GwtServerHelper {
 		try {
 			// Extract the user ID's from the List<CliboardUser>...
 			List<Long> userIds = new ArrayList<Long>();
-			if ((null != cbUserList) && (!(cbUserList.isEmpty()))) {
+			if (MiscUtil.hasItems(cbUserList)) {
 				for (ClipboardUser cbUser:  cbUserList) {
 					userIds.add(cbUser.getUserId());
 				}
@@ -8191,11 +8191,11 @@ public class GwtServerHelper {
 	 */
 	private static Set<Long> validatePrincipalIds(Set<Long> principalIds) {
 		Set<Long> reply = new HashSet<Long>();
-		if ((null != principalIds) && (!(principalIds.isEmpty()))) {
+		if (MiscUtil.hasItems(principalIds)) {
 			List principals = null;
 			try {principals = ResolveIds.getPrincipals(principalIds);}
 			catch (Exception ex) {/* Ignored. */}
-			if ((null != principals) && (!(principals.isEmpty()))) {
+			if (MiscUtil.hasItems(principals)) {
 				for (Object o:  principals) {
 					Principal p = ((Principal) o);
 					reply.add(p.getId());
