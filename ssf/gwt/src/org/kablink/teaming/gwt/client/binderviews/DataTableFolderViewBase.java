@@ -57,6 +57,7 @@ import org.kablink.teaming.gwt.client.datatable.CustomColumn;
 import org.kablink.teaming.gwt.client.datatable.DescriptionHtmlColumn;
 import org.kablink.teaming.gwt.client.datatable.DownloadColumn;
 import org.kablink.teaming.gwt.client.datatable.EmailAddressColumn;
+import org.kablink.teaming.gwt.client.datatable.EntryMenuColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryPinColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.GuestColumn;
@@ -928,16 +929,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	private static int getColumnIndex(List<FolderColumn> folderColumns, String cName) {
 		// Scan the List<FolderColumn>...
-		int reply = 0;
 		for (FolderColumn fc:  folderColumns) {
 			// ...is this the column in question?
 			if (fc.getColumnName().equals(cName)) {
-				// Yes!  Return its index.
-				return reply;
+				// Yes!  Return its display index.
+				return fc.getDisplayIndex();
 			}
-			reply += 1;
 		}
-		
+
 		// If we get here, we couldn't find the column in question. 
 		// Return -1.
 		return (-1);
@@ -1138,6 +1137,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	/*
 	 * Initializes the columns in the data table.
 	 */
+	@SuppressWarnings("unused")
 	private void initTableColumns(final FolderRowSelectionModel selectionModel) {
 		// Clear the data table's column sort list.
 		ColumnSortList csl = m_dataTable.getColumnSortList();
@@ -1159,9 +1159,17 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 
 	    // Scan the columns defined in this folder.
 		for (final FolderColumn fc:  m_folderColumnsList) {
+			// For some columns (e.g., entry titles), we define a 2nd,
+			// support column for it.  These variables are used to
+			// define that.
+			ColumnWidth					supportColumnWidth    = null;
+			String						supportColumnTitle    = null;
+			String						supportColumnStyles   = null;
+			VibeColumn<FolderRow, ?>	supportColumn         = null;
+			
 			// We need to define a VibeColumn<FolderRow, ?> of some
 			// sort for each one.  Is this a column that should show
-			// a download link for? 
+			// a download link for?
 			VibeColumn<FolderRow, ?> column;
 			final String cName = fc.getColumnEleName();
 			if (FolderColumn.isColumnDownload(cName)) {
@@ -1253,6 +1261,21 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						return reply;
 					}
 				};
+
+				// Is this entry title for other than an item in a
+				// trash folder? 
+				if (false) {	//! (!(isTrash())) {
+					// Yes!  Create a EntryMenuColumn for it.
+					supportColumn = new EntryMenuColumn<FolderRow>(fc) {
+						@Override
+						public EntryTitleInfo getValue(FolderRow fr) {
+							return fr.getColumnValueAsEntryTitle(fc);
+						}
+					};
+					supportColumn.setSortable(false);
+					supportColumnWidth  = new ColumnWidth(16, Unit.PX);
+					supportColumnStyles = "";
+				}
 			}
 			
 			// No, this column doesn't show an entry title either!
@@ -1379,6 +1402,20 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			m_dataTable.addColumn(column, fc.getColumnTitle()    );
 		    setColumnStyles(      column, cName, colIndex++      );
 		    setColumnWidth(               cName, column, pctTotal);
+
+		    // Do we have a support column for the column we just
+		    // added?
+		    if (null != supportColumn) {
+		    	// Yes!  Add it too.
+		    	m_dataTable.addColumn(supportColumn, ((null == supportColumnTitle) ? "" : supportColumnTitle));
+		    	if (GwtClientHelper.hasString(supportColumnStyles)) {
+		    		m_dataTable.addColumnStyleName(colIndex, supportColumnStyles);
+		    	}
+		    	colIndex += 1;
+		    	if (null != supportColumnWidth) {
+		    		m_dataTable.setColumnWidth(supportColumn, ColumnWidth.getWidthStyle(supportColumnWidth));
+		    	}
+		    }
 
 		    // Is this the column we're sorted on?
 		    if (fc.getColumnSortKey().equalsIgnoreCase(getFolderSortBy())) {
