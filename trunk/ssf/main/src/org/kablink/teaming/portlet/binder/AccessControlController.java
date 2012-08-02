@@ -86,6 +86,8 @@ public class AccessControlController extends AbstractBinderController {
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		response.setRenderParameters(request.getParameterMap());
+		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");	
+
 		//navigation links still use binderId
 		Long workAreaId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		if (workAreaId == null) workAreaId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_WORKAREA_ID));				
@@ -148,10 +150,18 @@ public class AccessControlController extends AbstractBinderController {
 				}
 			}
 		
+		} else if (formData.containsKey("revokeBtn") && WebHelper.isMethodPost(request)) {
+			Long shareItemId = PortletRequestUtils.getLongParameter(request, WebKeys.SHARE_ITEM_ID);
+			if (shareItemId != null) {
+				getSharingModule().deleteShareItem(shareItemId);
+			}
+		
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			if (workArea instanceof TemplateBinder) {
 				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, workAreaId.toString());
+			} else if (operation.equals(WebKeys.OPERATION_MANAGE_ACCESS_SHARING)){
+				response.setRenderParameter(WebKeys.URL_OPERATION, "");
 			} else {
 				setupCloseWindow(response);
 			}
