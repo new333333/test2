@@ -205,19 +205,15 @@ public class ShareItem extends BaseEntity {
 			return endDate.before(new Date());
 	}
 	
-	//Routine to get the ShareRole that best matches the RightSet for this ShareItem
-	public ShareRole getShareRole() {
-		ShareRole sr = new ShareRole(ShareRole.Role.VIEW);
-		if (this.getRightSet().equals(sr.getRightSet())) return sr;
-		sr = new ShareRole(ShareRole.Role.CONTRIBUTOR);
-		if (this.getRightSet().equals(sr.getRightSet())) return sr;
-		sr = new ShareRole(ShareRole.Role.OWNER);
-		if (this.getRightSet().equals(sr.getRightSet())) return sr;
-		sr = new ShareRole(ShareRole.Role.NONE);
-		if (this.getRightSet().equals(sr.getRightSet())) return sr;
-		sr = new ShareRole(ShareRole.Role.CUSTOM);
-		return sr;
+	//Routine to get the Role that best matches the RightSet for this ShareItem
+	public Role getRole() {
+		if (this.getRightSet().equals(Role.VIEW.getRightSet())) return Role.VIEW;
+		if (this.getRightSet().equals(Role.CONTRIBUTOR.getRightSet())) return Role.CONTRIBUTOR;
+		if (this.getRightSet().equals(Role.OWNER.getRightSet())) return Role.OWNER;
+		if (this.getRightSet().equals(Role.NONE.getRightSet())) return Role.NONE;
+		return Role.CUSTOM;
 	}
+	
 	
 	public static class RightSet implements Cloneable {
 		protected Boolean createEntries = Boolean.FALSE;
@@ -544,73 +540,37 @@ public class ShareItem extends BaseEntity {
 		
 	}
 	
-	public static class ShareRole {
-		private Role role;
+	public static enum Role {
+		VIEW("share.role.title.view", 
+				new String[] {"readEntries"}),
+		CONTRIBUTOR("share.role.title.contributor",
+				new String[] {"readEntries", "createEntries", "modifyEntries", "deleteEntries"}),
+		OWNER("share.role.title.owner",
+				new String[] {"readEntries", "createEntries", "modifyEntries", "deleteEntries", "addReplies", "binderAdministration", "createEntryAcls", "changeAccessControl"}),
+		NONE("share.role.title.none",
+				new String[] {}),
+		CUSTOM("share.role.title.custom",
+				new String[] {});
 		
-		public enum Role {
-			VIEW(0),
-			CONTRIBUTOR(1),
-			OWNER(2),
-			NONE(3),
-			CUSTOM(4);
-			
-			private int roleValue;
-			private Role(int roleValue) {
-				this.roleValue = roleValue;
-			}
-
-			public int getValue() {
-				return roleValue;
-			}
-		}
+		private String titleCode;
+		private String[] rightNames;
 		
-		// Message codes corresponding to each role.
-		public static String[] roleTitles = {
-			"share.role.title.view",
-			"share.role.title.contributor",
-			"share.role.title.owner",
-			"share.role.title.none",
-			"share.role.title.custom"
-		};
-		
-		//Constructor
-		public ShareRole(Role role) {
-			this.role = role;
-		}
-		
-		//Get the rights for this role
-		public RightSet getRightSet() {
-			RightSet rightSet = new RightSet();
-			switch (role) {
-			case VIEW:
-				rightSet.setReadEntries( true );
-				break;
-			case CONTRIBUTOR:
-				rightSet.setReadEntries( true );
-				rightSet.setCreateEntries( true );
-				rightSet.setModifyEntries( true );
-				rightSet.setDeleteEntries( true );
-				break;
-			case OWNER:
-				rightSet.setReadEntries( true );
-				rightSet.setCreateEntries( true );
-				rightSet.setModifyEntries( true );
-				rightSet.setDeleteEntries( true );
-				rightSet.setAddReplies( true );
-				rightSet.setBinderAdministration( true );
-				rightSet.setCreateEntryAcls( true );
-				rightSet.setChangeAccessControl( true );
-				break;
-			case NONE:
-			case CUSTOM:
-			default:
-				break;
-			}
-			return rightSet;
+		private Role(String titleCode, String[] rightNames) {
+			this.titleCode = titleCode;
+			this.rightNames = rightNames;
 		}
 		
 		public String getTitle() {
-			return NLT.get(this.roleTitles[role.getValue()]);
+			return NLT.get(titleCode);
+		}
+		
+		public RightSet getRightSet() {
+			RightSet rightSet = new RightSet();
+			if(rightNames != null) {
+				for(String rightName:rightNames)
+					rightSet.setRight(rightName, true);
+			}
+			return rightSet;
 		}
 	}
 	
