@@ -1286,6 +1286,7 @@ public class WebKeys {
     public static final String SEEN_ENTRIES="ssSeenEntries";
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";
     public static final String SENDING_EMAIL="sendingEmail";
+    public static final String SHARE_ITEM_ID="shareItemId";
     public static final String SHOW_INSTALLATION_GUIDE="ss_showInstallationGuide";
     public static final String SHOW_SEARCH_RESULTS="ss_showSearchResults";
     public static final String SIMPLE_URL_NAME_EXISTS_ERROR="ss_simpleUrlNameExistsError";

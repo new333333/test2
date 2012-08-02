@@ -120,13 +120,16 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 <br/>
 <c:choose>
 <c:when test="${ssWorkArea.workAreaType == 'folder'}">
+  <c:set var="binderType"><ssf:nlt tag="binder.configure.access_control.sharing.folder"/></c:set>
   <span><ssf:nlt tag="access.currentFolder"/></span>
 <span class="ss_bold"><ssf:nlt tag="${ssWorkArea.title}" checkIfTag="true"/></span>
 </c:when>
 <c:when test="${ssWorkArea.workAreaType == 'zone'}">
+  <c:set var="binderType" value=""/>
   <span><ssf:nlt tag="access.zone"/></span>
 </c:when>
 <c:otherwise>
+  <c:set var="binderType"><ssf:nlt tag="binder.configure.access_control.sharing.workspace"/></c:set>
   <span><ssf:nlt tag="access.currentWorkspace"/></span>
 	<% //need to check tags for templates %>
 	<span class="ss_bold"><ssf:nlt tag="${ssWorkArea.title}" checkIfTag="true"/></span>
@@ -223,16 +226,19 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
     </div>
     <c:if test="${empty ss_accessControlShareItems}">
       <div style="padding-top:6px;">
-        <span><ssf:nlt tag="binder.configure.access_control.sharing.none"/></span>
+        <span><ssf:nlt tag="binder.configure.access_control.sharing.none"><ssf:param
+          name="value" value="${binderType}"/></ssf:nlt></span>
       </div>
     </c:if>
     <c:if test="${!empty ss_accessControlShareItems}">
       <div style="padding-top:6px;">
         <c:if test="${fn:length(ss_accessControlShareItems) == 1}">
-          <span><ssf:nlt tag="binder.configure.access_control.sharing.one"/></span>
+          <span><ssf:nlt tag="binder.configure.access_control.sharing.one"><ssf:param
+          name="value" value="${binderType}"/></ssf:nlt></span>
         </c:if>
         <c:if test="${fn:length(ss_accessControlShareItems) gt 1}">
-          <span><ssf:nlt tag="binder.configure.access_control.sharing.more"><ssf:param 
+          <span><ssf:nlt tag="binder.configure.access_control.sharing.more"><ssf:param
+          name="value" value="${binderType}"/><ssf:param 
             name="value" value="${fn:length(ss_accessControlShareItems)}"/></ssf:nlt>
           </span>
         </c:if>

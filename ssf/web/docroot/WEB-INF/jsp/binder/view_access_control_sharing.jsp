@@ -43,6 +43,19 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 
+<script type="text/javascript" >
+function setItemToDelete(id) {
+	var formObj = document.getElementById("form1");
+	if (formObj != null) {
+		if (confirm("Do it?")) {
+			formObj['shareItemId'].value = id;
+		} else {
+			formObj['shareItemId'].value = '';
+		}
+	}
+}
+</script>
+
 <div class="ss_portlet">
 <c:set var="title_tag" value="binder.configure.access_control.sharing.manageShares"/>
 <ssf:form titleTag="${title_tag}">
@@ -68,29 +81,44 @@
 </c:choose>
 <br/>
 
-<ssf:box style="rounded">
-<div style="padding:4px 8px;">
+<form name="form1" id="form1" class="ss_style ss_form" method="post" 
+	action="<ssf:url><ssf:param 
+	  		name="action" value="configure_access_control"/><ssf:param 
+	  		name="actionUrl" value="true"/><ssf:param 
+	  		name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
+	  		name="workAreaType" value="${ssWorkArea.workAreaType}"/><ssf:param
+	  		name="operation" value="manage_sharing"/></ssf:url>"
+	onSubmit="ss_checkForAllUsersGroup();return true;"
+>
+	
+	<div align="right">
+	  <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"/>
+	</div>
+		
+<fieldset class="ss_fieldset">
+
+  <div style="padding:4px 8px;">
 	<table border="1" cellspacing="4" cellpadding="4">
 	  <th><ssf:nlt tag="binder.configure.access_control.sharing.sharer"/></th>
 	  <th><ssf:nlt tag="binder.configure.access_control.sharing.recipient"/></th>
 	  <th><ssf:nlt tag="binder.configure.access_control.sharing.right"/></th>
 	  <th><ssf:nlt tag="binder.configure.access_control.sharing.expiration"/></th>
+	  <th><ssf:nlt tag="binder.configure.access_control.sharing.revokeHeader"/></th>
       <c:forEach var="shareItem" items="${ss_accessControlShareItems}">
         <c:set var="recipient" value="${ss_accessControlShareItemRecipients[shareItem.id]}"/>
         <tr>
           <td>${shareItem.creation.principal.title }</td>
-          <td><img src="<html:imagesPath/>icons/${shareItem.recipientType.icon}"/> ${recipient.title} 
+          <td>
+			<img src="<html:imagesPath/>icons/${shareItem.recipientType.icon}"/> ${recipient.title} 
             <c:if test="${recipient.entityType == 'user' || recipient.entityType == 'group'}">
               <span class="ss_small">&nbsp;(${recipient.name})</span>
             </c:if>
-          
-           </td>
+          </td>
           <td>${shareItem.shareRole.title}</td>
           <td>
             <c:if test="${!empty shareItem.endDate}">
               <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-			     value="${shareItem.endDate}" type="both" 
-				 timeStyle="short" dateStyle="medium" />
+			     value="${shareItem.endDate}" type="date" dateStyle="medium" />
               <c:if test="${shareItem.expired}">
                 <span class="ss_smallprint">
                   &nbsp;(<ssf:nlt tag="binder.configure.access_control.sharing.exipred"/>)
@@ -98,13 +126,25 @@
               </c:if>
             </c:if>
           </td>
+          <td>
+              <input type="submit" name="revokeBtn" 
+                value="<ssf:nlt tag='button.delete'/>"
+                onClick="setItemToDelete('${shareItem.id}');"
+              >
+          </td>
         </tr>
       </c:forEach>
     </table>
 
-</div>
-</ssf:box>
+  </div>
+</fieldset>
+<input type="hidden" name="shareItemId"/>
 
+<div style="padding-top:10px;">
+  <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"/>
+</div>
+
+</form>
 </ssf:form>
 </div>
 
