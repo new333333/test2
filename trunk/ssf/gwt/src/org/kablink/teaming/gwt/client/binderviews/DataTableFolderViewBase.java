@@ -126,6 +126,9 @@ import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmCallback;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
@@ -512,7 +515,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Are there any entries (i.e., not binders) in the
 				// data table?
 				final List<EntityId> pinnedEntityIds = getAllPinnedEntityIds(!pinning);
-				if ((null != pinnedEntityIds) && (!(pinnedEntityIds.isEmpty()))) {
+				if (GwtClientHelper.hasItems(pinnedEntityIds)) {
 					// Yes!  Pin/unpin them.
 				    showBusySpinner();
 					final SetEntriesPinStateCmd cmd = new SetEntriesPinStateCmd(pinnedEntityIds, pinning);
@@ -877,6 +880,21 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/*
+	 * Removes the selection from the rows in a List<FolderRows>.
+	 */
+	private void deselectRows(List<FolderRow> rows) {
+		// Do we have any rows to remove the selection from?
+		if (GwtClientHelper.hasItems(rows)) {
+			// Yes!  Scan them...
+			FolderRowSelectionModel fsm = ((FolderRowSelectionModel) m_dataTable.getSelectionModel());
+			for (FolderRow row : rows) {
+				// ...and remove the selection from each.
+				fsm.setSelected(row, false);
+			}
+		}
+	}
+
+	/*
 	 * Returns a List<EntityIds> of the EntityId's of all the entries
 	 * (excluding binders) from the data table whose pinned state
 	 * matches the given boolean.
@@ -1033,7 +1051,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private int getSelectedEntryCount() {
 		int reply = 0;
 		List<EntityId> selectedEntities = getSelectedEntityIds();
-		if ((null != selectedEntities) && (!(selectedEntities.isEmpty()))) {
+		if (GwtClientHelper.hasItems(selectedEntities)) {
 			for (EntityId selectedEntity:  selectedEntities) {
 				if (selectedEntity.isEntry()) {
 					reply += 1;
@@ -1987,8 +2005,64 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Invoke the share.
-			BinderViewsHelper.shareEntities(getSelectedEntityIds());
+			// Yes!  Does the user have rights to share everything
+			// they've selected?
+			final List<EntityId>	selectedEntities = getSelectedEntityIds();
+			final List<FolderRow>	invalidRows      = validateSelectedRows_Sharing();
+			if (!(GwtClientHelper.hasItems(invalidRows))) {
+				// Yes!  Invoke the share.
+				shareSelectedEntitiesAsync(selectedEntities);
+			}
+			
+			else {
+				// No, they don't have rights to share everything!  Can
+				// they share any of them?
+				if (selectedEntities.size() == invalidRows.size()) {
+					// No!  Tell them about the problem and bail.
+					GwtClientHelper.deferredAlert(m_messages.vibeDataTable_Warning_ShareNoRights());
+					return;
+				}
+				
+				// Is the user sure they want to share the selections
+				// they have rights to share?
+				ConfirmDlg.createAsync(new ConfirmDlgClient() {
+					@Override
+					public void onUnavailable() {
+						// Nothing to do.  Error handled in
+						// asynchronous provider.
+					}
+					
+					@Override
+					public void onSuccess(ConfirmDlg cDlg) {
+						ConfirmDlg.initAndShow(
+							cDlg,
+							new ConfirmCallback() {
+								@Override
+								public void dialogReady() {
+									// Ignored.  We don't really care when the
+									// dialog is ready.
+								}
+
+								@Override
+								public void accepted() {
+									// Yes, they're sure!  Remove the
+									// selection from the entries they
+									// don't have rights to share and
+									// perform the share on the rest.
+									removeRowEntities(         selectedEntities, invalidRows);
+									deselectRows(                                invalidRows);
+									shareSelectedEntitiesAsync(selectedEntities             );
+								}
+
+								@Override
+								public void rejected() {
+									// No, they're not sure!
+								}
+							},
+							m_messages.vibeDataTable_Confirm_CantShareSomeSelections());
+					}
+				});
+			}
 		}
 	}
 	
@@ -2204,7 +2278,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the view.
 			List<EntityId> eids = getSelectedEntityIds();
-			if ((null != eids) && (!(eids.isEmpty()))) {
+			if (GwtClientHelper.hasItems(eids)) {
 				for (EntityId eid:  eids) {
 					if (eid.isEntry()) {
 						BinderViewsHelper.viewEntry(eid);
@@ -2221,7 +2295,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	final public void populateContent() {
 		// Did we get any column width overrides?
 		Map<String, String> widths = getFolderColumnWidths();
-		if ((null != widths) && (!(widths.isEmpty()))) {
+		if (GwtClientHelper.hasItems(widths)) {
 			// Yes!  Scan them...
 			for (String cName:  widths.keySet()) {
 				try {
@@ -2379,6 +2453,29 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/*
+	 * Removes the EntityId's from a List<EntityId> corresponding to
+	 * the FolderRow's in a List<FolderRow>.
+	 */
+	private void removeRowEntities(List<EntityId> entities, List<FolderRow> rows) {
+		// Do we have list to process?
+		if (GwtClientHelper.hasItems(entities) && GwtClientHelper.hasItems(rows)) {
+			// Yes!  Scan the rows.
+			for (FolderRow row:  rows) {
+				// Scan the entities.
+				for (EntityId entity:  entities) {
+					// Is this the entity for the row?
+					if (entity.equalsEntityId(row.getEntityId())) {
+						// Yes!  Remove it from the List<EntityId> and
+						// skip to the next row.
+						entities.remove(entity);
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	/*
 	 * Asynchronously resets the the content of the data table.
 	 * 
 	 * This is different from resetViewAsync() in that only the data
@@ -2477,6 +2574,26 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/*
+	 * Asynchronously runs the share dialog on the selected entities.
+	 */
+	private void shareSelectedEntitiesAsync(final List<EntityId> selectedEntities) {
+		Scheduler.ScheduledCommand doShare = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				shareSelectedEntitiesNow(selectedEntities);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doShare);
+	}
+	
+	/*
+	 * Synchronously runs the share dialog on the selected entities.
+	 */
+	private void shareSelectedEntitiesNow(List<EntityId> selectedEntities) {
+		BinderViewsHelper.shareEntities(selectedEntities);
+	}
+	
+	/*
 	 * Synchronously shows the add files dialog.
 	 */
 	private void showAddFilesDlgNow() {
@@ -2570,11 +2687,39 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/*
+	 * Returns a List<FolderRow> of the selected rows that the user
+	 * can't share.
+	 */
+	private List<FolderRow> validateSelectedRows_Sharing() {
+		// Are there any selected rows in the table?
+		List<FolderRow> reply = new ArrayList<FolderRow>();
+		List<FolderRow> rows  = m_dataTable.getVisibleItems();
+		if (GwtClientHelper.hasItems(rows)) {
+			// Yes!  Scan them
+			FolderRowSelectionModel fsm = ((FolderRowSelectionModel) m_dataTable.getSelectionModel());
+			for (FolderRow row : rows) {
+				// Is this row selected?
+				if (fsm.isSelected(row)) {
+					// Yes!  Is it sharable?
+					if (!(row.getCanShare())) {
+						// No!  Track it as invalid.
+						reply.add(row);
+					}
+				}
+			}
+		}
+		
+		// If we get here, reply refers to List<FolderRow> of the rows
+		// the user doesn't have rights to share.  Return it.
+		return reply;
+	}
+
+	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */
 	private void unregisterEvents() {
 		// If we have a non-empty list of registered events...
-		if ((null != m_registeredEventHandlers) && (!(m_registeredEventHandlers.isEmpty()))) {
+		if (GwtClientHelper.hasItems(m_registeredEventHandlers)) {
 			// ...unregister them.  (Note that this will also empty the
 			// ...list.)
 			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);

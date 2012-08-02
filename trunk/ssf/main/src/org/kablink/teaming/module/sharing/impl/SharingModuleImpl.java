@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -70,7 +70,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	private BinderModule binderModule;
 	private ProfileModule profileModule;
 	
-    public void checkAccess(ShareItem shareItem, SharingOperation operation)
+    @Override
+	public void checkAccess(ShareItem shareItem, SharingOperation operation)
 	    	throws AccessControlException {
     	User user = RequestContextHolder.getRequestContext().getUser();
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -165,6 +166,96 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		}
 		//No access was found
 		throw new AccessControlException();
+	}
+    
+    @Override
+	public boolean testAccess(ShareItem shareItem, SharingOperation operation) {
+    	try {
+    		checkAccess(shareItem, operation);
+    		return true;
+    	}
+    	catch (AccessControlException ac) {
+    		return false;
+    	}
+    }
+
+    /**
+     * Returns true if the current user can share the given
+     * DefinableEntity and false otherwise.
+     * 
+     * @param de
+     * 
+     * @return
+     */
+    @Override
+	public boolean testAddShareEntity(DefinableEntity de) {
+		boolean reply = false;
+		try {
+			// Is sharing enabled at the zone level for this type of user.
+	    	Long					zoneId               = RequestContextHolder.getRequestContext().getZoneId();
+	    	ZoneConfig				zoneConfig           = getCoreDao().loadZoneConfig(zoneId);
+			AccessControlManager	accessControlManager = getAccessControlManager();
+			if (null == accessControlManager) {
+				accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
+			}
+			accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING);
+
+			// Is the entity a folder entry?
+	    	User user = RequestContextHolder.getRequestContext().getUser();
+			if (de.getEntityType().equals(EntityType.folderEntry)) {
+				// Yes!  Does the user have AllowSharing rights on it?
+				FolderEntry fe = ((FolderEntry) de);
+				if (accessControlManager.testOperation(user, fe, WorkAreaOperation.ALLOW_SHARING)) {
+					// Yes!
+					reply = true;
+				}
+				
+				// Is the user the owner of the folder entry?
+				else if (user.getId().equals(fe.getCreation().getPrincipal().getId())) {
+					// Yes!
+					reply = true;
+				}
+				
+			}
+
+			// No, the entity isn't a folder entry!  Is it a folder or
+			// workspace (i.e., a binder)?
+			else if (de.getEntityType().equals(EntityType.folder) || de.getEntityType().equals(EntityType.workspace)) {
+				// Yes!  Does the user have AllowSharing rights on it?
+				Binder binder = ((Binder) de);
+				if (accessControlManager.testOperation(user, binder, WorkAreaOperation.ALLOW_SHARING)) {
+					// Yes!
+					reply = true;
+				}
+				
+				// Is the user the owner of the binder?
+				else if (user.getId().equals(binder.getCreation().getPrincipal().getId())) {
+					// Yes.
+					reply = true;
+				}
+			}
+		}
+		
+		catch (AccessControlException ace) {
+			// AccessControlException implies sharing isn't allowed.
+			reply = false;
+		}
+
+		// If we get here, reply contains true if the user can add a
+		// share to the given entity and false otherwise.  Return it.
+		return reply;
+	}
+	
+    
+	@Override
+	public boolean isSharingEnabled() {
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+    	ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+		AccessControlManager accessControlManager = getAccessControlManager();
+		if (accessControlManager == null) {
+			accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
+		}
+		return accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING);
 	}
 
     /* (non-Javadoc)
@@ -269,6 +360,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		}
 	}
 
+	@Override
 	public DefinableEntity getSharedRecipient(ShareItem shareItem) {
 		ShareItem.RecipientType recipientType = shareItem.getRecipientType();
 		if(recipientType == RecipientType.user || recipientType == RecipientType.group) {
