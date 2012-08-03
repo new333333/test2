@@ -42,11 +42,11 @@ import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
  * 
  * @author drfoster@novell.com
  */
-public abstract class EntryMenuColumn<T> extends VibeColumn<T, EntryTitleInfo> {
+public abstract class ActionMenuColumn<T> extends VibeColumn<T, EntryTitleInfo> {
   /**
    * Constructor method.
    */
-  public EntryMenuColumn(FolderColumn fc) {
-	  super(fc, new EntryMenuCell());
+  public ActionMenuColumn(FolderColumn fc) {
+	  super(fc, new ActionMenuCell());
   }
 }

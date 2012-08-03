@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.datatable.ActionMenuColumn;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
 import org.kablink.teaming.gwt.client.datatable.ApplyColumnWidths;
@@ -57,7 +58,6 @@ import org.kablink.teaming.gwt.client.datatable.CustomColumn;
 import org.kablink.teaming.gwt.client.datatable.DescriptionHtmlColumn;
 import org.kablink.teaming.gwt.client.datatable.DownloadColumn;
 import org.kablink.teaming.gwt.client.datatable.EmailAddressColumn;
-import org.kablink.teaming.gwt.client.datatable.EntryMenuColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryPinColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.GuestColumn;
@@ -212,6 +212,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 {
 	private AddFilesDlg					m_addFilesDlg;				//
 	private boolean						m_fixedLayout;				//
+	private ColumnWidth					m_actionMenuColumnWidth;	//
 	private ColumnWidth					m_defaultColumnWidth;		//
 	private FolderRowPager 				m_dataTablePager;			// Pager widgets at the bottom of the data table.
 	private List<FolderColumn>			m_folderColumnsList;		// The List<FolderColumn>' of the columns to be displayed.
@@ -241,6 +242,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private final static String STYLE_ROW_BASE		= "vibe-dataTableFolderRow";
 	private final static String STYLE_ROW_EVEN		= "even";
 	private final static String STYLE_ROW_ODD		= "odd";
+
+	// Width, in pixels for the action menu show in conjunction with an
+	// EntryTitleColumn.
+	private final static int ACTION_MENU_WIDTH_PX	= 30;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -1077,6 +1082,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (m_fixedLayout)
 		     initDataMembersFixed();
 		else initDataMembersFloat();
+		m_actionMenuColumnWidth = new ColumnWidth(ACTION_MENU_WIDTH_PX, Unit.PX);
 		
 		// ...and store the initial columns widths as the defaults.
 		m_defaultColumnWidths = ColumnWidth.copyColumnWidths(m_columnWidths);
@@ -1137,7 +1143,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	/*
 	 * Initializes the columns in the data table.
 	 */
-	@SuppressWarnings("unused")
 	private void initTableColumns(final FolderRowSelectionModel selectionModel) {
 		// Clear the data table's column sort list.
 		ColumnSortList csl = m_dataTable.getColumnSortList();
@@ -1264,17 +1269,17 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 
 				// Is this entry title for other than an item in a
 				// trash folder? 
-				if (false) {	//! (!(isTrash())) {
-					// Yes!  Create a EntryMenuColumn for it.
-					supportColumn = new EntryMenuColumn<FolderRow>(fc) {
+				if (!(isTrash())) {
+					// Yes!  Create an ActionMenuColumn for it.
+					supportColumn = new ActionMenuColumn<FolderRow>(fc) {
 						@Override
 						public EntryTitleInfo getValue(FolderRow fr) {
 							return fr.getColumnValueAsEntryTitle(fc);
 						}
 					};
 					supportColumn.setSortable(false);
-					supportColumnWidth  = new ColumnWidth(16, Unit.PX);
-					supportColumnStyles = "";
+					supportColumnWidth  = m_actionMenuColumnWidth;
+					supportColumnStyles = "vibe-dataTableActions-column";
 				}
 			}
 			

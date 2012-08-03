@@ -1268,6 +1268,7 @@ public interface GwtTeamingMessages extends Messages
 	String taskAltMoveRight();
 	String taskAltMoveUp();
 	String taskAltPurge();
+	String taskAltTaskActions();
 	String taskAltTaskClosed();
 	String taskAltTaskUnread();
 	String taskCantMove_Filter();
@@ -1436,6 +1437,7 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used by various widgets of the Vibe Data table.
 	String vibeDataTable_Alt_CollapseDescription();
+	String vibeDataTable_Alt_EntryActions();
 	String vibeDataTable_Alt_ExpandDescription();
 	String vibeDataTable_Alt_Unread();
 	String vibeDataTable_Alt_PinEntry();
