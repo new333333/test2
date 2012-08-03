@@ -136,6 +136,9 @@
 	/* ...End:  Generic data table folder view styles. */
 	
 	/* ...Start:  Data table cell styles. */
+		.vibe-dataTableActions-column             {}
+		.vibe-dataTableActions-hover              {cursor: pointer;}
+		.vibe-dataTableActions-img                {}
 		.vibe-dataTableAssignment-control         {}
 		.vibe-dataTableAssignment-disabled        {color: #c4c4c4;}
 		.vibe-dataTableAssignment-enabled         {color: #353838;}

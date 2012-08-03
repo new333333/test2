@@ -131,6 +131,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
@@ -771,30 +772,6 @@ public class TaskTable extends Composite
 	}
 	
 	/*
-	 * Returns a base Anchor widget.
-	 */
-	private Anchor buildAnchor(List<String> styles) {
-		Anchor reply = new Anchor();
-		for (String style:  styles) {
-			reply.addStyleName(style);
-		}
-		return reply;
-	}
-	
-	private Anchor buildAnchor(String style) {
-		List<String> styles = new ArrayList<String>();
-		styles.add(style);
-		if (!(style.equals("cursorPointer"))) {
-			styles.add("cursorPointer");
-		}
-		return buildAnchor(styles);
-	}
-	
-	private Anchor buildAnchor() {
-		return buildAnchor("cursorPointer");
-	}
-
-	/*
 	 * Returns a base Label that can be used as an anchor like widget.
 	 */
 	private Label buildAnchorLabel(List<String> styles) {
@@ -1029,7 +1006,7 @@ public class TaskTable extends Composite
 		Widget reply;
 		if (task.getTask().getCanModify()) {	
 			// Yes!  Generate the Anchor for this option.
-			Anchor  a  = buildAnchor(anchorStyle);
+			Anchor  a  = GwtClientHelper.buildAnchor(anchorStyle);
 			Element aE = a.getElement();
 			aE.appendChild(imgElement);
 			aE.appendChild(GwtClientHelper.buildImage(m_images.menu()).getElement());
@@ -1893,7 +1870,7 @@ public class TaskTable extends Composite
 		Element trElement = m_flexTableRF.getElement(taskRow);
 		TaskListItem task = getTaskFromEventElement(trElement);
 		Image img = getUIData(task).getTaskNewTaskMenuImage();
-		img.setResource(m_images.newTaskButton1());
+		img.setUrl(m_images.newTaskButton1().getSafeUri().asString());
 	}
 	
 	/*
@@ -1904,7 +1881,7 @@ public class TaskTable extends Composite
 		Element trElement = m_flexTableRF.getElement(taskRow);
 		TaskListItem task = getTaskFromEventElement(trElement);
 		Image img = getUIData(task).getTaskNewTaskMenuImage();
-		img.setResource(m_images.newTaskButton2());
+		img.setUrl(m_images.newTaskButton2().getSafeUri().asString());
 	}
 	
 	/*
@@ -2765,9 +2742,10 @@ public class TaskTable extends Composite
 		if (m_sortColumn == col) {
 			// Yes!  Add the appropriate directional arrow
 			// (i.e., ^/v)...
-			Image i = GwtClientHelper.buildImage(m_sortAscending ? m_images.sortAZ() : m_images.sortZA());
+			ImageResource	ir = (m_sortAscending ? m_images.sortAZ() : m_images.sortZA());
+			Image			i  = GwtClientHelper.buildImage(ir.getSafeUri());
 			i.addStyleName("gwtTaskList_sortImage");
-			a.getElement().appendChild(i.getElement());
+			a.getElement().insertFirst(i.getElement());
 			
 			// ...and style to the <TD>.
 			m_flexTableCF.addStyleName(0, getColumnIndex(col), "sortedcol");
@@ -3423,7 +3401,7 @@ public class TaskTable extends Composite
 		}
 		Widget dueDateWidget;
 		if (ti.getCanModify() && ti.isTaskActive()) {
-			Anchor a = buildAnchor();
+			Anchor a = GwtClientHelper.buildAnchor();
 			Element aE = a.getElement();
 			aE.appendChild(il.getElement());
 			aE.appendChild(GwtClientHelper.buildImage(m_images.menu()).getElement());
@@ -3464,7 +3442,7 @@ public class TaskTable extends Composite
 			
 			else {
 				// ...otherwise, render a link for it.
-				Anchor locationAnchor = buildAnchor();
+				Anchor locationAnchor = GwtClientHelper.buildAnchor();
 				locationAnchor.addStyleName("gwtTaskList_task-locationAnchor");
 				locationAnchor.getElement().setAttribute(ATTR_ENTRY_ID, String.valueOf(tid.getEntityId()));
 				EventWrapper.addHandler(locationAnchor, m_taskLocationClickHandler);
@@ -3492,29 +3470,23 @@ public class TaskTable extends Composite
 		int newTaskMenuIndex = getColumnIndex(Column.NEW_TASK_MENU);
 		if (includeNewTaskMenu) {
 			// Yes!  Add an Anchor for it...
-			Anchor menuAnchor = buildAnchor("gwtTaskList_newTaskMenu_Link");
+			Anchor menuAnchor = GwtClientHelper.buildAnchor("gwtTaskList_newTaskMenu_Link");
 			Element menuElement = menuAnchor.getElement();
 			String entryId = String.valueOf(task.getTask().getTaskId().getEntityId());
 			menuElement.setAttribute(ATTR_ENTRY_ID, entryId);
 			EventWrapper.addHandler(menuAnchor, m_newTaskClickHandler);
-			Image newTaskMenuImg = GwtClientHelper.buildImage(m_images.newTaskButton1());
+			Image newTaskMenuImg = GwtClientHelper.buildImage(m_images.newTaskButton1().getSafeUri().asString());
+			newTaskMenuImg.addStyleName("gwtTaskList_newTaskMenu_LinkImg");
+			newTaskMenuImg.setTitle(m_messages.taskAltTaskActions());
 			getUIData(task).setTaskNewTaskMenuImage(newTaskMenuImg);
 			menuElement.appendChild(newTaskMenuImg.getElement());
 			m_flexTable.setWidget(row, newTaskMenuIndex, menuAnchor);
 			
 			// ...and add hover event handlers to the task.
 			m_flexTableRF.getElement(row).setAttribute(ATTR_ENTRY_ID, entryId);
-			
-			String mouseOut  = "ss_taskMouseOut('"  + row + "');";
-			String mouseOver = "ss_taskMouseOver('" + row + "');";
-			
-			Element tdElement = m_flexTableCF.getElement(row, getColumnIndex(Column.TASK_NAME));
-			tdElement.setAttribute("onMouseOut",  mouseOut);
-			tdElement.setAttribute("onMouseOver", mouseOver);
-			
-			tdElement = m_flexTableCF.getElement(row, newTaskMenuIndex);
-			tdElement.setAttribute("onMouseOut",  mouseOut);
-			tdElement.setAttribute("onMouseOver", mouseOver);
+			Element tdElement = m_flexTableCF.getElement(row, newTaskMenuIndex);
+			tdElement.setAttribute("onMouseOut",  "ss_taskMouseOut('"  + row + "');");
+			tdElement.setAttribute("onMouseOver", "ss_taskMouseOver('" + row + "');");
 		}
 		
 		else {
@@ -3626,7 +3598,7 @@ public class TaskTable extends Composite
 		FlowPanel fp = new FlowPanel();
 		fp.add(cb);
 		if (0 < task.getSubtasks().size()) {
-			Anchor a = buildAnchor();
+			Anchor a = GwtClientHelper.buildAnchor();
 			Image  i = GwtClientHelper.buildImage(task.getExpandSubtasks() ? m_images.task_closer() : m_images.task_opener());
 			Element aE = a.getElement();
 			aE.appendChild(i.getElement());
@@ -3702,7 +3674,7 @@ public class TaskTable extends Composite
 			marker           = i;
 		}
 		else if (ti.isTaskUnseen()) {
-			Anchor a = buildAnchor();
+			Anchor a = GwtClientHelper.buildAnchor();
 			uid.setTaskUnseenAnchor(a);
 			Image i = GwtClientHelper.buildImage(m_images.unread(), m_messages.taskAltTaskUnread());
 			Element aE = a.getElement();
@@ -3726,7 +3698,7 @@ public class TaskTable extends Composite
 		taLeftOffset += m_markerSize;
 		
 		// Add the appropriately styled task name Anchor to the panel.
-		Anchor ta = buildAnchor();
+		Anchor ta = GwtClientHelper.buildAnchor();
 		ta.addStyleName(taStyles + " gwtTaskList_task-nameAnchor");
 		ta.getElement().setAttribute(ATTR_ENTRY_ID, entryId);
 		EventWrapper.addHandler(ta, m_taskViewClickHandler);
@@ -3768,7 +3740,7 @@ public class TaskTable extends Composite
 	 * Renders the 'Assigned To' column header.
 	 */
 	private void renderHeaderAssignedTo() {
-		Anchor a = buildAnchor("sort-column");
+		Anchor a = GwtClientHelper.buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_assignedTo());
 		markAsSortKey(a, Column.ASSIGNED_TO);
 		a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.ASSIGNED_TO.m_sortKey);
@@ -3780,7 +3752,7 @@ public class TaskTable extends Composite
 	 * Renders the 'Closed - % Done' column header.
 	 */
 	private void renderHeaderClosedPercentDone() {
-		Anchor a = buildAnchor("sort-column");
+		Anchor a = GwtClientHelper.buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_closedPercentDone());
 		markAsSortKey(a, Column.CLOSED_PERCENT_DONE);
 		a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.CLOSED_PERCENT_DONE.m_sortKey);
@@ -3797,7 +3769,7 @@ public class TaskTable extends Composite
 	 */
 	private void renderHeaderDueDate() {
 		FlowPanel fp = new FlowPanel();
-		Anchor a = buildAnchor("sort-column");
+		Anchor a = GwtClientHelper.buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_dueDate());
 		markAsSortKey(a, Column.DUE_DATE);
 		a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.DUE_DATE.m_sortKey);
@@ -3822,7 +3794,7 @@ public class TaskTable extends Composite
 		// Are we displaying tasks assigned to the current user?
 		if (!(m_taskBundle.getIsFromFolder())) {
 			// Yes!  Render the column header.
-			Anchor a = buildAnchor("sort-column");
+			Anchor a = GwtClientHelper.buildAnchor("sort-column");
 			a.getElement().setInnerHTML(m_messages.taskColumn_location());
 			markAsSortKey(a, Column.LOCATION);
 			a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.LOCATION.m_sortKey);
@@ -3849,7 +3821,7 @@ public class TaskTable extends Composite
 		// Are we supposed to show the 'Order' column?
 		if (showOrderColumn()) {
 			// Yes!  Render the column header.
-			Anchor a = buildAnchor("sort-column");
+			Anchor a = GwtClientHelper.buildAnchor("sort-column");
 			a.getElement().setInnerHTML(m_messages.taskColumn_order());
 			markAsSortKey(a, Column.ORDER);
 			a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.ORDER.m_sortKey);
@@ -3864,7 +3836,7 @@ public class TaskTable extends Composite
 	 * Renders the 'Priority' column header.
 	 */
 	private void renderHeaderPriority() {
-		Anchor a = buildAnchor("sort-column");
+		Anchor a = GwtClientHelper.buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_priority());
 		markAsSortKey(a, Column.PRIORITY);
 		a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.PRIORITY.m_sortKey);
@@ -3894,7 +3866,7 @@ public class TaskTable extends Composite
 	 * Renders the 'Status' column header.
 	 */
 	private void renderHeaderStatus() {
-		Anchor a = buildAnchor("sort-column");
+		Anchor a = GwtClientHelper.buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_status());
 		markAsSortKey(a, Column.STATUS);
 		a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.STATUS.m_sortKey);
@@ -3906,7 +3878,7 @@ public class TaskTable extends Composite
 	 * Renders the 'Task Name' column header.
 	 */
 	private void renderHeaderTaskName() {
-		Anchor a = buildAnchor("sort-column");
+		Anchor a = GwtClientHelper.buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_name());
 		markAsSortKey(a, Column.TASK_NAME);
 		a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.TASK_NAME.m_sortKey);

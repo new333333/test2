@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -69,6 +70,7 @@ import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Image;
@@ -172,6 +174,32 @@ public class GwtClientHelper {
 	
 	public static boolean bFromS(String s) {
 		return bFromS(s, false);
+	}
+
+	/**
+	 * Returns a base Anchor widget.
+	 * 
+	 * @param styles
+	 */
+	public static Anchor buildAnchor(List<String> styles) {
+		Anchor reply = new Anchor();
+		for (String style:  styles) {
+			reply.addStyleName(style);
+		}
+		return reply;
+	}
+	
+	public static Anchor buildAnchor(String style) {
+		List<String> styles = new ArrayList<String>();
+		styles.add(style);
+		if (!(style.equals("cursorPointer"))) {
+			styles.add("cursorPointer");
+		}
+		return buildAnchor(styles);
+	}
+	
+	public static Anchor buildAnchor() {
+		return buildAnchor("cursorPointer");
 	}
 
 	/**

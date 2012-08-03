@@ -32,9 +32,12 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.widgets.HoverHintPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -44,29 +47,49 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.ui.Image;
 
 /**
  * Data table cell that represents a menu for an entry
  * 
  * @author drfoster@novell.com
  */
-public class EntryMenuCell extends AbstractCell<EntryTitleInfo> {
-	private HoverHintPopup	m_hoverHintPopup;	//
+public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
+	private GwtTeamingDataTableImageBundle	m_images;	//
+	private GwtTeamingMessages				m_messages;	//
 	
 	/**
 	 * Constructor method.
 	 */
-	public EntryMenuCell() {
-		/*
-		 * Sink the events we need to process an entry title.
-	     */
+	public ActionMenuCell() {
+		// Sink the events we need to process an entry title...
 		super(
 			VibeDataTableConstants.CELL_EVENT_CLICK,
 			VibeDataTableConstants.CELL_EVENT_KEYDOWN,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOVER,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
+
+		// ...and initialize everything else.
+		m_images   = GwtTeaming.getDataTableImageBundle();
+		m_messages = GwtTeaming.getMessages();
 	}
 
+	/*
+	 * Called when the mouse leaves the action menu image.
+	 */
+	private void handleMouseOut(Element eventTarget) {
+		eventTarget.removeClassName("vibe-dataTableActions-hover");
+		eventTarget.setAttribute("src", m_images.entryActions1().getSafeUri().asString());
+	}
+	
+	/*
+	 * Called when the mouse enters the action menu image.
+	 */
+	private void handleMouseOver(Element eventTarget) {
+		eventTarget.addClassName("vibe-dataTableActions-hover");
+		eventTarget.setAttribute("src", m_images.entryActions2().getSafeUri().asString());
+	}
+	
 	/**
      * Called when an event occurs in a rendered instance of this
      * cell.  The parent element refers to the element that contains
@@ -81,13 +104,8 @@ public class EntryMenuCell extends AbstractCell<EntryTitleInfo> {
      * 
      * Overrides AbstractCell.onBrowserEvent()
      */
-    @SuppressWarnings("unused")
 	@Override
     public void onBrowserEvent(Context context, Element parent, EntryTitleInfo eti, NativeEvent event, ValueUpdater<EntryTitleInfo> valueUpdater) {
-    	// Which of our entry title widgets is being operated on? 
-		Element eventTarget = Element.as(event.getEventTarget());
-		String wt = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
-
 		// What type of event are we processing?
     	String eventType = event.getType();
     	if (VibeDataTableConstants.CELL_EVENT_KEYDOWN.equals(eventType)) {
@@ -95,46 +113,31 @@ public class EntryMenuCell extends AbstractCell<EntryTitleInfo> {
     		// convert it to an entry key down, ... as necessary.
         	super.onBrowserEvent(context, parent, eti, event, valueUpdater);
     	}
-
-    	else if (VibeDataTableConstants.CELL_EVENT_CLICK.equals(eventType)) {
-    		// A click!  Is it the label being clicked?
-//!			...this needs to be implemented...
-    	}
     	
-    	else if (VibeDataTableConstants.CELL_EVENT_MOUSEOVER.equals(eventType)) {
-    		// A mouse over!  Add the hover style...
-//!			...this needs to be implemented...
-			eventTarget.addClassName("vibe-dataTableLink-hover");
-			
-			// ...if have a description...
-			String description = eti.getDescription();
-			if (GwtClientHelper.hasString(description)) {
-				// ...and we haven't create a popup panel for the hover
-				// ...HTML yet...
-				if (null == m_hoverHintPopup) {
-					// ...create it now...
-					m_hoverHintPopup = new HoverHintPopup();
-				}
-				
-				// ...and show it with the description HTML.
-				m_hoverHintPopup.setHoverText(description);
-				m_hoverHintPopup.showHintRelativeTo(eventTarget);
-			}
-			
-			else if (null != m_hoverHintPopup) {
-				m_hoverHintPopup.hide();
-			}
-    	}
-    	
-    	else if (VibeDataTableConstants.CELL_EVENT_MOUSEOUT.equals(eventType)) {
-    		// A mouse out!  Remove the hover style...
-			eventTarget.removeClassName("vibe-dataTableLink-hover");
-			
-			// ...and if there's a title hint panel...
-			if (null != m_hoverHintPopup) {
-				// ...make sure it's hidden.
-				m_hoverHintPopup.hide();
-			}
+    	else {
+    		// Something other than a key down!  Is it targeted to this
+    		// action menu image?
+    		Element	eventTarget  = Element.as(event.getEventTarget()                                    );
+    		String	wt           = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
+    		if ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_ENTRY_ACTION_MENU_IMAGE)){
+    			// Yes!  What type of event are we processing?
+		    	if (VibeDataTableConstants.CELL_EVENT_CLICK.equals(eventType)) {
+		    		// A click!  Remove the hover and show the action
+		    		// menu.
+		    		handleMouseOut(eventTarget);
+					showActionMenu(eventTarget);
+		    	}
+		    	
+		    	else if (VibeDataTableConstants.CELL_EVENT_MOUSEOVER.equals(eventType)) {
+		    		// A mouse over!  Add the hover style.
+		    		handleMouseOver(eventTarget);
+		    	}
+		    	
+		    	else if (VibeDataTableConstants.CELL_EVENT_MOUSEOUT.equals(eventType)) {
+		    		// A mouse out!  Remove the hover style.
+		    		handleMouseOut(eventTarget);
+		    	}
+    		}
     	}
     }
     
@@ -146,11 +149,10 @@ public class EntryMenuCell extends AbstractCell<EntryTitleInfo> {
      * 
      * Overrides AbstractCell.onEnterKeyDown()
      */
-    @SuppressWarnings("unused")
 	@Override
     protected void onEnterKeyDown(Context context, Element parent, EntryTitleInfo eti, NativeEvent event, ValueUpdater<EntryTitleInfo> valueUpdater) {
     	Element eventTarget = Element.as(event.getEventTarget());
-//!		...this needs to be implemented...
+		showActionMenu(eventTarget);
     }
     
 	/**
@@ -177,10 +179,25 @@ public class EntryMenuCell extends AbstractCell<EntryTitleInfo> {
 		VibeFlowPanel fp = new VibeFlowPanel();
 		
 		// ...generate the appropriate widgets...
-//!		...this needs to be implemented...
+		Image actionMenuImg = GwtClientHelper.buildImage(m_images.entryActions1().getSafeUri().asString());
+		actionMenuImg.addStyleName("vibe-dataTableActions-img");
+		actionMenuImg.setTitle(m_messages.vibeDataTable_Alt_EntryActions());
+		Element amiE = actionMenuImg.getElement();
+		amiE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_ENTRY_ACTION_MENU_IMAGE);
+		amiE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ENTITY_ID, eti.getEntityId().getEntityIdString()                     );
+		fp.add(actionMenuImg);
 		
 		// ...and render that into the cell.
 		SafeHtml rendered = SafeHtmlUtils.fromTrustedString(fp.getElement().getInnerHTML());
 		sb.append(rendered);
+	}
+
+	/*
+	 * Shows the action menu for the given entity.
+	 */
+	private void showActionMenu(Element eventTarget) {
+//!		...this needs to be implemented...
+		EntityId eid = EntityId.parseEntityIdString(eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ENTITY_ID));
+		GwtClientHelper.deferredAlert("ActionMenuCell.showActionMenu( " + eid.getEntityIdString() + " ):  ...this needs to be implemented...");
 	}
 }

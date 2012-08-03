@@ -202,6 +202,15 @@ public class EntityId implements IsSerializable {
 	public static List<Long> getBinderLongsFromEntityIds(List<EntityId> entityIds) {
 		return getLongsFromEntityIdsImpl(entityIds, false, true);
 	}
+
+	/**
+	 * Returns a string representation of this EntityId.
+	 * 
+	 * @return
+	 */
+	public String getEntityIdString() {
+		return (getBinderId() + ":" + getEntityId() + ":" + getEntityType());
+	}
 	
 	/**
 	 * Returns a List<Long> of the IDs of the entries from a List<EntityId>.
@@ -292,6 +301,23 @@ public class EntityId implements IsSerializable {
 		return (entityType.equals(EntityId.FOLDER_ENTRY));
 	}
 
+	/**
+	 * Returns an EntityId constructed from a string returned from
+	 * getEntityIdString().
+	 * 
+	 * @param eidString
+	 * 
+	 * @return
+	 */
+	public static EntityId parseEntityIdString(String eidString) {
+		String[] parts = eidString.split(":");
+		return
+			new EntityId(
+				Long.parseLong(parts[0]),
+				Long.parseLong(parts[1]),
+				               parts[2]);
+	}
+	
 	/**
 	 * Removes the EntityId's that reference a binder from a
 	 * List<EntityId>.

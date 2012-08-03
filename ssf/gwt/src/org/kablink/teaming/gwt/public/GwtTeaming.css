@@ -3167,8 +3167,10 @@ top:100px;
 {
 	vertical-align: middle;
 }
-.gwtTaskList_newTaskMenu_Link {
-}
+
+.gwtTaskList_newTaskMenu_Link    {padding-right: 8px;}
+.gwtTaskList_newTaskMenu_LinkImg {}
+
 .gwtTaskList_popupGlass
 {
 	background-color: #000;
@@ -3209,6 +3211,8 @@ top:100px;
 .gwtTaskList_sortImage
 {
 	vertical-align: middle;
+	padding-top: 4px;
+	padding-right: 3px;
 }
 
 /* Note that the following styles were copied from the prototype's hf_teaming.css stylesheet. */

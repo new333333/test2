@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.resources.client.ClientBundle;
@@ -63,6 +62,14 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/collapse_16.png")
 	public ImageResource collapseDescription();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/activityStreamActions1.png")
+	public ImageResource entryActions1();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/activityStreamActions2.png")
+	public ImageResource entryActions2();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/expand_16.png")
