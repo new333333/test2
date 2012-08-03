@@ -829,6 +829,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_ENTITY_ACTION_TOOLBAR_ITEMS:
+		{
+			GetEntityActionToolbarItemsCmd gftiCmd = ((GetEntityActionToolbarItemsCmd) cmd);
+			GetToolbarItemsRpcResponseData responseData = GwtMenuHelper.getEntityActionToolbarItems( this, getRequest( ri ), gftiCmd.getEntityId() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_ENTRY:
 		{
 			GetEntryCmd geCmd;

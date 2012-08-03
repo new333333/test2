@@ -60,6 +60,10 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource busyAnimation_large();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/check_12.png")
+	public ImageResource check12();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/collapse_16.png")
 	public ImageResource collapseDescription();
 	
@@ -107,6 +111,10 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	@Source("org/kablink/teaming/gwt/public/images/pin_orange.png")
 	public ImageResource orangePin();
 	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/spacer_1px.png")
+	public ImageResource spacer1px();
+
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/sunburst.png")
 	public ImageResource unread();

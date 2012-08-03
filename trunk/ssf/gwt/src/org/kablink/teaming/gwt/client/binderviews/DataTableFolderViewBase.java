@@ -1271,7 +1271,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// trash folder? 
 				if (!(isTrash())) {
 					// Yes!  Create an ActionMenuColumn for it.
-					supportColumn = new ActionMenuColumn<FolderRow>(fc) {
+					supportColumn = new ActionMenuColumn<FolderRow>(fc, getFolderId()) {
 						@Override
 						public EntryTitleInfo getValue(FolderRow fr) {
 							return fr.getColumnValueAsEntryTitle(fc);
@@ -1508,9 +1508,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the change.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
 			BinderViewsHelper.changeEntryTypes(
 				getFolderType(),
-				getSelectedEntityIds());
+				selectedEntityIds);
 		}
 	}
 	
@@ -1554,9 +1558,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the copy.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
 			BinderViewsHelper.copyEntries(
 				getFolderType(),
-				getSelectedEntityIds());
+				selectedEntityIds);
 		}
 	}
 	
@@ -1574,7 +1582,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Delete the selected entries and reset the view to
 			// redisplay things with the entries deleted.
-			List<EntityId> selectedEntityIds = getSelectedEntityIds();
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
 			final boolean deletingBinders = EntityId.areBindersInEntityIds(selectedEntityIds);
 			BinderViewsHelper.deleteFolderEntries(
 					selectedEntityIds,
@@ -1808,9 +1819,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the lock.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
 			BinderViewsHelper.lockEntries(
 				getFolderType(),
-				getSelectedEntityIds());
+				selectedEntityIds);
 		}
 	}
 	
@@ -1827,7 +1842,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the mark entries read.
-			BinderViewsHelper.markEntriesRead(getSelectedEntityIds());
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
+			BinderViewsHelper.markEntriesRead(selectedEntityIds);
 		}
 	}
 	
@@ -1844,7 +1863,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the mark entries read.
-			BinderViewsHelper.markEntriesUnread(getSelectedEntityIds());
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
+			BinderViewsHelper.markEntriesUnread(selectedEntityIds);
 		}
 	}
 	
@@ -1861,9 +1884,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the move.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
 			BinderViewsHelper.moveEntries(
 				getFolderType(),
-				getSelectedEntityIds());
+				selectedEntityIds);
 		}
 	}
 	
@@ -1881,7 +1908,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Purge the selected entries and reset the view to
 			// redisplay things with the entries purged.
-			List<EntityId> selectedEntityIds = getSelectedEntityIds();
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
 			final boolean purgingBinders = EntityId.areBindersInEntityIds(selectedEntityIds);
 			BinderViewsHelper.purgeFolderEntries(
 					selectedEntityIds,
@@ -2049,7 +2079,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Does the user have rights to share everything
 			// they've selected?
-			final List<EntityId>	selectedEntities = getSelectedEntityIds();
+			List<EntityId> seList = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(seList))) {
+				seList = getSelectedEntityIds();
+			}
+			final List<EntityId>	selectedEntities = seList;
 			final List<FolderRow>	invalidRows      = validateSelectedRows_Sharing();
 			if (!(GwtClientHelper.hasItems(invalidRows))) {
 				// Yes!  Invoke the share.
@@ -2121,9 +2155,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the subscribe to.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
 			BinderViewsHelper.subscribeToEntries(
 				getFolderType(),
-				getSelectedEntityIds());
+				selectedEntityIds);
 		}
 	}
 	
@@ -2269,9 +2307,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the unlock.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
 			BinderViewsHelper.unlockEntries(
 				getFolderType(),
-				getSelectedEntityIds());
+				selectedEntityIds);
 		}
 	}
 	
@@ -2319,7 +2361,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the view.
-			List<EntityId> eids = getSelectedEntityIds();
+			List<EntityId> eids = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(eids))) {
+				eids = getSelectedEntityIds();
+			}
 			if (GwtClientHelper.hasItems(eids)) {
 				for (EntityId eid:  eids) {
 					if (eid.isEntry()) {

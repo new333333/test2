@@ -2777,9 +2777,13 @@ public class TaskTable extends Composite
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the change.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getTaskIdsChecked();
+			}
 			BinderViewsHelper.changeEntryTypes(
 				FolderType.TASK,
-				getTaskIdsChecked());
+				selectedEntityIds);
 		}
 	}
 	
@@ -2796,9 +2800,13 @@ public class TaskTable extends Composite
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the copy.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getTaskIdsChecked();
+			}
 			BinderViewsHelper.copyEntries(
 				FolderType.TASK,
-				getTaskIdsChecked());
+				selectedEntityIds);
 		}
 	}
 	
@@ -2845,9 +2853,13 @@ public class TaskTable extends Composite
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the lock.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getTaskIdsChecked();
+			}
 			BinderViewsHelper.lockEntries(
 				FolderType.TASK,
-				getTaskIdsChecked());
+				selectedEntityIds);
 		}
 	}
 	
@@ -2864,7 +2876,11 @@ public class TaskTable extends Composite
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the mark entries read.
-			BinderViewsHelper.markEntriesRead(getTaskIdsChecked());
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getTaskIdsChecked();
+			}
+			BinderViewsHelper.markEntriesRead(selectedEntityIds);
 		}
 	}
 	
@@ -2881,9 +2897,13 @@ public class TaskTable extends Composite
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the move.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getTaskIdsChecked();
+			}
 			BinderViewsHelper.moveEntries(
 				FolderType.TASK,
-				getTaskIdsChecked());
+				selectedEntityIds);
 		}
 	}
 	
@@ -2933,7 +2953,11 @@ public class TaskTable extends Composite
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the share.
-			BinderViewsHelper.shareEntities(getTaskIdsChecked());
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getTaskIdsChecked();
+			}
+			BinderViewsHelper.shareEntities(selectedEntityIds);
 		}
 	}
 	
@@ -2950,9 +2974,13 @@ public class TaskTable extends Composite
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the subscribe to.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getTaskIdsChecked();
+			}
 			BinderViewsHelper.subscribeToEntries(
 				FolderType.TASK,
-				getTaskIdsChecked());
+				selectedEntityIds);
 		}
 	}
 	
@@ -3053,9 +3081,13 @@ public class TaskTable extends Composite
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the unlock.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getTaskIdsChecked();
+			}
 			BinderViewsHelper.unlockEntries(
 				FolderType.TASK,
-				getTaskIdsChecked());
+				selectedEntityIds);
 		}
 	}
 	
@@ -3072,7 +3104,10 @@ public class TaskTable extends Composite
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
 			// Yes!  Invoke the view.
-			List<EntityId> eids = getTaskIdsChecked();
+			List<EntityId> eids = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(eids))) {
+				eids = getTaskIdsChecked();
+			}
 			if (GwtClientHelper.hasItems(eids)) {
 				for (EntityId eid:  eids) {
 					if (eid.isEntry()) {
