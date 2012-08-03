@@ -55,6 +55,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.SimpleName.SimpleNamePK;
@@ -70,10 +71,12 @@ import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem.NameValuePair;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderToolbarItemsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CalendarShow;
 import org.kablink.teaming.gwt.client.util.CollectionType;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -644,10 +647,10 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem for running the entry viewer the
 	 * selected entry.
 	 */
-	private static void constructEntryDetailsItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request) {
+	private static void constructEntryDetailsItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String resourceKey) {
 		// Add a Details item.
 		ToolbarItem detailsTBI = new ToolbarItem("1_detailsSelected");
-		markTBITitle(detailsTBI, "toolbar.details");
+		markTBITitle(detailsTBI, resourceKey);
 		markTBIEvent(detailsTBI, TeamingEvents.VIEW_SELECTED_ENTRY);
 		entryToolbar.addNestedItem(detailsTBI);
 	}
@@ -753,15 +756,9 @@ public class GwtMenuHelper {
 			markTBIEvent(tbi, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES);
 			moreTBI.addNestedItem(tbi);
 		}
-		
-		// ...if the user is not the Guest user...
-		if (!isGuest) {
-			// ...add the subscribe item.
-			tbi = new ToolbarItem("1_subscribeSelected");
-			markTBITitle(tbi, "toolbar.menu.subscribeToEntrySelected");
-			markTBIEvent(tbi, TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES);
-			moreTBI.addNestedItem(tbi);
-		}
+
+		// ...add the subscribe item.
+		constructEntrySubscribeItem(moreTBI, bs, request, false);
 
 		// If we added anything to the more toolbar...
 		if (!(moreTBI.getNestedItemsList().isEmpty())) {
@@ -1061,6 +1058,24 @@ public class GwtMenuHelper {
 		markTBITitle(trashTBI, "toolbar.menu.trash.purgeAll");
 		markTBIEvent(trashTBI, TeamingEvents.TRASH_PURGE_ALL);
 		entryToolbar.addNestedItem(trashTBI);
+	}
+
+	/*
+	 * Constructs a ToolbarItem for subscribing to an item.
+	 */
+	private static void constructEntrySubscribeItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, boolean separatorBefore) {
+		User    user     = GwtServerHelper.getCurrentUser();
+		boolean isGuest  = ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
+		if (!isGuest) {
+			// ...add the subscribe item.
+			if (separatorBefore) {
+				entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
+			}
+			ToolbarItem tbi = new ToolbarItem("1_subscribeSelected");
+			markTBITitle(tbi, "toolbar.menu.subscribeToEntrySelected");
+			markTBIEvent(tbi, TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES);
+			entryToolbar.addNestedItem(tbi);
+		}
 	}
 	
 	/*
@@ -2064,6 +2079,64 @@ public class GwtMenuHelper {
 	}
 	
 	/**
+	 * Returns a GetToolbarItemsRpcResponseData containing the 
+	 * ToolbarItem's for an entity given the current user's rights to
+	 * that entity.
+	 *
+	 * @param bs
+	 * @param request
+	 * @param entityId
+	 * 
+	 * @return
+	 */
+	public static GetToolbarItemsRpcResponseData getEntityActionToolbarItems(AllModulesInjected bs, HttpServletRequest request, EntityId entityId) {
+		SimpleProfiler.start("GwtMenuHelper.getEntityToolbarItems()");
+		try {
+			// Allocate a List<ToolbarItem> to hold the ToolbarItem's
+			// that we'll return.
+			ToolbarItem						actionToolbar = new ToolbarItem(WebKeys.ENTITY_ACTION_TOOLBAR);
+			List<ToolbarItem>				toolbarItems  = actionToolbar.getNestedItemsList();
+			GetToolbarItemsRpcResponseData	reply         = new GetToolbarItemsRpcResponseData(toolbarItems);
+			
+//!			...this needs to be implemented...
+			String eidType = entityId.getEntityType();
+			if (eidType.equals(EntityType.folderEntry.name())) {
+				FolderEntry fe= bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
+				
+				if (GwtShareHelper.isEntitySharable(bs, fe)) {
+					constructEntryShareItem(actionToolbar, bs, request);
+				}
+				constructEntryDetailsItem(  actionToolbar, bs, request, "toolbar.details.view");
+				constructEntrySubscribeItem(actionToolbar, bs, request, true                  );
+			}
+			
+			else if (eidType.equals(EntityType.folder.name())) {
+				Folder folder = bs.getFolderModule().getFolder(entityId.getEntityId());
+				
+				boolean addShare = GwtShareHelper.isEntitySharable(bs, folder);
+				if (addShare) {
+					actionToolbar.addNestedItem(constructShareBinderItem(request, folder));
+				}
+				constructEntrySubscribeItem(actionToolbar, bs, request, addShare);
+			}
+			
+			else {
+			}
+			
+			// If we get here, reply refers to the 
+			// GetToolbarItemsRpcResponseData containing the
+			// ToolbarItem's for the entity.  Return it.
+			m_logger.debug("GwtMenuHelper.getEntityToolbarItems():");
+			dumpToolbarItems(toolbarItems, "...");
+			return reply;
+		}
+		
+		finally {
+			SimpleProfiler.stop("GwtMenuHelper.getEntityToolbarItems()");
+		}
+	}
+	
+	/**
 	 * Returns a GetFolderToolbarItemsRpcResponseData containing the
 	 * ToolbarItem's for a folder given the current user's rights to
 	 * that folder.
@@ -2130,9 +2203,6 @@ public class GwtMenuHelper {
 				if (isCollectionMyFiles || isCollectionSharedByMe) {
 				    constructEntryShareItem(           entryToolbar, bs, request                                                             );
 				}
-				if (isCollectionSharedByMe || isCollectionSharedWithMe) {
-					constructEntryDetailsItem(         entryToolbar, bs, request                                                             );
-				}
 				constructEntryDeleteItem(              entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null));
 				constructEntryMoreItems(               entryToolbar, bs, request, folderId, viewType, null, (isCollectionMyFiles ? ws : null));
 			}
@@ -2162,9 +2232,9 @@ public class GwtMenuHelper {
 					}
 		
 					// If the folder supports entry selection...
-					if (folderSupportsEntrySelection(folder, viewType)) {
+					if (folderSupportsEntrySelection(folder, viewType) && isViewCalendar(viewType)) {
 						// ...construct the details menu item.
-						constructEntryDetailsItem(entryToolbar, bs, request);
+						constructEntryDetailsItem(entryToolbar, bs, request, "toolbar.details");
 					}
 					
 					// Constructs the items for sharing and deleting
@@ -2529,6 +2599,13 @@ public class GwtMenuHelper {
 	 */
 	private static boolean isViewBlog(String viewType) {
 		return MiscUtil.hasString(viewType) && viewType.equals(Definition.VIEW_STYLE_BLOG);
+	}
+	
+	/*
+	 * Returns true if a view type is a calendar and false otherwise.
+	 */
+	private static boolean isViewCalendar(String viewType) {
+		return MiscUtil.hasString(viewType) && viewType.equals(Definition.VIEW_STYLE_CALENDAR);
 	}
 	
 	/*

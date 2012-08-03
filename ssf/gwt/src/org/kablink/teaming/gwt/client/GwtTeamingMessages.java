@@ -333,6 +333,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetClipboardUsersFromList();
 	String rpcFailure_GetDownloadFileUrl();
 	String rpcFailure_GetEmailNotificationInfo();
+	String rpcFailure_GetEntityActionToolbarItems();
 	String rpcFailure_GetEntryComments();
 	String rpcFailure_GetEntryTypes();
 	String rpcFailure_getExecuteJspUrl();
@@ -566,6 +567,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_WorkspaceTreeControl();
 	
 	// Strings used to describe various event handling errors.
+	String eventHandling_NoActionMenuHandler(      String eventName                  );
 	String eventHandling_NoContextMenuEventHandler(String eventName                  );
 	String eventHandling_NoEntryMenuHandler(       String eventName                  );
 	String eventHandling_NoEventHandlerDefined(    String eventName, String className);
@@ -1460,6 +1462,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Event_Start();
 	String vibeDataTable_GuestbookInternalErrorOverrideMissing();
 	String vibeDataTable_InternalError_UnexpectedRowCount(int rowsRequested, int rowsRead);
+	String vibeDataTable_InternalError_UnsupportedStructuredToolbar();
 	String vibeDataTable_MemberCount(String count);
 	String vibeDataTable_Pin();
 	String vibeDataTable_Select();
@@ -1470,6 +1473,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_TrashConfirmRestoreAllWithSelections();
 	String vibeDataTable_TrashInternalErrorOverrideMissing(String methodName);
 	String vibeDataTable_View();
+	String vibeDataTable_Warning_NoEntryActions();
 	String vibeDataTable_Warning_ShareNoRights();
 	
 	// String used in the Landing Page

@@ -30,27 +30,66 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.datatable;
 
-import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
-import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
+package org.kablink.teaming.gwt.client.rpc.shared;
+
+import org.kablink.teaming.gwt.client.util.EntityId;
 
 /**
- * A column that displays a widget for opening an action menu on an
- * entity.
- *
- * @param <T> is a FolderRow.
+ * This class holds all of the information necessary to execute the
+ * 'get entity action toolbar items' command.
  * 
  * @author drfoster@novell.com
  */
-public abstract class ActionMenuColumn<T> extends VibeColumn<T, EntryTitleInfo> {
-  /**
-   * Constructor method.
-   * 
-   * @param fc
-   * @param binderId
-   */
-  public ActionMenuColumn(FolderColumn fc, Long binderId) {
-	  super(fc, new ActionMenuCell(binderId));
-  }
+public class GetEntityActionToolbarItemsCmd extends VibeRpcCmd {
+	private EntityId	m_entityId;	// The entity whose actions are being requested.
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * For GWT serialization, must have a zero parameter constructor.
+	 */
+	public GetEntityActionToolbarItemsCmd() {
+		// Initialize the super class.
+		super();
+	}
+	
+	/**
+	 * Constructor method.
+	 *
+	 * @param entityId
+	 */
+	public GetEntityActionToolbarItemsCmd(EntityId entityId) {
+		// Initialize this object...
+		this();
+		
+		// ...and initialize everything else.
+		setEntityId(entityId);
+	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public EntityId getEntityId() {return m_entityId;}
+
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setEntityId(EntityId entityId) {m_entityId = entityId;}
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_ENTITY_ACTION_TOOLBAR_ITEMS.ordinal();
+	}
 }

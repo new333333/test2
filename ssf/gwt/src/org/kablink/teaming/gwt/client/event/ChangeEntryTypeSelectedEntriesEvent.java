@@ -32,6 +32,11 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.util.EntityId;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
@@ -45,7 +50,8 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 public class ChangeEntryTypeSelectedEntriesEvent extends VibeEventBase<ChangeEntryTypeSelectedEntriesEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
-    public Long m_folderId;	//
+    public List<EntityId>	m_selectedEntities;	//
+    public Long				m_folderId;			//
     
 	/**
 	 * Handler interface for this event.
@@ -65,10 +71,22 @@ public class ChangeEntryTypeSelectedEntriesEvent extends VibeEventBase<ChangeEnt
 	 * Class constructor.
 	 * 
 	 * @param folderId
+	 * @param selectedEntityId
+	 */
+	public ChangeEntryTypeSelectedEntriesEvent(Long folderId, EntityId selectedEntityId) {
+		this();
+		
+		setFolderId(        folderId        );
+		setSelectedEntityId(selectedEntityId);
+	}
+
+	/**
+	 * Class constructor.
+	 * 
+	 * @param folderId
 	 */
 	public ChangeEntryTypeSelectedEntriesEvent(Long folderId) {
-		super();
-		m_folderId = folderId;
+		this(folderId, null);
 	}
 
 	/**
@@ -76,14 +94,23 @@ public class ChangeEntryTypeSelectedEntriesEvent extends VibeEventBase<ChangeEnt
 	 * 
 	 * @return
 	 */
-	public Long getFolderId() {return m_folderId;}
+	public Long           getFolderId()         {return m_folderId;        }
+	public List<EntityId> getSelectedEntities() {return m_selectedEntities;}
 	
 	/**
 	 * Set'er method.
 	 * 
-	 * @param folderId
+	 * @param
 	 */
-	public void setFolderId(Long folderId) {m_folderId = folderId;}
+	public void setFolderId(        Long     folderId)         {m_folderId = folderId;} 
+	public void setSelectedEntityId(EntityId selectedEntityId) {
+		if (null != selectedEntityId) {
+			if (null == m_selectedEntities) {
+				m_selectedEntities = new ArrayList<EntityId>();
+			}
+			m_selectedEntities.add(selectedEntityId);
+		}
+	}
 	
 	/**
 	 * Dispatches this event when one is triggered.

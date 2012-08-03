@@ -128,7 +128,7 @@ public class EntryMenuPanel extends ToolPanelBase
 	private boolean							m_viewingSharedFiles;		//
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private List<ToolbarItem>				m_configureToolbarItems;	//
-	private List<ToolbarItem>				m_toolbarIems;				//
+	private List<ToolbarItem>				m_toolbarItems;				//
 	private VibeFlexTable					m_grid;						//
 	private VibeFlowPanel					m_configPanel;				//
 	private VibeFlowPanel					m_filterOptionsPanel;		//
@@ -263,7 +263,7 @@ public class EntryMenuPanel extends ToolPanelBase
 			public void onSuccess(VibeRpcResponse response) {
 				// Store the toolbar items and continue loading.
 				GetFolderToolbarItemsRpcResponseData responseData = ((GetFolderToolbarItemsRpcResponseData) response.getResponseData());
-				m_toolbarIems = responseData.getToolbarItems();
+				m_toolbarItems = responseData.getToolbarItems();
 				
 				m_configureToolbarItems = responseData.getConfigureToolbarItems();
 				if (m_includeColumnResizer) {
@@ -345,7 +345,7 @@ public class EntryMenuPanel extends ToolPanelBase
 	 */
 	private void loadPart3Now() {
 		// Do we have an entry toolbar?
-		ToolbarItem entryTBI = ToolbarItem.getNestedToolbarItem(m_toolbarIems, "ssEntryToolbar");
+		ToolbarItem entryTBI = ToolbarItem.getNestedToolbarItem(m_toolbarItems, "ssEntryToolbar");
 		if (null != entryTBI) {
 			// Yes!  Scan its nested items..
 			for (ToolbarItem perEntryTBI:  entryTBI.getNestedItemsList()) {

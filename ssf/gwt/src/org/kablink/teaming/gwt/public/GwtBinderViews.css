@@ -139,6 +139,8 @@
 		.vibe-dataTableActions-column             {}
 		.vibe-dataTableActions-hover              {cursor: pointer;}
 		.vibe-dataTableActions-img                {}
+		.vibe-dataTableActions-menuDropDown       {}
+		.vibe-dataTableActions-menuPopupItem      {white-space: nowrap;}
 		.vibe-dataTableAssignment-control         {}
 		.vibe-dataTableAssignment-disabled        {color: #c4c4c4;}
 		.vibe-dataTableAssignment-enabled         {color: #353838;}

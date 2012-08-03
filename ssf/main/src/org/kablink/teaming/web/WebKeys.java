@@ -927,6 +927,7 @@ public class WebKeys {
     public static final String ENTRY_DEFINTION_ELEMENT_DATA="ssEntryDefinitionElementData";
     public static final String ENTRY_DEFINTION_ELEMENT_DATA_MAP="ssEntryDefinitionElementDataMap";
     public static final String WORKFLOW_DEFINTION_STATE_DATA="ssWorkflowDefinitionStateData";
+    public static final String ENTITY_ACTION_TOOLBAR="ssEntityActionToolbar";
     public static final String ENTRY_TOOLBAR="ssEntryToolbar";
     public static final String TRASH_VIEW_TOOLBAR="ssTrashViewToolbar";
     public static final String FOLDER_VIEWS_TOOLBAR="ssFolderViewsToolbar";

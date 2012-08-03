@@ -32,62 +32,113 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
+import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
+import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
+import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
+import org.kablink.teaming.gwt.client.menu.PopupMenu;
+import org.kablink.teaming.gwt.client.rpc.shared.GetEntityActionToolbarItemsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.ValueUpdater;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.UIObject;
 
 /**
- * Data table cell that represents a menu for an entry
+ * Data table cell that represents an action menu for an entity.
  * 
  * @author drfoster@novell.com
  */
 public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
-	private GwtTeamingDataTableImageBundle	m_images;	//
-	private GwtTeamingMessages				m_messages;	//
+	private GwtTeamingDataTableImageBundle	m_images;		// Access to the Vibe image  resources we need for this cell. 
+	private GwtTeamingMessages				m_messages;		// Access to the Vibe string resources we need for this cell.
+	private Long							m_binderId;		// The ID of the binder hosting this cell.
+	private Map<String, PopupMenu>			m_menuMap;		// Map of entity ID's to PopupMenu.          Added to as the action menus    get created for entities in the current data table.
+	private Map<String, List<ToolbarItem>>	m_toolbarMap;	// Map of entity ID's to List<ToolbarItem>.  Added to as the action toolbars get created for entities in the current data table.
+
+	/*
+	 * Inner class used so we can use PopupPanel.showRelativeTo() on an
+	 * actionMenuImg Element.
+	 */
+	private class ElementWrapper extends UIObject {
+		public ElementWrapper(Element e) {
+			setElement(e);	// setElement() is protected, so we have to subclass and call here
+		}
+	}
 	
 	/**
 	 * Constructor method.
 	 */
-	public ActionMenuCell() {
-		// Sink the events we need to process an entry title...
+	public ActionMenuCell(Long binderId) {
+		// Sink the events we need to process an action menu...
 		super(
 			VibeDataTableConstants.CELL_EVENT_CLICK,
 			VibeDataTableConstants.CELL_EVENT_KEYDOWN,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOVER,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
+		
+		// ...store the parameter...
+		m_binderId = binderId;
 
 		// ...and initialize everything else.
-		m_images   = GwtTeaming.getDataTableImageBundle();
-		m_messages = GwtTeaming.getMessages();
+		m_images     = GwtTeaming.getDataTableImageBundle();
+		m_messages   = GwtTeaming.getMessages();
+		m_menuMap    = new HashMap<String, PopupMenu>();
+		m_toolbarMap = new HashMap<String, List<ToolbarItem>>();
 	}
 
 	/*
 	 * Called when the mouse leaves the action menu image.
 	 */
-	private void handleMouseOut(Element eventTarget) {
-		eventTarget.removeClassName("vibe-dataTableActions-hover");
-		eventTarget.setAttribute("src", m_images.entryActions1().getSafeUri().asString());
+	private void handleMouseOut(Element actionMenuImg) {
+		actionMenuImg.removeClassName("vibe-dataTableActions-hover");
+		actionMenuImg.setAttribute("src", m_images.entryActions1().getSafeUri().asString());
 	}
 	
 	/*
 	 * Called when the mouse enters the action menu image.
 	 */
-	private void handleMouseOver(Element eventTarget) {
-		eventTarget.addClassName("vibe-dataTableActions-hover");
-		eventTarget.setAttribute("src", m_images.entryActions2().getSafeUri().asString());
+	private void handleMouseOver(Element actionMenuImg) {
+		actionMenuImg.addClassName("vibe-dataTableActions-hover");
+		actionMenuImg.setAttribute("src", m_images.entryActions2().getSafeUri().asString());
 	}
 	
 	/**
@@ -152,7 +203,10 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 	@Override
     protected void onEnterKeyDown(Context context, Element parent, EntryTitleInfo eti, NativeEvent event, ValueUpdater<EntryTitleInfo> valueUpdater) {
     	Element eventTarget = Element.as(event.getEventTarget());
-		showActionMenu(eventTarget);
+		String	wt           = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
+		if ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_ENTRY_ACTION_MENU_IMAGE)){
+			showActionMenu(eventTarget);
+		}
     }
     
 	/**
@@ -193,11 +247,151 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 	}
 
 	/*
+	 * Renders any simple (i.e., URL or event based) toolbar item.
+	 */
+	private void renderSimpleTBI(final EntityId eid, PopupMenu popupMenu, final ToolbarItem simpleTBI) {
+		final String        simpleTitle = simpleTBI.getTitle();
+		final TeamingEvents simpleEvent = simpleTBI.getTeamingEvent();
+		
+		// Generate the menu item.
+		VibeMenuItem menuItem = new VibeMenuItem(simpleTitle, false, new Command() {
+			@Override
+			public void execute() {
+				// Does the simple toolbar item contain a URL to
+				// launch?
+				final String simpleUrl = simpleTBI.getUrl();
+				if (GwtClientHelper.hasString(simpleUrl)) {
+					// Yes!  Launch it in the content frame.
+					OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+						simpleUrl,
+						Instigator.GOTO_CONTENT_URL);
+					
+					if (GwtClientHelper.validateOSBI(osbInfo)) {
+						GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+					}
+				}
+				
+				else {
+					// No, the simple toolbar item didn't contain a
+					// URL!  The only other option is an event.
+					VibeEventBase<?> event;
+					switch (simpleEvent) {
+					default:                                  event = EventHelper.createSimpleEvent(          simpleEvent    ); break;
+					case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:  event = new ChangeEntryTypeSelectedEntriesEvent(m_binderId, eid); break;
+					case COPY_SELECTED_ENTRIES:               event = new CopySelectedEntriesEvent(           m_binderId, eid); break;
+					case DELETE_SELECTED_ENTRIES:             event = new DeleteSelectedEntriesEvent(         m_binderId, eid); break;
+					case LOCK_SELECTED_ENTRIES:               event = new LockSelectedEntriesEvent(           m_binderId, eid); break;
+					case UNLOCK_SELECTED_ENTRIES:             event = new UnlockSelectedEntriesEvent(         m_binderId, eid); break;
+					case MARK_READ_SELECTED_ENTRIES:          event = new MarkReadSelectedEntriesEvent(       m_binderId, eid); break;
+					case MARK_UNREAD_SELECTED_ENTRIES:        event = new MarkUnreadSelectedEntriesEvent(     m_binderId, eid); break;
+					case MOVE_SELECTED_ENTRIES:               event = new MoveSelectedEntriesEvent(           m_binderId, eid); break;
+					case PURGE_SELECTED_ENTRIES:              event = new PurgeSelectedEntriesEvent(          m_binderId, eid); break;
+					case SHARE_SELECTED_ENTRIES:              event = new ShareSelectedEntriesEvent(          m_binderId, eid); break;
+					case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      m_binderId, eid); break;
+					case VIEW_SELECTED_ENTRY:                 event = new ViewSelectedEntryEvent(             m_binderId, eid); break;
+					
+					case UNDEFINED:
+						GwtClientHelper.deferredAlert(m_messages.eventHandling_NoActionMenuHandler(simpleEvent.name()));
+						event = null;
+					}
+					
+					if (null != event) {
+						GwtTeaming.fireEvent(event);
+					}
+				}
+			}
+		});
+		menuItem.addStyleName("vibe-dataTableActions-menuPopupItem");
+		popupMenu.addMenuItem(menuItem);
+	}
+
+	/*
 	 * Shows the action menu for the given entity.
 	 */
-	private void showActionMenu(Element eventTarget) {
-//!		...this needs to be implemented...
-		EntityId eid = EntityId.parseEntityIdString(eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ENTITY_ID));
-		GwtClientHelper.deferredAlert("ActionMenuCell.showActionMenu( " + eid.getEntityIdString() + " ):  ...this needs to be implemented...");
+	private void showActionMenu(final Element actionMenuImg) {
+		// Have we already loaded the toolbar items for this entity's
+		// action menu?
+		final String	eidString = actionMenuImg.getAttribute(VibeDataTableConstants.CELL_WIDGET_ENTITY_ID);
+		final EntityId	eid       = EntityId.parseEntityIdString(eidString);
+		
+		List<ToolbarItem> tbiList = m_toolbarMap.get(eidString);
+		if (null == tbiList) {
+			// No!  Load them now.
+			GwtClientHelper.executeCommand(
+					new GetEntityActionToolbarItemsCmd(eid),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_GetEntityActionToolbarItems());
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Store the toolbar items...
+					GetToolbarItemsRpcResponseData responseData = ((GetToolbarItemsRpcResponseData) response.getResponseData());
+					List<ToolbarItem> tbiList = responseData.getToolbarItems();
+					m_toolbarMap.put(eidString, tbiList);
+					
+					// ...and use them to show the action menu. 
+					showActionMenuAsync(actionMenuImg, eid, tbiList);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we already loaded the toolbar items for this
+			// entity's action menu!  Use them to show it. 
+			showActionMenuAsync(actionMenuImg, eid, tbiList);
+		}
+	}
+
+	/*
+	 * Asynchronously shows the action menu for this cell's entity.
+	 */
+	private void showActionMenuAsync(final Element actionMenuImg, final EntityId eid, final List<ToolbarItem> tbiList) {
+		ScheduledCommand doShow = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showActionMenuNow(actionMenuImg, eid, tbiList);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doShow);
+	}
+	
+	/*
+	 * Synchronously shows the action menu for this cell's entity.
+	 */
+	private void showActionMenuNow(final Element actionMenuImg, final EntityId eid, final List<ToolbarItem> tbiList) {
+		// If we don't have any items for the action menu...
+		if (tbiList.isEmpty()) {
+			// ...tell the user and bail.
+			GwtClientHelper.deferredAlert(m_messages.vibeDataTable_Warning_NoEntryActions());
+			return;
+		}
+
+		// Have we created the popup menu for the actions yet?
+		String eidString = eid.getEntityIdString();
+		PopupMenu actionMenu = m_menuMap.get(eidString);
+		if (null == actionMenu) {
+			// No!  Create one now.
+			actionMenu = new PopupMenu(true, false, false);
+			actionMenu.addStyleName("vibe-dataTableActions-menuDropDown");
+			
+			// Scan the toolbar items...
+			for (ToolbarItem actionTBI:  tbiList) {
+				// ...adding each to the action menu...
+				if      (actionTBI.hasNestedToolbarItems()) GwtClientHelper.deferredAlert(m_messages.vibeDataTable_InternalError_UnsupportedStructuredToolbar());
+				else if (actionTBI.isSeparator())           actionMenu.addSeparator();
+				else                                        renderSimpleTBI(eid, actionMenu, actionTBI);
+			}
+			
+			// ...and add the action menu to the Map tracking them.
+			m_menuMap.put(eidString, actionMenu);
+		}
+
+		// ...and then show the action menu image.
+		actionMenu.showRelativeToTarget(new ElementWrapper(actionMenuImg));
 	}
 }

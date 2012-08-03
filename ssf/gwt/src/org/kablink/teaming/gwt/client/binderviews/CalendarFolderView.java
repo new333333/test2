@@ -1278,9 +1278,13 @@ public class CalendarFolderView extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the change.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
 			BinderViewsHelper.changeEntryTypes(
 				getFolderInfo().getFolderType(),
-				getSelectedEntityIds());
+				selectedEntityIds);
 		}
 	}
 	
@@ -1297,9 +1301,13 @@ public class CalendarFolderView extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the copy.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
 			BinderViewsHelper.copyEntries(
 				getFolderInfo().getFolderType(),
-				getSelectedEntityIds());
+				selectedEntityIds);
 		}
 	}
 	
@@ -1407,9 +1415,13 @@ public class CalendarFolderView extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the lock.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
 			BinderViewsHelper.lockEntries(
 				getFolderInfo().getFolderType(),
-				getSelectedEntityIds());
+				selectedEntityIds);
 		}
 	}
 	
@@ -1426,7 +1438,11 @@ public class CalendarFolderView extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the mark entries read.
-			BinderViewsHelper.markEntriesRead(getSelectedEntityIds());
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
+			BinderViewsHelper.markEntriesRead(selectedEntityIds);
 		}
 	}
 	
@@ -1443,7 +1459,11 @@ public class CalendarFolderView extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the mark entries read.
-			BinderViewsHelper.markEntriesUnread(getSelectedEntityIds());
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
+			BinderViewsHelper.markEntriesUnread(selectedEntityIds);
 		}
 	}
 	
@@ -1460,9 +1480,13 @@ public class CalendarFolderView extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the move.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
 			BinderViewsHelper.moveEntries(
 				getFolderInfo().getFolderType(),
-				getSelectedEntityIds());
+				selectedEntityIds);
 		}
 	}
 	
@@ -1529,7 +1553,11 @@ public class CalendarFolderView extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the share.
-			BinderViewsHelper.shareEntities(getSelectedEntityIds());
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
+			BinderViewsHelper.shareEntities(selectedEntityIds);
 		}
 	}
 	
@@ -1546,9 +1574,13 @@ public class CalendarFolderView extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the subscribe to.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
 			BinderViewsHelper.subscribeToEntries(
 				getFolderInfo().getFolderType(),
-				getSelectedEntityIds());
+				selectedEntityIds);
 		}
 	}
 	
@@ -1565,9 +1597,13 @@ public class CalendarFolderView extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the unlock.
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = getSelectedEntityIds();
+			}
 			BinderViewsHelper.unlockEntries(
 				getFolderInfo().getFolderType(),
-				getSelectedEntityIds());
+				selectedEntityIds);
 		}
 	}
 	
@@ -1584,8 +1620,11 @@ public class CalendarFolderView extends FolderViewBase
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the view.
-			List<EntityId> eids = getSelectedEntityIds();
-			if ((null != eids) && (!(eids.isEmpty()))) {
+			List<EntityId> eids = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(eids))) {
+				eids = getSelectedEntityIds();
+			}
+			if (GwtClientHelper.hasItems(eids)) {
 				for (EntityId eid:  eids) {
 					if (eid.isEntry()) {
 						BinderViewsHelper.viewEntry(eid);
