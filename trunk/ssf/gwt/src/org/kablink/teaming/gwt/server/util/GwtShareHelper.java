@@ -50,7 +50,6 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem.RecipientType;
 import org.kablink.teaming.domain.ShareItem.RightSet;
@@ -385,7 +384,7 @@ public class GwtShareHelper
 	 * Return the id of the given user.  If the user is an external user we will see if their
 	 * user account has been created.  If it hasn't we will create it.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static Long getRecipientId( AllModulesInjected ami, GwtShareItem gwtShareItem )
 	{
 		Long id;
@@ -507,23 +506,15 @@ public class GwtShareHelper
 			{
 			case AFTER_DAYS:
 			{
-				HistoryStamp historyStamp = null;
 				long milliSecToExpire;
-				Date creationDate;
+				Date now;
 
 				daysToExpire = expirationValue.getValue().intValue();
 				milliSecToExpire = daysToExpire * MILLISEC_IN_A_DAY;
 
 				// Calculate the end date based on the days-to-expire.
-				if ( shareItem != null )
-					historyStamp = shareItem.getCreation();
-				
-				if ( historyStamp != null )
-					creationDate = historyStamp.getDate();
-				else
-					creationDate = new Date();
-
-				endDate = new Date( creationDate.getTime() + milliSecToExpire );
+				now = new Date();
+				endDate = new Date( now.getTime() + milliSecToExpire );
 				break;
 			}
 

@@ -91,6 +91,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -1156,6 +1157,16 @@ public class ShareThisDlg extends DlgBox
 			text = text.substring( 0, 253 );
 		}
 		
+		if ( text != null )
+		{
+			SafeHtmlBuilder builder;
+
+			// HTML escape the text entered by the user and replace newlines with <br>
+			builder = new SafeHtmlBuilder();
+			builder = builder.appendEscapedLines( text );
+			text = builder.toSafeHtml().asString();
+		}
+		
 		return text; 
 	}
 	
@@ -1334,6 +1345,7 @@ public class ShareThisDlg extends DlgBox
 				GwtShareItem nextShareItem;
 				
 				nextShareItem = ((RemoveShareWidget) widget).getShareItem();
+				nextShareItem.setComments( getComment() );
 				listOfShareItems.add( nextShareItem );
 			}
 		}
