@@ -88,11 +88,10 @@ import com.google.gwt.user.client.ui.UIObject;
  * @author drfoster@novell.com
  */
 public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
-	private GwtTeamingDataTableImageBundle	m_images;		// Access to the Vibe image  resources we need for this cell. 
-	private GwtTeamingMessages				m_messages;		// Access to the Vibe string resources we need for this cell.
-	private Long							m_binderId;		// The ID of the binder hosting this cell.
-	private Map<String, PopupMenu>			m_menuMap;		// Map of entity ID's to PopupMenu.          Added to as the action menus    get created for entities in the current data table.
-	private Map<String, List<ToolbarItem>>	m_toolbarMap;	// Map of entity ID's to List<ToolbarItem>.  Added to as the action toolbars get created for entities in the current data table.
+	private GwtTeamingDataTableImageBundle	m_images;	// Access to the Vibe image  resources we need for this cell. 
+	private GwtTeamingMessages				m_messages;	// Access to the Vibe string resources we need for this cell.
+	private Long							m_binderId;	// The ID of the binder hosting this cell.
+	private Map<String, PopupMenu>			m_menuMap;	// Map of entity ID's to PopupMenu.  Added to as the action menus get created for entities in the current data table.
 
 	/*
 	 * Inner class used so we can use PopupPanel.showRelativeTo() on an
@@ -119,10 +118,9 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 		m_binderId = binderId;
 
 		// ...and initialize everything else.
-		m_images     = GwtTeaming.getDataTableImageBundle();
-		m_messages   = GwtTeaming.getMessages();
-		m_menuMap    = new HashMap<String, PopupMenu>();
-		m_toolbarMap = new HashMap<String, List<ToolbarItem>>();
+		m_images   = GwtTeaming.getDataTableImageBundle();
+		m_messages = GwtTeaming.getMessages();
+		m_menuMap  = new HashMap<String, PopupMenu>();
 	}
 
 	/*
@@ -309,14 +307,12 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 	 * Shows the action menu for the given entity.
 	 */
 	private void showActionMenu(final Element actionMenuImg) {
-		// Have we already loaded the toolbar items for this entity's
-		// action menu?
-		final String	eidString = actionMenuImg.getAttribute(VibeDataTableConstants.CELL_WIDGET_ENTITY_ID);
-		final EntityId	eid       = EntityId.parseEntityIdString(eidString);
-		
-		List<ToolbarItem> tbiList = m_toolbarMap.get(eidString);
-		if (null == tbiList) {
-			// No!  Load them now.
+		// Have we already constructed the action menu for this entity?
+		String		eidString  = actionMenuImg.getAttribute(VibeDataTableConstants.CELL_WIDGET_ENTITY_ID);
+		PopupMenu	actionMenu = m_menuMap.get(eidString);
+		if (null == actionMenu) {
+			// No!  Load the action menu's toolbar items now.
+			final EntityId	eid = EntityId.parseEntityIdString(eidString);
 			GwtClientHelper.executeCommand(
 					new GetEntityActionToolbarItemsCmd(eid),
 					new AsyncCallback<VibeRpcResponse>() {
@@ -332,7 +328,6 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 					// Store the toolbar items...
 					GetToolbarItemsRpcResponseData responseData = ((GetToolbarItemsRpcResponseData) response.getResponseData());
 					List<ToolbarItem> tbiList = responseData.getToolbarItems();
-					m_toolbarMap.put(eidString, tbiList);
 					
 					// ...and use them to show the action menu. 
 					showActionMenuAsync(actionMenuImg, eid, tbiList);
@@ -341,9 +336,9 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 		}
 		
 		else {
-			// Yes, we already loaded the toolbar items for this
-			// entity's action menu!  Use them to show it. 
-			showActionMenuAsync(actionMenuImg, eid, tbiList);
+			// Yes, we already constructed the action menu for this
+			// entity!  Show it. 
+			showActionMenuAsync(actionMenuImg, actionMenu);
 		}
 	}
 
@@ -355,6 +350,16 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 			@Override
 			public void execute() {
 				showActionMenuNow(actionMenuImg, eid, tbiList);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doShow);
+	}
+	
+	private void showActionMenuAsync(final Element actionMenuImg, final PopupMenu actionMenu) {
+		ScheduledCommand doShow = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showActionMenuNow(actionMenuImg, actionMenu);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doShow);
@@ -392,6 +397,13 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 		}
 
 		// ...and then show the action menu image.
+		showActionMenuNow(actionMenuImg, actionMenu);
+	}
+	
+	/*
+	 * Synchronously shows the action menu for this cell's entity.
+	 */
+	private void showActionMenuNow(final Element actionMenuImg, final PopupMenu actionMenu) {
 		actionMenu.showRelativeToTarget(new ElementWrapper(actionMenuImg));
 	}
 }
