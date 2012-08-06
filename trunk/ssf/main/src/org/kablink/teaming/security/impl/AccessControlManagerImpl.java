@@ -309,7 +309,9 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				} else {
 					teamMembers = workAreaStart.getTeamMemberIds();
 				}
-				if (!Collections.disjoint(teamMembers, userMembersToLookup)) userMembersToLookup.add(ObjectKeys.TEAM_MEMBER_ID);
+				if (teamMembers != null && !Collections.disjoint(teamMembers, userMembersToLookup)) {
+					userMembersToLookup.add(ObjectKeys.TEAM_MEMBER_ID);
+				}
 				if(checkWorkAreaFunctionMembership(user.getZoneId(),
 								workArea, workAreaOperation, userMembersToLookup)) {
 					return true;

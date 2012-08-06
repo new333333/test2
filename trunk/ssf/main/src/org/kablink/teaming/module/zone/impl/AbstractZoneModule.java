@@ -1611,6 +1611,19 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
 		
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_CREATE_FILESPACES_INTERNALID)) {
+			function = new Function();
+			function.setZoneId(zoneConfig.getZoneId());
+			function.setName(ObjectKeys.ROLE_CREATE_FILESPACES);
+			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
+			function.setInternalId(ObjectKeys.FUNCTION_CREATE_FILESPACES_INTERNALID);
+			function.addOperation(WorkAreaOperation.CREATE_FILESPACE);
+			function.setZoneWide(true);
+			//generate functionId
+			getFunctionManager().addFunction(function);
+			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		}
+		
 		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_SHARING_INTERNALID)) {
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());

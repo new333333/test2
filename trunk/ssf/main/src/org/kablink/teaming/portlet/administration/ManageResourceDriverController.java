@@ -202,7 +202,7 @@ public class ManageResourceDriverController extends SAbstractController {
 					String volume = PortletRequestUtils.getStringParameter(request, "volume_"+driverType, "");
 					options.put(ObjectKeys.RESOURCE_DRIVER_VOLUME, volume);
 					
-					//Get who is allowed to manage this 
+					//Get who is allowed to create file spaces using this driver
 					Set<Long> groupIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addedGroups"));
 					Set<Long> userIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addedUsers"));
 					Set<Long> memberIds = new HashSet<Long>();
@@ -240,7 +240,7 @@ public class ManageResourceDriverController extends SAbstractController {
 			List<WorkAreaFunctionMembership> memberships = getAdminModule().getWorkAreaFunctionMemberships(driver);
 			WorkAreaFunctionMembership membership = null;
 			for (Function f : functions) {
-				if (ObjectKeys.FUNCTION_MANAGE_RESOURCE_DRIVERS_INTERNALID.equals(f.getInternalId())) {
+				if (ObjectKeys.FUNCTION_CREATE_FILESPACES_INTERNALID.equals(f.getInternalId())) {
 					for (WorkAreaFunctionMembership m : memberships) {
 						if (f.getId().equals(m.getFunctionId())) {
 							membership = m;
@@ -251,7 +251,10 @@ public class ManageResourceDriverController extends SAbstractController {
 			}
 			Set<Principal> users = new HashSet<Principal>();
 			Set<Principal> groups = new HashSet<Principal>();
-			List<Principal> members = ResolveIds.getPrincipals(membership.getMemberIds());
+			List<Principal> members = new ArrayList<Principal>();
+			if (membership != null) {
+				members = ResolveIds.getPrincipals(membership.getMemberIds());
+			}
 			for (Principal p : members) {
 				if (p instanceof User) {
 					users.add(p);
