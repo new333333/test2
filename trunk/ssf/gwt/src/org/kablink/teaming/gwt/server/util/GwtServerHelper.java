@@ -247,6 +247,7 @@ import org.kablink.teaming.web.util.FavoritesLimitExceededException;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.GwtUISessionData;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -4192,6 +4193,53 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Determines the family of a FolderEntry or Folder entity and
+	 * returns it.  If the family can't be determined, null is
+	 * returned.
+	 * 
+	 * @param bs
+	 * @param entity
+	 */
+	public static String getFolderEntityFamily(AllModulesInjected bs, DefinableEntity entity) {
+		// Is the entity a folder entry?
+		Definition entityDef = null;
+		if (entity instanceof FolderEntry) {
+			// Yes!  Does it have a definition ID?
+			FolderEntry fe = ((FolderEntry) entity);
+			String defId = fe.getEntryDefId();
+			if (MiscUtil.hasString(defId)) {
+				// Yes!  Use that to get its definition.
+				entityDef = DefinitionHelper.getDefinition(defId);
+			}
+		}
+
+		// No, the entity is not a folder entry!  Is it a folder?
+		else if (entity instanceof Folder) {
+			// Yes!  Can we get its definition?
+			Folder folder = ((Folder) entity);
+			entityDef = BinderHelper.getFolderDefinitionFromView(bs, folder.getId());
+			if (null == entityDef) {
+				// No!  Use the default from the folder.
+				entityDef = folder.getDefaultViewDef();
+			}
+		}
+		
+		// If we have a definition for the entity...
+		if (null != entityDef) {
+			// ...and we can determine the family from it...
+			String family = BinderHelper.getFamilyNameFromDef(entityDef);
+			if (MiscUtil.hasString(family)) {
+				// ...return it.
+				return family;
+			}
+		}
+		
+		// If we get here, we couldn't determine the family of the
+		// entity.  Return null.
+		return null;
+	}
+	
+	/**
 	 * 
 	 * @param request
 	 * @param zoneUUID
@@ -6426,6 +6474,37 @@ public class GwtServerHelper {
 		return reply;
 	}
 	
+	/**
+	 * Returns true if a family string represents a 'file' entity or
+	 * false otherwise.
+	 * 
+	 * @param family
+	 * 
+	 * @return
+	 */
+	public static boolean isFamilyFile(String family) {
+		// Do we have a family string?
+		if (MiscUtil.hasString(family)) {
+			// Yes!  Is it file?
+			if (family.equals(Definition.FAMILY_FILE)) {
+				// Yes!  Return true.
+				return true;
+			}
+
+			// No, it's not file!  If we're not in simple Filr mode,
+			// is it photo?
+			if ((Utils.checkIfFilrAndVibe() || Utils.checkIfVibe()) &&
+					family.equals(Definition.FAMILY_PHOTO)) {
+				// Yes!  Return true.
+				return true;
+			}
+		}
+		
+		// If we get here, the family string doesn't refer to what we
+		// consider a file entity.  Return false.
+		return false;
+	}
+
 	/**
 	 * Return true if the given group's membership is dynamic.
 	 */

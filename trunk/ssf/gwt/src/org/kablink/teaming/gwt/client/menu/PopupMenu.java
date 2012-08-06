@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Image;
@@ -60,6 +61,18 @@ public class PopupMenu extends TeamingPopupPanel
 {
 	private VibeMenuBar m_menu;
 	private boolean m_canHaveCheckedMenuItems;	// Can this pop-up menu have menu items that are checked?
+	
+	/*
+	 * Inner class used so we can use PopupPanel.showRelativeTo() on an
+	 * Element.
+	 */
+	private class ElementWrapper extends UIObject
+	{
+		public ElementWrapper( Element e )
+		{
+			setElement( e );	// setElement() is protected, so we have to subclass and call here
+		}
+	}
 	
 
 	/**
@@ -277,11 +290,19 @@ public class PopupMenu extends TeamingPopupPanel
 	}
 	
 	/**
+	 * Shows the popup menu relative to a UIObject.
 	 * 
+	 * @param target
 	 */
 	public void showRelativeToTarget( final UIObject target )
 	{
 		showRelativeTo( target );
 		setMenuFocusAsync();
+	}
+	
+	public void showRelativeToTarget( final Element target )
+	{
+		// Always use the initial form of the method.
+		showRelativeToTarget( new ElementWrapper( target ) );
 	}
 }

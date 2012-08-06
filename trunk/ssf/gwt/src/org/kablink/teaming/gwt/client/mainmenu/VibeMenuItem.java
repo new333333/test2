@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,6 +37,7 @@ import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -45,18 +46,16 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 
-
 /**
  * Class that wraps the GWT MenuItem implementation for use within Vibe.
  * 
  * @author drfoster@novell.com
  */
 public class VibeMenuItem extends MenuItem {
-	VibeEventBase<?> m_event;
-	Image m_checkMarkImg;	// Image used to put a checkmark next to a menu item.
-	Image m_spacerImg;		// Image used as a spacer if this menu item does not use the checkmark image
-	FlowPanel m_outerPanel;
-	
+	FlowPanel			m_outerPanel;	//
+	Image				m_checkMarkImg;	// Image used to put a checkmark next to a menu item.
+	Image				m_spacerImg;	// Image used as a spacer if this menu item does not use the checkmark image
+	VibeEventBase<?>	m_event;		//
 	
 	/**
 	 * Constructor method.
@@ -67,7 +66,7 @@ public class VibeMenuItem extends MenuItem {
 	 * @param style
 	 */
 	public VibeMenuItem(String text, boolean asHtml, Command cmd, String style) {
-		// Initialize the superclass...
+		// Initialize the super class...
 		super(text, asHtml, cmd);
 		
 		// ...and if we were given a style for the MenuItem...
@@ -86,7 +85,7 @@ public class VibeMenuItem extends MenuItem {
 	 * @param style
 	 */
 	public VibeMenuItem(String text, boolean asHtml, MenuBar subMenu, String style) {
-		// Initialize the superclass...
+		// Initialize the super class...
 		super(text, asHtml, subMenu);
 		
 		// ...and if we were given a style for the MenuItem...
@@ -123,6 +122,16 @@ public class VibeMenuItem extends MenuItem {
 	/**
 	 * Constructor method.
 	 * 
+	 * @param safeHtml
+	 */
+	public VibeMenuItem(SafeHtml safeHtml) {
+		// Initialize the super class.
+		super(safeHtml);
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
 	 * @param text
 	 * @param cmd
 	 */
@@ -143,91 +152,96 @@ public class VibeMenuItem extends MenuItem {
 	}
 	
 	/**
-	 * Constructor method.  This is used instead of using PopupMenuItem
+	 * Constructor method.
+	 * 
+	 * This is used instead of using PopupMenuItem.
+	 * 
+	 * @param cmd
+	 * @param event
+	 * @param img
+	 * @param text
+	 * @param styleName
+	 * @param allowForCheckMark
 	 */
-	public VibeMenuItem( Command cmd, VibeEventBase<?> event, Image img, String text, String styleName, boolean allowForCheckMark )
-	{
-		super( "", cmd );
+	public VibeMenuItem(Command cmd, VibeEventBase<?> event, Image img, String text, String styleName, boolean allowForCheckMark) {
+		super("", cmd);
 
-		InlineLabel label;
-		FlowPanel mainPanel;
-		
-		m_event = event;
-		
+		m_event      = event;
 		m_outerPanel = new FlowPanel();
 		
-		mainPanel = new FlowPanel();
-		if ( styleName != null )
-			mainPanel.addStyleName( styleName );
-		
-		m_outerPanel.add( mainPanel );
+		FlowPanel mainPanel = new FlowPanel();
+		if (null != styleName) {
+			mainPanel.addStyleName(styleName);
+		}
+		m_outerPanel.add(mainPanel);
 		
 		// Do we need to allow space for a check image?
-		if ( allowForCheckMark )
-		{
-			ImageResource imageResource;
+		if (allowForCheckMark) {
 			
-			// Yes
-			// Create a checkbox image in case we need it.
-			imageResource = GwtTeaming.getImageBundle().check12();
-			m_checkMarkImg = new Image( imageResource );
-			m_checkMarkImg.setVisible( false );
-			m_checkMarkImg.getElement().setAttribute( "align", "absmiddle" );
-			mainPanel.add( m_checkMarkImg );
+			// Yes!  Create a checkbox image in case we need it.
+			ImageResource imageResource = GwtTeaming.getImageBundle().check12();
+			m_checkMarkImg = new Image(imageResource);
+			m_checkMarkImg.setVisible(false);
+			m_checkMarkImg.getElement().setAttribute("align", "absmiddle");
+			mainPanel.add(m_checkMarkImg);
 
-			// Create a spacer image that will be used instead of a checkmark image.
+			// Create a spacer image that will be used instead of a
+			// checkmark image.
 			imageResource = GwtTeaming.getImageBundle().spacer1px();
-			m_spacerImg = new Image( imageResource );
-			m_spacerImg.setWidth( "12px" );
-			m_spacerImg.setVisible( false );
-			mainPanel.add( m_spacerImg );
-			
+			m_spacerImg = new Image(imageResource);
+			m_spacerImg.setWidth("12px");
+			m_spacerImg.setVisible(false);
+			mainPanel.add(m_spacerImg);
 		}
 
 		// Do we have an image?
-		if ( img != null )
-		{
-			img.getElement().setAttribute( "align", "absmiddle" );
-			img.addStyleName( "vibe-popupMenuItemImg" );
-			mainPanel.add( img );
+		if (null != img) {
+			img.getElement().setAttribute("align", "absmiddle");
+			img.addStyleName("vibe-popupMenuItemImg");
+			mainPanel.add(img);
 		}
 		
-		label = new InlineLabel( text );
-		mainPanel.add( label );
+		InlineLabel label = new InlineLabel(text);
+		mainPanel.add(label);
 		
 		setMenuItemHTML();
 	}
 	
 	/**
+	 * Get'er method.
 	 * 
+	 * @return
 	 */
-	public VibeEventBase<?> getEvent()
-	{
+	public VibeEventBase<?> getEvent() {
 		return m_event;
 	}
 	
 	/**
 	 * Is this menu item checked.
+	 * 
+	 * @return
 	 */
-	public boolean isChecked()
-	{
-		if ( m_checkMarkImg != null )
+	public boolean isChecked() {
+		if (null != m_checkMarkImg) {
 			return m_checkMarkImg.isVisible();
+		}
 		
 		return false;
 	}
 
 	/**
+	 * Set'er method.
+	 * 
 	 * Set the checked state of this menu item.
+	 * 
+	 * @param checked
 	 */
-	public void setCheckedState( boolean checked )
-	{
-		if ( m_checkMarkImg != null )
-		{
-			m_checkMarkImg.setVisible( checked );
-			m_spacerImg.setVisible( !checked );
+	public void setCheckedState(boolean checked) {
+		if (null != m_checkMarkImg) {
+			m_checkMarkImg.setVisible(checked);
+			m_spacerImg.setVisible(  !checked);
 			
-			// Refresh the html used by this menu item.
+			// Refresh the HTML used by this menu item.
 			setMenuItemHTML();
 		}
 	}
@@ -235,9 +249,9 @@ public class VibeMenuItem extends MenuItem {
 	/**
 	 * Set the HTML for this menu item.
 	 */
-	private void setMenuItemHTML()
-	{
-		if ( m_outerPanel != null )
-			setHTML( SafeHtmlUtils.fromTrustedString( m_outerPanel.getElement().getInnerHTML() ) );		
+	private void setMenuItemHTML() {
+		if (null != m_outerPanel) {
+			setHTML(SafeHtmlUtils.fromTrustedString(m_outerPanel.getElement().getInnerHTML()));
+		}
 	}
 }
