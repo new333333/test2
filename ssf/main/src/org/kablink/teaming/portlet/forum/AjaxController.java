@@ -53,7 +53,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -3452,6 +3454,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Long groupId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_GROUP_ID);
+		Long teamId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_TEAM_ID);
 		String applicationName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_APPLICATION_GROUP_NAME, "");
 		if (groupId != null) {
 			Group group = (Group)getProfileModule().getEntry(groupId);		
@@ -3469,7 +3472,23 @@ public class AjaxController  extends SAbstractControllerRetry {
 				}
 			}
 			model.put(WebKeys.USERS, getProfileModule().getUsers(ids));
-			model.put(WebKeys.GROUPS, getProfileModule().getGroups(ids));			
+			model.put(WebKeys.GROUPS, getProfileModule().getGroups(ids));
+		} else if (teamId != null) {
+			Binder binder = getBinderModule().getBinder(teamId);		
+			model.put(WebKeys.TEAM_BINDER, binder);
+			
+			Collection<Principal> usersAndGroups = bs.getBinderModule().getTeamMembers(binder, false);
+			SortedMap<String, User> teamUsers = new TreeMap();
+			SortedMap<String, Group> teamGroups = new TreeMap();
+			for (Principal p : usersAndGroups) {
+				if (p instanceof User) {
+					teamUsers.put(Utils.getUserTitle(p), (User)p);
+				} else if (p instanceof Group) {
+					teamGroups.put(p.getTitle(), (Group)p);
+				}
+			}
+			model.put(WebKeys.USERS, teamUsers.values());
+			model.put(WebKeys.GROUPS, teamGroups.values());
 		} else if (!applicationName.equals("")) {
 			ApplicationGroup group = getProfileModule().getApplicationGroup(applicationName);		
 			model.put(WebKeys.GROUP, group);

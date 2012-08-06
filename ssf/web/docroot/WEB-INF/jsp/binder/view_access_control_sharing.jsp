@@ -112,9 +112,37 @@ function setItemToDelete(id) {
       <c:forEach var="shareItem" items="${ss_accessControlShareItems}">
         <c:set var="recipient" value="${ss_accessControlShareItemRecipients[shareItem.id]}"/>
         <tr>
-          <td class="ss_table_paragraph">${shareItem.creation.principal.title }</td>
           <td class="ss_table_paragraph">
-			<img src="<html:imagesPath/>icons/${shareItem.recipientType.icon}"/> ${recipient.title} 
+            ${shareItem.creation.principal.title }
+            <span class="ss_small">&nbsp;(${shareItem.creation.principal.name})</span>
+          </td>
+          <td class="ss_table_paragraph">
+			<img src="<html:imagesPath/>icons/${shareItem.recipientType.icon}"/> 
+			<c:if test="${recipient.entityType == 'user'}">
+			  ${recipient.title} <span class="ss_small">&nbsp;(${recipient.name})</span>
+			</c:if>
+			<c:if test="${recipient.entityType == 'group'}">
+			  <a href="<ssf:url
+					adapter="true" 
+					crawlable="true"
+					portletName="ss_forum" 
+					action="__ajax_request"
+					actionUrl="false"><ssf:param 
+					name="operation" value="get_group_list"/><ssf:param 
+					name="groupId" value="${recipient.id}"/></ssf:url>"
+			    onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">${recipient.title}</a>
+			</c:if>
+			<c:if test="${recipient.entityType == 'folder' || recipient.entityType == 'workspace'}">
+			  <a href="<ssf:url
+					adapter="true" 
+					crawlable="true"
+					portletName="ss_forum" 
+					action="__ajax_request"
+					actionUrl="false"><ssf:param 
+					name="operation" value="get_group_list"/><ssf:param 
+					name="teamId" value="${recipient.id}"/></ssf:url>"
+			    onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">${recipient.title}</a>
+			</c:if>
             <c:if test="${recipient.entityType == 'user' || recipient.entityType == 'group'}">
               <span class="ss_small">&nbsp;(${recipient.name})</span>
             </c:if>

@@ -196,6 +196,7 @@ public class WebKeys {
 	public static final String URL_FILE_VERSION = "fileVersion";
 	public static final String URL_FILE_VIEW_TYPE = "viewType";
 	public static final String URL_GROUP_ID="groupId";
+	public static final String URL_TEAM_ID="teamId";
 	public static final String URL_HOME_PAGE_ID="homePageId";
 	public static final String URL_GUEST_HOME_PAGE_ID="guestHomePageId";
 	public static final String URL_HOLIDAYS="holidays";
@@ -911,6 +912,7 @@ public class WebKeys {
     public static final String ENTRY_DUE_DATE="dueDate";
     public static final String MEETING_TOKEN="ssMeetingToken";
     public static final String MEETING_ERROR="ssMeetingError";
+	public static final String TEAM_BINDER="ssTeamBinder";
     public static final String TEAM_MEMBER_GROUPS="ssTeamMemberGroups";
     public static final String TEAM_MEMBERS="ssTeamMembers";
     public static final String TEAM_MEMBERS_COUNT="ssTeamMembersCount";
