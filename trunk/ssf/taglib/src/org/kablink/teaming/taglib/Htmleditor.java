@@ -63,6 +63,7 @@ import org.kablink.util.servlet.StringServletResponse;
 public class Htmleditor extends BodyTagSupport {
 	private static String TYPE_STANDARD = "standard";
 	private static String TYPE_MIMIMAL = "minimal";
+	private static String TYPE_MIRRORED_FILE = "mirrored_file";
 	private String id;
 	private String name;
 	private String toolbar;
@@ -100,7 +101,7 @@ public class Htmleditor extends BodyTagSupport {
 		    	initText = "";
 		    }
 		    if (toolbar == null || toolbar.equals("")) toolbar = TYPE_STANDARD;
-		    if (!toolbar.equals(TYPE_MIMIMAL) && !toolbar.equals(TYPE_STANDARD)) 
+		    if (!toolbar.equals(TYPE_MIMIMAL) && !toolbar.equals(TYPE_STANDARD) && !toolbar.equals(TYPE_MIRRORED_FILE)) 
 		    	throw new JspException("Unknown ssf:htmleditor toolbar. Legal values are 'standard' and 'minimal'.");
 	
 			//Output the html editor
