@@ -231,6 +231,7 @@ public interface ObjectKeys {
     public static final String ROLE_ONLY_SEE_GROUP_MEMBERS="__role.onlySeeGroupMembers";
     public static final String ROLE_OVERRIDE_ONLY_SEE_GROUP_MEMBERS="__role.overrideOnlySeeGroupMembers";
     public static final String ROLE_MANAGE_RESOURCE_DRIVERS="__role.manageResourceDrivers";
+    public static final String ROLE_CREATE_FILESPACES="__role.createFilespaces";
     public static final String ROLE_ENABLE_SHARING="__role.enableSharing";
     //map keys from admin/sendMail
     public static final String SENDMAIL_ERRORS="errors";

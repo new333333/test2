@@ -357,22 +357,22 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 				//Then add in the new ACL
 				Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 				List functions = getFunctionManager().findFunctions(zoneId);
-				Function manageResourceDriversFunction = null;
+				Function createFilespacesFunction = null;
 				for (int i = 0; i < functions.size(); i++) {
 					Function function = (Function)functions.get(i);
 					if (function.getInternalId() != null && 
-							ObjectKeys.FUNCTION_MANAGE_RESOURCE_DRIVERS_INTERNALID.equals(function.getInternalId())) {
+							ObjectKeys.FUNCTION_CREATE_FILESPACES_INTERNALID.equals(function.getInternalId())) {
 						//We have found the pseudo role
-						manageResourceDriversFunction = function;
+						createFilespacesFunction = function;
 						break;
 					}
 				}
-    	    	if (manageResourceDriversFunction != null) {
+    	    	if (createFilespacesFunction != null) {
 					WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
 					membership.setZoneId(zoneId);
 					membership.setWorkAreaId(rdc.getWorkAreaId());
 					membership.setWorkAreaType(rdc.getWorkAreaType());
-					membership.setFunctionId(manageResourceDriversFunction.getId());
+					membership.setFunctionId(createFilespacesFunction.getId());
 					membership.setMemberIds(memberIds);
 					getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);
 				}
