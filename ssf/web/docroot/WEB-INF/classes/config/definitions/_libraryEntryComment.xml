@@ -26,13 +26,15 @@
           <property name="required" value="false"/> 
         </properties> 
       </item>  
-      <item name="description" caption="__description" type="data" id="4"> 
-        <properties> 
-          <property name="name" value="description"/>  
-          <property name="caption" value="__description"/>  
-          <property name="height" value=""/>  
-          <property name="required" value=""/> 
-        </properties> 
+      <item name="description" caption="__description" type="data" id="4" dataType="description" category="commonEntryData" display="form"> 
+        <properties>
+          <property name="caption" value="__description"/>
+          <property name="name" value="description"/>
+          <property name="height" value=""/>
+          <property name="toolbarType" value="mirrored_file"/>
+          <property name="required" value="false"/>
+          <property name="fieldModificationAllowed" value="false"/>
+        </properties>
       </item>  
       <item name="attachFiles" caption="__attach_files" type="data" id="5"> 
         <properties> 
@@ -95,12 +97,12 @@
         <property name="tabTitle" value="comments"/> 
       </properties> 
     </item>  
-    <operations>
-      <operation name="addOption" caption="__add"/>
-      <operation name="copyItem" caption="__copy"/>
-      <operation name="modifyItem" caption="__modify"/>
-      <operation name="moveItem" caption="__move"/>
-    </operations>
+    <operations> 
+      <operation name="addOption" caption="__add"/>  
+      <operation name="copyItem" caption="__copy"/>  
+      <operation name="modifyItem" caption="__modify"/>  
+      <operation name="moveItem" caption="__move"/> 
+    </operations> 
   </item>  
   <item name="entryBlogView" caption="__entry_blog_view_definition" id="16" display="view"> 
     <properties> 
@@ -127,19 +129,19 @@
         <property name="tabTitle" value="comments"/> 
       </properties> 
     </item>  
-    <operations>
-      <operation name="addOption" caption="__add"/>
-      <operation name="copyItem" caption="__copy"/>
-      <operation name="modifyItem" caption="__modify"/>
-      <operation name="moveItem" caption="__move"/>
-    </operations>
+    <operations> 
+      <operation name="addOption" caption="__add"/>  
+      <operation name="copyItem" caption="__copy"/>  
+      <operation name="modifyItem" caption="__modify"/>  
+      <operation name="moveItem" caption="__move"/> 
+    </operations> 
   </item>  
-  <properties>
-    <property name="caption" value="__definition_default_library_entry_comment"/>
-    <property name="name" value="_libraryEntryComment"/>
-    <property name="family" value="fileComment"/>
-    <property name="replyStyle" value="402883c6115753d801115777f284000c"/>
-  </properties>
+  <properties> 
+    <property name="caption" value="__definition_default_library_entry_comment"/>  
+    <property name="name" value="_libraryEntryComment"/>  
+    <property name="family" value="fileComment"/>  
+    <property name="replyStyle" value="402883c6115753d801115777f284000c"/> 
+  </properties>  
   <export-mappings>
     <export definitionId="402883c6115753d801115777f284000c">_libraryEntryComment</export>
   </export-mappings>
