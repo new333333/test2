@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.server.util;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -54,6 +55,7 @@ import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -78,6 +80,7 @@ import org.kablink.teaming.gwt.client.util.CalendarShow;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
+import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -1169,6 +1172,49 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Constructs a ToolbarItem for running the entry viewer the
+	 * selected entry.
+	 */
+	private static void constructEntryViewHtmlItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, FolderEntry fe) {
+		// Is the entry a file entry?
+		String family = GwtServerHelper.getFolderEntityFamily(bs, fe);
+		if (GwtServerHelper.isFamilyFile(family)) {
+			Collection<FileAttachment>	atts = fe.getFileAttachments();
+			// Yes!  Scan its attachments.
+	        for (FileAttachment fa : atts) {
+	        	// Does this attachment have a filename?
+	        	String fName = fa.getFileItem().getName();
+	        	if (MiscUtil.hasString(fName)) {
+	    			// Yes!  Do we support viewing that type of file as
+	        		// HTML?
+	        		if (SsfsUtil.supportsViewAsHtml(fName)) {
+						try {
+			        		// Yes!  Generate a toolbar item contain
+							// the URL to view its HTML.
+							ViewFileInfo vfi = new ViewFileInfo();
+							vfi.setFileId(     fa.getId());
+							vfi.setEntityId(   new EntityId(fe.getParentFolder().getId(), fe.getId(), EntityType.folderEntry.name()));
+							vfi.setFileTime(   String.valueOf(fa.getModification().getDate().getTime()));
+							vfi.setViewFileUrl(GwtServerHelper.getViewFileUrl(request, vfi));
+							
+			    			ToolbarItem viewHtmlTBI = new ToolbarItem("1_viewHtml");
+			    			markTBITitle(              viewHtmlTBI, "toolbar.view.html" );
+			    			markTBIUrlAsTargetedAnchor(viewHtmlTBI, vfi.getViewFileUrl());
+			    			entryToolbar.addNestedItem(viewHtmlTBI                      );
+						}
+						catch (GwtTeamingException ex) {/* Ignored. */}
+	        		}
+
+	        		// We stop with the first attachment that has a
+	        		// file name.  If we can't view that as HTML, we
+	        		// don't include the menu option.
+					break;
+	        	}
+	        }
+		}
+	}
+	
+	/*
 	 * Constructs a ToolbarItem for folders.
 	 */
 	@SuppressWarnings("unused")
@@ -2107,6 +2153,7 @@ public class GwtMenuHelper {
 					constructEntryShareItem(actionToolbar, bs, request);
 				}
 				constructEntryDetailsItem(  actionToolbar, bs, request, "toolbar.details.view");
+				constructEntryViewHtmlItem( actionToolbar, bs, request, fe                    );
 				constructEntrySubscribeItem(actionToolbar, bs, request, true                  );
 			}
 			
@@ -2701,6 +2748,7 @@ public class GwtMenuHelper {
 		if (MiscUtil.hasString(height)) tbi.addQualifier("popupHeight", height);
 	}
 	private static void markTBIPopup(ToolbarItem tbi) {
+		// Always use the initial form of the method.
 		markTBIPopup(tbi, null, null);
 	}
 	
@@ -2755,6 +2803,33 @@ public class GwtMenuHelper {
 	}
 	
 	private static void markTBIUrl(ToolbarItem tbi, AdaptedPortletURL url) {
+		// Always use the initial form of the method.
 		markTBIUrl(tbi, url.toString());
+	}
+	
+	/*
+	 * Marks a ToolbarItem's URL based on an AdaptedPortletURL using an
+	 * anchor with a target clause.
+	 */
+	private static void markTBIUrlAsTargetedAnchor(ToolbarItem tbi, String url, String anchorTarget) {
+		markTBIUrl(tbi, url);
+		tbi.addQualifier("anchorTarget", (MiscUtil.hasString(anchorTarget) ? anchorTarget : "_blank"));
+	}
+	
+	private static void markTBIUrlAsTargetedAnchor(ToolbarItem tbi, String url) {
+		// Always use the initial form of the method.
+		markTBIUrlAsTargetedAnchor(tbi, url.toString(), null);
+	}
+	
+	@SuppressWarnings("unused")
+	private static void markTBIUrlAsTargetedAnchor(ToolbarItem tbi, AdaptedPortletURL url, String anchorTarget) {
+		// Always use the initial form of the method.
+		markTBIUrlAsTargetedAnchor(tbi, url.toString(), anchorTarget);
+	}
+	
+	@SuppressWarnings("unused")
+	private static void markTBIUrlAsTargetedAnchor(ToolbarItem tbi, AdaptedPortletURL url) {
+		// Always use the initial form of the method.
+		markTBIUrlAsTargetedAnchor(tbi, url.toString(), null);
 	}
 }

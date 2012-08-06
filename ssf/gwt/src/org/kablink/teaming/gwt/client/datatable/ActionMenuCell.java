@@ -79,8 +79,9 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.UIObject;
+import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
  * Data table cell that represents an action menu for an entity.
@@ -93,16 +94,6 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 	private Long							m_binderId;	// The ID of the binder hosting this cell.
 	private Map<String, PopupMenu>			m_menuMap;	// Map of entity ID's to PopupMenu.  Added to as the action menus get created for entities in the current data table.
 
-	/*
-	 * Inner class used so we can use PopupPanel.showRelativeTo() on an
-	 * actionMenuImg Element.
-	 */
-	private class ElementWrapper extends UIObject {
-		public ElementWrapper(Element e) {
-			setElement(e);	// setElement() is protected, so we have to subclass and call here
-		}
-	}
-	
 	/**
 	 * Constructor method.
 	 */
@@ -123,6 +114,56 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 		m_menuMap  = new HashMap<String, PopupMenu>();
 	}
 
+	/*
+	 * Asynchronously builds and shows the action menu for this cell's
+	 * entity.
+	 */
+	private void buildAndShowActionMenuAsync(final Element actionMenuImg, final EntityId eid, final List<ToolbarItem> tbiList) {
+		ScheduledCommand doBuildAndShow = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				buildAndShowActionMenuNow(actionMenuImg, eid, tbiList);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doBuildAndShow);
+	}
+	
+	/*
+	 * Synchronously builds and shows the action menu for this cell's
+	 * entity.
+	 */
+	private void buildAndShowActionMenuNow(final Element actionMenuImg, final EntityId eid, final List<ToolbarItem> tbiList) {
+		// If we don't have any items for the action menu...
+		if (tbiList.isEmpty()) {
+			// ...tell the user and bail.
+			GwtClientHelper.deferredAlert(m_messages.vibeDataTable_Warning_NoEntryActions());
+			return;
+		}
+
+		// Have we created the popup menu for the actions yet?
+		String eidString = eid.getEntityIdString();
+		PopupMenu actionMenu = m_menuMap.get(eidString);
+		if (null == actionMenu) {
+			// No!  Create one now.
+			actionMenu = new PopupMenu(true, false, false);
+			actionMenu.addStyleName("vibe-dataTableActions-menuDropDown");
+			
+			// Scan the toolbar items...
+			for (ToolbarItem actionTBI:  tbiList) {
+				// ...adding each to the action menu...
+				if      (actionTBI.hasNestedToolbarItems()) GwtClientHelper.deferredAlert(m_messages.vibeDataTable_InternalError_UnsupportedStructuredToolbar());
+				else if (actionTBI.isSeparator())           actionMenu.addSeparator();
+				else                                        renderSimpleTBI(eid, actionMenu, actionTBI);
+			}
+			
+			// ...and add the action menu to the Map tracking them.
+			m_menuMap.put(eidString, actionMenu);
+		}
+
+		// ...and then show the action menu.
+		showActionMenuNow(actionMenuImg, actionMenu);
+	}
+	
 	/*
 	 * Called when the mouse leaves the action menu image.
 	 */
@@ -247,67 +288,94 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 	/*
 	 * Renders any simple (i.e., URL or event based) toolbar item.
 	 */
-	private void renderSimpleTBI(final EntityId eid, PopupMenu popupMenu, final ToolbarItem simpleTBI) {
+	private void renderSimpleTBI(final EntityId eid, final PopupMenu actionMenu, final ToolbarItem simpleTBI) {
+		// What do we know about this toolbar item?
 		final String        simpleTitle = simpleTBI.getTitle();
+		final String		simpleUrl   = simpleTBI.getUrl();
 		final TeamingEvents simpleEvent = simpleTBI.getTeamingEvent();
+
+		// Is it a URL for a targeted anchor?
+		final boolean	hasSimpleUrl = GwtClientHelper.hasString(simpleUrl);
+		String			anchorTarget = (hasSimpleUrl ? simpleTBI.getQualifierValue("anchorTarget") : null);
+		VibeMenuItem	menuItem;
+		if (GwtClientHelper.hasString(anchorTarget)) {
+			// Yes!  Create the anchor..
+			Anchor a = new Anchor();
+			a.addStyleName("gwt-MenuItem-anchor");
+			a.setTarget(anchorTarget);
+			a.setHref(simpleUrl);
+			InlineLabel il = new InlineLabel(simpleTitle);
+			a.getElement().appendChild(il.getElement());
+
+			// ...and use that to create an HTML only menu item.
+			VibeFlowPanel html = new VibeFlowPanel();
+			html.add(a);
+			menuItem = new VibeMenuItem(
+				SafeHtmlUtils.fromTrustedString(
+					html.getElement().getInnerHTML()));
+		}
 		
-		// Generate the menu item.
-		VibeMenuItem menuItem = new VibeMenuItem(simpleTitle, false, new Command() {
-			@Override
-			public void execute() {
-				// Does the simple toolbar item contain a URL to
-				// launch?
-				final String simpleUrl = simpleTBI.getUrl();
-				if (GwtClientHelper.hasString(simpleUrl)) {
-					// Yes!  Launch it in the content frame.
-					OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
-						simpleUrl,
-						Instigator.GOTO_CONTENT_URL);
+		else {
+			// No, it in't a URL for a targeted anchor!  Generate a
+			// command based menu item.
+			menuItem = new VibeMenuItem(simpleTitle, false, new Command() {
+				@Override
+				public void execute() {
+					// Does the toolbar item contain a URL to launch?
+					if (hasSimpleUrl) {
+						// Yes!  Launch it in the content frame.
+						OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+							simpleUrl,
+							Instigator.GOTO_CONTENT_URL);
+						
+						if (GwtClientHelper.validateOSBI(osbInfo)) {
+							GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+						}
+					}
 					
-					if (GwtClientHelper.validateOSBI(osbInfo)) {
-						GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+					else {
+						// No, the toolbar item didn't contain a URL!
+						// The only other option is an event.
+						VibeEventBase<?> event;
+						switch (simpleEvent) {
+						default:                                  event = EventHelper.createSimpleEvent(          simpleEvent    ); break;
+						case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:  event = new ChangeEntryTypeSelectedEntriesEvent(m_binderId, eid); break;
+						case COPY_SELECTED_ENTRIES:               event = new CopySelectedEntriesEvent(           m_binderId, eid); break;
+						case DELETE_SELECTED_ENTRIES:             event = new DeleteSelectedEntriesEvent(         m_binderId, eid); break;
+						case LOCK_SELECTED_ENTRIES:               event = new LockSelectedEntriesEvent(           m_binderId, eid); break;
+						case UNLOCK_SELECTED_ENTRIES:             event = new UnlockSelectedEntriesEvent(         m_binderId, eid); break;
+						case MARK_READ_SELECTED_ENTRIES:          event = new MarkReadSelectedEntriesEvent(       m_binderId, eid); break;
+						case MARK_UNREAD_SELECTED_ENTRIES:        event = new MarkUnreadSelectedEntriesEvent(     m_binderId, eid); break;
+						case MOVE_SELECTED_ENTRIES:               event = new MoveSelectedEntriesEvent(           m_binderId, eid); break;
+						case PURGE_SELECTED_ENTRIES:              event = new PurgeSelectedEntriesEvent(          m_binderId, eid); break;
+						case SHARE_SELECTED_ENTRIES:              event = new ShareSelectedEntriesEvent(          m_binderId, eid); break;
+						case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      m_binderId, eid); break;
+						case VIEW_SELECTED_ENTRY:                 event = new ViewSelectedEntryEvent(             m_binderId, eid); break;
+						
+						case UNDEFINED:
+							GwtClientHelper.deferredAlert(m_messages.eventHandling_NoActionMenuHandler(simpleEvent.name()));
+							event = null;
+						}
+						
+						if (null != event) {
+							GwtTeaming.fireEvent(event);
+						}
 					}
 				}
-				
-				else {
-					// No, the simple toolbar item didn't contain a
-					// URL!  The only other option is an event.
-					VibeEventBase<?> event;
-					switch (simpleEvent) {
-					default:                                  event = EventHelper.createSimpleEvent(          simpleEvent    ); break;
-					case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:  event = new ChangeEntryTypeSelectedEntriesEvent(m_binderId, eid); break;
-					case COPY_SELECTED_ENTRIES:               event = new CopySelectedEntriesEvent(           m_binderId, eid); break;
-					case DELETE_SELECTED_ENTRIES:             event = new DeleteSelectedEntriesEvent(         m_binderId, eid); break;
-					case LOCK_SELECTED_ENTRIES:               event = new LockSelectedEntriesEvent(           m_binderId, eid); break;
-					case UNLOCK_SELECTED_ENTRIES:             event = new UnlockSelectedEntriesEvent(         m_binderId, eid); break;
-					case MARK_READ_SELECTED_ENTRIES:          event = new MarkReadSelectedEntriesEvent(       m_binderId, eid); break;
-					case MARK_UNREAD_SELECTED_ENTRIES:        event = new MarkUnreadSelectedEntriesEvent(     m_binderId, eid); break;
-					case MOVE_SELECTED_ENTRIES:               event = new MoveSelectedEntriesEvent(           m_binderId, eid); break;
-					case PURGE_SELECTED_ENTRIES:              event = new PurgeSelectedEntriesEvent(          m_binderId, eid); break;
-					case SHARE_SELECTED_ENTRIES:              event = new ShareSelectedEntriesEvent(          m_binderId, eid); break;
-					case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      m_binderId, eid); break;
-					case VIEW_SELECTED_ENTRY:                 event = new ViewSelectedEntryEvent(             m_binderId, eid); break;
-					
-					case UNDEFINED:
-						GwtClientHelper.deferredAlert(m_messages.eventHandling_NoActionMenuHandler(simpleEvent.name()));
-						event = null;
-					}
-					
-					if (null != event) {
-						GwtTeaming.fireEvent(event);
-					}
-				}
-			}
-		});
+			});
+		}
+		
+		// If we get here, menuItem refers to the VibeMenuItem for the
+		// toolbar item.  Style it and add it to the action menu.
 		menuItem.addStyleName("vibe-dataTableActions-menuPopupItem");
-		popupMenu.addMenuItem(menuItem);
+		actionMenu.addMenuItem(menuItem);
 	}
 
 	/*
 	 * Shows the action menu for the given entity.
 	 */
 	private void showActionMenu(final Element actionMenuImg) {
-		// Have we already constructed the action menu for this entity?
+		// Have we already built the action menu for this entity?
 		String		eidString  = actionMenuImg.getAttribute(VibeDataTableConstants.CELL_WIDGET_ENTITY_ID);
 		PopupMenu	actionMenu = m_menuMap.get(eidString);
 		if (null == actionMenu) {
@@ -329,15 +397,16 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 					GetToolbarItemsRpcResponseData responseData = ((GetToolbarItemsRpcResponseData) response.getResponseData());
 					List<ToolbarItem> tbiList = responseData.getToolbarItems();
 					
-					// ...and use them to show the action menu. 
-					showActionMenuAsync(actionMenuImg, eid, tbiList);
+					// ...and use them to build and show the action
+					// ...menu. 
+					buildAndShowActionMenuAsync(actionMenuImg, eid, tbiList);
 				}
 			});
 		}
 		
 		else {
-			// Yes, we already constructed the action menu for this
-			// entity!  Show it. 
+			// Yes, we already built the action menu for this entity!
+			// Simply show it. 
 			showActionMenuAsync(actionMenuImg, actionMenu);
 		}
 	}
@@ -345,16 +414,6 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 	/*
 	 * Asynchronously shows the action menu for this cell's entity.
 	 */
-	private void showActionMenuAsync(final Element actionMenuImg, final EntityId eid, final List<ToolbarItem> tbiList) {
-		ScheduledCommand doShow = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				showActionMenuNow(actionMenuImg, eid, tbiList);
-			}
-		};
-		Scheduler.get().scheduleDeferred(doShow);
-	}
-	
 	private void showActionMenuAsync(final Element actionMenuImg, final PopupMenu actionMenu) {
 		ScheduledCommand doShow = new ScheduledCommand() {
 			@Override
@@ -368,42 +427,7 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 	/*
 	 * Synchronously shows the action menu for this cell's entity.
 	 */
-	private void showActionMenuNow(final Element actionMenuImg, final EntityId eid, final List<ToolbarItem> tbiList) {
-		// If we don't have any items for the action menu...
-		if (tbiList.isEmpty()) {
-			// ...tell the user and bail.
-			GwtClientHelper.deferredAlert(m_messages.vibeDataTable_Warning_NoEntryActions());
-			return;
-		}
-
-		// Have we created the popup menu for the actions yet?
-		String eidString = eid.getEntityIdString();
-		PopupMenu actionMenu = m_menuMap.get(eidString);
-		if (null == actionMenu) {
-			// No!  Create one now.
-			actionMenu = new PopupMenu(true, false, false);
-			actionMenu.addStyleName("vibe-dataTableActions-menuDropDown");
-			
-			// Scan the toolbar items...
-			for (ToolbarItem actionTBI:  tbiList) {
-				// ...adding each to the action menu...
-				if      (actionTBI.hasNestedToolbarItems()) GwtClientHelper.deferredAlert(m_messages.vibeDataTable_InternalError_UnsupportedStructuredToolbar());
-				else if (actionTBI.isSeparator())           actionMenu.addSeparator();
-				else                                        renderSimpleTBI(eid, actionMenu, actionTBI);
-			}
-			
-			// ...and add the action menu to the Map tracking them.
-			m_menuMap.put(eidString, actionMenu);
-		}
-
-		// ...and then show the action menu image.
-		showActionMenuNow(actionMenuImg, actionMenu);
-	}
-	
-	/*
-	 * Synchronously shows the action menu for this cell's entity.
-	 */
 	private void showActionMenuNow(final Element actionMenuImg, final PopupMenu actionMenu) {
-		actionMenu.showRelativeToTarget(new ElementWrapper(actionMenuImg));
+		actionMenu.showRelativeToTarget(actionMenuImg);
 	}
 }
