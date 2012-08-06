@@ -14,7 +14,11 @@
   <property name="inheritDefinitions">false</property>
   <property name="inheritTeamMembers">true</property>
   <workAreaFunctionMembership>
-    <property name="functionName">__role.teamMember</property>
+    <property name="functionName">__role.binderAdmin</property>
+    <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.visitor</property>
     <property name="members">-1 -2</property>
   </workAreaFunctionMembership>
   <workAreaFunctionMembership>
@@ -22,13 +26,8 @@
     <property name="members">-1 -2</property>
   </workAreaFunctionMembership>
   <workAreaFunctionMembership>
-    <property name="functionName">__role.visitor</property>
-    <property name="memberName">allUsers</property>
+    <property name="functionName">__role.teamMember</property>
     <property name="members">-1 -2</property>
-  </workAreaFunctionMembership>
-  <workAreaFunctionMembership>
-    <property name="functionName">__role.binderAdmin</property>
-    <property name="members">-1</property>
   </workAreaFunctionMembership>
   <definition name="_userWorkspace" internalId="402883b90cc53079010cc539bf26000b" databaseId="402883b90cc53079010cc539bf26000b"/>
   <dashboard>
@@ -70,8 +69,8 @@
     <component name="binder_9">
       <property name="displayStyle">border</property>
       <property name="title">__definition_default_folder_task</property>
-      <property name="name">task</property>
       <property name="roles"></property>
+      <property name="name">task</property>
       <data>
         <property name="resultsCount">5</property>
       </data>
@@ -79,8 +78,8 @@
     <component name="binder_8">
       <property name="displayStyle">border</property>
       <property name="title">__definition_default_folder_guestbook</property>
-      <property name="name">guestbook</property>
       <property name="roles"></property>
+      <property name="name">guestbook</property>
       <data>
         <property name="summaryWordCount">20</property>
         <property name="resultsCount">5</property>
@@ -103,7 +102,7 @@
     <attribute name="templateDescription" type="description">__template_folder_blog_description</attribute>
     <attribute name="title" type="string">__template_folder_blog</attribute>
     <attribute name="description" type="description"></attribute>
-    <attribute name="iconName" type="string">/icons/folder_blue_blog.gif</attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_blog.png</attribute>
     <property name="library">false</property>
     <property name="mirrored">false</property>
     <property name="uniqueTitle">false</property>
@@ -120,7 +119,7 @@
     <attribute name="templateDescription" type="description">__template_folder_calendar_description</attribute>
     <attribute name="title" type="string">__template_folder_calendar</attribute>
     <attribute name="description" type="description"></attribute>
-    <attribute name="iconName" type="string">/icons/folder_blue_calendar.gif</attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_calendar.png</attribute>
     <property name="library">false</property>
     <property name="mirrored">false</property>
     <property name="uniqueTitle">false</property>
@@ -135,7 +134,7 @@
     <attribute name="templateDescription" type="description">__template_folder_library_description</attribute>
     <attribute name="title" type="string">__template_folder_library</attribute>
     <attribute name="description" type="description"></attribute>
-    <attribute name="iconName" type="string">/icons/folder_blue_file_library.gif</attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_file_library.png</attribute>
     <property name="library">true</property>
     <property name="mirrored">false</property>
     <property name="uniqueTitle">false</property>
@@ -150,26 +149,13 @@
     <attribute name="templateDescription" type="description">__template_folder_guestbook_description</attribute>
     <attribute name="title" type="string">__template_folder_guestbook</attribute>
     <attribute name="description" type="description"></attribute>
-    <attribute name="iconName" type="string">/icons/folder_blue_guestbook.gif</attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_guestbook.png</attribute>
     <property name="library">false</property>
     <property name="mirrored">false</property>
     <property name="uniqueTitle">false</property>
-    <property name="inheritFunctionMembership">false</property>
+    <property name="inheritFunctionMembership">true</property>
     <property name="inheritDefinitions">false</property>
     <property name="inheritTeamMembers">true</property>
-    <workAreaFunctionMembership>
-      <property name="functionName">__role.teamMember</property>
-      <property name="members">-1 -2</property>
-    </workAreaFunctionMembership>
-    <workAreaFunctionMembership>
-      <property name="functionName">__role.binderAdmin</property>
-      <property name="members">-1</property>
-    </workAreaFunctionMembership>
-    <workAreaFunctionMembership>
-      <property name="functionName">__role.participant</property>
-      <property name="memberName">allUsers</property>
-      <property name="members">-1 -2</property>
-    </workAreaFunctionMembership>
     <definition name="_guestbookFolder" databaseId="402883c6115753d8011157619e35000a"/>
     <definition name="_guestbookEntry" databaseId="402883c6115753d8011157811ae1000e"/>
   </template>
@@ -178,7 +164,7 @@
     <attribute name="templateDescription" type="description">__template_folder_photo_description</attribute>
     <attribute name="title" type="string">__template_folder_photo</attribute>
     <attribute name="description" type="description"></attribute>
-    <attribute name="iconName" type="string">/icons/folder_blue_photo.gif</attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_photo.png</attribute>
     <property name="library">true</property>
     <property name="mirrored">false</property>
     <property name="uniqueTitle">false</property>
@@ -193,7 +179,7 @@
     <attribute name="templateDescription" type="description">__template_folder_task_description</attribute>
     <attribute name="title" type="string">__template_folder_task</attribute>
     <attribute name="description" type="description"></attribute>
-    <attribute name="iconName" type="string">/icons/folder_blue_task.gif</attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_task.png</attribute>
     <property name="library">false</property>
     <property name="mirrored">false</property>
     <property name="uniqueTitle">false</property>
@@ -202,6 +188,7 @@
     <property name="inheritTeamMembers">true</property>
     <definition name="_taskFolder" databaseId="402883c1129b1f8101129b28bc620003"/>
     <definition name="_taskEntry" databaseId="402883c1129b1f8101129b28bbe50002"/>
+    <definition name="_task_workflow" databaseId="24e350dd203897f40120389be0c80007"/>
     <definition name="_task_workflow" databaseId="24e350dd203897f40120389be0c80007">
       <definition name="_taskEntry" databaseId="402883c1129b1f8101129b28bbe50002"/>
     </definition>
