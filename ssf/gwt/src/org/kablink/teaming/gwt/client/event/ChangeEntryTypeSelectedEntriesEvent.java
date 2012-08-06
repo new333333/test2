@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -45,13 +44,16 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  * The ChangeEntryTypeSelectedEntriesEvent is used to change the entry
  * type of the currently selected entries in a folder.
  * 
+ * See the definition of the SelectedEntriesEventBase class for how and
+ * when an EntityId (or List<EntityId>) should be passed into the
+ * construction of this class.
+ * 
  * @author drfoster@novell.com
  */
-public class ChangeEntryTypeSelectedEntriesEvent extends VibeEventBase<ChangeEntryTypeSelectedEntriesEvent.Handler> {
+public class ChangeEntryTypeSelectedEntriesEvent extends SelectedEntriesEventBase<ChangeEntryTypeSelectedEntriesEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
-    public List<EntityId>	m_selectedEntities;	//
-    public Long				m_folderId;			//
+    public Long	m_folderId;	//
     
 	/**
 	 * Handler interface for this event.
@@ -64,6 +66,7 @@ public class ChangeEntryTypeSelectedEntriesEvent extends VibeEventBase<ChangeEnt
 	 * Class constructor.
 	 */
 	public ChangeEntryTypeSelectedEntriesEvent() {
+		// Initialize the super class.
 		super();
 	}
 	
@@ -74,8 +77,10 @@ public class ChangeEntryTypeSelectedEntriesEvent extends VibeEventBase<ChangeEnt
 	 * @param selectedEntityId
 	 */
 	public ChangeEntryTypeSelectedEntriesEvent(Long folderId, EntityId selectedEntityId) {
+		// Initialize this object...
 		this();
-		
+
+		// ...and store the parameters.
 		setFolderId(        folderId        );
 		setSelectedEntityId(selectedEntityId);
 	}
@@ -84,33 +89,40 @@ public class ChangeEntryTypeSelectedEntriesEvent extends VibeEventBase<ChangeEnt
 	 * Class constructor.
 	 * 
 	 * @param folderId
+	 * @param selectedEntities
 	 */
-	public ChangeEntryTypeSelectedEntriesEvent(Long folderId) {
-		this(folderId, null);
+	public ChangeEntryTypeSelectedEntriesEvent(Long folderId, List<EntityId> selectedEntities) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameters.
+		setFolderId(        folderId        );
+		setSelectedEntities(selectedEntities);
 	}
 
 	/**
-	 * Get'er method.
+	 * Class constructor.
+	 * 
+	 * @param folderId
+	 */
+	public ChangeEntryTypeSelectedEntriesEvent(Long folderId) {
+		// Initialize this object.
+		this(folderId, ((List<EntityId>) null));
+	}
+
+	/**
+	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public Long           getFolderId()         {return m_folderId;        }
-	public List<EntityId> getSelectedEntities() {return m_selectedEntities;}
+	public Long getFolderId() {return m_folderId;}
 	
 	/**
-	 * Set'er method.
+	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderId(        Long     folderId)         {m_folderId = folderId;} 
-	public void setSelectedEntityId(EntityId selectedEntityId) {
-		if (null != selectedEntityId) {
-			if (null == m_selectedEntities) {
-				m_selectedEntities = new ArrayList<EntityId>();
-			}
-			m_selectedEntities.add(selectedEntityId);
-		}
-	}
+	public void setFolderId(Long folderId) {m_folderId = folderId;} 
 	
 	/**
 	 * Dispatches this event when one is triggered.
