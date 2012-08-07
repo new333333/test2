@@ -1183,7 +1183,7 @@ body, table td, select
 }
 .findSearchResultItemWidget a
 {
-	font-size: .75em !important;
+	color: #1f1f1f !important;
 }
 .findSearchResultItemWidget span.gwt-InlineLabel
 {
