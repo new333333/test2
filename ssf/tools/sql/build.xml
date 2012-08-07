@@ -820,6 +820,21 @@
 		<antcall target="lb-generate-diff-changelog-sqlserver" inheritAll="false"/>
 	</target>	
 
+	<target name="lb-shell-script-execution-clean">
+		<delete dir="lb-commands/lib"/>
+		<delete dir="lb-commands/scripts"/>
+	</target>
+	
+	<target name="lb-shell-script-execution-prepare">
+		<mkdir dir="lb-commands/lib"/>
+		<copy todir="lb-commands/lib">
+			<fileset dir="${project.dir}/lib" includes="liquibase.jar,mysql-connector.jar,ojdbc6.jar,jtds.jar"/>
+		</copy>
+		<copy todir="lb-commands">
+			<fileset dir="." includes="scripts/changelog/**"/>
+		</copy>
+	</target>
+	
   	<target name="generate-update-tables-script" depends="init-jdbc-connection-settings"
   		description="Generate update sql script using old database and current build.">
 		<mkdir dir="${update.dir}"/>

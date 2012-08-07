@@ -182,10 +182,10 @@
         </createTable>
     </changeSet>
     <changeSet author="jong" context="schema" failOnError="true" id="13">
-        <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="SS_ShareItem" baseTableSchemaName="sitescape" constraintName="FK8520E45376767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="SS_ShareItem" constraintName="FK8520E45376767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="jong" context="schema" failOnError="true" id="14">
-        <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="SS_ShareItem" baseTableSchemaName="sitescape" constraintName="FK8520E453BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencedTableSchemaName="sitescape" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="SS_ShareItem" constraintName="FK8520E453BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="ss_principals" referencesUniqueColumn="false"/>
     </changeSet>
     <changeSet author="jong" context="schema" failOnError="true" id="15">
         <createIndex indexName="sharedEntity_shareitem" tableName="SS_ShareItem" unique="false">
@@ -218,5 +218,25 @@
 				<constraints nullable="true" />
 			</column>
         </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="20">
+        <comment>Only used to fix schema created prior to V3.1. Will not harm schema that is already in correct state.</comment>
+        <modifyDataType tableName="SS_CustomAttributes" columnName="serializedValue" newDataType="LONGBLOB"/>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="21">
+        <comment>Only used to fix schema created prior to V3.1. Will not harm schema that is already in correct state.</comment>
+        <modifyDataType tableName="SS_Dashboards" columnName="properties" newDataType="LONGBLOB"/>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+        <comment>Only used to fix schema created prior to V3.1. Will not harm schema that is already in correct state.</comment>
+        <modifyDataType tableName="SS_Forums" columnName="properties" newDataType="LONGBLOB"/>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="23">
+        <comment>Only used to fix schema created prior to V3.1. Will not harm schema that is already in correct state.</comment>
+        <modifyDataType tableName="SS_SeenMap" columnName="seenMap" newDataType="LONGBLOB"/>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="24">
+        <comment>Only used to fix schema created prior to V3.1. Will not harm schema that is already in correct state.</comment>
+        <modifyDataType tableName="SS_UserProperties" columnName="properties" newDataType="LONGBLOB"/>
     </changeSet>
 </databaseChangeLog>
