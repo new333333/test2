@@ -60,6 +60,11 @@ public class CommentsCell extends AbstractCell<CommentsInfo> {
 	private GwtTeamingMessages	m_messages;				// Access to the Vibe string resources we need for this cell.
 	private ManageCommentsDlg	m_manageCommentsDlg;	//
 	
+	// Controls whether the comment bubble is a link that invokes the
+	// manage comments dialog or simply a count of the comments on an
+	// entity.
+	private final static boolean ALLOW_COMMENT_MANAGEMENT	= false;
+	
 	/**
 	 * Constructor method.
 	 */
@@ -161,10 +166,18 @@ public class CommentsCell extends AbstractCell<CommentsInfo> {
 		// Are we processing the comments on a folder entry?
 		VibeFlowPanel html = new VibeFlowPanel();
 		if (EntityId.FOLDER_ENTRY.equals(commentsInfo.getEntityId().getEntityType())) {
-			// Yes!  Generate the number of comments panel.
+			// Yes!  Generate the number of comments panel...
 			VibeFlowPanel cp = new VibeFlowPanel();
 			cp.addStyleName("vibe-dataTableComments-panel");
-			cp.setTitle(m_messages.vibeDataTable_Alt_Comments());
+			Element cpE = cp.getElement();
+			if (ALLOW_COMMENT_MANAGEMENT) {
+				cp.addStyleName("cursorPointer"                        );
+				cp.setTitle(    m_messages.vibeDataTable_Alt_Comments());
+				cpE.setAttribute(
+					VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE,
+					VibeDataTableConstants.CELL_WIDGET_ENTRY_COMMENTS_PANEL);
+			}
+			
 			int commentCount = commentsInfo.getCommentsCount();
 			String comments;
 			if (0 == commentCount) {
@@ -174,11 +187,9 @@ public class CommentsCell extends AbstractCell<CommentsInfo> {
 			else {
 				comments = String.valueOf(commentsInfo.getCommentsCount());
 			}
-			Element cpE = cp.getElement();
 			cpE.setInnerHTML(comments);
-			cpE.setAttribute(
-				VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE,
-				VibeDataTableConstants.CELL_WIDGET_ENTRY_COMMENTS_PANEL);
+			
+			// ...and render it as the cell's HTML.
 			html.add(cp);
 		}
 		
