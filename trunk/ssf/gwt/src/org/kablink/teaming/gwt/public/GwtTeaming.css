@@ -975,19 +975,11 @@ body, table td, select
 }
 
 /* */
-.cursorDefault
-{
-	cursor: default;
-}
-.cursorPointer
-{
-	cursor: pointer;
-}
-
-.cursorMove
-{
-	cursor: move;
-}
+.cursorDefault  {cursor: default;}
+.cursorDefault2 {cursor: default !important;}
+.cursorPointer  {cursor: pointer;}
+.cursorPointer2 {cursor: pointer !important;}
+.cursorMove     {cursor: move;}
 
 /* Styles used with instructions in a dialog box. */
 .dlgInstructions

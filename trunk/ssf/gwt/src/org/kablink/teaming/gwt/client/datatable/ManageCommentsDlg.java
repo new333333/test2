@@ -260,7 +260,7 @@ public class ManageCommentsDlg extends DlgBox
 		m_fp.clear();
 		
 //!		...this needs to be implemented...
-		m_fp.add(new DlgLabel("...this needs to be implemented..."));
+		m_fp.add(new DlgLabel("Manage Comments:  ...this needs to be implemented..."));
 
 		// ...and show the dialog.
 		showRelativeTo(m_showRelativeWidget);

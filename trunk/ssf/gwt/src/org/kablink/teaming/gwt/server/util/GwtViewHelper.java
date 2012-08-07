@@ -490,6 +490,12 @@ public class GwtViewHelper {
 						break;
 		        	}
 		        }
+
+		        // Store the total replies for this entry in the Map. 
+		        entryMap.put(
+		        	Constants.TOTALREPLYCOUNT_FIELD,
+		        	String.valueOf(
+		        		((FolderEntry) entity).getTotalReplyCount()));
 				
 				// Store the entry's parent binder's ID in the Map.
 				binderIdField = Constants.BINDER_ID_FIELD;
