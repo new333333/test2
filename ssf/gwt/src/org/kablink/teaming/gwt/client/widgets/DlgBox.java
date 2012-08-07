@@ -43,7 +43,6 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -144,6 +143,7 @@ public abstract class DlgBox extends PopupPanel
 		m_id = m_uniqueId;
 		++m_uniqueId;
 		setStyleName( "teamingDlgBox" );
+		setStyleName( "teamingDlgBox_NoClip", true );
 		getElement().setId( "teamingDlgBox-" + String.valueOf( m_id ) );
 		
 		setAnimationEnabled( true );

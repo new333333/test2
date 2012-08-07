@@ -769,18 +769,22 @@ public class FindCtrl extends Composite
 		int height;
 		
 		// Get the position and dimensions of this control.
-		left = getAbsoluteLeft();
-		top = getAbsoluteTop();
-		height = getOffsetHeight();
-		width = getOffsetWidth();
+		left = m_searchResultsWidget.getAbsoluteLeft();
+		top = m_searchResultsWidget.getAbsoluteTop();
+		height = m_searchResultsWidget.getOffsetHeight();
+		width = m_searchResultsWidget.getOffsetWidth();
 		
 		// Factor scrolling into the mouse position.
 		mouseY += Window.getScrollTop();
 		mouseX += Window.getScrollLeft();
 		
+		//GWT.log( "left: " + left + " top: " + top + " height: " + height + " width: " + width + " mouseY: " + mouseY + " mouseX: " + mouseX, null );
+
 		// Is the mouse over this control?
 		if ( mouseY >= top && mouseY <= (top + height) && mouseX >= left && (mouseX <= left + width) )
 			return true;
+		
+		//GWT.log( "isMouseOver() about to return false", null );
 		
 		return false;
 	}// end isMouseOver()

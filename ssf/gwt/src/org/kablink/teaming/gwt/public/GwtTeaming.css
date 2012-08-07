@@ -1140,8 +1140,9 @@ body, table td, select
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: 1px;
-	position: relative;
+	position: absolute;
 	margin-left: 5px;
+	z-index: 2000;
 }
 
 /* Styles for the "search results" in a "find" control. */
@@ -2580,6 +2581,11 @@ body, table td, select
 	border-radius: 6px;
 	-webkit-border-radius: 6px;
 	z-index: 1001;
+}
+
+.teamingDlgBox_NoClip, .teamingPopupPanel_NoClip
+{
+	clip: rect( 0px, 10000px, 10000px, 0px) !important; 
 }
 
 .teamingDlgBox_Glass
