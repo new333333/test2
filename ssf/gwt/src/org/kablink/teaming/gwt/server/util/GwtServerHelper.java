@@ -756,6 +756,52 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Adds binderId to the user's list of favorites.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean addFavorite(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
+		Binder binder = bs.getBinderModule().getBinder(binderId);
+		UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
+		Favorites f = new Favorites((String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES));
+		String title = binder.getTitle();
+		if (binder instanceof Folder) {
+			title += (" (" + ((Folder)binder).getParentBinder().getTitle() + ")");
+		}
+		
+		String viewAction;
+		switch (binder.getEntityType())
+		{
+		case folder:     viewAction = "view_folder_listing";  break;
+		case profiles:   viewAction = "view_profile_listing"; break;
+		default:         viewAction = "";                     break;
+		}
+		try {
+			f.addFavorite(
+				title,
+				binder.getPathName(),
+				Favorites.FAVORITE_BINDER,
+				binderId.toString(),
+				viewAction,
+				"");
+		} catch(FavoritesLimitExceededException flee) {
+			// There are already too many favorites, some must be
+			// deleted first Construct a GwtTeamingException for this
+			// error condition.
+			throw GwtServerHelper.getGwtTeamingException(flee);
+		}
+		
+		bs.getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
+		return Boolean.TRUE;
+	}
+	
+	/**
 	 * Adds a quick filter to the search filter in the options map.
 	 * 
 	 * @param options
@@ -1395,6 +1441,57 @@ public class GwtServerHelper {
 		
 		// If we get here the user does not have rights to modify the binder.
 		return Boolean.FALSE;
+	}
+
+	/**
+	 * Changes the favorite state of the given binder.  If
+	 * makeFavoriate is true, the binder is made a favorite.
+	 * Otherwise, it is removed from the user's favorites list.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * @param makeFavorite
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static BooleanRpcResponseData changeFavoriteState(AllModulesInjected bs, HttpServletRequest request, Long binderId, boolean makeFavorite) throws GwtTeamingException {
+		try {
+			// Are we making this binder a favorite?
+			if (makeFavorite) {
+				// Yes!  Add it to the user's favorites list.
+				addFavorite(bs, request, binderId);
+			}
+			
+			else {
+				// No, we aren't making this binder a favorite!  Can we
+				// determine the ID of the favorite to remove?
+				String favoriteId = null;
+				List<FavoriteInfo> favorites = GwtServerHelper.getFavorites(bs);
+				for (FavoriteInfo favorite:  favorites) {
+					Long favoriteBinderId = Long.parseLong(favorite.getValue());
+					if (favoriteBinderId.equals(binderId)) {
+						favoriteId = favorite.getId();
+						break;
+					}
+				}
+				
+				if (null != favoriteId) {
+					// Yes!  Remove it.
+					removeFavorite(bs, request, favoriteId);
+				}
+			}
+
+			// If we get here, we changed the favorite state, as
+			// requested.  Return a true Boolean response data.
+			return new BooleanRpcResponseData(Boolean.TRUE);
+		}
+		
+		catch (Exception ex) {
+			throw getGwtTeamingException(ex);
+		}
 	}
 	
 	/**
@@ -7079,6 +7176,7 @@ public class GwtServerHelper {
 		case CAN_ADD_FOLDER:
 		case CAN_MODIFY_BINDER:
 		case CHANGE_ENTRY_TYPES:
+		case CHANGE_FAVORITE_STATE:
 		case COLLAPSE_SUBTASKS:
 		case COPY_ENTRIES:
 		case DELETE_FOLDER_ENTRIES:
@@ -7414,6 +7512,22 @@ public class GwtServerHelper {
 		}
 	}
 	
+	/**
+	 * Removes favoriteId from the user's list of favorites.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param favoriteId
+	 * 
+	 * @return
+	 */
+	public static Boolean removeFavorite(AllModulesInjected bs, HttpServletRequest request, String favoriteId) {
+		UserProperties userProperties = bs. getProfileModule().getUserProperties(null);
+		Favorites f = new Favorites((String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_FAVORITES));
+		f.deleteFavorite(favoriteId);
+		bs.getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
+		return Boolean.TRUE;
+	}
 	
 	/**
 	 * Removes a search based on its SavedSearchInfo.

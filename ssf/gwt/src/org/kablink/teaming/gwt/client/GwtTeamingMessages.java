@@ -295,6 +295,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CanManagePublicTags();
 	String rpcFailure_CanModifyBinder();
 	String rpcFailure_ChangeEntryTypes();
+	String rpcFailure_ChangeFavoriteState();
 	String rpcFailure_CheckForActivityStreamChanges();
 	String rpcFailure_CollapseSubtasks();
 	String rpcFailure_CopyEntries();

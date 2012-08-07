@@ -57,7 +57,6 @@ import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoUserByTheIdException;
@@ -214,7 +213,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			Boolean result;
 			
 			afCmd = (AddFavoriteCmd) cmd;
-			result = addFavorite( ri, afCmd.getBinderId() );
+			result = GwtServerHelper.addFavorite( this, getRequest( ri ), Long.parseLong( afCmd.getBinderId() ) );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -258,6 +257,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			ChangeEntryTypesCmd cetCmd = ((ChangeEntryTypesCmd) cmd);
 			ErrorListRpcResponseData result = GwtViewHelper.changeEntryTypes( this, getRequest( ri ), cetCmd.getDefId(), cetCmd.getEntryIds() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case CHANGE_FAVORITE_STATE:
+		{
+			ChangeFavoriteStateCmd cfsCmd = ((ChangeFavoriteStateCmd) cmd);
+			BooleanRpcResponseData result = GwtServerHelper.changeFavoriteState( this, getRequest( ri ), cfsCmd.getBinderId(), cfsCmd.getMakeFavorite() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -1911,7 +1918,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			Boolean result;
 			
 			rfCmd = (RemoveFavoriteCmd) cmd;
-			result = removeFavorite( ri, rfCmd.getFavoriteId() );
+			result = GwtServerHelper.removeFavorite( this, getRequest( ri ), rfCmd.getFavoriteId() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -4220,68 +4227,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return Boolean.TRUE;
 	}// end persistNodeExpand()
 
-	
-	/**
-	 * Adds binderId to the user's list of favorites.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * 
-	 * @return
-	 */
-	private Boolean addFavorite( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
-	{
-		Binder binder;
-		Favorites f;
-		String viewAction;
-		String title;
-		UserProperties userProperties;
-		
-		binder = getBinderModule().getBinder( Long.parseLong( binderId ) );
-		userProperties = getProfileModule().getUserProperties( null );
-		f = new Favorites( (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_FAVORITES ) );
-		title = binder.getTitle();
-		if ( binder instanceof Folder )
-		{
-			title += " (" + ((Folder)binder).getParentBinder().getTitle() + ")";
-		}
-		switch ( binder.getEntityType() )
-		{
-		case folder:     viewAction = "view_folder_listing";  break;
-		case profiles:   viewAction = "view_profile_listing"; break;
-		default:         viewAction = ""; break;
-		}
-		try {
-			f.addFavorite( title, binder.getPathName(), Favorites.FAVORITE_BINDER, binderId.toString(), viewAction, "" );
-		} catch(FavoritesLimitExceededException flee) {
-			//There are already too many favorites, some must be deleted first
-			// Construct a GwtTeamingException for this error condition.
-			throw GwtServerHelper.getGwtTeamingException( flee );
-		}
-		getProfileModule().setUserProperty( null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString() );
-		
-		return Boolean.TRUE;
-	}// end addFavorite()
-	
-	/**
-	 * Removes favoriteId from the user's list of favorites.
-	 * 
-	 * @param ri
-	 * @param favoriteId
-	 * 
-	 * @return
-	 */
-	private Boolean removeFavorite( HttpRequestInfo ri, String favoriteId )
-	{
-		Favorites f;
-		UserProperties userProperties;
-		
-		userProperties = getProfileModule().getUserProperties( null );
-		f = new Favorites( (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_FAVORITES ) );
-		f.deleteFavorite( favoriteId );
-		getProfileModule().setUserProperty( null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString() );
-		return Boolean.TRUE;
-	}//end removeFavorite()
 	
 	/**
 	 * Sets the user's list of favorites to favoritesList.
