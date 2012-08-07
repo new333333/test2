@@ -1904,7 +1904,7 @@ body, table td, select
 	vertical-align: middle;
 }
 
-.breadCrumb_ContentTail_configureImg {cursor: pointer;}
+.breadCrumb_ContentTail_configureImg {cursor: pointer; margin-left: 5px;}
 .breadCrumb_ContentTail_Img          {margin-right: 3px; vertical-align: middle;}
 .breadCrumb_ContentTail_Panel        {display: block; padding-top: 5px; white-space: nowrap;}
 .breadCrumb_ContentTail_Up           {margin-right: 3px; vertical-align: middle;}

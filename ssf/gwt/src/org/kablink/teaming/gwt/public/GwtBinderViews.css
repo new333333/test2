@@ -8,9 +8,12 @@
 	{
 		display: block;
 		padding: 5px;
-		-moz-border-radius: 5px;
-		border-radius: 5px;
-		-webkit-border-radius: 5px;
+		border-top-left-radius: 5px;
+		border-top-right-radius: 5px;
+		-moz-border-radius-topleft: 5px;
+		-moz-border-radius-topright: 5px;
+		-webkit-border-top-left-radius: 5px;
+		-webkit-border-top-right-radius: 5px;
 	}
 /* End:  Generic binder view tools styles. */
 
@@ -39,7 +42,7 @@
 	/* ...End:  Binder owner avatar panel styles. */
 	
 	/* ...Start:  Calendar navigation panel styles. */
-		.vibe-calNav-date           {color: white; font-weight: bold; font-size: 14px; font-family: Arial, Helvetica, sans-serif;}
+		.vibe-calNav-date           {color: #505354; font-weight: bold; font-size: 18px; text-shadow: 0 1px 0 white; font-family: Arial, Helvetica, sans-serif;}
 		.vibe-calNav-dateNavPanel   {padding: 0 10px;}
 		.vibe-calNav-datePanel      {padding: 0 10px;}
 		.vibe-calNav-datePicker     {}
