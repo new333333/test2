@@ -54,6 +54,8 @@ public class TeamingPopupPanel extends PopupPanel {
 	 */
 	public TeamingPopupPanel(boolean autoHide, boolean modal) {
 		super(autoHide, modal);
+
+		setStyleName( "teamingPopupPanel_NoClip", true );
 	}
 
 	public TeamingPopupPanel(boolean autoHide) {
