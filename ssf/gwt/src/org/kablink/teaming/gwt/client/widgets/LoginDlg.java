@@ -218,7 +218,9 @@ public class LoginDlg extends DlgBox
 		m_springSecurityRedirect = springSecurityRedirect;
 		
 		// Create the header, content and footer of this dialog box.
-		if ( GwtMainPage.m_novellTeaming )
+		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
+			headerText = GwtTeaming.getMessages().loginDlgNovellFilrHeader();
+		else if ( GwtTeaming.m_requestInfo.isNovellTeaming() )
 			headerText = GwtTeaming.getMessages().loginDlgNovellHeader();
 		else
 			headerText = GwtTeaming.getMessages().loginDlgKablinkHeader();
@@ -492,16 +494,18 @@ public class LoginDlg extends DlgBox
 		
 		panel = new FlowPanel();
 
-		// Are we running Novell Teaming?
-		if ( GwtMainPage.m_requestInfo.isNovellTeaming() )
+		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
 		{
-			// Yes
+			// Create a Novell Filr image that will be used in case there is no branding.
+			img = new Image( GwtMainPage.m_requestInfo.getImagesPath() + "pics/Login/novell_filr_graphic.png" );
+		}
+		else if ( GwtTeaming.m_requestInfo.isNovellTeaming() )
+		{
 			// Create a Novell Teaming image that will be used in case there is no branding.
 			img = new Image( GwtMainPage.m_requestInfo.getImagesPath() + "pics/Login/novell_graphic.png" );
 		}
 		else
 		{
-			// No
 			// Create a Kablink Teaming image that will be used in case there is no branding.
 			img = new Image( GwtMainPage.m_requestInfo.getImagesPath() + "pics/Login/kablink_graphic.png" );
 		}
