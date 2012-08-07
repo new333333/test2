@@ -54,9 +54,9 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.UIObject;
 
 /**
+ * A Generate dialog box class for use throughout Vibe.
  * 
  * @author jwootton
- *
  */
 public abstract class DlgBox extends PopupPanel
 	implements ClickHandler

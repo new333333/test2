@@ -37,7 +37,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Class used to communicate information about a folder columns between
+ * Class used to communicate information about folder columns between
  * the client and server.
  * 
  * @author drfoster@novell.com
@@ -243,6 +243,7 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	 * @return
 	 */
 	public static boolean isColumnAccess(          String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARE_ACCESS);     }
+	public static boolean isColumnComments(        String       columnName) {return columnName.equals(FolderColumn.COLUMN_COMMENTS);         }
 	public static boolean isColumnCustom(          FolderColumn column)     {return column.isCustomColumn();                                 }
 	public static boolean isColumnDescriptionHtml( String       columnName) {return columnName.equals(FolderColumn.COLUMN_DESCRIPTION_HTML); }
 	public static boolean isColumnDownload(        String       columnName) {return columnName.equals(FolderColumn.COLUMN_DOWNLOAD);         }

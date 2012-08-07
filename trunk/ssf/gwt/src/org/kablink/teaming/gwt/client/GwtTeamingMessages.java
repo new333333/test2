@@ -535,6 +535,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_LoginDlg();
 	String codeSplitFailure_MainMenuControl();
 	String codeSplitFailure_MainPage();
+	String codeSplitFailure_ManageCommentsDlg();
 	String codeSplitFailure_ManageMenuPopup();
 	String codeSplitFailure_ManageSavedSearchesDlg();
 	String codeSplitFailure_MicroBlogFolderView();
@@ -1441,6 +1442,7 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used by various widgets of the Vibe Data table.
 	String vibeDataTable_Alt_CollapseDescription();
+	String vibeDataTable_Alt_Comments();
 	String vibeDataTable_Alt_EntryActions();
 	String vibeDataTable_Alt_ExpandDescription();
 	String vibeDataTable_Alt_Unread();
