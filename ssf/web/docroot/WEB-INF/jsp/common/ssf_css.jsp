@@ -169,6 +169,7 @@ img { -ms-interpolation-mode: bicubic; }
   	color: ${ss_style_link_hover_color} !important;
 	background: url(<html:imagesPath/>pics/teal_slice.png) repeat-x;
     background-position:  left center;
+	border-radius: 2px;
 	-moz-border-radius: 2px;
 	-webkit-border-radius: 2px;
 	}
@@ -490,6 +491,8 @@ div.ss_entryContent a:hover {
   	font-size: 13px;
   	padding: 5px;
     border-top: 1px solid #C4C4C4;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
 	-moz-border-radius-bottomleft: 5px;
 	-moz-border-radius-bottomright: 5px;
 	-webkit-border-bottom-left-radius: 5px;
@@ -601,6 +604,7 @@ div.ss_workflow {
   	border: 1px solid #D2D5D1;
   	padding: 4px;
 	margin: 4px 0 4px 0;
+	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	}
@@ -640,6 +644,7 @@ table.ss_guestbook {
 	background-color: ${ss_entry_description_background_color};
 	margin-bottom: 3px;
 	padding: 5px 0px 0px 5px;
+	border-radius: 3px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
@@ -675,6 +680,7 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
   	cursor: pointer;
   	white-space: nowrap;
 	border: 0px;
+	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
     text-align: center !important;
@@ -704,6 +710,7 @@ button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type=
 		color-stop(0.47, #A8D4DD),
 		color-stop(0.53, #D5EDF1),
 		color-stop(1, #C8E4E9));
+	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
   	<c:if test="<%= isIE %>">
@@ -727,6 +734,7 @@ input[type="button"].n-button {
 	background-color: #81b2bd;
 	border: 0px;
 	height: 20px;
+	border-radius: 15px;
 	-moz-border-radius:15px;
 	-webkit-border-radius:15px;
 	<c:if test="<%= isIE %>">
@@ -750,6 +758,7 @@ input[type="button"].n-button:hover {
 		color-stop(0.47, #A8D4DD),
 		color-stop(0.53, #D5EDF1),
 		color-stop(1, #C8E4E9));
+	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
 	}
@@ -783,6 +792,7 @@ a.ss_tinyButton:visited {
 	text-decoration:none;	
   	white-space: nowrap;
   	cursor: pointer !important;
+	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
 	}
@@ -805,6 +815,7 @@ a.ss_tinyButton:hover {
 		color-stop(0.53, #D5EDF1),
 		color-stop(1, #C8E4E9));
   	white-space: nowrap;
+	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
@@ -859,6 +870,7 @@ div.ss_tag_content {
 	line-height: 17px;
 	border: 1px solid #b8b8b8;
 	padding: 2px 6px;
+	border-radius: 4px;
 	-moz-border-radius: 4px;
 	-web-border-radius: 4px;
 }
@@ -907,6 +919,7 @@ div.ss_send_friend {
   padding: 10px;
   background-color: #EBECA5;
   width: 300px;
+  border-radius: 5px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
 }
@@ -1450,6 +1463,7 @@ li.ss_toolbar_gwtui {
 	padding: 2px 10px !important;
 	margin-right: 3px;
 	display: inline-block;
+	border-radius: 10px;
 	-moz-border-radius: 10px;
 	-webkit-border-radisu: 10px;
 	}
@@ -1667,6 +1681,7 @@ div.ss_dashboardProtoDropTarget {
   border: 1px solid ${ss_form_border_color};
   background-color: #fff;
   padding: 5px;
+  border-radius: 3px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
 <c:if test="<%= isIE %>">
@@ -1846,6 +1861,7 @@ a:hover.ss_box_prev {
 
 /* "newpage" box styles */
 .ss_newpage_box {
+	border-radius: 3px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 	}
@@ -1857,6 +1873,8 @@ a:hover.ss_box_prev {
 	font-weight: bold;
 	padding: 5px;
 	background: transparent url(<html:imagesPath/>pics/dialog_header_tile.png) repeat-x;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
 	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
 	-webkit-border-top-left-radius: 5px;
@@ -1882,6 +1900,7 @@ a:hover.ss_box_prev {
 
 /* popup box styles */
 .ss_popup_box {
+	border-radius: 3px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 	margin:0px;
@@ -1894,7 +1913,9 @@ a:hover.ss_box_prev {
 	font-weight: bold;
 	padding: 5px;
 	background: transparent url(<html:imagesPath/>pics/dialog_header_tile.png) repeat-x;
-	-moz-border-radius-topleft: 5px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+ 	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
@@ -2094,6 +2115,8 @@ div.ss_content_outer {		/* also see ss_pseudoPortal */
 	padding:4px 10px;
 	border: 1px solid #b8b8b8;
 	background-color: #fff;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
 	-moz-border-radius-bottomleft: 3px;
 	-moz-border-radius-bottomright: 3px;
 	-webkit-border-bottom-left-radius: 3px;
@@ -2318,6 +2341,8 @@ div.ss_sidebar_panel_featured {
 	padding-top: 5px;
 	padding-left: 5px;
 	padding-right: 5px;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
 	-moz-border-radius-topleft: 3px;
 	-moz-border-radius-topright: 3px;
 	-webkit-border-top-left-radius: 3px;
@@ -2666,6 +2691,8 @@ div.ss_thumbnail_gallery div {
     font-family: ${ss_style_font_family};
     overflow: hidden;
     background-color: ${ss_gallery_background_color};
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
 	-moz-border-radius-bottomleft: 5px;
 	-moz-border-radius-bottomright: 5px;
 	-webkit-border-bottom-left-radius: 5px;
@@ -3346,6 +3373,7 @@ a.ss_calendarButton:hover img {
 	padding: 6px;
 	padding-bottom: 9px;
     background: url(<html:imagesPath/>pics/trans30_black.png) repeat;
+	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
@@ -3354,6 +3382,8 @@ a.ss_calendarButton:hover img {
 	height: 22px;
 	width: 100%;
 	background-color: #ECECEC;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
 	-moz-border-radius-topleft: 3px;
 	-moz-border-radius-topright: 3px;
 	-webkit-border-top-left-radius: 3px;
@@ -3602,6 +3632,8 @@ div.ss_calendarNaviBar {
 	margin: 0px;
 	padding: 10px;
 	overflow: auto;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
 	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
 	-webkit-border-top-left-radius: 5px;
@@ -3639,6 +3671,7 @@ div.ss_calendarNaviBar {
 	font-size: 11px !important;
 	padding: 3px 8px  !important;
 	text-decoration:none;	
+	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
@@ -3658,6 +3691,7 @@ div.ss_calendarNaviBar {
 		color-stop(0.47, #A8D4DD),
 		color-stop(0.53, #D5EDF1),
 		color-stop(1, #C8E4E9));
+	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
@@ -3722,11 +3756,13 @@ div.ss_calendarNaviBar {
  </c:if>	
 	border-top:none;
 	padding: 4px 1px;
+	border-radius: 3px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 
 .popupMenu {
+	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	background-color: #3A3E40;
@@ -3752,6 +3788,7 @@ div.ss_calendarNaviBar {
 
 .popupMenuItem:hover {
 	background: none repeat scroll 0 0 #505354;
+	border-radius: 3px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 	}
@@ -3907,6 +3944,7 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 	margin-top: 20px;
 	background-color: #f6f6f6;
 	padding: 10px;
+	border-radius: 3px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 	}
@@ -3983,6 +4021,7 @@ div.ss_searchContainer ul.ss_nobullet {
 
 div.ss_searchContainer div.ssPageNavi {
 	border-bottom: 1px solid #d2d5d1;
+	border-radius: 0px;
 	-moz-border-radius: 0px;
 	-webkit-border-radius: 0px;
 	}
@@ -4015,6 +4054,7 @@ div.ss_searchContainer #ss_content {
 	background: #ebf5f5;
 	padding: 10px 5px 2px 0px;
 	margin:0px;
+	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
@@ -4138,6 +4178,8 @@ a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 	border-bottom: 0px !important;
 	border-top: 1px solid #d2d5d1;
 	margin-bottom: 3px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
 	-moz-border-radius-bottomleft: 5px;
 	-moz-border-radius-bottomright: 5px;
 	-webkit-border-bottom-left-radius: 5px;
@@ -4259,6 +4301,7 @@ a.ss_button, a.ss_button:visited {
   	cursor: pointer;
   	white-space: nowrap;
 	border: 0px;
+	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
     text-align: center !important;
@@ -4346,6 +4389,7 @@ div.ss_questionContainer {
 	position: relative;
 	padding: 10px;
 	margin: 10px 0px;
+	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;	
 }
@@ -4354,6 +4398,7 @@ div.ss_subsection {
 	padding: 10px;
 	margin: 10px 0px;
 	background-color:#f6f6f6;
+	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;	
 }
@@ -4361,6 +4406,7 @@ div.ss_subsection2 {
 	padding: 10px;
 	margin: 10px 0px;
 	background-color:#ededed;
+	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;	
 }
@@ -4400,6 +4446,7 @@ div.ss_questionContainer a.ss_tinyButton {
 	text-decoration:none;	
   	white-space: nowrap;
   	cursor: pointer !important;
+	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
 	}
@@ -4421,6 +4468,7 @@ div.ss_questionContainer a.ss_tinyButton:hover {
 		color-stop(0.53, #D5EDF1),
 		color-stop(1, #C8E4E9));
   	white-space: nowrap;
+	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
@@ -4872,6 +4920,7 @@ div.ssPageNavi {
 	padding-top: 3px;
 	padding-bottom: 4px;
 	background-color: #ebf5f5; /* teal 5*/
+	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	}
@@ -5056,6 +5105,7 @@ ul.placesForm, ul.placesForm li {
 	padding: 6px 10px;
 	margin: 1px 4px 4px 4px;
 	border: 1px solid #949494;
+	border-radius: 3px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 	}
@@ -5106,6 +5156,7 @@ span.ss_infoDivValue {
 	font-size: ${ss_style_font_normalprint};
 	font-family: ${ss_style_font_family};
 	color: ${ss_form_element_text_color};
+	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
@@ -5139,6 +5190,7 @@ span.ss_infoDivValue {
 .ss_table_rounded {
 	margin: 12px;
 	background-color: #ededed;
+	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	border: 1px solid #c4c4c4;
