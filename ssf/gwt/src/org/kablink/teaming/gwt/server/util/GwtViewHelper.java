@@ -116,6 +116,7 @@ import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.CollectionType;
+import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -2342,10 +2343,10 @@ public class GwtViewHelper {
 				String[] columns;
 				switch (folderInfo.getCollectionType()) {
 				default:
-				case FILE_SPACES:     baseNameKey += "filespaces.";   columns = new String[]{"title", "rights", "descriptionHtml"};                                                           break;
-				case MY_FILES:        baseNameKey += "myfiles.";      columns = new String[]{"title", "family", "date"};                                                                      break;
-				case SHARED_BY_ME:    baseNameKey += "sharedByMe.";   columns = new String[]{"title", "share_sharedWith", "share_date", "share_expiration", "share_access", "share_message"}; break;
-				case SHARED_WITH_ME:  baseNameKey += "sharedWithMe."; columns = new String[]{"title", "share_sharedBy",   "share_date", "share_expiration", "share_access", "share_message"}; break;
+				case FILE_SPACES:     baseNameKey += "filespaces.";   columns = new String[]{"title", "rights", "descriptionHtml"};                                                                       break;
+				case MY_FILES:        baseNameKey += "myfiles.";      columns = new String[]{"title", "family", "date"};                                                                                  break;
+				case SHARED_BY_ME:    baseNameKey += "sharedByMe.";   columns = new String[]{"title", "share_sharedWith", "share_date", "share_expiration", "share_access", "share_message", "comments"}; break;
+				case SHARED_WITH_ME:  baseNameKey += "sharedWithMe."; columns = new String[]{"title", "share_sharedBy",   "share_date", "share_expiration", "share_access", "share_message", "comments"}; break;
 				}
 				columnNames = getColumnsLHMFromAS(columns);
 			}
@@ -3142,11 +3143,33 @@ public class GwtViewHelper {
 									fr.setColumnValue(fc, (null == (value) ? "" : value));
 								}
 								
+								// No, we aren't working on a family
+								// specification field either!  Are we
+								// working on a comments count field?
+								else if (csk.equals(Constants.TOTALREPLYCOUNT_FIELD)) {
+									// Yes!  Store a CommentsInfo for
+									// it.
+									String commentCount = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.TOTALREPLYCOUNT_FIELD);
+									if (!(MiscUtil.hasString(commentCount))) {
+										commentCount = "0";
+									}
+									String entityTitle = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.TITLE_FIELD);
+									if (!(MiscUtil.hasString(entityTitle))) {
+										entityTitle = ("--" + NLT.get("entry.noTitle") + "--");
+									}
+									fr.setColumnValue(
+										fc,
+										new CommentsInfo(
+											entityId,
+											entityTitle,
+											Integer.parseInt(commentCount)));
+								}
+								
 								else {
 									// No, we aren't working on a
-									// family specification field
-									// either!  Are we working on a
-									// field whose value is a Date?
+									// comments count field either!
+									// Are we working on a field whose
+									// value is a Date?
 									if (emValue instanceof Date) {
 										// Yes!  Is that Date overdue?
 										if (DateComparer.isOverdue((Date) emValue)) {

@@ -107,6 +107,20 @@ public class GwtClientHelper {
 		VERTICAL,
 	}
 
+	/**
+	 * Inner class used to convert an Element to a UIObject.
+	 */
+	public static class ElementWrapper extends UIObject {
+		/**
+		 * Constructor method.
+		 * 
+		 * @param e
+		 */
+		public ElementWrapper(Element e) {
+			setElement(e);	// setElement() is protected, so we have to subclass and call here
+		}
+	}
+	
 	/*
 	 * Constructor method. 
 	 */
@@ -487,6 +501,17 @@ public class GwtClientHelper {
 	 */
 	public static long getTimeZoneOffsetMillis() {
 		return (((long) getTimeZoneOffset()) * 60L * 1000L);
+	}
+
+	/**
+	 * Converts an Element to a UIObject.
+	 * 
+	 * @param e
+	 * 
+	 * @return
+	 */
+	public static UIObject getUIObjectFromElement(Element e) {
+		return new ElementWrapper(e);
 	}
 	
     /**

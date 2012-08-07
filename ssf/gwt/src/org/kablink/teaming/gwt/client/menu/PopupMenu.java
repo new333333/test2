@@ -61,19 +61,6 @@ public class PopupMenu extends TeamingPopupPanel
 {
 	private VibeMenuBar m_menu;
 	private boolean m_canHaveCheckedMenuItems;	// Can this pop-up menu have menu items that are checked?
-	
-	/*
-	 * Inner class used so we can use PopupPanel.showRelativeTo() on an
-	 * Element.
-	 */
-	private class ElementWrapper extends UIObject
-	{
-		public ElementWrapper( Element e )
-		{
-			setElement( e );	// setElement() is protected, so we have to subclass and call here
-		}
-	}
-	
 
 	/**
 	 * 
@@ -303,6 +290,6 @@ public class PopupMenu extends TeamingPopupPanel
 	public void showRelativeToTarget( final Element target )
 	{
 		// Always use the initial form of the method.
-		showRelativeToTarget( new ElementWrapper( target ) );
+		showRelativeToTarget( GwtClientHelper.getUIObjectFromElement( target ) );
 	}
 }

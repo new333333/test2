@@ -150,6 +150,8 @@
 		.vibe-dataTableAssignment-label           {display: inline; font-weight: bold; padding-left: 2px !important;}
 		.vibe-dataTableAssignment-list            {}
 		.vibe-dataTableAssignment-panel           {white-space: nowrap;}
+		.vibe-dataTableComments-panel             {background: url(images/comments_25.png) no-repeat scroll center center transparent; color: #135c8f; cursor: pointer; font-size: 12px; font-weight: bold; padding-top: 2px; padding-bottom: 5px; padding-left: 8px; padding-right: 8px; text-align: center; display: inline;}
+		.vibe-dataTableComments-panel0            {opacity: 0.4;}
 		.vibe-dataTableCustom-anchor              {}
 		.vibe-dataTableCustom-anchor-label        {}
 		.vibe-dataTableCustom-event               {}
@@ -336,6 +338,12 @@
 	.vibe-addFilesDlg_Label            {}
 	.vibe-addFilesDlg_Panel            {width: 500px; height: 280px;}
 /* End:  Add files dialog styles. */
+
+/* Start:  Manage comments dialog styles. */
+	.vibe-manageCommentsDlg .popupContent {background-color: white !important;}
+	.vibe-manageCommentsDlg-label         {}
+	.vibe-manageCommentsDlg-panel         {}
+/* End:  Manage comments dialog styles. */
 
 /* Start:  Size columns dialog styles. */
 	.vibe-sizeColumnsDlg-colCaptionImg {}

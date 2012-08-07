@@ -40,6 +40,7 @@ import java.util.Map;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderIcons;
+import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntryEventInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -72,6 +73,7 @@ public class FolderRow implements IsSerializable {
 	private EntityId								m_entityId;					// The entity ID of the FolderEntry this FolderRow corresponds to.
 	private List<FolderColumn>						m_columns;					// The FolderColumns that contribute to this FolderRow.
 	private Map<String, Boolean>					m_rowOverdueDates;			// A map of column names to Boolean indicators of an overdue date possibly stored for a column.
+	private Map<String, CommentsInfo>				m_rowComments;				// A map of column names to CommentsInfo's                        possibly stored for a column.
 	private Map<String, DescriptionHtml>			m_rowDescriptionHtmls;		// A map of column names to DescriptionHtml's                     possibly stored for a column.
 	private Map<String, EmailAddressInfo>			m_rowEmailAddresses;		// A map of column names to EmailAddressInfo's                    possibly stored for a column.
 	private Map<String, EntryEventInfo>				m_rowEntryEvents;			// A map of column names to EntryEventInfo's                      possibly stored for a column.
@@ -126,6 +128,7 @@ public class FolderRow implements IsSerializable {
 	public EntityId                                getEntityId()                          {                               return m_entityId;           }
 	public List<FolderColumn>                      getColumns()                           {                               return m_columns;            }
 	public Map<String, Boolean>                    getRowOverdueDates()                   {validateMapOverdueDates();     return m_rowOverdueDates;    }
+	public Map<String, CommentsInfo>               getRowCommentsMap()                    {validateMapComments();         return m_rowComments;        } 
 	public Map<String, DescriptionHtml>            getRowDescriptionHtmlMap()             {validateMapDescriptionHtmls(); return m_rowDescriptionHtmls;}
 	public Map<String, EmailAddressInfo>           getRowEmailAddressMap()                {validateMapEmailAddresses();   return m_rowEmailAddresses;  }
 	public Map<String, EntryEventInfo>             getRowEntryEventMap()                  {validateMapEvents();           return m_rowEntryEvents;     }
@@ -167,6 +170,7 @@ public class FolderRow implements IsSerializable {
 	public void setColumnValue(FolderColumn fc, Object v) {
 		String vk = getValueKey(fc);
 		if      (v instanceof String)              {validateMapStrings();          m_rowStrings.put(         vk, ((String)              v));}
+		else if (v instanceof CommentsInfo)        {validateMapComments();         m_rowComments.put(        vk, ((CommentsInfo)        v));}
 		else if (v instanceof DescriptionHtml)     {validateMapDescriptionHtmls(); m_rowDescriptionHtmls.put(vk, ((DescriptionHtml)     v));}
 		else if (v instanceof EmailAddressInfo)    {validateMapEmailAddresses();   m_rowEmailAddresses.put(  vk, ((EmailAddressInfo)    v));}
 		else if (v instanceof EntryEventInfo)      {validateMapEvents();           m_rowEntryEvents.put(     vk, ((EntryEventInfo)      v));}
@@ -229,6 +233,17 @@ public class FolderRow implements IsSerializable {
 	 */
 	public List<AssignmentInfo> getColumnValueAsAssignmentInfos(FolderColumn fc) {
 		return ((null == m_rowAssigneeInfos) ? null : m_rowAssigneeInfos.get(getValueKey(fc)));
+	}
+
+	/**
+	 * Returns the CommentsInfo value for a specific column.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public CommentsInfo getColumnValueAsComments(FolderColumn fc) {
+		return ((null == m_rowComments) ? null : m_rowComments.get(getValueKey(fc)));
 	}
 
 	/**
@@ -584,6 +599,7 @@ public class FolderRow implements IsSerializable {
 	 */
 	private void validateMapAssignees()        {if (null == m_rowAssigneeInfos)			m_rowAssigneeInfos			= new HashMap<String, List<AssignmentInfo>>();      }
 	private void validateMapOverdueDates()     {if (null == m_rowOverdueDates)  		m_rowOverdueDates			= new HashMap<String, Boolean>();                   }
+	private void validateMapComments()         {if (null == m_rowComments)				m_rowComments				= new HashMap<String, CommentsInfo>();              }
 	private void validateMapDescriptionHtmls() {if (null == m_rowDescriptionHtmls)		m_rowDescriptionHtmls		= new HashMap<String, DescriptionHtml>();           }
 	private void validateMapEmailAddresses()   {if (null == m_rowEmailAddresses)		m_rowEmailAddresses			= new HashMap<String, EmailAddressInfo>();          }
 	private void validateMapEvents()           {if (null == m_rowEntryEvents)			m_rowEntryEvents			= new HashMap<String, EntryEventInfo>();            }

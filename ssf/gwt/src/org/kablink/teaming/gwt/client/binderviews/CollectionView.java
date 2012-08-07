@@ -80,7 +80,8 @@ public class CollectionView extends DataTableFolderViewBase {
 		columnWidths.put(FolderColumn.COLUMN_SHARE_DATE,        new ColumnWidth( 7));	// = 40
 		columnWidths.put(FolderColumn.COLUMN_SHARE_EXPIRATION,  new ColumnWidth( 7));	// = 47
 		columnWidths.put(FolderColumn.COLUMN_SHARE_ACCESS,      new ColumnWidth( 7));	// = 54
-		columnWidths.put(FolderColumn.COLUMN_SHARE_MESSAGE,     new ColumnWidth(46));	// = 100%
+		columnWidths.put(FolderColumn.COLUMN_SHARE_MESSAGE,     new ColumnWidth(39));	// = 93
+		columnWidths.put(FolderColumn.COLUMN_COMMENTS,          new ColumnWidth( 7));	// = 100%
 	}
 
 	/**

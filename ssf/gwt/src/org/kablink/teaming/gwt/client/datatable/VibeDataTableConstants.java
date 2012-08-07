@@ -49,6 +49,7 @@ public class VibeDataTableConstants {
 	// The following are used to name widgets stored in various cells.
 	public final static String CELL_WIDGET_ATTRIBUTE					= "n-cellWidget";
 	public final static String CELL_WIDGET_ENTRY_ACTION_MENU_IMAGE		= "entryActionMenuImg";
+	public final static String CELL_WIDGET_ENTRY_COMMENTS_PANEL			= "entryCommentsPanel";
 	public final static String CELL_WIDGET_EMAIL_ADDRESS_LABEL			= "emailAddressLabel";
 	public final static String CELL_WIDGET_EMAIL_ADDRESS_LABEL_NOLINK	= "emailAddressLabelNoLink";
 	public final static String CELL_WIDGET_ENTITY_ID					= "n-entityId";

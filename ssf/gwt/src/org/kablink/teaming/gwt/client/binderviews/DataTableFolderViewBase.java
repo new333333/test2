@@ -54,6 +54,7 @@ import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
 import org.kablink.teaming.gwt.client.datatable.ApplyColumnWidths;
 import org.kablink.teaming.gwt.client.datatable.AssignmentColumn;
+import org.kablink.teaming.gwt.client.datatable.CommentsColumn;
 import org.kablink.teaming.gwt.client.datatable.CustomColumn;
 import org.kablink.teaming.gwt.client.datatable.DescriptionHtmlColumn;
 import org.kablink.teaming.gwt.client.datatable.DownloadColumn;
@@ -117,6 +118,7 @@ import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CollectionType;
+import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntryPinInfo;
@@ -1390,9 +1392,21 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				};
 			}
 			
+			// No, this column isn't a shared value either!  Is it a
+			// comments count?
+			else if (FolderColumn.isColumnComments(cName)) {
+				// Yes!  Create a CommentsColumn for it.
+				column = new CommentsColumn<FolderRow>(fc) {
+					@Override
+					public CommentsInfo getValue(FolderRow fr) {
+						return fr.getColumnValueAsComments(fc);
+					}
+				};
+			}
+			
 			else {
-				// No, this column isn't a shared value either!  Define
-				// a StringColumn for it.
+				// No, this column isn't a comments count either!
+				// Define a StringColumn for it.
 				column = new StringColumn<FolderRow>(fc) {
 					@Override
 					public String getValue(FolderRow fr) {
