@@ -383,7 +383,7 @@ public class LoginDlg extends DlgBox
 			
 			okElement = Document.get().getElementById( "loginOkBtn" );
 			okBtn = Button.wrap( okElement );
-			okBtn.setText( GwtTeaming.getMessages().ok() );
+			okBtn.setText( GwtTeaming.getMessages().login() );
 			
 			cancelElement = Document.get().getElementById( "loginCancelBtn" );
 			m_cancelBtn = Button.wrap( cancelElement );
