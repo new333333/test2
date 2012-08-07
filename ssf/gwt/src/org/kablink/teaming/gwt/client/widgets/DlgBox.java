@@ -67,6 +67,8 @@ public abstract class DlgBox extends PopupPanel
 	private Button		m_okBtn;
 	private Button		m_cancelBtn;
 	private HelpData	m_helpData;
+	private FlowPanel m_closePanel;
+	private Image m_closeImg;
 	protected FocusWidget m_focusWidget;	// Widget that should receive the focus when this dialog is shown.
 	protected boolean m_modal;
 	protected boolean m_visible = false;
@@ -193,6 +195,22 @@ public abstract class DlgBox extends PopupPanel
 		Panel		footer;
 		
 		panel = new FlowPanel();
+		
+		// Create a close image that is positioned in the top-right-hand corner
+		if ( m_dlgBtnMode == DlgButtonMode.Cancel || m_dlgBtnMode == DlgButtonMode.Close ||
+			 m_dlgBtnMode == DlgButtonMode.OkCancel )
+		{
+			ImageResource imageResource;
+			
+			m_closePanel = new FlowPanel();
+			m_closePanel.addStyleName( "dlgBox_closePanel" );
+			
+			imageResource = GwtTeaming.getImageBundle().closeBorder();
+			m_closeImg = new Image( imageResource );
+			m_closeImg.addClickHandler( this );
+			m_closePanel.add( m_closeImg );
+			panel.add( m_closePanel );
+		}
 		
 		// Add the header.
 		header = createHeader( caption );
@@ -446,6 +464,15 @@ public abstract class DlgBox extends PopupPanel
 	}// end hide()
 	
 	/**
+	 * Hide the close image.
+	 */
+	public void hideCloseImg()
+	{
+		if ( m_closePanel != null )
+			m_closePanel.setVisible( false );
+	}
+	
+	/**
 	 * Hide the panel that holds all the content.
 	 */
 	public void hideContentPanel()
@@ -535,7 +562,7 @@ public abstract class DlgBox extends PopupPanel
 		}
 		
 		// Did the user click on cancel?
-		if ( source == m_cancelBtn )
+		if ( source == m_cancelBtn || source == m_closeImg )
 		{
 			// Yes
 			// Do we have a handler we need to call?

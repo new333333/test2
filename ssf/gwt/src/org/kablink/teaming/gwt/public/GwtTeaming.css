@@ -982,6 +982,21 @@ body, table td, select
 .cursorMove     {cursor: move;}
 
 /* Styles used with instructions in a dialog box. */
+.dlgBox_closePanel
+{
+	color: #FFFFFF;
+	font-size: 0.8em;
+	position: absolute;
+	right: -8px;
+	top: -8px;
+	z-index: 1001;
+}
+
+.dlgBox_closePanel:hover
+{
+	cursor: pointer;
+}
+
 .dlgInstructions
 {
 	font-family: Arial,sans-serif;
@@ -2577,7 +2592,7 @@ body, table td, select
 
 .teamingDlgBox_NoClip, .teamingPopupPanel_NoClip
 {
-	clip: rect( 0px, 10000px, 10000px, 0px) !important; 
+	clip: rect( -10000px, 10000px, 10000px, 0px) !important; 
 }
 
 .teamingDlgBox_Glass
