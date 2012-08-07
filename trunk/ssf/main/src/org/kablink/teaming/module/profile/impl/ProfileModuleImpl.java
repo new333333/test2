@@ -89,6 +89,7 @@ import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
+import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -1548,6 +1549,31 @@ public void deleteEntry(Long principalId, Map options, boolean phase1Only) {
  	  
  	  return (User)principal;
     }
+    
+    
+    /**
+     * Get user by id even deleted or disabled users.
+     * @param name
+     * @return
+     */
+    //RO transaction
+    @Override
+	public User getUserDeadOrAlive( Long userId )
+    {
+ 	  Principal principal;
+
+ 	  principal = getProfileDao().loadUserPrincipal(
+ 			  									userId,
+ 			  									RequestContextHolder.getRequestContext().getZoneId(),
+ 			  									false );
+
+ 	  if ( !(principal instanceof User) )
+ 		  throw new NoUserByTheIdException( userId );
+ 	  
+ 	  return (User) principal;
+    }
+    
+    
 
     //RO transaction
    @Override

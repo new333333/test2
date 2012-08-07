@@ -361,6 +361,13 @@ public interface ProfileModule {
     public User getUserDeadOrAlive( String name );
     
     /**
+     * Get user by id even deleted or disabled users.
+     * @param name
+     * @return
+     */
+    public User getUserDeadOrAlive( Long userId );
+    
+    /**
 	 * Return search results for users
      * @return
      */
