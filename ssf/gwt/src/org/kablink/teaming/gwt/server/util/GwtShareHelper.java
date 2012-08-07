@@ -286,13 +286,19 @@ public class GwtShareHelper
 						
 						user = getUser( ami, nextShareItem );
 						
-						name = user.getTitle();
-						gwtShareItem.setRecipientName( name );
-						
-						if ( user.getIdentitySource() == User.IDENTITY_SOURCE_EXTERNAL )
-							gwtShareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
+						if ( user != null )
+						{
+							name = user.getTitle();
+							gwtShareItem.setRecipientName( name );
+							
+							if ( user.getIdentitySource() == User.IDENTITY_SOURCE_EXTERNAL )
+								gwtShareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
+							else
+								gwtShareItem.setRecipientType( GwtRecipientType.USER );
+						}
 						else
-							gwtShareItem.setRecipientType( GwtRecipientType.USER );
+							m_logger.error( "could not find the user: " + nextShareItem.getRecipientId().toString() );
+						
 						break;
 					}
 					
@@ -719,21 +725,10 @@ public class GwtShareHelper
 			// Set the recipient's name
 			try 
 			{
-				ArrayList<Long> userAL;
-				Set<User> userSet;
-				User[] users;
+				User user;
 				
-				userAL = new ArrayList<Long>();
-				userAL.add( shareItem.getRecipientId() );
-				userSet = ami.getProfileModule().getUsers( userAL );
-				users = userSet.toArray( new User[0] );
-				if ( users.length == 1 )
-				{
-					User user;
-					
-					user = users[0];
-					return user;
-				}
+				user = ami.getProfileModule().getUserDeadOrAlive( shareItem.getRecipientId() );
+				return user;
 			}
 			catch ( Exception e )
 			{
