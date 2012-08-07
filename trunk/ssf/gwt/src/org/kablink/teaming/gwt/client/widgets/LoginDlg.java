@@ -285,6 +285,9 @@ public class LoginDlg extends DlgBox
 	public Panel createContent( Object props )
 	{
 		Element formElement;
+
+		// Hide the close image in the upper-right-hand corner
+		hideCloseImg();
 		
 		m_mainPanel = new FlowPanel();
 		
