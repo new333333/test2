@@ -68,6 +68,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
@@ -657,7 +658,19 @@ public class GwtMenuHelper {
 		markTBIEvent(detailsTBI, TeamingEvents.VIEW_SELECTED_ENTRY);
 		entryToolbar.addNestedItem(detailsTBI);
 	}
+
+	/*
+	 * Constructs a ToolbarItem for making (or removing) a folder as a favorite.
+	 */
+	private static void constructEntryFavoriteItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, boolean isFavorite) {
+		ToolbarItem favoriteTBI = new ToolbarItem("1_favoriteSelected");
+		markTBITitle(       favoriteTBI, (isFavorite ? "toolbar.favorite.remove" : "toolbar.favorite.add"));
+		markTBIEvent(       favoriteTBI, TeamingEvents.CHANGE_FAVORITE_STATE                              );
+		markTBIMakeFavorite(favoriteTBI, (!isFavorite)                                                    );
+		entryToolbar.addNestedItem(favoriteTBI);
+	}
 	
+
 	/*
 	 * Constructs a ToolbarItem for miscellaneous operations against
 	 * the selected entries.
@@ -2158,13 +2171,24 @@ public class GwtMenuHelper {
 			}
 			
 			else if (eidType.equals(EntityType.folder.name())) {
-				Folder folder = bs.getFolderModule().getFolder(entityId.getEntityId());
+				Long	folderId = entityId.getEntityId();
+				Folder	folder   = bs.getFolderModule().getFolder(folderId);
 				
 				boolean addShare = GwtShareHelper.isEntitySharable(bs, folder);
 				if (addShare) {
 					actionToolbar.addNestedItem(constructShareBinderItem(request, folder));
 				}
-				constructEntrySubscribeItem(actionToolbar, bs, request, addShare);
+				boolean isFavorite = false;
+				List<FavoriteInfo> favorites = GwtServerHelper.getFavorites(bs);
+				for (FavoriteInfo favorite:  favorites) {
+					Long favoriteId = Long.parseLong(favorite.getValue());
+					if (favoriteId.equals(folderId)) {
+						isFavorite = true;
+						break;
+					}
+				}
+				constructEntryFavoriteItem( actionToolbar, bs, request, isFavorite);
+				constructEntrySubscribeItem(actionToolbar, bs, request, addShare  );
 			}
 			
 			else {
@@ -2739,6 +2763,13 @@ public class GwtMenuHelper {
 		tbi.addQualifier("title", NLT.get(key));
 	}
 	
+	/*
+	 * Marks a ToolbarItem as being the default of some sort.
+	 */
+	private static void markTBIMakeFavorite(ToolbarItem tbi, boolean makeFavorite) {
+		tbi.addQualifier("makeFavorite", String.valueOf(makeFavorite));
+	}
+
 	/*
 	 * Marks a ToolbarItem as bringing up a popup window.
 	 */

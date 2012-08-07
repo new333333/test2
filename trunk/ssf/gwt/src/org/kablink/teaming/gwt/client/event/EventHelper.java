@@ -478,6 +478,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case CHANGE_FAVORITE_STATE:
+				// A ChangeFavoriteStateEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof ChangeFavoriteStateEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ChangeFavoriteStateEvent.registerEvent(eventBus, ((ChangeFavoriteStateEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case CONTEXT_CHANGED:
 				// A ContextChangedEvent!  Can the event handler we
 				// were given handle that?
@@ -2078,6 +2087,7 @@ public class EventHelper {
 			case VIEW_WHATS_UNSEEN_IN_BINDER:			hasHandler = (eventHandler instanceof ViewWhatsUnseenInBinderEvent.Handler);       break;
 			
 			case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:    hasHandler = (eventHandler instanceof ChangeEntryTypeSelectedEntriesEvent.Handler);break;
+			case CHANGE_FAVORITE_STATE:                 hasHandler = (eventHandler instanceof ChangeFavoriteStateEvent.Handler);           break;
 			case COPY_SELECTED_ENTRIES:                 hasHandler = (eventHandler instanceof CopySelectedEntriesEvent.Handler);           break;
 			case DELETE_SELECTED_ENTRIES:               hasHandler = (eventHandler instanceof DeleteSelectedEntriesEvent.Handler);         break;
 			case DELETE_SELECTED_USER_WORKSPACES:       hasHandler = (eventHandler instanceof DeleteSelectedUserWorkspacesEvent.Handler);  break;

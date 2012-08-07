@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ChangeFavoriteStateEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -351,6 +352,12 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 						case SHARE_SELECTED_ENTRIES:              event = new ShareSelectedEntriesEvent(          m_binderId, eid); break;
 						case SUBSCRIBE_SELECTED_ENTRIES:          event = new SubscribeSelectedEntriesEvent(      m_binderId, eid); break;
 						case VIEW_SELECTED_ENTRY:                 event = new ViewSelectedEntryEvent(             m_binderId, eid); break;
+						
+						case CHANGE_FAVORITE_STATE:
+							event = new ChangeFavoriteStateEvent(
+								eid.getEntityId(),
+								Boolean.parseBoolean(simpleTBI.getQualifierValue("makeFavorite")));
+							break;
 						
 						case UNDEFINED:
 							GwtClientHelper.deferredAlert(m_messages.eventHandling_NoActionMenuHandler(simpleEvent.name()));

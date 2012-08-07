@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.event.ChangeFavoriteStateEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.EditCurrentBinderBrandingEvent;
@@ -88,6 +89,7 @@ import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg.GwtQuickViewDlgClient;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CanModifyBinderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ChangeFavoriteStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
@@ -170,6 +172,7 @@ public class GwtMainPage extends ResizeComposite
 		AdministrationExitEvent.Handler,
 		AdministrationUpgradeCheckEvent.Handler,
 		BrowseHierarchyEvent.Handler,
+		ChangeFavoriteStateEvent.Handler,
 		ContextChangedEvent.Handler,
 		ContextChangingEvent.Handler,
 		EditCurrentBinderBrandingEvent.Handler,
@@ -253,6 +256,7 @@ public class GwtMainPage extends ResizeComposite
 		
 		// Miscellaneous events.
 		TeamingEvents.BROWSE_HIERARCHY,
+		TeamingEvents.CHANGE_FAVORITE_STATE,
 		TeamingEvents.FULL_UI_RELOAD,
 		TeamingEvents.INVOKE_SHARE_BINDER,
 
@@ -1929,6 +1933,37 @@ public class GwtMainPage extends ResizeComposite
 			}// end onSuccess()
 		} );
 	}// end onBrowseHierarchy()
+	
+	/**
+	 * Handles ChangeFavoriteStateEvent's received by this class.
+	 * 
+	 * Implements the ChangeFavoriteStateEvent.Handler.onChangeFavoriteState() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onChangeFavoriteState( final ChangeFavoriteStateEvent event )
+	{
+		ChangeFavoriteStateCmd cmd = new ChangeFavoriteStateCmd( event.getBinderId(), event.getMakeFavorite() );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_ChangeFavoriteState() );
+			}//end onFailure()
+			
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				// Force the UI to reload so that the menus, ...
+				// get updated to reflect the change.
+				GwtTeaming.fireEventAsync( new FullUIReloadEvent() );
+			}// end onSuccess()
+		});
+	}// end onChangeFavoriteState()
 	
 	/**
 	 * Handles ContextChangedEvent's received by this class.
