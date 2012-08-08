@@ -36,6 +36,7 @@ td.noitem, .noitem { font-size: 0.9em; font-style: italic; margin: 1em; padding:
 	input[type="text"] {
 	font-size: 13px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 	}
 	

@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -171,6 +171,7 @@ img { -ms-interpolation-mode: bicubic; }
     background-position:  left center;
 	border-radius: 2px;
 	-moz-border-radius: 2px;
+	border-radius: 2px;
 	-webkit-border-radius: 2px;
 	}
 .ss_title_link {
@@ -495,6 +496,8 @@ div.ss_entryContent a:hover {
 	border-bottom-right-radius: 5px;
 	-moz-border-radius-bottomleft: 5px;
 	-moz-border-radius-bottomright: 5px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
 	-webkit-border-bottom-left-radius: 5px;
 	-webkit-border-bottom-right-radius: 5px;
 	}
@@ -606,6 +609,7 @@ div.ss_workflow {
 	margin: 4px 0 4px 0;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 	}
 .ss_replies .ss_entryDescription {
@@ -646,6 +650,7 @@ table.ss_guestbook {
 	padding: 5px 0px 0px 5px;
 	border-radius: 3px;
 	-moz-border-radius: 3px;
+	border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 .ss_tinyControl {
@@ -682,6 +687,7 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
 	border: 0px;
 	border-radius: 15px;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
     text-align: center !important;
 	<c:if test="<%= isIE %>">
@@ -712,6 +718,7 @@ button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type=
 		color-stop(1, #C8E4E9));
 	border-radius: 15px;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
   	<c:if test="<%= isIE %>">
   		padding: 0px;
@@ -736,6 +743,7 @@ input[type="button"].n-button {
 	height: 20px;
 	border-radius: 15px;
 	-moz-border-radius:15px;
+	border-radius:15px;
 	-webkit-border-radius:15px;
 	<c:if test="<%= isIE %>">
   		margin-left: 1px; 
@@ -760,6 +768,7 @@ input[type="button"].n-button:hover {
 		color-stop(1, #C8E4E9));
 	border-radius: 15px;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
 	}
 
@@ -794,6 +803,7 @@ a.ss_tinyButton:visited {
   	cursor: pointer !important;
 	border-radius: 15px;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
 	}
 a.ss_tinyButton:focus,
@@ -817,6 +827,7 @@ a.ss_tinyButton:hover {
   	white-space: nowrap;
 	border-radius: 15px;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
 
@@ -921,6 +932,7 @@ div.ss_send_friend {
   width: 300px;
   border-radius: 5px;
   -moz-border-radius: 5px;
+  border-radius: 5px;
   -webkit-border-radius: 5px;
 }
 
@@ -1465,6 +1477,7 @@ li.ss_toolbar_gwtui {
 	display: inline-block;
 	border-radius: 10px;
 	-moz-border-radius: 10px;
+	border-radisu: 10px;
 	-webkit-border-radisu: 10px;
 	}
 span.ss_toolbar_inactive {
@@ -1683,6 +1696,7 @@ div.ss_dashboardProtoDropTarget {
   padding: 5px;
   border-radius: 3px;
   -moz-border-radius: 3px;
+  border-radius: 3px;
   -webkit-border-radius: 3px;
 <c:if test="<%= isIE %>">
   zoom:1; /* a workaround IE bug - font color not display correctly */
@@ -1863,6 +1877,7 @@ a:hover.ss_box_prev {
 .ss_newpage_box {
 	border-radius: 3px;
 	-moz-border-radius: 3px;
+	border-radius: 3px;
 	-webkit-border-radius: 3px;
 	}
 .ss_newpage_box_header {
@@ -1877,6 +1892,8 @@ a:hover.ss_box_prev {
 	border-top-right-radius: 5px;
 	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 }
@@ -1902,6 +1919,7 @@ a:hover.ss_box_prev {
 .ss_popup_box {
 	border-radius: 3px;
 	-moz-border-radius: 3px;
+	border-radius: 3px;
 	-webkit-border-radius: 3px;
 	margin:0px;
 	padding:0px;
@@ -1917,6 +1935,8 @@ a:hover.ss_box_prev {
 	border-top-right-radius: 5px;
  	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 }
@@ -2119,6 +2139,8 @@ div.ss_content_outer {		/* also see ss_pseudoPortal */
 	border-bottom-right-radius: 3px;
 	-moz-border-radius-bottomleft: 3px;
 	-moz-border-radius-bottomright: 3px;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
 	-webkit-border-bottom-left-radius: 3px;
 	-webkit-border-bottom-right-radius: 3px;
 }
@@ -2345,6 +2367,8 @@ div.ss_sidebar_panel_featured {
 	border-top-right-radius: 3px;
 	-moz-border-radius-topleft: 3px;
 	-moz-border-radius-topright: 3px;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
 	-webkit-border-top-left-radius: 3px;
 	-webkit-border-top-right-radius: 3px;
 	}
@@ -2695,6 +2719,8 @@ div.ss_thumbnail_gallery div {
 	border-bottom-right-radius: 5px;
 	-moz-border-radius-bottomleft: 5px;
 	-moz-border-radius-bottomright: 5px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
 	-webkit-border-bottom-left-radius: 5px;
 	-webkit-border-bottom-right-radius: 5px;
 	}  
@@ -3375,6 +3401,7 @@ a.ss_calendarButton:hover img {
     background: url(<html:imagesPath/>pics/trans30_black.png) repeat;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -3386,6 +3413,8 @@ a.ss_calendarButton:hover img {
 	border-top-right-radius: 3px;
 	-moz-border-radius-topleft: 3px;
 	-moz-border-radius-topright: 3px;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
 	-webkit-border-top-left-radius: 3px;
 	-webkit-border-top-right-radius: 3px;
 }
@@ -3636,6 +3665,8 @@ div.ss_calendarNaviBar {
 	border-top-right-radius: 5px;
 	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 }
@@ -3673,6 +3704,7 @@ div.ss_calendarNaviBar {
 	text-decoration:none;	
 	border-radius: 15px;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
 
@@ -3693,6 +3725,7 @@ div.ss_calendarNaviBar {
 		color-stop(1, #C8E4E9));
 	border-radius: 15px;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
 
@@ -3758,12 +3791,14 @@ div.ss_calendarNaviBar {
 	padding: 4px 1px;
 	border-radius: 3px;
 	-moz-border-radius: 3px;
+	border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 
 .popupMenu {
 	border-radius: 5px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 	background-color: #3A3E40;
 	position: absolute;
@@ -3790,6 +3825,7 @@ div.ss_calendarNaviBar {
 	background: none repeat scroll 0 0 #505354;
 	border-radius: 3px;
 	-moz-border-radius: 3px;
+	border-radius: 3px;
 	-webkit-border-radius: 3px;
 	}
 .popupMenuItem a {
@@ -3946,6 +3982,7 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 	padding: 10px;
 	border-radius: 3px;
 	-moz-border-radius: 3px;
+	border-radius: 3px;
 	-webkit-border-radius: 3px;
 	}
 .ss_diff_content .head2 {
@@ -4023,6 +4060,7 @@ div.ss_searchContainer div.ssPageNavi {
 	border-bottom: 1px solid #d2d5d1;
 	border-radius: 0px;
 	-moz-border-radius: 0px;
+	border-radius: 0px;
 	-webkit-border-radius: 0px;
 	}
 div.ss_surveyContainer {
@@ -4056,6 +4094,7 @@ div.ss_searchContainer #ss_content {
 	margin:0px;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 #ss_surveyForm {
@@ -4182,6 +4221,8 @@ a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 	border-bottom-right-radius: 5px;
 	-moz-border-radius-bottomleft: 5px;
 	-moz-border-radius-bottomright: 5px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
 	-webkit-border-bottom-left-radius: 5px;
 	-webkit-border-bottom-right-radius: 5px;
 }
@@ -4303,6 +4344,7 @@ a.ss_button, a.ss_button:visited {
 	border: 0px;
 	border-radius: 15px;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
     text-align: center !important;
 	<c:if test="<%= isIE %>">
@@ -4332,6 +4374,7 @@ a.ss_button:hover {
 		color-stop(0.53, #D5EDF1),
 		color-stop(1, #C8E4E9));
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
   	<c:if test="<%= isIE %>">
   		padding: 0px;
@@ -4391,6 +4434,7 @@ div.ss_questionContainer {
 	margin: 10px 0px;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;	
 	-webkit-border-radius: 5px;	
 }
 div.ss_subsection {
@@ -4400,6 +4444,7 @@ div.ss_subsection {
 	background-color:#f6f6f6;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;	
 	-webkit-border-radius: 5px;	
 }
 div.ss_subsection2 {
@@ -4408,6 +4453,7 @@ div.ss_subsection2 {
 	background-color:#ededed;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;	
 	-webkit-border-radius: 5px;	
 }
 div.ss_questionContainer h4 {
@@ -4448,6 +4494,7 @@ div.ss_questionContainer a.ss_tinyButton {
   	cursor: pointer !important;
 	border-radius: 15px;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
 	}
 div.ss_questionContainer a.ss_tinyButton:focus,
@@ -4470,6 +4517,7 @@ div.ss_questionContainer a.ss_tinyButton:hover {
   	white-space: nowrap;
 	border-radius: 15px;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
 
@@ -4922,6 +4970,7 @@ div.ssPageNavi {
 	background-color: #ebf5f5; /* teal 5*/
 	border-radius: 5px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 	}
 div.ssPageNavi table td {
@@ -5107,6 +5156,7 @@ ul.placesForm, ul.placesForm li {
 	border: 1px solid #949494;
 	border-radius: 3px;
 	-moz-border-radius: 3px;
+	border-radius: 3px;
 	-webkit-border-radius: 3px;
 	}
 .ss_combobox_autocomplete_list ul li {
@@ -5158,6 +5208,7 @@ span.ss_infoDivValue {
 	color: ${ss_form_element_text_color};
 	border-radius: 5px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -5192,6 +5243,7 @@ span.ss_infoDivValue {
 	background-color: #ededed;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 	border: 1px solid #c4c4c4;
 	}

@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -82,6 +82,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     background-color: #EBF5F5;
     padding: 10px;
     -moz-border-radius: 5px;
+    border-radius: 5px;
     -webkit-border-radius: 5px;
     }
 .wiki-topic-content {
@@ -97,6 +98,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     font-weight: bold;
     padding: 3px 5px;
     -moz-border-radius: 3px;
+    border-radius: 3px;
     -webkit-border-radius: 3px;
     }
 .wiki-page {
@@ -119,6 +121,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	line-height: 28px;
 	z-index: 100;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -143,6 +146,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color: #d1d1d1;
     -moz-border-radius-topright: 5px;
     -moz-border-radius-topleft: 5px;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
     -webkit-border-top-right-radius: 5px;
     -webkit-border-top-left-radius: 5px;
     }
@@ -160,6 +165,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     color: #fff;
     background: #949494;
     -moz-border-radius: 3px;
+    border-radius: 3px;
     -webkit-border-radius: 3px;
     }   
 .wiki-tab.on {
@@ -172,6 +178,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
     margin: 2px 0px 0px 0px;
     -moz-border-radius-bottomright: 0px;
     -moz-border-radius-bottomleft: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
     -webkit-border-bottom-right-radius: 0px;
     -webkit-border-bottom-left-radius: 0px;
     }
@@ -203,6 +211,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
   	white-space: nowrap;
   	cursor: pointer !important;
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
     }
 .wiki-menu a:hover {
@@ -227,6 +236,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		color-stop(0.53, #D5EDF1),
 		color-stop(1, #C8E4E9));
 	-moz-border-radius: 15px;
+	border-radius: 15px;
 	-webkit-border-radius: 15px;
   	<c:if test="<%= isIE %>">
   		padding: 0px;
@@ -277,6 +287,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     padding: 3px 8px;
     z-index: 1000;
     -moz-border-radius: 3px;
+    border-radius: 3px;
     -webkit-border-radius: 3px;
     }   
 .wiki-entry-actions img {

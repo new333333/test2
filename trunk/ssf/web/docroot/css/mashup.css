@@ -36,6 +36,7 @@ div.ss_mashup_element {
   margin: 5px 5px 8px;
   border: 1px solid #ccc;
   -moz-border-radius: 5px;
+  border-radius: 5px;
   -webkit-border-radius: 5px;
 }
 
@@ -117,6 +118,7 @@ div.ss_mashup_folder_header_view a span:hover {
   color: #135c8f;
   padding: 0 3px;
   -moz-border-radius: 3px;
+  border-radius: 3px;
   -webkit-border-radius: 3px;
 }  
   
