@@ -828,11 +828,9 @@ public class ViewEntryController extends  SAbstractController {
 			if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 				Map qualifiers = new HashMap();
 				qualifiers.put("nosort", true);
-				qualifiers.put("popup", new Boolean(true));
-				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.shareThis");
+				qualifiers.put("onClick", "window.top.ss_invokeShareDlg('"+entryId+"');return false;");
 				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
-				adapterUrl.setParameter(WebKeys.ACTION, "__ajax_relevance");
-				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SHARE_THIS_BINDER);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
 				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
 				toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.shareThis"), adapterUrl.toString(), qualifiers);
