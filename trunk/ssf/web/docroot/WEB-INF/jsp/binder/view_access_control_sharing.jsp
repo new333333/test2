@@ -44,10 +44,11 @@
 <body class="ss_style_body tundra">
 
 <script type="text/javascript" >
+var doitText = "<ssf:escapeQuotes><ssf:nlt tag="binder.configure.access_control.sharing.revokeWarning"/></ssf:escapeQuotes>";
 function setItemToDelete(id) {
 	var formObj = document.getElementById("form1");
 	if (formObj != null) {
-		if (confirm("Do it?")) {
+		if (confirm(doitText)) {
 			formObj['shareItemId'].value = id;
 		} else {
 			formObj['shareItemId'].value = '';
@@ -147,7 +148,7 @@ function setItemToDelete(id) {
               <span class="ss_small">&nbsp;(${recipient.name})</span>
             </c:if>
           </td>
-          <td class="ss_table_paragraph">${shareItem.shareRole.title}</td>
+          <td class="ss_table_paragraph">${shareItem.role.title}</td>
           <td class="ss_table_paragraph">
             <c:if test="${!empty shareItem.endDate}">
               <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
