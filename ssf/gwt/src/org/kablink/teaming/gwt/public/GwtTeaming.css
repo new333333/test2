@@ -1147,9 +1147,16 @@ body, table td, select
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: 1px;
+	left: 0px;
+	margin-left: 2px;
 	position: absolute;
-	margin-left: 5px;
+	right: 0px;
 	z-index: 2000;
+}
+
+.findSearchResultsPanel
+{
+	position: relative;
 }
 
 /* Styles for the "search results" in a "find" control. */
@@ -1978,7 +1985,8 @@ body, table td, select
 	border-bottom-left-radius: 3px;
 	border-bottom-right-radius: 3px;
 	-webkit-border-bottom-left-radius: 3px;
-	-webkit-border-bottom-right-radius: 3px;	
+	-webkit-border-bottom-right-radius: 3px;
+	overflow: visible;	
 }
 .searchOptionsDlg_FindersRadio
 {

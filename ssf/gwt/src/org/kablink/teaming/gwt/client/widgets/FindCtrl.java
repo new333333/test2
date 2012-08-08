@@ -51,6 +51,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -418,6 +419,7 @@ public class FindCtrl extends Composite
 			}
 		}// end onClick()
 		
+		
 		/**
 		 * Set the width of this widget.
 		 */
@@ -440,7 +442,7 @@ public class FindCtrl extends Composite
 			width = m_mainPanel.getOffsetWidth();
 			x = (width - m_searchingPanel.getOffsetWidth()) / 2;
 			x -= 40;
-			DOM.setStyleAttribute( m_searchingPanel.getElement(), "left", Integer.toString( x ) + "px" );
+			m_searchingPanel.getElement().getStyle().setLeft( x, Unit.PX );
 			
 			// Show the "searching..." text
 			m_searchingPanel.setVisible( true );
@@ -571,9 +573,17 @@ public class FindCtrl extends Composite
 		mainPanel.add( m_txtBox );
 		
 		// Create a widget where the search results will live.
-		m_searchResultsWidget = new SearchResultsWidget();
-		hideSearchResults();
-		mainPanel.add( m_searchResultsWidget );
+		{
+			FlowPanel searchResultsPanel;
+			
+			searchResultsPanel = new FlowPanel();
+			searchResultsPanel.addStyleName( "findSearchResultsPanel" );
+			mainPanel.add( searchResultsPanel );
+			
+			m_searchResultsWidget = new SearchResultsWidget();
+			searchResultsPanel.add( m_searchResultsWidget );
+			hideSearchResults();
+		}
 		
 		// Add handlers that will be called when the user clicks on the "previous" or "next" images.
 		m_searchResultsWidget.addClickHandlerOnPrevImg( this );
