@@ -248,6 +248,7 @@
 		
 	.vibe-mainMenuControl .gwt-MenuBar .gwt-MenuItem-selected {
 		color:#135c8f !important;
+		background-color:#C8E4E9 !important;
 		background-image: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%)!important;
 		background-image: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%) !important;
 		background-image: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%) !important;
@@ -268,6 +269,7 @@
 		
 	.vibe-entryMenuBar .gwt-MenuItem-selected {
 		color: #135c8f !important;
+		background-color:#C8E4E9 !important;
 		border: 1px solid #81b2bd;
 		background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 		background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);

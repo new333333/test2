@@ -44,6 +44,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.MenuBar;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
 
 /**
@@ -132,7 +133,26 @@ public class GlobalSearchComposite extends Composite {
 								// Position and show the popup as per
 								// the position of the search panel on
 								// the menu.
-								m_soPopup.showRelativeTo(m_soButton);
+								m_soPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+									@Override
+									public void setPosition(int offsetWidth, int offsetHeight) {
+										int soPopupLeft = ((m_soButton.getAbsoluteLeft() + m_soButton.getOffsetWidth()) - offsetWidth);
+										int soPopupTop  = m_soButton.getElement().getAbsoluteBottom();
+										
+/*
+	GwtClientHelper.deferredAlert(
+		  "w:"   + offsetWidth                                 +
+		"\nh:"   + offsetHeight                                +
+		"\nb:l:" + m_soButton.getAbsoluteLeft()                +
+		"\nb:w:" + m_soButton.getOffsetWidth()                 +
+		"\nb:b:" + m_soButton.getElement().getAbsoluteBottom() +
+		"\nl:"   + soPopupLeft                                 +
+		"\nt:"   + soPopupTop);
+*/
+										
+										m_soPopup.setPopupPosition(soPopupLeft, soPopupTop);
+									}
+								});
 							}
 						};
 						Scheduler.get().scheduleDeferred(doShow);
