@@ -92,6 +92,7 @@ public class SearchOptionsComposite extends Composite
 	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
+	private boolean							m_isIE;						//
 	private FindCtrl						m_finderControl;			//
 	private FlowPanel						m_mainPanel;				//
 	private GwtTeamingMainMenuImageBundle	m_images;					//
@@ -162,6 +163,27 @@ public class SearchOptionsComposite extends Composite
 	}
 	
 	/*
+	 * Inner class used to wrap a FlowPanel so that on IE, it gets an
+	 * inline-block display style.  Without this, the layout doesn't
+	 * work correctly in the composite.
+	 */
+	private class SOFlowPanel extends FlowPanel {
+		/**
+		 * Constructor method.
+		 */
+		public SOFlowPanel() {
+			// Initialize the super class...
+			super();
+
+			// ...and if we're running on IE...
+			if (m_isIE) {
+				// ...give this an inline-block display style.
+				addStyleName("displayInlineBlock");
+			}
+		}
+	}
+	
+	/*
 	 * Class constructor.
 	 * 
 	 * Note that the class constructor is private to facilitate code
@@ -176,6 +198,7 @@ public class SearchOptionsComposite extends Composite
 		m_searchOptionsPopup = searchOptionsPopup;
 
 		// ...initialize the other data members...
+		m_isIE     = GwtClientHelper.jsIsIE();
 		m_images   = GwtTeaming.getMainMenuImageBundle();
 		m_messages = GwtTeaming.getMessages();
 
@@ -213,7 +236,7 @@ public class SearchOptionsComposite extends Composite
 		});
 
 		// ..and tie everything together.
-		FlowPanel asPanel = new FlowPanel();
+		FlowPanel asPanel = new SOFlowPanel();
 		asPanel.addStyleName("searchOptionsDlg_AdvancedSearchPanel margintop3");
 		asPanel.add(asAnchor);
 		m_mainPanel.add(asPanel);
@@ -235,7 +258,7 @@ public class SearchOptionsComposite extends Composite
 	 */
 	private void addFinders() {
 		// Create a panel to hold the finder radio buttons...
-		FlowPanel rbPanel = new FlowPanel();
+		FlowPanel rbPanel = new SOFlowPanel();
 		rbPanel.addStyleName("searchOptionsDlg_FindersRadioPanel");
 
 		// create the radio buttons themselves...
@@ -298,7 +321,7 @@ public class SearchOptionsComposite extends Composite
 		m_mainPanel.add(closePBPanel);
 		
 		// ...and add the header text. 
-		FlowPanel headerPanel = new FlowPanel();
+		FlowPanel headerPanel = new SOFlowPanel();
 		headerPanel.addStyleName("searchOptionsDlg_Header");
 		headerPanel.add(new InlineLabel(m_messages.mainMenuSearchOptionsHeader()));
 		m_mainPanel.add(headerPanel);
@@ -309,7 +332,7 @@ public class SearchOptionsComposite extends Composite
 	 */
 	private void addSavedSearches() {
 		// Create a label for the save search widgets...
-		FlowPanel ssLabelPanel = new FlowPanel();
+		FlowPanel ssLabelPanel = new SOFlowPanel();
 		ssLabelPanel.addStyleName("searchOptionsDlg_SavedSearchesLabelPanel margintop3");
 		InlineLabel ssLabel = new InlineLabel(m_messages.mainMenuSearchOptionsSavedSearches());
 		ssLabel.addStyleName("searchOptionsDlg_SavedSearchesLabel");
@@ -317,7 +340,7 @@ public class SearchOptionsComposite extends Composite
 		m_mainPanel.add(ssLabelPanel);
 
 		// ...create the saved searches list box...
-		FlowPanel ssListPanel = new FlowPanel();
+		FlowPanel ssListPanel = new SOFlowPanel();
 		ssListPanel.addStyleName("searchOptionsDlg_SavedSearchesSelectPanel margintop1");
 		ListBox ssList = new ListBox();
 		ssListPanel.add(ssList);
