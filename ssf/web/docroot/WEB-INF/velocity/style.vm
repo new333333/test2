@@ -37,6 +37,7 @@
 	  font-weight: bold;
 	  text-decoration:none;
 	  -moz-border-radius: 5px;
+	  border-radius: 5px;
 	  -webkit-border-radius: 5px;
 	}
 	.e-user-avatar-new {
@@ -62,6 +63,7 @@
 	  border: 1px solid #59828f;
 	  text-decoration:none;
 	  -moz-border-radius: 15px;
+	  border-radius: 15px;
 	  -webkit-border-radius: 15px;
 	}
 	a.actionbut:hover {
