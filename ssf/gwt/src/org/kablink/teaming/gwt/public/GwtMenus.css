@@ -290,6 +290,10 @@
 	/* End: GWT Vertical Menu styles*/
 
 
+	.vibe-globalSearch
+	{
+		display: inline;
+	}
 	.vibe-mainMenuPopup
 	{
 	}
