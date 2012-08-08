@@ -1134,6 +1134,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		List<Long> entryIds = new ArrayList<Long>();
 		entryIds.add(entryId);
 		getFolderDao().setFolderEntryType(folder, entryIds, newDefId);
+		entry.setEntryDefId(newDefId);
 		loadProcessor(entry.getParentFolder()).indexEntry(entry);
 	}
 
