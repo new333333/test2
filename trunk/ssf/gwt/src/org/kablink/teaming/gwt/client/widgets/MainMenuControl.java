@@ -69,6 +69,7 @@ import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg;
 import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg.EmailNotificationDlgClient;
 import org.kablink.teaming.gwt.client.mainmenu.FolderColumnsConfigDlg;
 import org.kablink.teaming.gwt.client.mainmenu.FolderColumnsConfigDlg.FolderColumnsConfigDlgClient;
+import org.kablink.teaming.gwt.client.mainmenu.GlobalSearchComposite;
 import org.kablink.teaming.gwt.client.mainmenu.ImportIcalByFileDlg;
 import org.kablink.teaming.gwt.client.mainmenu.ImportIcalByFileDlg.ImportIcalByFileDlgClient;
 import org.kablink.teaming.gwt.client.mainmenu.ImportIcalByUrlDlg;
@@ -81,9 +82,6 @@ import org.kablink.teaming.gwt.client.mainmenu.MenuBarToggle;
 import org.kablink.teaming.gwt.client.mainmenu.MyFavoritesMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.MyTeamsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlacesMenuPopup;
-import org.kablink.teaming.gwt.client.mainmenu.SearchMenuPanel;
-import org.kablink.teaming.gwt.client.mainmenu.SearchOptionsComposite;
-import org.kablink.teaming.gwt.client.mainmenu.SearchOptionsComposite.SearchOptionsCompositeClient;
 import org.kablink.teaming.gwt.client.mainmenu.SendEmailToContributors;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
@@ -151,6 +149,7 @@ public class MainMenuControl extends Composite
 	private ContextMenuSynchronizer			m_contextMenuSync;
 	private ContextLoadInfo					m_lastContextLoaded;
 	private EmailNotificationDlg			m_emailNotificationDlg;
+	private GlobalSearchComposite			m_globalSearch;
 	private GwtMainPage						m_mainPage;
 	private GwtTeamingMainMenuImageBundle	m_images   = GwtTeaming.getMainMenuImageBundle();
 	private GwtTeamingMessages 				m_messages = GwtTeaming.getMessages();
@@ -166,14 +165,11 @@ public class MainMenuControl extends Composite
 	private MenuBarBox						m_viewsBox;
 	private MenuBarBox						m_whatsNewBox;
 	private MenuBarButton					m_bhButton;
-	private MenuBarButton					m_soButton;
 	private MenuBarToggle					m_wsTreeSlider;
 	private MenuBarToggle					m_mastHeadSlider;
 	private MyFavoritesMenuPopup			m_myFavoritesMenuPopup;
 	private MyTeamsMenuPopup				m_myTeamsMenuPopup;
-	private SearchMenuPanel					m_searchPanel;
 	private TeamingPopupPanel               m_aboutPopup;
-	private TeamingPopupPanel               m_soPopup;
 	private TeamManagementInfo				m_contextTMI;
 	private VibeMenuBar						m_mainMenu;
 
@@ -361,55 +357,8 @@ public class MainMenuControl extends Composite
 		addCommonItems();
 		
 		// ...add the search widgets to the right end of the menu...
-		m_searchPanel = new SearchMenuPanel();
-		menuPanel.add(m_searchPanel);
-		m_soButton = new MenuBarButton(m_images.searchOptions(), m_messages.mainMenuAltSearchOptions(), new Command() {
-			@Override
-			public void execute() {
-				m_soButton.removeStyleName("subhead-control-bg2");
-				m_soPopup = new TeamingPopupPanel(true, false);
-				GwtClientHelper.rollDownPopup(m_soPopup);
-				m_soPopup.addStyleName("searchOptions_Browser roundcornerSM-bottom");
-				SearchOptionsComposite.createAsync(
-						m_soPopup,
-						new SearchOptionsCompositeClient() {					
-					@Override
-					public void onUnavailable() {
-						// Nothing to do.  Error handled in
-						// asynchronous provider.
-					}
-					
-					@Override
-					public void onSuccess(SearchOptionsComposite soc) {
-						// Connect things together...
-						soc.addStyleName("searchOptions");
-						m_soPopup.setWidget(soc);
-						m_soPopup.setGlassEnabled(true);
-						m_soPopup.setGlassStyleName("vibe-mainMenuPopup_Glass");
-						
-						// ...and show the search options popup.  We do
-						// ...this as a scheduled command so that the
-						// ...asynchronous processing related to the
-						// ...creation of the SearchOptionsComposite
-						// ...has a chance to complete.
-						ScheduledCommand doShow = new ScheduledCommand() {
-							@Override
-							public void execute() {
-								// Position and show the popup as per
-								// the position of the search panel on
-								// the menu.
-								m_soPopup.showRelativeTo(m_soButton);
-							}
-						};
-						Scheduler.get().scheduleDeferred(doShow);
-					}
-				});
-			}});
-		m_soButton.addStyleName("vibe-mainMenuButton subhead-control-bg1 roundcornerSM");
-		MenuBar soBar = new MenuBar();
-		soBar.addStyleName("vibe-mainMenuSearchOptions_Button");
-		soBar.addItem(m_soButton);
-		menuPanel.add(soBar);
+		m_globalSearch = new GlobalSearchComposite();
+		menuPanel.add(m_globalSearch);
 		
 		// ...and finally, all composites must call initWidget() in
 		// ...their constructors.
@@ -765,8 +714,7 @@ public class MainMenuControl extends Composite
 			setContextMenusVibibile(true);
 			
 			// Show the search panel.
-			GwtClientHelper.setVisibile(m_searchPanel, true);
-			GwtClientHelper.setVisibile(m_soButton,    true);
+			GwtClientHelper.setVisibile(m_globalSearch, true);
 			
 			// Hide the Close administration menu item.
 			GwtClientHelper.setVisibile(m_closeAdminBox, false);
@@ -1273,8 +1221,7 @@ public class MainMenuControl extends Composite
 			setContextMenusVibibile(false);
 			
 			// Hide the search panel.
-			GwtClientHelper.setVisibile(m_searchPanel, false);
-			GwtClientHelper.setVisibile(m_soButton,    false);
+			GwtClientHelper.setVisibile(m_globalSearch, false);
 			
 			// Show the Close administration menu item.
 			GwtClientHelper.setVisibile(m_closeAdminBox, true);

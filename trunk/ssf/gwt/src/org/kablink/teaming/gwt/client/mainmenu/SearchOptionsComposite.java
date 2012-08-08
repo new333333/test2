@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -79,6 +80,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * Class used for the content of the additional search options.  
@@ -90,11 +92,12 @@ public class SearchOptionsComposite extends Composite
 	// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
-	private FindCtrl m_finderControl;
-	private FlowPanel m_mainPanel;
-	private GwtTeamingMainMenuImageBundle m_images;
-	private GwtTeamingMessages m_messages;
-	private PopupPanel m_searchOptionsPopup;
+	private FindCtrl						m_finderControl;			//
+	private FlowPanel						m_mainPanel;				//
+	private GwtTeamingMainMenuImageBundle	m_images;					//
+	private GwtTeamingMessages				m_messages;					//
+	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private PopupPanel						m_searchOptionsPopup;		//
 
 	// The following are used as the ID's on the radio buttons.
 	private final static String RB_PERSON = "personRadio";
@@ -166,26 +169,23 @@ public class SearchOptionsComposite extends Composite
 	 * through its createAsync().
 	 */
 	private SearchOptionsComposite(PopupPanel searchOptionsPopup) {
-		// Store the parameter...
+		// Initialize the super class...
+		super();
+		
+		// ...store the parameter...
 		m_searchOptionsPopup = searchOptionsPopup;
 
-		// ...register the events to be handled by this class...
-		EventHelper.registerEventHandlers(
-			GwtTeaming.getEventBus(),
-			m_registeredEvents,
-			this);
-		
-		// ...and initialize everything else.
-		m_images = GwtTeaming.getMainMenuImageBundle();
+		// ...initialize the other data members...
+		m_images   = GwtTeaming.getMainMenuImageBundle();
 		m_messages = GwtTeaming.getMessages();
 
-		// Create the composite's content.
+		// ...create the composite's content...
 		m_mainPanel = new FlowPanel();
 		m_mainPanel.addStyleName("searchOptionsDlg_Content");
 		addHeader();
 		addContent();
 		
-		// All composites must call initWidget() in their constructors.
+		// ...and initialize the Composite itself.
 		initWidget(m_mainPanel);
 	}
 
@@ -535,5 +535,64 @@ public class SearchOptionsComposite extends Composite
 				});
 			}
 		});
+	}
+	
+	/**
+	 * Called when the SearchOptionsComposite is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach() {
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Called when the SearchOptionsComposite is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach() {
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
+
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents() {
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if (null == m_registeredEventHandlers) {
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if (m_registeredEventHandlers.isEmpty()) {
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				m_registeredEvents,
+				this,
+				m_registeredEventHandlers);
+		}
+	}
+
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents() {
+		// If we have a non-empty list of registered events...
+		if (GwtClientHelper.hasItems(m_registeredEventHandlers)) {
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+		}
 	}
 }
