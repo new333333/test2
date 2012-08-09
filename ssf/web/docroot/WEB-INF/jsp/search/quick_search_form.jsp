@@ -72,6 +72,7 @@
 							</div>
 						</td>
 						<td style="text-align: right;">
+						  <ssf:ifNotFilr>
 							<a href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
 								name="tabTitle" value=""/><ssf:param 
 								name="newTab" value="1"/><ssf:param 
@@ -80,6 +81,7 @@
 								name="showAdvancedSearchForm" value="true"/></ssf:url>" >
 								<ssf:nlt tag="searchForm.advanced.Title"/>
 							</a>
+						  </ssf:ifNotFilr>
 						</td>
 						<td></td>
 					</tr>	
