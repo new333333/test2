@@ -2341,6 +2341,13 @@ body, table td, select
 	z-index: 21;
 }
 
+.mastheadFilrActionsPanel
+{
+	bottom: 5px;
+	left: 160px;
+	position: absolute;
+}
+
 /* Style used with the panel that holds the global actions in the masthead. */
 .mastheadGlobalActionsPanel
 {
@@ -2442,6 +2449,14 @@ body, table td, select
 	background: url(images/blends/teal_slice.png) repeat scroll center center #81B2BD;
 	border-radius: 3px 3px 3px 3px;
 	color: #135C8F;
+}
+
+.brandingDefaultImg
+{
+	left: 6px;
+	position: absolute;
+	top: 6px;
+	z-index: 0;
 }
 
 /* Style used to add padding-top: 2px; */
@@ -4121,5 +4136,45 @@ td.datePickerMonth {
 	font-weight: bold;
  }
  
+ 
+ 
+/**
+ * Styles used with the FilrActionsCtrl
+ */
+.FilrActionsCtrl_mainPanel
+{
+}
+
+.FilrAction_Img
+{
+}
+
+.FilrAction_MainPanel
+{
+    border: 1px solid transparent;
+    color: #FFFFFF;
+    display: inline-block;
+    font-size: 12px;
+    margin-right: 5px;
+    padding: 3px;
+    text-align: center;
+}
+
+.FilrAction_MainPanel:hover
+{
+    border: 1px solid #3C4143;
+    border-radius: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+
+.FilrAction_Selected
+{
+    border-radius: 4px 4px 4px 4px;
+}
+
+.FilrAction_Text
+{
+}
+
  /* End */
  

@@ -333,6 +333,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetClipboardTeamUsers();
 	String rpcFailure_GetClipboardUsers();
 	String rpcFailure_GetClipboardUsersFromList();
+	String rpcFailure_GetCollectionPointUrl();
 	String rpcFailure_GetDownloadFileUrl();
 	String rpcFailure_GetEmailNotificationInfo();
 	String rpcFailure_GetEntityActionToolbarItems();
@@ -1767,5 +1768,11 @@ public interface GwtTeamingMessages extends Messages
 	String createBlogPageDlg_createFailed();
 	String createBlogPageDlg_newPageNameLabel();
 	String createBlogPageDlg_noNameSpecified();
+
+	// Strings used with Filr
+	String fileSpaces();
+	String myFiles();
+	String sharedByMe();
+	String sharedWithMe();
 
 }// end GwtTeamingMessages

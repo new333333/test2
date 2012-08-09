@@ -88,6 +88,7 @@ public class MastHead extends Composite
 	private InlineLabel m_userName = null;
 	private Label m_betaLabel = null;
 	private MastheadPopupMenu m_popupMenu = null;
+	private FilrActionsCtrl m_filrActionsCtrl;
 
 	private GwtBrandingData m_siteBrandingData = null;
 	private GwtBrandingData m_binderBrandingData = null;
@@ -160,6 +161,16 @@ public class MastHead extends Composite
 			m_mainMastheadPanel.add( m_betaLabel );
 		}
 		
+		// Are we running Filr?
+		if ( m_requestInfo.isLicenseFilr() )
+		{
+			// Yes
+			// Create a Filr Actions panel
+			m_filrActionsCtrl = new FilrActionsCtrl();
+			m_filrActionsCtrl.addStyleName( "mastheadFilrActionsPanel" );
+			m_mainMastheadPanel.add( m_filrActionsCtrl );
+		}
+		
 		// Create the panel that will hold the global actions such as Administration", "Logout" etc
 		{
 			m_globalActionsPanel = new FlowPanel();
@@ -210,6 +221,7 @@ public class MastHead extends Composite
 					/**
 					 * 
 					 */
+					@Override
 					public void onClick( ClickEvent event )
 					{
 						m_popupMenu.showRelativeToTarget( panel );
@@ -238,6 +250,7 @@ public class MastHead extends Composite
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -252,6 +265,7 @@ public class MastHead extends Composite
 			 * 
 			 * @param result
 			 */
+			@Override
 			public void onSuccess( final VibeRpcResponse response )
 			{
 				Scheduler.ScheduledCommand cmd;
@@ -260,6 +274,7 @@ public class MastHead extends Composite
 				
 				cmd = new Scheduler.ScheduledCommand()
 				{
+					@Override
 					public void execute()
 					{
 						// Update the site branding panel with the branding data
@@ -279,6 +294,7 @@ public class MastHead extends Composite
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -293,6 +309,7 @@ public class MastHead extends Composite
 			 * 
 			 * @param result
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				Scheduler.ScheduledCommand cmd;
@@ -301,6 +318,7 @@ public class MastHead extends Composite
 
 				cmd = new Scheduler.ScheduledCommand()
 				{
+					@Override
 					public void execute()
 					{
 						// Update the binder branding panel with the branding data
@@ -322,6 +340,7 @@ public class MastHead extends Composite
 		// Issue an ajax request to get the site branding.
 		cmd = new Scheduler.ScheduledCommand()
 		{
+			@Override
 			public void execute()
 			{
 				getSiteBrandingDataFromServer();
@@ -331,6 +350,50 @@ public class MastHead extends Composite
 	}// end MastHead()
 
 
+	/**
+	 * Adjust the height of the branding panels
+	 */
+	private void adjustBrandingPanelsHeight()
+	{
+		final int minHeight;
+		Scheduler.ScheduledCommand cmd;
+
+		if ( m_filrActionsCtrl != null )
+			minHeight = m_filrActionsCtrl.getOffsetHeight() + 12;
+		else
+			minHeight = 50;
+		
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				Scheduler.ScheduledCommand cmd2;
+
+				if ( m_siteBrandingPanel != null )
+				{
+					m_siteBrandingPanel.setMinHeight( minHeight );
+					m_siteBrandingPanel.adjustBrandingPanelHeight();
+				}
+				
+				cmd2 = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						if ( m_binderBrandingPanel != null )
+						{
+							m_binderBrandingPanel.setMinHeight( minHeight );
+							m_binderBrandingPanel.adjustBrandingPanelHeight();
+						}
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd2 );
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
 	/**
 	 * Add the "login" or "logout" action to the global actions part of the masthead.
 	 */
@@ -425,6 +488,16 @@ public class MastHead extends Composite
 		if ( m_binderBrandingPanel.isVisible() )
 			height += m_binderBrandingPanel.getOffsetHeight();
 		
+		// Are we running Filr?
+		if ( m_requestInfo.isLicenseFilr() && m_filrActionsCtrl != null )
+		{
+			int filrActionsCtrlHeight;
+			
+			filrActionsCtrlHeight = m_filrActionsCtrl.getOffsetHeight() + 10;
+			if ( filrActionsCtrlHeight > height )
+				height = filrActionsCtrlHeight;
+		}
+
 		return height;
 	}// end getHeight()
 	
@@ -465,6 +538,7 @@ public class MastHead extends Composite
 	/**
 	 * This method gets called when the user clicks on something in the branding panel.
 	 */
+	@Override
 	public void onClick( ClickEvent event )
 	{
 		Widget eventSource;
@@ -588,35 +662,14 @@ public class MastHead extends Composite
 	/**
 	 * 
 	 */
+	@Override
 	public void setVisible( boolean visible )
 	{
 		super.setVisible( visible );
 
 		if ( visible == true )
 		{
-			Scheduler.ScheduledCommand cmd;
-
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				public void execute()
-				{
-					Scheduler.ScheduledCommand cmd2;
-
-					if ( m_siteBrandingPanel != null )
-						m_siteBrandingPanel.adjustBrandingPanelHeight();
-					
-					cmd2 = new Scheduler.ScheduledCommand()
-					{
-						public void execute()
-						{
-							if ( m_binderBrandingPanel != null )
-								m_binderBrandingPanel.adjustBrandingPanelHeight();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd2 );
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			adjustBrandingPanelsHeight();
 		}
 	}
 	
@@ -710,31 +763,7 @@ public class MastHead extends Composite
 		setGlobalActionsFontColor();
 
 		// Adjust the height of the branding panels.
-		{
-			Scheduler.ScheduledCommand cmd;
-	
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				public void execute()
-				{
-					Scheduler.ScheduledCommand cmd2;
-	
-					if ( m_siteBrandingPanel != null )
-						m_siteBrandingPanel.adjustBrandingPanelHeight();
-					
-					cmd2 = new Scheduler.ScheduledCommand()
-					{
-						public void execute()
-						{
-							if ( m_binderBrandingPanel != null )
-								m_binderBrandingPanel.adjustBrandingPanelHeight();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd2 );
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
-		}
+		adjustBrandingPanelsHeight();
 	}// end showBranding()
 	
 	/**
