@@ -729,6 +729,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_COLLECTION_POINT_URL:
+		{
+			GetCollectionPointUrlCmd gcpuCmd;
+			StringRpcResponseData responseData;
+			String url;
+			
+			gcpuCmd = (GetCollectionPointUrlCmd) cmd;
+			url = GwtServerHelper.getCollectionPointUrl(
+													this,
+													getRequest( ri ),
+													gcpuCmd.getCollectionType() );
+			responseData = new StringRpcResponseData( url );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_COLUMN_WIDTHS:
 		{
 			GetColumnWidthsCmd gcwCmd = ((GetColumnWidthsCmd) cmd);

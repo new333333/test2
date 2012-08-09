@@ -68,6 +68,10 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource fileSpace_large();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/filespaces_transparent_40.png")
+	public ImageResource fileSpaces_transparent_40();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder.png")
 	public ImageResource folder();
 	
@@ -104,6 +108,10 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource myFiles_large();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/myfiles_transparent_40.png")
+	public ImageResource myFiles_transparent_40();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/sharedbyme.png")
 	public ImageResource sharedByMe();
 	
@@ -116,6 +124,10 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource sharedByMe_large();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/shared_by_me_transparent_40.png")
+	public ImageResource sharedByMe_transparent_40();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/shared.png")
 	public ImageResource sharedWithMe();
 	
@@ -126,4 +138,12 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/shared_48.png")
 	public ImageResource sharedWithMe_large();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/shared_with_me_transparent_40.png")
+	public ImageResource sharedWithMe_transparent_40();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/whatsnew_transparent_40.png")
+	public ImageResource whatsNew_transparent_40();
 }

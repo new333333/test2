@@ -73,6 +73,10 @@ import org.kablink.teaming.gwt.client.event.SearchSavedEvent;
 import org.kablink.teaming.gwt.client.event.SearchSimpleEvent;
 import org.kablink.teaming.gwt.client.event.SearchTagEvent;
 import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
+import org.kablink.teaming.gwt.client.event.ShowFileSpacesEvent;
+import org.kablink.teaming.gwt.client.event.ShowMyFilesEvent;
+import org.kablink.teaming.gwt.client.event.ShowSharedByMeEvent;
+import org.kablink.teaming.gwt.client.event.ShowSharedWithMeEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.SizeChangedEvent;
@@ -91,6 +95,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CanModifyBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ChangeFavoriteStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetCollectionPointUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
@@ -106,6 +111,7 @@ import org.kablink.teaming.gwt.client.util.Agent;
 import org.kablink.teaming.gwt.client.util.AgentBase;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfoHelper;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
@@ -198,6 +204,10 @@ public class GwtMainPage extends ResizeComposite
 		SearchSimpleEvent.Handler,
 		SearchTagEvent.Handler,
 		ShowContentControlEvent.Handler,
+		ShowFileSpacesEvent.Handler,
+		ShowMyFilesEvent.Handler,
+		ShowSharedByMeEvent.Handler,
+		ShowSharedWithMeEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler,
 		SizeChangedEvent.Handler,
@@ -237,6 +247,11 @@ public class GwtMainPage extends ResizeComposite
 	private WorkspaceTreeControl m_wsTreeCtrl;
 	private UIStateManager m_uiStateManager;
 	private ActivityStreamCtrl m_activityStreamCtrl = null;
+	private String m_showFileSpacesUrl = null;
+	private String m_showMyFilesUrl = null;
+	private String m_showSharedByMeUrl = null;
+	private String m_showSharedWithMeUrl = null;
+	private AsyncCallback<VibeRpcResponse> m_getCollectionPointUrlRpcCallback = null;
 
 	private com.google.gwt.dom.client.Element m_tagPanelElement;
 
@@ -300,6 +315,10 @@ public class GwtMainPage extends ResizeComposite
 		
 		// Show events.
 		TeamingEvents.SHOW_CONTENT_CONTROL,
+		TeamingEvents.SHOW_FILE_SPACES,
+		TeamingEvents.SHOW_MY_FILES,
+		TeamingEvents.SHOW_SHARED_BY_ME,
+		TeamingEvents.SHOW_SHARED_WITH_ME,
 		
 		// Sidebar events.
 		TeamingEvents.SIDEBAR_HIDE,
@@ -655,6 +674,85 @@ public class GwtMainPage extends ResizeComposite
 		}
 	}// end constructMainPage_Finish()
 
+	/**
+	 * Get the url for the given collection point and then after the rpc request
+	 * returns show the collection point.
+	 */
+	public void getCollectionPointUrlAndShowCollectionPoint( final CollectionType collectionType )
+	{
+		GetCollectionPointUrlCmd cmd;
+		
+		if ( m_getCollectionPointUrlRpcCallback == null )
+		{
+			m_getCollectionPointUrlRpcCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+							t,
+							GwtTeaming.getMessages().rpcFailure_GetCollectionPointUrl(),
+							collectionType.name() );
+				}
+				
+				/**
+				 * 
+				 */
+				@Override
+				public void onSuccess( VibeRpcResponse response )
+				{
+					StringRpcResponseData responseData;
+					final String url;
+					
+					responseData = (StringRpcResponseData) response.getResponseData();
+					url = responseData.getStringValue();
+
+					if ( url != null && url.length() > 0 )
+					{
+						Scheduler.ScheduledCommand cmd;
+
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								// Show the collection point.
+								gotoUrlAsync( url );
+								
+								// Remember the url we just retrieved
+								switch ( collectionType )
+								{
+								case FILE_SPACES:
+									m_showFileSpacesUrl = url;
+									break;
+								
+								case MY_FILES:
+									m_showMyFilesUrl = url;
+									break;
+									
+								case SHARED_BY_ME:
+									m_showSharedByMeUrl = url;
+									break;
+									
+								case SHARED_WITH_ME:
+									m_showSharedWithMeUrl = url;
+									break;
+								}
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				}
+			};
+		}
+		
+		cmd = new GetCollectionPointUrlCmd( collectionType );
+		GwtClientHelper.executeCommand( cmd, m_getCollectionPointUrlRpcCallback );
+	}
+	
 	/**
 	 * Returns the main content panel.
 	 * 
@@ -2616,6 +2714,82 @@ public class GwtMainPage extends ResizeComposite
 	{
 		// Display the content control
 		m_contentLayoutPanel.showContentControl();
+	}
+	
+	/**
+	 * Handles ShowFileSpacesEvent's received by this class.
+	 * 
+	 * Implements the ShowFileSpacesEvent.Handler.onShowFileSpaces() method.
+	 * 
+	 */
+	@Override
+	public void onShowFileSpaces( ShowFileSpacesEvent event )
+	{
+		// Do we have the url we need to show the "files spaces" collection point?
+		if ( m_showFileSpacesUrl == null )
+		{
+			// No, issue an rpc request to get the url.
+			getCollectionPointUrlAndShowCollectionPoint( CollectionType.FILE_SPACES );
+		}
+		else
+			gotoUrlAsync( m_showFileSpacesUrl );
+	}
+	
+	/**
+	 * Handles ShowMyFilesEvent's received by this class.
+	 * 
+	 * Implements the ShowMyFilesEvent.Handler.onShowMyFiles() method.
+	 * 
+	 */
+	@Override
+	public void onShowMyFiles( ShowMyFilesEvent event )
+	{
+		// Do we have the url we need to show the "my files" collection point?
+		if ( m_showMyFilesUrl == null )
+		{
+			// No, issue an rpc request to get the url.
+			getCollectionPointUrlAndShowCollectionPoint( CollectionType.MY_FILES );
+		}
+		else
+			gotoUrlAsync( m_showMyFilesUrl );
+	}
+	
+	/**
+	 * Handles ShowSharedByMeEvent's received by this class.
+	 * 
+	 * Implements the ShowSharedByMeEvent.Handler.onShowSharedByMe() method.
+	 * 
+	 */
+	@Override
+	public void onShowSharedByMe( ShowSharedByMeEvent event )
+	{
+		// Do we have the url we need to show the "shared by me" collection point?
+		if ( m_showSharedByMeUrl == null )
+		{
+			// No, issue an rpc request to get the url.
+			getCollectionPointUrlAndShowCollectionPoint( CollectionType.SHARED_BY_ME );
+		}
+		else
+			gotoUrlAsync( m_showSharedByMeUrl );
+	}
+	
+	/**
+	 * Handles ShowSharedWithMeEvent's received by this class.
+	 * 
+	 * Implements the ShowSharedWithMeEvent.Handler.onShowSharedWithMe() method.
+	 * 
+	 */
+	@Override
+	public void onShowSharedWithMe( ShowSharedWithMeEvent event )
+	{
+		// Do we have the url we need to show the "shared with me" collection point?
+		if ( m_showSharedWithMeUrl == null )
+		{
+			// No, issue an rpc request to get the url.
+			getCollectionPointUrlAndShowCollectionPoint( CollectionType.SHARED_WITH_ME );
+		}
+		else
+			gotoUrlAsync( m_showSharedWithMeUrl );
 	}
 	
 	/**

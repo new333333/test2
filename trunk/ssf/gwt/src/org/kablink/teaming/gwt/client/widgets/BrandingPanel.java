@@ -71,6 +71,7 @@ public class BrandingPanel extends Composite
 	private Image m_defaultBgImg = null;
 	private Image m_bgImg = null;
 	private GwtBrandingData m_brandingData = null;
+	private int m_minHeight = 50;
 	
 	/**
 	 * This class displays the image or html defined in the branding
@@ -113,6 +114,7 @@ public class BrandingPanel extends Composite
 			}
 
 			m_teamingImg = new Image( imageResource );
+			m_teamingImg.addStyleName( "brandingDefaultImg" );
 			m_teamingImg.setWidth( "500" );
 			m_teamingImg.setHeight( "75" );
 
@@ -125,6 +127,7 @@ public class BrandingPanel extends Composite
 		 * This method gets called when an image in the branding gets loaded.  We will need
 		 * to adjust the height of the BrandingPanel.
 		 */
+		@Override
 		public void onLoad( LoadEvent event )
 		{
 			Scheduler.ScheduledCommand cmd;
@@ -133,6 +136,7 @@ public class BrandingPanel extends Composite
 			// that has been loaded.
 			cmd = new Scheduler.ScheduledCommand()
 			{
+				@Override
 				public void execute()
 				{
 	    			adjustBrandingPanelHeight();
@@ -313,8 +317,8 @@ public class BrandingPanel extends Composite
 		wrapperPanelHeight = m_wrapperPanel.getOffsetHeight();
 		contentPanelHeight = m_contentPanel.getOffsetHeight();
 		height = Math.max( wrapperPanelHeight, contentPanelHeight );
-		if ( height < 50 )
-			height = 50;
+		if ( height < m_minHeight )
+			height = m_minHeight;
 
 		// The max height of branding is 1/3 the height of the browser window.
 		browserHeight = Window.getClientHeight();
@@ -371,6 +375,7 @@ public class BrandingPanel extends Composite
 		// Issue a deferred command to notify all OnSizeChangeHandlers.
 		cmd = new Scheduler.ScheduledCommand()
 		{
+			@Override
 			public void execute()
 			{
 				// Calling each OnSizeChangeHandler
@@ -394,6 +399,7 @@ public class BrandingPanel extends Composite
 	 * This method gets called when an image in the branding gets loaded.  We will need
 	 * to adjust the height of the branding panel.
 	 */
+	@Override
 	public void onLoad( LoadEvent event )
 	{
 		// Adjust the height of the branding panel to take into consideration this new image
@@ -402,6 +408,7 @@ public class BrandingPanel extends Composite
 
 		cmd = new Scheduler.ScheduledCommand()
 		{
+			@Override
 			public void execute()
 			{
     			adjustBrandingPanelHeight();
@@ -410,6 +417,14 @@ public class BrandingPanel extends Composite
 		Scheduler.get().scheduleDeferred( cmd );
 	}// end onLoad()
 	
+	
+	/**
+	 * Set the minimum height this branding panel can be.
+	 */
+	public void setMinHeight( int minHeight )
+	{
+		m_minHeight = minHeight;
+	}
 	
 	/**
 	 * Update the branding panel with the branding information found in brandingData.
@@ -498,6 +513,7 @@ public class BrandingPanel extends Composite
 
 				cmd = new Scheduler.ScheduledCommand()
 				{
+					@Override
 					public void execute()
 					{
 		    			adjustBrandingPanelHeight();

@@ -3789,6 +3789,49 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Returns the url needed to display the given collection point.
+	 */
+	public static String getCollectionPointUrl(
+		AllModulesInjected ami,
+		HttpServletRequest request,
+		CollectionType collectionType ) throws GwtTeamingException
+	{
+		String url = null;
+		User user;
+		Long userWSId;
+		Workspace userWS;
+
+		user = getCurrentUser();
+		userWSId = user.getWorkspaceId();
+		try 
+		{
+			userWS = ami.getWorkspaceModule().getWorkspace(userWSId);
+
+			url = PermaLinkUtil.getPermalink( request, userWS );
+			url = GwtUIHelper.appendUrlParam(
+											url,
+											WebKeys.URL_SHOW_COLLECTION,
+											collectionType.name() );
+		}
+		
+		catch ( Exception e ) 
+		{
+			// If this is the guest user...
+			if ( user.isShared() )
+			{
+				// ...simply ignore the error and bail.
+				return null;
+			}
+			
+			// For all other users, convert this to a
+			// GwtTeamingExcepton and throw that.
+			throw getGwtTeamingException( e );
+		}
+		
+		return url;
+	}
+	
+	/**
 	 * Returns the User object of the currently logged in user.
 	 * 
 	 * @return
@@ -7215,6 +7258,7 @@ public class GwtServerHelper {
 		case GET_CLIPBOARD_TEAM_USERS:
 		case GET_CLIPBOARD_USERS:
 		case GET_CLIPBOARD_USERS_FROM_LIST:
+		case GET_COLLECTION_POINT_URL:
 		case GET_COLUMN_WIDTHS:
 		case GET_DEFAULT_ACTIVITY_STREAM:
 		case GET_DEFAULT_FOLDER_DEFINITION_ID:
