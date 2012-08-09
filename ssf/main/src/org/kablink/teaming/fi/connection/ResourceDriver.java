@@ -174,25 +174,4 @@ public interface ResourceDriver {
 	 */
 	public Date getModifiedOn();
 
-	/**
-	 * Returns whether or not the driver supports ACL. For this to be <code>true</code>,
-	 * two conditions must be met:
-	 * <p>
-	 * 1. The underlying driver implementation is capable of supporting ACL, which means
-	 * that the session objects returned from <code>openSession</code> method must be 
-	 * of type <code>AclResourceSession</code>.<br>
-	 * 2. The driver instance is configured to allow ACL.
-	 * <p>
-	 * Therefore, it is important for application to base its decision to utilize ACL
-	 * capability on the return value from this method on a driver instance by instance
-	 * basis, rather than basing it on the type of the objects returned from 
-	 * <code>openSession</code> method.
-	 * <p>
-	 * This approach allows a resource driver implementing a specific remote access
-	 * protocol (e.g. CIFS, NCP, etc.) to be still useful regardless of whether the
-	 * back-end file system is integrated with directory-based identity or not.
-	 * 
-	 * @return
-	 */
-	//public boolean supportAcl();
 }
