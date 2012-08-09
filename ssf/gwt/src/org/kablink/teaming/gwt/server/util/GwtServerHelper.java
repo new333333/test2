@@ -141,6 +141,7 @@ import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.ClipboardUser;
+import org.kablink.teaming.gwt.client.rpc.shared.CollectionPointData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
@@ -3787,33 +3788,64 @@ public class GwtServerHelper {
 			throw getGwtTeamingException(ex);
 		}
 	}
-	
+
 	/**
-	 * Returns the url needed to display the given collection point.
+	 * Return the url needed to display the given collection point
 	 */
-	public static String getCollectionPointUrl(
-		AllModulesInjected ami,
+	private static String getCollectionPointUrl(
 		HttpServletRequest request,
-		CollectionType collectionType ) throws GwtTeamingException
+		Workspace userWS,
+		CollectionType collectionType )
 	{
-		String url = null;
+		String url;
+		
+		url = PermaLinkUtil.getPermalink( request, userWS );
+		url = GwtUIHelper.appendUrlParam(
+										url,
+										WebKeys.URL_SHOW_COLLECTION,
+										collectionType.name() );
+		return url;
+	}
+
+	/**
+	 * Returns the data about all the collection points.
+	 */
+	public static CollectionPointData getCollectionPointData(
+		AllModulesInjected ami,
+		HttpServletRequest request ) throws GwtTeamingException
+	{
+		CollectionPointData results;
 		User user;
 		Long userWSId;
 		Workspace userWS;
 
+		results = new CollectionPointData();
+		
 		user = getCurrentUser();
 		userWSId = user.getWorkspaceId();
 		try 
 		{
+			CollectionType collectionType;
+			String url;
+			
 			userWS = ami.getWorkspaceModule().getWorkspace(userWSId);
 
-			url = PermaLinkUtil.getPermalink( request, userWS );
-			url = GwtUIHelper.appendUrlParam(
-											url,
-											WebKeys.URL_SHOW_COLLECTION,
-											collectionType.name() );
+			collectionType = CollectionType.FILE_SPACES;
+			url = getCollectionPointUrl( request, userWS, collectionType );
+			results.setUrl( collectionType, url );
+
+			collectionType = CollectionType.MY_FILES;
+			url = getCollectionPointUrl( request, userWS, collectionType );
+			results.setUrl( collectionType, url );
+
+			collectionType = CollectionType.SHARED_BY_ME;
+			url = getCollectionPointUrl( request, userWS, collectionType );
+			results.setUrl( collectionType, url );
+
+			collectionType = CollectionType.SHARED_WITH_ME;
+			url = getCollectionPointUrl( request, userWS, collectionType );
+			results.setUrl( collectionType, url );
 		}
-		
 		catch ( Exception e ) 
 		{
 			// If this is the guest user...
@@ -3828,7 +3860,7 @@ public class GwtServerHelper {
 			throw getGwtTeamingException( e );
 		}
 		
-		return url;
+		return results;
 	}
 	
 	/**
@@ -7258,7 +7290,7 @@ public class GwtServerHelper {
 		case GET_CLIPBOARD_TEAM_USERS:
 		case GET_CLIPBOARD_USERS:
 		case GET_CLIPBOARD_USERS_FROM_LIST:
-		case GET_COLLECTION_POINT_URL:
+		case GET_COLLECTION_POINT_DATA:
 		case GET_COLUMN_WIDTHS:
 		case GET_DEFAULT_ACTIVITY_STREAM:
 		case GET_DEFAULT_FOLDER_DEFINITION_ID:

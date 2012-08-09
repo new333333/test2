@@ -102,10 +102,6 @@ public class EventHelper {
 		case REROOT_SIDEBAR_TREE:					reply = new RerootSidebarTreeEvent();			  break;
 		case SEARCH_ADVANCED:                   	reply = new SearchAdvancedEvent();                break;
 		case SHOW_CONTENT_CONTROL:                 	reply = new ShowContentControlEvent();            break;
-		case SHOW_FILE_SPACES:						reply = new ShowFileSpacesEvent();				  break;
-		case SHOW_MY_FILES:							reply = new ShowMyFilesEvent();					  break;
-		case SHOW_SHARED_BY_ME:						reply = new ShowSharedByMeEvent();				  break;
-		case SHOW_SHARED_WITH_ME:					reply = new ShowSharedWithMeEvent();			  break;
 		case SIDEBAR_HIDE:                      	reply = new SidebarHideEvent();                   break;
 		case SIDEBAR_SHOW:                      	reply = new SidebarShowEvent();                   break;
 		case SIZE_CHANGED:                      	reply = new SizeChangedEvent();                   break;
@@ -1268,8 +1264,19 @@ public class EventHelper {
 				}
 				break;
 			
+			case SHOW_COLLECTION:
+				// A ShowCollectionEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof ShowCollectionEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = ShowCollectionEvent.registerEvent(
+																		eventBus,
+																		((ShowCollectionEvent.Handler) eventHandler) );
+				}
+				break;
+			
 			case SHOW_COLLECTION_VIEW:
-				// A ShowCollectionEvent!  Can the event handler we
+				// A ShowCollectionViewEvent!  Can the event handler we
 				// were given handle that?
 				if (eventHandler instanceof ShowCollectionViewEvent.Handler) {
 					handlerNotDefined = false;
@@ -1310,14 +1317,6 @@ public class EventHelper {
 				if (eventHandler instanceof ShowFileFolderEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = ShowFileFolderEvent.registerEvent(eventBus, ((ShowFileFolderEvent.Handler) eventHandler));
-				}
-				break;
-			
-			case SHOW_FILE_SPACES:
-				// A ShowFileSpacesEvent!  Can the event handler we were given handle that?
-				if (eventHandler instanceof ShowFileSpacesEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = ShowFileSpacesEvent.registerEvent(eventBus, ((ShowFileSpacesEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -1393,14 +1392,6 @@ public class EventHelper {
 				}
 				break;
 			
-			case SHOW_MY_FILES:
-				// A ShowMyFilesEvent!  Can the event handler we were given handle that?
-				if (eventHandler instanceof ShowMyFilesEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = ShowMyFilesEvent.registerEvent(eventBus, ((ShowMyFilesEvent.Handler) eventHandler));
-				}
-				break;
-			
 			case SHOW_PERSONAL_WORKSPACES:
 				// A ShowPersonalWorkspacesEvent!  Can the event handler we were given handle that?
 				if ( eventHandler instanceof ShowPersonalWorkspacesEvent.Handler )
@@ -1416,22 +1407,6 @@ public class EventHelper {
 				{
 					handlerNotDefined = false;
 					registrationHandler = ShowProjectManagementWSEvent.registerEvent( eventBus, ((ShowProjectManagementWSEvent.Handler) eventHandler) );
-				}
-				break;
-			
-			case SHOW_SHARED_BY_ME:
-				// A ShowSharedByMeEvent!  Can the event handler we were given handle that?
-				if (eventHandler instanceof ShowSharedByMeEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = ShowSharedByMeEvent.registerEvent(eventBus, ((ShowSharedByMeEvent.Handler) eventHandler));
-				}
-				break;
-			
-			case SHOW_SHARED_WITH_ME:
-				// A ShowSharedWithMeEvent!  Can the event handler we were given handle that?
-				if (eventHandler instanceof ShowSharedWithMeEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = ShowSharedWithMeEvent.registerEvent(eventBus, ((ShowSharedWithMeEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2051,12 +2026,12 @@ public class EventHelper {
 
 			case SHOW_BLOG_FOLDER:						hasHandler = (eventHandler instanceof ShowBlogFolderEvent.Handler);		   		   break;
 			case SHOW_CALENDAR_FOLDER:					hasHandler = (eventHandler instanceof ShowCalendarFolderEvent.Handler);		       break;
-			case SHOW_COLLECTION_VIEW:					    hasHandler = (eventHandler instanceof ShowCollectionViewEvent.Handler);		           break;
+			case SHOW_COLLECTION:						hasHandler = (eventHandler instanceof ShowCollectionEvent.Handler);				   break;
+			case SHOW_COLLECTION_VIEW:				    hasHandler = (eventHandler instanceof ShowCollectionViewEvent.Handler);		       break;
 			case SHOW_CONTENT_CONTROL:                  hasHandler = (eventHandler instanceof ShowContentControlEvent.Handler);            break;
 			case SHOW_DISCUSSION_FOLDER:				hasHandler = (eventHandler instanceof ShowDiscussionFolderEvent.Handler);		   break;
 			case SHOW_DISCUSSION_WORKSPACE:				hasHandler = (eventHandler instanceof ShowDiscussionWSEvent.Handler);			   break;
 			case SHOW_FILE_FOLDER:						hasHandler = (eventHandler instanceof ShowFileFolderEvent.Handler);		           break;
-			case SHOW_FILE_SPACES:						hasHandler = (eventHandler instanceof ShowFileSpacesEvent.Handler);				   break;
 			case SHOW_GENERIC_WORKSPACE:				hasHandler = (eventHandler instanceof ShowGenericWSEvent.Handler);			   	   break;
 			case SHOW_GLOBAL_WORKSPACE:					hasHandler = (eventHandler instanceof ShowGlobalWSEvent.Handler);			   	   break;
 			case SHOW_GUESTBOOK_FOLDER:				    hasHandler = (eventHandler instanceof ShowGuestbookFolderEvent.Handler);		   break;
@@ -2065,11 +2040,8 @@ public class EventHelper {
 			case SHOW_MICRO_BLOG_FOLDER:				hasHandler = (eventHandler instanceof ShowMicroBlogFolderEvent.Handler);		   break;
 			case SHOW_MILESTONE_FOLDER:				    hasHandler = (eventHandler instanceof ShowMilestoneFolderEvent.Handler);		   break;
 			case SHOW_MIRRORED_FILE_FOLDER:				hasHandler = (eventHandler instanceof ShowMirroredFileFolderEvent.Handler);		   break;
-			case SHOW_MY_FILES:							hasHandler = (eventHandler instanceof ShowMyFilesEvent.Handler);				   break;
 			case SHOW_PERSONAL_WORKSPACES:				hasHandler = (eventHandler instanceof ShowPersonalWorkspacesEvent.Handler);		   break;
 			case SHOW_PROJECT_MANAGEMENT_WORKSPACE:		hasHandler = (eventHandler instanceof ShowProjectManagementWSEvent.Handler);	   break;
-			case SHOW_SHARED_BY_ME:						hasHandler = (eventHandler instanceof ShowSharedByMeEvent.Handler);				   break;
-			case SHOW_SHARED_WITH_ME:					hasHandler = (eventHandler instanceof ShowSharedWithMeEvent.Handler);			   break;
 			case SHOW_SURVEY_FOLDER:				    hasHandler = (eventHandler instanceof ShowSurveyFolderEvent.Handler);		       break;
 			case SHOW_TASK_FOLDER:						hasHandler = (eventHandler instanceof ShowTaskFolderEvent.Handler);		           break;
 			case SHOW_TEAM_ROOT_WORKSPACE:				hasHandler = (eventHandler instanceof ShowTeamRootWSEvent.Handler);			   	   break;

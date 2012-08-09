@@ -33,8 +33,6 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.CollectionType;
-
 
 /**
  * This class holds all of the information necessary to execute the "get collection point url" command.
@@ -42,26 +40,16 @@ import org.kablink.teaming.gwt.client.util.CollectionType;
  * @author jwootton
  *
  */
-public class GetCollectionPointUrlCmd extends VibeRpcCmd
+public class GetCollectionPointDataCmd extends VibeRpcCmd
 {
-	private CollectionType m_collectionType;
-	
 	/**
 	 * For GWT serialization, must have a zero param contructor
 	 */
-	public GetCollectionPointUrlCmd()
+	public GetCollectionPointDataCmd()
 	{
 		super();
 	}
 	
-	/**
-	 * 
-	 */
-	public GetCollectionPointUrlCmd( CollectionType type )
-	{
-		this();
-		m_collectionType = type;
-	}
 	
 	/**
 	 * Returns the command's enumeration value.
@@ -73,14 +61,6 @@ public class GetCollectionPointUrlCmd extends VibeRpcCmd
 	@Override
 	public int getCmdType()
 	{
-		return VibeRpcCmdType.GET_COLLECTION_POINT_URL.ordinal();
-	}
-
-	/**
-	 * 
-	 */
-	public CollectionType getCollectionType()
-	{
-		return m_collectionType;
+		return VibeRpcCmdType.GET_COLLECTION_POINT_DATA.ordinal();
 	}
 }

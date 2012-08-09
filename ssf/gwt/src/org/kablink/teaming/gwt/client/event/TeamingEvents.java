@@ -153,12 +153,12 @@ public enum TeamingEvents implements IsSerializable {
 	
 	SHOW_BLOG_FOLDER,					// Show a blog folder.
 	SHOW_CALENDAR_FOLDER,				// Shows a calendar folder.
+	SHOW_COLLECTION,					// Show a given collection point
 	SHOW_COLLECTION_VIEW,				// Shows a collection view.
 	SHOW_CONTENT_CONTROL,				// Shows the ContentControl.
 	SHOW_DISCUSSION_FOLDER,				// Shows a discussion folder.
 	SHOW_DISCUSSION_WORKSPACE,			// Shows a discussion workspace.
 	SHOW_FILE_FOLDER,					// Shows a file       folder.
-	SHOW_FILE_SPACES,					// Shows the "file spaces" collection point.
 	SHOW_GENERIC_WORKSPACE,				// Shows a generic workspace.
 	SHOW_GLOBAL_WORKSPACE,				// Shows the global workspace
 	SHOW_GUESTBOOK_FOLDER,				// Shows a guest book folder.
@@ -167,11 +167,8 @@ public enum TeamingEvents implements IsSerializable {
 	SHOW_MICRO_BLOG_FOLDER,				// Shows a micro-blog folder.
 	SHOW_MILESTONE_FOLDER,				// Shows a milestone folder.
 	SHOW_MIRRORED_FILE_FOLDER,			// Shows a mirrored file folder.
-	SHOW_MY_FILES,						// Shows the "my files" collection point
 	SHOW_PERSONAL_WORKSPACES,			// Shows the Personal workspaces binder.
 	SHOW_PROJECT_MANAGEMENT_WORKSPACE,	// Show a project management workspace.
-	SHOW_SHARED_BY_ME,					// Show the "shared by me" collection point.
-	SHOW_SHARED_WITH_ME,				// Show the "shared with me" collection point.
 	SHOW_SURVEY_FOLDER,					// Shows a survey folder.
 	SHOW_TASK_FOLDER,					// Shows a task folder.
 	SHOW_TEAM_ROOT_WORKSPACE,			// Shows the team root workspace.

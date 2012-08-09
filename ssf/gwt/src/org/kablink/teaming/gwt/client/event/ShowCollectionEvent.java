@@ -32,34 +32,41 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
+import org.kablink.teaming.gwt.client.util.CollectionType;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ShowFileSpacesEvent is used to signal that we need to show the "File spaces"
- * collection point
+ * The ShowCollectionEvent is used to signal that we need to show the given
+ * collection point based on the CollectionType.
  * 
  * @author jwootton@novell.com
  */
-public class ShowFileSpacesEvent extends VibeEventBase<ShowFileSpacesEvent.Handler>
+public class ShowCollectionEvent extends VibeEventBase<ShowCollectionEvent.Handler>
 {
     public static Type<Handler> TYPE = new Type<Handler>();
+    
+    private CollectionType m_collectionType;
+    
     
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler
 	{
-		void onShowFileSpaces( ShowFileSpacesEvent event );
+		void onShowCollection( ShowCollectionEvent event );
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public ShowFileSpacesEvent()
+	public ShowCollectionEvent( CollectionType collectionType )
 	{
 		super();
+		
+		m_collectionType = collectionType;
 	}
 	
 	/**
@@ -72,7 +79,7 @@ public class ShowFileSpacesEvent extends VibeEventBase<ShowFileSpacesEvent.Handl
     @Override
     protected void dispatch( Handler handler )
     {
-        handler.onShowFileSpaces( this );
+        handler.onShowCollection( this );
     }
 	
 	/**
@@ -88,6 +95,14 @@ public class ShowFileSpacesEvent extends VibeEventBase<ShowFileSpacesEvent.Handl
         return TYPE;
     }
     
+    /**
+     * 
+     */
+    public CollectionType getCollectionType()
+    {
+    	return m_collectionType;
+    }
+    
 	/**
 	 * Returns the TeamingEvents enumeration value corresponding to
 	 * this event.
@@ -99,7 +114,7 @@ public class ShowFileSpacesEvent extends VibeEventBase<ShowFileSpacesEvent.Handl
 	@Override
 	public TeamingEvents getEventEnum()
 	{
-		return TeamingEvents.SHOW_FILE_SPACES;
+		return TeamingEvents.SHOW_COLLECTION;
 	}
 	
 	/**

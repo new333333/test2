@@ -35,11 +35,9 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.event.ShowFileSpacesEvent;
-import org.kablink.teaming.gwt.client.event.ShowMyFilesEvent;
-import org.kablink.teaming.gwt.client.event.ShowSharedByMeEvent;
-import org.kablink.teaming.gwt.client.event.ShowSharedWithMeEvent;
+import org.kablink.teaming.gwt.client.event.ShowCollectionEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -133,7 +131,7 @@ public class FilrActionsCtrl extends Composite
 		action = new FilrAction(
 							imgBundle.myFiles_transparent_40(),
 							messages.myFiles(),
-							new ShowMyFilesEvent() );
+							new ShowCollectionEvent( CollectionType.MY_FILES ) );
 		action.addDomHandler( this, ClickEvent.getType() );
 		mainPanel.add( action );
 		
@@ -141,7 +139,7 @@ public class FilrActionsCtrl extends Composite
 		action = new FilrAction(
 							imgBundle.sharedWithMe_transparent_40(),
 							messages.sharedWithMe(),
-							new ShowSharedWithMeEvent() );
+							new ShowCollectionEvent( CollectionType.SHARED_WITH_ME ) );
 		action.addDomHandler( this, ClickEvent.getType() );
 		mainPanel.add( action );
 		
@@ -149,7 +147,7 @@ public class FilrActionsCtrl extends Composite
 		action = new FilrAction(
 							imgBundle.fileSpaces_transparent_40(),
 							messages.fileSpaces(),
-							new ShowFileSpacesEvent() );
+							new ShowCollectionEvent( CollectionType.FILE_SPACES ) );
 		action.addDomHandler( this, ClickEvent.getType() );
 		mainPanel.add( action );
 		
@@ -157,7 +155,7 @@ public class FilrActionsCtrl extends Composite
 		action = new FilrAction(
 							imgBundle.sharedByMe_transparent_40(),
 							messages.sharedByMe(),
-							new ShowSharedByMeEvent() );
+							new ShowCollectionEvent( CollectionType.SHARED_BY_ME ) );
 		action.addDomHandler( this, ClickEvent.getType() );
 		mainPanel.add( action );
 		

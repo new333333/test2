@@ -729,19 +729,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_COLLECTION_POINT_URL:
+		case GET_COLLECTION_POINT_DATA:
 		{
-			GetCollectionPointUrlCmd gcpuCmd;
-			StringRpcResponseData responseData;
-			String url;
+			CollectionPointData collectionPointData;
 			
-			gcpuCmd = (GetCollectionPointUrlCmd) cmd;
-			url = GwtServerHelper.getCollectionPointUrl(
-													this,
-													getRequest( ri ),
-													gcpuCmd.getCollectionType() );
-			responseData = new StringRpcResponseData( url );
-			response = new VibeRpcResponse( responseData );
+			collectionPointData= GwtServerHelper.getCollectionPointData(
+																	this,
+																	getRequest( ri ) );
+			response = new VibeRpcResponse( collectionPointData );
 			return response;
 		}
 		

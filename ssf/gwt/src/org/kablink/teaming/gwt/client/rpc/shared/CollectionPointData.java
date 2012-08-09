@@ -30,89 +30,82 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.event;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.event.shared.EventHandler;
-import com.google.web.bindery.event.shared.HandlerRegistration;
-import com.google.web.bindery.event.shared.SimpleEventBus;
+import org.kablink.teaming.gwt.client.util.CollectionType;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * The ShowSharedByMeEvent is used to signal that we need to show the "Shared by Me"
- * collection point
- * 
- * @author jwootton@novell.com
+ * This class holds information about collection points.  At this time the only information
+ * we have are the urls needed to invoke each collection point.
+ * @author jwootton
+ *
  */
-public class ShowSharedByMeEvent extends VibeEventBase<ShowSharedByMeEvent.Handler>
+public class CollectionPointData
+	implements IsSerializable, VibeRpcResponseData
 {
-    public static Type<Handler> TYPE = new Type<Handler>();
-    
-	/**
-	 * Handler interface for this event.
-	 */
-	public interface Handler extends EventHandler
-	{
-		void onShowSharedByMe( ShowSharedByMeEvent event );
-	}
+	private String m_showFileSpacesUrl = null;
+	private String m_showMyFilesUrl = null;
+	private String m_showSharedByMeUrl = null;
+	private String m_showSharedWithMeUrl = null;
 	
 	/**
-	 * Class constructor.
+	 * 
 	 */
-	public ShowSharedByMeEvent()
+	public CollectionPointData()
 	{
 		super();
 	}
 	
 	/**
-	 * Dispatches this event when one is triggered.
 	 * 
-	 * Implements GwtEvent.dispatch()
-	 * 
-	 * @param handler
 	 */
-    @Override
-    protected void dispatch( Handler handler )
-    {
-        handler.onShowSharedByMe( this );
-    }
-	
-	/**
-	 * Returns the GwtEvent.Type of this event.
-	 *
-	 * Implements GwtEvent.getAssociatedType()
-	 * 
-	 * @return
-	 */
-    @Override
-    public Type<Handler> getAssociatedType()
-    {
-        return TYPE;
-    }
-    
-	/**
-	 * Returns the TeamingEvents enumeration value corresponding to
-	 * this event.
-	 * 
-	 * Implements VibeBaseEvent.getEventEnum()
-	 * 
-	 * @return
-	 */
-	@Override
-	public TeamingEvents getEventEnum()
+	public String getUrl( CollectionType collectionType )
 	{
-		return TeamingEvents.SHOW_SHARED_BY_ME;
+		// Remember the url we just retrieved
+		switch ( collectionType )
+		{
+		case FILE_SPACES:
+			return m_showFileSpacesUrl;
+		
+		case MY_FILES:
+			return m_showMyFilesUrl;
+			
+		case SHARED_BY_ME:
+			return m_showSharedByMeUrl;
+			
+		case SHARED_WITH_ME:
+			return m_showSharedWithMeUrl;
+			
+		default:
+			return null;
+		}
 	}
 	
 	/**
-	 * Registers this event on the given event bus and returns its
-	 * HandlerRegistration.
 	 * 
-	 * @param eventBus
-	 * @param handler
-	 * 
-	 * @return
 	 */
-	public static HandlerRegistration registerEvent( SimpleEventBus eventBus, Handler handler )
+	public void setUrl( CollectionType collectionType, String url )
 	{
-		return eventBus.addHandler( TYPE, handler );
+		// Remember the url we just retrieved
+		switch ( collectionType )
+		{
+		case FILE_SPACES:
+			m_showFileSpacesUrl = url;
+			break;
+		
+		case MY_FILES:
+			m_showMyFilesUrl = url;
+			break;
+			
+		case SHARED_BY_ME:
+			m_showSharedByMeUrl = url;
+			break;
+			
+		case SHARED_WITH_ME:
+			m_showSharedWithMeUrl = url;
+			break;
+		}
 	}
 }
