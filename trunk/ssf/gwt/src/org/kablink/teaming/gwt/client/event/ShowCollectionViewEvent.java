@@ -45,7 +45,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  * 
  * @author drfoster@novell.com
  */
-public class ShowCollectionEvent extends VibeEventBase<ShowCollectionEvent.Handler> {
+public class ShowCollectionViewEvent extends VibeEventBase<ShowCollectionViewEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private BinderInfo	m_binderInfo;	//
@@ -55,13 +55,13 @@ public class ShowCollectionEvent extends VibeEventBase<ShowCollectionEvent.Handl
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onShowCollection(ShowCollectionEvent event);
+		void onShowCollectionView(ShowCollectionViewEvent event);
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public ShowCollectionEvent() {
+	public ShowCollectionViewEvent() {
 		// Initialize the super class.
 		super();
 	}
@@ -72,7 +72,7 @@ public class ShowCollectionEvent extends VibeEventBase<ShowCollectionEvent.Handl
 	 * @param binderInfo
 	 * @param viewReady
 	 */
-	public ShowCollectionEvent(BinderInfo binderInfo, ViewReady viewReady) {
+	public ShowCollectionViewEvent(BinderInfo binderInfo, ViewReady viewReady) {
 		// Initialize this object...
 		this();
 		
@@ -106,7 +106,7 @@ public class ShowCollectionEvent extends VibeEventBase<ShowCollectionEvent.Handl
 	 */
 	@Override
 	protected void dispatch(Handler handler) {
-		handler.onShowCollection(this);
+		handler.onShowCollectionView(this);
 	}
 	
 	/**
@@ -131,7 +131,7 @@ public class ShowCollectionEvent extends VibeEventBase<ShowCollectionEvent.Handl
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.SHOW_COLLECTION;
+		return TeamingEvents.SHOW_COLLECTION_VIEW;
 	}
 		
 	/**

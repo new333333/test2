@@ -1268,12 +1268,12 @@ public class EventHelper {
 				}
 				break;
 			
-			case SHOW_COLLECTION:
+			case SHOW_COLLECTION_VIEW:
 				// A ShowCollectionEvent!  Can the event handler we
 				// were given handle that?
-				if (eventHandler instanceof ShowCollectionEvent.Handler) {
+				if (eventHandler instanceof ShowCollectionViewEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = ShowCollectionEvent.registerEvent(eventBus, ((ShowCollectionEvent.Handler) eventHandler));
+					registrationHandler = ShowCollectionViewEvent.registerEvent(eventBus, ((ShowCollectionViewEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2051,7 +2051,7 @@ public class EventHelper {
 
 			case SHOW_BLOG_FOLDER:						hasHandler = (eventHandler instanceof ShowBlogFolderEvent.Handler);		   		   break;
 			case SHOW_CALENDAR_FOLDER:					hasHandler = (eventHandler instanceof ShowCalendarFolderEvent.Handler);		       break;
-			case SHOW_COLLECTION:					    hasHandler = (eventHandler instanceof ShowCollectionEvent.Handler);		           break;
+			case SHOW_COLLECTION_VIEW:					    hasHandler = (eventHandler instanceof ShowCollectionViewEvent.Handler);		           break;
 			case SHOW_CONTENT_CONTROL:                  hasHandler = (eventHandler instanceof ShowContentControlEvent.Handler);            break;
 			case SHOW_DISCUSSION_FOLDER:				hasHandler = (eventHandler instanceof ShowDiscussionFolderEvent.Handler);		   break;
 			case SHOW_DISCUSSION_WORKSPACE:				hasHandler = (eventHandler instanceof ShowDiscussionWSEvent.Handler);			   break;

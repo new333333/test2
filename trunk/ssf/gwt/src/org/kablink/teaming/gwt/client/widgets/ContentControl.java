@@ -65,7 +65,7 @@ import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
 import org.kablink.teaming.gwt.client.event.ShowBlogFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowCalendarFolderEvent;
-import org.kablink.teaming.gwt.client.event.ShowCollectionEvent;
+import org.kablink.teaming.gwt.client.event.ShowCollectionViewEvent;
 import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
 import org.kablink.teaming.gwt.client.event.ShowDiscussionFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowDiscussionWSEvent;
@@ -129,7 +129,7 @@ public class ContentControl extends Composite
 		GotoUrlEvent.Handler,
 		ShowBlogFolderEvent.Handler,
 		ShowCalendarFolderEvent.Handler,
-		ShowCollectionEvent.Handler,
+		ShowCollectionViewEvent.Handler,
 		ShowDiscussionFolderEvent.Handler,
 		ShowDiscussionWSEvent.Handler,
 		ShowFileFolderEvent.Handler,
@@ -172,7 +172,7 @@ public class ContentControl extends Composite
 		// Show events.
 		TeamingEvents.SHOW_BLOG_FOLDER,
 		TeamingEvents.SHOW_CALENDAR_FOLDER,
-		TeamingEvents.SHOW_COLLECTION,
+		TeamingEvents.SHOW_COLLECTION_VIEW,
 		TeamingEvents.SHOW_DISCUSSION_FOLDER,
 		TeamingEvents.SHOW_DISCUSSION_WORKSPACE,
 		TeamingEvents.SHOW_FILE_FOLDER,
@@ -630,7 +630,7 @@ public class ContentControl extends Composite
 					switch ( bt )
 					{
 					case COLLECTION:
-						GwtTeaming.fireEvent( new ShowCollectionEvent( bi, viewReady ) );
+						GwtTeaming.fireEvent( new ShowCollectionViewEvent( bi, viewReady ) );
 						m_contentInGWT = true;
 						break;
 						
@@ -1054,7 +1054,7 @@ public class ContentControl extends Composite
 	 * @param event
 	 */
 	@Override
-	public void onShowCollection( final ShowCollectionEvent event )
+	public void onShowCollectionView( final ShowCollectionViewEvent event )
 	{
 		// Create a CollectionView widget for the selected BinderInfo.
 		CollectionView.createAsync(
