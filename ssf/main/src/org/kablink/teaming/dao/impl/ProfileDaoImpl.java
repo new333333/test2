@@ -567,7 +567,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
  	 */
  	@Override
 	public User findUserByLdapGuid( final String ldapGuid, final Long zoneId ) 
-		throws NoPrincipalByTheNameException
+		throws NoUserByTheNameException
 	{
 	   long begin = System.nanoTime();
 	   try
