@@ -251,7 +251,6 @@ public class GwtMainPage extends ResizeComposite
 	private String m_showMyFilesUrl = null;
 	private String m_showSharedByMeUrl = null;
 	private String m_showSharedWithMeUrl = null;
-	private AsyncCallback<VibeRpcResponse> m_getCollectionPointUrlRpcCallback = null;
 
 	private com.google.gwt.dom.client.Element m_tagPanelElement;
 
@@ -681,76 +680,74 @@ public class GwtMainPage extends ResizeComposite
 	public void getCollectionPointUrlAndShowCollectionPoint( final CollectionType collectionType )
 	{
 		GetCollectionPointUrlCmd cmd;
+		AsyncCallback<VibeRpcResponse> getCollectionPointUrlRpcCallback;
 		
-		if ( m_getCollectionPointUrlRpcCallback == null )
+		getCollectionPointUrlRpcCallback = new AsyncCallback<VibeRpcResponse>()
 		{
-			m_getCollectionPointUrlRpcCallback = new AsyncCallback<VibeRpcResponse>()
+			/**
+			 * 
+			 */
+			@Override
+			public void onFailure( Throwable t )
 			{
-				/**
-				 * 
-				 */
-				@Override
-				public void onFailure( Throwable t )
-				{
-					GwtClientHelper.handleGwtRPCFailure(
-							t,
-							GwtTeaming.getMessages().rpcFailure_GetCollectionPointUrl(),
-							collectionType.name() );
-				}
+				GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetCollectionPointUrl(),
+						collectionType.name() );
+			}
+			
+			/**
+			 * 
+			 */
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				StringRpcResponseData responseData;
+				final String url;
 				
-				/**
-				 * 
-				 */
-				@Override
-				public void onSuccess( VibeRpcResponse response )
+				responseData = (StringRpcResponseData) response.getResponseData();
+				url = responseData.getStringValue();
+
+				if ( url != null && url.length() > 0 )
 				{
-					StringRpcResponseData responseData;
-					final String url;
-					
-					responseData = (StringRpcResponseData) response.getResponseData();
-					url = responseData.getStringValue();
+					Scheduler.ScheduledCommand cmd;
 
-					if ( url != null && url.length() > 0 )
+					cmd = new Scheduler.ScheduledCommand()
 					{
-						Scheduler.ScheduledCommand cmd;
-
-						cmd = new Scheduler.ScheduledCommand()
+						@Override
+						public void execute()
 						{
-							@Override
-							public void execute()
+							// Show the collection point.
+							gotoUrlAsync( url );
+							
+							// Remember the url we just retrieved
+							switch ( collectionType )
 							{
-								// Show the collection point.
-								gotoUrlAsync( url );
+							case FILE_SPACES:
+								m_showFileSpacesUrl = url;
+								break;
+							
+							case MY_FILES:
+								m_showMyFilesUrl = url;
+								break;
 								
-								// Remember the url we just retrieved
-								switch ( collectionType )
-								{
-								case FILE_SPACES:
-									m_showFileSpacesUrl = url;
-									break;
+							case SHARED_BY_ME:
+								m_showSharedByMeUrl = url;
+								break;
 								
-								case MY_FILES:
-									m_showMyFilesUrl = url;
-									break;
-									
-								case SHARED_BY_ME:
-									m_showSharedByMeUrl = url;
-									break;
-									
-								case SHARED_WITH_ME:
-									m_showSharedWithMeUrl = url;
-									break;
-								}
+							case SHARED_WITH_ME:
+								m_showSharedWithMeUrl = url;
+								break;
 							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
-			};
-		}
+			}
+		};
 		
 		cmd = new GetCollectionPointUrlCmd( collectionType );
-		GwtClientHelper.executeCommand( cmd, m_getCollectionPointUrlRpcCallback );
+		GwtClientHelper.executeCommand( cmd, getCollectionPointUrlRpcCallback );
 	}
 	
 	/**
