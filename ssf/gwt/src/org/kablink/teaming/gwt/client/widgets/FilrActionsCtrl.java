@@ -35,14 +35,18 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ShowCollectionEvent;
-import org.kablink.teaming.gwt.client.event.VibeEventBase;
+import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.CollectionType;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -66,7 +70,7 @@ public class FilrActionsCtrl extends Composite
 	 */
 	public class FilrAction extends Composite
 	{
-		private VibeEventBase<?> m_event;
+		private Command m_cmd;
 		
 		/**
 		 * 
@@ -74,13 +78,13 @@ public class FilrActionsCtrl extends Composite
 		public FilrAction(
 						ImageResource imgResource,
 						String text,
-						VibeEventBase<?> event )
+						Command cmd )
 		{
 			FlowPanel mainPanel;
 			Label label;
 			Image img;
 			
-			m_event = event;
+			m_cmd = cmd;
 			
 			mainPanel = new FlowPanel();
 			mainPanel.addStyleName( "FilrAction_MainPanel" );
@@ -107,8 +111,8 @@ public class FilrActionsCtrl extends Composite
 		 */
 		public void executeAction()
 		{
-			if ( m_event != null )
-				GwtTeaming.fireEvent( m_event );
+			if ( m_cmd != null )
+				m_cmd.execute();
 		}
 	}
 	
@@ -121,6 +125,7 @@ public class FilrActionsCtrl extends Composite
 		FilrAction action;
 		GwtTeamingFilrImageBundle imgBundle;
 		GwtTeamingMessages messages;
+		Command cmd;
 		
 		mainPanel = new HorizontalPanel();
 		mainPanel.addStyleName( "FilrActionsCtrl_mainPanel" );
@@ -129,42 +134,92 @@ public class FilrActionsCtrl extends Composite
 		messages = GwtTeaming.getMessages();
 		
 		// Add "My Files" action
+		cmd = new Command()
+		{
+			@Override
+			public void execute()
+			{
+				GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.MY_FILES ) );
+			}
+		};
 		action = new FilrAction(
 							imgBundle.myFiles_transparent_40(),
 							messages.myFiles(),
-							new ShowCollectionEvent( CollectionType.MY_FILES ) );
+							cmd );
 		action.addDomHandler( this, ClickEvent.getType() );
 		mainPanel.add( action );
 		
 		// Add the "Shared with Me" action
+		cmd = new Command()
+		{
+			@Override
+			public void execute()
+			{
+				GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_WITH_ME ) );
+			}
+		};
 		action = new FilrAction(
 							imgBundle.sharedWithMe_transparent_40(),
 							messages.sharedWithMe(),
-							new ShowCollectionEvent( CollectionType.SHARED_WITH_ME ) );
+							cmd );
 		action.addDomHandler( this, ClickEvent.getType() );
 		mainPanel.add( action );
 		
 		// Add the "File Spaces" action
+		cmd = new Command()
+		{
+			@Override
+			public void execute()
+			{
+				GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.FILE_SPACES ) );
+			}
+		};
 		action = new FilrAction(
 							imgBundle.fileSpaces_transparent_40(),
 							messages.fileSpaces(),
-							new ShowCollectionEvent( CollectionType.FILE_SPACES ) );
+							cmd );
 		action.addDomHandler( this, ClickEvent.getType() );
 		mainPanel.add( action );
 		
 		// Add the "Shared by Me" action
+		cmd = new Command()
+		{
+			@Override
+			public void execute()
+			{
+				GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_BY_ME ) );
+			}
+		};
 		action = new FilrAction(
 							imgBundle.sharedByMe_transparent_40(),
 							messages.sharedByMe(),
-							new ShowCollectionEvent( CollectionType.SHARED_BY_ME ) );
+							cmd );
 		action.addDomHandler( this, ClickEvent.getType() );
 		mainPanel.add( action );
 		
 		// Add the "What's New" action
+		cmd = new Command()
+		{
+			@Override
+			public void execute()
+			{
+				ActivityStreamInfo asi;
+				
+				//!!!
+				// Figure out which collection point is selected and invoke "what's new"
+				// on that collection point.
+				asi = new ActivityStreamInfo();
+				asi.setActivityStream( ActivityStream.SHARED_WITH_ME );
+				//!!!asi.setBinderId( m_contextBinder.getBinderId() );
+				//!!!asi.setTitle( m_contextBinder.getBinderTitle() );
+
+				GwtTeaming.fireEvent( new ActivityStreamEnterEvent( asi, ActivityStreamDataType.OTHER ) );
+			}
+		};
 		action = new FilrAction(
 							imgBundle.whatsNew_transparent_40(),
 							messages.whatsNew(),
-							null );
+							cmd );
 		action.addDomHandler( this, ClickEvent.getType() );
 		mainPanel.add( action );
 		
