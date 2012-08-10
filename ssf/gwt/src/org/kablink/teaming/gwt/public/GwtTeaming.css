@@ -4170,6 +4170,7 @@ td.datePickerMonth {
 
 .FilrAction_MainPanel:hover
 {
+	background-repeat: repeat;
     border: 1px solid #3C4143;
     border-radius: 5px 5px 5px 5px;
     cursor: pointer;
