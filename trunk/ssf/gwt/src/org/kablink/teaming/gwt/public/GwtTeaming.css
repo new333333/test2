@@ -2348,6 +2348,14 @@ body, table td, select
 	position: absolute;
 }
 
+.mastheadFilrSearchComposite
+{
+	bottom: 30px;
+	position: absolute;
+	right: 10px;
+	z-index: 1000;
+}
+
 /* Style used with the panel that holds the global actions in the masthead. */
 .mastheadGlobalActionsPanel
 {

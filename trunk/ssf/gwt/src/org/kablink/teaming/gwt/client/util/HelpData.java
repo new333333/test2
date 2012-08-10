@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.util;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 
 
@@ -181,6 +182,7 @@ public class HelpData
 		String url;
 		String lang;
 		String guideComponent = null;
+		String product;
 		
 		//!!! Get the base help url from ssf-ext.properties.
 		url = "http://www.novell.com";
@@ -194,9 +196,18 @@ public class HelpData
 		}
 		
 		url += "/documentation";
+
+		product = "/vibe33";
 		
+		// Are we running Filr?
+		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
+		{
+			// Yes
+			url += "/filr10";
+			product = "/filr10";
+		}
 		// Are we running Novell Teaming?
-		if ( GwtMainPage.m_requestInfo.isNovellTeaming() )
+		else if ( GwtMainPage.m_requestInfo.isNovellTeaming() )
 		{
 			// Yes
 			url += "/vibe33";
@@ -209,17 +220,17 @@ public class HelpData
 			if ( m_guideName.equalsIgnoreCase( USER_GUIDE ) )
 			{
 				// Get the url to the user guide.
-				guideComponent = "/vibe33_user/data/";
+				guideComponent = product + "_user/data/";
 			}
 			else if ( m_guideName.equalsIgnoreCase( ADV_USER_GUIDE ) )
 			{
 				// Get the url to the advanced user guide.
-				guideComponent = "/vibe33_useradv/data/";
+				guideComponent = product + "_useradv/data/";
 			}
 			else if ( m_guideName.equalsIgnoreCase( ADMIN_GUIDE ) )
 			{
 				// Get the url to the administration guide.
-				guideComponent = "/vibe33_admin/data/";
+				guideComponent = product + "_admin/data/";
 			}
 			else
 				guideComponent = null;

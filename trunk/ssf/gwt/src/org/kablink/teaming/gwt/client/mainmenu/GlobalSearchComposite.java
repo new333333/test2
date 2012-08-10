@@ -62,9 +62,10 @@ public class GlobalSearchComposite extends Composite {
 	private TeamingPopupPanel               m_soPopup;		//
 
 	/**
-	 * Constructor method.
+	 * 
 	 */
-	public GlobalSearchComposite() {
+	public GlobalSearchComposite( boolean showAdvOptionsImg )
+	{
 		// Initialize the super class...
 		super();
 		
@@ -73,10 +74,16 @@ public class GlobalSearchComposite extends Composite {
 		m_messages = GwtTeaming.getMessages();
 
 		// ...initialize the GlobalSearchComposite's contents...
-		initSearchContents();
+		initSearchContents( showAdvOptionsImg );
 
 		// ...and initialize the Composite itself.
 		initWidget(m_mainPanel);
+	}
+	/**
+	 * Constructor method.
+	 */
+	public GlobalSearchComposite() {
+		this( true );
 	}
 
 	/**
@@ -85,86 +92,88 @@ public class GlobalSearchComposite extends Composite {
 	 * @return
 	 */
 	public MenuBarButton     getSearchOptionsButton() {return m_soButton;   }
-	public SearchMenuPanel   getSearchMenuPanel()     {return m_searchPanel;}
-	public TeamingPopupPanel getSearchOptionsPopup()  {return m_soPopup;    }
+//!!!	public SearchMenuPanel   getSearchMenuPanel()     {return m_searchPanel;}
+//!!!	public TeamingPopupPanel getSearchOptionsPopup()  {return m_soPopup;    }
 
 	/*
 	 * Initializes the contents of the GlobalSearchComposite.
 	 */
-	private void initSearchContents() {
+	private void initSearchContents( boolean showAdvOptionsImg ) {
 		m_mainPanel   = new FlowPanel();
 		m_mainPanel.addStyleName("vibe-globalSearch");
 		
 		m_searchPanel = new SearchMenuPanel();
 		m_mainPanel.add(m_searchPanel);
 		
-		m_soButton = new MenuBarButton(m_images.searchOptions(), m_messages.mainMenuAltSearchOptions(), new Command() {
-			@Override
-			public void execute() {
-				m_soButton.removeStyleName("subhead-control-bg2");
-				m_soPopup = new TeamingPopupPanel(true, false);
-				GwtClientHelper.rollDownPopup(m_soPopup);
-				m_soPopup.addStyleName("searchOptions_Browser roundcornerSM-bottom");
-				SearchOptionsComposite.createAsync(
-						m_soPopup,
-						new SearchOptionsCompositeClient() {					
-					@Override
-					public void onUnavailable() {
-						// Nothing to do.  Error handled in
-						// asynchronous provider.
-					}
-					
-					@Override
-					public void onSuccess(SearchOptionsComposite soc) {
-						// Connect things together...
-						soc.addStyleName("searchOptions");
-						m_soPopup.setWidget(soc);
-						m_soPopup.setGlassEnabled(true);
-						m_soPopup.setGlassStyleName("vibe-mainMenuPopup_Glass");
+		if ( showAdvOptionsImg ) {
+			m_soButton = new MenuBarButton(m_images.searchOptions(), m_messages.mainMenuAltSearchOptions(), new Command() {
+				@Override
+				public void execute() {
+					m_soButton.removeStyleName("subhead-control-bg2");
+					m_soPopup = new TeamingPopupPanel(true, false);
+					GwtClientHelper.rollDownPopup(m_soPopup);
+					m_soPopup.addStyleName("searchOptions_Browser roundcornerSM-bottom");
+					SearchOptionsComposite.createAsync(
+							m_soPopup,
+							new SearchOptionsCompositeClient() {					
+						@Override
+						public void onUnavailable() {
+							// Nothing to do.  Error handled in
+							// asynchronous provider.
+						}
 						
-						// ...and show the search options popup.  We do
-						// ...this as a scheduled command so that the
-						// ...asynchronous processing related to the
-						// ...creation of the SearchOptionsComposite
-						// ...has a chance to complete.
-						ScheduledCommand doShow = new ScheduledCommand() {
-							@Override
-							public void execute() {
-								// Position and show the popup as per
-								// the position of the search panel on
-								// the menu.
-								m_soPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-									@Override
-									public void setPosition(int offsetWidth, int offsetHeight) {
-										int soPopupLeft = ((m_soButton.getAbsoluteLeft() + m_soButton.getOffsetWidth()) - offsetWidth);
-										int soPopupTop  = m_soButton.getElement().getAbsoluteBottom();
-										
-/*
-	GwtClientHelper.deferredAlert(
-		  "w:"   + offsetWidth                                 +
-		"\nh:"   + offsetHeight                                +
-		"\nb:l:" + m_soButton.getAbsoluteLeft()                +
-		"\nb:w:" + m_soButton.getOffsetWidth()                 +
-		"\nb:b:" + m_soButton.getElement().getAbsoluteBottom() +
-		"\nl:"   + soPopupLeft                                 +
-		"\nt:"   + soPopupTop);
-*/
-										
-										m_soPopup.setPopupPosition(soPopupLeft, soPopupTop);
-									}
-								});
-							}
-						};
-						Scheduler.get().scheduleDeferred(doShow);
-					}
-				});
-			}});
-		m_soButton.addStyleName("vibe-mainMenuButton subhead-control-bg1 roundcornerSM");
-		
-		MenuBar soBar = new MenuBar();
-		soBar.addStyleName("vibe-mainMenuSearchOptions_Button");
-		soBar.addItem(m_soButton);
-		m_mainPanel.add(soBar);
+						@Override
+						public void onSuccess(SearchOptionsComposite soc) {
+							// Connect things together...
+							soc.addStyleName("searchOptions");
+							m_soPopup.setWidget(soc);
+							m_soPopup.setGlassEnabled(true);
+							m_soPopup.setGlassStyleName("vibe-mainMenuPopup_Glass");
+							
+							// ...and show the search options popup.  We do
+							// ...this as a scheduled command so that the
+							// ...asynchronous processing related to the
+							// ...creation of the SearchOptionsComposite
+							// ...has a chance to complete.
+							ScheduledCommand doShow = new ScheduledCommand() {
+								@Override
+								public void execute() {
+									// Position and show the popup as per
+									// the position of the search panel on
+									// the menu.
+									m_soPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+										@Override
+										public void setPosition(int offsetWidth, int offsetHeight) {
+											int soPopupLeft = ((m_soButton.getAbsoluteLeft() + m_soButton.getOffsetWidth()) - offsetWidth);
+											int soPopupTop  = m_soButton.getElement().getAbsoluteBottom();
+											
+	/*
+		GwtClientHelper.deferredAlert(
+			  "w:"   + offsetWidth                                 +
+			"\nh:"   + offsetHeight                                +
+			"\nb:l:" + m_soButton.getAbsoluteLeft()                +
+			"\nb:w:" + m_soButton.getOffsetWidth()                 +
+			"\nb:b:" + m_soButton.getElement().getAbsoluteBottom() +
+			"\nl:"   + soPopupLeft                                 +
+			"\nt:"   + soPopupTop);
+	*/
+											
+											m_soPopup.setPopupPosition(soPopupLeft, soPopupTop);
+										}
+									});
+								}
+							};
+							Scheduler.get().scheduleDeferred(doShow);
+						}
+					});
+				}});
+			m_soButton.addStyleName("vibe-mainMenuButton subhead-control-bg1 roundcornerSM");
+			
+			MenuBar soBar = new MenuBar();
+			soBar.addStyleName("vibe-mainMenuSearchOptions_Button");
+			soBar.addItem(m_soButton);
+			m_mainPanel.add(soBar);
+		}
 	}
 	
 	/**
