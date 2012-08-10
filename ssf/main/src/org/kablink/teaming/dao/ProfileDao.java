@@ -125,6 +125,8 @@ public interface ProfileDao {
 
  	public User findUserByLdapGuid( String ldapGuid, Long zoneId ) 
  		throws NoUserByTheNameException;
+ 	
+ 	public Long findPrincipalIdByLdapGuid(String ldapGuid, Long zoneId);
 
  	public Principal findPrincipalByName(String name, Long zoneId) 
  		throws NoPrincipalByTheNameException;
