@@ -45,6 +45,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 
@@ -116,12 +117,12 @@ public class FilrActionsCtrl extends Composite
 	 */
 	public FilrActionsCtrl()
 	{
-		FlowPanel mainPanel;
+		HorizontalPanel mainPanel;
 		FilrAction action;
 		GwtTeamingFilrImageBundle imgBundle;
 		GwtTeamingMessages messages;
 		
-		mainPanel = new FlowPanel();
+		mainPanel = new HorizontalPanel();
 		mainPanel.addStyleName( "FilrActionsCtrl_mainPanel" );
 		
 		imgBundle = GwtTeaming.getFilrImageBundle();

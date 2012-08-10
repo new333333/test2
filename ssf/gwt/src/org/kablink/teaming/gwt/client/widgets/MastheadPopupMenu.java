@@ -92,14 +92,18 @@ public class MastheadPopupMenu extends PopupMenu
 				addMenuItem( new EditPersonalPreferencesEvent(), img, messages.personalPrefsMenuItem() );
 			
 				// Create the "Open News Feed" menu item.
-				img = new Image( GwtTeaming.getImageBundle().newsFeedMenuImg() );
-				addMenuItem( new ViewTeamingFeedEvent(), img, messages.newsFeedMenuItem() );
+				if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
+				{
+					img = new Image( GwtTeaming.getImageBundle().newsFeedMenuImg() );
+					addMenuItem( new ViewTeamingFeedEvent(), img, messages.newsFeedMenuItem() );
+				}
 				
 				// Add a separator
 				addSeparator();
 			}
 			
 			// Create the "Vibe Resource Library" menu item.
+			if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
 			{
 				img = new Image( GwtTeaming.getImageBundle().resourceLibMenuImg() );
 				addMenuItem( new ViewResourceLibraryEvent(), img, messages.resourceLibMenuItem() );

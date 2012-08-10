@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
+import org.kablink.teaming.gwt.client.mainmenu.GlobalSearchComposite;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -164,11 +165,22 @@ public class MastHead extends Composite
 		// Are we running Filr?
 		if ( m_requestInfo.isLicenseFilr() )
 		{
+			GlobalSearchComposite globalSearchWidget;
+			FlowPanel globalSearchPanel;
+			
 			// Yes
 			// Create a Filr Actions panel
 			m_filrActionsCtrl = new FilrActionsCtrl();
 			m_filrActionsCtrl.addStyleName( "mastheadFilrActionsPanel" );
 			m_mainMastheadPanel.add( m_filrActionsCtrl );
+			
+			// Add the search control
+			globalSearchPanel = new FlowPanel();
+			globalSearchPanel.addStyleName( "mastheadFilrSearchComposite" );
+			globalSearchWidget = new GlobalSearchComposite( false );
+			globalSearchPanel.add( globalSearchWidget );
+			
+			m_mainMastheadPanel.add( globalSearchPanel );
 		}
 		
 		// Create the panel that will hold the global actions such as Administration", "Logout" etc

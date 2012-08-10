@@ -67,6 +67,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -763,6 +764,7 @@ public final class MiscUtil
 		String url;
 		String lang;
 		String guideComponent = null;
+		String product;
 		
 		// Get the base help url from ssf-ext.properties.
 		url = SPropsUtil.getString( "help.hostName", "http://www.novell.com" );
@@ -777,8 +779,17 @@ public final class MiscUtil
 		
 		url += "/documentation";
 		
+		product = "/vibe33";
+		
+		// Are we running Filr?
+		if ( Utils.checkIfFilr() )
+		{
+			// Yes
+			url += "/filr10";
+			product = "/filr10";
+		}
 		// Are we running Novell Teaming?
-		if ( ReleaseInfo.isLicenseRequiredEdition())
+		else if ( ReleaseInfo.isLicenseRequiredEdition())
 		{
 			// Yes
 			url += "/vibe33";
@@ -791,17 +802,17 @@ public final class MiscUtil
 			if ( guideName.equalsIgnoreCase( USER_GUIDE ) )
 			{
 				// Get the url to the user guide.
-				guideComponent = "/vibe33_user/data/";
+				guideComponent = product + "_user/data/";
 			}
 			else if ( guideName.equalsIgnoreCase( ADV_USER_GUIDE ) )
 			{
 				// Get the url to the advanced user guide.
-				guideComponent = "/vibe33_useradv/data/";
+				guideComponent = product + "_useradv/data/";
 			}
 			else if ( guideName.equalsIgnoreCase( ADMIN_GUIDE ) )
 			{
 				// Get the url to the administration guide.
-				guideComponent = "/vibe33_admin/data/";
+				guideComponent = product + "_admin/data/";
 			}
 			else
 				guideComponent = null;

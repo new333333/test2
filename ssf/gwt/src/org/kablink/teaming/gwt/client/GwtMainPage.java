@@ -660,6 +660,14 @@ public class GwtMainPage extends ResizeComposite
 			// Have the masthead hide the logout link
 			m_mastHead.hideLogoutLink();
 		}
+		
+		// Are we running Filr?
+		if ( m_requestInfo.isLicenseFilr() )
+		{
+			// Yes
+			GwtTeaming.fireEvent( new MenuHideEvent() );	// false -> Don't resize the content now...
+			GwtTeaming.fireEvent( new SidebarHideEvent(  false ) );	// ...will happen when the frame has loaded.
+		}
 	}// end constructMainPage_Finish()
 
 	/**
