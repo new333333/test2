@@ -609,6 +609,35 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}// end findUserByLdapGuid()
 
  	@Override
+	public Long findPrincipalIdByLdapGuid( final String ldapGuid, final Long zoneId ) 
+	{
+	   long begin = System.nanoTime();
+	   try
+	   {
+	       Long id = (Long)getHibernateTemplate().execute(
+                new HibernateCallback()
+                {
+                    @Override
+					public Object doInHibernate(Session session) throws HibernateException
+                    {
+                 	   //only returns active principals
+                  	   return session.getNamedQuery( "find-Principal-id-By-LdapGuid-Company" )
+                             		.setString( ParameterNames.LDAP_UGID, ldapGuid )
+                             		.setLong( ParameterNames.ZONE_ID, zoneId )
+                             		.setCacheable( isPrincipalQueryCacheable() )
+                             		.uniqueResult();
+                    }
+                }
+             );		
+	       return id;
+	   }
+	   finally
+	   {
+		   end(begin, "findPrincipalIdByLdapGuid(String,Long)");
+	   }	        
+	}
+
+ 	@Override
 	public Principal findPrincipalByName(final String name, final Long zoneId) 
  		throws NoPrincipalByTheNameException {
  		if(name.startsWith(FAKE_NAME_PREFIX)) {
