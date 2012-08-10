@@ -33,7 +33,6 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ShowCollectionEvent;
@@ -45,7 +44,10 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -69,27 +71,33 @@ public class FilrActionsCtrl extends Composite
 	 * 
 	 */
 	public class FilrAction extends Composite
+		implements MouseOutHandler, MouseOverHandler
 	{
 		private Command m_cmd;
+		private FlowPanel m_mainPanel;
+		private boolean m_isSelected;
 		
 		/**
 		 * 
 		 */
 		public FilrAction(
-						ImageResource imgResource,
+						String imgPath,
 						String text,
 						Command cmd )
 		{
-			FlowPanel mainPanel;
 			Label label;
 			Image img;
 			
+			m_isSelected = false;
 			m_cmd = cmd;
 			
-			mainPanel = new FlowPanel();
-			mainPanel.addStyleName( "FilrAction_MainPanel" );
-			
-			img = new Image( imgResource );
+			m_mainPanel = new FlowPanel();
+			m_mainPanel.addStyleName( "FilrAction_MainPanel" );
+
+			m_mainPanel.addDomHandler( this, MouseOutEvent.getType() );
+			m_mainPanel.addDomHandler( this, MouseOverEvent.getType() );
+
+			img = new Image( imgPath );
 			img.setAltText( text );
 			img.setTitle( text );
 			img.setWidth( "40px" );
@@ -97,13 +105,13 @@ public class FilrActionsCtrl extends Composite
 			img.getElement().setAttribute( "border", "0" );
 			img.getElement().setAttribute( "align", "top" );
 			img.addStyleName( "FilrAction_Img" );
-			mainPanel.add( img );
+			m_mainPanel.add( img );
 			
 			label = new Label( text );
 			label.addStyleName( "FilrAction_Text" );
-			mainPanel.add( label );
+			m_mainPanel.add( label );
 			
-			initWidget( mainPanel );
+			initWidget( m_mainPanel );
 		}
 		
 		/**
@@ -114,6 +122,52 @@ public class FilrActionsCtrl extends Composite
 			if ( m_cmd != null )
 				m_cmd.execute();
 		}
+
+		/**
+		 * 
+		 */
+		@Override
+		public void onMouseOut( MouseOutEvent event )
+		{
+			if ( m_isSelected )
+				setSelectedBackground();
+			else
+				m_mainPanel.getElement().getStyle().clearBackgroundImage();
+		}
+
+		/**
+		 * 
+		 */
+		@Override
+		public void onMouseOver( MouseOverEvent event )
+		{
+			String url;
+			
+			url = GwtTeaming.m_requestInfo.getImagesPath() + "pics/Filr/trans20_91daf2.png";
+			m_mainPanel.getElement().getStyle().setBackgroundImage( "url( " + url + " )" );
+		}
+		
+		/**
+		 * 
+		 */
+		public void setIsSelected( boolean selected )
+		{
+			m_isSelected = selected;
+			
+			if ( selected == false )
+				m_mainPanel.getElement().getStyle().clearBackgroundImage();
+		}
+		
+		/**
+		 * 
+		 */
+		public void setSelectedBackground()
+		{
+			String url;
+			
+			url = GwtTeaming.m_requestInfo.getImagesPath() + "pics/trans30_black.png";
+			m_mainPanel.getElement().getStyle().setBackgroundImage( "url( " + url + " )" );
+		}
 	}
 	
 	/**
@@ -123,14 +177,14 @@ public class FilrActionsCtrl extends Composite
 	{
 		HorizontalPanel mainPanel;
 		FilrAction action;
-		GwtTeamingFilrImageBundle imgBundle;
 		GwtTeamingMessages messages;
 		Command cmd;
+		
+		m_selectedAction = null;
 		
 		mainPanel = new HorizontalPanel();
 		mainPanel.addStyleName( "FilrActionsCtrl_mainPanel" );
 		
-		imgBundle = GwtTeaming.getFilrImageBundle();
 		messages = GwtTeaming.getMessages();
 		
 		// Add "My Files" action
@@ -143,7 +197,7 @@ public class FilrActionsCtrl extends Composite
 			}
 		};
 		action = new FilrAction(
-							imgBundle.myFiles_transparent_40(),
+							GwtTeaming.m_requestInfo.getImagesPath() + "pics/Filr/myfiles_transparent_40.png",
 							messages.myFiles(),
 							cmd );
 		action.addDomHandler( this, ClickEvent.getType() );
@@ -159,7 +213,7 @@ public class FilrActionsCtrl extends Composite
 			}
 		};
 		action = new FilrAction(
-							imgBundle.sharedWithMe_transparent_40(),
+							GwtTeaming.m_requestInfo.getImagesPath() + "pics/Filr/shared_with_me_transparent_40.png",
 							messages.sharedWithMe(),
 							cmd );
 		action.addDomHandler( this, ClickEvent.getType() );
@@ -175,7 +229,7 @@ public class FilrActionsCtrl extends Composite
 			}
 		};
 		action = new FilrAction(
-							imgBundle.fileSpaces_transparent_40(),
+							GwtTeaming.m_requestInfo.getImagesPath() + "pics/Filr/filespaces_transparent_40.png",
 							messages.fileSpaces(),
 							cmd );
 		action.addDomHandler( this, ClickEvent.getType() );
@@ -191,7 +245,7 @@ public class FilrActionsCtrl extends Composite
 			}
 		};
 		action = new FilrAction(
-							imgBundle.sharedByMe_transparent_40(),
+							GwtTeaming.m_requestInfo.getImagesPath() + "pics/Filr/shared_by_me_transparent_40.png",
 							messages.sharedByMe(),
 							cmd );
 		action.addDomHandler( this, ClickEvent.getType() );
@@ -217,7 +271,7 @@ public class FilrActionsCtrl extends Composite
 			}
 		};
 		action = new FilrAction(
-							imgBundle.whatsNew_transparent_40(),
+							GwtTeaming.m_requestInfo.getImagesPath() + "pics/Filr/whatsnew_transparent_40.png",
 							messages.whatsNew(),
 							cmd );
 		action.addDomHandler( this, ClickEvent.getType() );
@@ -247,32 +301,18 @@ public class FilrActionsCtrl extends Composite
 				@Override
 				public void execute()
 				{
+					// Do we have an action that is already selected?
+					if ( m_selectedAction != null )
+						m_selectedAction.setIsSelected( false );
+					
+					// Execute the action of the selected action.
 					action.executeAction();
 						
-					if ( m_selectedAction != null )
-						unselectAction( m_selectedAction );
-					
 					m_selectedAction = action;
-					selectAction( action );
+					m_selectedAction.setIsSelected( true );
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
 		}
-	}
-	
-	/**
-	 * Highlight the given action.
-	 */
-	private void selectAction( FilrAction action )
-	{
-		
-	}
-	
-	/**
-	 * Unhighlight the given action.
-	 */
-	private void unselectAction( FilrAction action )
-	{
-		
 	}
 }

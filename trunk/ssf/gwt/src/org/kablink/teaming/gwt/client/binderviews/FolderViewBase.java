@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtConstants;
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.binderviews.BreadCrumbPanel;
 import org.kablink.teaming.gwt.client.binderviews.DescriptionPanel;
@@ -755,8 +756,8 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Loads the FooterPanel.
 	 */
 	private void loadPart8Async() {
-		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.FOOTER))) {
+		// For classes that don't want it, or if we are running Filr
+		if (!(includePanel(FolderPanels.FOOTER)) || GwtTeaming.m_requestInfo.isLicenseFilr() ) {
 			// ...we don't show the footer.
 			insertToolPanelPlaceholder(FOOTER_PANEL_INDEX);
 			loadPart9Async();
