@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamComment;
+import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCommentsContainer;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu.ActionMenuItem;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
@@ -52,11 +53,13 @@ import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
  * This widget is used to display the comments for a given entity
  */
 public class CommentsWidget extends Composite
+	implements ActivityStreamCommentsContainer
 {
 	private CommentsInfo m_commentsInfo;
 	private VibeFlowPanel m_mainPanel;
@@ -80,19 +83,21 @@ public class CommentsWidget extends Composite
 	/*
 	 * Add the given comment to our list of comments.
 	 */
-	private void addComment( ActivityStreamEntry activityStreamEntry )
+	private void addComment( ActivityStreamEntry activityStreamEntry, boolean append )
 	{
 		ActivityStreamComment commentUI = null;
 		
-		//!!! We may need to create an ActivityStreamTopEntry object and pass it to ActivityStreamComment()
 		commentUI = new ActivityStreamComment(
 											m_activityStreamCtrl,
-											null,
+											this,
 											DescViewFormat.FULL,
 											m_showTitle );
 		commentUI.addStyleName( "commentsWidget_commentStylesOverride" );
 		commentUI.setData( activityStreamEntry );
-		m_mainPanel.add( commentUI );
+		if ( append )
+			m_mainPanel.add( commentUI );
+		else
+			m_mainPanel.insert( commentUI, 0 );
 	}
 
 	/**
@@ -151,7 +156,7 @@ public class CommentsWidget extends Composite
 									// Yes
 									for (ActivityStreamEntry nextComment: listOfComments)
 									{
-										addComment( nextComment );
+										addComment( nextComment, true );
 									}
 								}
 							}
@@ -240,6 +245,15 @@ public class CommentsWidget extends Composite
 			// Issue an rpc request to get the comments on the given entity
 			getCommentsFromServer();
 		}
+	}
+	
+	/**
+	 * Insert the given comments as the first comment.
+	 */
+	@Override
+	public void insertReply( ActivityStreamEntry reply )
+	{
+		addComment( reply, false );
 	}
 }
 

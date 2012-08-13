@@ -43,20 +43,20 @@ import com.google.gwt.user.client.ui.FlowPanel;
  */
 public class ActivityStreamComment extends ActivityStreamUIEntry
 {
-	private ActivityStreamTopEntry m_topEntry;	// The entry this comment belongs to.
+	private ActivityStreamCommentsContainer m_commentsContainer;
 	
 	/**
 	 * 
 	 */
 	public ActivityStreamComment(
 				ActivityStreamCtrl activityStreamCtrl,
-				ActivityStreamTopEntry topEntry,
+				ActivityStreamCommentsContainer commentsContainer,
 				DescViewFormat descViewFormat,
 				boolean showTitle )
 	{
 		super( activityStreamCtrl, descViewFormat, showTitle );
 		
-		m_topEntry = topEntry;
+		m_commentsContainer = commentsContainer;
 	}
 	
 	/**
@@ -174,8 +174,8 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	@Override
 	public void insertReply( ActivityStreamEntry reply )
 	{
-		// Add this reply to the top entry.
-		if ( m_topEntry != null )
-			m_topEntry.insertReply( reply );
+		// Add this reply to the container that holds the comments.
+		if ( m_commentsContainer != null )
+			m_commentsContainer.insertReply( reply );
 	}
 }

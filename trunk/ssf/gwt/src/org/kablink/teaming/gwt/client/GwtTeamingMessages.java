@@ -1111,6 +1111,7 @@ public interface GwtTeamingMessages extends Messages
 	String whatsNewWithName( String name );
 	
 	// The following strings are used in the activity stream "reply to entry" ui
+	String addAComment();
 	String defaultReplyTitle( String title );
 	String noReplyText();
 	String replyToEntryLabel();

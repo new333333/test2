@@ -380,7 +380,9 @@ public abstract class ActivityStreamUIEntry extends Composite
 					
 					// Set the position of the expand/collapse images to be just to the left
 					// of the top of the description.
-					top = m_descPanel.getAbsoluteTop() - m_mainPanel.getAbsoluteTop() - 20;
+					top = m_descPanel.getAbsoluteTop() - m_mainPanel.getAbsoluteTop();
+					if ( m_showTitle )
+						top -= 20;
 
 					style = m_expandDescImg.getElement().getStyle();
 					style.setTop( top, Unit.PX );

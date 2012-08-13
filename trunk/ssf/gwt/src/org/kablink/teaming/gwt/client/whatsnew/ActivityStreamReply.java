@@ -43,6 +43,8 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -61,6 +63,7 @@ public class ActivityStreamReply extends Composite
 	private TextBox m_titleTextBox;
 	private TextArea m_descTextArea;
 	private EditSuccessfulHandler m_onSuccessHandler;
+	private FlowPanel m_addACommentPanel;
 	
 	/**
 	 * 
@@ -86,10 +89,37 @@ public class ActivityStreamReply extends Composite
 		inputPanel.add( m_titleTextBox );
 		mainPanel.add( inputPanel );
 		
+		// Add a panel that will hold "Add a comment" hint
+		{
+			m_addACommentPanel = new FlowPanel();
+			m_addACommentPanel.addStyleName( "activityStreamReplyAddACommentPanel" );
+			m_addACommentPanel.getElement().setInnerText( GwtTeaming.getMessages().addAComment() );
+			mainPanel.add( m_addACommentPanel );
+		}
+		
 		// Create a textbox
 		inputPanel = new FlowPanel();
 		m_descTextArea = new TextArea();
 		m_descTextArea.addStyleName( "activityStreamReplyTextArea" );
+		m_descTextArea.addKeyPressHandler( new KeyPressHandler()
+		{
+			@Override
+			public void onKeyPress( KeyPressEvent event )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute() 
+					{
+						// Hide the "Add a comment" message
+						m_addACommentPanel.setVisible( false );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		} );
 		inputPanel.add( m_descTextArea );
 		mainPanel.add( inputPanel );
 		
@@ -130,6 +160,7 @@ public class ActivityStreamReply extends Composite
 		// Add a click handler for the send button.
 		clickHandler = new ClickHandler()
 		{
+			@Override
 			public void onClick( ClickEvent event )
 			{
 				handleClickOnSendBtn();
@@ -145,6 +176,7 @@ public class ActivityStreamReply extends Composite
 		// Add a click handler for the cancel button.
 		clickHandler = new ClickHandler()
 		{
+			@Override
 			public void onClick( ClickEvent event )
 			{
 				close();
@@ -223,6 +255,7 @@ public class ActivityStreamReply extends Composite
 		// Issue a deferred command to give the focus to the textarea control.
 		cmd = new Scheduler.ScheduledCommand()
 		{
+			@Override
 			public void execute()
 			{
 				m_descTextArea.setFocus( true );
