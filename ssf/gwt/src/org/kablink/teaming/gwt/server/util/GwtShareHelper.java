@@ -66,6 +66,8 @@ import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -261,7 +263,6 @@ public class GwtShareHelper
 				GwtShareItem gwtShareItem;
 				
 				gwtShareItem = new GwtShareItem();
-				gwtShareItem.setComments( nextShareItem.getComment() );
 				gwtShareItem.setEntityId( entityId );
 				gwtShareItem.setEntityName( getEntityName( ami, entityId ) );
 				gwtShareItem.setId( nextShareItem.getId() );
@@ -488,7 +489,6 @@ public class GwtShareHelper
 		RecipientType recipientType;
 		Long recipientId;
 		RightSet rightSet;
-		String comments;
 		EntityId entityId;
 		EntityIdentifier entityIdentifier;
 		int daysToExpire = -1;
@@ -564,8 +564,6 @@ public class GwtShareHelper
 		
 		recipientId = getRecipientId( ami, gwtShareItem );
 
-		comments = gwtShareItem.getComments();
-		
 		// Get the appropriate RightSet
 		rightSet = getRightSetFromShareRights( gwtShareItem.getShareRights() );
 		
@@ -576,7 +574,7 @@ public class GwtShareHelper
 			shareItem = new ShareItem(
 								sharer,
 								entityIdentifier,
-								comments,
+								"",	//!!! The ShareItem should not have comments any more
 								endDate,
 								recipientType,
 								recipientId,
@@ -587,7 +585,6 @@ public class GwtShareHelper
 		else
 		{
 			// No, just update the given ShareItem.
-			shareItem.setComment( comments );
 			shareItem.setRightSet( rightSet );
 			shareItem.setEndDate( endDate );
 			shareItem.setDaysToExpire( daysToExpire );
@@ -760,12 +757,12 @@ public class GwtShareHelper
 	private static List sendEmailToRecipient(
 		AllModulesInjected ami,
 		GwtShareItem shareItem,
+		String comments,
 		User currentUser )
 	{
 		List emailErrors;
 		Set<Long> principalIds;
 		Set<Long> teamIds;
-		String comments;
 		String title;
 		String shortTitle;
 		String desc;
@@ -801,8 +798,6 @@ public class GwtShareHelper
 			break;
 		}
 		
-		comments = shareItem.getComments();
-
 		entityId = shareItem.getEntityId();
 		if ( entityId.isBinder() )
 			sharedEntity = ami.getBinderModule().getBinder( entityId.getEntityId() );
@@ -918,6 +913,7 @@ public class GwtShareHelper
 		ArrayList<GwtShareItem> listOfGwtShareItemsToDelete;
 		User currentUser;
 		List emailErrors;
+		String comments;
 
 		sharingModule = ami.getSharingModule();
 
@@ -938,6 +934,7 @@ public class GwtShareHelper
 		
 		currentUser = GwtServerHelper.getCurrentUser();
 		emailErrors = null;
+		comments = sharingData.getComments();
 		
 		// Delete ShareItems that the user removed.
 		listOfGwtShareItemsToDelete = sharingData.getListOfToBeDeletedShareItems();
@@ -1007,6 +1004,7 @@ public class GwtShareHelper
 				entityEmailErrors = sendEmailToRecipient(
 														ami,
 														nextGwtShareItem,
+														comments,
 														currentUser );
 				
 				if ( emailErrors == null )
@@ -1027,6 +1025,54 @@ public class GwtShareHelper
 		if ( null != emailErrors )
 		{
 			results.setErrors( (String[])emailErrors.toArray( new String[0]) );
+		}
+		
+		// Are there comments for this share?
+		if ( comments != null && comments.length() > 0 )
+		{
+			ArrayList<EntityId> listOfEntities;
+			
+			// Yes
+			// Get the list of entities we are sharing
+			listOfEntities = sharingData.getListOfEntities();
+			if ( listOfEntities != null && listOfEntities.size() > 0 )
+			{
+				// Add a comment to each entity
+				for ( EntityId nextEntityId : listOfEntities )
+				{
+					// Are we dealing with a folder entry?
+					if ( nextEntityId.isEntry() )
+					{
+						// Yes
+						// Add a comment to the given entry.
+						try
+						{
+							GwtServerHelper.addReply(
+													ami,
+													nextEntityId.getEntityId().toString(),
+													"",
+													comments );
+						}
+						catch ( WriteEntryDataException wedEx )
+						{
+							m_logger.error( "GwtShareHelper.shareEntry(), call to GwtServerHelper.addReply() threw a WriteEntryDataException: " + wedEx.getMessage() );
+						}
+						catch ( WriteFilesException wfEx )
+						{
+							m_logger.error( "GwtShareHelper.shareEntry(), call to GwtServerHelper.addReply() threw a WriteFilesException: " + wfEx.getMessage() );
+						}
+						catch ( Exception ex )
+						{
+							m_logger.error( "GwtShareHelper.shareEntry(), call to GwtServerHelper.addReply() threw an exception: " + ex.getMessage() );
+						}
+					}
+					else
+					{
+						// No
+						m_logger.info( "We can't add a comment to a folder yet" );
+					}
+				}
+			}
 		}
 		
 		return results;
