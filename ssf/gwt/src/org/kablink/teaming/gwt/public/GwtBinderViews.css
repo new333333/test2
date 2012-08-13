@@ -343,6 +343,7 @@
 	.vibe-manageCommentsDlg .popupContent {background-color: white !important;}
 	.vibe-manageCommentsDlg-label         {}
 	.vibe-manageCommentsDlg-panel         {}
+	.vibe-manageCommentsDlg-commentsWidget{height: 300px; overflow: auto; width: 550px;}
 /* End:  Manage comments dialog styles. */
 
 /* Start:  Size columns dialog styles. */

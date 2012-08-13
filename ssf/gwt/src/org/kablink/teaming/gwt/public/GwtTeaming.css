@@ -4185,5 +4185,19 @@ td.datePickerMonth {
 {
 }
 
+/**
+ * Styles used with the "Comments" widget
+ */
+
+.commentsWidget_commentsPanel
+{
+	background-color: #FFFFFF;
+	padding: 10px;
+}
+
+.commentsWidget_commentStylesOverride
+{
+	margin-left: 10px !important;
+}
  /* End */
  

@@ -41,8 +41,11 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
+import org.kablink.teaming.gwt.client.widgets.CommentsWidget;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -51,6 +54,7 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
@@ -72,6 +76,7 @@ public class ManageCommentsDlg extends DlgBox
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private UIObject						m_showRelativeWidget;		// The UIObject to show the dialog relative to.
 	private VibeFlowPanel					m_fp;						// The panel that holds the dialog's contents.
+	private CommentsWidget					m_commentsWidget;			// Widget that holds all the comments
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -146,6 +151,10 @@ public class ManageCommentsDlg extends DlgBox
 		// Create a panel to hold the dialog's content...
 		m_fp = new VibeFlowPanel();
 		m_fp.addStyleName("vibe-manageCommentsDlg-panel");
+		
+		m_commentsWidget = new CommentsWidget();
+		m_commentsWidget.addStyleName( "vibe-manageCommentsDlg-commentsWidget" );
+		m_fp.add( m_commentsWidget );
 		
 		// ...and return the Panel that holds the dialog's contents.
 		return m_fp;
@@ -256,12 +265,8 @@ public class ManageCommentsDlg extends DlgBox
 	 * Synchronously populates the contents of the dialog.
 	 */
 	private void populateDlgWithDataNow() {
-		// Clear the current contents of the dialog...
-		m_fp.clear();
+		m_commentsWidget.init( m_commentsInfo );
 		
-//!		...this needs to be implemented...
-		m_fp.add(new DlgLabel("Manage Comments:  ...this needs to be implemented..."));
-
 		// ...and show the dialog.
 		showRelativeTo(m_showRelativeWidget);
 	}
