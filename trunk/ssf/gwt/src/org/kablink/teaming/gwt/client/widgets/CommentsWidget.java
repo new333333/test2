@@ -62,14 +62,17 @@ public class CommentsWidget extends Composite
 	private VibeFlowPanel m_mainPanel;
 	private ActivityStreamCtrl m_activityStreamCtrl;
 	private AsyncCallback<VibeRpcResponse> m_getCommentsCallback;
+	private boolean m_showTitle;
 
 	/**
 	 * 
 	 */
-	public CommentsWidget()
+	public CommentsWidget( boolean showTitle )
 	{
 		m_mainPanel = new VibeFlowPanel();
 		m_mainPanel.addStyleName( "commentsWidget_commentsPanel" );
+		
+		m_showTitle = showTitle;
 
 		initWidget( m_mainPanel );
 	}
@@ -82,7 +85,11 @@ public class CommentsWidget extends Composite
 		ActivityStreamComment commentUI = null;
 		
 		//!!! We may need to create an ActivityStreamTopEntry object and pass it to ActivityStreamComment()
-		commentUI = new ActivityStreamComment( m_activityStreamCtrl, null, DescViewFormat.FULL );
+		commentUI = new ActivityStreamComment(
+											m_activityStreamCtrl,
+											null,
+											DescViewFormat.FULL,
+											m_showTitle );
 		commentUI.addStyleName( "commentsWidget_commentStylesOverride" );
 		commentUI.setData( activityStreamEntry );
 		m_mainPanel.add( commentUI );
