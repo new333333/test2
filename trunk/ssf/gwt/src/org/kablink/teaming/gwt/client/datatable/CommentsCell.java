@@ -107,6 +107,8 @@ public class CommentsCell extends AbstractCell<CommentsInfo> {
     		// comments cell?
     		Element	eventTarget  = Element.as(event.getEventTarget()                                    );
     		String	wt           = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
+    		//!!! remove this call to showManageCommentsDlg()
+			showManageCommentsDlg(commentsInfo, eventTarget);
     		if ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_ENTRY_COMMENTS_PANEL)) {
     			// Yes!  What type of event are we processing?
 		    	if (VibeDataTableConstants.CELL_EVENT_CLICK.equals(eventType)) {
