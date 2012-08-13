@@ -54,7 +54,6 @@ public class GwtShareItem
 	private GwtRecipientType m_recipientType;
 	private ShareRights m_shareRights;
 	private ShareExpirationValue m_shareExpirationValue;
-	private String m_comments;
 	private boolean m_isDirty;
 	private boolean m_isExpired;
 	private boolean m_toBeDeleted;
@@ -104,7 +103,6 @@ public class GwtShareItem
 		m_recipientType = GwtRecipientType.UNKNOWN;
 		m_shareRights = ShareRights.VIEW;
 		m_shareExpirationValue = null;
-		m_comments = null;
 		m_isDirty = false;
 		m_isExpired = false;
 		m_toBeDeleted = false;
@@ -171,14 +169,6 @@ public class GwtShareItem
 		
 		// If we get here the two GwtShareItem objects are not the same.
 		return false;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getComments()
-	{
-		return m_comments;
 	}
 	
 	/**
@@ -315,14 +305,6 @@ public class GwtShareItem
 	public boolean isExpired()
 	{
 		return m_isExpired;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setComments( String comments )
-	{
-		m_comments = comments;
 	}
 	
 	/**

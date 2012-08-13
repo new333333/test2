@@ -1092,6 +1092,8 @@ public class ShareThisDlg extends DlgBox
 		}
 		
 		sharingData = new GwtSharingInfo();
+		sharingData.setComments( getComment() );
+		sharingData.setEntityNamesMap( m_sharingInfo.getEntityNamesMap() );
 		listOfShareItems = getListOfShareItemsFromDlg();
 		sharingData.setListOfShareItems( listOfShareItems );
 		sharingData.setListOfToBeDeletedShareItems( m_sharingInfo.getListOfToBeDeletedShareItems() );
@@ -1345,7 +1347,6 @@ public class ShareThisDlg extends DlgBox
 				GwtShareItem nextShareItem;
 				
 				nextShareItem = ((RemoveShareWidget) widget).getShareItem();
-				nextShareItem.setComments( getComment() );
 				listOfShareItems.add( nextShareItem );
 			}
 		}
@@ -1458,7 +1459,6 @@ public class ShareThisDlg extends DlgBox
 				shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
 				shareItem.setShareRights( getSelectedShareRights() );
 				shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
-				shareItem.setComments( getComment() );
 				//!!! Finish
 				
 				// Is this external user already in the list?
@@ -1683,7 +1683,6 @@ public class ShareThisDlg extends DlgBox
 										shareItem.setRecipientType( GwtRecipientType.TEAM );
 										shareItem.setShareRights( getSelectedShareRights() );
 										shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
-										shareItem.setComments( getComment() );
 										
 										// Is this external user already in the list?
 										if ( findShareItem( shareItem ) == -1 )
@@ -2042,7 +2041,6 @@ public class ShareThisDlg extends DlgBox
 							// No
 							shareItem.setShareRights( getSelectedShareRights() );
 							shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
-							shareItem.setComments( getComment() );
 							
 							// Add the recipient to our list of recipients
 							addShare( shareItem, true );

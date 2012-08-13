@@ -47,6 +47,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GwtSharingInfo
 	implements IsSerializable, VibeRpcResponseData
 {
+	private String m_comments;
 	private ArrayList<GwtShareItem> m_listOfShareItems;
 	private ArrayList<GwtShareItem> m_listOfToBeDeletedShareItems;
 	private HashMap<EntityId, String> m_entityNamesMap;
@@ -58,6 +59,7 @@ public class GwtSharingInfo
 	 */
 	public GwtSharingInfo()
 	{
+		m_comments = null;
 		m_listOfShareItems = null;
 		m_listOfToBeDeletedShareItems = null;
 		m_entityNamesMap = null;
@@ -102,6 +104,14 @@ public class GwtSharingInfo
 	}
 	
 	/**
+	 * 
+	 */
+	public String getComments()
+	{
+		return m_comments;
+	}
+	
+	/**
 	 * Return the name of the given entity
 	 */
 	public String getEntityName( EntityId entityId )
@@ -128,6 +138,40 @@ public class GwtSharingInfo
 		// If we get here we did not find the entityId
 		return null;
 	}
+	
+	/**
+	 * 
+	 */
+	public HashMap<EntityId, String> getEntityNamesMap()
+	{
+		return m_entityNamesMap;
+	}
+	
+	/**
+	 * Return the list of entities we are sharing
+	 */
+	public ArrayList<EntityId> getListOfEntities()
+	{
+		ArrayList<EntityId> listOfEntities;
+		
+		listOfEntities = new ArrayList<EntityId>();
+		if ( m_entityNamesMap != null )
+		{
+			Set<EntityId> entityIds;
+
+			entityIds = m_entityNamesMap.keySet();
+			if ( entityIds != null )
+			{
+				for ( EntityId nextEntityId : entityIds )
+				{
+					listOfEntities.add( nextEntityId );
+				}
+			}
+		}
+		
+		return listOfEntities;
+	}
+	
 	/**
 	 * 
 	 */
@@ -163,12 +207,28 @@ public class GwtSharingInfo
 	/**
 	 * 
 	 */
+	public void setComments( String comments )
+	{
+		m_comments = comments;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setEntityName( EntityId entityId, String entityName )
 	{
 		if ( m_entityNamesMap == null )
 			m_entityNamesMap = new HashMap<EntityId, String>();
 		
 		m_entityNamesMap.put( entityId, entityName );
+	}
+	
+	/**
+	 * 
+	 */
+	public void setEntityNamesMap( HashMap<EntityId, String> entityNamesMap )
+	{
+		m_entityNamesMap = entityNamesMap;
 	}
 	
 	/**
