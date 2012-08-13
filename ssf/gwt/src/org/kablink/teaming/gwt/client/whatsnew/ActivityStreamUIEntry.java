@@ -117,6 +117,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private String m_viewEntryUrl;
 	private ActivityStreamReply m_replyWidget;
 	private DescViewFormat m_descViewFormat;
+	private boolean m_showTitle;
 	
 	
 	/**
@@ -124,13 +125,15 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public ActivityStreamUIEntry(
 		ActivityStreamCtrl activityStreamCtrl,
-		DescViewFormat descViewFormat )
+		DescViewFormat descViewFormat,
+		boolean showTitle )
 	{
 		FlowPanel panel;
 		EditSuccessfulHandler onSuccessHandler;
 
 		m_activityStreamCtrl = activityStreamCtrl;
 		m_descViewFormat = descViewFormat;
+		m_showTitle = showTitle;
 		
 		m_mainPanel = new FlowPanel();
 		m_mainPanel.addStyleName( getMainPanelStyleName() );
@@ -222,6 +225,15 @@ public abstract class ActivityStreamUIEntry extends Composite
 		initWidget( m_mainPanel );
 	}
 	
+	/**
+	 * 
+	 */
+	public ActivityStreamUIEntry(
+		ActivityStreamCtrl activityStreamCtrl,
+		DescViewFormat descViewFormat )
+	{
+		this( activityStreamCtrl, descViewFormat, true );
+	}
 	
 	/**
 	 * This abstract method gives classes that extend this class an opportunity to add
@@ -237,7 +249,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 	{
 		m_avatarImg.setUrl( "" );
 		m_avatarImg.setVisible( false );
-		m_title.getElement().setInnerHTML( "" );
+		if ( m_title != null )
+			m_title.getElement().setInnerHTML( "" );
 		m_author.setText( "" );
 		m_date.setText( "" );
 		m_descPanel.getElement().setInnerHTML( "" );
@@ -389,7 +402,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 	public FlowPanel createHeaderPanel()
 	{
 		FlowPanel headerPanel;
-		FlowPanel titlePanel;
 		ImageResource imageResource;
 		
 		headerPanel = new FlowPanel();
@@ -467,64 +479,71 @@ public abstract class ActivityStreamUIEntry extends Composite
 			m_actionsLabel.addClickHandler( clickHandler );
 		}
 		
-		// Create a <span> to hold the title.
-		titlePanel = new FlowPanel();
-		titlePanel.addStyleName( getTitlePanelStyleName() );
-		headerPanel.add( titlePanel );
-		
-		// Add an image that indicates this entry has not been read.
+		// Are we supposed to show the title?
+		if ( m_showTitle )
 		{
-			ClickHandler clickHandler;
-			
-			imageResource = GwtTeaming.getImageBundle().sunburst();
-			m_unreadImg = new Image( imageResource );
-			m_unreadImg.addStyleName( "unreadImg" );
-			m_unreadImg.setTitle( GwtTeaming.getMessages().markEntryAsReadHint() );
-			m_unreadImg.setVisible( false );
-			titlePanel.add( m_unreadImg );
+			FlowPanel titlePanel;
 
-			// Add a click handler for the "unread" image.
-			clickHandler = new ClickHandler()
+			// yes
+			// Create a <span> to hold the title.
+			titlePanel = new FlowPanel();
+			titlePanel.addStyleName( getTitlePanelStyleName() );
+			headerPanel.add( titlePanel );
+			
+			// Add an image that indicates this entry has not been read.
 			{
-				@Override
-				public void onClick( ClickEvent clickEvent )
+				ClickHandler clickHandler;
+				
+				imageResource = GwtTeaming.getImageBundle().sunburst();
+				m_unreadImg = new Image( imageResource );
+				m_unreadImg.addStyleName( "unreadImg" );
+				m_unreadImg.setTitle( GwtTeaming.getMessages().markEntryAsReadHint() );
+				m_unreadImg.setVisible( false );
+				titlePanel.add( m_unreadImg );
+
+				// Add a click handler for the "unread" image.
+				clickHandler = new ClickHandler()
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					@Override
+					public void onClick( ClickEvent clickEvent )
 					{
-						/**
-						 * 
-						 */
-						@Override
-						public void execute()
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
 						{
-							// Mark this entry as read.
-							GwtTeaming.fireEvent(new MarkEntryReadEvent( getThis() ));
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			};
-			m_unreadImg.addClickHandler( clickHandler );
+							/**
+							 * 
+							 */
+							@Override
+							public void execute()
+							{
+								// Mark this entry as read.
+								GwtTeaming.fireEvent(new MarkEntryReadEvent( getThis() ));
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				};
+				m_unreadImg.addClickHandler( clickHandler );
+			}
+			
+			m_title = new InlineLabel();
+			m_title.addStyleName( getTitleStyleName() );
+			titlePanel.add( m_title );
+			
+			// Add a mouse-over handler for the title.
+			m_title.addMouseOverHandler( this );
+			
+			// Add a mouse-out handler for the activity stream source name
+			m_title.addMouseOutHandler( this );
+			
+			// Add a click handler for the activity stream source name
+			m_title.addClickHandler( this );
+			
+			// Add any additional ui to the header.  This gives classes that extend this
+			// class an opportunity to put additional data in the header.
+			addAdditionalHeaderUI( titlePanel );
 		}
-		
-		m_title = new InlineLabel();
-		m_title.addStyleName( getTitleStyleName() );
-		titlePanel.add( m_title );
-		
-		// Add a mouse-over handler for the title.
-		m_title.addMouseOverHandler( this );
-		
-		// Add a mouse-out handler for the activity stream source name
-		m_title.addMouseOutHandler( this );
-		
-		// Add a click handler for the activity stream source name
-		m_title.addClickHandler( this );
-		
-		// Add any additional ui to the header.  This gives classes that extend this
-		// class an opportunity to put additional data in the header.
-		addAdditionalHeaderUI( titlePanel );
 		
 		return headerPanel;
 	}
@@ -728,7 +747,10 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public String getEntryTitle()
 	{
-		return m_title.getText();
+		if ( m_title != null )
+			return m_title.getText();
+		
+		return "";
 	}
 	
 	
@@ -995,7 +1017,10 @@ public abstract class ActivityStreamUIEntry extends Composite
 	public boolean isEntryUnread()
 	{
 		// Base our decision of whether the entry is unread on the visibility of the unread image.
-		return m_unreadImg.isVisible();
+		if ( m_unreadImg != null )
+			return m_unreadImg.isVisible();
+		
+		return false;
 	}
 	
 	/**
@@ -1292,7 +1317,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 		title = getEntryTitle( entryItem );
 		if ( title == null || title.length() == 0 )
 			title = GwtTeaming.getMessages().noTitle();
-		m_title.getElement().setInnerHTML( title );
+		if ( m_title != null )
+			m_title.getElement().setInnerHTML( title );
 		updateReadUnreadUI( entryItem.getEntrySeen() );
 		
 		m_author.setText( entryItem.getAuthorName() );
@@ -1426,18 +1452,21 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public void updateReadUnreadUI( boolean read )
 	{
-		m_title.removeStyleName( "readEntry" );
-		m_title.removeStyleName( "unreadEntry" );
-
-		if ( read )
+		if ( m_title != null && m_unreadImg != null )
 		{
-			m_title.addStyleName( "readEntry" );
-			m_unreadImg.setVisible( false );
-		}
-		else
-		{
-			m_title.addStyleName( "unreadEntry" );
-			m_unreadImg.setVisible( true );
+			m_title.removeStyleName( "readEntry" );
+			m_title.removeStyleName( "unreadEntry" );
+	
+			if ( read )
+			{
+				m_title.addStyleName( "readEntry" );
+				m_unreadImg.setVisible( false );
+			}
+			else
+			{
+				m_title.addStyleName( "unreadEntry" );
+				m_unreadImg.setVisible( true );
+			}
 		}
 	}
 	

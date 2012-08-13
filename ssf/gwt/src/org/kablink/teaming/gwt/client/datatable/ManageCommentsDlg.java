@@ -152,7 +152,7 @@ public class ManageCommentsDlg extends DlgBox
 		m_fp = new VibeFlowPanel();
 		m_fp.addStyleName("vibe-manageCommentsDlg-panel");
 		
-		m_commentsWidget = new CommentsWidget();
+		m_commentsWidget = new CommentsWidget( false );
 		m_commentsWidget.addStyleName( "vibe-manageCommentsDlg-commentsWidget" );
 		m_fp.add( m_commentsWidget );
 		

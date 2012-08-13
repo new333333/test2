@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ShowCollectionEvent;
@@ -44,10 +45,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -71,33 +69,27 @@ public class FilrActionsCtrl extends Composite
 	 * 
 	 */
 	public class FilrAction extends Composite
-		implements MouseOutHandler, MouseOverHandler
 	{
 		private Command m_cmd;
 		private FlowPanel m_mainPanel;
-		private boolean m_isSelected;
 		
 		/**
 		 * 
 		 */
 		public FilrAction(
-						String imgPath,
+						ImageResource imgResource,
 						String text,
 						Command cmd )
 		{
 			Label label;
 			Image img;
 			
-			m_isSelected = false;
 			m_cmd = cmd;
 			
 			m_mainPanel = new FlowPanel();
 			m_mainPanel.addStyleName( "FilrAction_MainPanel" );
 
-			m_mainPanel.addDomHandler( this, MouseOutEvent.getType() );
-			m_mainPanel.addDomHandler( this, MouseOverEvent.getType() );
-
-			img = new Image( imgPath );
+			img = new Image( imgResource );
 			img.setAltText( text );
 			img.setTitle( text );
 			img.setWidth( "40px" );
@@ -126,47 +118,12 @@ public class FilrActionsCtrl extends Composite
 		/**
 		 * 
 		 */
-		@Override
-		public void onMouseOut( MouseOutEvent event )
-		{
-			if ( m_isSelected )
-				setSelectedBackground();
-			else
-				m_mainPanel.getElement().getStyle().clearBackgroundImage();
-		}
-
-		/**
-		 * 
-		 */
-		@Override
-		public void onMouseOver( MouseOverEvent event )
-		{
-			String url;
-			
-			url = GwtTeaming.m_requestInfo.getImagesPath() + "pics/Filr/trans20_91daf2.png";
-			m_mainPanel.getElement().getStyle().setBackgroundImage( "url( " + url + " )" );
-		}
-		
-		/**
-		 * 
-		 */
 		public void setIsSelected( boolean selected )
 		{
-			m_isSelected = selected;
-			
 			if ( selected == false )
-				m_mainPanel.getElement().getStyle().clearBackgroundImage();
-		}
-		
-		/**
-		 * 
-		 */
-		public void setSelectedBackground()
-		{
-			String url;
-			
-			url = GwtTeaming.m_requestInfo.getImagesPath() + "pics/trans30_black.png";
-			m_mainPanel.getElement().getStyle().setBackgroundImage( "url( " + url + " )" );
+				m_mainPanel.removeStyleName( "FilrAction_Selected" );
+			else
+				m_mainPanel.addStyleName( "FilrAction_Selected" );
 		}
 	}
 	
@@ -178,6 +135,7 @@ public class FilrActionsCtrl extends Composite
 		HorizontalPanel mainPanel;
 		FilrAction action;
 		GwtTeamingMessages messages;
+		GwtTeamingFilrImageBundle imgBundle;
 		Command cmd;
 		
 		m_selectedAction = null;
@@ -186,6 +144,7 @@ public class FilrActionsCtrl extends Composite
 		mainPanel.addStyleName( "FilrActionsCtrl_mainPanel" );
 		
 		messages = GwtTeaming.getMessages();
+		imgBundle = GwtTeaming.getFilrImageBundle();
 		
 		// Add "My Files" action
 		cmd = new Command()
@@ -197,7 +156,7 @@ public class FilrActionsCtrl extends Composite
 			}
 		};
 		action = new FilrAction(
-							GwtTeaming.m_requestInfo.getImagesPath() + "pics/Filr/myfiles_transparent_40.png",
+							imgBundle.myFiles_transparent_40(),
 							messages.myFiles(),
 							cmd );
 		action.addDomHandler( this, ClickEvent.getType() );
@@ -213,7 +172,7 @@ public class FilrActionsCtrl extends Composite
 			}
 		};
 		action = new FilrAction(
-							GwtTeaming.m_requestInfo.getImagesPath() + "pics/Filr/shared_with_me_transparent_40.png",
+							imgBundle.sharedWithMe_transparent_40(),
 							messages.sharedWithMe(),
 							cmd );
 		action.addDomHandler( this, ClickEvent.getType() );
@@ -229,7 +188,7 @@ public class FilrActionsCtrl extends Composite
 			}
 		};
 		action = new FilrAction(
-							GwtTeaming.m_requestInfo.getImagesPath() + "pics/Filr/filespaces_transparent_40.png",
+							imgBundle.fileSpaces_transparent_40(),
 							messages.fileSpaces(),
 							cmd );
 		action.addDomHandler( this, ClickEvent.getType() );
@@ -245,7 +204,7 @@ public class FilrActionsCtrl extends Composite
 			}
 		};
 		action = new FilrAction(
-							GwtTeaming.m_requestInfo.getImagesPath() + "pics/Filr/shared_by_me_transparent_40.png",
+							imgBundle.sharedByMe_transparent_40(),
 							messages.sharedByMe(),
 							cmd );
 		action.addDomHandler( this, ClickEvent.getType() );
@@ -271,7 +230,7 @@ public class FilrActionsCtrl extends Composite
 			}
 		};
 		action = new FilrAction(
-							GwtTeaming.m_requestInfo.getImagesPath() + "pics/Filr/whatsnew_transparent_40.png",
+							imgBundle.whatsNew_transparent_40(),
 							messages.whatsNew(),
 							cmd );
 		action.addDomHandler( this, ClickEvent.getType() );

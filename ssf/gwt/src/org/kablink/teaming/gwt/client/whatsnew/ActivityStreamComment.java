@@ -51,13 +51,24 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	public ActivityStreamComment(
 				ActivityStreamCtrl activityStreamCtrl,
 				ActivityStreamTopEntry topEntry,
-				DescViewFormat descViewFormat )
+				DescViewFormat descViewFormat,
+				boolean showTitle )
 	{
-		super( activityStreamCtrl, descViewFormat );
+		super( activityStreamCtrl, descViewFormat, showTitle );
 		
 		m_topEntry = topEntry;
 	}
-
+	
+	/**
+	 * 
+	 */
+	public ActivityStreamComment(
+			ActivityStreamCtrl activityStreamCtrl,
+			ActivityStreamTopEntry topEntry,
+			DescViewFormat descViewFormat )
+	{
+		this( activityStreamCtrl, topEntry, descViewFormat, true );
+	}
 
 	/**
 	 * Nothing to do.

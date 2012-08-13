@@ -44,6 +44,7 @@
 	position: absolute;
 	right: 5px;
 	top: 0px;
+	z-index: 300;
 }
 
 .activityStreamActionsPanel
@@ -290,6 +291,7 @@
 	font-size: 12px;
 	margin-top: 4px;
 	margin-left: 1px;
+	padding-bottom: 12px;
 	position: relative;
 }
 
@@ -4170,7 +4172,7 @@ td.datePickerMonth {
 
 .FilrAction_MainPanel:hover
 {
-	background-repeat: repeat;
+	background: url(images/trans20_91daf2.png) repeat;
     border: 1px solid #3C4143;
     border-radius: 5px 5px 5px 5px;
     cursor: pointer;
@@ -4178,7 +4180,8 @@ td.datePickerMonth {
 
 .FilrAction_Selected
 {
-    border-radius: 4px 4px 4px 4px;
+	background: url(images/trans30_black.png) repeat;
+	border-radius: 4px 4px 4px 4px;
 }
 
 .FilrAction_Text
