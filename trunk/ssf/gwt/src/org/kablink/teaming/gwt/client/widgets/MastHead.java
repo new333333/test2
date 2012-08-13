@@ -144,7 +144,7 @@ public class MastHead extends Composite
 		m_mainMastheadPanel.add( m_binderBrandingPanel );
 		
 		// Create a place for the beta text to go.
-		if ( beta )
+		if ( beta && m_requestInfo.isLicenseFilr() == false )
 		{
 			String productName;
 			
