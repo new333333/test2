@@ -68,6 +68,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  */
 public class ActivityStreamTopEntry extends ActivityStreamUIEntry
+	implements ActivityStreamCommentsContainer
 {
 	private ArrayList<ActivityStreamComment> m_comments;
 	private FlowPanel m_numCommentsPanel;		// Shows the number of comments that exist for this entry.

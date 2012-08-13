@@ -446,6 +446,15 @@
 	width: 450px;
 }
 
+.activityStreamReplyAddACommentPanel
+{
+	color: #CCCCCC;
+	font-size: 0.9em;
+	left: 20px;
+	position: absolute;
+	top: 34px;
+}
+
 .activityStreamReplyTitlePanel, .shareThisDlg_TitlePanel
 {
 	padding-bottom: 5px;
