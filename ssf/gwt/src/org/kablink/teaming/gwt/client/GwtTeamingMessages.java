@@ -1136,6 +1136,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_noTeamsToShareWith();
 	String shareDlg_owner();
 	String shareDlg_rightsLabel();
+	String shareDlg_sendToLabel();
 	String shareDlg_shareLabel();
 	String shareDlg_sharingLabel();
 	String shareDlg_addExternalUserTitle();
@@ -1789,4 +1790,12 @@ public interface GwtTeamingMessages extends Messages
 	String sharedByMe();
 	String sharedWithMe();
 
+	// Strings used with the "Share send-to" widget
+	String shareSendToWidget_AllRecipients();
+	String shareSendToWidget_OnlyModifiedRecipients();
+	String shareSendToWidget_OnlyNewRecipients();
+	String shareSendToWidget_SelectedRecipients();
+	String shareSendToWidget_Unknown();
+	
+	
 }// end GwtTeamingMessages
