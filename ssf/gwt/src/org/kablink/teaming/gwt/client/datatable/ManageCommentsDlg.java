@@ -41,10 +41,8 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.widgets.CommentsWidget;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -54,7 +52,6 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
@@ -64,19 +61,17 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 /**
  * Implements Vibe's 'Manage Comments' dialog.
  *  
- * @author jwootton@novell.com
+ * @author drfoster@novell.com
  */
 @SuppressWarnings("unused")
-public class ManageCommentsDlg extends DlgBox
-	implements EditSuccessfulHandler
-{
+public class ManageCommentsDlg extends DlgBox implements EditSuccessfulHandler {
 	private CommentsInfo					m_commentsInfo;				// The CommentsInfo the ManageCommentsDlg is running against.
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private UIObject						m_showRelativeWidget;		// The UIObject to show the dialog relative to.
 	private VibeFlowPanel					m_fp;						// The panel that holds the dialog's contents.
-	private CommentsWidget					m_commentsWidget;			// Widget that holds all the comments
+	private CommentsWidget					m_commentsWidget;			// Widget that displays the current comments.
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -151,10 +146,14 @@ public class ManageCommentsDlg extends DlgBox
 		// Create a panel to hold the dialog's content...
 		m_fp = new VibeFlowPanel();
 		m_fp.addStyleName("vibe-manageCommentsDlg-panel");
+
+		// ...create the widget to display the comments...
+		m_commentsWidget = new CommentsWidget(false);
+		m_commentsWidget.addStyleName("vibe-manageCommentsDlg-commentsWidget");
+		m_fp.add(m_commentsWidget);
 		
-		m_commentsWidget = new CommentsWidget( false );
-		m_commentsWidget.addStyleName( "vibe-manageCommentsDlg-commentsWidget" );
-		m_fp.add( m_commentsWidget );
+		// ...create the widgets to add comments...
+//!		...this needs to be implemented...
 		
 		// ...and return the Panel that holds the dialog's contents.
 		return m_fp;
@@ -265,7 +264,11 @@ public class ManageCommentsDlg extends DlgBox
 	 * Synchronously populates the contents of the dialog.
 	 */
 	private void populateDlgWithDataNow() {
-		m_commentsWidget.init( m_commentsInfo );
+		// Initialize the comments widget with the comments...
+		m_commentsWidget.init(m_commentsInfo);
+		
+		// ...initialize the comment entry widgets...
+//!		...this needs to be implemented...
 		
 		// ...and show the dialog.
 		showRelativeTo(m_showRelativeWidget);
