@@ -1400,19 +1400,32 @@ public interface GwtTeamingMessages extends Messages
 	String vibeBinderFilter_None();
 	
 	// Strings used by the footer in the various binder views.
-	String vibeBinderFooter_AtomUrl();
-	String vibeBinderFooter_EmailAddresses();
-	String vibeBinderFooter_EmailAddressesHint();
-	String vibeBinderFooter_iCalUrl();
-	String vibeBinderFooter_iCalUrlHint();
-	String vibeBinderFooter_KeyHeader();
-	String vibeBinderFooter_KeyFooter();
-	String vibeBinderFooter_Permalink();
-	String vibeBinderFooter_PermalinkHint();
-	String vibeBinderFooter_RSSUrl();
-	String vibeBinderFooter_RSSUrlHint();
-	String vibeBinderFooter_WebDAVUrl();
-	String vibeBinderFooter_WebDAVUrlHint();
+	String vibeBinderFooter_Filr_AtomUrl();
+	String vibeBinderFooter_Filr_EmailAddresses();
+	String vibeBinderFooter_Filr_EmailAddressesHint();
+	String vibeBinderFooter_Filr_iCalUrl();
+	String vibeBinderFooter_Filr_iCalUrlHint();
+	String vibeBinderFooter_Filr_KeyHeader();
+	String vibeBinderFooter_Filr_KeyFooter();
+	String vibeBinderFooter_Filr_Permalink();
+	String vibeBinderFooter_Filr_PermalinkHint();
+	String vibeBinderFooter_Filr_RSSUrl();
+	String vibeBinderFooter_Filr_RSSUrlHint();
+	String vibeBinderFooter_Filr_WebDAVUrl();
+	String vibeBinderFooter_Filr_WebDAVUrlHint();
+	String vibeBinderFooter_Vibe_AtomUrl();
+	String vibeBinderFooter_Vibe_EmailAddresses();
+	String vibeBinderFooter_Vibe_EmailAddressesHint();
+	String vibeBinderFooter_Vibe_iCalUrl();
+	String vibeBinderFooter_Vibe_iCalUrlHint();
+	String vibeBinderFooter_Vibe_KeyHeader();
+	String vibeBinderFooter_Vibe_KeyFooter();
+	String vibeBinderFooter_Vibe_Permalink();
+	String vibeBinderFooter_Vibe_PermalinkHint();
+	String vibeBinderFooter_Vibe_RSSUrl();
+	String vibeBinderFooter_Vibe_RSSUrlHint();
+	String vibeBinderFooter_Vibe_WebDAVUrl();
+	String vibeBinderFooter_Vibe_WebDAVUrlHint();
 	
 	// Strings used by the entry menu bar in the various binder views.
 	String vibeEntryMenu_Alt_ClearFilter();

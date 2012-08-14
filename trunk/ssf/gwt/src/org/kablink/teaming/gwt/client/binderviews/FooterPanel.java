@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,7 +32,9 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
@@ -70,7 +72,6 @@ import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.TextBox;
 
-
 /**
  * Class used for the content of the footer panel in the binder views.  
  * 
@@ -83,6 +84,29 @@ public class FooterPanel extends ToolPanelBase {
 	private ToolbarItem				m_footerTBI;	//
 	private VibeFlowPanel			m_fp;			// The panel holding the FooterPanel's contents.
 	private VibeFlowPanel			m_dataPanel;	// The panel holding the display of the data, ..., once rendered.
+	
+	// The following manage the strings used by the footer.  The map is
+	// loaded with the appropriate strings from the resource bundle for
+	// the footer based on whether it's in Filr or Vibe mode each time
+	// it is instantiated.  See initFooterStrings().
+	private enum StringIds{
+		CAPTION_ATOM,
+		CAPTION_EMAIL_ADDRESSES,
+		CAPTION_ICAL,
+		CAPTION_PERMALINK,
+		CAPTION_RSS,
+		CAPTION_WEBDAV,
+
+		KEY_ATOM,
+		KEY_EMAIL_ADDRESSES,
+		KEY_HEADER,
+		KEY_FOOTER,
+		KEY_ICAL,
+		KEY_PERMALINK,
+		KEY_RSS,
+		KEY_WEBDAV,
+	}
+	private Map<StringIds, String> m_strMap;
 	
 	/*
 	 * Constructor method.
@@ -98,6 +122,7 @@ public class FooterPanel extends ToolPanelBase {
 		// ...initialize the data members...
 		m_images   = GwtTeaming.getImageBundle();
 		m_messages = GwtTeaming.getMessages();
+		initFooterStrings();
 		
 		// ...and construct the panel.
 		m_fp = new VibeFlowPanel();
@@ -130,6 +155,70 @@ public class FooterPanel extends ToolPanelBase {
 				tpClient.onUnavailable();
 			}
 		});
+	}
+	
+	/*
+	 * Initialize the Map of the strings used by the footer based
+	 * whether we're in Filr or Vibe mode.
+	 */
+	private void initFooterStrings() {
+		// Start with an empty map...
+		if (null == m_strMap)
+		     m_strMap = new HashMap<StringIds, String>();
+		else m_strMap.clear();
+		
+//!		...this needs to be implemented...
+/*	
+		CAPTION_ATOM,
+		CAPTION_EMAIL_ADDRESSES,
+		CAPTION_ICAL,
+		CAPTION_PERMALINK,
+		CAPTION_RSS,
+		CAPTION_WEBDAV,
+
+		KEY_ATOM,
+		KEY_EMAIL_ADDRESSES,
+		KEY_HEADER,
+		KEY_ICAL,
+		KEY_PERMALINK,
+		KEY_RSS,
+		KEY_WEBDAV,
+*/
+		if (GwtClientHelper.isLicenseFilr()) {
+			m_strMap.put(StringIds.CAPTION_ATOM,            m_messages.vibeBinderFooter_Filr_AtomUrl());
+			m_strMap.put(StringIds.CAPTION_EMAIL_ADDRESSES, m_messages.vibeBinderFooter_Filr_EmailAddresses());
+			m_strMap.put(StringIds.CAPTION_ICAL,            m_messages.vibeBinderFooter_Filr_iCalUrl());
+			m_strMap.put(StringIds.CAPTION_PERMALINK,       m_messages.vibeBinderFooter_Filr_Permalink());
+			m_strMap.put(StringIds.CAPTION_RSS,             m_messages.vibeBinderFooter_Filr_RSSUrl());
+			m_strMap.put(StringIds.CAPTION_WEBDAV,          m_messages.vibeBinderFooter_Filr_WebDAVUrl());
+
+			m_strMap.put(StringIds.KEY_ATOM,                m_messages.vibeBinderFooter_Filr_AtomUrl());
+			m_strMap.put(StringIds.KEY_EMAIL_ADDRESSES,     m_messages.vibeBinderFooter_Filr_EmailAddressesHint());
+			m_strMap.put(StringIds.KEY_HEADER,              m_messages.vibeBinderFooter_Filr_KeyHeader());
+			m_strMap.put(StringIds.KEY_FOOTER,              m_messages.vibeBinderFooter_Filr_KeyFooter());
+			m_strMap.put(StringIds.KEY_ICAL,                m_messages.vibeBinderFooter_Filr_iCalUrlHint());
+			m_strMap.put(StringIds.KEY_PERMALINK,           m_messages.vibeBinderFooter_Filr_PermalinkHint());
+			m_strMap.put(StringIds.KEY_RSS,                 m_messages.vibeBinderFooter_Filr_RSSUrlHint());
+			m_strMap.put(StringIds.KEY_WEBDAV,              m_messages.vibeBinderFooter_Filr_WebDAVUrlHint());
+		}
+		
+		else {
+			m_strMap.put(StringIds.CAPTION_ATOM,            m_messages.vibeBinderFooter_Vibe_AtomUrl());
+			m_strMap.put(StringIds.CAPTION_EMAIL_ADDRESSES, m_messages.vibeBinderFooter_Vibe_EmailAddresses());
+			m_strMap.put(StringIds.CAPTION_ICAL,            m_messages.vibeBinderFooter_Vibe_iCalUrl());
+			m_strMap.put(StringIds.CAPTION_PERMALINK,       m_messages.vibeBinderFooter_Vibe_Permalink());
+			m_strMap.put(StringIds.CAPTION_RSS,             m_messages.vibeBinderFooter_Vibe_RSSUrl());
+			m_strMap.put(StringIds.CAPTION_WEBDAV,          m_messages.vibeBinderFooter_Vibe_WebDAVUrl());
+
+			m_strMap.put(StringIds.KEY_ATOM,                m_messages.vibeBinderFooter_Vibe_AtomUrl());
+			m_strMap.put(StringIds.KEY_EMAIL_ADDRESSES,     m_messages.vibeBinderFooter_Vibe_EmailAddressesHint());
+			m_strMap.put(StringIds.KEY_HEADER,              m_messages.vibeBinderFooter_Vibe_KeyHeader());
+			m_strMap.put(StringIds.KEY_FOOTER,              m_messages.vibeBinderFooter_Vibe_KeyFooter());
+			m_strMap.put(StringIds.KEY_ICAL,                m_messages.vibeBinderFooter_Vibe_iCalUrlHint());
+			m_strMap.put(StringIds.KEY_PERMALINK,           m_messages.vibeBinderFooter_Vibe_PermalinkHint());
+			m_strMap.put(StringIds.KEY_RSS,                 m_messages.vibeBinderFooter_Vibe_RSSUrlHint());
+			m_strMap.put(StringIds.KEY_WEBDAV,              m_messages.vibeBinderFooter_Vibe_WebDAVUrlHint());
+		}
 	}
 	
 	/*
@@ -262,9 +351,11 @@ public class FooterPanel extends ToolPanelBase {
 	 * Adds a row with a label and hint to the hint grid.
 	 */
 	private void renderHintGridRow(FlexTable hintGrid, String label, String hint) {
-		int row = hintGrid.getRowCount();
-		hintGrid.setWidget(row, 0, new InlineLabel(label));
-		hintGrid.setWidget(row, 1, new InlineLabel(hint ));
+		if (GwtClientHelper.hasString(label) && GwtClientHelper.hasString(hint)) {
+			int row = hintGrid.getRowCount();
+			hintGrid.setWidget(row, 0, new InlineLabel(label));
+			hintGrid.setWidget(row, 1, new InlineLabel(hint ));
+		}
 	}
 	
 	/*
@@ -335,7 +426,7 @@ public class FooterPanel extends ToolPanelBase {
 
 		// ...add a row for the permalink...
 		ToolbarItem permalinkTBI = m_footerTBI.getNestedToolbarItem("permalink");
-		VibeFlowPanel rowDataPanel = renderRow(linksGrid, cf, m_messages.vibeBinderFooter_Permalink());
+		VibeFlowPanel rowDataPanel = renderRow(linksGrid, cf, m_strMap.get(StringIds.CAPTION_PERMALINK));
 		renderRowLink(rowDataPanel, permalinkTBI.getUrl());
 
 		// ...if there are simple names defined on the binder...
@@ -352,7 +443,7 @@ public class FooterPanel extends ToolPanelBase {
 
 			// ...scan them again...
 			String hostName = simpleNamesTBI.getQualifierValue("simple.host");
-			rowDataPanel = renderRow(linksGrid, cf, m_messages.vibeBinderFooter_EmailAddresses());
+			rowDataPanel = renderRow(linksGrid, cf, m_strMap.get(StringIds.CAPTION_EMAIL_ADDRESSES));
 			for (int i = 0; i < c; i += 1) {
 				// ...adding an email for each to the table...
 				String emailAddress = simpleNamesTBI.getQualifierValue("simple." + i + ".email");
@@ -364,7 +455,7 @@ public class FooterPanel extends ToolPanelBase {
 		ToolbarItem rssTBI = m_footerTBI.getNestedToolbarItem("subscribeRSS");
 		if (null != rssTBI) {
 			// ...add a link opener for it...
-			rowDataPanel = renderRow(linksGrid, cf, m_messages.vibeBinderFooter_RSSUrl());
+			rowDataPanel = renderRow(linksGrid, cf, m_strMap.get(StringIds.CAPTION_RSS));
 			renderRowLinkOpener(rowDataPanel, rssTBI.getUrl());
 		}
 
@@ -372,7 +463,7 @@ public class FooterPanel extends ToolPanelBase {
 		ToolbarItem atomTBI = m_footerTBI.getNestedToolbarItem("subscribeAtom");
 		if (null != atomTBI) {
 			// ...add a link opener for it...
-			rowDataPanel = renderRow(linksGrid, cf, m_messages.vibeBinderFooter_AtomUrl());
+			rowDataPanel = renderRow(linksGrid, cf, m_strMap.get(StringIds.CAPTION_ATOM));
 			renderRowLinkOpener(rowDataPanel, atomTBI.getUrl());
 		}
 
@@ -380,7 +471,7 @@ public class FooterPanel extends ToolPanelBase {
 		ToolbarItem webDavTBI = m_footerTBI.getNestedToolbarItem("webdavUrl");
 		if (null != webDavTBI) {
 			// ...add a link for it...
-			rowDataPanel = renderRow(linksGrid, cf, m_messages.vibeBinderFooter_WebDAVUrl());
+			rowDataPanel = renderRow(linksGrid, cf, m_strMap.get(StringIds.CAPTION_WEBDAV));
 			renderRowLink(rowDataPanel, webDavTBI.getUrl());
 		}
 
@@ -388,7 +479,7 @@ public class FooterPanel extends ToolPanelBase {
 		ToolbarItem iCalTBI = m_footerTBI.getNestedToolbarItem("iCalendar");
 		if (null != iCalTBI) {
 			// ...add a link for it.
-			rowDataPanel = renderRow(linksGrid, cf, m_messages.vibeBinderFooter_iCalUrl());
+			rowDataPanel = renderRow(linksGrid, cf, m_strMap.get(StringIds.CAPTION_ICAL));
 			renderRowLink(rowDataPanel, iCalTBI.getUrl());
 		}
 		
@@ -404,23 +495,23 @@ public class FooterPanel extends ToolPanelBase {
 		cf = hintGrid.getFlexCellFormatter();
 
 		// ...add a header string to the key grid...
-		InlineLabel hintHeader = new InlineLabel(m_messages.vibeBinderFooter_KeyHeader());
+		InlineLabel hintHeader = new InlineLabel(m_strMap.get(StringIds.KEY_HEADER));
 		hintHeader.addStyleName("vibe-footerDataHintGridHeader");
 		hintGrid.setWidget(0, 0, hintHeader);
 		cf.setColSpan(    0, 0, 2 );
 
 		// ...add rows for each item type...
-		renderHintGridRow(hintGrid, m_messages.vibeBinderFooter_Permalink(),      m_messages.vibeBinderFooter_PermalinkHint()     );
-		renderHintGridRow(hintGrid, m_messages.vibeBinderFooter_EmailAddresses(), m_messages.vibeBinderFooter_EmailAddressesHint());
-		renderHintGridRow(hintGrid, m_messages.vibeBinderFooter_WebDAVUrl(),      m_messages.vibeBinderFooter_WebDAVUrlHint()     );
-		renderHintGridRow(hintGrid, m_messages.vibeBinderFooter_iCalUrl(),        m_messages.vibeBinderFooter_iCalUrlHint()       );
-		renderHintGridRow(hintGrid, m_messages.vibeBinderFooter_RSSUrl(),         m_messages.vibeBinderFooter_RSSUrlHint()        );
+		renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_PERMALINK), m_strMap.get(StringIds.KEY_PERMALINK)      );
+		renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_ICAL),      m_strMap.get(StringIds.KEY_EMAIL_ADDRESSES));
+		renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_WEBDAV),    m_strMap.get(StringIds.KEY_WEBDAV)         );
+		renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_ICAL),      m_strMap.get(StringIds.KEY_ICAL)           );
+		renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_RSS),       m_strMap.get(StringIds.KEY_RSS)            );
 
 		// ...and add a footer with further explanations.
 		VibeFlowPanel keyFooterPanel = new VibeFlowPanel();
 		keyFooterPanel.addStyleName("vibe-footerDataHintGridFooter");
 		linksPanel.add(keyFooterPanel);
-		keyFooterPanel.add(new InlineLabel(m_messages.vibeBinderFooter_KeyFooter()));
+		keyFooterPanel.add(new InlineLabel(m_strMap.get(StringIds.KEY_FOOTER)));
 
 		// Finally, force the container to resize to reflect the
 		// expanded footer.
@@ -431,104 +522,113 @@ public class FooterPanel extends ToolPanelBase {
 	 * Renders row in the grid and returns it data panel.
 	 */
 	private VibeFlowPanel renderRow(FlexTable grid, FlexCellFormatter cf, String label) {
-		// Get the row's index...
-		int row = grid.getRowCount();
-
-		// ...add the cell for the row's label...
-		grid.setWidget(         row, 0, new InlineLabel(label)        );
-		cf.setWidth(            row, 0, "10%"                         );
-		cf.setWordWrap(         row, 0, false                         );
-		cf.setVerticalAlignment(row, 0, HasVerticalAlignment.ALIGN_TOP);
-
-		// ...add the cell for the row's data...
-		VibeFlowPanel rowDataPanel = new VibeFlowPanel();
-		grid.setWidget(         row, 1, rowDataPanel                  );
-		cf.setWidth(            row, 1, "90%"                         );
-		cf.setWordWrap(         row, 1, false                         );
-		cf.setVerticalAlignment(row, 1, HasVerticalAlignment.ALIGN_TOP);
-
-		// ...and return the panel that's to contain the row's data.
-		return rowDataPanel;
+		if (GwtClientHelper.hasString(label)) {
+			// Get the row's index...
+			int row = grid.getRowCount();
+	
+			// ...add the cell for the row's label...
+			grid.setWidget(         row, 0, new InlineLabel(label)        );
+			cf.setWidth(            row, 0, "10%"                         );
+			cf.setWordWrap(         row, 0, false                         );
+			cf.setVerticalAlignment(row, 0, HasVerticalAlignment.ALIGN_TOP);
+	
+			// ...add the cell for the row's data...
+			VibeFlowPanel rowDataPanel = new VibeFlowPanel();
+			grid.setWidget(         row, 1, rowDataPanel                  );
+			cf.setWidth(            row, 1, "90%"                         );
+			cf.setWordWrap(         row, 1, false                         );
+			cf.setVerticalAlignment(row, 1, HasVerticalAlignment.ALIGN_TOP);
+	
+			// ...and return the panel that's to contain the row's data.
+			return rowDataPanel;
+		}
+		return null;
 	}
 	
 	/*
 	 * Renders a link in the row data panel.
 	 */
 	private void renderRowLink(VibeFlowPanel rowDataPanel, final String url) {
-		// Define a panel with an INPUT that contains the link.  We use
-		// and INPUT for this to facilitate the user being able to copy
-		// the link to the clipboard.
-		VibeFlowPanel linkPanel = new VibeFlowPanel();
-		rowDataPanel.add(linkPanel);
-		final TextBox linkInput = new TextBox();
-		linkInput.addStyleName("vibe-footerDataLinksInput");
-		linkPanel.add(linkInput);
-		linkInput.setValue(url);
-		linkInput.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				linkInput.selectAll();
-			}
-		});
-		linkInput.addChangeHandler(new ChangeHandler() {
-			@Override
-			public void onChange(ChangeEvent event) {
-				// If the user happens to change the link (since it's
-				// an INPUT, they CAN edit it), we simply restore the
-				// INPUT back to its initial value.
-				linkInput.setValue(url);
-				linkInput.selectAll();
-			}
-		});
+		if (null != rowDataPanel) {
+			// Define a panel with an INPUT that contains the link.  We use
+			// and INPUT for this to facilitate the user being able to copy
+			// the link to the clipboard.
+			VibeFlowPanel linkPanel = new VibeFlowPanel();
+			rowDataPanel.add(linkPanel);
+			final TextBox linkInput = new TextBox();
+			linkInput.addStyleName("vibe-footerDataLinksInput");
+			linkPanel.add(linkInput);
+			linkInput.setValue(url);
+			linkInput.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					linkInput.selectAll();
+				}
+			});
+			linkInput.addChangeHandler(new ChangeHandler() {
+				@Override
+				public void onChange(ChangeEvent event) {
+					// If the user happens to change the link (since it's
+					// an INPUT, they CAN edit it), we simply restore the
+					// INPUT back to its initial value.
+					linkInput.setValue(url);
+					linkInput.selectAll();
+				}
+			});
+		}
 	}
 	
 	/*
 	 * Renders a link to open a URL in a new window in the row data panel.
 	 */
 	private void renderRowLinkOpener(VibeFlowPanel rowDataPanel, final String url) {
-		// Define a panel with a link to launch the URL in a new
-		// window.
-		VibeFlowPanel linkPanel = new VibeFlowPanel();
-		rowDataPanel.add(linkPanel);
-		final Anchor linkA = new Anchor();
-		linkA.addStyleName("vibe-footerDataLinksOpenerAnchor");
-		linkPanel.add(linkA);
-		InlineLabel linkLabel = new InlineLabel(url);
-		linkLabel.addStyleName("vibe-footerDataLinksOpenerLabel");
-		linkA.getElement().appendChild(linkLabel.getElement());
-		linkA.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				Window.open(
-					url,
-					"teamingSubscribe",
-					("directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no,width=" + 800 + ",height=" + 600));
-			}
-		});
-		linkA.addMouseOutHandler(new MouseOutHandler() {
-			@Override
-			public void onMouseOut(MouseOutEvent event) {
-				linkA.removeStyleName("vibe-footerDataLinksOpenerAnchor-hover");
-			}
-		});
-		linkA.addMouseOverHandler(new MouseOverHandler() {
-			@Override
-			public void onMouseOver(MouseOverEvent event) {
-				linkA.addStyleName("vibe-footerDataLinksOpenerAnchor-hover");
-			}
-		});
+		if (null != rowDataPanel) {
+			// Define a panel with a link to launch the URL in a new
+			// window.
+			VibeFlowPanel linkPanel = new VibeFlowPanel();
+			rowDataPanel.add(linkPanel);
+			final Anchor linkA = new Anchor();
+			linkA.addStyleName("vibe-footerDataLinksOpenerAnchor");
+			linkPanel.add(linkA);
+			InlineLabel linkLabel = new InlineLabel(url);
+			linkLabel.addStyleName("vibe-footerDataLinksOpenerLabel");
+			linkA.getElement().appendChild(linkLabel.getElement());
+			linkA.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					Window.open(
+						url,
+						"teamingSubscribe",
+						("directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no,width=" + 800 + ",height=" + 600));
+				}
+			});
+			linkA.addMouseOutHandler(new MouseOutHandler() {
+				@Override
+				public void onMouseOut(MouseOutEvent event) {
+					linkA.removeStyleName("vibe-footerDataLinksOpenerAnchor-hover");
+				}
+			});
+			linkA.addMouseOverHandler(new MouseOverHandler() {
+				@Override
+				public void onMouseOver(MouseOverEvent event) {
+					linkA.addStyleName("vibe-footerDataLinksOpenerAnchor-hover");
+				}
+			});
+		}
 	}
 	
 	/*
 	 * Renders some text in the row data panel.
 	 */
 	private void renderRowText(VibeFlowPanel rowDataPanel, String text) {
-		// Define a panel with the text in a SPAN.
-		VibeFlowPanel textPanel = new VibeFlowPanel();
-		rowDataPanel.add(textPanel);
-		InlineLabel textLabel = new InlineLabel(text);
-		textLabel.addStyleName("vibe-footerDataLinksText");
-		textPanel.add(textLabel);
+		if (null != rowDataPanel) {
+			// Define a panel with the text in a SPAN.
+			VibeFlowPanel textPanel = new VibeFlowPanel();
+			rowDataPanel.add(textPanel);
+			InlineLabel textLabel = new InlineLabel(text);
+			textLabel.addStyleName("vibe-footerDataLinksText");
+			textPanel.add(textLabel);
+		}
 	}
 	
 	/**
