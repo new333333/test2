@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtConstants;
-import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.binderviews.BreadCrumbPanel;
 import org.kablink.teaming.gwt.client.binderviews.DescriptionPanel;
@@ -99,6 +98,9 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	//    integrated in the entry menu so that filter panel is no
 	//    loner needed.
 	private final static boolean SHOW_LEGACY_FILTERS	= false;
+	
+	// Control whether the FooterPanel is shown when in Filr mode.
+	private final static boolean SHOW_FILR_FOOTER	= false;
 	
 	// The following define the indexes into a VibeVerticalPanel of the
 	// various panels that make up a folder view.
@@ -756,21 +758,30 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Loads the FooterPanel.
 	 */
 	private void loadPart8Async() {
-		// For classes that don't want it, or if we are running Filr
-		if (!(includePanel(FolderPanels.FOOTER)) || GwtTeaming.m_requestInfo.isLicenseFilr() ) {
-			// ...we don't show the footer.
-			insertToolPanelPlaceholder(FOOTER_PANEL_INDEX);
-			loadPart9Async();
-			return;
+		// If we need to show the footer panel...
+		boolean showFooter = includePanel(FolderPanels.FOOTER);
+		if (showFooter) {
+			if (!SHOW_FILR_FOOTER) {
+				showFooter = (!(GwtClientHelper.isLicenseFilr()));
+			}
 		}
 		
-		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart8Now();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		if (showFooter) {
+			// ...load it...
+			Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
+				@Override
+				public void execute() {
+					loadPart8Now();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doLoad);
+		}
+		
+		else {
+			// ...otherwise, insert a place holder for it.
+			insertToolPanelPlaceholder(FOOTER_PANEL_INDEX);
+			loadPart9Async();
+		}
 	}
 
 	/*

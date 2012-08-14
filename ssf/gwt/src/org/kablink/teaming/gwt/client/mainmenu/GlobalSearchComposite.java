@@ -62,10 +62,11 @@ public class GlobalSearchComposite extends Composite {
 	private TeamingPopupPanel               m_soPopup;		//
 
 	/**
+	 * Constructor method.
 	 * 
+	 * @param includeSearchOptions
 	 */
-	public GlobalSearchComposite( boolean showAdvOptionsImg )
-	{
+	public GlobalSearchComposite(boolean includeSearchOptions) {
 		// Initialize the super class...
 		super();
 		
@@ -74,16 +75,18 @@ public class GlobalSearchComposite extends Composite {
 		m_messages = GwtTeaming.getMessages();
 
 		// ...initialize the GlobalSearchComposite's contents...
-		initSearchContents( showAdvOptionsImg );
+		initSearchContents(includeSearchOptions);
 
 		// ...and initialize the Composite itself.
 		initWidget(m_mainPanel);
 	}
+	
 	/**
 	 * Constructor method.
 	 */
 	public GlobalSearchComposite() {
-		this( true );
+		// Always use the initial form of the constructor.
+		this(true);
 	}
 
 	/**
@@ -92,20 +95,20 @@ public class GlobalSearchComposite extends Composite {
 	 * @return
 	 */
 	public MenuBarButton     getSearchOptionsButton() {return m_soButton;   }
-//!!!	public SearchMenuPanel   getSearchMenuPanel()     {return m_searchPanel;}
-//!!!	public TeamingPopupPanel getSearchOptionsPopup()  {return m_soPopup;    }
+	public SearchMenuPanel   getSearchMenuPanel()     {return m_searchPanel;}
+	public TeamingPopupPanel getSearchOptionsPopup()  {return m_soPopup;    }
 
 	/*
 	 * Initializes the contents of the GlobalSearchComposite.
 	 */
-	private void initSearchContents( boolean showAdvOptionsImg ) {
-		m_mainPanel   = new FlowPanel();
+	private void initSearchContents(boolean includeSearchOptions) {
+		m_mainPanel = new FlowPanel();
 		m_mainPanel.addStyleName("vibe-globalSearch");
 		
 		m_searchPanel = new SearchMenuPanel();
 		m_mainPanel.add(m_searchPanel);
 		
-		if ( showAdvOptionsImg ) {
+		if (includeSearchOptions) {
 			m_soButton = new MenuBarButton(m_images.searchOptions(), m_messages.mainMenuAltSearchOptions(), new Command() {
 				@Override
 				public void execute() {
@@ -147,16 +150,16 @@ public class GlobalSearchComposite extends Composite {
 											int soPopupLeft = ((m_soButton.getAbsoluteLeft() + m_soButton.getOffsetWidth()) - offsetWidth);
 											int soPopupTop  = m_soButton.getElement().getAbsoluteBottom();
 											
-	/*
-		GwtClientHelper.deferredAlert(
-			  "w:"   + offsetWidth                                 +
-			"\nh:"   + offsetHeight                                +
-			"\nb:l:" + m_soButton.getAbsoluteLeft()                +
-			"\nb:w:" + m_soButton.getOffsetWidth()                 +
-			"\nb:b:" + m_soButton.getElement().getAbsoluteBottom() +
-			"\nl:"   + soPopupLeft                                 +
-			"\nt:"   + soPopupTop);
-	*/
+/*
+	GwtClientHelper.deferredAlert(
+		  "w:"   + offsetWidth                                 +
+		"\nh:"   + offsetHeight                                +
+		"\nb:l:" + m_soButton.getAbsoluteLeft()                +
+		"\nb:w:" + m_soButton.getOffsetWidth()                 +
+		"\nb:b:" + m_soButton.getElement().getAbsoluteBottom() +
+		"\nl:"   + soPopupLeft                                 +
+		"\nt:"   + soPopupTop);
+*/
 											
 											m_soPopup.setPopupPosition(soPopupLeft, soPopupTop);
 										}
