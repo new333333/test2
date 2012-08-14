@@ -1552,13 +1552,13 @@ public class GwtViewHelper {
 	 *    contain multiple parts was reverse engineered from that used
 	 *    by folder_view_common2.jsp or view_trash.jsp.
 	 */
-	private static void fixupFCs(List<FolderColumn> fcList, boolean isTrash) {
+	private static void fixupFCs(List<FolderColumn> fcList, boolean isTrash, boolean isCollection) {
 		// We need to handle the columns that were added for
 		// collections.
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
 			if      (colName.equals("author"))           {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);              fc.setColumnSortKey(Constants.CREATOR_TITLE_FIELD); }
-			else if (colName.equals("comments"))         {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                            }
+			else if (colName.equals("comments"))         {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);        fc.setColumnSortable(!isCollection);                }
 			else if (colName.equals("date"))             {fc.setColumnSearchKey(Constants.MODIFICATION_DATE_FIELD);                                                          }
 			else if (colName.equals("description"))      {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                       }
 			else if (colName.equals("descriptionHtml"))  {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                       }
@@ -2349,10 +2349,10 @@ public class GwtViewHelper {
 				String[] columns;
 				switch (folderInfo.getCollectionType()) {
 				default:
-				case FILE_SPACES:     baseNameKey += "filespaces.";   columns = new String[]{"title", "rights", "descriptionHtml"};                                                                       break;
-				case MY_FILES:        baseNameKey += "myfiles.";      columns = new String[]{"title", "family", "date"};                                                                                  break;
-				case SHARED_BY_ME:    baseNameKey += "sharedByMe.";   columns = new String[]{"title", "share_sharedWith", "share_date", "share_expiration", "share_access", "share_message", "comments"}; break;
-				case SHARED_WITH_ME:  baseNameKey += "sharedWithMe."; columns = new String[]{"title", "share_sharedBy",   "share_date", "share_expiration", "share_access", "share_message", "comments"}; break;
+				case FILE_SPACES:     baseNameKey += "filespaces.";   columns = new String[]{"title", "rights", "descriptionHtml"};                                                      break;
+				case MY_FILES:        baseNameKey += "myfiles.";      columns = new String[]{"title", "family", "date"};                                                                 break;
+				case SHARED_BY_ME:    baseNameKey += "sharedByMe.";   columns = new String[]{"title", "share_sharedWith", "share_date", "share_expiration", "share_access", "comments"}; break;
+				case SHARED_WITH_ME:  baseNameKey += "sharedWithMe."; columns = new String[]{"title", "share_sharedBy",   "share_date", "share_expiration", "share_access", "comments"}; break;
 				}
 				columnNames = getColumnsLHMFromAS(columns);
 			}
@@ -2513,7 +2513,7 @@ public class GwtViewHelper {
 
 			// Walk the List<FolderColumn>'s performing fixups on each
 			// as necessary.
-			fixupFCs(fcList, isTrash);
+			fixupFCs(fcList, isTrash, isCollection);
 			
 
 			if (includeConfigurationInfo && (!isTrash) && (!isCollection)) {
