@@ -153,7 +153,7 @@ public interface ResourceSession {
 	 * 
 	 * @return
 	 */
-	public ResourceDriver getDriver();
+	public ResourceDriver getResourceDriver();
 	
 	/**
 	 * Return the length (in byte) of the content of the file resource.
