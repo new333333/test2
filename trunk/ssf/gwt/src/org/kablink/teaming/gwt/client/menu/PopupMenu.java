@@ -104,6 +104,38 @@ public class PopupMenu extends TeamingPopupPanel
 
 		return menuItem;
 	}
+	
+	/**
+	 * 
+	 */
+	public VibeMenuItem addMenuItem( final Command cmd, Image img, String text )
+	{
+		VibeMenuItem menuItem;
+		Command cmd2;
+		
+		cmd2 = new Command()
+		{
+			@Override
+			public void execute()
+			{
+				// Close this menu.
+				hide();
+				
+				cmd.execute();
+			};
+		};
+		
+		menuItem = new VibeMenuItem(
+								cmd2,
+								null,
+								img,
+								text,
+								"vibe-mainMenuPopup_Item",
+								m_canHaveCheckedMenuItems );
+		m_menu.addItem( menuItem );
+		
+		return menuItem;
+	}
 
 	/**
 	 * 

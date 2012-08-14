@@ -72,6 +72,7 @@ import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.ShareExpirationDlg.ShareExpirationDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
 import org.kablink.teaming.gwt.client.widgets.ShareWithTeamsDlg.ShareWithTeamsDlgClient;
 
 import com.google.gwt.core.client.GWT;
@@ -142,6 +143,7 @@ public class ShareThisDlg extends DlgBox
 	private FlexTable m_shareTable;
 	private InlineLabel m_shareWithTeamsLabel;
 	private FlowPanel m_shareTablePanel;
+	private ShareSendToWidget m_sendToWidget;
 	private FlexCellFormatter m_shareCellFormatter;
 	private HTMLTable.RowFormatter m_shareRowFormatter;
 	private List<EntityId> m_entityIds;
@@ -672,20 +674,15 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * Create all the controls needed to share this item with others.
 	 */
-	private FlowPanel createShareControls()
+	private FlexTable createShareControls()
 	{
-		FlowPanel mainPanel;
 		FlexTable mainTable;
 		HTMLTable.RowFormatter mainRowFormatter;
 		FlexCellFormatter mainCellFormatter;
 		int row;
 		
-		// Create a panel for all of the controls dealing with the shares.
-		mainPanel = new FlowPanel();
-		
 		mainTable = new FlexTable();
 		mainTable.setCellSpacing( 6 );
-		mainPanel.add( mainTable );
 		
 		mainRowFormatter = mainTable.getRowFormatter();
 		mainCellFormatter = mainTable.getFlexCellFormatter();
@@ -931,7 +928,7 @@ public class ShareThisDlg extends DlgBox
 		// Create an image resource for the delete image.
 		m_deleteImgR = GwtTeaming.getImageBundle().delete();
 
-		return mainPanel;
+		return mainTable;
 	}
 	
 	/**
@@ -2155,9 +2152,12 @@ public class ShareThisDlg extends DlgBox
 	 */
 	private void populateDlgNow()
 	{
+		FlexTable mainTable;
 		FlowPanel inputPanel;
-		FlowPanel sharePanel;
+		FlowPanel tmpPanel;
+		Label tmpLabel;
 		Label comments;
+		int row;
 		
 		// Create the controls needed in the header
 		{
@@ -2188,16 +2188,33 @@ public class ShareThisDlg extends DlgBox
 		}
 		
 		// Add the controls needed to manage sharing.
-		sharePanel = createShareControls();
-		m_mainPanel.add( sharePanel );
+		mainTable = createShareControls();
+		m_mainPanel.add( mainTable );
 		
-		// Add a "Comments:" label before the textbox.
-		comments = new Label( GwtTeaming.getMessages().commentsLabel() );
+		row = mainTable.getRowCount();
+		
+		// Add some space between the list of recipients and the "send to" controls
+		tmpPanel = new FlowPanel();
+		tmpLabel = new Label();
+		tmpLabel.getElement().getStyle().setPaddingTop( 20, Unit.PX );
+		tmpPanel.add( tmpLabel );
+		mainTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
+		++row;
+		
+		mainTable.getRowFormatter().setVerticalAlign( row, HasVerticalAlignment.ALIGN_TOP );
+
+		// Add a "Send to:" label before the textbox.
+		comments = new Label( GwtTeaming.getMessages().shareDlg_sendToLabel() );
 		comments.addStyleName( "shareThisDlg_CommentsLabel" );
-		m_mainPanel.add( comments );
+		mainTable.setHTML( row, 0, comments.getElement().getInnerHTML() );
 		
 		// Create a textbox
 		inputPanel = new FlowPanel();
+		tmpPanel = new FlowPanel();
+		m_sendToWidget = new ShareSendToWidget();
+		m_sendToWidget.init( SendToValue.ALL_RECIPIENTS );
+		tmpPanel.add( m_sendToWidget );
+		inputPanel.add( tmpPanel );
 		m_msgTextArea = new TextArea();
 		m_msgTextArea.addKeyPressHandler( new KeyPressHandler()
 		{
@@ -2226,7 +2243,8 @@ public class ShareThisDlg extends DlgBox
 		m_msgTextArea.addStyleName( "shareThisDlg_TextArea" );
 		m_msgTextArea.addStyleName( "shareThisDlg_TextAreaBorder" );
 		inputPanel.add( m_msgTextArea );
-		m_mainPanel.add( inputPanel );
+		mainTable.setWidget( row, 1, inputPanel );
+		++row;
 		
 		// Show the dialog.
 		showDlg();
