@@ -64,7 +64,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 /**
  * Implements Vibe's 'Manage Comments' dialog.
  *  
- * @author drfoster@novell.com
+ * @author jwootton@novell.com
  */
 @SuppressWarnings("unused")
 public class ManageCommentsDlg extends DlgBox
