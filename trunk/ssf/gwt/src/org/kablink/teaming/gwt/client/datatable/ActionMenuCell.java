@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.event.ChangeFavoriteStateEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
@@ -357,6 +358,10 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 							event = new ChangeFavoriteStateEvent(
 								eid.getEntityId(),
 								Boolean.parseBoolean(simpleTBI.getQualifierValue("makeFavorite")));
+							break;
+						
+						case INVOKE_SHARE_BINDER:
+							event = new InvokeShareBinderEvent(String.valueOf(eid.getEntityId()));
 							break;
 						
 						case UNDEFINED:
