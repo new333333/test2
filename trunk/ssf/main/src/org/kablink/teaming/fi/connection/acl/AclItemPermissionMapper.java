@@ -32,15 +32,9 @@
  */
 package org.kablink.teaming.fi.connection.acl;
 
-import org.kablink.teaming.security.function.WorkAreaOperation.ExternalAclRights;
-
 /**
  * A concrete resource driver supporting ACL must implement this interface so that
- * Vibe can determine:
- * <p>
- * 1. Which set of Vibe rights should be controlled by the external data source
- * integrated through this driver.<br>
- * 2. Which Vibe roles each of the external permissions map to.
+ * Vibe can determine Which Vibe roles each of the external permissions map to.
  * 
  * @author jong
  *
@@ -59,12 +53,4 @@ public interface AclItemPermissionMapper {
 	 */
 	public String[] toVibeRoleName(AclItemPermission permission);
 	
-	/**
-	 * Returns an enum value of <code>ExternalAclRights</code> type, which uniquely
-	 * identifies the set of Vibe rights controlled by the external data source
-	 * integrated through this driver.
-	 * 
-	 * @return
-	 */
-	public ExternalAclRights getExternalAclRights();
 }
