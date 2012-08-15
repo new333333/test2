@@ -71,9 +71,17 @@ public class HoverHintPopup extends TeamingPopupPanel {
 	 * Set the text in the hover hint.
 	 * 
 	 * @param hoverText
+	 * @param isHtml
 	 */
+	public void setHoverText(String hoverText, boolean isHtml) {
+		if (isHtml)
+		     m_hoverHintLabel.getElement().setInnerHTML(hoverText);
+		else m_hoverHintLabel.getElement().setInnerText(hoverText);
+	}
+	
 	public void setHoverText(String hoverText) {
-		m_hoverHintLabel.getElement().setInnerHTML(hoverText);
+		// Always use the initial form of the method.
+		setHoverText(hoverText, true);
 	}
 
 	/**

@@ -41,12 +41,13 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster
  */
 public class EntryTitleInfo implements IsSerializable {
-	private boolean		m_file;			//
-	private boolean 	m_trash;		//
-	private boolean		m_seen;			//
-	private EntityId	m_entityId;		//
-	private String		m_description;	//
-	private String  	m_title;		//
+	private boolean		m_descriptionIsHtml;	//
+	private boolean		m_file;					//
+	private boolean 	m_trash;				//
+	private boolean		m_seen;					//
+	private EntityId	m_entityId;				//
+	private String		m_description;			//
+	private String  	m_title;				//
 	
 	// The following is only used on the client side to push an Image
 	// through to the data table for items.
@@ -66,26 +67,28 @@ public class EntryTitleInfo implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean  isFile()             {return m_file;           }
-	public boolean  isSeen()             {return m_seen;           }
-	public boolean  isTrash()            {return m_trash;          }
-	public EntityId getEntityId()        {return m_entityId;       }
-	public String   getDescription()     {return m_description;    }
-	public String   getTitle()           {return m_title;          }
-	public Object   getClientItemImage() {return m_clientItemImage;}
+	public boolean  isDescriptionHtml()  {return m_descriptionIsHtml;}
+	public boolean  isFile()             {return m_file;             }
+	public boolean  isSeen()             {return m_seen;             }
+	public boolean  isTrash()            {return m_trash;            }
+	public EntityId getEntityId()        {return m_entityId;         }
+	public String   getDescription()     {return m_description;      }
+	public String   getTitle()           {return m_title;            }
+	public Object   getClientItemImage() {return m_clientItemImage;  }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFile(           boolean  file)            {m_file            = file;           }
-	public void setSeen(           boolean  seen)            {m_seen            = seen;           }
-	public void setTrash(          boolean  trash)           {m_trash           = trash;          }
-	public void setEntityId(       EntityId entityId)        {m_entityId        = entityId;       }
-	public void setDescription(    String   description)     {m_description     = description;    }
-	public void setTitle(          String   title)           {m_title           = title;          }
-	public void setClientItemImage(Object   clientItemImage) {m_clientItemImage = clientItemImage;}
+	public void setFile(             boolean  file)              {m_file              = file;             }
+	public void setSeen(             boolean  seen)              {m_seen              = seen;             }
+	public void setTrash(            boolean  trash)             {m_trash             = trash;            }
+	public void setEntityId(         EntityId entityId)          {m_entityId          = entityId;         }
+	public void setDescription(      String   description)       {m_description       = description;      }
+	public void setDescriptionIsHtml(boolean  descriptionIsHtml) {m_descriptionIsHtml = descriptionIsHtml;}
+	public void setTitle(            String   title)             {m_title             = title;            }
+	public void setClientItemImage(  Object   clientItemImage)   {m_clientItemImage   = clientItemImage;  }
 	
 	/**
 	 * Constructs an EntryTitleInfo from the parameters.
@@ -94,17 +97,19 @@ public class EntryTitleInfo implements IsSerializable {
 	 * @param trash
 	 * @param title
 	 * @param description
+	 * @param descriptionIsHtml
 	 * 
 	 * @return
 	 */
-	public static EntryTitleInfo construct(EntityId entityId, boolean seen, boolean trash, String title, String description) {
+	public static EntryTitleInfo construct(EntityId entityId, boolean seen, boolean trash, String title, String description, boolean descriptionIsHtml) {
 		EntryTitleInfo reply = new EntryTitleInfo();
 		
-		reply.setEntityId(   entityId   );
-		reply.setSeen(       seen       );
-		reply.setTrash(      trash      );
-		reply.setTitle(      title      );
-		reply.setDescription(description);
+		reply.setEntityId(         entityId         );
+		reply.setSeen(             seen             );
+		reply.setTrash(            trash            );
+		reply.setTitle(            title            );
+		reply.setDescription(      description      );
+		reply.setDescriptionIsHtml(descriptionIsHtml);
 		
 		return reply;
 	}

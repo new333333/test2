@@ -73,6 +73,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -121,6 +122,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ShareAccessInfo;
 import org.kablink.teaming.gwt.client.util.ShareDateInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationInfo;
@@ -471,9 +473,11 @@ public class GwtViewHelper {
 
 			// Are we processing an entry?
 			DefinableEntity	entity = si.getEntity();
-			entryMap.put(Constants.DOCID_FIELD,  String.valueOf(entity.getId()));
-			entryMap.put(Constants.ENTITY_FIELD, entity.getEntityType().name());
-			entryMap.put(Constants.TITLE_FIELD,  entity.getTitle());
+			entryMap.put(Constants.DESC_FIELD,        entity.getDescription().getText());
+			entryMap.put(Constants.DESC_FORMAT_FIELD, entity.getDescription().getFormat());
+			entryMap.put(Constants.DOCID_FIELD,       String.valueOf(entity.getId()));
+			entryMap.put(Constants.ENTITY_FIELD,      entity.getEntityType().name());
+			entryMap.put(Constants.TITLE_FIELD,       entity.getTitle());
 			String binderIdField;
 			if (entity instanceof FolderEntry) {
 				// Yes!  Scan its attachments.
@@ -503,6 +507,7 @@ public class GwtViewHelper {
 				// No, we aren't processing an entry!  It must be a
 				// binder!  Store its parent's ID in the Map.
 				binderIdField = Constants.BINDERS_PARENT_ID_FIELD;
+				entryMap.put(Constants.ENTITY_PATH, ((Binder) entity).getPathName());
 			}
 			
 			// Store the binder ID in the Map.
@@ -3077,7 +3082,19 @@ public class GwtViewHelper {
 									eti.setTrash(isTrash);
 									eti.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
 									eti.setEntityId(entityId);
-									eti.setDescription(getEntryDescriptionFromMap(request, entryMap));
+									String description = getEntryDescriptionFromMap(request, entryMap);
+									if (GwtClientHelper.hasString(description)) {
+										eti.setDescription(description);
+										String descriptionFormat = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DESC_FORMAT_FIELD);
+										eti.setDescriptionIsHtml(MiscUtil.hasString(descriptionFormat) && descriptionFormat.equals(String.valueOf(Description.FORMAT_HTML)));
+									}
+									else if (!isEntityFolderEntry) {
+										description = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_PATH);
+										if (GwtClientHelper.hasString(description)) {
+											eti.setDescription(      description);
+											eti.setDescriptionIsHtml(false      );
+										}
+									}
 									boolean file = GwtServerHelper.isFamilyFile(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FAMILY_FIELD));
 									if (file) {
 										file = MiscUtil.hasString(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD));
