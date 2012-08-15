@@ -489,24 +489,38 @@ public class WorkAreaOperation {
      * 
      */
 	public static enum ExternalAclRights {
-		FILR(new String[] {"readEntries", "createEntries", "modifyEntries", "modifyEntryFields",
-				"deleteEntries", "binderAdministration", "createEntryAcls", "changeAccessControl",
-				"createWorkspaces", "createFolders", "creatorReadEntries", "creatorModifyEntries",
-				"creatorDeleteEntries", "ownerCreateEntryAcls"});
+		FILR(new WorkAreaOperation[] {
+				WorkAreaOperation.READ_ENTRIES, 
+				WorkAreaOperation.CREATE_ENTRIES, 
+				WorkAreaOperation.MODIFY_ENTRIES, 
+				WorkAreaOperation.MODIFY_ENTRY_FIELDS,
+				WorkAreaOperation.DELETE_ENTRIES,
+				WorkAreaOperation.BINDER_ADMINISTRATION, 
+				WorkAreaOperation.CREATE_ENTRY_ACLS, 
+				WorkAreaOperation.CHANGE_ACCESS_CONTROL,
+				WorkAreaOperation.CREATE_WORKSPACES,
+				WorkAreaOperation.CREATE_FOLDERS,
+				WorkAreaOperation.CREATOR_READ,
+				WorkAreaOperation.CREATOR_MODIFY,
+				WorkAreaOperation.CREATOR_DELETE,
+				WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS
+				});
 		
-		private String[] rightNames;
-		private ExternalAclRights(String[] rightNames) {
-			this.rightNames = rightNames;
+		private WorkAreaOperation[] workAreaOperations;
+
+		private ExternalAclRights(WorkAreaOperation[] workAreaOperations) {
+			this.workAreaOperations = workAreaOperations;
 		}
 		
 		public RightSet getRightSet() {
 			RightSet rightSet = new RightSet();
-			if(rightNames != null) {
-				for(String rightName:rightNames)
-					rightSet.setRight(rightName, true);
+			if(workAreaOperations != null) {
+				for(WorkAreaOperation workAreaOperation:workAreaOperations)
+					rightSet.setRight(workAreaOperation, true);
 			}
 			return rightSet;
 		}
+
 	}
 
 
