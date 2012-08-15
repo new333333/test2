@@ -52,7 +52,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem.RecipientType;
-import org.kablink.teaming.domain.ShareItem.RightSet;
+import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.ShareItem;
@@ -84,7 +84,7 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 public class GwtShareHelper 
 {
 	protected static Log m_logger = LogFactory.getLog( GwtShareHelper.class );
-	private static RightSet m_viewRightSet;
+	private static org.kablink.teaming.security.function.WorkAreaOperation.RightSet m_viewRightSet;
 	private static RightSet m_contributorRightSet;
 	private static RightSet m_ownerRightSet;
 	private static long MILLISEC_IN_A_DAY = 86400000; 
