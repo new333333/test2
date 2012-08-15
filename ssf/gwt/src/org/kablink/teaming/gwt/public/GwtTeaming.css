@@ -1912,6 +1912,11 @@ body, table td, select
 	width: 10px;
 	padding-top: 3px;
 }
+.breadCrumb_ContentNode_Filr
+{
+	color: #135c8f  !important;
+	cursor: default !important;
+}
 .breadCrumb_ContentNode_Anchor
 {
 	margin-top: 3px;

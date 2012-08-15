@@ -206,8 +206,13 @@ public class GwtMenuHelper {
 		// Do we have a binder and are we running as other than
 		// guest?
 		if ((null != binder) && (!(GwtServerHelper.getCurrentUser().isShared()))) {
-			// Yes!  Add a ToolbarItem for editing its branding.
-			miscTBI.addNestedItem(constructEditBrandingItem(bs, binder, binderType));
+			// Yes!
+			boolean isFilr = Utils.checkIfFilr();
+
+			if (!isFilr) {
+				// Add a ToolbarItem for editing its branding.
+				miscTBI.addNestedItem(constructEditBrandingItem(bs, binder, binderType));
+			}
 
 			// Is this other than the profiles binder?
 			if (EntityIdentifier.EntityType.profiles != binder.getEntityType()) {
@@ -219,7 +224,9 @@ public class GwtMenuHelper {
 					miscTBI.addNestedItem( constructShareBinderItem(request, binder));
 				}
 				miscTBI.addNestedItem( constructMobileUiItem(       request, binder));
-				miscTBI.addNestedItems(constructTrackBinderItem(    bs,      binder));
+				if (!isFilr) {
+					miscTBI.addNestedItems(constructTrackBinderItem(bs,      binder));
+				}
 				miscTBI.addNestedItem( constructTrashItem(          request, binder));
 			}
 		}
@@ -261,48 +268,53 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem for calendar imports. to the
 	 */
 	private static ToolbarItem constructCalendarImportItems(boolean isFilr, String tbKey, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
-		// Allocate the base ToolbarItem to return;
+		// Allocate the base ToolbarItem to return.
 		ToolbarItem reply = new ToolbarItem(tbKey);
-
-		// Are we looking at a calendar or task folder that we can add entries to?
-		boolean isCalendar =                   BinderHelper.isBinderCalendar(bs, folder);
-		boolean isTask     = ((!isCalendar) && BinderHelper.isBinderTask(    bs, folder));
-		if ((isCalendar || isTask) && bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {
-			// Yes!  Generate the required structure for the menu.
-			ToolbarItem calTBI  = new ToolbarItem(CALENDAR  );
-			ToolbarItem catTBI  = new ToolbarItem(CATEGORIES);
-			ToolbarItem calTBI2 = new ToolbarItem(CALENDAR  );
-			reply.addNestedItem( calTBI );			
-			calTBI.addNestedItem(catTBI );			
-			catTBI.addNestedItem(calTBI2);
-			
-			// Load the localized strings we need for the menu items...
-			String importFromFile;
-			String importByURL;
-			String importType;
-			if (isCalendar) {
-				importFromFile = "toolbar.menu.calendarImport.fromFile";
-				importByURL    = "toolbar.menu.calendarImport.byURL";
-				importType     = "calendar";
+		
+		// Are we running in other than simple Filr mode?
+		if (!isFilr) {
+			// Yes!  Are we looking at a calendar or task folder that
+			// we can add entries to?
+			boolean isCalendar =                   BinderHelper.isBinderCalendar(bs, folder);
+			boolean isTask     = ((!isCalendar) && BinderHelper.isBinderTask(    bs, folder));
+			if ((isCalendar || isTask) && bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {
+				// Yes!  Generate the required structure for the menu.
+				ToolbarItem calTBI  = new ToolbarItem(CALENDAR  );
+				ToolbarItem catTBI  = new ToolbarItem(CATEGORIES);
+				ToolbarItem calTBI2 = new ToolbarItem(CALENDAR  );
+				reply.addNestedItem( calTBI );			
+				calTBI.addNestedItem(catTBI );			
+				catTBI.addNestedItem(calTBI2);
+				
+				// Load the localized strings we need for the menu
+				// items...
+				String importFromFile;
+				String importByURL;
+				String importType;
+				if (isCalendar) {
+					importFromFile = "toolbar.menu.calendarImport.fromFile";
+					importByURL    = "toolbar.menu.calendarImport.byURL";
+					importType     = "calendar";
+				}
+				
+				else {
+					importFromFile = "toolbar.menu.taskImport.fromFile";
+					importByURL    = "toolbar.menu.taskImport.byURL";				
+					importType     = "task";
+				}
+				
+				// ...and generate the items.
+				ToolbarItem importTBI = new ToolbarItem(importType + ".File");
+				markTBITitle(importTBI, importFromFile                       );
+				markTBIEvent(importTBI, TeamingEvents.INVOKE_IMPORT_ICAL_FILE);
+				calTBI2.addNestedItem(importTBI);
+				
+				importTBI = new ToolbarItem(importType + ".Url");
+				markTBITitle(importTBI, importByURL                         );
+				markTBIEvent(importTBI, TeamingEvents.INVOKE_IMPORT_ICAL_URL);
+				calTBI2.addNestedItem(importTBI);
 			}
-			
-			else {
-				importFromFile = "toolbar.menu.taskImport.fromFile";
-				importByURL    = "toolbar.menu.taskImport.byURL";				
-				importType     = "task";
-			}
-			
-			// ...and generate the items.
-			ToolbarItem importTBI = new ToolbarItem(importType + ".File");
-			markTBITitle(importTBI, importFromFile                       );
-			markTBIEvent(importTBI, TeamingEvents.INVOKE_IMPORT_ICAL_FILE);
-			calTBI2.addNestedItem(importTBI);
-			
-			importTBI = new ToolbarItem(importType + ".Url");
-			markTBITitle(importTBI, importByURL                         );
-			markTBIEvent(importTBI, TeamingEvents.INVOKE_IMPORT_ICAL_URL);
-			calTBI2.addNestedItem(importTBI);
-		}		
+		}
 		
 		// If we get here, reply refers to the ToolbarItem requested.
 		// Return it.
@@ -341,7 +353,7 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem for email subscription handling.
 	 */
 	private static ToolbarItem constructEmailSubscriptionItems(boolean isFilr, String tbKey, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
-		// Allocate the base ToolbarItem to return;
+		// Allocate the base ToolbarItem to return.
 		ToolbarItem reply = new ToolbarItem(tbKey);
 
 		// Is the current user the guest user?
@@ -1234,7 +1246,7 @@ public class GwtMenuHelper {
 	 */
 	@SuppressWarnings("unused")
 	private static ToolbarItem constructFolderItems(boolean isFilr, String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder, EntityType binderType) {
-		// Allocate the base ToolbarItem to return;
+		// Allocate the base ToolbarItem to return.
 		ToolbarItem reply = new ToolbarItem(tbKey);
 
 		// Define some locals to work with.
@@ -1628,57 +1640,60 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem for folder views.
 	 */
 	private static ToolbarItem constructFolderViewsItems(boolean isFilr, String tbKey, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
-		// Allocate the base ToolbarItem to return;
+		// Allocate the base ToolbarItem to return.
 		ToolbarItem reply = new ToolbarItem(tbKey);
-
-		// Are there any views defined on this folder?
-		@SuppressWarnings("unchecked")
-		List<Definition> folderViewDefs = folder.getViewDefinitions();
-		if (!(folderViewDefs.isEmpty())) {
-			// Yes!  Generate the required structure for the menu.
-			ToolbarItem dispStylesTBI = new ToolbarItem(DISPLAY_STYLES);
-			ToolbarItem catTBI        = new ToolbarItem(CATEGORIES    );
-			ToolbarItem viewsTBI      = new ToolbarItem(FOLDER_VIEWS  );
-			reply.addNestedItem(        dispStylesTBI );			
-			dispStylesTBI.addNestedItem(catTBI        );
-			catTBI.addNestedItem(       viewsTBI      );
-
-			// Does the user have a default view defined on this
-			// folder?
-			Long folderId = folder.getId();
-			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUserId(), folderId);
-			String userSelectedDefinition = ((String) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
-			Definition currentDef = folderViewDefs.get(0);
-			if (MiscUtil.hasString(userSelectedDefinition)) {
-				// Yes!  Scan the defined views.
-				for (Definition def:  folderViewDefs) {
-					// Is this the user's default view?
-					if (userSelectedDefinition.equals(def.getId())) {
-						// Yes!  Track it.
-						currentDef = def;
-						break;
+		
+		// Are we running in other than simple Filr mode?
+		if (!isFilr) {
+			// Yes!  Are there any views defined on this folder?
+			@SuppressWarnings("unchecked")
+			List<Definition> folderViewDefs = folder.getViewDefinitions();
+			if (!(folderViewDefs.isEmpty())) {
+				// Yes!  Generate the required structure for the menu.
+				ToolbarItem dispStylesTBI = new ToolbarItem(DISPLAY_STYLES);
+				ToolbarItem catTBI        = new ToolbarItem(CATEGORIES    );
+				ToolbarItem viewsTBI      = new ToolbarItem(FOLDER_VIEWS  );
+				reply.addNestedItem(        dispStylesTBI );			
+				dispStylesTBI.addNestedItem(catTBI        );
+				catTBI.addNestedItem(       viewsTBI      );
+	
+				// Does the user have a default view defined on this
+				// folder?
+				Long folderId = folder.getId();
+				UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUserId(), folderId);
+				String userSelectedDefinition = ((String) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
+				Definition currentDef = folderViewDefs.get(0);
+				if (MiscUtil.hasString(userSelectedDefinition)) {
+					// Yes!  Scan the defined views.
+					for (Definition def:  folderViewDefs) {
+						// Is this the user's default view?
+						if (userSelectedDefinition.equals(def.getId())) {
+							// Yes!  Track it.
+							currentDef = def;
+							break;
+						}
 					}
 				}
-			}
-
-			// Scan the defined views again.
-			String folderIdS = String.valueOf(folderId);
-			for (Definition def:  folderViewDefs) {
-				// Build URL to switch to this view...
-				AdaptedPortletURL url = createActionUrl(request);
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING             );
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_DEFINITION);
-				url.setParameter(WebKeys.URL_BINDER_ID, folderIdS                               );
-				url.setParameter(WebKeys.URL_VALUE, def.getId()                                 );
-				
-				// ...and create a ToolbarItem for it.
-				ToolbarItem viewTBI = new ToolbarItem(def.getName());
-				if (def.equals(currentDef)) {
-					markTBISelected(viewTBI);
-				}				
-				markTBITitleGetDef(viewTBI, def.getTitle());
-				markTBIUrl(  viewTBI, url           );
-				viewsTBI.addNestedItem(viewTBI);
+	
+				// Scan the defined views again.
+				String folderIdS = String.valueOf(folderId);
+				for (Definition def:  folderViewDefs) {
+					// Build URL to switch to this view...
+					AdaptedPortletURL url = createActionUrl(request);
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING             );
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_DEFINITION);
+					url.setParameter(WebKeys.URL_BINDER_ID, folderIdS                               );
+					url.setParameter(WebKeys.URL_VALUE, def.getId()                                 );
+					
+					// ...and create a ToolbarItem for it.
+					ToolbarItem viewTBI = new ToolbarItem(def.getName());
+					if (def.equals(currentDef)) {
+						markTBISelected(viewTBI);
+					}				
+					markTBITitleGetDef(viewTBI, def.getTitle());
+					markTBIUrl(  viewTBI, url           );
+					viewsTBI.addNestedItem(viewTBI);
+				}
 			}
 		}
 		
@@ -1900,7 +1915,7 @@ public class GwtMenuHelper {
 	 * Constructs the ToolbarItem's for What's New handling.
 	 */
 	private static ToolbarItem constructWhatsNewItems(boolean isFilr, String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder, EntityType binderType) {
-		// Allocate the base ToolbarItem to return;
+		// Allocate the base ToolbarItem to return.
 		ToolbarItem reply = new ToolbarItem(tbKey);
 
 		// Is the current user the guest user?
