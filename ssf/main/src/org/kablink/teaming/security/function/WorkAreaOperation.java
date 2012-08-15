@@ -489,7 +489,7 @@ public class WorkAreaOperation {
      * 
      */
 	public static enum ExternalAclRights {
-		FILR(new WorkAreaOperation[] {
+		DEFAULT(new WorkAreaOperation[] {
 				WorkAreaOperation.READ_ENTRIES, 
 				WorkAreaOperation.CREATE_ENTRIES, 
 				WorkAreaOperation.MODIFY_ENTRIES, 
