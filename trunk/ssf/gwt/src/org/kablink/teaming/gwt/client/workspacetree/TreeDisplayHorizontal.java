@@ -234,23 +234,23 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * from the sidebar.
 	 */
 	private class GetSidebarContextHelper {
-		private Anchor		m_selectorA;			// The anchor for the TreeInfo.
 		private boolean		m_handleSidebarContext;	// Coordinates handling the callback.
 		private FlowPanel	m_fp;					// The FlowPanel things are to be added to.
 		private Timer		m_timer;				// A timer used to control the maximum amount of time we'll wait for a response.
 		private TreeInfo	m_ti;					// The TreeInfo we're dealing with.
+		private Widget		m_selectorW;			// The Widget for the TreeInfo.
 		
 		/**
 		 * Class constructor.
 		 */
-		GetSidebarContextHelper(FlowPanel fp, TreeInfo ti, Anchor selectorA) {
+		GetSidebarContextHelper(FlowPanel fp, TreeInfo ti, Widget selectorW) {
 			// Initialize the super class.
 			super();
 			
 			// ...store the parameters...
 			m_fp        = fp;
 			m_ti        = ti;
-			m_selectorA = selectorA;
+			m_selectorW = selectorW;
 			
 			// ...and initialize everything else.
 			setHandleSidebarContext(true);
@@ -267,7 +267,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 					// ...add the TreeInfo information since we didn't
 					// ...get a context that we'd normally add one
 					// ...from.
-					addTIImageAndAnchor(m_fp, m_ti, m_selectorA);
+					addTIImageAndAnchor(m_fp, m_ti, m_selectorW);
 
 					// ...and add the access to the binder
 					// ...configuration menu.
@@ -351,7 +351,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	/*
 	 * Adds an image and anchor for a TreeInfo to a flow panel.
 	 */
-	private void addTIImageAndAnchor(FlowPanel fp, TreeInfo ti, Anchor selectorA) {
+	private void addTIImageAndAnchor(FlowPanel fp, TreeInfo ti, Widget selectorW) {
 		// Create the image for the TreeInfo...
 		Image binderImg = GwtClientHelper.buildImage(((String) null));
 		binderImg.addStyleName("breadCrumb_ContentTail_Img");
@@ -361,7 +361,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 
 		// ...and add it to the flow panel with the anchor.
 		fp.add(binderImg);
-		fp.add(selectorA);
+		fp.add(selectorW);
 	}
 	
 	/*
@@ -684,6 +684,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * Renders a TreeInfo into the next position in a HorizontalPanel.
 	 */
 	private void renderNode(final TreeInfo ti, FlexTable nodeGrid) {
+		boolean isFilr = GwtClientHelper.isLicenseFilr();
 		int depth = Integer.parseInt(nodeGrid.getElement().getAttribute(GRID_DEPTH_ATTRIBUTE));
 		Widget selectorLabel      = getSelectorLabel(ti, (0 == depth));
 		String selectorLabelStyle = selectorLabel.getStyleName();
@@ -709,10 +710,16 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				if (getTreeMode().isHorizontalBinder()) {
 					expanderImg.addStyleName("breadCrumb_ContentNode_ExpanderImgSmall");
 				}
-				Anchor expanderA = new Anchor();
-				expanderA.getElement().appendChild(expanderImg.getElement());
-				expanderA.addClickHandler(new BinderExpander(ti, nodeGrid, expanderImg));
-				expanderWidget = expanderA;
+				if (isFilr) {
+					expanderWidget = expanderImg;
+					expanderWidget.addStyleName("breadCrumb_ContentNode_Filr");
+				}
+				else {
+					Anchor expanderA = new Anchor();
+					expanderA.getElement().appendChild(expanderImg.getElement());
+					expanderA.addClickHandler(new BinderExpander(ti, nodeGrid, expanderImg));
+					expanderWidget = expanderA;
+				}
 			}
 			else {
 				// No, it isn't expandable!  Put a 16x16 spacer in place of
@@ -726,13 +733,21 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		}
 		
 		// Generate the widgets to select the Binder.
-		final Anchor selectorA = new Anchor();
-		selectorA.getElement().appendChild(selectorLabel.getElement());
-		selectorA.addClickHandler(new BinderSelector(ti));
-		selectorA.setWidth("100%");
-		if (ti.isBucket()) {
-			setWidgetHover(selectorA, getBinderHover(ti));
+		Anchor a;
+		if (isFilr && (!binderBreadcrumbTail)) {
+			a = null;
+			selectorLabel.addStyleName("breadCrumb_ContentNode_Filr");
 		}
+		else {
+			a = new Anchor();
+			a.getElement().appendChild(selectorLabel.getElement());
+			a.addClickHandler(new BinderSelector(ti));
+			a.setWidth("100%");
+			if (ti.isBucket()) {
+				setWidgetHover(a, getBinderHover(ti));
+			}
+		}
+		final Widget selectorW = ((null == a) ? selectorLabel : a);
 		
 		// Are we rendering the tail node in a binder bread crumb tree?
 		if (binderBreadcrumbTail) {
@@ -770,7 +785,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 					});
 				
 				// ...add the image and anchor for the binder...
-				addTIImageAndAnchor(fp, ti, selectorA);
+				addTIImageAndAnchor(fp, ti, selectorW);
 				
 				// ...and add the access to the binder configuration
 				// ...menu.
@@ -785,7 +800,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				final GetSidebarContextHelper gscHelper = new GetSidebarContextHelper(
 					fp,			// The FlowPanel we're constructing. 
 					ti,			// The TreeInfo  we're constructing from.
-					selectorA);	// The Anchor for this TreeInfo.
+					selectorW);	// The Anchor for this TreeInfo.
 				
 				// ...and fire a get sidebar context event.
 				GwtTeaming.fireEvent(
@@ -840,7 +855,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 									
 									// ...add the image and anchor for
 									// ...the binder...
-									addTIImageAndAnchor(fp, ti, selectorA);
+									addTIImageAndAnchor(fp, ti, selectorW);
 									
 									// ...and add the access to the
 									// ...binder configuration menu.
@@ -853,7 +868,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			else {
 				// No, we must be showing navigation trees!  Add the
 				// image and anchor for the binder...
-				addTIImageAndAnchor(fp, ti, selectorA);
+				addTIImageAndAnchor(fp, ti, selectorW);
 				
 				// ...and add the access to the
 				// ...binder configuration menu.
@@ -866,7 +881,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			// crumb tree!  Simply add the expander and selector to the
 			// FlexTable.
 			nodeGrid.setWidget(0, 0, expanderWidget);
-			nodeGrid.setWidget(0, 1, selectorA     );
+			nodeGrid.setWidget(0, 1, selectorW     );
 		}
 
 		// Is the node showing an expander and is expanded?
