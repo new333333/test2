@@ -1525,9 +1525,9 @@ public class GwtActivityStreamHelper {
 		// Based on the installed license, what definition families do
 		// we consider as 'file'?
 		String[] fileFamilies;
-		if (Utils.checkIfFilrAndVibe() || Utils.checkIfVibe())
-		     fileFamilies = new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO};
-		else fileFamilies = new String[]{Definition.FAMILY_FILE                         };
+		if (Utils.checkIfFilr())
+		     fileFamilies = new String[]{Definition.FAMILY_FILE                         };
+		else fileFamilies = new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO};
 		
 		switch (collectionType) {
 		default:
@@ -2141,7 +2141,7 @@ public class GwtActivityStreamHelper {
 			rootASList.add(asTI);
 
 			// If we not in pure Filr mode...
-			if (Utils.checkIfFilrAndVibe() || Utils.checkIfVibe()) {
+			if (!(Utils.checkIfFilr())) {
 				// ...add a 'My Teams' TreeInfo to the root TreeInfo.
 				asTI = buildMyTeamsTI(bs, request, td);
 				rootASList.add(asTI);

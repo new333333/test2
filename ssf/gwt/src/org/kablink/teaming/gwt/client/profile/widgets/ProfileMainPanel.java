@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.profile.widgets;
 
 import java.util.List;
@@ -38,8 +37,6 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.TrackCurrentBinderEvent;
-import org.kablink.teaming.gwt.client.event.UntrackCurrentBinderEvent;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.profile.DiskUsageInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
@@ -82,6 +79,11 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.dom.client.NodeList;
 
+/**
+ * ?
+ * 
+ * @author nbjensen@novell.com
+ */
 @SuppressWarnings("unchecked")
 public class ProfileMainPanel extends Composite implements SubmitCompleteHandler {
 
@@ -155,22 +157,30 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		mainPanel.add(titlePanel);
 
 		String userName = profileRequestInfo.getUserName();
-		String url = profileRequestInfo.getAdaptedUrl();
+		if (GwtClientHelper.isLicenseFilr()) {
+			InlineLabel unLabel = new InlineLabel(userName);
+			unLabel.addStyleName("profile-title");
+			titlePanel.add(unLabel);
+		}
 		
-		Anchor anchor = new Anchor(userName, url);
-		anchor.setTitle(GwtTeaming.getMessages().qViewWorkspaceTitle());
+		else {
+			String url = profileRequestInfo.getAdaptedUrl();
+			
+			Anchor anchor = new Anchor(userName, url);
+			anchor.setTitle(GwtTeaming.getMessages().qViewWorkspaceTitle());
+			
+			anchor.addStyleName("profile-title");
+			titlePanel.add(anchor);
+	
+			Anchor workspace = new Anchor( GwtTeaming.getMessages().qViewWorkspace(), url);
+			workspace.setTitle(GwtTeaming.getMessages().qViewWorkspaceTitle());
+			
+			workspace.addStyleName("profile-workspace-link");
+	
+			titlePanel.add(workspace);
+		}
 		
-		anchor.addStyleName("profile-title");
-		titlePanel.add(anchor);
-
 		PresenceControl presence = new PresenceControl(profileRequestInfo.getBinderId(), true, true, true);
-
-		Anchor workspace = new Anchor( GwtTeaming.getMessages().qViewWorkspace(), url);
-		workspace.setTitle(GwtTeaming.getMessages().qViewWorkspaceTitle());
-		
-		workspace.addStyleName("profile-workspace-link");
-
-		titlePanel.add(workspace);
 		titlePanel.add(presence);
 	}
 
@@ -193,6 +203,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 
 		// Add a mouse-over handler
 		MouseOverHandler mouseOverHandler = new MouseOverHandler() {
+			@Override
 			public void onMouseOver(MouseOverEvent event) {
 				Widget widget;
 
@@ -206,6 +217,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 
 		// Add a mouse-out handler
 		MouseOutHandler mouseOutHandler = new MouseOutHandler() {
+			@Override
 			public void onMouseOut(MouseOutEvent event) {
 				Widget widget;
 
@@ -221,6 +233,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		
 		// Add a mouse-over handler
 		delete.addMouseOverHandler( new MouseOverHandler() {
+			@Override
 			public void onMouseOver(MouseOverEvent event) {
 				Widget widget;
 
@@ -232,6 +245,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 
 		// Add a mouse-out handler
 		delete.addMouseOutHandler( new MouseOutHandler() {
+			@Override
 			public void onMouseOut(MouseOutEvent event) {
 				Widget widget;
 
@@ -421,6 +435,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		uploadBtn = new Anchor(GwtTeaming.getMessages().profileUpload());
 		uploadBtn.setTitle(GwtTeaming.getMessages().profileUploadSelect());
 		uploadBtn.addClickHandler( new ClickHandler(){
+				@Override
 				public void onClick(ClickEvent event){
 					formPanel.submit();
 				}
@@ -434,6 +449,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		
 		//if the file upload changes, add the upload button
 		fileUpload.addChangeHandler(new ChangeHandler(){
+			@Override
 			public void onChange(ChangeEvent event) {
 				uploadBtn.setVisible(true);
 			}
@@ -453,6 +469,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		grid.getFlexCellFormatter().setStyleName(row, 0, "sectionHeadingRBB");
 		
 		formPanel.addSubmitCompleteHandler(new SubmitCompleteHandler() {
+			@Override
 			public void onSubmitComplete(SubmitCompleteEvent event) {
 				// When the form submission is successfully completed, this event is
 		        // fired. Assuming the service returned a response of type text/html,
@@ -544,6 +561,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		cmd = new IsPersonTrackedCmd( profileRequestInfo.getBinderId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 				{
+					@Override
 					public void onFailure( Throwable t )
 					{
 						GwtClientHelper.handleGwtRPCFailure(
@@ -552,6 +570,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 							profileRequestInfo.getBinderId());
 					}//end onFailure()
 					
+					@Override
 					public void onSuccess( VibeRpcResponse response )
 					{
 						Boolean success;
@@ -581,6 +600,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 			handlerId = id;
 		}
 
+		@Override
 		public void onClick(ClickEvent event) {
 			if (handlerId.equals("EditId")) {
 				String url = profileRequestInfo.getModifyUrl();
@@ -655,6 +675,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 			
 			// Add a mouse-over handler
 			addMouseOverHandler( new MouseOverHandler() {
+				@Override
 				public void onMouseOver(MouseOverEvent event) {
 					if(!isChecked()){
 						removeStyleName("subhead-control-bg1");
@@ -668,6 +689,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 
 			// Add a mouse-out handler
 			addMouseOutHandler( new MouseOutHandler() {
+				@Override
 				public void onMouseOut(MouseOutEvent event) {
 					if(!isChecked()){
 						removeStyleName("subhead-control-bg2");
@@ -702,15 +724,18 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 			}
 		}
 		
+		@Override
 		public void setText(String text) {
 			label.setText(text);
 		}
 		
+		@Override
 		public void setTitle(String text) {
 			label.setTitle(text);
 		}
 	}
 
+	@Override
 	public void onSubmitComplete(SubmitCompleteEvent event) {
 		// Do we have an editSuccessfulHandler?
 		if ( editAvatarSuccessHandler != null )
@@ -729,6 +754,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		if(editAvatarSuccessHandler == null) {
 			
 			editAvatarSuccessHandler = new EditSuccessfulHandler() {
+				@Override
 				public boolean editSuccessful(Object obj) {
 					
 					GetProfileAvatarsCmd cmd;
@@ -750,6 +776,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 					// create an async callback to handle the result of the request to get
 					// the state:
 					AsyncCallback<VibeRpcResponse> callback = new AsyncCallback<VibeRpcResponse>() {
+						@Override
 						public void onFailure(Throwable t) {
 							// display error
 							GwtClientHelper.handleGwtRPCFailure(
@@ -758,6 +785,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 								profileRequestInfo.getBinderId());
 						}
 
+						@Override
 						public void onSuccess( VibeRpcResponse response ) {
 							ProfileAttribute attr;
 							
@@ -821,6 +849,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		GetDiskUsageInfoCmd cmd;
 		
 		AsyncCallback<VibeRpcResponse> callback = new AsyncCallback<VibeRpcResponse>() {
+			@Override
 			public void onFailure(Throwable t) {
 				// display error
 				GwtClientHelper.handleGwtRPCFailure(
@@ -828,6 +857,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 					GwtTeaming.getMessages().rpcFailure_GetProfileAvatars(),
 					profileRequestInfo.getBinderId());
 			}
+			@Override
 			public void onSuccess( VibeRpcResponse response) {
 				DiskUsageInfo info = null;
 				

@@ -6695,7 +6695,7 @@ public class GwtServerHelper {
 
 			// No, it's not file!  If we're not in simple Filr mode,
 			// is it photo?
-			if ((Utils.checkIfFilrAndVibe() || Utils.checkIfVibe()) &&
+			if ((!(Utils.checkIfFilr())) &&
 					family.equals(Definition.FAMILY_PHOTO)) {
 				// Yes!  Return true.
 				return true;

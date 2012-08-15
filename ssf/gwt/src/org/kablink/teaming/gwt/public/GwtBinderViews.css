@@ -147,7 +147,7 @@
 		.vibe-dataTableAssignment-control         {}
 		.vibe-dataTableAssignment-disabled        {color: #c4c4c4;}
 		.vibe-dataTableAssignment-enabled         {color: #353838;}
-		.vibe-dataTableAssignment-image           {width: 25px;}
+		.vibe-dataTableAssignment-image           {height: 25px;}
 		.vibe-dataTableAssignment-label           {display: inline; font-weight: bold; padding-left: 2px !important;}
 		.vibe-dataTableAssignment-list            {}
 		.vibe-dataTableAssignment-panel           {white-space: nowrap;}
@@ -187,10 +187,10 @@
 		.vibe-dataTablePresence-label             {display: inline; font-weight: bold; padding-left: 2px !important;}
 		.vibe-dataTablePresence-disabled          {color: #c4c4c4;}
 		.vibe-dataTablePresence-enabled           {color: #353838;}
-		.vibe-dataTablePresence-image             {width: 25px;}
+		.vibe-dataTablePresence-image             {height: 25px;}
 		.vibe-dataTableShareStringValue-expired   {color: red; font-weight: bold;}
 		.vibe-dataTableShareStringValue-label     {white-space: nowrap;}
-		.vibe-dataTableShareStringValue-panel     {white-space: nowrap; height: 15px}
+		.vibe-dataTableShareStringValue-panel     {white-space: nowrap; height: 25px; margin-top: 6px;}
 		.vibe-dataTableTaskFolder-disabled        {color: #c4c4c4;}
 		.vibe-dataTableTaskFolder-enabled         {color: #353838;}
 		.vibe-dataTableTaskFolder-label           {display: inline; color: #135c8f;}
