@@ -207,6 +207,25 @@
 </div>
 </div>
 </div>
+
+<c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
+<c:if test="${!empty ss_namespace}"><c:set var="ss_attachments_namespace" value="${ss_namespace}"/></c:if>
+<c:if test="${!ss_fileopenDivSeen}">
+  <div id="ss_div_fileopen${ss_attachments_namespace}" 
+    name="ss_div_fileopen${ss_attachments_namespace}" 
+    style="visibility:visible;display:block; width:1px; height:1px;">
+	<div align="right">
+		<iframe frameborder="0" 
+		  id="ss_iframe_fileopen${ss_attachments_namespace}" 
+		  name="ss_iframe_fileopen${ss_attachments_namespace}" 
+		  src="<html:rootPath/>js/forum/null.html" 
+		  height="1" width="1"
+		  title="<ssf:nlt tag="entry.AttachFilesByWebDav" />" >Novell Vibe</iframe>
+	</div>
+  </div>
+  <c:set var="ss_fileopenDivSeen" value="true" scope="request"/>
+</c:if>
+
 <script type="text/javascript">
 function ss_focusOnEntry() {
 	ss_setFocusToFirstA("ss_entryTop${ss_entryLinkCounter}");

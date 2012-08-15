@@ -4523,6 +4523,10 @@ function ss_openWebDAVFile(binderId, entryId, namespace, OSInfo, fileId) {
 	
 	var frameId = 'ss_iframe_fileopen' + namespace;
 	var frameObj = document.getElementById(frameId);
+	if (frameObj == null) {
+		alert("The edit function is broken in ss_openWebDAVFile.  The iframe named ss_iframe_fileopen"+namespace+" is missing.");
+		return;
+	}
 	
 	editClicked = "true";
 	
@@ -4530,7 +4534,7 @@ function ss_openWebDAVFile(binderId, entryId, namespace, OSInfo, fileId) {
 	frameObj.style.visibility = "visible";
 
 	frameObj.src = url;
-	}
+}
 
 function ss_checkEditClicked(entryId, namespace) {
 	return editClicked;
