@@ -277,6 +277,8 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 				presenceControl.addStyleName("vibe-dataTableAssignment-control displayInline verticalAlignTop");
 				presenceControl.setAnchorStyleName("cursorPointer");
 				presenceControl.getElement().setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, (VibeDataTableConstants.CELL_WIDGET_PRESENCE + assignmentIndexTail));
+				presenceControl.setImageOverride(ai.getAvatarUrl());
+				presenceControl.addImageStyleName("vibe-dataTableAssignment-image");
 				fp.add(presenceControl);
 				
 				// ...and add a name link for it.

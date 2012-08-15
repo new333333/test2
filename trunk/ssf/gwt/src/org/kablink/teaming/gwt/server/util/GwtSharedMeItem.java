@@ -92,15 +92,15 @@ public class GwtSharedMeItem {
 	public void addPerShareInfo(ShareItem si) {
 		// Construct a new per share info for the share item...
 		GwtPerShareInfo psi = new GwtPerShareInfo(
-			si.getId(),
-			si.getModification().getPrincipal().getId(),
-			si.getRecipientId(),
-			si.getRecipientType(),
-			si.getCreation().getDate(),
-			GwtShareHelper.getShareRightsFromRightSet(si.getRightSet()),
-			si.getEndDate(),
-			si.isExpired(),
-			si.getComment());
+			si.getId(),														// Share  ID.
+			si.getModification().getPrincipal().getId(),					// Sharer ID.
+			si.getRecipientId(),											// Recipient ID.
+			si.getRecipientType(),											// Recipient type (user, group or team.)
+			si.getCreation().getDate(),										// Time/date stamp the share was created.
+			GwtShareHelper.getShareRightsFromRightSet(si.getRightSet()),	// The rights granted by the share.
+			si.getEndDate(),												// Time/date stamp the share expires.
+			si.isExpired(),													// true -> The share is expired.  false -> It's not.
+			si.getComment());												// Comment associated with the share.
 		
 		// ...and add it to the list.
 		m_perShareInfos.add(psi);
@@ -171,7 +171,7 @@ public class GwtSharedMeItem {
 	 */
 	public static GwtSharedMeItem findShareMeInList(Long shareId, List<GwtSharedMeItem> siList) {
 		// Do we have any GwtSharedMeItem's to search?
-		if ((null != siList) && (!(siList.isEmpty()))) {
+		if ((null != shareId) && (null != siList) && (!(siList.isEmpty()))) {
 			// Yes!  Scan them.
 			for (GwtSharedMeItem si:  siList) {
 				// Scan this GwtSharedMeItem's GwtPerShareInfo's.

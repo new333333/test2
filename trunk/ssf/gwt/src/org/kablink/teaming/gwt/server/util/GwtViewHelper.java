@@ -91,8 +91,6 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.GuestInfo;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
-import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
-import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.rpc.shared.AvatarInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
@@ -551,7 +549,7 @@ public class GwtViewHelper {
 	 * only contain the assignee IDs.  We need to complete them with
 	 * each assignee's title, ...
 	 */
-	private static void completeAIs(AllModulesInjected bs, List<FolderRow> folderRows) {
+	private static void completeAIs(AllModulesInjected bs, HttpServletRequest request, List<FolderRow> folderRows) {
 		// If we don't have any FolderRows's to complete...
 		if (!(MiscUtil.hasItems(folderRows))) {
 			// ..bail.
@@ -621,6 +619,7 @@ public class GwtViewHelper {
 
 		// Construct Maps, mapping the IDs to their titles, membership
 		// counts, ...
+		Map<Long, String>			avatarUrls        = new HashMap<Long, String>();
 		Map<Long, String>			principalEMAs     = new HashMap<Long, String>();
 		Map<Long, String>			principalTitles   = new HashMap<Long, String>();
 		Map<Long, Integer>			groupCounts       = new HashMap<Long, Integer>();
@@ -631,6 +630,7 @@ public class GwtViewHelper {
 		GwtEventHelper.readEventStuffFromDB(
 			// Uses these...
 			bs,
+			request,
 			principalIds,
 			teamIds,
 
@@ -642,31 +642,33 @@ public class GwtViewHelper {
 			presenceUserWSIds,
 			
 			teamTitles,
-			teamCounts);
-		
+			teamCounts,
+			
+			avatarUrls);
+
 		// Scan the List<FolderRow>'s again...
 		for (FolderRow fr:  folderRows) {
 			// ...this time, fixing the assignee lists.
-			fixupAIs(     getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, userPresence, presenceUserWSIds);
-			fixupAIGroups(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, groupCounts                    );
-			fixupAITeams( getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             teamTitles,      teamCounts                     );
-			fixupAIs(     getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, userPresence, presenceUserWSIds);
-			fixupAIGroups(getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, groupCounts                    );
-			fixupAITeams( getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        teamTitles,      teamCounts                     );
-			fixupAIs(     getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, userPresence, presenceUserWSIds);
-			fixupAIGroups(getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, groupCounts                    );
-			fixupAITeams( getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  teamTitles,      teamCounts                     );
+			fixupAIs(     getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, userPresence, presenceUserWSIds, avatarUrls);
+			fixupAIGroups(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, groupCounts                                );
+			fixupAITeams( getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             teamTitles,      teamCounts                                 );
+			fixupAIs(     getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, userPresence, presenceUserWSIds, avatarUrls);
+			fixupAIGroups(getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, groupCounts                                );
+			fixupAITeams( getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        teamTitles,      teamCounts                                 );
+			fixupAIs(     getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, userPresence, presenceUserWSIds, avatarUrls);
+			fixupAIGroups(getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, groupCounts                                );
+			fixupAITeams( getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  teamTitles,      teamCounts                                 );
 			
-			fixupAIGroups(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      principalTitles, groupCounts                    );
-			fixupAIGroups(getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), principalTitles, groupCounts                    );
-			fixupAIGroups(getAIListFromFR(fr, RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME),           principalTitles, groupCounts                    );
+			fixupAIGroups(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      principalTitles, groupCounts                                );
+			fixupAIGroups(getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), principalTitles, groupCounts                                );
+			fixupAIGroups(getAIListFromFR(fr, RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME),           principalTitles, groupCounts                                );
 			
-			fixupAITeams( getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       teamTitles,      teamCounts                     );
-			fixupAITeams( getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  teamTitles,      teamCounts                     );
-			fixupAITeams( getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            teamTitles,      teamCounts                     );
+			fixupAITeams( getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       teamTitles,      teamCounts                                 );
+			fixupAITeams( getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  teamTitles,      teamCounts                                 );
+			fixupAITeams( getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            teamTitles,      teamCounts                                 );
 			
-			fixupAIs(     getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY),                         principalTitles, userPresence, presenceUserWSIds);
-			fixupAIs(     getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       principalTitles, userPresence, presenceUserWSIds);
+			fixupAIs(     getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY),                         principalTitles, userPresence, presenceUserWSIds, avatarUrls);
+			fixupAIs(     getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       principalTitles, userPresence, presenceUserWSIds, avatarUrls);
 		}		
 
 		// Finally, one last scan through the List<FolderRow>'s...
@@ -781,7 +783,7 @@ public class GwtViewHelper {
 				continue;
 			}
 
-			// Is this an additional share item on an existed
+			// Is this an additional share item on an existing
 			// GwtSharedMeItem?
 			GwtSharedMeItem meItem = GwtSharedMeItem.findShareMeInList(siEntity, reply);
 			if (null == meItem) {
@@ -850,8 +852,9 @@ public class GwtViewHelper {
 					siEntityFamily);	// The family of the entity.
 			}
 
-			// Is this member directed to this user, one of the
-			// user's groups or one of the user's teams?
+			// Is this share directed to this user, one of the user's
+			// groups or one of the user's teams?  Well use the item
+			// (break) if it does and skip it (continue) if it doesn't.
 			Long rId = si.getRecipientId();
 			switch (si.getRecipientType()) {
 			case user:   if (userId.equals(  rId)) break; continue;	// Checks the user...
@@ -860,7 +863,7 @@ public class GwtViewHelper {
 			default:                                      continue;
 			}
 					
-			// The recipient belongs with this user!  Add the
+			// The share recipient belongs with this user!  Add the
 			// information about it to the GwtSharedMeItem.
 			meItem.addPerShareInfo(si);
 
@@ -1513,7 +1516,7 @@ public class GwtViewHelper {
 	/*
 	 * Fixes up the individual assignees in an List<AssignmentInfo>'s.
 	 */
-	private static void fixupAIs(List<AssignmentInfo> aiList, Map<Long, String> principalTitles, Map<Long, GwtPresenceInfo> userPresence, Map<Long, Long> presenceUserWSIds) {
+	private static void fixupAIs(List<AssignmentInfo> aiList, Map<Long, String> principalTitles, Map<Long, GwtPresenceInfo> userPresence, Map<Long, Long> presenceUserWSIds, Map<Long, String> avatarUrls) {
 		// If don't have a list to fixup...
 		if (!(MiscUtil.hasItems(aiList))) {
 			// ...bail.
@@ -1536,6 +1539,7 @@ public class GwtViewHelper {
 			if (GwtEventHelper.setAssignmentInfoTitle(           ai, principalTitles )) {
 				GwtEventHelper.setAssignmentInfoPresence(        ai, userPresence     );
 				GwtEventHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
+				GwtEventHelper.setAssignmentInfoAvatarUrl(       ai, avatarUrls       );
 			}
 			else {
 				removeList.add(ai);
@@ -2863,9 +2867,7 @@ public class GwtViewHelper {
 					}
 					
 					else {
-						// No, this isn't a custom column!  Can we
-						// construct a PrincipalInfo for this column
-						// using the value from Map?
+						// No, this isn't a custom column!
 						String cn      = fc.getColumnName();
 						String csk     = fc.getColumnSearchKey();
 						Object emValue = GwtServerHelper.getValueFromEntryMap(entryMap, csk);
@@ -3255,7 +3257,7 @@ public class GwtViewHelper {
 				// List<AssignmentInfo>'s only contain the assignee
 				// IDs.  We need to complete them with each assignee's
 				// title, ...
-				completeAIs(bs, folderRows);
+				completeAIs(bs, request, folderRows);
 			}
 			
 			// Walk the List<FolderRow>'s performing any remaining
@@ -3316,7 +3318,7 @@ public class GwtViewHelper {
 			pId,
 			p.getTitle(),
 			PermaLinkUtil.getUserPermalink(request, String.valueOf(pId)));
-		reply.setAvatarUrl(getUserAvatarUrl(bs, request, p));
+		reply.setAvatarUrl(GwtServerHelper.getUserAvatarUrl(bs, request, p));
 		reply.setEmailAddress(      p.getEmailAddress()      );
 		reply.setMobileEmailAddress(p.getMobileEmailAddress());
 		reply.setTextEmailAddress(  p.getTxtEmailAddress()   );
@@ -3372,6 +3374,7 @@ public class GwtViewHelper {
 					reply.setUserWSInTrash(userWSInTrash    );
 					reply.setViewProfileEntryUrl(getViewProfileEntryUrl(bs, request, pId));
 					reply.setPresenceUserWSId(user.getWorkspaceId());
+					reply.setAvatarUrl(GwtServerHelper.getUserAvatarUrl(bs, request, user));
 					
 					// Setup an appropriate GwtPresenceInfo for the
 					// Vibe environment?
@@ -3435,7 +3438,7 @@ public class GwtViewHelper {
 				
 				// Store the URL for the user's avatar, if they have
 				// one.
-				reply.setAvatarUrl(getUserAvatarUrl(bs, request, user));
+				reply.setAvatarUrl(GwtServerHelper.getUserAvatarUrl(bs, request, user));
 
 				// Does the current user have rights to modify users?
 				ProfileModule pm = bs.getProfileModule();
@@ -4011,29 +4014,6 @@ public class GwtViewHelper {
 		return reply;
 	}
 	
-	/*
-	 * Returns the URL for a user's avatar.
-	 */
-	@SuppressWarnings("unchecked")
-	private static String getUserAvatarUrl(AllModulesInjected bs, HttpServletRequest request, Principal user) {
-		// Can we access any avatars for the user?
-		String reply = null;
-		ProfileAttribute pa;
-		try                  {pa = GwtProfileHelper.getProfileAvatars(request, bs, user);}
-		catch (Exception ex) {pa = null;                                                 }
-		List<ProfileAttributeListElement> paValue = ((null == pa) ? null : ((List<ProfileAttributeListElement>) pa.getValue()));
-		if (MiscUtil.hasItems(paValue)) {
-			// Yes!  We'll use the first one as the URL.  Does it
-			// have a URL?
-			ProfileAttributeListElement paValueItem = paValue.get(0);
-			reply = GwtProfileHelper.fixupAvatarUrl(paValueItem.getValue().toString());
-		}
-		
-		// If we get here, reply refers to the user's avatar URL or is
-		// null.  Return it.
-		return reply;
-	}
-
 	/**
 	 * Returns true if the user is viewing pinned entries on a given
 	 * folder and false otherwise.

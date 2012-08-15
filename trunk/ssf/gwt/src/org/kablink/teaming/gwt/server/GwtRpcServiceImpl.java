@@ -1295,7 +1295,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			List<TaskInfo> results;
 			TaskInfoListRpcResponseData responseData;
 
-			results = getMyTasks();
+			results = getMyTasks( ri );
 			responseData = new TaskInfoListRpcResponseData( results );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -4430,12 +4430,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Return a list of all the tasks assigned to the logged in user.
 	 */
-	private List<TaskInfo> getMyTasks()
+	private List<TaskInfo> getMyTasks( HttpRequestInfo ri )
 	{
 		SimpleProfiler.start( "GwtRpcServiceImpl.getMyTasks()" );
 		try
 		{
-			return GwtTaskHelper.getMyTasks( this );
+			return GwtTaskHelper.getMyTasks( this, getRequest( ri ) );
 		}
 		finally
 		{

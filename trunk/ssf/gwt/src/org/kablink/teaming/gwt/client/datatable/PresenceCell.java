@@ -220,6 +220,8 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
 		presenceControl.addStyleName("vibe-dataTablePresence-control displayInline verticalAlignTop");
 		presenceControl.setAnchorStyleName("cursorPointer");
 		presenceControl.getElement().setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, VibeDataTableConstants.CELL_WIDGET_PRESENCE);
+		presenceControl.setImageOverride(pi.getAvatarUrl());
+		presenceControl.addImageStyleName("vibe-dataTablePresence-image");
 		fp.add(presenceControl);
 		
 		// ...add a name link for it...

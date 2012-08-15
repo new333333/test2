@@ -138,6 +138,8 @@ import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
+import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
+import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.ClipboardUser;
@@ -6297,6 +6299,34 @@ public class GwtServerHelper {
 		return triList;
 	}
 	
+	/**
+	 * Returns the URL for a user's avatar.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static String getUserAvatarUrl(AllModulesInjected bs, HttpServletRequest request, Principal user) {
+		// Can we access any avatars for the user?
+		String reply = null;
+		ProfileAttribute pa;
+		try                  {pa = GwtProfileHelper.getProfileAvatars(request, bs, user);}
+		catch (Exception ex) {pa = null;                                                 }
+		List<ProfileAttributeListElement> paValue = ((null == pa) ? null : ((List<ProfileAttributeListElement>) pa.getValue()));
+		if (MiscUtil.hasItems(paValue)) {
+			// Yes!  We'll use the first one as the URL.  Does it
+			// have a URL?
+			ProfileAttributeListElement paValueItem = paValue.get(0);
+			reply = GwtProfileHelper.fixupAvatarUrl(paValueItem.getValue().toString());
+		}
+		
+		// If we get here, reply refers to the user's avatar URL or is
+		// null.  Return it.
+		return reply;
+	}
+
 	/**
 	 * Given a user ID, returns the corresponding User object.
 	 * 

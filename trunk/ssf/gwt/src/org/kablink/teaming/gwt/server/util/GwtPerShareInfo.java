@@ -56,15 +56,15 @@ public class GwtPerShareInfo {
 	/**
 	 * Constructor method.
 	 *
-	 * @param shareId
-	 * @param sharerId
-	 * @param recipientId
-	 * @param recipientType
-	 * @param shareDate
-	 * @param rights
-	 * @param rightsExpire
-	 * @param rightsExpired
-	 * @param comment
+	 * @param shareId		Share  ID.
+	 * @param sharerId		Sharer ID.
+	 * @param recipientId	Recipient ID.
+	 * @param recipientType	Recipient type (user, group or team.)
+	 * @param shareDate		Time/date stamp the share was created.
+	 * @param rights		The rights granted by the share.
+	 * @param rightsExpire	Time/date stamp the share expires.
+	 * @param rightsExpired	true -> The share is expired.  false -> It's not.
+	 * @param comment		Comment associated with the share.
 	 */
 	public GwtPerShareInfo(Long shareId, Long sharerId, Long recipientId, RecipientType recipientType, Date shareDate, ShareRights rights, Date rightsExpire, boolean rightsExpired, String comment) {
 		// Initialize the super class...

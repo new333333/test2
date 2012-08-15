@@ -50,6 +50,7 @@ public class PrincipalInfo implements IsSerializable {
 	private int             m_members = (-1);		// Only used for group and team assignees.
 	private Long            m_id;					//
 	private Long			m_presenceUserWSId;		// Only used for individual assignees.
+	private String			m_avatarUrl;			//
 	private String			m_emailAddress;			//
 	private String			m_presenceDude;			// Used for all assignees.
 	private String          m_title;				//
@@ -76,6 +77,7 @@ public class PrincipalInfo implements IsSerializable {
 	public int             getMembers()             {return m_members;            }
 	public Long            getId()                  {return m_id;                 }
 	public Long            getPresenceUserWSId()    {return m_presenceUserWSId;   }
+	public String          getAvatarUrl()           {return m_avatarUrl;          }
 	public String          getEmailAddress()        {return m_emailAddress;       }
 	public String          getPresenceDude()        {return m_presenceDude;       }
 	public String          getTitle()               {return m_title;              }
@@ -93,6 +95,7 @@ public class PrincipalInfo implements IsSerializable {
 	public void setMembers(            int             members)             {m_members             = members;            }
 	public void setId(                 Long            id)                  {m_id                  = id;                 }
 	public void setPresenceUserWSId(   Long            presenceUserWSId)    {m_presenceUserWSId    = presenceUserWSId;   }
+	public void setAvatarUrl(          String          avatarurl)           {m_avatarUrl           = avatarurl;          }
 	public void setEmailAddress(       String          emailAddress)        {m_emailAddress        = emailAddress;       }
 	public void setPresenceDude(       String          presenceDude)        {m_presenceDude        = presenceDude;       }
 	public void setTitle(              String          title)               {m_title               = title;              }

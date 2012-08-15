@@ -44,6 +44,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class AssignmentInfo extends PrincipalInfo implements IsSerializable {
 	private AssigneeType	m_assigneeType;	//
+	private String			m_avatarUrl;	//
 	private String			m_hover;		//
 	
 	// The following are used for managing group and team assignees for
@@ -68,6 +69,7 @@ public class AssignmentInfo extends PrincipalInfo implements IsSerializable {
 	public AssigneeType         getAssigneeType() {return m_assigneeType;}
 	public List<AssignmentInfo> getMembership()   {return m_membership;  }
 	public int                  getMembersShown() {return m_membersShown;}
+	public String               getAvatarUrl()    {return m_avatarUrl;   }
 	public String               getHover()        {return m_hover;       }
 	
 	/**
@@ -78,6 +80,7 @@ public class AssignmentInfo extends PrincipalInfo implements IsSerializable {
 	public void setAssigneeType(AssigneeType         assigneeType) {m_assigneeType = assigneeType;}
 	public void setMembership(  List<AssignmentInfo> membership)   {m_membership   = membership;  }
 	public void setMembersShown(int                  membersShown) {m_membersShown = membersShown;}
+	public void setAvatarUrl(   String               avatarUrl)    {m_avatarUrl    = avatarUrl;   }
 	public void setHover(       String               hover)        {m_hover        = hover;       }
 	
 	/**
