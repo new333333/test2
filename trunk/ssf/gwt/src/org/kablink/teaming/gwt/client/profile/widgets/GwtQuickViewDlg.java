@@ -225,10 +225,13 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 										"qView-a", "qView-action");
 		profileBtn.addClickHandler(new WorkspaceEventHandler(true));
 		
-		workspaceBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewWorkspace(),
-										 GwtTeaming.getMessages().qViewWorkspaceTitle(),
-										 "qView-a",	"qView-action");
-		workspaceBtn.addClickHandler(new WorkspaceEventHandler(false));
+		boolean isFilr = GwtClientHelper.isLicenseFilr();
+		if (!isFilr) {
+			workspaceBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewWorkspace(),
+											 GwtTeaming.getMessages().qViewWorkspaceTitle(),
+											 "qView-a",	"qView-action");
+			workspaceBtn.addClickHandler(new WorkspaceEventHandler(false));
+		}
 		
 		instantMessageBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewInstantMessage(),
 				GwtTeaming.getMessages().qViewInstantMessageTitle(),
@@ -244,77 +247,83 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 			});
 		instantMessageBtn.setVisible(false);
 
-		followBtn = new QuickViewAction("", "", "qView-a",
-									    "qView-action-following");
-
-		// Add a clickhandler to the "advanced" link. When the user clicks on
-		// the link we
-		// will invoke the "edit advanced branding" dialog.
-		clickHandler = new ClickHandler() {
-			/**
-			 * Invoke the "edit advanced branding" dialog
-			 */
-			@Override
-			public void onClick(ClickEvent event) {
-				if(followBtn.isChecked()) {
-					unFollowAction();
-				} else {
-					followAction();
+		if (!isFilr) {
+			followBtn = new QuickViewAction("", "", "qView-a",
+										    "qView-action-following");
+	
+			// Add a clickhandler to the "advanced" link. When the user clicks on
+			// the link we
+			// will invoke the "edit advanced branding" dialog.
+			clickHandler = new ClickHandler() {
+				/**
+				 * Invoke the "edit advanced branding" dialog
+				 */
+				@Override
+				public void onClick(ClickEvent event) {
+					if(followBtn.isChecked()) {
+						unFollowAction();
+					} else {
+						followAction();
+					}
+				}// end onClick()
+	
+				private void followAction() {
+					TrackBinderCmd cmd;
+					
+					cmd = new TrackBinderCmd( binderId );
+					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+					{
+						@Override
+						public void onFailure( Throwable t )
+						{
+							GwtClientHelper.handleGwtRPCFailure(
+								t,
+								GwtTeaming.getMessages().rpcFailure_TrackingBinder(),
+								binderId);
+						}//end onFailure()
+						
+						@Override
+						public void onSuccess( VibeRpcResponse response )
+						{
+							updateFollowingButton(true);
+						}// end onSuccess()
+					});
 				}
-			}// end onClick()
-
-			private void followAction() {
-				TrackBinderCmd cmd;
-				
-				cmd = new TrackBinderCmd( binderId );
-				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-				{
-					@Override
-					public void onFailure( Throwable t )
-					{
-						GwtClientHelper.handleGwtRPCFailure(
-							t,
-							GwtTeaming.getMessages().rpcFailure_TrackingBinder(),
-							binderId);
-					}//end onFailure()
+	
+				private void unFollowAction() {
+					UntrackPersonCmd cmd;
 					
-					@Override
-					public void onSuccess( VibeRpcResponse response )
+					cmd = new UntrackPersonCmd( binderId );
+					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 					{
-						updateFollowingButton(true);
-					}// end onSuccess()
-				});
-			}
-
-			private void unFollowAction() {
-				UntrackPersonCmd cmd;
-				
-				cmd = new UntrackPersonCmd( binderId );
-				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-				{
-					@Override
-					public void onFailure( Throwable t )
-					{
-						GwtClientHelper.handleGwtRPCFailure(
-							t,
-							GwtTeaming.getMessages().rpcFailure_UntrackingPerson(),
-							binderId);
-					}//end onFailure()
-					
-					@Override
-					public void onSuccess( VibeRpcResponse response )
-					{
-						updateFollowingButton(false);
-					}// end onSuccess()
-				});
-			}
-		};
-		followBtn.addClickHandler(clickHandler);
+						@Override
+						public void onFailure( Throwable t )
+						{
+							GwtClientHelper.handleGwtRPCFailure(
+								t,
+								GwtTeaming.getMessages().rpcFailure_UntrackingPerson(),
+								binderId);
+						}//end onFailure()
+						
+						@Override
+						public void onSuccess( VibeRpcResponse response )
+						{
+							updateFollowingButton(false);
+						}// end onSuccess()
+					});
+				}
+			};
+			followBtn.addClickHandler(clickHandler);
+		}
 		
 		panel.add(profileBtn);
-		panel.add(workspaceBtn);
+		if (!isFilr) {
+			panel.add(workspaceBtn);
+		}
 		panel.add(instantMessageBtn);
-		panel.add(followBtn);
+		if (!isFilr) {
+			panel.add(followBtn);
+		}
 
 		return panel;
 	}
@@ -423,7 +432,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	@Override
 	public FocusWidget getFocusWidget() {
 
-		return workspaceBtn;
+		return ((null == workspaceBtn) ? profileBtn : workspaceBtn);
 	}
 
 	/**
@@ -559,7 +568,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 						
 						return;
 					}
-					
+
 					if(showProfile){
 						binderUrl = GwtClientHelper.appendUrlParam( binderUrl, "operation", "showProfile" );
 					} else {
@@ -613,14 +622,16 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	 * @param isFollowing
 	 */
 	private void updateFollowingButton(boolean isFollowing) {
-		if(isFollowing) {
-			followBtn.setText(GwtTeaming.getMessages().qViewFollowing());
-			followBtn.setTitle(GwtTeaming.getMessages().qViewFollowingTitle());
-			followBtn.setChecked(true);
-		} else {
-			followBtn.setText(GwtTeaming.getMessages().qViewFollow());
-			followBtn.setTitle(GwtTeaming.getMessages().qViewFollowTitle());
-			followBtn.setChecked(false);
+		if (null != followBtn) {
+			if(isFollowing) {
+				followBtn.setText(GwtTeaming.getMessages().qViewFollowing());
+				followBtn.setTitle(GwtTeaming.getMessages().qViewFollowingTitle());
+				followBtn.setChecked(true);
+			} else {
+				followBtn.setText(GwtTeaming.getMessages().qViewFollow());
+				followBtn.setTitle(GwtTeaming.getMessages().qViewFollowTitle());
+				followBtn.setChecked(false);
+			}
 		}
 	}
 	

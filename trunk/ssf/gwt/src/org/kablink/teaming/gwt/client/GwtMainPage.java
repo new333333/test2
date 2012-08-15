@@ -2281,7 +2281,12 @@ public class GwtMainPage extends ResizeComposite
 	{
 		m_contentLayoutPanel.showContentControl();
 		m_requestInfo.setRerootSidebarTree();
-		gotoUrlAsync( m_requestInfo.getMyWorkspaceUrl() );
+		String myWSUrl = m_requestInfo.getMyWorkspaceUrl();
+		if ( GwtClientHelper.isLicenseFilr() )
+		{
+			myWSUrl = GwtClientHelper.appendUrlParam( myWSUrl, "operation", "showProfile" );
+		}
+		gotoUrlAsync( myWSUrl );
 	}// end onGotoMyWorkspace()
 	
 	/**
