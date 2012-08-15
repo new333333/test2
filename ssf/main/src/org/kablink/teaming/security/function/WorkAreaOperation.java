@@ -177,6 +177,15 @@ public class WorkAreaOperation {
 		protected Boolean viewBinderTitle = Boolean.FALSE;
 		protected Boolean allowSharing = Boolean.FALSE;
 		
+		public RightSet() {}
+		
+		public RightSet(WorkAreaOperation[] workAreaOperations) {
+			if(workAreaOperations != null) {
+				for(WorkAreaOperation workAreaOperation:workAreaOperations)
+					this.setRight(workAreaOperation, true);
+			}
+		}
+		
 		@Override
 		public Object clone() {
 			try {
@@ -478,50 +487,5 @@ public class WorkAreaOperation {
 		}
 		
 	}
-
-    /**
-     * Rights controlled by external ACLs
-     * 
-     * This code dictates which Vibe WorkAreaOperations are controlled by external ACLs
-     * 
-     * The first instance of an externally controlled ACL is with Filr. 
-     * The rights listed below are controlled by Filr for Filr folders and files.
-     * 
-     */
-	public static enum ExternalAclRights {
-		DEFAULT(new WorkAreaOperation[] {
-				WorkAreaOperation.READ_ENTRIES, 
-				WorkAreaOperation.CREATE_ENTRIES, 
-				WorkAreaOperation.MODIFY_ENTRIES, 
-				WorkAreaOperation.MODIFY_ENTRY_FIELDS,
-				WorkAreaOperation.DELETE_ENTRIES,
-				WorkAreaOperation.BINDER_ADMINISTRATION, 
-				WorkAreaOperation.CREATE_ENTRY_ACLS, 
-				WorkAreaOperation.CHANGE_ACCESS_CONTROL,
-				WorkAreaOperation.CREATE_WORKSPACES,
-				WorkAreaOperation.CREATE_FOLDERS,
-				WorkAreaOperation.CREATOR_READ,
-				WorkAreaOperation.CREATOR_MODIFY,
-				WorkAreaOperation.CREATOR_DELETE,
-				WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS
-				});
-		
-		private WorkAreaOperation[] workAreaOperations;
-
-		private ExternalAclRights(WorkAreaOperation[] workAreaOperations) {
-			this.workAreaOperations = workAreaOperations;
-		}
-		
-		public RightSet getRightSet() {
-			RightSet rightSet = new RightSet();
-			if(workAreaOperations != null) {
-				for(WorkAreaOperation workAreaOperation:workAreaOperations)
-					rightSet.setRight(workAreaOperation, true);
-			}
-			return rightSet;
-		}
-
-	}
-
 
 }

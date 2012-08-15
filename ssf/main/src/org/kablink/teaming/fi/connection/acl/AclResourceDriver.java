@@ -35,6 +35,7 @@ package org.kablink.teaming.fi.connection.acl;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 
 /**
  * A resource driver interface that supports access control list (ACL).
@@ -87,6 +88,16 @@ public interface AclResourceDriver extends ResourceDriver {
 	 * @return
 	 */
 	public AclItemPrincipalMapper getAclItemPrincipalMapper();
+
+	/**
+	 * Returns an array of <code>WorkAreaOperation</code> objects indicating which Vibe
+	 * rights should be controlled by the external ACLs.
+	 * <p>
+	 * The caller must not modify the array returned from this method.
+	 * 
+	 * @return an array of <code>WorkAreaOperation</code> objects
+	 */
+	public WorkAreaOperation[] getExternallyControlledlRights();
 
 	/**
 	 * Opens a session in proxy mode.
