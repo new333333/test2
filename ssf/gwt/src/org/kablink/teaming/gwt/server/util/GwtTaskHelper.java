@@ -324,7 +324,7 @@ public class GwtTaskHelper {
 	 * only contain the assignee IDs.  We need to complete them with
 	 * each assignee's title.
 	 */
-	private static void completeAIs(AllModulesInjected bs, List<TaskInfo> tasks) {
+	private static void completeAIs(AllModulesInjected bs, HttpServletRequest request, List<TaskInfo> tasks) {
 		// If we don't have any TaskInfo's to complete...
 		if ((null == tasks) || tasks.isEmpty()) {
 			// ..bail.
@@ -367,6 +367,7 @@ public class GwtTaskHelper {
 		
 		// Construct Maps, mapping the IDs to their titles, membership
 		// counts, ...
+		Map<Long, String>			avatarUrls        = new HashMap<Long, String>();
 		Map<Long, String>			principalEMAs     = new HashMap<Long, String>();
 		Map<Long, String>			principalTitles   = new HashMap<Long, String>();
 		Map<Long, Integer>			groupCounts       = new HashMap<Long, Integer>();
@@ -377,6 +378,7 @@ public class GwtTaskHelper {
 		GwtEventHelper.readEventStuffFromDB(
 			// Uses these...
 			bs,
+			request,
 			principalIds,
 			teamIds,
 
@@ -388,7 +390,9 @@ public class GwtTaskHelper {
 			presenceUserWSIds,
 			
 			teamTitles,
-			teamCounts);
+			teamCounts,
+			
+			avatarUrls);
 		
 		// Scan the List<TaskInfo> again.
 		for (TaskInfo ti:  tasks) {
@@ -404,6 +408,7 @@ public class GwtTaskHelper {
 					GwtEventHelper.setAssignmentInfoEmailAddress(    ai, principalEMAs    );
 					GwtEventHelper.setAssignmentInfoPresence(        ai, userPresence     );
 					GwtEventHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
+					GwtEventHelper.setAssignmentInfoAvatarUrl(       ai, avatarUrls       );
 				}
 				else {
 					removeList.add(ai);
@@ -1004,11 +1009,15 @@ public class GwtTaskHelper {
 	}
 
 	/**
-	 * Return a list of all the tasks assigned to the logged-in user
+	 * Return a list of all the tasks assigned to the logged-in user.
+	 * 
+	 * @param bs
+	 * @param request
+	 * 
+	 * @return
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static List<TaskInfo> getMyTasks( AllModulesInjected ami )
-	{
+	public static List<TaskInfo> getMyTasks(AllModulesInjected ami, HttpServletRequest request) {
 		boolean clientBundle;
 		Map options = new HashMap();
 		Integer searchUserOffset = 0;
@@ -1152,11 +1161,10 @@ public class GwtTaskHelper {
 			// we do this AFTER collecting data from the search index so
 			// that we only have to perform a single DB read for each type
 			// of information we need to complete the TaskInfo details.
-			completeTaskRights( ami, reply );
-			if ( clientBundle )
-			{
-				completeBinderLocations( ami, reply );
-				completeAIs( ami, reply );
+			completeTaskRights(ami, reply);
+			if (clientBundle) {
+				completeBinderLocations(ami, reply);
+				completeAIs(ami, request, reply);
 			}
 			
 			return reply;
@@ -1938,10 +1946,10 @@ public class GwtTaskHelper {
 		// we do this AFTER collecting data from the search index so
 		// that we only have to perform a single DB read for each type
 		// of information we need to complete the TaskInfo details.
-		completeTaskRights(         bs, reply);
+		completeTaskRights(         bs,          reply);
 		if (clientBundle) {
-			completeBinderLocations(bs, reply);
-			completeAIs(            bs, reply);
+			completeBinderLocations(bs,          reply);
+			completeAIs(            bs, request, reply);
 		}
 				
 		if (m_logger.isDebugEnabled()) {

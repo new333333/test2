@@ -41,6 +41,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
@@ -390,6 +392,7 @@ public class GwtEventHelper {
 	 * information in a series of Map's.
 	 * 
 	 * @param bs
+	 * @param request
 	 * @param principalIds
 	 * @param teamIds
 	 * 
@@ -400,11 +403,13 @@ public class GwtEventHelper {
 	 * @param presenceUserWSIds
 	 * @param teamTitles
 	 * @param teamCounts
+	 * @param avatarUrls
 	 */
 	@SuppressWarnings("unchecked")
 	public static void readEventStuffFromDB(
 			// Uses these...
 			AllModulesInjected			bs,
+			HttpServletRequest			request,
 			List<Long>					principalIds,
 			List<Long>					teamIds,
 
@@ -416,7 +421,9 @@ public class GwtEventHelper {
 			Map<Long, Long>				presenceUserWSIds,
 			
 			Map<Long, String>			teamTitles,
-			Map<Long, Integer>			teamCounts)
+			Map<Long, Integer>			teamCounts,
+			
+			Map<Long, String>			avatarUrls)
 	{
 		// If we don't have any principal or team IDs...
 		boolean hasPrincipals = ((null != principalIds) && (!(principalIds.isEmpty())));
@@ -452,6 +459,10 @@ public class GwtEventHelper {
 						if (MiscUtil.hasString(ema)) {
 							principalEMAs.put(pId, ema);
 						}
+						String avatarUrl = GwtServerHelper.getUserAvatarUrl(bs, request, user);
+						if (MiscUtil.hasString(avatarUrl)) {
+							avatarUrls.put(pId, avatarUrl);
+						}
 					}
 				}
 			}
@@ -471,6 +482,26 @@ public class GwtEventHelper {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Stores the avatar URL of an AssignmentInfo based on Map lookup
+	 * using its ID.
+	 * 
+	 * Returns true if an avatar URL was stored and false otherwise.
+	 * 
+	 * @param ai
+	 * @param avatarUrls
+	 * 
+	 * @return
+	 */
+	public static boolean setAssignmentInfoAvatarUrl(AssignmentInfo ai, Map<Long, String> avatarUrls) {
+		String avatarUrl = avatarUrls.get(ai.getId());
+		boolean reply = MiscUtil.hasString(avatarUrl);
+		if (reply) {
+			ai.setAvatarUrl(avatarUrl);
+		}
+		return reply;
 	}
 	
 	/**

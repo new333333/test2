@@ -310,7 +310,7 @@ public class GwtCalendarHelper {
 	 * only contain the assignee IDs.  We need to complete them with
 	 * each assignee's title, ...
 	 */
-	private static void completeAIs(AllModulesInjected bs, ArrayList<Appointment> appointments) {
+	private static void completeAIs(AllModulesInjected bs, HttpServletRequest request, ArrayList<Appointment> appointments) {
 		// If we don't have any appointments to complete...
 		if (!(MiscUtil.hasItems(appointments))) {
 			// ..bail.
@@ -354,6 +354,7 @@ public class GwtCalendarHelper {
 
 		// Construct Maps, mapping the IDs to their titles, membership
 		// counts, ...
+		Map<Long, String>			avatarUrls        = new HashMap<Long, String>();
 		Map<Long, String>			principalEMAs     = new HashMap<Long, String>();
 		Map<Long, String>			principalTitles   = new HashMap<Long, String>();
 		Map<Long, Integer>			groupCounts       = new HashMap<Long, Integer>();
@@ -364,6 +365,7 @@ public class GwtCalendarHelper {
 		GwtEventHelper.readEventStuffFromDB(
 			// Uses these...
 			bs,
+			request,
 			principalIds,
 			teamIds,
 
@@ -375,7 +377,9 @@ public class GwtCalendarHelper {
 			presenceUserWSIds,
 			
 			teamTitles,
-			teamCounts);
+			teamCounts,
+			
+			avatarUrls);
 		
 		// Scan the List<Appointment> again.
 		for (Appointment a:  appointments) {
@@ -392,6 +396,7 @@ public class GwtCalendarHelper {
 					GwtEventHelper.setAssignmentInfoEmailAddress(    ai, principalEMAs    );
 					GwtEventHelper.setAssignmentInfoPresence(        ai, userPresence     );
 					GwtEventHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
+					GwtEventHelper.setAssignmentInfoAvatarUrl(       ai, avatarUrls       );
 				}
 				else {
 					removeList.add(ai);
@@ -829,7 +834,7 @@ public class GwtCalendarHelper {
 			// data from the search index so that we only have to
 			// perform a single DB read for each type of information we
 			// need to complete the CalendarAppointment's details.
-			completeAIs(bs, reply.getAppointments());
+			completeAIs(bs, request, reply.getAppointments());
 			
 			// Walk the appointments one more time performing any
 			// remaining fixups on each as necessary.
