@@ -542,22 +542,38 @@ public class ShareItem extends BaseEntity {
 	
 	public static enum Role {
 		VIEW("share.role.title.view", 
-				new String[] {"readEntries"}),
+				new WorkAreaOperation[] {
+				WorkAreaOperation.READ_ENTRIES
+				}),
 		CONTRIBUTOR("share.role.title.contributor",
-				new String[] {"readEntries", "createEntries", "modifyEntries", "deleteEntries"}),
+				new WorkAreaOperation[] {
+				WorkAreaOperation.READ_ENTRIES, 
+				WorkAreaOperation.CREATE_ENTRIES, 
+				WorkAreaOperation.MODIFY_ENTRIES, 
+				WorkAreaOperation.DELETE_ENTRIES
+				}),
 		OWNER("share.role.title.owner",
-				new String[] {"readEntries", "createEntries", "modifyEntries", "deleteEntries", "addReplies", "binderAdministration", "createEntryAcls", "changeAccessControl"}),
+				new WorkAreaOperation[] {
+				WorkAreaOperation.READ_ENTRIES, 
+				WorkAreaOperation.CREATE_ENTRIES, 
+				WorkAreaOperation.MODIFY_ENTRIES, 
+				WorkAreaOperation.DELETE_ENTRIES,
+				WorkAreaOperation.ADD_REPLIES, 
+				WorkAreaOperation.BINDER_ADMINISTRATION, 
+				WorkAreaOperation.CREATE_ENTRY_ACLS, 
+				WorkAreaOperation.CHANGE_ACCESS_CONTROL
+				}),
 		NONE("share.role.title.none",
-				new String[] {}),
+				new WorkAreaOperation[] {}),
 		CUSTOM("share.role.title.custom",
-				new String[] {});
+				new WorkAreaOperation[] {});
 		
 		private String titleCode;
-		private String[] rightNames;
+		private WorkAreaOperation[] workAreaOperations;
 		
-		private Role(String titleCode, String[] rightNames) {
+		private Role(String titleCode, WorkAreaOperation[] workAreaOperations) {
 			this.titleCode = titleCode;
-			this.rightNames = rightNames;
+			this.workAreaOperations = workAreaOperations;
 		}
 		
 		public String getTitle() {
@@ -566,9 +582,9 @@ public class ShareItem extends BaseEntity {
 		
 		public RightSet getRightSet() {
 			RightSet rightSet = new RightSet();
-			if(rightNames != null) {
-				for(String rightName:rightNames)
-					rightSet.setRight(rightName, true);
+			if(workAreaOperations != null) {
+				for(WorkAreaOperation workAreaOperation:workAreaOperations)
+					rightSet.setRight(workAreaOperation, true);
 			}
 			return rightSet;
 		}
