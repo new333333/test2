@@ -280,7 +280,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 				}
 				
 				// ...and show it with the description HTML.
-				m_hoverHintPopup.setHoverText(description);
+				m_hoverHintPopup.setHoverText(description, eti.isDescriptionHtml());
 				m_hoverHintPopup.showHintRelativeTo(eventTarget);
 			}
 			
