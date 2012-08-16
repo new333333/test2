@@ -1482,7 +1482,8 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		
     }		
 
-	public Map getWorkflowQuestions(FolderEntry entry, Long stateId) {
+	@Override
+	public Map<String, Map> getWorkflowQuestions(FolderEntry entry, Long stateId) {
 		WorkflowState ws = entry.getWorkflowState(stateId);
     	Map<String, Map> qMap = WorkflowUtils.getQuestions(ws.getDefinition(), ws);
     	//Check if the user is allowed to respond
