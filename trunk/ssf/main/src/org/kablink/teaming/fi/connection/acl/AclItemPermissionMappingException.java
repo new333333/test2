@@ -33,25 +33,22 @@
 package org.kablink.teaming.fi.connection.acl;
 
 /**
- * Defines the permissions for use with access control list (ACL).
+ * Checked exception thrown when a mapping of external system permission to Vibe
+ * role object fails.
  * 
  * @author jong
  *
  */
-public enum AclItemPermission {
+public class AclItemPermissionMappingException extends Exception {
 
-	/**
-	 * Permission to own the file or directory.
-	 */
-	OWNER,
+	private static final long serialVersionUID = 1L;
+
+	public AclItemPermissionMappingException(String message) {
+		super(message);
+	}
 	
-	/**
-	 * Permission to read the data of the file or directory.
-	 */
-	READ,
+	public AclItemPermissionMappingException(String message, Throwable cause) {
+		super(message, cause);
+	}
 	
-	/**
-	 * Permission to modify the data of the file or directory.
-	 */
-	WRITE
 }

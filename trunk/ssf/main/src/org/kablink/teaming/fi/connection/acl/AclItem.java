@@ -43,40 +43,40 @@ import java.util.Set;
  */
 public class AclItem {
 	
-	private String principalId;
-	private Set<AclItemPermission> permissions;
+	private String permissionName;
+	private Set<String> principalIds;
 	
 	/**
 	 * Constructor
 	 * 
-	 * @param principalId
-	 * @param permissions
+	 * @param permissionName
+	 * @param principalIds
 	 */
-	public AclItem(String principalId, Set<AclItemPermission> permissions) {
-		if(principalId == null)
-			throw new IllegalArgumentException("Principal ID must be specified");
-		if(permissions == null)
-			throw new IllegalArgumentException("Permissions must be specified");
-		this.principalId = principalId;
-		this.permissions = permissions;
+	public AclItem(String permissionName, Set<String> principalIds) {
+		if(permissionName == null)
+			throw new IllegalArgumentException("Permission name must be specified");
+		if(principalIds == null)
+			throw new IllegalArgumentException("Principal IDs must be specified");
+		this.permissionName = permissionName;
+		this.principalIds = principalIds;
 	}
 	
 	/**
-	 * Returns the ID of the file system principal. 
+	 * Returns the permission name. 
 	 * 
 	 * @return
 	 */
-	public String getPrincipalId() {
-		return principalId;
+	public String getPermissionName() {
+		return permissionName;
 	}
 	
 	/**
-	 * Returns the set of file system permissions.
+	 * Returns the IDs of the principals.
 	 * 
 	 * @return
 	 */
-	public Set<AclItemPermission> getPermissions() {
-		return permissions;
+	public Set<String> getPrincipalIds() {
+		return principalIds;
 	}
 
 	/**
@@ -89,9 +89,9 @@ public class AclItem {
 		if(obj == null || !(obj instanceof AclItem))
 			return false;
 		AclItem other = (AclItem)obj;
-		if(!principalId.equals(other.principalId))
+		if(!permissionName.equals(other.permissionName))
 			return false;
-		if(!permissions.equals(other.permissions))
+		if(!principalIds.equals(other.principalIds))
 			return false;
 		return true;
 	}
@@ -101,8 +101,8 @@ public class AclItem {
 	 */
 	@Override 
 	public int hashCode() {
-		int h = principalId.hashCode();
-		h = h * 127 + permissions.hashCode();
+		int h = permissionName.hashCode();
+		h = h * 127 + principalIds.hashCode();
 		return h;
 	}
 	

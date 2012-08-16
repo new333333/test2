@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.teaming.NoObjectByTheNameException;
 import org.kablink.teaming.security.dao.SecurityDao;
 import org.kablink.teaming.security.function.Condition;
 import org.kablink.teaming.security.function.ConditionEvaluationResult;
@@ -160,4 +161,20 @@ public class FunctionManagerImpl implements FunctionManager {
 		}
 		return new ConditionEvaluationResult(status, metConditionIds);
 	}
+	
+    public Function findFunctionByName(Long zoneId, String name) throws NoObjectByTheNameException {
+        // This is implemented on top of getFunctions(Long) based on the
+        // assumption that the underlying ORM effectively caches the
+        // result of the query. 
+        
+        List functions = this.findFunctions(zoneId);
+        
+        for(Iterator i = functions.iterator(); i.hasNext();) {
+            Function function = (Function) i.next();
+            if(function.getName().equals(name))
+                 return function;
+        }
+        
+        return null;
+    }
 }

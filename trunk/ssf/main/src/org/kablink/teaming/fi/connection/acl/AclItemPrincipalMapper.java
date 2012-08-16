@@ -36,8 +36,7 @@ import org.kablink.teaming.domain.User;
 
 /**
  * A concrete resource driver supporting ACL must implement this interface so that
- * Vibe can figure out which Vibe user or group each of the file system principal 
- * maps to.
+ * Vibe can figure out which Vibe user or group each of the principal maps to.
  *
  * @author jong
  *
@@ -46,12 +45,12 @@ public interface AclItemPrincipalMapper {
 
 	/**
 	 * Returns the ID of the Vibe principal object (which could be either user or
-	 * group) that this particular file system principal ID maps to.
+	 * group) that this particular principal ID maps to.
 	 * <p>
 	 * A concrete implementation of this method must be thread-safe, that is, safe for
 	 * use by multiple concurrent threads on the same object instance.
 	 * 
-	 * @param aclItemPrincipalId ACL item (file system) principal ID
+	 * @param aclItemPrincipalId ACL item principal ID
 	 * @return Vibe principal ID
 	 * @throws AclItemPrincipalMappingException
 	 * 
@@ -59,11 +58,10 @@ public interface AclItemPrincipalMapper {
 	public Long toVibePrincipalId(String aclItemPrincipalId) throws AclItemPrincipalMappingException;
 	
 	/**
-	 * Returns the ACL item principal ID (i.e., file system principal ID) corresponding
-	 * to the specified Vibe user object. 
+	 * Returns the ACL item principal ID corresponding to the specified Vibe user object. 
 	 * 
 	 * @param vibeUser Vibe user object
-	 * @return ACL item (file system) principal ID
+	 * @return ACL item principal ID
 	 * @throws AclItemPrincipalMappingException
 	 */
 	public String toAclItemPrincipalId(User vibeUser) throws AclItemPrincipalMappingException;
