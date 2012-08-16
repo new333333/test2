@@ -380,6 +380,11 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 				}
 				break;
 			}
+			case allowSharing:
+			{
+				AccessUtils.operationCheck(entry, WorkAreaOperation.ALLOW_SHARING);   
+				break;
+			}
 			default:
 				throw new NotSupportedException(operation.toString(), "checkAccess");
 					
