@@ -56,10 +56,10 @@ public class FIException extends UncheckedCodedException {
     	super(errorCode, new Object[]{arg});
     }
 
-    public FIException(String errorCode, Object arg1, Object arg2) {
-    	super(errorCode, new Object[]{arg1,arg2});
+    public FIException(String errorCode, Object[] args) {
+    	super(errorCode, args);
     }
-
+    
     public int getHttpStatusCode() {
     	return 500; // internal server error
     }
