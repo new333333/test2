@@ -341,6 +341,13 @@
 	.vibe-addFilesDlg_Panel            {width: 500px; height: 280px;}
 /* End:  Add files dialog styles. */
 
+/* Start:  Add files via HTML5 styles. */
+	.vibe-addFilesHtml5Popup                {}
+	.vibe-addFilesHtml5Popup-dndPanel       {border 3px solid #09f;    -moz-border-radius: 15px; border-radius: 15px; -webkit-border-radius: 15px; opacity: 0.7; background: #abced1 url("images/trans_blue_stripes.png"  ) repeat;}
+	.vibe-addFilesHtml5Popup-dndPanel-hover {border 3px solid #ebaf1b; -moz-border-radius: 15px; border-radius: 15px; -webkit-border-radius: 15px; opacity: 0.7; background: #f2ef91 url("images/trans_yellow_stripes.png") repeat;}
+	.vibe-addFilesHtml5Popup-innerHintPanel {color: white; font-size: 1.3em; text-align: center; padding: 15px; -moz-border-radius: 10px; border-radius: 10px; -webkit-border-radius: 10px; background: url("images/trans30_black.png") repeat;}
+/* Start:  Add files via HTML5 styles. */
+
 /* Start:  Manage comments dialog styles. */
 	.vibe-manageCommentsDlg .popupContent {background-color: white !important;}
 	.vibe-manageCommentsDlg-label         {}
