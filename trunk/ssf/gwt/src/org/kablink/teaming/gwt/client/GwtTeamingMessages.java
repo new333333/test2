@@ -493,6 +493,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_AccessoriesPanel();
 	String codeSplitFailure_ActivityStreamCtrl();
 	String codeSplitFailure_AddFilesDlg();
+	String codeSplitFailure_AddFilesHtml5Popup();
 	String codeSplitFailure_AddNewFolderDlg();
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_AdminInfoDlg();

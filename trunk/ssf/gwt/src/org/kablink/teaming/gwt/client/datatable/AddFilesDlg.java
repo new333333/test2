@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,8 +35,6 @@ package org.kablink.teaming.gwt.client.datatable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.EditCanceledHandler;
-import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FilesDroppedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -68,14 +66,13 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
-
 /**
- * Implements Vibe's 'add files' dialog.
+ * Implements Vibe's 'add files' dialog using the Java Applet.
  *  
  * @author drfoster@novell.com
  */
 public class AddFilesDlg extends DlgBox
-	implements EditSuccessfulHandler, EditCanceledHandler,
+	implements
 	// Event handlers implemented by this class.
 		FilesDroppedEvent.Handler
 {
@@ -141,10 +138,10 @@ public class AddFilesDlg extends DlgBox
 		// ...and create the dialog's content.
 		addStyleName("vibe-addFilesDlgBox");
 		createAllDlgContent(
-			m_messages.addFilesDlgHeader(),
-			this,	// The dialog's EditSuccessfulHandler.
-			this,	// The dialog's EditCanceledHandler.
-			null);	// Create callback data.  Unused. 
+			m_messages.addFilesDlgHeader(),			//
+			DlgBox.getSimpleSuccessfulHandler(),	// The dialog's EditSuccessfulHandler.
+			DlgBox.getSimpleCanceledHandler(),		// The dialog's EditCanceledHandler.
+			null);									// Create callback data.  Unused. 
 	}
 
 	/**
@@ -164,36 +161,6 @@ public class AddFilesDlg extends DlgBox
 		
 		// ...and return the Panel that holds the dialog's contents.
 		return m_fp;
-	}
-
-	/**
-	 * This method gets called when user user presses the Cancel push
-	 * button.
-	 * 
-	 * Implements the EditCanceledHandler.editCanceled() interface
-	 * method.
-	 * 
-	 * @return
-	 */
-	public boolean editCanceled() {
-		// Simply return true to allow the dialog to close.
-		return true;
-	}
-	
-	/**
-	 * This method gets called when user user presses the OK push
-	 * button.
-	 * 
-	 * Implements the EditSuccessfulHandler.editSuccessful() interface
-	 * method.
-	 * 
-	 * @param callbackData
-	 * 
-	 * @return
-	 */
-	public boolean editSuccessful(Object callbackData) {
-		// Unused.
-		return true;
 	}
 
 	/**
