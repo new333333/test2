@@ -50,8 +50,6 @@ import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.ActionMenuColumn;
-import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
-import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
 import org.kablink.teaming.gwt.client.datatable.ApplyColumnWidths;
 import org.kablink.teaming.gwt.client.datatable.AssignmentColumn;
 import org.kablink.teaming.gwt.client.datatable.CommentsColumn;
@@ -212,7 +210,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		ViewPinnedEntriesEvent.Handler,
 		ViewSelectedEntryEvent.Handler
 {
-	private AddFilesDlg					m_addFilesDlg;				//
 	private boolean						m_fixedLayout;				//
 	private ColumnWidth					m_actionMenuColumnWidth;	//
 	private ColumnWidth					m_defaultColumnWidth;		//
@@ -1763,37 +1760,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Invoke the add file dialog on the folder.
-			// Have we instantiated an add files dialog yet?
-			if (null == m_addFilesDlg) {
-				// No!  Instantiate one now.
-				AddFilesDlg.createAsync(new AddFilesDlgClient() {			
-					@Override
-					public void onUnavailable() {
-						// Nothing to do.  Error handled in
-						// asynchronous provider.
-					}
-					
-					@Override
-					public void onSuccess(final AddFilesDlg afDlg) {
-						// ...and show it.
-						m_addFilesDlg = afDlg;
-						ScheduledCommand doShow = new ScheduledCommand() {
-							@Override
-							public void execute() {
-								showAddFilesDlgNow();
-							}
-						};
-						Scheduler.get().scheduleDeferred(doShow);
-					}
-				});
-			}
-			
-			else {
-				// Yes, we've instantiated an add files dialog already!
-				// Simply show it.
-				showAddFilesDlgNow();
-			}
+			// Yes!  Invoke the files drop box on the folder.
+			BinderViewsHelper.invokeDropBox(
+				getFolderInfo(),
+				getEntryMenuPanel().getAddFilesMenuItem());
 		}
 	}
 	
@@ -2692,16 +2662,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	private void shareSelectedEntitiesNow(List<EntityId> selectedEntities) {
 		BinderViewsHelper.shareEntities(selectedEntities);
-	}
-	
-	/*
-	 * Synchronously shows the add files dialog.
-	 */
-	private void showAddFilesDlgNow() {
-		AddFilesDlg.initAndShow(
-			m_addFilesDlg,
-			getFolderInfo(),
-			getEntryMenuPanel().getAddFilesMenuItem());
 	}
 	
 	/*

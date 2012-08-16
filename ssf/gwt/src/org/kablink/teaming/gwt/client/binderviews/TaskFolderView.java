@@ -37,8 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
-import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
-import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
+import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
@@ -54,7 +53,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -70,7 +68,6 @@ public class TaskFolderView extends FolderViewBase
 		ContributorIdsRequestEvent.Handler,
 		InvokeDropBoxEvent.Handler
 {
-	private AddFilesDlg						m_addFilesDlg;				//
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private TaskDisplayDataRpcResponseData	m_taskDisplayData;			// The task display data read from the server.
 	private TaskListing						m_taskListing;				// The TaskList composite.
@@ -311,37 +308,10 @@ public class TaskFolderView extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
-			// Yes!  Invoke the add file dialog on the folder.
-			// Have we instantiated an add files dialog yet?
-			if (null == m_addFilesDlg) {
-				// No!  Instantiate one now.
-				AddFilesDlg.createAsync(new AddFilesDlgClient() {			
-					@Override
-					public void onUnavailable() {
-						// Nothing to do.  Error handled in
-						// asynchronous provider.
-					}
-					
-					@Override
-					public void onSuccess(final AddFilesDlg afDlg) {
-						// ...and show it.
-						m_addFilesDlg = afDlg;
-						ScheduledCommand doShow = new ScheduledCommand() {
-							@Override
-							public void execute() {
-								showAddFilesDlgNow();
-							}
-						};
-						Scheduler.get().scheduleDeferred(doShow);
-					}
-				});
-			}
-			
-			else {
-				// Yes, we've instantiated an add files dialog already!
-				// Simply show it.
-				showAddFilesDlgNow();
-			}
+			// Yes!  Invoke the files drop box on the folder.
+			BinderViewsHelper.invokeDropBox(
+				getFolderInfo(),
+				getEntryMenuPanel().getAddFilesMenuItem());
 		}
 	}
 	
@@ -410,16 +380,6 @@ public class TaskFolderView extends FolderViewBase
 		m_taskListing.resize();
 	}
 
-	/*
-	 * Synchronously shows the add files dialog.
-	 */
-	private void showAddFilesDlgNow() {
-		AddFilesDlg.initAndShow(
-			m_addFilesDlg,
-			getFolderInfo(),
-			getEntryMenuPanel().getAddFilesMenuItem());
-	}
-	
 	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */
