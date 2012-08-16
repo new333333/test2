@@ -14,18 +14,21 @@
 		<inherits name='com.google.gwt.user.theme.dark.Dark'    />
 	-->
 	
-	<!-- Inherit the the GWT Calendar support libraries. -->
+	<!-- Inherit the GWT Calendar support libraries. -->
 	<inherits name='com.bradrydzewski.gwt.calendar.Calendar'            />
 	<inherits name='com.bradrydzewski.gwt.calendar.theme.google.Google' />
-	
+
 	<!-- Other possible themes for the GWT Calendar.  -->
 	<!--
 		<inherits name='com.bradrydzewski.gwt.calendar.theme.ical.iCal' />
 		<inherits name='com.bradrydzewski.gwt.calendar.theme.outlook.Outlook' /> 
 	-->
 	
-	<!-- Inherit the the GWT drag-and-drop support libraries. -->
+	<!-- Inherit the GWT drag-and-drop support libraries. -->
 	<inherits name='com.allen_sauer.gwt.dnd.gwt-dnd' />
+	
+	<!-- Inherit the GWT W3C file APIs support libraries. -->	
+	<inherits name="org.vectomatic.libgwtfile"/>
 	
  	<!-- Other 'generic' module inherits go here. -->
 

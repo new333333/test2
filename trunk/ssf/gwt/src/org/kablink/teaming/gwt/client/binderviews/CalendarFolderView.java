@@ -39,8 +39,6 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
-import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
-import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
 import org.kablink.teaming.gwt.client.event.CalendarChangedEvent;
 import org.kablink.teaming.gwt.client.event.CalendarGotoDateEvent;
 import org.kablink.teaming.gwt.client.event.CalendarHoursEvent;
@@ -158,7 +156,6 @@ public class CalendarFolderView extends FolderViewBase
 		ViewSelectedEntryEvent.Handler
 {
 	private ArrayList<Appointment>				m_appointments;				//
-	private AddFilesDlg							m_addFilesDlg;				//
 	private CalendarAppointment					m_selectedEvent;			//
 	private CalendarDisplayDataRpcResponseData	m_calendarDisplayData;		//
 	private CalendarSettingsDlg					m_calendarSettingsDlg;		//
@@ -1368,37 +1365,10 @@ public class CalendarFolderView extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
-			// Yes!  Invoke the add file dialog on the folder.
-			// Have we instantiated an add files dialog yet?
-			if (null == m_addFilesDlg) {
-				// No!  Instantiate one now.
-				AddFilesDlg.createAsync(new AddFilesDlgClient() {			
-					@Override
-					public void onUnavailable() {
-						// Nothing to do.  Error handled in
-						// asynchronous provider.
-					}
-					
-					@Override
-					public void onSuccess(final AddFilesDlg afDlg) {
-						// ...and show it.
-						m_addFilesDlg = afDlg;
-						ScheduledCommand doShow = new ScheduledCommand() {
-							@Override
-							public void execute() {
-								showAddFilesDlgNow();
-							}
-						};
-						Scheduler.get().scheduleDeferred(doShow);
-					}
-				});
-			}
-			
-			else {
-				// Yes, we've instantiated an add files dialog already!
-				// Simply show it.
-				showAddFilesDlgNow();
-			}
+			// Yes!  Invoke the files drop box on the folder.
+			BinderViewsHelper.invokeDropBox(
+				getFolderInfo(),
+				getEntryMenuPanel().getAddFilesMenuItem());
 		}
 	}
 	
@@ -1809,16 +1779,6 @@ public class CalendarFolderView extends FolderViewBase
 		     m_calendar.setView(cView      );
 		else m_calendar.setView(cView, days);
 		m_calendar.setDate(m_calendarDisplayData.getFirstDay());
-	}
-	
-	/*
-	 * Synchronously shows the add files dialog.
-	 */
-	private void showAddFilesDlgNow() {
-		AddFilesDlg.initAndShow(
-			m_addFilesDlg,
-			getFolderInfo(),
-			getEntryMenuPanel().getAddFilesMenuItem());
 	}
 	
 	/*

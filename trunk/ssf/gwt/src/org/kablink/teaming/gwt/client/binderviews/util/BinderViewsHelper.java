@@ -42,6 +42,8 @@ import org.kablink.teaming.gwt.client.binderviews.ChangeEntryTypesDlg.ChangeEntr
 import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg;
 import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg.CopyMoveEntriesDlgClient;
 import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
+import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
+import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg;
@@ -56,6 +58,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UnlockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -70,6 +73,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.UIObject;
 
 /**
  * Helper methods for binder views.
@@ -77,6 +81,7 @@ import com.google.gwt.user.client.ui.CheckBox;
  * @author drfoster@novell.com
  */
 public class BinderViewsHelper {
+	private static AddFilesDlg			m_addFilesDlg;							// An instance of the add files (via the applet) dialog.
 	private static ChangeEntryTypesDlg	m_cetDlg;								// An instance of a change entry types dialog. 
 	private static CopyMoveEntriesDlg	m_cmeDlg;								// An instance of a copy/move entries dialog.
 	private static EmailNotificationDlg	m_enDlg;								// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntityId>. 
@@ -403,6 +408,48 @@ public class BinderViewsHelper {
 		});
 	}
 
+	/**
+	 * Invokes the 'Add Files' interface.
+	 * 
+	 * For browsers that support it, that will be the HTML5 file upload
+	 * facility.  For all others, that will be the Java Applet.
+	 * 
+	 * @param folderInfo
+	 * @param showRelativeWidget
+	 */
+	public static void invokeDropBox(final BinderInfo folderInfo, final UIObject showRelativeWidget) {
+		// Have we instantiated an add files dialog yet?
+		if (null == m_addFilesDlg) {
+			// No!  Instantiate one now...
+			AddFilesDlg.createAsync(new AddFilesDlgClient() {			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+				
+				@Override
+				public void onSuccess(final AddFilesDlg afDlg) {
+					// ...and show it.
+					m_addFilesDlg = afDlg;
+					ScheduledCommand doShow = new ScheduledCommand() {
+						@Override
+						public void execute() {
+							showAddFilesDlgNow(folderInfo, showRelativeWidget);
+						}
+					};
+					Scheduler.get().scheduleDeferred(doShow);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've instantiated an add files dialog already!
+			// Simply show it.
+			showAddFilesDlgNow(folderInfo, showRelativeWidget);
+		}
+	}
+	
 	/**
 	 * Locks the entries based on a List<EntityId> of their entity IDs.
 	 *
@@ -805,6 +852,16 @@ public class BinderViewsHelper {
 		shareEntities(entityIds);
 	}
 
+	/*
+	 * Synchronously shows the add files dialog.
+	 */
+	private static void showAddFilesDlgNow(final BinderInfo folderInfo, final UIObject showRelativeWidget) {
+		AddFilesDlg.initAndShow(
+			m_addFilesDlg,
+			folderInfo,
+			showRelativeWidget);
+	}
+	
 	/*
 	 * Asynchronously initializes and shows the copy/move entries
 	 * dialog.
