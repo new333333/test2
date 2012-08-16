@@ -143,8 +143,9 @@ public class Function extends ZonedObject {
     public void setScope(String scope) {
         if (!scope.equals(ObjectKeys.ROLE_TYPE_ZONE) &&
         		!scope.equals(ObjectKeys.ROLE_TYPE_BINDER) && 
-        		!scope.equals(ObjectKeys.ROLE_TYPE_ENTRY))
-            throw new IllegalArgumentException("Type must be 'zone', 'binder' or 'entry'.");
+        		!scope.equals(ObjectKeys.ROLE_TYPE_ENTRY) && 
+        		!scope.equals(ObjectKeys.ROLE_TYPE_FILR))
+            throw new IllegalArgumentException("Type must be 'zone', 'binder', 'entry' or 'filr'.");
         
         this.scope = scope;
     }

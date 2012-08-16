@@ -150,7 +150,20 @@ public interface ObjectKeys {
 	public static final String FUNCTION_ENABLE_SHARING_INTERNALID="402883b90d0de1f3010d0df5582b0024";
 	//reserved id for _enableExternalSharing pseudo role (no longer used)
 	public static final String FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID="402883b90d0de1f3010d0df5582b0025";
-	
+
+	//reserved id for Filr file read role
+	public static final String FUNCTION_FILR_FILE_READ_INTERNALID="402883b90d0de1f3010d0df5582b0025";
+	//reserved id for Filr file write role
+	public static final String FUNCTION_FILR_FILE_WRITE_INTERNALID="402883b90d0de1f3010d0df5582b0026";
+	//reserved id for Filr file owner role
+	public static final String FUNCTION_FILR_FILE_OWNER_INTERNALID="402883b90d0de1f3010d0df5582b0027";
+	//reserved id for Filr folder read role
+	public static final String FUNCTION_FILR_FOLDER_READ_INTERNALID="402883b90d0de1f3010d0df5582b0028";
+	//reserved id for Filr folder write role
+	public static final String FUNCTION_FILR_FOLDER_WRITE_INTERNALID="402883b90d0de1f3010d0df5582b0029";
+	//reserved id for Filr folder owner role
+	public static final String FUNCTION_FILR_FOLDER_OWNER_INTERNALID="402883b90d0de1f3010d0df5582b0030";
+
 	//reserved id put in acls/membership to indicate owner of object has access
 	//search engine stores the ownerId of the entity in place of this
 	public static final Long OWNER_USER_ID = Long.valueOf(-1);
@@ -201,10 +214,11 @@ public interface ObjectKeys {
 	public static final String DEFINITION_FOLDER_REMOTE_APPLICATION="folderRemoteApp";
 	public static final String DEFINITION_ENTRY_REMOTE_APPLICATION="entryRemoteApp";	
     
-    //Default role types
+    //Default role types (scope)
     public static final String ROLE_TYPE_ZONE="zone";
     public static final String ROLE_TYPE_BINDER="binder";
     public static final String ROLE_TYPE_ENTRY="entry";
+    public static final String ROLE_TYPE_FILR="filr";
     
     //Default role titles
     public static final String ROLE_TITLE_READ="__role.read";
@@ -221,6 +235,12 @@ public interface ObjectKeys {
     public static final String ROLE_TITLE_WORKSPACE_CREATOR="__role.workspaceCreator";
     public static final String ROLE_TITLE_SITE_ADMIN="__role.siteAdmin"; //Depreciated
     public static final String ROLE_TITLE_ALLOW_SHARING="__role.allowSharing"; 
+    public static final String ROLE_TITLE_FILR_FOLDER_READ="__role.FilrFolderRead"; 
+    public static final String ROLE_TITLE_FILR_FOLDER_WRITE="__role.FilrFolderWrite"; 
+    public static final String ROLE_TITLE_FILR_FOLDER_OWNER="__role.FilrFolderOwner"; 
+    public static final String ROLE_TITLE_FILR_FILE_READ="__role.FilrFileRead"; 
+    public static final String ROLE_TITLE_FILR_FILE_WRITE="__role.FilrFileWrite"; 
+    public static final String ROLE_TITLE_FILR_FILE_OWNER="__role.FilrFileOwner"; 
     
     //reserved pseudo roles. Only have 1 right each and cannot be edited by user.
     //Used to simulate a group of users without actually using the group facility.

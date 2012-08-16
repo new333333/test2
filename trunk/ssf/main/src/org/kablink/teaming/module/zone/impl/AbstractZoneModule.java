@@ -88,6 +88,7 @@ import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
 import org.kablink.teaming.security.impl.AccessControlManagerImpl;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
@@ -631,6 +632,15 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		if(version.intValue() <= 9) {
 			Function allowSharingRole = addAllowSharingRole(top);
 		}
+		
+		if(version.intValue() <= 10) {
+			addFilrRoleFolderRead(top);
+			addFilrRoleFolderWrite(top);
+			addFilrRoleFolderOwner(top);
+			addFilrRoleFileRead(top);
+			addFilrRoleFileWrite(top);
+			addFilrRoleFileOwner(top);
+		}
 		//Remove unused eEnableExternalSharing and AllowExternalSharing roles
 		WorkAreaOperation enableExternalSharing = WorkAreaOperation.getInstance("enableExternalSharing");
 		WorkAreaOperation allowExternalSharing = WorkAreaOperation.getInstance("allowExternalSharing");
@@ -952,7 +962,13 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		Function binderRole = addBinderRole(top);
     		Function teamWsRole = addTeamWorkspaceRole(top);
     		Function allowSharingRole = addAllowSharingRole(top);
-    		
+			addFilrRoleFolderRead(top);
+			addFilrRoleFolderWrite(top);
+			addFilrRoleFolderOwner(top);
+			addFilrRoleFileRead(top);
+			addFilrRoleFileWrite(top);
+			addFilrRoleFileOwner(top);
+
     		//make sure allusers group and roles are defined, may be referenced by templates
     		getAdminModule().updateDefaultDefinitions(top.getId(), false);
     		getTemplateModule().updateDefaultTemplates(top.getId(), true);
@@ -1477,6 +1493,92 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
 		function.addOperation(WorkAreaOperation.ALLOW_SHARING);
 		//generate functionId
+		getFunctionManager().addFunction(function);		
+		return function;
+	}
+	private Function addFilrRoleFolderRead(Workspace top) {
+		Function function = new Function();
+		function.setZoneId(top.getId());
+		function.setName(ObjectKeys.ROLE_TITLE_FILR_FOLDER_READ);
+		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
+		function.setInternalId(ObjectKeys.FUNCTION_FILR_FOLDER_READ_INTERNALID);
+		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		getFunctionManager().addFunction(function);		
+		return function;
+	}
+	private Function addFilrRoleFolderWrite(Workspace top) {
+		Function function = new Function();
+		function.setZoneId(top.getId());
+		function.setName(ObjectKeys.ROLE_TITLE_FILR_FOLDER_WRITE); 
+		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
+		function.setInternalId(ObjectKeys.FUNCTION_FILR_FOLDER_WRITE_INTERNALID);
+		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
+		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
+		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
+		getFunctionManager().addFunction(function);		
+		return function;
+	}
+	private Function addFilrRoleFolderOwner(Workspace top) {
+		Function function = new Function();
+		function.setZoneId(top.getId());
+		function.setName(ObjectKeys.ROLE_TITLE_FILR_FOLDER_OWNER);
+		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
+		function.setInternalId(ObjectKeys.FUNCTION_FILR_FOLDER_OWNER_INTERNALID);
+		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
+		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
+		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
+		function.addOperation(WorkAreaOperation.ADD_REPLIES);
+		function.addOperation(WorkAreaOperation.ALLOW_SHARING);
+		function.addOperation(WorkAreaOperation.BINDER_ADMINISTRATION);
+		function.addOperation(WorkAreaOperation.CHANGE_ACCESS_CONTROL);
+		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
+		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);
+		function.addOperation(WorkAreaOperation.VIEW_BINDER_TITLE);
+		getFunctionManager().addFunction(function);		
+		return function;
+	}
+	private Function addFilrRoleFileRead(Workspace top) {
+		Function function = new Function();
+		function.setZoneId(top.getId());
+		function.setName(ObjectKeys.ROLE_TITLE_FILR_FILE_READ);
+		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
+		function.setInternalId(ObjectKeys.FUNCTION_FILR_FILE_READ_INTERNALID);
+		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		getFunctionManager().addFunction(function);		
+		return function;
+	}
+	private Function addFilrRoleFileWrite(Workspace top) {
+		Function function = new Function();
+		function.setZoneId(top.getId());
+		function.setName(ObjectKeys.ROLE_TITLE_FILR_FILE_WRITE);
+		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
+		function.setInternalId(ObjectKeys.FUNCTION_FILR_FILE_WRITE_INTERNALID);
+		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
+		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
+		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
+		getFunctionManager().addFunction(function);		
+		return function;
+	}
+	private Function addFilrRoleFileOwner(Workspace top) {
+		Function function = new Function();
+		function.setZoneId(top.getId());
+		function.setName(ObjectKeys.ROLE_TITLE_FILR_FILE_OWNER);
+		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
+		function.setInternalId(ObjectKeys.FUNCTION_FILR_FILE_OWNER_INTERNALID);
+		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
+		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
+		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
+		function.addOperation(WorkAreaOperation.ADD_REPLIES);
+		function.addOperation(WorkAreaOperation.ALLOW_SHARING);
+		function.addOperation(WorkAreaOperation.BINDER_ADMINISTRATION);
+		function.addOperation(WorkAreaOperation.CHANGE_ACCESS_CONTROL);
+		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
+		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);
+		function.addOperation(WorkAreaOperation.VIEW_BINDER_TITLE);
 		getFunctionManager().addFunction(function);		
 		return function;
 	}

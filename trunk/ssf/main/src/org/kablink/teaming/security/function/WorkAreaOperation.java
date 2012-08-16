@@ -33,8 +33,10 @@
 package org.kablink.teaming.security.function;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.InternalException;
@@ -267,7 +269,33 @@ public class WorkAreaOperation {
 			if(!equalRights(this.allowSharing, that.allowSharing)) return false;
 			return true;
 		}
-		
+
+	    public List<WorkAreaOperation> getRights() {
+	    	List<WorkAreaOperation> rights = new ArrayList<WorkAreaOperation>();
+			if(this.createEntries) rights.add(WorkAreaOperation.CREATE_ENTRIES);
+			if(this.modifyEntries) rights.add(WorkAreaOperation.MODIFY_ENTRIES);
+			if(this.modifyEntryFields) rights.add(WorkAreaOperation.MODIFY_ENTRY_FIELDS);
+			if(this.deleteEntries) rights.add(WorkAreaOperation.DELETE_ENTRIES);
+			if(this.readEntries) rights.add(WorkAreaOperation.ADD_REPLIES);
+			if(this.addReplies) rights.add(WorkAreaOperation.ADD_REPLIES);
+			if(this.generateReports) rights.add(WorkAreaOperation.GENERATE_REPORTS);
+			if(this.binderAdministration) rights.add(WorkAreaOperation.BINDER_ADMINISTRATION);
+			if(this.createEntryAcls) rights.add(WorkAreaOperation.CREATE_ENTRY_ACLS);
+			if(this.changeAccessControl) rights.add(WorkAreaOperation.CHANGE_ACCESS_CONTROL);
+			if(this.createWorkspaces) rights.add(WorkAreaOperation.CREATE_WORKSPACES);
+			if(this.createFolders) rights.add(WorkAreaOperation.CREATE_FOLDERS);
+			if(this.manageEntryDefinitions) rights.add(WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);
+			if(this.manageWorkflowDefinitions) rights.add(WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS);
+			if(this.creatorReadEntries) rights.add(WorkAreaOperation.CREATOR_READ);
+			if(this.creatorModifyEntries) rights.add(WorkAreaOperation.CREATOR_MODIFY);
+			if(this.creatorDeleteEntries) rights.add(WorkAreaOperation.CREATOR_DELETE);
+			if(this.ownerCreateEntryAcls) rights.add(WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
+			if(this.addTags) rights.add(WorkAreaOperation.ADD_COMMUNITY_TAGS);
+			if(this.viewBinderTitle) rights.add(WorkAreaOperation.VIEW_BINDER_TITLE);
+			if(this.allowSharing) rights.add(WorkAreaOperation.ALLOW_SHARING);
+			return rights;
+		}
+
 		// The following four methods provide read and update on any right using
 		// its right name as argument. Useful as generic getter/setter.
 		
