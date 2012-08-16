@@ -825,7 +825,8 @@ public class ViewEntryController extends  SAbstractController {
 				}
 			}	
 			
-			if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()) &&
+					entry.isTop() && getFolderModule().testAccess(entry, FolderOperation.allowSharing)) {
 				Map qualifiers = new HashMap();
 				qualifiers.put("nosort", true);
 				qualifiers.put("onClick", "window.top.ss_invokeShareDlg('"+entryId+"');return false;");
