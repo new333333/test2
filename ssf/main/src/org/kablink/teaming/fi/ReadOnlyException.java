@@ -40,7 +40,7 @@ public class ReadOnlyException extends FIException {
 	private static final String ERROR_CODE = "fi.error.read.only";
 
 	public ReadOnlyException(String driverTitle, String operationName) {
-		super(ERROR_CODE, operationName, driverTitle);
+		super(ERROR_CODE, new Object[] {operationName, driverTitle});
 	}
 	
     public int getHttpStatusCode() {
