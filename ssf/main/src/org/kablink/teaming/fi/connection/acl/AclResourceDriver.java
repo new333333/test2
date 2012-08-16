@@ -57,13 +57,13 @@ public interface AclResourceDriver extends ResourceDriver {
 	 * Therefore, it is important for application to base its decision to utilize ACL
 	 * capability on the return value from this method on a driver instance by instance
 	 * basis, rather than simply assuming that any and all drivers implementing this
-	 * interface will convey ACL information from the back-end file system in a way 
+	 * interface will actually convey ACL information from the back-end storage in a way 
 	 * meaningful to Vibe.
 	 * <p>
 	 * This approach allows a resource driver implementing a specific remote access
 	 * protocol (e.g. CIFS, NCP, etc.) to be still used/useful (for testing purpose
-	 * if not for production use) regardless of whether the back-end file system is 
-	 * set up to integrate with directory-based identity or not.
+	 * if not for production use) regardless of whether the back-end storage system 
+	 * is set up to integrate with directory-based identity or not.
 	 * 
 	 * @return
 	 */
@@ -113,8 +113,8 @@ public interface AclResourceDriver extends ResourceDriver {
 	/**
 	 * Opens a session in user mode.
 	 * 
-	 * @param aclItemPrincipalId ID of the file system principal
-	 * @param aclItemPrincipalPassword password of the file system principal
+	 * @param aclItemPrincipalId ID of the storage system principal
+	 * @param aclItemPrincipalPassword password of the storage system principal
 	 * @return ACL resource session
 	 * @throws FIException
 	 * @throws UncheckedIOException
