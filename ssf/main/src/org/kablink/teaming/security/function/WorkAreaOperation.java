@@ -57,9 +57,8 @@ public class WorkAreaOperation {
     // It is critically important to have this map instantiated here
     // BEFORE pre-defined WorkAreOperation instances are created. 
     private static final Map Instances = new HashMap();
-    //Workarea operations
-    //  Important: do not create operations that control the viewing of an entry of folder.
-    //  Such "view" operations should be controlled by the ACL. (not implemented)
+    
+    // Workarea operations/rights
     public final static WorkAreaOperation CREATE_ENTRIES = new WorkAreaOperation("createEntries");
     public final static WorkAreaOperation MODIFY_ENTRIES = new WorkAreaOperation("modifyEntries");    
     public final static WorkAreaOperation MODIFY_ENTRY_FIELDS = new WorkAreaOperation("modifyEntryFields");    
@@ -82,8 +81,8 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation VIEW_BINDER_TITLE = new WorkAreaOperation("viewBinderTitle");
     public final static WorkAreaOperation ALLOW_SHARING = new WorkAreaOperation("allowSharing");
 
-    //The following rights should not be used in access management of workareas.  Used to give access to zone-wide functions to a
-    //group of users
+    // The following rights should not be used in access management of workareas.
+    // Used to give access to zone-wide functions to a group of users
     public final static WorkAreaOperation ZONE_ADMINISTRATION = new WorkAreaOperation("zoneAdministration", true);
     public final static WorkAreaOperation ADD_GUEST_ACCESS = new WorkAreaOperation("addGuestAccess", true);
     public final static WorkAreaOperation TOKEN_REQUEST = new WorkAreaOperation("tokenRequest", true);
@@ -92,6 +91,23 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation MANAGE_RESOURCE_DRIVERS = new WorkAreaOperation("manageResourceDrivers", true);
     public final static WorkAreaOperation CREATE_FILESPACE = new WorkAreaOperation("createFilespace", true);
     public final static WorkAreaOperation ENABLE_SHARING = new WorkAreaOperation("enableSharing", true);
+
+    // Default set of rights controlled by external ACLs.
+	public static final WorkAreaOperation[] EXTERNALLY_CONTROLLED_RIGHTS_DEFAULT = new WorkAreaOperation[] {
+		WorkAreaOperation.READ_ENTRIES, 
+		WorkAreaOperation.CREATE_ENTRIES,
+		WorkAreaOperation.MODIFY_ENTRIES,
+		WorkAreaOperation.MODIFY_ENTRY_FIELDS,
+		WorkAreaOperation.DELETE_ENTRIES,
+		WorkAreaOperation.BINDER_ADMINISTRATION,
+		WorkAreaOperation.CREATE_ENTRY_ACLS,
+		WorkAreaOperation.CHANGE_ACCESS_CONTROL,
+		WorkAreaOperation.CREATE_WORKSPACES,
+		WorkAreaOperation.CREATE_FOLDERS, 
+		WorkAreaOperation.CREATOR_READ,
+		WorkAreaOperation.CREATOR_MODIFY, 
+		WorkAreaOperation.CREATOR_DELETE,
+		WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS };
 
     private String name;
     private boolean zoneWide=false;
