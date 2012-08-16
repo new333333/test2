@@ -299,6 +299,7 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 				VibeFlowPanel imgPanel = new VibeFlowPanel();
 				imgPanel.addStyleName("vibe-dataTableAssignment-control displayInline verticalAlignTop");
 				Image assigneeImg = new Image();
+				assigneeImg.addStyleName("vibe-dataTableAssignment-image");
 				assigneeImg.setUrl(GwtClientHelper.getRequestInfo().getImagesPath() + ai.getPresenceDude());
 				assigneeImg.getElement().setAttribute("align", "absmiddle");
 				imgPanel.add(assigneeImg);
