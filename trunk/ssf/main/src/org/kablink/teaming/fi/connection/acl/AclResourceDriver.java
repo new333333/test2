@@ -74,6 +74,26 @@ public interface AclResourceDriver extends ResourceDriver {
 	 * @return an array of <code>WorkAreaOperation</code> objects
 	 */
 	public WorkAreaOperation[] getExternallyControlledlRights();
+	
+	/**
+	 * Returns the name of the role type (aka scope) registered with the Vibe system.
+	 * Role type is used to identify the set of Vibe roles that the permissions from
+	 * the external system can map to via <code>AclItemPermissionMapper</code> mapper.
+	 * Therefore it is required and expected that <code>AclItemPermissionMapper</code>
+	 * mapper maps external system permissions only to those Vibe roles that belong
+	 * in the role type returned from this method. If this condition/requirement is
+	 * not met, the system behavior is unpredictable.
+	 * <p>
+	 * In the current version of Vibe, this part of the integration is not entirely
+	 * pluggable in the sense that adding and registering a new role type requires 
+	 * changes to the Vibe software. However, it's possible for new driver implementation
+	 * to re-use an existing role type defined by another driver implementation
+	 * if the access control requirement happens to be identical. In such case,
+	 * no change is necessary to Vibe software.
+	 * 
+	 * @return
+	 */
+	public String getRegisteredRoleTypeName();
 
 	/**
 	 * Opens a session in proxy mode.

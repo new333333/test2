@@ -106,6 +106,10 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
     	return getSecurityDao().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType(), workAreaOperation.getName());
     }
 
+    public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(Long zoneId, WorkArea workArea, String functionScope) {
+        return getSecurityDao().findWorkAreaFunctionMemberships(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType(), functionScope);    	
+    }
+    
     /*
     public boolean checkWorkAreaFunctionMembership(Long zoneName, WorkArea workArea, 
             Set membersToLookup, List functions) {

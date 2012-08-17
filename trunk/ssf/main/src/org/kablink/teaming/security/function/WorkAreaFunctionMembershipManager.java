@@ -66,6 +66,7 @@ public interface WorkAreaFunctionMembershipManager {
     public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(Long zoneId, WorkArea workArea);
     public List<WorkAreaFunctionMembership> findWorkAreaFunctionMembershipsByOperation(Long zoneId, WorkArea workArea, WorkAreaOperation workAreaOperation);
     public List<WorkAreaFunctionMembership> findWorkAreaFunctionMembershipsByOperation(Long zoneId, WorkAreaOperation workAreaOperation, Set<Long> membersToLookup);
+    public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(Long zoneId, WorkArea workArea, String functionScope);
     /**
      * 
      * @param zoneId
