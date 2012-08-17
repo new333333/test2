@@ -64,6 +64,10 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource check12();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/close_w_border.png")
+	public ImageResource closeBorder();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/collapse_16.png")
 	public ImageResource collapseDescription();
 	

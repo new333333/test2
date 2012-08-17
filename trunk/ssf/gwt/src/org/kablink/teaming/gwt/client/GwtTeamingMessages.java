@@ -1533,6 +1533,15 @@ public interface GwtTeamingMessages extends Messages
 	String addFilesDlgHavingTrouble();
 	String addFilesDlgHeader();
 	
+	// Strings used in the AddFilesHtml5Popup.
+	String addFilesHtml5PopupCancel();
+	String addFilesHtml5PopupCancelAlt();
+	String addFilesHtml5PopupBrowse();
+	String addFilesHtml5PopupBrowseAlt();
+	String addFilesHtml5PopupBusy(String fileName, int thisOne, int total);
+	String addFilesHtml5PopupHint();
+	String addFilesHtml5PopupReadError(String fileName, String errorDesc);
+	
 	// Strings used in the "Child binders widget"
 	String workspacesHeader();
 	String unreadEntries( Long numUnread );
