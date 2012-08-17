@@ -44,6 +44,8 @@ import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg.CopyMoveEnt
 import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
+import org.kablink.teaming.gwt.client.datatable.AddFilesHtml5Popup;
+import org.kablink.teaming.gwt.client.datatable.AddFilesHtml5Popup.AddFilesHtml5PopupClient;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg;
@@ -81,7 +83,8 @@ import com.google.gwt.user.client.ui.UIObject;
  * @author drfoster@novell.com
  */
 public class BinderViewsHelper {
-	private static AddFilesDlg			m_addFilesDlg;							// An instance of the add files (via the applet) dialog.
+	private static AddFilesDlg			m_addFilesAppletDlg;					// An instance of the add files (via an applet) dialog.
+	private static AddFilesHtml5Popup	m_addFilesHtml5Popup;					// An instance of the add files (via HTML5)     popup.
 	private static ChangeEntryTypesDlg	m_cetDlg;								// An instance of a change entry types dialog. 
 	private static CopyMoveEntriesDlg	m_cmeDlg;								// An instance of a copy/move entries dialog.
 	private static EmailNotificationDlg	m_enDlg;								// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntityId>. 
@@ -418,35 +421,73 @@ public class BinderViewsHelper {
 	 * @param showRelativeWidget
 	 */
 	public static void invokeDropBox(final BinderInfo folderInfo, final UIObject showRelativeWidget) {
-		// Have we instantiated an add files dialog yet?
-		if (null == m_addFilesDlg) {
-			// No!  Instantiate one now...
-			AddFilesDlg.createAsync(new AddFilesDlgClient() {			
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in asynchronous
-					// provider.
-				}
-				
-				@Override
-				public void onSuccess(final AddFilesDlg afDlg) {
-					// ...and show it.
-					m_addFilesDlg = afDlg;
-					ScheduledCommand doShow = new ScheduledCommand() {
-						@Override
-						public void execute() {
-							showAddFilesDlgNow(folderInfo, showRelativeWidget);
-						}
-					};
-					Scheduler.get().scheduleDeferred(doShow);
-				}
-			});
+		// Are we running in a browser that support file uploads using HTML5?
+		if (AddFilesHtml5Popup.browserSupportsHtml5()) {
+			// Yes!  Have we instantiated an HTML5 add files popup yet?
+			if (null == m_addFilesHtml5Popup) {
+				// No!  Instantiate one now...
+				AddFilesHtml5Popup.createAsync(new AddFilesHtml5PopupClient() {			
+					@Override
+					public void onUnavailable() {
+						// Nothing to do.  Error handled in
+						// asynchronous provider.
+					}
+					
+					@Override
+					public void onSuccess(final AddFilesHtml5Popup afPopup) {
+						// ...and show it.
+						m_addFilesHtml5Popup = afPopup;
+						ScheduledCommand doShow = new ScheduledCommand() {
+							@Override
+							public void execute() {
+								showAddFilesPopupNow(folderInfo);
+							}
+						};
+						Scheduler.get().scheduleDeferred(doShow);
+					}
+				});
+			}
+			
+			else {
+				// Yes, we've instantiated an HTML5 add files popup
+				// already!  Simply show it.
+				showAddFilesPopupNow(folderInfo);
+			}
 		}
 		
 		else {
-			// Yes, we've instantiated an add files dialog already!
-			// Simply show it.
-			showAddFilesDlgNow(folderInfo, showRelativeWidget);
+			// No, we aren't running in a browser that support file
+			// uploads using HTML5!  Have we instantiated an applet
+			// based add files dialog yet?
+			if (null == m_addFilesAppletDlg) {
+				// No!  Instantiate one now...
+				AddFilesDlg.createAsync(new AddFilesDlgClient() {			
+					@Override
+					public void onUnavailable() {
+						// Nothing to do.  Error handled in
+						// asynchronous provider.
+					}
+					
+					@Override
+					public void onSuccess(final AddFilesDlg afDlg) {
+						// ...and show it.
+						m_addFilesAppletDlg = afDlg;
+						ScheduledCommand doShow = new ScheduledCommand() {
+							@Override
+							public void execute() {
+								showAddFilesDlgNow(folderInfo, showRelativeWidget);
+							}
+						};
+						Scheduler.get().scheduleDeferred(doShow);
+					}
+				});
+			}
+			
+			else {
+				// Yes, we've instantiated an applet based add files
+				// dialog already!  Simply show it.
+				showAddFilesDlgNow(folderInfo, showRelativeWidget);
+			}
 		}
 	}
 	
@@ -857,9 +898,18 @@ public class BinderViewsHelper {
 	 */
 	private static void showAddFilesDlgNow(final BinderInfo folderInfo, final UIObject showRelativeWidget) {
 		AddFilesDlg.initAndShow(
-			m_addFilesDlg,
+			m_addFilesAppletDlg,
 			folderInfo,
 			showRelativeWidget);
+	}
+	
+	/*
+	 * Synchronously shows the HTML5 add files popup.
+	 */
+	private static void showAddFilesPopupNow(final BinderInfo folderInfo) {
+		AddFilesHtml5Popup.initAndShow(
+			m_addFilesHtml5Popup,
+			folderInfo);
 	}
 	
 	/*

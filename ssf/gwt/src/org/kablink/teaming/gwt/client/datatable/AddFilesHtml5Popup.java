@@ -41,13 +41,29 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
+import org.vectomatic.dnd.DataTransferExt;
 import org.vectomatic.dnd.DropPanel;
+import org.vectomatic.file.ErrorCode;
+import org.vectomatic.file.File;
+import org.vectomatic.file.FileError;
+import org.vectomatic.file.FileList;
+import org.vectomatic.file.FileReader;
+import org.vectomatic.file.FileUploadExt;
+import org.vectomatic.file.events.ErrorEvent;
+import org.vectomatic.file.events.ErrorHandler;
+import org.vectomatic.file.events.LoadEndEvent;
+import org.vectomatic.file.events.LoadEndHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DragEnterEvent;
 import com.google.gwt.event.dom.client.DragEnterHandler;
 import com.google.gwt.event.dom.client.DragLeaveEvent;
@@ -57,29 +73,60 @@ import com.google.gwt.event.dom.client.DragOverHandler;
 import com.google.gwt.event.dom.client.DropEvent;
 import com.google.gwt.event.dom.client.DropHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
- * Implements Vibe's 'add files' using HTML5.
+ * Implements Vibe's 'add files' using HTML5 popup.
  *  
  * @author drfoster@novell.com
  */
 @SuppressWarnings("unused")
 public class AddFilesHtml5Popup extends TeamingPopupPanel
 	implements
+		ChangeHandler,
+		ClickHandler,
 		DragEnterHandler,
 		DragLeaveHandler,
 		DragOverHandler,
-		DropHandler
+		DropHandler,
+		ErrorHandler,
+		LoadEndHandler
 {
 	private BinderInfo						m_folderInfo;				// The folder the add files is running against.
+	private Button							m_browseButton;				// Button that fronts the default browser 'Browse' button.
 	private DropPanel						m_dndPanel;					// The drag and drop panel that holds the popup's content.
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
+	private InlineLabel						m_hintLabel;				// The label inside the hint box.
+	private int								m_readThis;					// The file out of the total that is currently being uploaded.
+	private int								m_readTotal;				// Total number of files to upload during an upload event.
+	private List<File>						m_readQueue;				// List of files queued for uploading.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private FileReader						m_reader;					// Reads files.
+	private FileUploadExt					m_uploadButton;				// A hidden button that services the m_browseButton above.
+	private SpinnerPopup					m_busy;						// Shows a spinner while uploading files.
 
+	// Controls whether the HTML5 popup will be used vs. the Java
+	// applet to upload files.
+	private static boolean USE_HTML5_POPUP	= false;	//
+	
+	// true -> Information about files being uploaded is displayed via
+	// alerts.  false -> It's not.
+	private static boolean TRACE_FILES	= true;	//
+	
+	// The minimum height and width of the popup.
+	private static int MIN_HEIGHT		= 200;	//
+	private static int MIN_WIDTH		= 800;	//
+
+	// Padding on the left/right and top/bottom of the popup.
+	private static int LEFT_RIGHT_PAD	= 240;	// This number of pixels on the left and right.
+	private static int TOP_BOTTOM_PAD	= 200;	// This number of pixels on the top  and bottom.
+	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
@@ -98,32 +145,139 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		super(false, true);
 
 		// ...initialize everything else...
-		m_images   = GwtTeaming.getDataTableImageBundle();
-		m_messages = GwtTeaming.getMessages();
+		m_images    = GwtTeaming.getDataTableImageBundle();
+		m_messages  = GwtTeaming.getMessages();
+		m_readQueue = new ArrayList<File>();
+		m_reader    = new FileReader();
+		m_reader.addLoadEndHandler(this);
+		m_reader.addErrorHandler(  this);
+		m_busy = new SpinnerPopup();
 	
 		// ...and create the popup's content.
 		addStyleName("vibe-addFilesHtml5Popup");
-		add(createContent());
+		createContent();
+	}
+
+	/**
+	 * Returns true if the browser being used supports uploading files
+	 * using HTML5 and false otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean browserSupportsHtml5() {
+//!		...this needs to be implemented...
+		return USE_HTML5_POPUP;
 	}
 
 	/*
 	 * Creates all the controls that make up the popup.
 	 */
-	private Panel createContent() {
-		// Create a panel to hold the popup's content...
+	private void createContent() {
+		// Create an main panel to hold the popup's content.
+		FlowPanel mainPanel = new FlowPanel();
+		mainPanel.addStyleName("vibe-addFilesHtml5Popup-panel");
+		add(mainPanel);
+		
+		// Create a close image that is positioned at the top right
+		// hand corner of the popup.
+		FlowPanel closePanel = new FlowPanel();
+		closePanel.addStyleName("vibe-addFilesHtml5Popup-closePanel");
+		Image closeImg = new Image(m_images.closeBorder());
+		closeImg.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				// If the user clicks the close, simply hide the popup.
+				hide();
+			}
+		});
+		closePanel.add(closeImg  );
+		mainPanel.add( closePanel);
+		
+		// Create a drag and drop panel for dropping into...
 		m_dndPanel = new DropPanel();
 		m_dndPanel.addStyleName("vibe-addFilesHtml5Popup-dndPanel");
 
-		// ...connect the various drag and drop handles to the popup...
+		// ...connect the various drag and drop handlers to it...
 		m_dndPanel.addDragEnterHandler(this);
 		m_dndPanel.addDragLeaveHandler(this);
 		m_dndPanel.addDragOverHandler( this);
 		m_dndPanel.addDropHandler(     this);
 		
-		// ...and return the panel that holds the content.
-		return m_dndPanel;
+		// ...and add it to the main panel.
+		mainPanel.add(m_dndPanel);
+		
+		// Create a hint panel in the center of the drag and drop panel.
+		FlowPanel hintPanel = new FlowPanel();
+		hintPanel.addStyleName("vibe-addFilesHtml5Popup-innerHintPanel");
+		m_dndPanel.add(hintPanel);
+		
+		m_hintLabel = new InlineLabel(m_messages.addFilesHtml5PopupHint());
+		m_hintLabel.addStyleName("vibe-addFilesHtml5Popup-innerHintLabel");
+		hintPanel.add(m_hintLabel);
+
+		// Create a browse button panel in the hint panel.
+		FlowPanel browsePanel = new FlowPanel();
+		browsePanel.addStyleName("vibe-addFilesHtml5Popup-innerHintBrowsePanel");
+		m_uploadButton = new FileUploadExt();
+		m_uploadButton.addStyleName("vibe-addFilesHtml5Popup-innerHintBrowseUpload");
+		m_uploadButton.addChangeHandler(this);
+		browsePanel.add(m_uploadButton);
+		m_browseButton = new Button(m_messages.addFilesHtml5PopupBrowse());
+		m_browseButton.addStyleName("vibe-addFilesHtml5Popup-innerHintBrowseButton");
+		m_browseButton.setTitle(m_messages.addFilesHtml5PopupBrowseAlt());
+		m_browseButton.addClickHandler(this);
+		browsePanel.add(m_browseButton);
+		hintPanel.add(browsePanel);
 	}
 
+	/*
+	 * If we're in debug UI mode, displays an alert about a file.
+	 */
+	private void debugTraceFile(String methodName, File file, boolean traceQueueSize, String traceHead, String traceTail) {
+		if (TRACE_FILES && GwtClientHelper.isDebugUI()) {
+			String	dump  = (traceHead + ":  '" + file.getName() + "' (" + file.getSize() + ")");
+			if (traceQueueSize) {
+				int		files = (m_readQueue.size() - 1);
+				switch (files) {
+				case 0:   dump += " there are no files pending";             break;
+				case 1:   dump += " there is 1 file pending";                break;
+				default:  dump += " there are "  + files + " files pending"; break;
+				}
+			}
+			boolean hasTail = GwtClientHelper.hasString(traceTail);
+			dump = ("AddFilesHtml5Popup." + methodName + "( " + dump + " )" + (hasTail ? ":  " + traceTail : ""));
+			String data = m_reader.getStringResult();
+			if (null != data) {
+				int len = data.length();
+				if (2048 < len) {
+					data = (data.substring(0, 2048) + "...truncated...");
+				}
+				dump += ("\n\nData:  " + data); 
+			}
+			Window.alert(dump);
+		}
+	}
+	
+	private void debugTraceFile(String methodName, File file, boolean traceQueueSize, String traceHead) {
+		// Always use the initial form of the method.
+		debugTraceFile(methodName, file, traceQueueSize, traceHead, null);
+	}
+	
+	/*
+	 * Called if the reader encounters an error.
+	 */
+	private void handleError(File file) {
+		FileError error = m_reader.getError();
+		String errorDesc = "";
+		if (error != null) {
+			ErrorCode errorCode = error.getCode();
+			if (null != errorCode) {
+				errorDesc = ": " + errorCode.name();
+			}
+		}
+		GwtClientHelper.deferredAlert(m_messages.addFilesHtml5PopupReadError(file.getName(), errorDesc));
+	}
+	
 	/**
 	 * Called when the data table is attached.
 	 * 
@@ -134,6 +288,43 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		// Let the widget attach and then register our event handlers.
 		super.onAttach();
 		registerEvents();
+	}
+
+	/**
+	 * Called when the file selection off the 'Browse' button has
+	 * changed.
+	 * 
+	 * Implements the ChangeHandler.onChange() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onChange(ChangeEvent event) {
+		processFiles(m_uploadButton.getFiles());
+	}
+	
+
+	/**
+	 * Called when the 'Browse' button is clicked.
+	 * 
+	 * Implements the ClickHandler.onClick() method.
+	 * 
+	 * @param event.
+	 */
+	@Override
+	public void onClick(ClickEvent event) {
+		// Is the read queue is empty?
+		if (m_readQueue.isEmpty()) {
+			// Yes!  Let the user select some files to upload.
+			m_uploadButton.click();
+		}
+		else {
+			// No, the read queue isn't empty!  Abort and read
+			// in progress and clear the read queue to cancel
+			// uploading.
+			m_reader.abort();
+			m_readQueue.clear();
+		}
 	}
 	
 	/**
@@ -158,7 +349,12 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 */
 	@Override
 	public void onDragEnter(DragEnterEvent event) {
-//!		...this needs to be implemented...
+		if (m_readQueue.isEmpty()) {
+			           addStyleName("vibe-addFilesHtml5Popup-hover"        );
+			m_dndPanel.addStyleName("vibe-addFilesHtml5Popup-dndPanelHover");
+		}
+		event.stopPropagation();
+		event.preventDefault();
 	}
 	
 	/**
@@ -171,7 +367,12 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 */
 	@Override
 	public void onDragLeave(DragLeaveEvent event) {
-//!		...this needs to be implemented...
+		if (m_readQueue.isEmpty()) {
+			           removeStyleName("vibe-addFilesHtml5Popup-hover"        );
+			m_dndPanel.removeStyleName("vibe-addFilesHtml5Popup-dndPanelHover");
+		}
+		event.stopPropagation();
+		event.preventDefault();
 	}
 
 	/**
@@ -184,7 +385,10 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 */
 	@Override
 	public void onDragOver(DragOverEvent event) {
-//!		...this needs to be implemented...
+		// Mandatory handler, otherwise the default behavior will kick
+		// in and onDrop will never be called.
+		event.stopPropagation();
+		event.preventDefault();
 	}
 
 	/**
@@ -196,7 +400,56 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 */
 	@Override
 	public void onDrop(DropEvent event) {
-//!		...this needs to be implemented...
+		if (m_readQueue.isEmpty()) {
+	                   removeStyleName("vibe-addFilesHtml5Popup-hover"        );
+			m_dndPanel.removeStyleName("vibe-addFilesHtml5Popup-dndPanelHover");
+			processFiles(event.getDataTransfer().<DataTransferExt>cast().getFiles());
+		}
+		event.stopPropagation();
+		event.preventDefault();
+	}
+
+	/**
+	 * Called if the read encounters an error reading a file.
+	 * 
+	 * Implements the ErrorHandler.onError() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onError(ErrorEvent event) {
+		if (!(m_readQueue.isEmpty())) {
+			File file = m_readQueue.get(0);
+			handleError(file);
+			m_readQueue.remove(0);
+			readNext();
+		}
+	}
+	
+	/**
+	 * Called when the reader completes reading a file.
+	 * 
+	 * Implements the LoadEndHandler.onLoadEnd() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onLoadEnd(LoadEndEvent event) {
+		if (null == m_reader.getError()) {
+			if (!(m_readQueue.isEmpty())) {
+				File file = m_readQueue.get(0);
+				try {
+					// Upload the file that we just read.
+//!					...this needs to be implemented...
+					debugTraceFile("onLoadEnd", file, true, "Just read", "...this needs to be implemented...");
+				}
+				
+				finally {
+					m_readQueue.remove(0);
+					readNext();
+				}
+			}
+		}
 	}
 	
 	/*
@@ -216,10 +469,73 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * Synchronously populates the contents of the popup.
 	 */
 	private void populatePopupNow() {
-//!		...this needs to be implemented...
-
+		// Size...
+		String h = (Math.max(MIN_HEIGHT, (Window.getClientHeight() - (TOP_BOTTOM_PAD * 2))) + "px"); 
+		String w = (Math.max(MIN_WIDTH,  (Window.getClientWidth()  - (LEFT_RIGHT_PAD * 2))) + "px");
+		
+		setHeight(h); m_dndPanel.setHeight(h);
+		setWidth( w); m_dndPanel.setWidth( w);
+		
 		// ...and show the popup.
 		center();
+	}
+	
+	/*
+	 * Called when some files are dropped on the panel.
+	 */
+	private void processFiles(FileList files) {
+		// If we weren't given any files to process...
+		if ((null == files) || (0 >= files.getLength())) {
+			// ...bail.
+			return;
+		}
+		
+		// Copy the files into the read queue...
+		for (File file:  files) {
+			m_readQueue.add(file);
+		}
+
+		// ...and upload them.
+		m_readTotal = m_readQueue.size();
+		m_readThis  = 0;
+		readNext();
+	}
+	
+	/*
+	 * Called to read and upload the next file in the queue.
+	 */
+	private void readNext() {
+		if (m_readQueue.isEmpty()) {
+			m_browseButton.setText( m_messages.addFilesHtml5PopupBrowse()   );
+			m_browseButton.setTitle(m_messages.addFilesHtml5PopupBrowseAlt());
+			m_hintLabel.setText(    m_messages.addFilesHtml5PopupHint()     );
+			m_busy.hide();
+		}
+		
+		else {
+			if ((!(m_busy.isAttached())) || (!(m_busy.isVisible()))) {
+				m_browseButton.setText( m_messages.addFilesHtml5PopupCancel()   );
+				m_browseButton.setTitle(m_messages.addFilesHtml5PopupCancelAlt());
+				m_busy.center();
+			}
+			
+			File file = m_readQueue.get(0);
+			m_hintLabel.setText(m_messages.addFilesHtml5PopupBusy(file.getName(), ++m_readThis, m_readTotal));
+			try {
+//!				m_reader.readAsArrayBuffer( file);
+				m_reader.readAsDataURL(     file);
+//!				m_reader.readAsBinaryString(file);
+//!				m_reader.readAsText(        file);
+			}
+			
+			catch(Throwable t) {
+				// Necessary for FF (see bug https://bugzilla.mozilla.org/show_bug.cgi?id=701154.)
+				// Standard-complying browsers will to go in this branch.
+				handleError(file);
+				m_readQueue.remove(0);
+				readNext();
+			}
+		}
 	}
 	
 	/*
@@ -261,10 +577,8 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * Synchronously runs the given instance of the add files popup.
 	 */
 	private void runPopupNow(BinderInfo fi) {
-		// Store the parameter...
+		// Store the parameter and start populating the popup.
 		m_folderInfo = fi;
-		
-		// ...and start populating the popup.
 		populatePopupAsync();
 	}
 

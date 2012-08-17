@@ -342,10 +342,19 @@
 /* End:  Add files dialog styles. */
 
 /* Start:  Add files via HTML5 styles. */
-	.vibe-addFilesHtml5Popup                {}
-	.vibe-addFilesHtml5Popup-dndPanel       {border 3px solid #09f;    -moz-border-radius: 15px; border-radius: 15px; -webkit-border-radius: 15px; opacity: 0.7; background: #abced1 url("images/trans_blue_stripes.png"  ) repeat;}
-	.vibe-addFilesHtml5Popup-dndPanel-hover {border 3px solid #ebaf1b; -moz-border-radius: 15px; border-radius: 15px; -webkit-border-radius: 15px; opacity: 0.7; background: #f2ef91 url("images/trans_yellow_stripes.png") repeat;}
-	.vibe-addFilesHtml5Popup-innerHintPanel {color: white; font-size: 1.3em; text-align: center; padding: 15px; -moz-border-radius: 10px; border-radius: 10px; -webkit-border-radius: 10px; background: url("images/trans30_black.png") repeat;}
+	.vibe-addFilesHtml5Popup                             {z-index: 1000; border: 3px solid #09f !important; -moz-border-radius !important: 15px; border-radius: 15px !important; -webkit-border-radius !important: 15px; opacity: 0.7; background: #abced1 url("images/trans_blue_stripes.png") repeat !important;}
+	.vibe-addFilesHtml5Popup-closePanel                  {color: #FFFFFF; background-color: transparent !important; opacity: 1.0 !important; font-size: 0.8em; position: absolute; right: -12px; top: -12px; z-index: 1001;}
+	.vibe-addFilesHtml5Popup-closePanel:hover            {cursor: pointer;}
+	.vibe-addFilesHtml5Popup-hover                       {border: 3px solid #ebaf1b !important; -moz-border-radius: 15px !important; border-radius: 15px !important; -webkit-border-radius: 15px !important; opacity: 0.7; background: #f2ef91 url("images/trans_yellow_stripes.png") repeat !important;}
+	.vibe-addFilesHtml5Popup-dndPanel                    {position: relative;}
+	.vibe-addFilesHtml5Popup-dndPanelHover               {}
+	.vibe-addFilesHtml5Popup-innerHintBrowseButton       {font-size: 14px !important;}
+	.vibe-addFilesHtml5Popup-innerHintBrowseButton:hover {font-size: 14px !important;}
+	.vibe-addFilesHtml5Popup-innerHintBrowsePanel        {display: block; margin-top: 1em;}
+	.vibe-addFilesHtml5Popup-innerHintBrowseUpload       {visibility: hidden; width: 0px; margin: 0px;}
+	.vibe-addFilesHtml5Popup-innerHintLabel              {}
+	.vibe-addFilesHtml5Popup-innerHintPanel              {position: absolute; top: 50px; left: 25%; right: 25%; color: white; font-size: 1.3em; text-align: center; padding: 15px; -moz-border-radius: 10px; border-radius: 10px; -webkit-border-radius: 10px; background: url("images/trans50_black.png") repeat;}
+	.vibe-addFilesHtml5Popup-panel                       {z-index: 1000;}
 /* Start:  Add files via HTML5 styles. */
 
 /* Start:  Manage comments dialog styles. */
