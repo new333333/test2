@@ -915,7 +915,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		if ((!original.equals(current) || conditionsExist || conditionsExistInOrigianl) && (workArea instanceof Binder)) {
 			Binder binder = (Binder)workArea;
 			loadBinderProcessor(binder).indexFunctionMembership(binder, true);
-		} else if (workArea instanceof Entry) {
+		} else if (!original.equals(current) && workArea instanceof Entry) {
 			Entry entry = (Entry)workArea;
 			List entries = new ArrayList();
 			entries.add(entry);
