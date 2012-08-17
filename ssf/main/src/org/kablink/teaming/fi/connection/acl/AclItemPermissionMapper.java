@@ -43,14 +43,16 @@ public interface AclItemPermissionMapper {
 	
 	/**
 	 * Returns the IDs of the Vibe roles (aka functions) that the specified external
-	 * permission maps to.
+	 * permission maps to as it applies to a folder or a file.
 	 * <p>
 	 * A concrete implementation of this method must be thread-safe, that is, safe for
 	 * use by multiple concurrent threads on the same object instance.
 	 * 
-	 * @param permissionName
+	 * @param permissionName name of the permission
+	 * @param appliesToFolder <code>true</code> if the permission applies to folder, 
+	 * <code>false</code> if to file. 
 	 * @return
 	 * @throws AclItemPermissionMappingException
 	 */
-	public Long[] toVibeRoleIds(String permissionName) throws AclItemPermissionMappingException;
+	public Long[] toVibeRoleIds(String permissionName, boolean appliesToFolder) throws AclItemPermissionMappingException;
 }
