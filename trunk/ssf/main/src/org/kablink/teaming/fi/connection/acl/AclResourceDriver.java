@@ -46,30 +46,6 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 public interface AclResourceDriver extends ResourceDriver {
 
 	/**
-	 * Returns whether or not ACL handling is enabled on this driver instance.
-	 * <p> 
-	 * For this to be <code>true</code>, two conditions must be met:
-	 * <p>
-	 * 1. The underlying driver implementation is capable of supporting ACL and
-	 * implements this interface.
-	 * 2. The driver instance is configured to allow ACL.
-	 * <p>
-	 * Therefore, it is important for application to base its decision to utilize ACL
-	 * capability on the return value from this method on a driver instance by instance
-	 * basis, rather than simply assuming that any and all drivers implementing this
-	 * interface will actually convey ACL information from the back-end storage in a way 
-	 * meaningful to Vibe.
-	 * <p>
-	 * This approach allows a resource driver implementing a specific remote access
-	 * protocol (e.g. CIFS, NCP, etc.) to be still used/useful (for testing purpose
-	 * if not for production use) regardless of whether the back-end storage system 
-	 * is set up to integrate with directory-based identity or not.
-	 * 
-	 * @return
-	 */
-	public boolean isAclEnabled();
-
-	/**
 	 * Returns an implementation of <code>AclItemPermissionMapper</code> interface.
 	 * <p>
 	 * For efficiency reason, resource driver implementation should re-use the same
