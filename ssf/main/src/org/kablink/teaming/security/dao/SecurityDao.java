@@ -80,7 +80,8 @@ public interface SecurityDao {
     		Long workAreaId, String workAreaType, Long functionId);
 
     public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(Long zoneId, Long functionId);
-	public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(Long zoneId, Long functionId, String workAreaType);
+	public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(Long zoneId, Long workAreaId, String workAreaType);
+	public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(Long zoneId, Long workAreaId, String workAreaType, String functionScope);
 
     /**
      * 
