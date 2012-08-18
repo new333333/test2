@@ -163,6 +163,7 @@ import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -1973,14 +1974,34 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Asynchronously sets the size of the data table based on its
 	 * position in the view.
 	 */
+	private void onResizeAsync(int delay) {
+		if (0 == delay) {
+			ScheduledCommand doResize = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					onResize();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doResize);
+		}
+		
+		else {
+			Timer timer = new Timer() {
+				@Override
+				public void run() {
+					onResize();
+				}
+			};
+			timer.schedule(delay);
+		}
+	}
+
+	/*
+	 * Asynchronously sets the size of the data table based on its
+	 * position in the view.
+	 */
 	private void onResizeAsync() {
-		ScheduledCommand doResize = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				onResize();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doResize);
+		onResizeAsync(INITIAL_RESIZE_DELAY);
 	}
 	
 	/**

@@ -120,6 +120,7 @@ import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -1782,6 +1783,40 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/*
+	 * Asynchronously sets the size of the calendar based on its
+	 * position in the view.
+	 */
+	private void resizeViewAsync(int delay) {
+		if (0 == delay) {
+			ScheduledCommand doResize = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					resizeView();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doResize);
+		}
+		
+		else {
+			Timer timer = new Timer() {
+				@Override
+				public void run() {
+					resizeView();
+				}
+			};
+			timer.schedule(delay);
+		}
+	}
+
+	/*
+	 * Asynchronously sets the size of the calendar based on its
+	 * position in the view.
+	 */
+	private void resizeViewAsync() {
+		resizeViewAsync(INITIAL_RESIZE_DELAY);
+	}
+	
+	/*
 	 * Asynchronously shows the calendar settings dialog.
 	 */
 	private void showCalendarSettingsDlgAsync() {
@@ -1836,7 +1871,7 @@ public class CalendarFolderView extends FolderViewBase
 	public void viewComplete() {
 		// Tell the calendar to resize itself now that it can determine
 		// how big everything is.
-		resizeView();
+		resizeViewAsync();
 	}
 	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
