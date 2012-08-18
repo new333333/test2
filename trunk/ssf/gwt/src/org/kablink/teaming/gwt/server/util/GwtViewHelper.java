@@ -87,6 +87,7 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.GuestInfo;
@@ -5270,6 +5271,39 @@ public class GwtViewHelper {
 	        }
 		}
 		return value;
+	}
+
+	/**
+	 * Uploads a file blob.
+	 * 
+	 * If the blob is the last one for the file, the file entry is
+	 * created.  Otherwise, the blob is cached while we await
+	 * additional blobs for it.
+	 *
+	 * @param bs
+	 * @param request
+	 * @param folderInfo
+	 * @param fileBlob
+	 * @param lastBlob
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static StringRpcResponseData uploadFileBlob(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, FileBlob fileBlob, boolean lastBlob) throws GwtTeamingException {
+		try {
+//!			...this needs to be implemented...
+			return new StringRpcResponseData();
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.uploadFileBlob( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
 	}
 
 	/*

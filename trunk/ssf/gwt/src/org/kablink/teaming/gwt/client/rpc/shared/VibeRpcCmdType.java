@@ -244,6 +244,7 @@ public enum VibeRpcCmdType implements IsSerializable
 	UNPIN_ENTRY,
 	UNTRACK_BINDER,
 	UNTRACK_PERSON,
+	UPLOAD_FILE_BLOB,
 	VALIDATE_ENTRY_EVENTS,
 	
 	UNDEFINED;
