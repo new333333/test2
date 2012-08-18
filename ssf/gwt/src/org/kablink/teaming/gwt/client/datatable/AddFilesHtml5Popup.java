@@ -35,16 +35,21 @@ package org.kablink.teaming.gwt.client.datatable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.UploadFileBlobCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 import org.vectomatic.dnd.DataTransferExt;
 import org.vectomatic.dnd.DropPanel;
+import org.vectomatic.file.Blob;
 import org.vectomatic.file.ErrorCode;
 import org.vectomatic.file.File;
 import org.vectomatic.file.FileError;
@@ -73,6 +78,7 @@ import com.google.gwt.event.dom.client.DragOverHandler;
 import com.google.gwt.event.dom.client.DropEvent;
 import com.google.gwt.event.dom.client.DropHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -85,7 +91,6 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  *  
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
 public class AddFilesHtml5Popup extends TeamingPopupPanel
 	implements
 		ChangeHandler,
@@ -107,6 +112,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private int								m_readTotal;				// Total number of files to upload during an upload event.
 	private List<File>						m_readQueue;				// List of files queued for uploading.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private FileBlob						m_fileBlob;					// Contains information about blobs of a file as they're read and uploaded.
 	private FileReader						m_reader;					// Reads files.
 	private FileUploadExt					m_uploadButton;				// A hidden button that services the m_browseButton above.
 	private SpinnerPopup					m_busy;						// Shows a spinner while uploading files.
@@ -235,7 +241,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 */
 	private void debugTraceFile(String methodName, File file, boolean traceQueueSize, String traceHead, String traceTail) {
 		if (TRACE_FILES && GwtClientHelper.isDebugUI()) {
-			String	dump  = (traceHead + ":  '" + file.getName() + "' (" + file.getSize() + ")");
+			String	dump  = (traceHead + ":  '" + file.getName() + "' (" + file.getSize() + ":" + m_fileBlob.getBlobStart() + ":" + m_fileBlob.getBlobSize() + ")");
 			if (traceQueueSize) {
 				int		files = (m_readQueue.size() - 1);
 				switch (files) {
@@ -258,6 +264,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private void debugTraceFile(String methodName, File file, boolean traceQueueSize, String traceHead) {
 		// Always use the initial form of the method.
 		debugTraceFile(methodName, file, traceQueueSize, traceHead, null);
@@ -422,7 +429,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			File file = m_readQueue.get(0);
 			handleError(file);
 			m_readQueue.remove(0);
-			readNext();
+			uploadNextNow();
 		}
 	}
 	
@@ -438,18 +445,80 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		if (null == m_reader.getError()) {
 			if (!(m_readQueue.isEmpty())) {
 				File file = m_readQueue.get(0);
-				try {
-					// Upload the file that we just read.
-//!					...this needs to be implemented...
-					debugTraceFile("onLoadEnd", file, true, "Just read", "...this needs to be implemented...");
-				}
+				debugTraceFile("onLoadEnd", file, true, "Just read", "...this needs to be implemented...");
 				
-				finally {
-					m_readQueue.remove(0);
-					readNext();
-				}
+				processBlobAsync();
 			}
 		}
+	}
+
+	/*
+	 * Asynchronously processes the next blob read from a file.
+	 */
+	private void processBlobAsync() {
+		Scheduler.ScheduledCommand doProcessBlob = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				processBlobNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doProcessBlob);
+	}
+	
+	/*
+	 * Synchronously processes the next blob read from a file.
+	 */
+	private void processBlobNow() {
+		// Upload the blob.
+		final boolean lastBlob = ((m_fileBlob.getBlobStart() + m_fileBlob.getBlobSize()) >= m_fileBlob.getFileSize());
+		m_fileBlob.setBlobData(m_reader.getStringResult());
+		final UploadFileBlobCmd cmd = new UploadFileBlobCmd(m_folderInfo, m_fileBlob, lastBlob);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_UploadFileBlob(),
+					m_fileBlob.getFileName());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				// Are we done uploading this file?
+				String	uploadError    = ((StringRpcResponseData) result.getResponseData()).getStringValue();
+				boolean	hasUploadError = GwtClientHelper.hasString(uploadError); 
+				if (lastBlob || hasUploadError) {
+					// Yes!  If we stopped because of an error...
+					if (hasUploadError) {
+						// ...display the error...
+						GwtClientHelper.deferredAlert(uploadError);
+					}
+					
+					// ...and continue with the next file.
+					m_readQueue.remove(0);
+					uploadNextAsync();
+				}
+				
+				else {
+					// No, we aren't done uploading this file!
+					File file = m_readQueue.get(0);
+					m_fileBlob.incrBlobStart(m_fileBlob.getBlobSize());
+					try {
+						// Read the next blob.
+						Blob readBlob = file.slice(m_fileBlob.getBlobStart(), m_fileBlob.getBlobSize());
+						readNextBlobAsync(readBlob);
+					}
+					
+					catch(Throwable t) {
+						// Necessary for FF (see bug https://bugzilla.mozilla.org/show_bug.cgi?id=701154.)
+						// Standard-complying browsers will to go in this branch.
+						handleError(file);
+						m_readQueue.remove(0);
+						uploadNextAsync();
+					}
+				}
+			}
+		});
 	}
 	
 	/*
@@ -498,44 +567,30 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		// ...and upload them.
 		m_readTotal = m_readQueue.size();
 		m_readThis  = 0;
-		readNext();
+		uploadNextNow();
+	}
+
+	/*
+	 * Asynchronously initiates the reading of the given blob.
+	 */
+	private void readNextBlobAsync(final Blob readBlob) {
+		Scheduler.ScheduledCommand doRead = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				readNextBlobNow(readBlob);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doRead);
 	}
 	
 	/*
-	 * Called to read and upload the next file in the queue.
+	 * Synchronously initiates the reading of the given blob.
 	 */
-	private void readNext() {
-		if (m_readQueue.isEmpty()) {
-			m_browseButton.setText( m_messages.addFilesHtml5PopupBrowse()   );
-			m_browseButton.setTitle(m_messages.addFilesHtml5PopupBrowseAlt());
-			m_hintLabel.setText(    m_messages.addFilesHtml5PopupHint()     );
-			m_busy.hide();
-		}
-		
-		else {
-			if ((!(m_busy.isAttached())) || (!(m_busy.isVisible()))) {
-				m_browseButton.setText( m_messages.addFilesHtml5PopupCancel()   );
-				m_browseButton.setTitle(m_messages.addFilesHtml5PopupCancelAlt());
-				m_busy.center();
-			}
-			
-			File file = m_readQueue.get(0);
-			m_hintLabel.setText(m_messages.addFilesHtml5PopupBusy(file.getName(), ++m_readThis, m_readTotal));
-			try {
-//!				m_reader.readAsArrayBuffer( file);
-				m_reader.readAsDataURL(     file);
-//!				m_reader.readAsBinaryString(file);
-//!				m_reader.readAsText(        file);
-			}
-			
-			catch(Throwable t) {
-				// Necessary for FF (see bug https://bugzilla.mozilla.org/show_bug.cgi?id=701154.)
-				// Standard-complying browsers will to go in this branch.
-				handleError(file);
-				m_readQueue.remove(0);
-				readNext();
-			}
-		}
+	private void readNextBlobNow(final Blob readBlob) {
+//!		m_reader.readAsArrayBuffer( readBlob);
+		m_reader.readAsDataURL(     readBlob);
+//!		m_reader.readAsBinaryString(readBlob);
+//!		m_reader.readAsText(        readBlob);
 	}
 	
 	/*
@@ -594,6 +649,57 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		}
 	}
 
+	/*
+	 * Asynchronously uploads the next file.
+	 */
+	private void uploadNextAsync() {
+		Scheduler.ScheduledCommand doRead = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				uploadNextNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doRead);
+	}
+	
+	/*
+	 * Synchronously uploads the next file.
+	 * 
+	 * Called to read and upload the next file in the queue.
+	 */
+	private void uploadNextNow() {
+		if (m_readQueue.isEmpty()) {
+			m_browseButton.setText( m_messages.addFilesHtml5PopupBrowse()   );
+			m_browseButton.setTitle(m_messages.addFilesHtml5PopupBrowseAlt());
+			m_hintLabel.setText(    m_messages.addFilesHtml5PopupHint()     );
+			m_busy.hide();
+		}
+		
+		else {
+			if ((!(m_busy.isAttached())) || (!(m_busy.isVisible()))) {
+				m_browseButton.setText( m_messages.addFilesHtml5PopupCancel()   );
+				m_browseButton.setTitle(m_messages.addFilesHtml5PopupCancelAlt());
+				m_busy.center();
+			}
+			
+			File file = m_readQueue.get(0);
+			m_hintLabel.setText(m_messages.addFilesHtml5PopupBusy(file.getName(), ++m_readThis, m_readTotal));
+			try {
+				m_fileBlob    = new FileBlob(file.getName(), file.getLastModifiedDate().toUTCString(), file.getSize());
+				Blob readBlob = file.slice(m_fileBlob.getBlobStart(), m_fileBlob.getBlobSize());
+				readNextBlobNow(readBlob);
+			}
+			
+			catch(Throwable t) {
+				// Necessary for FF (see bug https://bugzilla.mozilla.org/show_bug.cgi?id=701154.)
+				// Standard-complying browsers will to go in this branch.
+				handleError(file);
+				m_readQueue.remove(0);
+				uploadNextAsync();
+			}
+		}
+	}
+	
 	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */

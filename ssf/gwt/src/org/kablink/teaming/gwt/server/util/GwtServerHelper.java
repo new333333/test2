@@ -7471,6 +7471,7 @@ public class GwtServerHelper {
 		case UNPIN_ENTRY:
 		case UNTRACK_BINDER:
 		case UNTRACK_PERSON:
+		case UPLOAD_FILE_BLOB:
 		case VALIDATE_ENTRY_EVENTS:
 			break;
 			

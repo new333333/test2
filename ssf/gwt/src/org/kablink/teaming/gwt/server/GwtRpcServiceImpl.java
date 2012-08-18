@@ -2413,6 +2413,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case UPLOAD_FILE_BLOB:
+		{
+			UploadFileBlobCmd upeCmd = ((UploadFileBlobCmd) cmd);
+			StringRpcResponseData result = GwtViewHelper.uploadFileBlob( this, getRequest( ri ), upeCmd.getFolderInfo(), upeCmd.getFileBlob(), upeCmd.isLastBlob() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case UNPIN_ENTRY:
 		{
 			UnpinEntryCmd upeCmd = ((UnpinEntryCmd) cmd);

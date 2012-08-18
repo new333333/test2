@@ -488,6 +488,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_UpdateCalendarEventAppointment();
 	String rpcFailure_UpdateCalendarEventTask();
 	String rpcFailure_UpdateFavorites();
+	String rpcFailure_UploadFileBlob();
 
 	// Strings used to describe various split point load failures.
 	String codeSplitFailure_AccessoriesPanel();
