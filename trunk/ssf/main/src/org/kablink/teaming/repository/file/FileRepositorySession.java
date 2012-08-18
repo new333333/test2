@@ -123,7 +123,7 @@ public class FileRepositorySession implements RepositorySession {
 	}
 	
 	public String createVersioned(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
+			String relativeFilePath, InputStream in, long size) throws RepositoryServiceException, UncheckedIOException {
 		File fileDir = getFileDir(binder, entry, relativeFilePath);
 		
 		try {
@@ -141,7 +141,7 @@ public class FileRepositorySession implements RepositorySession {
 	}
 
 	public void createUnversioned(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
+			String relativeFilePath, InputStream in, long size) throws RepositoryServiceException, UncheckedIOException {
 		File fileDir = getFileDir(binder, entry, relativeFilePath);
 		
 		try {
@@ -168,7 +168,7 @@ public class FileRepositorySession implements RepositorySession {
 	}
 
 	public void update(Binder binder, DefinableEntity entry, 
-			String relativeFilePath, InputStream in) throws RepositoryServiceException, UncheckedIOException {
+			String relativeFilePath, InputStream in, long size) throws RepositoryServiceException, UncheckedIOException {
 		
 		int fileInfo = fileInfo(binder, entry, relativeFilePath);
 		

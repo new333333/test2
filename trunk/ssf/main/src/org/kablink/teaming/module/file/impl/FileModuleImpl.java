@@ -1060,8 +1060,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			RepositorySession session = RepositorySessionFactoryUtil.openSession(destBinder, fa.getRepositoryName());
 			try {
 				InputStream is = readFile(binder, entity, fa);
+				long size = fa.getFileItem().getLength();
 				try {
-					createVersionedWithInputData(session, destBinder, destEntity, toFileName, true, is);
+					createVersionedWithInputData(session, destBinder, destEntity, toFileName, true, is, size);
 				}
 				finally {
 					try {
@@ -2166,8 +2167,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		session.checkout(binder, entity, relativeFilePath);
     		// Update the file content
     		InputStream in = fui.getInputStream();
+    		long size = fui.makeReentrant();
     		try {
-    			updateWithInputData(session, binder, entity, relativeFilePath, in);
+    			updateWithInputData(session, binder, entity, relativeFilePath, in, size);
     		}
     		finally {
     			try {
@@ -2203,9 +2205,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
 		if(fui.isSynchToRepository()) {
 			InputStream in = fui.getInputStream();
+			long size = fui.makeReentrant();
 			try {
 				versionName = createVersionedWithInputData(session, binder, entity,
-						fui.getOriginalFilename(), fui.isSynchToRepository(), in);
+						fui.getOriginalFilename(), fui.isSynchToRepository(), in, size);
 			}
 			finally {
 				// Make sure to close the stream even when the above call fails. 
@@ -2378,7 +2381,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	private String createVersionedWithInputData(RepositorySession session,
 			Binder binder, DefinableEntity entry, String relativeFilePath, 
-			boolean synchToRepository, Object inputData)
+			boolean synchToRepository, Object inputData, long size)
 		throws RepositoryServiceException {
 		String versionName = null;
 		/*if(inputData instanceof MultipartFile) {
@@ -2387,11 +2390,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 		else*/ if(inputData instanceof byte[]) {
 			versionName = session.createVersioned(binder, entry, relativeFilePath,
-					new ByteArrayInputStream((byte[]) inputData));
+					new ByteArrayInputStream((byte[]) inputData), ((byte[]) inputData).length);
 		}
 		else if(inputData instanceof InputStream) {
 			versionName = session.createVersioned(binder, entry, relativeFilePath, 
-					(InputStream) inputData);
+					(InputStream) inputData, size);
 		}
 		else {
 			throw new InternalException("Illegal input type [" + inputData.getClass().getName() + "]");
@@ -2401,7 +2404,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	private void updateWithInputData(RepositorySession session,
-			Binder binder, DefinableEntity entry, String relativeFilePath, Object inputData)
+			Binder binder, DefinableEntity entry, String relativeFilePath, Object inputData, long size)
 		throws RepositoryServiceException {
 		/*if(inputData instanceof MultipartFile) {
 			service.update(session, binder, entry, 
@@ -2409,11 +2412,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 		else*/ if(inputData instanceof byte[]) {
 			session.update(binder, entry, relativeFilePath,
-					new ByteArrayInputStream((byte[]) inputData));
+					new ByteArrayInputStream((byte[]) inputData), ((byte[]) inputData).length);
 		}
 		else if(inputData instanceof InputStream) {
 			session.update(binder, entry, relativeFilePath, 
-					(InputStream) inputData);
+					(InputStream) inputData, size);
 		}
 		else {
 			throw new InternalException("Illegal input type [" + inputData.getClass().getName() + "]");

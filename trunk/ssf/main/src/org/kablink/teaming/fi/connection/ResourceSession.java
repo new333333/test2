@@ -116,12 +116,13 @@ public interface ResourceSession {
 	 * Write new content of the file resource. 
 	 * Create the resource if it doesn't already exist. 
 	 * 
-	 * @param in
+	 * @param in input stream
+	 * @param size content size in byte
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 * @throws IllegalStateException
 	 */
-	public void writeFile(InputStream in) throws FIException, UncheckedIOException, IllegalStateException;
+	public void writeFile(InputStream in, long size) throws FIException, UncheckedIOException, IllegalStateException;
 	
 	/**
 	 * Create a directory. 
