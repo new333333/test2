@@ -100,7 +100,11 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	private final static boolean SHOW_LEGACY_FILTERS	= false;
 	
 	// Control whether the FooterPanel is shown when in Filr mode.
-	private final static boolean SHOW_FILR_FOOTER	= false;
+	private final static boolean SHOW_FILR_FOOTER	= true;
+	
+	// Amount of time the initial resizing of a view should delay to
+	// wait for things to stabilize.
+	public final static int INITIAL_RESIZE_DELAY	= 500;
 	
 	// The following define the indexes into a VibeVerticalPanel of the
 	// various panels that make up a folder view.

@@ -53,6 +53,8 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -381,6 +383,40 @@ public class TaskFolderView extends FolderViewBase
 	}
 
 	/*
+	 * Asynchronously sets the size of the task listing based on its
+	 * position in the view.
+	 */
+	private void resizeViewAsync(int delay) {
+		if (0 == delay) {
+			ScheduledCommand doResize = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					resizeView();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doResize);
+		}
+		
+		else {
+			Timer timer = new Timer() {
+				@Override
+				public void run() {
+					resizeView();
+				}
+			};
+			timer.schedule(delay);
+		}
+	}
+
+	/*
+	 * Asynchronously sets the size of the task listing based on its
+	 * position in the view.
+	 */
+	private void resizeViewAsync() {
+		resizeViewAsync(INITIAL_RESIZE_DELAY);
+	}
+	
+	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */
 	private void unregisterEvents() {
@@ -402,7 +438,7 @@ public class TaskFolderView extends FolderViewBase
 	public void viewComplete() {
 		// Tell the task listing to resize itself now that it can
 		// determine how big everything is.
-		m_taskListing.resize();
+		resizeViewAsync();
 	}
 	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
