@@ -47,8 +47,8 @@ public class FIException extends UncheckedCodedException {
 	public static final String PARENT_BINDER_IS_NOT_BINDER="fi.error.parent.binder.isnot.binder";
 	public static final String PARENT_BINDER_IS_NOT_MIRRORED_FOLDER="fi.error.parent.binder.isnot.mirrored.folder";
 	public static final String FILE_DOES_NOT_EXIST="fi.error.file.doesnot.exist";
-	public static final String BINDER_TO_DELETE_DOES_NOT_EXIST="fi.error.binder.to.delete.doesnot.exist";
-	public static final String BINDER_TO_DELETE_IS_NOT_MIRRORED_FOLDER="fi.error.binder.to.delete.isnot.mirrored.folder";
+	public static final String BINDER_DOES_NOT_EXIST="fi.error.binder.doesnot.exist";
+	public static final String BINDER_IS_NOT_MIRRORED_FOLDER="fi.error.binder.isnot.mirrored.folder";
 	public static final String FAILED_TO_SYNCHRONIZE_NOT_DIRECTORY="fi.error.failed.to.synchronize.not.directory";
 	public static final String CANNOT_ADD_FOLDER_ANCESTER="fi.error.cannot.add.folder.ancester";
 	
