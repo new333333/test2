@@ -845,6 +845,19 @@ public class GwtClientHelper {
 	}
 
 	/**
+	 * Returns true if the browser supports the HTML5 file APIs and false
+	 * otherwise.
+	 */
+	public static native boolean jsBrowserSupportsHtml5FileAPIs() /*-{
+		if ($wnd.File && $wnd.FileReader && $wnd.FileList && $wnd.Blob) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}-*/;
+	
+	/**
 	 * Appends an HTML element to the top document.
 	 * 
 	 * @param htmlElement
@@ -1016,13 +1029,56 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
+	 * Returns true if we're running in any flavor of Chrome and false
+	 * otherwise.
+	 * 
+	 * Mimics the check in BrowserSniffer.is_chrome().
+	 * 
+	 * @return
+	 */
+	public static native boolean jsIsChrome() /*-{
+		var agent = navigator.userAgent.toLowerCase();
+		if (agent.indexOf("chrome") != (-1)) {
+			return true;
+		}
+		return false;
+	}-*/;
+	
+	/**
+	 * Returns true if we're running in any flavor of Firefox and false
+	 * otherwise.
+	 * 
+	 * Mimics the check in BrowserSniffer.is_mozilla().
+	 * 
+	 * @return
+	 */
+	public static native boolean jsIsFirefox() /*-{
+		var agent = navigator.userAgent.toLowerCase();
+		if ((agent.indexOf("mozilla")    != (-1)) &&
+			(agent.indexOf("spoofer")    == (-1)) &&
+			(agent.indexOf("compatible") == (-1)) &&
+			(agent.indexOf("opera")      == (-1)) &&
+			(agent.indexOf("webtv")      == (-1)) &&
+			(agent.indexOf("hotjava")    == (-1))) {
+			return true;
+		}
+		return false;
+	}-*/;
+	
+	/**
 	 * Returns true if we're running in any flavor of IE and false
 	 * otherwise.
+	 * 
+	 * Mimics the check in BrowserSniffer.is_ie().
 	 * 
 	 * @return
 	 */
 	public static native boolean jsIsIE() /*-{
-		return(navigator.userAgent.toLowerCase().indexOf("msie") > -1);
+		var agent = navigator.userAgent.toLowerCase();
+		if (agent.indexOf("msie") != (-1)) {
+			return true;
+		}
+		return false;
 	}-*/;
 	
 	/**
