@@ -613,9 +613,9 @@ public class MastHead extends Composite
 
 	
 	/**
-	 * Set the font color used in the "global actions" panel.
+	 * Set the font color used in the "global actions" panel and in the FilrActions widget.
 	 */
-	private void setGlobalActionsFontColor()
+	private void setMastheadFontColor()
 	{
 		Element element;
 		Style style;
@@ -643,13 +643,18 @@ public class MastHead extends Composite
 			// Yes
 			// Change the color of the font used to display the user's name.
 			style.setColor( fontColor );
+			
 		}
 		else
 		{
 			// Go back to the font color defined in the style sheet.
 			style.clearColor();
 		}
-		
+
+		// Set the font color used by the FilrActionsCtrl
+		if ( m_filrActionsCtrl != null )
+			m_filrActionsCtrl.setFontColor( fontColor );
+
 		if ( m_betaLabel != null )
 		{
 			element = m_betaLabel.getElement();
@@ -668,7 +673,7 @@ public class MastHead extends Composite
 				style.clearColor();
 			}
 		}
-	}// end setGlobalActionsFontColor()
+	}
 	
 	
 	/**
@@ -771,8 +776,8 @@ public class MastHead extends Composite
 			}
 		}
 		
-		// Set the font color used in the global actions panel.
-		setGlobalActionsFontColor();
+		// Set the font color used in the mast head
+		setMastheadFontColor();
 
 		// Adjust the height of the branding panels.
 		adjustBrandingPanelsHeight();
