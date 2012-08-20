@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,27 +32,37 @@
  */
 package org.kablink.teaming.fi;
 
-import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.util.api.ApiErrorCode;
 
-public class ReadOnlyException extends FIException {
+/**
+ * Unchecked exception thrown when resource driver denies a file system operation,
+ * typically due to a file permission or other access check failure. 
+ * 
+ * @author jong
+ *
+ */
+public class AccessDeniedException extends FIException {
 
 	private static final long serialVersionUID = 1L;
-	private static final String ERROR_CODE = "fi.error.read.only";
+	private static final String ERROR_CODE = "fi.error.access.denied";
 
-	public ReadOnlyException(ResourceDriver driver, String operationName) {
-		super(ERROR_CODE, new Object[] {operationName, driver.getName()});
+	/**
+	 * Constructor.
+	 * 
+	 * @param resourcePath a path identifying the resource
+	 * @param operationName name of the operation that failed due to denied access
+	 */
+	public AccessDeniedException(String resourcePath, String operationName) {
+		super(ERROR_CODE, new Object[] {operationName, resourcePath});
 	}
 	
     public int getHttpStatusCode() {
     	return 403; // Forbidden
     }
 
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
-	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.MIRRORED_READONLY_DRIVER;
+		return ApiErrorCode.MIRRORED_ACCESS_DENIED;
 	}
+
 }
