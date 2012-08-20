@@ -2368,7 +2368,7 @@ body, table td, select
 {
 	bottom: 30px;
 	position: absolute;
-	right: 10px;
+	right: -42px;
 	z-index: 1000;
 }
 
