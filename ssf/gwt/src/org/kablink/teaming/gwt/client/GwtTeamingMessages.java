@@ -1540,6 +1540,7 @@ public interface GwtTeamingMessages extends Messages
 	String addFilesHtml5PopupBrowse();
 	String addFilesHtml5PopupBrowseAlt();
 	String addFilesHtml5PopupBusy(String fileName, int thisOne, int total);
+	String addFilesHtml5PopupFoldersSkipped(String folderNames);
 	String addFilesHtml5PopupHint();
 	String addFilesHtml5PopupReadError(String fileName, String errorDesc);
 	

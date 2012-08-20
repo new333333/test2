@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
+
 import org.vectomatic.dnd.DataTransferExt;
 import org.vectomatic.dnd.DropPanel;
 import org.vectomatic.file.Blob;
@@ -56,12 +57,14 @@ import org.vectomatic.file.FileError;
 import org.vectomatic.file.FileList;
 import org.vectomatic.file.FileReader;
 import org.vectomatic.file.FileUploadExt;
+import org.vectomatic.file.FileUtils;
 import org.vectomatic.file.events.ErrorEvent;
 import org.vectomatic.file.events.ErrorHandler;
 import org.vectomatic.file.events.LoadEndEvent;
 import org.vectomatic.file.events.LoadEndHandler;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JsDate;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -110,6 +113,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private InlineLabel						m_hintLabel;				// The label inside the hint box.
 	private int								m_readThis;					// The file out of the total that is currently being uploaded.
 	private int								m_readTotal;				// Total number of files to upload during an upload event.
+	private List<File>						m_ignoredAsFolders;			//
 	private List<File>						m_readQueue;				// List of files queued for uploading.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private FileBlob						m_fileBlob;					// Contains information about blobs of a file as they're read and uploaded.
@@ -121,13 +125,13 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	// applet to upload files.
 	private static boolean USE_HTML5_POPUP	= false;	//
 	
-	// true -> Information about files being uploaded is displayed via
-	// alerts.  false -> It's not.
-	private static boolean TRACE_FILES	= true;	//
+	// true -> Information about file blobs being uploaded is displayed
+	// via alerts.  false -> They're not.
+	private static boolean TRACE_BLOBS	= true;	//
 	
 	// The minimum height and width of the popup.
-	private static int MIN_HEIGHT		= 200;	//
-	private static int MIN_WIDTH		= 800;	//
+	private static int MIN_HEIGHT	= 200;	//
+	private static int MIN_WIDTH	= 800;	//
 
 	// Padding on the left/right and top/bottom of the popup.
 	private static int LEFT_RIGHT_PAD	= 240;	// This number of pixels on the left and right.
@@ -151,12 +155,16 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		super(false, true);
 
 		// ...initialize everything else...
-		m_images    = GwtTeaming.getDataTableImageBundle();
-		m_messages  = GwtTeaming.getMessages();
-		m_readQueue = new ArrayList<File>();
-		m_reader    = new FileReader();
+		m_images   = GwtTeaming.getDataTableImageBundle();
+		m_messages = GwtTeaming.getMessages();
+		
+		m_ignoredAsFolders = new ArrayList<File>();
+		m_readQueue        = new ArrayList<File>();
+		
+		m_reader = new FileReader();
 		m_reader.addLoadEndHandler(this);
 		m_reader.addErrorHandler(  this);
+		
 		m_busy = new SpinnerPopup();
 	
 		// ...and create the popup's content.
@@ -171,8 +179,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * @return
 	 */
 	public static boolean browserSupportsHtml5() {
-//!		...this needs to be implemented...
-		return USE_HTML5_POPUP;
+		return (USE_HTML5_POPUP && GwtClientHelper.jsBrowserSupportsHtml5FileAPIs());
 	}
 
 	/*
@@ -237,11 +244,11 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	}
 
 	/*
-	 * If we're in debug UI mode, displays an alert about a file.
+	 * If we're in debug UI mode, displays an alert about a file blob.
 	 */
-	private void debugTraceFile(String methodName, File file, boolean traceQueueSize, String traceHead, String traceTail) {
-		if (TRACE_FILES && GwtClientHelper.isDebugUI()) {
-			String	dump  = (traceHead + ":  '" + file.getName() + "' (" + file.getSize() + ":" + m_fileBlob.getBlobStart() + ":" + m_fileBlob.getBlobSize() + ")");
+	private void debugTraceBlob(String methodName, boolean traceQueueSize, String traceHead, String traceTail) {
+		if (TRACE_BLOBS && GwtClientHelper.isDebugUI()) {
+			String	dump  = (traceHead + ":  '" + m_fileBlob.getFileName() + "' (fSize:" + m_fileBlob.getFileSize() + ", bStart:" + m_fileBlob.getBlobStart() + ", bSize:" + m_fileBlob.getBlobSize() + ")");
 			if (traceQueueSize) {
 				int		files = (m_readQueue.size() - 1);
 				switch (files) {
@@ -252,22 +259,34 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			}
 			boolean hasTail = GwtClientHelper.hasString(traceTail);
 			dump = ("AddFilesHtml5Popup." + methodName + "( " + dump + " )" + (hasTail ? ":  " + traceTail : ""));
-			String data = m_reader.getStringResult();
-			if (null != data) {
-				int len = data.length();
-				if (2048 < len) {
-					data = (data.substring(0, 2048) + "...truncated...");
-				}
-				dump += ("\n\nData:  " + data); 
-			}
+			String data = m_fileBlob.getBlobData();
+			dump += ("\n\nData Read:  " + ((null == data) ? 0 : data.length()) + " base64 encoded bytes."); 
 			Window.alert(dump);
 		}
 	}
 	
-	@SuppressWarnings("unused")
-	private void debugTraceFile(String methodName, File file, boolean traceQueueSize, String traceHead) {
+	private void debugTraceBlob(String methodName, boolean traceQueueSize, String traceHead) {
 		// Always use the initial form of the method.
-		debugTraceFile(methodName, file, traceQueueSize, traceHead, null);
+		debugTraceBlob(methodName, traceQueueSize, traceHead, null);
+	}
+
+	/*
+	 * Returns the current File being operation on.
+	 */
+	private File getCurrentFile() {
+		File reply;
+		if (uploadsPending())
+		     reply = m_readQueue.get(0);
+		else reply = null;
+		return reply;
+	}
+
+	/*
+	 * Returns the string to use for file's date.
+	 */
+	private String getFileDate(File file) {
+		JsDate fileDate = ((null == file) ? null : file.getLastModifiedDate());
+		return ((null == fileDate) ? null : fileDate.toUTCString());
 	}
 	
 	/*
@@ -279,10 +298,54 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		if (error != null) {
 			ErrorCode errorCode = error.getCode();
 			if (null != errorCode) {
-				errorDesc = ": " + errorCode.name();
+				errorDesc = errorCode.name();
+				if (errorDesc.equals("NOT_FOUND_ERR") && GwtClientHelper.jsIsChrome()) {
+					m_ignoredAsFolders.add(getCurrentFile());
+					return;
+				}
 			}
 		}
 		GwtClientHelper.deferredAlert(m_messages.addFilesHtml5PopupReadError(file.getName(), errorDesc));
+	}
+
+	/*
+	 * Displays an error to the user if any files were ignored as
+	 * folders.
+	 */
+	private void handleIgnoredFolders() {
+		// Are we tracking any ignored folders?
+		if (0 < m_ignoredAsFolders.size()) {
+			// Yes!  Display them to the user...
+			StringBuffer folderNames = new StringBuffer("");
+			int folders = 0;
+			for (File ignoredFolder:  m_ignoredAsFolders) {
+				if (0 < folders) {
+					folderNames.append(", ");
+				}
+				folders += 1;
+				
+				folderNames.append("'");
+				folderNames.append(ignoredFolder.getName());
+				folderNames.append("'");
+			}
+			
+			GwtClientHelper.deferredAlert(
+				m_messages.addFilesHtml5PopupFoldersSkipped(
+					folderNames.toString()));
+
+			// ...and clear the list.
+			m_ignoredAsFolders.clear();
+		}
+	}
+
+	/*
+	 * Returns true if a file is a folder and false otherwise.
+	 * 
+	 * There's currently no reliable check for a File being a folder
+	 * in Chrome.
+	 */
+	private boolean isFirefoxFolder(File file) {
+		return ((0 == file.getSize()) && (!(GwtClientHelper.hasString(file.getType()))) && GwtClientHelper.jsIsFirefox());
 	}
 	
 	/**
@@ -321,16 +384,17 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	@Override
 	public void onClick(ClickEvent event) {
 		// Is the read queue is empty?
-		if (m_readQueue.isEmpty()) {
-			// Yes!  Let the user select some files to upload.
-			m_uploadButton.click();
-		}
-		else {
-			// No, the read queue isn't empty!  Abort and read
-			// in progress and clear the read queue to cancel
-			// uploading.
+		if (uploadsPending()) {
+			// No!  Abort and read in progress and clear the read queue
+			// to cancel uploading.
 			m_reader.abort();
 			m_readQueue.clear();
+		}
+		
+		else {
+			// Yes, the read queue is empty!  Let the user select some
+			// files to upload.
+			m_uploadButton.click();
 		}
 	}
 	
@@ -356,7 +420,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 */
 	@Override
 	public void onDragEnter(DragEnterEvent event) {
-		if (m_readQueue.isEmpty()) {
+		if (!(uploadsPending())) {
 			           addStyleName("vibe-addFilesHtml5Popup-hover"        );
 			m_dndPanel.addStyleName("vibe-addFilesHtml5Popup-dndPanelHover");
 		}
@@ -374,7 +438,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 */
 	@Override
 	public void onDragLeave(DragLeaveEvent event) {
-		if (m_readQueue.isEmpty()) {
+		if (!(uploadsPending())) {
 			           removeStyleName("vibe-addFilesHtml5Popup-hover"        );
 			m_dndPanel.removeStyleName("vibe-addFilesHtml5Popup-dndPanelHover");
 		}
@@ -407,7 +471,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 */
 	@Override
 	public void onDrop(DropEvent event) {
-		if (m_readQueue.isEmpty()) {
+		if (!(uploadsPending())) {
 	                   removeStyleName("vibe-addFilesHtml5Popup-hover"        );
 			m_dndPanel.removeStyleName("vibe-addFilesHtml5Popup-dndPanelHover");
 			processFiles(event.getDataTransfer().<DataTransferExt>cast().getFiles());
@@ -425,11 +489,10 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 */
 	@Override
 	public void onError(ErrorEvent event) {
-		if (!(m_readQueue.isEmpty())) {
-			File file = m_readQueue.get(0);
-			handleError(file);
-			m_readQueue.remove(0);
-			uploadNextNow();
+		// If we've got an upload going...
+		if (uploadsPending()) {
+			// ...process the error for the file.
+			handleError(getCurrentFile());
 		}
 	}
 	
@@ -442,85 +505,34 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 */
 	@Override
 	public void onLoadEnd(LoadEndEvent event) {
-		if (null == m_reader.getError()) {
-			if (!(m_readQueue.isEmpty())) {
-				File file = m_readQueue.get(0);
-				debugTraceFile("onLoadEnd", file, true, "Just read", "...this needs to be implemented...");
-				
+		// Do we have an upload going?
+		if (uploadsPending()) {
+			// Yes!  Was this blob successfully uploaded?
+			if (null == m_reader.getError()) {
+				// Yes!  Process it.
 				processBlobAsync();
+			}
+			
+			else {
+				// No, the blob wasn't successfully uploaded!  The
+				// onError() should have handled the error.  Skip to
+				// the next file to upload.
+				popCurrentFile();
+				uploadNextNow();
 			}
 		}
 	}
 
 	/*
-	 * Asynchronously processes the next blob read from a file.
+	 * Removes the current file from the read queue.
 	 */
-	private void processBlobAsync() {
-		Scheduler.ScheduledCommand doProcessBlob = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				processBlobNow();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doProcessBlob);
+	private void popCurrentFile() {
+		// If we have files pending to be uploaded...
+		if (uploadsPending()) {
+			// ...remove the first entry.
+			m_readQueue.remove(0);
+		}
 	}
-	
-	/*
-	 * Synchronously processes the next blob read from a file.
-	 */
-	private void processBlobNow() {
-		// Upload the blob.
-		final boolean lastBlob = ((m_fileBlob.getBlobStart() + m_fileBlob.getBlobSize()) >= m_fileBlob.getFileSize());
-		m_fileBlob.setBlobData(m_reader.getStringResult());
-		final UploadFileBlobCmd cmd = new UploadFileBlobCmd(m_folderInfo, m_fileBlob, lastBlob);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					GwtTeaming.getMessages().rpcFailure_UploadFileBlob(),
-					m_fileBlob.getFileName());
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse result) {
-				// Are we done uploading this file?
-				String	uploadError    = ((StringRpcResponseData) result.getResponseData()).getStringValue();
-				boolean	hasUploadError = GwtClientHelper.hasString(uploadError); 
-				if (lastBlob || hasUploadError) {
-					// Yes!  If we stopped because of an error...
-					if (hasUploadError) {
-						// ...display the error...
-						GwtClientHelper.deferredAlert(uploadError);
-					}
-					
-					// ...and continue with the next file.
-					m_readQueue.remove(0);
-					uploadNextAsync();
-				}
-				
-				else {
-					// No, we aren't done uploading this file!
-					File file = m_readQueue.get(0);
-					m_fileBlob.incrBlobStart(m_fileBlob.getBlobSize());
-					try {
-						// Read the next blob.
-						Blob readBlob = file.slice(m_fileBlob.getBlobStart(), m_fileBlob.getBlobSize());
-						readNextBlobAsync(readBlob);
-					}
-					
-					catch(Throwable t) {
-						// Necessary for FF (see bug https://bugzilla.mozilla.org/show_bug.cgi?id=701154.)
-						// Standard-complying browsers will to go in this branch.
-						handleError(file);
-						m_readQueue.remove(0);
-						uploadNextAsync();
-					}
-				}
-			}
-		});
-	}
-	
 	/*
 	 * Asynchronously populates the contents of the popup.
 	 */
@@ -550,6 +562,80 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	}
 	
 	/*
+	 * Asynchronously processes the next blob read from a file.
+	 */
+	private void processBlobAsync() {
+		Scheduler.ScheduledCommand doProcessBlob = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				processBlobNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doProcessBlob);
+	}
+	
+	/*
+	 * Synchronously processes the next blob read from a file.
+	 */
+	private void processBlobNow() {
+		// Extract the data for the blob we just read...
+		final boolean lastBlob = ((m_fileBlob.getBlobStart() + m_fileBlob.getBlobSize()) >= m_fileBlob.getFileSize());
+		m_fileBlob.setBlobData(FileUtils.base64encode(m_reader.getStringResult()));
+		
+		// ...and trace it, if necessary.
+		debugTraceBlob("processBlobNow", true, "Just read");
+		
+		// Upload the blob.
+		final UploadFileBlobCmd cmd = new UploadFileBlobCmd(m_folderInfo, m_fileBlob, lastBlob);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_UploadFileBlob(),
+					m_fileBlob.getFileName());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				// Are we done uploading this file?
+				String	uploadError    = ((StringRpcResponseData) result.getResponseData()).getStringValue();
+				boolean	hasUploadError = GwtClientHelper.hasString(uploadError); 
+				if (lastBlob || hasUploadError) {
+					// Yes!  If we stopped because of an error...
+					if (hasUploadError) {
+						// ...display the error...
+						GwtClientHelper.deferredAlert(uploadError);
+					}
+					
+					// ...and continue with the next file.
+					popCurrentFile();
+					uploadNextAsync();
+				}
+				
+				else {
+					// No, we aren't done uploading this file!
+					m_fileBlob.incrBlobStart(m_fileBlob.getBlobSize());
+					File file = getCurrentFile();
+					try {
+						// Read the next blob.
+						Blob readBlob = file.slice(m_fileBlob.getBlobStart(), (m_fileBlob.getBlobStart() + m_fileBlob.getBlobSize()));
+						readNextBlobAsync(readBlob);
+					}
+					
+					catch (Throwable t) {
+						// Necessary for FF (see bug https://bugzilla.mozilla.org/show_bug.cgi?id=701154.)
+						// Standard-complying browsers will to go in this branch.
+						handleError(file);
+						popCurrentFile();
+						uploadNextAsync();
+					}
+				}
+			}
+		});
+	}
+	
+	/*
 	 * Called when some files are dropped on the panel.
 	 */
 	private void processFiles(FileList files) {
@@ -559,15 +645,33 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			return;
 		}
 		
-		// Copy the files into the read queue...
+		// Scan the file list...
+		m_ignoredAsFolders.clear();
 		for (File file:  files) {
+			// Is this file actually a folder?
+			if (isFirefoxFolder(file)) {
+				// Yes!  Add it to the ignore list and skip it.
+				m_ignoredAsFolders.add(file);
+				continue;
+			}
+			
+			// Add the files that are actually files to the read queue.
 			m_readQueue.add(file);
 		}
-
-		// ...and upload them.
-		m_readTotal = m_readQueue.size();
-		m_readThis  = 0;
-		uploadNextNow();
+		
+		//  If we have any actual files to upload...
+		if (uploadsPending()) {
+			// ...start upload them...
+			m_readTotal = m_readQueue.size();
+			m_readThis  = 0;
+			uploadNextAsync();
+		}
+		
+		else {
+			// ...otherwise, make sure we tell the user about any that
+			// ...we ignored.
+			handleIgnoredFolders();
+		}
 	}
 
 	/*
@@ -588,8 +692,8 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 */
 	private void readNextBlobNow(final Blob readBlob) {
 //!		m_reader.readAsArrayBuffer( readBlob);
-		m_reader.readAsDataURL(     readBlob);
-//!		m_reader.readAsBinaryString(readBlob);
+//!		m_reader.readAsDataURL(     readBlob);
+		m_reader.readAsBinaryString(readBlob);
 //!		m_reader.readAsText(        readBlob);
 	}
 	
@@ -668,36 +772,52 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * Called to read and upload the next file in the queue.
 	 */
 	private void uploadNextNow() {
-		if (m_readQueue.isEmpty()) {
+		// Are we done uploading files?
+		if (!(uploadsPending())) {
+			// Yes!  Reset the popup for more to be uploaded.
 			m_browseButton.setText( m_messages.addFilesHtml5PopupBrowse()   );
 			m_browseButton.setTitle(m_messages.addFilesHtml5PopupBrowseAlt());
 			m_hintLabel.setText(    m_messages.addFilesHtml5PopupHint()     );
 			m_busy.hide();
+
+			handleIgnoredFolders();
 		}
 		
 		else {
+			// No, we aren't done uploading files!  If we're not
+			// showing that we're busy uploading yet...
 			if ((!(m_busy.isAttached())) || (!(m_busy.isVisible()))) {
+				// ...show it now.
 				m_browseButton.setText( m_messages.addFilesHtml5PopupCancel()   );
 				m_browseButton.setTitle(m_messages.addFilesHtml5PopupCancelAlt());
 				m_busy.center();
 			}
-			
-			File file = m_readQueue.get(0);
+
+			// Change the hint to reflect the current file...
+			File file = getCurrentFile();
 			m_hintLabel.setText(m_messages.addFilesHtml5PopupBusy(file.getName(), ++m_readThis, m_readTotal));
 			try {
-				m_fileBlob    = new FileBlob(file.getName(), file.getLastModifiedDate().toUTCString(), file.getSize());
-				Blob readBlob = file.slice(m_fileBlob.getBlobStart(), m_fileBlob.getBlobSize());
-				readNextBlobNow(readBlob);
+				// ...and upload it by blobs.
+				m_fileBlob = new FileBlob(file.getName(), getFileDate(file), file.getSize());
+				readNextBlobNow(file.slice(m_fileBlob.getBlobStart(), m_fileBlob.getBlobSize()));
 			}
 			
-			catch(Throwable t) {
+			catch (Throwable t) {
 				// Necessary for FF (see bug https://bugzilla.mozilla.org/show_bug.cgi?id=701154.)
 				// Standard-complying browsers will to go in this branch.
 				handleError(file);
-				m_readQueue.remove(0);
+				popCurrentFile();
 				uploadNextAsync();
 			}
 		}
+	}
+	
+	/*
+	 * Returns true if there are files pending uploading and false
+	 * otherwise.
+	 */
+	private boolean uploadsPending() {
+		return (!(m_readQueue.isEmpty()));
 	}
 	
 	
