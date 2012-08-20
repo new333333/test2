@@ -2004,7 +2004,7 @@ public class ShareThisDlg extends DlgBox
 						}
 						
 						shareItem = new GwtShareItem();
-						shareItem.setRecipientName( user.getShortDisplayName() );
+						shareItem.setRecipientName( user.getName() );
 						if ( user.getIdentitySource() == GwtUser.IdentitySource.EXTERNAL )
 							shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
 						else

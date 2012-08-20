@@ -52,6 +52,8 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem.RecipientType;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
@@ -75,6 +77,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+
 
 /**
  * Helper methods for the GWT UI server code that services share requests.
@@ -398,47 +401,67 @@ public class GwtShareHelper
 		
 		id = null;
 		
+		id = gwtShareItem.getRecipientId();
+
+		// Are we dealing with an external user?
 		if ( gwtShareItem.getRecipientType() == GwtRecipientType.EXTERNAL_USER )
 		{
-			User user;
-			String recipientName;
-			ProfileModule profileModule;
-
-			profileModule = ami.getProfileModule();
-			
-			recipientName = gwtShareItem.getRecipientName();
-			
-			try
+			// Yes
+			// Does the external user have a Vibe account?
+			if ( id == null )
 			{
-				// Does this external user already have an account in Vibe?
-				user = profileModule.getUser( recipientName );
-				if ( user != null )
+				final String recipientName;
+				final ProfileModule profileModule;
+
+				// Maybe
+				profileModule = ami.getProfileModule();
+				
+				recipientName = gwtShareItem.getRecipientName();
+				
+				try
 				{
-					id = user.getId();
+					User user;
+
+					// Does a Vibe account exist with the given name?
+					user = profileModule.getUser( recipientName );
+					if ( user != null )
+					{
+						id = user.getId();
+					}
+				}
+				catch ( Exception ex )
+				{
+					RunasCallback callback;
+					
+					// If we get here a Vibe account does not exist for the given external user.
+					// Create one.
+					callback = new RunasCallback()
+					{
+						@Override
+						public Object doAs() 
+						{
+							HashMap updates;
+							User user;
+
+							updates = new HashMap();
+							updates.put( ObjectKeys.FIELD_USER_EMAIL, recipientName );
+							updates.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, recipientName );
+			 				user = profileModule.addUserFromPortal(
+			 													User.IDENTITY_SOURCE_EXTERNAL,
+			 													recipientName,
+			 													null,
+			 													updates,
+			 													null );
+			 				
+			 				return user.getId();
+						}
+					}; 
+
+					id = (Long) RunasTemplate.runasAdmin(
+														callback,
+														RequestContextHolder.getRequestContext().getZoneName() );
 				}
 			}
-			catch ( Exception ex )
-			{
-				HashMap updates;
-				
-				// If we get here the external user does not have a Vibe account yet.
-				// Create one.
-				updates = new HashMap();
-				updates.put( ObjectKeys.FIELD_USER_EMAIL, recipientName );
-				updates.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, recipientName );
- 				user = profileModule.addUserFromPortal(
- 													User.IDENTITY_SOURCE_EXTERNAL,
- 													recipientName,
- 													null,
- 													updates,
- 													null );
- 				
- 				id = user.getId();
-			}
-		}
-		else
-		{
-			id = gwtShareItem.getRecipientId();
 		}
 		
 		return id;
@@ -786,6 +809,7 @@ public class GwtShareHelper
 		{
 		case GROUP:
 		case USER:
+		case EXTERNAL_USER:
 			principalIds.add( shareItem.getRecipientId() );
 			break;
 		
@@ -893,7 +917,7 @@ public class GwtShareHelper
 		}
 		catch ( Exception ex )
 		{
-			m_logger.error( "adminModule.sendMail() threw an exception: " + ex.getMessage() );
+			m_logger.error( "adminModule.sendMail() threw an exception: " + ex.toString() );
 		}
 
 		return emailErrors;
@@ -968,6 +992,8 @@ public class GwtShareHelper
 			{
 				// No, create a ShareItem object
 				shareItem = getShareItemInfo( ami, currentUser, null, nextGwtShareItem );
+				
+				nextGwtShareItem.setRecipientId( shareItem.getRecipientId() );
 
 				sharingModule.addShareItem( shareItem );
 				sendEmail = true;
