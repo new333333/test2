@@ -142,15 +142,16 @@ public class GwtShareItem
 		// Are the entities the same?
 		if ( entityIdEquals( entityId ) )
 		{
+			Long thisRecipientId;
+
 			// Yes
+			thisRecipientId = getRecipientId();
+
 			// Do we have a recipient id?
-			if ( recipientId != null )
+			if ( recipientId != null && thisRecipientId != null )
 			{
-				Long nextRecipientId;
-				
 				// Yes
-				nextRecipientId = getRecipientId();
-				if ( nextRecipientId != null && recipientId.compareTo( nextRecipientId ) == 0 )
+				if ( recipientId.compareTo( thisRecipientId ) == 0 )
 				{
 					// We found the recipient
 					return true;
