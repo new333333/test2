@@ -112,6 +112,7 @@ public enum ApiErrorCode {
 	REGULAR_FILE_IN_MIRRORED_FOLDER, // Cannot write regular file in mirrored folder
 	MIRRORED_MULTIPLE, // An entry cannot mirror more than one file
 	MIRRORED_READONLY_DRIVER, // Cannot create/update/delete mirrored file through read-only driver
+	MIRRORED_ACCESS_DENIED, // Access to mirrored file/folder denied
 	MIRRORED_ERROR, // Error with mirrored folder/file
 
 	// Miscellaneous errors
