@@ -542,6 +542,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_MainMenuControl();
 	String codeSplitFailure_MainPage();
 	String codeSplitFailure_ManageCommentsDlg();
+	String codeSplitFailure_ManageGroupsDlg();
 	String codeSplitFailure_ManageNetFolderRootsDlg();
 	String codeSplitFailure_ManageMenuPopup();
 	String codeSplitFailure_ManageSavedSearchesDlg();
