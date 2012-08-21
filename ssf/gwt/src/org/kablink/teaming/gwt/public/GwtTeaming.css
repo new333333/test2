@@ -3872,7 +3872,7 @@ td.datePickerMonth {
 
 /* The following styles are used with the group management dialogs. */
 
-.groupManagementBtn
+.groupManagementBtn, .manageNetFolderRootsDlg_Btn
 {
     border-radius: 15px 15px 15px 15px;
     color: #666666 !important;
@@ -3883,7 +3883,7 @@ td.datePickerMonth {
     text-decoration: none;
 }
 
-.groupManagementBtn:hover
+.groupManagementBtn:hover, .manageNetFolderRootsDlg_Btn:hover
 {
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
@@ -3892,7 +3892,7 @@ td.datePickerMonth {
 	-webkit-border-radius: 5px;
 }
 
-.groupManagementMenuPanel, .modifyStaticMembershipMenuPanel
+.groupManagementMenuPanel, .modifyStaticMembershipMenuPanel, .manageNetFolderRootsDlg_MenuPanel
 {
     background-color: #CCCCCC;
     border-top-left-radius: 5px;
@@ -3905,12 +3905,12 @@ td.datePickerMonth {
     white-space: nowrap;
 }
 
-.groupTitlePanel
+.groupTitlePanel, .netFolderRoot_NamePanel
 {
 	vertical-align: middle;
 }
 
-.groupTitle
+.groupTitle, .netFolderRoot_Name
 {
 	color: #135C8F;
 	cursor: pointer;
