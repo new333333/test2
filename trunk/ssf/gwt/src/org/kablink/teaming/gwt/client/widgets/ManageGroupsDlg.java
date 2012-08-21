@@ -60,6 +60,7 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -106,6 +107,7 @@ public class ManageGroupsDlg extends DlgBox
     private int m_width;
     private int m_height;
 	
+	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
@@ -119,6 +121,16 @@ public class ManageGroupsDlg extends DlgBox
 		TeamingEvents.GROUP_MODIFIED
 	};
 	
+	/**
+	 * Callback interface to interact with the "manage groups" dialog
+	 * asynchronously after it loads. 
+	 */
+	public interface ManageGroupsDlgClient
+	{
+		void onSuccess( ManageGroupsDlg mgDlg );
+		void onUnavailable();
+	}
+
 	/**
 	 * The different statuses of a group 
 	 */
@@ -176,7 +188,7 @@ public class ManageGroupsDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public ManageGroupsDlg(
+	private ManageGroupsDlg(
 		boolean autoHide,
 		boolean modal,
 		int xPos,
@@ -986,5 +998,48 @@ public class ManageGroupsDlg extends DlgBox
 				m_dataProvider.refresh();
 			}
 		}
+	}
+
+	/**
+	 * Loads the ManageGroupsDlg split point and returns an instance
+	 * of it via the callback.
+	 * 
+	 */
+	public static void createAsync(
+							final boolean autoHide,
+							final boolean modal,
+							final int left,
+							final int top,
+							final int width,
+							final int height,
+							final ManageGroupsDlgClient mgDlgClient )
+	{
+		GWT.runAsync( ManageGroupsDlg.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onFailure(Throwable reason)
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ManageGroupsDlg() );
+				if ( mgDlgClient != null )
+				{
+					mgDlgClient.onUnavailable();
+				}
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				ManageGroupsDlg mgDlg;
+				
+				mgDlg = new ManageGroupsDlg(
+										autoHide,
+										modal,
+										left,
+										top,
+										width,
+										height );
+				mgDlgClient.onSuccess( mgDlg );
+			}
+		});
 	}
 }

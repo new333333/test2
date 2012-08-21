@@ -62,6 +62,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
+import org.kablink.teaming.gwt.client.widgets.ManageGroupsDlg.ManageGroupsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFolderRootsDlg.ManageNetFolderRootsDlgClient;
 
 import com.google.gwt.core.client.GWT;
@@ -1222,12 +1223,47 @@ public class AdminControl extends TeamingPopupPanel
 			// No, create one.
 			height = (m_contentControlHeight * 7) / 10;
 			width = (m_contentControlWidth * 8) / 10;
-			m_manageGroupsDlg = new ManageGroupsDlg( false, true, x, y, width, height );
+			ManageGroupsDlg.createAsync(
+									false, 
+									true,
+									x, 
+									y,
+									width,
+									height,
+									new ManageGroupsDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ManageGroupsDlg mgDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_manageGroupsDlg = mgDlg;
+							
+							m_manageGroupsDlg.init();
+							m_manageGroupsDlg.show();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
 		}
-		
-		m_manageGroupsDlg.init();
-		m_manageGroupsDlg.setPopupPosition( x, y );
-		m_manageGroupsDlg.show();
+		else
+		{
+			m_manageGroupsDlg.init();
+			m_manageGroupsDlg.setPopupPosition( x, y );
+			m_manageGroupsDlg.show();
+		}
 	}
 	
 	/**
