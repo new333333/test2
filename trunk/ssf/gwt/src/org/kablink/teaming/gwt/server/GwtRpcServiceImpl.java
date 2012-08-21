@@ -69,6 +69,7 @@ import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogPages;
+import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtAttachment;
@@ -143,6 +144,7 @@ import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
 import org.kablink.teaming.gwt.server.util.GwtBlogHelper;
 import org.kablink.teaming.gwt.server.util.GwtCalendarHelper;
 import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
+import org.kablink.teaming.gwt.server.util.GwtNetFolderHelper;
 import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtSearchHelper;
@@ -317,6 +319,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 			response = new VibeRpcResponse( groupInfo );
 			
+			return response;
+		}
+		
+		case DELETE_NET_FOLDER_ROOTS:
+		{
+			Boolean result;
+			DeleteNetFolderRootsCmd dnfrCmd;
+			
+			dnfrCmd = (DeleteNetFolderRootsCmd) cmd;
+			result = GwtNetFolderHelper.deleteNetFolderRoots( this, dnfrCmd.getListOfNetFolderRootsToDelete() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
 		
@@ -548,6 +561,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			adminActions = getAdminActions( ri, binderId );
 			
 			responseData = new AdminActionsRpcResponseData( adminActions );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_ALL_NET_FOLDER_ROOTS:
+		{
+			List<NetFolderRoot> result;
+			GetNetFolderRootsRpcResponseData responseData;
+			
+			result = GwtNetFolderHelper.getAllNetFolderRoots( this );
+			responseData = new GetNetFolderRootsRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

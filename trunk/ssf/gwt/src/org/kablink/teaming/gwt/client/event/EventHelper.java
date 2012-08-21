@@ -90,6 +90,7 @@ public class EventHelper {
 		case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	reply = new InvokeConfigureFileSyncAppDlgEvent(); break;
 		case INVOKE_EMAIL_NOTIFICATION:         	reply = new InvokeEmailNotificationEvent();       break;
 		case INVOKE_HELP:                       	reply = new InvokeHelpEvent();                    break;
+		case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	reply = new InvokeManageNetFolderRootsDlgEvent(); break;
 		case INVOKE_MANAGE_GROUPS_DLG:				reply = new InvokeManageGroupsDlgEvent();		  break;
 		case LOGIN:                             	reply = new LoginEvent();                         break;
 		case PRE_LOGOUT:                        	reply = new PreLogoutEvent();                     break;
@@ -866,6 +867,17 @@ public class EventHelper {
 				}
 				break;
 				
+			case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:
+				// An InvokeManageNetFolderRootsDlgEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof InvokeManageNetFolderRootsDlgEvent.Handler)
+				{
+					handlerNotDefined = false;
+					registrationHandler = InvokeManageNetFolderRootsDlgEvent.registerEvent(
+																						eventBus,
+																						((InvokeManageNetFolderRootsDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case INVOKE_MANAGE_GROUPS_DLG:
 				// An InvokeManageGroupsDlgEvent!  Can the event handler we were given handle that?
 				if ( eventHandler instanceof InvokeManageGroupsDlgEvent.Handler)
@@ -1989,6 +2001,7 @@ public class EventHelper {
 			case INVOKE_HELP:                       	hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                    break;
 			case INVOKE_IMPORT_ICAL_FILE:           	hasHandler = (eventHandler instanceof InvokeImportIcalFileEvent.Handler);          break;
 			case INVOKE_IMPORT_ICAL_URL:            	hasHandler = (eventHandler instanceof InvokeImportIcalUrlEvent.Handler);           break;
+			case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	hasHandler = (eventHandler instanceof InvokeManageNetFolderRootsDlgEvent.Handler); break;
 			case INVOKE_MANAGE_GROUPS_DLG:				hasHandler = (eventHandler instanceof InvokeManageGroupsDlgEvent.Handler);		   break;
 			case INVOKE_REPLY:                      	hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                   break;
 			case INVOKE_SEND_EMAIL_TO_TEAM:             hasHandler = (eventHandler instanceof InvokeSendEmailToTeamEvent.Handler);         break;
