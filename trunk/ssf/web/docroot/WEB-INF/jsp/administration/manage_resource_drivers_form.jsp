@@ -81,6 +81,9 @@
 		    <option value="<%= ResourceDriverConfig.DriverType.ncp_oes %>"
 		      <c:if test="${selectedType == 'ncp_oes'}">selected</c:if>
 		    ><ssf:nlt tag="administration.resourceDrivers.type.ncp_oes"/></option>
+		    <option value="<%= ResourceDriverConfig.DriverType.famt %>"
+		      <c:if test="${selectedType == 'famt'}">selected</c:if>
+		    ><ssf:nlt tag="administration.resourceDrivers.type.famt"/></option>
 	    </ssf:ifAuthorizedByLicense>
 	  </select>
 	</td>
@@ -393,6 +396,79 @@
 		</td>
 		<td valign="middle" style="padding-top:20px;">
 		  <input type="text" class="ss_text" size="70" name="volume_ncp_oes" id="volume_ncp_oes" maxlength="64"
+		  <c:if test="${!empty fsr}"> value="${fsr.volume}" </c:if>
+		  >
+		</td>
+		</tr>
+	
+		</table>
+	  </div>
+
+	  <div style="padding-left:20px; <c:if test="${selectedType != 'famt'}"> display:none; </c:if>" 
+	    id="options_${formNumber}_famt"
+	  >
+		<table cellspacing="6" cellpadding="4">		
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="accountName_famt">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.accountName"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="text" class="ss_text" size="70" name="accountName_famt" id="accountName_famt" maxlength="64"
+		  <c:if test="${!empty fsr.accountName}"> value="${fsr.accountName}" </c:if>
+		  >
+		</td>
+		</tr>
+		
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="password_famt">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.accountPassword"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="password" class="ss_text" size="70" name="password_famt" id="password_famt" maxlength="64">
+		  <br/>
+		  <input type="checkbox" name="changePassword_famt">
+		  <span><ssf:nlt tag="administration.resourceDrivers.changePassword"/></span>
+		</td>
+		</tr>
+		
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="serverName_famt">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.serverDnsName"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="text" class="ss_text" size="70" name="serverName_famt" id="serverName_famt" maxlength="64"
+		  <c:if test="${!empty fsr}"> value="${fsr.serverName}" </c:if>
+		  >
+		</td>
+		</tr>
+	
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="serverIP_famt">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.serverIP"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="text" class="ss_text" size="70" name="serverIP_famt" id="serverIP_famt" maxlength="64"
+		  <c:if test="${!empty fsr}"> value="${fsr.serverIP}" </c:if>
+		  >
+		</td>
+		</tr>
+	
+		<tr>
+		<td valign="middle" style="padding-top:20px;">
+		  <label for="volume_famt">
+		    <span class="ss_bold"><ssf:nlt tag="administration.resourceDrivers.volume"/></span>
+		  </label>
+		</td>
+		<td valign="middle" style="padding-top:20px;">
+		  <input type="text" class="ss_text" size="70" name="volume_famt" id="volume_famt" maxlength="64"
 		  <c:if test="${!empty fsr}"> value="${fsr.volume}" </c:if>
 		  >
 		</td>
