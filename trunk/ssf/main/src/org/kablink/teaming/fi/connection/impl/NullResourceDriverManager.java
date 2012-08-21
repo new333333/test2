@@ -91,4 +91,10 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 		return null;
 	}
 
+	@Override
+	public ResourceSession getSession(ResourceDriver driver)
+			throws FIException, UncheckedIOException {
+		return null;
+	}
+
 }

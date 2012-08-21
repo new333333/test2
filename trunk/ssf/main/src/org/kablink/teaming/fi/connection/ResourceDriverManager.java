@@ -52,7 +52,7 @@ public interface ResourceDriverManager {
 	public ResourceSession getSession(String driverName)
 	throws FIException, UncheckedIOException;
 	
-	public ResourceSession getSession(String driverName, String initialResourcePath) 
+	public ResourceSession getSession(ResourceDriver driver)
 	throws FIException, UncheckedIOException;
 	
 	/**
