@@ -33,13 +33,17 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.ResourceDriverConfig;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.resourcedriver.RDException;
@@ -57,6 +61,60 @@ public class GwtNetFolderHelper
 {
 	protected static Log m_logger = LogFactory.getLog( GwtNetFolderHelper.class );
 
+	
+	/**
+	 * Create a new net folder root from the given data
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static NetFolderRoot createNetFolderRoot(
+		AllModulesInjected ami,
+		NetFolderRoot netFolderRoot ) throws GwtTeamingException
+	{
+		Map options;
+		ResourceDriverConfig rdConfig = null;
+		NetFolderRoot newRoot = null;
+		
+		ami.getAdminModule().checkAccess( AdminOperation.manageResourceDrivers );
+
+		options = new HashMap();
+		options.put( ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE );
+		options.put( ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, netFolderRoot.getProxyName() ); 
+		options.put( ObjectKeys.RESOURCE_DRIVER_PASSWORD, netFolderRoot.getProxyPwd() );
+
+		// Always prevent the top level folder from being deleted
+		// This is forced so that the folder could not accidentally be deleted if the 
+		// external disk was offline
+		options.put( ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE, Boolean.FALSE );
+
+		//Add this resource driver
+		try
+		{
+			rdConfig = ami.getResourceDriverModule().addResourceDriver(
+															netFolderRoot.getName(),
+															ResourceDriverConfig.DriverType.valueOf( 0 ), 
+															netFolderRoot.getRootPath(),
+															netFolderRoot.getMemberIds(),
+															options );
+			if ( rdConfig != null )
+			{
+				newRoot = new NetFolderRoot();
+				newRoot.setId( rdConfig.getId() );
+				newRoot.setName( rdConfig.getName() );
+				newRoot.setProxyName( rdConfig.getAccountName() );
+				newRoot.setProxyPwd( rdConfig.getPassword() );
+				newRoot.setRootPath( rdConfig.getRootPath() );
+			}
+		}
+		catch (Exception ex)
+		{
+			GwtTeamingException gtEx;
+			
+			gtEx = GwtServerHelper.getGwtTeamingException( ex );
+			throw gtEx;				
+		}
+		
+		return newRoot;
+	}
 	
 	/**
 	 * Delete the given list of net folder roots
@@ -114,6 +172,49 @@ public class GwtNetFolderHelper
 		}
 		
 		return listOfNetFolderRoots;
+	}
+	
+	/**
+	 * Modify the net folder root from the given data
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static NetFolderRoot modifyNetFolderRoot(
+		AllModulesInjected ami,
+		NetFolderRoot netFolderRoot ) throws GwtTeamingException
+	{
+		Map options;
+
+		ami.getAdminModule().checkAccess( AdminOperation.manageResourceDrivers );
+
+		options = new HashMap();
+		options.put( ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE );
+		options.put( ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, netFolderRoot.getProxyName() ); 
+		options.put( ObjectKeys.RESOURCE_DRIVER_PASSWORD, netFolderRoot.getProxyPwd() );
+
+		// Always prevent the top level folder from being deleted
+		// This is forced so that the folder could not accidentally be deleted if the 
+		// external disk was offline
+		options.put( ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE, Boolean.FALSE );
+
+		//Add this resource driver
+		try
+		{
+			ami.getResourceDriverModule().modifyResourceDriver(
+														netFolderRoot.getName(),
+														ResourceDriverConfig.DriverType.valueOf( 0 ), 
+														netFolderRoot.getRootPath(),
+														netFolderRoot.getMemberIds(),
+														options );
+		}
+		catch ( Exception ex )
+		{
+			GwtTeamingException gtEx;
+			
+			gtEx = GwtServerHelper.getGwtTeamingException( ex );
+			throw gtEx;				
+		}
+		
+		return netFolderRoot;
 	}
 	
 }

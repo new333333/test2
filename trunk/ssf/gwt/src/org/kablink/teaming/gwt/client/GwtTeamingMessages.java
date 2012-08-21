@@ -550,6 +550,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_MilestoneFolderView();
 	String codeSplitFailure_MirroredFileFolderView();
 	String codeSplitFailure_ModifyGroupDlg();
+	String codeSplitFailure_ModifyNetFolderRootDlg();
 	String codeSplitFailure_MultiErrorAlertDlg();
 	String codeSplitFailure_PersonalWorkspacesView();
 	String codeSplitFailure_ProfileAttributeWidget();
@@ -1823,5 +1824,17 @@ public interface GwtTeamingMessages extends Messages
 	String manageNetFolderRootsDlg_NoNetFolderRootsLabel();
 	String manageNetFolderRootsDlg_RootPathCol();
 	String manageNetFolderRootsDlg_SelectRootsToDelete();
+
+	// Strings used in the modify Net Folder Root dialog
+	String modifyNetFolderRootDlg_AddHeader();
+	String modifyNetFolderRootDlg_EditHeader( String name );
+	String modifyNetFolderRootDlg_ErrorCreatingNetFolderRoot( String err );
+	String modifyNetFolderRootDlg_ErrorModifyingNetFolderRoot( String err );
+	String modifyNetFolderRootDlg_InsufficientRights();
+	String modifyNetFolderRootDlg_NameLabel();
+	String modifyNetFolderRootDlg_NameRequired();
+	String modifyNetFolderRootDlg_RootAlreadyExists();
+	String modifyNetFolderRootDlg_RootPathLabel();
+	
 	
 }// end GwtTeamingMessages

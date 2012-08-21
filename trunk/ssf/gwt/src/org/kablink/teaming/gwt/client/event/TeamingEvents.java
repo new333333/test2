@@ -140,7 +140,10 @@ public enum TeamingEvents implements IsSerializable {
 	HIDE_MANAGE_MENU,					// Hides the manage menu loaded in the main menu bar.
 	MENU_HIDE,							// Hides the main menu
 	MENU_SHOW,							// Shows the main menu
-	
+
+	NET_FOLDER_ROOT_CREATED,			// Notification that a net folder root was created.
+	NET_FOLDER_ROOT_MODIFIED,			// Notification that a net folder root was modified.
+
 	QUICK_FILTER,						// Creates or Clears a Quick Filter on the Folder.
 	
 	SEARCH_ADVANCED,					// Runs the advanced Search in the content area.

@@ -1004,6 +1004,28 @@ public class EventHelper {
 				}
 				break;
 				
+			case NET_FOLDER_ROOT_CREATED:
+				// A NetFolderRootCreatedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof NetFolderRootCreatedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = NetFolderRootCreatedEvent.registerEvent(
+																			eventBus,
+																			((NetFolderRootCreatedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
+			case NET_FOLDER_ROOT_MODIFIED:
+				// A NetFolderRootModifiedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof NetFolderRootModifiedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = NetFolderRootModifiedEvent.registerEvent(
+																			eventBus,
+																			((NetFolderRootModifiedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
 			case PRE_LOGOUT:
 				// A PreLogoutEvent!  Can the event handler we were
 				// given handle that?
@@ -2024,6 +2046,9 @@ public class EventHelper {
 			case MARK_ENTRY_READ:                   	hasHandler = (eventHandler instanceof MarkEntryReadEvent.Handler);                 break;
 			case MARK_ENTRY_UNREAD:                 	hasHandler = (eventHandler instanceof MarkEntryUnreadEvent.Handler);               break;
 			
+			case NET_FOLDER_ROOT_CREATED:        		hasHandler = (eventHandler instanceof NetFolderRootCreatedEvent.Handler);          break;
+			case NET_FOLDER_ROOT_MODIFIED:        		hasHandler = (eventHandler instanceof NetFolderRootModifiedEvent.Handler);         break;
+
 			case QUICK_FILTER:                 	        hasHandler = (eventHandler instanceof QuickFilterEvent.Handler);                   break;
 			
 			case RESET_ENTRY_MENU:                   	hasHandler = (eventHandler instanceof ResetEntryMenuEvent.Handler);                break;

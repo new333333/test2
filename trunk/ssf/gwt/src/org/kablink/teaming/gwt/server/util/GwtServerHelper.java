@@ -209,6 +209,7 @@ import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.license.LicenseModule.LicenseOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
+import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
@@ -4811,6 +4812,10 @@ public class GwtServerHelper {
 				else if ( ex instanceof GroupExistsException )
 				{
 					exType = ExceptionType.GROUP_ALREADY_EXISTS;
+				}
+				else if ( ex instanceof RDException )
+				{
+					exType = ExceptionType.NET_FOLDER_ROOT_ALREADY_EXISTS;
 				}
 				else                                                          exType = ExceptionType.UNKNOWN;
 				

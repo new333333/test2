@@ -41,18 +41,24 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.datatable.NetFolderRootNameCell;
 import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.NetFolderRootCreatedEvent;
+import org.kablink.teaming.gwt.client.event.NetFolderRootModifiedEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderRootsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.ModifyNetFolderRootDlgClient;
 
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -81,15 +87,27 @@ import com.google.gwt.view.client.MultiSelectionModel;
  *
  */
 public class ManageNetFolderRootsDlg extends DlgBox
+	implements
+		NetFolderRootCreatedEvent.Handler,
+		NetFolderRootModifiedEvent.Handler
 {
 	private CellTable<NetFolderRoot> m_netFolderRootsTable;
     private MultiSelectionModel<NetFolderRoot> m_selectionModel;
 	private ListDataProvider<NetFolderRoot> m_dataProvider;
 	private SimplePager m_pager;
 	private List<NetFolderRoot> m_listOfNetFolderRoots;
-//!!	private ModifyGroupDlg m_modifyGroupDlg;
+	private ModifyNetFolderRootDlg m_modifyNetFolderRootDlg;
     private int m_width;
     private int m_height;
+	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] 
+	{
+		TeamingEvents.NET_FOLDER_ROOT_CREATED,
+		TeamingEvents.NET_FOLDER_ROOT_MODIFIED
+	};
 	
 
 	/**
@@ -115,6 +133,12 @@ public class ManageNetFolderRootsDlg extends DlgBox
 		int height )
 	{
 		super( autoHide, modal, xPos, yPos, DlgButtonMode.Close );
+		
+		// Register the events to be handled by this class.
+		EventHelper.registerEventHandlers(
+									GwtTeaming.getEventBus(),
+									m_registeredEvents,
+									this );
 		
 		// Create the header, content and footer of this dialog box.
 		m_width = width;
@@ -469,31 +493,6 @@ public class ManageNetFolderRootsDlg extends DlgBox
 	}
 	
 	/**
-	 * Find the given net folder root by name in our list of net folder roots.
-	 */
-	private NetFolderRoot findNewNetFolderRootByName( String name )
-	{
-		if ( m_listOfNetFolderRoots != null && name != null )
-		{
-			for (NetFolderRoot nextRoot : m_listOfNetFolderRoots)
-			{
-				if ( name.equalsIgnoreCase( nextRoot.getName() ) )
-				{
-					Long id;
-					
-					// We are looking for a net folder root that doesn't existing the db yet.
-					id = nextRoot.getId();
-					if ( id != null && id == -1 )
-						return nextRoot;
-				}
-			}
-		}
-		
-		// If we get here we did not find the net folder root.
-		return null;
-	}
-	
-	/**
 	 * Issue an ajax request to get a list of all the net folder roots.
 	 */
 	private void getAllNetFolderRootsFromServer()
@@ -588,9 +587,8 @@ public class ManageNetFolderRootsDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private void invokeModifyNetFolderRootDlg( NetFolderRoot netFolderRoot )
+	private void invokeModifyNetFolderRootDlg( final NetFolderRoot netFolderRoot )
 	{
-	/**
 		int x;
 		int y;
 		
@@ -598,17 +596,110 @@ public class ManageNetFolderRootsDlg extends DlgBox
 		x = getAbsoluteLeft() + 50;
 		y = getAbsoluteTop() + 50;
 		
-		if ( m_modifyGroupDlg == null )
+		if ( m_modifyNetFolderRootDlg == null )
 		{
-			m_modifyGroupDlg = new ModifyGroupDlg( false, true, x, y );
+			ModifyNetFolderRootDlg.createAsync(
+											false, 
+											true,
+											x, 
+											y,
+											new ModifyNetFolderRootDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ModifyNetFolderRootDlg mnfrDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_modifyNetFolderRootDlg = mnfrDlg;
+							
+							m_modifyNetFolderRootDlg.init( netFolderRoot );
+							m_modifyNetFolderRootDlg.show();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
 		}
-		
-		m_modifyGroupDlg.init( netFolderRoot );
-		m_modifyGroupDlg.setPopupPosition( x, y );
-		m_modifyGroupDlg.show();
-	*/
+		else
+		{
+			m_modifyNetFolderRootDlg.init( netFolderRoot );
+			m_modifyNetFolderRootDlg.setPopupPosition( x, y );
+			m_modifyNetFolderRootDlg.show();
+		}
 	}
 
+	/**
+	 * Handles the NetFolderRootCreatedEvent received by this class
+	 */
+	@Override
+	public void onNetFolderRootCreated( NetFolderRootCreatedEvent event )
+	{
+		NetFolderRoot root;
+
+		// Get the newly created net folder root.
+		root = event.getNetFolderRoot();
+		
+		if ( root != null )
+		{
+			// Add the net folder root as the first item in the list.
+			m_listOfNetFolderRoots.add( 0, root );
+			
+			// Update the table to reflect the new root we just created.
+			m_dataProvider.refresh();
+			
+			// Go to the first page.
+			m_pager.firstPage();
+			
+			// Select the newly created root.
+			m_selectionModel.setSelected( root, true );
+
+			// Tell the table how many roots we have.
+			m_netFolderRootsTable.setRowCount( m_listOfNetFolderRoots.size(), true );
+		}
+	}
+	
+
+	/**
+	 * Handles the NetFolderRootModifiedEvent received by this class
+	 */
+	@Override
+	public void onNetFolderRootModified( NetFolderRootModifiedEvent event )
+	{
+		NetFolderRoot root;
+		
+		// Get the NetFolderRoot passed in the event.
+		root = event.getNetFolderRoot();
+		
+		if ( root != null )
+		{
+			Long id;
+			NetFolderRoot existingRoot;
+			
+			// Find this root in our list of roots.
+			id = root.getId();
+			existingRoot = findNetFolderRootById( id );
+			
+			if ( existingRoot != null )
+			{
+				// Update the root object with the new data.
+				existingRoot.copy( root );
+				
+				// Update the table to reflect the fact that this root has been modified.
+				m_dataProvider.refresh();
+			}
+		}
+	}
 
 	/**
 	 * Loads the ManageNetFolderRootsDlg split point and returns an instance
