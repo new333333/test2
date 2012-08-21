@@ -322,6 +322,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case CREATE_NET_FOLDER_ROOT:
+		{
+			CreateNetFolderRootCmd cnfrCmd;
+			NetFolderRoot netFolderRoot;
+			
+			cnfrCmd = (CreateNetFolderRootCmd) cmd;
+			netFolderRoot = GwtNetFolderHelper.createNetFolderRoot( this, cnfrCmd.getNetFolderRoot() ); 
+			response = new VibeRpcResponse( netFolderRoot );
+			
+			return response;
+		}
+		
 		case DELETE_NET_FOLDER_ROOTS:
 		{
 			Boolean result;
@@ -1838,6 +1850,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			mgCmd = (ModifyGroupCmd) cmd;
 			GwtServerHelper.modifyGroup( this, mgCmd.getId(), mgCmd.getTitle(), mgCmd.getDesc(), mgCmd.getIsMembershipDynamic(), mgCmd.getMembership(), mgCmd.getMembershipCriteria() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( Boolean.TRUE ) );
+			
+			return response;
+		}
+		
+		case MODIFY_NET_FOLDER_ROOT:
+		{
+			ModifyNetFolderRootCmd mnfrCmd;
+			
+			mnfrCmd = (ModifyNetFolderRootCmd) cmd;
+			GwtNetFolderHelper.modifyNetFolderRoot( this, mnfrCmd.getNetFolderRoot() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( Boolean.TRUE ) );
 			
 			return response;

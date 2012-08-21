@@ -33,6 +33,10 @@
 package org.kablink.teaming.gwt.client;
 
 
+import java.util.Set;
+
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -42,11 +46,14 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author jwootton@novell.com
  */
 public class NetFolderRoot 
-	implements IsSerializable
+	implements IsSerializable, VibeRpcResponseData
 {
 	private Long m_id;
 	private String m_name;
 	private String m_rootPath;
+	private String m_proxyName = "";
+	private String m_proxyPwd = "";
+	private Set<Long> m_memberIds;
 	
 	
 	/**
@@ -60,6 +67,19 @@ public class NetFolderRoot
 	}	
 	
 	/**
+	 * Copy the info from the given NetFolderRoot
+	 */
+	public void copy( NetFolderRoot root )
+	{
+		m_id = root.getId();
+		m_name = root.getName();
+		m_rootPath = root.getRootPath();
+		m_proxyName = root.getProxyName();
+		m_proxyPwd = root.getProxyPwd();
+		m_memberIds = root.getMemberIds();
+	}
+	
+	/**
 	 * 
 	 */
 	public Long getId()
@@ -68,11 +88,35 @@ public class NetFolderRoot
 	}
 	
 	/**
+	 * 
+	 */
+	public Set<Long> getMemberIds()
+	{
+		return m_memberIds;
+	}
+	
+	/**
 	 * Returns the Net Folder Root's name.
 	 */
 	public String getName()
 	{
 		return m_name;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getProxyName()
+	{
+		return m_proxyName;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getProxyPwd()
+	{
+		return m_proxyPwd;
 	}
 	
 	/**
@@ -99,6 +143,22 @@ public class NetFolderRoot
 	public void setName( String name )
 	{
 		m_name = name;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setProxyName( String name )
+	{
+		m_proxyName = name;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setProxyPwd( String pwd )
+	{
+		m_proxyPwd = pwd;
 	}
 	
 	/**
