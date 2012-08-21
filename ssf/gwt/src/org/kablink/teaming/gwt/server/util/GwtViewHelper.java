@@ -4265,7 +4265,7 @@ public class GwtViewHelper {
 				// Does it contain a filter operation?
 				if (op.equals(WebKeys.URL_SELECT_FILTER)) {
 					// Yes, a filter selection!  Apply the selection.
-					String filterName = getQueryParameterString(nvMap, WebKeys.URL_SELECT_FILTER);
+					String filterName = MiscUtil.replace(getQueryParameterString(nvMap, WebKeys.URL_SELECT_FILTER), "+", " ");
 					String op2 = getQueryParameterString(nvMap, WebKeys.URL_OPERATION2);
 					String filterScope;
 					if (MiscUtil.hasString(op2) && op2.equals(ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL))
@@ -4301,8 +4301,8 @@ public class GwtViewHelper {
 					pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER,       ""         );
 					pm.setUserProperty(userId, binderId, ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE, filterScope);
 	
-					String filterName = getQueryParameterString(nvMap, WebKeys.URL_CLEAR_FILTER);
-					String filterSpec = BinderFilter.buildFilterSpec(MiscUtil.replace(filterName, "+", " "), filterScope);
+					String filterName = MiscUtil.replace(getQueryParameterString(nvMap, WebKeys.URL_CLEAR_FILTER), "+", " ");
+					String filterSpec = BinderFilter.buildFilterSpec(filterName, filterScope);
 					UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUserId(), binderId);
 					List<String> currentFilters = ((List<String>) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTERS));
 					if (null == currentFilters) {
