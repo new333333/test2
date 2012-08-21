@@ -37,10 +37,12 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.AbortFileUploadCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UploadFileBlobCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -58,6 +60,7 @@ import org.vectomatic.file.FileList;
 import org.vectomatic.file.FileReader;
 import org.vectomatic.file.FileUploadExt;
 import org.vectomatic.file.FileUtils;
+import org.vectomatic.file.FileReader.State;
 import org.vectomatic.file.events.ErrorEvent;
 import org.vectomatic.file.events.ErrorHandler;
 import org.vectomatic.file.events.LoadEndEvent;
@@ -123,11 +126,15 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 
 	// Controls whether the HTML5 popup will be used vs. the Java
 	// applet to upload files.
-	private static boolean USE_HTML5_POPUP	= false;	//
+	private static boolean USE_HTML5_POPUP	= true;	//
 	
 	// true -> Information about file blobs being uploaded is displayed
 	// via alerts.  false -> They're not.
-	private static boolean TRACE_BLOBS	= true;	//
+	private static boolean TRACE_BLOBS	= false;	//
+	
+	// Defines the default type of HTML5 file read used to upload
+	// files.
+	private static ReadType DEFAULT_READ_TYPE	= ReadType.BINARY_STRING;
 	
 	// The minimum height and width of the popup.
 	private static int MIN_HEIGHT	= 200;	//
@@ -142,6 +149,16 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 	};
+
+	/*
+	 * Used to specify how to read files for streaming to the server.
+	 */
+	private enum ReadType {
+		ARRAY_BUFFER,
+		BINARY_STRING,
+		DATA_URL,
+		TEXT,
+	}
 
 	/*
 	 * Class constructor.
@@ -165,13 +182,42 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		m_reader.addLoadEndHandler(this);
 		m_reader.addErrorHandler(  this);
 		
-		m_busy = new SpinnerPopup();
+		m_busy = new SpinnerPopup(false);	// false -> Not modal.
 	
 		// ...and create the popup's content.
 		addStyleName("vibe-addFilesHtml5Popup");
 		createContent();
 	}
 
+	/*
+	 * Does what's necessary to abort a file upload sequence.
+	 */
+	private void abortUpload() {
+		// If the reader's loading...
+		if (State.LOADING == m_reader.getReadyState()) {
+			// ...abort it...
+			m_reader.abort();
+		}
+		
+		// ...empty the read queue...
+		m_readQueue.clear();
+
+		// ...and tell the server that we've aborted the upload so
+		// ...it can clean up anything it has hanging around.
+		final AbortFileUploadCmd cmd = new AbortFileUploadCmd(m_folderInfo);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				// Ignored.
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				// Ignored.  Nothing to do.
+			}
+		});
+	}
+	
 	/**
 	 * Returns true if the browser being used supports uploading files
 	 * using HTML5 and false otherwise.
@@ -293,19 +339,42 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * Called if the reader encounters an error.
 	 */
 	private void handleError(File file) {
-		FileError error = m_reader.getError();
-		String errorDesc = "";
-		if (error != null) {
+		FileError	error     = m_reader.getError();
+		String		errorDesc = "";
+		if (null != error) {
 			ErrorCode errorCode = error.getCode();
 			if (null != errorCode) {
-				errorDesc = errorCode.name();
-				if (errorDesc.equals("NOT_FOUND_ERR") && GwtClientHelper.jsIsChrome()) {
-					m_ignoredAsFolders.add(getCurrentFile());
+				switch (errorCode) {
+				case ABORT_ERR:
+					// We ignore abort errors since these are user
+					// driven.  No need to tell them they just aborted
+					// the upload.
 					return;
+					
+				case NOT_FOUND_ERR:
+					// If we're running on Chrome...
+					if (GwtClientHelper.jsIsChrome()) {
+						// ...treat this as the user having uploaded
+						// ...a folder, which is not supported.
+						m_ignoredAsFolders.add(getCurrentFile());
+						return;
+					}
+					
+					// ...otherwise, fall through and handle with the
+					// ...other errors.
+					
+				default:
+					errorDesc = errorCode.name();
+					break;
 				}
 			}
 		}
-		GwtClientHelper.deferredAlert(m_messages.addFilesHtml5PopupReadError(file.getName(), errorDesc));
+		
+		// If we get here, we need to tell the user about the error.
+		GwtClientHelper.deferredAlert(
+			m_messages.addFilesHtml5PopupReadError(
+				file.getName(),
+				errorDesc));
 	}
 
 	/*
@@ -385,10 +454,11 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	public void onClick(ClickEvent event) {
 		// Is the read queue is empty?
 		if (uploadsPending()) {
-			// No!  Abort and read in progress and clear the read queue
-			// to cancel uploading.
-			m_reader.abort();
-			m_readQueue.clear();
+			// No!  Abort the uploads that are in progress.  We call
+			// the uploadNext to clean up the display from the canceled
+			// uploads.
+			abortUpload();
+			uploadNextNow();
 		}
 		
 		else {
@@ -590,10 +660,15 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
+				// Tell the user about the problem...
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
 					GwtTeaming.getMessages().rpcFailure_UploadFileBlob(),
 					m_fileBlob.getFileName());
+				
+				// ...and continue with the next file.
+				popCurrentFile();
+				uploadNextAsync();
 			}
 
 			@Override
@@ -690,11 +765,18 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	/*
 	 * Synchronously initiates the reading of the given blob.
 	 */
+	private void readNextBlobNow(final ReadType readType, final Blob readBlob) {
+		switch (readType) {
+		case ARRAY_BUFFER:   m_reader.readAsArrayBuffer( readBlob); break;
+		case BINARY_STRING:  m_reader.readAsBinaryString(readBlob); break;
+		case DATA_URL:       m_reader.readAsDataURL(     readBlob); break;
+		case TEXT:           m_reader.readAsText(        readBlob); break;
+		}
+	}
+	
 	private void readNextBlobNow(final Blob readBlob) {
-//!		m_reader.readAsArrayBuffer( readBlob);
-//!		m_reader.readAsDataURL(     readBlob);
-		m_reader.readAsBinaryString(readBlob);
-//!		m_reader.readAsText(        readBlob);
+		// Always use the initial form of the method.
+		readNextBlobNow(DEFAULT_READ_TYPE, readBlob);
 	}
 	
 	/*
@@ -774,13 +856,17 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private void uploadNextNow() {
 		// Are we done uploading files?
 		if (!(uploadsPending())) {
-			// Yes!  Reset the popup for more to be uploaded.
+			// Yes!  Reset the popup for more to be uploaded...
 			m_browseButton.setText( m_messages.addFilesHtml5PopupBrowse()   );
 			m_browseButton.setTitle(m_messages.addFilesHtml5PopupBrowseAlt());
 			m_hintLabel.setText(    m_messages.addFilesHtml5PopupHint()     );
 			m_busy.hide();
 
+			// ...tell the user about any folders that were ignored...
 			handleIgnoredFolders();
+			
+			// ...and force the folder to refresh.
+			GwtTeaming.fireEventAsync(new FullUIReloadEvent());
 		}
 		
 		else {
@@ -788,8 +874,8 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			// showing that we're busy uploading yet...
 			if ((!(m_busy.isAttached())) || (!(m_busy.isVisible()))) {
 				// ...show it now.
-				m_browseButton.setText( m_messages.addFilesHtml5PopupCancel()   );
-				m_browseButton.setTitle(m_messages.addFilesHtml5PopupCancelAlt());
+				m_browseButton.setText( m_messages.addFilesHtml5PopupAbort()   );
+				m_browseButton.setTitle(m_messages.addFilesHtml5PopupAbortAlt());
 				m_busy.center();
 			}
 
