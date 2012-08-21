@@ -35,10 +35,6 @@ package org.kablink.teaming.security;
 import java.util.Set;
 
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.security.acl.AccessType;
-import org.kablink.teaming.security.acl.AclAccessControlException;
-import org.kablink.teaming.security.acl.AclContainer;
-import org.kablink.teaming.security.acl.AclControlled;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 
@@ -111,5 +107,23 @@ public interface AccessControlManager {
      * @throws AccessControlException
      */
     public void checkOperation(User user, WorkArea workArea,
-            WorkAreaOperation workAreaOperation) throws AccessControlException; 
+            WorkAreaOperation workAreaOperation) throws AccessControlException;
+    
+    /**
+     * Returns whether or not the sharing facility grants the specified user 
+     * with the privilege to run the specified operation against the work area.
+     * <p>
+     * This method is reserved for internal use only. Application code must
+     * use <code>testOperation</code> or <code>checkOperation</code> for
+     * normal access checking.
+     * 
+     * @param user
+     * @param workAreaStart
+     * @param workArea
+     * @param workAreaOperation
+     * @param userMembers
+     * @return
+     */
+    public boolean testRightGrantedBySharing(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation, Set<Long> userMembers);
+
 }

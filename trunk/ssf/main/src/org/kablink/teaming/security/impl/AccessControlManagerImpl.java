@@ -186,10 +186,12 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 
 		if(logger.isDebugEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0; // millisecond
-			logger.debug("testOperation: " + result + " time=" + diff + " user=" + user.getName() +
-				" op=" + workAreaOperation.getName() +
-				" wa-type=" + workArea.getClass().getSimpleName() +
-				" wa-id=" + workArea.getWorkAreaId());
+			logger.debug("testOperation: result=" + result + 
+					" operation=" + workAreaOperation.getName() +
+					" time=" + diff + 
+					" user=" + user.getName() +
+					" wa-type=" + workArea.getClass().getSimpleName() +
+					" wa-id=" + workArea.getWorkAreaId());
 		}
 		
 		return result;
@@ -431,7 +433,8 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     	(zoneId, workArea, workAreaOperation, membersToLookup);
     }
 
-    private boolean testRightGrantedBySharing(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation, Set<Long> userMembers) {
+    @Override
+    public boolean testRightGrantedBySharing(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation, Set<Long> userMembers) {
     	// Unlike regular ACL checking, share right checking is not implemented using recursive invocation.
     	if(workAreaStart != workArea)
     		return false;
