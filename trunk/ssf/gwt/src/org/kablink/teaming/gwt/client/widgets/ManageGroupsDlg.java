@@ -56,12 +56,14 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetGroupsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.ModifyGroupDlg.ModifyGroupDlgClient;
 
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -765,7 +767,7 @@ public class ManageGroupsDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private void invokeModifyGroupDlg( GroupInfo groupInfo )
+	private void invokeModifyGroupDlg( final GroupInfo groupInfo )
 	{
 		int x;
 		int y;
@@ -776,12 +778,45 @@ public class ManageGroupsDlg extends DlgBox
 		
 		if ( m_modifyGroupDlg == null )
 		{
-			m_modifyGroupDlg = new ModifyGroupDlg( false, true, x, y );
+			ModifyGroupDlg.createAsync(
+									false, 
+									true,
+									x, 
+									y,
+									new ModifyGroupDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ModifyGroupDlg mgDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_modifyGroupDlg = mgDlg;
+							
+							m_modifyGroupDlg.init( groupInfo );
+							m_modifyGroupDlg.show();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
 		}
-		
-		m_modifyGroupDlg.init( groupInfo );
-		m_modifyGroupDlg.setPopupPosition( x, y );
-		m_modifyGroupDlg.show();
+		else
+		{
+			m_modifyGroupDlg.init( groupInfo );
+			m_modifyGroupDlg.setPopupPosition( x, y );
+			m_modifyGroupDlg.show();
+		}
 	}
 
 	/**

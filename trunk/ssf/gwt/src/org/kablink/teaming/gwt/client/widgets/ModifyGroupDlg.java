@@ -62,6 +62,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -101,11 +103,22 @@ public class ModifyGroupDlg extends DlgBox
 	private GwtDynamicGroupMembershipCriteria m_dynamicMembershipCriteria;
 	private Integer m_numDynamicMembers;
 	private boolean m_dynamicMembershipAllowed;
-	
+
+	/**
+	 * Callback interface to interact with the "modify group" dialog
+	 * asynchronously after it loads. 
+	 */
+	public interface ModifyGroupDlgClient
+	{
+		void onSuccess( ModifyGroupDlg mgDlg );
+		void onUnavailable();
+	}
+
+
 	/**
 	 * 
 	 */
-	public ModifyGroupDlg(
+	private ModifyGroupDlg(
 		boolean autoHide,
 		boolean modal,
 		int xPos,
@@ -880,5 +893,44 @@ public class ModifyGroupDlg extends DlgBox
 		// Issue an rpc request to update the group.
 		cmd = new ModifyGroupCmd( m_groupInfo.getId(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership, m_dynamicMembershipCriteria );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
+	}
+
+	/**
+	 * Loads the ModifyGroupDlg split point and returns an instance
+	 * of it via the callback.
+	 * 
+	 */
+	public static void createAsync(
+							final boolean autoHide,
+							final boolean modal,
+							final int left,
+							final int top,
+							final ModifyGroupDlgClient mgDlgClient )
+	{
+		GWT.runAsync( ModifyGroupDlg.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onFailure(Throwable reason)
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ModifyGroupDlg() );
+				if ( mgDlgClient != null )
+				{
+					mgDlgClient.onUnavailable();
+				}
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				ModifyGroupDlg mgDlg;
+				
+				mgDlg = new ModifyGroupDlg(
+										autoHide,
+										modal,
+										left,
+										top );
+				mgDlgClient.onSuccess( mgDlg );
+			}
+		});
 	}
 }
