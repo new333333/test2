@@ -500,7 +500,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				ResourceSession session = null;
 				try {
 					if(binder.getResourcePath() == null && parent.getResourcePath() != null) {
-						session = driver.openSession();
+						session = getResourceDriverManager().getSession(driver);
 						session.setPath(parent.getResourcePath(), binder.getTitle());
 						binder.setResourcePath(session.getPath());
 						normalizeResourcePath(binder);
@@ -518,7 +518,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 						}
 						else {
 							if(session == null) {						
-								session = driver.openSession();
+								session = getResourceDriverManager().getSession(driver);
 								session.setPath(binder.getResourcePath());
 							}
 							
@@ -823,7 +823,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 						new String[] {binder.getPathName(), driver.getTitle()});
     		}
     		else {
-				ResourceSession session = driver.openSession().setPath(binder.getResourcePath());
+				ResourceSession session = getResourceDriverManager().getSession(driver).setPath(binder.getResourcePath());
 				try {
 					session.move(binder.getParentBinder().getResourcePath(), newTitle);
 					
@@ -1014,7 +1014,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 							new String[] {binder.getPathName(), driver.getTitle()});
 				}
 				else {
-	    			ResourceSession session = driver.openSession().setPath(binder.getResourcePath());
+	    			ResourceSession session = getResourceDriverManager().getSession(driver).setPath(binder.getResourcePath());
 	    			try {
 	    				session.delete();
 	    			}
@@ -1201,7 +1201,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		    		}
     		    		else {
         					// We can/must move the resource.
-	    					ResourceSession session = driver.openSession().setPath(source.getResourcePath()); 
+	    					ResourceSession session = getResourceDriverManager().getSession(driver).setPath(source.getResourcePath()); 
 	    					try {
 	    						session.move(destination.getResourcePath(), source.getTitle());  	
 	    						// Do not yet update the resource path in the source, it will be done by callder.
