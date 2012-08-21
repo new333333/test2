@@ -30,38 +30,67 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.widgets;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.TeamingPopupPanel;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 /**
- * This widget displays spinner in a popup.
+ * This class holds all of the information necessary to execute the
+ * 'abort file upload' command.
  * 
  * @author drfoster@novell.com
  */
-public class SpinnerPopup extends TeamingPopupPanel {
+public class AbortFileUploadCmd extends VibeRpcCmd {
+	private BinderInfo	m_folderInfo;	//
+	
 	/**
 	 * Constructor method.
 	 * 
-	 * @param modal
+	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public SpinnerPopup(boolean modal) {
-		super(false, modal);	// false -> Not auto hide.
-	
-		setStyleName("spinnerPopup");
-		FlowPanel mainPanel = new FlowPanel();
-		Image spinnerImage = GwtClientHelper.buildImage(GwtTeaming.getImageBundle().spinner32());
-		mainPanel.add(spinnerImage);
-		setWidget(mainPanel);
+	public AbortFileUploadCmd() {
+		// Initialize the super class.
+		super();
 	}
 	
-	public SpinnerPopup() {
-		// Always use the initial form of the constructor.
-		this(true);	// true -> Modal.
+	/**
+	 * Constructor method.
+	 * 
+	 * @param folderInfo
+	 */
+	public AbortFileUploadCmd(BinderInfo folderInfo) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameter.
+		setFolderInfo(folderInfo);
+	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public BinderInfo getFolderInfo() {return m_folderInfo;}
+
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setFolderInfo(BinderInfo folderInfo) {m_folderInfo = folderInfo;}
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.ABORT_FILE_UPLOAD.ordinal();
 	}
 }

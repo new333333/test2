@@ -1535,8 +1535,8 @@ public interface GwtTeamingMessages extends Messages
 	String addFilesDlgHeader();
 	
 	// Strings used in the AddFilesHtml5Popup.
-	String addFilesHtml5PopupCancel();
-	String addFilesHtml5PopupCancelAlt();
+	String addFilesHtml5PopupAbort();
+	String addFilesHtml5PopupAbortAlt();
 	String addFilesHtml5PopupBrowse();
 	String addFilesHtml5PopupBrowseAlt();
 	String addFilesHtml5PopupBusy(String fileName, int thisOne, int total);

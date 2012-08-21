@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
@@ -58,6 +61,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -123,7 +127,6 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ShareAccessInfo;
 import org.kablink.teaming.gwt.client.util.ShareDateInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationInfo;
@@ -145,6 +148,7 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
+import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -167,6 +171,7 @@ import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -208,7 +213,9 @@ public class GwtViewHelper {
 	public static final String RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME	= "responsible_groups";
 	public static final String RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME			= "responsible";
 	public static final String RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME		= "responsible_teams";
-	
+
+	// Attribute names used to store things in the session cache.
+	private static final String CACHED_UPLOAD_FILE				= "uploadFile";
 	private static final String CACHED_VIEW_PINNED_ENTRIES_BASE = "viewPinnedEntries_";
 	private static final String CACHED_VIEW_SHARED_FILES_BASE	= "viewSharedFiles_";
 
@@ -374,6 +381,52 @@ public class GwtViewHelper {
 	 */
 	private GwtViewHelper() {
 		// Nothing to do.
+	}
+
+	/**
+	 * Aborts any file upload in progress.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderInfo
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static BooleanRpcResponseData abortFileUpload(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) throws GwtTeamingException {
+		try {
+			// Do we have an upload filename cached in the session?
+			HttpSession session = WebHelper.getRequiredSession(request);
+			String fileName = ((String) session.getAttribute(CACHED_UPLOAD_FILE));
+			if (MiscUtil.hasString(fileName)) {
+				// Yes!  Remove it...
+				session.removeAttribute(CACHED_UPLOAD_FILE);
+				try {
+					// ...and if we can access the temporary file for
+					// ...it...
+					File tempFile = TempFileUtil.getTempFileByName(fileName);
+					if (null != tempFile) {
+						// ...delete that.
+						tempFile.delete();
+					}
+				}
+				
+				catch (Throwable t) {
+					// Ignore.
+				}
+			}
+			return new BooleanRpcResponseData(true);
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.abortFileUpload( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
 	}
 
 	/*
@@ -946,6 +999,25 @@ public class GwtViewHelper {
 		}
 	}
 	
+	/*
+	 * Writes debug information about a file blob to the system log.
+	 */
+	private static void debugTraceBlob(FileBlob fileBlob, String methodName, String traceHead, String traceTail, boolean lastBlob) {
+		if (m_logger.isDebugEnabled()) {
+			String	dump  = (traceHead + ":  '" + fileBlob.getFileName() + "' (fSize:" + fileBlob.getFileSize() + ", bStart:" + fileBlob.getBlobStart() + ", bSize:" + fileBlob.getBlobSize() + ", last:" + lastBlob + ")");
+			boolean hasTail = MiscUtil.hasString(traceTail);
+			dump = ("GwtViewHelper." + methodName + "( " + dump + " )" + (hasTail ? ":  " + traceTail : ""));
+			String data = fileBlob.getBlobData();
+			dump += ("\n\nData Uploaded:  " + ((null == data) ? 0 : data.length()) + " base64 encoded bytes."); 
+			m_logger.debug(dump);
+		}
+	}
+	
+	private static void debugTraceBlob(FileBlob fileBlob, String methodName, String traceHead, boolean lastBlob) {
+		// Always use the initial form of the method.
+		debugTraceBlob(fileBlob, methodName, traceHead, null, lastBlob);
+	}
+
 	/**
 	 * Delete user workspaces.
 	 * 
@@ -3084,14 +3156,14 @@ public class GwtViewHelper {
 									eti.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
 									eti.setEntityId(entityId);
 									String description = getEntryDescriptionFromMap(request, entryMap);
-									if (GwtClientHelper.hasString(description)) {
+									if (MiscUtil.hasString(description)) {
 										eti.setDescription(description);
 										String descriptionFormat = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DESC_FORMAT_FIELD);
 										eti.setDescriptionIsHtml(MiscUtil.hasString(descriptionFormat) && descriptionFormat.equals(String.valueOf(Description.FORMAT_HTML)));
 									}
 									else if (!isEntityFolderEntry) {
 										description = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.ENTITY_PATH);
-										if (GwtClientHelper.hasString(description)) {
+										if (MiscUtil.hasString(description)) {
 											eti.setDescription(      description);
 											eti.setDescriptionIsHtml(false      );
 										}
@@ -5292,8 +5364,100 @@ public class GwtViewHelper {
 	 */
 	public static StringRpcResponseData uploadFileBlob(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, FileBlob fileBlob, boolean lastBlob) throws GwtTeamingException {
 		try {
-//!			...this needs to be implemented...
-			return new StringRpcResponseData();
+			// Trace what we read to the log.
+			debugTraceBlob(fileBlob, "uploadFileBlob", "Uploaded", lastBlob);
+
+			// Is this the first blob of a file?
+			HttpSession session = WebHelper.getRequiredSession(request);
+			boolean firstBlob = (0l == fileBlob.getBlobStart());
+			File tempFile;
+			if (firstBlob) {
+				// Yes!  Create a new temporary file for it and store
+				// the file handle in the session cache.  The format of
+				// the prefix used is:  'uploadFile.<userId>.<timestamp>.'
+				String prefix = (CACHED_UPLOAD_FILE + "." + String.valueOf(GwtServerHelper.getCurrentUserId()) + "." + String.valueOf(new Date().getTime()) + ".");
+				tempFile = TempFileUtil.createTempFile(prefix);
+				if (!lastBlob) {
+					session.setAttribute(CACHED_UPLOAD_FILE, tempFile.getName());
+				}
+			}
+			
+			else {
+				// No, this isn't the first blob of a file!  Access the
+				// temporary file from the handle stored in the session
+				// cache.
+				tempFile = TempFileUtil.getTempFileByName((String) session.getAttribute(CACHED_UPLOAD_FILE));
+				if (lastBlob) {
+					session.removeAttribute(CACHED_UPLOAD_FILE);
+				}
+			}
+
+			StringRpcResponseData reply = null;
+			try {
+				// Can we write the data from this blob to the file?
+				FileOutputStream fo = new FileOutputStream(tempFile, (!firstBlob));
+				fo.write(Base64.decodeBase64(fileBlob.getBlobData().getBytes()));
+				fo.close();
+			}
+			
+			catch (Exception e) {
+				// No!  Return the error to the user.
+				reply = new StringRpcResponseData();
+				reply.setStringValue(NLT.get("binder.add.files.html5.upload.error", new String[]{e.getLocalizedMessage()}));
+				try {tempFile.delete();}
+				catch (Throwable t) {/* Ignored. */}
+			}
+
+			// Did we just successfully write the last blob of the file
+			// to the temporary file we use to cache it while we stream
+			// it to the server?
+			if ((null == reply) && lastBlob) {
+				// Yes!  We need to create the entry for the file in
+				// the target folder.
+				FolderModule	fm     = bs.getFolderModule();
+				ProfileModule	pm     = bs.getProfileModule();
+    	    	Folder			folder = fm.getFolder(folderInfo.getBinderIdAsLong());
+    	    	FileInputStream fi     = new FileInputStream(tempFile);
+    	    	try {
+        	    	// If there's an existing entry...
+    				String fileName = fileBlob.getFileName();
+        	    	FolderEntry existingEntry = fm.getLibraryFolderEntryByFileName(folder, fileName);
+    	    		if (null != existingEntry) {
+    	    			// ...we modify it...
+        	    		FolderUtils.modifyLibraryEntry(existingEntry, fileName, fi, null, true);
+        				pm.setSeen(null, existingEntry);
+        	    	}
+    	    		
+    	    		else {
+    	    			// ...otherwise, we create a new one.
+        	    		FolderEntry fe = FolderUtils.createLibraryEntry(folder, fileName, fi, null, true);
+        				pm.setSeen(null, fe);
+        	    	}
+    	    	}
+    	    	
+    	    	catch(AccessControlException ace) {
+    				reply = new StringRpcResponseData();
+    	    		reply.setStringValue(NLT.get("entry.duplicateFileInLibrary2"));
+    	    	}
+    	    	
+    	    	finally {
+    	    		// If we have an input stream open...
+    	    		if (null != fi) {
+    	    			// ...close it...
+    	    			fi.close();
+    	    			fi = null;
+    	    		}
+    	    		
+    	    		// ...and delete the temporary file.
+    	    		try {tempFile.delete();}
+    	    		catch (Throwable t) {/* Ignore. */}
+    	    	}
+			}
+
+			// Return an empty string response or the one we
+			// constructed containing any error we encountered during
+			// the upload.
+			return ((null == reply) ? new StringRpcResponseData() : reply);
 		}
 		
 		catch (Exception e) {

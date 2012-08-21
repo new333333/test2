@@ -7276,6 +7276,7 @@ public class GwtServerHelper {
 		}
 			
 		// The following commands do not require XSS checks.
+		case ABORT_FILE_UPLOAD:
 		case ADD_FAVORITE:
 		case ADD_NEW_FOLDER:
 		case CAN_ADD_FOLDER:

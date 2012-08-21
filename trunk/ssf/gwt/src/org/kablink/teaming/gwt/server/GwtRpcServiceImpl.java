@@ -206,6 +206,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		VibeRpcCmdType cmdEnum = VibeRpcCmdType.getEnum( cmd.getCmdType() );
 		switch ( cmdEnum )
 		{
+		case ABORT_FILE_UPLOAD:
+		{
+			AbortFileUploadCmd afuCmd = ((AbortFileUploadCmd) cmd);
+			BooleanRpcResponseData result = GwtViewHelper.abortFileUpload( this, getRequest( ri ), afuCmd.getFolderInfo() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case ADD_FAVORITE:
 		{
 			AddFavoriteCmd afCmd;
@@ -2415,8 +2423,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case UPLOAD_FILE_BLOB:
 		{
-			UploadFileBlobCmd upeCmd = ((UploadFileBlobCmd) cmd);
-			StringRpcResponseData result = GwtViewHelper.uploadFileBlob( this, getRequest( ri ), upeCmd.getFolderInfo(), upeCmd.getFileBlob(), upeCmd.isLastBlob() );
+			UploadFileBlobCmd ufbCmd = ((UploadFileBlobCmd) cmd);
+			StringRpcResponseData result = GwtViewHelper.uploadFileBlob( this, getRequest( ri ), ufbCmd.getFolderInfo(), ufbCmd.getFileBlob(), ufbCmd.isLastBlob() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
