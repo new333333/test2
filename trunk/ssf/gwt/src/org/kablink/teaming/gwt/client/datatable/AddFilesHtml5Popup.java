@@ -83,6 +83,9 @@ import com.google.gwt.event.dom.client.DragOverEvent;
 import com.google.gwt.event.dom.client.DragOverHandler;
 import com.google.gwt.event.dom.client.DropEvent;
 import com.google.gwt.event.dom.client.DropHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -106,6 +109,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		DragOverHandler,
 		DropHandler,
 		ErrorHandler,
+		KeyDownHandler,
 		LoadEndHandler
 {
 	private BinderInfo						m_folderInfo;				// The folder the add files is running against.
@@ -284,7 +288,8 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		m_browseButton = new Button(m_messages.addFilesHtml5PopupBrowse());
 		m_browseButton.addStyleName("vibe-addFilesHtml5Popup-innerHintBrowseButton");
 		m_browseButton.setTitle(m_messages.addFilesHtml5PopupBrowseAlt());
-		m_browseButton.addClickHandler(this);
+		m_browseButton.addClickHandler(  this);
+		m_browseButton.addKeyDownHandler(this);
 		browsePanel.add(m_browseButton);
 		hintPanel.add(browsePanel);
 	}
@@ -565,6 +570,32 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			handleError(getCurrentFile());
 		}
 	}
+
+	/**
+	 * Called when the user presses a key in the popup.
+	 * 
+	 * Implements the KeyDownHandler.onKeyDown() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onKeyDown(KeyDownEvent event) {
+		// Is there an upload in progress?
+		if (!(uploadsPending())) {
+			// No!  What key is being pressed?
+			switch (event.getNativeEvent().getKeyCode()) {
+			case KeyCodes.KEY_ENTER:
+				// Enter!  Let the user select some files to upload.
+				m_uploadButton.click();
+				break;
+				
+			case KeyCodes.KEY_ESCAPE:
+				// Escape!  Simply hide the popup.
+				hide();
+				break;
+			}
+		}
+	}
 	
 	/**
 	 * Called when the reader completes reading a file.
@@ -620,15 +651,22 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * Synchronously populates the contents of the popup.
 	 */
 	private void populatePopupNow() {
-		// Size...
+		// Size the popup...
 		String h = (Math.max(MIN_HEIGHT, (Window.getClientHeight() - (TOP_BOTTOM_PAD * 2))) + "px"); 
 		String w = (Math.max(MIN_WIDTH,  (Window.getClientWidth()  - (LEFT_RIGHT_PAD * 2))) + "px");
 		
 		setHeight(h); m_dndPanel.setHeight(h);
 		setWidth( w); m_dndPanel.setWidth( w);
+
+		// ...show the gray glass under it to express modality...
+		setGlassEnabled(  true                           );
+		setGlassStyleName("vibe-addFilesHtml5Popup-glass");
 		
-		// ...and show the popup.
+		// ...show it...
 		center();
+
+		// ...and leave the input focus in the browse button.
+		GwtClientHelper.setFocusDelayed(m_browseButton);
 	}
 	
 	/*

@@ -49,8 +49,8 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -219,7 +219,7 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 	 */
 	@Override
 	public FocusWidget getFocusWidget() {
-		return null;
+		return m_folderNameInput;
 	}
 
 	/*
@@ -256,14 +256,20 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 		// ...and add an input widget.
 		m_folderNameInput = new TextBox();
 		m_folderNameInput.addStyleName("vibe-addNewFolderDlg_NameInput");
-		m_folderNameInput.addKeyPressHandler(new KeyPressHandler() {
+		m_folderNameInput.addKeyDownHandler(new KeyDownHandler() {
 			@Override
-			public void onKeyPress(KeyPressEvent event) {
-				// If this the enter key being pressed...
-				int key = event.getNativeEvent().getKeyCode();
-				if (KeyCodes.KEY_ENTER == key) {
-					// ...treat it like the user pressed OK.
+			public void onKeyDown(KeyDownEvent event) {
+				// What key is being pressed?
+				switch (event.getNativeEvent().getKeyCode()) {
+				case KeyCodes.KEY_ESCAPE:
+					// Escape!  Simply hide the dialog.
+					hide();
+					break;
+					
+				case KeyCodes.KEY_ENTER:
+					// Enter!  Treat it like the user pressed OK.
 					editSuccessful(null);
+					break;
 				}
 			}
 		});
