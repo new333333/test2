@@ -98,6 +98,7 @@ public class SelfResource extends AbstractResource {
         }
         user.addAdditionalLink("file_spaces", "/self/file_spaces");
         user.addAdditionalLink("shared_with_me", "/self/shared_with_me");
+        user.addAdditionalLink("shared_by_me", "/self/shared_by_me");
         return user;
     }
 
@@ -156,8 +157,15 @@ public class SelfResource extends AbstractResource {
     @GET
     @Path("/shared_with_me")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public BinderBrief getSharesWithMe() {
+    public BinderBrief getSharedWithMe() {
         return getFakeSharedWithMe();
+    }
+
+    @GET
+    @Path("/shared_by_me")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public BinderBrief getSharedByMe() {
+        return getFakeSharedByMe();
     }
 
     @GET
@@ -219,6 +227,23 @@ public class SelfResource extends AbstractResource {
         binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
         binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        return binder;
+    }
+
+    private BinderBrief getFakeSharedByMe() {
+        BinderBrief binder = new BinderBrief();
+        //TODO: localize
+        binder.setTitle("Shared by Me");
+        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
+        Long userId = getLoggedInUserId();
+        String baseUri = "/shares/by_user/" + userId;
+        binder.addAdditionalLink("child_binders", baseUri + "/binders");
+//        binder.addAdditionalLink("child_binder_tree", baseUri + "/binder_tree");
+        binder.addAdditionalLink("child_entries", baseUri + "/entries");
+        binder.addAdditionalLink("child_files", baseUri + "/files");
+        binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
+        binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
+//        binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
         return binder;
     }
 }
