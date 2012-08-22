@@ -13,6 +13,8 @@ import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
+import org.kablink.teaming.rest.v1.model.BaseRestObject;
 import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderTree;
@@ -284,6 +286,38 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         } else {
             getBinderModule().preDeleteBinder(id, getLoggedInUserId());
         }
+    }
+
+    protected SearchResultList<BaseRestObject> getSubEntities(long id, boolean recursive, boolean onlyLibrary, String keyword, Integer offset, Integer maxCount, String nextUrl) {
+        _getBinder(id);
+        Junction criterion = Restrictions.conjunction();
+
+        if (recursive) {
+            criterion.add(Restrictions.eq(Constants.ENTRY_ANCESTRY, ((Long)id).toString()));
+        } else {
+            criterion.add(Restrictions.eq(Constants.BINDER_ID_FIELD, ((Long)id).toString()));
+        }
+        if (onlyLibrary) {
+            criterion.add(Restrictions.disjunction()
+                    .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT))
+                    .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER))
+            );
+            criterion.add(Restrictions.eq(Constants.IS_LIBRARY_FIELD, ((Boolean) onlyLibrary).toString()));
+        }
+        if (keyword!=null) {
+//            criterion.add(Restrictions.like(Constants.GENERAL_TEXT_FIELD, keyword));
+            criterion.add(Restrictions.disjunction()
+                    .add(Restrictions.like(Constants.TITLE_FIELD, keyword))
+                    .add(Restrictions.like(Constants.DESC_FIELD, keyword))
+                    .add(Restrictions.like(Constants.GENERAL_TEXT_FIELD, keyword))
+            );
+        }
+        Criteria crit = new Criteria();
+        crit.add(criterion);
+        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        SearchResultList<BaseRestObject> results = new SearchResultList<BaseRestObject>(offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(), resultsMap, "/legacy_query", offset);
+        return results;
     }
 
     protected SearchResultList<FileProperties> getSubFiles(long id, boolean recursive, boolean onlyLibraryFiles, Integer offset, Integer maxCount, String nextUrl) {
