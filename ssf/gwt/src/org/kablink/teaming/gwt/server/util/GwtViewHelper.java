@@ -527,11 +527,14 @@ public class GwtViewHelper {
 
 			// Are we processing an entry?
 			DefinableEntity	entity = si.getEntity();
-			entryMap.put(Constants.DESC_FIELD,        entity.getDescription().getText());
-			entryMap.put(Constants.DESC_FORMAT_FIELD, entity.getDescription().getFormat());
-			entryMap.put(Constants.DOCID_FIELD,       String.valueOf(entity.getId()));
-			entryMap.put(Constants.ENTITY_FIELD,      entity.getEntityType().name());
-			entryMap.put(Constants.TITLE_FIELD,       entity.getTitle());
+			Description entityDesc = entity.getDescription();
+			if (null != entityDesc) {
+				entryMap.put(Constants.DESC_FIELD,        entityDesc.getText());
+				entryMap.put(Constants.DESC_FORMAT_FIELD, entityDesc.getFormat());
+			}
+			entryMap.put(Constants.DOCID_FIELD,  String.valueOf(entity.getId()));
+			entryMap.put(Constants.ENTITY_FIELD, entity.getEntityType().name());
+			entryMap.put(Constants.TITLE_FIELD,  entity.getTitle());
 			String binderIdField;
 			if (entity instanceof FolderEntry) {
 				// Yes!  Scan its attachments.
