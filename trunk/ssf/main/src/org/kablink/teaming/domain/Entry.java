@@ -138,6 +138,11 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
      public boolean isFunctionMembershipInheritanceSupported() {
     	return false;
     }
+     public boolean isExtFunctionMembershipInherited() {
+     	return false;
+     }
+     public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInherited) {
+     }
      public Long getOwnerId() {
     	Principal owner = getOwner();
     	if (owner == null)	return null;

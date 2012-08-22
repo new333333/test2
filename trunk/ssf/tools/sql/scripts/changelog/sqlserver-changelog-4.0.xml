@@ -219,4 +219,9 @@
 			</column>
         </addColumn>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="20">
+        <addColumn tableName="SS_Forums">
+			<column name="extFunctionMembershipInherited" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

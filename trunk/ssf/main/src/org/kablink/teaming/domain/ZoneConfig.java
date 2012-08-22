@@ -221,13 +221,20 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     public boolean isFunctionMembershipInheritanceSupported() {
     	return false;
     }
-     public boolean isFunctionMembershipInherited() {
-    	return false;
-    }
-   
-    public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
-    	
-    }
+    public boolean isFunctionMembershipInherited() {
+   	return false;
+   }
+  
+   public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
+   	
+   }
+   public boolean isExtFunctionMembershipInherited() {
+  	return false;
+  }
+ 
+  public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInherited) {
+  	
+  }
     public Long getOwnerId() {
     	return null;
     }

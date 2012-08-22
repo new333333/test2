@@ -222,4 +222,9 @@
 			</column>
         </addColumn>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="21">
+        <addColumn tableName="SS_FORUMS">
+			<column name="EXTFUNCTIONMEMBERSHIPINHERITED" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

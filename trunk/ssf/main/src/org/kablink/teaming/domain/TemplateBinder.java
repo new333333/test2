@@ -118,6 +118,13 @@ public class TemplateBinder extends Binder {
     public boolean isFunctionMembershipInheritanceSupported() {
     	return true;
     }
+	//we always can inherit
+    public boolean isExtFunctionMembershipInherited() {
+   	 if(extFunctionMembershipInherited == null)
+		 return true;
+	 else
+		 return extFunctionMembershipInherited.booleanValue();
+    }
 
 
     public boolean isDefinitionInheritanceSupported() {
