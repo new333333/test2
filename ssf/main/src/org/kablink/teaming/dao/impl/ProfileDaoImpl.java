@@ -2385,6 +2385,11 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 
 	@Override
  	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightToSharedEntities(final Collection<EntityIdentifier> sharedEntityIdentifiers, final String rightName) {
+		return getRecipientIdsWithGrantedRightsToSharedEntities(sharedEntityIdentifiers, new String[]{rightName});
+	}
+
+	@Override
+ 	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightsToSharedEntities(final Collection<EntityIdentifier> sharedEntityIdentifiers, final String[] rightNames) {
 		if(sharedEntityIdentifiers == null || sharedEntityIdentifiers.isEmpty())
 			throw new IllegalArgumentException("shared entity identifiers must be specified");
 		long begin = System.nanoTime();
@@ -2394,8 +2399,19 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    public Object doInHibernate(Session session) throws HibernateException {
 	                    	// Don't use alias of the first table to refer to property/column name associated with entity, 
 	                    	// since HQL won't treat it as nicely as it does without alias. 
-	                    	StringBuilder sb = new StringBuilder("select distinct recipientType, recipientId from org.kablink.teaming.domain.ShareItem where rightSet." + rightName + "=:rightValue and (");
-	                        int i = 0;
+	                    	StringBuilder sb = new StringBuilder("select distinct recipientType, recipientId from org.kablink.teaming.domain.ShareItem where (");
+	                    	int i;
+	                    	for(i = 0; i < rightNames.length; i++) {
+	                    		if(i > 0)
+	                    			sb.append(" or ");
+	                    		sb.append("(rightSet.")
+	                    		.append(rightNames[i])
+	                    		.append("=:rightValue")
+	                    		.append(i)
+	                    		.append(")");
+	                    	}
+	                    	sb.append(") and (");
+	                        i = 0;
 	                    	for(EntityIdentifier sharedEntityIdentifier:sharedEntityIdentifiers) {
 	                    		if(i > 0)
 	                    			sb.append(" or ");
@@ -2407,9 +2423,10 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    		i++;
 	                    	}
 	                    	sb.append(")");
-                    		return session.createQuery(sb.toString())
-                    				.setBoolean("rightValue", true)
-                    				.list();
+                    		Query query = session.createQuery(sb.toString());
+                    		for(i = 0; i < rightNames.length; i++)
+                    			query.setBoolean("rightValue" + i, true);
+                    		return query.list();
 	                    }
 	                }
 	            );
@@ -2417,7 +2434,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	      	return recipientResultListToMap(list);
     	}
     	finally {
-    		end(begin, "getMemberIdsWithGrantedRightToSharedEntities(Collection<EntityIdentifier>,String)");
+    		end(begin, "getRecipientIdsWithGrantedRightsToSharedEntities(Collection<EntityIdentifier>,String[])");
     	}	              	
 	}
 

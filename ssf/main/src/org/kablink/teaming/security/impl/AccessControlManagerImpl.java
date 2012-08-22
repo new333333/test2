@@ -253,7 +253,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 					return true;
 				}
 				else {
-					return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, null);
+					return testRightsGrantedBySharing(user, workAreaStart, workArea, new WorkAreaOperation[]{workAreaOperation}, null);
 				}
 			}
 		} else {
@@ -327,7 +327,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				return true;
 			}
 			else {
-				return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userMembersToLookup);
+				return testRightsGrantedBySharing(user, workAreaStart, workArea, new WorkAreaOperation[]{workAreaOperation}, userMembersToLookup);
 			}
 		}
 	}
@@ -434,7 +434,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     }
 
     @Override
-    public boolean testRightGrantedBySharing(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation, Set<Long> userMembers) {
+    public boolean testRightsGrantedBySharing(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation[] workAreaOperations, Set<Long> userMembers) {
     	// Unlike regular ACL checking, share right checking is not implemented using recursive invocation.
     	if(workAreaStart != workArea)
     		return false;
@@ -450,7 +450,10 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     		if(workArea instanceof DefinableEntity)
     			chain.add(((DefinableEntity)workArea).getEntityIdentifier());
     	}
-    	Map<ShareItem.RecipientType, Set<Long>> shareMembers = getProfileDao().getRecipientIdsWithGrantedRightToSharedEntities(chain, workAreaOperation.getName());
+    	String[] rightNames = new String[workAreaOperations.length];
+    	for(int i = 0; i < workAreaOperations.length; i++)
+    		rightNames[i] = workAreaOperations[i].getName();
+    	Map<ShareItem.RecipientType, Set<Long>> shareMembers = getProfileDao().getRecipientIdsWithGrantedRightsToSharedEntities(chain, rightNames);
     	// Check if at least one entity in the ACL inheritance parentage chain grants the specified access to the user directly.
     	if(shareMembers.get(ShareItem.RecipientType.user).contains(user.getId()))
     		return true;

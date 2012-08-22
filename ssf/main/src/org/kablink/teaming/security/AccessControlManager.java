@@ -111,7 +111,8 @@ public interface AccessControlManager {
     
     /**
      * Returns whether or not the sharing facility grants the specified user 
-     * with the privilege to run the specified operation against the work area.
+     * with the privilege to run at least one of the specified operations against
+     * the work area.
      * <p>
      * This method is reserved for internal use only. Application code must
      * use <code>testOperation</code> or <code>checkOperation</code> for
@@ -124,6 +125,8 @@ public interface AccessControlManager {
      * @param userMembers
      * @return
      */
-    public boolean testRightGrantedBySharing(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation, Set<Long> userMembers);
+    public boolean testRightsGrantedBySharing(User user, WorkArea workAreaStart, 
+    		WorkArea workArea, WorkAreaOperation[] workAreaOperations, 
+    		Set<Long> userMembers);
 
 }

@@ -292,6 +292,16 @@ public interface ProfileDao {
  	 */
  	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightToSharedEntities(Collection<EntityIdentifier> sharedEntityIdentifiers, String rightName);
  	
+ 	/**
+ 	 * Return IDs of users, groups, and teams that are granted at least one of the specified
+ 	 * rights to at least one of the specified entities.
+ 	 * 
+ 	 * @param sharedEntityIdentifier
+ 	 * @param rightName
+ 	 * @return
+ 	 */
+ 	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightsToSharedEntities(Collection<EntityIdentifier> sharedEntityIdentifiers, String[] rightNames);
+ 	
  	/** 
  	 * Find a list of <code>ShareItem</code> meeting the specified selection criteria.
  	 * 
