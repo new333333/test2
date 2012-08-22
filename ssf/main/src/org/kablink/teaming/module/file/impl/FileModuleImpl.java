@@ -455,7 +455,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	throws ReservedByAnotherUserException {
     	return writeFiles(binder, entry, fileUploadItems, errors, Boolean.TRUE);
     }
-	public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
+    
+	private FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
     		List fileUploadItems, FilesErrors errors, Boolean prune) 
     	throws ReservedByAnotherUserException {
 		if(errors == null)

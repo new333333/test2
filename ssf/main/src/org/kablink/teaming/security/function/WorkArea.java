@@ -67,6 +67,13 @@ public interface WorkArea {
     
     public void setFunctionMembershipInherited(boolean functionMembershipInherited);
     /**
+     * Return true if workArea is currently inheritting external function membership.
+     * @return
+     */
+    public boolean isExtFunctionMembershipInherited();
+    
+    public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInherited);
+    /**
      * Return the id of the owner of the workArea
      * @return
      */

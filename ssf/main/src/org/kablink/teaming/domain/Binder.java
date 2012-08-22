@@ -103,6 +103,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Boolean versionAgingEnabled;
     protected Long maxFileSize;	//MB (stored as the maximum number of mega-bytes)
     protected Boolean fileEncryptionEnabled;
+    protected Boolean extFunctionMembershipInherited = Boolean.TRUE;
     public Binder() {
     }
     /**
@@ -823,6 +824,19 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     	if ((memberIds == null) || memberIds.isEmpty()) removeProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
     	else setProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS, LongIdUtil.getIdsAsString(memberIds));
      }
+     
+     public boolean isExtFunctionMembershipInherited() {
+     	 if (isRoot()) return false;
+    	 if(extFunctionMembershipInherited == null)
+    		 return true;
+    	 else
+    		 return extFunctionMembershipInherited.booleanValue();
+     }
+     
+     public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInherited) {
+    	 this.extFunctionMembershipInherited = Boolean.valueOf(extFunctionMembershipInherited);
+     }
+     
      /*****************End WorkArea interface stuff***********/
     
      /**

@@ -239,4 +239,9 @@
         <comment>Only used to fix schema created prior to V3.1. Will not harm schema that is already in correct state.</comment>
         <modifyDataType tableName="SS_UserProperties" columnName="properties" newDataType="LONGBLOB"/>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="25">
+        <addColumn tableName="SS_Forums">
+			<column name="extFunctionMembershipInherited" type="BIT"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

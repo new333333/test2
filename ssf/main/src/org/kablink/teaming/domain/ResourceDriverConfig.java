@@ -265,6 +265,15 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	}
 
 	@Override
+	public boolean isExtFunctionMembershipInherited() {
+		return false;
+	}
+
+	@Override
+	public void setExtFunctionMembershipInherited(boolean functionMembershipInherited) {
+	}
+
+	@Override
 	public Long getOwnerId() {
 		return null;
 	}

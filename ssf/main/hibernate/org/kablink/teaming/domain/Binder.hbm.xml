@@ -82,6 +82,7 @@
 <!-- use length to force medium blog in mysql -->
     <property name="properties" length="2000000" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
     <property name="functionMembershipInherited" not-null="true"/>
+    <property name="extFunctionMembershipInherited" access="field"/>
     <property name="definitionsInherited"/>
     <property name="definitionType"/>
     <property name="teamMembershipInherited"/>
