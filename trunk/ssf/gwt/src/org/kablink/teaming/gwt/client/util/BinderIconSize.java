@@ -91,7 +91,7 @@ public enum BinderIconSize implements IsSerializable {
 	public static BinderIconSize getListViewIconSize()           {return BinderIconSize.SMALL; }
 	public static BinderIconSize getSidebarTreeIconSize()        {
 		BinderIconSize reply;
-		if (WorkspaceTreeControl.showNavigationTrees())
+		if (WorkspaceTreeControl.siteNavigationAvailable())
 		     reply = BinderIconSize.SMALL;
 		else reply = BinderIconSize.MEDIUM;
 		return reply;
