@@ -78,4 +78,10 @@ public class NullFIRepositorySessionFactoryAdapter extends AbstractFIRepositoryS
 		return null;
 	}
 
+	@Override
+	public boolean supportsExternalAcl(String resourceDriverName)
+			throws FIException, UncheckedIOException {
+		return false;
+	}
+
 }

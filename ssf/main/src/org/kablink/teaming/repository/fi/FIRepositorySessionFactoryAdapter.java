@@ -42,4 +42,6 @@ public interface FIRepositorySessionFactoryAdapter extends RepositorySessionFact
 
 	public RepositorySession openSession(String resourceDriverName) 
 	throws FIException, UncheckedIOException;
+	
+	public boolean supportsExternalAcl(String resourceDriverName) throws FIException, UncheckedIOException;
 }
