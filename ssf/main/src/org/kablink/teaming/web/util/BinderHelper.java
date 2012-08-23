@@ -1575,7 +1575,7 @@ public class BinderHelper {
 	}
 	
 	static public boolean isBinderUserWorkspace(AllModulesInjected bs, Long binderId) {
-		return isBinderUserWorkspace(bs.getBinderModule().getBinder(binderId));
+		return isBinderUserWorkspace(bs.getBinderModule().getBinderWithoutAccessCheck(binderId));
 	}
 
 	/**
@@ -4201,7 +4201,7 @@ public class BinderHelper {
 				if (relevanceMap != null) {
 					List trackedPeople = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
 					if (trackedPeople != null) {
-						Binder binder = bs.getBinderModule().getBinder(binderId);
+						Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck(binderId);
 						reply = trackedPeople.contains(binder.getOwnerId());
 					}
 				}

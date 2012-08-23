@@ -413,6 +413,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetTree();
 	String rpcFailure_GetUpgradeInfo();
 	String rpcFailure_GetUserPermalink();
+	String rpcFailure_GetUserWorkspaceInfo();
 	String rpcFailure_GetUserWorkspaceUrl();
 	String rpcFailure_GetViewFileUrl();
 	String rpcFailure_GetViewFolderEntryUrl();
@@ -1045,6 +1046,9 @@ public interface GwtTeamingMessages extends Messages
 	String qViewErrorWorkspaceDoesNotExist();
 	String qViewErrorDeletedWorkspace();
 	String qViewErrorNoProfile();
+	String qViewErrorNoUserForQuickView();
+	String qViewErrorCantTrack();
+	String qViewErrorCantUntrack();
 
 	//Profile
 	String profileCallMe();

@@ -100,9 +100,9 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
 				}
 				
 				@Override
-				public void onSuccess(final ProfileEntryDlg cpDlg) {
+				public void onSuccess(final ProfileEntryDlg peDlg) {
 					// ...and show it.
-					m_profileEntryDlg = cpDlg;
+					m_profileEntryDlg = peDlg;
 					showProfileEntryDlgAsync(pi);
 				}
 			});
@@ -255,6 +255,6 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
 	 * Synchronously shows the profile entry dialog.
 	 */
 	private void showProfileEntryDlgNow(PrincipalInfo pi) {
-		ProfileEntryDlg.initAndShow(m_profileEntryDlg, pi);
+		ProfileEntryDlg.initAndShow(m_profileEntryDlg, pi.getId());
 	}
 }
