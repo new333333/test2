@@ -42,7 +42,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData.ProfileAttribute;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -69,8 +68,8 @@ import com.google.gwt.user.client.ui.Panel;
  * @author drfoster@novell.com
  */
 public class ProfileEntryDlg extends DlgBox {
-	private GwtTeamingMessages	m_messages;	// Access to Vibe's messages.
-	private PrincipalInfo					m_pi;				// The user whose profile entry we're dealing with.
+	private GwtTeamingMessages				m_messages;			// Access to Vibe's messages.
+	private Long							m_userId;			// The user whose profile entry we're dealing with.
 	private ProfileEntryInfoRpcResponseData	m_profileEntryInfo;	//
 	private VibeFlowPanel					m_fp;				// The panel holding the dialog's content.
 
@@ -168,7 +167,7 @@ public class ProfileEntryDlg extends DlgBox {
 	 */
 	private void loadPart1Now() {
 		GwtClientHelper.executeCommand(
-				new GetProfileEntryInfoCmd(m_pi.getId()),
+				new GetProfileEntryInfoCmd(m_userId),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -317,11 +316,11 @@ public class ProfileEntryDlg extends DlgBox {
 	 * Asynchronously runs the given instance of the profile entry
 	 * dialog.
 	 */
-	private static void runDlgAsync(final ProfileEntryDlg peDlg, final PrincipalInfo pi) {
+	private static void runDlgAsync(final ProfileEntryDlg peDlg, final Long userId) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				peDlg.runDlgNow(pi);
+				peDlg.runDlgNow(userId);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -331,9 +330,9 @@ public class ProfileEntryDlg extends DlgBox {
 	 * Synchronously runs the given instance of the profile entry
 	 * dialog.
 	 */
-	private void runDlgNow(PrincipalInfo pi) {
+	private void runDlgNow(Long userId) {
 		// Store the parameter and populate the dialog.
-		m_pi = pi;
+		m_userId = userId;
 		loadPart1Async();
 	}
 
@@ -362,7 +361,7 @@ public class ProfileEntryDlg extends DlgBox {
 			
 			// initAndShow parameters,
 			final ProfileEntryDlg peDlg,
-			final PrincipalInfo pi) {
+			final Long userId) {
 		GWT.runAsync(ProfileEntryDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -385,7 +384,7 @@ public class ProfileEntryDlg extends DlgBox {
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(peDlg, pi);
+					runDlgAsync(peDlg, userId);
 				}
 			}
 		});
@@ -405,9 +404,9 @@ public class ProfileEntryDlg extends DlgBox {
 	 * Initializes and shows the profile entry dialog.
 	 * 
 	 * @param peDlg
-	 * @param pi
+	 * @param userId
 	 */
-	public static void initAndShow(ProfileEntryDlg peDlg, PrincipalInfo pi) {
-		doAsyncOperation(null, peDlg, pi);
+	public static void initAndShow(ProfileEntryDlg peDlg, Long userId) {
+		doAsyncOperation(null, peDlg, userId);
 	}
 }

@@ -170,6 +170,7 @@ import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.Favorites;
@@ -1700,6 +1701,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			gusCmd = (GetUserStatusCmd) cmd;
 			result = getUserStatus( ri, gusCmd.getBinderId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_USER_WORKSPACE_INFO:
+		{
+			GetUserWorkspaceInfoCmd gusCmd = ((GetUserWorkspaceInfoCmd) cmd);
+			UserWorkspaceInfoRpcResponseData result = getUserWorkspaceInfo( ri, gusCmd.getBinderId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -4830,8 +4839,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	private Boolean trackBinder( HttpRequestInfo ri, String binderId )
 	{
-		BinderHelper.trackThisBinder( this, Long.parseLong(binderId), "add" );
-		return Boolean.TRUE;
+		Boolean reply;
+		try {
+			BinderHelper.trackThisBinder( this, Long.parseLong(binderId), "add" );
+			reply = Boolean.TRUE;
+		}
+		catch (Exception e) {
+			reply = Boolean.FALSE;
+		}
+		return reply;
 	}// endtrackBinder()
 	
 	/**
@@ -4843,8 +4859,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	private Boolean untrackBinder( HttpRequestInfo ri, String binderId )
 	{
-		BinderHelper.trackThisBinder( this, Long.parseLong(binderId), "delete" );
-		return Boolean.TRUE;
+		Boolean reply;
+		try {
+			BinderHelper.trackThisBinder( this, Long.parseLong(binderId), "delete" );
+			reply = Boolean.TRUE;
+		}
+		catch (Exception e) {
+			reply = Boolean.FALSE;
+		}
+		return reply;
 	}//end untrackBinder()
 	
 	/**
@@ -4856,9 +4879,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	private Boolean untrackPerson( HttpRequestInfo ri, String binderId )
 	{
-		Binder binder = getBinderModule().getBinder( Long.parseLong( binderId ) );
-		BinderHelper.trackThisBinder( this, binder.getOwnerId(), "deletePerson" );
-		return Boolean.TRUE;
+		Binder binder = getBinderModule().getBinderWithoutAccessCheck( Long.parseLong( binderId ) );
+		Boolean reply;
+		try {
+			BinderHelper.trackThisBinder( this, binder.getOwnerId(), "deletePerson" );
+			reply = Boolean.TRUE;
+		}
+		catch (Exception e) {
+			reply = Boolean.FALSE;
+		}
+		return reply;
 	}//end untrackPerson()
 
 	/*
@@ -5275,6 +5305,51 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			throws GwtTeamingException {
 	
 		return GwtProfileHelper.getUserStatus(this, sbinderId);
+	}
+
+	/**
+	 * Get the User Workspace Information from a user's Workspace ID.
+	 * 
+	 * @param ri
+	 * @param binderId This is the binderId of the user's workspace.
+	 * 
+	 * @return UserWorkspaceInfoRpcResponseData This object contains information about the user's workspace.
+	 * 
+	 * @throws GwtTeamingException 
+	 */
+	private UserWorkspaceInfoRpcResponseData getUserWorkspaceInfo(HttpRequestInfo ri, Long binderId) throws GwtTeamingException
+	{
+		boolean canAccessUserWorkspace;
+		Long userId = null;
+		Binder binder;
+		try
+		{
+			binder = getBinderModule().getBinder( binderId );
+			canAccessUserWorkspace = ( null != binder );
+		}
+		catch ( Exception e )
+		{
+			canAccessUserWorkspace = false;
+		}
+		
+		if ( ! canAccessUserWorkspace )
+		{
+			try
+			{
+				binder = getBinderModule().getBinderWithoutAccessCheck( binderId );
+				if ( null != binder )
+				{
+					Principal owner = binder.getCreation().getPrincipal(); //creator is user
+					owner = Utils.fixProxy( owner );
+					userId = owner.getId();
+				}
+			}
+			catch ( Exception e )
+			{
+				throw GwtServerHelper.getGwtTeamingException( e );
+			}
+		}
+		return new UserWorkspaceInfoRpcResponseData( canAccessUserWorkspace, userId );
 	}
 
 	/**

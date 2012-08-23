@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
+import org.kablink.teaming.gwt.client.binderviews.ProfileEntryDlg;
+import org.kablink.teaming.gwt.client.binderviews.ProfileEntryDlg.ProfileEntryDlgClient;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
@@ -95,6 +97,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.CollectionPointData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCollectionPointDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetUserWorkspaceInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
@@ -102,6 +105,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TrackBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UntrackBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UntrackPersonCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.UserWorkspaceInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
@@ -2392,9 +2396,9 @@ public class GwtMainPage extends ResizeComposite
 	{
 		SimpleProfileParams params = event.getSimpleProfileParams();
 		
-		Element element = params.getElement();
-		String binderId = params.getBinderId();
-		String userName = params.getUserName();
+		final Element element = params.getElement();
+		final String binderId = params.getBinderId();
+		final String userName = params.getUserName();
 		
 		if( ! GwtClientHelper.hasString( binderId ) )
 		{
@@ -2402,6 +2406,108 @@ public class GwtMainPage extends ResizeComposite
 			return;
 		}
 		
+		GetUserWorkspaceInfoCmd cmd = new GetUserWorkspaceInfoCmd( Long.parseLong( binderId ) );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetUserWorkspaceInfo(),
+					binderId );
+			}//end onFailure()
+			
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				UserWorkspaceInfoRpcResponseData responseData = ((UserWorkspaceInfoRpcResponseData) response.getResponseData());
+				if (responseData.canAccessUserWorkspace())
+				{
+					runQuickViewDlgAsync( binderId, userName, element );
+				}
+				
+				else {
+					Long userId = responseData.getUserId();
+					if ( null == userId )
+					     GwtClientHelper.deferredAlert( GwtTeaming.getMessages().qViewErrorNoUserForQuickView() );
+					else runProfileEntryDlgAsync( userId );
+				}
+			}// end onSuccess()
+		});
+	}// end onInvokeSimpleProfile()
+
+	/*
+	 * Asynchronously runs the profile entry dialog using the supplied
+	 * information.
+	 */
+	private void runProfileEntryDlgAsync( final Long userId )
+	{
+		ScheduledCommand doProfileEntry = new ScheduledCommand() {
+			@Override
+			public void execute()
+			{
+				runProfileEntryDlgNow( userId );
+			}// end execute()
+		};
+		Scheduler.get().scheduleDeferred( doProfileEntry );
+	}
+	
+	/*
+	 * Synchronously runs the profile entry dialog using the supplied
+	 * information.
+	 */
+	private void runProfileEntryDlgNow( final Long userId )
+	{
+		// Instantiate a profile entry dialog...
+		ProfileEntryDlg.createAsync( new ProfileEntryDlgClient()
+		{			
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}// end onUnavailable()
+			
+			@Override
+			public void onSuccess( final ProfileEntryDlg peDlg )
+			{
+				// ...and show it.
+				ScheduledCommand doShow = new ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						ProfileEntryDlg.initAndShow( peDlg, userId );
+					}// end execute()
+				};
+				Scheduler.get().scheduleDeferred( doShow );
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously runs the quick view dialog using the supplied
+	 * information.
+	 */
+	private void runQuickViewDlgAsync( final String binderId, final String userName, final Element element )
+	{
+		ScheduledCommand doQuickView = new ScheduledCommand() {
+			@Override
+			public void execute()
+			{
+				runQuickViewDlgNow( binderId, userName, element );
+			}// end execute()
+		};
+		Scheduler.get().scheduleDeferred( doQuickView );
+	}
+	
+	/*
+	 * Synchronously runs the quick view dialog using the supplied
+	 * information.
+	 */
+	private void runQuickViewDlgNow( final String binderId, final String userName, final Element element )
+	{
 		GwtQuickViewDlg.createAsync(
 				false,
 				true,
@@ -2410,7 +2516,8 @@ public class GwtMainPage extends ResizeComposite
 				binderId,
 				userName,
 				element,
-				new GwtQuickViewDlgClient() {			
+				new GwtQuickViewDlgClient()
+		{			
 			@Override
 			public void onUnavailable()
 			{
@@ -2438,7 +2545,7 @@ public class GwtMainPage extends ResizeComposite
 				qvd.setPopupPositionAndShow( posCallback );
 			}// end onSuccess()
 		} );		
-	}// end onInvokeSimpleProfile()
+	}
 	
 	/**
 	 * Handles LogoutEvent's received by this class.

@@ -285,7 +285,10 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 						@Override
 						public void onSuccess( VibeRpcResponse response )
 						{
-							updateFollowingButton(true);
+							boolean success = ((BooleanRpcResponseData) response.getResponseData()).getBooleanValue();
+							if (success)
+							     updateFollowingButton(true);
+							else GwtClientHelper.deferredAlert(GwtTeaming.getMessages().qViewErrorCantTrack());
 						}// end onSuccess()
 					});
 				}
@@ -308,7 +311,10 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 						@Override
 						public void onSuccess( VibeRpcResponse response )
 						{
-							updateFollowingButton(false);
+							boolean success = ((BooleanRpcResponseData) response.getResponseData()).getBooleanValue();
+							if (success)
+							     updateFollowingButton(false);
+							else GwtClientHelper.deferredAlert(GwtTeaming.getMessages().qViewErrorCantUntrack());
 						}// end onSuccess()
 					});
 				}

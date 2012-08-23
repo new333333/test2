@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.server.util;
 
 import static org.kablink.util.search.Constants.MODIFICATION_DATE_FIELD;
@@ -65,7 +64,6 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.client.GwtUser;
@@ -99,6 +97,11 @@ import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Criteria;
 
+/**
+ * Helper methods for the GWT based user profile features.
+ * 
+ * @author nbjensen@novell.com
+ */
 @SuppressWarnings("unchecked")
 public class GwtProfileHelper {
 	
@@ -250,7 +253,7 @@ public class GwtProfileHelper {
 		ProfileInfo profile = new ProfileInfo();
 
 		//get the binder
-		Binder binder = bs.getBinderModule().getBinder(Long.valueOf(binderId));
+		Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck(Long.valueOf(binderId));
 		Principal owner = binder.getCreation().getPrincipal(); //creator is user
 		owner = Utils.fixProxy(owner);
 		
@@ -767,7 +770,7 @@ public class GwtProfileHelper {
 	public static Principal getPrincipalByBinderId(AllModulesInjected bs, String sbinderId) throws OperationAccessControlExceptionNoName {
 		//Convert binderID to Long
 		Long binderId = Long.valueOf(sbinderId);
-		Binder binder = bs.getBinderModule().getBinder(binderId);
+		Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck(binderId);
 
 		//Get the Owner of the binder
 		Principal p = binder.getOwner();
