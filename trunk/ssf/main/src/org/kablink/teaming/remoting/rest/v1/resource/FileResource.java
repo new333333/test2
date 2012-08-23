@@ -32,13 +32,19 @@
  */
 package org.kablink.teaming.remoting.rest.v1.resource;
 
+import com.bradmcevoy.http.exceptions.NotAuthorizedException;
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.FileUtils;
+import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
@@ -48,12 +54,15 @@ import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.webdav.WebdavException;
 import org.kablink.util.api.ApiErrorCode;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -66,6 +75,8 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * User: david
@@ -150,6 +161,40 @@ public class FileResource extends AbstractFileResource {
         FileAttachment fa = findFileAttachment(fileId);
         DefinableEntity entity = fa.getOwner().getEntity();
         deleteFile(entity.getEntityType().name(), entity.getId(), fa.getFileItem().getName());
+    }
+
+    @POST
+    @Path("/name")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public FileProperties renameFile(@PathParam("id") String fileId,
+                                     @FormParam("name") String name) throws WriteFilesException, WriteEntryDataException {
+        FileAttachment fa = findFileAttachment(fileId);
+        if (name==null || name.length()==0) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'name' form parameter");
+        }
+        DefinableEntity entity = fa.getOwner().getEntity();
+
+        Map<FileAttachment,String> renamesTo = new HashMap<FileAttachment,String>();
+        renamesTo.put(fa, name);
+
+        InputDataAccessor inputData = null;
+
+        if(entity instanceof FolderEntry && fa.getFileItem().getName().equals(entity.getTitle())) {
+            // This entry's title is identical to the current name of the file.
+            // In this case, it's reasonable to change the title to match the new name as well.
+            Map data = new HashMap();
+            data.put("title", name);
+            inputData = new MapInputData(data);
+        }
+        else {
+            inputData = new EmptyInputData();
+        }
+
+        getFolderModule().modifyEntry(entity.getParentBinder().getId(),
+                entity.getId(), inputData, null, null, renamesTo, null);
+
+        return ResourceUtil.buildFileProperties(fa);
     }
 
     @GET
