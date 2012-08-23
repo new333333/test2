@@ -1827,14 +1827,25 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the modify Net Folder Root dialog
 	String modifyNetFolderRootDlg_AddHeader();
+	String modifyNetFolderRootDlg_AlreadyAPrivilegedPrincipal( String name );
+	String modifyNetFolderRootDlg_CantSelectExternalUser();
 	String modifyNetFolderRootDlg_EditHeader( String name );
 	String modifyNetFolderRootDlg_ErrorCreatingNetFolderRoot( String err );
 	String modifyNetFolderRootDlg_ErrorModifyingNetFolderRoot( String err );
+	String modifyNetFolderRootDlg_Group();
 	String modifyNetFolderRootDlg_InsufficientRights();
+	String modifyNetFolderRootDlg_NameCol();
 	String modifyNetFolderRootDlg_NameLabel();
 	String modifyNetFolderRootDlg_NameRequired();
+	String modifyNetFolderRootDlg_NoPrivilegedPrincipalsHint();
+	String modifyNetFolderRootDlg_PrivilegedPrincipalsHint();
+	String modifyNetFolderRootDlg_ProxyNameLabel();
+	String modifyNetFolderRootDlg_ProxyPwdLabel();
+	String modifyNetFolderRootDlg_RemovePrincipalHint();
 	String modifyNetFolderRootDlg_RootAlreadyExists();
 	String modifyNetFolderRootDlg_RootPathLabel();
+	String modifyNetFolderRootDlg_TypeCol();
+	String modifyNetFolderRootDlg_User();
 	
 	
 }// end GwtTeamingMessages
