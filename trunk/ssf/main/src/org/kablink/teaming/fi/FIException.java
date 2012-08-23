@@ -51,6 +51,7 @@ public class FIException extends UncheckedCodedException {
 	public static final String BINDER_IS_NOT_MIRRORED_FOLDER="fi.error.binder.isnot.mirrored.folder";
 	public static final String FAILED_TO_SYNCHRONIZE_NOT_DIRECTORY="fi.error.failed.to.synchronize.not.directory";
 	public static final String CANNOT_ADD_FOLDER_ANCESTER="fi.error.cannot.add.folder.ancester";
+	public static final String CANNOT_MAP_TO_EXTERNAL_PRINCIPAL_ID="fi.error.cannot.map.to.external.principal.id";
 	
     public FIException(String errorCode, Object arg) {
     	super(errorCode, new Object[]{arg});
