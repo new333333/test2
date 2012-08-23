@@ -33,9 +33,11 @@
 package org.kablink.teaming.domain;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 
 /**
  * This class is used to marker a class that is not a <code>Binder</code>
@@ -126,6 +128,14 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
     public Set getChildWorkAreas() {
     	return new HashSet();
     }
+    
+    public boolean isAclExternallyControlled() {
+    	return this.getParentBinder().isAclExternallyControlled();
+    }
+    public List<WorkAreaOperation> getExternallyControlledRights() {
+    	return this.getParentBinder().getExternallyControlledRights();
+    }
+    
 	/**
 	 * @hibernate.property not-null="true"
 	 * @return
@@ -180,5 +190,4 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
      public void setTeamMemberIds(Set<Long> memberIds) {
      }
      /*****************End WorkArea interface stuff***********/
-     
 }

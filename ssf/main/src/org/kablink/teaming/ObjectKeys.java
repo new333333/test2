@@ -152,7 +152,7 @@ public interface ObjectKeys {
 	public static final String FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID="402883b90d0de1f3010d0df5582b0025";
 
 	//reserved id for Filr file read role
-	public static final String FUNCTION_FILR_FILE_READ_INTERNALID="402883b90d0de1f3010d0df5582b0025";
+	public static final String FUNCTION_FILR_FILE_READ_INTERNALID="402883b90d0de1f3010d0df5582b0031";
 	//reserved id for Filr file write role
 	public static final String FUNCTION_FILR_FILE_WRITE_INTERNALID="402883b90d0de1f3010d0df5582b0026";
 	//reserved id for Filr file owner role

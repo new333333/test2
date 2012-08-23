@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.portlet.binder;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -56,11 +58,14 @@ import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SimpleProfiler;
@@ -305,9 +310,74 @@ public class AccessControlController extends AbstractBinderController {
 	//used by ajax controller
 	public static void setupAccess(AllModulesInjected bs, RenderRequest request, RenderResponse response, WorkArea wArea, Map model) {
 		String scope = ObjectKeys.ROLE_TYPE_BINDER;
+		List<Function> extraBinderFunctions = new ArrayList<Function>();
 		if (wArea instanceof Entry) scope = ObjectKeys.ROLE_TYPE_ENTRY;
 		if (wArea instanceof ZoneConfig) scope = ObjectKeys.ROLE_TYPE_ZONE;
+		if (wArea instanceof Binder && ((Binder)wArea).isMirrored()) {
+			//This is a mirrored folder. See if it is an external ACL controlled folder
+			Binder binder = (Binder) wArea;
+			if (binder.getResourceDriver() instanceof AclResourceDriver) {
+				//This is a mirrored folder with external ACLs
+				model.put(WebKeys.WORKAREA_IS_EXTERNAL_ACLS, Boolean.TRUE);
+				AclResourceDriver ard = (AclResourceDriver)binder.getResourceDriver();
+				scope = ard.getRegisteredRoleTypeName();
+				//Get the list of other binder functions that can also be used with this WorkArea
+				//These roles cannot have any rights that are being controlled externally
+				List<Function> binderFunctions = bs.getAdminModule().getFunctions(ObjectKeys.ROLE_TYPE_BINDER);
+				List<WorkAreaOperation> ardWaos = wArea.getExternallyControlledRights();
+				//Now check if this role is OK to be used
+				for (Function f : binderFunctions) {
+					//If there are no operations (aka rights) that are being controlled by the external ACL 
+					//  in this function, then it is OK to be included in the list
+					boolean addThisFunction = true;
+					Set<WorkAreaOperation> waos = f.getOperations();
+					for (WorkAreaOperation wao : waos) {
+						if (ardWaos.contains(wao)) {
+							addThisFunction = false;
+							break;
+						}
+					}
+					if (addThisFunction) {
+						//This function is ok to use
+						extraBinderFunctions.add(f);
+					}
+				}
+			} else {
+				if (1 == 0) {
+					//****************** emulate Filr for testing *******************
+					model.put(WebKeys.WORKAREA_IS_EXTERNAL_ACLS, Boolean.TRUE);
+					scope = ObjectKeys.ROLE_TYPE_FILR;
+					//Get the list of other binder functions that can also be used with this WorkArea
+					//These roles cannot have any rights that are being controlled externally
+					List<Function> binderFunctions = bs.getAdminModule().getFunctions(ObjectKeys.ROLE_TYPE_BINDER);
+					List<WorkAreaOperation> ardWaos = WorkAreaOperation.getDefaultExternallyControlledRights();
+					//Now check if this role is OK to be used
+					for (Function f : binderFunctions) {
+						
+						//If there are no operations (aka rights) that are being controlled by the external ACL 
+						//  in this function, then it is OK to be included in the list
+						boolean addThisFunction = true;
+						Set<WorkAreaOperation> waos = f.getOperations();
+						for (WorkAreaOperation wao : waos) {
+							if (ardWaos.contains(wao)) {
+								addThisFunction = false;
+								break;
+							}
+						}
+						if (addThisFunction) {
+							//This function is ok to use
+							extraBinderFunctions.add(f);
+						}
+					}
+				}
+			}
+		}
 		List functions = bs.getAdminModule().getFunctions(scope);
+		if (!extraBinderFunctions.isEmpty()) {
+			for (Function f : extraBinderFunctions) {
+				if (!functions.contains(f)) functions.add(f);
+			}
+		}
 		List membership;
 		boolean zoneWide = wArea.getWorkAreaType().equals(ZoneConfig.WORKAREA_TYPE);
 		if (wArea.isFunctionMembershipInherited()) {

@@ -424,11 +424,16 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 		<ul class="ss_actions_bar5 ss_actions_bar_submenu" style="white-space:nowrap;">
 		<c:set var="ss_roleWasAdded" value="false"/>
 	    <c:forEach var="function" items="${ssFunctions}">
-	     <c:if test="${function.scope == ssWorkArea.workAreaType || 
-	     		(function.scope == 'binder' && ssWorkArea.workAreaType == 'workspace') || 
-	     		(function.scope == 'binder' && ssWorkArea.workAreaType == 'folder') || 
-	     		(function.scope == 'binder' && ssWorkArea.workAreaType == 'profiles')}">
+	     <c:if test="${(function.scope == ssWorkArea.workAreaType && !ssWorkAreaIsExternalAcls) || 
+	     		(function.scope == 'binder' && ssWorkArea.workAreaType == 'workspace' && !ssWorkAreaIsExternalAcls) || 
+	     		(function.scope == 'binder' && ssWorkArea.workAreaType == 'folder' && !ssWorkAreaIsExternalAcls) || 
+	     		(function.scope == 'binder' && ssWorkArea.workAreaType == 'profiles' && !ssWorkAreaIsExternalAcls) || 
+	     		(ssWorkAreaIsExternalAcls && function.scope == 'filr') ||
+	     		(!empty ssFunctionsAllowed[function.id])}">
 	      <c:set var="includeRole" value="1"/>
+	      <c:if test="${function.scope == 'filr'}">
+	        <c:set var="includeRole" value="0"/>
+	      </c:if>
 	      <c:forEach var="sortedFunction" items="${ss_accessSortedFunctions}">
 	        <c:if test="${sortedFunction.id == function.id}">
 	          <c:set var="includeRole" value="0"/>

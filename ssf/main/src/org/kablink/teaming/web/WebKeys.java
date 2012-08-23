@@ -1491,6 +1491,7 @@ public class WebKeys {
     public static final String WINDOW_STATE="ss_windowState";
     public static final String WINDOW_HEIGHT="ss_windowHeight";
     public static final String WORKAREA="ssWorkArea";
+    public static final String WORKAREA_IS_EXTERNAL_ACLS="ssWorkAreaIsExternalAcls";
     public static final String WORKAREA_OPERATIONS="ssWorkAreaOperations";
     public static final String WORKFLOW_CAPTIONS="ssWorkflowCaptions";
     public static final String WORKFLOW_THREAD_CAPTIONS="ssWorkflowThreadCaptions";

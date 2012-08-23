@@ -61,6 +61,7 @@ import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.license.LicenseManager;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -241,18 +242,26 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				return false;
 			}
 		}
-		if (workArea.isFunctionMembershipInherited()) {
+		boolean isExternalAclControlledOperation = false;
+		if (workArea.isAclExternallyControlled()) {
+			//This is a workarea with external ACLs
+			List<WorkAreaOperation> ardWaos = workArea.getExternallyControlledRights();
+			if (ardWaos.contains(workAreaOperation)) {
+				//This right is controlled externally
+				isExternalAclControlledOperation = true;
+			}
+		}
+		if ((!isExternalAclControlledOperation && workArea.isFunctionMembershipInherited()) || 
+				(isExternalAclControlledOperation && workArea.isExtFunctionMembershipInherited())) {
 			WorkArea parentWorkArea = workArea.getParentWorkArea();
 			if (parentWorkArea == null) {
 				throw new InternalException(
 						"Cannot inherit function membership when it has no parent");
-			}
-			else {
+			} else {
 				// use the original workArea owner
-				if(testOperationRecursive(user, workAreaStart, parentWorkArea, workAreaOperation)) {
+				if (testOperationRecursive(user, workAreaStart, parentWorkArea, workAreaOperation)) {
 					return true;
-				}
-				else {
+				} else {
 					return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, null);
 				}
 			}
