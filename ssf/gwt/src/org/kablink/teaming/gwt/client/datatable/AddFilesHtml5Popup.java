@@ -48,7 +48,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.UploadFileBlobCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
+import org.kablink.teaming.gwt.client.widgets.ProgressBar;
+import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
 
 import org.vectomatic.dnd.DataTransferExt;
 import org.vectomatic.dnd.DropPanel;
@@ -89,6 +90,7 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -115,18 +117,21 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private BinderInfo						m_folderInfo;				// The folder the add files is running against.
 	private Button							m_browseButton;				// Button that fronts the default browser 'Browse' button.
 	private DropPanel						m_dndPanel;					// The drag and drop panel that holds the popup's content.
+	private FlexTable						m_pbPanel;					// Panel that will hold the progress bars.
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
+	private Image							m_busyImage;				// Image holding a spinner that's show while an upload is happening.
 	private InlineLabel						m_hintLabel;				// The label inside the hint box.
 	private int								m_readThis;					// The file out of the total that is currently being uploaded.
 	private int								m_readTotal;				// Total number of files to upload during an upload event.
-	private List<File>						m_ignoredAsFolders;			//
+	private List<File>						m_ignoredAsFolders;			// Tracks files that are dropped that 'appear' to be folders and are hence, ignored.
 	private List<File>						m_readQueue;				// List of files queued for uploading.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private FileBlob						m_fileBlob;					// Contains information about blobs of a file as they're read and uploaded.
 	private FileReader						m_reader;					// Reads files.
 	private FileUploadExt					m_uploadButton;				// A hidden button that services the m_browseButton above.
-	private SpinnerPopup					m_busy;						// Shows a spinner while uploading files.
+	private ProgressBar						m_pbPerItem;				// Displays a per item progress bar as items are uploaded to the server.
+	private ProgressBar						m_pbTotal;					// Displays a total    progress bar as items are uploaded to the server.
 
 	// Controls whether the HTML5 popup will be used vs. the Java
 	// applet to upload files.
@@ -141,7 +146,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private static ReadType DEFAULT_READ_TYPE	= ReadType.BINARY_STRING;
 	
 	// The minimum height and width of the popup.
-	private static int MIN_HEIGHT	= 200;	//
+	private static int MIN_HEIGHT	= 250;	//
 	private static int MIN_WIDTH	= 800;	//
 
 	// Padding on the left/right and top/bottom of the popup.
@@ -186,8 +191,6 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		m_reader.addLoadEndHandler(this);
 		m_reader.addErrorHandler(  this);
 		
-		m_busy = new SpinnerPopup(false);	// false -> Not modal.
-	
 		// ...and create the popup's content.
 		addStyleName("vibe-addFilesHtml5Popup");
 		createContent();
@@ -274,6 +277,11 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		hintPanel.addStyleName("vibe-addFilesHtml5Popup-innerHintPanel");
 		m_dndPanel.add(hintPanel);
 		
+		m_busyImage = GwtClientHelper.buildImage(m_images.busyAnimation_medium());
+		m_busyImage.addStyleName("vibe-addFilesHtml5Popup-innerHintBusy");
+		m_busyImage.setVisible(false);
+		hintPanel.add(m_busyImage);
+		
 		m_hintLabel = new InlineLabel(m_messages.addFilesHtml5PopupHint());
 		m_hintLabel.addStyleName("vibe-addFilesHtml5Popup-innerHintLabel");
 		hintPanel.add(m_hintLabel);
@@ -292,6 +300,27 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		m_browseButton.addKeyDownHandler(this);
 		browsePanel.add(m_browseButton);
 		hintPanel.add(browsePanel);
+
+		// Create an initially hidden panel containing progress bars
+		// used to show upload progress.
+		m_pbPanel = new VibeFlexTable();
+		m_pbPanel.addStyleName("vibe-addFilesHtml5Popup-progressBar-panel");
+		m_pbPanel.setVisible(false);
+		hintPanel.add(m_pbPanel);
+		
+		InlineLabel il = new InlineLabel(m_messages.addFilesHtml5PopupProgressItem());
+		il.addStyleName("vibe-addFilesHtml5Popup-progressBar-perItem-label");
+		m_pbPanel.setWidget(0, 0, il);
+		m_pbPerItem = new ProgressBar(0, 0, 0);
+		m_pbPerItem.addStyleName("vibe-addFilesHtml5Popup-progressBar-perItem-bar");
+		m_pbPanel.setWidget(0, 1, m_pbPerItem);
+		
+		il = new InlineLabel(m_messages.addFilesHtml5PopupProgressTotal());
+		il.addStyleName("vibe-addFilesHtml5Popup-progressBar-total-label");
+		m_pbPanel.setWidget(1, 0, il);
+		m_pbTotal = new ProgressBar(0, 0, 0);
+		m_pbTotal.addStyleName("vibe-addFilesHtml5Popup-progressBar-total-bar");
+		m_pbPanel.setWidget(1, 1, m_pbTotal);
 	}
 
 	/*
@@ -338,6 +367,17 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private String getFileDate(File file) {
 		JsDate fileDate = ((null == file) ? null : file.getLastModifiedDate());
 		return ((null == fileDate) ? null : fileDate.toUTCString());
+	}
+
+	/*
+	 * Returns the total size of the files pending upload.
+	 */
+	private double getTotalQueueFileSize() {
+		double reply = 0;
+		for (File file:  m_readQueue) {
+			reply += file.getSize();
+		}
+		return reply;
 	}
 	
 	/*
@@ -611,6 +651,10 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			// Yes!  Was this blob successfully uploaded?
 			if (null == m_reader.getError()) {
 				// Yes!  Process it.
+				m_pbPerItem.incrProgress(m_fileBlob.getBlobSize());
+				if (m_pbTotal.isVisible()) {
+					m_pbTotal.incrProgress(  m_fileBlob.getBlobSize());
+				}
 				processBlobAsync();
 			}
 			
@@ -619,6 +663,9 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 				// onError() should have handled the error.  Skip to
 				// the next file to upload.
 				popCurrentFile();
+				if (m_pbTotal.isVisible()) {
+					m_pbTotal.setProgress(m_pbTotal.getMaxProgress() - getTotalQueueFileSize());
+				}
 				uploadNextNow();
 			}
 		}
@@ -862,6 +909,50 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	}
 
 	/*
+	 * Does what's necessary with the UI to indicate an upload is active or not.
+	 */
+	private void showUploadsActive(boolean active) {
+		// Are we showing uploads as being active?
+		if (active) {
+			// Yes!  If we aren't current showing an active upload...
+			if (!(m_busyImage.isVisible())) {
+				// ...update the text displayed...
+				m_browseButton.setText( m_messages.addFilesHtml5PopupAbort()   );
+				m_browseButton.setTitle(m_messages.addFilesHtml5PopupAbortAlt());
+				
+				// ...show the progress panel and if necessary...
+				m_busyImage.setVisible(true);
+				m_pbPanel.setVisible(  true);
+				boolean showTotal = (1 < m_readQueue.size()); 
+				if (showTotal) {
+					// ...the total progress bar...
+					m_pbTotal.setMaxProgress(getTotalQueueFileSize());
+					m_pbTotal.setMinProgress(0                      );
+					m_pbTotal.setProgress(   0                      );
+				}
+				m_pbPanel.getRowFormatter().setVisible(1, showTotal);
+			}
+			
+			// ...and show the per item progress bar.
+			m_pbPerItem.setMaxProgress(getCurrentFile().getSize());
+			m_pbPerItem.setMinProgress(0                         );
+			m_pbPerItem.setProgress(   0                         );
+		}
+		
+		else {
+			// No, we aren't showing uploads as being active!  They
+			// must changing to inactive.  Update the text displayed...
+			m_browseButton.setText( m_messages.addFilesHtml5PopupBrowse()   );
+			m_browseButton.setTitle(m_messages.addFilesHtml5PopupBrowseAlt());
+			m_hintLabel.setText(    m_messages.addFilesHtml5PopupHint()     );
+
+			// ...and hide any necessary widgets.
+			m_busyImage.setVisible(false);
+			m_pbPanel.setVisible(  false);
+		}
+	}
+	
+	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */
 	private void unregisterEvents() {
@@ -894,11 +985,9 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private void uploadNextNow() {
 		// Are we done uploading files?
 		if (!(uploadsPending())) {
-			// Yes!  Reset the popup for more to be uploaded...
-			m_browseButton.setText( m_messages.addFilesHtml5PopupBrowse()   );
-			m_browseButton.setTitle(m_messages.addFilesHtml5PopupBrowseAlt());
-			m_hintLabel.setText(    m_messages.addFilesHtml5PopupHint()     );
-			m_busy.hide();
+			// Yes!  Reset the popup to indicate there are no uploads
+			// in progress...
+			showUploadsActive(false);
 
 			// ...tell the user about any folders that were ignored...
 			handleIgnoredFolders();
@@ -908,14 +997,9 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 		}
 		
 		else {
-			// No, we aren't done uploading files!  If we're not
-			// showing that we're busy uploading yet...
-			if ((!(m_busy.isAttached())) || (!(m_busy.isVisible()))) {
-				// ...show it now.
-				m_browseButton.setText( m_messages.addFilesHtml5PopupAbort()   );
-				m_browseButton.setTitle(m_messages.addFilesHtml5PopupAbortAlt());
-				m_busy.center();
-			}
+			// No, we aren't done uploading files!  Reset the popup to
+			// indicate that an upload is in progress..
+			showUploadsActive(true);
 
 			// Change the hint to reflect the current file...
 			File file = getCurrentFile();
