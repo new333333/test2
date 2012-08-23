@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -46,9 +47,11 @@ import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
+import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.modelprocessor.InstanceLevelProcessorSupport;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.Validator;
@@ -783,6 +786,21 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     public Set getChildWorkAreas() {
     	return new HashSet(getBinders());
     }
+    public boolean isAclExternallyControlled() {
+    	if (this.getResourceDriver() instanceof AclResourceDriver) {
+    		return Boolean.TRUE;
+    	} else {
+    		return Boolean.FALSE;
+    	}
+    }
+    public List<WorkAreaOperation> getExternallyControlledRights() {
+    	if (this.getResourceDriver() instanceof AclResourceDriver) {
+    		return Arrays.asList(((AclResourceDriver)this.getResourceDriver()).getExternallyControlledlRights());
+    	} else {
+    		return new ArrayList<WorkAreaOperation>();
+    	}
+    }
+
 	/**
 	 * @hibernate.property not-null="true"
 	 * @return

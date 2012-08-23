@@ -100,7 +100,7 @@
 <c:if test="${!empty ssFunctionMap[function].ssOwner || isEntryACL}">
 <input type="checkbox" 
   <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] || 
-  		!ss_accessControlConfigureAllowed}">
+  		!ss_accessControlConfigureAllowed || function.scope == 'filr'}">
     disabled="disabled"
   </c:if>
   name="role_id${function.id}_owner"
@@ -115,7 +115,7 @@
 <c:if test="${empty ssFunctionMap[function].ssOwner && !isEntryACL}">
 <input type="checkbox" 
   <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] ||
-  		!ss_accessControlConfigureAllowed}">
+  		!ss_accessControlConfigureAllowed || function.scope == 'filr'}">
     disabled="disabled"
   </c:if>
   name="role_id${function.id}_owner"
@@ -147,7 +147,7 @@
 <c:if test="${!empty ssFunctionMap[function].ssTeamMember}">
 <input type="checkbox" 
   <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] ||
-  		!ss_accessControlConfigureAllowed}">
+  		!ss_accessControlConfigureAllowed || function.scope == 'filr'}">
     disabled="disabled"
   </c:if>
   name="role_id${function.id}_teamMember" 
@@ -157,7 +157,7 @@
 <c:if test="${empty ssFunctionMap[function].ssTeamMember}">
 <input type="checkbox" 
   <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] || 
-  		!ss_accessControlConfigureAllowed}">
+  		!ss_accessControlConfigureAllowed || function.scope == 'filr'}">
     disabled="disabled"
   </c:if>
   name="role_id${function.id}_teamMember"
@@ -250,7 +250,7 @@
 		(ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
     <input type="checkbox" 
     <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] ||
-    		!ss_accessControlConfigureAllowed}">
+    		!ss_accessControlConfigureAllowed || function.scope == 'filr'}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${group.id}" 
@@ -260,8 +260,8 @@
 <c:if test="${empty ssFunctionMap[function].ssGroups[group.id] && 
 		(ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
     <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || 
-    	empty ssFunctionsAllowed[function.id] || !ss_accessControlConfigureAllowed}">
+    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] || 
+    		!ss_accessControlConfigureAllowed || function.scope == 'filr'}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${group.id}"
@@ -332,8 +332,8 @@
 <c:if test="${!empty ssFunctionMap[function].ssUsers[user.id] && 
 		(ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
     <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || 
-    	empty ssFunctionsAllowed[function.id] || !ss_accessControlConfigureAllowed}">
+    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] || 
+    		!ss_accessControlConfigureAllowed || function.scope == 'filr'}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${user.id}"
@@ -343,8 +343,8 @@
 <c:if test="${empty ssFunctionMap[function].ssUsers[user.id] && 
 		(ssWorkArea.workAreaType != 'zone' || function.zoneWide)}">
     <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || 
-    	empty ssFunctionsAllowed[function.id] || !ss_accessControlConfigureAllowed}">
+    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] || 
+    		!ss_accessControlConfigureAllowed || function.scope == 'filr'}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${user.id}"
@@ -440,8 +440,8 @@
 </c:if>
 <c:if test="${!empty ssFunctionMap[function].ssApplicationGroups[group.id] && !function.zoneWide}">
     <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || 
-    	empty ssFunctionsAllowed[function.id] || !ss_accessControlConfigureAllowed}">
+    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] || 
+    		!ss_accessControlConfigureAllowed || function.scope == 'filr'}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${group.id}" 
@@ -450,8 +450,8 @@
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssApplicationGroups[group.id] && !function.zoneWide}">
     <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || 
-    	empty ssFunctionsAllowed[function.id] || !ss_accessControlConfigureAllowed}">
+    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] || 
+    		!ss_accessControlConfigureAllowed || function.scope == 'filr'}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${group.id}"
@@ -530,8 +530,8 @@
 </c:if>
 <c:if test="${!empty ssFunctionMap[function].ssApplications[application.id] && !function.zoneWide}">
     <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || 
-    	empty ssFunctionsAllowed[function.id] || !ss_accessControlConfigureAllowed}">
+    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] || 
+    		!ss_accessControlConfigureAllowed || function.scope == 'filr'}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${application.id}" 
@@ -539,8 +539,8 @@
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssApplications[application.id] && !function.zoneWide}">
     <input type="checkbox" 
-    <c:if test="${ssWorkArea.functionMembershipInherited || 
-    	empty ssFunctionsAllowed[function.id] || !ss_accessControlConfigureAllowed}">
+    <c:if test="${ssWorkArea.functionMembershipInherited || empty ssFunctionsAllowed[function.id] || 
+    		!ss_accessControlConfigureAllowed || function.scope == 'filr'}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${application.id}" />

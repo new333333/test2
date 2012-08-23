@@ -100,7 +100,8 @@ public class RelevanceDashboardHelper {
 			String relevanceTab = (String)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_TAB);
 			if (!(MiscUtil.hasString(relevanceTab))) {
 				if (Utils.checkIfFilr()) {
-					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_FILESPACES;
+					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_FILESPACES;  //not implemented
+					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW;
 				} else {
 					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW;
 				}
@@ -111,7 +112,8 @@ public class RelevanceDashboardHelper {
 						relevanceTab.equals(ObjectKeys.RELEVANCE_DASHBOARD_MINIBLOGS) ||
 						relevanceTab.equals(ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW)) {
 					//This tab is not shown, revert back to the filespaces tab
-					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_FILESPACES;
+					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_FILESPACES;  //not implemented
+					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW;
 				}
 			}
 			if (!type.equals("") && !type.equals(relevanceTab)) {

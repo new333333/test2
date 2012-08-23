@@ -350,7 +350,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			for (WorkAreaFunctionMembership wfm:wfms) {
 				ids.addAll(wfm.getMemberIds());				
 			}
-			addGlobalFunctions(zoneConfig, ids);
+			addGlobalFunctions(zoneConfig);
 			//Remove old site_admin right
 			//now remove the old right
 			List<Function>fns = getFunctionManager().findFunctions(top.getId(), siteAdmin);
@@ -565,7 +565,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		
 		//In general, make sure all of the global functions are there
 		//This call only adds roles that weren't there already
-		addGlobalFunctions(zoneConfig, new ArrayList());
+		addGlobalFunctions(zoneConfig);
 
 		if (version.intValue() <= 2 || zoneConfig.getUpgradeVersion() < ZoneConfig.ZONE_LATEST_VERSION) {
 			zoneConfig.setUpgradeVersion(ZoneConfig.ZONE_LATEST_VERSION);
@@ -590,7 +590,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			for (WorkAreaFunctionMembership wfm:wfms) {
 				ids.addAll(wfm.getMemberIds());				
 			}
-			addGlobalFunctions(zoneConfig, ids);
+			addGlobalFunctions(zoneConfig);
 		}
 		if (version.intValue() <= 4) {
 			//add new role
@@ -634,13 +634,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		}
 		
 		if(version.intValue() <= 10) {
-			addFilrRoleFolderRead(top);
-			addFilrRoleFolderWrite(top);
-			addFilrRoleFolderOwner(top);
-			addFilrRoleFileRead(top);
-			addFilrRoleFileWrite(top);
-			addFilrRoleFileOwner(top);
+			//No longer used
 		}
+		
 		//Remove unused eEnableExternalSharing and AllowExternalSharing roles
 		WorkAreaOperation enableExternalSharing = WorkAreaOperation.getInstance("enableExternalSharing");
 		WorkAreaOperation allowExternalSharing = WorkAreaOperation.getInstance("allowExternalSharing");
@@ -962,12 +958,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		Function binderRole = addBinderRole(top);
     		Function teamWsRole = addTeamWorkspaceRole(top);
     		Function allowSharingRole = addAllowSharingRole(top);
-			addFilrRoleFolderRead(top);
-			addFilrRoleFolderWrite(top);
-			addFilrRoleFolderOwner(top);
-			addFilrRoleFileRead(top);
-			addFilrRoleFileWrite(top);
-			addFilrRoleFileOwner(top);
 
     		//make sure allusers group and roles are defined, may be referenced by templates
     		getAdminModule().updateDefaultDefinitions(top.getId(), false);
@@ -1042,7 +1032,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	
     		members.clear();
     		members.add(user.getId());
-    		addGlobalFunctions(zoneConfig, members);
+    		addGlobalFunctions(zoneConfig);
     		
     		//all applications limited to participant for zone
     		setApplicationGlobalRoles(zoneConfig, applicationGroup, participantsRole);
@@ -1496,9 +1486,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getFunctionManager().addFunction(function);		
 		return function;
 	}
-	private Function addFilrRoleFolderRead(Workspace top) {
+	private Function addFilrRoleFolderRead(Long zoneId) {
 		Function function = new Function();
-		function.setZoneId(top.getId());
+		function.setZoneId(zoneId);
 		function.setName(ObjectKeys.ROLE_TITLE_FILR_FOLDER_READ);
 		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
 		function.setInternalId(ObjectKeys.FUNCTION_FILR_FOLDER_READ_INTERNALID);
@@ -1506,9 +1496,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getFunctionManager().addFunction(function);		
 		return function;
 	}
-	private Function addFilrRoleFolderWrite(Workspace top) {
+	private Function addFilrRoleFolderWrite(Long zoneId) {
 		Function function = new Function();
-		function.setZoneId(top.getId());
+		function.setZoneId(zoneId);
 		function.setName(ObjectKeys.ROLE_TITLE_FILR_FOLDER_WRITE); 
 		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
 		function.setInternalId(ObjectKeys.FUNCTION_FILR_FOLDER_WRITE_INTERNALID);
@@ -1519,9 +1509,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getFunctionManager().addFunction(function);		
 		return function;
 	}
-	private Function addFilrRoleFolderOwner(Workspace top) {
+	private Function addFilrRoleFolderOwner(Long zoneId) {
 		Function function = new Function();
-		function.setZoneId(top.getId());
+		function.setZoneId(zoneId);
 		function.setName(ObjectKeys.ROLE_TITLE_FILR_FOLDER_OWNER);
 		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
 		function.setInternalId(ObjectKeys.FUNCTION_FILR_FOLDER_OWNER_INTERNALID);
@@ -1539,9 +1529,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getFunctionManager().addFunction(function);		
 		return function;
 	}
-	private Function addFilrRoleFileRead(Workspace top) {
+	private Function addFilrRoleFileRead(Long zoneId) {
 		Function function = new Function();
-		function.setZoneId(top.getId());
+		function.setZoneId(zoneId);
 		function.setName(ObjectKeys.ROLE_TITLE_FILR_FILE_READ);
 		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
 		function.setInternalId(ObjectKeys.FUNCTION_FILR_FILE_READ_INTERNALID);
@@ -1549,9 +1539,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getFunctionManager().addFunction(function);		
 		return function;
 	}
-	private Function addFilrRoleFileWrite(Workspace top) {
+	private Function addFilrRoleFileWrite(Long zoneId) {
 		Function function = new Function();
-		function.setZoneId(top.getId());
+		function.setZoneId(zoneId);
 		function.setName(ObjectKeys.ROLE_TITLE_FILR_FILE_WRITE);
 		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
 		function.setInternalId(ObjectKeys.FUNCTION_FILR_FILE_WRITE_INTERNALID);
@@ -1562,9 +1552,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getFunctionManager().addFunction(function);		
 		return function;
 	}
-	private Function addFilrRoleFileOwner(Workspace top) {
+	private Function addFilrRoleFileOwner(Long zoneId) {
 		Function function = new Function();
-		function.setZoneId(top.getId());
+		function.setZoneId(zoneId);
 		function.setName(ObjectKeys.ROLE_TITLE_FILR_FILE_OWNER);
 		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
 		function.setInternalId(ObjectKeys.FUNCTION_FILR_FILE_OWNER_INTERNALID);
@@ -1614,9 +1604,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		}
 	}
 	
-	private void addGlobalFunctions(ZoneConfig zoneConfig, List ids) {
-		// Do not add default members for this.
-		//Set members = new HashSet(ids);
+	private void addGlobalFunctions(ZoneConfig zoneConfig) {
 		Set<Long> members = new HashSet();
 		Function function;
 		List functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
@@ -1747,6 +1735,25 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			} catch(Exception e) {
 				logger.warn("Could not delete 'Enable External Sharing' role");
 			}
+		}
+		
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_FILE_READ_INTERNALID)) {
+			addFilrRoleFileRead(zoneConfig.getZoneId());
+		}
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_FILE_WRITE_INTERNALID)) {
+			addFilrRoleFileWrite(zoneConfig.getZoneId());
+		}
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_FILE_OWNER_INTERNALID)) {
+			addFilrRoleFileOwner(zoneConfig.getZoneId());
+		}
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_FOLDER_READ_INTERNALID)) {
+			addFilrRoleFolderRead(zoneConfig.getZoneId());
+		}
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_FOLDER_WRITE_INTERNALID)) {
+			addFilrRoleFolderWrite(zoneConfig.getZoneId());
+		}
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_FOLDER_OWNER_INTERNALID)) {
+			addFilrRoleFolderOwner(zoneConfig.getZoneId());
 		}
 	}
 	

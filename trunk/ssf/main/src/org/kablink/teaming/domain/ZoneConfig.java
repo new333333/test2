@@ -31,10 +31,13 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.domain;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
 import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SPropsUtil;
 
 @SuppressWarnings("unchecked")
@@ -255,6 +258,12 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     }
     public Set<Long> getChildWorkAreas() {
     	return new HashSet();
+    }
+    public boolean isAclExternallyControlled() {
+    	return Boolean.FALSE;
+    }
+    public List<WorkAreaOperation> getExternallyControlledRights() {
+    	return new ArrayList<WorkAreaOperation>();
     }
     
 	public boolean getFsaEnabled() {

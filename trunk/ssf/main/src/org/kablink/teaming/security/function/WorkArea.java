@@ -31,6 +31,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.security.function;
+import java.util.List;
 import java.util.Set;
 
 import org.kablink.teaming.domain.Principal;
@@ -101,4 +102,15 @@ public interface WorkArea {
      */
     public Set<Long> getChildWorkAreas();
 
+    /**
+     * Return true if this workarea has ACL controlled externally (such as Filr)
+     * @return
+     */
+    public boolean isAclExternallyControlled();
+    
+    /**
+     * Return a list of the rights being controlled by the external device
+     * @return
+     */
+    public List<WorkAreaOperation> getExternallyControlledRights();
 }

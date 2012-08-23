@@ -155,6 +155,7 @@ if (ss_getUserDisplayStyle() != "accessible") {
 		</td>
 		</c:if>
 	
+		<c:if test="${!empty ss_showingFilespacesTabIsSupported }">
 		<ssf:ifFilr>
 		<ssf:ifLoggedIn>
 		<td>
@@ -171,6 +172,7 @@ if (ss_getUserDisplayStyle() != "accessible") {
 		</td>
 		</ssf:ifLoggedIn>
 		</ssf:ifFilr>
+		</c:if>
 			
 		<% /* Only add the other tabs if we are not dealing with a Template Binder. */ %>
 		<c:if test="${usingTemplateBinder == 'false'}">
@@ -269,7 +271,7 @@ ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
   <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tasks_and_calendars_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'activities'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'miniblogs'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/miniblogs_tab.jsp" /></c:if>
-  <c:if test="${ssRDCurrentTab == 'filespaces'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/filespaces_tab.jsp" /></c:if>
+  <c:if test="${ssRDCurrentTab == 'filespaces'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tab.jsp" /></c:if>
 </c:if>
 <c:if test="${!empty ssRelevanceDashboardConfigElement}">
   <c:if test="${ssRDCurrentTab == 'overview'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/overview.jsp" /></c:if>
@@ -277,7 +279,7 @@ ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
   <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tasks_and_calendars_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'activities'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'miniblogs'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/miniblogs_tab.jsp" /></c:if>
-  <c:if test="${ssRDCurrentTab == 'filespaces'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/filespaces_tab.jsp" /></c:if>
+  <c:if test="${ssRDCurrentTab == 'filespaces'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tab.jsp" /></c:if>
 </c:if>
 </div>
 </div>

@@ -33,10 +33,12 @@
 package org.kablink.teaming.domain;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 
 public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 
@@ -305,6 +307,13 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	public Set<Long> getChildWorkAreas() {
 		return null;
 	}
+
+    public boolean isAclExternallyControlled() {
+    	return Boolean.FALSE;
+    }
+    public List<WorkAreaOperation> getExternallyControlledRights() {
+    	return WorkAreaOperation.getDefaultExternallyControlledRights();
+    }
 
 	public String getShareName() {
 		return shareName;
