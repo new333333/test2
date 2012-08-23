@@ -42,13 +42,25 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
+import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
+import org.kablink.teaming.domain.User;
+import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
+import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.NetFolderRootType;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
+import org.kablink.teaming.security.function.Function;
+import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.ResolveIds;
+import org.kablink.teaming.util.Utils;
 
 
 /**
@@ -80,6 +92,21 @@ public class GwtNetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE );
 		options.put( ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, netFolderRoot.getProxyName() ); 
 		options.put( ObjectKeys.RESOURCE_DRIVER_PASSWORD, netFolderRoot.getProxyPwd() );
+		
+		// Is the root type WebDAV?
+		if ( netFolderRoot.getRootType() == NetFolderRootType.WEB_DAV )
+		{
+			// Yes, get the WebDAV specific values
+			options.put(
+					ObjectKeys.RESOURCE_DRIVER_HOST_URL,
+					netFolderRoot.getHostUrl() );
+			options.put(
+					ObjectKeys.RESOURCE_DRIVER_ALLOW_SELF_SIGNED_CERTIFICATE,
+					netFolderRoot.getAllowSelfSignedCerts() );
+			options.put(
+					ObjectKeys.RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH,
+					Boolean.FALSE );
+		}
 
 		// Always prevent the top level folder from being deleted
 		// This is forced so that the folder could not accidentally be deleted if the 
@@ -89,11 +116,14 @@ public class GwtNetFolderHelper
 		//Add this resource driver
 		try
 		{
+			DriverType driverType;
+			
+			driverType = getDriverType( netFolderRoot.getRootType() );
 			rdConfig = ami.getResourceDriverModule().addResourceDriver(
 															netFolderRoot.getName(),
-															ResourceDriverConfig.DriverType.valueOf( 0 ), 
+															driverType, 
 															netFolderRoot.getRootPath(),
-															netFolderRoot.getMemberIds(),
+															netFolderRoot.getListOfPrincipalIds(),
 															options );
 			if ( rdConfig != null )
 			{
@@ -147,13 +177,16 @@ public class GwtNetFolderHelper
 	/**
 	 * Return a list of all the net folder roots
 	 */
+	@SuppressWarnings("unchecked")
 	public static List<NetFolderRoot> getAllNetFolderRoots( AllModulesInjected ami )
 	{
 		List<NetFolderRoot> listOfNetFolderRoots;
+		AdminModule adminModule;
 		
 		listOfNetFolderRoots = new ArrayList<NetFolderRoot>();
+		adminModule = ami.getAdminModule();
 		
-		if ( ami.getAdminModule().testAccess( AdminOperation.manageResourceDrivers ) )
+		if ( adminModule.testAccess( AdminOperation.manageResourceDrivers ) )
 		{
 			List<ResourceDriverConfig> drivers;
 
@@ -161,17 +194,109 @@ public class GwtNetFolderHelper
 			drivers = ami.getResourceDriverModule().getAllResourceDriverConfigs();
 			for ( ResourceDriverConfig driver : drivers )
 			{
-				NetFolderRoot fsRoot;
+				NetFolderRoot nfRoot;
+				DriverType driverType;
 				
-				fsRoot = new NetFolderRoot();
-				fsRoot.setId( driver.getId() );
-				fsRoot.setName( driver.getName() );
-				fsRoot.setRootPath( driver.getRootPath() );
-				listOfNetFolderRoots.add( fsRoot );
+				nfRoot = new NetFolderRoot();
+				nfRoot.setId( driver.getId() );
+				nfRoot.setName( driver.getName() );
+				
+				driverType = driver.getDriverType();
+				if ( driverType == DriverType.filesystem )
+					nfRoot.setRootType( NetFolderRootType.FILE_SYSTEM );
+				else if ( driverType == DriverType.webdav )
+					nfRoot.setRootType( NetFolderRootType.WEB_DAV );
+				else if ( driverType == DriverType.famt )
+					nfRoot.setRootType( NetFolderRootType.FAMT );
+				else
+					nfRoot.setRootType( NetFolderRootType.UNKNOWN );
+				
+				nfRoot.setRootPath( driver.getRootPath() );
+				nfRoot.setProxyName( driver.getAccountName() );
+				nfRoot.setProxyPwd( driver.getPassword() );
+				
+				// Get the list of principals that can use the net folder root
+				{
+					List<Function> functions;
+					List<WorkAreaFunctionMembership> memberships;
+					WorkAreaFunctionMembership membership = null;
+					List<Principal> members;
+
+					functions = adminModule.getFunctions( ObjectKeys.ROLE_TYPE_ZONE );
+					memberships = adminModule.getWorkAreaFunctionMemberships( driver );
+					membership = null;
+					for ( Function f : functions )
+					{
+						if ( ObjectKeys.FUNCTION_CREATE_FILESPACES_INTERNALID.equals( f.getInternalId() ) )
+						{
+							for ( WorkAreaFunctionMembership m : memberships )
+							{
+								if ( f.getId().equals( m.getFunctionId() ) )
+								{
+									membership = m;
+									break;
+								}
+							}
+						}
+					}
+					
+					members = new ArrayList<Principal>();
+
+					if ( membership != null )
+					{
+						members = ResolveIds.getPrincipals( membership.getMemberIds() );
+					}
+					
+					for ( Principal p : members ) 
+					{
+						if ( p instanceof User )
+						{
+							GwtUser gwtUser;
+							
+							gwtUser = new GwtUser();
+							gwtUser.setUserId( p.getId() );
+							gwtUser.setName( p.getName() );
+							gwtUser.setTitle( Utils.getUserTitle( p ) );
+							gwtUser.setWorkspaceTitle( ((User)p).getWSTitle() );
+							
+							nfRoot.addPrincipal( gwtUser );
+						}
+						else if ( p instanceof Group )
+						{
+							GwtGroup gwtGroup;
+							
+							gwtGroup = new GwtGroup();
+							gwtGroup.setId( p.getId().toString() );
+							gwtGroup.setName( p.getName() );
+							gwtGroup.setTitle( p.getTitle() );
+							
+							nfRoot.addPrincipal( gwtGroup );
+						}
+					}
+				}
+				
+				listOfNetFolderRoots.add( nfRoot );
 			}
 		}
 		
 		return listOfNetFolderRoots;
+	}
+	
+	/**
+	 * Return the appropriate DriverType from the given NetFolderRootType
+	 */
+	private static DriverType getDriverType( NetFolderRootType type )
+	{
+		if ( type == NetFolderRootType.FILE_SYSTEM )
+			return DriverType.filesystem;
+		
+		if ( type == NetFolderRootType.WEB_DAV )
+			return DriverType.webdav;
+		
+		if ( type == NetFolderRootType.FAMT )
+			return DriverType.famt;
+		
+		return DriverType.famt;
 	}
 	
 	/**
@@ -196,14 +321,32 @@ public class GwtNetFolderHelper
 		// external disk was offline
 		options.put( ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE, Boolean.FALSE );
 
+		// Is the root type WebDAV?
+		if ( netFolderRoot.getRootType() == NetFolderRootType.WEB_DAV )
+		{
+			// Yes, get the WebDAV specific values
+			options.put(
+					ObjectKeys.RESOURCE_DRIVER_HOST_URL,
+					netFolderRoot.getHostUrl() );
+			options.put(
+					ObjectKeys.RESOURCE_DRIVER_ALLOW_SELF_SIGNED_CERTIFICATE,
+					netFolderRoot.getAllowSelfSignedCerts() );
+			options.put(
+					ObjectKeys.RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH,
+					Boolean.FALSE );
+		}
+
 		//Add this resource driver
 		try
 		{
+			DriverType driverType;
+			
+			driverType = getDriverType( netFolderRoot.getRootType() );
 			ami.getResourceDriverModule().modifyResourceDriver(
 														netFolderRoot.getName(),
-														ResourceDriverConfig.DriverType.valueOf( 0 ), 
+														driverType, 
 														netFolderRoot.getRootPath(),
-														netFolderRoot.getMemberIds(),
+														netFolderRoot.getListOfPrincipalIds(),
 														options );
 		}
 		catch ( Exception ex )

@@ -41,7 +41,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author drfoster@novell.com
  */
-public class GwtUser extends GwtTeamingItem implements IsSerializable {
+public class GwtUser extends GwtPrincipal implements IsSerializable {
 	private String m_name;
 	private String m_title;
 	private String m_userId;
@@ -74,8 +74,21 @@ public class GwtUser extends GwtTeamingItem implements IsSerializable {
 	}
 	
 	/**
+	 * 
+	 */
+	@Override
+	public Long getIdLong()
+	{
+		if ( m_userId != null )
+			return Long.valueOf( m_userId );
+		
+		return null;
+	}
+	
+	/**
 	 * Returns the user's name.
 	 */
+	@Override
 	public String getName() {
 		return m_name;
 	}
@@ -83,8 +96,18 @@ public class GwtUser extends GwtTeamingItem implements IsSerializable {
 	/**
 	 * Returns the user's title.
 	 */
+	@Override
 	public String getTitle() {
 		return m_title;
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public PrincipalType getType()
+	{
+		return PrincipalType.USER;
 	}
 	
 	/**

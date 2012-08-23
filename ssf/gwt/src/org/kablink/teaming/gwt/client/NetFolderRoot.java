@@ -33,9 +33,12 @@
 package org.kablink.teaming.gwt.client;
 
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.NetFolderRootType;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -50,10 +53,15 @@ public class NetFolderRoot
 {
 	private Long m_id;
 	private String m_name;
+	private NetFolderRootType m_rootType = NetFolderRootType.FAMT;
 	private String m_rootPath;
 	private String m_proxyName = "";
 	private String m_proxyPwd = "";
-	private Set<Long> m_memberIds;
+	private ArrayList<GwtPrincipal> m_principals;
+	
+	// This information is specific to WebDAV
+	private boolean m_allowSelfSignedCerts = false;
+	private String m_hostUrl = "";
 	
 	
 	/**
@@ -67,16 +75,48 @@ public class NetFolderRoot
 	}	
 	
 	/**
+	 * 
+	 */
+	public void addPrincipal( GwtPrincipal principal )
+	{
+		if ( m_principals == null )
+			m_principals = new ArrayList<GwtPrincipal>();
+		
+		m_principals.add( principal );
+	}
+	
+	/**
 	 * Copy the info from the given NetFolderRoot
 	 */
 	public void copy( NetFolderRoot root )
 	{
 		m_id = root.getId();
 		m_name = root.getName();
+		m_rootType = root.getRootType();
 		m_rootPath = root.getRootPath();
 		m_proxyName = root.getProxyName();
 		m_proxyPwd = root.getProxyPwd();
-		m_memberIds = root.getMemberIds();
+		m_principals = root.getListOfPrincipals();
+		
+		// Copy WebDAV info
+		m_allowSelfSignedCerts = root.getAllowSelfSignedCerts();
+		m_hostUrl = root.getHostUrl();
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getAllowSelfSignedCerts()
+	{
+		return m_allowSelfSignedCerts;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getHostUrl()
+	{
+		return m_hostUrl;
 	}
 	
 	/**
@@ -88,19 +128,35 @@ public class NetFolderRoot
 	}
 	
 	/**
-	 * 
-	 */
-	public Set<Long> getMemberIds()
-	{
-		return m_memberIds;
-	}
-	
-	/**
 	 * Returns the Net Folder Root's name.
 	 */
 	public String getName()
 	{
 		return m_name;
+	}
+	
+	/**
+	 * 
+	 */
+	public ArrayList<GwtPrincipal> getListOfPrincipals()
+	{
+		return m_principals;
+	}
+	
+	/**
+	 * 
+	 */
+	public Set<Long> getListOfPrincipalIds()
+	{
+		HashSet<Long> principalIds;
+		
+		principalIds = new HashSet<Long>();
+		for (GwtPrincipal nextPrincipal : m_principals)
+		{
+			principalIds.add( nextPrincipal.getIdLong() );
+		}
+		
+		return principalIds;
 	}
 	
 	/**
@@ -130,9 +186,41 @@ public class NetFolderRoot
 	/**
 	 * 
 	 */
+	public NetFolderRootType getRootType()
+	{
+		return m_rootType;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setAllowSelfSignedCerts( boolean allow )
+	{
+		m_allowSelfSignedCerts = allow;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHostUrl( String url )
+	{
+		m_hostUrl = url;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setId( Long id )
 	{
 		m_id = id;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setListOfPrincipals( ArrayList<GwtPrincipal> listOfPrincipals )
+	{
+		m_principals = listOfPrincipals;
 	}
 	
 	/**
@@ -169,5 +257,13 @@ public class NetFolderRoot
 	public void setRootPath( String rootPath )
 	{
 		m_rootPath = rootPath;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setRootType( NetFolderRootType type )
+	{
+		m_rootType = type;
 	}
 }
