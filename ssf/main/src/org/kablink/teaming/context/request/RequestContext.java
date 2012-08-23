@@ -43,7 +43,6 @@ import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.security.accesstoken.AccessToken;
-import org.kablink.teaming.security.accesstoken.AccessToken.BinderAccessConstraints;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SpringContextUtil;
 
@@ -88,6 +87,8 @@ public class RequestContext {
     
     private List<WorkAreaOperation> increaseByRights;
     private List<WorkAreaOperation> decreaseByRights;
+    
+    private Boolean accessFileSystemWithExternalAclInUserMode = null;
     
     // IMPORTANT: This object is designed to contain only those properties that
     //            are needed to fetch corresponding user, application, or zone object. 
@@ -327,5 +328,14 @@ public class RequestContext {
 	public void setDecreaseByRights(List<WorkAreaOperation> decreaseByRights) {
 		this.decreaseByRights = decreaseByRights;
 	}
-	
+
+	public Boolean getAccessFileSystemWithExternalAclInUserMode() {
+		return accessFileSystemWithExternalAclInUserMode;
+	}
+
+	public void setAccessFileSystemWithExternalAclInUserMode(
+			Boolean accessFileSystemWithExternalAclInUserMode) {
+		this.accessFileSystemWithExternalAclInUserMode = accessFileSystemWithExternalAclInUserMode;
+	}
+
 }

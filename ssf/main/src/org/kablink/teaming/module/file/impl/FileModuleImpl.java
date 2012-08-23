@@ -129,6 +129,7 @@ import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.DatedMultipartFile;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.FilePathUtil;
@@ -375,7 +376,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			FileAttachment fAtt, FilesErrors errors) {
 		boolean involvesExtAcl = involvesExternalAcl(binder, fAtt.getRepositoryName());
 		if(involvesExtAcl)
-			setupAccessContext();
+			setupAccessModeForExternalAcl(entry, new WorkAreaOperation[]{WorkAreaOperation.DELETE_ENTRIES});
 		
 		try {
 			if(errors == null)
@@ -408,14 +409,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 		finally {
 			if(involvesExtAcl)
-				teardownAccessContext();
+				teardownAccessModeForExternalAcl();
 		}
 	}
 	public void readFile(Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
 		boolean involvesExtAcl = involvesExternalAcl(binder, fa.getRepositoryName());
 		if(involvesExtAcl)
-			setupAccessContext();
+			setupAccessModeForExternalAcl(entry, new WorkAreaOperation[]{WorkAreaOperation.READ_ENTRIES});
 		
 		try {
 			String versionName = null;
@@ -441,21 +442,21 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 		finally {
 			if(involvesExtAcl)
-				teardownAccessContext();
+				teardownAccessModeForExternalAcl();
 		}
 	}
 	
 	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) { 
 		boolean involvesExtAcl = involvesExternalAcl(binder, fa.getRepositoryName());
 		if(involvesExtAcl)
-			setupAccessContext();
+			setupAccessModeForExternalAcl(entry, new WorkAreaOperation[]{WorkAreaOperation.READ_ENTRIES});
 		
 		try {
 			return readFile(binder, entry, fa, false);
 		}
 		finally {
 			if(involvesExtAcl)
-				teardownAccessContext();
+				teardownAccessModeForExternalAcl();
 		}
 	}
 	
@@ -1882,7 +1883,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		FileUploadItem fui, FilesErrors errors) {
 		boolean involvesExtAcl = involvesExternalAcl(binder, fui.getRepositoryName());
 		if(involvesExtAcl)
-			setupAccessContext();
+			setupAccessModeForExternalAcl(entry, new WorkAreaOperation[]{WorkAreaOperation.CREATE_ENTRIES, WorkAreaOperation.MODIFY_ENTRIES});
     	
 		try {
 	    	/// Work Flow:
@@ -1989,7 +1990,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 		finally {
 			if(involvesExtAcl)
-				teardownAccessContext();
+				teardownAccessModeForExternalAcl();
 		}
     }
     
@@ -2964,11 +2965,36 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 	
-	private void setupAccessContext() {
+	private void setupAccessModeForExternalAcl(DefinableEntity entity, WorkAreaOperation[] workAreaOperations) {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		
+		boolean shareGrantedAccess;
+		
+		if(entity instanceof FolderEntry) {
+			FolderEntry entry = (FolderEntry) entity;
+			if(entry.hasEntryAcl()) { // This entry has its own (external) ACL
+				shareGrantedAccess = getAccessControlManager().testRightsGrantedBySharing(user, entry, workAreaOperations);
+			}
+			else { // This entry inherits its ACL from the parent folder
+				shareGrantedAccess = getAccessControlManager().testRightsGrantedBySharing(user, entry.getParentFolder(), workAreaOperations);
+			}
+		}
+		else if(entity instanceof Folder) {
+			shareGrantedAccess = getAccessControlManager().testRightsGrantedBySharing(user, (Folder) entity, workAreaOperations);			
+		}
+		else {
+			// Sharing facility only supports folders and folder entries, which means that the user
+			// can never be assigned the specified rights on this entity through sharing.
+			shareGrantedAccess = false;
+		}
+		
+		if(shareGrantedAccess)
+			RequestContextHolder.getRequestContext().setAccessFileSystemWithExternalAclInUserMode(Boolean.FALSE); // proxy mode
+		else
+			RequestContextHolder.getRequestContext().setAccessFileSystemWithExternalAclInUserMode(Boolean.TRUE); // user mode
 	}
 	
-	private void teardownAccessContext() {
-		
+	private void teardownAccessModeForExternalAcl() {
+		RequestContextHolder.getRequestContext().setAccessFileSystemWithExternalAclInUserMode(null);		
 	}
 }

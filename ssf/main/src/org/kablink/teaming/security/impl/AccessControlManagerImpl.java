@@ -253,7 +253,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 					return true;
 				}
 				else {
-					return testRightsGrantedBySharing(user, workAreaStart, workArea, new WorkAreaOperation[]{workAreaOperation}, null);
+					return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, null);
 				}
 			}
 		} else {
@@ -327,7 +327,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				return true;
 			}
 			else {
-				return testRightsGrantedBySharing(user, workAreaStart, workArea, new WorkAreaOperation[]{workAreaOperation}, userMembersToLookup);
+				return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userMembersToLookup);
 			}
 		}
 	}
@@ -434,11 +434,19 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     }
 
     @Override
-    public boolean testRightsGrantedBySharing(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation[] workAreaOperations, Set<Long> userMembers) {
+    public boolean testRightsGrantedBySharing(User user, WorkArea workArea, WorkAreaOperation[] workAreaOperations) {
+    	return testRightsGrantedBySharing(user, workArea, workAreaOperations, null);
+    }
+
+    private boolean testRightGrantedBySharing(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation, Set<Long> userMembers) {
     	// Unlike regular ACL checking, share right checking is not implemented using recursive invocation.
     	if(workAreaStart != workArea)
     		return false;
     	
+    	return testRightsGrantedBySharing(user, workArea, new WorkAreaOperation[]{workAreaOperation}, userMembers);
+    }
+    
+    private boolean testRightsGrantedBySharing(User user, WorkArea workArea, WorkAreaOperation[] workAreaOperations, Set<Long> userMembers) {
     	// Share-granted access rights can be defined only on DefinableEntity
     	if(!(workArea instanceof DefinableEntity))
     		return false;
