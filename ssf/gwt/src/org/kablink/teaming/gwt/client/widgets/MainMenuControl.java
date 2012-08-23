@@ -398,8 +398,8 @@ public class MainMenuControl extends Composite
 		m_mastHeadSlider.addStyleName("vibe-mainMenuButton subhead-control-bg1 roundcornerSM");
 		m_mainMenu.addItem(m_mastHeadSlider);
 
-		// ...if we're showing navigation trees...
-		if (WorkspaceTreeControl.showNavigationTrees()) {
+		// ...if site navigation is available...
+		if (WorkspaceTreeControl.siteNavigationAvailable()) {
 			// ...add the browse hierarchy button...
 			BrowseHierarchyEvent bhe = new BrowseHierarchyEvent();
 			m_bhButton = new MenuBarButton(m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), bhe);

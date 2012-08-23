@@ -743,13 +743,13 @@ public class WorkspaceTreeControl extends ResizeComposite
 	}
 
 	/**
-	 * Returns true if navigation trees are to be shown and false
+	 * Returns true if site navigation is available and false
 	 * otherwise.
 	 * 
 	 * @return
 	 */
-	public static boolean showNavigationTrees() {
-		// We always show the navigation trees all license modes except
+	public static boolean siteNavigationAvailable() {
+		// Site navigation is available in all license modes except
 		// Filr.
 		return (!(GwtClientHelper.isLicenseFilr()));
 	}

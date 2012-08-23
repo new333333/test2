@@ -1237,8 +1237,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			}
 		}
 
-		// Are we showing navigation trees or in an activity stream?
-		if (WorkspaceTreeControl.showNavigationTrees() || isAS) {
+		// Is site navigation available or are we in an activity
+		// stream?
+		if (WorkspaceTreeControl.siteNavigationAvailable() || isAS) {
 			// Yes!  Are there are any child binder rows to display?
 			tiList = rootTI.getChildBindersList();
 			if ((null != tiList) && (!(tiList.isEmpty()))) {
@@ -1359,7 +1360,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorGrid.addStyleName(buildElementStyle(ti, "workspaceTreeControlRow"));
 		if (ti.isBinderCollection()) {
 			String paddingStyle;
-			if (WorkspaceTreeControl.showNavigationTrees())
+			if (WorkspaceTreeControl.siteNavigationAvailable())
 			     paddingStyle = "padding3b";
 			else paddingStyle = "padding5b";
 			selectorGrid.addStyleName(paddingStyle);
@@ -1501,19 +1502,20 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	@Override
 	void selectBinder(TreeInfo ti) {
-		// We skip selecting a trash...
-		boolean showNavigationTrees = WorkspaceTreeControl.showNavigationTrees();
-		boolean skipSelection       = ((null == ti) || ti.isBinderTrash());
-		if ((!skipSelection) && (!showNavigationTrees)) {
-			// ...or non-collection when navigation trees not being
-			// ...shown.
-			skipSelection = (!(ti.isBinderCollection()));
+		// Should we skip the selection?  We skip it under the
+		// following conditions:
+		// 1. No TreeInfo or a trash TreeInfo is being selected;
+		// 2. Site navigation is not available; and
+		// 3. We're selecting other than a collection or activity
+		//    stream.
+		boolean siteNavigationAvailable = WorkspaceTreeControl.siteNavigationAvailable();
+		boolean skipSelection           = ((null == ti) || ti.isBinderTrash());
+		if ((!skipSelection) && (!siteNavigationAvailable)) {
+			skipSelection = ((!(ti.isBinderCollection())) && (!(ti.isActivityStream())));
 		}
-
-		// Should we select this item?
 		if (skipSelection) {
-			// No!  Are navigation trees being shown?
-			if (!showNavigationTrees) {
+			// Yes!  Is site navigation available?
+			if (!siteNavigationAvailable) {
 				// No!  Set/clear the selector configuration menu, as
 				// appropriate.
 				if ((null != ti) && ti.getBinderInfo().isEqual(getRootTreeInfo().getBinderInfo()))
@@ -1607,8 +1609,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			return;
 		}
 		
-		// If we are in a mode where we don't show navigation trees...
-		if (!(WorkspaceTreeControl.showNavigationTrees())) {
+		// If we are in a mode where site navigation is not
+		// available...
+		if (!(WorkspaceTreeControl.siteNavigationAvailable())) {
 			// ...select the binder.
 			selectBinder(
 				TreeInfo.findBinderTI(

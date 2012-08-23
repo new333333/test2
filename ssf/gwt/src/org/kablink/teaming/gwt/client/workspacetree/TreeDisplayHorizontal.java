@@ -792,9 +792,9 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				addBinderConfig(fp, ti);
 			}
 
-			// No the tail binder is not a folder!  Are we showing
-			// navigation trees?
-			else if (!(WorkspaceTreeControl.showNavigationTrees())) {
+			// No the tail binder is not a folder!  Is site navigation
+			// available?
+			else if (!(WorkspaceTreeControl.siteNavigationAvailable())) {
 				// No!  Construct the helper to coordinate handling
 				// not getting called back with the context...
 				final GetSidebarContextHelper gscHelper = new GetSidebarContextHelper(
