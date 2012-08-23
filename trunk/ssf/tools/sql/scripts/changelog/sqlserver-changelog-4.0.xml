@@ -224,4 +224,9 @@
 			<column name="extFunctionMembershipInherited" type="TINYINT"/>
         </addColumn>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="21">
+        <addColumn tableName="SS_FolderEntries">
+			<column name="hasEntryExternalAcl" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

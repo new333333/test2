@@ -47,6 +47,7 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
  
     protected Boolean hasEntryAcl = Boolean.FALSE;
     protected Boolean checkFolderAcl = Boolean.FALSE;
+    protected Boolean hasEntryExternalAcl = Boolean.FALSE;
     protected String entryDefId; //initialized by hiberate access=field
 
     public Entry() {
@@ -114,7 +115,22 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
 		this.checkFolderAcl = checkFolderAcl;
 	}
     
-    //*****************WorkArea interface stuff***********/
+	public boolean hasEntryExternalAcl() {
+		if (this instanceof FolderEntry && !((FolderEntry)this).isTop()) {
+			//This is a reply to a folder entry. Check the top entry instead
+			return ((FolderEntry)this).getTopEntry().hasEntryExternalAcl();
+		}
+		if (hasEntryExternalAcl == null) {
+			return false;
+		} else {
+			return hasEntryExternalAcl;
+		}
+	}
+	public void setHasEntryExternalAcl(boolean hasEntryExternalAcl) {
+		this.hasEntryExternalAcl = hasEntryExternalAcl;
+	}
+
+	//*****************WorkArea interface stuff***********/
     public Long getWorkAreaId() {
         return getId();
     }
