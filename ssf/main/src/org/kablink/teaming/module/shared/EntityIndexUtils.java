@@ -923,19 +923,40 @@ public class EntityIndexUtils {
 	       			for(String acl:acls) {
 	       				doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, acl));
 	       			}
-	       		} else if (((Entry)entry).hasEntryAcl()) {
+	       		}
+	       		else {
 	       			Entry e = (Entry)entry;
-	    			//The entry has its own ACL specified
-	       			addEntryAcls(doc, binder, e);
-	       			if(e.isIncludeFolderAcl()) {
-	       				// In addition to entry-level ACL, this entry is also inheriting ACLs from its parent folder.
-		    			markEntryAsInheritingAcls(doc, binder, (Entry)entry);
+	       			if(e.isAclExternallyControlled()) {
+	       				// Since the "all important" read right comes from external ACL in this case, 
+	       				// it doesn't matter whether the entry is inheriting its Vibe-managed ACLs from
+	       				// the parent or not. Simply put, Vibe-managed ACLs will play no role here 
+	       				// as far as ACL indexing is concerned, because read right will never originate
+	       				// from the Vibe-managed ACLs.
+	       				if(e.hasEntryExternalAcl()) {
+	       					// This entry has its own external ACL. We need to index it. 
+			       			addEntryAcls(doc, binder, e);
+	       				}
+	       				else {
+	       					// This entry is using the folder's external ACL. If user has read access to the 
+	       					// parent folder through its external ACL, then she shall have same access to this entry. 
+			    			markEntryAsInheritingAcls(doc, binder, e);
+	       				}
 	       			}
-	    		} else {
-	    			// The entry has neither workflow ACL nor its own ACL.
-	    			//The entry is using the folder's ACL
-	    			markEntryAsInheritingAcls(doc, binder, (Entry)entry);
-	    		}
+	       			else {
+	       				if (e.hasEntryAcl()) {
+			    			//The entry has its own ACL specified
+			       			addEntryAcls(doc, binder, e);
+			       			if(e.isIncludeFolderAcl()) {
+			       				// In addition to entry-level ACL, this entry is also inheriting ACLs from its parent folder.
+				    			markEntryAsInheritingAcls(doc, binder, e);
+			       			}
+			    		} else {
+			    			// The entry has neither workflow ACL nor its own ACL.
+			    			//The entry is using the folder's ACL
+			    			markEntryAsInheritingAcls(doc, binder, e);
+			    		}
+	       			}
+	       		}
        		}
        		//Finally, add in the sharing acls
        		addSharingIds(doc, entry);
