@@ -1548,6 +1548,8 @@ public interface GwtTeamingMessages extends Messages
 	String addFilesHtml5PopupBusy(String fileName, int thisOne, int total);
 	String addFilesHtml5PopupFoldersSkipped(String folderNames);
 	String addFilesHtml5PopupHint();
+	String addFilesHtml5PopupProgressItem();
+	String addFilesHtml5PopupProgressTotal();
 	String addFilesHtml5PopupReadError(String fileName, String errorDesc);
 	
 	// Strings used in the "Child binders widget"

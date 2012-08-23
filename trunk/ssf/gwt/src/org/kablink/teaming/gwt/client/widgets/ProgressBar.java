@@ -304,6 +304,15 @@ public class ProgressBar extends Widget implements RequiresResize {
 		redraw();
 	}
 
+	/**
+	 * Increments the current progress by the given amount.
+	 * 
+	 * @param curIncrement
+	 */
+	public void incrProgress(double curIncrement) {
+		setProgress(m_curProgress + curIncrement);
+	}
+
 	public void setTextFirstHalfStyleName(String textFirstHalfClassName) {
 		m_textFirstHalfClassName = textFirstHalfClassName;
 		onTextStyleChange();
@@ -374,7 +383,7 @@ public class ProgressBar extends Widget implements RequiresResize {
 	protected void resetProgress() {
 		setProgress(getProgress());
 	}
-
+	
 	private void onTextStyleChange() {
 		int percent = ((int) (100 * getPercent()));
 		updateTextStyle(percent);
