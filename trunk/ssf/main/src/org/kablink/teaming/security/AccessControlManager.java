@@ -119,14 +119,10 @@ public interface AccessControlManager {
      * normal access checking.
      * 
      * @param user
-     * @param workAreaStart
      * @param workArea
      * @param workAreaOperation
-     * @param userMembers
      * @return
      */
-    public boolean testRightsGrantedBySharing(User user, WorkArea workAreaStart, 
-    		WorkArea workArea, WorkAreaOperation[] workAreaOperations, 
-    		Set<Long> userMembers);
+    public boolean testRightsGrantedBySharing(User user, WorkArea workArea, WorkAreaOperation[] workAreaOperations);
 
 }

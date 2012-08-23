@@ -176,8 +176,9 @@ public class NullAccessControlManager implements AccessControlManager {
     public boolean testAcl(User user, AclControlled aclControlledObj, Set memberIds) {
     	return true;
     }
+    
 	@Override
-    public boolean testRightsGrantedBySharing(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation[] workAreaOperations, Set<Long> userMembers) {
+    public boolean testRightsGrantedBySharing(User user, WorkArea workArea, WorkAreaOperation[] workAreaOperations) {
 		return false; // Assume there's no sharing
 	}
 }
