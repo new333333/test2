@@ -244,4 +244,9 @@
 			<column name="extFunctionMembershipInherited" type="BIT"/>
         </addColumn>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="26">
+        <addColumn tableName="SS_FolderEntries">
+			<column name="hasEntryExternalAcl" type="BIT"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
