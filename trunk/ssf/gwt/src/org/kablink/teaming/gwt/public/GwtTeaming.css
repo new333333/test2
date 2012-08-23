@@ -200,7 +200,7 @@
 }
  
 
-.activityStreamHover, .shareThisDlg_NameHover, .groupMembershipNameHover
+.activityStreamHover, .shareThisDlg_NameHover, .groupMembershipNameHover, .modifyNetFolderRootDlg_NameHover
 {
 	cursor: pointer;
 	background: url(images/blends/teal_slice.png) repeat-x;
@@ -4238,5 +4238,51 @@ td.datePickerMonth {
 	-webkit-border-radius: 5px;
 }
 
- /* End */
- 
+/**
+ * Styles used in the "Modify Net Folder Root" dialog
+ */
+
+.modifyNetFolderRootDlg_SelectPrivelegedUsersHint
+{
+	color: #4D6D8B;
+	font-size: 1em;
+	margin-bottom: 0.5em;
+}
+
+.modifyNetFolderRootDlg_PrivilegedPrincipalsTablePanelHeight
+{
+	height: 200px;
+	overflow: auto;
+}
+
+.modifyNetFolderRootDlg_PrivilegedPrincipalsTable_highlightRow
+{
+	background: none repeat scroll 0 0 #CCE9EE;
+}
+
+.modifyNetFolderRootDlg_PrivilegedPrincipalsTablePanel
+{
+	width: 570px;
+}
+
+.modifyNetFolderRootDlg_PrivilegedPrincipalsTable
+{
+	width: 550px;
+	table-layout: fixed;
+}
+
+.modifyNetFolderRootDlg_RemovePrincipalPanel
+{
+	margin-left: 4px;
+}
+
+.modifyNetFolderRootDlg_PrivilegedPrincipalsTable_Cell
+{
+	overflow: hidden;
+}
+
+.modifyNetFolderRootDlg_PrincipalNameLabel
+{
+}
+
+ /* End */ 
