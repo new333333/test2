@@ -32,127 +32,67 @@
  */
 package org.kablink.teaming.gwt.client;
 
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
+	
 /**
- * Class used in GWT RPC calls to represent a Group.
  * 
- * @author jwootton@novell.com
  */
-public class GwtGroup extends GwtPrincipal implements IsSerializable
+public abstract class GwtPrincipal extends GwtTeamingItem
+	implements IsSerializable
 {
-	private String m_name;
-	private String m_title;
-	private String m_id;
-	
-	/**
-	 * Constructor method. 
-	 * 
-	 * No parameters as per GWT serialization requirements.
-	 */
-	public GwtGroup()
-	{
-		// Nothing to do.
-	}	
-	
 	/**
 	 * 
 	 */
-	@Override
-	public Long getIdLong()
+	public enum PrincipalType implements IsSerializable
 	{
-		if ( m_id != null )
-			return Long.valueOf( m_id );
-		
-		return null;
-	}
-	
-	/**
-	 * Returns the group's name.
-	 */
-	@Override
-	public String getName()
-	{
-		return m_name;
-	}
-	
-	/**
-	 * Returns the group's title.
-	 */
-	@Override
-	public String getTitle()
-	{
-		return m_title;
-	}
-	
-	/**
-	 * Returns the group's ID. 
-	 */
-	public String getId()
-	{
-		return m_id;
-	}
-	
-	/**
-	 * 
-	 */
-	@Override
-	public String getSecondaryDisplayText()
-	{
-		return null;
-	}
-	
-	/**
-	 * 
-	 */
-	@Override
-	public PrincipalType getType()
-	{
-		return PrincipalType.GROUP;
+		USER,
+		GROUP,
+		UNKNOWN
 	}
 
 	/**
-	 * Return the name that should be displayed when this group is
-	 * displayed.
 	 * 
-	 * Implements the GwtTeamingItem.getShortDisplayName() abstract
-	 * method.
 	 */
-	@Override
-	public String getShortDisplayName()
+	public boolean equals( GwtPrincipal principal )
 	{
-		return getTitle();
-	}
+		Long id1;
+		Long id2;
 		
-	/**
-	 * Stores the group's name.
-	 * 
-	 * @param name
-	 */
-	public void setName( String name )
-	{
-		m_name = name;
+		id1 = getIdLong();
+		id2 = principal.getIdLong();
+		if ( id1 != null && id2 != null && id1.compareTo( id2 ) == 0 )
+			return true;
+		
+		return false;
 	}
 	
 	/**
-	 * Stores the group's ID. 
 	 * 
-	 * @param groupId
 	 */
-	public void setId( String groupId )
-	{
-		m_id = groupId;
-	}
-	
+	public abstract Long getIdLong();
 	
 	/**
-	 * Stores the group's title. 
 	 * 
-	 * @param title
 	 */
-	public void setTitle( String title )
+	public abstract PrincipalType getType();
+	
+	/**
+	 * 
+	 */
+	public String getTypeAsString()
 	{
-		m_title = title;
+		PrincipalType type;
+		
+		type = getType();
+		if ( type == PrincipalType.USER )
+			return GwtTeaming.getMessages().modifyNetFolderRootDlg_User();
+
+		if ( type == PrincipalType.GROUP )
+			return GwtTeaming.getMessages().modifyNetFolderRootDlg_Group();
+		
+		return "Unknown principal type";
 	}
 }
+	

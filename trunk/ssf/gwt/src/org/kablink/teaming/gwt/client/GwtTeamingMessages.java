@@ -1833,12 +1833,15 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the modify Net Folder Root dialog
 	String modifyNetFolderRootDlg_AddHeader();
+	String modifyNetFolderRootDlg_AllowSelfSignedCertsLabel();
 	String modifyNetFolderRootDlg_AlreadyAPrivilegedPrincipal( String name );
 	String modifyNetFolderRootDlg_CantSelectExternalUser();
 	String modifyNetFolderRootDlg_EditHeader( String name );
 	String modifyNetFolderRootDlg_ErrorCreatingNetFolderRoot( String err );
 	String modifyNetFolderRootDlg_ErrorModifyingNetFolderRoot( String err );
 	String modifyNetFolderRootDlg_Group();
+	String modifyNetFolderRootDlg_HostUrlLabel();
+	String modifyNetFolderRootDlg_HostUrlRequired();
 	String modifyNetFolderRootDlg_InsufficientRights();
 	String modifyNetFolderRootDlg_NameCol();
 	String modifyNetFolderRootDlg_NameLabel();
@@ -1850,7 +1853,12 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderRootDlg_RemovePrincipalHint();
 	String modifyNetFolderRootDlg_RootAlreadyExists();
 	String modifyNetFolderRootDlg_RootPathLabel();
+	String modifyNetFolderRootDlg_SelectPrincipalsLabel();
+	String modifyNetFolderRootDlg_TypeLabel();
 	String modifyNetFolderRootDlg_TypeCol();
+	String modifyNetFolderRootDlg_Type_Famt();
+	String modifyNetFolderRootDlg_Type_FileSystem();
+	String modifyNetFolderRootDlg_Type_WebDav();
 	String modifyNetFolderRootDlg_User();
 	
 	
