@@ -180,6 +180,7 @@ public class LinkUriUtil {
         String baseUrl = getFileBaseLinkUri(fp);
         fp.addAdditionalLink("content", baseUrl);
         fp.addAdditionalLink("major_version", baseUrl + "/major_version");
+        fp.addAdditionalLink("name", baseUrl + "/name");
         fp.addAdditionalLink("versions", baseUrl + "/versions");
         fp.addAdditionalLink("current_version", baseUrl + "/versions/current");
     }
