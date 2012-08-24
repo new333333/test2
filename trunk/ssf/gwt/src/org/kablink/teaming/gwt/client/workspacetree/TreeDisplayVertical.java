@@ -977,28 +977,33 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	@Override
 	public void getSidebarCollection(CollectionCallback collectionCallback) {
-		// Are we tracking a selected binder?
-		TreeInfo selectedTI;
-		if (null != m_selectedBinderInfo) {
-			// Yes!  Find the matching TreeInfo.
-			TreeInfo rootTI = getRootTreeInfo();
-			if (m_selectedBinderInfo.isBinderCollection())
-			     selectedTI = TreeInfo.findCollectionTI(rootTI, m_selectedBinderInfo.getCollectionType());
-			else selectedTI = TreeInfo.findBinderTI(    rootTI, m_selectedBinderInfo.getBinderId());
+		// We only response to this request when we're not in Filr
+		// mode.  When in Filr mode, the mast head will respond as it's
+		// responsible for navigation.
+		if (!(GwtClientHelper.isLicenseFilr())) {
+			// Are we tracking a selected binder?
+			TreeInfo selectedTI;
+			if (null != m_selectedBinderInfo) {
+				// Yes!  Find the matching TreeInfo.
+				TreeInfo rootTI = getRootTreeInfo();
+				if (m_selectedBinderInfo.isBinderCollection())
+				     selectedTI = TreeInfo.findCollectionTI(rootTI, m_selectedBinderInfo.getCollectionType());
+				else selectedTI = TreeInfo.findBinderTI(    rootTI, m_selectedBinderInfo.getBinderId());
+			}
+			else {
+				// No, we aren't we tracking a selected binder!  No
+				// matching TreeInfo.
+				selectedTI = null;
+			}
+	
+			// Return the collection type from the TreeInfo.
+			CollectionType ct =
+				((null == selectedTI)               ?
+					CollectionType.NOT_A_COLLECTION :
+					selectedTI.getBinderInfo().getCollectionType());
+//			GwtClientHelper.debugAlert("TreeDisplayVertical.getSidebarCollection():  " + ct.name());		
+			collectionCallback.collection(ct);
 		}
-		else {
-			// No, we aren't we tracking a selected binder!  No
-			// matching TreeInfo.
-			selectedTI = null;
-		}
-
-		// Return the collection type from the TreeInfo.
-		CollectionType ct =
-			((null == selectedTI)               ?
-				CollectionType.NOT_A_COLLECTION :
-				selectedTI.getBinderInfo().getCollectionType());
-//		GwtClientHelper.debugAlert("TreeDisplayVertical.getSidebarCollection():  " + ct.name());		
-		collectionCallback.collection(ct);
 	}
 	
 	/**
