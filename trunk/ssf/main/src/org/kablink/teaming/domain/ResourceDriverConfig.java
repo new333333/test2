@@ -168,39 +168,47 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		this.driverType = type;
 	}
 	
-	public Boolean getReadOnly() {
-		return readOnly;
+	public boolean isReadOnly() {
+		if(readOnly == null)
+			return true;
+		else
+			return readOnly;
 	}
 
-	public Boolean isReadOnly() {
-		return readOnly;
-	}
-
-	public void setReadOnly(Boolean readOnly) {
+	public void setReadOnly(boolean readOnly) {
 		this.readOnly = readOnly;
 	}
 
-	public Boolean getSynchTopDelete() {
-		return synchTopDelete;
+	public boolean isSynchTopDelete() {
+		if(synchTopDelete == null)
+			return false;
+		else 
+			return synchTopDelete;
 	}
 
-	public void setSynchTopDelete(Boolean synchTopDelete) {
+	public void setSynchTopDelete(boolean synchTopDelete) {
 		this.synchTopDelete = synchTopDelete;
 	}
 
-	public Boolean getPutRequiresContentLength() {
-		return putRequiresContentLength;
+	public boolean isPutRequiresContentLength() {
+		if(putRequiresContentLength == null)
+			return false;
+		else
+			return putRequiresContentLength;
 	}
 
-	public void setPutRequiresContentLength(Boolean putRequiresContentLength) {
+	public void setPutRequiresContentLength(boolean putRequiresContentLength) {
 		this.putRequiresContentLength = putRequiresContentLength;
 	}
 
-	public Boolean getAllowSelfSignedCertificate() {
-		return allowSelfSignedCertificate;
+	public boolean isAllowSelfSignedCertificate() {
+		if(allowSelfSignedCertificate == null)
+			return false;
+		else 
+			return allowSelfSignedCertificate;
 	}
 
-	public void setAllowSelfSignedCertificate(Boolean allowSelfSignedCertificate) {
+	public void setAllowSelfSignedCertificate(boolean allowSelfSignedCertificate) {
 		this.allowSelfSignedCertificate = allowSelfSignedCertificate;
 	}
 
