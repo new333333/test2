@@ -56,6 +56,10 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	private String			m_columnDefId;			// The definition ID for this column (only used for custom columns.)
 	private String			m_columnEleName;		// The element name from the definition (if custom attribute), otherwise, it is the column name.
 	private String			m_columnType;			// The type for this column (only used for custom columns.)
+
+	// Controls whether the 'Message' column appears in the
+	// 'Shared By/With Me' views.
+	public final static boolean SHOW_SHARE_MESSAGES_COLUMN	= false;
 	
 	// The following are the various predefined names used for columns.
 	public final static String COLUMN_AUTHOR			= "author";
