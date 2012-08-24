@@ -181,6 +181,7 @@ public class LinkUriUtil {
         fp.addAdditionalLink("content", baseUrl);
         fp.addAdditionalLink("major_version", baseUrl + "/major_version");
         fp.addAdditionalLink("name", baseUrl + "/name");
+        fp.addAdditionalLink("parent_binder", baseUrl + "/parent_binder");
         fp.addAdditionalLink("versions", baseUrl + "/versions");
         fp.addAdditionalLink("current_version", baseUrl + "/versions/current");
     }
