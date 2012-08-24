@@ -641,12 +641,12 @@ public class EventHelper {
 				}
 				break;
 				
-			case GET_SIDEBAR_CONTEXT:
-				// An GetSidebarContextEvent!  Can the event handler we
-				// were given handle that?
-				if (eventHandler instanceof GetSidebarContextEvent.Handler) {
+			case GET_SIDEBAR_COLLECTION:
+				// An GetSidebarCollectionEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof GetSidebarCollectionEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = GetSidebarContextEvent.registerEvent(eventBus, ((GetSidebarContextEvent.Handler) eventHandler));
+					registrationHandler = GetSidebarCollectionEvent.registerEvent(eventBus, ((GetSidebarCollectionEvent.Handler) eventHandler));
 				}
 				break;
 				
@@ -2089,7 +2089,7 @@ public class EventHelper {
 			case HIDE_ACCESSORIES:						hasHandler = (eventHandler instanceof HideAccessoriesEvent.Handler);		   	   break;
 			case SHOW_ACCESSORIES:						hasHandler = (eventHandler instanceof ShowAccessoriesEvent.Handler);		   	   break;
 			
-			case GET_SIDEBAR_CONTEXT:                  	hasHandler = (eventHandler instanceof GetSidebarContextEvent.Handler);             break;
+			case GET_SIDEBAR_COLLECTION:                hasHandler = (eventHandler instanceof GetSidebarCollectionEvent.Handler);          break;
 			case REFRESH_SIDEBAR_TREE:                 	hasHandler = (eventHandler instanceof RefreshSidebarTreeEvent.Handler);            break;
 			case REROOT_SIDEBAR_TREE:                 	hasHandler = (eventHandler instanceof RerootSidebarTreeEvent.Handler);             break;
 			case SIDEBAR_HIDE:                      	hasHandler = (eventHandler instanceof SidebarHideEvent.Handler);                   break;

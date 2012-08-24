@@ -33,42 +33,45 @@
 package org.kablink.teaming.gwt.client.event;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The GetSidebarContextEvent is used to get the context currently
- * loaded in the sidebar tree.
+ * The GetSidebarCollectionEvent is used to get the collection type
+ * currently loaded in the sidebar tree.
+ * 
+ * If a collection is not the currently loaded context, the callback
+ * should be called with CollectionType.NOT_A_COLLECTION.
  * 
  * @author drfoster@novell.com
  */
-public class GetSidebarContextEvent extends VibeEventBase<GetSidebarContextEvent.Handler> {
+public class GetSidebarCollectionEvent extends VibeEventBase<GetSidebarCollectionEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 	
-	private ContextCallback	m_contextCallback;	//
+	private CollectionCallback	m_collectionCallback;	//
 
 	/**
 	 * Interface used to callback to the event trigger what the current
-	 * sidebar context currently is. 
+	 * sidebar collection currently is. 
 	 */
-	public interface ContextCallback {
-		public void context(BinderInfo contextBI, String contextPermalink);
+	public interface CollectionCallback {
+		public void collection(CollectionType collectoinType);
 	}
 
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onGetSidebarContext(GetSidebarContextEvent event);
+		void onGetSidebarCollection(GetSidebarCollectionEvent event);
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public GetSidebarContextEvent() {
+	public GetSidebarCollectionEvent() {
 		// Initialize the super class.
 		super();
 	}
@@ -76,14 +79,14 @@ public class GetSidebarContextEvent extends VibeEventBase<GetSidebarContextEvent
 	/**
 	 * Class constructor.
 	 * 
-	 * @param contextCallback
+	 * @param collectionCallback
 	 */
-	public GetSidebarContextEvent(ContextCallback contextCallback) {
+	public GetSidebarCollectionEvent(CollectionCallback collectionCallback) {
 		// Initialize the this object...
 		this();
 		
 		// ...and store the parameter.
-		setContextCallback(contextCallback);
+		setCollectionCallback(collectionCallback);
 	}
 	
 	/**
@@ -91,14 +94,14 @@ public class GetSidebarContextEvent extends VibeEventBase<GetSidebarContextEvent
 	 * 
 	 * @return
 	 */
-	public ContextCallback getContextCallback() {return m_contextCallback;}
+	public CollectionCallback getCollectionCallback() {return m_collectionCallback;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setContextCallback(ContextCallback contextCallback) {m_contextCallback = contextCallback;}
+	public void setCollectionCallback(CollectionCallback collectionCallback) {m_collectionCallback = collectionCallback;}
 	
 	/**
 	 * Dispatches this event when one is triggered.
@@ -109,14 +112,14 @@ public class GetSidebarContextEvent extends VibeEventBase<GetSidebarContextEvent
 	 */
 	@Override
 	protected void dispatch(Handler handler) {
-		handler.onGetSidebarContext(this);
+		handler.onGetSidebarCollection(this);
 	}
 	
 	/**
 	 * Fires a new one of these events.
 	 */
 	public static void fireOne() {
-		GwtTeaming.fireEvent(new GetSidebarContextEvent());
+		GwtTeaming.fireEvent(new GetSidebarCollectionEvent());
 	}
 	
 	/**
@@ -141,7 +144,7 @@ public class GetSidebarContextEvent extends VibeEventBase<GetSidebarContextEvent
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.GET_SIDEBAR_CONTEXT;
+		return TeamingEvents.GET_SIDEBAR_COLLECTION;
 	}
 		
 	/**
