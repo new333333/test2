@@ -875,6 +875,27 @@ a, a:visited, a:hover {
 	border-width: 0px;
 }
 
+.adminControl_CloseLabel
+{
+    border-radius: 15px 15px 15px 15px;
+    color: #FFFFFF !important;
+    font-size: .85em;
+	margin-right: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-decoration: none;
+}
+
+.adminControl_CloseLabel:hover
+{
+	cursor: pointer;
+	background: url(images/blends/teal_slice.png) repeat-x;
+	background-position:center;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
 body, table td, select
 {
 	font-family: Arial, Helvetica, sans-serif;

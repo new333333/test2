@@ -442,6 +442,36 @@ public class AdminControl extends TeamingPopupPanel
 					cellFormatter.setWidth( 0, 1, "100%" );
 				}
 				
+				// Add a close button
+				{
+					InlineLabel label;
+					
+					label = new InlineLabel( GwtTeaming.getMessages().close() );
+					label.addStyleName( "adminControl_CloseLabel" );
+					label.addClickHandler( new ClickHandler()
+					{
+						@Override
+						public void onClick( ClickEvent event )
+						{
+							Scheduler.ScheduledCommand cmd;
+							
+							cmd = new Scheduler.ScheduledCommand()
+							{
+								@Override
+								public void execute()
+								{
+									// Fire the event that closes the admin console.
+									FilrActionsCtrl.closeAdminConsole();
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+					} );
+					
+					table.setWidget( 0, 2, label );
+					cellFormatter.setHorizontalAlignment( 0, 2, HasHorizontalAlignment.ALIGN_RIGHT );
+				}
+				
 				m_mainTable.setWidget( 0, 0, table );
 			}
 			
