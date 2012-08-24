@@ -124,6 +124,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private InlineLabel m_hostUrlLabel;
 	private TextBox m_hostUrlTxtBox;
 	private CheckBox m_allowSelfSignedCertsCkbox;
+	private CheckBox m_isSharePointServerCkbox;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 	private FlexCellFormatter m_privilegedPrincipalsCellFormatter;
 	private HTMLTable.RowFormatter m_privilegedPrincipalsRowFormatter;
@@ -578,6 +579,12 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			m_allowSelfSignedCertsCkbox.setVisible( false );
 			table.setWidget( nextRow, 0, m_allowSelfSignedCertsCkbox );
 			++nextRow;
+
+			cellFormatter.setColSpan( nextRow, 0, 2 );
+			m_isSharePointServerCkbox = new CheckBox( messages.modifyNetFolderRootDlg_IsSharePointServerLabel() );
+			m_isSharePointServerCkbox.setVisible( false );
+			table.setWidget( nextRow, 0, m_isSharePointServerCkbox );
+			++nextRow;
 		}
 		
 		// Create the controls used to enter proxy information
@@ -778,6 +785,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			m_hostUrlLabel.setVisible( visible );
 			m_hostUrlTxtBox.setVisible( visible );
 			m_allowSelfSignedCertsCkbox.setVisible( visible );
+			m_isSharePointServerCkbox.setVisible( visible );
 		}
 	}
 	
@@ -943,6 +951,14 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	}
 	
 	/**
+	 * 
+	 */
+	private boolean getIsSharePointServer()
+	{
+		return m_isSharePointServerCkbox.getValue();
+	}
+	
+	/**
 	 * Return the list of principals that have rights to use this net folder root
 	 */
 	private ArrayList<GwtPrincipal> getListOfPrivilegedPrincipals()
@@ -992,6 +1008,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		{
 			netFolderRoot.setHostUrl( getHostUrl() );
 			netFolderRoot.setAllowSelfSignedCerts( getAllowSelfSignedCerts() );
+			netFolderRoot.setIsSharePointServer( getIsSharePointServer() );
 		}
 
 		if ( m_netFolderRoot != null )
@@ -1100,6 +1117,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		m_proxyPwdTxtBox.setValue( "" );
 		m_hostUrlTxtBox.setValue( "" );
 		m_allowSelfSignedCertsCkbox.setValue( false );
+		m_isSharePointServerCkbox.setValue( false );
 
 		// Remove all of the rows from the table.
 		// We start at row 1 so we don't delete the header.
@@ -1134,6 +1152,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			{
 				m_hostUrlTxtBox.setValue( netFolderRoot.getHostUrl() );
 				m_allowSelfSignedCertsCkbox.setValue( netFolderRoot.getAllowSelfSignedCerts() );
+				m_isSharePointServerCkbox.setValue( netFolderRoot.getIsSharePointServer() );
 			}
 			
 			m_rootPathTxtBox.setValue( netFolderRoot.getRootPath() );

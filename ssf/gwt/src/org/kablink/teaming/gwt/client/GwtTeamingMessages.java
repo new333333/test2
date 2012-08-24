@@ -1843,6 +1843,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderRootDlg_HostUrlLabel();
 	String modifyNetFolderRootDlg_HostUrlRequired();
 	String modifyNetFolderRootDlg_InsufficientRights();
+	String modifyNetFolderRootDlg_IsSharePointServerLabel();
 	String modifyNetFolderRootDlg_NameCol();
 	String modifyNetFolderRootDlg_NameLabel();
 	String modifyNetFolderRootDlg_NameRequired();

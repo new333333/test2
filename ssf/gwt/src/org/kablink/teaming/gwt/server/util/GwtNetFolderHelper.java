@@ -105,7 +105,7 @@ public class GwtNetFolderHelper
 					netFolderRoot.getAllowSelfSignedCerts() );
 			options.put(
 					ObjectKeys.RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH,
-					Boolean.FALSE );
+					netFolderRoot.getIsSharePointServer() );
 		}
 
 		// Always prevent the top level folder from being deleted
@@ -214,6 +214,9 @@ public class GwtNetFolderHelper
 				nfRoot.setRootPath( driver.getRootPath() );
 				nfRoot.setProxyName( driver.getAccountName() );
 				nfRoot.setProxyPwd( driver.getPassword() );
+				nfRoot.setHostUrl( driver.getHostUrl() );
+				nfRoot.setAllowSelfSignedCerts( driver.isAllowSelfSignedCertificate() );
+				nfRoot.setIsSharePointServer( driver.isPutRequiresContentLength() );
 				
 				// Get the list of principals that can use the net folder root
 				{
@@ -333,7 +336,7 @@ public class GwtNetFolderHelper
 					netFolderRoot.getAllowSelfSignedCerts() );
 			options.put(
 					ObjectKeys.RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH,
-					Boolean.FALSE );
+					netFolderRoot.getIsSharePointServer() );
 		}
 
 		//Add this resource driver
