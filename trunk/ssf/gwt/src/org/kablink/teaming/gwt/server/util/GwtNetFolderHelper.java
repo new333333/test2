@@ -133,6 +133,12 @@ public class GwtNetFolderHelper
 				newRoot.setProxyName( rdConfig.getAccountName() );
 				newRoot.setProxyPwd( rdConfig.getPassword() );
 				newRoot.setRootPath( rdConfig.getRootPath() );
+				newRoot.setHostUrl( rdConfig.getHostUrl() );
+				newRoot.setAllowSelfSignedCerts( rdConfig.isAllowSelfSignedCertificate() );
+				newRoot.setIsSharePointServer( rdConfig.isPutRequiresContentLength() );
+
+				// Get the list of principals that can use the net folder root
+				getListOfPrincipals( ami, rdConfig, newRoot );
 			}
 		}
 		catch (Exception ex)
@@ -219,64 +225,7 @@ public class GwtNetFolderHelper
 				nfRoot.setIsSharePointServer( driver.isPutRequiresContentLength() );
 				
 				// Get the list of principals that can use the net folder root
-				{
-					List<Function> functions;
-					List<WorkAreaFunctionMembership> memberships;
-					WorkAreaFunctionMembership membership = null;
-					List<Principal> members;
-
-					functions = adminModule.getFunctions( ObjectKeys.ROLE_TYPE_ZONE );
-					memberships = adminModule.getWorkAreaFunctionMemberships( driver );
-					membership = null;
-					for ( Function f : functions )
-					{
-						if ( ObjectKeys.FUNCTION_CREATE_FILESPACES_INTERNALID.equals( f.getInternalId() ) )
-						{
-							for ( WorkAreaFunctionMembership m : memberships )
-							{
-								if ( f.getId().equals( m.getFunctionId() ) )
-								{
-									membership = m;
-									break;
-								}
-							}
-						}
-					}
-					
-					members = new ArrayList<Principal>();
-
-					if ( membership != null )
-					{
-						members = ResolveIds.getPrincipals( membership.getMemberIds() );
-					}
-					
-					for ( Principal p : members ) 
-					{
-						if ( p instanceof User )
-						{
-							GwtUser gwtUser;
-							
-							gwtUser = new GwtUser();
-							gwtUser.setUserId( p.getId() );
-							gwtUser.setName( p.getName() );
-							gwtUser.setTitle( Utils.getUserTitle( p ) );
-							gwtUser.setWorkspaceTitle( ((User)p).getWSTitle() );
-							
-							nfRoot.addPrincipal( gwtUser );
-						}
-						else if ( p instanceof Group )
-						{
-							GwtGroup gwtGroup;
-							
-							gwtGroup = new GwtGroup();
-							gwtGroup.setId( p.getId().toString() );
-							gwtGroup.setName( p.getName() );
-							gwtGroup.setTitle( p.getTitle() );
-							
-							nfRoot.addPrincipal( gwtGroup );
-						}
-					}
-				}
+				getListOfPrincipals( ami, driver, nfRoot );
 				
 				listOfNetFolderRoots.add( nfRoot );
 			}
@@ -300,6 +249,75 @@ public class GwtNetFolderHelper
 			return DriverType.famt;
 		
 		return DriverType.famt;
+	}
+
+	/**
+	 * 
+	 */
+	@SuppressWarnings("unchecked")
+	private static void getListOfPrincipals(
+		AllModulesInjected ami,
+		ResourceDriverConfig driver,
+		NetFolderRoot nfRoot )
+	{
+		List<Function> functions;
+		List<WorkAreaFunctionMembership> memberships;
+		WorkAreaFunctionMembership membership = null;
+		List<Principal> members;
+		AdminModule adminModule;
+
+		adminModule = ami.getAdminModule();
+		functions = adminModule.getFunctions( ObjectKeys.ROLE_TYPE_ZONE );
+		memberships = adminModule.getWorkAreaFunctionMemberships( driver );
+		membership = null;
+		for ( Function f : functions )
+		{
+			if ( ObjectKeys.FUNCTION_CREATE_FILESPACES_INTERNALID.equals( f.getInternalId() ) )
+			{
+				for ( WorkAreaFunctionMembership m : memberships )
+				{
+					if ( f.getId().equals( m.getFunctionId() ) )
+					{
+						membership = m;
+						break;
+					}
+				}
+			}
+		}
+		
+		members = new ArrayList<Principal>();
+
+		if ( membership != null )
+		{
+			members = ResolveIds.getPrincipals( membership.getMemberIds() );
+		}
+		
+		for ( Principal p : members ) 
+		{
+			if ( p instanceof User )
+			{
+				GwtUser gwtUser;
+				
+				gwtUser = new GwtUser();
+				gwtUser.setUserId( p.getId() );
+				gwtUser.setName( p.getName() );
+				gwtUser.setTitle( Utils.getUserTitle( p ) );
+				gwtUser.setWorkspaceTitle( ((User)p).getWSTitle() );
+				
+				nfRoot.addPrincipal( gwtUser );
+			}
+			else if ( p instanceof Group )
+			{
+				GwtGroup gwtGroup;
+				
+				gwtGroup = new GwtGroup();
+				gwtGroup.setId( p.getId().toString() );
+				gwtGroup.setName( p.getName() );
+				gwtGroup.setTitle( p.getTitle() );
+				
+				nfRoot.addPrincipal( gwtGroup );
+			}
+		}
 	}
 	
 	/**
