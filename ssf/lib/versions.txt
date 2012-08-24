@@ -15,7 +15,7 @@ bsh 2.0b2
 cglib 2.2.0(from Hibernate distribution, needed by Hibernate)
 Colt CERN Colt Library 1.2
 Commons Beanutils 1.7 (from spring distribution)
-Commons Codec 1.3 (required by WSS4J)
+Commons Codec 1.5 (required by WSS4J)
 Commons Collections 3.2 (from spring distribution)
 Commons Compress 1.4
 Commons Digester 1.8
