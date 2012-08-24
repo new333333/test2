@@ -41,7 +41,7 @@ import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.GetSidebarContextEvent;
+import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent;
 import org.kablink.teaming.gwt.client.event.RefreshSidebarTreeEvent;
 import org.kablink.teaming.gwt.client.event.RerootSidebarTreeEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
@@ -89,7 +89,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 		ActivityStreamExitEvent.Handler,
 		ChangeContextEvent.Handler,
 		ContextChangedEvent.Handler,
-		GetSidebarContextEvent.Handler,
+		GetSidebarCollectionEvent.Handler,
 		RefreshSidebarTreeEvent.Handler,
 		RerootSidebarTreeEvent.Handler,
 		SidebarHideEvent.Handler,
@@ -116,7 +116,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 		TeamingEvents.CONTEXT_CHANGED,
 		
 		// Sidebar events.
-		TeamingEvents.GET_SIDEBAR_CONTEXT,
+		TeamingEvents.GET_SIDEBAR_COLLECTION,
 		TeamingEvents.REFRESH_SIDEBAR_TREE,
 		TeamingEvents.REROOT_SIDEBAR_TREE,
 		TeamingEvents.SIDEBAR_HIDE,
@@ -496,18 +496,18 @@ public class WorkspaceTreeControl extends ResizeComposite
 	}
 	
 	/**
-	 * Handles GetSidebarContextEvent's received by this class.
+	 * Handles GetSidebarCollectionEvent's received by this class.
 	 * 
-	 * Implements the GetSidebarContextEvent.Handler.onGetSidebarContext() method.
+	 * Implements the GetSidebarCollectionEvent.Handler.onGetSidebarCollection() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onGetSidebarContext(GetSidebarContextEvent event) {
+	public void onGetSidebarCollection(GetSidebarCollectionEvent event) {
 		// If this is a sidebar tree...
 		if (isSidebarTree()) {
-			// ...tell it to return its context.
-			m_treeDisplay.getSidebarContext(event.getContextCallback());
+			// ...tell it to return its collection.
+			m_treeDisplay.getSidebarCollection(event.getCollectionCallback());
 		}
 	}
 	

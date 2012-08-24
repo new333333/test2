@@ -831,7 +831,7 @@ public interface GwtTeamingMessages extends Messages
 	String treeCloseBreadCrumbs();
 	String treeErrorNoManageMenu();
 	String treeIntentionallyLeftBlank();
-	String treeInternalErrorNoContext();
+	String treeInternalErrorNoCollection();
 	String treeInternalErrorRefreshNotSidebar();
 	String treeInternalErrorRerootNotSidebar();
 	String treePreviousCollection();

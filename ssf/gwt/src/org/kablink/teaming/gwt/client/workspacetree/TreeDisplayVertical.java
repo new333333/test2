@@ -43,7 +43,7 @@ import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent.ManageMenuPopupCallback;
-import org.kablink.teaming.gwt.client.event.GetSidebarContextEvent.ContextCallback;
+import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent.CollectionCallback;
 import org.kablink.teaming.gwt.client.event.HideManageMenuEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -66,6 +66,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BucketInfo;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -968,24 +969,36 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	}
 
 	/**
-	 * Returns the current sidebar context via a callback.
+	 * Returns the current sidebar collection type via a callback.
 	 * 
-	 * Implementation of TreeDisplayBase.getContextCallback().
+	 * Implementation of TreeDisplayBase.getCollectionCallback().
 	 * 
-	 * @param contextCallback
+	 * @param collectionCallback
 	 */
 	@Override
-	public void getSidebarContext(ContextCallback contextCallback) {
-		String contextPermalink = "";
+	public void getSidebarCollection(CollectionCallback collectionCallback) {
+		// Are we tracking a selected binder?
+		TreeInfo selectedTI;
 		if (null != m_selectedBinderInfo) {
-			TreeInfo selectedTI;
+			// Yes!  Find the matching TreeInfo.
 			TreeInfo rootTI = getRootTreeInfo();
 			if (m_selectedBinderInfo.isBinderCollection())
 			     selectedTI = TreeInfo.findCollectionTI(rootTI, m_selectedBinderInfo.getCollectionType());
 			else selectedTI = TreeInfo.findBinderTI(    rootTI, m_selectedBinderInfo.getBinderId());
-			contextPermalink = selectedTI.getBinderPermalink();
 		}
-		contextCallback.context(m_selectedBinderInfo, contextPermalink);
+		else {
+			// No, we aren't we tracking a selected binder!  No
+			// matching TreeInfo.
+			selectedTI = null;
+		}
+
+		// Return the collection type from the TreeInfo.
+		CollectionType ct =
+			((null == selectedTI)               ?
+				CollectionType.NOT_A_COLLECTION :
+				selectedTI.getBinderInfo().getCollectionType());
+//		GwtClientHelper.debugAlert("TreeDisplayVertical.getSidebarCollection():  " + ct.name());		
+		collectionCallback.collection(ct);
 	}
 	
 	/**
@@ -1601,17 +1614,19 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// If the selection is for a collection...
 		if (osbInfo.isCollection()) {
 			// ...select it.
-			selectBinder(
-				TreeInfo.findCollectionTI(
-					getRootTreeInfo(),
-					osbInfo.getBinderInfo().getCollectionType()));
+			TreeInfo collectionTI = TreeInfo.findCollectionTI(
+				getRootTreeInfo(),
+				osbInfo.getBinderInfo().getCollectionType());
 			
-			return;
+			if (null != collectionTI) {
+				selectBinder(collectionTI);
+				return;
+			}
 		}
 		
-		// If we are in a mode where site navigation is not
+		// Otherwise, if we are in a mode where site navigation is not
 		// available...
-		if (!(WorkspaceTreeControl.siteNavigationAvailable())) {
+		else if (!(WorkspaceTreeControl.siteNavigationAvailable())) {
 			// ...select the binder.
 			selectBinder(
 				TreeInfo.findBinderTI(

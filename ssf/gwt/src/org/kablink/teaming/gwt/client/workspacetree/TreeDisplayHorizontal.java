@@ -39,9 +39,10 @@ import org.kablink.teaming.gwt.client.event.BrowseHierarchyExitEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent.ManageMenuPopupCallback;
-import org.kablink.teaming.gwt.client.event.GetSidebarContextEvent;
-import org.kablink.teaming.gwt.client.event.GetSidebarContextEvent.ContextCallback;
+import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent;
+import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent.CollectionCallback;
 import org.kablink.teaming.gwt.client.event.HideManageMenuEvent;
+import org.kablink.teaming.gwt.client.event.ShowCollectionEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeCollapsedEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeExpandedEvent;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
@@ -52,6 +53,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -230,21 +232,21 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	}
 	
 	/*
-	 * Inner class used to track information about getting the context
-	 * from the sidebar.
+	 * Inner class used to track information about getting the
+	 * collection type from the sidebar.
 	 */
-	private class GetSidebarContextHelper {
-		private boolean		m_handleSidebarContext;	// Coordinates handling the callback.
-		private FlowPanel	m_fp;					// The FlowPanel things are to be added to.
-		private Timer		m_timer;				// A timer used to control the maximum amount of time we'll wait for a response.
+	private class GetSidebarCollectionHelper {
+		private boolean		m_waitingForResponse;	// Coordinates handling the callback.
+		private FlowPanel	m_fp;					// The FlowPanel things are being added to.
+		private Timer		m_timer;				// A timer used to control how long we wait for a response.
 		private TreeInfo	m_ti;					// The TreeInfo we're dealing with.
 		private Widget		m_selectorW;			// The Widget for the TreeInfo.
 		
 		/**
 		 * Class constructor.
 		 */
-		GetSidebarContextHelper(FlowPanel fp, TreeInfo ti, Widget selectorW) {
-			// Initialize the super class.
+		GetSidebarCollectionHelper(FlowPanel fp, TreeInfo ti, Widget selectorW) {
+			// Initialize the super class...
 			super();
 			
 			// ...store the parameters...
@@ -253,19 +255,19 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			m_selectorW = selectorW;
 			
 			// ...and initialize everything else.
-			setHandleSidebarContext(true);
+			setWaitingForResponse(true);
 			
-			// Setup a timer to wait for the context.  If we exceed the
-			// timeout, we simply stop waiting.
+			// Setup a timer to wait for the response.  If we exceed
+			// the timeout, we simply stop waiting.
 			m_timer = new Timer() {
 				@Override
 				public void run() {
 					// Stop waiting...
-					clearGetContext();
-					m_handleSidebarContext = false;
+					clearGetCollection();
+					m_waitingForResponse = false;
 					
 					// ...add the TreeInfo information since we didn't
-					// ...get a context that we'd normally add one
+					// ...get a collection that we'd normally add one
 					// ...from.
 					addTIImageAndAnchor(m_fp, m_ti, m_selectorW);
 
@@ -276,16 +278,16 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 					// If we're in UI debug mode, display an alert
 					// about the problem.
 					GwtClientHelper.debugAlert(
-						getMessages().treeInternalErrorNoContext());
+						getMessages().treeInternalErrorNoCollection());
 				}
 			};
-			m_timer.schedule(1000);	// We'll wait no longer than 1 second for a context.
+			m_timer.schedule(1000);	// We'll wait no longer than 1 second for a collection type.
 		}
 
 		/**
-		 * Called to clear the get context timer.
+		 * Called to clear the get collection timer.
 		 */
-		void clearGetContext() {
+		void clearGetCollection() {
 			// If we have a timer...
 			if (null != m_timer) {
 				// ...cancel and forget about it.
@@ -299,14 +301,14 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		 * 
 		 * @return
 		 */
-		boolean getHandleSidebarContext() {return m_handleSidebarContext;}
+		boolean getWaitingForResponse() {return m_waitingForResponse;}
 
 		/**
 		 * Set'er methods.
 		 * 
 		 * @param
 		 */
-		void setHandleSidebarContext(boolean handleSidebarContext) {m_handleSidebarContext = handleSidebarContext;}
+		void setWaitingForResponse(boolean waitingForResponse) {m_waitingForResponse = waitingForResponse;}
 	}
 	
 	/**
@@ -324,8 +326,6 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * Adds access to the binder configuration menu.
 	 */
 	private void addBinderConfig(FlowPanel fp, TreeInfo ti) {
-//!		...this needs to be implemented...
-		
 		// Create an anchor to run the configuration menu on this
 		// binder.
 		final Anchor  selectorConfigA  = new Anchor();
@@ -587,12 +587,12 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * Returns the current sidebar context via a callback.  Ignored by
 	 * horizontal trees.
 	 * 
-	 * Implementation of TreeDisplayBase.getContextCallback().
+	 * Implementation of TreeDisplayBase.getCollectionCallback().
 	 * 
 	 * @param contextCallback
 	 */
 	@Override
-	public void getSidebarContext(ContextCallback contextCallback) {
+	public void getSidebarCollection(CollectionCallback contextCallback) {
 		// Nothing to do.  Ignored by horizontal trees.
 	}
 	
@@ -760,7 +760,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			fp.addStyleName("breadCrumb_ContentTail_Panel");
 		    m_rootPanel.add(fp);
 
-			// Is the tail binder a folder?
+			// Is the node above the tail binder a folder?
 			final TreeInfo prevTI = getPreviousTI(ti);
 			if ((null != prevTI) && (BinderType.FOLDER == prevTI.getBinderInfo().getBinderType())) {
 				// Yes!  Add an up button to navigate to it...
@@ -792,62 +792,60 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				addBinderConfig(fp, ti);
 			}
 
-			// No the tail binder is not a folder!  Is site navigation
-			// available?
+			// No the node above the tail binder is not a folder!  Is
+			// site navigation available?
 			else if (!(WorkspaceTreeControl.siteNavigationAvailable())) {
-				// No!  Construct the helper to coordinate handling
-				// not getting called back with the context...
-				final GetSidebarContextHelper gscHelper = new GetSidebarContextHelper(
+				// No!  Construct a helper to coordinate handling
+				// getting the collection type...
+				final GetSidebarCollectionHelper gscHelper = new GetSidebarCollectionHelper(
 					fp,			// The FlowPanel we're constructing. 
 					ti,			// The TreeInfo  we're constructing from.
 					selectorW);	// The Anchor for this TreeInfo.
 				
-				// ...and fire a get sidebar context event.
+				// ...and fire a get sidebar collection event.
 				GwtTeaming.fireEvent(
-					new GetSidebarContextEvent(
-						new ContextCallback() {
+					new GetSidebarCollectionEvent(
+						new CollectionCallback() {
 							/**
 							 * Callback method for the event.
 							 * 
 							 * This method will be called by the event
-							 * handler(s) with the current context
-							 * loaded in the sidebar tree.
+							 * handler(s) with the current collection
+							 * type.
 							 * 
-							 * @param contextBI
-							 * @param contextPermalink
+							 * @param collectionType
 							 */
 							@Override
-							public void context(final BinderInfo contextBI, final String contextPermalink) {
-								// Did we timeout before we got a
-								// context?
-								gscHelper.clearGetContext();
-								if (gscHelper.getHandleSidebarContext()) {
-									// No!  If the current sidebar
-									// context is a collection...
-									gscHelper.setHandleSidebarContext(false);
-									if ((null != contextBI) && contextBI.isBinderCollection()) {
-										// ...add an up button to
-										// ...navigate to it...
+							public void collection(final CollectionType collectionType) {
+								// Are we still waiting for a response?
+								gscHelper.clearGetCollection();
+								if (gscHelper.getWaitingForResponse()) {
+									// Yes!  We aren't waiting any
+									// more.
+									gscHelper.setWaitingForResponse(false);
+									
+									// Did we get a collection type we
+									// can generate an up arrow for?
+									if (CollectionType.NOT_A_COLLECTION != collectionType) {
+										// Yes!  Add an up button to
+										// navigate to it.
 										addUpButton(
 											fp,
 											getMessages().treePreviousCollection(),
 											new Command() {
+												/**
+												 * The following is
+												 * called when the up
+												 * is clicked.
+												 */
 												@Override
 												public void execute() {
 													// If we can change contexts...
 													if (canChangeContext()) {
-														// ...select the appropriate TreeInfo...
-														selectBinder(TreeInfo.findCollectionTI(
-															getRootTreeInfoList(),
-															contextBI.getCollectionType()));
-
-														// ...and change the context.
-														GwtTeaming.fireEvent(
-															new ChangeContextEvent(
-																new OnSelectBinderInfo(
-																	contextBI,
-																	contextPermalink,
-																	Instigator.BREADCRUMB_TREE_SELECT)));
+														// ...fire the event to do so.
+														GwtTeaming.fireEventAsync(
+															new ShowCollectionEvent(
+																collectionType));
 													}
 												}
 											});

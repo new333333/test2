@@ -42,7 +42,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
-import org.kablink.teaming.gwt.client.event.GetSidebarContextEvent.ContextCallback;
+import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent.CollectionCallback;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
@@ -171,7 +171,7 @@ public abstract class TreeDisplayBase {
 	abstract OnSelectBinderInfo buildOnSelectBinderInfo(TreeInfo ti);
 	abstract void selectBinder(TreeInfo ti);
 	public abstract boolean isInActivityStreamMode();
-	public abstract void    getSidebarContext(ContextCallback contextCallback);
+	public abstract void    getSidebarCollection(CollectionCallback collectionCallback);
 	public abstract void    refreshSidebarTree();
 	public abstract void    rerootSidebarTree();
 	public abstract void    render(          BinderInfo selectedBinderInfo, FlowPanel targetPanel);
