@@ -2112,6 +2112,40 @@ public class GwtViewHelper {
 	}
 
 	/*
+	 * Returns a String[] of the names of the columns to display in a
+	 * given collection.
+	 */
+	private static String[] getCollectionColumnNames(CollectionType ct) {
+		String[] reply;
+		switch (ct) {
+		case FILE_SPACES:
+			reply = new String[]{"title", "rights", "descriptionHtml"};
+			break;
+			
+		case MY_FILES:
+			reply = new String[]{"title", "family", "date"};
+			break;
+			
+		case SHARED_BY_ME:
+			if (FolderColumn.SHOW_SHARE_MESSAGES_COLUMN)
+			     {reply = new String[]{"title", "share_sharedWith", "share_date", "share_expiration", "share_access", "share_message", "comments"};}
+			else {reply = new String[]{"title", "share_sharedWith", "share_date", "share_expiration", "share_access",                  "comments"};}
+			break;
+			
+		case SHARED_WITH_ME:
+			if (FolderColumn.SHOW_SHARE_MESSAGES_COLUMN)
+			     {reply = new String[]{"title", "share_sharedBy",   "share_date", "share_expiration", "share_access", "share_message", "comments"};}
+			else {reply = new String[]{"title", "share_sharedBy",   "share_date", "share_expiration", "share_access",                  "comments"};}
+			break;
+			
+		default:
+			reply = new String[0];
+			break;
+		}
+		return reply;
+	}
+
+	/*
 	 * Returns the entries for the given collection.
 	 */
 	@SuppressWarnings("unchecked")
@@ -2431,15 +2465,18 @@ public class GwtViewHelper {
 			else if (isCollection) {
 				// Yes!
 				baseNameKey = "collections.column.";
-				String[] columns;
-				switch (folderInfo.getCollectionType()) {
+				CollectionType	collectionType = folderInfo.getCollectionType();
+				switch (collectionType) {
 				default:
-				case FILE_SPACES:     baseNameKey += "filespaces.";   columns = new String[]{"title", "rights", "descriptionHtml"};                                                      break;
-				case MY_FILES:        baseNameKey += "myfiles.";      columns = new String[]{"title", "family", "date"};                                                                 break;
-				case SHARED_BY_ME:    baseNameKey += "sharedByMe.";   columns = new String[]{"title", "share_sharedWith", "share_date", "share_expiration", "share_access", "comments"}; break;
-				case SHARED_WITH_ME:  baseNameKey += "sharedWithMe."; columns = new String[]{"title", "share_sharedBy",   "share_date", "share_expiration", "share_access", "comments"}; break;
+				case FILE_SPACES:     baseNameKey += "filespaces.";   break;
+				case MY_FILES:        baseNameKey += "myfiles.";      break;
+				case SHARED_BY_ME:    baseNameKey += "sharedByMe.";   break;
+				case SHARED_WITH_ME:  baseNameKey += "sharedWithMe."; break;
 				}
-				columnNames = getColumnsLHMFromAS(columns);
+				columnNames =
+					getColumnsLHMFromAS(
+						getCollectionColumnNames(
+							collectionType));
 			}
 			
 			else {
