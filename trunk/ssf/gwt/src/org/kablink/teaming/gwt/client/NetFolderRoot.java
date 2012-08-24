@@ -61,6 +61,7 @@ public class NetFolderRoot
 	
 	// This information is specific to WebDAV
 	private boolean m_allowSelfSignedCerts = false;
+	private boolean m_isSharePointServer = false;
 	private String m_hostUrl = "";
 	
 	
@@ -100,6 +101,7 @@ public class NetFolderRoot
 		
 		// Copy WebDAV info
 		m_allowSelfSignedCerts = root.getAllowSelfSignedCerts();
+		m_isSharePointServer = root.getIsSharePointServer();
 		m_hostUrl = root.getHostUrl();
 	}
 	
@@ -125,6 +127,14 @@ public class NetFolderRoot
 	public Long getId()
 	{
 		return m_id;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getIsSharePointServer()
+	{
+		return m_isSharePointServer;
 	}
 	
 	/**
@@ -213,6 +223,14 @@ public class NetFolderRoot
 	public void setId( Long id )
 	{
 		m_id = id;
+	}
+
+	/**
+	 * 
+	 */
+	public void setIsSharePointServer( boolean isSharePointServer )
+	{
+		m_isSharePointServer = isSharePointServer;
 	}
 	
 	/**
