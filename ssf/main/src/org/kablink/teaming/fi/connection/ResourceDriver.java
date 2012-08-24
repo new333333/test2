@@ -35,6 +35,7 @@ package org.kablink.teaming.fi.connection;
 import java.util.Date;
 
 import org.kablink.teaming.UncheckedIOException;
+import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.fi.FIException;
 
 
@@ -174,4 +175,12 @@ public interface ResourceDriver {
 	 */
 	public Date getModifiedOn();
 
+	/**
+	 * Returns resource driver config object associated with this driver instance
+	 * or <code>null</code> if this driver instance was not created from a config object.
+	 * 
+	 * @return
+	 */
+	public ResourceDriverConfig getConfig();
+	
 }

@@ -16,10 +16,10 @@
     <property name="zoneId" not-null="true"/>
     <property name="name"/>
     <property name="type"/>
-    <property name="readOnly"/>
-    <property name="synchTopDelete"/>
-    <property name="putRequiresContentLength"/>
-	<property name="allowSelfSignedCertificate"/>
+    <property name="readOnly" access="field"/>
+    <property name="synchTopDelete" access="field"/>
+    <property name="putRequiresContentLength" access="field"/>
+	<property name="allowSelfSignedCertificate" access="field"/>
     <property name="hostUrl"/>
     <property name="rootPath"/>
     <property name="accountName"/>
