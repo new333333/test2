@@ -208,6 +208,8 @@ public interface AdminModule {
     
     public void setEntryHasAcl(final WorkArea workArea, final Boolean hasAcl, final Boolean checkFolderAcl);
     
+    public void setEntryHasExternalAcl(final WorkArea workArea, final Boolean hasExternalAcl);
+    
 	/**
 	 * Send a mail message to a collection of users and/or explicit email address.  Include attachments  from entries if specified  
 	 * @param entry - may be null

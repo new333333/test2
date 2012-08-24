@@ -1078,16 +1078,44 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				}
 			}
 		
-			//Set the entry acl flag
 	        getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
-	           		if (workArea instanceof Entry) ((Entry)workArea).setHasEntryAcl(hasAcl);
+	           		if (workArea instanceof Entry) {
+	        			//Set the entry acl flag
+	           			((Entry)workArea).setHasEntryAcl(hasAcl);
+	        	        //Set the entry checkFolderAcl flag
+	           			((Entry)workArea).setCheckFolderAcl(checkFolderAcl);
+	           		}
 					return null;
 	        	}});
-	        //Set the entry checkFolderAcl flag
+		}
+	}
+
+	public void setEntryHasExternalAcl(final WorkArea workArea, final Boolean hasExternalAcl) {
+        //Make sure this user is allowed to do this
+		if (workArea instanceof Entry && ((Entry)workArea).isTop()) {
+			try {
+				if (((Entry)workArea).hasEntryExternalAcl()) {
+					getAccessControlManager().checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);
+				} else {
+					getAccessControlManager().checkOperation(((Entry)workArea).getParentBinder(), WorkAreaOperation.CREATE_ENTRY_ACLS);
+				}
+			} catch(AccessControlException ex) {
+				if (!((Entry)workArea).hasEntryExternalAcl()) {
+					try {
+						getAccessControlManager().checkOperation(((Entry)workArea).getParentBinder(), WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
+					} catch(AccessControlException ex2) {
+						return;
+					}
+				} else {
+					return;
+				}
+			}
+		
+			//Set the entry external acl flag
 	        getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
-	           		if (workArea instanceof Entry) ((Entry)workArea).setCheckFolderAcl(checkFolderAcl);
+	           		if (workArea instanceof Entry) ((Entry)workArea).setHasEntryExternalAcl(hasExternalAcl);
 					return null;
 	        	}});
 		}
