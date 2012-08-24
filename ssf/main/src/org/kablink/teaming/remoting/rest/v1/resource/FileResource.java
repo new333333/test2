@@ -32,12 +32,12 @@
  */
 package org.kablink.teaming.remoting.rest.v1.resource;
 
-import com.bradmcevoy.http.exceptions.NotAuthorizedException;
 import com.sun.jersey.spi.resource.Singleton;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -54,8 +54,6 @@ import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
-import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.webdav.WebdavException;
 import org.kablink.util.api.ApiErrorCode;
 
 import javax.servlet.http.HttpServletRequest;
@@ -193,6 +191,29 @@ public class FileResource extends AbstractFileResource {
 
         getFolderModule().modifyEntry(entity.getParentBinder().getId(),
                 entity.getId(), inputData, null, null, renamesTo, null);
+
+        return ResourceUtil.buildFileProperties(fa);
+    }
+
+    @POST
+    @Path("/parent_binder")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public FileProperties moveFile(@PathParam("id") String fileId,
+                                     @FormParam("folder_id") Long newFolderId) throws WriteFilesException, WriteEntryDataException {
+        FileAttachment fa = findFileAttachment(fileId);
+        if (newFolderId ==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'folder_id' form parameter");
+        }
+        Binder binder = getBinderModule().getBinder(newFolderId);
+        if (!(binder instanceof Folder)) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The binder with the specified id is not a valid folder: " + newFolderId);
+        }
+        DefinableEntity entity = fa.getOwner().getEntity();
+        if (!(entity instanceof FolderEntry)) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Only files that are contained in an entry can be moved.");
+        }
+        getFolderModule().moveEntry(null, entity.getId(), newFolderId, null, null);
 
         return ResourceUtil.buildFileProperties(fa);
     }
