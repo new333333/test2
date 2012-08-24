@@ -43,9 +43,7 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.dom.client.UListElement;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -56,7 +54,6 @@ import com.google.gwt.user.client.ui.Panel;
  */
 public class AdminInfoDlg extends DlgBox
 {
-	private Button m_closeBtn;
 	private FlexTable m_table;
 	
 	/*
@@ -72,7 +69,7 @@ public class AdminInfoDlg extends DlgBox
 		int xPos,
 		int yPos )
 	{
-		super( autoHide, modal, xPos, yPos );
+		super( autoHide, modal, xPos, yPos, DlgButtonMode.Close );
 	
 		String headerText;
 		
@@ -84,6 +81,7 @@ public class AdminInfoDlg extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
+	@Override
 	public Panel createContent( Object props )
 	{
 		FlowPanel mainPanel = null;
@@ -106,30 +104,10 @@ public class AdminInfoDlg extends DlgBox
 	}
 	
 	
-	/*
-	 * Override the createFooter() method so we can control what buttons are in the footer.
-	 */
-	public Panel createFooter()
-	{
-		FlowPanel panel;
-		
-		panel = new FlowPanel();
-		
-		// Associate this panel with its stylesheet.
-		panel.setStyleName( "teamingDlgBoxFooter" );
-		
-		m_closeBtn = new Button( GwtTeaming.getMessages().close() );
-		m_closeBtn.addClickHandler( this );
-		m_closeBtn.addStyleName( "teamingButton" );
-		panel.add( m_closeBtn );
-
-		return panel;
-	}
-	
-	
 	/**
 	 * 
 	 */
+	@Override
 	public Object getDataFromDlg()
 	{
 		// Nothing to do.
@@ -140,6 +118,7 @@ public class AdminInfoDlg extends DlgBox
 	/**
 	 *  
 	 */
+	@Override
 	public FocusWidget getFocusWidget()
 	{
 		return null;
@@ -155,24 +134,6 @@ public class AdminInfoDlg extends DlgBox
 	}
 
 	
-	/*
-	 * This method gets called when the user clicks on a button in the footer.
-	 */
-	public void onClick( ClickEvent event )
-	{
-		Object	source;
-		
-		// Get the object that was clicked on.
-		source = event.getSource();
-		
-		// Did the user click on close?
-		if ( source == m_closeBtn )
-		{
-			// Yes
-			hide();
-		}
-	}
-
 	/**
 	 * Refresh the content of this dialog with the new information found in the given GwtUpgradeInfo object.
 	 */
