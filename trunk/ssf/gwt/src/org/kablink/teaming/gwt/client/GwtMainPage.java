@@ -3286,7 +3286,17 @@ public class GwtMainPage extends ResizeComposite
 		
 		m_splitLayoutPanel.setVisible( false );
 		
-		m_adminControl.showControl( m_mainMenuCtrl );
+		// Is the main menu visible?
+		if ( m_mainMenuCtrl.isVisible() )
+		{
+			// Yes, position the admin control relative to the main menu control.
+			m_adminControl.showControl( m_mainMenuCtrl );
+		}
+		else
+		{
+			// No, position the admin control relative to the masthead
+			m_adminControl.showControl( m_headerPanel );
+		}
 	}// end showAdminControlImpl()
 	
 	/*

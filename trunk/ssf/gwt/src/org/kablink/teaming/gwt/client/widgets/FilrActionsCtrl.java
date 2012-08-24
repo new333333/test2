@@ -36,6 +36,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
+import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.ShowCollectionEvent;
@@ -202,6 +203,8 @@ public class FilrActionsCtrl extends Composite
 			@Override
 			public void execute()
 			{
+				FilrActionsCtrl.closeAdminConsole();
+
 				GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.MY_FILES ) );
 			}
 		};
@@ -218,6 +221,8 @@ public class FilrActionsCtrl extends Composite
 			@Override
 			public void execute()
 			{
+				FilrActionsCtrl.closeAdminConsole();
+
 				GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_WITH_ME ) );
 			}
 		};
@@ -234,6 +239,8 @@ public class FilrActionsCtrl extends Composite
 			@Override
 			public void execute()
 			{
+				FilrActionsCtrl.closeAdminConsole();
+
 				GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.FILE_SPACES ) );
 			}
 		};
@@ -250,6 +257,8 @@ public class FilrActionsCtrl extends Composite
 			@Override
 			public void execute()
 			{
+				FilrActionsCtrl.closeAdminConsole();
+
 				GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_BY_ME ) );
 			}
 		};
@@ -268,6 +277,8 @@ public class FilrActionsCtrl extends Composite
 			{
 				ActivityStreamInfo asi;
 				
+				FilrActionsCtrl.closeAdminConsole();
+
 				//!!!
 				// Figure out which collection point is selected and invoke "what's new"
 				// on that collection point.
@@ -287,6 +298,19 @@ public class FilrActionsCtrl extends Composite
 		m_mainPanel.add( m_whatsNewAction );
 		
 		initWidget( m_mainPanel );
+	}
+	
+	/**
+	 * 
+	 */
+	public static void closeAdminConsole()
+	{
+		// Is the admin console active?
+		if ( GwtTeaming.getMainPage().isAdminActive() )
+		{
+			// Yes, close it
+			AdministrationExitEvent.fireOne();
+		}
 	}
 
 	/**
