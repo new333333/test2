@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent;
 import org.kablink.teaming.gwt.client.event.ShowCollectionEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
@@ -69,7 +70,10 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class FilrActionsCtrl extends Composite
-	implements ClickHandler, ContextChangedEvent.Handler
+	implements
+		ClickHandler,
+		ContextChangedEvent.Handler,
+		GetSidebarCollectionEvent.Handler
 {
 	private FilrAction m_selectedAction;
 	private HorizontalPanel m_mainPanel;
@@ -85,7 +89,8 @@ public class FilrActionsCtrl extends Composite
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[]
 	{
 		// Context events.
-		TeamingEvents.CONTEXT_CHANGED
+		TeamingEvents.CONTEXT_CHANGED,
+		TeamingEvents.GET_SIDEBAR_COLLECTION
 	};
 
 	
@@ -396,6 +401,34 @@ public class FilrActionsCtrl extends Composite
 					selectAction( action );
 			}
 		}
+	}
+	
+	/**
+	 * Handles GetSidebarCollectionEvent's received by this class.
+	 * 
+	 * Implements the GetSidebarCollectionEvent.Handler.onContextChanged() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onGetSidebarCollection( GetSidebarCollectionEvent event )
+	{
+		CollectionType collectionType;
+		
+		collectionType = CollectionType.NOT_A_COLLECTION;
+		if ( m_selectedAction != null )
+		{
+			if ( m_selectedAction == m_myFilesAction )
+				collectionType = CollectionType.MY_FILES;
+			else if ( m_selectedAction == m_netFoldersAction )
+				collectionType = CollectionType.FILE_SPACES;
+			else if ( m_selectedAction == m_sharedWithMeAction )
+				collectionType = CollectionType.SHARED_WITH_ME;
+			else if ( m_selectedAction == m_sharedByMeAction )
+				collectionType = CollectionType.SHARED_BY_ME;
+		}
+		
+		event.getCollectionCallback().collection( collectionType );
 	}
 
 	/**
