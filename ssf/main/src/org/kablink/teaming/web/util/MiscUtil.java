@@ -259,7 +259,8 @@ public final class MiscUtil
 		
 		if ( name.equalsIgnoreCase( "admin" ) || name.equalsIgnoreCase( "guest" ) ||
 			  name.equalsIgnoreCase( "_postingAgent" ) || name.equalsIgnoreCase( "_jobProcessingAgent" ) ||
-			  name.equalsIgnoreCase("_synchronizationAgent"))
+			  name.equalsIgnoreCase("_synchronizationAgent") ||
+			  name.equalsIgnoreCase("_fileSyncAgent"))
 		{
 			return true;
 		}
