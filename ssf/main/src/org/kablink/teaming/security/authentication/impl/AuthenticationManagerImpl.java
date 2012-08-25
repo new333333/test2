@@ -220,7 +220,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				}
 				else { // This means either LDAP or LOCAL. We have to fall back to the old mechanism for making determination.
 	   				// We don't want to sync ldap attributes if the user is one of the 5
-	   				// system user accounts, "admin", "guest", "_postingAgent", "_jobProcessingAgent" and "_synchronizationAgent".
+	   				// system user accounts, "admin", "guest", "_postingAgent", "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
 	   				// Is the user a system user account?
 	   				if ( !MiscUtil.isSystemUserAccount( userName ) )
 	   				{
@@ -481,7 +481,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	   			// Password does not match.
 	   			if(passwordAutoSynch) {
 	   				// We don't want to sync the password if the user is one of the 5
-	   				// system user accounts, "admin", "guest", "_postingAgent", "_jobProcessingAgent" and "_synchronizationAgent".
+	   				// system user accounts, "admin", "guest", "_postingAgent", "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
 	   				// Is the user a system user account?
 	   				if ( !MiscUtil.isSystemUserAccount( username ) )
 	   				{
