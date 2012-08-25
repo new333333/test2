@@ -688,7 +688,8 @@ public class QueryBuilder {
 		//if this is the super user or the synchronization agent, but not a remote application, then don't add any acl controls.
 		
 		if ((user.isSuper() || 
-				ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(user.getInternalId())) && 
+				ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(user.getInternalId()) ||
+				ObjectKeys.FILE_SYNCHRONIZATION_AGENT_INTERNALID.equals(user.getInternalId())) && 
 				applicationPrincipals == null) {
 			return null;
 		}

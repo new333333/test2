@@ -1328,6 +1328,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
  		try {	
   			if (!entry.isReserved() || (!ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(entry.getInternalId()) &&
   					!ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(entry.getInternalId()) &&
+  					!ObjectKeys.FILE_SYNCHRONIZATION_AGENT_INTERNALID.equals(entry.getInternalId()) &&
  					!ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId()))) {
   				List templates;
   				if (entry.isExternalUser()) {
@@ -1396,6 +1397,7 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
  		try {	
   			if (!entry.isReserved() || (!ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(entry.getInternalId()) &&
   					!ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(entry.getInternalId()) &&
+  					!ObjectKeys.FILE_SYNCHRONIZATION_AGENT_INTERNALID.equals(entry.getInternalId()) &&
  					!ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId()))) {
 				TemplateBinder miniblogTemplate = getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_MINIBLOG);
 				if (miniblogTemplate != null) {

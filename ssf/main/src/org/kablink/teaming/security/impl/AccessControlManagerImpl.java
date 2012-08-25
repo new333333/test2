@@ -98,6 +98,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     private AuthenticationModule authenticationModule;
     private Map synchAgentRights;
     private Map synchAgentTokenBoostRights;
+    private Map fileSyncAgentRights;
     
 	public void afterPropertiesSet() throws Exception {
 		synchAgentRights = new HashMap();
@@ -111,6 +112,12 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		if(strs2 != null) {
 			for(String str:strs2)
 				synchAgentTokenBoostRights.put(str, str);
+		}
+		fileSyncAgentRights = new HashMap();
+		String[] strs3 = SPropsUtil.getStringArray("file.sync.agent.rights", ",");
+		if(strs3 != null) {
+			for(String str:strs3)
+				fileSyncAgentRights.put(str, str);
 		}
 	}
 	
@@ -205,7 +212,8 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 	private boolean userAccessGrantedViaSpecialMeans(User user, WorkAreaOperation workAreaOperation) {
 		return (user.isSuper() || 
 				isDirectSynchronizationWork(user, workAreaOperation) ||
-				isIndirectSynchronizationWork(workAreaOperation));
+				isIndirectSynchronizationWork(workAreaOperation) ||
+				isFileSynchronizationWork(user, workAreaOperation));
 	}
 	
 	//pass the original ownerId in.  Recursive calls need the original
@@ -424,6 +432,11 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				(synchAgentTokenBoostRights.get(workAreaOperation.getName()) != null);
 		else
 			return false;
+	}
+	
+	private boolean isFileSynchronizationWork(User user, WorkAreaOperation workAreaOperation) {
+		return ObjectKeys.FILE_SYNCHRONIZATION_AGENT_INTERNALID.equals(user.getInternalId()) &&
+			(fileSyncAgentRights.get(workAreaOperation.getName()) != null);
 	}
 
     private boolean checkWorkAreaFunctionMembership(Long zoneId, WorkArea workArea, 
