@@ -250,7 +250,7 @@ public final class MiscUtil
 	
 	/**
 	 * This method will return true if the given name is the name of a system user account.
-	 * Currently there are 5 system user accounts: "admin", "guest", "_postingAgent", "_jobProcessingAgent" and "_synchronizationAgent".
+	 * Currently there are 5 system user accounts: "admin", "guest", "_postingAgent", "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
 	 */
 	public static boolean isSystemUserAccount( String name )
 	{
