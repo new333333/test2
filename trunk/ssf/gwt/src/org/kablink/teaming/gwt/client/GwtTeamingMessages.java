@@ -1809,8 +1809,8 @@ public interface GwtTeamingMessages extends Messages
 	String createBlogPageDlg_noNameSpecified();
 
 	// Strings used with Filr
-	String fileSpaces();
 	String myFiles();
+	String netFolders();
 	String sharedByMe();
 	String sharedWithMe();
 

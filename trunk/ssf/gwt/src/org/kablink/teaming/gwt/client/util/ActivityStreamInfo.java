@@ -85,10 +85,10 @@ public class ActivityStreamInfo
 		SITE_WIDE(            10),
 		SPECIFIC_BINDER(      11),
 		SPECIFIC_FOLDER(      12),
-		FILE_SPACES(          13),
-		FILE_SPACE(           14),
-		MY_FILES(             15),
-		MY_FILE(              16),
+		MY_FILES(             13),
+		MY_FILE(              14),
+		NET_FOLDERS(          15),
+		NET_FOLDER(           16),
 		SHARED_BY_ME(         17),
 		SHARED_BY_ME_FOLDER(  18),
 		SHARED_WITH_ME(       19),
@@ -146,10 +146,10 @@ public class ActivityStreamInfo
 			case 10:  reply = SITE_WIDE;             break;
 			case 11:  reply = SPECIFIC_BINDER;       break;
 			case 12:  reply = SPECIFIC_FOLDER;       break;
-			case 13:  reply = FILE_SPACES;           break;
-			case 14:  reply = FILE_SPACE;            break;
-			case 15:  reply = MY_FILES;              break;
-			case 16:  reply = MY_FILE;               break;
+			case 13:  reply = MY_FILES;              break;
+			case 14:  reply = MY_FILE;               break;
+			case 15:  reply = NET_FOLDERS;           break;
+			case 16:  reply = NET_FOLDER;            break;
 			case 17:  reply = SHARED_BY_ME;          break;
 			case 18:  reply = SHARED_BY_ME_FOLDER;   break;
 			case 19:  reply = SHARED_WITH_ME;        break;
