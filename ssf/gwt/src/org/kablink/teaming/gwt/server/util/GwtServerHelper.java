@@ -285,6 +285,10 @@ public class GwtServerHelper {
 	private static final String VIEW_WORKSPACE_WELCOME     = "_welcomeWorkspace";
 	private static final String VIEW_WORKSPACE_GENERIC     = "_workspace";
 
+	// String used to recognize an '&' formatted URL vs. a '/'
+	// formatted permalink URL.
+	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
+
 	/**
 	 * Inner class used to compare two AssignmentInfo's.
 	 */
@@ -1049,6 +1053,21 @@ public class GwtServerHelper {
 	}
 
 	/*
+	 * Appends a parameter to to a URL.
+	 */
+	private static String appendUrlParam(String urlString, String pName, String pValue) {
+		String param;
+		boolean useAmpersand = (0 < urlString.indexOf(AMPERSAND_FORMAT_MARKER));
+		if (useAmpersand)
+			 param = ("&" + pName + "=" + pValue);
+		else param = ("/" + pName + "/" + pValue);
+		if (0 > urlString.indexOf(param)) {
+			urlString += param;
+		}
+		return urlString;
+	}
+
+	/*
 	 * Constructs a TagInfo from a Tag.
 	 */
 	private static TagInfo buildTIFromTag(TagType tagType, Tag tag) {
@@ -1186,6 +1205,9 @@ public class GwtServerHelper {
 		reply.setBinderTitle(GwtUIHelper.getTreeBinderTitle(binder));
 		reply.setBinderChildren(binder.getBinderCount());
 		String binderPermalink = PermaLinkUtil.getPermalink(request, binder);
+		if (Utils.checkIfFilr() && BinderHelper.isBinderPersonalWorkspace(binder)) {
+			binderPermalink = appendUrlParam(binderPermalink, WebKeys.URL_OPERATION, WebKeys.ACTION_SHOW_PROFILE);
+		}
 		reply.setBinderPermalink(binderPermalink);
 		reply.setBinderTrashPermalink(GwtUIHelper.getTrashPermalink(binderPermalink));
 		reply.setBinderIcon(binder.getIconName(), BinderIconSize.SMALL);

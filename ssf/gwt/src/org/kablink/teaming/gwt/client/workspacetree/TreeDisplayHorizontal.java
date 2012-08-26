@@ -92,6 +92,22 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	private ManageMenuPopup	m_selectorConfigPopup;	//
 	
 	private final static String GRID_DEPTH_ATTRIBUTE	= "n-depth";
+
+	/*
+	 * Enumeration type used to control how binder bread crumbs behave
+	 * in Filr mode.
+	 */
+	@SuppressWarnings("unused")
+	private enum FileBreadCrumbMode {
+		BINDER_NAMES,	// Only binder names are links.  The expander arrows are not.
+		FULL,			// Links in bread crumbs are the same in File and Vibe.
+		NONE;			// Neither the expander arrows or binder names are links.
+		
+		boolean isBinderNames() {return this.equals(BINDER_NAMES);}
+		boolean isFull()        {return this.equals(FULL        );}
+		boolean isNone()        {return this.equals(NONE        );}
+	}
+	private final static FileBreadCrumbMode	FILR_BC_MODE	= FileBreadCrumbMode.NONE;
 	
 	/*
 	 * Inner class that implements clicking on the various tree
@@ -710,7 +726,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				if (getTreeMode().isHorizontalBinder()) {
 					expanderImg.addStyleName("breadCrumb_ContentNode_ExpanderImgSmall");
 				}
-				if (isFilr) {
+				if (isFilr && (FILR_BC_MODE.isBinderNames() || FILR_BC_MODE.isNone())) {
 					expanderWidget = expanderImg;
 					expanderWidget.addStyleName("breadCrumb_ContentNode_Filr");
 				}
@@ -734,7 +750,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		
 		// Generate the widgets to select the Binder.
 		Anchor a;
-		if (isFilr && (!binderBreadcrumbTail)) {
+		if (isFilr && FILR_BC_MODE.isNone() && (!binderBreadcrumbTail)) {
 			a = null;
 			selectorLabel.addStyleName("breadCrumb_ContentNode_Filr");
 		}
