@@ -56,22 +56,6 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource entry_large();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/filespace.png")
-	public ImageResource fileSpace();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/filespace_36.png")
-	public ImageResource fileSpace_medium();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/filespace_48.png")
-	public ImageResource fileSpace_large();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/filespaces_transparent_40.png")
-	public ImageResource fileSpaces_transparent_40();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/Neutron_folder.png")
 	public ImageResource folder();
 	
@@ -110,6 +94,22 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/myfiles_transparent_40.png")
 	public ImageResource myFiles_transparent_40();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/netfolder.png")
+	public ImageResource netFolder();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/netfolder_36.png")
+	public ImageResource netFolder_medium();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/netfolder_48.png")
+	public ImageResource netFolder_large();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/netfolders_transparent_40.png")
+	public ImageResource netFolders_transparent_40();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/sharedbyme.png")

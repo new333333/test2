@@ -684,9 +684,9 @@ public class GwtActivityStreamHelper {
 		private List<String>       m_followedPlacesList;			// The current user's followed places.
 		private List<String>       m_followedUsersList;				// The current user's followed users.
 		private List<String>       m_collection_MyFilesList;		// The 'My Files'       collection point binder list.
+		private List<String>       m_collection_NetFoldersList;		// The 'Net Folders'    collection point binder list.
 		private List<String>       m_collection_SharedByMeList;		// The 'Shared by Me'   collection point binder list.
 		private List<String>       m_collection_SharedWithMeList;	// The 'Shared with Me' collection point binder list.
-		private List<String>       m_collection_FileSpacesList;		// The 'File Spaces'    collection point binder list.
 		private List<TeamInfo>     m_myTeamsList;					// The teams the current user is a member of.
 		private Long               m_baseBinderId;					// The ID of the base binder this ASTreeData was constructed for.
 		private Map<Long, Binder>  m_bindersMap;					// Map of the Binder's referenced by the lists.
@@ -715,9 +715,9 @@ public class GwtActivityStreamHelper {
 		private List<String>       getFollowedPlacesList()         {return m_followedPlacesList;               }
 		private List<String>       getFollowedUsersList()          {return m_followedUsersList;                }
 		private List<String>       getCollectionMyFilesList()      {return m_collection_MyFilesList;           }
+		private List<String>       getCollectionNetFoldersList()   {return m_collection_NetFoldersList;        }
 		private List<String>       getCollectionSharedByMeList()   {return m_collection_SharedByMeList;        }
 		private List<String>       getCollectionSharedWithMeList() {return m_collection_SharedWithMeList;      }
-		private List<String>       getCollectionFileSpacesList()   {return m_collection_FileSpacesList;        }
 		private Long               getBaseBinderId()               {return m_baseBinderId;                     }
 
 		/*
@@ -739,7 +739,7 @@ public class GwtActivityStreamHelper {
 			reply.m_collection_MyFilesList      = new ArrayList<String>(); fillCollectionLists(bs, CollectionType.MY_FILES,       reply.m_collection_MyFilesList     );
 			reply.m_collection_SharedByMeList   = new ArrayList<String>(); fillCollectionLists(bs, CollectionType.SHARED_BY_ME,   reply.m_collection_SharedByMeList  );
 			reply.m_collection_SharedWithMeList = new ArrayList<String>(); fillCollectionLists(bs, CollectionType.SHARED_WITH_ME, reply.m_collection_SharedWithMeList);
-			reply.m_collection_FileSpacesList   = new ArrayList<String>(); fillCollectionLists(bs, CollectionType.FILE_SPACES,    reply.m_collection_FileSpacesList  );
+			reply.m_collection_NetFoldersList   = new ArrayList<String>(); fillCollectionLists(bs, CollectionType.NET_FOLDERS,    reply.m_collection_NetFoldersList  );
 			
 			// Read the required User's and Binder's.
 			reply.m_usersMap   = readUsers(  bs,           reply);
@@ -768,7 +768,7 @@ public class GwtActivityStreamHelper {
 			for (String collectionId:  td.m_collection_MyFilesList)      ListUtil.addLongToListLongIfUnique(binderIds, collectionId);			
 			for (String collectionId:  td.m_collection_SharedByMeList)   ListUtil.addLongToListLongIfUnique(binderIds, collectionId);			
 			for (String collectionId:  td.m_collection_SharedWithMeList) ListUtil.addLongToListLongIfUnique(binderIds, collectionId);			
-			for (String collectionId:  td.m_collection_FileSpacesList)   ListUtil.addLongToListLongIfUnique(binderIds, collectionId);			
+			for (String collectionId:  td.m_collection_NetFoldersList)   ListUtil.addLongToListLongIfUnique(binderIds, collectionId);			
 			
 			// Read the binders that we're tracking (in a single
 			// database read) and scan them...
@@ -1069,6 +1069,14 @@ public class GwtActivityStreamHelper {
 			ctFoldersList = td.getCollectionMyFilesList();
 			break;
 			
+		case NET_FOLDERS:
+			ctBorderTop   = false;
+			ctTitleKey    = "asTreeNetFolders";
+			ctFolderAS    = ActivityStream.NET_FOLDER;
+			ctRootAS      = ActivityStream.NET_FOLDERS;
+			ctFoldersList = td.getCollectionNetFoldersList();
+			break;
+			
 		case SHARED_BY_ME:
 			ctBorderTop   = false;
 			ctTitleKey    = "asTreeSharedByMe";
@@ -1083,14 +1091,6 @@ public class GwtActivityStreamHelper {
 			ctFolderAS    = ActivityStream.SHARED_WITH_ME_FOLDER;
 			ctRootAS      = ActivityStream.SHARED_WITH_ME;
 			ctFoldersList = td.getCollectionSharedWithMeList();
-			break;
-			
-		case FILE_SPACES:
-			ctBorderTop   = false;
-			ctTitleKey    = "asTreeFileSpaces";
-			ctFolderAS    = ActivityStream.FILE_SPACE;
-			ctRootAS      = ActivityStream.FILE_SPACES;
-			ctFoldersList = td.getCollectionFileSpacesList();
 			break;
 		}
 		
@@ -1568,6 +1568,40 @@ public class GwtActivityStreamHelper {
 			break;
 		}
 
+		case NET_FOLDERS: {
+			// Can we access the ID of the top workspace?
+			String	topWSId  = GwtUIHelper.getTopWSIdSafely(bs, false);
+			if (!(MiscUtil.hasString(topWSId))) {
+				// No!  Then use the ID of the user's workspace.
+				topWSId = userWSId;
+			}
+
+			// Add the criteria for top level mirrored file folders
+			// that have been configured.
+			Criteria crit = new Criteria();
+			crit.add(in(Constants.DOC_TYPE_FIELD,            new String[]{Constants.DOC_TYPE_BINDER}));
+			crit.add(in(Constants.ENTRY_ANCESTRY,            new String[]{topWSId}));
+			crit.add(in(Constants.FAMILY_FIELD,              new String[]{Definition.FAMILY_FILE}));
+			crit.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
+			crit.add(in(Constants.IS_TOP_FOLDER_FIELD,       new String[]{Constants.TRUE}));
+    		crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
+			
+			Map searchResults = bs.getBinderModule().executeSearchQuery(
+				crit,
+				Constants.SEARCH_MODE_NORMAL,
+				0,
+				ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+			
+			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+			for (Map entryMap:  searchEntries) {
+				if (trackFolders) {
+					folderIds.add(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD));
+				}
+			}
+			
+			break;
+		}
+		
 		case SHARED_BY_ME: {
 			// Scan the SharedItem's shared by the current user.
 			ShareItemSelectSpec	spec   = new ShareItemSelectSpec();
@@ -1613,40 +1647,6 @@ public class GwtActivityStreamHelper {
 				String				siEntityId         = String.valueOf(siEntityIdentifier.getEntityId());
 				if      (trackFolders && siEntityType.equals(EntityType.folder))      folderIds.add(siEntityId);
 				else if (trackEntries && siEntityType.equals(EntityType.folderEntry)) entryIds.add( siEntityId);
-			}
-			
-			break;
-		}
-			
-		case FILE_SPACES: {
-			// Can we access the ID of the top workspace?
-			String	topWSId  = GwtUIHelper.getTopWSIdSafely(bs, false);
-			if (!(MiscUtil.hasString(topWSId))) {
-				// No!  Then use the ID of the user's workspace.
-				topWSId = userWSId;
-			}
-
-			// Add the criteria for top level mirrored file folders
-			// that have been configured.
-			Criteria crit = new Criteria();
-			crit.add(in(Constants.DOC_TYPE_FIELD,            new String[]{Constants.DOC_TYPE_BINDER}));
-			crit.add(in(Constants.ENTRY_ANCESTRY,            new String[]{topWSId}));
-			crit.add(in(Constants.FAMILY_FIELD,              new String[]{Definition.FAMILY_FILE}));
-			crit.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
-			crit.add(in(Constants.IS_TOP_FOLDER_FIELD,       new String[]{Constants.TRUE}));
-    		crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
-			
-			Map searchResults = bs.getBinderModule().executeSearchQuery(
-				crit,
-				Constants.SEARCH_MODE_NORMAL,
-				0,
-				ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
-			
-			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
-			for (Map entryMap:  searchEntries) {
-				if (trackFolders) {
-					folderIds.add(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD));
-				}
 			}
 			
 			break;
@@ -2134,7 +2134,7 @@ public class GwtActivityStreamHelper {
 			rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.MY_FILES)      );
 			rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.SHARED_WITH_ME));
 			rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.SHARED_BY_ME)  );
-			rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.FILE_SPACES)   );
+			rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.NET_FOLDERS)   );
 			
 			// Add a 'My Favorites' TreeInfo to the root TreeInfo.
 			TreeInfo asTI = buildMyFavoritesTI(bs, request, td);
@@ -2580,7 +2580,6 @@ public class GwtActivityStreamHelper {
 			// * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 			
 		case CURRENT_BINDER:
-		case FILE_SPACE:
 		case FOLLOWED_PLACES:
 		case FOLLOWED_PLACE:
 		case MY_FAVORITES:
@@ -2588,6 +2587,7 @@ public class GwtActivityStreamHelper {
 		case MY_FILE:
 		case MY_TEAMS:
 		case MY_TEAM:
+		case NET_FOLDER:
 		case SHARED_BY_ME_FOLDER:
 		case SHARED_WITH_ME_FOLDER:
 		case SPECIFIC_BINDER:
@@ -2597,8 +2597,8 @@ public class GwtActivityStreamHelper {
 			// 3. There are no tracked entries.
 			break;
 
-		case FILE_SPACES:
 		case MY_FILES:
+		case NET_FOLDERS:
 		case SHARED_BY_ME:
 		case SHARED_WITH_ME:
 			// A collection point:
@@ -2611,9 +2611,9 @@ public class GwtActivityStreamHelper {
 			switch (asi.getActivityStream()) {
 			default:
 			case MY_FILES:        collectionType = CollectionType.MY_FILES;       break;
+			case NET_FOLDERS:     collectionType = CollectionType.NET_FOLDERS;    break;
 			case SHARED_BY_ME:    collectionType = CollectionType.SHARED_BY_ME;   break;
 			case SHARED_WITH_ME:  collectionType = CollectionType.SHARED_WITH_ME; break;
-			case FILE_SPACES:     collectionType = CollectionType.FILE_SPACES;    break;
 			}
 			fillCollectionLists(bs, collectionType, trackedPlacesAL, trackedEntriesAL);
 			break;

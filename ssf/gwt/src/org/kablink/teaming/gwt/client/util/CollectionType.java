@@ -41,14 +41,46 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public enum CollectionType implements IsSerializable {
-	FILE_SPACES,
+	// *** WARNING *** WARNING *** WARNING *** WARNING ***
+	// ***
+	// *** The ordinal value of MY_FILES (i.e., 0) is hard coded in
+	// *** PermaLinkUtil.getUserPermalink().  If the ordinal value
+	// *** of that enumeration changes, PermaLinkUtil.java MUST be
+	// *** changed accordingly.
+	// ***
+	// *** WARNING *** WARNING *** WARNING *** WARNING ***
 	MY_FILES,
+	NET_FOLDERS,
 	SHARED_BY_ME,
 	SHARED_WITH_ME,
 	
 	OTHER,
 	NOT_A_COLLECTION;
 
+	/**
+	 * Converts the ordinal value of a CollectionType to its
+	 * enumeration equivalent.
+	 * 
+	 * @param ordinal
+	 * 
+	 * @return
+	 */
+	public static CollectionType getEnum(int ordinal) {
+		CollectionType reply;
+		try {
+			reply = CollectionType.values()[ordinal];
+		}
+		catch (ArrayIndexOutOfBoundsException e) {
+			reply = CollectionType.OTHER;
+		}
+		return reply;
+	}
+	
+	public static CollectionType getEnum(String ordinal) {
+		// Always use the initial form of the method.
+		return getEnum(Integer.parseInt(ordinal));
+	}
+	
 	/**
 	 * Returns true if this CollectionType value represents a
 	 * collection and false otherwise.

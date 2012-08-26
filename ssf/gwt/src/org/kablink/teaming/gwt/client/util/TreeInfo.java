@@ -569,8 +569,8 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 			switch (m_binderInfo.getBinderType()) {
 			case COLLECTION:
 				switch (m_binderInfo.getCollectionType()) {
-				case FILE_SPACES:     reply = filrImages.fileSpace();   break;
 				case MY_FILES:        reply = filrImages.myFiles();      break;
+				case NET_FOLDERS:     reply = filrImages.netFolder();   break;
 				case SHARED_BY_ME:    reply = filrImages.sharedByMe();   break;
 				case SHARED_WITH_ME:  reply = filrImages.sharedWithMe(); break;
 				}
@@ -647,8 +647,8 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 			switch (m_binderInfo.getBinderType()) {
 			case COLLECTION:
 				switch (m_binderInfo.getCollectionType()) {
-				case FILE_SPACES:     reply = filrImages.fileSpace_medium();    break;
 				case MY_FILES:        reply = filrImages.myFiles_medium();      break;
+				case NET_FOLDERS:     reply = filrImages.netFolder_medium();    break;
 				case SHARED_BY_ME:    reply = filrImages.sharedByMe_medium();   break;
 				case SHARED_WITH_ME:  reply = filrImages.sharedWithMe_medium(); break;
 				}
@@ -725,8 +725,8 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 			switch (m_binderInfo.getBinderType()) {
 			case COLLECTION:
 				switch (m_binderInfo.getCollectionType()) {
-				case FILE_SPACES:     reply = filrImages.fileSpace_large();    break;
 				case MY_FILES:        reply = filrImages.myFiles_large();      break;
+				case NET_FOLDERS:     reply = filrImages.netFolder_large();    break;
 				case SHARED_BY_ME:    reply = filrImages.sharedByMe_large();   break;
 				case SHARED_WITH_ME:  reply = filrImages.sharedWithMe_large(); break;
 				}

@@ -2118,12 +2118,12 @@ public class GwtViewHelper {
 	private static String[] getCollectionColumnNames(CollectionType ct) {
 		String[] reply;
 		switch (ct) {
-		case FILE_SPACES:
-			reply = new String[]{"title", "rights", "descriptionHtml"};
-			break;
-			
 		case MY_FILES:
 			reply = new String[]{"title", "family", "date"};
+			break;
+			
+		case NET_FOLDERS:
+			reply = new String[]{"title", "rights", "descriptionHtml"};
 			break;
 			
 		case SHARED_BY_ME:
@@ -2189,6 +2189,24 @@ public class GwtViewHelper {
 			
 			break;
 
+		case NET_FOLDERS:
+			// Can we access the ID of the top workspace?
+			if (!(MiscUtil.hasString(topWSId))) {
+				// No!  Then we can't search for file spaces.  Bail.
+				return buildEmptyEntryMap();
+			}
+
+			// Add the criteria for top level mirrored file folders
+			// that have been configured.
+			crit.add(in(Constants.DOC_TYPE_FIELD,            new String[]{Constants.DOC_TYPE_BINDER}));
+			crit.add(in(Constants.ENTRY_ANCESTRY,            new String[]{topWSId}));
+			crit.add(in(Constants.FAMILY_FIELD,              new String[]{Definition.FAMILY_FILE}));
+			crit.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
+			crit.add(in(Constants.IS_TOP_FOLDER_FIELD,       new String[]{Constants.TRUE}));
+    		crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
+			
+			break;
+			
 		case SHARED_BY_ME:
 		case SHARED_WITH_ME:
 			// Do we have any shares to analyze?
@@ -2225,24 +2243,6 @@ public class GwtViewHelper {
 					shareItems,
 					GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false),
 					GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD));
-			
-		case FILE_SPACES:
-			// Can we access the ID of the top workspace?
-			if (!(MiscUtil.hasString(topWSId))) {
-				// No!  Then we can't search for file spaces.  Bail.
-				return buildEmptyEntryMap();
-			}
-
-			// Add the criteria for top level mirrored file folders
-			// that have been configured.
-			crit.add(in(Constants.DOC_TYPE_FIELD,            new String[]{Constants.DOC_TYPE_BINDER}));
-			crit.add(in(Constants.ENTRY_ANCESTRY,            new String[]{topWSId}));
-			crit.add(in(Constants.FAMILY_FIELD,              new String[]{Definition.FAMILY_FILE}));
-			crit.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
-			crit.add(in(Constants.IS_TOP_FOLDER_FIELD,       new String[]{Constants.TRUE}));
-    		crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
-			
-			break;
 		}
 
 		// Do we have a quick filter?
@@ -2468,8 +2468,8 @@ public class GwtViewHelper {
 				CollectionType	collectionType = folderInfo.getCollectionType();
 				switch (collectionType) {
 				default:
-				case FILE_SPACES:     baseNameKey += "filespaces.";   break;
 				case MY_FILES:        baseNameKey += "myfiles.";      break;
+				case NET_FOLDERS:     baseNameKey += "netfolders.";   break;
 				case SHARED_BY_ME:    baseNameKey += "sharedByMe.";   break;
 				case SHARED_WITH_ME:  baseNameKey += "sharedWithMe."; break;
 				}
@@ -2736,7 +2736,7 @@ public class GwtViewHelper {
 			String propSortBy      = ObjectKeys.SEARCH_SORT_BY;
 			String propSortDescend = ObjectKeys.SEARCH_SORT_DESCEND;
 			if (folderInfo.isBinderCollection()) {
-				String cName     = folderInfo.getCollectionType().name();
+				String cName     = ("." + String.valueOf(folderInfo.getCollectionType().ordinal()));
 				propSortBy      += cName;
 				propSortDescend += cName;
 			}
@@ -4170,7 +4170,7 @@ public class GwtViewHelper {
 	 */
 	public static boolean getUserViewSharedFiles(HttpServletRequest request, CollectionType collectionType) {
 		HttpSession session = WebHelper.getRequiredSession(request);
-		Boolean viewSharedFiles = ((Boolean) session.getAttribute(CACHED_VIEW_SHARED_FILES_BASE + collectionType.name()));
+		Boolean viewSharedFiles = ((Boolean) session.getAttribute(CACHED_VIEW_SHARED_FILES_BASE + collectionType.ordinal()));
 		return ((null == viewSharedFiles) || viewSharedFiles);
 	}
 	
@@ -4423,7 +4423,7 @@ public class GwtViewHelper {
 			String showCollection = getQueryParameterString(nvMap, WebKeys.URL_SHOW_COLLECTION);
 			if (MiscUtil.hasString(showCollection)) {
 				bi = GwtServerHelper.buildCollectionBI(
-					CollectionType.valueOf(showCollection),
+					CollectionType.getEnum(showCollection),
 					GwtServerHelper.getCurrentUser().getWorkspaceId());
 			}
 		}
@@ -5172,7 +5172,7 @@ public class GwtViewHelper {
 	 */
 	public static void saveUserViewSharedFiles(HttpServletRequest request, CollectionType collectionType, boolean viewingSharedFiles) {
 		HttpSession session = WebHelper.getRequiredSession(request);
-		session.setAttribute((CACHED_VIEW_SHARED_FILES_BASE + collectionType.name()), new Boolean(viewingSharedFiles));
+		session.setAttribute((CACHED_VIEW_SHARED_FILES_BASE + collectionType.ordinal()), new Boolean(viewingSharedFiles));
 	}
 	
 	/**

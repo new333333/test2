@@ -246,12 +246,12 @@ public class FilrActionsCtrl extends Composite
 			{
 				FilrActionsCtrl.closeAdminConsole();
 
-				GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.FILE_SPACES ) );
+				GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.NET_FOLDERS ) );
 			}
 		};
 		m_netFoldersAction = new FilrAction(
-										imgBundle.fileSpaces_transparent_40(),
-										messages.fileSpaces(),
+										imgBundle.netFolders_transparent_40(),
+										messages.netFolders(),
 										cmd );
 		m_netFoldersAction.addDomHandler( this, ClickEvent.getType() );
 		m_mainPanel.add( m_netFoldersAction );
@@ -377,12 +377,12 @@ public class FilrActionsCtrl extends Composite
 				binderInfo = osbInfo.getBinderInfo();
 				switch ( binderInfo.getCollectionType() )
 				{
-				case FILE_SPACES:
-					action = m_netFoldersAction;
-					break;
-				
 				case MY_FILES:
 					action = m_myFilesAction;
+					break;
+				
+				case NET_FOLDERS:
+					action = m_netFoldersAction;
 					break;
 				
 				case SHARED_BY_ME:
@@ -421,7 +421,7 @@ public class FilrActionsCtrl extends Composite
 			if ( m_selectedAction == m_myFilesAction )
 				collectionType = CollectionType.MY_FILES;
 			else if ( m_selectedAction == m_netFoldersAction )
-				collectionType = CollectionType.FILE_SPACES;
+				collectionType = CollectionType.NET_FOLDERS;
 			else if ( m_selectedAction == m_sharedWithMeAction )
 				collectionType = CollectionType.SHARED_WITH_ME;
 			else if ( m_selectedAction == m_sharedByMeAction )

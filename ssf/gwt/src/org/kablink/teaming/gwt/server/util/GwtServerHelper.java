@@ -710,7 +710,7 @@ public class GwtServerHelper {
 		// TreeInfo's for the various collections. 
 		addCollection(bs, request, userWS, ti, CollectionType.MY_FILES,       false);
 		addCollection(bs, request, userWS, ti, CollectionType.SHARED_WITH_ME, false);
-		addCollection(bs, request, userWS, ti, CollectionType.FILE_SPACES,    false);
+		addCollection(bs, request, userWS, ti, CollectionType.NET_FOLDERS,    false);
 		addCollection(bs, request, userWS, ti, CollectionType.SHARED_BY_ME,   true );
 	}
 	
@@ -733,7 +733,7 @@ public class GwtServerHelper {
 	
 			// ...store the various required links...
 			String wsPL = PermaLinkUtil.getPermalink(request, userWS);
-			collectionTI.setBinderPermalink(GwtUIHelper.appendUrlParam(wsPL, WebKeys.URL_SHOW_COLLECTION, ct.name()));
+			collectionTI.setBinderPermalink(GwtUIHelper.appendUrlParam(wsPL, WebKeys.URL_SHOW_COLLECTION, String.valueOf(ct.ordinal())));
 			collectionTI.setBinderTrashPermalink(GwtUIHelper.getTrashPermalink(wsPL));
 			
 			// ...and add the collection TreeInfo to the collection list.
@@ -1143,7 +1143,7 @@ public class GwtServerHelper {
 		switch (ct) {
 		default:
 		case MY_FILES:        titleKey = "collection.myFiles";      break;
-		case FILE_SPACES:     titleKey = "collection.fileSpaces";   break;
+		case NET_FOLDERS:     titleKey = "collection.netFolders";   break;
 		case SHARED_BY_ME:    titleKey = "collection.sharedByMe";   break;
 		case SHARED_WITH_ME:  titleKey = "collection.sharedWithMe"; break;
 		}
@@ -3806,7 +3806,7 @@ public class GwtServerHelper {
 		url = GwtUIHelper.appendUrlParam(
 										url,
 										WebKeys.URL_SHOW_COLLECTION,
-										collectionType.name() );
+										String.valueOf( collectionType.ordinal() ) );
 		return url;
 	}
 
@@ -3833,11 +3833,11 @@ public class GwtServerHelper {
 			
 			userWS = ami.getWorkspaceModule().getWorkspace(userWSId);
 
-			collectionType = CollectionType.FILE_SPACES;
+			collectionType = CollectionType.MY_FILES;
 			url = getCollectionPointUrl( request, userWS, collectionType );
 			results.setUrl( collectionType, url );
 
-			collectionType = CollectionType.MY_FILES;
+			collectionType = CollectionType.NET_FOLDERS;
 			url = getCollectionPointUrl( request, userWS, collectionType );
 			results.setUrl( collectionType, url );
 
@@ -7813,7 +7813,7 @@ public class GwtServerHelper {
 			String propSortBy      = ObjectKeys.SEARCH_SORT_BY;
 			String propSortDescend = ObjectKeys.SEARCH_SORT_DESCEND;
 			if (binderInfo.isBinderCollection()) {
-				String cName     = binderInfo.getCollectionType().name();
+				String cName     = ("." + String.valueOf(binderInfo.getCollectionType().ordinal()));
 				propSortBy      += cName;
 				propSortDescend += cName;
 			}

@@ -65,7 +65,7 @@ public class PermaLinkUtil {
 			adapterUrl.setParameter(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "1");
 		}
 		if (startWithMyFiles) {
-			adapterUrl.setParameter(WebKeys.URL_SHOW_COLLECTION, "MY_FILES");
+			adapterUrl.setParameter(WebKeys.URL_SHOW_COLLECTION, "0");	// 0 -> CollectionType.MY_FILES
 		}
 		return adapterUrl.toString();
 	}
