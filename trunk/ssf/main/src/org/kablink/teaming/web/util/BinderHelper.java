@@ -1607,6 +1607,24 @@ public class BinderHelper {
 	}
 	
 	/**
+	 * Determines whether a binder is a personal workspace.
+	 * 
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	static public boolean isBinderPersonalWorkspace(Binder binder) {
+		boolean isPersonalWS = (EntityIdentifier.EntityType.workspace == binder.getEntityType());
+		if (isPersonalWS) {
+			String dFamily = getBinderDefaultFamilyName(binder);
+			if (MiscUtil.hasString(dFamily)) {
+				isPersonalWS = dFamily.equalsIgnoreCase("user");
+			}
+		}
+		return isPersonalWS;
+	}
+	
+	/**
 	 * Determines whether a binder is being viewed as a task folder.
 	 * 
 	 * @param bs
