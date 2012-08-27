@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.datatable;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
@@ -60,6 +61,8 @@ import com.google.gwt.user.client.ui.Label;
  * @author drfoster@novell.com
  */
 public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
+	private GwtTeamingDataTableImageBundle	m_images;	//
+	
 	/*
 	 * Inner class used to encapsulate information about an event
 	 * received by an AssignmentCell.
@@ -139,14 +142,29 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 	 * Constructor method.
 	 */
 	public AssignmentCell() {
-		// Sink the events we need to process assignments.
+		// Sink the events we need to process assignments...
 		super(
 			VibeDataTableConstants.CELL_EVENT_CLICK,
 			VibeDataTableConstants.CELL_EVENT_KEYDOWN,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOVER,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
+		
+		// ...and initialize everything else.
+		m_images = GwtTeaming.getDataTableImageBundle();
 	}
 
+	/*
+	 * Returns the URL to the image to display for presence for the
+	 * cell.
+	 */
+	private String getPresenceImage(AssignmentInfo ai) {
+		String reply = ai.getAvatarUrl();
+		if (!(GwtClientHelper.hasString(reply))) {
+			reply = m_images.userPhoto().getSafeUri().asString();
+		}
+		return reply;
+	}
+	
 	/*
 	 * Called to invoke the simple profile dialog on the principal's
 	 * presence.
@@ -277,7 +295,7 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 				presenceControl.addStyleName("vibe-dataTableAssignment-control displayInline verticalAlignTop");
 				presenceControl.setAnchorStyleName("cursorPointer");
 				presenceControl.getElement().setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, (VibeDataTableConstants.CELL_WIDGET_PRESENCE + assignmentIndexTail));
-				presenceControl.setImageOverride(ai.getAvatarUrl());
+				presenceControl.setImageOverride(getPresenceImage(ai));
 				presenceControl.addImageStyleName("vibe-dataTableAssignment-image");
 				fp.add(presenceControl);
 				
