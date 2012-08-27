@@ -1040,6 +1040,7 @@ public class GwtActivityStreamHelper {
 		reply.setActivityStream(true);
 		reply.setBinderTitle(title);
 		reply.setBinderHover(hover);
+		reply.setBinderBorderTop(Utils.checkIfFilr() && ActivityStream.SITE_WIDE.equals(as));
 		reply.setActivityStreamEvent(
 			TeamingEvents.ACTIVITY_STREAM,
 			buildASI(
@@ -2136,24 +2137,25 @@ public class GwtActivityStreamHelper {
 			rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.SHARED_BY_ME)  );
 			rootASList.add(buildCollectionPointTI(bs, request, td, CollectionType.NET_FOLDERS)   );
 			
-			// Add a 'My Favorites' TreeInfo to the root TreeInfo.
-			TreeInfo asTI = buildMyFavoritesTI(bs, request, td);
-			rootASList.add(asTI);
-
-			// If we not in pure Filr mode...
+			// Are we in Filr only mode?
 			if (!(Utils.checkIfFilr())) {
-				// ...add a 'My Teams' TreeInfo to the root TreeInfo.
+				// No!  Add a 'My Favorites' TreeInfo to the root
+				// TreeInfo.
+				TreeInfo asTI = buildMyFavoritesTI(bs, request, td);
+				rootASList.add(asTI);
+
+				// Add a 'My Teams' TreeInfo to the root TreeInfo.
 				asTI = buildMyTeamsTI(bs, request, td);
 				rootASList.add(asTI);
-			}
 
-			// Add a 'Followed People' TreeInfo to the root TreeInfo.
-			asTI = buildFollowedPeopleTI(bs, request, td, isOtherUserAccessRestricted);
-			rootASList.add(asTI);
-			
-			// Add a 'Followed Places' TreeInfo to the root TreeInfo.
-			asTI = buildFollowedPlacesTI(bs, request, td);
-			rootASList.add(asTI);
+				// Add a 'Followed People' TreeInfo to the root TreeInfo.
+				asTI = buildFollowedPeopleTI(bs, request, td, isOtherUserAccessRestricted);
+				rootASList.add(asTI);
+				
+				// Add a 'Followed Places' TreeInfo to the root TreeInfo.
+				asTI = buildFollowedPlacesTI(bs, request, td);
+				rootASList.add(asTI);
+			}
 			
 			// We always have a Site Wide.
 			rootASList.add(
