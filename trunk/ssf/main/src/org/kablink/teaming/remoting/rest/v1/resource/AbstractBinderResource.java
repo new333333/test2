@@ -298,10 +298,10 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
             criterion.add(Restrictions.eq(Constants.BINDER_ID_FIELD, ((Long)id).toString()));
         }
         if (onlyLibrary) {
-            criterion.add(Restrictions.disjunction()
-                    .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT))
-                    .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER))
-            );
+//            criterion.add(Restrictions.disjunction()
+//                    .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT))
+//                    .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER))
+//            );
             criterion.add(Restrictions.eq(Constants.IS_LIBRARY_FIELD, ((Boolean) onlyLibrary).toString()));
         }
         if (keyword!=null) {
