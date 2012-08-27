@@ -298,6 +298,9 @@ public class WorkspaceTreeControl extends ResizeComposite
 			// ...tell it to load the activity stream navigation
 			// ...points.
 			m_treeDisplay.enterActivityStreamMode(defaultASI);
+			if (!(siteNavigationAvailable())) {
+				GwtTeaming.fireEventAsync(new SidebarShowEvent());
+			}
 		}
 	}
 	
@@ -310,6 +313,9 @@ public class WorkspaceTreeControl extends ResizeComposite
 		if (isSidebarTree() && (null != m_treeDisplay)) {
 			// ...tell it to exit activity stream mode.
 			m_treeDisplay.exitActivityStreamMode(exitMode);
+			if (!(siteNavigationAvailable())) {
+				GwtTeaming.fireEventAsync(new SidebarHideEvent());
+			}
 		}
 	}
 	

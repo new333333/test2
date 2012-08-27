@@ -36,6 +36,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
+import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -65,12 +66,13 @@ import com.google.gwt.user.client.ui.Widget;
 
 /**
  * This class is used to display a list of Filr actions; "My file", "Shared with Me"
- * "File Spaces", "Shared by Me" and "What's New"
+ * "Net Folders", "Shared by Me" and "What's New"
+ * 
  * @author jwootton
- *
  */
 public class FilrActionsCtrl extends Composite
 	implements
+		ActivityStreamExitEvent.Handler,
 		ClickHandler,
 		ContextChangedEvent.Handler,
 		GetSidebarCollectionEvent.Handler
@@ -81,6 +83,7 @@ public class FilrActionsCtrl extends Composite
 	private FilrAction m_sharedWithMeAction;
 	private FilrAction m_netFoldersAction;
 	private FilrAction m_sharedByMeAction;
+	private FilrAction m_preWhatsNewAction;
 	private FilrAction m_whatsNewAction;
 
 	// The following defines the TeamingEvents that are handled by
@@ -89,6 +92,7 @@ public class FilrActionsCtrl extends Composite
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[]
 	{
 		// Context events.
+		TeamingEvents.ACTIVITY_STREAM_EXIT,
 		TeamingEvents.CONTEXT_CHANGED,
 		TeamingEvents.GET_SIDEBAR_COLLECTION
 	};
@@ -350,6 +354,19 @@ public class FilrActionsCtrl extends Composite
 	}
 	
 	/**
+	 * Handles ActivityStreamExitEvent's received by this class.
+	 *
+	 * Implements the ActivityStreamExitEvent.Handler.onActivityStreamExit() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onActivityStreamExit(ActivityStreamExitEvent event) {
+		selectAction(m_preWhatsNewAction);
+		m_preWhatsNewAction = null;
+	}
+
+	/**
 	 * Handles ContextChangedEvent's received by this class.
 	 * 
 	 * Implements the ContextChangedEvent.Handler.onContextChanged() method.
@@ -439,7 +456,11 @@ public class FilrActionsCtrl extends Composite
 		// Do we have an action that is already selected?
 		if ( m_selectedAction != null )
 			m_selectedAction.setIsSelected( false );
-		
+
+
+		if (action == m_whatsNewAction)
+			m_preWhatsNewAction = m_selectedAction;	// Save the FilrAction that was selected before What's New.
+
 		m_selectedAction = action;
 		m_selectedAction.setIsSelected( true );
 	}
