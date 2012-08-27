@@ -195,10 +195,12 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 		rightPanel.addStyleName("qViewRight");
 		mainPanel.add(rightPanel);
 
-		Panel statusPanel = createStatusPanel();
+		if (!(GwtClientHelper.isLicenseFilr())) {
+			Panel statusPanel = createStatusPanel();
+			rightPanel.add(statusPanel);
+		}
+		
 		Panel infoPanel = createInfoPanel();
-
-		rightPanel.add(statusPanel);
 		rightPanel.add(infoPanel);
 
 		return mainPanel;
