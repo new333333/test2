@@ -37,6 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.security.dao.SecurityDao;
 import org.kablink.teaming.security.function.ConditionalClause;
@@ -45,6 +46,7 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembershipManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.util.Validator;
 
 
 /**
@@ -66,15 +68,27 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         getSecurityDao().save(functionMembership);
     }
     public void copyWorkAreaFunctionMemberships(Long zoneId, WorkArea source, WorkArea destination) {
+    	copyWorkAreaFunctionMemberships(zoneId, source, destination, Boolean.FALSE, ObjectKeys.ROLE_TYPE_FILR);
+    }
+    public void copyWorkAreaFunctionMemberships(Long zoneId, WorkArea source, WorkArea destination,
+    		boolean justThisScope, String scope) {
 		List<WorkAreaFunctionMembership> wfms = findWorkAreaFunctionMemberships(zoneId, source);
 		for (WorkAreaFunctionMembership fm: wfms) {
-			WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
-			membership.setZoneId(zoneId);
-			membership.setWorkAreaId(destination.getWorkAreaId());
-			membership.setWorkAreaType(destination.getWorkAreaType());
-			membership.setFunctionId(fm.getFunctionId());
-			membership.setMemberIds(new HashSet(fm.getMemberIds()));
-			addWorkAreaFunctionMembership(membership);	
+			Function f = getFunction(zoneId, fm.getFunctionId());
+			if (Validator.isNotNull(scope)) {
+	        	if (f != null) {
+					if ((scope.equals(f.getScope()) && justThisScope) || 
+							(!scope.equals(f.getScope()) && !justThisScope)) {
+						WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
+						membership.setZoneId(zoneId);
+						membership.setWorkAreaId(destination.getWorkAreaId());
+						membership.setWorkAreaType(destination.getWorkAreaType());
+						membership.setFunctionId(fm.getFunctionId());
+						membership.setMemberIds(new HashSet(fm.getMemberIds()));
+						addWorkAreaFunctionMembership(membership);	
+					}
+	        	}
+			}
 		}
 	}
     public void deleteWorkAreaFunctionMemberships(Long zoneId, WorkArea workArea) {

@@ -1056,24 +1056,59 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	}
 	//no transaction
 	public void setWorkAreaFunctionMembershipInherited(final WorkArea workArea, final boolean inherit) 
-    throws AccessControlException {
+    		throws AccessControlException {
+		setWorkAreaFunctionMembershipInherited(workArea, inherit, Boolean.FALSE, ObjectKeys.ROLE_TYPE_FILR);
+	}
+
+    /*
+     * Routine to set whether a workarea inherits from its parent folder or not.
+     * 
+     * Depending on the "justThisScope" flag, this routine will skip any function with the 
+     * specified scope or it will only change functions with the specified scope. The other 
+     * functions are left unchanged. This capability is used to support workareas that have 
+     * functions (roles) that are being controlled externally, such as with Filr ACLs. 
+     * 
+     * If "justThisScope" is true, then modify only those functions with the specified scope
+     * If "justThisScope" is false, then modify all functions except the ones with the specified scope
+     */
+	public void setWorkAreaFunctionMembershipInherited(final WorkArea workArea, final boolean inherit,
+			final boolean justThisScope, final String scope) throws AccessControlException {
     	checkAccess(workArea, AdminOperation.manageFunctionMembership);
+    	final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
         Boolean index = (Boolean) getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
         		if (inherit) {
         			//remove them
         			List current = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(RequestContextHolder.getRequestContext().getZoneId(), workArea);
         			for (int i=0; i<current.size(); ++i) {
-	    	        WorkAreaFunctionMembership wfm = (WorkAreaFunctionMembership)current.get(i);
-	    	        getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(wfm);
+		    	        WorkAreaFunctionMembership wfm = (WorkAreaFunctionMembership)current.get(i);
+		    	        if (Validator.isNotNull(scope)) {
+		    	        	Function f = getWorkAreaFunctionMembershipManager().getFunction(zoneId, wfm.getFunctionId());
+		    	        	if (f != null) {
+	      						if ((scope.equals(f.getScope()) && justThisScope) || 
+	    								(!scope.equals(f.getScope()) && !justThisScope)) {
+	      							//Delete the functions according to the scope
+	      							//  This check is used to skip functions that are externally controlled
+	      							getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(wfm);
+	      						}
+		    	        	}
+		    	        } else {
+		    	        	//Delete all wfm if no scope specified
+		    	        	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(wfm);
+		    	        }
         			}
     		
         		} else if (workArea.isFunctionMembershipInherited() && !inherit) {
         			//copy parent values as beginning values
-        			if (workArea.getParentWorkArea() != null) getWorkAreaFunctionMembershipManager().copyWorkAreaFunctionMemberships(RequestContextHolder.getRequestContext().getZoneId(),getWorkAreaFunctionInheritance(workArea), workArea);
+        			if (workArea.getParentWorkArea() != null) {
+        				getWorkAreaFunctionMembershipManager().copyWorkAreaFunctionMemberships(
+        						RequestContextHolder.getRequestContext().getZoneId(),
+        						getWorkAreaFunctionInheritance(workArea), 
+        						workArea);
+        			}
         		}
         	   	//see if there is a real change
-            	if (workArea.isFunctionMembershipInherited()  != inherit) {
+            	if (workArea.isFunctionMembershipInherited() != inherit) {
             		workArea.setFunctionMembershipInherited(inherit);
              		processAccessChangeLog(workArea, ChangeLog.ACCESSMODIFY);
              		//just changed from not inheritting to inherit = need to update index

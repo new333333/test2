@@ -43,6 +43,8 @@ public interface WorkAreaFunctionMembershipManager {
     
     public void addWorkAreaFunctionMembership(WorkAreaFunctionMembership functionMembership);
     public void copyWorkAreaFunctionMemberships(Long zoneId, WorkArea source, WorkArea destination);
+    public void copyWorkAreaFunctionMemberships(Long zoneId, WorkArea source, WorkArea destination,
+    		boolean justThisScope, String scope);
     public void deleteWorkAreaFunctionMemberships(Long zoneId, WorkArea workArea);
     public void deleteWorkAreaFunctionMembership(WorkAreaFunctionMembership functionMembership);
     
