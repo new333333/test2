@@ -775,12 +775,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getProfileDao().getReservedUser(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, zone.getId());
 			getProfileModule().indexEntry(u);
 		}
-		//make sure file synchronization agent exists
-		if(getFileSynchronizationAgent(zone.getId()) == null) {
+		//make sure file sync agent exists
+		if(getFileSyncAgent(zone.getId()) == null) {
 			//need to add it
-			User u = addFileSynchronizationAgent(superU.getParentBinder(), new HistoryStamp(superU));
+			User u = addFileSyncAgent(superU.getParentBinder(), new HistoryStamp(superU));
 			//updates cache
-			getProfileDao().getReservedUser(ObjectKeys.FILE_SYNCHRONIZATION_AGENT_INTERNALID, zone.getId());
+			getProfileDao().getReservedUser(ObjectKeys.FILE_SYNC_AGENT_INTERNALID, zone.getId());
 			getProfileModule().indexEntry(u);
 		}
 		//make sure guest exists
@@ -1003,7 +1003,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		addPosting(profiles, stamp);
     		addJobProcessor(profiles, stamp); 
     		addSynchronizationAgent(profiles, stamp);
-    		addFileSynchronizationAgent(profiles, stamp);
+    		addFileSyncAgent(profiles, stamp);
     		addGuest(profiles, stamp); 
     		Workspace globalRoot = addGlobalRoot(top, stamp);		
     		Workspace teamRoot = addTeamRoot(top, stamp);
@@ -1056,7 +1056,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		user = getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, top.getId());
     		getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, top.getId());
     		getProfileDao().getReservedUser(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, top.getId());
-    		getProfileDao().getReservedUser(ObjectKeys.FILE_SYNCHRONIZATION_AGENT_INTERNALID, top.getId());
+    		getProfileDao().getReservedUser(ObjectKeys.FILE_SYNC_AGENT_INTERNALID, top.getId());
     		getProfileDao().getReservedApplicationGroup(ObjectKeys.ALL_APPLICATIONS_GROUP_INTERNALID, top.getId());
 
     		ScheduleInfo info = getAdminModule().getNotificationSchedule();
@@ -1202,8 +1202,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	private User addSynchronizationAgent(Binder parent, HistoryStamp stamp) {
 		return addReservedUser(parent, stamp, "_synchronizationAgent", null, NLT.get("administration.initial.synchronizationAgent.title"), ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID);
 	}
-	private User addFileSynchronizationAgent(Binder parent, HistoryStamp stamp) {
-		return addReservedUser(parent, stamp, "_fileSyncAgent", null, NLT.get("administration.initial.fileSyncAgent.title"), ObjectKeys.FILE_SYNCHRONIZATION_AGENT_INTERNALID);
+	private User addFileSyncAgent(Binder parent, HistoryStamp stamp) {
+		return addReservedUser(parent, stamp, "_fileSyncAgent", null, NLT.get("administration.initial.fileSyncAgent.title"), ObjectKeys.FILE_SYNC_AGENT_INTERNALID);
 	}
 	private User addGuest(Binder parent, HistoryStamp stamp) {
 		String guestName= SZoneConfig.getString(parent.getRoot().getName(), "property[@name='guestUser']", ObjectKeys.GUEST);
@@ -1594,9 +1594,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		}
 	}
 	
-	private User getFileSynchronizationAgent(Long zoneId) {
+	private User getFileSyncAgent(Long zoneId) {
 		try {
-			return getProfileDao().getReservedUser(ObjectKeys.FILE_SYNCHRONIZATION_AGENT_INTERNALID, zoneId);
+			return getProfileDao().getReservedUser(ObjectKeys.FILE_SYNC_AGENT_INTERNALID, zoneId);
 		} catch (NoUserByTheNameException nu) {
 			return null;
 		}

@@ -128,8 +128,8 @@ public interface ObjectKeys {
 	public static final String JOB_PROCESSOR_INTERNALID="402883b90d0de1f3010d0df5582b0012";
 	//id to run synchronization agent (teaming connector) under
 	public static final String SYNCHRONIZATION_AGENT_INTERNALID="402883b90d0de1f3010d0df5582b001d";
-	//id to run file synchronization agent (for mirrored folder) under
-	public static final String FILE_SYNCHRONIZATION_AGENT_INTERNALID="402883b90d0de1f3010d0df5582b001e";
+	//id to run file sync agent (for mirrored folder) under
+	public static final String FILE_SYNC_AGENT_INTERNALID="402883b90d0de1f3010d0df5582b001e";
 	//shared guest account
 	public static final String GUEST_USER_INTERNALID="402883b90d0de1f3010d0df5582b0013";
 	//reserverd internalids for allapplication group
