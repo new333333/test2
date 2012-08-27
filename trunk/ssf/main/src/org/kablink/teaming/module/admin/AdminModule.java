@@ -244,8 +244,10 @@ public interface AdminModule {
  	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships, boolean doCheckAccess) throws AccessControlException;
  	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships, boolean doCheckAccess, boolean justThisScope, String scope) throws AccessControlException;
     public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) throws AccessControlException;
+    public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit,
+			boolean justThisScope, String scope) throws AccessControlException;
     public void setWorkAreaOwner(WorkArea workArea, Long userId, boolean propagate) throws AccessControlException;
-	public void updateDefaultDefinitions(Long topId, Boolean newDefinitionsOnly);
+    public void updateDefaultDefinitions(Long topId, Boolean newDefinitionsOnly);
 	public void updateDefaultDefinitions(AllModulesInjected bs, Long topId, Boolean newDefinitionsOnly, Collection ids);
 	
 	/**
