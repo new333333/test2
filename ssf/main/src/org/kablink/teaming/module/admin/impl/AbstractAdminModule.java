@@ -903,7 +903,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         				}
         			}
         			//See if this is a function that should be modified
-        			if (Validator.isNotNull(scope)) {
+        			if (Validator.isNotNull(scope) && membership != null) {
         				Function f = getWorkAreaFunctionMembershipManager().getFunction(zoneId, membership.getFunctionId());
     					if (f != null) {
     						if ((scope.equals(f.getScope()) && !justThisScope) || 
