@@ -1379,6 +1379,10 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	public void handleLandingPageOptions( final String binderId, final boolean hideMasthead, final boolean hideSidebar, final boolean showBranding, final boolean hideMenu )
 	{
+		// If we're in File mode, we ignore the landing page options.
+		if ( GwtClientHelper.isLicenseFilr() )
+			return;
+		
 		// If we are running in captive mode we never want to show the masthead of sidebar.
 		// Are we running in captive mode (GroupWise integration)?
 		if ( m_requestInfo.isSessionCaptive() == false )

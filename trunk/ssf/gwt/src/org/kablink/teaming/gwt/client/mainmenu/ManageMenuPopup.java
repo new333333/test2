@@ -476,7 +476,9 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				// ...and add a spacer when required.
 				addSpacerMenuItem();
 			}
-			showTagThis();
+			if (!(GwtClientHelper.isLicenseFilr())) {
+				showTagThis();
+			}
 			addContextMenuItemsFromList(IDBASE, m_miscBucket);
 			
 			// Then the config section...

@@ -107,7 +107,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		boolean isFull()        {return this.equals(FULL        );}
 		boolean isNone()        {return this.equals(NONE        );}
 	}
-	private final static FileBreadCrumbMode	FILR_BC_MODE	= FileBreadCrumbMode.NONE;
+	private final static FileBreadCrumbMode	FILR_BC_MODE	= FileBreadCrumbMode.BINDER_NAMES;
 	
 	/*
 	 * Inner class that implements clicking on the various tree
