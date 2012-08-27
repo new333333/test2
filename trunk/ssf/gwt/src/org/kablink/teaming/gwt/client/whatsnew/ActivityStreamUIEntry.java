@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.whatsnew;
 
 import java.util.HashMap;
@@ -82,9 +81,11 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 
-
-/*
- * This class is the base class for the entries that are displayed in the Activity Stream.
+/**
+ * This class is the base class for the entries that are displayed in
+ * the Activity Stream.
+ * 
+ * @author jwootton@novell.com
  */
 public abstract class ActivityStreamUIEntry extends Composite
 	implements ClickHandler, MouseOverHandler, MouseOutHandler
@@ -776,8 +777,14 @@ public abstract class ActivityStreamUIEntry extends Composite
 			if ( replyNum != null && replyNum.length() > 0 )
 			{
 				String tmp;
+				int pPos;
 				
-				title = replyNum + " ";
+				pPos = replyNum.indexOf( "." );
+				if ( 0 < pPos )
+				{
+			  		replyNum = replyNum.substring( pPos + 1 );
+				}
+				title = replyNum + ". ";
 				
 				// Yes
 				// Does the entry have a title?
