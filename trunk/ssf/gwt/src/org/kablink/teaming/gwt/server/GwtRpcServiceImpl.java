@@ -69,6 +69,7 @@ import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogPages;
+import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
@@ -335,6 +336,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case DELETE_NET_FOLDERS:
+		{
+			Boolean result;
+			DeleteNetFoldersCmd dnfCmd;
+			
+			dnfCmd = (DeleteNetFoldersCmd) cmd;
+			result = GwtNetFolderHelper.deleteNetFolders( this, dnfCmd.getListOfNetFoldersToDelete() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
 		case DELETE_NET_FOLDER_ROOTS:
 		{
 			Boolean result;
@@ -574,6 +586,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			adminActions = getAdminActions( ri, binderId );
 			
 			responseData = new AdminActionsRpcResponseData( adminActions );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_ALL_NET_FOLDERS:
+		{
+			List<NetFolder> result;
+			GetNetFoldersRpcResponseData responseData;
+			
+			result = GwtNetFolderHelper.getAllNetFolders( this );
+			responseData = new GetNetFoldersRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

@@ -2409,6 +2409,28 @@ public class GwtServerHelper {
 			}
 			catch(AccessControlException e) {}
 
+			// Does the user have rights to "Manage net folders"?
+			try
+			{
+				if ( adminModule.testAccess( AdminOperation.manageFunction ) &&
+						LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder"))
+				{
+					// Yes
+					title = NLT.get( "administration.manage.netFolders" );
+
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_NET_FOLDERS );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_NET_FOLDERS );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
+			}
+			catch(AccessControlException e) {}
+
 			// Does the user have rights to "Manage workspace and folder templates"?
 			if ( adminModule.testAccess( AdminOperation.manageTemplate ) )
 			{
@@ -7312,6 +7334,7 @@ public class GwtServerHelper {
 		case CHANGE_FAVORITE_STATE:
 		case COLLAPSE_SUBTASKS:
 		case COPY_ENTRIES:
+		case DELETE_NET_FOLDERS:
 		case DELETE_NET_FOLDER_ROOTS:
 		case DELETE_FOLDER_ENTRIES:
 		case DELETE_GROUPS:
@@ -7330,6 +7353,7 @@ public class GwtServerHelper {
 		case GET_ACTIVITY_STREAM_PARAMS:
 		case GET_ADD_MEETING_URL:
 		case GET_ADMIN_ACTIONS:
+		case GET_ALL_NET_FOLDERS:
 		case GET_ALL_NET_FOLDER_ROOTS:
 		case GET_ALL_GROUPS:
 		case GET_BINDER_BRANDING:

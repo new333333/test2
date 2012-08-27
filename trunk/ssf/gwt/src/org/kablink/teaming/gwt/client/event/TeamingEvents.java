@@ -107,6 +107,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,	// Invokes the Configure File Sync App dialog.
 	INVOKE_DROPBOX,						// Invokes the files drop box (i.e., the file drag&drop applet.)
 	INVOKE_EMAIL_NOTIFICATION,			// Invokes the Email Notification dialog.
+	INVOKE_MANAGE_NET_FOLDERS_DLG,		// Invokes the Manage Net Folders dialog
 	INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,	// Invokes the Manage Net Folder Roots dialog
 	INVOKE_HELP,						// Invokes the Vibe online help.
 	INVOKE_IMPORT_ICAL_FILE,			// Invokes the dialog to import an iCal by uploading  a file.
@@ -140,6 +141,9 @@ public enum TeamingEvents implements IsSerializable {
 	HIDE_MANAGE_MENU,					// Hides the manage menu loaded in the main menu bar.
 	MENU_HIDE,							// Hides the main menu
 	MENU_SHOW,							// Shows the main menu
+
+	NET_FOLDER_CREATED,					// Notification that a net folder was created.
+	NET_FOLDER_MODIFIED,				// Notification that a net folder was modified.
 
 	NET_FOLDER_ROOT_CREATED,			// Notification that a net folder root was created.
 	NET_FOLDER_ROOT_MODIFIED,			// Notification that a net folder root was modified.

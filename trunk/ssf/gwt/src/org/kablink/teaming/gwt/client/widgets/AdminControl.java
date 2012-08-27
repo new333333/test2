@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFolderRootsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeManageNetFoldersDlgEvent;
 import org.kablink.teaming.gwt.client.event.PreLogoutEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -64,6 +65,7 @@ import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 import org.kablink.teaming.gwt.client.widgets.ManageGroupsDlg.ManageGroupsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFolderRootsDlg.ManageNetFolderRootsDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ManageNetFoldersDlg.ManageNetFoldersDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -100,6 +102,7 @@ public class AdminControl extends TeamingPopupPanel
 	implements 
 	// Event handlers implemented by this class.
 		InvokeConfigureFileSyncAppDlgEvent.Handler,
+		InvokeManageNetFoldersDlgEvent.Handler,
 		InvokeManageNetFolderRootsDlgEvent.Handler,
 		InvokeManageGroupsDlgEvent.Handler,
 		PreLogoutEvent.Handler,
@@ -114,6 +117,7 @@ public class AdminControl extends TeamingPopupPanel
 	private int m_contentControlHeight;
 	private ConfigureFileSyncAppDlg m_configureFileSyncAppDlg = null;
 	private ManageGroupsDlg m_manageGroupsDlg = null;
+	private ManageNetFoldersDlg m_manageNetFoldersDlg = null;
 	private ManageNetFolderRootsDlg m_manageNetFolderRootsDlg = null;
 
 	// The following defines the TeamingEvents that are handled by
@@ -122,6 +126,7 @@ public class AdminControl extends TeamingPopupPanel
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Administration events.
 		TeamingEvents.INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,
+		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
 		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
 		
@@ -443,6 +448,7 @@ public class AdminControl extends TeamingPopupPanel
 				}
 				
 				// Add a close button
+				if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
 				{
 					InlineLabel label;
 					
@@ -688,12 +694,19 @@ public class AdminControl extends TeamingPopupPanel
 			// Fire the event to invoke the "Manage Groups" dialog.
 			InvokeManageGroupsDlgEvent.fireOne();
 		}
-		else if ( adminAction.getActionType() == AdminAction.MANAGE_RESOURCE_DRIVERS && Window.confirm( "show new ui" ) )
+		else if ( adminAction.getActionType() == AdminAction.MANAGE_RESOURCE_DRIVERS )
 		{
 			hideContentPanel();
 			
 			// Fire the event to invoke the "Manage net folder roots" dialog.
 			InvokeManageNetFolderRootsDlgEvent.fireOne();
+		}
+		else if ( adminAction.getActionType() == AdminAction.MANAGE_NET_FOLDERS )
+		{
+			hideContentPanel();
+			
+			// Fire the event to invoke the "Manage net folders" dialog.
+			InvokeManageNetFoldersDlgEvent.fireOne();
 		}
 		else
 		{
@@ -1158,6 +1171,75 @@ public class AdminControl extends TeamingPopupPanel
 	}
 	
 
+	/**
+	 * Handles InvokeManageNetFoldersDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeManageNetFoldersDlgEvent.Handler.onInvokeManageNetFoldersDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeManageNetFoldersDlg( InvokeManageNetFoldersDlgEvent event )
+	{
+		int x;
+		int y;
+		
+		// Get the position of the content control.
+		x = m_contentControlX;
+		y = m_contentControlY;
+		
+		// Have we already created a "Manage Net Folders" dialog?
+		if ( m_manageNetFoldersDlg == null )
+		{
+			int width;
+			int height;
+			
+			// No, create one.
+			height = (m_contentControlHeight * 7) / 10;
+			width = (m_contentControlWidth * 8) / 10;
+			ManageNetFoldersDlg.createAsync(
+											false, 
+											true,
+											x, 
+											y,
+											width,
+											height,
+											new ManageNetFoldersDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ManageNetFoldersDlg mnfDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_manageNetFoldersDlg = mnfDlg;
+							
+							m_manageNetFoldersDlg.init();
+							m_manageNetFoldersDlg.show();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+		}
+		else
+		{
+			m_manageNetFoldersDlg.init();
+			m_manageNetFoldersDlg.setPopupPosition( x, y );
+			m_manageNetFoldersDlg.show();
+		}
+	}
+	
 	/**
 	 * Handles InvokeManageNetFolderRootsDlgEvent received by this class.
 	 * 

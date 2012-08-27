@@ -42,6 +42,8 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
@@ -50,10 +52,12 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtUser;
+import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.NetFolderRootType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.security.function.Function;
@@ -61,6 +65,14 @@ import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.TrashHelper;
+import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Criterion;
+import org.kablink.util.search.Order;
+import org.kablink.util.search.Restrictions;
 
 
 /**
@@ -153,6 +165,42 @@ public class GwtNetFolderHelper
 	}
 	
 	/**
+	 * Delete the given list of net folders
+	 */
+	public static Boolean deleteNetFolders(
+		AllModulesInjected ami,
+		Set<NetFolder> netFolders ) throws GwtTeamingException
+	{
+		Boolean result;
+		
+		result = Boolean.TRUE;
+		
+		for ( NetFolder nextNetFolder : netFolders )
+		{
+			try
+			{
+				boolean deleteSource = false;
+				
+				ami.getBinderModule().deleteBinder(
+												nextNetFolder.getId(),
+												deleteSource,
+												null );
+			}
+			catch ( Exception e )
+			{
+				GwtTeamingException gwtEx;
+				
+				m_logger.error( "Error deleting next net folder: " + nextNetFolder.getName() + ", " + e.toString() );
+				
+				gwtEx = GwtServerHelper.getGwtTeamingException( e );
+				throw gwtEx;
+			}
+		}
+		
+		return result;
+	}
+
+	/**
 	 * Delete the given list of net folder roots
 	 */
 	public static Boolean deleteNetFolderRoots(
@@ -179,11 +227,95 @@ public class GwtNetFolderHelper
 		
 		return result;
 	}
+
+	/**
+	 * Return a list of all the net folders 
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static List<NetFolder> getAllNetFolders( AllModulesInjected ami )
+	{
+		Criteria criteria;
+		Criterion criterion;
+		String topWSId;
+		int start;
+		int maxHits;
+		boolean sortAscend;
+		String  sortBy;
+		List<Map> searchEntries;
+		Map searchResults;
+		BinderModule binderModule;
+		ArrayList<NetFolder> listOfNetFolders;
+		
+		listOfNetFolders = new ArrayList<NetFolder>();
+		
+		// Can we access the ID of the top workspace?
+		topWSId = GwtUIHelper.getTopWSIdSafely( ami, false );
+		if ( MiscUtil.hasString( topWSId ) == false )
+		{
+			// No!  Then we can't search for net folders.  Bail.
+			return listOfNetFolders;
+		}
+
+		binderModule = ami.getBinderModule();
+		
+		criteria = new Criteria();
+
+		start = 0;
+		maxHits = ObjectKeys.SEARCH_MAX_HITS_LIMIT;
+
+		// Add the criteria for top level net folders that have been configured.
+		criterion = Restrictions.in( Constants.DOC_TYPE_FIELD, new String[]{Constants.DOC_TYPE_BINDER} );
+		criteria.add( criterion );
+		criterion = Restrictions.in(Constants.ENTRY_ANCESTRY, new String[]{topWSId} );
+		criteria.add( criterion );
+		criterion = Restrictions.in(Constants.FAMILY_FIELD, new String[]{Definition.FAMILY_FILE} );
+		criteria.add( criterion );
+		criterion = Restrictions.in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.TRUE} );
+		criteria.add( criterion );
+		criterion = Restrictions.in(Constants.IS_TOP_FOLDER_FIELD, new String[]{Constants.TRUE} );
+		criteria.add( criterion );
+		criterion = Restrictions.in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE} );
+		criteria.add( criterion );
+
+		// Add in the sort information...
+		sortAscend = false;
+		sortBy = Constants.SORT_TITLE_FIELD;
+		criteria.addOrder( new Order( Constants.ENTITY_FIELD, sortAscend ) );
+		criteria.addOrder( new Order( sortBy, sortAscend ) );
+
+		searchResults = binderModule.executeSearchQuery(
+															criteria,
+															Constants.SEARCH_MODE_NORMAL,
+															start,
+															maxHits );
+		searchEntries = ((List<Map>) searchResults.get( ObjectKeys.SEARCH_ENTRIES ) );
+		//totalRecords = ((Integer) searchResults.get( ObjectKeys.SEARCH_COUNT_TOTAL ) ).intValue();
+		
+		for ( Map entryMap:  searchEntries )
+		{
+			NetFolder netFolder;
+			String binderId;
+			Binder binder;
+			
+			netFolder = new NetFolder();
+			binderId = GwtServerHelper.getStringFromEntryMap( entryMap, Constants.DOCID_FIELD );
+			if ( binderId != null )
+				netFolder.setId( Long.valueOf( binderId ) );
+			
+			binder = binderModule.getBinder( netFolder.getId() );
+			netFolder.setName( binder.getTitle() );
+			netFolder.setNetFolderRootName( binder.getResourceDriverName() );
+			netFolder.setRelativePath( binder.getResourcePath() );
+			
+			listOfNetFolders.add( netFolder );
+		}
+		
+		return listOfNetFolders;
+	}
 	
 	/**
 	 * Return a list of all the net folder roots
 	 */
-	@SuppressWarnings("unchecked")
 	public static List<NetFolderRoot> getAllNetFolderRoots( AllModulesInjected ami )
 	{
 		List<NetFolderRoot> listOfNetFolderRoots;
