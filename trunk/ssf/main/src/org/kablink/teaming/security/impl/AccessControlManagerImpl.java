@@ -213,7 +213,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		return (user.isSuper() || 
 				isDirectSynchronizationWork(user, workAreaOperation) ||
 				isIndirectSynchronizationWork(workAreaOperation) ||
-				isFileSynchronizationWork(user, workAreaOperation));
+				isFileSyncWork(user, workAreaOperation));
 	}
 	
 	//pass the original ownerId in.  Recursive calls need the original
@@ -434,8 +434,8 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			return false;
 	}
 	
-	private boolean isFileSynchronizationWork(User user, WorkAreaOperation workAreaOperation) {
-		return ObjectKeys.FILE_SYNCHRONIZATION_AGENT_INTERNALID.equals(user.getInternalId()) &&
+	private boolean isFileSyncWork(User user, WorkAreaOperation workAreaOperation) {
+		return ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId()) &&
 			(fileSyncAgentRights.get(workAreaOperation.getName()) != null);
 	}
 

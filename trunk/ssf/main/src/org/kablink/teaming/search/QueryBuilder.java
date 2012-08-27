@@ -689,7 +689,7 @@ public class QueryBuilder {
 		
 		if ((user.isSuper() || 
 				ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(user.getInternalId()) ||
-				ObjectKeys.FILE_SYNCHRONIZATION_AGENT_INTERNALID.equals(user.getInternalId())) && 
+				ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId())) && 
 				applicationPrincipals == null) {
 			return null;
 		}

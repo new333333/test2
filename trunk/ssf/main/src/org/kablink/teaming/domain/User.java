@@ -485,7 +485,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     	if (ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(getInternalId())) return false;
     	if (ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(getInternalId())) return false;
     	if (ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(getInternalId())) return false;
-    	if (ObjectKeys.FILE_SYNCHRONIZATION_AGENT_INTERNALID.equals(getInternalId())) return false;
+    	if (ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(getInternalId())) return false;
     	return true;
     }
  
