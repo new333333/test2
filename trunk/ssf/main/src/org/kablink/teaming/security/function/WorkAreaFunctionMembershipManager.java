@@ -77,4 +77,6 @@ public interface WorkAreaFunctionMembershipManager {
      */
     public boolean checkWorkAreaFunctionMembership(Long zoneId, WorkArea workArea, 
             WorkAreaOperation workAreaOperation, Set membersToLookup);   
+    
+    public Function getFunction(Long zoneId, Long functionId);
 }

@@ -830,10 +830,28 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	//no transaction
     public void setWorkAreaFunctionMemberships(final WorkArea workArea, 
     		final Map<Long, Set<Long>> functionMemberships) {
-    	setWorkAreaFunctionMemberships(workArea, functionMemberships, Boolean.TRUE);
+    	setWorkAreaFunctionMemberships(workArea, functionMemberships, Boolean.TRUE, Boolean.FALSE, 
+    			ObjectKeys.ROLE_TYPE_FILR);
     }
     public void setWorkAreaFunctionMemberships(final WorkArea workArea, final Map<Long, 
     		Set<Long>> functionMemberships, boolean doCheckAccess) {
+    	setWorkAreaFunctionMemberships(workArea, functionMemberships, doCheckAccess, Boolean.FALSE, 
+    			ObjectKeys.ROLE_TYPE_FILR);
+    }
+    /*
+     * Routine to set the functions (roles) and function memberships for a workarea.
+     * 
+     * Depending on the "justThisScope" flag, this routine will skip any function with the 
+     * specified scope or it will only change functions with the specified scope. The other 
+     * functions are left unchanged. This capability is used to support workareas that have 
+     * functions (roles) that are being controlled externally, such as with Filr ACLs. 
+     * 
+     * If "justThisScope" is true, then modify only those functions with the specified scope
+     * If "justThisScope" is false, then modify all functions except the ones with the specified scope
+     */
+    public void setWorkAreaFunctionMemberships(final WorkArea workArea, 
+    		final Map<Long, Set<Long>> functionMemberships, boolean doCheckAccess, 
+    		final Boolean justThisScope, final String scope) {
     	if (doCheckAccess) {
     		checkAccess(workArea, AdminOperation.manageFunctionMembership);
     	}
@@ -858,8 +876,21 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         		//get list of current memberships
         		List<WorkAreaFunctionMembership>wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(zoneId, workArea);
         		for( WorkAreaFunctionMembership wfm:wfms) {
-        			if (!functionMemberships.containsKey(wfm.getFunctionId()))
-        				getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(wfm);       	
+        			if (!functionMemberships.containsKey(wfm.getFunctionId())) {
+        				//Also check if limiting the deletions to a scope
+        				if (Validator.isNotNull(scope)) {
+        					Function f = getWorkAreaFunctionMembershipManager().getFunction(zoneId, wfm.getFunctionId());
+        					if (f != null) {
+        						if ((scope.equals(f.getScope()) && justThisScope) || 
+        								(!scope.equals(f.getScope()) && !justThisScope)) {
+        							//We are either limiting to a scope or limiting to all but the specified scope
+        							getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(wfm);  
+        						}
+        					}
+        				} else {
+        					getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(wfm);  
+        				}
+        			}
         		}
         		for (Map.Entry<Long, Set<Long>> fm : functionMemberships.entrySet()) {
         			WorkAreaFunctionMembership membership=null;
@@ -870,6 +901,17 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         					membership = wfm;
         					break;	        	
         				}
+        			}
+        			//See if this is a function that should be modified
+        			if (Validator.isNotNull(scope)) {
+        				Function f = getWorkAreaFunctionMembershipManager().getFunction(zoneId, membership.getFunctionId());
+    					if (f != null) {
+    						if ((scope.equals(f.getScope()) && !justThisScope) || 
+    								(!scope.equals(f.getScope()) && justThisScope)) {
+    							//This combination indicates to not allow modifications
+    							continue;
+    						}
+    					}
         			}
         			Set members = fm.getValue();
         			if (membership == null) { 

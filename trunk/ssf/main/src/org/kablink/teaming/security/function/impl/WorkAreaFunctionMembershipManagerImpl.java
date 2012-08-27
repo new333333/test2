@@ -37,6 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.security.dao.SecurityDao;
 import org.kablink.teaming.security.function.ConditionalClause;
 import org.kablink.teaming.security.function.Function;
@@ -184,5 +185,9 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
     			return false;
     		}
     	}
+    }
+    
+    public Function getFunction(Long zoneId, Long functionId) {
+    	return getSecurityDao().loadFunction(zoneId, functionId);
     }
 }
