@@ -851,7 +851,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
      */
     public void setWorkAreaFunctionMemberships(final WorkArea workArea, 
     		final Map<Long, Set<Long>> functionMemberships, boolean doCheckAccess, 
-    		final Boolean justThisScope, final String scope) {
+    		final boolean justThisScope, final String scope) {
     	if (doCheckAccess) {
     		checkAccess(workArea, AdminOperation.manageFunctionMembership);
     	}
