@@ -90,6 +90,7 @@ public class EventHelper {
 		case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	reply = new InvokeConfigureFileSyncAppDlgEvent(); break;
 		case INVOKE_EMAIL_NOTIFICATION:         	reply = new InvokeEmailNotificationEvent();       break;
 		case INVOKE_HELP:                       	reply = new InvokeHelpEvent();                    break;
+		case INVOKE_MANAGE_NET_FOLDERS_DLG:			reply = new InvokeManageNetFoldersDlgEvent();	  break;
 		case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	reply = new InvokeManageNetFolderRootsDlgEvent(); break;
 		case INVOKE_MANAGE_GROUPS_DLG:				reply = new InvokeManageGroupsDlgEvent();		  break;
 		case LOGIN:                             	reply = new LoginEvent();                         break;
@@ -866,6 +867,18 @@ public class EventHelper {
 					registrationHandler = InvokeImportIcalUrlEvent.registerEvent(eventBus, ((InvokeImportIcalUrlEvent.Handler) eventHandler));
 				}
 				break;
+
+			case INVOKE_MANAGE_NET_FOLDERS_DLG:
+				// An InvokeManageNetFoldersDlgEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof InvokeManageNetFoldersDlgEvent.Handler)
+				{
+					handlerNotDefined = false;
+					registrationHandler = InvokeManageNetFoldersDlgEvent.registerEvent(
+																					eventBus,
+																					((InvokeManageNetFoldersDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
 				
 			case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:
 				// An InvokeManageNetFolderRootsDlgEvent!  Can the event handler we were given handle that?
@@ -1004,6 +1017,17 @@ public class EventHelper {
 				}
 				break;
 				
+			case NET_FOLDER_CREATED:
+				// A NetFolderCreatedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof NetFolderCreatedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = NetFolderCreatedEvent.registerEvent(
+																			eventBus,
+																			((NetFolderCreatedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
 			case NET_FOLDER_ROOT_CREATED:
 				// A NetFolderRootCreatedEvent  Can the event handler we  were given handle that?
 				if ( eventHandler instanceof NetFolderRootCreatedEvent.Handler )
@@ -1012,6 +1036,17 @@ public class EventHelper {
 					registrationHandler = NetFolderRootCreatedEvent.registerEvent(
 																			eventBus,
 																			((NetFolderRootCreatedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
+			case NET_FOLDER_MODIFIED:
+				// A NetFolderModifiedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof NetFolderModifiedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = NetFolderModifiedEvent.registerEvent(
+																			eventBus,
+																			((NetFolderModifiedEvent.Handler) eventHandler ) );
 				}
 				break;
 				
@@ -2023,6 +2058,7 @@ public class EventHelper {
 			case INVOKE_HELP:                       	hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                    break;
 			case INVOKE_IMPORT_ICAL_FILE:           	hasHandler = (eventHandler instanceof InvokeImportIcalFileEvent.Handler);          break;
 			case INVOKE_IMPORT_ICAL_URL:            	hasHandler = (eventHandler instanceof InvokeImportIcalUrlEvent.Handler);           break;
+			case INVOKE_MANAGE_NET_FOLDERS_DLG:			hasHandler = (eventHandler instanceof InvokeManageNetFoldersDlgEvent.Handler); 	   break;
 			case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	hasHandler = (eventHandler instanceof InvokeManageNetFolderRootsDlgEvent.Handler); break;
 			case INVOKE_MANAGE_GROUPS_DLG:				hasHandler = (eventHandler instanceof InvokeManageGroupsDlgEvent.Handler);		   break;
 			case INVOKE_REPLY:                      	hasHandler = (eventHandler instanceof InvokeReplyEvent.Handler);                   break;
@@ -2046,6 +2082,8 @@ public class EventHelper {
 			case MARK_ENTRY_READ:                   	hasHandler = (eventHandler instanceof MarkEntryReadEvent.Handler);                 break;
 			case MARK_ENTRY_UNREAD:                 	hasHandler = (eventHandler instanceof MarkEntryUnreadEvent.Handler);               break;
 			
+			case NET_FOLDER_CREATED:        			hasHandler = (eventHandler instanceof NetFolderCreatedEvent.Handler);          	   break;
+			case NET_FOLDER_MODIFIED:        			hasHandler = (eventHandler instanceof NetFolderModifiedEvent.Handler);         	   break;
 			case NET_FOLDER_ROOT_CREATED:        		hasHandler = (eventHandler instanceof NetFolderRootCreatedEvent.Handler);          break;
 			case NET_FOLDER_ROOT_MODIFIED:        		hasHandler = (eventHandler instanceof NetFolderRootModifiedEvent.Handler);         break;
 

@@ -394,6 +394,7 @@ public class WebKeys {
 	public static final String ACTION_MANAGE_EXTENSIONS="manage_extensions";
 	public static final String ACTION_MANAGE_GROUPS="manage_groups";
 	public static final String ACTION_MANAGE_QUOTAS="manage_quotas";
+	public static final String ACTION_MANAGE_NET_FOLDERS = "manage_net_folders";
 	public static final String ACTION_MANAGE_RESOURCE_DRIVERS="manage_resource_drivers";
 	public static final String ACTION_MANAGE_USER_ACCOUNTS="manage_user_accounts";
 	public static final String ACTION_MANAGE_LICENSE="manage_license";

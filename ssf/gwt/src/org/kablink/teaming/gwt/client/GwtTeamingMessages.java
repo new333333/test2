@@ -303,6 +303,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CreateBlogPage();
 	String rpcFailure_CreateGroup();
 	String rpcFailure_CreateGroupAlreadyExists();
+	String rpcFailure_DeleteNetFolders();
 	String rpcFailure_DeleteNetFolderRoots();
 	String rpcFailure_DeleteFolderEntries();
 	String rpcFailure_DeleteGroups();
@@ -321,6 +322,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetActivityStreamsTree();
 	String rpcFailure_GetAddMeetingUrl();
 	String rpcFailure_GetAdminActions();
+	String rpcFailure_GetAllNetFolders();
 	String rpcFailure_GetAllNetFolderRoots();
 	String rpcFailure_GetAllGroups();
 	String rpcFailure_GetBinderDescription();
@@ -544,6 +546,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_MainPage();
 	String codeSplitFailure_ManageCommentsDlg();
 	String codeSplitFailure_ManageGroupsDlg();
+	String codeSplitFailure_ManageNetFoldersDlg();
 	String codeSplitFailure_ManageNetFolderRootsDlg();
 	String codeSplitFailure_ManageMenuPopup();
 	String codeSplitFailure_ManageSavedSearchesDlg();
@@ -1862,5 +1865,14 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderRootDlg_Type_WebDav();
 	String modifyNetFolderRootDlg_User();
 	
+	// Strings used in the Manage Net Folders dialog
+	String manageNetFoldersDlg_AddNetFolderLabel();
+	String manageNetFoldersDlg_ConfirmDelete( String netFolderName );
+	String manageNetFoldersDlg_DeleteNetFolderLabel();
+	String manageNetFoldersDlg_Header();
+	String manageNetFoldersDlg_NameCol();
+	String manageNetFoldersDlg_NoNetFoldersLabel();
+	String manageNetFoldersDlg_RootCol();
+	String manageNetFoldersDlg_SelectFoldersToDelete();
 	
 }// end GwtTeamingMessages
