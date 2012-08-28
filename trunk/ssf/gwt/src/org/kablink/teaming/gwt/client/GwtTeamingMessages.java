@@ -555,6 +555,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_MilestoneFolderView();
 	String codeSplitFailure_MirroredFileFolderView();
 	String codeSplitFailure_ModifyGroupDlg();
+	String codeSplitFailure_ModifyNetFolderDlg();
 	String codeSplitFailure_ModifyNetFolderRootDlg();
 	String codeSplitFailure_MultiErrorAlertDlg();
 	String codeSplitFailure_PersonalWorkspacesView();
@@ -1875,5 +1876,21 @@ public interface GwtTeamingMessages extends Messages
 	String manageNetFoldersDlg_NoNetFoldersLabel();
 	String manageNetFoldersDlg_RootCol();
 	String manageNetFoldersDlg_SelectFoldersToDelete();
+
+	// Strings used in the Modify Net Folder dialog
+	String modifyNetFolderDlg_AddHeader();
+	String modifyNetFolderDlg_EditHeader( String name );
+	String modifyNetFolderDlg_ErrorCreatingNetFolder( String err );
+	String modifyNetFolderDlg_ErrorModifyingNetFolder( String err );
+	String modifyNetFolderDlg_InsufficientRights();
+	String modifyNetFolderDlg_NameLabel();
+	String modifyNetFolderDlg_NameRequired();
+	String modifyNetFolderDlg_NetFolderAlreadyExists();
+	String modifyNetFolderDlg_NetFolderRootLabel();
+	String modifyNetFolderDlg_NoNetFolderRootsLabel();
+	String modifyNetFolderDlg_ParentBinderRequired();
+	String modifyNetFolderDlg_ParentFolderLabel();
+	String manageNetFoldersDlg_RelativePathCol();
+	String modifyNetFolderDlg_RelativePathLabel();
 	
 }// end GwtTeamingMessages
