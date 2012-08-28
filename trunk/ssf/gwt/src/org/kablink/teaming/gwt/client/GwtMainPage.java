@@ -96,8 +96,10 @@ import org.kablink.teaming.gwt.client.rpc.shared.ChangeFavoriteStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.CollectionPointData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCollectionPointDataCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetMainPageInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserWorkspaceInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
@@ -358,6 +360,49 @@ public class GwtMainPage extends ResizeComposite
 	}
 	
 	/*
+	 * Loads the initial data from the server and continues loading
+	 * controls for the page.
+	 */
+	private void loadInitialData( String binderId )
+	{
+		// Execute a GWT RPC command asking the server for our initial
+		// data requirements.
+		GetMainPageInfoCmd cmd = new GetMainPageInfoCmd( binderId );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetMainPageInfo() );
+			}//end onFailure()
+			
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				// Store the BinderInfo...
+				MainPageInfoRpcResponseData responseData = ((MainPageInfoRpcResponseData) response.getResponseData());
+				m_selectedBinderInfo = responseData.getBinderInfo();
+
+				// ...and the user's avatar URL from the response...
+				String userAvatarUrl = responseData.getUserAvatarUrl();
+				m_requestInfo.setUserAvatarUrl( ( null == userAvatarUrl ) ? "" : userAvatarUrl );
+				
+				// ...and continue the load process.
+				ScheduledCommand loadNextControl = new ScheduledCommand() {
+					@Override
+					public void execute()
+					{
+						loadMainMenuControl();
+					}// end execute()
+				};
+				Scheduler.get().scheduleDeferred( loadNextControl );
+			}// end onSuccess()
+		});
+	}// end loadInitialData()
+
+	/*
 	 * Various control loaders used to load the split points containing
 	 * the code for the controls in the main page.
 	 * 
@@ -445,7 +490,7 @@ public class GwtMainPage extends ResizeComposite
 					@Override
 					public void execute()
 					{
-						ActivityStreamCtrl();
+						loadActivityStreamCtrl();
 					}// end execute()
 				};
 				Scheduler.get().scheduleDeferred( loadNextControl );
@@ -457,7 +502,7 @@ public class GwtMainPage extends ResizeComposite
 	 * Loads the split point for the ActivityStreamCtrl and
 	 * instantiates an object from it.
 	 */
-	private void ActivityStreamCtrl()
+	private void loadActivityStreamCtrl()
 	{
 		ActionsPopupMenu actionsMenu;
 		ActionMenuItem[] menuItems = {  ActionMenuItem.REPLY,
@@ -482,7 +527,14 @@ public class GwtMainPage extends ResizeComposite
 			public void onSuccess( ActivityStreamCtrl asCtrl )
 			{
 				m_activityStreamCtrl = asCtrl;
-				constructMainPage_Finish();
+				ScheduledCommand loadNextControl = new ScheduledCommand() {
+					@Override
+					public void execute()
+					{
+						constructMainPage_Finish();
+					}// end execute()
+				};
+				Scheduler.get().scheduleDeferred( loadNextControl );
 			}// end onSuccess()
 		} );
 	}// end ActivityStreamCtrl()
@@ -492,10 +544,15 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void constructMainPage_Start()
 	{
+		// Initialize the flag indicating of we're running Novell Vibe
+		// vs. Kablink Vibe...
 		m_novellTeaming = m_requestInfo.isNovellTeaming();
-		m_mainPanel     = new VibeDockLayoutPanel( Style.Unit.PX );
+		
+		// ...create the main Vibe content panel...
+		m_mainPanel = new VibeDockLayoutPanel( Style.Unit.PX );
 		m_mainPanel.addStyleName( "mainTeamingPagePanel" );
 		
+		// ...and begin the load process. 
 		String riBinderId = m_requestInfo.getBinderId();
 		if ( ! GwtClientHelper.hasString( riBinderId ))
 		{
@@ -505,31 +562,7 @@ public class GwtMainPage extends ResizeComposite
 				riBinderId = m_requestInfo.getTopWSId();
 			}
 		}
-		
-		BinderInfoHelper.getBinderInfo( riBinderId, new BinderInfoCallback() {
-			@Override
-			public void onFailure()
-			{
-				// Nothing to do!  The user will already have been
-				// told about the problem.
-			}// end onFailure()
-
-			@Override
-			public void onSuccess( BinderInfo binderInfo )
-			{
-				// Get information about the request we are dealing with.
-				m_selectedBinderInfo = binderInfo;
-				ScheduledCommand loadControls = new ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						loadMainMenuControl();
-					}// end execute()
-				};
-				Scheduler.get().scheduleDeferred( loadControls );		
-			}// end onSuccess()
-		});
+		loadInitialData( riBinderId );
 	}// end constructMainPage_Start();
 	
 	/*

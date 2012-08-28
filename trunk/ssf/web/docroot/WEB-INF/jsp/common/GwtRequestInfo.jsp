@@ -85,7 +85,7 @@
 		teamingFeedUrl:						'<ssf:escapeJavaScript><ssf:url adapter="true" portletName="ss_forum" action="__ajax_mobile" operation="view_teaming_live" actionUrl="false" /></ssf:escapeJavaScript>',
 		tinyMCELang:						'${tinyMCELang}',
 		topWSId:							'${topWSId}',
-		userAvatarUrl:						'${ssUserAvatarUrl}',
+		userAvatarUrl:						'',	// Initialized in GwtMainPage.loadInitialData().
 		userDescription:					'',
 		userId:								'${ssUser.id}',
 		userLoginId:						'${ssUser.name}',

@@ -1332,6 +1332,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_MAIN_PAGE_INFO:
+		{
+			GetMainPageInfoCmd gcwCmd = ((GetMainPageInfoCmd) cmd);
+			MainPageInfoRpcResponseData result = GwtServerHelper.getMainPageInfo( this, getRequest( ri ), gcwCmd.getBinderId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_MICRO_BLOG_URL:
 		{
 			GetMicroBlogUrlCmd gmbuCmd;
@@ -4480,7 +4488,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	private BinderInfo getBinderInfo( HttpRequestInfo ri, String binderId )
 	{
-		return GwtServerHelper.getBinderInfo( getRequest( ri ), this, binderId );
+		return GwtServerHelper.getBinderInfo( this, getRequest( ri ), binderId );
 	}//end getBinderInfo()
 
 	/**

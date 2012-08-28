@@ -150,6 +150,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.Membershi
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
+import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
@@ -3462,13 +3463,13 @@ public class GwtServerHelper {
 	/**
 	 * Returns a BinderInfo describing a binder.
 	 *
-	 * @param request
 	 * @param bs
+	 * @param request
 	 * @param binderId
 	 * 
 	 * @return
 	 */
-	public static BinderInfo getBinderInfo(HttpServletRequest request, AllModulesInjected bs, String binderId) {
+	public static BinderInfo getBinderInfo(AllModulesInjected bs, HttpServletRequest request, String binderId) {
 		BinderInfo reply;
 		Binder binder = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
 		if (null == binder) {
@@ -5362,7 +5363,36 @@ public class GwtServerHelper {
 		
 		return loginInfo;
 	}
-	
+
+	/**
+	 * Returns a MainPageInfoRpcResponseData object containing the
+	 * information necessary for GwtMainPage to run.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static MainPageInfoRpcResponseData getMainPageInfo(AllModulesInjected bs, HttpServletRequest request, String binderId) throws GwtTeamingException {
+		try {
+			// Construct a BinderInfo for the binder...
+			BinderInfo bi = getBinderInfo(bs, request, binderId);
+			
+			// ...get the URL to the current user's avatar...
+			String userAvatarUrl = getUserAvatarUrl(bs, request, getCurrentUser());
+			
+			// ...and use them to construct a
+			// ...MainPageInfoRpcResponseData to return.
+			return new MainPageInfoRpcResponseData(bi, userAvatarUrl);
+		}
+		
+		catch (Exception ex) {
+			throw getGwtTeamingException(ex);
+		}
+	}
 	
 	/**
 	 * Returns information about the groups the current user is a member of.
@@ -7418,6 +7448,7 @@ public class GwtServerHelper {
 		case GET_LIST_OF_FILES:
 		case GET_LOGGED_IN_USER_PERMALINK:
 		case GET_LOGIN_INFO:
+		case GET_MAIN_PAGE_INFO:
 		case GET_MICRO_BLOG_URL:
 		case GET_MODIFY_BINDER_URL:
 		case GET_MY_TASKS:

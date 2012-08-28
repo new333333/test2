@@ -317,6 +317,16 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Stores the user's avatar URL.
+	 * 
+	 * @param userAvatarUrl
+	 */
+	public final native String setUserAvatarUrl(String userAvatarUrl)
+	/*-{
+		this.userAvatarUrl = userAvatarUrl;
+	}-*/;
+
+	/**
 	 * Return the user's login id.
 	 * 
 	 * @return

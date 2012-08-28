@@ -225,7 +225,6 @@ public class WebKeys {
     public static final String URL_PAGE_SIZE="pageSize";
     public static final String URL_PORTAL_SIGNAL="portalSignalUrl";
     public static final String URL_PROFILE="profile";
-    public static final String URL_USER_AVATAR_URL="ssUserAvatarUrl";
     public static final String URL_QUOTA_OPTION="ssQuotaOption";
     public static final String URL_USER_QUOTA_OPTION="ssUserQuotaOption";
     public static final String URL_QUOTA_THRESHOLD="ssQuotaThreshold";
