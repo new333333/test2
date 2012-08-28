@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryListRpcRespo
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCommentsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
+import org.kablink.teaming.gwt.client.util.CommentAddedCallback;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -62,6 +63,7 @@ import com.google.gwt.user.client.ui.Composite;
 public class CommentsWidget extends Composite
 	implements ActivityStreamCommentsContainer
 {
+	private CommentAddedCallback m_commentAddedCallback;
 	private CommentsInfo m_commentsInfo;
 	private VibeFlowPanel m_mainPanel;
 	private ActivityStreamCtrl m_activityStreamCtrl;
@@ -90,6 +92,7 @@ public class CommentsWidget extends Composite
 	 */
 	public void addComment( ActivityStreamEntry activityStreamEntry, boolean append, boolean fromCommentManager )
 	{
+//!		Note:  Dennis -> Jay:
 //!		...Jay, you need to do whatever you need to reflect the
 //!		...animation Lynn wanted when fromCommentManager is true.
 		
@@ -212,10 +215,20 @@ public class CommentsWidget extends Composite
 	
 	/**
 	 * Initialize the widget
+	 * 
+	 * @param commentsInfo
+	 * @param commentAddedCallback
 	 */
-	public void init( CommentsInfo commentsInfo )
+	public void init( CommentsInfo commentsInfo, CommentAddedCallback commentAddedCallback )
 	{
 		m_commentsInfo = commentsInfo;
+		m_commentAddedCallback = commentAddedCallback;
+		
+//!		Note:  Dennis -> Jay:
+//!		...Jay, you need to do whatever you need to do so that if
+//!		...m_commentAddedCallback is not null, its
+//!		...m_commentAddedCallback.commentAdded(CommentInfo) method gets
+//!		...called with each comment added.
 		
 		// Have we created an ActivityStreamCtrl before?
 		if ( m_activityStreamCtrl == null )
@@ -259,6 +272,12 @@ public class CommentsWidget extends Composite
 			// Issue an rpc request to get the comments on the given entity
 			getCommentsFromServer();
 		}
+	}
+	
+	public void init( CommentsInfo commentsInfo )
+	{
+		// Always use the initial form of the method.
+		init( commentsInfo, null );	// null -> Caller doesn't need notifications of added comments.
 	}
 	
 	/**

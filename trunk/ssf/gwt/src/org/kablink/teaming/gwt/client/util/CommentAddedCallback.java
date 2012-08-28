@@ -32,61 +32,12 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
- * Class used to bundle information about the comments to an entry
- * through GWT RPC requests.
- *  
+ * Interface used by comment providers to notify comment consumers that
+ * a comment was added.
+ * 
  * @author drfoster@novell.com
  */
-public class CommentsInfo implements IsSerializable {
-	private EntityId	m_entityId;			//
-	private int			m_commentsCount;	//
-	private String		m_entityTitle;		//
-
-	/**
-	 * Constructor method.
-	 * 
-	 * No parameters as per GWT serialization requirements.
-	 */
-	public CommentsInfo() {
-		// Initialize the super class.
-		super();
-	}
-	
-	/**
-	 * Constructor method.
-	 *
-	 * @param entityId
-	 * @param entityTitle
-	 * @param commentsCount
-	 */
-	public CommentsInfo(EntityId entityId, String entityTitle, int commentsCount) {
-		// Initialize this object...
-		this();
-		
-		// ...and store the parameters.
-		setEntityId(     entityId     );
-		setEntityTitle(  entityTitle  );
-		setCommentsCount(commentsCount);
-	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public EntityId getEntityId()      {return m_entityId;     }
-	public int      getCommentsCount() {return m_commentsCount;}
-	public String   getEntityTitle()   {return m_entityTitle;  }
-	
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setEntityId(     EntityId entityId)      {m_entityId      = entityId;     }
-	public void setCommentsCount(int      commentsCount) {m_commentsCount = commentsCount;}
-	public void setEntityTitle(  String   entityTitle)   {m_entityTitle   = entityTitle;  }
+public interface CommentAddedCallback {
+	public void commentAdded(Object callbackData);
 }

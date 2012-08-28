@@ -62,24 +62,25 @@ public abstract class DlgBox extends PopupPanel
 	implements ClickHandler
 {
 	private EditSuccessfulHandler	m_editSuccessfulHandler;	// Handler to call when the user presses Ok.
-	private EditCanceledHandler	m_editCanceledHandler;		// Handler to call when the user presses Cancel.
-	private DlgButtonMode m_dlgBtnMode;
-	private Button		m_okBtn;
-	private Button		m_cancelBtn;
-	private HelpData	m_helpData;
-	private FlowPanel m_closePanel;
-	private Image m_closeImg;
-	protected FocusWidget m_focusWidget;	// Widget that should receive the focus when this dialog is shown.
-	protected boolean m_modal;
-	protected boolean m_visible = false;
-	private Label m_caption;
-	private FlowPanel m_errorPanel;
-	private Panel m_contentPanel;
-	private FlowPanel m_footerPanel;
-	private int m_id;
+	private EditCanceledHandler		m_editCanceledHandler;		// Handler to call when the user presses Cancel.
+	private DlgButtonMode			m_dlgBtnMode;				//
+	private boolean					m_showFooter;				//
+	private Button					m_okBtn;					//
+	private Button					m_cancelBtn;				//
+	private HelpData				m_helpData;					//
+	private FlowPanel 				m_closePanel;				//
+	private Image 					m_closeImg;					//
+	protected FocusWidget 			m_focusWidget;				// Widget that should receive the focus when this dialog is shown.
+	protected boolean 				m_modal;					//
+	protected boolean 				m_visible;					//
+	private Label 					m_caption;					//
+	private FlowPanel 				m_errorPanel;				//
+	private Panel 					m_contentPanel;				//
+	private FlowPanel 				m_footerPanel;				//
+	private int 					m_id;						//
     	
-	protected static int m_numDlgsVisible = 0;	// Number of dialogs that are currently visible.
-	private static int m_uniqueId = 100;
+	protected static int			m_numDlgsVisible = 0;		// Number of dialogs that are currently visible.
+	private   static int			m_uniqueId       = 100;		//
 	
 	public enum DlgButtonMode {
 		Cancel,
@@ -98,7 +99,20 @@ public abstract class DlgBox extends PopupPanel
 		int xPos,
 		int yPos )
 	{
-		this( autoHide, modal, xPos, yPos, DlgButtonMode.OkCancel );
+		this( autoHide, modal, xPos, yPos, DlgButtonMode.OkCancel, true );
+	}
+	
+	/**
+	 * 
+	 */
+	public DlgBox(
+		boolean autoHide,
+		boolean modal,
+		int xPos,
+		int yPos,
+		boolean showFooter )
+	{
+		this( autoHide, modal, xPos, yPos, DlgButtonMode.OkCancel, showFooter );
 	}
 	
 	/**
@@ -108,7 +122,18 @@ public abstract class DlgBox extends PopupPanel
 		boolean autoHide,
 		boolean modal )
 	{
-		this( autoHide, modal, 0, 0, DlgButtonMode.OkCancel );
+		this( autoHide, modal, 0, 0, DlgButtonMode.OkCancel, true );
+	}
+	
+	/**
+	 * 
+	 */
+	public DlgBox(
+		boolean autoHide,
+		boolean modal,
+		boolean showFooter )
+	{
+		this( autoHide, modal, 0, 0, DlgButtonMode.OkCancel, showFooter );
 	}
 	
 	/**
@@ -119,7 +144,19 @@ public abstract class DlgBox extends PopupPanel
 		boolean modal,
 		DlgButtonMode dlgBtnMode )
 	{
-		this( autoHide, modal, 0, 0, dlgBtnMode );
+		this( autoHide, modal, 0, 0, dlgBtnMode, true );
+	}
+	
+	/**
+	 * 
+	 */
+	public DlgBox(
+		boolean autoHide,
+		boolean modal,
+		DlgButtonMode dlgBtnMode,
+		boolean showFooter )
+	{
+		this( autoHide, modal, 0, 0, dlgBtnMode, showFooter );
 	}
 	
 	/**
@@ -132,6 +169,20 @@ public abstract class DlgBox extends PopupPanel
 		int yPos,
 		DlgButtonMode dlgBtnMode )
 	{
+		this( autoHide, modal, xPos, yPos, dlgBtnMode, true );
+	}
+	
+	/**
+	 * 
+	 */
+	public DlgBox(
+		boolean autoHide,
+		boolean modal,
+		int xPos,
+		int yPos,
+		DlgButtonMode dlgBtnMode,
+		boolean showFooter )
+	{
 		// Since we are providing the modal behavior, always pass false into super()
 		super( autoHide, false );
 		
@@ -140,6 +191,7 @@ public abstract class DlgBox extends PopupPanel
 	
 		m_focusWidget = null;
 		m_dlgBtnMode = dlgBtnMode;
+		m_showFooter = showFooter;
 		
 		// Override the style used for PopupPanel
 		m_id = m_uniqueId;
@@ -247,6 +299,9 @@ public abstract class DlgBox extends PopupPanel
 		
 		// Associate this panel with its stylesheet.
 		m_footerPanel.setStyleName( "teamingDlgBoxFooter" );
+		if (!m_showFooter) {
+			m_footerPanel.addStyleName( "displayNone" );
+		}
 		
 		// Create the appropriate buttons based on the value of m_dlgBtnMode.
 		createFooterButtons( m_dlgBtnMode );
