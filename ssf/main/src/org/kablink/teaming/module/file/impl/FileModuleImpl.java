@@ -2968,30 +2968,37 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	private void setupAccessModeForExternalAcl(DefinableEntity entity, WorkAreaOperation[] workAreaOperations) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		
-		boolean shareGrantedAccess;
-		
-		if(entity instanceof FolderEntry) {
-			FolderEntry entry = (FolderEntry) entity;
-			if(entry.hasEntryAcl()) { // This entry has its own (external) ACL
-				shareGrantedAccess = getAccessControlManager().testRightsGrantedBySharing(user, entry, workAreaOperations);
-			}
-			else { // This entry inherits its ACL from the parent folder
-				shareGrantedAccess = getAccessControlManager().testRightsGrantedBySharing(user, entry.getParentFolder(), workAreaOperations);
-			}
-		}
-		else if(entity instanceof Folder) {
-			shareGrantedAccess = getAccessControlManager().testRightsGrantedBySharing(user, (Folder) entity, workAreaOperations);			
+		if(ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId())) {
+			// The file operation is being requested by file sync agent, which ALWAYS accesses
+			// file system in proxy mode regardless of sharing. 
+			RequestContextHolder.getRequestContext().setAccessFileSystemWithExternalAclInUserMode(Boolean.FALSE); // proxy mode
 		}
 		else {
-			// Sharing facility only supports folders and folder entries, which means that the user
-			// can never be assigned the specified rights on this entity through sharing.
-			shareGrantedAccess = false;
+			boolean shareGrantedAccess;
+			
+			if(entity instanceof FolderEntry) {
+				FolderEntry entry = (FolderEntry) entity;
+				if(entry.hasEntryExternalAcl()) { // This entry has its own (external) ACL
+					shareGrantedAccess = getAccessControlManager().testRightsGrantedBySharing(user, entry, workAreaOperations);
+				}
+				else { // This entry inherits its ACL from the parent folder
+					shareGrantedAccess = getAccessControlManager().testRightsGrantedBySharing(user, entry.getParentFolder(), workAreaOperations);
+				}
+			}
+			else if(entity instanceof Folder) {
+				shareGrantedAccess = getAccessControlManager().testRightsGrantedBySharing(user, (Folder) entity, workAreaOperations);			
+			}
+			else {
+				// Sharing facility only supports folders and folder entries, which means that the user
+				// can never be assigned the specified rights on this entity through sharing.
+				shareGrantedAccess = false;
+			}
+			
+			if(shareGrantedAccess)
+				RequestContextHolder.getRequestContext().setAccessFileSystemWithExternalAclInUserMode(Boolean.FALSE); // proxy mode
+			else
+				RequestContextHolder.getRequestContext().setAccessFileSystemWithExternalAclInUserMode(Boolean.TRUE); // user mode
 		}
-		
-		if(shareGrantedAccess)
-			RequestContextHolder.getRequestContext().setAccessFileSystemWithExternalAclInUserMode(Boolean.FALSE); // proxy mode
-		else
-			RequestContextHolder.getRequestContext().setAccessFileSystemWithExternalAclInUserMode(Boolean.TRUE); // user mode
 	}
 	
 	private void teardownAccessModeForExternalAcl() {
