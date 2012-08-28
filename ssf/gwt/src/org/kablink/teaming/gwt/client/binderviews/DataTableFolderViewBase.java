@@ -998,6 +998,43 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					m_messages.vibeDataTable_Empty_Pinning() :
 					m_messages.vibeDataTable_Empty());
 	}
+
+	/*
+	 * Returns the URL to use for a row's image.
+	 */
+	private String getRowImageUrl(FolderRow fr) {
+		// Is the row a binder?
+		String reply;
+		if (fr.isBinder()) {
+			// Yes!  Do we have a specific image for it?
+			String binderIcon = fr.getBinderIcon(BinderIconSize.getListViewIconSize());
+			if (GwtClientHelper.hasString(binderIcon)) {
+				// Yes!  Use it to construct the URL.
+				String imagesPath = GwtClientHelper.getRequestInfo().getImagesPath();
+				if (binderIcon.startsWith("/"))
+				     reply = (imagesPath + binderIcon.substring(1));
+				else reply = (imagesPath + binderIcon);
+			}
+			
+			else {
+				// No, we don't have a specific image for it!  Use the
+				// generic folder image.
+				ImageResource binderImgRes = GwtTeaming.getFilrImageBundle().folder();
+				reply = binderImgRes.getSafeUri().asString();
+			}
+		}
+		
+		else {
+			// No, the row isn't a binder!  Use the generic entry
+			// image.
+			ImageResource binderImgRes = GwtTeaming.getFilrImageBundle().entry();
+			reply = binderImgRes.getSafeUri().asString();
+		}
+		
+		// If we get here, reply refers to the URL for the row's image.
+		// Return it.
+		return reply;
+	}
 	
 	/*
 	 * Returns the FolderRow for the given entity ID.
@@ -1235,26 +1272,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 							// Create the rows's Image widget...
 							Image rowImg = new Image();
 							rowImg.getElement().setAttribute("align", "absmiddle");
-							
-							if (fr.isBinder()) {
-								// ...store the URL in the Image...
-								String binderIcon = fr.getBinderIcon(BinderIconSize.getListViewIconSize());
-								if (GwtClientHelper.hasString(binderIcon)) {
-									String imagesPath = GwtClientHelper.getRequestInfo().getImagesPath();
-									if (binderIcon.startsWith("/"))
-									     rowImg.setUrl(imagesPath + binderIcon.substring(1));
-									else rowImg.setUrl(imagesPath + binderIcon);
-								}
-								else {
-									ImageResource binderImgRes = GwtTeaming.getFilrImageBundle().folder();
-									rowImg.setUrl(binderImgRes.getSafeUri());
-								}
-							}
-							else {
-								// ...store the URL in the Image...
-								ImageResource binderImgRes = GwtTeaming.getFilrImageBundle().entry();
-								rowImg.setUrl(binderImgRes.getSafeUri());
-							}
+							rowImg.setUrl(getRowImageUrl(fr));
 							
 							// ...apply any scaling to the Image...
 							int width  = BinderIconSize.getListViewIconSize().getBinderIconWidth();  if ((-1) != width)  rowImg.setWidth( width  + "px");
@@ -1397,7 +1415,23 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				column = new CommentsColumn<FolderRow>(fc) {
 					@Override
 					public CommentsInfo getValue(FolderRow fr) {
-						return fr.getColumnValueAsComments(fc);
+						CommentsInfo reply = fr.getColumnValueAsComments(fc);
+						if (null != reply) {
+							// Create an Image widget for the manage
+							// comments dialog...
+							Image rowImg = new Image();
+							rowImg.addStyleName("vibe-manageCommentsDlg-captionImg");
+							rowImg.getElement().setAttribute("align", "absmiddle");
+							rowImg.setUrl(getRowImageUrl(fr));
+							
+							// ...apply any scaling to the Image...
+							int width  = BinderIconSize.getDialogCaptionIconSize().getBinderIconWidth();  if ((-1) != width)  rowImg.setWidth( width  + "px");
+							int height = BinderIconSize.getDialogCaptionIconSize().getBinderIconHeight(); if ((-1) != height) rowImg.setHeight(height + "px");
+
+							// ...and store the Image in the reply.
+							reply.setClientItemImage(rowImg);
+						}
+						return reply;
 					}
 				};
 			}
