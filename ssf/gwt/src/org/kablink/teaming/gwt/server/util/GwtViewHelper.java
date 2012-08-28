@@ -2128,14 +2128,14 @@ public class GwtViewHelper {
 			
 		case SHARED_BY_ME:
 			if (FolderColumn.SHOW_SHARE_MESSAGES_COLUMN)
-			     {reply = new String[]{"title", "share_sharedWith", "share_date", "share_expiration", "share_access", "share_message", "comments"};}
-			else {reply = new String[]{"title", "share_sharedWith", "share_date", "share_expiration", "share_access",                  "comments"};}
+			     {reply = new String[]{"title", "comments", "share_sharedWith", "share_date", "share_expiration", "share_access", "share_message"};}
+			else {reply = new String[]{"title", "comments", "share_sharedWith", "share_date", "share_expiration", "share_access"                  };}
 			break;
 			
 		case SHARED_WITH_ME:
 			if (FolderColumn.SHOW_SHARE_MESSAGES_COLUMN)
-			     {reply = new String[]{"title", "share_sharedBy",   "share_date", "share_expiration", "share_access", "share_message", "comments"};}
-			else {reply = new String[]{"title", "share_sharedBy",   "share_date", "share_expiration", "share_access",                  "comments"};}
+			     {reply = new String[]{"title", "comments", "share_sharedBy",   "share_date", "share_expiration", "share_access", "share_message"};}
+			else {reply = new String[]{"title", "comments", "share_sharedBy",   "share_date", "share_expiration", "share_access"                 };}
 			break;
 			
 		default:
