@@ -36,6 +36,7 @@ import org.kablink.teaming.gwt.client.datatable.ManageCommentsDlg;
 import org.kablink.teaming.gwt.client.datatable.ManageCommentsDlg.ManageCommentsDlgClient;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.util.CommentAddedCallback;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -50,20 +51,16 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.DOM;
 
 /**
  * Data table cell that represents a comments count on an entity.
  * 
  * @author drfoster@novell.com
  */
-public class CommentsCell extends AbstractCell<CommentsInfo> {
+public class CommentsCell extends AbstractCell<CommentsInfo> implements CommentAddedCallback {
 	private GwtTeamingMessages	m_messages;				// Access to the Vibe string resources we need for this cell.
 	private ManageCommentsDlg	m_manageCommentsDlg;	//
-	
-	// Controls whether the comment bubble is a link that invokes the
-	// manage comments dialog or simply a count of the comments on an
-	// entity.
-	private final static boolean ALLOW_COMMENT_MANAGEMENT	= true;
 	
 	/**
 	 * Constructor method.
@@ -78,6 +75,27 @@ public class CommentsCell extends AbstractCell<CommentsInfo> {
 		m_messages = GwtTeaming.getMessages();
 	}
 
+	/**
+	 * Called by the manage comments dialog saying a new comment was
+	 * added to the item.
+	 * 
+	 * Implements the CommentAddedCallback.commentAdded() method.
+	 * 
+	 * @param callbackData
+	 */
+	@Override
+	public void commentAdded(Object callbackData) {
+		// Increment the count of comments in the CommentsInfo...
+		CommentsInfo ci = ((CommentsInfo) callbackData);
+		int commentCount = (ci.getCommentsCount() + 1);
+		ci.setCommentsCount(commentCount);
+
+		// ...and update the display of the comment bubble.
+		Element cpE = DOM.getElementById(ci.getEntityId().getEntityIdString());
+		cpE.removeClassName("vibe-dataTableComments-panel0");
+		cpE.setInnerHTML(String.valueOf(commentCount));
+	}
+	
 	/**
      * Called when an event occurs in a rendered instance of this
      * cell.  The parent element refers to the element that contains
@@ -170,18 +188,17 @@ public class CommentsCell extends AbstractCell<CommentsInfo> {
 			VibeFlowPanel cp = new VibeFlowPanel();
 			cp.addStyleName("vibe-dataTableComments-panel");
 			Element cpE = cp.getElement();
-			if (ALLOW_COMMENT_MANAGEMENT) {
-				cp.addStyleName("cursorPointer"                        );
-				cp.setTitle(    m_messages.vibeDataTable_Alt_Comments());
-				cpE.setAttribute(
-					VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE,
-					VibeDataTableConstants.CELL_WIDGET_ENTRY_COMMENTS_PANEL);
-			}
+			cp.addStyleName("cursorPointer"                        );
+			cp.setTitle(    m_messages.vibeDataTable_Alt_Comments());
+			cpE.setId(commentsInfo.getEntityId().getEntityIdString());
+			cpE.setAttribute(
+				VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE,
+				VibeDataTableConstants.CELL_WIDGET_ENTRY_COMMENTS_PANEL);
 			
 			int commentCount = commentsInfo.getCommentsCount();
 			String comments;
 			if (0 == commentCount) {
-				cp.addStyleName("vibe-dataTableComments-panel0");
+				cpE.addClassName("vibe-dataTableComments-panel0");
 				comments = "&nbsp;&nbsp;";
 			}
 			else {
@@ -248,6 +265,7 @@ public class CommentsCell extends AbstractCell<CommentsInfo> {
 		ManageCommentsDlg.initAndShow(
 			m_manageCommentsDlg,
 			commentsInfo,
-			GwtClientHelper.getUIObjectFromElement(relativeToThis));
+			GwtClientHelper.getUIObjectFromElement(relativeToThis),
+			this);	// Provides a CommentAddedCallback.
 	}
 }

@@ -307,6 +307,16 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Return the user's avatar URL.
+	 * 
+	 * @return
+	 */
+	public final native String getUserAvatarUrl()
+	/*-{
+		return this.userAvatarUrl;
+	}-*/;
+
+	/**
 	 * Return the user's login id.
 	 * 
 	 * @return

@@ -41,6 +41,11 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
+import org.kablink.teaming.gwt.client.util.CommentAddedCallback;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.CommentsWidget;
@@ -51,10 +56,16 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
@@ -63,50 +74,26 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  *  
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
-public class ManageCommentsDlg extends DlgBox implements EditSuccessfulHandler {
+public class ManageCommentsDlg extends DlgBox
+	implements
+		EditSuccessfulHandler,
+		KeyDownHandler
+{
+	private CommentAddedCallback			m_commentAddedCallback;		// Callback interface used to tell the callee a new comment was added.
 	private CommentsInfo					m_commentsInfo;				// The CommentsInfo the ManageCommentsDlg is running against.
+	private CommentsWidget					m_commentsWidget;			// Widget that displays the current comments.
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private TextArea						m_addCommentTA;				// The TextArea containing the comments being added.
 	private UIObject						m_showRelativeWidget;		// The UIObject to show the dialog relative to.
 	private VibeFlowPanel					m_fp;						// The panel that holds the dialog's contents.
-	private CommentsWidget					m_commentsWidget;			// Widget that displays the current comments.
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 	};
-
-	/*
-	 * Inner class that wraps items displayed in the dialog's content.
-	 */
-	private class DlgLabel extends InlineLabel {
-		/**
-		 * Constructor method.
-		 * 
-		 * @param label
-		 * @param title
-		 */
-		public DlgLabel(String label, String title) {
-			super(label);
-			if (GwtClientHelper.hasString(title)) {
-				setTitle(title);
-			}
-			addStyleName("vibe-manageCommentsDlg-label");
-		}
-		
-		/**
-		 * Constructor method.
-		 * 
-		 * @param label
-		 */
-		public DlgLabel(String label) {
-			// Always use the initial form of the method.
-			this(label, null);
-		}
-	}
 
 	/*
 	 * Class constructor.
@@ -117,7 +104,11 @@ public class ManageCommentsDlg extends DlgBox implements EditSuccessfulHandler {
 	 */
 	private ManageCommentsDlg() {
 		// Initialize the superclass...
-		super(false, true, DlgButtonMode.Close);
+		super(
+			false,					// false -> Not auto hide.
+			true,					// true  -> Modal.
+			DlgButtonMode.Close,	// Forces the 'X' close button in the upper right corner.
+			false);					// false -> Don't show footer.
 
 		// ...initialize everything else...
 		m_images   = GwtTeaming.getDataTableImageBundle();
@@ -130,6 +121,60 @@ public class ManageCommentsDlg extends DlgBox implements EditSuccessfulHandler {
 			this,	// The dialog's EditSuccessfulHandler.
 			DlgBox.getSimpleCanceledHandler(),
 			null);	// Create callback data.  Unused. 
+	}
+
+	/*
+	 * Asynchronously adds a comment to the entry.
+	 */
+	private void addCommentAsync(final String comment) {
+		ScheduledCommand doAdd = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				addCommentNow(comment);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doAdd);
+	}
+
+	/*
+	 * Synchronously adds a comment to the entry.
+	 */
+	private void addCommentNow(String comment) {
+		SafeHtmlBuilder builder = new SafeHtmlBuilder();
+		builder = builder.appendEscapedLines(comment);
+		
+		ReplyToEntryCmd cmd = new ReplyToEntryCmd(m_commentsInfo.getEntityId().getEntityId(), builder.toSafeHtml().asString(), "");
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_ReplyToEntry());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				final ActivityStreamEntry asEntry = ((ActivityStreamEntryRpcResponseData) result.getResponseData()).getActivityStreamEntry();
+				Scheduler.ScheduledCommand doAdd = new Scheduler.ScheduledCommand() {
+					@Override
+					public void execute() {
+						// Add the comment to the comment widget...
+						m_commentsWidget.addComment(asEntry, true, true);
+						
+						// ...clear the text from the TextArea...
+						m_addCommentTA.setText("");
+						
+						// ...and if the caller wanted a
+						// ...notification...
+						if (null != m_commentAddedCallback) {
+							// ...tell them a comment was added.
+							m_commentAddedCallback.commentAdded(m_commentsInfo);
+						}
+					}
+				};
+				Scheduler.get().scheduleDeferred(doAdd);
+			}
+		});
 	}
 
 	/**
@@ -153,7 +198,20 @@ public class ManageCommentsDlg extends DlgBox implements EditSuccessfulHandler {
 		m_fp.add(m_commentsWidget);
 		
 		// ...create the widgets to add comments...
-//!		...this needs to be implemented...
+		VibeFlowPanel addCommentPanel = new VibeFlowPanel();
+		addCommentPanel.addStyleName("vibe-manageCommentsDlg-addCommentPanel");
+		String avatarUrl = GwtClientHelper.getRequestInfo().getUserAvatarUrl();
+		if (!(GwtClientHelper.hasString(avatarUrl))) {
+			avatarUrl = m_images.userPhoto().getSafeUri().asString();
+		}
+		Image avatarImg = GwtClientHelper.buildImage(avatarUrl);
+		avatarImg.addStyleName("vibe-manageCommentsDlg-addCommentAvatar");
+		addCommentPanel.add(avatarImg);
+		m_addCommentTA = new TextArea();
+		m_addCommentTA.addStyleName("vibe-manageCommentsDlg-addCommentTextArea");
+		m_addCommentTA.addKeyDownHandler(this);
+		addCommentPanel.add(m_addCommentTA);
+		m_fp.add(addCommentPanel);
 		
 		// ...and return the Panel that holds the dialog's contents.
 		return m_fp;
@@ -198,7 +256,7 @@ public class ManageCommentsDlg extends DlgBox implements EditSuccessfulHandler {
 	 */
 	@Override
 	public FocusWidget getFocusWidget() {
-		return null;
+		return m_addCommentTA;
 	}
 
 	/**
@@ -226,6 +284,40 @@ public class ManageCommentsDlg extends DlgBox implements EditSuccessfulHandler {
 		unregisterEvents();
 	}
 	
+	/**
+	 * Called when the user presses a key in the popup.
+	 * 
+	 * Implements the KeyDownHandler.onKeyDown() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onKeyDown(KeyDownEvent event) {
+		String comment = m_addCommentTA.getText();
+		if (null == comment)
+		     comment = "";
+		else comment = comment.trim();
+		boolean hasComment = GwtClientHelper.hasString(comment);
+		
+		// What key is being pressed?
+		switch (event.getNativeEvent().getKeyCode()) {
+		case KeyCodes.KEY_ENTER:
+			// Enter!  Has the user entered any text for a comment?
+			if (hasComment) {
+				addCommentAsync(comment);
+			}
+			break;
+			
+		case KeyCodes.KEY_ESCAPE:
+			// Escape!  Has the user entered any text for a comment?
+			if (!hasComment) {
+				// No!  Then simply hide the dialog.
+				hide();
+			}
+			break;
+		}
+	}
+	
 	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
@@ -243,35 +335,17 @@ public class ManageCommentsDlg extends DlgBox implements EditSuccessfulHandler {
 	 * Synchronously populates the contents of the dialog.
 	 */
 	private void populateDlgNow() {
-//!		...this needs to be implemented...
-		populateDlgWithDataAsync();
-	}
-	
-	/*
-	 * Asynchronously populates the contents of the dialog.
-	 */
-	private void populateDlgWithDataAsync() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				populateDlgWithDataNow();
-			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
-	}
-	
-	/*
-	 * Synchronously populates the contents of the dialog.
-	 */
-	private void populateDlgWithDataNow() {
 		// Initialize the comments widget with the comments...
-		m_commentsWidget.init(m_commentsInfo);
+		m_commentsWidget.init(m_commentsInfo, m_commentAddedCallback);
 		
-		// ...initialize the comment entry widgets...
-//!		...this needs to be implemented...
+		// ...initialize the comment entry widget...
+		m_addCommentTA.setText("");
 		
-		// ...and show the dialog.
+		// ...show the dialog...
 		showRelativeTo(m_showRelativeWidget);
+		
+		// ...and force the focus into the TextArea.
+		GwtClientHelper.setFocusDelayed(m_addCommentTA);
 	}
 	
 	/*
@@ -300,11 +374,11 @@ public class ManageCommentsDlg extends DlgBox implements EditSuccessfulHandler {
 	 * Asynchronously runs the given instance of the manage comments
 	 * dialog.
 	 */
-	private static void runDlgAsync(final ManageCommentsDlg mcDlg, final CommentsInfo ci, final UIObject showRelativeWidget) {
+	private static void runDlgAsync(final ManageCommentsDlg mcDlg, final CommentsInfo ci, final UIObject showRelativeWidget, final CommentAddedCallback commentAddedCallback) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				mcDlg.runDlgNow(ci, showRelativeWidget);
+				mcDlg.runDlgNow(ci, showRelativeWidget, commentAddedCallback);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -314,13 +388,14 @@ public class ManageCommentsDlg extends DlgBox implements EditSuccessfulHandler {
 	 * Synchronously runs the given instance of the manage comments
 	 * dialog.
 	 */
-	private void runDlgNow(CommentsInfo ci, UIObject showRelativeWidget) {
+	private void runDlgNow(CommentsInfo ci, UIObject showRelativeWidget, CommentAddedCallback commentAddedCallback) {
 		// Set the dialog's caption...
 		setCaption(ci.getEntityTitle());
 		
 		// ...store the parameters...
-		m_commentsInfo       = ci;
-		m_showRelativeWidget = showRelativeWidget;
+		m_commentsInfo         = ci;
+		m_showRelativeWidget   = showRelativeWidget;
+		m_commentAddedCallback = commentAddedCallback;
 		
 		// ...and start populating the dialog.
 		populateDlgAsync();
@@ -362,9 +437,10 @@ public class ManageCommentsDlg extends DlgBox implements EditSuccessfulHandler {
 			final ManageCommentsDlgClient mcDlgClient,
 			
 			// initAndShow parameters,
-			final ManageCommentsDlg mcDlg,
-			final CommentsInfo ci,
-			final UIObject showRelativeWidget) {
+			final ManageCommentsDlg		mcDlg,
+			final CommentsInfo			ci,
+			final UIObject				showRelativeWidget,
+			final CommentAddedCallback	commentAddedCallback) {
 		GWT.runAsync(ManageCommentsDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -387,7 +463,7 @@ public class ManageCommentsDlg extends DlgBox implements EditSuccessfulHandler {
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(mcDlg, ci, showRelativeWidget);
+					runDlgAsync(mcDlg, ci, showRelativeWidget, commentAddedCallback);
 				}
 			}
 		});
@@ -400,7 +476,7 @@ public class ManageCommentsDlg extends DlgBox implements EditSuccessfulHandler {
 	 * @param mcDlgClient
 	 */
 	public static void createAsync(ManageCommentsDlgClient mcDlgClient) {
-		doAsyncOperation(mcDlgClient, null, null, null);
+		doAsyncOperation(mcDlgClient, null, null, null, null);
 	}
 	
 	/**
@@ -408,8 +484,15 @@ public class ManageCommentsDlg extends DlgBox implements EditSuccessfulHandler {
 	 * 
 	 * @param mcDlg
 	 * @param ci
+	 * @param showRelativeWidget
+	 * @param commentAddedCallback
 	 */
+	public static void initAndShow(ManageCommentsDlg mcDlg, CommentsInfo ci, UIObject showRelativeWidget, CommentAddedCallback commentAddedCallback) {
+		doAsyncOperation(null, mcDlg, ci, showRelativeWidget, commentAddedCallback);
+	}
+	
 	public static void initAndShow(ManageCommentsDlg mcDlg, CommentsInfo ci, UIObject showRelativeWidget) {
-		doAsyncOperation(null, mcDlg, ci, showRelativeWidget);
+		// Always use the initial form of the method.
+		doAsyncOperation(null, mcDlg, ci, showRelativeWidget, null);
 	}
 }
