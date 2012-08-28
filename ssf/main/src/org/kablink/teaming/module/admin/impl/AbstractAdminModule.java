@@ -942,7 +942,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         				}
         			}
         		}
-           		workArea.setFunctionMembershipInherited(false);
+        		if(dealingWithExternalAcl(justThisScope, scope))
+        			workArea.setExtFunctionMembershipInherited(false);
+        		else
+        			workArea.setFunctionMembershipInherited(false);
 				processAccessChangeLog(workArea, ChangeLog.ACCESSMODIFY);
 				return null;
         	}});
@@ -1098,7 +1101,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		    	        }
         			}
     		
-        		} else if (workArea.isFunctionMembershipInherited() && !inherit) {
+        		} else if (!dealingWithExternalAcl(justThisScope, scope) && workArea.isFunctionMembershipInherited() && !inherit) {
         			//copy parent values as beginning values
         			if (workArea.getParentWorkArea() != null) {
         				getWorkAreaFunctionMembershipManager().copyWorkAreaFunctionMemberships(
@@ -1108,13 +1111,19 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         			}
         		}
         	   	//see if there is a real change
-            	if (workArea.isFunctionMembershipInherited() != inherit) {
+            	if (!dealingWithExternalAcl(justThisScope, scope) && workArea.isFunctionMembershipInherited() != inherit) {
             		workArea.setFunctionMembershipInherited(inherit);
              		processAccessChangeLog(workArea, ChangeLog.ACCESSMODIFY);
              		//just changed from not inheritting to inherit = need to update index
             		//if changed from inherit to not, index remains the same
               		if (inherit) return Boolean.TRUE;
-
+            	}
+            	else if(dealingWithExternalAcl(justThisScope, scope) && workArea.isExtFunctionMembershipInherited() != inherit) {
+            		workArea.setExtFunctionMembershipInherited(inherit);
+             		processAccessChangeLog(workArea, ChangeLog.ACCESSMODIFY);
+             		//just changed from not inheritting to inherit = need to update index
+            		//if changed from inherit to not, index remains the same
+              		if (inherit) return Boolean.TRUE;
             	}
         		return Boolean.FALSE;
         	}});
@@ -1675,4 +1684,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		rs.setSimpleProfilerEnabled(false);
 	}
 
+	private boolean dealingWithExternalAcl(boolean justThisScope, String scope) {
+		return (justThisScope && ObjectKeys.ROLE_TYPE_FILR.equals(scope));
+	}
 }
