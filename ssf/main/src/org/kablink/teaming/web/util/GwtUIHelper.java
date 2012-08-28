@@ -55,7 +55,6 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
-//import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
@@ -1288,7 +1287,6 @@ public class GwtUIHelper {
 	 * - showWhatsNew
 	 * - showCollection
 	 * - isFormLoginAllowed
-	 * - ssUserAvatarUrl
 	 * 
 	 * @param request
 	 * @param bs
@@ -1387,13 +1385,6 @@ public class GwtUIHelper {
 		Boolean loginDisallowed;
 		loginDisallowed = SPropsUtil.getBoolean("form.login.auth.disallowed", false);
 		model.put(WebKeys.IS_FORM_LOGIN_ALLOWED, (!loginDisallowed));
-
-		// If the current user has an avatar defined, put that out.
-		String userAvatarUrl = "";	//! GwtServerHelper.getUserAvatarUrl(bs, hRequest, GwtServerHelper.getCurrentUser());
-		if (null == userAvatarUrl) {
-			userAvatarUrl = "";
-		}
-		model.put(WebKeys.URL_USER_AVATAR_URL, userAvatarUrl);
 	}
 	
 	/**

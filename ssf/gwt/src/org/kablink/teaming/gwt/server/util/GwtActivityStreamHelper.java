@@ -1034,7 +1034,7 @@ public class GwtActivityStreamHelper {
 	private static TreeInfo buildASTI(HttpServletRequest request, AllModulesInjected bs, boolean isBinder, String id, String title, String hover, ActivityStream as) {
 		TreeInfo reply = new TreeInfo();
 		if (isBinder && MiscUtil.hasString(id)) {
-			reply.setBinderInfo(GwtServerHelper.getBinderInfo(request, bs, id));
+			reply.setBinderInfo(GwtServerHelper.getBinderInfo(bs, request, id));
 		}
 		
 		reply.setActivityStream(true);

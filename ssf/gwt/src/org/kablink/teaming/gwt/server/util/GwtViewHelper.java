@@ -1894,7 +1894,7 @@ public class GwtViewHelper {
 		try {
 			// Access the BinderInfo for the binder's description
 			// information...
-			BinderInfo binderInfo = GwtServerHelper.getBinderInfo(request, bs, String.valueOf(binderId));
+			BinderInfo binderInfo = GwtServerHelper.getBinderInfo(bs, request, String.valueOf(binderId));
 
 			// ...and use it to construct and return a
 			// ...BinderDescriptionRpcResponseData object.
@@ -4414,7 +4414,7 @@ public class GwtViewHelper {
 	private static boolean initVIFromBinderId(HttpServletRequest request, AllModulesInjected bs, Map<String, String> nvMap, String binderIdName, ViewInfo vi, boolean checkForTrash) {
 		// Initialize as a binder based on the user's workspace.
 		Long binderId = getQueryParameterLong(nvMap, binderIdName);
-		BinderInfo bi = GwtServerHelper.getBinderInfo(request, bs, String.valueOf(binderId));
+		BinderInfo bi = GwtServerHelper.getBinderInfo(bs, request, String.valueOf(binderId));
 		if (null == bi) {
 			return false;
 		}
@@ -4457,7 +4457,7 @@ public class GwtViewHelper {
 		}
 
 		// Initialize as a binder based on the user's workspace.
-		BinderInfo bi = GwtServerHelper.getBinderInfo(request, bs, String.valueOf(user.getWorkspaceId()));
+		BinderInfo bi = GwtServerHelper.getBinderInfo(bs, request, String.valueOf(user.getWorkspaceId()));
 		if (null == bi) {
 			return false;
 		}
