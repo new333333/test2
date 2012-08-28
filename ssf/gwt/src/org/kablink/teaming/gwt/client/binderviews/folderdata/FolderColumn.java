@@ -76,10 +76,10 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public final static String COLUMN_HTML				= "html";
 	public final static String COLUMN_LOCATION			= "location";
 	public final static String COLUMN_LOGIN_ID			= "loginId";
+	public final static String COLUMN_NETFOLDER_ACCESS	= "netfolder_access";
 	public final static String COLUMN_NUMBER			= "number";
 	public final static String COLUMN_RATING			= "rating";
 	public final static String COLUMN_RESPONSIBLE		= "responsible";
-	public final static String COLUMN_RIGHTS			= "rights";
 	public final static String COLUMN_SHARE_ACCESS		= "share_access";
 	public final static String COLUMN_SHARE_DATE		= "share_date";
 	public final static String COLUMN_SHARE_EXPIRATION	= "share_expiration";
@@ -255,8 +255,8 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public static boolean isColumnFamily(          String       columnName) {return columnName.equals(FolderColumn.COLUMN_FAMILY);           }
 	public static boolean isColumnFullName(        String       columnName) {return columnName.equals(FolderColumn.COLUMN_FULL_NAME);        }
 	public static boolean isColumnGuest(           String       columnName) {return columnName.equals(FolderColumn.COLUMN_GUEST);            }
+	public static boolean isColumnNetFolderAccess( String       columnName) {return columnName.equals(FolderColumn.COLUMN_NETFOLDER_ACCESS); }
 	public static boolean isColumnRating(          String       columnName) {return columnName.equals(FolderColumn.COLUMN_RATING);           }
-	public static boolean isColumnRights(          String       columnName) {return columnName.equals(FolderColumn.COLUMN_RIGHTS);           }
 	public static boolean isColumnPresence(        String       columnName) {return columnName.equals(FolderColumn.COLUMN_AUTHOR);           }
 	public static boolean isColumnTaskFolders(     String       columnName) {return columnName.equals(FolderColumn.COLUMN_TASKS);            }
 	public static boolean isColumnTitle(           String       columnName) {return columnName.equals(FolderColumn.COLUMN_TITLE);            }
