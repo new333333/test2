@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.server.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,18 +49,21 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
+import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
+import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.NetFolderRootType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -67,7 +71,6 @@ import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
-import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Criterion;
@@ -85,6 +88,89 @@ public class GwtNetFolderHelper
 {
 	protected static Log m_logger = LogFactory.getLog( GwtNetFolderHelper.class );
 
+	
+	/**
+	 * Create a new net folder from the given data
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static NetFolder createNetFolder(
+		AllModulesInjected ami,
+		NetFolder netFolder ) throws GwtTeamingException
+	{
+		NetFolder newNetFolder = null;
+		
+		try
+		{
+			Binder binder;
+			Long templateId = null;
+			List<TemplateBinder> listOfTemplateBinders;
+			
+			// Find the template binder for mirrored folders.
+			listOfTemplateBinders = ami.getTemplateModule().getTemplates();
+			if ( listOfTemplateBinders != null )
+			{
+				for ( TemplateBinder nextTemplateBinder : listOfTemplateBinders )
+				{
+					String internalId;
+					
+					internalId = nextTemplateBinder.getInternalId();
+					if ( internalId != null && internalId.equalsIgnoreCase( ObjectKeys.DEFAULT_FOLDER_MIRRORED_FILE_CONFIG ) )
+					{
+						templateId = nextTemplateBinder.getId();
+						break;
+					}
+				}
+			}
+
+			if ( templateId != null )
+			{
+				// Create the binder
+				binder = ami.getTemplateModule().addBinder(
+														templateId,
+														netFolder.getParentBinderId(),
+														netFolder.getName(),
+														netFolder.getName() );
+				
+				// Modify the binder with the additional net folder information.
+				{
+					Set deleteAtts;
+					Map fileMap = null;
+					MapInputData mid;
+	   				Map formData = null;
+					
+					deleteAtts = new HashSet();
+					fileMap = new HashMap();
+	   				formData = new HashMap();
+			   		formData.put( ObjectKeys.FIELD_BINDER_LIBRARY, "true" );
+			   		formData.put( ObjectKeys.FIELD_BINDER_MIRRORED, "true" );
+			   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, netFolder.getNetFolderRootName() );
+			   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, netFolder.getRelativePath() );
+	   				mid = new MapInputData( formData );
+	
+		   			ami.getBinderModule().modifyBinder( binder.getId(), mid, fileMap, deleteAtts, null );				
+				}
+				
+				newNetFolder = new NetFolder();
+				newNetFolder.setName( netFolder.getName() );
+				newNetFolder.setNetFolderRootName( netFolder.getNetFolderRootName() );
+				newNetFolder.setRelativePath( netFolder.getRelativePath() );
+				newNetFolder.setParentBinderId( netFolder.getParentBinderId() );
+				newNetFolder.setId( binder.getId() );
+			}
+			else
+				throw new GwtTeamingException( ExceptionType.UNKNOWN, "Could not find the template binder for a mirrored folder" );
+		}
+		catch ( Exception ex )
+		{
+			GwtTeamingException gtEx;
+			
+			gtEx = GwtServerHelper.getGwtTeamingException( ex );
+			throw gtEx;				
+		}
+		
+		return newNetFolder;
+	}
+	
 	
 	/**
 	 * Create a new net folder root from the given data
@@ -210,6 +296,8 @@ public class GwtNetFolderHelper
 		Boolean result;
 		ResourceDriverModule rdModule;
 		
+		ami.getAdminModule().checkAccess( AdminOperation.manageResourceDrivers );
+
 		result = Boolean.TRUE;
 		rdModule = ami.getResourceDriverModule();
 		
@@ -306,6 +394,7 @@ public class GwtNetFolderHelper
 			netFolder.setName( binder.getTitle() );
 			netFolder.setNetFolderRootName( binder.getResourceDriverName() );
 			netFolder.setRelativePath( binder.getResourcePath() );
+			netFolder.setParentBinderId( binder.getParentBinder().getId() );
 			
 			listOfNetFolders.add( netFolder );
 		}
@@ -453,6 +542,45 @@ public class GwtNetFolderHelper
 	}
 	
 	/**
+	 * Modify the net folder from the given data
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static NetFolder modifyNetFolder(
+		AllModulesInjected ami,
+		NetFolder netFolder ) throws GwtTeamingException
+	{
+		try
+		{
+			Set deleteAtts;
+			Map fileMap = null;
+			MapInputData mid;
+			Map formData = null;
+			
+			deleteAtts = new HashSet();
+			fileMap = new HashMap();
+			formData = new HashMap();
+	   		formData.put( ObjectKeys.FIELD_BINDER_LIBRARY, "true" );
+	   		formData.put( ObjectKeys.FIELD_BINDER_MIRRORED, "true" );
+	   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, netFolder.getNetFolderRootName() );
+	   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, netFolder.getRelativePath() );
+			mid = new MapInputData( formData );
+
+			// Modify the binder with the net folder information.
+   			ami.getBinderModule().modifyBinder( netFolder.getId(), mid, fileMap, deleteAtts, null );				
+		}
+		catch ( Exception ex )
+		{
+			GwtTeamingException gtEx;
+			
+			gtEx = GwtServerHelper.getGwtTeamingException( ex );
+			throw gtEx;				
+		}
+		
+		return netFolder;
+	}
+	
+	
+	/**
 	 * Modify the net folder root from the given data
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -512,5 +640,4 @@ public class GwtNetFolderHelper
 		
 		return netFolderRoot;
 	}
-	
 }

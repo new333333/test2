@@ -51,6 +51,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetNetFoldersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderDlg.ModifyNetFolderDlgClient;
 
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
@@ -95,7 +96,7 @@ public class ManageNetFoldersDlg extends DlgBox
 	private ListDataProvider<NetFolder> m_dataProvider;
 	private SimplePager m_pager;
 	private List<NetFolder> m_listOfNetFolders;
-//	private ModifyNetFolderDlg m_modifyNetFolderRootDlg;
+	private ModifyNetFolderDlg m_modifyNetFolderDlg;
     private int m_width;
     private int m_height;
 	
@@ -184,6 +185,7 @@ public class ManageNetFoldersDlg extends DlgBox
 		NetFolderNameCell cell;
 		Column<NetFolder,NetFolder> nameCol;
 		TextColumn<NetFolder> rootCol;
+		TextColumn<NetFolder> relativePathCol;
 		FlowPanel menuPanel;
 		CellTable.Resources cellTableResources;
 		
@@ -329,6 +331,23 @@ public class ManageNetFoldersDlg extends DlgBox
 			}
 		};
 		m_netFoldersTable.addColumn( rootCol, messages.manageNetFoldersDlg_RootCol() );
+		
+		// Add the "Relative Path" column
+		relativePathCol = new TextColumn<NetFolder>()
+		{
+			@Override
+			public String getValue( NetFolder netFolder )
+			{
+				String relativePath;
+				
+				relativePath = netFolder.getRelativePath();
+				if ( relativePath == null )
+					relativePath = "";
+				
+				return relativePath;
+			}
+		};
+		m_netFoldersTable.addColumn( relativePathCol, messages.manageNetFoldersDlg_RelativePathCol() );
 		
 		// Create a pager
 		{
@@ -588,7 +607,6 @@ public class ManageNetFoldersDlg extends DlgBox
 	 */
 	private void invokeModifyNetFolderDlg( final NetFolder netFolder )
 	{
-/*!!!
 		int x;
 		int y;
 		
@@ -637,7 +655,6 @@ public class ManageNetFoldersDlg extends DlgBox
 			m_modifyNetFolderDlg.setPopupPosition( x, y );
 			m_modifyNetFolderDlg.show();
 		}
-*/
 	}
 
 	/**
