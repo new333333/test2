@@ -1656,10 +1656,10 @@ public class GwtViewHelper {
 			else if (colName.equals("html"))             {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                    }
 			else if (colName.equals("location"))         {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                }
 			else if (colName.equals("loginId"))          {fc.setColumnSearchKey(Constants.LOGINNAME_FIELD);                                                                  }
+			else if (colName.equals("netfolder_access")) {fc.setColumnSearchKey(FolderColumn.COLUMN_NETFOLDER_ACCESS);   fc.setColumnSortable(false);                        }
 			else if (colName.equals("number"))           {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);              fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);    }
 			else if (colName.equals("rating"))           {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                     }
 			else if (colName.equals("responsible"))      {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                }
-			else if (colName.equals("rights"))           {fc.setColumnSearchKey(FolderColumn.COLUMN_RIGHTS);             fc.setColumnSortable(false);                        }
 			else if (colName.equals("size"))             {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                  }
 			else if (colName.equals("share_access"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_ACCESS);       fc.setColumnSortable(false);                        }
 			else if (colName.equals("share_date"))       {fc.setColumnSearchKey(FolderColumn.COLUMN_SHARE_DATE);         fc.setColumnSortable(false);                        }
@@ -2123,7 +2123,7 @@ public class GwtViewHelper {
 			break;
 			
 		case NET_FOLDERS:
-			reply = new String[]{"title", "rights", "descriptionHtml"};
+			reply = new String[]{"title", "date", "netfolder_access", "descriptionHtml"};
 			break;
 			
 		case SHARED_BY_ME:

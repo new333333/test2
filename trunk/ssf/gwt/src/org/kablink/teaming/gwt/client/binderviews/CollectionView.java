@@ -74,6 +74,14 @@ public class CollectionView extends DataTableFolderViewBase {
 	@Override
 	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
 		switch (getFolderInfo().getCollectionType()) {
+		case NET_FOLDERS:
+			columnWidths.put(FolderColumn.COLUMN_TITLE,            new ColumnWidth(30));	// = 30
+			columnWidths.put(FolderColumn.COLUMN_DATE,             new ColumnWidth(10));	// = 40
+			columnWidths.put(FolderColumn.COLUMN_NETFOLDER_ACCESS, new ColumnWidth(10));	// = 50
+			columnWidths.put(FolderColumn.COLUMN_DESCRIPTION_HTML, new ColumnWidth(50));	// = 100%
+			
+			break;
+			
 		case SHARED_BY_ME:
 		case SHARED_WITH_ME:
 			if (FolderColumn.SHOW_SHARE_MESSAGES_COLUMN) {
@@ -96,6 +104,7 @@ public class CollectionView extends DataTableFolderViewBase {
 				columnWidths.put(FolderColumn.COLUMN_SHARE_EXPIRATION,  new ColumnWidth(10));	// = 90
 				columnWidths.put(FolderColumn.COLUMN_SHARE_ACCESS,      new ColumnWidth(10));	// = 100%
 			}
+			
 			break;
 		
 		default:
