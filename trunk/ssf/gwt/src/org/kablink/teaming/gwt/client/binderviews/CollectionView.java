@@ -78,23 +78,23 @@ public class CollectionView extends DataTableFolderViewBase {
 		case SHARED_WITH_ME:
 			if (FolderColumn.SHOW_SHARE_MESSAGES_COLUMN) {
 				columnWidths.put(FolderColumn.COLUMN_TITLE,             new ColumnWidth(20));	// = 20
-				columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_BY,   new ColumnWidth(13));	// = 33
+				columnWidths.put(FolderColumn.COLUMN_COMMENTS,          new ColumnWidth( 7));	// = 27
+				columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_BY,   new ColumnWidth(13));	// = 40
 				columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_WITH, new ColumnWidth(13));	//     (By or with, never both.)
-				columnWidths.put(FolderColumn.COLUMN_SHARE_DATE,        new ColumnWidth( 7));	// = 40
-				columnWidths.put(FolderColumn.COLUMN_SHARE_EXPIRATION,  new ColumnWidth( 7));	// = 47
-				columnWidths.put(FolderColumn.COLUMN_SHARE_ACCESS,      new ColumnWidth( 7));	// = 54
-				columnWidths.put(FolderColumn.COLUMN_SHARE_MESSAGE,     new ColumnWidth(39));	// = 93
-				columnWidths.put(FolderColumn.COLUMN_COMMENTS,          new ColumnWidth( 7));	// = 100%
+				columnWidths.put(FolderColumn.COLUMN_SHARE_DATE,        new ColumnWidth( 7));	// = 47
+				columnWidths.put(FolderColumn.COLUMN_SHARE_EXPIRATION,  new ColumnWidth( 7));	// = 54
+				columnWidths.put(FolderColumn.COLUMN_SHARE_ACCESS,      new ColumnWidth( 7));	// = 61
+				columnWidths.put(FolderColumn.COLUMN_SHARE_MESSAGE,     new ColumnWidth(39));	// = 100%
 			}
 			
 			else {
 				columnWidths.put(FolderColumn.COLUMN_TITLE,             new ColumnWidth(50));	// = 50
-				columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_BY,   new ColumnWidth(13));	// = 63
+				columnWidths.put(FolderColumn.COLUMN_COMMENTS,          new ColumnWidth( 7));	// = 57
+				columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_BY,   new ColumnWidth(13));	// = 70
 				columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_WITH, new ColumnWidth(13));	//     (By or with, never both.)
-				columnWidths.put(FolderColumn.COLUMN_SHARE_DATE,        new ColumnWidth(10));	// = 73
-				columnWidths.put(FolderColumn.COLUMN_SHARE_EXPIRATION,  new ColumnWidth(10));	// = 83
-				columnWidths.put(FolderColumn.COLUMN_SHARE_ACCESS,      new ColumnWidth(10));	// = 93
-				columnWidths.put(FolderColumn.COLUMN_COMMENTS,          new ColumnWidth( 7));	// = 100%
+				columnWidths.put(FolderColumn.COLUMN_SHARE_DATE,        new ColumnWidth(10));	// = 80
+				columnWidths.put(FolderColumn.COLUMN_SHARE_EXPIRATION,  new ColumnWidth(10));	// = 90
+				columnWidths.put(FolderColumn.COLUMN_SHARE_ACCESS,      new ColumnWidth(10));	// = 100%
 			}
 			break;
 		
