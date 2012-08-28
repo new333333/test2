@@ -20,15 +20,25 @@
 .displayNone        { display: none;           }
 .displayNone2       { display: none !important;}
 
-.padding3  {padding: 3px;           }
-.padding3b {padding: 3px !important;}
-.padding5  {padding: 5px;           }
-.padding5b {padding: 5px !important;}
+.padding3  {padding:       3px;           }
+.padding3b {padding:       3px !important;}
+.padding5  {padding:       5px;           }
+.padding5b {padding:       5px !important;}
+.padding5R {padding-right: 5px;           }
 
 .vibe-verticalScroll {overflow-y: auto;}
 
 .white { color: white !important; }
-	
+
+.blend2-b
+{
+	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:         linear-gradient(top, #abced1, #81b2bd) !important; /* standard, but currently unimplemented */
+}
+
 /* Styles used with the activity stream control */
 .activityStreamCtrl
 {
@@ -2709,7 +2719,8 @@ body, table td, select
 	color: #fff;
 	font-size: 14px;
 	font-weight: bold;
-	background: transparent url(images/dialog_header_tile.png) repeat-x;
+	background: transparent url(images/dialog_header_tile2.png);
+	background-size: 100%;
 	padding: 5px;
 	-moz-border-radius-topleft: 3px;
 	-moz-border-radius-topright: 3px;
@@ -2717,7 +2728,12 @@ body, table td, select
 	border-top-right-radius: 3px;
 	-webkit-border-top-left-radius: 3px;
 	-webkit-border-top-right-radius: 3px;
+	white-space: nowrap;
+	vertical-align: middle;
 }
+
+.teamingDlgBoxHeader-captionImagePanel {display: inline;}
+.teamingDlgBoxHeader-captionLabel      {display: inline !important;}
 
 .teamingDlgBoxHeader:hover
 {

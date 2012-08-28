@@ -74,6 +74,7 @@ public abstract class DlgBox extends PopupPanel
 	protected boolean 				m_modal;					//
 	protected boolean 				m_visible;					//
 	private Label 					m_caption;					//
+	private FlowPanel				m_captionImagePanel;		//
 	private FlowPanel 				m_errorPanel;				//
 	private Panel 					m_contentPanel;				//
 	private FlowPanel 				m_footerPanel;				//
@@ -392,7 +393,12 @@ public abstract class DlgBox extends PopupPanel
 		flowPanel.setStyleName( "teamingDlgBoxHeader" );
 		flowPanel.getElement().setId( "teamingDlgBoxHeader-" + String.valueOf( m_id ) );
 
+		m_captionImagePanel = new FlowPanel();
+		m_captionImagePanel.setStyleName( "teamingDlgBoxHeader-captionImagePanel" );
+		flowPanel.add( m_captionImagePanel );
+		
 		m_caption = new Label( caption );
+		m_caption.setStyleName( "teamingDlgBoxHeader-captionLabel" );
 		flowPanel.add( m_caption );
 		
 		// Add a help link to the header if needed.
@@ -654,6 +660,21 @@ public abstract class DlgBox extends PopupPanel
 	{
 		m_caption.setText( caption );
 	}// end setCaption()
+	
+	/**
+	 * Updates the caption's image.
+	 *  
+	 * @param captionImg
+	 */
+	public void setCaptionImage( Image captionImg )
+	{
+		if ( null != captionImg )
+		{
+			m_captionImagePanel.clear();
+			m_captionImagePanel.add( captionImg );
+			m_captionImagePanel.addStyleName( "padding5R" );
+		}
+	}// end setCaptionImage()
 	
 	/**
 	 * Enables/disables the ok push button.

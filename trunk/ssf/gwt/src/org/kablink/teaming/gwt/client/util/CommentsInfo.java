@@ -45,6 +45,10 @@ public class CommentsInfo implements IsSerializable {
 	private int			m_commentsCount;	//
 	private String		m_entityTitle;		//
 
+	// The following is only used on the client side to push an Image
+	// through to the data table for items.
+	private transient Object m_clientItemImage;
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -77,16 +81,18 @@ public class CommentsInfo implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public EntityId getEntityId()      {return m_entityId;     }
-	public int      getCommentsCount() {return m_commentsCount;}
-	public String   getEntityTitle()   {return m_entityTitle;  }
+	public EntityId getEntityId()        {return m_entityId;       }
+	public int      getCommentsCount()   {return m_commentsCount;  }
+	public String   getEntityTitle()     {return m_entityTitle;    }
+	public Object   getClientItemImage() {return m_clientItemImage;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setEntityId(     EntityId entityId)      {m_entityId      = entityId;     }
-	public void setCommentsCount(int      commentsCount) {m_commentsCount = commentsCount;}
-	public void setEntityTitle(  String   entityTitle)   {m_entityTitle   = entityTitle;  }
+	public void setEntityId(       EntityId entityId)        {m_entityId        = entityId;       }
+	public void setCommentsCount(  int      commentsCount)   {m_commentsCount   = commentsCount;  }
+	public void setEntityTitle(    String   entityTitle)     {m_entityTitle     = entityTitle;    }
+	public void setClientItemImage(Object   clientItemImage) {m_clientItemImage = clientItemImage;}
 }

@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.datatable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -74,11 +73,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  *  
  * @author drfoster@novell.com
  */
-public class ManageCommentsDlg extends DlgBox
-	implements
-		EditSuccessfulHandler,
-		KeyDownHandler
-{
+public class ManageCommentsDlg extends DlgBox implements KeyDownHandler {
 	private CommentAddedCallback			m_commentAddedCallback;		// Callback interface used to tell the callee a new comment was added.
 	private CommentsInfo					m_commentsInfo;				// The CommentsInfo the ManageCommentsDlg is running against.
 	private CommentsWidget					m_commentsWidget;			// Widget that displays the current comments.
@@ -118,7 +113,7 @@ public class ManageCommentsDlg extends DlgBox
 		addStyleName("vibe-manageCommentsDlg");
 		createAllDlgContent(
 			"",		// The dialog's caption will be set each time it is run.
-			this,	// The dialog's EditSuccessfulHandler.
+			DlgBox.getSimpleSuccessfulHandler(),
 			DlgBox.getSimpleCanceledHandler(),
 			null);	// Create callback data.  Unused. 
 	}
@@ -215,23 +210,6 @@ public class ManageCommentsDlg extends DlgBox
 		
 		// ...and return the Panel that holds the dialog's contents.
 		return m_fp;
-	}
-
-	/**
-	 * This method gets called when user user presses the OK push
-	 * button.
-	 * 
-	 * Implements the EditSuccessfulHandler.editSuccessful() interface
-	 * method.
-	 * 
-	 * @param callbackData
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean editSuccessful(Object callbackData) {
-		// Unused.
-		return true;
 	}
 
 	/**
@@ -389,8 +367,9 @@ public class ManageCommentsDlg extends DlgBox
 	 * dialog.
 	 */
 	private void runDlgNow(CommentsInfo ci, UIObject showRelativeWidget, CommentAddedCallback commentAddedCallback) {
-		// Set the dialog's caption...
-		setCaption(ci.getEntityTitle());
+		// Set the dialog's caption and caption image...
+		setCaption(             ci.getEntityTitle()    );
+		setCaptionImage((Image) ci.getClientItemImage());
 		
 		// ...store the parameters...
 		m_commentsInfo         = ci;
