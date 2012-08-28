@@ -1389,7 +1389,7 @@ public class GwtUIHelper {
 		model.put(WebKeys.IS_FORM_LOGIN_ALLOWED, (!loginDisallowed));
 
 		// If the current user has an avatar defined, put that out.
-		String userAvatarUrl = GwtServerHelper.getUserAvatarUrl(bs, hRequest, GwtServerHelper.getCurrentUser());
+		String userAvatarUrl = "";	//! GwtServerHelper.getUserAvatarUrl(bs, hRequest, GwtServerHelper.getCurrentUser());
 		if (null == userAvatarUrl) {
 			userAvatarUrl = "";
 		}
