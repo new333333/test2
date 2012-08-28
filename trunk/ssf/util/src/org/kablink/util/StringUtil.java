@@ -441,6 +441,28 @@ public class StringUtil {
 		return sb.toString();
 	}
 
+	public static String merge(Object array[]) {
+		return merge(array, StringPool.COMMA);
+	}
+
+	public static String merge(Object array[], String delimiter) {
+		if (array == null) {
+			return null;
+		}
+
+		StringBuffer sb = new StringBuffer();
+
+		for (int i = 0; i < array.length; i++) {
+			sb.append(array[i].toString().trim());
+
+			if ((i + 1) != array.length) {
+				sb.append(delimiter);
+			}
+		}
+
+		return sb.toString();
+	}
+
 	public static String randomize(String s) {
 		Randomizer r = new Randomizer();
 
