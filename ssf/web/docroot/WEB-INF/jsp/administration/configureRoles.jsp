@@ -376,7 +376,7 @@
 </c:forEach>
 <br/>
 
-<ssf:ifFilr>
+<ssf:ifAuthorizedByLicense featureName="com.novell.teaming.Filr">
 <h4><ssf:nlt tag="administration.configure_roles.existing.Filr" /></h4>
 <c:forEach var="function4" items="${ssFunctions}">
 <jsp:useBean id="function4" type="org.kablink.teaming.security.function.Function" />
@@ -449,7 +449,7 @@
 </c:if>
 </c:forEach>
 <br/>
-</ssf:ifFilr>
+</ssf:ifAuthorizedByLicense>
 
 <form class="ss_style ss_form" name="${renderResponse.namespace}rolesForm" method="post" 
 	action="<ssf:url action="site_administration" actionUrl="false"/>" >

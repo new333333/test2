@@ -1499,78 +1499,36 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getFunctionManager().addFunction(function);		
 		return function;
 	}
-	private Function addFilrRoleFolderRead(Long zoneId) {
+	private Function addFilrRoleRead(Long zoneId) {
 		Function function = new Function();
 		function.setZoneId(zoneId);
-		function.setName(ObjectKeys.ROLE_TITLE_FILR_FOLDER_READ);
+		function.setName(ObjectKeys.ROLE_TITLE_FILR_READ);
 		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
-		function.setInternalId(ObjectKeys.FUNCTION_FILR_FOLDER_READ_INTERNALID);
+		function.setInternalId(ObjectKeys.FUNCTION_FILR_READ_INTERNALID);
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
-		getFunctionManager().addFunction(function);		
-		return function;
-	}
-	private Function addFilrRoleFolderWrite(Long zoneId) {
-		Function function = new Function();
-		function.setZoneId(zoneId);
-		function.setName(ObjectKeys.ROLE_TITLE_FILR_FOLDER_WRITE); 
-		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
-		function.setInternalId(ObjectKeys.FUNCTION_FILR_FOLDER_WRITE_INTERNALID);
-		function.addOperation(WorkAreaOperation.READ_ENTRIES);
-		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
-		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
-		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
-		getFunctionManager().addFunction(function);		
-		return function;
-	}
-	private Function addFilrRoleFolderOwner(Long zoneId) {
-		Function function = new Function();
-		function.setZoneId(zoneId);
-		function.setName(ObjectKeys.ROLE_TITLE_FILR_FOLDER_OWNER);
-		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
-		function.setInternalId(ObjectKeys.FUNCTION_FILR_FOLDER_OWNER_INTERNALID);
-		function.addOperation(WorkAreaOperation.READ_ENTRIES);
-		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
-		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
-		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
-		function.addOperation(WorkAreaOperation.ALLOW_SHARING);
-		function.addOperation(WorkAreaOperation.BINDER_ADMINISTRATION);
-		function.addOperation(WorkAreaOperation.CHANGE_ACCESS_CONTROL);
-		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
-		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);
-		function.addOperation(WorkAreaOperation.VIEW_BINDER_TITLE);
 		getFunctionManager().addFunction(function);		
 		return function;
 	}
-	private Function addFilrRoleFileRead(Long zoneId) {
+	private Function addFilrRoleWrite(Long zoneId) {
 		Function function = new Function();
 		function.setZoneId(zoneId);
-		function.setName(ObjectKeys.ROLE_TITLE_FILR_FILE_READ);
+		function.setName(ObjectKeys.ROLE_TITLE_FILR_WRITE); 
 		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
-		function.setInternalId(ObjectKeys.FUNCTION_FILR_FILE_READ_INTERNALID);
-		function.addOperation(WorkAreaOperation.READ_ENTRIES);
-		getFunctionManager().addFunction(function);		
-		return function;
-	}
-	private Function addFilrRoleFileWrite(Long zoneId) {
-		Function function = new Function();
-		function.setZoneId(zoneId);
-		function.setName(ObjectKeys.ROLE_TITLE_FILR_FILE_WRITE);
-		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
-		function.setInternalId(ObjectKeys.FUNCTION_FILR_FILE_WRITE_INTERNALID);
+		function.setInternalId(ObjectKeys.FUNCTION_FILR_WRITE_INTERNALID);
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
-		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
+		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		getFunctionManager().addFunction(function);		
 		return function;
 	}
-	private Function addFilrRoleFileOwner(Long zoneId) {
+	private Function addFilrRoleOwner(Long zoneId) {
 		Function function = new Function();
 		function.setZoneId(zoneId);
-		function.setName(ObjectKeys.ROLE_TITLE_FILR_FILE_OWNER);
+		function.setName(ObjectKeys.ROLE_TITLE_FILR_OWNER);
 		function.setScope(ObjectKeys.ROLE_TYPE_FILR);
-		function.setInternalId(ObjectKeys.FUNCTION_FILR_FILE_OWNER_INTERNALID);
+		function.setInternalId(ObjectKeys.FUNCTION_FILR_OWNER_INTERNALID);
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
 		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
@@ -1628,7 +1586,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	private void addGlobalFunctions(ZoneConfig zoneConfig) {
 		Set<Long> members = new HashSet();
 		Function function;
-		List functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
+		List<Function> functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
 		Map functionNames = new HashMap();
 		Map functionInternalIds = new HashMap();
 		for (int i = 0; i < functions.size(); i++) {
@@ -1758,23 +1716,38 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			}
 		}
 		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_FILE_READ_INTERNALID)) {
-			addFilrRoleFileRead(zoneConfig.getZoneId());
+		// The next calls should be deleted. These file roles were never shipped
+		//TODO remove these next lines before Filr ships
+		for (Function f : functions) {
+			if (f.getName().equals("__role.FilrFolderRead") || 
+					f.getName().equals("__role.FilrFolderWrite") || 
+					f.getName().equals("__role.FilrFolderOwner") ||
+					f.getName().equals("__role.FilrFileRead") || 
+					f.getName().equals("__role.FilrFileWrite") || 
+					f.getName().equals("__role.FilrFileOwner")) {
+				try{
+					getFunctionManager().deleteFunction(f, true);
+				} catch(Exception e) {
+					logger.warn("Could not delete unused Filr roles");
+				}
+			}
 		}
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_FILE_WRITE_INTERNALID)) {
-			addFilrRoleFileWrite(zoneConfig.getZoneId());
+		functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
+		functionInternalIds = new HashMap();
+		for (int i = 0; i < functions.size(); i++) {
+			function = (Function)functions.get(i);
+			functionNames.put(function.getName(), function);
+			if (function.getInternalId() != null) functionInternalIds.put(function.getInternalId(), function);
 		}
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_FILE_OWNER_INTERNALID)) {
-			addFilrRoleFileOwner(zoneConfig.getZoneId());
+		
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_READ_INTERNALID)) {
+			addFilrRoleRead(zoneConfig.getZoneId());
 		}
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_FOLDER_READ_INTERNALID)) {
-			addFilrRoleFolderRead(zoneConfig.getZoneId());
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_WRITE_INTERNALID)) {
+			addFilrRoleWrite(zoneConfig.getZoneId());
 		}
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_FOLDER_WRITE_INTERNALID)) {
-			addFilrRoleFolderWrite(zoneConfig.getZoneId());
-		}
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_FOLDER_OWNER_INTERNALID)) {
-			addFilrRoleFolderOwner(zoneConfig.getZoneId());
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_FILR_OWNER_INTERNALID)) {
+			addFilrRoleOwner(zoneConfig.getZoneId());
 		}
 	}
 	
