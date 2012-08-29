@@ -7436,7 +7436,7 @@ function ssEditAppConfig(menuDIV) {
 		// Define the data table's data.
 		eDIV                = document.createElement("div");
 		eDIV.id             = "appConfigListDiv";
-		eDIV.style.width    = "100%";
+		eDIV.style.width    = "600px";
 		eDIV.style.overflow = "auto";
 		this.menuDIV.appendChild(eDIV);
 		
