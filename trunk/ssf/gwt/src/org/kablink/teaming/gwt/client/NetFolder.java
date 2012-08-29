@@ -52,7 +52,16 @@ public class NetFolder
 	private String m_relativePath;
 	private String m_netFolderRootName;
 	private Long m_parentBinderId;
+	private NetFolderStatus m_status;
 	
+	/**
+	 * The different statuses of a net Folder
+	 */
+	public enum NetFolderStatus implements IsSerializable
+	{
+		SYNC_IN_PROGRESS,
+		READY
+	}
 	
 	/**
 	 * Constructor method. 
@@ -130,6 +139,14 @@ public class NetFolder
 	/**
 	 * 
 	 */
+	public NetFolderStatus getStatus()
+	{
+		return m_status;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setId( Long id )
 	{
 		m_id = id;
@@ -169,5 +186,13 @@ public class NetFolder
 	public void setRelativePath( String relativePath )
 	{
 		m_relativePath = relativePath;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setStatus( NetFolderStatus status )
+	{
+		m_status = status;
 	}
 }

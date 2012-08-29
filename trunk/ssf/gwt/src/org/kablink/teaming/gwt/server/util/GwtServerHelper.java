@@ -7546,6 +7546,7 @@ public class GwtServerHelper {
 		case SET_SEEN:
 		case SET_UNSEEN:
 		case SHARE_ENTRY:
+		case SYNC_NET_FOLDERS:
 		case TEST_GROUP_MEMBERSHIP_LDAP_QUERY:
 		case TRACK_BINDER:
 		case TRASH_PURGE_ALL:

@@ -39,6 +39,7 @@ import java.util.Set;
 import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.NetFolder.NetFolderStatus;
 import org.kablink.teaming.gwt.client.datatable.NetFolderNameCell;
 import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -48,6 +49,7 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFoldersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFoldersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFoldersRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFoldersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -240,6 +242,29 @@ public class ManageNetFoldersDlg extends DlgBox
 						public void execute()
 						{
 							deleteSelectedNetFolders();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			menuPanel.add( label );
+
+			// Add a "Sync" button.
+			label = new InlineLabel( messages.manageNetFoldersDlg_SyncLabel() );
+			label.addStyleName( "manageNetFoldersDlg_Btn" );
+			label.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							syncSelectedNetFolders();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -444,6 +469,9 @@ public class ManageNetFoldersDlg extends DlgBox
 									t,
 									GwtTeaming.getMessages().rpcFailure_DeleteNetFolders() );
 
+							// Clear all selections.
+							m_selectionModel.clear();
+							
 							// Update the table to reflect the fact that we deleted a net folder.
 							m_dataProvider.refresh();
 						}
@@ -471,6 +499,9 @@ public class ManageNetFoldersDlg extends DlgBox
 								if ( netFolder != null )
 									m_listOfNetFolders.remove( netFolder );
 							}
+							
+							// Clear all selections.
+							m_selectionModel.clear();
 							
 							// Update the table to reflect the fact that we deleted a net folder.
 							m_dataProvider.refresh();
@@ -545,7 +576,12 @@ public class ManageNetFoldersDlg extends DlgBox
 						
 						// Add the net folders to the ui
 						if ( responseData != null )
-							addNetFolders( responseData.getListOfNetFolders() );
+						{
+							List<NetFolder> listOfNetFolders;
+							
+							listOfNetFolders = responseData.getListOfNetFolders();
+							addNetFolders( listOfNetFolders );
+						}
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
@@ -719,6 +755,88 @@ public class ManageNetFoldersDlg extends DlgBox
 		}
 	}
 
+	/**
+	 * Sync the selected net folders.
+	 */
+	private void syncSelectedNetFolders()
+	{
+		final Set<NetFolder> selectedFolders;
+		SyncNetFoldersCmd cmd;
+		AsyncCallback<VibeRpcResponse> rpcCallback = null;
+		
+		selectedFolders = getSelectedNetFolders();
+
+		// Do we have any net folders to sync?
+		if ( selectedFolders == null || selectedFolders.size() == 0 )
+		{
+			// No
+			Window.alert( GwtTeaming.getMessages().manageNetFoldersDlg_SelectFoldersToSync() );
+			return;
+		}
+		
+		// Mark each of the selected net folders as "sync in progress"
+		for ( NetFolder nextNetFolder : selectedFolders )
+		{
+			nextNetFolder.setStatus( NetFolderStatus.SYNC_IN_PROGRESS );
+		}
+
+		// Create the callback that will be used when we issue an ajax call
+		// to sync the net folders.
+		rpcCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( final Throwable t )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+								t,
+								GwtTeaming.getMessages().rpcFailure_SyncNetFolders() );
+
+						// Update the table to reflect the fact that we sync'd a net folder.
+						m_dataProvider.refresh();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+	
+			@Override
+			public void onSuccess( final VibeRpcResponse response )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						// Spin through the list of net folders we just sync'd
+						for ( NetFolder nextNetFolder : selectedFolders )
+						{
+							nextNetFolder.setStatus( NetFolderStatus.READY );
+						}
+						
+						// Update the table to reflect the fact that we sync'd a net folder.
+						m_dataProvider.refresh();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		};
+
+		// Update the table to reflect the fact that net folder sync is in progress
+		m_dataProvider.refresh();
+
+		// Issue an ajax request to sync the list of net folders.
+		cmd = new SyncNetFoldersCmd( selectedFolders );
+		GwtClientHelper.executeCommand( cmd, rpcCallback );
+	}
+	
 	/**
 	 * Loads the ManageNetFolderDlg split point and returns an instance
 	 * of it via the callback.
