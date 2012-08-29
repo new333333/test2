@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFoldersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFoldersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFoldersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFoldersCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFoldersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -815,14 +816,48 @@ public class ManageNetFoldersDlg extends DlgBox
 					@Override
 					public void execute()
 					{
-						// Spin through the list of net folders we just sync'd
-						for ( NetFolder nextNetFolder : selectedFolders )
-						{
-							nextNetFolder.setStatus( NetFolderStatus.READY );
-						}
+						SyncNetFoldersRpcResponseData responseData;
 						
-						// Update the table to reflect the fact that we sync'd a net folder.
-						m_dataProvider.refresh();
+						responseData = (SyncNetFoldersRpcResponseData) response.getResponseData();
+						
+						if ( responseData != null )
+						{
+							Set<NetFolder> listOfNetFolders;
+							
+							listOfNetFolders = responseData.getListOfNetFolders();
+							
+							if ( listOfNetFolders != null )
+							{
+								// Spin through the list of net folders we started the sync process on
+								for ( NetFolder nextNetFolder : listOfNetFolders )
+								{
+									// Was this net folder deleted as a result of the sync process?
+									if ( nextNetFolder.getStatus() == NetFolderStatus.DELETED_BY_SYNC_PROCESS )
+									{
+										NetFolder netFolderToDelete;
+										
+										// Find this net folder in our list and remove it.
+										netFolderToDelete = findNetFolderById( nextNetFolder.getId() );
+										if ( netFolderToDelete != null )
+										{
+											if ( netFolderToDelete != null )
+												m_listOfNetFolders.remove( netFolderToDelete );
+										}
+									}
+									else
+									{
+										//!!! We need to use the status ticket to request the
+										// status on the sync.
+									}
+								}
+								
+								// Update the table to reflect the fact that we sync'd a net folder.
+								m_dataProvider.refresh();
+
+								// Tell the table how many net folders we have.
+								m_netFoldersTable.setRowCount( m_listOfNetFolders.size(), true );
+							}
+						}
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );

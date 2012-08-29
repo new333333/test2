@@ -69,6 +69,7 @@ import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.ResolveIds;
+import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -647,19 +648,30 @@ public class GwtNetFolderHelper
 	/**
 	 * Sync the given list of net folders
 	 */
-	public static Boolean syncNetFolders(
+	public static Set<NetFolder> syncNetFolders(
 		AllModulesInjected ami,
 		Set<NetFolder> netFolders ) throws GwtTeamingException
 	{
-		Boolean result;
-		
-		result = Boolean.TRUE;
-		
 		for ( NetFolder nextNetFolder : netFolders )
 		{
 			try
 			{
-				Thread.sleep( 2000 );
+				StatusTicket statusTicket = null;
+				String statusTicketId;
+
+				statusTicketId = "sync_net_folder_" + nextNetFolder.getId();
+				//statusTicket = WebStatusTicket.newStatusTicket( statusTicketId, request);
+				if( ami.getFolderModule().synchronize( nextNetFolder.getId(), statusTicket ) )
+				{
+					// The binder was not deleted (typical situation).
+					nextNetFolder.setStatus( NetFolderStatus.SYNC_IN_PROGRESS );
+					nextNetFolder.setStatusTicketId( statusTicketId );
+				}
+				else 
+				{
+					// The binder was indeed deleted.
+					nextNetFolder.setStatus( NetFolderStatus.DELETED_BY_SYNC_PROCESS );
+				}
 			}
 			catch ( Exception e )
 			{
@@ -672,7 +684,6 @@ public class GwtNetFolderHelper
 			}
 		}
 		
-		return result;
+		return netFolders;
 	}
-
 }
