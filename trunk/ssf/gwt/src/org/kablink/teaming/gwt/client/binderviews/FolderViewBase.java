@@ -541,8 +541,8 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	 * Loads the AccessoriesPanel.
 	 */
 	private void loadPart3Async() {
-		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.ACCESSORIES))) {
+		// If we're in Filr mode or a super class doesn't want it...
+		if (GwtClientHelper.isLicenseFilr() || (!(includePanel(FolderPanels.ACCESSORIES)))) {
 			// ...we don't show the accessories.
 			insertToolPanelPlaceholder(ACCESSORY_PANEL_INDEX);
 			loadPart4Async();

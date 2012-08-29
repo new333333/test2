@@ -2385,8 +2385,9 @@ public class GwtMenuHelper {
 			}
 			
 			// Are we returning the toolbar items for other than a
-			// trash or collections view?
-			if ((!isBinderTrash) && (!isBinderCollection)) {
+			// trash or collections view and are we in other than Filr
+			// mode?
+			if ((!isBinderTrash) && (!isBinderCollection) && (!(Utils.checkIfFilr()))) {
 				// Yes!  Add the configure accessories item to the
 				// toolbar.
 				constructEntryConfigureAccessories(
