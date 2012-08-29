@@ -475,6 +475,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SetStatus();
 	String rpcFailure_SetUnseen();
 	String rpcFailure_ShareEntry();
+	String rpcFailure_SyncNetFolders();
 	String rpcFailure_TestGroupMembershipCriteria();
 	String rpcFailure_TrackingBinder();
 	String rpcFailure_TrackingPerson();
@@ -1876,6 +1877,10 @@ public interface GwtTeamingMessages extends Messages
 	String manageNetFoldersDlg_NoNetFoldersLabel();
 	String manageNetFoldersDlg_RootCol();
 	String manageNetFoldersDlg_SelectFoldersToDelete();
+	String manageNetFoldersDlg_SelectFoldersToSync();
+	String manageNetFoldersDlg_SyncLabel();
+	String manageNetFoldersDlg_Syncing();
+	String manageNetFoldersDlg_UnknownStatus();
 
 	// Strings used in the Modify Net Folder dialog
 	String modifyNetFolderDlg_AddHeader();

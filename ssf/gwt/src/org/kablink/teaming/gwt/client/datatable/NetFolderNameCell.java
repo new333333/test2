@@ -32,7 +32,9 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.NetFolder;
+import org.kablink.teaming.gwt.client.NetFolder.NetFolderStatus;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -40,9 +42,11 @@ import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.ui.Image;
 
 
 /**
@@ -50,6 +54,8 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
  */
 public class NetFolderNameCell extends AbstractCell<NetFolder>
 {
+	private static String m_imgHtml;
+
 	/**
 	 * 
 	 */
@@ -57,6 +63,16 @@ public class NetFolderNameCell extends AbstractCell<NetFolder>
 	{
 		// We care about click and keydown action
 		super( "click", "keydown" );
+
+		if ( m_imgHtml == null )
+		{
+			ImageResource imgResource;
+			Image img;
+			
+			imgResource = GwtTeaming.getImageBundle().spinner16();
+			img = GwtClientHelper.buildImage( imgResource );
+			m_imgHtml = img.toString();
+		}
 	}
 
 	/**
@@ -101,6 +117,7 @@ public class NetFolderNameCell extends AbstractCell<NetFolder>
 		
 		{
 			SafeHtml safeValue;
+			NetFolderStatus status;
 
 			// Wrap everything in a <div>
 			sb.appendHtmlConstant( "<div class=\"netFolder_NamePanel\">" );
@@ -110,6 +127,26 @@ public class NetFolderNameCell extends AbstractCell<NetFolder>
 			safeValue = SafeHtmlUtils.fromString( value.getName() );
 			sb.append( safeValue );
 			sb.appendHtmlConstant( "</span>" );
+			
+			status = value.getStatus();
+			if ( status != NetFolderStatus.READY )
+			{
+				String statusMsg;
+				
+				// Add the spinner
+				sb.appendHtmlConstant( m_imgHtml );
+				
+				// Get the appropriate status message.
+				if ( status == NetFolderStatus.SYNC_IN_PROGRESS )
+					statusMsg = GwtTeaming.getMessages().manageNetFoldersDlg_Syncing();
+				else
+					statusMsg = GwtTeaming.getMessages().manageNetFoldersDlg_UnknownStatus();
+					
+				// Add a status message
+				sb.appendHtmlConstant( "<span class=\"groupStatus\">" );
+				sb.appendEscaped( statusMsg );
+				sb.appendHtmlConstant( "</span>" );
+			}
 			
 			// Close the <div>
 			sb.appendHtmlConstant( "</div>" );

@@ -57,6 +57,7 @@ import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
+import org.kablink.teaming.gwt.client.NetFolder.NetFolderStatus;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.NetFolderRootType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -156,6 +157,7 @@ public class GwtNetFolderHelper
 				newNetFolder.setRelativePath( netFolder.getRelativePath() );
 				newNetFolder.setParentBinderId( netFolder.getParentBinderId() );
 				newNetFolder.setId( binder.getId() );
+				newNetFolder.setStatus( NetFolderStatus.READY );
 			}
 			else
 				throw new GwtTeamingException( ExceptionType.UNKNOWN, "Could not find the template binder for a mirrored folder" );
@@ -395,6 +397,7 @@ public class GwtNetFolderHelper
 			netFolder.setNetFolderRootName( binder.getResourceDriverName() );
 			netFolder.setRelativePath( binder.getResourcePath() );
 			netFolder.setParentBinderId( binder.getParentBinder().getId() );
+			netFolder.setStatus( NetFolderStatus.READY );
 			
 			listOfNetFolders.add( netFolder );
 		}
@@ -640,4 +643,36 @@ public class GwtNetFolderHelper
 		
 		return netFolderRoot;
 	}
+
+	/**
+	 * Sync the given list of net folders
+	 */
+	public static Boolean syncNetFolders(
+		AllModulesInjected ami,
+		Set<NetFolder> netFolders ) throws GwtTeamingException
+	{
+		Boolean result;
+		
+		result = Boolean.TRUE;
+		
+		for ( NetFolder nextNetFolder : netFolders )
+		{
+			try
+			{
+				Thread.sleep( 2000 );
+			}
+			catch ( Exception e )
+			{
+				GwtTeamingException gwtEx;
+				
+				m_logger.error( "Error syncing next net folder: " + nextNetFolder.getName() + ", " + e.toString() );
+				
+				gwtEx = GwtServerHelper.getGwtTeamingException( e );
+				throw gwtEx;
+			}
+		}
+		
+		return result;
+	}
+
 }
