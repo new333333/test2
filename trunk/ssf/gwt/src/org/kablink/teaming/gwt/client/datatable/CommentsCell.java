@@ -173,7 +173,7 @@ public class CommentsCell extends AbstractCell<CommentsInfo> implements CommentA
 	@Override
 	public void render(Context context, CommentsInfo commentsInfo, SafeHtmlBuilder sb) {
 		// If we weren't given a CommentsInfo...
-		if (null == commentsInfo) {
+		if ((null == commentsInfo) || commentsInfo.getEntityId().isBinder()) {
 			// ...bail.  Cell widgets can pass null to cells if the
 			// ...underlying data contains a null, or if the data
 			// ...arrives out of order.
@@ -183,7 +183,7 @@ public class CommentsCell extends AbstractCell<CommentsInfo> implements CommentA
 
 		// Are we processing the comments on a folder entry?
 		VibeFlowPanel html = new VibeFlowPanel();
-		if (EntityId.FOLDER_ENTRY.equals(commentsInfo.getEntityId().getEntityType())) {
+		if (commentsInfo.getEntityId().isEntry()) {
 			// Yes!  Generate the number of comments panel...
 			VibeFlowPanel cp = new VibeFlowPanel();
 			cp.addStyleName("vibe-dataTableComments-panel");
