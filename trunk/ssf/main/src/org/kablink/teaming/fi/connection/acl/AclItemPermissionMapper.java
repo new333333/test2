@@ -49,10 +49,9 @@ public interface AclItemPermissionMapper {
 	 * use by multiple concurrent threads on the same object instance.
 	 * 
 	 * @param permissionName name of the permission
-	 * @param appliesToFolder <code>true</code> if the permission applies to folder, 
 	 * <code>false</code> if to file. 
 	 * @return
 	 * @throws AclItemPermissionMappingException
 	 */
-	public Long[] toVibeRoleIds(String permissionName, boolean appliesToFolder) throws AclItemPermissionMappingException;
+	public Long[] toVibeRoleIds(String permissionName) throws AclItemPermissionMappingException;
 }
