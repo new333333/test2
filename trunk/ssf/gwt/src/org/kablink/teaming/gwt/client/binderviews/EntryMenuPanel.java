@@ -1065,6 +1065,11 @@ public class EntryMenuPanel extends ToolPanelBase
 		boolean reply = false;
 		
 		switch (m_binderInfo.getBinderType()) {
+		case COLLECTION:
+			// All collections support the quick filters.
+			reply = true;
+			break;
+			
 		case FOLDER:
 			switch (m_binderInfo.getFolderType()) {
 			case BLOG:
@@ -1082,9 +1087,11 @@ public class EntryMenuPanel extends ToolPanelBase
 			}
 			break;
 			
-		case COLLECTION:
-			// All collections support the quick filters.
-			reply = true;
+		case WORKSPACE:
+			switch (m_binderInfo.getWorkspaceType()) {
+			case PROFILE_ROOT:
+				reply = true;
+			}
 			break;
 		}
 		
