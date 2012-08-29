@@ -391,6 +391,9 @@ public abstract class DlgBox extends PopupPanel
 		
 		flowPanel = new FlowPanel();
 		flowPanel.setStyleName( "teamingDlgBoxHeader" );
+		if ( GwtClientHelper.jsIsIE() )
+		     flowPanel.addStyleName( "teamingDlgBoxHeaderBG_IE"    );
+		else flowPanel.addStyleName( "teamingDlgBoxHeaderBG_NonIE" );
 		flowPanel.getElement().setId( "teamingDlgBoxHeader-" + String.valueOf( m_id ) );
 
 		m_captionImagePanel = new FlowPanel();

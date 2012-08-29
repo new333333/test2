@@ -1297,7 +1297,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					};
 					supportColumn.setSortable(false);
 					supportColumnWidth  = m_actionMenuColumnWidth;
-					supportColumnStyles = "vibe-dataTableActions-column";
+					supportColumnStyles = (STYLE_COL_BASE + " vibe-dataTableActions-column");
 				}
 			}
 			
@@ -1458,7 +1458,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		    // added?
 		    if (null != supportColumn) {
 		    	// Yes!  Add it too.
-		    	m_dataTable.addColumn(supportColumn, ((null == supportColumnTitle) ? "" : supportColumnTitle));
+		    	if (GwtClientHelper.hasString(supportColumnTitle))
+			         m_dataTable.addColumn(supportColumn, supportColumnTitle                       );
+		    	else m_dataTable.addColumn(supportColumn, SafeHtmlUtils.fromTrustedString("&nbsp;"));
 		    	if (GwtClientHelper.hasString(supportColumnStyles)) {
 		    		m_dataTable.addColumnStyleName(colIndex, supportColumnStyles);
 		    	}
