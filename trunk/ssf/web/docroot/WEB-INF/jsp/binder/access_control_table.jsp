@@ -105,7 +105,9 @@
   </c:if>
   name="role_id${function.id}_owner"
   title="<ssf:nlt tag="access.select"/>" 
-  checked="checked" 
+  <c:if test="${ssWorkArea.functionMembershipInherited || (isEntryACL && function.scope != 'filr')}">
+    checked="checked" 
+  </c:if>
   <c:if test="${isEntryACL}">
     onClick="alert(ss_escapeSQ('<ssf:nlt tag="access.cannotChangeEntryOwnerAccess"/>'));return false;"
     onChange="if(!this.checked)this.click();"

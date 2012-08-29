@@ -1101,13 +1101,15 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		    	        }
         			}
     		
-        		} else if (!dealingWithExternalAcl(justThisScope, scope) && workArea.isFunctionMembershipInherited() && !inherit) {
+        		} else if (workArea.isFunctionMembershipInherited() && !inherit) {
         			//copy parent values as beginning values
         			if (workArea.getParentWorkArea() != null) {
         				getWorkAreaFunctionMembershipManager().copyWorkAreaFunctionMemberships(
         						RequestContextHolder.getRequestContext().getZoneId(),
         						getWorkAreaFunctionInheritance(workArea), 
-        						workArea);
+        						workArea,
+        						justThisScope,
+        						scope);
         			}
         		}
         	   	//see if there is a real change

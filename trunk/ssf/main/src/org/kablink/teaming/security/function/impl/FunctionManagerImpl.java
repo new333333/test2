@@ -44,6 +44,7 @@ import org.kablink.teaming.security.function.ConditionEvaluationResult;
 import org.kablink.teaming.security.function.ConditionalClause;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.FunctionManager;
+import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 
 /**
@@ -71,7 +72,17 @@ public class FunctionManagerImpl implements FunctionManager {
     	}
     }
     public List deleteFunction(Function function) {
-    	List result = getSecurityDao().findWorkAreaFunctionMemberships(function.getZoneId(), function.getId());
+    	return deleteFunction(function, Boolean.FALSE);
+    }
+    public List deleteFunction(Function function, boolean force) {
+    	List<WorkAreaFunctionMembership> result = getSecurityDao().findWorkAreaFunctionMemberships(function.getZoneId(), function.getId());
+    	if (force && !result.isEmpty()) {
+    		//Forcably remove all of the memberships, too
+    		for (WorkAreaFunctionMembership wfm : result) {
+    			getSecurityDao().delete(wfm);
+    		}
+    		result = getSecurityDao().findWorkAreaFunctionMemberships(function.getZoneId(), function.getId());
+    	}
     	if (result.isEmpty()) {
     		getSecurityDao().delete(function);
     		return null;
