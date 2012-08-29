@@ -779,8 +779,8 @@ public class GwtMenuHelper {
 			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
 		}
 		
-		if (isFolder) {
-			// ...add the change entry type item....
+		if (isFolder && (!(Utils.checkIfFilr()))) {
+			// ...add the change entry type item when not Filr....
 			tbi = new ToolbarItem("1_changeEntryTypeSelected");
 			markTBITitle(tbi, "toolbar.changeEntryType");
 			markTBIEvent(tbi, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES);
