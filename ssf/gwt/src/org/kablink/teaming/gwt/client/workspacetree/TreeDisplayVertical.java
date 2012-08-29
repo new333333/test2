@@ -761,6 +761,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// Finally, reset the menu so that it display what's
 		// appropriate for activity stream mode.
 		resetMenuContext();
+		if (!(WorkspaceTreeControl.siteNavigationAvailable())) {
+			GwtTeaming.fireEventAsync(new SidebarShowEvent());
+		}
 	}
 	
 	/**
