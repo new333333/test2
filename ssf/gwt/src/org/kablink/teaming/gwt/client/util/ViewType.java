@@ -34,7 +34,6 @@ package org.kablink.teaming.gwt.client.util;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
  * Enumeration used to communicate the type of a view between the
  * client and the server as part of a GWT RPC request.
@@ -48,6 +47,7 @@ public enum ViewType implements IsSerializable {
 	ADVANCED_SEARCH,
 	BINDER,
 	BUILD_FILTER,
+	MODIFY_BINDER,
 	SHOW_TEAM_MEMBERS,
 	VIEW_PROFILE_ENTRY,
 	

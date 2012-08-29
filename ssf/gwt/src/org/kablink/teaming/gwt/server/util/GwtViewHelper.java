@@ -4379,6 +4379,11 @@ public class GwtViewHelper {
 			vi.setViewType(ViewType.BUILD_FILTER);
 		}
 		
+		else if (action.equals(WebKeys.ACTION_MODIFY_BINDER)) {
+			// A modify binder!  Simply mark the ViewInfo as such.
+			vi.setViewType(ViewType.MODIFY_BINDER);
+		}
+		
 		else if (action.equals(WebKeys.ACTION_VIEW_PROFILE_ENTRY)) {
 			// A view profile entry!  Simply mark the ViewInfo as such.
 			vi.setViewType(ViewType.VIEW_PROFILE_ENTRY);
