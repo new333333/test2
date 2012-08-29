@@ -2396,12 +2396,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case SYNC_NET_FOLDERS:
 		{
-			Boolean result;
 			SyncNetFoldersCmd snfCmd;
+			Set<NetFolder> listOfNetFolders;
 			
 			snfCmd = (SyncNetFoldersCmd) cmd;
-			result = GwtNetFolderHelper.syncNetFolders( this, snfCmd.getListOfNetFoldersToSync() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			listOfNetFolders = GwtNetFolderHelper.syncNetFolders( this, snfCmd.getListOfNetFoldersToSync() );
+			response = new VibeRpcResponse( new SyncNetFoldersRpcResponseData( listOfNetFolders ) );
 			return response;
 		}
 		

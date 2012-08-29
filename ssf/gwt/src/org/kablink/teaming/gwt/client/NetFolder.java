@@ -53,12 +53,14 @@ public class NetFolder
 	private String m_netFolderRootName;
 	private Long m_parentBinderId;
 	private NetFolderStatus m_status;
+	private String m_statusTicketId;
 	
 	/**
 	 * The different statuses of a net Folder
 	 */
 	public enum NetFolderStatus implements IsSerializable
 	{
+		DELETED_BY_SYNC_PROCESS,
 		SYNC_IN_PROGRESS,
 		READY
 	}
@@ -83,6 +85,7 @@ public class NetFolder
 		m_relativePath = netFolder.getRelativePath();
 		m_netFolderRootName = netFolder.getNetFolderRootName();
 		m_parentBinderId = netFolder.getParentBinderId();
+		m_statusTicketId = netFolder.getStatusTicketId();
 	}
 	
 	/**
@@ -147,6 +150,14 @@ public class NetFolder
 	/**
 	 * 
 	 */
+	public String getStatusTicketId()
+	{
+		return m_statusTicketId;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setId( Long id )
 	{
 		m_id = id;
@@ -194,5 +205,13 @@ public class NetFolder
 	public void setStatus( NetFolderStatus status )
 	{
 		m_status = status;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setStatusTicketId( String id )
+	{
+		m_statusTicketId = id;
 	}
 }
