@@ -1321,16 +1321,21 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		return function;
 	}
 
-	private Function addViewBinderTitleRole(Long topId) {
-		Function function = null;
-		function = new Function();
-		function.setZoneId(topId);
-		function.setName(ObjectKeys.ROLE_TITLE_VIEW_BINDER_TITLE);
-		function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
-		function.setInternalId(ObjectKeys.FUNCTION_VIEW_BINDER_TITLE_INTERNALID);
-		function.addOperation(WorkAreaOperation.VIEW_BINDER_TITLE);
-		//generate functionId
-		getFunctionManager().addFunction(function);
+	private Function addViewBinderTitleRole(Long zoneId) {
+		Function function = getFunctionManager().findFunctionByName(zoneId, ObjectKeys.ROLE_TITLE_VIEW_BINDER_TITLE);
+		if (function != null) {
+			function.setInternalId(ObjectKeys.FUNCTION_VIEW_BINDER_TITLE_INTERNALID);
+			getFunctionManager().updateFunction(function);
+		} else {
+			function = new Function();
+			function.setZoneId(zoneId);
+			function.setName(ObjectKeys.ROLE_TITLE_VIEW_BINDER_TITLE);
+			function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
+			function.setInternalId(ObjectKeys.FUNCTION_VIEW_BINDER_TITLE_INTERNALID);
+			function.addOperation(WorkAreaOperation.VIEW_BINDER_TITLE);
+			//generate functionId
+			getFunctionManager().addFunction(function);
+		}
 		return function;
 	}
 
