@@ -592,10 +592,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			}
 			addGlobalFunctions(zoneConfig);
 		}
-		if (version.intValue() <= 4) {
-			//add new role
-			addViewBinderTitleRole(top);
-		}
 		if (version.intValue() <= 5) {
 			Function readRole = addEntryReadRole(top);
 			Function readReplyRole = addEntryReadReplyRole(top);
@@ -1325,17 +1321,16 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		return function;
 	}
 
-	private Function addViewBinderTitleRole(Workspace top) {
+	private Function addViewBinderTitleRole(Long topId) {
 		Function function = null;
-		if (SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
-			function = new Function();
-			function.setZoneId(top.getId());
-			function.setName(ObjectKeys.ROLE_TITLE_VIEW_BINDER_TITLE);
-			function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
-			function.addOperation(WorkAreaOperation.VIEW_BINDER_TITLE);
-			//generate functionId
-			getFunctionManager().addFunction(function);
-		}
+		function = new Function();
+		function.setZoneId(topId);
+		function.setName(ObjectKeys.ROLE_TITLE_VIEW_BINDER_TITLE);
+		function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
+		function.setInternalId(ObjectKeys.FUNCTION_VIEW_BINDER_TITLE_INTERNALID);
+		function.addOperation(WorkAreaOperation.VIEW_BINDER_TITLE);
+		//generate functionId
+		getFunctionManager().addFunction(function);
 		return function;
 	}
 
@@ -1714,6 +1709,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			} catch(Exception e) {
 				logger.warn("Could not delete 'Enable External Sharing' role");
 			}
+		}
+		
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_VIEW_BINDER_TITLE_INTERNALID)) {
+			addViewBinderTitleRole(zoneConfig.getZoneId());
 		}
 		
 		// The next calls should be deleted. These file roles were never shipped

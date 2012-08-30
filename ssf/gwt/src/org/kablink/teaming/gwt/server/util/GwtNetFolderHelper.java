@@ -116,7 +116,7 @@ public class GwtNetFolderHelper
 					String internalId;
 					
 					internalId = nextTemplateBinder.getInternalId();
-					if ( internalId != null && internalId.equalsIgnoreCase( ObjectKeys.DEFAULT_FOLDER_MIRRORED_FILE_CONFIG ) )
+					if ( internalId != null && internalId.equalsIgnoreCase( ObjectKeys.DEFAULT_FOLDER_FILR_ROOT_CONFIG ) )
 					{
 						templateId = nextTemplateBinder.getId();
 						break;
