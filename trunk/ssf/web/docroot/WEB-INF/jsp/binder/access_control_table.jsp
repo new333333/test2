@@ -105,7 +105,8 @@
   </c:if>
   name="role_id${function.id}_owner"
   title="<ssf:nlt tag="access.select"/>" 
-  <c:if test="${ssWorkArea.functionMembershipInherited || (isEntryACL && function.scope != 'filr')}">
+  <c:if test="${ssWorkArea.functionMembershipInherited || 
+  		!isEntryACL || (isEntryACL && function.scope != 'filr')}">
     checked="checked" 
   </c:if>
   <c:if test="${isEntryACL}">

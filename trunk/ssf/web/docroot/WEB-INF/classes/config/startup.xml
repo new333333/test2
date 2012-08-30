@@ -54,6 +54,7 @@
 	<templateFile>config/templates/_folder_task.xml</templateFile>
 	<templateFile>config/templates/_folder_survey.xml</templateFile>
 	<templateFile>config/templates/_folder_mirrored_file.xml</templateFile>
+	<templateFile>config/templates/_folder_filr_root.xml</templateFile>
 	<templateFile>config/templates/_workspace.xml</templateFile>
 	<templateFile>config/templates/_workspace_team.xml</templateFile>
 	<templateFile>config/templates/_workspace_user.xml</templateFile>

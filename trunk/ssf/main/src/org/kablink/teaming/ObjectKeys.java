@@ -110,6 +110,7 @@ public interface ObjectKeys {
 	public static final String DEFAULT_PROJECT_WORKSPACE_CONFIG="402883c1129b1f8101129b28bc620005";
 	public static final String DEFAULT_DISCUSSIONS_WORKSPACE_CONFIG="402880e619c6250f0119c62794b9000c";
 	public static final String DEFAULT_WORKSPACE_WELCOME_CONFIG="402883b90d0de1f3010d0df5582b0016";
+	public static final String DEFAULT_FOLDER_FILR_ROOT_CONFIG="402883b90d0de1f3010d0df5582b0032";
 	
 	//reserved internalIds for binders
 	public static final String PROFILE_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b0005";
@@ -152,6 +153,9 @@ public interface ObjectKeys {
 	public static final String FUNCTION_ENABLE_SHARING_INTERNALID="402883b90d0de1f3010d0df5582b0024";
 	//reserved id for _enableExternalSharing pseudo role (no longer used)
 	public static final String FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID="402883b90d0de1f3010d0df5582b0025";
+
+	//reserved id for View Binder Title role
+	public static final String FUNCTION_VIEW_BINDER_TITLE_INTERNALID="402883b90d0de1f3010d0df5582b0033";
 
 	//reserved id for Filr file read role
 	public static final String FUNCTION_FILR_FILE_READ_INTERNALID="402883b90d0de1f3010d0df5582b0031";

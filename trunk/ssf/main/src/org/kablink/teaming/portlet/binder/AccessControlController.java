@@ -342,31 +342,6 @@ public class AccessControlController extends AbstractBinderController {
 						extraFunctions.add(f);
 					}
 				}
-			} else if (1 == 0 && parentBinder.isMirrored()) {
-				//************** Simulate that this entry has its ACL controlled externally ****************
-				model.put(WebKeys.WORKAREA_IS_EXTERNAL_ACLS, Boolean.TRUE);
-				scope = ObjectKeys.ROLE_TYPE_FILR;
-				//Get the list of other entry functions that can also be used with this WorkArea
-				//These roles cannot have any rights that are being controlled externally
-				List<Function> entryFunctions = bs.getAdminModule().getFunctions(ObjectKeys.ROLE_TYPE_ENTRY);
-				List<WorkAreaOperation> ardWaos = WorkAreaOperation.getDefaultExternallyControlledRights();
-				//Now check if this role is OK to be used
-				for (Function f : entryFunctions) {
-					//If there are no operations (aka rights) that are being controlled by the external ACL 
-					//  in this function, then it is OK to be included in the list
-					boolean addThisFunction = true;
-					Set<WorkAreaOperation> waos = f.getOperations();
-					for (WorkAreaOperation wao : waos) {
-						if (ardWaos.contains(wao)) {
-							addThisFunction = false;
-							break;
-						}
-					}
-					if (addThisFunction) {
-						//This function is ok to use
-						extraFunctions.add(f);
-					}
-				}
 			}
 		}
 		if (wArea instanceof Binder && ((Binder)wArea).isMirrored()) {
@@ -396,34 +371,6 @@ public class AccessControlController extends AbstractBinderController {
 					if (addThisFunction) {
 						//This function is ok to use
 						extraFunctions.add(f);
-					}
-				}
-			} else {
-				if (1 == 0) {
-					//****************** emulate Filr for testing *******************
-					model.put(WebKeys.WORKAREA_IS_EXTERNAL_ACLS, Boolean.TRUE);
-					scope = ObjectKeys.ROLE_TYPE_FILR;
-					//Get the list of other binder functions that can also be used with this WorkArea
-					//These roles cannot have any rights that are being controlled externally
-					List<Function> binderFunctions = bs.getAdminModule().getFunctions(ObjectKeys.ROLE_TYPE_BINDER);
-					List<WorkAreaOperation> ardWaos = WorkAreaOperation.getDefaultExternallyControlledRights();
-					//Now check if this role is OK to be used
-					for (Function f : binderFunctions) {
-						
-						//If there are no operations (aka rights) that are being controlled by the external ACL 
-						//  in this function, then it is OK to be included in the list
-						boolean addThisFunction = true;
-						Set<WorkAreaOperation> waos = f.getOperations();
-						for (WorkAreaOperation wao : waos) {
-							if (ardWaos.contains(wao)) {
-								addThisFunction = false;
-								break;
-							}
-						}
-						if (addThisFunction) {
-							//This function is ok to use
-							extraFunctions.add(f);
-						}
 					}
 				}
 			}
