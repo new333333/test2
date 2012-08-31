@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Calendar;
 
 //This annotation is necessary not only for XML but also for JSON representation.
-@XmlRootElement(name="file")
+@XmlRootElement(name="legacy_file")
 public class LegacyFileProperties {
 
     private String id;
