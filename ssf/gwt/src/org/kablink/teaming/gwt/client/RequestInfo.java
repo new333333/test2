@@ -244,6 +244,24 @@ public class RequestInfo extends JavaScriptObject
 	/*-{
 		return this.timeZone;
 	}-*/;
+	
+	/**
+	 * Return the abreviation of the user's time zone.
+	 * 
+	 * @return
+	 */
+	public final native String getTimeZoneIdAbrev()
+	/*-{
+		return this.timeZoneIdAbrev;
+	}-*/;
+	
+	/**
+	 * Return the offset in hours of the users timezone
+	 */
+	public final native int getTimeZoneOffsetHour()
+	/*-{
+	 	return this.timeZoneOffsetHour;
+	}-*/;
 
 	/**
 	 * Return the error message from the last login.

@@ -54,6 +54,7 @@ public class NetFolder
 	private Long m_parentBinderId;
 	private NetFolderStatus m_status;
 	private String m_statusTicketId;
+	private GwtSchedule m_syncSchedule;
 	
 	/**
 	 * The different statuses of a net Folder
@@ -86,6 +87,7 @@ public class NetFolder
 		m_netFolderRootName = netFolder.getNetFolderRootName();
 		m_parentBinderId = netFolder.getParentBinderId();
 		m_statusTicketId = netFolder.getStatusTicketId();
+		m_syncSchedule = netFolder.getSyncSchedule();
 	}
 	
 	/**
@@ -137,6 +139,14 @@ public class NetFolder
 	public String getRelativePath()
 	{
 		return m_relativePath;
+	}
+	
+	/**
+	 * 
+	 */
+	public GwtSchedule getSyncSchedule()
+	{
+		return m_syncSchedule;
 	}
 	
 	/**
@@ -197,6 +207,14 @@ public class NetFolder
 	public void setRelativePath( String relativePath )
 	{
 		m_relativePath = relativePath;
+	}
+
+	/**
+	 * 
+	 */
+	public void setSyncSchedule( GwtSchedule schedule )
+	{
+		m_syncSchedule = schedule;
 	}
 	
 	/**

@@ -32,6 +32,24 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="java.util.TimeZone" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="org.kablink.teaming.domain.User" %>
+<%
+	User currentUser = (User) request.getAttribute( "ssUser" );
+	Date now = new Date();
+	int offsetHour = 0;
+
+	if ( currentUser != null )
+	{
+		TimeZone tz = currentUser.getTimeZone();
+		int offset = tz.getOffset( now.getTime() );
+		offsetHour = offset / (1000*60*60);
+	}
+%>
+
+<c:set var="tzOffsetHour" value="<%= offsetHour %>" />
+
 <script type="text/javascript" language="javascript">
 	// Save away information such as the binder id and the adapted url for the request we are working with.
 	// Through an overlay we will access m_requestInfo from java.
@@ -63,6 +81,8 @@
 		language:							'${ssUser.locale.language}',
 		locale:								'${ssUser.locale}',
 		timeZone:							'${ssUser.timeZone.ID}',
+		timeZoneIdAbrev:					'<fmt:formatDate value="<%= now %>" pattern="z" timeZone="${ssUser.timeZone.ID}" />',
+		timeZoneOffsetHour:					${tzOffsetHour},
 		loginError:							'<ssf:escapeJavaScript>${ss_loginError}</ssf:escapeJavaScript>',
 		loginPostUrl:						'<ssf:escapeJavaScript>${ss_loginPostUrl}</ssf:escapeJavaScript>',
 		loginRefererUrl:					'${loginRefererUrl}',
