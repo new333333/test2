@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.event.NetFolderCreatedEvent;
 import org.kablink.teaming.gwt.client.event.NetFolderModifiedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFoldersCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFoldersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFoldersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFoldersCmd;
@@ -335,7 +336,7 @@ public class ManageNetFoldersDlg extends DlgBox
 				@Override
 				public void update( int index, NetFolder netFolder, NetFolder value )
 				{
-					invokeModifyNetFolderDlg( netFolder );
+					invokeModifyNetFolderDlgById( netFolder.getId() );
 				}
 			} );
 			m_netFoldersTable.addColumn( nameCol, messages.manageNetFoldersDlg_NameCol() );
@@ -533,7 +534,7 @@ public class ManageNetFoldersDlg extends DlgBox
 		{
 			for (NetFolder nextFolder : m_listOfNetFolders)
 			{
-				if ( nextFolder.getId() == id )
+				if ( id.compareTo( nextFolder.getId() ) == 0 )
 					return nextFolder;
 			}
 		}
@@ -639,6 +640,61 @@ public class ManageNetFoldersDlg extends DlgBox
 		invokeModifyNetFolderDlg( null );
 	}
 	
+	/**
+	 * 
+	 */
+	private void invokeModifyNetFolderDlgById( Long id )
+	{
+		// Are we editing an existing net folder?
+		if ( id != null )
+		{
+			GetNetFolderCmd cmd;
+			AsyncCallback<VibeRpcResponse> rpcCallback = null;
+
+			// Yes
+			// Create the callback that will be used when we issue an ajax call to get the net folder.
+			rpcCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				@Override
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetNetFolder() );
+				}
+		
+				@Override
+				public void onSuccess( final VibeRpcResponse response )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							NetFolder netFolder;
+							
+							netFolder = (NetFolder) response.getResponseData();
+							
+							// Invoke the modify net folder dialog
+							if ( netFolder != null )
+							{
+								invokeModifyNetFolderDlg( netFolder );
+							}
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+
+			// Issue an ajax request to get the net folder.
+			cmd = new GetNetFolderCmd();
+			cmd.setId( id );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		}
+	}
+
 	/**
 	 * 
 	 */
@@ -752,7 +808,7 @@ public class ManageNetFoldersDlg extends DlgBox
 				
 				// Update the table to reflect the fact that this net folder has been modified.
 				m_dataProvider.refresh();
-			}
+			} 
 		}
 	}
 

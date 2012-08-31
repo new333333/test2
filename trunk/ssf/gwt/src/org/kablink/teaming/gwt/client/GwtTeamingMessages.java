@@ -382,6 +382,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetMainPageInfo();
 	String rpcFailure_GetMyTeams();
 	String rpcFailure_NumberOfMembers();
+	String rpcFailure_GetNetFolder();
 	String rpcFailure_GetPersonalPreferences();
 	String rpcFailure_GetPresenceInfo();
 	String rpcFailure_GetProfileAvatars();
