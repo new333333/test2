@@ -1885,6 +1885,7 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the Modify Net Folder dialog
 	String modifyNetFolderDlg_AddHeader();
 	String modifyNetFolderDlg_EditHeader( String name );
+	String modifyNetFolderDlg_EnableSyncScheduleLabel();
 	String modifyNetFolderDlg_ErrorCreatingNetFolder( String err );
 	String modifyNetFolderDlg_ErrorModifyingNetFolder( String err );
 	String modifyNetFolderDlg_InsufficientRights();
@@ -1897,5 +1898,21 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_ParentFolderLabel();
 	String manageNetFoldersDlg_RelativePathCol();
 	String modifyNetFolderDlg_RelativePathLabel();
+	String modifyNetFolderDlg_SyncScheduleCaption();
+	
+	// Strings used in the Schedule widget
+	String scheduleWidget_AtTimeLabel();
+	String scheduleWidget_EveryDayLabel();
+	String scheduleWidget_FridayLabel();
+	String scheduleWidget_HoursLabel();
+	String scheduleWidget_MondayLabel();
+	String scheduleWidget_OnSelectedDaysLabel();
+	String scheduleWidget_RepeatEveryLabel();
+	String scheduleWidget_SaturdayLabel();
+	String scheduleWidget_SundayLabel();
+	String scheduleWidget_ThursdayLabel();
+	String scheduleWidget_TuesdayLabel();
+	String scheduleWidget_WednesdayLabel();
+	
 	
 }// end GwtTeamingMessages

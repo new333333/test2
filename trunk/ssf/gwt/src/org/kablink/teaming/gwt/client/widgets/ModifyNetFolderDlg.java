@@ -38,6 +38,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtFolder;
+import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -64,12 +65,14 @@ import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -80,6 +83,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
@@ -102,6 +106,7 @@ public class ModifyNetFolderDlg extends DlgBox
 	private Button m_editBtn;
 	private FlowPanel m_findPanel;
 	private FindCtrl m_findCtrl;
+	private ScheduleWidget m_scheduleWidget;
 	private String m_parentFolderId = null;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 
@@ -169,6 +174,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		final FlexTable table;
 		Label label;
 		int nextRow;
+		FlexCellFormatter cellFormatter;
 		
 		messages = GwtTeaming.getMessages();
 		
@@ -179,7 +185,9 @@ public class ModifyNetFolderDlg extends DlgBox
 		table = new FlexTable();
 		table.setCellSpacing( 4 );
 		table.addStyleName( "dlgContent" );
-		
+
+		cellFormatter = table.getFlexCellFormatter();
+
 		nextRow = 0;
 		
 		// Create the controls for "Name"
@@ -351,6 +359,33 @@ public class ModifyNetFolderDlg extends DlgBox
 				
 				m_findPanel.add( findTable );
 			}
+		}
+		
+		// Create the controls for defining the sync schedule
+		{
+			FlowPanel spacerPanel;
+			FlowPanel captionPanelMainPanel;
+			CaptionPanel captionPanel;
+			
+			// Add some space
+			spacerPanel = new FlowPanel();
+			spacerPanel.getElement().getStyle().setMarginTop( 10, Unit.PX );
+			table.setHTML( nextRow, 0, spacerPanel.getElement().getString() );
+			++nextRow;
+			
+			captionPanel = new CaptionPanel( messages.modifyNetFolderDlg_SyncScheduleCaption() );
+			captionPanel.addStyleName( "modifyNetFolderDlg_SyncScheduleCaptionPanel" );
+			
+			captionPanelMainPanel = new FlowPanel();
+			captionPanel.add( captionPanelMainPanel );
+
+			m_scheduleWidget = new ScheduleWidget( messages.modifyNetFolderDlg_EnableSyncScheduleLabel());
+			m_scheduleWidget.addStyleName( "modifyNetFolderDlg_ScheduleWidget" );
+			captionPanelMainPanel.add( m_scheduleWidget );
+			
+			cellFormatter.setColSpan( nextRow, 0, 2 );
+			table.setWidget( nextRow, 0, captionPanel );
+			++nextRow;
 		}
 		
 		mainPanel.add( table );
@@ -631,6 +666,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		netFolder.setRelativePath( getRelativePath() );
 		netFolder.setNetFolderRootName( getNetFolderRootName() );
 		netFolder.setParentBinderId( getParentBinderId() );
+		netFolder.setSyncSchedule( getSyncSchedule() );
 		
 		if ( m_netFolder != null )
 			netFolder.setId( m_netFolder.getId() );
@@ -688,6 +724,14 @@ public class ModifyNetFolderDlg extends DlgBox
 	}
 	
 	/**
+	 * Return the sync schedule
+	 */
+	private GwtSchedule getSyncSchedule()
+	{
+		return m_scheduleWidget.getSchedule( );
+	}
+	
+	/**
 	 * 
 	 */
 	private void hideFindControl()
@@ -722,6 +766,9 @@ public class ModifyNetFolderDlg extends DlgBox
 		m_netFolderRootsListbox.setVisible( false );
 		m_noNetFolderRootsLabel.setVisible( false );
 		m_parentFolderId = null;
+		
+		// Clear out the sync schedule controls
+		m_scheduleWidget.init( null );
 
 		// Are we modifying an existing net folder?
 		if ( m_netFolder != null )
@@ -742,6 +789,9 @@ public class ModifyNetFolderDlg extends DlgBox
 			// Get the name of the parent binder
 			m_parentFolderId = m_netFolder.getParentBinderIdAsString();
 			getParentFolder();
+			
+			// Initialize the sync schedule controls
+			m_scheduleWidget.init( m_netFolder.getSyncSchedule() );
 		}
 		else
 		{

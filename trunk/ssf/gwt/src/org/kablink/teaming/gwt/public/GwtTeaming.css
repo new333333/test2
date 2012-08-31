@@ -4329,4 +4329,37 @@ td.datePickerMonth {
 {
 }
 
- /* End */ 
+/**
+ * Styles used in the "modify net folder" dialog
+ */
+
+.modifyNetFolderDlg_SyncScheduleCaptionPanel
+{
+}
+
+.modifyNetFolderDlg_ScheduleWidget
+{
+}
+
+
+/**
+ * Styles used in the Schedule Widget
+ */
+ 
+.scheduleWidget_TimePicker
+{
+	margin-left: 5px;
+}
+
+.scheduleWidget_OnSelectedDaysPanel
+{
+	padding-left: 20px;
+}
+
+.scheduleWidget_DayPanel
+{
+	margin-right: 4px;
+	text-align: center; 
+}
+
+/* End */ 
