@@ -1402,6 +1402,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_NET_FOLDER:
+		{
+			GetNetFolderCmd gnfCmd;
+			NetFolder netFolder;
+			
+			gnfCmd = (GetNetFolderCmd) cmd;
+			netFolder = GwtNetFolderHelper.getNetFolder( this, gnfCmd.getId() );
+			response = new VibeRpcResponse( netFolder );
+			return response;
+		}
+		
 		case GET_NUMBER_OF_MEMBERS:
 		{
 			GetNumberOfMembersCmd gnmCmd;

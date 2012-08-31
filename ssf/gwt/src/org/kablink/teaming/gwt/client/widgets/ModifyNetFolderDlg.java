@@ -174,7 +174,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		final FlexTable table;
 		Label label;
 		int nextRow;
-		FlexCellFormatter cellFormatter;
+		CaptionPanel captionPanel;
 		
 		messages = GwtTeaming.getMessages();
 		
@@ -185,8 +185,6 @@ public class ModifyNetFolderDlg extends DlgBox
 		table = new FlexTable();
 		table.setCellSpacing( 4 );
 		table.addStyleName( "dlgContent" );
-
-		cellFormatter = table.getFlexCellFormatter();
 
 		nextRow = 0;
 		
@@ -365,7 +363,6 @@ public class ModifyNetFolderDlg extends DlgBox
 		{
 			FlowPanel spacerPanel;
 			FlowPanel captionPanelMainPanel;
-			CaptionPanel captionPanel;
 			
 			// Add some space
 			spacerPanel = new FlowPanel();
@@ -382,14 +379,11 @@ public class ModifyNetFolderDlg extends DlgBox
 			m_scheduleWidget = new ScheduleWidget( messages.modifyNetFolderDlg_EnableSyncScheduleLabel());
 			m_scheduleWidget.addStyleName( "modifyNetFolderDlg_ScheduleWidget" );
 			captionPanelMainPanel.add( m_scheduleWidget );
-			
-			cellFormatter.setColSpan( nextRow, 0, 2 );
-			table.setWidget( nextRow, 0, captionPanel );
-			++nextRow;
 		}
 		
 		mainPanel.add( table );
 		mainPanel.add( m_findPanel );
+		mainPanel.add( captionPanel );
 
 		return mainPanel;
 	}

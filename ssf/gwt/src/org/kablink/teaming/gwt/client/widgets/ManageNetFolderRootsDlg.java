@@ -483,7 +483,7 @@ public class ManageNetFolderRootsDlg extends DlgBox
 		{
 			for (NetFolderRoot nextRoot : m_listOfNetFolderRoots)
 			{
-				if ( nextRoot.getId() == id )
+				if ( id.compareTo( nextRoot.getId() ) == 0 )
 					return nextRoot;
 			}
 		}

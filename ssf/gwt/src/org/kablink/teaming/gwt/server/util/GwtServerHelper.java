@@ -7455,6 +7455,7 @@ public class GwtServerHelper {
 		case GET_MODIFY_BINDER_URL:
 		case GET_MY_TASKS:
 		case GET_MY_TEAMS:
+		case GET_NET_FOLDER:
 		case GET_NUMBER_OF_MEMBERS:
 		case GET_PERSONAL_PREFERENCES:
 		case GET_PRESENCE_INFO:

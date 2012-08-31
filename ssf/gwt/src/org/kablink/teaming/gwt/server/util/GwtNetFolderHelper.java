@@ -383,8 +383,6 @@ public class GwtNetFolderHelper
 		criteria.add( criterion );
 		criterion = Restrictions.in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.TRUE} );
 		criteria.add( criterion );
-		criterion = Restrictions.in(Constants.IS_TOP_FOLDER_FIELD, new String[]{Constants.TRUE} );
-		criteria.add( criterion );
 		criterion = Restrictions.in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE} );
 		criteria.add( criterion );
 
@@ -395,10 +393,10 @@ public class GwtNetFolderHelper
 		criteria.addOrder( new Order( sortBy, sortAscend ) );
 
 		searchResults = binderModule.executeSearchQuery(
-															criteria,
-															Constants.SEARCH_MODE_NORMAL,
-															start,
-															maxHits );
+													criteria,
+													Constants.SEARCH_MODE_NORMAL,
+													start,
+													maxHits );
 		searchEntries = ((List<Map>) searchResults.get( ObjectKeys.SEARCH_ENTRIES ) );
 		//totalRecords = ((Integer) searchResults.get( ObjectKeys.SEARCH_COUNT_TOTAL ) ).intValue();
 		
@@ -406,24 +404,9 @@ public class GwtNetFolderHelper
 		{
 			NetFolder netFolder;
 			String binderId;
-			Binder binder;
-			GwtSchedule gwtSchedule;
 			
-			netFolder = new NetFolder();
 			binderId = GwtServerHelper.getStringFromEntryMap( entryMap, Constants.DOCID_FIELD );
-			if ( binderId != null )
-				netFolder.setId( Long.valueOf( binderId ) );
-			
-			binder = binderModule.getBinder( netFolder.getId() );
-			netFolder.setName( binder.getTitle() );
-			netFolder.setNetFolderRootName( binder.getResourceDriverName() );
-			netFolder.setRelativePath( binder.getResourcePath() );
-			netFolder.setParentBinderId( binder.getParentBinder().getId() );
-			netFolder.setStatus( NetFolderStatus.READY );
-			
-			// Get the net folder's sync schedule.
-			gwtSchedule = getGwtSyncSchedule( ami, binder );
-			netFolder.setSyncSchedule( gwtSchedule );
+			netFolder = GwtNetFolderHelper.getNetFolder( ami, Long.valueOf( binderId ) );
 			
 			listOfNetFolders.add( netFolder );
 		}
@@ -649,6 +632,34 @@ public class GwtNetFolderHelper
 				nfRoot.addPrincipal( gwtGroup );
 			}
 		}
+	}
+	
+	/**
+	 * Return a NetFolder object for the given net folder id 
+	 */
+	public static NetFolder getNetFolder(
+		AllModulesInjected ami,
+		Long id )
+	{
+		NetFolder netFolder;
+		Binder binder;
+		GwtSchedule gwtSchedule;
+		
+		netFolder = new NetFolder();
+		netFolder.setId( id );
+		
+		binder = ami.getBinderModule().getBinder( id );
+		netFolder.setName( binder.getTitle() );
+		netFolder.setNetFolderRootName( binder.getResourceDriverName() );
+		netFolder.setRelativePath( binder.getResourcePath() );
+		netFolder.setParentBinderId( binder.getParentBinder().getId() );
+		netFolder.setStatus( NetFolderStatus.READY );
+		
+		// Get the net folder's sync schedule.
+		gwtSchedule = getGwtSyncSchedule( ami, binder );
+		netFolder.setSyncSchedule( gwtSchedule );
+
+		return netFolder;
 	}
 	
 	/**
