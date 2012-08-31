@@ -2177,7 +2177,6 @@ public class GwtMenuHelper {
 			List<ToolbarItem>				toolbarItems  = actionToolbar.getNestedItemsList();
 			GetToolbarItemsRpcResponseData	reply         = new GetToolbarItemsRpcResponseData(toolbarItems);
 			
-//!			...this needs to be implemented...
 			String eidType = entityId.getEntityType();
 			if (eidType.equals(EntityType.folderEntry.name())) {
 				FolderEntry fe= bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
@@ -2198,20 +2197,19 @@ public class GwtMenuHelper {
 				if (addShare) {
 					actionToolbar.addNestedItem(constructShareBinderItem(request, folder));
 				}
-				boolean isFavorite = false;
-				List<FavoriteInfo> favorites = GwtServerHelper.getFavorites(bs);
-				for (FavoriteInfo favorite:  favorites) {
-					Long favoriteId = Long.parseLong(favorite.getValue());
-					if (favoriteId.equals(folderId)) {
-						isFavorite = true;
-						break;
+				if (!(Utils.checkIfFilr())) {
+					boolean isFavorite = false;
+					List<FavoriteInfo> favorites = GwtServerHelper.getFavorites(bs);
+					for (FavoriteInfo favorite:  favorites) {
+						Long favoriteId = Long.parseLong(favorite.getValue());
+						if (favoriteId.equals(folderId)) {
+							isFavorite = true;
+							break;
+						}
 					}
+					constructEntryFavoriteItem(actionToolbar, bs, request, isFavorite);
 				}
-				constructEntryFavoriteItem( actionToolbar, bs, request, isFavorite);
-				constructEntrySubscribeItem(actionToolbar, bs, request, addShare  );
-			}
-			
-			else {
+				constructEntrySubscribeItem(   actionToolbar, bs, request, addShare  );
 			}
 			
 			// If we get here, reply refers to the 
@@ -2291,7 +2289,7 @@ public class GwtMenuHelper {
 				if (isCollectionMyFiles) {
 					constructEntryAddFileFolderItem(   entryToolbar, bs, request,                                                  ws        );
 				}
-				if (isCollectionMyFiles || isCollectionSharedByMe) {
+				if (isCollectionMyFiles || isCollectionSharedByMe || isCollectionSharedWithMe) {
 				    constructEntryShareItem(           entryToolbar, bs, request                                                             );
 				}
 				constructEntryDeleteItem(              entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null));

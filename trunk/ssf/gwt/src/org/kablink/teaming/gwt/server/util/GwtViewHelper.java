@@ -580,8 +580,7 @@ public class GwtViewHelper {
 			}
 		}
 		
-		// Finally, apply the, filtering, sorting, ... to the search
-		// entries...
+		// Finally, apply the sorting to the search entries...
 		searchEntries = postProcessSharedMeMap(
 			searchEntries,
 			shareItems,
@@ -2113,34 +2112,16 @@ public class GwtViewHelper {
 
 	/*
 	 * Returns a String[] of the names of the columns to display in a
-	 * given collection.
+	 * given collection type.
 	 */
 	private static String[] getCollectionColumnNames(CollectionType ct) {
 		String[] reply;
 		switch (ct) {
-		case MY_FILES:
-			reply = new String[]{"title", "family", "date"};
-			break;
-			
-		case NET_FOLDERS:
-			reply = new String[]{"title", "date", "netfolder_access", "descriptionHtml"};
-			break;
-			
-		case SHARED_BY_ME:
-			if (FolderColumn.SHOW_SHARE_MESSAGES_COLUMN)
-			     {reply = new String[]{"title", "comments", "share_sharedWith", "share_date", "share_expiration", "share_access", "share_message"};}
-			else {reply = new String[]{"title", "comments", "share_sharedWith", "share_date", "share_expiration", "share_access"                  };}
-			break;
-			
-		case SHARED_WITH_ME:
-			if (FolderColumn.SHOW_SHARE_MESSAGES_COLUMN)
-			     {reply = new String[]{"title", "comments", "share_sharedBy",   "share_date", "share_expiration", "share_access", "share_message"};}
-			else {reply = new String[]{"title", "comments", "share_sharedBy",   "share_date", "share_expiration", "share_access"                 };}
-			break;
-			
-		default:
-			reply = new String[0];
-			break;
+		case MY_FILES:       reply = pruneColumnNames(ct, "title", "family",   "date"                                                                               ); break;
+		case NET_FOLDERS:    reply = pruneColumnNames(ct, "title", "date",     "netfolder_access", "descriptionHtml"                                                ); break;
+		case SHARED_BY_ME:   reply = pruneColumnNames(ct, "title", "comments", "share_sharedWith", "share_date", "share_expiration", "share_access", "share_message"); break;
+		case SHARED_WITH_ME: reply = pruneColumnNames(ct, "title", "comments", "share_sharedBy",   "share_date", "share_expiration", "share_access", "share_message"); break;
+		default:             reply = new String[0];                                                                                                                    break;
 		}
 		return reply;
 	}
@@ -2322,7 +2303,7 @@ public class GwtViewHelper {
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
 	}
-	
+
 	/**
 	 * Returns the entry description from a search results Map.
 	 * 
@@ -2410,6 +2391,25 @@ public class GwtViewHelper {
 		}
 	}
 
+	/*
+	 * Returns a String[] of the names of the columns to display in a
+	 * given folder type.
+	 * 
+	 * Uses the default as setup in folder_column_defaults.jsp.
+	 */
+	private static String[] getFolderColumnNames(FolderType ft) {
+		String[] reply;
+		switch (ft) {
+		case FILE:       reply = pruneColumnNames(ft, "title", "comments",    "size",     "html",   "state",  "author", "date" ); break;
+		case GUESTBOOK:  reply = pruneColumnNames(ft, "guest", "title",       "date",     "descriptionHtml"                    ); break;
+		case MILESTONE:  reply = pruneColumnNames(ft, "title", "responsible", "tasks",    "status", "dueDate"                  ); break;
+		case MINIBLOG:   reply = pruneColumnNames(ft, "title", "description"                                                   ); break;
+		case SURVEY:     reply = pruneColumnNames(ft, "title", "author",      "dueDate"                                        ); break;
+		default:         reply = pruneColumnNames(ft, "number", "title",      "comments", "state",  "author", "date",  "rating"); break;
+		}
+		return reply;
+	}
+	
 	/**
 	 * Reads the current user's columns for a folder and returns them
 	 * as a FolderColumnsRpcResponseData.
@@ -2463,7 +2463,8 @@ public class GwtViewHelper {
 			// No, we aren't showing the root profiles binder
 			// either!  Are we viewing a collection?
 			else if (isCollection) {
-				// Yes!
+				// Yes!  Generate the base key to use for accessing
+				// column name in the string resource...
 				baseNameKey = "collections.column.";
 				CollectionType	collectionType = folderInfo.getCollectionType();
 				switch (collectionType) {
@@ -2473,6 +2474,8 @@ public class GwtViewHelper {
 				case SHARED_BY_ME:    baseNameKey += "sharedByMe.";   break;
 				case SHARED_WITH_ME:  baseNameKey += "sharedWithMe."; break;
 				}
+				
+				// ...and generate the column names for the collection.
 				columnNames =
 					getColumnsLHMFromAS(
 						getCollectionColumnNames(
@@ -2504,18 +2507,12 @@ public class GwtViewHelper {
 					// No!  Are there defaults stored on the binder?
 					columnNames = ((Map) folder.getProperty(ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS));
 					if (null == columnNames) {
-						// No!  Use the default as setup in
-						// folder_column_defaults.jsp.
-						String[] defaultCols;
-						switch (folderType) {
-						case FILE:       defaultCols = new String[]{"title", "comments", "size", "html", "state", "author", "date"};     break;
-						case GUESTBOOK:  defaultCols = new String[]{"guest", "title", "date", "descriptionHtml"};                        break;
-						case MILESTONE:  defaultCols = new String[]{"title", "responsible", "tasks", "status", "dueDate"};               break;
-						case MINIBLOG:   defaultCols = new String[]{"title", "description"};                                             break;
-						case SURVEY:     defaultCols = new String[]{"title", "author", "dueDate"};                                       break;
-						default:         defaultCols = new String[]{"number", "title", "comments", "state", "author", "date", "rating"}; break;
-						}
-						columnNames = getColumnsLHMFromAS(defaultCols);
+						// No!  Generate a list of default column names
+						// for the folder.
+						columnNames =
+							getColumnsLHMFromAS(
+								getFolderColumnNames(
+									folderType));
 					}
 					
 					else {
@@ -4630,6 +4627,80 @@ public class GwtViewHelper {
 		// If we get here, searchEntries refers to the post processed
 		// search entries Map.  Return it. 
 		return searchEntries;
+	}
+	
+	/*
+	 * Given a list of column names, return those columns applicable to
+	 * the collection type for the current license mode, ...
+	 */
+	private static String[] pruneColumnNames(CollectionType collection, String ... columnList) {
+		// Scan the columns.
+		List<String> columns = new ArrayList<String>();
+		for (String column:  columnList) {
+			// What type of collection are we working on?
+			switch (collection) {
+			case SHARED_BY_ME:
+			case SHARED_WITH_ME:
+				if ((!FolderColumn.SHOW_SHARE_MESSAGES_COLUMN) && column.equals("share_message")) {
+					continue;
+				}
+				break;
+			default:
+				// For all others, we show all the columns.
+				break;
+			}
+			
+			// Add the column to the list we'll return.
+			columns.add(column);
+		}
+		
+		// Return a String[] of the columns that are applicable for the
+		// current license, ... in the current collection type.
+		return columns.toArray(new String[0]);
+	}
+	
+	/*
+	 * Given a list of column names, returns those column applicable to
+	 * the folder type for the current license mode, ...
+	 */
+	private static String[] pruneColumnNames(FolderType folder, String ... columnList) {
+		// If we're not in Filr mode...
+		if (!(Utils.checkIfFilr())) {
+			// ...we always use all the columns.
+			return columnList;
+		}
+
+		// Scan the columns.
+		List<String> columns = new ArrayList<String>();
+		for (String column:  columnList) {
+			// What type of folder are we working on?
+			switch (folder) {
+			case FILE:
+				// File!  We show all but state.
+				if (column.equals("state")) {
+					continue;
+				}
+				break;
+				
+			case MIRROREDFILE:
+				// MirroredFile!  We show all but state.
+				if (column.equals("state")) {
+					continue;
+				}
+				break;
+				
+			default:
+				// For all others, we show all the columns.
+				break;
+			}
+			
+			// Add the column to the list we'll return.
+			columns.add(column);
+		}
+		
+		// Return a String[] of the columns that are applicable for the
+		// current license, ... in the current folder type.
+		return columns.toArray(new String[0]);
 	}
 	
 	/**
