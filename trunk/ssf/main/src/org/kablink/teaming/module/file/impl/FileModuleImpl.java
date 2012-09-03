@@ -2968,7 +2968,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	private void setupAccessModeForExternalAcl(DefinableEntity entity, WorkAreaOperation[] workAreaOperations) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		
-		if(ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId())) {
+		if(ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) {
+			// The file operation is being requested by admin. We treat admin like Linux root
+			// acccount and grant all accesses to all files.
+			RequestContextHolder.getRequestContext().setAccessFileSystemWithExternalAclInUserMode(Boolean.FALSE); // proxy mode
+		}
+		else if(ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId())) {
 			// The file operation is being requested by file sync agent, which ALWAYS accesses
 			// file system in proxy mode regardless of sharing. 
 			RequestContextHolder.getRequestContext().setAccessFileSystemWithExternalAclInUserMode(Boolean.FALSE); // proxy mode
