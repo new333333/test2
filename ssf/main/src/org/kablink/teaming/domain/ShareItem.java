@@ -33,10 +33,8 @@
 
 package org.kablink.teaming.domain;
 
-import java.lang.reflect.Field;
 import java.util.Date;
 
-import org.kablink.teaming.InternalException;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
@@ -47,7 +45,7 @@ import org.kablink.teaming.util.SPropsUtil;
  * @author jong
  * 
  */
-public class ShareItem extends BaseEntity {
+public class ShareItem extends PersistentLongIdObject implements EntityIdentifiable { 
 
 	public enum RecipientType {
 		user((short)1),
@@ -90,9 +88,12 @@ public class ShareItem extends BaseEntity {
 		}
 	}
 
+	protected boolean latest = true;
+	protected Long sharerId;
 	protected EntityIdentifier sharedEntityIdentifier;
 	protected String comment;
 	protected int daysToExpire;
+	protected Date startDate;
 	protected Date endDate;
 	protected short recipientType;
 	protected Long recipientId;
@@ -103,31 +104,40 @@ public class ShareItem extends BaseEntity {
 	}
 
 	// For user by application
-	public ShareItem(User sharer, 
+	public ShareItem(Long sharerId, 
 			EntityIdentifier sharedEntityIdentifier, 
 			String comment, 
 			Date endDate, 
 			RecipientType recipientType, 
 			Long recipientId, 
 			RightSet rightSet) {
-		if (sharer == null) throw new IllegalArgumentException("Sharer must be specified");
+		if (sharerId == null) throw new IllegalArgumentException("Sharer ID must be specified");
 		if (sharedEntityIdentifier == null) throw new IllegalArgumentException("Shared entity identifier must be specified");
 		if(recipientType == null) throw new IllegalArgumentException("Recipient type must be specified");
 		if(recipientId == null) throw new IllegalArgumentException("Recipient ID must be specified");
 		if(rightSet == null) throw new IllegalArgumentException("Right set must be specified");
 
-
-		this.setCreation(new HistoryStamp(sharer));
-		this.setModification(this.getCreation());
+		this.sharerId = sharerId;
 		this.sharedEntityIdentifier = sharedEntityIdentifier;
 		int commentMax = SPropsUtil.getInt("shareitem.comment.max.length", 255);
 		if(comment != null && comment.length() > commentMax)
 			comment = comment.substring(0, 255);
 		this.comment = comment;
+		this.startDate = new Date();
 		this.endDate = endDate;
 		setRecipientType(recipientType);
 		this.recipientId = recipientId;
 		this.rightSet = rightSet;
+	}
+
+	@Override
+	public EntityIdentifier getEntityIdentifier() {
+		return new EntityIdentifier(getId(), getEntityType());
+	}
+
+	@Override
+	public String getEntityTypedId() {
+	   	return getEntityType().name() + "_" + getEntityIdentifier().getEntityId();
 	}
 
 	@Override
@@ -141,6 +151,14 @@ public class ShareItem extends BaseEntity {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getSharerId() {
+		return sharerId;
+	}
+
+	public void setSharerId(Long sharerId) {
+		this.sharerId = sharerId;
 	}
 
 	public EntityIdentifier getSharedEntityIdentifier() {
@@ -157,6 +175,14 @@ public class ShareItem extends BaseEntity {
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
 	}
 
 	public int getDaysToExpire() {
@@ -215,7 +241,13 @@ public class ShareItem extends BaseEntity {
 		return Role.CUSTOM;
 	}
 	
+	public boolean isLatest() {
+		return latest;
+	}
 	
+	public void setLatest(boolean current) {
+		this.latest = current;
+	}
 	
 	public static enum Role {
 		VIEW("share.role.title.view", 

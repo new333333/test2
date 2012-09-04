@@ -17,6 +17,8 @@ package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -28,10 +30,10 @@ import java.util.Date;
 public class Share extends BaseRestObject {
     private Long id;
     protected String comment;
-    private HistoryStamp creation;
+	private LongIdLinkPair sharer;
     protected int daysToExpire;
+    protected Date startDate;
     protected Date endDate;
-    private HistoryStamp modification;
     private LongIdLinkPair recipient;
     private EntityId sharedEntity;
 
@@ -43,13 +45,13 @@ public class Share extends BaseRestObject {
         this.comment = comment;
     }
 
-    public HistoryStamp getCreation() {
-        return creation;
-    }
+    public LongIdLinkPair getSharer() {
+		return sharer;
+	}
 
-    public void setCreation(HistoryStamp creation) {
-        this.creation = creation;
-    }
+	public void setSharer(LongIdLinkPair sharer) {
+		this.sharer = sharer;
+	}
 
     @XmlElement(name = "days_to_expire")
     public int getDaysToExpire() {
@@ -60,7 +62,16 @@ public class Share extends BaseRestObject {
         this.daysToExpire = daysToExpire;
     }
 
-    @XmlElement(name = "expiration")
+    @XmlElement(name = "sharing_date")
+    public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	@XmlElement(name = "expiration")
     public Date getEndDate() {
         return endDate;
     }
@@ -75,14 +86,6 @@ public class Share extends BaseRestObject {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public HistoryStamp getModification() {
-        return modification;
-    }
-
-    public void setModification(HistoryStamp modification) {
-        this.modification = modification;
     }
 
     public LongIdLinkPair getRecipient() {

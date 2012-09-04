@@ -595,7 +595,7 @@ public class GwtShareHelper
 		{
 			// Yes
 			shareItem = new ShareItem(
-								sharer,
+								sharer.getId(),
 								entityIdentifier,
 								"",	//!!! The ShareItem should not have comments any more
 								endDate,

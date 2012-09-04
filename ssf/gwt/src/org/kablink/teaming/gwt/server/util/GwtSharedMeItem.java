@@ -93,10 +93,10 @@ public class GwtSharedMeItem {
 		// Construct a new per share info for the share item...
 		GwtPerShareInfo psi = new GwtPerShareInfo(
 			si.getId(),														// Share  ID.
-			si.getModification().getPrincipal().getId(),					// Sharer ID.
+			si.getSharerId(),					// Sharer ID.
 			si.getRecipientId(),											// Recipient ID.
 			si.getRecipientType(),											// Recipient type (user, group or team.)
-			si.getCreation().getDate(),										// Time/date stamp the share was created.
+			si.getStartDate(),										// Time/date stamp the share was created.
 			GwtShareHelper.getShareRightsFromRightSet(si.getRightSet()),	// The rights granted by the share.
 			si.getEndDate(),												// Time/date stamp the share expires.
 			si.isExpired(),													// true -> The share is expired.  false -> It's not.

@@ -66,6 +66,8 @@ import org.kablink.util.search.Constants;
  *
  */
 public class ShareItemSelectSpec {
+	public Boolean latest;
+	
 	public Collection<Long> sharerIds;
 	
 	public Collection<EntityIdentifier> sharedEntityIdentifiers;
@@ -94,7 +96,16 @@ public class ShareItemSelectSpec {
 	public boolean onRightsDisjunctive = true;
 	
 	/**
-	 * Defines selection criterion around 'sharer' attribute of share item.
+	 * Defines selection criterion with a specific value of "latest" attribute.
+	 * 
+	 * @return
+	 */
+	public void setLatest(boolean latest) {
+		this.latest = latest;
+	}
+
+	/**
+	 * Defines selection criterion around 'sharer' attribute.
 	 * 
 	 * @param sharerId
 	 */
@@ -104,7 +115,7 @@ public class ShareItemSelectSpec {
 	}
 	
 	/**
-	 * Defines selection criterion around 'sharer' attribute of share item.
+	 * Defines selection criterion around 'sharer' attribute.
 	 * 
 	 * @param sharerIds
 	 */
@@ -113,7 +124,7 @@ public class ShareItemSelectSpec {
 	}
 	
 	/**
-	 * Defines selection criterion around 'shared entity' attribute of share item.
+	 * Defines selection criterion around 'shared entity' attribute.
 	 * 
 	 * @param sharedEntityIdentifier
 	 */
@@ -123,7 +134,7 @@ public class ShareItemSelectSpec {
 	}
 	
 	/**
-	 * Defines selection criterion around 'shared entity' attribute of share item.
+	 * Defines selection criterion around 'shared entity' attribute.
 	 * 
 	 * @param sharedEntityIdentifiers
 	 */
@@ -132,7 +143,7 @@ public class ShareItemSelectSpec {
 	}
 	
 	/**
-	 * Defines selection criterion around 'start date' attribute of share item.
+	 * Defines selection criterion around 'start date' attribute.
 	 * 
 	 * @param startDateMin
 	 * @param startDateMinInclusive
@@ -149,7 +160,7 @@ public class ShareItemSelectSpec {
 	}
 
 	/**
-	 * Defines selection criterion around 'comment' attribute of share item.
+	 * Defines selection criterion around 'comment' attribute.
 	 * 
 	 * @param quickFilter
 	 */
@@ -165,7 +176,7 @@ public class ShareItemSelectSpec {
 	}
 	
 	/**
-	 * Defines selection criterion around 'comment' attribute of share item.
+	 * Defines selection criterion around 'comment' attribute.
 	 * 
 	 * @param commentLikes
 	 * @param commentLikesDisjunctive
@@ -176,7 +187,7 @@ public class ShareItemSelectSpec {
 	}
 	
 	/**
-	 * Defines selection criterion around 'end date' attribute of share item.
+	 * Defines selection criterion around 'end date' attribute.
 	 * 
 	 * @param endDateMin
 	 * @param endDateMinInclusive
@@ -193,7 +204,7 @@ public class ShareItemSelectSpec {
 	}
 	
 	/**
-	 * Defines selection criterion around 'end date' attribute of share item.
+	 * Defines selection criterion around 'end date' attribute.
 	 * 
 	 */
 	public void excludeExpired() {
@@ -201,7 +212,7 @@ public class ShareItemSelectSpec {
 	}
 	
 	/**
-	 * Defines selection criterion around 'recipient' attribute of share item.
+	 * Defines selection criterion around 'recipient' attribute.
 	 * 
 	 * @param recipientUserId
 	 * @param recipientGroupId
@@ -226,7 +237,7 @@ public class ShareItemSelectSpec {
 	}
 
 	/**
-	 * Defines selection criterion around 'recipient' attribute of share item.
+	 * Defines selection criterion around 'recipient' attribute.
 	 * 
 	 * @param recipientUserIds
 	 * @param recipientGroupIds
@@ -239,7 +250,7 @@ public class ShareItemSelectSpec {
 	}
 	
 	/**
-	 * Defines selection criterion around 'recipient' attribute of share item.
+	 * Defines selection criterion around 'recipient' attribute.
 	 * 
 	 * @param userId
 	 */
@@ -260,7 +271,7 @@ public class ShareItemSelectSpec {
 	}
 	
 	/**
-	 * Defines selection criterion around 'right' attribute of share item.
+	 * Defines selection criterion around 'right' attribute.
 	 * 
 	 * @param onRights
 	 * @param onRightsDisjunctive
@@ -271,7 +282,7 @@ public class ShareItemSelectSpec {
 	}
 	
 	/**
-	 * Defines selection criterion around 'right' attribute of share item.
+	 * Defines selection criterion around 'right' attribute.
 	 * 
 	 * @param onRights
 	 * @param onRightsDisjunctive
