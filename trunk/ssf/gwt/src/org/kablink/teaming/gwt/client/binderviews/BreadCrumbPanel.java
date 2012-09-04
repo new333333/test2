@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
+import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
@@ -53,6 +54,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -196,9 +198,50 @@ public class BreadCrumbPanel extends ToolPanelBase
 			toolPanelReady();
 		}
 		
+		// No, we we aren't displaying a bread crumb panel for a
+		// collection!  Are we displaying it for the profile root
+		// workspace?
+		else if (m_binderInfo.isBinderWorkspace() && WorkspaceType.PROFILE_ROOT.equals(m_binderInfo.getWorkspaceType())) {
+			// Yes!  We don't need a tree, just the image and title.
+			// Create the panel for it...
+			VibeFlowPanel fp = new VibeFlowPanel();
+			fp.addStyleName("vibe-breadCrumbProfiles-panel");
+
+			// ...create the image...
+			ImageResource iRes;
+			switch (BinderIconSize.getBreadCrumbIconSize()) {
+			default:
+			case SMALL:   iRes = m_filrImages.profileRoot();        break;
+			case MEDIUM:  iRes = m_filrImages.profileRoot_medium(); break;
+			case LARGE:   iRes = m_filrImages.profileRoot_large();  break;
+			}
+			Image i = GwtClientHelper.buildImage(iRes.getSafeUri().asString());
+			i.addStyleName("vibe-breadCrumbProfiles-image");
+			int width  = BinderIconSize.getBreadCrumbIconSize().getBinderIconWidth();
+			if ((-1) != width) {
+				i.setWidth(width + "px");
+			}
+			int height = BinderIconSize.getBreadCrumbIconSize().getBinderIconHeight();
+			if ((-1) != height) {
+				i.setHeight(height + "px");
+			}
+			fp.add(i);
+
+			// ...create the title label...
+			InlineLabel il = new InlineLabel(m_messages.vibeDataTable_People());
+			il.addStyleName("vibe-breadCrumbProfiles-label");
+			fp.add(il);
+
+			// ...tie it all together and tell our container that we're
+			// ...ready.
+			m_fp.add(fp);
+			toolPanelReady();
+		}
+		
 		else {
-			// No, we aren't displaying a bread crumb panel for a
-			// collection!  We need the full bread crumb tree.
+			// No, we aren't displaying a bread crumb panel for the
+			// profile root workspace either!  We need the full bread
+			// crumb tree.
 			WorkspaceTreeControl.createAsync(
 					GwtTeaming.getMainPage(),
 					m_binderInfo,

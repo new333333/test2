@@ -26,8 +26,10 @@
 		.vibe-breadCrumbCollection-image {vertical-align: middle; margin-right: 5px;}
 		.vibe-breadCrumbCollection-label {font-size: 1.5em; color: #5691A6; padding: 0px 10px 2px 0px; white-space: nowrap;}
 		.vibe-breadCrumbCollection-panel {display: inline; white-space: nowrap;}
-		
-		.vibe-breadCrumbPanel {width: 1%;}
+		.vibe-breadCrumbPanel            {width: 1%;}
+		.vibe-breadCrumbProfiles-image   {vertical-align: middle; margin-right: 5px;}
+		.vibe-breadCrumbProfiles-label   {font-size: 1.5em; color: #5691A6; padding: 0px 10px 2px 0px; white-space: nowrap;}
+		.vibe-breadCrumbProfiles-panel   {display: inline; white-space: nowrap;}
 	/* ...End:  Bread crumb panel styles. */
 	
 	/* ...Start:  Binder owner avatar panel styles. */

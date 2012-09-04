@@ -112,6 +112,18 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource netFolders_transparent_40();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/group.png")
+	public ImageResource profileRoot();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/group_36.png")
+	public ImageResource profileRoot_medium();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/group_48.png")
+	public ImageResource profileRoot_large();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/sharedbyme.png")
 	public ImageResource sharedByMe();
 	
