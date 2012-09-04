@@ -79,6 +79,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.EmailLog.EmailLogType;
 import org.kablink.teaming.extension.ExtensionManager;
+import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.jobs.EmailNotification;
 import org.kablink.teaming.jobs.EmailPosting;
 import org.kablink.teaming.jobs.FileVersionAging;
@@ -1027,13 +1028,47 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// open to anyone - only way to get parentMemberships
 		//checkAccess(workArea, "getWorkAreaFunctionMemberships");
 
-        return getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(
+		List<WorkAreaFunctionMembership> memberships = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(
         		RequestContextHolder.getRequestContext().getZoneId(), workArea);
-	}
+
+	    //See if this is a workarea with external ACLs
+	    List<WorkAreaFunctionMembership> extMemberships = new ArrayList<WorkAreaFunctionMembership>();
+	    List<WorkAreaFunctionMembership> filteredExtMemberships = new ArrayList<WorkAreaFunctionMembership>();
+		if (workArea.isAclExternallyControlled()) {
+			WorkArea sourceExt = workArea;
+			if (workArea.isExtFunctionMembershipInherited()) {
+			    while (sourceExt.isExtFunctionMembershipInherited()) {
+			    	sourceExt = sourceExt.getParentWorkArea();
+			    	if (sourceExt == null) break;
+			    }
+			}
+			if (sourceExt != null) {
+				extMemberships = getWorkAreaFunctionMembershipManager()
+						.findWorkAreaFunctionMemberships(RequestContextHolder.getRequestContext().getZoneId(), sourceExt);
+			}
+			//Filter out any functions that are not the external role type
+			for (WorkAreaFunctionMembership wfm : extMemberships) {
+				Function f = getFunction(wfm.getFunctionId());
+				if (f.getScope().equals(workArea.getRegisteredRoleType())) filteredExtMemberships.add(wfm);
+			}
+		}
+        
+        //Merge the two sets of memberships with deference to the external ACLs
+        for (WorkAreaFunctionMembership wfm : filteredExtMemberships) {
+        	if (memberships.contains(wfm)) {
+        		//Remove the wrong membership 
+        		memberships.remove(wfm);
+        	}
+        	//Add in the setting from the external ACL
+        	memberships.add(wfm);
+        }
+        return memberships;
+}
 
 	public List<WorkAreaFunctionMembership> getWorkAreaFunctionMembershipsInherited(WorkArea workArea) {
 		// open to anyone - only way to get parentMemberships
 		// checkAccess(workArea, "getWorkAreaFunctionMembershipsInherited");
+		List<WorkAreaFunctionMembership> memberships = new ArrayList<WorkAreaFunctionMembership>();
 	    WorkArea source = workArea;
 	    if (!workArea.isFunctionMembershipInherited()) return new ArrayList();
 	    while (source.isFunctionMembershipInherited()) {
@@ -1042,8 +1077,41 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	    	//root until instanciated, but want to inherit from a future parent
 	    	if (source == null) return new ArrayList();
 	    }
- 
-        return getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(RequestContextHolder.getRequestContext().getZoneId(), source);
+	    
+	    //See if this is a workarea with external ACLs
+	    List<WorkAreaFunctionMembership> extMemberships = new ArrayList<WorkAreaFunctionMembership>();
+	    List<WorkAreaFunctionMembership> filteredExtMemberships = new ArrayList<WorkAreaFunctionMembership>();
+		if (workArea.isAclExternallyControlled()) {
+			WorkArea sourceExt = workArea;
+			if (workArea.isExtFunctionMembershipInherited()) {
+			    while (sourceExt.isExtFunctionMembershipInherited()) {
+			    	sourceExt = sourceExt.getParentWorkArea();
+			    	if (sourceExt == null) break;
+			    }
+			}
+			if (sourceExt != null) {
+				extMemberships = getWorkAreaFunctionMembershipManager()
+						.findWorkAreaFunctionMemberships(RequestContextHolder.getRequestContext().getZoneId(), sourceExt);
+			}
+			//Filter out any functions that are not the external role type
+			for (WorkAreaFunctionMembership wfm : extMemberships) {
+				Function f = getFunction(wfm.getFunctionId());
+				if (f.getScope().equals(workArea.getRegisteredRoleType())) filteredExtMemberships.add(wfm);
+			}
+		}
+        memberships = getWorkAreaFunctionMembershipManager()
+        		.findWorkAreaFunctionMemberships(RequestContextHolder.getRequestContext().getZoneId(), source);
+        
+        //Merge the two sets of memberships with deference to the external ACLs
+        for (WorkAreaFunctionMembership wfm : filteredExtMemberships) {
+        	if (memberships.contains(wfm)) {
+        		//Remove the wrong membership 
+        		memberships.remove(wfm);
+        	}
+        	//Add in the setting from the external ACL
+        	memberships.add(wfm);
+        }
+        return memberships;
 	}
 
 	//Routine to return the workarea that access control is being inherited from

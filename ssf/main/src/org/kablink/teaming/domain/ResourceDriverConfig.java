@@ -322,6 +322,9 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
     public List<WorkAreaOperation> getExternallyControlledRights() {
     	return WorkAreaOperation.getDefaultExternallyControlledRights();
     }
+    public String getRegisteredRoleType() {
+    	return "";
+    }
 
 	public String getShareName() {
 		return shareName;
