@@ -35,10 +35,13 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * User: david
@@ -93,12 +96,34 @@ public class SearchResultList<T> {
         this.next = next;
     }
 
-    @XmlTransient
-    public void setNextIfNecessary(String nextUrl) {
+    public void setNextIfNecessary(String nextUrl, Map<String, String> nextParams) {
         if (nextUrl!=null) {
             int offset = first + count;
             if (offset<total) {
-                setNext(nextUrl + "?first=" + offset + "&count=" + count);
+                Map<String, String> params = new LinkedHashMap<String, String>();
+                if (nextParams!=null) {
+                    params.putAll(nextParams);
+                }
+                params.put("first", Integer.toString(offset));
+                params.put("count", Integer.toString(count));
+                StringBuilder builder = new StringBuilder(nextUrl);
+                boolean first = true;
+                for (Map.Entry<String, String> entry : params.entrySet()) {
+                    if (first) {
+                        builder.append("?");
+                        first = false;
+                    } else {
+                        builder.append("&");
+                    }
+                    try {
+                        builder.append(URLEncoder.encode(entry.getKey(), "UTF-8"))
+                               .append("=")
+                               .append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                setNext(builder.toString());
             }
         }
     }

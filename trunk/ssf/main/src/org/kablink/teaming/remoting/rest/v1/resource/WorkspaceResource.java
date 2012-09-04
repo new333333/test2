@@ -66,6 +66,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import java.util.HashMap;
 import java.util.Map;
 
 @Path("/workspaces")
@@ -79,7 +80,7 @@ public class WorkspaceResource extends AbstractBinderResource {
         Document queryDoc = buildQueryDocument("<query/>", buildWorkspacesCriterion());
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultsMap, "/workspaces", offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultsMap, "/workspaces", null, offset);
         return results;
     }
 
@@ -92,7 +93,7 @@ public class WorkspaceResource extends AbstractBinderResource {
            Document queryDoc = buildQueryDocument(query, buildWorkspacesCriterion());
            Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
            SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-           SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultsMap, "/workspaces/legacy_query", offset);
+           SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultsMap, "/workspaces/legacy_query", null, offset);
            return results;
    	}
 
@@ -115,7 +116,7 @@ public class WorkspaceResource extends AbstractBinderResource {
 			@QueryParam("first") @DefaultValue("0") Integer offset,
 			@QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         return getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_WORKSPACE),
-                offset, maxCount, "/workspaces/" + id + "/workspaces");
+                offset, maxCount, "/workspaces/" + id + "/workspaces", null);
 	}
 
     @POST
@@ -143,7 +144,7 @@ public class WorkspaceResource extends AbstractBinderResource {
 			@QueryParam("first") @DefaultValue("0") int offset,
 			@QueryParam("count") @DefaultValue("-1") int maxCount) {
         return getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER),
-                offset, maxCount, "/workspaces/" + id + "/folders");
+                offset, maxCount, "/workspaces/" + id + "/folders", null);
 	}
 
     @POST
@@ -185,7 +186,12 @@ public class WorkspaceResource extends AbstractBinderResource {
                                                   @QueryParam("keyword") String keyword,
                                                   @QueryParam("first") @DefaultValue("0") Integer offset,
                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        return getSubEntities(id, recursive, true, keyword, offset, maxCount, "/workspaces/" + id + "/library_entities");
+        Map<String, String> nextParams = new HashMap<String, String>();
+        nextParams.put("recursive", Boolean.toString(recursive));
+        if (keyword!=null) {
+            nextParams.put("keyword", keyword);
+        }
+        return getSubEntities(id, recursive, true, keyword, offset, maxCount, "/workspaces/" + id + "/library_entities", nextParams);
 	}
 
     @Override

@@ -37,13 +37,11 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.module.shared.ChainedInputData;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.util.*;
 import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.rest.v1.model.Group;
-import org.kablink.teaming.rest.v1.model.Principal;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.util.api.ApiErrorCode;
 
@@ -67,9 +65,11 @@ public class GroupResource extends AbstractPrincipalResource {
 		@QueryParam("count") Integer maxCount) {
         Map<String, Object> options = new HashMap<String, Object>();
         SearchFilter searchTermFilter = new SearchFilter();
+        Map<String, String> nextParams = new HashMap<String, String>();
         if (name!=null) {
             searchTermFilter.addGroupNameFilter(name);
             options.put( ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter() );
+            nextParams.put("name", name);
         }
         if (offset!=null) {
             options.put(ObjectKeys.SEARCH_OFFSET, offset);
@@ -81,7 +81,7 @@ public class GroupResource extends AbstractPrincipalResource {
         }
         Map resultMap = getProfileModule().getGroups(options);
         SearchResultList<GroupBrief> results = new SearchResultList<GroupBrief>();
-        SearchResultBuilderUtil.buildSearchResults(results, new GroupBriefBuilder(), resultMap, "/groups", offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new GroupBriefBuilder(), resultMap, "/groups", nextParams, offset);
 		return results;
 	}
 	
@@ -149,7 +149,7 @@ public class GroupResource extends AbstractPrincipalResource {
             results.append(ResourceUtil.buildGroupMember(id, member));
         }
         results.setTotal(members.size());
-        results.setNextIfNecessary(LinkUriUtil.getGroupLinkUri(id) + "/members");
+        results.setNextIfNecessary(LinkUriUtil.getGroupLinkUri(id) + "/members", null);
         return results;
     }
 

@@ -67,7 +67,7 @@ public class BinderResource extends AbstractResource {
         Document queryDoc = buildQueryDocument("<query/>", buildBindersCriterion());
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultsMap, "/binders", offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultsMap, "/binders", null, offset);
         return results;
     }
 
@@ -80,7 +80,7 @@ public class BinderResource extends AbstractResource {
            Document queryDoc = buildQueryDocument(query, buildBindersCriterion());
            Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
            SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-           SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultsMap, "/binders/legacy_query", offset);
+           SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultsMap, "/binders/legacy_query", null, offset);
            return results;
    	}
 

@@ -74,10 +74,10 @@ public class SearchResultBuilderUtil {
     }
 
     public static <T> void buildSearchResults(SearchResultList<T> results, SearchResultBuilder<T> builder, Map resultMap) {
-        buildSearchResults(results, builder, resultMap, null, 0);
+        buildSearchResults(results, builder, resultMap, null, null, 0);
     }
 
-    public static <T> void buildSearchResults(SearchResultList<T> results, SearchResultBuilder<T> builder, Map resultMap, String nextUrl, int offset) {
+    public static <T> void buildSearchResults(SearchResultList<T> results, SearchResultBuilder<T> builder, Map resultMap, String nextUrl, Map<String, String> nextParams, int offset) {
         results.setFirst(offset);
         results.setCount((Integer)resultMap.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED));
         results.setTotal((Integer)resultMap.get(ObjectKeys.TOTAL_SEARCH_COUNT));
@@ -90,6 +90,6 @@ public class SearchResultBuilderUtil {
                 }
             }
         }
-        results.setNextIfNecessary(nextUrl);
+        results.setNextIfNecessary(nextUrl, nextParams);
     }
 }
