@@ -171,43 +171,46 @@ public class ShareResource extends AbstractResource {
         ShareItemSelectSpec spec = new ShareItemSelectSpec();
         spec.setRecipientsFromUserMembership(userId);
         List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
-        Junction criterion = Restrictions.conjunction();
-        Junction searchContext = Restrictions.disjunction();
-        for (ShareItem shareItem : shareItems) {
-            Junction shareCrit = Restrictions.conjunction();
-            if (keyword!=null) {
-                shareCrit.add(buildKeywordCriterion(keyword));
-            }
-            EntityIdentifier entityId = shareItem.getSharedEntityIdentifier();
-            if (entityId.getEntityType()==EntityIdentifier.EntityType.folderEntry) {
-                shareCrit.add(Restrictions.disjunction()
-                    .add(buildEntryCriterion(entityId.getEntityId()))
-                    .add(buildAttachmentCriterion(entityId.getEntityId()))
-                );
-            } else if (entityId.getEntityType()==EntityIdentifier.EntityType.folder ||
-                    entityId.getEntityType()==EntityIdentifier.EntityType.workspace) {
-                if (recursive) {
-                    shareCrit.add(buildSearchBinderCriterion(entityId.getEntityId(), true));
-                } else {
-                    shareCrit.add(buildBinderCriterion(entityId.getEntityId()));
-                }
-            }
-            searchContext.add(shareCrit);
-        }
-        criterion.add(buildLibraryCriterion(true));
-        Map<String, String> nextParams = new HashMap<String, String>();
-        nextParams.put("recursive", Boolean.toString(recursive));
-        if (keyword!=null) {
-            criterion.add(buildKeywordCriterion(keyword));
-            //TODO: URL encode the keyword
-            nextParams.put("keyword", keyword);
-        }
-        Criteria crit = new Criteria();
-        crit.add(criterion);
-        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BaseRestObject> results = new SearchResultList<BaseRestObject>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(), resultsMap,
-                "/with_user/" + userId + "/library_entities", nextParams, offset);
+        if (shareItems.size()>0) {
+            Junction criterion = Restrictions.conjunction();
+            Junction searchContext = Restrictions.disjunction();
+            for (ShareItem shareItem : shareItems) {
+                Junction shareCrit = Restrictions.conjunction();
+                if (keyword!=null) {
+                    shareCrit.add(buildKeywordCriterion(keyword));
+                }
+                EntityIdentifier entityId = shareItem.getSharedEntityIdentifier();
+                if (entityId.getEntityType()==EntityIdentifier.EntityType.folderEntry) {
+                    shareCrit.add(Restrictions.disjunction()
+                        .add(buildEntryCriterion(entityId.getEntityId()))
+                        .add(buildAttachmentCriterion(entityId.getEntityId()))
+                    );
+                } else if (entityId.getEntityType()==EntityIdentifier.EntityType.folder ||
+                        entityId.getEntityType()==EntityIdentifier.EntityType.workspace) {
+                    if (recursive) {
+                        shareCrit.add(buildSearchBinderCriterion(entityId.getEntityId(), true));
+                    } else {
+                        shareCrit.add(buildBinderCriterion(entityId.getEntityId()));
+                    }
+                }
+                searchContext.add(shareCrit);
+            }
+            criterion.add(searchContext);
+            criterion.add(buildLibraryCriterion(true));
+            Map<String, String> nextParams = new HashMap<String, String>();
+            nextParams.put("recursive", Boolean.toString(recursive));
+            if (keyword!=null) {
+                criterion.add(buildKeywordCriterion(keyword));
+                //TODO: URL encode the keyword
+                nextParams.put("keyword", keyword);
+            }
+            Criteria crit = new Criteria();
+            crit.add(criterion);
+            Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+            SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(), resultsMap,
+                    "/with_user/" + userId + "/library_entities", nextParams, offset);
+        }
         return results;
     }
 
@@ -318,33 +321,36 @@ public class ShareResource extends AbstractResource {
     }
 
     protected BinderTree getSubBinderTree(SharedBinderBrief [] sharedBinders, Criterion filter) {
-        Criteria crit = new Criteria();
-        if (filter!=null) {
-            crit.add(filter);
-        }
-        crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
-        crit.add(entryAncentryCriterion(sharedBinders));
-        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
         BinderTree results = new BinderTree();
-        SearchResultBuilderUtil.buildSearchResultsTree(results, sharedBinders, new BinderBriefBuilder(), resultMap);
-        results.setItem(null);
+        if (sharedBinders.length>0) {
+            Criteria crit = new Criteria();
+            if (filter!=null) {
+                crit.add(filter);
+            }
+            crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
+            crit.add(entryAncentryCriterion(sharedBinders));
+            Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
+            SearchResultBuilderUtil.buildSearchResultsTree(results, sharedBinders, new BinderBriefBuilder(), resultMap);
+            results.setItem(null);
+        }
         return results;
     }
 
     protected List<FileProperties> getSubFiles(SharedBinderBrief [] sharedBinders, boolean onlyLibraryFiles) {
-        Junction criterion = Restrictions.conjunction()
-                .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT));
-
-        criterion.add(entryAncentryCriterion(sharedBinders));
-        if (onlyLibraryFiles) {
-            criterion.add(Restrictions.eq(Constants.IS_LIBRARY_FIELD, ((Boolean) onlyLibraryFiles).toString()));
-        }
-        List<FileIndexData> files = getFileModule().getFileDataFromIndex(new Criteria().add(criterion));
         List<FileProperties> results = new ArrayList<FileProperties>();
-        for (FileIndexData file : files) {
-            results.add(ResourceUtil.buildFileProperties(file));
-        }
+        if (sharedBinders.length>0) {
+            Junction criterion = Restrictions.conjunction()
+                    .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT));
 
+            criterion.add(entryAncentryCriterion(sharedBinders));
+            if (onlyLibraryFiles) {
+                criterion.add(Restrictions.eq(Constants.IS_LIBRARY_FIELD, ((Boolean) onlyLibraryFiles).toString()));
+            }
+            List<FileIndexData> files = getFileModule().getFileDataFromIndex(new Criteria().add(criterion));
+            for (FileIndexData file : files) {
+                results.add(ResourceUtil.buildFileProperties(file));
+            }
+        }
         return results;
     }
 
