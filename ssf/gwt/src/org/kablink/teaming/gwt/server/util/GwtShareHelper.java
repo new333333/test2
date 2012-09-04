@@ -68,13 +68,10 @@ import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
-import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
-import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 
@@ -121,6 +118,117 @@ public class GwtShareHelper
 		return zoneConfig.isExternalUserEnabled();
 	}
 
+	/**
+	 * Create a ShareItem from the given GwtShareItem object
+	 */
+	private static ShareItem createShareItem(
+		AllModulesInjected ami,
+		User sharer,
+		GwtShareItem gwtShareItem )
+	{
+		ShareItem shareItem;
+		Date endDate = null;
+		RecipientType recipientType;
+		Long recipientId;
+		RightSet rightSet;
+		EntityId entityId;
+		EntityIdentifier entityIdentifier;
+		int daysToExpire = -1;
+
+		if ( ami == null || gwtShareItem == null )
+		{
+			m_logger.error( "invalid parameter passed to createShareItem()" );
+			return null;
+		}
+		
+		// Get the entity that is being shared.
+		entityId = gwtShareItem.getEntityId();
+		entityIdentifier = getEntityIdentifierFromEntityId( entityId );		
+
+		// Get the share expiration value
+		{
+			ShareExpirationValue expirationValue;
+			
+			expirationValue = gwtShareItem.getShareExpirationValue();
+			switch ( expirationValue.getExpirationType() )
+			{
+			case AFTER_DAYS:
+			{
+				long milliSecToExpire;
+				Date now;
+
+				daysToExpire = expirationValue.getValue().intValue();
+				milliSecToExpire = daysToExpire * MILLISEC_IN_A_DAY;
+
+				// Calculate the end date based on the days-to-expire.
+				now = new Date();
+				endDate = new Date( now.getTime() + milliSecToExpire );
+				break;
+			}
+
+			case NEVER:
+				break;
+
+			case ON_DATE:
+				endDate = new Date( expirationValue.getValue() );
+				break;
+				
+			case UNKNOWN:
+			default:
+				break;
+			}
+		}
+		
+		// Get the recipient type
+		switch ( gwtShareItem.getRecipientType() )
+		{
+		case EXTERNAL_USER:
+			recipientType = RecipientType.user;
+			break;
+			
+		case GROUP:
+			recipientType = RecipientType.group;
+			break;
+			
+		case TEAM:
+			recipientType = RecipientType.team;
+			break;
+		
+		case USER:
+			recipientType = RecipientType.user;
+			break;
+			
+		case UNKNOWN:
+		default:
+			recipientType = RecipientType.user;
+			break;
+		}
+		
+		recipientId = getRecipientId( ami, gwtShareItem );
+
+		// Get the appropriate RightSet
+		rightSet = getRightSetFromShareRights( gwtShareItem.getShareRights() );
+		
+		// Create the new ShareItem in the db
+		{
+			shareItem = new ShareItem(
+								sharer.getId(),
+								entityIdentifier,
+								gwtShareItem.getComments(),
+								endDate,
+								recipientType,
+								recipientId,
+								rightSet );
+			
+			shareItem.setDaysToExpire( daysToExpire );
+			shareItem.setLatest( true );
+			
+			ami.getSharingModule().addShareItem( shareItem );
+		}		
+		
+		return shareItem;
+	}
+	
 	/**
 	 * Return the RightSet that corresponds to the "Contributor" rights
 	 */
@@ -243,6 +351,7 @@ public class GwtShareHelper
 		spec = new ShareItemSelectSpec();
 		spec.setSharerId( currentUser.getId() );
 		spec.setSharedEntityIdentifier( entityIdentifier );
+		spec.setLatest( true );
 		
 		try
 		{
@@ -399,8 +508,6 @@ public class GwtShareHelper
 	{
 		Long id;
 		
-		id = null;
-		
 		id = gwtShareItem.getRecipientId();
 
 		// Are we dealing with an external user?
@@ -499,124 +606,6 @@ public class GwtShareHelper
 	}
 	
 	/**
-	 * Copy the information from the given GwtShareItem object into a
-	 * ShareItem object and return that object.
-	 */
-	private static ShareItem getShareItemInfo(
-		AllModulesInjected ami,
-		User sharer,
-		ShareItem shareItem,
-		GwtShareItem gwtShareItem )
-	{
-		Date endDate = null;
-		RecipientType recipientType;
-		Long recipientId;
-		RightSet rightSet;
-		EntityId entityId;
-		EntityIdentifier entityIdentifier;
-		int daysToExpire = -1;
-
-		if ( ami == null || gwtShareItem == null )
-		{
-			m_logger.error( "invalid parameter passed to getShareItemInfo()" );
-			return null;
-		}
-		
-		// Get the entity that is being shared.
-		entityId = gwtShareItem.getEntityId();
-		entityIdentifier = getEntityIdentifierFromEntityId( entityId );		
-
-		// Get the share expiration value
-		{
-			ShareExpirationValue expirationValue;
-			
-			expirationValue = gwtShareItem.getShareExpirationValue();
-			switch ( expirationValue.getExpirationType() )
-			{
-			case AFTER_DAYS:
-			{
-				long milliSecToExpire;
-				Date now;
-
-				daysToExpire = expirationValue.getValue().intValue();
-				milliSecToExpire = daysToExpire * MILLISEC_IN_A_DAY;
-
-				// Calculate the end date based on the days-to-expire.
-				now = new Date();
-				endDate = new Date( now.getTime() + milliSecToExpire );
-				break;
-			}
-
-			case NEVER:
-				break;
-
-			case ON_DATE:
-				endDate = new Date( expirationValue.getValue() );
-				break;
-				
-			case UNKNOWN:
-			default:
-				break;
-			}
-		}
-		
-		// Get the recipient type
-		switch ( gwtShareItem.getRecipientType() )
-		{
-		case EXTERNAL_USER:
-			recipientType = RecipientType.user;
-			break;
-			
-		case GROUP:
-			recipientType = RecipientType.group;
-			break;
-			
-		case TEAM:
-			recipientType = RecipientType.team;
-			break;
-		
-		case USER:
-			recipientType = RecipientType.user;
-			break;
-			
-		case UNKNOWN:
-		default:
-			recipientType = RecipientType.user;
-			break;
-		}
-		
-		recipientId = getRecipientId( ami, gwtShareItem );
-
-		// Get the appropriate RightSet
-		rightSet = getRightSetFromShareRights( gwtShareItem.getShareRights() );
-		
-		// Should we create a new ShareItem object?
-		if ( shareItem == null )
-		{
-			// Yes
-			shareItem = new ShareItem(
-								sharer.getId(),
-								entityIdentifier,
-								"",	//!!! The ShareItem should not have comments any more
-								endDate,
-								recipientType,
-								recipientId,
-								rightSet );
-			
-			shareItem.setDaysToExpire( daysToExpire );
-		}
-		else
-		{
-			// No, just update the given ShareItem.
-			shareItem.setRightSet( rightSet );
-			shareItem.setEndDate( endDate );
-			shareItem.setDaysToExpire( daysToExpire );
-		}
-		
-		return shareItem;
-	}
-	
-	/**
 	 * Get a ShareRights object that corresponds to the given RightSet
 	 */
 	public static ShareRights getShareRightsFromRightSet( RightSet rightSet )
@@ -662,7 +651,6 @@ public class GwtShareHelper
 	{
 		GwtSharingInfo sharingInfo;
 		User currentUser;
-		SharingModule sharingModule;
 
 		sharingInfo = new GwtSharingInfo();
 		
@@ -674,13 +662,6 @@ public class GwtShareHelper
 		if ( listOfEntityIds == null || listOfEntityIds.size() == 0 )
 		{
 			m_logger.error( "In GwtShareHelper.getSharingInfo(), listOfEntityIds is null or empty" );
-			return sharingInfo;
-		}
-		
-		sharingModule = (SharingModule)SpringContextUtil.getBean( "sharingModule" );
-		if ( sharingModule == null )
-		{
-			m_logger.error( "In GwtShareHelper.getSharingInfo(), sharingModule is null" );
 			return sharingInfo;
 		}
 		
@@ -780,12 +761,12 @@ public class GwtShareHelper
 	private static List sendEmailToRecipient(
 		AllModulesInjected ami,
 		GwtShareItem shareItem,
-		String comments,
 		User currentUser )
 	{
 		List emailErrors;
 		Set<Long> principalIds;
 		Set<Long> teamIds;
+		String comments;
 		String title;
 		String shortTitle;
 		String desc;
@@ -834,6 +815,10 @@ public class GwtShareHelper
 		if ( sharedEntity.getParentBinder() != null )
 			title = sharedEntity.getParentBinder().getPathName() + "/" + title;
 
+		comments = shareItem.getComments();
+		if ( comments == null )
+			comments = "";
+		
 		// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
 		desc = "<a href=\"" + PermaLinkUtil.getPermalinkForEmail( sharedEntity ) + "\">" + title + "</a><br/><br/>" + comments;
 		desc += "<br/>";
@@ -937,7 +922,6 @@ public class GwtShareHelper
 		ArrayList<GwtShareItem> listOfGwtShareItemsToDelete;
 		User currentUser;
 		List emailErrors;
-		String comments;
 
 		sharingModule = ami.getSharingModule();
 
@@ -958,7 +942,6 @@ public class GwtShareHelper
 		
 		currentUser = GwtServerHelper.getCurrentUser();
 		emailErrors = null;
-		comments = sharingData.getComments();
 		
 		// Delete ShareItems that the user removed.
 		listOfGwtShareItemsToDelete = sharingData.getListOfToBeDeletedShareItems();
@@ -991,11 +974,12 @@ public class GwtShareHelper
 			if ( shareItemId == null )
 			{
 				// No, create a ShareItem object
-				shareItem = getShareItemInfo( ami, currentUser, null, nextGwtShareItem );
+				shareItem = createShareItem( ami, currentUser, nextGwtShareItem );
 				
+				// createShareItem() may have created an external user.  Get the
+				// recipient id just in case.
 				nextGwtShareItem.setRecipientId( shareItem.getRecipientId() );
 
-				sharingModule.addShareItem( shareItem );
 				sendEmail = true;
 			}
 			else
@@ -1005,11 +989,14 @@ public class GwtShareHelper
 				if ( nextGwtShareItem.isDirty() )
 				{
 					// Yes
+					// Modify the existing ShareItem and mark it as not being the latest.
 					shareItem = sharingModule.getShareItem( shareItemId );
-					
-					getShareItemInfo( ami, currentUser, shareItem, nextGwtShareItem );
-					
+					shareItem.setLatest( false );
 					sharingModule.modifyShareItem( shareItem );
+					
+					// Create a new ShareItem with the new information.
+					shareItem = createShareItem( ami, currentUser, nextGwtShareItem );
+
 					sendEmail = true;
 				}
 			}
@@ -1030,7 +1017,6 @@ public class GwtShareHelper
 				entityEmailErrors = sendEmailToRecipient(
 														ami,
 														nextGwtShareItem,
-														comments,
 														currentUser );
 				
 				if ( emailErrors == null )
@@ -1051,54 +1037,6 @@ public class GwtShareHelper
 		if ( null != emailErrors )
 		{
 			results.setErrors( (String[])emailErrors.toArray( new String[0]) );
-		}
-		
-		// Are there comments for this share?
-		if ( comments != null && comments.length() > 0 )
-		{
-			ArrayList<EntityId> listOfEntities;
-			
-			// Yes
-			// Get the list of entities we are sharing
-			listOfEntities = sharingData.getListOfEntities();
-			if ( listOfEntities != null && listOfEntities.size() > 0 )
-			{
-				// Add a comment to each entity
-				for ( EntityId nextEntityId : listOfEntities )
-				{
-					// Are we dealing with a folder entry?
-					if ( nextEntityId.isEntry() )
-					{
-						// Yes
-						// Add a comment to the given entry.
-						try
-						{
-							GwtServerHelper.addReply(
-													ami,
-													nextEntityId.getEntityId().toString(),
-													"",
-													comments );
-						}
-						catch ( WriteEntryDataException wedEx )
-						{
-							m_logger.error( "GwtShareHelper.shareEntry(), call to GwtServerHelper.addReply() threw a WriteEntryDataException: " + wedEx.getMessage() );
-						}
-						catch ( WriteFilesException wfEx )
-						{
-							m_logger.error( "GwtShareHelper.shareEntry(), call to GwtServerHelper.addReply() threw a WriteFilesException: " + wfEx.getMessage() );
-						}
-						catch ( Exception ex )
-						{
-							m_logger.error( "GwtShareHelper.shareEntry(), call to GwtServerHelper.addReply() threw an exception: " + ex.getMessage() );
-						}
-					}
-					else
-					{
-						// No
-						m_logger.info( "We can't add a comment to a folder yet" );
-					}
-				}
-			}
 		}
 		
 		return results;

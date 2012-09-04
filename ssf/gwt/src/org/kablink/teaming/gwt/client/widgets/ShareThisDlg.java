@@ -1089,7 +1089,6 @@ public class ShareThisDlg extends DlgBox
 		}
 		
 		sharingData = new GwtSharingInfo();
-		sharingData.setComments( getComment() );
 		sharingData.setEntityNamesMap( m_sharingInfo.getEntityNamesMap() );
 		listOfShareItems = getListOfShareItemsFromDlg();
 		sharingData.setListOfShareItems( listOfShareItems );
@@ -2038,6 +2037,7 @@ public class ShareThisDlg extends DlgBox
 							// No
 							shareItem.setShareRights( getSelectedShareRights() );
 							shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
+							shareItem.setComments( getComment() );
 							
 							// Add the recipient to our list of recipients
 							addShare( shareItem, true );

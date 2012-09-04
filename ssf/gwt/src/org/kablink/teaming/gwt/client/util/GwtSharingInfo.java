@@ -47,7 +47,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GwtSharingInfo
 	implements IsSerializable, VibeRpcResponseData
 {
-	private String m_comments;
 	private ArrayList<GwtShareItem> m_listOfShareItems;
 	private ArrayList<GwtShareItem> m_listOfToBeDeletedShareItems;
 	private HashMap<EntityId, String> m_entityNamesMap;
@@ -59,7 +58,6 @@ public class GwtSharingInfo
 	 */
 	public GwtSharingInfo()
 	{
-		m_comments = null;
 		m_listOfShareItems = null;
 		m_listOfToBeDeletedShareItems = null;
 		m_entityNamesMap = null;
@@ -101,14 +99,6 @@ public class GwtSharingInfo
 	public boolean getCanShareWithExternalUsers()
 	{
 		return m_canShareWithExternalUsers;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getComments()
-	{
-		return m_comments;
 	}
 	
 	/**
@@ -202,14 +192,6 @@ public class GwtSharingInfo
 	public void setCanShareWithExternalUsers( boolean canShareWithExternalUsers )
 	{
 		m_canShareWithExternalUsers = canShareWithExternalUsers;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setComments( String comments )
-	{
-		m_comments = comments;
 	}
 	
 	/**
