@@ -105,7 +105,6 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.Validator;
-import org.kablink.util.dao.hibernate.DynamicDialect;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateSystemException;
@@ -2398,7 +2397,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		try {
 	      	List<Object[]> list = (List<Object[]>)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
 	                    	// Don't use alias of the first table to refer to property/column name associated with entity, 
 	                    	// since HQL won't treat it as nicely as it does without alias. 
 	                    	StringBuilder sb = new StringBuilder("select distinct recipientType, recipientId from org.kablink.teaming.domain.ShareItem where latest=:latestValue and (");
@@ -2441,14 +2441,16 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	              	
 	}
 
- 	public List<ShareItem> findShareItems(final ShareItemSelectSpec selectSpec) {
+ 	@Override
+	public List<ShareItem> findShareItems(final ShareItemSelectSpec selectSpec) {
  		// This method utilizes sub-criteria which requires relationship to be expressed using
  		// association rather than collection of values.
 		long begin = System.nanoTime();
 		try {
 	      	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
 	                    	Criteria crit = session.createCriteria(ShareItem.class);
 	                    	if(selectSpec.latest != null) {
 	                    		crit.add(Restrictions.eq("latest", selectSpec.latest));
@@ -2456,7 +2458,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    	if(selectSpec.sharerIds != null && !selectSpec.sharerIds.isEmpty()) {
 	                    		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();
 	                    		for(Long sharerId:selectSpec.sharerIds)
-	                    			disjunction.add(Restrictions.eq("sharer.id", sharerId));
+	                    			disjunction.add(Restrictions.eq("sharerId", sharerId));
 	                    		crit.add(disjunction);
 	                    	}
 	                    	if(selectSpec.sharedEntityIdentifiers != null && !selectSpec.sharedEntityIdentifiers.isEmpty()) {
