@@ -183,6 +183,20 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return criteria;
     }
 
+    protected Criterion buildEntryCriterion(Long id) {
+        return Restrictions.conjunction()
+        			.add(buildEntriesCriterion())
+                    .add(Restrictions.disjunction()
+                            .add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()))
+                            .add(Restrictions.eq(Constants.ENTRY_TOP_ENTRY_ID_FIELD, id.toString())));
+    }
+
+    protected Criterion buildAttachmentCriterion(Long entryId) {
+        return Restrictions.conjunction()
+                .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT))
+                .add(Restrictions.eq(Constants.ENTRY_PARENT_ID_FIELD, entryId.toString()));
+    }
+
     protected Criterion buildEntriesCriterion() {
         return Restrictions.conjunction()
         			.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
@@ -201,9 +215,41 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         			.add(Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_WORKSPACE));
     }
 
-    protected Criterion buildBindersCriterion() {
+    protected Criterion buildBinderCriterion(Long id) {
         return Restrictions.conjunction()
-        			.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
+        			.add(buildBindersCriterion())
+                    .add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
+    }
+
+    protected Criterion buildBindersCriterion() {
+        return Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER);
+    }
+
+    protected Criterion buildAncentryCriterion(Long id) {
+        return Restrictions.eq(Constants.ENTRY_ANCESTRY, id.toString());
+    }
+
+    protected Criterion buildParentBinderCriterion(Long id) {
+        return Restrictions.eq(Constants.BINDER_ID_FIELD, ((Long) id).toString());
+    }
+
+    protected Criterion buildSearchBinderCriterion(Long id, boolean recursive) {
+        if (recursive) {
+            return buildAncentryCriterion(id);
+        } else {
+            return buildParentBinderCriterion(id);
+        }
+    }
+
+    protected Criterion buildLibraryCriterion(Boolean onlyLibrary) {
+        return Restrictions.eq(Constants.IS_LIBRARY_FIELD, ((Boolean) onlyLibrary).toString());
+    }
+
+    protected Criterion buildKeywordCriterion(String keyword) {
+        return Restrictions.disjunction()
+                .add(Restrictions.like(Constants.TITLE_FIELD, keyword))
+                .add(Restrictions.like(Constants.DESC_FIELD, keyword))
+                .add(Restrictions.like(Constants.GENERAL_TEXT_FIELD, keyword));
     }
 
     protected Document buildQueryDocument(String query, Criterion additionalCriteria) {

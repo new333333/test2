@@ -87,7 +87,7 @@ public class FolderEntryResource extends AbstractDefinableEntityResource {
         Document queryDoc = buildQueryDocument("<query/>", buildEntriesCriterion());
         Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(), folderEntries, "/folder_entries", offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(), folderEntries, "/folder_entries", null, offset);
         return results;
 	}
 
@@ -100,7 +100,7 @@ public class FolderEntryResource extends AbstractDefinableEntityResource {
         Document queryDoc = buildQueryDocument(query, buildEntriesCriterion());
         Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(), folderEntries, "/folder_entries/legacy_query", offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(), folderEntries, "/folder_entries/legacy_query", null, offset);
         return results;
 	}
 

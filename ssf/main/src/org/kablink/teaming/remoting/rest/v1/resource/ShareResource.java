@@ -24,12 +24,14 @@ import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.util.search.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -155,6 +157,57 @@ public class ShareResource extends AbstractResource {
     public SearchResultList<SharedBinderBrief> getLibraryFoldersSharedWithUser(@PathParam("id") Long userId) {
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
         results.appendAll(getSharedWithBinders(userId, true));
+        return results;
+    }
+
+    @GET
+    @Path("/with_user/{id}/library_entities")
+    public SearchResultList<BaseRestObject> getLibraryEntitiesSharedWithUser(@PathParam("id") Long userId,
+                                                      @QueryParam("recursive") @DefaultValue("false") boolean recursive,
+                                                      @QueryParam("keyword") String keyword,
+                                                      @QueryParam("first") @DefaultValue("0") Integer offset,
+                                                      @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        _getUser(userId);
+        ShareItemSelectSpec spec = new ShareItemSelectSpec();
+        spec.setRecipientsFromUserMembership(userId);
+        List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
+        Junction criterion = Restrictions.conjunction();
+        Junction searchContext = Restrictions.disjunction();
+        for (ShareItem shareItem : shareItems) {
+            Junction shareCrit = Restrictions.conjunction();
+            if (keyword!=null) {
+                shareCrit.add(buildKeywordCriterion(keyword));
+            }
+            EntityIdentifier entityId = shareItem.getSharedEntityIdentifier();
+            if (entityId.getEntityType()==EntityIdentifier.EntityType.folderEntry) {
+                shareCrit.add(Restrictions.disjunction()
+                    .add(buildEntryCriterion(entityId.getEntityId()))
+                    .add(buildAttachmentCriterion(entityId.getEntityId()))
+                );
+            } else if (entityId.getEntityType()==EntityIdentifier.EntityType.folder ||
+                    entityId.getEntityType()==EntityIdentifier.EntityType.workspace) {
+                if (recursive) {
+                    shareCrit.add(buildSearchBinderCriterion(entityId.getEntityId(), true));
+                } else {
+                    shareCrit.add(buildBinderCriterion(entityId.getEntityId()));
+                }
+            }
+            searchContext.add(shareCrit);
+        }
+        criterion.add(buildLibraryCriterion(true));
+        Map<String, String> nextParams = new HashMap<String, String>();
+        nextParams.put("recursive", Boolean.toString(recursive));
+        if (keyword!=null) {
+            criterion.add(buildKeywordCriterion(keyword));
+            //TODO: URL encode the keyword
+            nextParams.put("keyword", keyword);
+        }
+        Criteria crit = new Criteria();
+        crit.add(criterion);
+        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        SearchResultList<BaseRestObject> results = new SearchResultList<BaseRestObject>(offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(), resultsMap,
+                "/with_user/" + userId + "/library_entities", nextParams, offset);
         return results;
     }
 

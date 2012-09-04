@@ -138,7 +138,7 @@ public class MiscResource extends AbstractResource {
            Document queryDoc = buildQueryDocument(query, null);
            Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
            SearchResultList<BaseRestObject> results = new SearchResultList<BaseRestObject>(offset);
-           SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(), resultsMap, "/legacy_query", offset);
+           SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(), resultsMap, "/legacy_query", null, offset);
            return results;
    	}
 }

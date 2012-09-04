@@ -88,15 +88,21 @@ public class UserResource extends AbstractPrincipalResource {
 		@QueryParam("first") Integer offset,
 		@QueryParam("count") Integer maxCount) {
         Map<String, Object> options = new HashMap<String, Object>();
+        Map<String, String> nextParams = new HashMap<String, String>();
         SearchFilter searchTermFilter = new SearchFilter();
+        String nextUrl = "/users";
         if (name!=null || email!=null) {
+            String params = null;
             if (name!=null) {
                 searchTermFilter.addLoginNameFilter(name);
+                nextParams.put("name", name);
             }
             if (email!=null) {
                 searchTermFilter.addEmailFilter(email.replace('@', '?'));
+                nextParams.put("email", email);
             }
             options.put( ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter() );
+            nextUrl += params;
         }
         if (offset!=null) {
             options.put(ObjectKeys.SEARCH_OFFSET, offset);
@@ -108,7 +114,7 @@ public class UserResource extends AbstractPrincipalResource {
         }
         Map resultMap = getProfileModule().getUsers(options);
         SearchResultList<UserBrief> results = new SearchResultList<UserBrief>();
-        SearchResultBuilderUtil.buildSearchResults(results, new UserBriefBuilder(), resultMap, "/users", offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new UserBriefBuilder(), resultMap, nextUrl, nextParams, offset);
 		return results;
 	}
 	
