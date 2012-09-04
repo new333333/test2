@@ -45,14 +45,12 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.dom.DOMDocument;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
-import org.kablink.teaming.remoting.ws.model.Timestamp;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
 import org.kablink.teaming.search.SearchUtils;
@@ -65,11 +63,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -185,7 +180,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     protected Criterion buildEntryCriterion(Long id) {
         return Restrictions.conjunction()
-        			.add(buildEntriesCriterion())
+        			.add(buildEntriesAndRepliesCriterion())
                     .add(Restrictions.disjunction()
                             .add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()))
                             .add(Restrictions.eq(Constants.ENTRY_TOP_ENTRY_ID_FIELD, id.toString())));
@@ -194,13 +189,26 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     protected Criterion buildAttachmentCriterion(Long entryId) {
         return Restrictions.conjunction()
                 .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT))
-                .add(Restrictions.eq(Constants.ENTRY_PARENT_ID_FIELD, entryId.toString()));
+                .add(Restrictions.eq(Constants.ENTRY_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
+                .add(Restrictions.eq(Constants.DOCID_FIELD, entryId.toString()));
+    }
+
+    protected Criterion buildEntriesAndRepliesCriterion() {
+        return Restrictions.conjunction()
+        			.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
+        			.add(Restrictions.in(Constants.ENTRY_TYPE_FIELD, new String[]{Constants.ENTRY_TYPE_ENTRY, Constants.ENTRY_TYPE_REPLY}));
     }
 
     protected Criterion buildEntriesCriterion() {
         return Restrictions.conjunction()
         			.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
-        			.add(Restrictions.in(Constants.ENTRY_TYPE_FIELD, new String[]{Constants.ENTRY_TYPE_ENTRY, Constants.ENTRY_TYPE_REPLY}));
+        			.add(Restrictions.in(Constants.ENTRY_TYPE_FIELD, new String[]{Constants.ENTRY_TYPE_ENTRY}));
+    }
+
+    protected Criterion buildRepliesCriterion() {
+        return Restrictions.conjunction()
+        			.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
+        			.add(Restrictions.in(Constants.ENTRY_TYPE_FIELD, new String[]{Constants.ENTRY_TYPE_REPLY}));
     }
 
     protected Criterion buildFoldersCriterion() {

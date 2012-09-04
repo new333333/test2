@@ -14,6 +14,8 @@ public class FolderEntryBrief extends EntryBrief {
    	private String docNumber;
    	private Integer docLevel;
     private String[] fileNames;
+    private LongIdLinkPair parentEntry;
+    private LongIdLinkPair topEntry;
 
     @XmlElement(name = "doc_level")
     public Integer getDocLevel() {
@@ -41,5 +43,23 @@ public class FolderEntryBrief extends EntryBrief {
 
     public void setFileNames(String[] fileNames) {
         this.fileNames = fileNames;
+    }
+
+    @XmlElement(name="parent_entry")
+    public LongIdLinkPair getParentEntry() {
+        return parentEntry;
+    }
+
+    public void setParentEntry(LongIdLinkPair parentEntry) {
+        this.parentEntry = parentEntry;
+    }
+
+    @XmlElement(name="top_entry")
+    public LongIdLinkPair getTopEntry() {
+        return topEntry;
+    }
+
+    public void setTopEntry(LongIdLinkPair topEntry) {
+        this.topEntry = topEntry;
     }
 }

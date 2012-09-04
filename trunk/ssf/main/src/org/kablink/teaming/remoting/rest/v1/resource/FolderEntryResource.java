@@ -84,7 +84,7 @@ public class FolderEntryResource extends AbstractDefinableEntityResource {
 	@GET
 	public SearchResultList<FolderEntryBrief> getFolderEntries(@QueryParam("first") @DefaultValue("0") Integer offset,
 			                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        Document queryDoc = buildQueryDocument("<query/>", buildEntriesCriterion());
+        Document queryDoc = buildQueryDocument("<query/>", buildEntriesAndRepliesCriterion());
         Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(offset);
         SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(), folderEntries, "/folder_entries", null, offset);
@@ -97,7 +97,7 @@ public class FolderEntryResource extends AbstractDefinableEntityResource {
                                                          @QueryParam("first") @DefaultValue("0") Integer offset,
 			                                             @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         String query = getRawInputStreamAsString(request);
-        Document queryDoc = buildQueryDocument(query, buildEntriesCriterion());
+        Document queryDoc = buildQueryDocument(query, buildEntriesAndRepliesCriterion());
         Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(offset);
         SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(), folderEntries, "/folder_entries/legacy_query", null, offset);

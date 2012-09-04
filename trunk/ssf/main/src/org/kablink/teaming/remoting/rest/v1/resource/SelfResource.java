@@ -182,7 +182,7 @@ public class SelfResource extends AbstractResource {
         crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
         Map map = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), map, "/self/accessible_library_folders", null, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), map, "/self/file_spaces", null, offset);
         return results;
     }
 
@@ -224,6 +224,7 @@ public class SelfResource extends AbstractResource {
         binder.addAdditionalLink("child_binder_tree", baseUri + "/binder_tree");
         binder.addAdditionalLink("child_entries", baseUri + "/entries");
         binder.addAdditionalLink("child_files", baseUri + "/files");
+        binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
         binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
         binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
