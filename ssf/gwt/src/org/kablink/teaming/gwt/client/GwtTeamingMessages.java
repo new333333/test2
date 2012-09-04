@@ -1504,6 +1504,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_InternalError_UnexpectedRowCount(int rowsRequested, int rowsRead);
 	String vibeDataTable_InternalError_UnsupportedStructuredToolbar();
 	String vibeDataTable_MemberCount(String count);
+	String vibeDataTable_People();
 	String vibeDataTable_Pin();
 	String vibeDataTable_Select();
 	String vibeDataTable_TrashConfirmPurge();
