@@ -800,6 +800,12 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     		return new ArrayList<WorkAreaOperation>();
     	}
     }
+    public String getRegisteredRoleType() {
+    	if (this.getResourceDriver() instanceof AclResourceDriver) {
+    		return ((AclResourceDriver)this.getResourceDriver()).getRegisteredRoleTypeName();
+    	}
+    	return "";
+    }
 
 	/**
 	 * @hibernate.property not-null="true"

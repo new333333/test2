@@ -278,7 +278,6 @@ public class WorkAreaHelper {
 								sortedApplicationGroupsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
 							}
 						}
-						break;
 					}
 				}
 				//Build a map of users and groups per operation (e.g., operationMap.operation.ss_Users.userId)
@@ -388,6 +387,7 @@ public class WorkAreaHelper {
 	}
 	
 	public static void mergeAccessControlTableBeans(Map model) {
+		
 		List sortedFunctions = (List)model.get(WebKeys.ACCESS_SORTED_FUNCTIONS);
 		Map sortedFunctionsMap = (Map)model.get(WebKeys.ACCESS_SORTED_FUNCTIONS_MAP);
 		List sortedGroups = (List)model.get(WebKeys.ACCESS_SORTED_GROUPS);

@@ -265,6 +265,9 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     public List<WorkAreaOperation> getExternallyControlledRights() {
     	return new ArrayList<WorkAreaOperation>();
     }
+    public String getRegisteredRoleType() {
+    	return "";
+    }
     
 	public boolean getFsaEnabled() {
 		if(fsaEnabled == null)

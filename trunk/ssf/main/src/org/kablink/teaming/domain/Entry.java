@@ -36,6 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 
@@ -150,6 +151,12 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
     }
     public List<WorkAreaOperation> getExternallyControlledRights() {
     	return this.getParentBinder().getExternallyControlledRights();
+    }
+    public String getRegisteredRoleType() {
+    	if (this.getParentBinder().getResourceDriver() instanceof AclResourceDriver) {
+    		return ((AclResourceDriver)this.getParentBinder().getResourceDriver()).getRegisteredRoleTypeName();
+    	}
+    	return "";
     }
     
 	/**

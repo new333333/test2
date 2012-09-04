@@ -113,4 +113,10 @@ public interface WorkArea {
      * @return
      */
     public List<WorkAreaOperation> getExternallyControlledRights();
+    
+    /**
+     * Return the role type of the external device (if any)
+     * @return
+     */
+    public String getRegisteredRoleType();
 }

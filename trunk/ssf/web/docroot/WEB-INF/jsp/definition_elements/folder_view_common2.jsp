@@ -1228,7 +1228,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
  </div>
 </c:if>
 
-<c:if test="${ssBinder.mirrored && empty ssBinder.resourceDriverName}">
+<c:if test="${ssBinder.mirrored && empty ssBinder.resourceDriverName && !ssBinder.templateBinder}">
 	<div class="ss_style ss_portlet" style="padding:10px;"><span class="ss_errorLabel"><ssf:nlt tag="binder.mirrored.incomplete"/></span></div>
 </c:if>
 <c:if test="${empty ssFolderEntries && !(ssBinder.mirrored && empty ssBinder.resourceDriverName)}">
