@@ -47,6 +47,7 @@ public class GwtShareItem
 	implements IsSerializable
 {
 	private Long m_id;
+	private String m_comments;
 	private EntityId m_entityId;	// Id of the item being shared.
 	private String m_entityName;	// Name of the item being shared.
 	private Long m_recipientId;
@@ -96,6 +97,7 @@ public class GwtShareItem
 	public GwtShareItem()
 	{
 		m_id = null;
+		m_comments = null;
 		m_entityId = null;
 		m_entityName = null;
 		m_recipientName = null;
@@ -170,6 +172,14 @@ public class GwtShareItem
 		
 		// If we get here the two GwtShareItem objects are not the same.
 		return false;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getComments()
+	{
+		return m_comments;
 	}
 	
 	/**
@@ -306,6 +316,14 @@ public class GwtShareItem
 	public boolean isExpired()
 	{
 		return m_isExpired;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setComments( String comments )
+	{
+		m_comments = comments;
 	}
 	
 	/**
