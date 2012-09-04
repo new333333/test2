@@ -2349,7 +2349,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 						public Object doInHibernate(Session session) throws HibernateException {
 	                    	// Don't use alias of the first table to refer to property/column name associated with entity, 
 	                    	// since HQL won't treat it as nicely as it does without alias. 
-                    		return session.createQuery("select distinct recipientType, recipientId from org.kablink.teaming.domain.ShareItem where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId and rightSet." + rightName + "=:rightValue")
+                    		return session.createQuery("select distinct recipientType, recipientId from org.kablink.teaming.domain.ShareItem where latest=:latestValue and sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId and rightSet." + rightName + "=:rightValue")
+                    				.setBoolean("latestValue", true)
                     				.setInteger("sharedEntityType", sharedEntityIdentifier.getEntityType().getValue())
                     				.setLong("sharedEntityId", sharedEntityIdentifier.getEntityId())
                     				.setBoolean("rightValue", true)
@@ -2400,7 +2401,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    public Object doInHibernate(Session session) throws HibernateException {
 	                    	// Don't use alias of the first table to refer to property/column name associated with entity, 
 	                    	// since HQL won't treat it as nicely as it does without alias. 
-	                    	StringBuilder sb = new StringBuilder("select distinct recipientType, recipientId from org.kablink.teaming.domain.ShareItem where (");
+	                    	StringBuilder sb = new StringBuilder("select distinct recipientType, recipientId from org.kablink.teaming.domain.ShareItem where latest=:latestValue and (");
 	                    	int i;
 	                    	for(i = 0; i < rightNames.length; i++) {
 	                    		if(i > 0)
@@ -2425,6 +2426,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    	}
 	                    	sb.append(")");
                     		Query query = session.createQuery(sb.toString());
+                    		query.setBoolean("latestValue", true);
                     		for(i = 0; i < rightNames.length; i++)
                     			query.setBoolean("rightValue" + i, true);
                     		return query.list();
@@ -2448,10 +2450,13 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
 	                    	Criteria crit = session.createCriteria(ShareItem.class);
+	                    	if(selectSpec.latest != null) {
+	                    		crit.add(Restrictions.eq("latest", selectSpec.latest));
+	                    	}
 	                    	if(selectSpec.sharerIds != null && !selectSpec.sharerIds.isEmpty()) {
 	                    		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();
 	                    		for(Long sharerId:selectSpec.sharerIds)
-	                    			disjunction.add(Restrictions.eq("creation.principal.id", sharerId));
+	                    			disjunction.add(Restrictions.eq("sharer.id", sharerId));
 	                    		crit.add(disjunction);
 	                    	}
 	                    	if(selectSpec.sharedEntityIdentifiers != null && !selectSpec.sharedEntityIdentifiers.isEmpty()) {

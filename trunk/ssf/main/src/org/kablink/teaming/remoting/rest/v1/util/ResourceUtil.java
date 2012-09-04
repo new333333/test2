@@ -655,11 +655,11 @@ public class ResourceUtil {
     public static Share buildShare(ShareItem shareItem) {
         Share model = new Share();
         model.setComment(shareItem.getComment());
-        model.setCreation(buildHistoryStamp(shareItem.getCreation()));
+        model.setSharer(new LongIdLinkPair(shareItem.getSharerId(), LinkUriUtil.getUserLinkUri(shareItem.getSharerId())));
+        model.setStartDate(shareItem.getStartDate());
         model.setDaysToExpire(shareItem.getDaysToExpire());
         model.setEndDate(shareItem.getEndDate());
         model.setId(shareItem.getId());
-        model.setModification(buildHistoryStamp(shareItem.getModification()));
 
         Long recipientId = shareItem.getRecipientId();
         ShareItem.RecipientType recipType = shareItem.getRecipientType();

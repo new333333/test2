@@ -113,7 +113,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			break;
 		case modifyShareItem:
 			//The share creator and the entity owner can modify a shareItem
-			if (user.getId().equals(shareItem.getCreation().getPrincipal().getId())) {
+			if (user.getId().equals(shareItem.getSharerId())) {
 				//The user is the creator of the share
 				return;
 			}
@@ -135,7 +135,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			break;
 		case deleteShareItem:
 			//The share creator, the entity owner, or the site admin can delete a shareItem
-			if (user.getId().equals(shareItem.getCreation().getPrincipal().getId())) {
+			if (user.getId().equals(shareItem.getSharerId())) {
 				//The user is the creator of the share
 				return;
 			}

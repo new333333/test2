@@ -12,24 +12,15 @@
          mapping element that maps it to a database column, meaning that optimistic locking is not used
          for this class. -->
     <property name="zoneId" access="field"/>
-    <component name="creation" class="org.kablink.teaming.domain.HistoryStamp">
-      <property name="date" column="creation_date" type="timestamp"/>
-      <many-to-one class="org.kablink.teaming.domain.UserPrincipal" name="principal">
-        <column name="creation_principal"/>
-      </many-to-one>
-    </component>
-    <component name="modification" class="org.kablink.teaming.domain.HistoryStamp">
-      <property name="date" column="modification_date" type="timestamp"/>
-      <many-to-one class="org.kablink.teaming.domain.UserPrincipal" name="principal">
-        <column name="modification_principal"/>
-      </many-to-one>
-    </component>
+    <property name="latest"/>
+    <property name="sharerId" index="sharerId_shareitem"/>    
     <component name="sharedEntityIdentifier" class="org.kablink.teaming.domain.EntityIdentifier">
       <property name="type" column="sharedEntity_type" type="int" index="sharedEntity_shareitem"/>
       <property name="entityId" column="sharedEntity_id" index="sharedEntity_shareitem"/>
     </component>
     <property name="comment" length="255"/>
     <property name="daysToExpire" type="int"/>
+    <property name="startDate" index="startDate_shareitem"/>
     <property name="endDate" index="endDate_shareitem"/>
     <property name="recipientType" column="recipient_type" access="field" type="short" index="recipient_shareitem"/>
     <property name="recipientId" column="recipient_id" index="recipient_shareitem"/>
