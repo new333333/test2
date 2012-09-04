@@ -118,6 +118,7 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 		if (0 == folderName.length()) {
 			// No!  Tell them about the error and bail.
 			GwtClientHelper.deferredAlert(m_messages.addNewFolderDlgError_NoName());
+			setButtonsEnabled(true);
 			return;
 		}
 
@@ -132,6 +133,7 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 					t,
 					m_messages.rpcFailure_AddNewFolder(),
 					folderName);
+				setButtonsEnabled(true);
 			}
 			
 			@Override
@@ -143,6 +145,7 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 				if ((null != errors) && (0 < errors.size())) {
 					// Yes!  Display them.
 					GwtClientHelper.displayMultipleErrors(m_messages.addNewFolderDlgError_AddFailed(), errors);
+					setButtonsEnabled(true);
 				}
 				
 				else {
@@ -152,6 +155,7 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 					GwtTeaming.fireEvent(new FullUIReloadEvent());
 					
 					// ...and close the dialog.
+					setButtonsEnabled(true);
 					hide();
 				}
 			}
@@ -188,12 +192,16 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 	 */
 	@Override
 	public boolean editSuccessful(Object callbackData) {
-		// Start the folder creation process.
+		// Disable the OK button so the user doesn't repeatedly press
+		// it...
+		setButtonsEnabled(false);
+		
+		// ...start the folder creation process...
 		createNewFolderAsync();
 		
-		// Always return false to leave the dialog open.  If it's
-		// contents validate and the folder gets created, the dialog
-		// will then be closed.
+		// ...and always return false to leave the dialog open.  If its
+		// ...contents validate and the folder gets created, the dialog
+		// ...will then be closed.
 		return false;
 	}
 
@@ -278,6 +286,7 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 		GwtClientHelper.setFocusDelayed(m_folderNameInput);
 		
 		// Finally, show the dialog centered on the screen.
+		setButtonsEnabled(true);
 		show(true);
 	}
 	
@@ -304,6 +313,14 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 
 		// ...and start populating the dialog.
 		populateDlgAsync();
+	}
+
+	/*
+	 * Enables/disables the buttons on the dialog.
+	 */
+	private void setButtonsEnabled(boolean enabled) {
+		setOkEnabled(    enabled);
+		setCancelEnabled(enabled);
 	}
 
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */

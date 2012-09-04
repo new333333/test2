@@ -386,19 +386,9 @@ public class GwtMenuHelper {
 				folderTemplates.add(tm.addDefaultTemplate(Definition.FOLDER_VIEW));
 			}
 			if ((null != folderTemplates) && (0 < folderTemplates.size())) {
-				// Yes!  Scan them.
-				Long folderTemplateId = null;
-				for (TemplateBinder tb:  folderTemplates) {
-					// Yes!  Is this template for a file folder?
-					String tbFamily = BinderHelper.getFamilyNameFromDef(tb.getEntryDef());
-					if (MiscUtil.hasString(tbFamily) && tbFamily.equalsIgnoreCase(Definition.FAMILY_FILE)) {
-						// Yes!  Save its ID.
-						folderTemplateId = tb.getId();
-						break;
-					}
-				}
-
-				// Did we find the template ID for a file folder?
+				// Yes!  Can we find the template ID for a file folder?
+				TemplateBinder	libraryTemplate  = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_LIBRARY);
+				Long			folderTemplateId = ((null == libraryTemplate) ? null : libraryTemplate.getId());
 				if (null != folderTemplateId) {
 					// Yes!  Use the information we've got to add a
 					// ToolbarItem to add a new folder.
@@ -458,7 +448,13 @@ public class GwtMenuHelper {
 						// Is the the template for this folder?
 						if (tb.getEntryDefId().equals(fedId)) {
 							// Yes!  Save its ID.
-							folderTemplateId = tb.getId();
+							if (tb.getInternalId().equals(ObjectKeys.DEFAULT_FOLDER_FILR_ROOT_CONFIG)) {
+								tb = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_MIRRORED_FILE);
+								folderTemplateId = ((null == tb) ? null : tb.getId());
+							}
+							else {
+								folderTemplateId = tb.getId();
+							}
 							break;
 						}
 					}
