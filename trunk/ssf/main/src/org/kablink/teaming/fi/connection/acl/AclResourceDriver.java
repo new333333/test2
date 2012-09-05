@@ -45,6 +45,38 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
  */
 public interface AclResourceDriver extends ResourceDriver {
 
+	public enum ConnectionTestStatusCode {
+		/**
+		 * Indicates a success
+		 */
+		NORMAL,
+		/**
+		 * Invalid proxy credentials
+		 */
+		PROXY_CREDENTIALS_ERROR,
+		/**
+		 * Network connection failure
+		 */
+		NETWORK_ERROR
+	}
+	
+	public class ConnectionTestStatus {
+		// connection test status code
+		private ConnectionTestStatusCode code;
+		// (optional) detailed error message 
+		private String message;
+		public ConnectionTestStatus(ConnectionTestStatusCode code, String message) {
+			this.code = code;
+			this.message = message;
+		}
+		public ConnectionTestStatusCode getCode() {
+			return code;
+		}
+		public String getMessage() {
+			return message;
+		}
+	}
+	
 	/**
 	 * Returns an implementation of <code>AclItemPermissionMapper</code> interface.
 	 * <p>
@@ -117,4 +149,11 @@ public interface AclResourceDriver extends ResourceDriver {
 	 */
 	public AclResourceSession openSessionUserMode(String aclItemPrincipalId, String aclItemPrincipalPassword) throws FIException, UncheckedIOException;
 
+	/**
+	 * Tests a connection.
+	 * 
+	 * @return connection test status
+	 */
+	public ConnectionTestStatus testConnection(String proxyUsername, String proxyPassword);
+	
 }
