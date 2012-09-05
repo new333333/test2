@@ -66,7 +66,6 @@ public class ShareSendToWidget extends Composite
 		ALL_RECIPIENTS,				// Send to all recipients
 		ONLY_NEW_RECIPIENTS,		// Send to only newly added recipients
 		ONLY_MODIFIED_RECIPIENTS,	// Send to only recipients that have had their share rights modified
-		SELECTED_RECIPIENTS,		// Send to only the selected recipients.
 		UNKNOWN
 	}
 	
@@ -80,7 +79,6 @@ public class ShareSendToWidget extends Composite
 		private VibeMenuItem m_allRecipientsMenuItem;
 		private VibeMenuItem m_newRecipientsMenuItem;
 		private VibeMenuItem m_modifiedRecipientsMenuItem;
-		private VibeMenuItem m_selectedRecipientsMenuItem;
 
 		/**
 		 * 
@@ -135,21 +133,6 @@ public class ShareSendToWidget extends Composite
 													cmd,
 													null,
 													GwtTeaming.getMessages().shareSendToWidget_OnlyModifiedRecipients() );
-
-			// Add the "Modified recipients" menu item.
-			cmd = new Command()
-			{
-				@Override
-				public void execute()
-				{
-					m_sendToValue = SendToValue.SELECTED_RECIPIENTS;
-					updateSendToLabel();
-				};
-			};
-			m_selectedRecipientsMenuItem = addMenuItem(
-													cmd,
-													null,
-													GwtTeaming.getMessages().shareSendToWidget_SelectedRecipients() );
 		}
 		
 		/**
@@ -161,7 +144,6 @@ public class ShareSendToWidget extends Composite
 			setMenuItemCheckedState( m_allRecipientsMenuItem, false );
 			setMenuItemCheckedState( m_newRecipientsMenuItem, false );
 			setMenuItemCheckedState( m_modifiedRecipientsMenuItem, false );
-			setMenuItemCheckedState( m_selectedRecipientsMenuItem, false );
 			
 			// Check the appropriate menu item.
 			switch ( sendToValue )
@@ -176,10 +158,6 @@ public class ShareSendToWidget extends Composite
 				
 			case ONLY_NEW_RECIPIENTS:
 				setMenuItemCheckedState( m_newRecipientsMenuItem, true );
-				break;
-				
-			case SELECTED_RECIPIENTS:
-				setMenuItemCheckedState( m_selectedRecipientsMenuItem, true );
 				break;
 				
 			case UNKNOWN:
@@ -228,9 +206,6 @@ public class ShareSendToWidget extends Composite
 		
 		case ONLY_NEW_RECIPIENTS:
 			return GwtTeaming.getMessages().shareSendToWidget_OnlyNewRecipients();
-		
-		case SELECTED_RECIPIENTS:
-			return GwtTeaming.getMessages().shareSendToWidget_SelectedRecipients();
 		
 		case UNKNOWN:
 		default:

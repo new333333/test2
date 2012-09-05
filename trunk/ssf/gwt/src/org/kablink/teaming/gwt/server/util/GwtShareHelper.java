@@ -75,6 +75,8 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+
 
 /**
  * Helper methods for the GWT UI server code that services share requests.
@@ -830,7 +832,16 @@ public class GwtShareHelper
 			title = sharedEntity.getParentBinder().getPathName() + "/" + title;
 
 		comments = shareItem.getComments();
-		if ( comments == null )
+		if ( comments != null )
+		{
+			SafeHtmlBuilder builder;
+
+			// HTML escape the text entered by the user and replace newlines with <br>
+			builder = new SafeHtmlBuilder();
+			builder = builder.appendEscapedLines( comments );
+			comments = builder.toSafeHtml().asString();
+		}
+		else
 			comments = "";
 		
 		// Do NOT use interactive context when constructing permalink for email. See Bug 536092.

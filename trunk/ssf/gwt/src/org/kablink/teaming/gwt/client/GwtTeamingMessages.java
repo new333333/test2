@@ -527,6 +527,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_DiscussionFolderView();
 	String codeSplitFailure_DiscussionWSView();
 	String codeSplitFailure_EditBrandingDlg();
+	String codeSplitFailure_EditShareNoteDlg();
 	String codeSplitFailure_EmailNotificationDlg();
 	String codeSplitFailure_EntryMenuPanel();
 	String codeSplitFailure_ExtensionsConfig();
@@ -1147,11 +1148,13 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_alreadySharedWithSelectedRecipient( String recipientName );
 	String shareDlg_cantShareWithExternalUser();
 	String shareDlg_cantShareWithYourself();
+	String shareDlg_clickToAddNote();
 	String shareDlg_contributor();
 	String shareDlg_expiresAfter( String after );
 	String shareDlg_expiresLabel();
 	String shareDlg_expiresNever();
 	String shareDlg_expiresOn( String on );
+	String shareDlg_noNote();
 	String shareDlg_noTeamsToShareWith();
 	String shareDlg_noteLabel();
 	String shareDlg_notifyLabel();
@@ -1917,6 +1920,9 @@ public interface GwtTeamingMessages extends Messages
 	String scheduleWidget_ThursdayLabel();
 	String scheduleWidget_TuesdayLabel();
 	String scheduleWidget_WednesdayLabel();
-	
+
+	// Strings used in the Edit Share Note dialog
+	String editShareNoteDlg_caption();
+	String editShareNoteDlg_noteLabel();
 	
 }// end GwtTeamingMessages
