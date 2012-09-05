@@ -68,6 +68,7 @@ import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
+import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -994,6 +995,9 @@ public class GwtShareHelper
 			shareItem = null;
 			sendEmail = false;
 			
+			if ( sharingData.getNotifyRecipients() && sharingData.getSendToValue() == SendToValue.ALL_RECIPIENTS )
+				sendEmail = true;
+			
 			// Does this ShareItem exists?
 			shareItemId = nextGwtShareItem.getId();
 			if ( shareItemId == null )
@@ -1005,7 +1009,8 @@ public class GwtShareHelper
 				// recipient id just in case.
 				nextGwtShareItem.setRecipientId( shareItem.getRecipientId() );
 
-				sendEmail = true;
+				if ( sharingData.getNotifyRecipients() && sharingData.getSendToValue() == SendToValue.ONLY_NEW_RECIPIENTS )
+					sendEmail = true;
 			}
 			else
 			{
@@ -1021,17 +1026,11 @@ public class GwtShareHelper
 					// and persisting the new snapshot. 
 					sharingModule.modifyShareItem(shareItem, shareItemId);
 
-					sendEmail = true;
+					if ( sharingData.getNotifyRecipients() && sharingData.getSendToValue() == SendToValue.ONLY_MODIFIED_RECIPIENTS )
+						sendEmail = true;
 				}
 			}
 			
-			// Are we suppose to send an email to everyone and not just new or modified shares?
-			if ( sharingData.getSendEmailToAll() )
-			{
-				// Yes
-				sendEmail = true;
-			}
-
 			// Send an email to this recipient
 			if ( sendEmail )
 			{

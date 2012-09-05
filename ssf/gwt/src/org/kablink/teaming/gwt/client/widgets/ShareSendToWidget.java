@@ -42,6 +42,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -61,7 +62,7 @@ public class ShareSendToWidget extends Composite
 	/**
 	 * 
 	 */
-	public enum SendToValue
+	public enum SendToValue implements IsSerializable
 	{
 		ALL_RECIPIENTS,				// Send to all recipients
 		ONLY_NEW_RECIPIENTS,		// Send to only newly added recipients
@@ -191,6 +192,14 @@ public class ShareSendToWidget extends Composite
 		initWidget( m_sendToLabel );
 	}
 
+	/**
+	 * 
+	 */
+	public SendToValue getSendToValue()
+	{
+		return m_sendToValue;
+	}
+	
 	/**
 	 * 
 	 */

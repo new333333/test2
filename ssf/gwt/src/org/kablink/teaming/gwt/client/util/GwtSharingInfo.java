@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -50,7 +51,8 @@ public class GwtSharingInfo
 	private ArrayList<GwtShareItem> m_listOfShareItems;
 	private ArrayList<GwtShareItem> m_listOfToBeDeletedShareItems;
 	private HashMap<EntityId, String> m_entityNamesMap;
-	private boolean m_sendEmailToAll;
+	private SendToValue m_sendToValue;
+	private boolean m_notifyRecipients;
 	private boolean m_canShareWithExternalUsers;
 	
 	/**
@@ -61,8 +63,9 @@ public class GwtSharingInfo
 		m_listOfShareItems = null;
 		m_listOfToBeDeletedShareItems = null;
 		m_entityNamesMap = null;
-		m_sendEmailToAll = false;
+		m_notifyRecipients = true;
 		m_canShareWithExternalUsers = false;
+		m_sendToValue = SendToValue.ALL_RECIPIENTS;
 	}
 	
 	/**
@@ -181,9 +184,17 @@ public class GwtSharingInfo
 	/**
 	 * 
 	 */
-	public boolean getSendEmailToAll()
+	public boolean getNotifyRecipients()
 	{
-		return m_sendEmailToAll;
+		return m_notifyRecipients;
+	}
+	
+	/**
+	 * 
+	 */
+	public SendToValue getSendToValue()
+	{
+		return m_sendToValue;
 	}
 
 	/**
@@ -232,9 +243,17 @@ public class GwtSharingInfo
 	/**
 	 * 
 	 */
-	public void setSendEmailToAll( boolean sendEmailToAll )
+	public void setNotifyRecipients( boolean notifyRecipients )
 	{
-		m_sendEmailToAll = sendEmailToAll;
+		m_notifyRecipients = notifyRecipients;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setSendToValue( SendToValue sendToValue )
+	{
+		m_sendToValue = sendToValue;
 	}
 }
 
