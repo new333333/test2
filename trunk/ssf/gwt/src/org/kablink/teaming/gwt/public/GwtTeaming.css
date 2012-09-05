@@ -523,7 +523,7 @@
 
 /* Styles used in the Share dialog */
 
-.shareThisDlg_CommentsLabel, .shareThisDlg_ShareWithTeamsLabel
+.shareThisDlg_NotesLabel, .shareThisDlg_ShareWithTeamsLabel
 {
 	font-size: 12px;
 	padding-top: 8px;
@@ -567,6 +567,11 @@
 	font-size: 0.75em;
 	line-height: 1.1em;
 	padding-left: 2px;
+}
+
+.shareThisDlg_NotifyLabel
+{
+	padding-right: 4px;
 }
 
 .shareThisDlg_RecipientNameLabel
@@ -654,7 +659,7 @@
 	color: #353838;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 14px;
-	height: 100px;
+	height: 45px;
 	padding: 5px;
 	resize: none;
 	width: 95%;

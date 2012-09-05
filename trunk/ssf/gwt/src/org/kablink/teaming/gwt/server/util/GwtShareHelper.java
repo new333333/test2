@@ -393,6 +393,7 @@ public class GwtShareHelper
 				gwtShareItem.setId( nextShareItem.getId() );
 				gwtShareItem.setIsExpired( nextShareItem.isExpired() );
 				gwtShareItem.setRecipientId( nextShareItem.getRecipientId() );
+				gwtShareItem.setComments( nextShareItem.getComment() );
 
 				// Set the recipient type and name.
 				{
@@ -834,7 +835,7 @@ public class GwtShareHelper
 		
 		// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
 		desc = "<a href=\"" + PermaLinkUtil.getPermalinkForEmail( sharedEntity ) + "\">" + title + "</a><br/><br/>" + comments;
-		desc += "<br/>";
+		desc += "<br/><br/>";
 		// Append when the share expires
 		{
 			ShareExpirationValue expirationValue;
