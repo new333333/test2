@@ -89,7 +89,7 @@ public class GwtShareHelper
 	protected static Log m_logger = LogFactory.getLog( GwtShareHelper.class );
 	private static org.kablink.teaming.security.function.WorkAreaOperation.RightSet m_viewRightSet;
 	private static RightSet m_contributorRightSet;
-	private static RightSet m_ownerRightSet;
+	private static RightSet m_editorRightSet;
 	private static long MILLISEC_IN_A_DAY = 86400000; 
 	
 
@@ -504,16 +504,16 @@ public class GwtShareHelper
 	}
 
 	/**
-	 * Return the RightSet that corresponds to the "Owner" rights
+	 * Return the RightSet that corresponds to the "Editor" rights
 	 */
-	private static RightSet getOwnerRightSet()
+	private static RightSet getEditorRightSet()
 	{
-		if ( m_ownerRightSet == null )
+		if ( m_editorRightSet == null )
 		{
-			m_ownerRightSet = ShareItem.Role.OWNER.getRightSet();
+			m_editorRightSet = ShareItem.Role.OWNER.getRightSet();
 		}
 		
-		return m_ownerRightSet;
+		return m_editorRightSet;
 	}
 	
 	/**
@@ -604,11 +604,11 @@ public class GwtShareHelper
 			rightSet = getContributorRightSet(); 
 			break;
 		
-		case OWNER:
-			rightSet = getOwnerRightSet();
+		case EDITOR:
+			rightSet = getEditorRightSet();
 			break;
 		
-		case VIEW:
+		case VIEWER:
 			rightSet = getViewRightSet();
 			break;
 			
@@ -636,7 +636,7 @@ public class GwtShareHelper
 			if ( areRightSetsEqual( rightSet, tmpRightSet ) )
 			{
 				// Yes
-				return ShareRights.VIEW;
+				return ShareRights.VIEWER;
 			}
 			
 			// Is the given RightSet equal to the "Contributor" RightSet
@@ -647,12 +647,12 @@ public class GwtShareHelper
 				return ShareRights.CONTRIBUTOR;
 			}
 			
-			// Is the given RightSet equal to the "Owner" RightSet
-			tmpRightSet = getOwnerRightSet();
+			// Is the given RightSet equal to the "Editor" RightSet
+			tmpRightSet = getEditorRightSet();
 			if ( areRightSetsEqual( rightSet, tmpRightSet ) )
 			{
 				// Yes
-				return ShareRights.OWNER;
+				return ShareRights.EDITOR;
 			}
 			
 		}

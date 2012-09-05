@@ -103,7 +103,7 @@ public class GwtShareItem
 		m_recipientName = null;
 		m_recipientId = null;
 		m_recipientType = GwtRecipientType.UNKNOWN;
-		m_shareRights = ShareRights.VIEW;
+		m_shareRights = ShareRights.VIEWER;
 		m_shareExpirationValue = null;
 		m_isDirty = false;
 		m_isExpired = false;
@@ -282,14 +282,14 @@ public class GwtShareItem
 	 */
 	public String getShareRightsAsString()
 	{
-		if ( m_shareRights == ShareRights.VIEW )
+		if ( m_shareRights == ShareRights.VIEWER )
 			return GwtTeaming.getMessages().shareDlg_view();
 		
 		if ( m_shareRights == ShareRights.CONTRIBUTOR )
 			return GwtTeaming.getMessages().shareDlg_contributor();
 		
-		if ( m_shareRights == ShareRights.OWNER )
-			return GwtTeaming.getMessages().shareDlg_owner();
+		if ( m_shareRights == ShareRights.EDITOR )
+			return GwtTeaming.getMessages().shareDlg_editor();
 		
 		return "Unknown";
 	}
