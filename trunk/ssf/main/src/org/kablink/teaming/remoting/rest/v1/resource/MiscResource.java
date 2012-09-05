@@ -77,6 +77,7 @@ public class MiscResource extends AbstractResource {
         obj.addAdditionalLink("folder_entry_operations", "/folder_entries/operations");
         obj.addAdditionalLink("groups", "/groups");
         obj.addAdditionalLink("library_entities", "/workspaces/" + getWorkspaceModule().getTopWorkspaceId() + "/library_entities");
+        obj.addAdditionalLink("net_folders", "/net_folders");
         obj.addAdditionalLink("release_info", "/release_info");
         obj.addAdditionalLink("self", "/self");
         obj.addAdditionalLink("templates", "/templates");
