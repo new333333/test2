@@ -61,5 +61,13 @@ public interface AclResourceSession extends ResourceSession {
 	 * @return
 	 */
 	public AclResourceDriver getAclResourceDriver();
-	
+
+	/**
+	 * Returns the ID of the principal that owns the resource, or <code>null</code>
+	 * if no such information is available.
+	 * 
+	 * @return
+	 */
+	public String getOwnerPrincipalId();
+
 }
