@@ -59,7 +59,7 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 
 	// Controls whether the 'Message' column appears in the
 	// 'Shared By/With Me' views.
-	public final static boolean SHOW_SHARE_MESSAGES_COLUMN	= false;
+	public final static boolean SHOW_SHARE_MESSAGES_COLUMN	= true;
 	
 	// The following are the various predefined names used for columns.
 	public final static String COLUMN_AUTHOR			= "author";
