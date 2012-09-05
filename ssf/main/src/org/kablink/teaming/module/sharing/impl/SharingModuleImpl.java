@@ -258,9 +258,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		return accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING);
 	}
 
-    /* (non-Javadoc)
-	 * @see org.kablink.teaming.module.profile.ProfileModule#addShareItem(org.kablink.teaming.domain.ShareItem)
-	 */
     //RW transaction
 	@Override
 	public void addShareItem(ShareItem shareItem) {
@@ -273,20 +270,32 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		indexSharedEntity(shareItem);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.module.profile.ProfileModule#modifyShareItem(org.kablink.teaming.domain.ShareItem)
-	 */
     //RW transaction
 	@Override
-	public void modifyShareItem(ShareItem shareItem) {
+	public void modifyShareItem(ShareItem latestShareItem,
+			ShareItem previousShareItem) {
+		if(latestShareItem == null)
+			throw new IllegalArgumentException("Latest share item must be specified");
+		if(previousShareItem == null)
+			throw new IllegalArgumentException("Previous share item must be specified");
+		if(latestShareItem.getId() != null)
+			throw new IllegalArgumentException("Latest share item must be transient");
+		if(previousShareItem.getId() == null)
+			throw new IllegalArgumentException("Previous share item must be persistant");
+		
 		// Access check (throws error if not allowed)
-		checkAccess(shareItem, SharingOperation.modifyShareItem);
+		checkAccess(latestShareItem, SharingOperation.modifyShareItem);
+		
+		previousShareItem.setLatest(false);
 
-		// This should handle both persistent and detached instance.
-		getCoreDao().update(shareItem);
+		// Save the new snapshot
+		getCoreDao().save(latestShareItem);
+		
+		// Update the previous snapshot. This should handle both persistent and detached instance.
+		getCoreDao().update(previousShareItem);
 		
 		//Index the entity that is being shared
-		indexSharedEntity(shareItem);
+		indexSharedEntity(latestShareItem);		
 	}
 	
 	/* (non-Javadoc)
