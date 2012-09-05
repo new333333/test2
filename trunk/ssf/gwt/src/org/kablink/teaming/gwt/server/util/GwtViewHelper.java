@@ -829,6 +829,12 @@ public class GwtViewHelper {
 		boolean			sharedFiles = getUserViewSharedFiles(request, CollectionType.SHARED_BY_ME);
 		SharingModule	sm          = bs.getSharingModule();
 		for (ShareItem si:  shareItems) {
+			// Is this share item not the latest share for the entity?
+			if (!(si.isLatest())) {
+				// Yes!  Skip it.
+				continue;
+			}
+			
 			// Is this share item's entity in the trash?
 			DefinableEntity siEntity = sm.getSharedEntity(si);
 			if (GwtServerHelper.isEntityPreDeleted(siEntity)) {
@@ -889,6 +895,13 @@ public class GwtViewHelper {
 		boolean			sharedFiles = getUserViewSharedFiles(request, CollectionType.SHARED_WITH_ME);
 		SharingModule	sm          = bs.getSharingModule();
 		for (ShareItem si:  shareItems) {
+			// Is this share item expired or not the latest share for
+			// the entity?
+			if (si.isExpired() || (!(si.isLatest()))) {
+				// Yes!  Skip it.
+				continue;
+			}
+			
 			// Is this share item's entity in the trash?
 			DefinableEntity siEntity = sm.getSharedEntity(si);
 			if (GwtServerHelper.isEntityPreDeleted(siEntity)) {
@@ -4633,6 +4646,7 @@ public class GwtViewHelper {
 	 * Given a list of column names, return those columns applicable to
 	 * the collection type for the current license mode, ...
 	 */
+	@SuppressWarnings("unused")
 	private static String[] pruneColumnNames(CollectionType collection, String ... columnList) {
 		// Scan the columns.
 		List<String> columns = new ArrayList<String>();
