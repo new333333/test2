@@ -272,27 +272,32 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	
     //RW transaction
 	@Override
-	public void modifyShareItem(ShareItem latestShareItem,
-			ShareItem previousShareItem) {
+	public void modifyShareItem(ShareItem latestShareItem, Long previousShareItemId) {
 		if(latestShareItem == null)
 			throw new IllegalArgumentException("Latest share item must be specified");
-		if(previousShareItem == null)
-			throw new IllegalArgumentException("Previous share item must be specified");
+		if(previousShareItemId == null)
+			throw new IllegalArgumentException("Previous share item ID must be specified");
 		if(latestShareItem.getId() != null)
 			throw new IllegalArgumentException("Latest share item must be transient");
-		if(previousShareItem.getId() == null)
-			throw new IllegalArgumentException("Previous share item must be persistant");
 		
 		// Access check (throws error if not allowed)
 		checkAccess(latestShareItem, SharingOperation.modifyShareItem);
 		
-		previousShareItem.setLatest(false);
+		// Update previous snapshot
+		try {
+			ShareItem previousShareItem = getProfileDao().loadShareItem(previousShareItemId);
+			
+			previousShareItem.setLatest(false);
+			
+			getCoreDao().update(previousShareItem);
+		}
+		catch(NoShareItemByTheIdException e) {
+			// The previous snapshot isn't found.
+			logger.warn("Previous share item with id '" + previousShareItemId + "' is not found.");
+		}
 
-		// Save the new snapshot
+		// Save new snapshot
 		getCoreDao().save(latestShareItem);
-		
-		// Update the previous snapshot. This should handle both persistent and detached instance.
-		getCoreDao().update(previousShareItem);
 		
 		//Index the entity that is being shared
 		indexSharedEntity(latestShareItem);		

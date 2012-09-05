@@ -75,9 +75,9 @@ public interface SharingModule {
      * Modify an existing share by creating a new snapshot. The previous snapshot becomes an archive. 
      * 
      * @param latestShareItem the new snapshot being added
-     * @param previousShareItem the previous snapshot of the share
+     * @param previousShareItemId the ID of the previous snapshot of the share
      */
-    public void modifyShareItem(ShareItem latestShareItem, ShareItem previousShareItem);
+    public void modifyShareItem(ShareItem latestShareItem, Long previousShareItemId);
     
     /**
      * Delete an existing share item.
