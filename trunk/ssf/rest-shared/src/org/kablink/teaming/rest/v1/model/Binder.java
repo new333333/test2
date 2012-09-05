@@ -41,6 +41,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Binder extends DefinableEntity {
     private String path;
 
+    public Binder() {
+        setDocType("binder");
+    }
+
     public String getPath() {
         return path;
     }

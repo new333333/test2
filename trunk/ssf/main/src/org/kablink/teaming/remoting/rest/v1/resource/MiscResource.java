@@ -44,24 +44,18 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
-import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.spi.resource.Singleton;
 import org.dom4j.Document;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.module.zone.ZoneModule;
-import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
-import org.kablink.teaming.rest.v1.model.BaseRestObject;
-import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.ReleaseInfo;
 import org.kablink.teaming.rest.v1.model.RootRestObject;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
-import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.search.Constants;
 
 import java.io.InputStream;
@@ -131,13 +125,13 @@ public class MiscResource extends AbstractResource {
 
     @POST
     @Path("/legacy_query")
-   	public SearchResultList<BaseRestObject> legacySearch(@Context HttpServletRequest request,
+   	public SearchResultList<SearchableObject> legacySearch(@Context HttpServletRequest request,
                                                          @QueryParam("first") @DefaultValue("0") Integer offset,
                                                          @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
            String query = getRawInputStreamAsString(request);
            Document queryDoc = buildQueryDocument(query, null);
            Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
-           SearchResultList<BaseRestObject> results = new SearchResultList<BaseRestObject>(offset);
+           SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
            SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(), resultsMap, "/legacy_query", null, offset);
            return results;
    	}

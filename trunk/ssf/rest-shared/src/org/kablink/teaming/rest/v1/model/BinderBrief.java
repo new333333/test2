@@ -46,6 +46,10 @@ public class BinderBrief extends DefinableEntityBrief {
    	private String path;
    	private Boolean mirrored;
 
+    public BinderBrief() {
+        setDocType("binder");
+    }
+
     public Boolean getLibrary() {
         return library;
     }

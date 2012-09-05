@@ -53,14 +53,13 @@ import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
-import org.kablink.teaming.rest.v1.model.BaseRestObject;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.FolderEntry;
 import org.kablink.teaming.rest.v1.model.FolderEntryBrief;
 import org.kablink.teaming.rest.v1.model.Operation;
 import org.kablink.teaming.rest.v1.model.Permission;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
-import org.kablink.teaming.search.filter.SearchFilter;
+import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
@@ -270,7 +269,7 @@ public class FolderResource extends AbstractBinderResource {
 	@GET
 	@Path("{id}/library_entities")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResultList<BaseRestObject> getLibraryFiles(@PathParam("id") long id,
+	public SearchResultList<SearchableObject> getLibraryFiles(@PathParam("id") long id,
                                                   @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                   @QueryParam("keyword") String keyword,
                                                   @QueryParam("first") @DefaultValue("0") Integer offset,

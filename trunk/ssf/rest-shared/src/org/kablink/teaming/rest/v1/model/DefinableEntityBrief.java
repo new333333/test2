@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
  * Date: 5/21/12
  * Time: 2:37 PM
  */
-public abstract class DefinableEntityBrief extends BaseRestObject {
+public abstract class DefinableEntityBrief extends SearchableObject {
     private Long id;
    	private LongIdLinkPair parentBinder;
    	private String title;

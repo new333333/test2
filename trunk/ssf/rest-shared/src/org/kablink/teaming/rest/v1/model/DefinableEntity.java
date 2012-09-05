@@ -41,7 +41,7 @@ import java.util.List;
  * Date: 5/16/12
  * Time: 3:54 PM
  */
-public abstract class DefinableEntity extends BaseRestObject {
+public abstract class DefinableEntity extends SearchableObject {
     private Long id;
    	private LongIdLinkPair parentBinder;
    	private String title;

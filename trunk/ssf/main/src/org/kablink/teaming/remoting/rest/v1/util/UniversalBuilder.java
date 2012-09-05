@@ -32,8 +32,8 @@
  */
 package org.kablink.teaming.remoting.rest.v1.util;
 
-import org.kablink.teaming.rest.v1.model.BaseRestObject;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
+import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.util.search.Constants;
 
 import java.util.HashMap;
@@ -44,7 +44,7 @@ import java.util.Map;
  * Date: 6/4/12
  * Time: 2:41 PM
  */
-public class UniversalBuilder implements SearchResultBuilder<BaseRestObject> {
+public class UniversalBuilder implements SearchResultBuilder<SearchableObject> {
 
     private static class BuilderFactory {
         private Map<String, Class<? extends SearchResultBuilder>> buildersByDocType =
@@ -63,7 +63,7 @@ public class UniversalBuilder implements SearchResultBuilder<BaseRestObject> {
             buildersByEntryType.put(Constants.ENTRY_TYPE_APPLICATION_GROUP, ApplicationGroupBriefBuilder.class);
         }
 
-        public SearchResultBuilder<BaseRestObject> factoryBuilder(Map objectMap) {
+        public SearchResultBuilder<SearchableObject> factoryBuilder(Map objectMap) {
             Class<? extends SearchResultBuilder> clss = null;
             String docType = (String) objectMap.get(Constants.DOC_TYPE_FIELD);
             if(Constants.DOC_TYPE_ENTRY.equals(docType)) {
@@ -83,23 +83,23 @@ public class UniversalBuilder implements SearchResultBuilder<BaseRestObject> {
 
     private static BuilderFactory builderFactory = new BuilderFactory();
 
-    public BaseRestObject build(Map objectMap) {
-        SearchResultBuilder<BaseRestObject> builder = builderFactory.factoryBuilder(objectMap);
+    public SearchableObject build(Map objectMap) {
+        SearchResultBuilder<SearchableObject> builder = builderFactory.factoryBuilder(objectMap);
         if (builder!=null) {
             return builder.build(objectMap);
         }
         return null;
     }
 
-    public Object getId(BaseRestObject obj) {
+    public Object getId(SearchableObject obj) {
         return null;
     }
 
-    public Object getParentId(BaseRestObject obj) {
+    public Object getParentId(SearchableObject obj) {
         return null;
     }
 
-    public SearchResultTreeNode<BaseRestObject> factoryTreeNode(BaseRestObject obj) {
+    public SearchResultTreeNode<SearchableObject> factoryTreeNode(SearchableObject obj) {
         return null;
     }
 }

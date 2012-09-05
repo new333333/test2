@@ -42,7 +42,7 @@ import javax.xml.bind.annotation.XmlElement;
  *
  */
 @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@type")
-public abstract class BaseFileProperties extends BaseRestObject {
+public abstract class BaseFileProperties extends SearchableObject {
 
 	private String id;
 	private HistoryStamp creation;
@@ -54,22 +54,10 @@ public abstract class BaseFileProperties extends BaseRestObject {
 	private String note; // used also for update
 	private Integer status; // used also for update
 
-	protected BaseFileProperties() {}
+	protected BaseFileProperties() {
+        setDocType("file");
+    }
 	
-	public BaseFileProperties(String id, HistoryStamp creation, HistoryStamp modification,
-                              Long length, Integer versionNumber, Integer majorVersion, Integer minorVersion,
-                              String note, Integer status) {
-		this.id = id;
-		this.creation = creation;
-		this.modification = modification;
-		this.length = length;
-		this.versionNumber = versionNumber;
-		this.majorVersion = majorVersion;
-		this.minorVersion = minorVersion;
-		this.note = note;
-		this.status = status;
-	}
-
 	public String getId() {
 		return id;
 	}

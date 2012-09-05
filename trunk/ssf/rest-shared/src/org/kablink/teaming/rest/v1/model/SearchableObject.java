@@ -15,7 +15,7 @@
  *
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  *
  * Attribution Information:
  * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
@@ -32,26 +32,27 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-import javax.xml.bind.annotation.XmlElement;
-
 /**
  * User: david
- * Date: 5/16/12
- * Time: 4:02 PM
+ * Date: 9/5/12
+ * Time: 2:01 PM
  */
-public abstract class Entry extends DefinableEntity {
-    protected String entryType;
+public abstract class SearchableObject extends BaseRestObject {
+    private String docType;
 
-    protected Entry() {
-        setDocType("entry");
+    public SearchableObject() {
+        super();
     }
 
-    @XmlElement(name = "entry_type")
-    public String getEntryType() {
-        return entryType;
+    public SearchableObject(String link) {
+        super(link);
     }
 
-    public void setEntryType(String entryType) {
-        this.entryType = entryType;
+    public String getDocType() {
+        return docType;
+    }
+
+    public void setDocType(String docType) {
+        this.docType = docType;
     }
 }

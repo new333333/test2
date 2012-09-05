@@ -14,13 +14,13 @@ import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
-import org.kablink.teaming.rest.v1.model.BaseRestObject;
 import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderTree;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.PrincipalBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.rest.v1.model.TeamMember;
 import org.kablink.teaming.search.SearchUtils;
@@ -288,7 +288,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
     }
 
-    protected SearchResultList<BaseRestObject> getSubEntities(long id, boolean recursive, boolean onlyLibrary, String keyword, Integer offset, Integer maxCount, String nextUrl, Map<String, String> nextParams) {
+    protected SearchResultList<SearchableObject> getSubEntities(long id, boolean recursive, boolean onlyLibrary, String keyword, Integer offset, Integer maxCount, String nextUrl, Map<String, String> nextParams) {
         _getBinder(id);
         Junction criterion = Restrictions.conjunction();
 
@@ -307,7 +307,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         Criteria crit = new Criteria();
         crit.add(criterion);
         Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
-        SearchResultList<BaseRestObject> results = new SearchResultList<BaseRestObject>(offset);
+        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
         SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(), resultsMap, nextUrl, nextParams, offset);
         return results;
     }
