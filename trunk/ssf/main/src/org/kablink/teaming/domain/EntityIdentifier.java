@@ -36,7 +36,7 @@ package org.kablink.teaming.domain;
  * An entity is uniquely identified by its id and a type.
  *
  */
-public class EntityIdentifier implements Comparable<EntityIdentifier> {
+public class EntityIdentifier implements Comparable<EntityIdentifier>, Cloneable {
 	protected EntityType entityType=EntityType.none;
 	protected Long entityId;
 	
@@ -168,6 +168,13 @@ public class EntityIdentifier implements Comparable<EntityIdentifier> {
 		}
 	}
 	
-
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException("Clone not supported: " + e.getMessage());
+		}
+	}
 
 }

@@ -1007,8 +1007,7 @@ public class GwtShareHelper
 					
 					// Modify the share by marking existing snapshot as not being the latest
 					// and persisting the new snapshot. 
-					sharingModule.modifyShareItem(shareItem,
-							sharingModule.getShareItem(shareItemId));
+					sharingModule.modifyShareItem(shareItem, shareItemId);
 
 					sendEmail = true;
 				}

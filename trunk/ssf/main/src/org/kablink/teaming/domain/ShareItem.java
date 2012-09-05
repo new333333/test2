@@ -130,6 +130,21 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 		this.rightSet = rightSet;
 	}
 
+	// Copy constructor.
+	public ShareItem(ShareItem si) {
+		// Don't copy ID and zone ID. Copy just the data.
+		this.latest = si.latest;
+		this.sharerId = si.sharerId;
+		this.sharedEntityIdentifier = (EntityIdentifier) si.sharedEntityIdentifier.clone();
+		this.comment = si.comment;
+		this.daysToExpire = si.daysToExpire;
+		this.startDate = new Date(si.startDate.getTime());
+		this.endDate = new Date(si.endDate.getTime());
+		this.recipientType = si.recipientType;
+		this.recipientId = si.recipientId;
+		this.rightSet = (RightSet) si.rightSet.clone();
+	}
+	
 	@Override
 	public EntityIdentifier getEntityIdentifier() {
 		return new EntityIdentifier(getId(), getEntityType());
