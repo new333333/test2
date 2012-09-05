@@ -162,7 +162,7 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/with_user/{id}/library_entities")
-    public SearchResultList<BaseRestObject> getLibraryEntitiesSharedWithUser(@PathParam("id") Long userId,
+    public SearchResultList<SearchableObject> getLibraryEntitiesSharedWithUser(@PathParam("id") Long userId,
                                                       @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                       @QueryParam("keyword") String keyword,
                                                       @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -171,7 +171,7 @@ public class ShareResource extends AbstractResource {
         ShareItemSelectSpec spec = new ShareItemSelectSpec();
         spec.setRecipientsFromUserMembership(userId);
         List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
-        SearchResultList<BaseRestObject> results = new SearchResultList<BaseRestObject>(offset);
+        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
         if (shareItems.size()>0) {
             Junction criterion = Restrictions.conjunction();
             Junction searchContext = Restrictions.disjunction();

@@ -19,6 +19,7 @@ public class FolderEntryBriefBuilder extends DefinableEntityBriefBuilder impleme
     public FolderEntryBrief build(Map entry) {
         FolderEntryBrief model = new FolderEntryBrief();
         populateDefinableEntityBrief(model, entry, Constants.BINDER_ID_FIELD);
+        model.setEntryType((String) entry.get(Constants.ENTRY_TYPE_FIELD));
         model.setDocNumber((String) entry.get(Constants.DOCNUMBER_FIELD));
         String sortKey = (String) entry.get(Constants.SORTNUMBER_FIELD);
         if (sortKey!=null) {

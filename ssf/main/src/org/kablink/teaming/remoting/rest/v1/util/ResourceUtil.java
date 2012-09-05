@@ -60,6 +60,7 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.dom4j.Element;
 import org.kablink.util.Validator;
+import org.kablink.util.search.Constants;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -121,6 +122,11 @@ public class ResourceUtil {
     public static FolderEntry buildFolderEntry(org.kablink.teaming.domain.FolderEntry entry, boolean includeAttachments, boolean textDescriptions) {
         FolderEntry model = new FolderEntry();
         populateEntry(model, entry, includeAttachments, textDescriptions);
+        if (entry.isTop()) {
+            model.setEntryType(Constants.ENTRY_TYPE_ENTRY);
+        } else {
+            model.setEntryType(Constants.ENTRY_TYPE_REPLY);
+        }
         model.setDocLevel(entry.getDocLevel());
         model.setDocNumber(entry.getDocNumber());
         model.setReservation(buildHistoryStamp(entry.getReservation()));
@@ -358,17 +364,16 @@ public class ResourceUtil {
 	public static FileVersionProperties fileVersionFromFileAttachment(VersionAttachment va) {
         Long creatorId = va.getCreation().getPrincipal().getId();
         Long modifierId = va.getModification().getPrincipal().getId();
-        FileVersionProperties props = new FileVersionProperties(
-                va.getId(),
-                new HistoryStamp(new LongIdLinkPair(creatorId, LinkUriUtil.getUserLinkUri(creatorId)), va.getCreation().getDate()),
-                new HistoryStamp(new LongIdLinkPair(modifierId, LinkUriUtil.getUserLinkUri(modifierId)), va.getModification().getDate()),
-                Long.valueOf(va.getFileItem().getLength()),
-                Integer.valueOf(va.getVersionNumber()),
-                Integer.valueOf(va.getMajorVersion()),
-                Integer.valueOf(va.getMinorVersion()),
-                va.getFileItem().getDescription().getText(),
-                va.getFileStatus()
-        );
+        FileVersionProperties props = new FileVersionProperties();
+        props.setId(va.getId());
+        props.setCreation(new HistoryStamp(new LongIdLinkPair(creatorId, LinkUriUtil.getUserLinkUri(creatorId)), va.getCreation().getDate()));
+        props.setModification(new HistoryStamp(new LongIdLinkPair(modifierId, LinkUriUtil.getUserLinkUri(modifierId)), va.getModification().getDate()));
+        props.setLength(va.getFileItem().getLength());
+        props.setVersionNumber(va.getVersionNumber());
+        props.setMajorVersion(va.getMajorVersion());
+        props.setMinorVersion(va.getMinorVersion());
+        props.setNote(va.getFileItem().getDescription().getText());
+        props.setStatus(va.getFileStatus());
         LinkUriUtil.populateFileVersionLinks(props);
         return props;
 	}
