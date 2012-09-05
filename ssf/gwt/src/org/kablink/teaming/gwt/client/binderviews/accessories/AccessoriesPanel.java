@@ -54,8 +54,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveAccessoryStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -137,8 +137,13 @@ public class AccessoriesPanel extends ToolPanelBase
 	 * Synchronously loads the next part of the accessories panel.
 	 */
 	private void loadPart1Now() {
-		// For non-folder binders...
-		if (BinderType.FOLDER != m_binderInfo.getBinderType()) {
+		// What kind of binder are the accessories being shown on?
+		boolean isFolder      = m_binderInfo.isBinderFolder();
+		boolean isWorkspace   = ((!isFolder) && m_binderInfo.isBinderWorkspace());
+		boolean isProfileRoot = (isWorkspace && WorkspaceType.PROFILE_ROOT.equals(m_binderInfo.getWorkspaceType()));
+		
+		// For non-folder, non-profile root binders...
+		if ((!isFolder) && (!isProfileRoot)) {
 			// ...we always show the accessories panel when included in
 			// ...the view.
 			showAccessoryPanel();
