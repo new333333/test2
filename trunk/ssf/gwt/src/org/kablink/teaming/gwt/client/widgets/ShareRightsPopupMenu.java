@@ -49,11 +49,11 @@ import org.kablink.teaming.gwt.client.util.ShareRights;
 public class ShareRightsPopupMenu extends PopupMenu
 {
 	private VibeMenuItem m_viewMenuItem;
+	private VibeMenuItem m_editorMenuItem;
 	private VibeMenuItem m_contributorMenuItem;
-	private VibeMenuItem m_ownerMenuItem;
 	private SetShareRightsEvent m_setViewRightsEvent;
+	private SetShareRightsEvent m_setEditorRightsEvent;
 	private SetShareRightsEvent m_setContributorRightsEvent;
-	private SetShareRightsEvent m_setOwnerRightsEvent;
 
 	/**
 	 * 
@@ -62,17 +62,25 @@ public class ShareRightsPopupMenu extends PopupMenu
 	{
 		super( autoHide, modal, true );
 
-		// Add the "View" menu item.
-		m_setViewRightsEvent = new SetShareRightsEvent( ShareRights.VIEW );
+		// Add the "Viewer" menu item.
+		m_setViewRightsEvent = new SetShareRightsEvent( ShareRights.VIEWER );
 		m_viewMenuItem = addMenuItem( m_setViewRightsEvent, null, GwtTeaming.getMessages().shareDlg_view() );
 		
+		// Add the "Editor" menu item.
+		m_setEditorRightsEvent = new SetShareRightsEvent( ShareRights.EDITOR );
+		m_editorMenuItem = addMenuItem( m_setEditorRightsEvent, null, GwtTeaming.getMessages().shareDlg_editor() );
+
 		// Add the "Contributor" menu item.
 		m_setContributorRightsEvent = new SetShareRightsEvent( ShareRights.CONTRIBUTOR );
 		m_contributorMenuItem = addMenuItem( m_setContributorRightsEvent, null, GwtTeaming.getMessages().shareDlg_contributor() );
-
-		// Add the "Owner" menu item.
-		m_setOwnerRightsEvent = new SetShareRightsEvent( ShareRights.OWNER );
-		m_ownerMenuItem = addMenuItem( m_setOwnerRightsEvent, null, GwtTeaming.getMessages().shareDlg_owner() );
+	}
+	
+	/**
+	 * 
+	 */
+	public void hideContributorMenuItem()
+	{
+		m_contributorMenuItem.setVisible( false );
 	}
 	
 	/**
@@ -86,9 +94,17 @@ public class ShareRightsPopupMenu extends PopupMenu
 			
 			// Update the events that each menu item uses with the given ShareInfo
 			m_setViewRightsEvent.setShareInfo( shareInfo );
+			m_setEditorRightsEvent.setShareInfo( shareInfo );
 			m_setContributorRightsEvent.setShareInfo( shareInfo );
-			m_setOwnerRightsEvent.setShareInfo( shareInfo );
 		}
+	}
+	
+	/**
+	 * 
+	 */
+	public void showContributorMenuItem()
+	{
+		m_contributorMenuItem.setVisible( true );
 	}
 	
 	/**
@@ -98,8 +114,8 @@ public class ShareRightsPopupMenu extends PopupMenu
 	{
 		// Uncheck all of the menu items.
 		setMenuItemCheckedState( m_viewMenuItem, false );
+		setMenuItemCheckedState( m_editorMenuItem, false );
 		setMenuItemCheckedState( m_contributorMenuItem, false );
-		setMenuItemCheckedState( m_ownerMenuItem, false );
 		
 		// Check the appropriate menu item.
 		switch ( rights )
@@ -108,11 +124,11 @@ public class ShareRightsPopupMenu extends PopupMenu
 			setMenuItemCheckedState( m_contributorMenuItem, true );
 			break;
 			
-		case OWNER:
-			setMenuItemCheckedState( m_ownerMenuItem, true );
+		case EDITOR:
+			setMenuItemCheckedState( m_editorMenuItem, true );
 			break;
 			
-		case VIEW:
+		case VIEWER:
 			setMenuItemCheckedState(m_viewMenuItem, true );
 			break;
 			

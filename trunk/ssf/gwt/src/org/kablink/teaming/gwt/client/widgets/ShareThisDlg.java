@@ -628,6 +628,7 @@ public class ShareThisDlg extends DlgBox
 		int row;
 		int col;
 		int i;
+		InlineLabel typeLabel;
 		RemoveShareWidget removeWidget;
 		RecipientNameWidget recipientNameWidget;
 		
@@ -679,7 +680,9 @@ public class ShareThisDlg extends DlgBox
 		m_shareCellFormatter.setWordWrap( row, col, false );
 		m_shareCellFormatter.addStyleName( row, col, "shareThisDlg_RecipientTable_Cell" );
 		type = shareItem.getRecipientTypeAsString();
-		m_shareTable.setText( row, col, type );
+		typeLabel = new InlineLabel( type );
+		typeLabel.setTitle( type );
+		m_shareTable.setHTML( row, col, typeLabel.getElement().getString() );
 		++col;
 		
 		// Are we sharing more than 1 entity?
@@ -1427,7 +1430,7 @@ public class ShareThisDlg extends DlgBox
 	 */
 	private ShareRights getDefaultShareRights()
 	{
-		return ShareRights.VIEW;
+		return ShareRights.VIEWER;
 	}
 	
 	/**

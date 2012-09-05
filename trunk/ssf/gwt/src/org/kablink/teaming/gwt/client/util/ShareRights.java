@@ -39,9 +39,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public enum ShareRights implements IsSerializable
 {
-	VIEW,
+	VIEWER,
+	EDITOR,
 	CONTRIBUTOR,
-	OWNER,
 	
 	UNKNOWN
 }

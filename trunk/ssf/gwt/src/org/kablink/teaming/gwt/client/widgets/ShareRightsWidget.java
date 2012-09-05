@@ -114,6 +114,12 @@ public class ShareRightsWidget extends Composite
 		
 		m_shareRightsPopupMenu.setShareInfo( m_shareInfo );
 		m_shareRightsPopupMenu.showRelativeToTarget( this );
+		
+		// If we are dealing with a folder, show the "contributor" menu item.
+		if ( m_shareInfo.getEntityId().isBinder() )
+			m_shareRightsPopupMenu.showContributorMenuItem();
+		else
+			m_shareRightsPopupMenu.hideContributorMenuItem();
 	}
 	
 	/**
