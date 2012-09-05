@@ -85,8 +85,6 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -109,8 +107,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RadioButton;
-import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -132,17 +128,11 @@ public class ShareThisDlg extends DlgBox
 	private Image m_headerImg;
 	private Label m_headerNameLabel;
 	private Label m_headerPathLabel;
-	private TextArea m_msgTextArea;
-	private RadioButton m_viewRB;
-	private RadioButton m_contributorRB;
-	private RadioButton m_ownerRB;
 	private FindCtrl m_findCtrl;
 	private CheckBox m_notifyCheckbox;
 	private Image m_addExternalUserImg;
-	private InlineLabel m_expiresLabel;
 	private FlowPanel m_mainPanel;
 	private ImageResource m_deleteImgR;
-	private Image m_defaultExpirationImg;
 	private FlexTable m_shareTable;
 	private InlineLabel m_shareWithTeamsLabel;
 	private FlowPanel m_shareTablePanel;
@@ -160,7 +150,6 @@ public class ShareThisDlg extends DlgBox
 	private ShareExpirationValue m_defaultShareExpirationValue;
 	private ShareExpirationDlg m_shareExpirationDlg;
 	private EditShareNoteDlg m_editShareNoteDlg;
-	private EditSuccessfulHandler m_editDefaultExpirationHandler;
 	private ShareWithTeamsDlg m_shareWithTeamsDlg;
 	private EditSuccessfulHandler m_editShareWithTeamsHandler;
 
@@ -823,7 +812,6 @@ public class ShareThisDlg extends DlgBox
 		HTMLTable.RowFormatter mainRowFormatter;
 		FlexCellFormatter mainCellFormatter;
 		int row;
-		boolean showOldUI;
 		
 		mainTable = new FlexTable();
 		mainTable.setCellSpacing( 6 );
@@ -836,126 +824,6 @@ public class ShareThisDlg extends DlgBox
 
 		m_defaultShareExpirationValue = new ShareExpirationValue();
 		m_defaultShareExpirationValue.setType( ShareExpirationType.NEVER );
-		
-		showOldUI = false;
-		if ( showOldUI )
-		{
-			// Add the radio button for the sharing rights
-			{
-				FlowPanel rightsPanel;
-				
-				rightsPanel = new FlowPanel();
-				
-				m_viewRB = new RadioButton( "sharing-rights", GwtTeaming.getMessages().shareDlg_view() );
-				m_viewRB.addStyleName( "shareThisDlg_RightsRB" );
-				m_viewRB.setValue( Boolean.TRUE );
-				rightsPanel.add( m_viewRB );
-				
-				m_contributorRB = new RadioButton( "sharing-rights", GwtTeaming.getMessages().shareDlg_contributor() );
-				m_contributorRB.addStyleName( "shareThisDlg_RightsRB" );
-				m_contributorRB.setValue( Boolean.FALSE );
-				rightsPanel.add( m_contributorRB );
-				
-				m_ownerRB = new RadioButton( "sharing-rights", GwtTeaming.getMessages().shareDlg_owner() );
-				m_ownerRB.addStyleName( "shareThisDlg_RightsRB" );
-				m_ownerRB.setValue( Boolean.FALSE );
-				rightsPanel.add( m_ownerRB );
-				
-				mainTable.setText( row, 0, GwtTeaming.getMessages().shareDlg_rightsLabel() );
-				mainTable.setWidget( row, 1, rightsPanel );
-				
-				++row;
-			}
-			
-			// Add the default expiration controls
-			{
-				ImageResource imageResource;
-				ClickHandler clickHandler;
-				
-				mainTable.setText( row, 0, GwtTeaming.getMessages().shareDlg_expiresLabel() );
-			
-				m_expiresLabel = new InlineLabel( GwtTeaming.getMessages().shareDlg_expiresNever() );
-				m_expiresLabel.addStyleName( "shareThisDlg_DefaultExpiresLabel" );
-	
-				imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
-				m_defaultExpirationImg = new Image( imageResource );
-				m_defaultExpirationImg.getElement().setAttribute( "align", "absmiddle" );
-	
-				updateDefaultExpirationLabel();
-				
-				clickHandler = new ClickHandler()
-				{
-					@Override
-					public void onClick(ClickEvent event)
-					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								handleClickOnDefaultExpiration();
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				};
-				m_expiresLabel.addClickHandler( clickHandler );
-	
-				mainTable.setWidget( row, 1, m_expiresLabel );
-				
-				++row;
-			}
-			
-			// Add the controls to let the user enter the default Note
-			{
-				mainTable.getRowFormatter().setVerticalAlign( row, HasVerticalAlignment.ALIGN_TOP );
-	
-				// Add a "Note:" label before the textbox.
-				mainTable.setText( row, 0, GwtTeaming.getMessages().shareDlg_noteLabel() );
-				
-				m_msgTextArea = new TextArea();
-				m_msgTextArea.addKeyPressHandler( new KeyPressHandler()
-				{
-					@Override
-					public void onKeyPress( KeyPressEvent event )
-					{
-						int keyCode;
-						
-				        keyCode = event.getNativeEvent().getKeyCode();
-				        if ( (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
-				             && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
-				             && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
-				             && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN) )
-				        {
-							String text;
-							
-							text = m_msgTextArea.getText(); 
-							if ( text != null && text.length() > 253 )
-							{
-				        		// Suppress the current keyboard event.
-				        		m_msgTextArea.cancelKey();
-							}
-				        }
-					}
-				} );
-				m_msgTextArea.addStyleName( "shareThisDlg_TextArea" );
-				m_msgTextArea.addStyleName( "shareThisDlg_TextAreaBorder" );
-				mainTable.setWidget( row, 1, m_msgTextArea );
-				++row;
-			}
-			
-			// Add some space
-			{
-				FlowPanel spacerPanel;
-				
-				spacerPanel = new FlowPanel();
-				spacerPanel.getElement().getStyle().setMarginTop( 10, Unit.PX );
-				mainTable.setWidget( row, 1, spacerPanel );
-				++row;
-			}
-		}
 		
 		// Add the find control.
 		{
@@ -1153,41 +1021,6 @@ public class ShareThisDlg extends DlgBox
 	}
 
 	/**
-	 * 
-	 */
-	private void editDefaultExpiration()
-	{
-		if ( m_shareExpirationDlg != null )
-		{
-			if ( m_editDefaultExpirationHandler == null )
-			{
-				m_editDefaultExpirationHandler = new EditSuccessfulHandler()
-				{
-					@Override
-					public boolean editSuccessful( Object obj )
-					{
-						if ( obj instanceof ShareExpirationValue )
-						{
-							ShareExpirationValue expirationValue;
-							
-							expirationValue = (ShareExpirationValue) obj;
-							m_defaultShareExpirationValue.set( expirationValue );
-							
-							updateDefaultExpirationLabel();
-						}
-						
-						return true;
-					}
-				};
-			}
-			
-			// Invoke the "share expiration" dialog.
-			m_shareExpirationDlg.init( m_defaultShareExpirationValue, m_editDefaultExpirationHandler );
-			m_shareExpirationDlg.showRelativeToTarget( m_expiresLabel );
-		}
-	}
-	
-	/**
 	 * This method gets called when user user presses the OK push
 	 * button.  We will issue an ajax request to start the work of
 	 * sharing the selected entities with the selected users/groups/teams.
@@ -1346,23 +1179,11 @@ public class ShareThisDlg extends DlgBox
 	
 
 	/**
-	 * Return the text the user entered for the comment.
+	 * Return the default comment
 	 */
-	private String getComment()
+	private String getDefaultComment()
 	{
-		String text;
-		
-		text = "";
-		if ( m_msgTextArea != null )
-		{
-			text = m_msgTextArea.getText();
-			if ( text != null && text.length() >= 254 )
-			{
-				text = text.substring( 0, 253 );
-			}
-		}
-		
-		return text; 
+		return "";
 	}
 	
 	/**
@@ -1602,24 +1423,11 @@ public class ShareThisDlg extends DlgBox
 	
 
 	/**
-	 * Return the selected share rights
+	 * Return the default share rights
 	 */
-	private ShareRights getSelectedShareRights()
+	private ShareRights getDefaultShareRights()
 	{
-		if ( m_viewRB != null )
-		{
-			if (  m_viewRB.getValue() == Boolean.TRUE )
-				return ShareRights.VIEW;
-			
-			if ( m_contributorRB.getValue() == Boolean.TRUE )
-				return ShareRights.CONTRIBUTOR;
-			
-			if ( m_ownerRB.getValue() == Boolean.TRUE )
-				return ShareRights.OWNER;
-		}
-		
 		return ShareRights.VIEW;
-	
 	}
 	
 	/**
@@ -1653,7 +1461,7 @@ public class ShareThisDlg extends DlgBox
 				shareItem.setEntityName( getEntityName( nextEntityId ) );
 				shareItem.setRecipientName( emailAddress );
 				shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
-				shareItem.setShareRights( getSelectedShareRights() );
+				shareItem.setShareRights( getDefaultShareRights() );
 				shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
 				
 				// Is this external user already in the list?
@@ -1669,33 +1477,6 @@ public class ShareThisDlg extends DlgBox
 				}
 			}
 		}
-	}
-	
-	/**
-	 * 
-	 */
-	private void handleClickOnDefaultExpiration()
-	{
-		if ( m_shareExpirationDlg == null )
-		{
-			ShareExpirationDlg.createAsync( true, true, new ShareExpirationDlgClient()
-			{
-				@Override
-				public void onUnavailable() 
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( ShareExpirationDlg seDlg )
-				{
-					m_shareExpirationDlg = seDlg;
-					editDefaultExpiration();
-				}
-			} );
-		}
-		else
-			editDefaultExpiration();
 	}
 	
 	/**
@@ -1720,9 +1501,6 @@ public class ShareThisDlg extends DlgBox
 		// Set the column headers.  We do this now because the column headers vary
 		// depending on how many entities we are sharing.
 		setColumnHeaders();
-		
-		if ( m_msgTextArea != null )
-			m_msgTextArea.setText( "" );
 		
 		if ( m_findCtrl != null )
 		{
@@ -1883,7 +1661,7 @@ public class ShareThisDlg extends DlgBox
 										shareItem.setRecipientId( Long.valueOf( nextTeamInfo.getBinderId() ) );
 										shareItem.setRecipientName( nextTeamInfo.getTitle() );
 										shareItem.setRecipientType( GwtRecipientType.TEAM );
-										shareItem.setShareRights( getSelectedShareRights() );
+										shareItem.setShareRights( getDefaultShareRights() );
 										shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
 										
 										// Is this external user already in the list?
@@ -2009,18 +1787,6 @@ public class ShareThisDlg extends DlgBox
 		if ( listOfGwtShareItems != null && listOfGwtShareItems.size() > 0 )
 		{
 			Collections.sort( listOfGwtShareItems, new GwtShareItem.GwtShareItemComparator() );
-		}
-	}
-	
-	/**
-	 * Update the label that holds the default expiration value.
-	 */
-	private void updateDefaultExpirationLabel()
-	{
-		if ( m_defaultShareExpirationValue != null )
-		{
-			m_expiresLabel.setText( m_defaultShareExpirationValue.getValueAsString() );
-			m_expiresLabel.getElement().appendChild( m_defaultExpirationImg.getElement() );
 		}
 	}
 	
@@ -2241,9 +2007,9 @@ public class ShareThisDlg extends DlgBox
 						if ( findShareItem( shareItem ) == -1 )
 						{
 							// No
-							shareItem.setShareRights( getSelectedShareRights() );
+							shareItem.setShareRights( getDefaultShareRights() );
 							shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
-							shareItem.setComments( getComment() );
+							shareItem.setComments( getDefaultComment() );
 							
 							// Add the recipient to our list of recipients
 							addShare( shareItem, true );
