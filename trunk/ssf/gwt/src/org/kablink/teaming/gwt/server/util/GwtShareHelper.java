@@ -126,6 +126,21 @@ public class GwtShareHelper
 		User sharer,
 		GwtShareItem gwtShareItem )
 	{
+		ShareItem shareItem = buildShareItem(ami, sharer, gwtShareItem);
+		
+		ami.getSharingModule().addShareItem( shareItem );
+		
+		return shareItem;
+	}
+	
+	/**
+	 * Build a ShareItem from the given GwtShareItem object
+	 */
+	private static ShareItem buildShareItem(
+		AllModulesInjected ami,
+		User sharer,
+		GwtShareItem gwtShareItem )
+	{
 		ShareItem shareItem;
 		Date endDate = null;
 		RecipientType recipientType;
@@ -222,8 +237,6 @@ public class GwtShareHelper
 			
 			shareItem.setDaysToExpire( daysToExpire );
 			shareItem.setLatest( true );
-			
-			ami.getSharingModule().addShareItem( shareItem );
 		}		
 		
 		return shareItem;
@@ -989,13 +1002,13 @@ public class GwtShareHelper
 				if ( nextGwtShareItem.isDirty() )
 				{
 					// Yes
-					// Modify the existing ShareItem and mark it as not being the latest.
-					shareItem = sharingModule.getShareItem( shareItemId );
-					shareItem.setLatest( false );
-					sharingModule.modifyShareItem( shareItem );
+					// Build a new ShareItem with the new information.
+					shareItem = buildShareItem( ami, currentUser, nextGwtShareItem );
 					
-					// Create a new ShareItem with the new information.
-					shareItem = createShareItem( ami, currentUser, nextGwtShareItem );
+					// Modify the share by marking existing snapshot as not being the latest
+					// and persisting the new snapshot. 
+					sharingModule.modifyShareItem(shareItem,
+							sharingModule.getShareItem(shareItemId));
 
 					sendEmail = true;
 				}

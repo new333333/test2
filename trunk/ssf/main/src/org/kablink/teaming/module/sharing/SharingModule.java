@@ -39,6 +39,7 @@ import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.ShareItem;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.security.AccessControlException;
 
 /**
@@ -64,18 +65,19 @@ public interface SharingModule {
 	public boolean isSharingEnabled();
 
     /**
-     * Add a share item.
+     * Add a new share by adding a share item.
      * 
      * @param shareItem
      */
     public void addShareItem(ShareItem shareItem);
     
     /**
-     * Modify an existing share item.
+     * Modify an existing share by creating a new snapshot. The previous snapshot becomes an archive. 
      * 
-     * @param shareItem
+     * @param latestShareItem the new snapshot being added
+     * @param previousShareItem the previous snapshot of the share
      */
-    public void modifyShareItem(ShareItem shareItem);
+    public void modifyShareItem(ShareItem latestShareItem, ShareItem previousShareItem);
     
     /**
      * Delete an existing share item.
@@ -128,4 +130,5 @@ public interface SharingModule {
  	 * @return
  	 */
  	public DefinableEntity getSharedRecipient(ShareItem shareItem);
+
 }
