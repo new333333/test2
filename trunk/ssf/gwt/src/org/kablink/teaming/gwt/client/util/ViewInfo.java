@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,17 +36,16 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
  * Class used to communicate information about a view between the
  * client and server.
  * 
  * @author drfoster@novell.com
- *
  */
 public class ViewInfo implements IsSerializable, VibeRpcResponseData {
-	private BinderInfo m_binderInfo;				// If view type is binder, a BinderInfo object that describes it.
-	private ViewType   m_viewType = ViewType.OTHER;	//
+	private BinderInfo	m_binderInfo;	// If view type is binder, a BinderInfo object that describes it.
+	private String		m_entryViewUrl;	//
+	private ViewType	m_viewType;		//
 	
 	/**
 	 * Constructor method.
@@ -54,7 +53,11 @@ public class ViewInfo implements IsSerializable, VibeRpcResponseData {
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public ViewInfo() {
-		// Nothing to do.
+		// Initialize the super class...
+		super();
+		
+		// ...and any data members requiring it.
+		m_viewType = ViewType.OTHER;
 	}
 
 	/**
@@ -63,8 +66,11 @@ public class ViewInfo implements IsSerializable, VibeRpcResponseData {
 	 * @param viewType
 	 */
 	public ViewInfo(ViewType viewType) {
+		// Initialize this object...
 		this();
-		m_viewType = viewType;
+		
+		// ...and store the parameter.
+		setViewType(viewType);
 	}
 
 	/**
@@ -72,16 +78,18 @@ public class ViewInfo implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @return
 	 */
-	public boolean    isAdvancedSearchView() {return m_viewType == ViewType.ADVANCED_SEARCH;}
-	public boolean    isBinderView()         {return m_viewType == ViewType.BINDER;         }
-	public BinderInfo getBinderInfo()        {return m_binderInfo;                          }
-	public ViewType   getViewType()          {return m_viewType;                            }
+	public boolean    isAdvancedSearchView() {return  ViewType.ADVANCED_SEARCH.equals(m_viewType);                                                       }
+	public boolean    isBinderView()         {return (ViewType.BINDER.equals(         m_viewType) || ViewType.BINDER_WITH_ENTRY_VIEW.equals(m_viewType));}
+	public BinderInfo getBinderInfo()        {return m_binderInfo;                                                                                       }
+	public String     getEntryViewUrl()      {return m_entryViewUrl;                                                                                     }
+	public ViewType   getViewType()          {return m_viewType;                                                                                         }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @return
 	 */
-	public void setBinderInfo(BinderInfo binderInfo) {m_binderInfo = binderInfo;}	
-	public void setViewType(  ViewType   viewType)   {m_viewType   = viewType;  }	
+	public void setBinderInfo(  BinderInfo binderInfo)   {m_binderInfo   = binderInfo;  }
+	public void setEntryViewUrl(String     entryViewUrl) {m_entryViewUrl = entryViewUrl;}
+	public void setViewType(    ViewType   viewType)     {m_viewType     = viewType;    }	
 }

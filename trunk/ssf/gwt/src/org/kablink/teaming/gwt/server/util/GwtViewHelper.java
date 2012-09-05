@@ -4312,6 +4312,17 @@ public class GwtViewHelper {
 						// ...put them into effect.
 						ListFolderHelper.setFolderModeType(bs, userId, binderId, ModeType.valueOf(folderModeType));
 					}
+					
+					// Is the URL to view a specific entry within the
+					// folder?
+					String entryViewStyle = getQueryParameterString(nvMap, WebKeys.URL_ENTRY_VIEW_STYLE);
+					String entryId        = getQueryParameterString(nvMap, WebKeys.URL_ENTRY_ID        );
+					if (MiscUtil.hasString(entryViewStyle) && MiscUtil.hasString(entryId)) {
+						// Yes!  Adjust the ViewInfo accordingly.
+						vi.setViewType(ViewType.BINDER_WITH_ENTRY_VIEW);
+						vi.setEntryViewUrl(GwtServerHelper.getViewFolderEntryUrl(bs, request, binderId, Long.parseLong(entryId)));
+
+					}
 				}
 				
 				// Does it contain a filter operation?
