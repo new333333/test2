@@ -87,6 +87,7 @@ import org.kablink.teaming.gwt.client.event.ShowTrashEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.ShowTeamWSEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.ViewFolderEntryEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -580,10 +581,11 @@ public class ContentControl extends Composite
 			if ( null != vi )
 			{
 				// What type of view is it?
-				ViewType vt = vi.getViewType();
+				final ViewType vt = vi.getViewType();
 				switch ( vt )
 				{
 				case BINDER:
+				case BINDER_WITH_ENTRY_VIEW:
 					// Are we in UI debug mode?
 					final BinderInfo bi = vi.getBinderInfo();
 					if ( m_isDebugUI )
@@ -616,12 +618,27 @@ public class ContentControl extends Composite
 						public void viewReady()
 						{
 							GwtClientHelper.jsSetMainTitle(bi.getBinderTitle());
-							GwtTeaming.fireEventAsync(
-								new ContextChangedEvent(
-									new OnSelectBinderInfo(
-										bi,
-										url,
-										instigator )));
+							ScheduledCommand doViewReady = new ScheduledCommand()
+							{
+								@Override
+								public void execute()
+								{
+									GwtTeaming.fireEvent(
+										new ContextChangedEvent(
+											new OnSelectBinderInfo(
+												bi,
+												url,
+												instigator )));
+									
+									if ( ViewType.BINDER_WITH_ENTRY_VIEW.equals( vt ) )
+									{
+										GwtTeaming.fireEventAsync(
+											new ViewFolderEntryEvent(
+												vi.getEntryViewUrl() ));
+									}
+								}// end execute()
+							};
+							Scheduler.get().scheduleDeferred( doViewReady );
 						}//end viewReady()
 					};
 					
