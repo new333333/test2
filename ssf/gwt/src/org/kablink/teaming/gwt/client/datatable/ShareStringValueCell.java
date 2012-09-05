@@ -43,6 +43,7 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 
 /**
  * Data table cell that represents a list of string values 
@@ -87,18 +88,18 @@ public class ShareStringValueCell extends AbstractCell<List<ShareStringValue>> {
 		for (ShareStringValue ssv:  ssvList) {
 			// Generate a panel to hold the string.
 			VibeFlowPanel fp = new VibeFlowPanel();
-			fp.addStyleName("vibe-dataTableShareStringValue-panel displayBlock verticalAlignTop");
+			fp.addStyleName("vibe-dataTableShareStringValue-panel displayBlock verticalAlignMiddle");
 			if (0 < svsIndex) {
 				fp.addStyleName("margintop3px");
 			}
 			svsIndex += 1;
-			InlineLabel il = new InlineLabel(ssv.getValue());
-			il.addStyleName("vibe-dataTableShareStringValue-label");
+			Label l = new Label(ssv.getValue());
+			l.addStyleName("vibe-dataTableShareStringValue-label");
 			String addedStyle = ssv.getAddedStyle();
 			if (GwtClientHelper.hasString(addedStyle)) {
-				il.addStyleName(addedStyle);
+				l.addStyleName(addedStyle);
 			}
-			fp.add(il);
+			fp.add(l);
 			renderPanel.add(fp);
 		}
 		
