@@ -1293,6 +1293,10 @@ public class ShareThisDlg extends DlgBox
 		sharingData.setListOfShareItems( listOfShareItems );
 		sharingData.setListOfToBeDeletedShareItems( m_sharingInfo.getListOfToBeDeletedShareItems() );
 		
+		// Get who should be notified.
+		sharingData.setNotifyRecipients( m_notifyCheckbox.getValue() );
+		sharingData.setSendToValue( m_sendToWidget.getSendToValue() );
+		
 		// Issue an ajax request to share the entities.
 		ShareEntryCmd cmd = new ShareEntryCmd( sharingData );
 		GwtClientHelper.executeCommand( cmd, m_shareEntryCallback );
