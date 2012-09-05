@@ -608,6 +608,22 @@ public class ShareThisDlg extends DlgBox
 			m_shareTable.setWidget( row, col, expirationWidget );
 			++col;
 		}
+		
+		// Add the "Note" column
+		{
+			String note;
+			
+			m_shareCellFormatter.setWordWrap( row, col, false );
+			m_shareCellFormatter.addStyleName( row, col, "shareThisDlg_RecipientTable_Cell" );
+			note = shareItem.getComments();
+			if ( note != null && note.length() > 6 )
+			{
+				note = note.substring( 0, 6 );
+				note += "...";
+			}
+			m_shareTable.setText( row, col, note );
+			++col;
+		}
 
 		// Add the "remove share" widget
 		{
@@ -758,6 +774,44 @@ public class ShareThisDlg extends DlgBox
 
 			mainTable.setWidget( row, 1, m_expiresLabel );
 			
+			++row;
+		}
+		
+		// Add the controls to let the user enter the default Note
+		{
+			mainTable.getRowFormatter().setVerticalAlign( row, HasVerticalAlignment.ALIGN_TOP );
+
+			// Add a "Note:" label before the textbox.
+			mainTable.setText( row, 0, GwtTeaming.getMessages().shareDlg_noteLabel() );
+			
+			m_msgTextArea = new TextArea();
+			m_msgTextArea.addKeyPressHandler( new KeyPressHandler()
+			{
+				@Override
+				public void onKeyPress( KeyPressEvent event )
+				{
+					int keyCode;
+					
+			        keyCode = event.getNativeEvent().getKeyCode();
+			        if ( (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
+			             && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
+			             && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
+			             && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN) )
+			        {
+						String text;
+						
+						text = m_msgTextArea.getText(); 
+						if ( text != null && text.length() > 253 )
+						{
+			        		// Suppress the current keyboard event.
+			        		m_msgTextArea.cancelKey();
+						}
+			        }
+				}
+			} );
+			m_msgTextArea.addStyleName( "shareThisDlg_TextArea" );
+			m_msgTextArea.addStyleName( "shareThisDlg_TextAreaBorder" );
+			mainTable.setWidget( row, 1, m_msgTextArea );
 			++row;
 		}
 		
@@ -2153,10 +2207,7 @@ public class ShareThisDlg extends DlgBox
 	private void populateDlgNow()
 	{
 		FlexTable mainTable;
-		FlowPanel inputPanel;
 		FlowPanel tmpPanel;
-		Label tmpLabel;
-		Label comments;
 		int row;
 		
 		// Create the controls needed in the header
@@ -2193,58 +2244,22 @@ public class ShareThisDlg extends DlgBox
 		
 		row = mainTable.getRowCount();
 		
-		// Add some space between the list of recipients and the "send to" controls
-		tmpPanel = new FlowPanel();
-		tmpLabel = new Label();
-		tmpLabel.getElement().getStyle().setPaddingTop( 20, Unit.PX );
-		tmpPanel.add( tmpLabel );
-		mainTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
-		++row;
-		
-		mainTable.getRowFormatter().setVerticalAlign( row, HasVerticalAlignment.ALIGN_TOP );
-
-		// Add a "Send to:" label before the textbox.
-		comments = new Label( GwtTeaming.getMessages().shareDlg_sendToLabel() );
-		comments.addStyleName( "shareThisDlg_CommentsLabel" );
-		mainTable.setHTML( row, 0, comments.getElement().getInnerHTML() );
-		
-		// Create a textbox
-		inputPanel = new FlowPanel();
-		tmpPanel = new FlowPanel();
-		m_sendToWidget = new ShareSendToWidget();
-		m_sendToWidget.init( SendToValue.ALL_RECIPIENTS );
-		tmpPanel.add( m_sendToWidget );
-		inputPanel.add( tmpPanel );
-		m_msgTextArea = new TextArea();
-		m_msgTextArea.addKeyPressHandler( new KeyPressHandler()
+		// Create the "notify" controls
 		{
-			@Override
-			public void onKeyPress( KeyPressEvent event )
-			{
-				int keyCode;
-				
-		        keyCode = event.getNativeEvent().getKeyCode();
-		        if ( (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
-		             && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
-		             && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
-		             && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN) )
-		        {
-					String text;
-					
-					text = m_msgTextArea.getText(); 
-					if ( text != null && text.length() > 253 )
-					{
-		        		// Suppress the current keyboard event.
-		        		m_msgTextArea.cancelKey();
-					}
-		        }
-			}
-		} );
-		m_msgTextArea.addStyleName( "shareThisDlg_TextArea" );
-		m_msgTextArea.addStyleName( "shareThisDlg_TextAreaBorder" );
-		inputPanel.add( m_msgTextArea );
-		mainTable.setWidget( row, 1, inputPanel );
-		++row;
+			InlineLabel notifyLabel;
+
+			tmpPanel = new FlowPanel();
+			notifyLabel = new InlineLabel( GwtTeaming.getMessages().shareDlg_notifyLabel() );
+			notifyLabel.addStyleName( "shareThisDlg_NotifyLabel" );
+			tmpPanel.add( notifyLabel );
+			
+			m_sendToWidget = new ShareSendToWidget();
+			m_sendToWidget.init( SendToValue.ALL_RECIPIENTS );
+			tmpPanel.add( m_sendToWidget );
+			
+			mainTable.setWidget( row, 1, tmpPanel );
+			++row;
+		}
 		
 		// Show the dialog.
 		showDlg();
@@ -2323,6 +2338,10 @@ public class ShareThisDlg extends DlgBox
 		
 		m_shareTable.setText( 0, col, GwtTeaming.getMessages().shareExpires() );
 		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "90px" );
+		++col;
+		
+		m_shareTable.setText( 0, col, GwtTeaming.getMessages().shareNote() );
+		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "45px" );
 		++col;
 		
 		m_shareTable.setHTML( 0, col, "&nbsp;" );	// The delete image will go in this column.
