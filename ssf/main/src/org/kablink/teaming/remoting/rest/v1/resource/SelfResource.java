@@ -96,7 +96,7 @@ public class SelfResource extends AbstractResource {
         if (user.getWorkspace()!=null) {
             user.addAdditionalLink("my_file_folders", user.getWorkspace().getLink() + "/library_folders");
         }
-        user.addAdditionalLink("file_spaces", "/self/file_spaces");
+        user.addAdditionalLink("net_folders", "/self/net_folders");
         user.addAdditionalLink("shared_with_me", "/self/shared_with_me");
         user.addAdditionalLink("shared_by_me", "/self/shared_by_me");
         return user;
@@ -155,6 +155,13 @@ public class SelfResource extends AbstractResource {
     }
 
     @GET
+    @Path("/net_folders")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public BinderBrief getNetFolders() {
+        return getFakeNetFolders();
+    }
+
+    @GET
     @Path("/shared_with_me")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public BinderBrief getSharedWithMe() {
@@ -166,24 +173,6 @@ public class SelfResource extends AbstractResource {
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public BinderBrief getSharedByMe() {
         return getFakeSharedByMe();
-    }
-
-    @GET
-    @Path("/file_spaces")
-   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResultList<BinderBrief> getFileSpaces(
-                                                           @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                           @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        Criteria crit = new Criteria();
-        crit.add(in(Constants.DOC_TYPE_FIELD,            new String[]{Constants.DOC_TYPE_BINDER}));
-        crit.add(in(Constants.FAMILY_FIELD,              new String[]{Definition.FAMILY_FILE}));
-        crit.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
-        crit.add(in(Constants.IS_TOP_FOLDER_FIELD,       new String[]{Constants.TRUE}));
-        crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
-        Map map = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount);
-        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), map, "/self/file_spaces", null, offset);
-        return results;
     }
 
     private BinderBrief getFakeMyWorkspace() {
@@ -245,6 +234,23 @@ public class SelfResource extends AbstractResource {
         binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
 //        binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        return binder;
+    }
+
+    private BinderBrief getFakeNetFolders() {
+        BinderBrief binder = new BinderBrief();
+        //TODO: localize
+        binder.setTitle("Net Folders");
+        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
+        Long userId = getLoggedInUserId();
+        String baseUri = "/net_folders";
+        binder.addAdditionalLink("child_binders", baseUri);
+        //binder.addAdditionalLink("child_binder_tree", baseUri + "/binder_tree");
+        //binder.addAdditionalLink("child_files", baseUri + "/files");
+        binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
+        //binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
+        binder.addAdditionalLink("child_library_folders", baseUri);
+        //binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
         return binder;
     }
 }
