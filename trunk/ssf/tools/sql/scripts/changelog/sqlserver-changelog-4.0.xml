@@ -147,14 +147,13 @@
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_ShareItem"/>
             </column>
             <column name="zoneId" type="NUMERIC(19,0)"/>
-            <column name="creation_date" type="DATETIME"/>
-            <column name="creation_principal" type="NUMERIC(19,0)"/>
-            <column name="modification_date" type="DATETIME"/>
-            <column name="modification_principal" type="NUMERIC(19,0)"/>
+            <column name="latest" type="TINYINT"/>
+            <column name="sharerId" type="NUMERIC(19,0)"/>
             <column name="sharedEntity_type" type="INT"/>
             <column name="sharedEntity_id" type="NUMERIC(19,0)"/>
             <column name="comment" type="NVARCHAR(255)"/>
             <column name="daysToExpire" type="INT"/>
+            <column name="startDate" type="DATETIME"/>
             <column name="endDate" type="DATETIME"/>
             <column name="recipient_type" type="SMALLINT"/>
             <column name="recipient_id" type="NUMERIC(19,0)"/>
@@ -228,5 +227,10 @@
         <addColumn tableName="SS_FolderEntries">
 			<column name="hasEntryExternalAcl" type="TINYINT"/>
         </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+        <createIndex indexName="sharerId_shareitem" schemaName="dbo" tableName="SS_ShareItem" unique="false">
+            <column name="sharerId"/>
+        </createIndex>
     </changeSet>
 </databaseChangeLog>

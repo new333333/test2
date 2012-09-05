@@ -147,14 +147,13 @@
                 <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_SHAREITEM"/>
             </column>
             <column name="ZONEID" type="NUMBER(19,0)"/>
-            <column name="CREATION_DATE" type="TIMESTAMP(6)"/>
-            <column name="CREATION_PRINCIPAL" type="NUMBER(19,0)"/>
-            <column name="MODIFICATION_DATE" type="TIMESTAMP(6)"/>
-            <column name="MODIFICATION_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="LATEST" type="NUMBER(1,0)"/>
+            <column name="SHARERID" type="NUMBER(19,0)"/>
             <column name="SHAREDENTITY_TYPE" type="NUMBER(10,0)"/>
             <column name="SHAREDENTITY_ID" type="NUMBER(19,0)"/>
             <column name="COMMENT" type="VARCHAR2(255 CHAR)"/>
             <column name="DAYSTOEXPIRE" type="NUMBER(10,0)"/>
+            <column name="STARTDATE" type="TIMESTAMP(6)"/>
             <column name="ENDDATE" type="TIMESTAMP(6)"/>
             <column name="RECIPIENT_TYPE" type="NUMBER(2,0)"/>
             <column name="RECIPIENT_ID" type="NUMBER(19,0)"/>
@@ -231,5 +230,10 @@
         <addColumn tableName="SS_FOLDERENTRIES">
 			<column name="HASENTRYEXTERNALACL" type="NUMBER(1,0)"/>
         </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="23">
+        <createIndex indexName="SHARERID_SHAREITEM" tableName="SS_SHAREITEM" unique="false">
+            <column name="SHARERID"/>
+        </createIndex>
     </changeSet>
 </databaseChangeLog>
