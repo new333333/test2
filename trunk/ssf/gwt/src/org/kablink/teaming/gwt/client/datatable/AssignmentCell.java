@@ -61,6 +61,7 @@ import com.google.gwt.user.client.ui.Label;
  * @author drfoster@novell.com
  */
 public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
+	private boolean							m_isIE;		//
 	private GwtTeamingDataTableImageBundle	m_images;	//
 	
 	/*
@@ -151,6 +152,7 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 		
 		// ...and initialize everything else.
 		m_images = GwtTeaming.getDataTableImageBundle();
+		m_isIE   = GwtClientHelper.jsIsIE();
 	}
 
 	/*
@@ -279,7 +281,7 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 			
 			// Generate a panel to hold the assignment...
 			VibeFlowPanel fp = new VibeFlowPanel();
-			fp.addStyleName("vibe-dataTableAssignment-panel displayBlock verticalAlignTop");
+			fp.addStyleName("vibe-dataTableAssignment-panel displayBlock verticalAlignMiddle");
 			if (0 < assignmentIndex) {
 				fp.addStyleName("margintop3px");
 			}
@@ -292,7 +294,7 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 				GwtPresenceInfo presence = ai.getPresence();
 				PresenceControl presenceControl = new PresenceControl(String.valueOf(ai.getPresenceUserWSId()), false, false, false, presence);
 				presenceControl.setImageAlignment("top");
-				presenceControl.addStyleName("vibe-dataTableAssignment-control displayInline verticalAlignTop");
+				presenceControl.addStyleName("vibe-dataTableAssignment-control displayInline verticalAlignMiddle");
 				presenceControl.setAnchorStyleName("cursorPointer");
 				presenceControl.getElement().setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, (VibeDataTableConstants.CELL_WIDGET_PRESENCE + assignmentIndexTail));
 				presenceControl.setImageOverride(getPresenceImage(ai));
@@ -302,6 +304,9 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 				// ...and add a name link for it.
 				Label presenceLabel = new Label(ai.getTitle());
 				presenceLabel.addStyleName("vibe-dataTableAssignment-label vibe-dataTableAssignment-enabled");
+				if (m_isIE) {
+					presenceLabel.addStyleName("vibe-dataTableAssignment-labelIE");
+				}
 				presenceLabel.getElement().setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, (VibeDataTableConstants.CELL_WIDGET_PRESENCE_LABEL + assignmentIndexTail));
 				if (hasHover) {
 					presenceLabel.setTitle(hover);
@@ -315,7 +320,7 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 				// image...
 				assignmentIndex += 1;
 				VibeFlowPanel imgPanel = new VibeFlowPanel();
-				imgPanel.addStyleName("vibe-dataTableAssignment-control displayInline verticalAlignTop");
+				imgPanel.addStyleName("vibe-dataTableAssignment-control displayInline verticalAlignMiddle");
 				Image assigneeImg = new Image();
 				assigneeImg.addStyleName("vibe-dataTableAssignment-image");
 				assigneeImg.setUrl(GwtClientHelper.getRequestInfo().getImagesPath() + ai.getPresenceDude());
@@ -329,6 +334,9 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 				String assigneeLabel = (ai.getTitle() + " " + membersString);
 				Label assignee = new Label(assigneeLabel);
 				assignee.addStyleName("vibe-dataTableAssignment-label vibe-dataTableAssignment-enabled");
+				if (m_isIE) {
+					assignee.addStyleName("vibe-dataTableAssignment-labelIE");
+				}
 				if (hasHover) {
 					assignee.setTitle(hover);
 				}

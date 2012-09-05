@@ -778,10 +778,10 @@
 	margin-left: 40px;
 }
 
-.verticalAlignTop
-{
-	vertical-align: top;
-}
+.verticalAlignTop     {vertical-align: top;}
+.verticalAlignTop2    {vertical-align: top !important;}
+.verticalAlignMiddle  {vertical-align: middle;}
+.verticalAlignMiddle2 {vertical-align: middle !important;}
 
 /* The following two styles are used to prevent an entry's description from starting */
 /* on a new line in the activity stream control. */
