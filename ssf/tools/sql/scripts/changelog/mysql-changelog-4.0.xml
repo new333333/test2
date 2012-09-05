@@ -149,11 +149,11 @@
             <column name="zoneId" type="BIGINT"/>
             <column name="latest" type="BIT"/>
             <column name="sharerId" type="BIGINT"/>
-            <column name="startDate" type="DATETIME"/>            
             <column name="sharedEntity_type" type="INT"/>
             <column name="sharedEntity_id" type="BIGINT"/>
             <column name="comment" type="VARCHAR(255)"/>
             <column name="daysToExpire" type="INT"/>
+            <column name="startDate" type="DATETIME"/>            
             <column name="endDate" type="DATETIME"/>
             <column name="recipient_type" type="SMALLINT"/>
             <column name="recipient_id" type="BIGINT"/>
