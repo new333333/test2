@@ -730,6 +730,8 @@ public class GwtViewHelper {
 			
 			fixupAIs(     getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY),                         principalTitles, userPresence, presenceUserWSIds, avatarUrls);
 			fixupAIs(     getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       principalTitles, userPresence, presenceUserWSIds, avatarUrls);
+			fixupAIGroups(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       principalTitles, groupCounts                                );
+			fixupAITeams( getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       teamTitles,      teamCounts                                 );
 		}		
 
 		// Finally, one last scan through the List<FolderRow>'s...
