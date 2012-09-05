@@ -569,6 +569,12 @@
 	padding-left: 2px;
 }
 
+.shareThisDlg_NoteLabel
+{
+	color: #5691A6;
+	padding-left: 4px;
+}
+
 .shareThisDlg_NotifyLabel
 {
 	padding-right: 4px;
@@ -585,7 +591,7 @@
 
 .shareThisDlg_RecipientTablePanel
 {
-	width: 570px;
+	width: 610px;
 }
 
 .shareThisDlg_RecipientTablePanelHeight
@@ -616,7 +622,7 @@
 	padding-left: 4px;
 }
 
-.shareThisDlg_RightsLabel:hover, .shareThisDlg_ExpiresLabel:hover, .shareThisDlg_DefaultExpiresLabel:hover, .shareThisDlg_shareWithTeamsLink:hover
+.shareThisDlg_RightsLabel:hover, .shareThisDlg_ExpiresLabel:hover, .shareThisDlg_DefaultExpiresLabel:hover, .shareThisDlg_shareWithTeamsLink:hover, .shareThisDlg_NoteLabel:hover
 {
 	cursor: pointer;
 	background: url(images/blends/teal_slice.png) repeat-x;
@@ -4365,6 +4371,85 @@ td.datePickerMonth {
 {
 	margin-right: 4px;
 	text-align: center; 
+}
+
+
+/**
+ * Styles used in the Edit Note Wiget
+ */
+.editNoteWidget
+{
+	background-color: #F6F6F6;
+	border: 1px solid #C4C4C4;
+	left: 50px;
+	margin-bottom: 10px;
+	margin-top: .5em;
+	padding: 5px;
+	position: relative;
+	width: 450px;
+}
+
+.editNoteWidget_TextArea
+{
+	background-color: transparent;
+	border: 0 none;
+	color: #353838;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 14px;
+	height: 45px;
+	padding: 5px;
+	resize: none;
+	width: 95%;
+}
+
+.editNoteWidget_Footer
+{
+	margin-bottom: 5px;
+	margin-top: .5em;
+	text-align: right;
+	width: 450px;
+}
+
+.editNoteWidget_Btn
+{
+	background: #949494 none repeat scroll 0 0;
+	color: #FFFFFF;
+	cursor: pointer;
+	font-size: 12px;
+	margin-right: 3px;
+	padding: 2px 10px;
+}
+
+
+/**
+ * Styles used in the Edit Share Note dialog
+ */
+.editShareNoteDlg_table
+{
+}
+
+.editShareNoteDlg_TextArea
+{
+	background-color: transparent;
+	border: 0 none;
+	color: #353838;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 14px;
+	height: 45px;
+	padding: 5px;
+	resize: none;
+	width: 350px;
+}
+
+.editShareNoteDlg_TextAreaBorder
+{
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: 1px;
+}
+
+.editShareNoteDlg_MainPanel
+{
 }
 
 /* End */ 
