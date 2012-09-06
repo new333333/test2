@@ -68,6 +68,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -480,10 +481,11 @@ public class GwtViewHelper {
 			catch (Exception e) {
 				// No!  Add an error  to the error list.
 				String messageKey;
-				if      (e instanceof AccessControlException) messageKey = "addNewFolderError.AccssControlException";
-				else if (e instanceof WriteFilesException)    messageKey = "addNewFolderError.WriteFilesException";
-				else if (e instanceof TitleException)		  messageKey = "addNewFolderError.TitleException";
-				else                                          messageKey = "addNewFolderError.OtherException";
+				if      (e instanceof AccessControlException)          messageKey = "addNewFolderError.AccssControlException";
+				else if (e instanceof IllegalCharacterInNameException) messageKey = "addNewFolderError.IllegalCharacterInNameException";
+				else if (e instanceof WriteFilesException)             messageKey = "addNewFolderError.WriteFilesException";
+				else if (e instanceof TitleException)		           messageKey = "addNewFolderError.TitleException";
+				else                                                   messageKey = "addNewFolderError.OtherException";
 				reply.addError(NLT.get(messageKey, new String[]{folderName}));
 			}
 
