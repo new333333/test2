@@ -252,7 +252,7 @@ public class GwtShareHelper
 	{
 		if ( m_contributorRightSet == null )
 		{
-			m_contributorRightSet = ShareItem.Role.CONTRIBUTOR.getRightSet();
+			m_contributorRightSet = ShareItem.Role.EDITOR.getRightSet();
 		}
 		
 		return m_contributorRightSet;
@@ -510,7 +510,7 @@ public class GwtShareHelper
 	{
 		if ( m_editorRightSet == null )
 		{
-			m_editorRightSet = ShareItem.Role.OWNER.getRightSet();
+			m_editorRightSet = ShareItem.Role.EDITOR.getRightSet();
 		}
 		
 		return m_editorRightSet;
@@ -609,7 +609,7 @@ public class GwtShareHelper
 			break;
 		
 		case VIEWER:
-			rightSet = getViewRightSet();
+			rightSet = getViewerRightSet();
 			break;
 			
 		case UNKNOWN:
@@ -632,7 +632,7 @@ public class GwtShareHelper
 			RightSet tmpRightSet;
 			
 			// Is the given RightSet equal to the "View" RightSet
-			tmpRightSet = getViewRightSet();
+			tmpRightSet = getViewerRightSet();
 			if ( areRightSetsEqual( rightSet, tmpRightSet ) )
 			{
 				// Yes
@@ -759,13 +759,13 @@ public class GwtShareHelper
 	}
 
 	/**
-	 * Return the RightSet that corresponds to the "View" rights
+	 * Return the RightSet that corresponds to the "Viewer" rights
 	 */
-	private static RightSet getViewRightSet()
+	private static RightSet getViewerRightSet()
 	{
 		if ( m_viewRightSet == null )
 		{
-			m_viewRightSet = ShareItem.Role.VIEW.getRightSet();
+			m_viewRightSet = ShareItem.Role.VIEWER.getRightSet();
 		}
 		
 		return m_viewRightSet;
