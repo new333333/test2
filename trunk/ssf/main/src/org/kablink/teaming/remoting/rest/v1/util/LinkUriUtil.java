@@ -167,6 +167,7 @@ public class LinkUriUtil {
         populateBinderLinks(model);
         model.addAdditionalLink("child_workspaces", model.getLink() + "/workspaces");
         model.addAdditionalLink("child_folders", model.getLink() + "/folders");
+        model.addAdditionalLink("recent_activity", model.getLink() + "/recent_activity");
     }
 
     public static void populateFolderLinks(BaseRestObject model) {
