@@ -32,17 +32,86 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * This class represents the different share rights
  */
-public enum ShareRights implements IsSerializable
+public class ShareRights implements IsSerializable
 {
-	VIEWER,
-	EDITOR,
-	CONTRIBUTOR,
+	private AccessRights m_accessRights;
+	private boolean m_canShareWithOthers;
 	
-	UNKNOWN
+	/**
+	 * 
+	 */
+	public enum AccessRights implements IsSerializable
+	{
+		VIEWER,
+		EDITOR,
+		CONTRIBUTOR,
+		
+		UNKNOWN
+	}
+	
+	/**
+	 * 
+	 */
+	public ShareRights()
+	{
+		m_accessRights = AccessRights.UNKNOWN;
+		m_canShareWithOthers = false;
+	}
+	
+	/**
+	 * 
+	 */
+	public AccessRights getAccessRights()
+	{
+		return m_accessRights;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getCanShareWithOthers()
+	{
+		return m_canShareWithOthers;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getShareRightsAsString()
+	{
+		if ( m_accessRights == ShareRights.AccessRights.VIEWER )
+			return GwtTeaming.getMessages().shareDlg_viewer();
+		
+		if ( m_accessRights == ShareRights.AccessRights.CONTRIBUTOR )
+			return GwtTeaming.getMessages().shareDlg_contributor();
+		
+		if ( m_accessRights == ShareRights.AccessRights.EDITOR )
+			return GwtTeaming.getMessages().shareDlg_editor();
+		
+		return "Unknown";
+	}
+	
+	/**
+	 * 
+	 */
+	public void setAccessRights( AccessRights accessRights )
+	{
+		m_accessRights = accessRights;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCanShareWithOthers( boolean canShare )
+	{
+		m_canShareWithOthers = canShare;
+	}
 }
 

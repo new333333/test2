@@ -4076,7 +4076,7 @@ public class GwtViewHelper {
 				access = "";
 			}
 			else {
-				switch (rights) {
+				switch (rights.getAccessRights()) {
 				default:
 				case UNKNOWN:      access = "";                                        break;
 				case CONTRIBUTOR:  access = NLT.get("collections.access.contributor"); break;

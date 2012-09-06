@@ -528,6 +528,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_DiscussionWSView();
 	String codeSplitFailure_EditBrandingDlg();
 	String codeSplitFailure_EditShareNoteDlg();
+	String codeSplitFailure_EditShareRightsDlg();
 	String codeSplitFailure_EmailNotificationDlg();
 	String codeSplitFailure_EntryMenuPanel();
 	String codeSplitFailure_ExtensionsConfig();
@@ -1163,7 +1164,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_shareLabel();
 	String shareDlg_sharingLabel();
 	String shareDlg_addExternalUserTitle();
-	String shareDlg_view();
+	String shareDlg_viewer();
 	String shareEntityName();
 	String shareErrors();
 	String shareExpires();
@@ -1924,5 +1925,13 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the Edit Share Note dialog
 	String editShareNoteDlg_caption();
 	String editShareNoteDlg_noteLabel();
+
+	// Strings used in the Edit Share Rights dialog
+	String editShareRightsDlg_CanShareLabel();
+	String editShareRightsDlg_caption();
+	String editShareRightsDlg_ContributorLabel();
+	String editShareRightsDlg_EditorLabel();
+	String editShareRightsDlg_GrantRightsLabel();
+	String editShareRightsDlg_ViewerLabel();
 	
 }// end GwtTeamingMessages

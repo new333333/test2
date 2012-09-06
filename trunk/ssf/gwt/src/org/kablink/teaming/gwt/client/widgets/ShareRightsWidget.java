@@ -32,14 +32,11 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-import java.util.ArrayList;
-import java.util.List;
 
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.SetShareRightsEvent;
-import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
+import org.kablink.teaming.gwt.client.widgets.EditShareRightsDlg.EditShareRightsDlgClient;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -48,31 +45,20 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * This widget is used to display the rights for a given share and allow the user
  * to change the rights.
  */
 public class ShareRightsWidget extends Composite
-	implements ClickHandler, SetShareRightsEvent.Handler
+	implements ClickHandler
 {
 	private GwtShareItem m_shareInfo;
 	private InlineLabel m_rightsLabel;
 	private Image m_rightsImg;
+	private EditSuccessfulHandler m_editShareRightsHandler;
 
-	private List<HandlerRegistration> m_registeredEventHandlers;
-	
-	// The following defines the TeamingEvents that are handled by
-	// this class.  See EventHelper.registerEventHandlers() for how
-	// this array is used.
-	private static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[]
-    {
-		// Search events.
-		TeamingEvents.SET_SHARE_RIGHTS,
-	};
-	
-	private static ShareRightsPopupMenu m_shareRightsPopupMenu;
+	private static EditShareRightsDlg m_editShareRightsDlg;
 	
 	
 	/**
@@ -93,46 +79,63 @@ public class ShareRightsWidget extends Composite
 		m_rightsImg.getElement().setAttribute( "align", "absmiddle" );
 		m_rightsLabel.getElement().appendChild( m_rightsImg.getElement() );
 
-		registerEvents();
-		
 		initWidget( m_rightsLabel );
 	}
 
 	/**
 	 * This method gets called when the user clicks on the current rights a user has.
-	 * We will pop up a menu to let the user change the rights.
+	 * We will pop up a dialog to let the user change the rights.
 	 */
-	private void handleClickOnShareRights()
+	private void invokeEditShareRightsDlg()
 	{
-		// Have we created the popup menu yet?
-		if ( m_shareRightsPopupMenu == null )
+		if ( m_editShareRightsDlg != null )
 		{
-			// No
-			// Create a pop-up menu that can be used to change the share rights.
-			m_shareRightsPopupMenu = new ShareRightsPopupMenu( true, true );
+			if ( m_editShareRightsHandler == null )
+			{
+				m_editShareRightsHandler = new EditSuccessfulHandler()
+				{
+					@Override
+					public boolean editSuccessful( Object obj )
+					{
+						if ( obj instanceof Boolean )
+						{
+							Boolean retValue;
+							
+							// Did the "Edit Share Rights" dialog successfully update
+							// our GwtShareItem.
+							retValue = (Boolean) obj;
+							if ( retValue == true )
+								updateRightsLabel();
+						}
+
+						return true;
+					}
+				};
+			}
+			
+			// Invoke the "edit share rights" dialog.
+			m_editShareRightsDlg.init( m_shareInfo, m_editShareRightsHandler );
+			m_editShareRightsDlg.showRelativeToTarget( m_rightsLabel );
 		}
-		
-		m_shareRightsPopupMenu.setShareInfo( m_shareInfo );
-		m_shareRightsPopupMenu.showRelativeToTarget( this );
-		
-		// If we are dealing with a folder, show the "contributor" menu item.
-		if ( m_shareInfo.getEntityId().isBinder() )
-			m_shareRightsPopupMenu.showContributorMenuItem();
 		else
-			m_shareRightsPopupMenu.hideContributorMenuItem();
-	}
-	
-	/**
-	 * Called when the dialog is attached.
-	 * 
-	 * Overrides the Widget.onAttach() method.
-	 */
-	@Override
-	public void onAttach()
-	{
-		// Let the widget attach and then register our event handlers.
-		super.onAttach();
-		registerEvents();
+		{
+			EditShareRightsDlg.createAsync( true, true, new EditShareRightsDlgClient()
+			{
+				@Override
+				public void onUnavailable() 
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( EditShareRightsDlg esrDlg )
+				{
+					m_editShareRightsDlg = esrDlg;
+					invokeEditShareRightsDlg();
+				}
+			} );
+			
+		}
 	}
 	
 	/**
@@ -148,89 +151,12 @@ public class ShareRightsWidget extends Composite
 			@Override
 			public void execute() 
 			{
-				handleClickOnShareRights();
+				invokeEditShareRightsDlg();
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
 	}
 
-	/**
-	 * Called when this widget is detached.
-	 * 
-	 * Overrides the Widget.onDetach() method.
-	 */
-	@Override
-	public void onDetach()
-	{
-		// Let the widget detach and then unregister our event
-		// handlers.
-		super.onDetach();
-		unregisterEvents();
-	}
-	
-	/**
-	 * This gets called when the user select one of the menu items in the
-	 * ShareRightsPopupMenu.
-	 */
-	@Override
-	public void onSetShareRights( SetShareRightsEvent event )
-	{
-		GwtShareItem targetShareInfo;
-		
-		targetShareInfo = event.getShareInfo();
-		if ( m_shareInfo != null && targetShareInfo != null )
-		{
-			// Was this event meant for us?
-			if ( m_shareInfo.equals( targetShareInfo ) )
-			{
-				// Yes
-				m_shareInfo.setShareRights( event.getShareRights() );
-				m_shareInfo.setIsDirty( true );
-		
-				updateRightsLabel();
-			}
-		}
-	}
-	
-	/*
-	 * Registers any global event handlers that need to be registered.
-	 */
-	private void registerEvents()
-	{
-		// If we having allocated a list to track events we've
-		// registered yet...
-		if ( null == m_registeredEventHandlers )
-		{
-			// ...allocate one now.
-			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
-		}
-
-		// If the list of registered events is empty...
-		if ( m_registeredEventHandlers.isEmpty() )
-		{
-			// ...register the events.
-			EventHelper.registerEventHandlers(
-										GwtTeaming.getEventBus(),
-										REGISTERED_EVENTS,
-										this,
-										m_registeredEventHandlers );
-		}
-	}
-
-	/*
-	 * Unregisters any global event handlers that may be registered.
-	 */
-	public void unregisterEvents()
-	{
-		// If we have a non-empty list of registered events...
-		if ( ( null != m_registeredEventHandlers ) && ( ! ( m_registeredEventHandlers.isEmpty() ) ) )
-		{
-			// ...unregister them.  (Note that this will also empty the
-			// ...list.)
-			EventHelper.unregisterEventHandlers( m_registeredEventHandlers );
-		}
-	}
-	
 	/**
 	 * 
 	 */

@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.util;
 import java.util.Comparator;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -103,7 +104,7 @@ public class GwtShareItem
 		m_recipientName = null;
 		m_recipientId = null;
 		m_recipientType = GwtRecipientType.UNKNOWN;
-		m_shareRights = ShareRights.VIEWER;
+		m_shareRights = new ShareRights();
 		m_shareExpirationValue = null;
 		m_isDirty = false;
 		m_isExpired = false;
@@ -282,14 +283,8 @@ public class GwtShareItem
 	 */
 	public String getShareRightsAsString()
 	{
-		if ( m_shareRights == ShareRights.VIEWER )
-			return GwtTeaming.getMessages().shareDlg_view();
-		
-		if ( m_shareRights == ShareRights.CONTRIBUTOR )
-			return GwtTeaming.getMessages().shareDlg_contributor();
-		
-		if ( m_shareRights == ShareRights.EDITOR )
-			return GwtTeaming.getMessages().shareDlg_editor();
+		if ( m_shareRights != null )
+			return m_shareRights.getShareRightsAsString();
 		
 		return "Unknown";
 	}
@@ -393,6 +388,14 @@ public class GwtShareItem
 	/**
 	 * 
 	 */
+	public void setShareCanShareWithOthers( boolean canShareWithOthers )
+	{
+		m_shareRights.setCanShareWithOthers( canShareWithOthers );
+	}
+	
+	/**
+	 * 
+	 */
 	public void setShareExpirationValue( ShareExpirationValue value )
 	{
 		m_shareExpirationValue = new ShareExpirationValue( value );
@@ -401,9 +404,9 @@ public class GwtShareItem
 	/**
 	 * 
 	 */
-	public void setShareRights( ShareRights shareRights )
+	public void setShareAccessRights( AccessRights accessRights )
 	{
-		m_shareRights = shareRights;
+		m_shareRights.setAccessRights( accessRights );
 	}
 	
 	/**
