@@ -63,7 +63,6 @@ import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
-import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -74,7 +73,6 @@ import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.PostingDef;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WeekendsAndHolidaysConfig;
@@ -1470,27 +1468,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     		Collection<Long> bccIds, String subject, Description body) throws Exception {
     	// Always use the initial form of the method.
     	return sendMail(null, ids, teamIds, emailAddresses, ccIds, bccIds, subject, body, false); 
-    }
-    
-	/**
-	 * Send a share notification mail message to a collection of users and/or explicit email addresses.
-	 *   
-	 * @param share
-	 * @param sharedEntity
-	 * @param ids - toList
-	 * @param emailAddresses
-	 * @param ccIds - ccoList
-	 * @param bccIds - bccList
-	 * 
-	 * @return
-	 * 
-	 * @throws Exception
-	 */
-    @Override
-	public Map<String, Object> sendMail(ShareItem share, DefinableEntity sharedEntity, Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, Collection<Long> ccIds, 
-    		Collection<Long> bccIds) throws Exception {
-//!		...this needs to be implemented...
-    	return null;
     }
     
     private Set<InternetAddress> getEmail(Collection<Long>ids, List errors) {
