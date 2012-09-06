@@ -80,6 +80,7 @@ public class GroupResource extends AbstractPrincipalResource {
         if (maxCount!=null) {
             options.put(ObjectKeys.SEARCH_MAX_HITS, maxCount);
         }
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         Map resultMap = getProfileModule().getGroups(options);
         SearchResultList<GroupBrief> results = new SearchResultList<GroupBrief>();
         SearchResultBuilderUtil.buildSearchResults(results, new GroupBriefBuilder(textDescriptions), resultMap, "/groups", nextParams, offset);

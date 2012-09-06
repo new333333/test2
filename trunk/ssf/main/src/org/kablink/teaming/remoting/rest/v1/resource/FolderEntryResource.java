@@ -88,7 +88,9 @@ public class FolderEntryResource extends AbstractDefinableEntityResource {
         Document queryDoc = buildQueryDocument("<query/>", buildEntriesAndRepliesCriterion());
         Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(textDescriptions), folderEntries, "/folder_entries", null, offset);
+        Map<String, String> nextParams = new HashMap<String, String>();
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(textDescriptions), folderEntries, "/folder_entries", nextParams, offset);
         return results;
 	}
 
@@ -102,7 +104,9 @@ public class FolderEntryResource extends AbstractDefinableEntityResource {
         Document queryDoc = buildQueryDocument(query, buildEntriesAndRepliesCriterion());
         Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(textDescriptions), folderEntries, "/folder_entries/legacy_query", null, offset);
+        Map<String, String> nextParams = new HashMap<String, String>();
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(textDescriptions), folderEntries, "/folder_entries/legacy_query", nextParams, offset);
         return results;
 	}
 

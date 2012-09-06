@@ -113,6 +113,7 @@ public class UserResource extends AbstractPrincipalResource {
         if (maxCount!=null) {
             options.put(ObjectKeys.SEARCH_MAX_HITS, maxCount);
         }
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         Map resultMap = getProfileModule().getUsers(options);
         SearchResultList<UserBrief> results = new SearchResultList<UserBrief>();
         SearchResultBuilderUtil.buildSearchResults(results, new UserBriefBuilder(textDescriptions), resultMap, nextUrl, nextParams, offset);

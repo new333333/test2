@@ -55,6 +55,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import java.util.HashMap;
 import java.util.Map;
 
 @Path("/binders")
@@ -78,12 +79,14 @@ public class BinderResource extends AbstractResource {
                                                                   @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                                   @QueryParam("first") @DefaultValue("0") Integer offset,
                                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-           String query = getRawInputStreamAsString(request);
-           Document queryDoc = buildQueryDocument(query, buildBindersCriterion());
-           Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
-           SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-           SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/binders/legacy_query", null, offset);
-           return results;
+        String query = getRawInputStreamAsString(request);
+        Document queryDoc = buildQueryDocument(query, buildBindersCriterion());
+        Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
+        Map<String, String> nextParams = new HashMap<String, String>();
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/binders/legacy_query", nextParams, offset);
+        return results;
    	}
 
     /**

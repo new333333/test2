@@ -80,7 +80,9 @@ public class NetFoldersResource extends AbstractResource {
         crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
         Map map = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), map, "/net_folders", null, offset);
+        Map<String, String> nextParams = new HashMap<String, String>();
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), map, "/net_folders", nextParams, offset);
         return results;
     }
 
@@ -118,6 +120,7 @@ public class NetFoldersResource extends AbstractResource {
                 //TODO: URL encode the keyword
                 nextParams.put("keyword", keyword);
             }
+            nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
             Criteria crit = new Criteria();
             crit.add(criterion);
             Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
