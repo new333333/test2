@@ -87,9 +87,6 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 public class GwtShareHelper 
 {
 	protected static Log m_logger = LogFactory.getLog( GwtShareHelper.class );
-	private static org.kablink.teaming.security.function.WorkAreaOperation.RightSet m_viewRightSet;
-	private static RightSet m_contributorRightSet;
-	private static RightSet m_editorRightSet;
 	private static long MILLISEC_IN_A_DAY = 86400000; 
 	
 
@@ -225,7 +222,7 @@ public class GwtShareHelper
 		recipientId = getRecipientId( ami, gwtShareItem );
 
 		// Get the appropriate RightSet
-		rightSet = getRightSetFromShareRights( gwtShareItem.getShareRights() );
+		rightSet = getRightSetFromShareRights( gwtShareItem );
 		
 		// Create the new ShareItem in the db
 		{
@@ -250,12 +247,15 @@ public class GwtShareHelper
 	 */
 	private static RightSet getContributorRightSet()
 	{
-		if ( m_contributorRightSet == null )
-		{
-			m_contributorRightSet = ShareItem.Role.CONTRIBUTOR.getRightSet();
-		}
-		
-		return m_contributorRightSet;
+		return ShareItem.Role.CONTRIBUTOR.getRightSet();
+	}
+	
+	/**
+	 * Return the RightSet that corresponds to the "Editor" rights
+	 */
+	private static RightSet getEditorRightSet()
+	{
+		return ShareItem.Role.EDITOR.getRightSet();
 	}
 	
 	/**
@@ -493,7 +493,8 @@ public class GwtShareHelper
 					ShareRights shareRights;
 					
 					shareRights = getShareRightsFromRightSet( nextShareItem.getRightSet() );
-					gwtShareItem.setShareRights( shareRights );
+					gwtShareItem.setShareAccessRights( shareRights.getAccessRights() );
+					gwtShareItem.setShareCanShareWithOthers( shareRights.getCanShareWithOthers() );
 				}
 
 				listOfGwtShareItems.add( gwtShareItem );
@@ -503,19 +504,6 @@ public class GwtShareHelper
 		return listOfGwtShareItems;
 	}
 
-	/**
-	 * Return the RightSet that corresponds to the "Editor" rights
-	 */
-	private static RightSet getEditorRightSet()
-	{
-		if ( m_editorRightSet == null )
-		{
-			m_editorRightSet = ShareItem.Role.EDITOR.getRightSet();
-		}
-		
-		return m_editorRightSet;
-	}
-	
 	/**
 	 * Return the id of the given user.  If the user is an external user we will see if their
 	 * user account has been created.  If it hasn't we will create it.
@@ -561,6 +549,7 @@ public class GwtShareHelper
 					// Create one.
 					callback = new RunasCallback()
 					{
+						@SuppressWarnings("rawtypes")
 						@Override
 						public Object doAs() 
 						{
@@ -594,11 +583,14 @@ public class GwtShareHelper
 	/**
 	 * Return the appropriate RightSet object for the given ShareRights object
 	 */
-	private static RightSet getRightSetFromShareRights( ShareRights shareRights )
+	private static RightSet getRightSetFromShareRights( GwtShareItem gwtShareItem )
 	{
+		ShareRights shareRights;
 		RightSet rightSet;
 		
-		switch ( shareRights )
+		shareRights = gwtShareItem.getShareRights();
+		
+		switch ( shareRights.getAccessRights() )
 		{
 		case CONTRIBUTOR:
 			rightSet = getContributorRightSet(); 
@@ -619,6 +611,8 @@ public class GwtShareHelper
 			break;
 		}
 	
+		rightSet.setAllowSharing( shareRights.getCanShareWithOthers() );
+
 		return rightSet;
 	}
 	
@@ -627,16 +621,29 @@ public class GwtShareHelper
 	 */
 	public static ShareRights getShareRightsFromRightSet( RightSet rightSet )
 	{
+		ShareRights shareRights;
+
+		shareRights = new ShareRights();
+		shareRights.setAccessRights( ShareRights.AccessRights.UNKNOWN );
+		shareRights.setCanShareWithOthers( false );
+
 		if ( rightSet != null )
 		{
 			RightSet tmpRightSet;
+
+			shareRights.setCanShareWithOthers( rightSet.isAllowSharing() );
 			
+			// areRightSetsEqual() compares "allow sharing".  That is why we
+			// are setting "allow sharing" to false.
+			rightSet.setAllowSharing( false );
+
 			// Is the given RightSet equal to the "View" RightSet
 			tmpRightSet = getViewerRightSet();
 			if ( areRightSetsEqual( rightSet, tmpRightSet ) )
 			{
 				// Yes
-				return ShareRights.VIEWER;
+				shareRights.setAccessRights( ShareRights.AccessRights.VIEWER );
+				return shareRights;
 			}
 			
 			// Is the given RightSet equal to the "Contributor" RightSet
@@ -644,7 +651,9 @@ public class GwtShareHelper
 			if ( areRightSetsEqual( rightSet, tmpRightSet ) )
 			{
 				// Yes
-				return ShareRights.CONTRIBUTOR;
+				shareRights.setAccessRights( ShareRights.AccessRights.CONTRIBUTOR );
+				
+				return shareRights;
 			}
 			
 			// Is the given RightSet equal to the "Editor" RightSet
@@ -652,13 +661,14 @@ public class GwtShareHelper
 			if ( areRightSetsEqual( rightSet, tmpRightSet ) )
 			{
 				// Yes
-				return ShareRights.EDITOR;
+				shareRights.setAccessRights( ShareRights.AccessRights.EDITOR );
+				
+				return shareRights;
 			}
-			
 		}
 		
 		// If we get here we didn't find a match.
-		return ShareRights.UNKNOWN;
+		return shareRights;
 	}
 
 	/**
@@ -763,12 +773,7 @@ public class GwtShareHelper
 	 */
 	private static RightSet getViewerRightSet()
 	{
-		if ( m_viewRightSet == null )
-		{
-			m_viewRightSet = ShareItem.Role.VIEWER.getRightSet();
-		}
-		
-		return m_viewRightSet;
+		return ShareItem.Role.VIEWER.getRightSet();
 	}
 
 	/**

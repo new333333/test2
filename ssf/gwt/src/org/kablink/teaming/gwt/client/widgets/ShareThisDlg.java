@@ -153,6 +153,7 @@ public class ShareThisDlg extends DlgBox
 	private EditShareNoteDlg m_editShareNoteDlg;
 	private ShareWithTeamsDlg m_shareWithTeamsDlg;
 	private EditSuccessfulHandler m_editShareWithTeamsHandler;
+	
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -591,7 +592,7 @@ public class ShareThisDlg extends DlgBox
 	{
 		// Initialize the superclass.
 		super( false, true );
-		
+
 		// Create the dialog's content
 		createAllDlgContent(
 			"",		// // No caption yet.  It's set appropriately when the dialog runs.
@@ -1427,11 +1428,19 @@ public class ShareThisDlg extends DlgBox
 	
 
 	/**
-	 * Return the default share rights
+	 * Return the default share access rights
 	 */
-	private ShareRights getDefaultShareRights()
+	private ShareRights.AccessRights getDefaultShareAccessRights()
 	{
-		return ShareRights.VIEWER;
+		return ShareRights.AccessRights.VIEWER;
+	}
+	
+	/**
+	 * Return the default share "can share with others" rights
+	 */
+	private boolean getDefaultShareCanShareWithOthers()
+	{
+		return false;
 	}
 	
 	/**
@@ -1465,7 +1474,8 @@ public class ShareThisDlg extends DlgBox
 				shareItem.setEntityName( getEntityName( nextEntityId ) );
 				shareItem.setRecipientName( emailAddress );
 				shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
-				shareItem.setShareRights( getDefaultShareRights() );
+				shareItem.setShareAccessRights( getDefaultShareAccessRights() );
+				shareItem.setShareCanShareWithOthers( getDefaultShareCanShareWithOthers() );
 				shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
 				
 				// Is this external user already in the list?
@@ -1665,7 +1675,8 @@ public class ShareThisDlg extends DlgBox
 										shareItem.setRecipientId( Long.valueOf( nextTeamInfo.getBinderId() ) );
 										shareItem.setRecipientName( nextTeamInfo.getTitle() );
 										shareItem.setRecipientType( GwtRecipientType.TEAM );
-										shareItem.setShareRights( getDefaultShareRights() );
+										shareItem.setShareAccessRights( getDefaultShareAccessRights() );
+										shareItem.setShareCanShareWithOthers( getDefaultShareCanShareWithOthers() );
 										shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
 										
 										// Is this external user already in the list?
@@ -2011,7 +2022,8 @@ public class ShareThisDlg extends DlgBox
 						if ( findShareItem( shareItem ) == -1 )
 						{
 							// No
-							shareItem.setShareRights( getDefaultShareRights() );
+							shareItem.setShareAccessRights( getDefaultShareAccessRights() );
+							shareItem.setShareCanShareWithOthers( getDefaultShareCanShareWithOthers() );
 							shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
 							shareItem.setComments( getDefaultComment() );
 							

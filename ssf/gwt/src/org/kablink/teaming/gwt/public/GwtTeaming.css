@@ -4452,4 +4452,21 @@ td.datePickerMonth {
 {
 }
 
+/**
+ * Styles used in the Edit Share Rights dialog
+ */
+.editShareRightsDlg_CanShareCkbox
+{
+	margin-top: 8px;
+}
+
+.editShareRightsDlg_MainPanel
+{
+}
+
+.editShareRightsDlg_RbPanel
+{
+	margin-left: 10px;
+}
+
 /* End */ 

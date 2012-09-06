@@ -62,16 +62,23 @@ public class ShareRightsPopupMenu extends PopupMenu
 	{
 		super( autoHide, modal, true );
 
+		ShareRights shareRights;
+		
+		shareRights = new ShareRights();
+
 		// Add the "Viewer" menu item.
-		m_setViewRightsEvent = new SetShareRightsEvent( ShareRights.VIEWER );
-		m_viewMenuItem = addMenuItem( m_setViewRightsEvent, null, GwtTeaming.getMessages().shareDlg_view() );
+		shareRights.setAccessRights( ShareRights.AccessRights.VIEWER );
+		m_setViewRightsEvent = new SetShareRightsEvent( shareRights );
+		m_viewMenuItem = addMenuItem( m_setViewRightsEvent, null, GwtTeaming.getMessages().shareDlg_viewer() );
 		
 		// Add the "Editor" menu item.
-		m_setEditorRightsEvent = new SetShareRightsEvent( ShareRights.EDITOR );
+		shareRights.setAccessRights( ShareRights.AccessRights.EDITOR );
+		m_setEditorRightsEvent = new SetShareRightsEvent( shareRights );
 		m_editorMenuItem = addMenuItem( m_setEditorRightsEvent, null, GwtTeaming.getMessages().shareDlg_editor() );
 
 		// Add the "Contributor" menu item.
-		m_setContributorRightsEvent = new SetShareRightsEvent( ShareRights.CONTRIBUTOR );
+		shareRights.setAccessRights( ShareRights.AccessRights.CONTRIBUTOR );
+		m_setContributorRightsEvent = new SetShareRightsEvent( shareRights );
 		m_contributorMenuItem = addMenuItem( m_setContributorRightsEvent, null, GwtTeaming.getMessages().shareDlg_contributor() );
 	}
 	
@@ -118,7 +125,7 @@ public class ShareRightsPopupMenu extends PopupMenu
 		setMenuItemCheckedState( m_contributorMenuItem, false );
 		
 		// Check the appropriate menu item.
-		switch ( rights )
+		switch ( rights.getAccessRights() )
 		{
 		case CONTRIBUTOR:
 			setMenuItemCheckedState( m_contributorMenuItem, true );
