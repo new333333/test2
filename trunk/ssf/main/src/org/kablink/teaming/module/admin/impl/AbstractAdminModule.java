@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -50,6 +50,7 @@ import javax.mail.internet.InternetAddress;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
@@ -62,6 +63,7 @@ import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -72,6 +74,7 @@ import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.PostingDef;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WeekendsAndHolidaysConfig;
@@ -79,7 +82,6 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.EmailLog.EmailLogType;
 import org.kablink.teaming.extension.ExtensionManager;
-import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.jobs.EmailNotification;
 import org.kablink.teaming.jobs.EmailPosting;
 import org.kablink.teaming.jobs.FileVersionAging;
@@ -128,16 +130,18 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-
 /**
+ * ?
+ * 
  * @author Janet McCann
- *
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractAdminModule extends CommonDependencyInjection implements AdminModule {
 	
 	protected static String INDEX_OPTIMIZATION_JOB = "index.optimization.job"; // properties in xml file need a unique name
@@ -225,6 +229,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		this.reportModule = reportModule;
 	}
 	private ExtensionManager extensionManager;
+	@Override
 	public ExtensionManager getExtensionManager() {
 		return extensionManager;
 	}
@@ -232,6 +237,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		this.extensionManager = extensionManager;
 	}
 
+	@Override
 	public void deleteExtension(String id){
 		checkAccess(AdminOperation.manageExtensions);
 		
@@ -242,10 +248,12 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		}
 	}
 	
+	@Override
 	public void addExtension(ExtensionInfo extension) {
 		checkAccess(AdminOperation.manageExtensions);
 		coreDao.save(extension);
 	}
+	@Override
 	public void modifyExtension(ExtensionInfo extension) {
 		checkAccess(AdminOperation.manageExtensions);
 		
@@ -255,7 +263,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    	 * Use operation so we can keep the logic out of application
 	 * and easisly change the required rights
 	 */
-   	public boolean testAccess(WorkArea workArea, AdminOperation operation) {
+   	@Override
+	public boolean testAccess(WorkArea workArea, AdminOperation operation) {
    		try {
    			checkAccess(workArea, operation);
    			return true;
@@ -263,7 +272,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    			return false;
    		}
    	}
-   	public void checkAccess(WorkArea workArea, AdminOperation operation) {
+   	@Override
+	public void checkAccess(WorkArea workArea, AdminOperation operation) {
    		if (workArea instanceof TemplateBinder) {
 			getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    		} else if (workArea instanceof ZoneConfig) {
@@ -315,7 +325,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 * and easisly change the required rights
    	 * 
    	 */
-  	public boolean testAccess(AdminOperation operation) {
+  	@Override
+	public boolean testAccess(AdminOperation operation) {
    		try {
    			checkAccess(operation);
    			return true;
@@ -323,7 +334,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    			return false;
    		}
    	}
-  	public void checkAccess(AdminOperation operation) {
+  	@Override
+	public void checkAccess(AdminOperation operation) {
    		Binder top = RequestContextHolder.getRequestContext().getZone();
 		switch (operation) {
 			case manageFunction:
@@ -363,11 +375,13 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    				throw new NotSupportedException(operation.toString(), "checkAccess");
 		}
    	}
-  	public boolean isQuotaEnabled() {
+  	@Override
+	public boolean isQuotaEnabled() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.isDiskQuotaEnabled(); 		
   	}
-  	public void setQuotaEnabled(boolean quotaEnabled) {
+  	@Override
+	public void setQuotaEnabled(boolean quotaEnabled) {
   		boolean resetUsage = false;
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		if (isQuotaEnabled() == quotaEnabled) return;  // if the setting hasn't changed, then do nothing
@@ -377,25 +391,30 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   		if (resetUsage)
   			getProfileDao().resetDiskUsage(RequestContextHolder.getRequestContext().getZoneId());
   	}
-  	public Integer getQuotaDefault() {
+  	@Override
+	public Integer getQuotaDefault() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.getDiskQuotaUserDefault();
   	}
-  	public Integer getQuotaHighWaterMark() {
+  	@Override
+	public Integer getQuotaHighWaterMark() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.getDiskQuotasHighwaterPercentage();
   	}
-  	public void setQuotaDefault(Integer quotaDefault) {
+  	@Override
+	public void setQuotaDefault(Integer quotaDefault) {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		if (zoneConfig.getDiskQuotaUserDefault() == quotaDefault) return; // if no change, do nothing
   		zoneConfig.setDiskQuotaUserDefault(quotaDefault);
   	}
-  	public void setQuotaHighWaterMark(Integer quotaHighWaterMark) {
+  	@Override
+	public void setQuotaHighWaterMark(Integer quotaHighWaterMark) {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		if (zoneConfig.getDiskQuotasHighwaterPercentage() == quotaHighWaterMark) return; // if no change, do nothing
   		zoneConfig.setDiskQuotasHighwaterPercentage(quotaHighWaterMark);
   	}
-    public BinderQuota getBinderQuota(Binder binder) {
+    @Override
+	public BinderQuota getBinderQuota(Binder binder) {
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
     	BinderQuota bq = null;
     	try {
@@ -410,7 +429,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	}
     	return bq;
     }
-    public void setBinderQuota(Binder binder, BinderQuota binderQuota) {
+    @Override
+	public void setBinderQuota(Binder binder, BinderQuota binderQuota) {
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
     	BinderQuota bq = null;
     	try {
@@ -421,19 +441,23 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     		getCoreDao().save(binderQuota);
     	}
     }
-    public void setBinderQuotasInitialized(boolean binderQuotaInitialized) {
+    @Override
+	public void setBinderQuotasInitialized(boolean binderQuotaInitialized) {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		zoneConfig.setBinderQuotasInitialized(binderQuotaInitialized);
     }
-    public void setBinderQuotasEnabled(boolean binderQuotaEnabled, boolean allowBinderOwner) {
+    @Override
+	public void setBinderQuotasEnabled(boolean binderQuotaEnabled, boolean allowBinderOwner) {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		zoneConfig.setBinderQuotasEnabled(binderQuotaEnabled, allowBinderOwner);
     }
-    public boolean isBinderQuotaInitialized() {
+    @Override
+	public boolean isBinderQuotaInitialized() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.isBinderQuotaInitialized(); 		
     }
-    public boolean isBinderQuotaEnabled() {
+    @Override
+	public boolean isBinderQuotaEnabled() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		if (zoneConfig.isBinderQuotaInitialized()) {
   			return zoneConfig.isBinderQuotaEnabled(); 		
@@ -441,42 +465,51 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   			return false;
   		}
     }
-    public boolean isBinderQuotaAllowBinderOwnerEnabled() {
+    @Override
+	public boolean isBinderQuotaAllowBinderOwnerEnabled() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.isBinderQuotaAllowBinderOwnerEnabled(); 		
     }
 
-  	public void setFileVersionsMaxAge(Long fileVersionsMaxAge) {
+  	@Override
+	public void setFileVersionsMaxAge(Long fileVersionsMaxAge) {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		if (zoneConfig.getFileVersionsMaxAge() == fileVersionsMaxAge) return; // if no change, do nothing
   		zoneConfig.setFileVersionsMaxAge(fileVersionsMaxAge);
   	}
 
-  	public boolean isMobileAccessEnabled() {
+  	@Override
+	public boolean isMobileAccessEnabled() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.isMobileAccessEnabled(); 		
   	}
-  	public void setMobileAccessEnabled(boolean mobileAccessEnabled) {
+  	@Override
+	public void setMobileAccessEnabled(boolean mobileAccessEnabled) {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		zoneConfig.setMobileAccessEnabled(mobileAccessEnabled);
   	}
-  	public HomePageConfig getHomePageConfig() {
+  	@Override
+	public HomePageConfig getHomePageConfig() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return new HomePageConfig(zoneConfig.getHomePageConfig()); 		
   	}
-  	public void setHomePageConfig(HomePageConfig homePageConfig) {
+  	@Override
+	public void setHomePageConfig(HomePageConfig homePageConfig) {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		zoneConfig.setHomePageConfig(homePageConfig); 		
   	}
-  	public WeekendsAndHolidaysConfig getWeekendsAndHolidaysConfig() {
+  	@Override
+	public WeekendsAndHolidaysConfig getWeekendsAndHolidaysConfig() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return new WeekendsAndHolidaysConfig(zoneConfig.getWeekendsAndHolidaysConfig()); 		
   	}
-  	public void setWeekendsAndHolidaysConfig(WeekendsAndHolidaysConfig weekendsAndHolidaysConfig) {
+  	@Override
+	public void setWeekendsAndHolidaysConfig(WeekendsAndHolidaysConfig weekendsAndHolidaysConfig) {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		zoneConfig.setWeekendsAndHolidaysConfig(weekendsAndHolidaysConfig); 		
   	}
-  	public Long getFileVersionsMaxAge() {
+  	@Override
+	public Long getFileVersionsMaxAge() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.getFileVersionsMaxAge();
   	}
@@ -485,16 +518,19 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		zoneConfig.setFileVersionsMaxAge(fileVersionAge);
   	}
-  	public Long getFileSizeLimitUserDefault() {
+  	@Override
+	public Long getFileSizeLimitUserDefault() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.getFileSizeLimitUserDefault();
   	}
-  	public void setFileSizeLimitUserDefault(Long fileSizeLimitUserDefault) {
+  	@Override
+	public void setFileSizeLimitUserDefault(Long fileSizeLimitUserDefault) {
   	   	checkAccess(AdminOperation.manageFileSizeLimit);
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		zoneConfig.setFileSizeLimitUserDefault(fileSizeLimitUserDefault);
   	}
-  	public Long getUserFileSizeLimit() {
+  	@Override
+	public Long getUserFileSizeLimit() {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		//Check the system default and the user limits
 		Long userMaxFileSize = user.getFileSizeLimit();
@@ -514,12 +550,14 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		}
 		return fileSizeLimit;
   	}
-  	public MailConfig getMailConfig() {
+  	@Override
+	public MailConfig getMailConfig() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return new MailConfig(zoneConfig.getMailConfig()); 		
   	}
   	//try to keep these in sync using one call
-  	public void setMailConfigAndSchedules(MailConfig mailConfig, ScheduleInfo notification, ScheduleInfo posting) {
+  	@Override
+	public void setMailConfigAndSchedules(MailConfig mailConfig, ScheduleInfo notification, ScheduleInfo posting) {
   	   	checkAccess(AdminOperation.manageMail);
   		//even if schedules are running, these settings should stop the processing in the job
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
@@ -542,15 +580,18 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
  			getPostingObject().enable(false, zoneConfig.getZoneId());
  		}
   	}
-    public List<PostingDef> getPostings() {
+	@Override
+	public List<PostingDef> getPostings() {
     	return coreDao.loadPostings(RequestContextHolder.getRequestContext().getZoneId());
     }
-    public void modifyPosting(String postingId, Map updates) {
+    @Override
+	public void modifyPosting(String postingId, Map updates) {
     	checkAccess(AdminOperation.manageMail);
     	PostingDef post = coreDao.loadPosting(postingId, RequestContextHolder.getRequestContext().getZoneId());
     	ObjectBuilder.updateObject(post, updates);
     }
-    public void addPosting(Map updates) {
+    @Override
+	public void addPosting(Map updates) {
     	checkAccess(AdminOperation.manageMail);
     	PostingDef post = new PostingDef();
     	post.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
@@ -558,7 +599,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
        	post.setEmailAddress(post.getEmailAddress().toLowerCase());
       	coreDao.save(post);   	
     }
-    public void deletePosting(String postingId) {
+    @Override
+	public void deletePosting(String postingId) {
     	checkAccess(AdminOperation.manageMail);
     	PostingDef post = coreDao.loadPosting(postingId, RequestContextHolder.getRequestContext().getZoneId());
     	if (post.getBinder() != null) {
@@ -566,7 +608,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	}
        	coreDao.delete(post);
     }
-    public ScheduleInfo getPostingSchedule() {
+    @Override
+	public ScheduleInfo getPostingSchedule() {
       	//let anyone get it;
     	ScheduleInfo info = getPostingObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
     	return info;
@@ -588,6 +631,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
      * @param id
      * @param value
      */
+	@Override
 	public ScheduleInfo getNotificationSchedule() {
 		ScheduleInfo info = getNotificationObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
     	return info;
@@ -610,6 +654,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
      * @param id
      * @param value
      */
+	@Override
 	public ScheduleInfo getFileVersionAgingSchedule() {
 		ScheduleInfo info = getFileVersionAgingObject().getScheduleInfo(
 				RequestContextHolder.getRequestContext().getZoneId());
@@ -650,17 +695,20 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		return SZoneConfig.getString(zoneName, "fileVersionAgingConfiguration/property[@name='" + name + "']");
 	}
 
-  	public void setFileVersionAgingSchedule(ScheduleInfo info) {
+  	@Override
+	public void setFileVersionAgingSchedule(ScheduleInfo info) {
   	   	checkAccess(AdminOperation.manageFileVersionAging);
   		//even if schedules are running, these settings should stop the processing in the job
   	   	long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+  		@SuppressWarnings("unused")
+		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
  		if (info != null) {
 			getFileVersionAgingObject().setScheduleInfo(info);
 			getFileVersionAgingObject().enable(Boolean.TRUE, zoneId);
  		}
   	}
 
+	@Override
 	public void updateDefaultDefinitions(Long topId, Boolean newDefinitionsOnly) {
 		Workspace top = (Workspace)getCoreDao().loadBinder(topId, topId);
 		
@@ -699,8 +747,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			logger.error("Cannot read startup configuration:", ex);
 		}
 	}	
+	@Override
 	public void updateDefaultDefinitions(AllModulesInjected bs, Long topId, Boolean newDefinitionsOnly, Collection ids) {
 		Workspace top = (Workspace)getCoreDao().loadBinder(topId, topId);
+		@SuppressWarnings("unused")
 		List currentDefinitions = new ArrayList();
 		currentDefinitions = DefinitionHelper.getDefaultDefinitions(bs);
 		
@@ -755,6 +805,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			logger.error("Cannot read startup configuration:", ex);
 		}
 	}
+	@Override
 	public Function addFunction(String name, Set<WorkAreaOperation> operations, String scope, 
 			List<ConditionalClause> conditions) {
 		checkAccess(AdminOperation.manageFunction);
@@ -773,7 +824,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		functionManager.addFunction(function);
 		return function;
     }
-    public Function modifyFunction(Long id, Map updates) {
+    @Override
+	public Function modifyFunction(Long id, Map updates) {
 		checkAccess(AdminOperation.manageFunction);
 		Function function = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), id);
 		if (function.isReserved()) throw new NotSupportedException("errorcode.role.reserved", new Object[]{function.getName()});       	
@@ -793,7 +845,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		return function;
     }
     
-    public List deleteFunction(Long id) {
+    @Override
+	public List deleteFunction(Long id) {
 		checkAccess(AdminOperation.manageFunction);
 		Function f = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), id);
 		if (f.isReserved()) throw new NotSupportedException("errorcode.role.reserved", new Object[]{f.getName()});       	
@@ -806,15 +859,18 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		else
 			return null;
     }
-    public Function getFunction(Long functionId) {
+    @Override
+	public Function getFunction(Long functionId) {
     	// let anyone read it
     	return functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), functionId);
     }
-    public List<Function> getFunctions() {
+    @Override
+	public List<Function> getFunctions() {
 		//let anyone read them			
     	return functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
     }
-    public List<Function> getFunctions(String scope) {
+    @Override
+	public List<Function> getFunctions(String scope) {
 		//let anyone read them			
     	List<Function> functions = functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
     	List<Function> functionsPruned = new ArrayList<Function>();
@@ -829,12 +885,14 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	return functionsPruned;
     }
 	//no transaction
-    public void setWorkAreaFunctionMemberships(final WorkArea workArea, 
+    @Override
+	public void setWorkAreaFunctionMemberships(final WorkArea workArea, 
     		final Map<Long, Set<Long>> functionMemberships) {
     	setWorkAreaFunctionMemberships(workArea, functionMemberships, Boolean.TRUE, Boolean.FALSE, 
     			ObjectKeys.ROLE_TYPE_FILR);
     }
-    public void setWorkAreaFunctionMemberships(final WorkArea workArea, final Map<Long, 
+    @Override
+	public void setWorkAreaFunctionMemberships(final WorkArea workArea, final Map<Long, 
     		Set<Long>> functionMemberships, boolean doCheckAccess) {
     	setWorkAreaFunctionMemberships(workArea, functionMemberships, doCheckAccess, Boolean.FALSE, 
     			ObjectKeys.ROLE_TYPE_FILR);
@@ -850,7 +908,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
      * If "justThisScope" is true, then modify only those functions with the specified scope
      * If "justThisScope" is false, then modify all functions except the ones with the specified scope
      */
-    public void setWorkAreaFunctionMemberships(final WorkArea workArea, 
+    @Override
+	public void setWorkAreaFunctionMemberships(final WorkArea workArea, 
     		final Map<Long, Set<Long>> functionMemberships, boolean doCheckAccess, 
     		final boolean justThisScope, final String scope) {
     	if (doCheckAccess) {
@@ -869,7 +928,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
       	boolean conditionsExistInOrigianl = checkIfConditionsExist(workArea);
         //first remove any that are not in the new list
         getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
+        	@Override
+			public Object doInTransaction(TransactionStatus status) {
         		User guest = null;
        			try {
        				guest = getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zoneId);
@@ -973,7 +1033,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 
 
 	//no transaction
-    public void setWorkAreaOwner(final WorkArea workArea, final Long userId, final boolean propagate) {
+    @Override
+	public void setWorkAreaOwner(final WorkArea workArea, final Long userId, final boolean propagate) {
     	 checkAccess(workArea, AdminOperation.manageFunctionMembership);
     	 final List<Binder>binders = new ArrayList();
        	 if (propagate) {
@@ -999,7 +1060,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	 }
     	if (!binders.isEmpty() || !workArea.getOwnerId().equals(userId)) {
     		getTransactionTemplate().execute(new TransactionCallback() {
-   		        	public Object doInTransaction(TransactionStatus status) {
+   		        	@Override
+					public Object doInTransaction(TransactionStatus status) {
    		        		User user = getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());
    		        		workArea.setOwner(user);
    		        		for (Binder child:binders) {
@@ -1016,7 +1078,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			}
     	}
     }
-    public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId) {
+    @Override
+	public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId) {
 		// open to anyone - only way to get parentMemberships
     	// checkAccess(workArea, "getWorkAreaFunctionMembership");
 
@@ -1024,6 +1087,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
        		(RequestContextHolder.getRequestContext().getZoneId(), workArea, functionId);
     }
     
+	@Override
 	public List<WorkAreaFunctionMembership> getWorkAreaFunctionMemberships(WorkArea workArea) {
 		// open to anyone - only way to get parentMemberships
 		//checkAccess(workArea, "getWorkAreaFunctionMemberships");
@@ -1065,6 +1129,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         return memberships;
 }
 
+	@Override
 	public List<WorkAreaFunctionMembership> getWorkAreaFunctionMembershipsInherited(WorkArea workArea) {
 		// open to anyone - only way to get parentMemberships
 		// checkAccess(workArea, "getWorkAreaFunctionMembershipsInherited");
@@ -1126,6 +1191,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         return source;
 	}
 	//no transaction
+	@Override
 	public void setWorkAreaFunctionMembershipInherited(final WorkArea workArea, final boolean inherit) 
     		throws AccessControlException {
 		setWorkAreaFunctionMembershipInherited(workArea, inherit, Boolean.FALSE, ObjectKeys.ROLE_TYPE_FILR);
@@ -1142,12 +1208,14 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
      * If "justThisScope" is true, then modify only those functions with the specified scope
      * If "justThisScope" is false, then modify all functions except the ones with the specified scope
      */
+	@Override
 	public void setWorkAreaFunctionMembershipInherited(final WorkArea workArea, final boolean inherit,
 			final boolean justThisScope, final String scope) throws AccessControlException {
     	checkAccess(workArea, AdminOperation.manageFunctionMembership);
     	final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
         Boolean index = (Boolean) getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
+        	@Override
+			public Object doInTransaction(TransactionStatus status) {
         		if (inherit) {
         			//remove them
         			List current = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(RequestContextHolder.getRequestContext().getZoneId(), workArea);
@@ -1213,6 +1281,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
        	}
 	}
 	
+	@Override
 	public void setEntryHasAcl(final WorkArea workArea, final Boolean hasAcl, final Boolean checkFolderAcl) {
         //Make sure this user is allowed to do this
 		if (workArea instanceof Entry && ((Entry)workArea).isTop()) {
@@ -1235,7 +1304,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			}
 		
 	        getTransactionTemplate().execute(new TransactionCallback() {
-	        	public Object doInTransaction(TransactionStatus status) {
+	        	@Override
+				public Object doInTransaction(TransactionStatus status) {
 	           		if (workArea instanceof Entry) {
 	        			//Set the entry acl flag
 	           			((Entry)workArea).setHasEntryAcl(hasAcl);
@@ -1247,6 +1317,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		}
 	}
 
+	@Override
 	public void setEntryHasExternalAcl(final WorkArea workArea, final Boolean hasExternalAcl) {
         //Make sure this user is allowed to do this
 		if (workArea instanceof Entry && ((Entry)workArea).isTop()) {
@@ -1270,18 +1341,32 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		
 			//Set the entry external acl flag
 	        getTransactionTemplate().execute(new TransactionCallback() {
-	        	public Object doInTransaction(TransactionStatus status) {
+	        	@Override
+				public Object doInTransaction(TransactionStatus status) {
 	           		if (workArea instanceof Entry) ((Entry)workArea).setHasEntryExternalAcl(hasExternalAcl);
 					return null;
 	        	}});
 		}
 	}
 
-    public Map<String, Object> sendMail(Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, Collection<Long> ccIds, 
-    		Collection<Long> bccIds, String subject, Description body) throws Exception {
-    	return sendMail(null, ids, teamIds, emailAddresses, ccIds, bccIds, subject, body, false); 
-    }
-    public Map<String, Object> sendMail(Entry entry, Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, Collection<Long> ccIds, 
+	/**
+	 * Send a mail message to a collection of users and/or explicit email addresses.  Includes attachments from entries if specified.
+	 *   
+	 * @param entry - may be null
+	 * @param ids - toList
+	 * @param emailAddresses
+	 * @param ccIds - ccoList
+	 * @param bccIds - bccList
+	 * @param subject
+	 * @param body
+	 * @param sendAttachments
+	 * 
+	 * @return
+	 * 
+	 * @throws Exception
+	 */
+    @Override
+	public Map<String, Object> sendMail(Entry entry, Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, Collection<Long> ccIds, 
     		Collection<Long> bccIds, String subject, Description body, boolean sendAttachments) throws Exception {
 		if (!getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isSendMailEnabled()) {
 			throw new ConfigurationException(NLT.get("errorcode.sendmail.disabled"));
@@ -1365,7 +1450,49 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		result.put(ObjectKeys.SENDMAIL_STATUS, results);
 		return result;
     }
-
+    
+    /**
+     * Send a mail message to a collection of users and/or explicit email addresses.
+     *  
+     * @param ids - toList
+     * @param emailAddresses
+ 	 * @param ccIds - ccoList
+	 * @param bccIds - bccList
+     * @param subject
+     * @param body
+     * 
+     * @return
+     * 
+     * @throws Exception
+     */
+    @Override
+	public Map<String, Object> sendMail(Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, Collection<Long> ccIds, 
+    		Collection<Long> bccIds, String subject, Description body) throws Exception {
+    	// Always use the initial form of the method.
+    	return sendMail(null, ids, teamIds, emailAddresses, ccIds, bccIds, subject, body, false); 
+    }
+    
+	/**
+	 * Send a share notification mail message to a collection of users and/or explicit email addresses.
+	 *   
+	 * @param share
+	 * @param sharedEntity
+	 * @param ids - toList
+	 * @param emailAddresses
+	 * @param ccIds - ccoList
+	 * @param bccIds - bccList
+	 * 
+	 * @return
+	 * 
+	 * @throws Exception
+	 */
+    @Override
+	public Map<String, Object> sendMail(ShareItem share, DefinableEntity sharedEntity, Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, Collection<Long> ccIds, 
+    		Collection<Long> bccIds) throws Exception {
+//!		...this needs to be implemented...
+    	return null;
+    }
+    
     private Set<InternetAddress> getEmail(Collection<Long>ids, List errors) {
     	Set<InternetAddress> addrs=null;
     	if (ids != null && !ids.isEmpty()) {
@@ -1411,7 +1538,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	return false;
     }
     
-   public List<ChangeLog> getChanges(Long binderId, String operation) {
+   @Override
+public List<ChangeLog> getChanges(Long binderId, String operation) {
 	   FilterControls filter = new FilterControls();
 	   filter.add("owningBinderId", binderId);
 	   if (!Validator.isNull(operation)) {
@@ -1425,7 +1553,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		  return filterChangeLogs(changeLogs, false);
 	   //need to filter for access
    }
-   public List<ChangeLog> getChanges(EntityIdentifier entityIdentifier, String operation) {
+   @Override
+public List<ChangeLog> getChanges(EntityIdentifier entityIdentifier, String operation) {
 	   FilterControls filter = new FilterControls();
 	   filter.add("entityId", entityIdentifier.getEntityId());
 	   filter.add("entityType", entityIdentifier.getEntityType().name());
@@ -1441,7 +1570,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    	
    }
    
-   public List<ChangeLog> getEntryHistoryChanges(EntityIdentifier entityIdentifier) {
+   @Override
+public List<ChangeLog> getEntryHistoryChanges(EntityIdentifier entityIdentifier) {
 	   FilterControls filter = new FilterControls();
 	   filter.add("entityId", entityIdentifier.getEntityId());
 	   filter.add("entityType", entityIdentifier.getEntityType().name());
@@ -1476,7 +1606,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	   }
 	   return entryChangeLogs;
    }
-   public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, String operation) {
+   @Override
+public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, String operation) {
 	   FilterControls filter = new FilterControls();
 	   filter.add("entityId", entityIdentifier.getEntityId());
 	   filter.add("entityType", entityIdentifier.getEntityType().name());
@@ -1540,6 +1671,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 
    }
    
+	@Override
 	public String obtainApplicationScopedToken(long applicationId, long userId) {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 
@@ -1547,6 +1679,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(rc.getZoneId()), WorkAreaOperation.TOKEN_REQUEST);
 		
 		// check application exists
+		@SuppressWarnings("unused")
 		Application application = getProfileDao().loadApplication(applicationId, rc.getZoneId());
 		
 		// check user exists
@@ -1561,6 +1694,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		return result;
 	}
 	
+	@Override
 	public void destroyApplicationScopedToken(String token) {
 		// check caller has right - we simply check the same right needed for token request 
 		// (that is, no separate right for destroying it)
@@ -1569,6 +1703,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		getAccessTokenManager().destroyApplicationScopedToken(new AccessToken(token));
 	}
 	
+	@Override
 	public void optimizeIndex(String[] nodeNames) throws ManageIndexException, AccessControlException {
 		checkAccess(AdminOperation.manageIndex);
 		
@@ -1584,16 +1719,19 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		}
 	}
 	
+	@Override
 	public void addFunctionCondition(Condition functionCondition) {
 		checkAccess(AdminOperation.manageFunctionCondition);
 		getSecurityDao().save(functionCondition);
 	}
 	
+	@Override
 	public void modifyFunctionCondition(Condition functionCondition) {
 		checkAccess(AdminOperation.manageFunctionCondition);
 		getSecurityDao().update(functionCondition);
 	}
 	
+	@Override
 	public void deleteFunctionCondition(Long functionConditionId) {
 		checkAccess(AdminOperation.manageFunctionCondition);
 		try {
@@ -1605,16 +1743,19 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		}
 	}
 	
+	@Override
 	public Condition getFunctionCondition(Long functionConditionId) {
 		// let anyone read it?
 		return getSecurityDao().loadFunctionCondition(RequestContextHolder.getRequestContext().getZoneId(), functionConditionId);
 	}
 	
+	@Override
 	public List<Condition> getFunctionConditions() {
 		// let anyone read them - is this right?
 		return getSecurityDao().findFunctionConditions(RequestContextHolder.getRequestContext().getZoneId());
 	}
 
+	@SuppressWarnings("unused")
 	private void testFunctionCondition() {
 		AdminModule am = (AdminModule) SpringContextUtil.getBean("adminModule");
 		int i = 0;
@@ -1698,12 +1839,14 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		return false;
 	}
 	
+	@Override
 	public IndexOptimizationSchedule getIndexOptimizationSchedule() {
 		checkAccess(AdminOperation.manageIndex);
 		ScheduleInfo si = getIndexOptimizationObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
 		return new IndexOptimizationSchedule(si);
 	}
 	
+	@Override
 	public void setIndexOptimizationSchedule(IndexOptimizationSchedule schedule) {
 		checkAccess(AdminOperation.manageIndex);
 		getIndexOptimizationObject().setScheduleInfo(schedule.getScheduleInfo());
@@ -1730,24 +1873,28 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		return SZoneConfig.getString(zoneName, "indexConfiguration/property[@name='" + name + "']");
 	}
 	
+	@Override
 	public String dumpRuntimeStatisticsAsString() {
 		checkAccess(AdminOperation.manageRuntime);
 		RuntimeStatistics rs = (RuntimeStatistics) SpringContextUtil.getBean("runtimeStatistics");
 		return rs.dumpAllAsString();
 	}
 	
+	@Override
 	public void dumpRuntimeStatisticsToLog() {
 		checkAccess(AdminOperation.manageRuntime);
 		RuntimeStatistics rs = (RuntimeStatistics) SpringContextUtil.getBean("runtimeStatistics");
 		rs.dumpAllToLog();
 	}
 	
+	@Override
 	public void enableSimpleProfiler() {
 		checkAccess(AdminOperation.manageRuntime);
 		RuntimeStatistics rs = (RuntimeStatistics) SpringContextUtil.getBean("runtimeStatistics");
 		rs.setSimpleProfilerEnabled(true);
 	}
 	
+	@Override
 	public void disableSimpleProfiler() {
 		checkAccess(AdminOperation.manageRuntime);
 		RuntimeStatistics rs = (RuntimeStatistics) SpringContextUtil.getBean("runtimeStatistics");

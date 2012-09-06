@@ -73,11 +73,11 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-
 
 /**
  * Helper methods for the GWT UI server code that services share requests.
@@ -155,7 +155,7 @@ public class GwtShareHelper
 
 		if ( ami == null || gwtShareItem == null )
 		{
-			m_logger.error( "invalid parameter passed to createShareItem()" );
+			m_logger.error( "invalid parameter passed to buildShareItem()" );
 			return null;
 		}
 		
@@ -777,7 +777,8 @@ public class GwtShareHelper
 	@SuppressWarnings("rawtypes")
 	private static List sendEmailToRecipient(
 		AllModulesInjected ami,
-		GwtShareItem shareItem,
+		ShareItem shareItem,
+		GwtShareItem gwtShareItem,
 		User currentUser )
 	{
 		List emailErrors;
@@ -794,7 +795,7 @@ public class GwtShareHelper
 		EntityId entityId;
 		DefinableEntity sharedEntity;
 
-		if ( ami == null || currentUser == null || shareItem == null )
+		if ( ami == null || currentUser == null || gwtShareItem == null )
 		{
 			m_logger.error( "invalid parameter in sendEmailToRecipient()" );
 			return null;
@@ -803,16 +804,16 @@ public class GwtShareHelper
 		principalIds = new HashSet<Long>();
 		teamIds = new HashSet<Long>();
 		
-		switch ( shareItem.getRecipientType() )
+		switch ( gwtShareItem.getRecipientType() )
 		{
 		case GROUP:
 		case USER:
 		case EXTERNAL_USER:
-			principalIds.add( shareItem.getRecipientId() );
+			principalIds.add( gwtShareItem.getRecipientId() );
 			break;
 		
 		case TEAM:
-			teamIds.add( shareItem.getRecipientId() );
+			teamIds.add( gwtShareItem.getRecipientId() );
 			break;
 		
 		default:
@@ -820,7 +821,7 @@ public class GwtShareHelper
 			break;
 		}
 		
-		entityId = shareItem.getEntityId();
+		entityId = gwtShareItem.getEntityId();
 		if ( entityId.isBinder() )
 			sharedEntity = ami.getBinderModule().getBinder( entityId.getEntityId() );
 		else
@@ -832,7 +833,7 @@ public class GwtShareHelper
 		if ( sharedEntity.getParentBinder() != null )
 			title = sharedEntity.getParentBinder().getPathName() + "/" + title;
 
-		comments = shareItem.getComments();
+		comments = gwtShareItem.getComments();
 		if ( comments != null )
 		{
 			SafeHtmlBuilder builder;
@@ -852,7 +853,7 @@ public class GwtShareHelper
 		{
 			ShareExpirationValue expirationValue;
 			
-			expirationValue = shareItem.getShareExpirationValue();
+			expirationValue = gwtShareItem.getShareExpirationValue();
 			switch ( expirationValue.getExpirationType() )
 			{
 			case NEVER:
@@ -913,14 +914,30 @@ public class GwtShareHelper
 			Map<String,Object> errorMap;
 			
 			// Send the email notification
-			errorMap = ami.getAdminModule().sendMail(
-													principalIds,
-													teamIds,
-													emailAddress,
-													null,
-													null,
-													mailTitle,
-													body );
+			if ( SPropsUtil.getBoolean( "UI.useNewShareEmail", false ) )
+			{
+				errorMap = ami.getAdminModule().sendMail(
+														shareItem,
+														sharedEntity,
+														principalIds,
+														teamIds,
+														emailAddress,
+														null,
+														null );
+			}
+			
+			else
+			{
+				errorMap = ami.getAdminModule().sendMail(
+														principalIds,
+														teamIds,
+														emailAddress,
+														null,
+														null,
+														mailTitle,
+														body );
+			}
+			
 			if ( errorMap != null )
 			{
 				emailErrors = (List) errorMap.get( ObjectKeys.SENDMAIL_ERRORS );
@@ -1015,13 +1032,13 @@ public class GwtShareHelper
 			else
 			{
 				// The ShareItem exists.
+				// Build a new ShareItem with the new information.
+				shareItem = buildShareItem( ami, currentUser, nextGwtShareItem );
+				
 				// Was it modified?
 				if ( nextGwtShareItem.isDirty() )
 				{
 					// Yes
-					// Build a new ShareItem with the new information.
-					shareItem = buildShareItem( ami, currentUser, nextGwtShareItem );
-					
 					// Modify the share by marking existing snapshot as not being the latest
 					// and persisting the new snapshot. 
 					sharingModule.modifyShareItem(shareItem, shareItemId);
@@ -1039,6 +1056,7 @@ public class GwtShareHelper
 				// Send an email to each of the recipients
 				entityEmailErrors = sendEmailToRecipient(
 														ami,
+														shareItem,
 														nextGwtShareItem,
 														currentUser );
 				
