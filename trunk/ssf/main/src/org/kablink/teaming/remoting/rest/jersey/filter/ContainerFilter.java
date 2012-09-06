@@ -108,13 +108,19 @@ public class ContainerFilter implements ContainerRequestFilter, ContainerRespons
 	}
 	
 	private void traceRequest(ContainerRequest request) {
-		if(logger.isDebugEnabled())
-			logger.debug(request.toString());
+		if(logger.isDebugEnabled()) {
+            StringBuilder builder = new StringBuilder("REST request: (").append(request.getUserPrincipal().getName()).append(") ");
+            builder.append(request.getMethod()).append(" ");
+            String fullUri = request.getRequestUri().toString();
+            String baseUri = request.getBaseUri().toString();
+            builder.append(fullUri.substring(baseUri.length()-1));
+			logger.debug(builder.toString());
+        }
 	}
 	
 	private void traceResponse(ContainerResponse response) {
-		if(logger.isDebugEnabled())
-			logger.debug(response.toString());
+		//if(logger.isDebugEnabled())
+		//	logger.debug(response.toString());
 	}
 	
 	private ZoneModule getZoneModule() {
