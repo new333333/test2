@@ -154,6 +154,7 @@
    	   <property name="HFormat" column="tDescription_format"/>
    	  </component>
    	  <property name="templateOwningBinderId" index="templateOwningBinderId_Binder"/>
+   	  <property name="templateHidden"/>
     </subclass>
  
   </class>

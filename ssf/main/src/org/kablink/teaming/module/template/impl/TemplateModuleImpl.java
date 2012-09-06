@@ -764,8 +764,12 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		return Utils.validateTemplateBinders(binders);
 	}
 	public List<TemplateBinder> getTemplates(int type, Binder binder, boolean includeAncestors) {
+		return getTemplates(type, binder, includeAncestors, Boolean.FALSE);
+	}
+	public List<TemplateBinder> getTemplates(int type, Binder binder, boolean includeAncestors, 
+			boolean includeHiddenTemplates) {
 		List<TemplateBinder> binders = getCoreDao().loadTemplates(binder, RequestContextHolder.getRequestContext().getZoneId(), type, includeAncestors);
-		return Utils.validateTemplateBinders(binders);
+		return Utils.validateTemplateBinders(binders, includeHiddenTemplates);
 	}
 	//no transaction - Adding the top binder can lead to optimisitic lock exceptions.
 	//In order to reduce the risk, we try to shorten the transaction time by managing it ourselves

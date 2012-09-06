@@ -140,6 +140,8 @@ public interface TemplateModule {
 	 */
 	public List<TemplateBinder> getTemplates(int type);
 	public List<TemplateBinder> getTemplates(int type, Binder binder, boolean includeAncestors);
+	public List<TemplateBinder> getTemplates(int type, Binder binder, boolean includeAncestors, 
+			boolean includeHiddenTemplates);
 
 	public boolean updateDefaultTemplates(Long topId, boolean replace);
 	

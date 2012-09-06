@@ -102,7 +102,6 @@ public class WorkAreaOperation {
 		WorkAreaOperation.MODIFY_ENTRIES,
 		WorkAreaOperation.MODIFY_ENTRY_FIELDS,
 		WorkAreaOperation.DELETE_ENTRIES,
-		WorkAreaOperation.BINDER_ADMINISTRATION,
 		WorkAreaOperation.CREATE_ENTRY_ACLS,
 		WorkAreaOperation.CHANGE_ACCESS_CONTROL,
 		WorkAreaOperation.CREATE_WORKSPACES,
