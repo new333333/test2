@@ -3,6 +3,7 @@
 <template type="5" internalId="402883b90d0de1f3010d0df5582b0032">
   <attribute name="templateTitle" type="string">__template_folder_filr_root</attribute>
   <attribute name="templateDescription" type="description">__template_folder_filr_root_description</attribute>
+  <attribute name="templateHidden" type="boolean">true</attribute>
   <attribute name="title" type="string">__template_folder_filr_root</attribute>
   <attribute name="description" type="description"></attribute>
   <attribute name="iconName" type="string">/icons/folder_mirrored.png</attribute>

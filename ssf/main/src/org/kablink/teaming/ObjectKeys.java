@@ -763,6 +763,7 @@ public interface ObjectKeys {
     public static final String XTAG_BINDER_NAME="name";
     public static final String XTAG_TEMPLATE_TITLE="templateTitle";
     public static final String XTAG_TEMPLATE_DESCRIPTION="templateDescription";
+    public static final String XTAG_TEMPLATE_HIDDEN="templateHidden";
    //value of name= attribue on XTAG_ELEMENT_TYPE_PROPERTY for binders
     public static final String XTAG_BINDER_UNIQUETITLES="uniqueTitle";
     public static final String XTAG_BINDER_LIBRARY="library";

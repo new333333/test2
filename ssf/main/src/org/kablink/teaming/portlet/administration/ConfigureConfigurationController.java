@@ -462,7 +462,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			List<TemplateBinder> configs = new ArrayList<TemplateBinder>();
 			if (parentBinderId == null) {
 				//Get all of the global templates
-				configs = getTemplateModule().getTemplates();
+				configs = getTemplateModule().getTemplates(Boolean.TRUE);
 			} else {
 				//Get just the local templates
 				configs = getTemplateModule().getTemplates(parentBinder);
@@ -550,7 +550,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 
 			List<TemplateBinder> configs = new ArrayList<TemplateBinder>();
 			if (parentBinderId == null) {
-				configs = getTemplateModule().getTemplates();
+				configs = getTemplateModule().getTemplates(Boolean.TRUE);
 			} else {
 				configs = getTemplateModule().getTemplates(parentBinder);
 			}

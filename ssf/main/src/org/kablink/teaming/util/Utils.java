@@ -806,11 +806,9 @@ public class Utils {
 	public static List<TemplateBinder> validateTemplateBinders(List<TemplateBinder> binders, 
 			boolean includeHiddenTemplates) {
 		List<TemplateBinder> filteredList = new ArrayList<TemplateBinder>();
-		if (!includeHiddenTemplates) {
-			//We must filter out any hidden templates
-			for (TemplateBinder t : binders) {
-				if (!t.isTemplateHidden()) filteredList.add(t);
-			}
+		//We must first filter out any hidden templates
+		for (TemplateBinder t : binders) {
+			if (includeHiddenTemplates || !t.isTemplateHidden()) filteredList.add(t);
 		}
 		if (!Utils.checkIfFilr()) return filteredList;
 		
