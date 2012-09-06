@@ -28,6 +28,7 @@ if ""%2"" == ""generateSqlToMarkDatabaseAsUpdated"" goto generateSqlToMarkDataba
 if ""%2"" == ""exportSchema"" goto exportSchema
 if ""%2"" == ""exportData"" goto exportData
 if ""%2"" == ""diffDatabases"" goto diffDatabases
+if ""%2"" == ""validate"" goto validate
 echo Errors:
 echo    Invalid command
 goto displayUsage
@@ -64,6 +65,8 @@ echo    diffDatabases   Output schema differences between two databases into a c
 echo                    log file which can later be executed to upgrade the schema of
 echo                    the first database to that of the second (reference) database. 
 echo                    There are limitations with this function.
+echo    validate        Checks the change log for errors. Useful after making manual
+echo                    edits to the change log file (which is not recommended).
 echo.
 echo Note: Additional parameters are read in from [db type]-liquibase.properties file.
 goto end
@@ -94,6 +97,10 @@ goto end
 
 :diffDatabases
 java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" diffChangeLog > ".\%1-diff-changelog.xml"
+goto end
+
+:validate
+java -jar ".\lib\liquibase.jar" --logLevel="%LOG_LEVEL%" --defaultsFile=".\%1-liquibase.properties" --classpath="%CLASSPATH%" --changeLogFile="scripts\changelog\%1-changelog-master.xml" --contexts="%CONTEXTS%" validate
 goto end
 
 :end

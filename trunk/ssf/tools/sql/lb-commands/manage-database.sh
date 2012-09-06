@@ -32,6 +32,8 @@ echo "   diffDatabases   Output schema differences between two databases into a 
 echo "                   log file which can later be executed to upgrade the schema of"
 echo "                   the first database to that of the second (reference) database."
 echo "                   There are limitations with this function."
+echo "   validate        Checks the change log for errors. Useful after making manual"
+echo "                   edits to the change log file (which is not recommended)."
 echo ""
 echo "Note: Additional parameters are read in from [db type]-liquibase.properties file."
 }
@@ -71,6 +73,8 @@ elif [ "$2" = "exportData" ]; then
   java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --diffTypes="data" generateChangeLog > "./$1-data-changelog.xml"
 elif [ "$2" = "diffDatabases" ]; then
   java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" diffChangeLog > "./$1-diff-changelog.xml"
+elif [ "$2" = "validate" ]; then
+  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-master.xml" --contexts="$CONTEXTS" validate
 else
   echo "Errors:"
   echo "   Invalid command"
