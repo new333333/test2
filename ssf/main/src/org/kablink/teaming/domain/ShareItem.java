@@ -249,9 +249,9 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 	
 	//Routine to get the Role that best matches the RightSet for this ShareItem
 	public Role getRole() {
-		if (this.getRightSet().equals(Role.VIEW.getRightSet())) return Role.VIEW;
+		if (this.getRightSet().equals(Role.VIEWER.getRightSet())) return Role.VIEWER;
+		if (this.getRightSet().equals(Role.EDITOR.getRightSet())) return Role.EDITOR;
 		if (this.getRightSet().equals(Role.CONTRIBUTOR.getRightSet())) return Role.CONTRIBUTOR;
-		if (this.getRightSet().equals(Role.OWNER.getRightSet())) return Role.OWNER;
 		if (this.getRightSet().equals(Role.NONE.getRightSet())) return Role.NONE;
 		return Role.CUSTOM;
 	}
@@ -265,18 +265,19 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 	}
 	
 	public static enum Role {
-		VIEW("share.role.title.view", 
+		VIEWER("share.role.title.viewer", 
 				new WorkAreaOperation[] {
-				WorkAreaOperation.READ_ENTRIES
+				WorkAreaOperation.READ_ENTRIES,
+				WorkAreaOperation.ADD_REPLIES
 				}),
-		CONTRIBUTOR("share.role.title.contributor",
+		EDITOR("share.role.title.editor",
 				new WorkAreaOperation[] {
 				WorkAreaOperation.READ_ENTRIES, 
 				WorkAreaOperation.CREATE_ENTRIES, 
 				WorkAreaOperation.MODIFY_ENTRIES, 
-				WorkAreaOperation.DELETE_ENTRIES
+				WorkAreaOperation.ADD_REPLIES
 				}),
-		OWNER("share.role.title.owner",
+		CONTRIBUTOR("share.role.title.contributor",
 				new WorkAreaOperation[] {
 				WorkAreaOperation.READ_ENTRIES, 
 				WorkAreaOperation.CREATE_ENTRIES, 
