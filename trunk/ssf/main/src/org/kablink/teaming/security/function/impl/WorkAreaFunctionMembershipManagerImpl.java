@@ -122,7 +122,22 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
     }
 
     public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(Long zoneId, WorkArea workArea, String functionScope) {
-        return getSecurityDao().findWorkAreaFunctionMemberships(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType(), functionScope);    	
+    	 List<WorkAreaFunctionMembership> membership = getSecurityDao().findWorkAreaFunctionMemberships(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType());
+    	 if(functionScope == null) 
+    		 return membership;
+    	 if(membership.size() == 0)
+    		 return membership;
+		 List<Function> functions = getSecurityDao().findFunctions(zoneId);
+		 List<WorkAreaFunctionMembership> result = new ArrayList<WorkAreaFunctionMembership>();
+		 for(WorkAreaFunctionMembership m:membership) {
+			 for(Function f:functions) {
+				 if(m.getFunctionId().equals(f.getId()) && functionScope.equals(f.getScope())) {
+					 result.add(m);
+					 break;
+				 }
+			 }
+		 }
+		 return result;
     }
     
     /*
