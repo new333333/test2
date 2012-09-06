@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
+import javax.xml.bind.annotation.XmlElement;
+
 /**
  * User: david
  * Date: 9/5/12
@@ -48,6 +50,7 @@ public abstract class SearchableObject extends BaseRestObject {
         super(link);
     }
 
+    @XmlElement(name="doc_type")
     public String getDocType() {
         return docType;
     }
