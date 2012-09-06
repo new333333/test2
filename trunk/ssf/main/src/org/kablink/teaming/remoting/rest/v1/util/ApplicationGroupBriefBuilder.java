@@ -43,6 +43,13 @@ import java.util.Map;
  * Time: 1:07 PM
  */
 public class ApplicationGroupBriefBuilder extends PrincipalBriefBuilder implements SearchResultBuilder<ApplicationGroupBrief> {
+    public ApplicationGroupBriefBuilder() {
+    }
+
+    public ApplicationGroupBriefBuilder(boolean textDescriptions) {
+        super(textDescriptions);
+    }
+
     public ApplicationGroupBrief build(Map entry) {
         ApplicationGroupBrief user = new ApplicationGroupBrief();
         populatePrincipalBrief(user, entry);

@@ -69,7 +69,7 @@ import static org.kablink.util.search.Restrictions.in;
 public class NetFoldersResource extends AbstractResource {
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResultList<BinderBrief> getNetFolders(
+    public SearchResultList<BinderBrief> getNetFolders(@QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                            @QueryParam("first") @DefaultValue("0") Integer offset,
                                                            @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         Criteria crit = new Criteria();
@@ -80,7 +80,7 @@ public class NetFoldersResource extends AbstractResource {
         crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
         Map map = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), map, "/net_folders", null, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), map, "/net_folders", null, offset);
         return results;
     }
 
@@ -88,11 +88,12 @@ public class NetFoldersResource extends AbstractResource {
     @Path("/library_entities")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<SearchableObject> getLibraryEntities(@QueryParam("recursive") @DefaultValue("false") boolean recursive,
+                                                                 @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
             @QueryParam("keyword") String keyword,
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
-        SearchResultList<BinderBrief> netFolders = getNetFolders(0, -1);
+        SearchResultList<BinderBrief> netFolders = getNetFolders(textDescriptions, 0, -1);
         if (netFolders.getCount()>0) {
             Junction criterion = Restrictions.conjunction();
             Junction searchContext = Restrictions.disjunction();
@@ -120,7 +121,7 @@ public class NetFoldersResource extends AbstractResource {
             Criteria crit = new Criteria();
             crit.add(criterion);
             Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
-            SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(), resultsMap,
+            SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap,
                     "/net_folders/library_entities", nextParams, offset);
         }
         return results;

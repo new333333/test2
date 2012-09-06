@@ -47,6 +47,13 @@ import java.util.Map;
  * Time: 1:07 PM
  */
 public abstract class PrincipalBriefBuilder extends DefinableEntityBriefBuilder {
+    protected PrincipalBriefBuilder() {
+    }
+
+    protected PrincipalBriefBuilder(boolean textDescriptions) {
+        super(textDescriptions);
+    }
+
     public void populatePrincipalBrief(PrincipalBrief model, Map entry) {
         populateDefinableEntityBrief(model, entry, Constants.BINDER_ID_FIELD);
         model.setName((String) entry.get(Constants.LOGINNAME_FIELD));

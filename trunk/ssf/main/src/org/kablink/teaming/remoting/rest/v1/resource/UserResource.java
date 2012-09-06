@@ -85,6 +85,7 @@ public class UserResource extends AbstractPrincipalResource {
 	public SearchResultList<UserBrief> getUsers(
 		@QueryParam("name") String name,
 		@QueryParam("email") String email,
+        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
 		@QueryParam("first") Integer offset,
 		@QueryParam("count") Integer maxCount) {
         Map<String, Object> options = new HashMap<String, Object>();
@@ -114,7 +115,7 @@ public class UserResource extends AbstractPrincipalResource {
         }
         Map resultMap = getProfileModule().getUsers(options);
         SearchResultList<UserBrief> results = new SearchResultList<UserBrief>();
-        SearchResultBuilderUtil.buildSearchResults(results, new UserBriefBuilder(), resultMap, nextUrl, nextParams, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new UserBriefBuilder(textDescriptions), resultMap, nextUrl, nextParams, offset);
 		return results;
 	}
 	

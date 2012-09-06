@@ -96,9 +96,10 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 	@Path("{id}/binders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<BinderBrief> getSubBinders(@PathParam("id") long id,
-			@QueryParam("first") @DefaultValue("0") Integer offset,
-			@QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        return getSubBinders(id, null, offset, maxCount, null, null);
+                                                       @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+			                                           @QueryParam("first") @DefaultValue("0") Integer offset,
+                                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        return getSubBinders(id, null, offset, maxCount, null, null, textDescriptions);
 	}
 
     /**
@@ -123,24 +124,27 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 	@GET
 	@Path("{id}/binder_tree")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public BinderTree getSubBinderTree(@PathParam("id") long id) {
-        return getSubBinderTree(id, null);
+	public BinderTree getSubBinderTree(@PathParam("id") long id,
+                                       @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+        return getSubBinderTree(id, null, textDescriptions);
 	}
 
 	@GET
 	@Path("{id}/library_tree")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public BinderTree getLibraryTree(@PathParam("id") long id) {
-        return getSubBinderTree(id, buildLibraryTreeCriterion());
+	public BinderTree getLibraryTree(@PathParam("id") long id,
+                                     @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
+        return getSubBinderTree(id, buildLibraryTreeCriterion(), textDescriptions);
 	}
 
     @GET
    	@Path("{id}/library_folders")
        @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
    	public SearchResultList<BinderBrief> getLibraryFolders(@PathParam("id") long id,
-   			@QueryParam("first") @DefaultValue("0") Integer offset,
-   			@QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        return getSubBinders(id, SearchUtils.libraryFolders(), offset, maxCount, null, null);
+                                                           @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                           @QueryParam("first") @DefaultValue("0") Integer offset,
+                                                           @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        return getSubBinders(id, SearchUtils.libraryFolders(), offset, maxCount, null, null, textDescriptions);
    	}
 
     // Read entries
@@ -288,7 +292,8 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
     }
 
-    protected SearchResultList<SearchableObject> getSubEntities(long id, boolean recursive, boolean onlyLibrary, String keyword, Integer offset, Integer maxCount, String nextUrl, Map<String, String> nextParams) {
+    protected SearchResultList<SearchableObject> getSubEntities(long id, boolean recursive, boolean onlyLibrary, String keyword,
+                                                                Integer offset, Integer maxCount, String nextUrl, Map<String, String> nextParams, boolean textDescriptions) {
         _getBinder(id);
         Junction criterion = Restrictions.conjunction();
 
@@ -308,7 +313,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         crit.add(criterion);
         Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(), resultsMap, nextUrl, nextParams, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap, nextUrl, nextParams, offset);
         return results;
     }
 
@@ -333,7 +338,8 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return results;
     }
 
-    protected SearchResultList<BinderBrief> getSubBinders(long id, Criterion filter, Integer offset, Integer maxCount, String nextUrl, Map<String, String> nextParams) {
+    protected SearchResultList<BinderBrief> getSubBinders(long id, Criterion filter, Integer offset, Integer maxCount,
+                                                          String nextUrl, Map<String, String> nextParams, boolean textDescriptions) {
         _getBinder(id);
         if (offset==null) {
             offset = 0;
@@ -349,11 +355,11 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         crit.add(Restrictions.eq(Constants.BINDERS_PARENT_ID_FIELD, ((Long) id).toString()));
         Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultMap, nextUrl, nextParams, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultMap, nextUrl, nextParams, offset);
         return results;
     }
 
-    protected BinderTree getSubBinderTree(long id, Criterion filter) {
+    protected BinderTree getSubBinderTree(long id, Criterion filter, boolean textDescriptions) {
         _getBinder(id);
         Criteria crit = new Criteria();
         if (filter!=null) {
@@ -363,7 +369,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         crit.add(buildAncentryCriterion(id));
         Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
         BinderTree results = new BinderTree();
-        SearchResultBuilderUtil.buildSearchResultsTree(results, id, new BinderBriefBuilder(), resultMap);
+        SearchResultBuilderUtil.buildSearchResultsTree(results, id, new BinderBriefBuilder(textDescriptions), resultMap);
         results.setItem(null);
         return results;
     }

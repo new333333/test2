@@ -127,13 +127,14 @@ public class MiscResource extends AbstractResource {
     @POST
     @Path("/legacy_query")
    	public SearchResultList<SearchableObject> legacySearch(@Context HttpServletRequest request,
+                                                           @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                          @QueryParam("first") @DefaultValue("0") Integer offset,
                                                          @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
            String query = getRawInputStreamAsString(request);
            Document queryDoc = buildQueryDocument(query, null);
            Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
            SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
-           SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(), resultsMap, "/legacy_query", null, offset);
+           SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap, "/legacy_query", null, offset);
            return results;
    	}
 }

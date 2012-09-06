@@ -75,25 +75,27 @@ import java.util.Map;
 public class WorkspaceResource extends AbstractBinderResource {
 
     @GET
-    public SearchResultList<BinderBrief> getWorkspaces(@QueryParam("first") @DefaultValue("0") Integer offset,
+    public SearchResultList<BinderBrief> getWorkspaces(@QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                       @QueryParam("first") @DefaultValue("0") Integer offset,
                                                        @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         Document queryDoc = buildQueryDocument("<query/>", buildWorkspacesCriterion());
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultsMap, "/workspaces", null, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/workspaces", null, offset);
         return results;
     }
 
     @POST
     @Path("/legacy_query")
    	public SearchResultList<BinderBrief> getWorkspacesViaLegacyQuery(@Context HttpServletRequest request,
-                                                          @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                          @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+                                                                     @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                                     @QueryParam("first") @DefaultValue("0") Integer offset,
+                                                                     @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
            String query = getRawInputStreamAsString(request);
            Document queryDoc = buildQueryDocument(query, buildWorkspacesCriterion());
            Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
            SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-           SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultsMap, "/workspaces/legacy_query", null, offset);
+           SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/workspaces/legacy_query", null, offset);
            return results;
    	}
 
@@ -113,10 +115,11 @@ public class WorkspaceResource extends AbstractBinderResource {
 	@Path("{id}/workspaces")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<BinderBrief> getSubWorkspaces(@PathParam("id") long id,
+                                                          @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
 			@QueryParam("first") @DefaultValue("0") Integer offset,
 			@QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         return getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_WORKSPACE),
-                offset, maxCount, "/workspaces/" + id + "/workspaces", null);
+                offset, maxCount, "/workspaces/" + id + "/workspaces", null, textDescriptions);
 	}
 
     @POST
@@ -141,10 +144,11 @@ public class WorkspaceResource extends AbstractBinderResource {
 	@Path("{id}/folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<BinderBrief> getSubFolders(@PathParam("id") long id,
+                                                       @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
 			@QueryParam("first") @DefaultValue("0") int offset,
 			@QueryParam("count") @DefaultValue("-1") int maxCount) {
         return getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER),
-                offset, maxCount, "/workspaces/" + id + "/folders", null);
+                offset, maxCount, "/workspaces/" + id + "/folders", null, textDescriptions);
 	}
 
     @POST
@@ -184,6 +188,7 @@ public class WorkspaceResource extends AbstractBinderResource {
 	public SearchResultList<SearchableObject> getLibraryFiles(@PathParam("id") long id,
                                                   @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                   @QueryParam("keyword") String keyword,
+                                                  @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                   @QueryParam("first") @DefaultValue("0") Integer offset,
                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         Map<String, String> nextParams = new HashMap<String, String>();
@@ -191,7 +196,7 @@ public class WorkspaceResource extends AbstractBinderResource {
         if (keyword!=null) {
             nextParams.put("keyword", keyword);
         }
-        return getSubEntities(id, recursive, true, keyword, offset, maxCount, "/workspaces/" + id + "/library_entities", nextParams);
+        return getSubEntities(id, recursive, true, keyword, offset, maxCount, "/workspaces/" + id + "/library_entities", nextParams, textDescriptions);
 	}
 
     @Override

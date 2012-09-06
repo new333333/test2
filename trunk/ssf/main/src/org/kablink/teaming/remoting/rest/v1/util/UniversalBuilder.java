@@ -83,9 +83,20 @@ public class UniversalBuilder implements SearchResultBuilder<SearchableObject> {
 
     private static BuilderFactory builderFactory = new BuilderFactory();
 
+    private boolean textDescriptions;
+
+    public UniversalBuilder(boolean textDescriptions) {
+        this.textDescriptions = textDescriptions;
+    }
+
+    public void setTextDescriptions(boolean textDescriptions) {
+        this.textDescriptions = textDescriptions;
+    }
+
     public SearchableObject build(Map objectMap) {
         SearchResultBuilder<SearchableObject> builder = builderFactory.factoryBuilder(objectMap);
         if (builder!=null) {
+            builder.setTextDescriptions(textDescriptions);
             return builder.build(objectMap);
         }
         return null;

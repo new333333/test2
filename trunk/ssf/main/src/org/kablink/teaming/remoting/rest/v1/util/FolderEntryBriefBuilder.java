@@ -16,6 +16,13 @@ import java.util.Map;
  * Time: 2:45 PM
  */
 public class FolderEntryBriefBuilder extends DefinableEntityBriefBuilder implements SearchResultBuilder<FolderEntryBrief> {
+    public FolderEntryBriefBuilder() {
+    }
+
+    public FolderEntryBriefBuilder(boolean textDescriptions) {
+        super(textDescriptions);
+    }
+
     public FolderEntryBrief build(Map entry) {
         FolderEntryBrief model = new FolderEntryBrief();
         populateDefinableEntityBrief(model, entry, Constants.BINDER_ID_FIELD);
