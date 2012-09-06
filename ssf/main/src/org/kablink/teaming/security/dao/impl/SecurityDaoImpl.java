@@ -102,7 +102,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     	}	        
     }
 
-    public List findFunctions(final Long zoneId) {
+    public List<Function> findFunctions(final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 	        return (List)getHibernateTemplate().execute(
@@ -245,34 +245,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     		end(begin, "findWorkAreaFunctionMemberships(Long,Long,String)");
     	}
 	 }
-	
-	public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(final Long zoneId, final Long workAreaId, final String workAreaType, final String functionScope) {
-		long begin = System.nanoTime();
-		try {
-	       return (List<WorkAreaFunctionMembership>)getHibernateTemplate().execute(
-	                new HibernateCallback() {
-	                    public Object doInHibernate(Session session) throws HibernateException {
-	                    	List<Long> results = session.createCriteria(WorkAreaFunctionMembership.class)
-	                                .add(Expression.conjunction() 
-	                               			.add(Expression.eq(ZONE_ID, zoneId))
-	                               			.add(Expression.eq(WORK_AREA_ID, workAreaId))
-	                               			.add(Expression.eq(WORK_AREA_TYPE, workAreaType))
-	                               			.add(Expression.eq(FUNCTION_SCOPE, functionScope))
-	                               		)
-	                               	.setFetchMode("memberIds", FetchMode.JOIN)
-	                               	.setCacheable(isWorkAreaFunctionMembershipQueryCacheable()) //cache for use during indexing, each entry will make this call
-	                               	.list();
-	                    	//since we eagerly fetch, results are not unique
-	                    	return new ArrayList(new HashSet(results));
-	                    	}
-	                	}
-	            );
-    	}
-    	finally {
-    		end(begin, "findWorkAreaFunctionMemberships(Long,Long,String)");
-    	}		
-	}
-	
+		
     public void deleteWorkAreaFunctionMemberships(final Long zoneId, final Long workAreaId, final String workAreaType) {
 		long begin = System.nanoTime();
 		try {

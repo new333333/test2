@@ -60,7 +60,7 @@ public interface SecurityDao {
     
     public Function loadFunction(Long zoneId, Long id)  throws NoObjectByTheIdException;
     	    	     
-    public List findFunctions(Long zoneId);
+    public List<Function> findFunctions(Long zoneId);
     
     public Condition loadFunctionCondition(Long zoneId, Long functionConditionId) throws NoObjectByTheIdException;
     
@@ -81,7 +81,6 @@ public interface SecurityDao {
 
     public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(Long zoneId, Long functionId);
 	public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(Long zoneId, Long workAreaId, String workAreaType);
-	public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(Long zoneId, Long workAreaId, String workAreaType, String functionScope);
 
     /**
      * 
