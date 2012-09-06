@@ -85,7 +85,11 @@ import java.util.Map;
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class FolderResource extends AbstractBinderResource {
 
-	// Read sub-folders
+    protected String getBasePath() {
+        return "/folders/";
+    }
+
+    // Read sub-folders
     @GET
     public SearchResultList<BinderBrief> getFolders(@QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                     @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -93,7 +97,9 @@ public class FolderResource extends AbstractBinderResource {
         Document queryDoc = buildQueryDocument("<query/>", buildFoldersCriterion());
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/folders", null, offset);
+        Map<String, String> nextParams = new HashMap<String, String>();
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/folders", nextParams, offset);
         return results;
     }
 
@@ -104,13 +110,15 @@ public class FolderResource extends AbstractBinderResource {
                                                                   @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                     @QueryParam("first") @DefaultValue("0") Integer offset,
    			                                        @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-           String query = getRawInputStreamAsString(request);
-           Document queryDoc = buildQueryDocument(query, buildFoldersCriterion());
-           Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
-           SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-           SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/folders/legacy_query", null, offset);
-           return results;
-   	}
+        String query = getRawInputStreamAsString(request);
+        Document queryDoc = buildQueryDocument(query, buildFoldersCriterion());
+        Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
+        Map<String, String> nextParams = new HashMap<String, String>();
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/folders/legacy_query", nextParams, offset);
+        return results;
+    }
 
     /**
      * Returns a list of all access-control related operations that can be performed on a folder.
@@ -165,8 +173,24 @@ public class FolderResource extends AbstractBinderResource {
         throw new NotFoundException(ApiErrorCode.BAD_INPUT, "Checking permissions is not supported for the operation: " + id);
     }
 
+    /**
+     * Gets a list of child binders contained in the specified binder.
+     * @param id The id of the parent binder
+     * @return Returns a list of BinderBrief objects.
+     */
+    @GET
+    @Path("{id}/binders")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public SearchResultList<BinderBrief> getSubBinders(@PathParam("id") long id,
+                                                       @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                       @QueryParam("first") @DefaultValue("0") Integer offset,
+                                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        Map<String, String> nextParams = new HashMap<String, String>();
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        return getSubBinders(id, null, offset, maxCount, "/folders/" + id + "/binders", nextParams, textDescriptions);
+    }
 
-	// Read sub-folders
+    // Read sub-folders
 	@GET
 	@Path("{id}/folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -174,8 +198,10 @@ public class FolderResource extends AbstractBinderResource {
                                                        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
 			@QueryParam("first") @DefaultValue("0") Integer offset,
 			@QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+        Map<String, String> nextParams = new HashMap<String, String>();
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         return getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER),
-                offset, maxCount, "/folders/" + id + "/folders", null, textDescriptions);
+                offset, maxCount, "/folders/" + id + "/folders", nextParams, textDescriptions);
 	}
 
     @POST
@@ -283,6 +309,7 @@ public class FolderResource extends AbstractBinderResource {
                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         Map<String, String> nextParams = new HashMap<String, String>();
         nextParams.put("recursive", Boolean.toString(recursive));
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
         if (keyword!=null) {
             nextParams.put("keyword", keyword);
         }

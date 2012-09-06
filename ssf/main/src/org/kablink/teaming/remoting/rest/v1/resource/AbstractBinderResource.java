@@ -73,7 +73,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
             throws WriteFilesException, WriteEntryDataException {
         _getBinder(id);
         getBinderModule().modifyBinder(id,
-                         new RestModelInputData(binder), null, null, null);
+                new RestModelInputData(binder), null, null, null);
     }
 
     /**
@@ -86,21 +86,6 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                              @QueryParam("purge") @DefaultValue("false") boolean purge) {
         _deleteBinder(id, purge);
     }
-
-    /**
-     * Gets a list of child binders contained in the specified binder.
-     * @param id The id of the parent binder
-     * @return Returns a list of BinderBrief objects.
-     */
-	@GET
-	@Path("{id}/binders")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResultList<BinderBrief> getSubBinders(@PathParam("id") long id,
-                                                       @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
-			                                           @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        return getSubBinders(id, null, offset, maxCount, null, null, textDescriptions);
-	}
 
     /**
      * Creates a new binder as a child of the specified binder.
@@ -144,8 +129,12 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                                            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                            @QueryParam("first") @DefaultValue("0") Integer offset,
                                                            @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        return getSubBinders(id, SearchUtils.libraryFolders(), offset, maxCount, null, null, textDescriptions);
+        Map<String, String> nextParams = new HashMap<String, String>();
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        return getSubBinders(id, SearchUtils.libraryFolders(), offset, maxCount, getBasePath() + id + "/library_folders", nextParams, textDescriptions);
    	}
+
+    abstract protected String getBasePath();
 
     // Read entries
 	@GET
@@ -155,7 +144,9 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                                   @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                   @QueryParam("first") Integer offset,
                                                   @QueryParam("count") Integer maxCount) {
-        return getSubFiles(id, recursive, true, offset, maxCount, null);
+        Map<String, String> nextParams = new HashMap<String, String>();
+        nextParams.put("recursive", Boolean.toString(recursive));
+        return getSubFiles(id, recursive, true, offset, maxCount, getBasePath() + id + "/library_files", nextParams);
 	}
 
     // Read entries
@@ -166,7 +157,9 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                                   @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                   @QueryParam("first") Integer offset,
                                                   @QueryParam("count") Integer maxCount) {
-        return getSubFiles(id, recursive, false, offset, maxCount, null);
+        Map<String, String> nextParams = new HashMap<String, String>();
+        nextParams.put("recursive", Boolean.toString(recursive));
+        return getSubFiles(id, recursive, false, offset, maxCount, getBasePath() + id + "/files", nextParams);
 	}
 
     @GET
@@ -317,7 +310,8 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return results;
     }
 
-    protected SearchResultList<FileProperties> getSubFiles(long id, boolean recursive, boolean onlyLibraryFiles, Integer offset, Integer maxCount, String nextUrl) {
+    protected SearchResultList<FileProperties> getSubFiles(long id, boolean recursive, boolean onlyLibraryFiles,
+                                                           Integer offset, Integer maxCount, String nextUrl, Map<String, String> nextParams) {
         _getBinder(id);
         Junction criterion = Restrictions.conjunction()
             .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT));

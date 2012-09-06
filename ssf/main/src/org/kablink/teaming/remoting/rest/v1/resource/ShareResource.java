@@ -203,6 +203,7 @@ public class ShareResource extends AbstractResource {
             criterion.add(buildLibraryCriterion(true));
             Map<String, String> nextParams = new HashMap<String, String>();
             nextParams.put("recursive", Boolean.toString(recursive));
+            nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
             if (keyword!=null) {
                 criterion.add(buildKeywordCriterion(keyword));
                 //TODO: URL encode the keyword
