@@ -56,9 +56,9 @@ public class ContentChangedEvent extends VibeEventBase<ContentChangedEvent.Handl
 	
 	// Used to identify what about the content has changed.
 	public enum Change {
-		SHARING,
+		SHARING,	// Something about sharing in the content changed.
 		
-		UNKNOWN,
+		UNKNOWN,	// Catch-all.  Something changed, but it wasn't specified.
 	}
 	
 	/**
@@ -75,10 +75,8 @@ public class ContentChangedEvent extends VibeEventBase<ContentChangedEvent.Handl
 		// Initialize the super class...
 		super();
 		
-		// ...and initialize the data members that require
-		// ...initialization.
-		setChange(   Change.UNKNOWN           );
-		setEntityIds(new ArrayList<EntityId>());
+		// ...and initialize the data members that require it.
+		setChange(Change.UNKNOWN);
 	}
 	
 	/**
@@ -113,8 +111,8 @@ public class ContentChangedEvent extends VibeEventBase<ContentChangedEvent.Handl
 	 * 
 	 * @return
 	 */
-	public Change         getChange()    {return m_change;   }
-	public List<EntityId> getEntityIds() {return m_entityIds;}
+	public Change         getChange()    {                     return m_change;   }
+	public List<EntityId> getEntityIds() {validateEntityIds(); return m_entityIds;}
 
 	/**
 	 * Set'er methods.
@@ -130,6 +128,7 @@ public class ContentChangedEvent extends VibeEventBase<ContentChangedEvent.Handl
 	 * @param entityId
 	 */
 	public void addEntityId(EntityId entityId) {
+		validateEntityIds();
 		m_entityIds.add(entityId);
 	}
 	
@@ -195,5 +194,14 @@ public class ContentChangedEvent extends VibeEventBase<ContentChangedEvent.Handl
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
+	}
+
+	/*
+	 * Validates that we have a non-null List<EntityId>.
+	 */
+	private void validateEntityIds() {
+		if (null == m_entityIds) {
+			m_entityIds = new ArrayList<EntityId>(); 
+		}
 	}
 }
