@@ -252,7 +252,7 @@ public class GwtShareHelper
 	{
 		if ( m_contributorRightSet == null )
 		{
-			m_contributorRightSet = ShareItem.Role.EDITOR.getRightSet();
+			m_contributorRightSet = ShareItem.Role.CONTRIBUTOR.getRightSet();
 		}
 		
 		return m_contributorRightSet;
@@ -520,7 +520,7 @@ public class GwtShareHelper
 	 * Return the id of the given user.  If the user is an external user we will see if their
 	 * user account has been created.  If it hasn't we will create it.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings("unchecked")
 	private static Long getRecipientId( AllModulesInjected ami, GwtShareItem gwtShareItem )
 	{
 		Long id;
