@@ -784,12 +784,6 @@ public class GwtShareHelper
 		List emailErrors;
 		Set<Long> principalIds;
 		Set<Long> teamIds;
-		String comments;
-		String title;
-		String shortTitle;
-		String desc;
-		String mailTitle;
-		Description body;
 		HashSet<String> emailAddress;
 		String bccEmailAddress;
 		EntityId entityId;
@@ -827,77 +821,8 @@ public class GwtShareHelper
 		else
 			sharedEntity = ami.getFolderModule().getEntry( entityId.getBinderId(), entityId.getEntityId() );
 		
-		title = sharedEntity.getTitle();
-		shortTitle = title;
-		
-		if ( sharedEntity.getParentBinder() != null )
-			title = sharedEntity.getParentBinder().getPathName() + "/" + title;
-
-		comments = gwtShareItem.getComments();
-		if ( comments != null )
-		{
-			SafeHtmlBuilder builder;
-
-			// HTML escape the text entered by the user and replace newlines with <br>
-			builder = new SafeHtmlBuilder();
-			builder = builder.appendEscapedLines( comments );
-			comments = builder.toSafeHtml().asString();
-		}
-		else
-			comments = "";
-		
-		// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
-		desc = "<a href=\"" + PermaLinkUtil.getPermalinkForEmail( sharedEntity ) + "\">" + title + "</a><br/><br/>" + comments;
-		desc += "<br/><br/>";
-		// Append when the share expires
-		{
-			ShareExpirationValue expirationValue;
-			
-			expirationValue = gwtShareItem.getShareExpirationValue();
-			switch ( expirationValue.getExpirationType() )
-			{
-			case NEVER:
-				desc += NLT.get( "share.expires.never" );
-				break;
-			
-			case AFTER_DAYS:
-			{
-				int daysToExpire;
-
-				daysToExpire = expirationValue.getValue().intValue();
-				desc += NLT.get( "share.expires.after", new Object[]{ daysToExpire } );
-				break;
-			}
-			
-			case ON_DATE:
-			{
-				Long endDate;
-				
-				endDate = expirationValue.getValue();
-				if ( endDate != null )
-				{
-					Date date;
-					DateFormat dateFmt;
-					String dateText;
-					
-					date = new Date( endDate );
-					dateFmt = DateFormat.getDateTimeInstance( DateFormat.MEDIUM, DateFormat.SHORT, NLT.getTeamingLocale() );
-					dateText = dateFmt.format( date );
-					
-					desc += NLT.get( "share.expires.on", new Object[]{ dateText } );
-				}
-				break;
-			}
-			}
-		}
-		body = new Description( desc );
-
-		mailTitle = NLT.get( "relevance.mailShared", new Object[]{Utils.getUserTitle( currentUser )} );
-		mailTitle += " (" + shortTitle +")";
-
-		emailAddress = new HashSet<String>();
-		
 		//See if this user wants to be BCC'd on all mail sent out
+		emailAddress = new HashSet<String>();
 		bccEmailAddress = currentUser.getBccEmailAddress();
 		if ( bccEmailAddress != null && !bccEmailAddress.equals("") )
 		{
@@ -909,14 +834,14 @@ public class GwtShareHelper
 		}
 		
 		emailErrors = null;
-		try
+		if ( SPropsUtil.getBoolean( "UI.useNewShareEmail", false ) )
 		{
-			Map<String,Object> errorMap;
-			
-			// Send the email notification
-			if ( SPropsUtil.getBoolean( "UI.useNewShareEmail", false ) )
+			try
 			{
-				errorMap = ami.getAdminModule().sendMail(
+				Map<String,Object> errorMap;
+				
+				errorMap = GwtEmailHelper.sendShareNotification(
+														ami,
 														shareItem,
 														sharedEntity,
 														principalIds,
@@ -924,10 +849,100 @@ public class GwtShareHelper
 														emailAddress,
 														null,
 														null );
+				
+				if ( errorMap != null )
+				{
+					emailErrors = (List) errorMap.get( ObjectKeys.SENDMAIL_ERRORS );
+				}
 			}
-			
-			else
+			catch ( Exception ex )
 			{
+				m_logger.error( "GwtEmailHelper.sendShareNotification() threw an exception: " + ex.toString() );
+			}
+		}
+		
+		else
+		{
+			String desc;
+			String mailTitle;
+			Description body;
+			String comments;
+			String title;
+			String shortTitle;
+			
+			title = sharedEntity.getTitle();
+			shortTitle = title;
+			
+			if ( sharedEntity.getParentBinder() != null )
+				title = sharedEntity.getParentBinder().getPathName() + "/" + title;
+	
+			comments = gwtShareItem.getComments();
+			if ( comments != null )
+			{
+				SafeHtmlBuilder builder;
+	
+				// HTML escape the text entered by the user and replace newlines with <br>
+				builder = new SafeHtmlBuilder();
+				builder = builder.appendEscapedLines( comments );
+				comments = builder.toSafeHtml().asString();
+			}
+			else
+				comments = "";
+			
+			// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
+			desc = "<a href=\"" + PermaLinkUtil.getPermalinkForEmail( sharedEntity ) + "\">" + title + "</a><br/><br/>" + comments;
+			desc += "<br/><br/>";
+			// Append when the share expires
+			{
+				ShareExpirationValue expirationValue;
+				
+				expirationValue = gwtShareItem.getShareExpirationValue();
+				switch ( expirationValue.getExpirationType() )
+				{
+				case NEVER:
+					desc += NLT.get( "share.expires.never" );
+					break;
+				
+				case AFTER_DAYS:
+				{
+					int daysToExpire;
+	
+					daysToExpire = expirationValue.getValue().intValue();
+					desc += NLT.get( "share.expires.after", new Object[]{ daysToExpire } );
+					break;
+				}
+				
+				case ON_DATE:
+				{
+					Long endDate;
+					
+					endDate = expirationValue.getValue();
+					if ( endDate != null )
+					{
+						Date date;
+						DateFormat dateFmt;
+						String dateText;
+						
+						date = new Date( endDate );
+						dateFmt = DateFormat.getDateTimeInstance( DateFormat.MEDIUM, DateFormat.SHORT, NLT.getTeamingLocale() );
+						dateText = dateFmt.format( date );
+						
+						desc += NLT.get( "share.expires.on", new Object[]{ dateText } );
+					}
+					break;
+				}
+				}
+			}
+			body = new Description( desc );
+	
+			mailTitle = NLT.get( "relevance.mailShared", new Object[]{Utils.getUserTitle( currentUser )} );
+			mailTitle += " (" + shortTitle +")";
+	
+			try
+			{
+				Map<String,Object> errorMap;
+				
+				// Send the email notification
 				errorMap = ami.getAdminModule().sendMail(
 														principalIds,
 														teamIds,
@@ -936,16 +951,16 @@ public class GwtShareHelper
 														null,
 														mailTitle,
 														body );
+				
+				if ( errorMap != null )
+				{
+					emailErrors = (List) errorMap.get( ObjectKeys.SENDMAIL_ERRORS );
+				}
 			}
-			
-			if ( errorMap != null )
+			catch ( Exception ex )
 			{
-				emailErrors = (List) errorMap.get( ObjectKeys.SENDMAIL_ERRORS );
+				m_logger.error( "adminModule.sendMail() threw an exception: " + ex.toString() );
 			}
-		}
-		catch ( Exception ex )
-		{
-			m_logger.error( "adminModule.sendMail() threw an exception: " + ex.toString() );
 		}
 
 		return emailErrors;

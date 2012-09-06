@@ -40,7 +40,6 @@ import java.util.Set;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
-import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
@@ -53,7 +52,6 @@ import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.OpenIDConfig;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.WeekendsAndHolidaysConfig;
 import org.kablink.teaming.extension.ExtensionManager;
 import org.kablink.teaming.jobs.ScheduleInfo;
@@ -218,7 +216,8 @@ public interface AdminModule {
 	 * Send a mail message to a collection of users and/or explicit email addresses.  Includes attachments from entries if specified.
 	 *   
 	 * @param entry - may be null
-	 * @param ids - toList
+	 * @param userIds - toList
+	 * @param teamIds
 	 * @param emailAddresses
 	 * @param ccIds - ccoList
 	 * @param bccIds - bccList
@@ -237,6 +236,7 @@ public interface AdminModule {
      * Send a mail message to a collection of users and/or explicit email addresses.
      *  
      * @param ids - toList
+     * @param teamIds - toList
      * @param emailAddresses
  	 * @param ccIds - ccoList
 	 * @param bccIds - bccList
@@ -250,23 +250,6 @@ public interface AdminModule {
     public Map<String, Object> sendMail(Collection<Long> ids, Collection<Long> teamIds, Collection<String> emailAddresses, Collection<Long> ccIds, 
     		Collection<Long> bccIds, String subject, Description body) throws Exception;
     	 
-	/**
-	 * Send a share notification mail message to a collection of users and/or explicit email addresses.
-	 *   
-	 * @param share
-	 * @param sharedEntity
-	 * @param ids - toList
-	 * @param emailAddresses
-	 * @param ccIds - ccoList
-	 * @param bccIds - bccList
-	 * 
-	 * @return
-	 * 
-	 * @throws Exception
-	 */
-    public Map<String, Object> sendMail(ShareItem share, DefinableEntity sharedEntity, Collection<Long> userIds, Collection<Long> teamIds, Collection<String> emailAddresses, Collection<Long> ccIds, 
-    		Collection<Long> bccIds) throws Exception;
-    
     public void setMailConfigAndSchedules(MailConfig mailConfig, ScheduleInfo notifications, ScheduleInfo postings) throws AccessControlException;  
  	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships) throws AccessControlException;
  	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships, boolean doCheckAccess) throws AccessControlException;

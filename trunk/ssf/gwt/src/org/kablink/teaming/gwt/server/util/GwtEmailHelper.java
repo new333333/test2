@@ -30,9 +30,9 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.server.util;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,8 +42,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EmailAddress;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -55,7 +57,6 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.web.util.MiscUtil;
-
 
 /**
  * Helper methods for the GWT email handling.
@@ -203,7 +204,8 @@ public class GwtEmailHelper {
 		List<String>		msgAddressTypes,		//
 		List<String>		msgNoAttAddressTypes,	//
 		List<String>		textAddressTypes)		//
-			throws GwtTeamingException {
+			throws GwtTeamingException
+	{
 		try {
 			// Allocate a map to hold the new subscription information.
 			Map<Integer, String[]> saveStyles = new HashMap<Integer, String[]>();
@@ -306,6 +308,53 @@ public class GwtEmailHelper {
 		}
 		
 		catch (Exception ex) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtEmailHelper.saveEmailNotificationInfo( SOURCE EXCEPTION ):  ", ex);
+			}
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
+	}
+
+	/**
+	 * Send a share notification mail message to a collection of users and/or explicit email addresses.
+	 * 
+	 * @param bs
+	 * @param share
+	 * @param sharedEntity
+	 * @param userIds - toList
+	 * @param teamIds
+	 * @param emailAddresses
+	 * @param ccIds - ccList
+	 * @param bccIds - bccList
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Map<String, Object> sendShareNotification(
+		AllModulesInjected	bs,				//
+		ShareItem			share,			//
+		DefinableEntity		sharedEntity,	//
+		Collection<Long>	userIds,		//
+		Collection<Long>	teamIds,		//
+		Collection<String>	emailAddresses,	//
+		Collection<Long>	ccIds, 			//
+		Collection<Long>	bccIds)			//
+			throws GwtTeamingException
+	{
+		try {
+//!			...this needs to be implemented...
+			return null;
+		}
+		
+		catch (Exception ex) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtEmailHelper.sendShareNotification( SOURCE EXCEPTION ):  ", ex);
+			}
 			throw GwtServerHelper.getGwtTeamingException(ex);
 		}
 	}
