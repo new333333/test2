@@ -45,6 +45,12 @@ import java.util.Map;
  * Time: 1:07 PM
  */
 public class BinderBriefBuilder extends DefinableEntityBriefBuilder implements SearchResultBuilder<BinderBrief> {
+    public BinderBriefBuilder() {
+    }
+
+    public BinderBriefBuilder(boolean textDescriptions) {
+        super(textDescriptions);
+    }
 
     public BinderBrief build(Map entry) {
         BinderBrief binder = new BinderBrief();

@@ -70,9 +70,10 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/by_user/{id}/binder_tree")
-    public BinderTree getSharedByUserBinderTree(@PathParam("id") Long userId) {
+    public BinderTree getSharedByUserBinderTree(@PathParam("id") Long userId,
+                                                @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
         SharedBinderBrief [] sharedBinders = getSharedByBinders(userId, false);
-        return getSubBinderTree(sharedBinders, null);
+        return getSubBinderTree(sharedBinders, null, textDescriptions);
     }
 
     @GET
@@ -147,9 +148,10 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/with_user/{id}/binder_tree")
-    public BinderTree getSharedWithUserBinderTree(@PathParam("id") Long userId) {
+    public BinderTree getSharedWithUserBinderTree(@PathParam("id") Long userId,
+                                                  @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
         SharedBinderBrief [] sharedBinders = getSharedWithBinders(userId, false);
-        return getSubBinderTree(sharedBinders, null);
+        return getSubBinderTree(sharedBinders, null, textDescriptions);
     }
 
     @GET
@@ -165,6 +167,7 @@ public class ShareResource extends AbstractResource {
     public SearchResultList<SearchableObject> getLibraryEntitiesSharedWithUser(@PathParam("id") Long userId,
                                                       @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                       @QueryParam("keyword") String keyword,
+                                                      @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                       @QueryParam("first") @DefaultValue("0") Integer offset,
                                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         _getUser(userId);
@@ -208,7 +211,7 @@ public class ShareResource extends AbstractResource {
             Criteria crit = new Criteria();
             crit.add(criterion);
             Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
-            SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(), resultsMap,
+            SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap,
                     "/with_user/" + userId + "/library_entities", nextParams, offset);
         }
         return results;
@@ -256,9 +259,10 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/with_user/{id}/library_tree")
-    public BinderTree getSharedWithUserLibraryTree(@PathParam("id") Long userId) {
+    public BinderTree getSharedWithUserLibraryTree(@PathParam("id") Long userId,
+                                                   @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
         SharedBinderBrief [] sharedBinders = getSharedWithBinders(userId, true);
-        return getSubBinderTree(sharedBinders, buildLibraryTreeCriterion());
+        return getSubBinderTree(sharedBinders, buildLibraryTreeCriterion(), textDescriptions);
     }
 
     protected SharedBinderBrief [] getSharedByBinders(Long userId, boolean onlyLibrary)  {
@@ -320,7 +324,7 @@ public class ShareResource extends AbstractResource {
         return results.toArray(new SharedFileProperties[results.size()]);
     }
 
-    protected BinderTree getSubBinderTree(SharedBinderBrief [] sharedBinders, Criterion filter) {
+    protected BinderTree getSubBinderTree(SharedBinderBrief [] sharedBinders, Criterion filter, boolean textDescriptions) {
         BinderTree results = new BinderTree();
         if (sharedBinders.length>0) {
             Criteria crit = new Criteria();
@@ -330,7 +334,7 @@ public class ShareResource extends AbstractResource {
             crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
             crit.add(entryAncentryCriterion(sharedBinders));
             Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
-            SearchResultBuilderUtil.buildSearchResultsTree(results, sharedBinders, new BinderBriefBuilder(), resultMap);
+            SearchResultBuilderUtil.buildSearchResultsTree(results, sharedBinders, new BinderBriefBuilder(textDescriptions), resultMap);
             results.setItem(null);
         }
         return results;

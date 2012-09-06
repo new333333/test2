@@ -599,7 +599,7 @@ public class ResourceUtil {
         return new HistoryStamp(new LongIdLinkPair(userId, LinkUriUtil.getUserLinkUri(userId)), historyStamp.getDate());
     }
 
-    private static Description buildDescription(org.kablink.teaming.domain.Description description, boolean textDescriptions){
+    public static Description buildDescription(org.kablink.teaming.domain.Description description, boolean textDescriptions){
         Description model = new Description();
         if (textDescriptions) {
             model.setText(description.getStrippedText());
@@ -607,6 +607,22 @@ public class ResourceUtil {
         } else {
             model.setText(description.getText());
             model.setFormat(description.getFormat());
+        }
+        return model;
+    }
+
+    public static Description buildDescription(String text, String formatStr, boolean textDescriptions){
+        Description model = null;
+        if (text!=null) {
+            int format = org.kablink.teaming.domain.Description.FORMAT_HTML;
+            if (formatStr!=null) {
+                try {
+                    format = Integer.parseInt(formatStr);
+                } catch (NumberFormatException e) {
+                    // Ignore
+                }
+            }
+            model = buildDescription(new org.kablink.teaming.domain.Description(text, format), textDescriptions);
         }
         return model;
     }

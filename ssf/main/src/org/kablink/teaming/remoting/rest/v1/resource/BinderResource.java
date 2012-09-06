@@ -62,25 +62,27 @@ import java.util.Map;
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class BinderResource extends AbstractResource {
     @GET
-    public SearchResultList<BinderBrief> getBinders(@QueryParam("first") @DefaultValue("0") Integer offset,
-                                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+    public SearchResultList<BinderBrief> getBinders(@QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                    @QueryParam("first") @DefaultValue("0") Integer offset,
+                                                    @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         Document queryDoc = buildQueryDocument("<query/>", buildBindersCriterion());
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultsMap, "/binders", null, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/binders", null, offset);
         return results;
     }
 
     @POST
     @Path("/legacy_query")
    	public SearchResultList<BinderBrief> getBindersViaLegacyQuery(@Context HttpServletRequest request,
-                                                       @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+                                                                  @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                                  @QueryParam("first") @DefaultValue("0") Integer offset,
+                                                                  @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
            String query = getRawInputStreamAsString(request);
            Document queryDoc = buildQueryDocument(query, buildBindersCriterion());
            Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
            SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
-           SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), resultsMap, "/binders/legacy_query", null, offset);
+           SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/binders/legacy_query", null, offset);
            return results;
    	}
 

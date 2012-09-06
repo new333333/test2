@@ -50,6 +50,9 @@ import java.util.Map;
  * Time: 3:16 PM
  */
 public class FilePropertiesBuilder implements SearchResultBuilder<FileProperties> {
+    public void setTextDescriptions(boolean textDescriptions) {
+    }
+
     public FileProperties build(Map doc) {
         FileProperties fp = new FileProperties();
         fp.setName((String) doc.get(Constants.FILENAME_FIELD));

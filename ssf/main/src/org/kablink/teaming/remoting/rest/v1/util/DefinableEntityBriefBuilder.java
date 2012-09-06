@@ -52,12 +52,30 @@ import java.util.Map;
  * Time: 11:15 AM
  */
 abstract public class DefinableEntityBriefBuilder {
+    private boolean textDescriptions;
+
+    protected DefinableEntityBriefBuilder() {
+    }
+
+    protected DefinableEntityBriefBuilder(boolean textDescriptions) {
+        this.textDescriptions = textDescriptions;
+    }
+
+    public void setTextDescriptions(boolean textDescriptions) {
+        this.textDescriptions = textDescriptions;
+    }
+
     public void populateDefinableEntityBrief(DefinableEntityBrief model, Map entry, String parentBinderField) {
         String binderIdStr = (String) entry.get(Constants.DOCID_FIELD);
         Long binderId = (binderIdStr != null)? Long.valueOf(binderIdStr) : null;
 
         model.setId(binderId);
         model.setTitle((String) entry.get(Constants.TITLE_FIELD));
+
+        String descText = (String) entry.get(Constants.DESC_FIELD);
+        String descFormat = (String) entry.get(Constants.DESC_FORMAT_FIELD);
+        model.setDescription(ResourceUtil.buildDescription(descText, descFormat, textDescriptions));
+
         model.setEntityType((String) entry.get(Constants.ENTITY_FIELD));
         model.setFamily((String) entry.get(Constants.FAMILY_FIELD));
         model.setIcon(LinkUriUtil.getIconLinkUri((String) entry.get(Constants.ICON_NAME_FIELD), model.getEntityType()));

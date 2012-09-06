@@ -42,6 +42,7 @@ import java.util.Map;
  * Time: 1:05 PM
  */
 public interface SearchResultBuilder<T> {
+    public void setTextDescriptions(boolean textDescriptions);
     public T build(Map entry);
     public Object getId(T obj);
     public Object getParentId(T obj);

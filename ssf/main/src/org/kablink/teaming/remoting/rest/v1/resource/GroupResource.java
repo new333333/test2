@@ -61,6 +61,7 @@ public class GroupResource extends AbstractPrincipalResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<GroupBrief> getGroups(
 		@QueryParam("name") String name,
+        @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
 		@QueryParam("first") Integer offset,
 		@QueryParam("count") Integer maxCount) {
         Map<String, Object> options = new HashMap<String, Object>();
@@ -81,7 +82,7 @@ public class GroupResource extends AbstractPrincipalResource {
         }
         Map resultMap = getProfileModule().getGroups(options);
         SearchResultList<GroupBrief> results = new SearchResultList<GroupBrief>();
-        SearchResultBuilderUtil.buildSearchResults(results, new GroupBriefBuilder(), resultMap, "/groups", nextParams, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new GroupBriefBuilder(textDescriptions), resultMap, "/groups", nextParams, offset);
 		return results;
 	}
 	

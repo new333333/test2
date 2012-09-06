@@ -11,6 +11,7 @@ public abstract class DefinableEntityBrief extends SearchableObject {
     private Long id;
    	private LongIdLinkPair parentBinder;
    	private String title;
+    private Description description;
     private StringIdLinkPair definition;
    	private String entityType;
    	private String family;
@@ -100,6 +101,14 @@ public abstract class DefinableEntityBrief extends SearchableObject {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Description getDescription() {
+        return description;
+    }
+
+    public void setDescription(Description description) {
+        this.description = description;
     }
 
     @XmlElement(name="permalink")
