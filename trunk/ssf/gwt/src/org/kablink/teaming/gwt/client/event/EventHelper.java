@@ -77,7 +77,8 @@ public class EventHelper {
 		case ADMINISTRATION_EXIT:               	reply = new AdministrationExitEvent();            break;
 		case ADMINISTRATION_UPGRADE_CHECK:      	reply = new AdministrationUpgradeCheckEvent();    break;
 		case BROWSE_HIERARCHY_EXIT:             	reply = new BrowseHierarchyExitEvent();           break;
-		case EDIT_CURRENT_BINDER_BRANDING:      	reply = new EditCurrentBinderBrandingEvent();     break;
+		case CONTENT_CHANGED:						reply = new ContentChangedEvent();                break;
+		case EDIT_CURRENT_BINDER_BRANDING:          reply = new EditCurrentBinderBrandingEvent();     break;
 		case EDIT_LANDING_PAGE_PROPERTIES:			reply = new EditLandingPagePropertiesEvent();	  break;
 		case EDIT_PERSONAL_PREFERENCES:         	reply = new EditPersonalPreferencesEvent();       break;
 		case EDIT_SITE_BRANDING:                	reply = new EditSiteBrandingEvent();              break;
@@ -486,6 +487,15 @@ public class EventHelper {
 				if (eventHandler instanceof ChangeFavoriteStateEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = ChangeFavoriteStateEvent.registerEvent(eventBus, ((ChangeFavoriteStateEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case CONTENT_CHANGED:
+				// A ContentChangedEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ContentChangedEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ContentChangedEvent.registerEvent(eventBus, ((ContentChangedEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2010,6 +2020,7 @@ public class EventHelper {
 			case CALENDAR_VIEW_DAYS:                    hasHandler = (eventHandler instanceof CalendarViewDaysEvent.Handler);              break;
 			
 			case CHANGE_CONTEXT:                    	hasHandler = (eventHandler instanceof ChangeContextEvent.Handler);                 break;
+			case CONTENT_CHANGED:                   	hasHandler = (eventHandler instanceof ContentChangedEvent.Handler);                break;
 			case CONTEXT_CHANGED:                   	hasHandler = (eventHandler instanceof ContextChangedEvent.Handler);                break;
 			case CONTEXT_CHANGING:                  	hasHandler = (eventHandler instanceof ContextChangingEvent.Handler);               break;
 			

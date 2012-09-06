@@ -47,6 +47,8 @@ import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeFavoriteStateEvent;
+import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
+import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.EditCurrentBinderBrandingEvent;
@@ -183,6 +185,7 @@ public class GwtMainPage extends ResizeComposite
 		AdministrationUpgradeCheckEvent.Handler,
 		BrowseHierarchyEvent.Handler,
 		ChangeFavoriteStateEvent.Handler,
+		ContentChangedEvent.Handler,
 		ContextChangedEvent.Handler,
 		ContextChangingEvent.Handler,
 		EditCurrentBinderBrandingEvent.Handler,
@@ -278,6 +281,7 @@ public class GwtMainPage extends ResizeComposite
 		TeamingEvents.GOTO_PERMALINK_URL,
 
 		// Context events.
+		TeamingEvents.CONTENT_CHANGED,
 		TeamingEvents.CONTEXT_CHANGED,
 		TeamingEvents.CONTEXT_CHANGING,
 
@@ -2076,6 +2080,24 @@ public class GwtMainPage extends ResizeComposite
 			}// end onSuccess()
 		});
 	}// end onChangeFavoriteState()
+	
+	/**
+	 * Handles ContentChangedEvent's received by this class.
+	 * 
+	 * Implements the ContentChangedEvent.Handler.onContentChanged() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onContentChanged( final ContentChangedEvent event )
+	{
+		// If the content that changed is not known...
+		if ( Change.UNKNOWN.equals( event.getChange() ) )
+		{
+			// ...simply force the entire UI to refresh.
+			FullUIReloadEvent.fireOneAsync();
+		}
+	}// end onContentChanged()
 	
 	/**
 	 * Handles ContextChangedEvent's received by this class.
