@@ -257,4 +257,9 @@
             <column name="pathName"/>
         </createIndex>
     </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="28">
+        <addColumn tableName="SS_Forums">
+			<column name="templateHidden" type="BIT"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
