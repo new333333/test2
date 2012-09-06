@@ -122,6 +122,7 @@ public interface TemplateModule {
  	 * @return
  	 */
 	public List<TemplateBinder> getTemplates();
+	public List<TemplateBinder> getTemplates(boolean includeHiddenTemplates);
  	/**
  	 * Get all binder level templates
  	 * @return

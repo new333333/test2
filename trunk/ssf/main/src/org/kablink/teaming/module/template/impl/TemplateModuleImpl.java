@@ -651,6 +651,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		
 		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_TEMPLATE_TITLE, ObjectKeys.XTAG_TYPE_STRING, binder.getTemplateTitle());
 		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_TEMPLATE_DESCRIPTION, ObjectKeys.XTAG_TYPE_DESCRIPTION, binder.getTemplateDescription());
+		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_TEMPLATE_HIDDEN, ObjectKeys.XTAG_TYPE_BOOLEAN, binder.getTemplateHidden());
 		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_ENTITY_TITLE, ObjectKeys.XTAG_TYPE_STRING, binder.getTitle());
 		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_ENTITY_DESCRIPTION, ObjectKeys.XTAG_TYPE_DESCRIPTION, binder.getDescription());
 		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_ENTITY_ICONNAME, ObjectKeys.XTAG_TYPE_STRING, binder.getIconName());			
@@ -749,9 +750,12 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		return Utils.validateTemplateBinder(binder);
 	}
 	public List<TemplateBinder> getTemplates() {
+		return getTemplates(Boolean.FALSE);
+	}
+	public List<TemplateBinder> getTemplates(boolean includeHiddenTemplates) {
 		//world read
 		List<TemplateBinder> binders = getCoreDao().loadTemplates(RequestContextHolder.getRequestContext().getZoneId());
-		return Utils.validateTemplateBinders(binders);
+		return Utils.validateTemplateBinders(binders, includeHiddenTemplates);
 	}
 	public List<TemplateBinder> getTemplates(Binder binder) {
 		//world read
