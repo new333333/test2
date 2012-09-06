@@ -39,8 +39,9 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
+import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtGroup;
@@ -1113,8 +1114,8 @@ public class ShareThisDlg extends DlgBox
 								// Close this dialog.
 								hide();
 								
-								// Fire the event to reload the ui so it know about the new shares
-								FullUIReloadEvent.fireOne();
+								// Fire the event to notify about the new shares
+								GwtTeaming.fireEvent(new ContentChangedEvent(Change.SHARING));
 							}
 						}
 					};

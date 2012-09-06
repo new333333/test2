@@ -4077,9 +4077,9 @@ public class GwtViewHelper {
 				switch (rights) {
 				default:
 				case UNKNOWN:      access = "";                                        break;
-				case VIEWER:         access = NLT.get("collections.access.view");        break;
 				case CONTRIBUTOR:  access = NLT.get("collections.access.contributor"); break;
-				case EDITOR:        access = NLT.get("collections.access.owner");       break;
+				case EDITOR:       access = NLT.get("collections.access.editor");      break;
+				case VIEWER:       access = NLT.get("collections.access.viewer");      break;
 				}
 			}
 			reply.add(new ShareAccessInfo(access));

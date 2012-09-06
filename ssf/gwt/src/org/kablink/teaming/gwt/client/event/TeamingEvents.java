@@ -71,6 +71,7 @@ public enum TeamingEvents implements IsSerializable {
 	CALENDAR_VIEW_DAYS,					// Tells the calendar to change is day view.
 	
 	CHANGE_CONTEXT,						// Tells the UI that a context switch is currently taking place.	(I.e., Is happening.      )
+	CONTENT_CHANGED,					// Tells the UI that something in the content panel has changed.
 	CONTEXT_CHANGED,					// Tells the UI that a context switch has just taken places.		(I.e., Has happened.      )
 	CONTEXT_CHANGING,					// Tells the UI That a context switch is about to take place.		(I.e., Is going to happen.)
 	

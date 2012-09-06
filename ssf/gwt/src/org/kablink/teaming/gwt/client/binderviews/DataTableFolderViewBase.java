@@ -72,6 +72,8 @@ import org.kablink.teaming.gwt.client.datatable.VibeDataGrid;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
 import org.kablink.teaming.gwt.client.datatable.ViewColumn;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
+import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
@@ -183,6 +185,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	implements ApplyColumnWidths,
 	// Event handlers implemented by this class.
 		ChangeEntryTypeSelectedEntriesEvent.Handler,
+		ContentChangedEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
 		CopySelectedEntriesEvent.Handler,
 		DeleteSelectedEntriesEvent.Handler,
@@ -252,6 +255,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES,
+		TeamingEvents.CONTENT_CHANGED,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.COPY_SELECTED_ENTRIES,
 		TeamingEvents.DELETE_SELECTED_ENTRIES,
@@ -1563,6 +1567,22 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			BinderViewsHelper.changeEntryTypes(
 				getFolderType(),
 				selectedEntityIds);
+		}
+	}
+	
+	/**
+	 * Handles ContentChangedEvent's received by this class.
+	 * 
+	 * Implements the ContentChangedEvent.Handler.onContentChanged() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onContentChanged(final ContentChangedEvent event) {
+		// If a share changed in the 'Shared By Me' collection view...
+		if (Change.SHARING.equals(event.getChange()) && getFolderInfo().getCollectionType().equals(CollectionType.SHARED_BY_ME)) {
+			// ...force the UI to refresh.
+			FullUIReloadEvent.fireOneAsync();
 		}
 	}
 	

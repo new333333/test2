@@ -32,34 +32,105 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.util.EntityId;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The FullUIReloadEvent is used to force the full Vibe OnPrem UI
- * to reload.
+ * The ContentChangedEvent is used notify that something in the content
+ * panel has changed.
  * 
  * @author drfoster@novell.com
  */
-public class FullUIReloadEvent extends VibeEventBase<FullUIReloadEvent.Handler> {
+public class ContentChangedEvent extends VibeEventBase<ContentChangedEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
-
+	
+	private Change			m_change;		//
+	private List<EntityId>	m_entityIds;	//
+	
+	// Used to identify what about the content has changed.
+	public enum Change {
+		SHARING,
+		
+		UNKNOWN,
+	}
+	
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onFullUIReload(FullUIReloadEvent event);
+		void onContentChanged(ContentChangedEvent event);
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public FullUIReloadEvent() {
-		// Initialize the super class.
+	public ContentChangedEvent() {
+		// Initialize the super class...
 		super();
+		
+		// ...and initialize the data members that require
+		// ...initialization.
+		setChange(   Change.UNKNOWN           );
+		setEntityIds(new ArrayList<EntityId>());
+	}
+	
+	/**
+	 * Class constructor.
+	 * 
+	 * @param change
+	 */
+	public ContentChangedEvent(Change change) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameter.
+		setChange(change);
+	}
+	
+	/**
+	 * Class constructor.
+	 * 
+	 * @param change
+	 */
+	public ContentChangedEvent(Change change, List<EntityId> entityIds) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameter.
+		setChange(   change   );
+		setEntityIds(entityIds);
+	}
+	
+	/**
+	 * Get'er method.
+	 * 
+	 * @return
+	 */
+	public Change         getChange()    {return m_change;   }
+	public List<EntityId> getEntityIds() {return m_entityIds;}
+
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setChange(   Change         change)    {m_change    = change;   }
+	public void setEntityIds(List<EntityId> entityIds) {m_entityIds = entityIds;}
+	
+	/**
+	 * Adds an entity ID to the entity ID list.
+	 * 
+	 * @param entityId
+	 */
+	public void addEntityId(EntityId entityId) {
+		m_entityIds.add(entityId);
 	}
 	
 	/**
@@ -71,21 +142,21 @@ public class FullUIReloadEvent extends VibeEventBase<FullUIReloadEvent.Handler> 
 	 */
 	@Override
 	protected void dispatch(Handler handler) {
-		handler.onFullUIReload(this);
+		handler.onContentChanged(this);
 	}
 	
 	/**
 	 * Synchronously fires a new one of these events.
 	 */
 	public static void fireOne() {
-		GwtTeaming.fireEvent(new FullUIReloadEvent());
+		GwtTeaming.fireEvent(new ContentChangedEvent());
 	}
 	
 	/**
 	 * Asynchronously fires a new one of these events.
 	 */
 	public static void fireOneAsync() {
-		GwtTeaming.fireEventAsync(new FullUIReloadEvent());
+		GwtTeaming.fireEventAsync(new ContentChangedEvent());
 	}
 	
 	/**
@@ -110,7 +181,7 @@ public class FullUIReloadEvent extends VibeEventBase<FullUIReloadEvent.Handler> 
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.FULL_UI_RELOAD;
+		return TeamingEvents.CONTENT_CHANGED;
 	}
 		
 	/**

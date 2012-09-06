@@ -82,7 +82,7 @@ public class GetSidebarCollectionEvent extends VibeEventBase<GetSidebarCollectio
 	 * @param collectionCallback
 	 */
 	public GetSidebarCollectionEvent(CollectionCallback collectionCallback) {
-		// Initialize the this object...
+		// Initialize this object...
 		this();
 		
 		// ...and store the parameter.
