@@ -39,6 +39,7 @@ public class TemplateBinder extends Binder {
 	protected Description tDescription;
 	protected String tTitle;
 	protected Long tOwningBinder;
+	protected Boolean tHidden = Boolean.FALSE;
 	
 	public TemplateBinder() {
 		super();
@@ -108,6 +109,19 @@ public class TemplateBinder extends Binder {
 	}
 	public void setTemplateOwningBinderId(Long tOwningBinder) {
 		this.tOwningBinder = tOwningBinder;
+	}
+
+	public boolean isTemplateHidden() {
+		if (tHidden == null) return false;
+		return tHidden;
+	}
+	public boolean getTemplateHidden() {
+		if (tHidden == null) return false;
+		return tHidden;
+	}
+	public void setTemplateHidden(Boolean tHidden) {
+		if (tHidden == null) tHidden = Boolean.FALSE;
+		this.tHidden = tHidden;
 	}
 
 	//we always can inherit

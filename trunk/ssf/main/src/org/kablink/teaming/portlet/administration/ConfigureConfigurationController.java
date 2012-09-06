@@ -342,14 +342,14 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			if (WebKeys.OPERATION_ADD_FOLDER.equals(operation)) {
 				List<TemplateBinder> configs = getTemplateModule().getTemplates(Definition.FOLDER_VIEW);
 				if (parentBinder != null) {
-					configs.addAll(getTemplateModule().getTemplates(Definition.FOLDER_VIEW, parentBinder, true));
+					configs.addAll(getTemplateModule().getTemplates(Definition.FOLDER_VIEW, parentBinder, true, true));
 				}
 				model.put(WebKeys.BINDER_CONFIGS, configs);
 				model.put(WebKeys.OPERATION, operation);								
 			} else  if (WebKeys.OPERATION_ADD_WORKSPACE.equals(operation)) {
 				List<TemplateBinder> configs = getTemplateModule().getTemplates(Definition.WORKSPACE_VIEW);
 				if (parentBinder != null) {
-					configs.addAll(getTemplateModule().getTemplates(Definition.WORKSPACE_VIEW, parentBinder, true));
+					configs.addAll(getTemplateModule().getTemplates(Definition.WORKSPACE_VIEW, parentBinder, true, true));
 				}
 				model.put(WebKeys.OPERATION, operation);				
 				model.put(WebKeys.BINDER_CONFIGS, configs);

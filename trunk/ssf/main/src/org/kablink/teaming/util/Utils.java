@@ -801,11 +801,21 @@ public class Utils {
 		
    	//Validate that which templates are allowed to be used
 	public static List<TemplateBinder> validateTemplateBinders(List<TemplateBinder> binders) {
-		if (!Utils.checkIfFilr()) return binders;
+		return validateTemplateBinders(binders, Boolean.FALSE);
+	}
+	public static List<TemplateBinder> validateTemplateBinders(List<TemplateBinder> binders, 
+			boolean includeHiddenTemplates) {
+		List<TemplateBinder> filteredList = new ArrayList<TemplateBinder>();
+		if (!includeHiddenTemplates) {
+			//We must filter out any hidden templates
+			for (TemplateBinder t : binders) {
+				if (!t.isTemplateHidden()) filteredList.add(t);
+			}
+		}
+		if (!Utils.checkIfFilr()) return filteredList;
 		
 		//Filter out any templates that are not allowed
-		List<TemplateBinder> filteredList = new ArrayList<TemplateBinder>();
-		for (TemplateBinder binder : binders) {
+		for (TemplateBinder binder : filteredList) {
 			if (validateTemplateBinder(binder) != null) {
 				//This template is allowed
 				filteredList.add(binder);
