@@ -181,20 +181,24 @@
         </createTable>
     </changeSet>
     <changeSet author="jong" context="schema" failOnError="true" id="13">
-        <addForeignKeyConstraint baseColumnNames="CREATION_PRINCIPAL" baseTableName="SS_SHAREITEM" constraintName="FK8520E45376767782" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+        <createIndex indexName="SHARERID_SHAREITEM" tableName="SS_SHAREITEM" unique="false">
+            <column name="SHARERID"/>
+        </createIndex>
     </changeSet>
     <changeSet author="jong" context="schema" failOnError="true" id="14">
-        <addForeignKeyConstraint baseColumnNames="MODIFICATION_PRINCIPAL" baseTableName="SS_SHAREITEM" constraintName="FK8520E453BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+        <createIndex indexName="STARTDATE_SHAREITEM" tableName="SS_SHAREITEM" unique="false">
+            <column name="STARTDATE"/>
+        </createIndex>
     </changeSet>
     <changeSet author="jong" context="schema" failOnError="true" id="15">
-        <createIndex indexName="SHAREDENTITY_SHAREITEM" tableName="SS_SHAREITEM" unique="false">
-            <column name="SHAREDENTITY_TYPE"/>
-            <column name="SHAREDENTITY_ID"/>
+        <createIndex indexName="ENDDATE_SHAREITEM" tableName="SS_SHAREITEM" unique="false">
+            <column name="ENDDATE"/>
         </createIndex>
     </changeSet>
     <changeSet author="jong" context="schema" failOnError="true" id="16">
-        <createIndex indexName="ENDDATE_SHAREITEM" tableName="SS_SHAREITEM" unique="false">
-            <column name="ENDDATE"/>
+        <createIndex indexName="SHAREDENTITY_SHAREITEM" tableName="SS_SHAREITEM" unique="false">
+            <column name="SHAREDENTITY_TYPE"/>
+            <column name="SHAREDENTITY_ID"/>
         </createIndex>
     </changeSet>
     <changeSet author="jong" context="schema" failOnError="true" id="17">
@@ -230,10 +234,5 @@
         <addColumn tableName="SS_FOLDERENTRIES">
 			<column name="HASENTRYEXTERNALACL" type="NUMBER(1,0)"/>
         </addColumn>
-    </changeSet>
-    <changeSet author="jong" context="schema" failOnError="true" id="23">
-        <createIndex indexName="SHARERID_SHAREITEM" tableName="SS_SHAREITEM" unique="false">
-            <column name="SHARERID"/>
-        </createIndex>
     </changeSet>
 </databaseChangeLog>
