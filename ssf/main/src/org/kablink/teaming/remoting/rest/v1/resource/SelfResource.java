@@ -34,20 +34,13 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.*;
-import org.kablink.teaming.module.sharing.SharingModule;
-import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
-import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
-import org.kablink.teaming.search.SearchUtils;
-import org.kablink.util.search.Criteria;
-import org.kablink.util.search.Order;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -56,13 +49,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
-import java.util.Map;
-
-import org.kablink.util.search.Constants;
-import org.kablink.util.search.Restrictions;
-
-import static org.kablink.util.search.Restrictions.eq;
-import static org.kablink.util.search.Restrictions.in;
 
 /**
  * User: david

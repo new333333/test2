@@ -46,13 +46,16 @@ import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.Folder;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.rest.v1.model.Workspace;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Restrictions;
 
 import javax.servlet.http.HttpServletRequest;
@@ -66,7 +69,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Path("/workspaces")
@@ -198,6 +203,23 @@ public class WorkspaceResource extends AbstractBinderResource {
         }
         return getSubEntities(id, recursive, true, keyword, offset, maxCount, "/workspaces/" + id + "/library_entities", nextParams, textDescriptions);
 	}
+
+    @GET
+    @Path("{id}/recent_activity")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<SearchableObject> getRecentActivity(@PathParam("id") Long id,
+                                                                @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                @QueryParam("first") @DefaultValue("0") Integer offset,
+                @QueryParam("count") @DefaultValue("20") Integer maxCount) {
+        List<String> workspaces = new ArrayList<String>();
+        workspaces.add(id.toString());
+        Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, workspaces, null, null, true, Constants.LASTACTIVITY_FIELD);
+        Map resultsMap = getBinderModule().executeSearchQuery(criteria, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap,
+                "/workspaces/" + id + "/recent_activity", null, offset);
+        return results;
+    }
 
     @Override
     protected Binder _getBinder(long id) {
