@@ -815,13 +815,14 @@ public class Utils {
 		if (!Utils.checkIfFilr()) return filteredList;
 		
 		//Filter out any templates that are not allowed
+		List<TemplateBinder> finalList = new ArrayList<TemplateBinder>();
 		for (TemplateBinder binder : filteredList) {
 			if (validateTemplateBinder(binder) != null) {
 				//This template is allowed
-				filteredList.add(binder);
+				finalList.add(binder);
 			}
 		}
-		return filteredList;
+		return finalList;
 	}
 	
    	//Validate that a template is allowed to be used
