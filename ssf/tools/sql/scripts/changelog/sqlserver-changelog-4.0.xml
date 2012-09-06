@@ -232,4 +232,9 @@
 			<column name="hasEntryExternalAcl" type="TINYINT"/>
         </addColumn>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+        <createIndex indexName="pathName_Binder" schemaName="dbo" tableName="SS_Forums" unique="true">
+            <column name="pathName"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>

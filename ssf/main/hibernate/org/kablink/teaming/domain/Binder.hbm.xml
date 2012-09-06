@@ -64,7 +64,7 @@
       </many-to-many>
     </list>
     <property name="name" length="128" />
-    <property name="pathName" length="1024"/>
+    <property name="pathName" length="1024" unique="true"/>
     <component name="notificationDef">
       <property name="teamOn" column="notify_teamOn"/>
       <property name="style" column="notify_style"/>
