@@ -240,4 +240,9 @@
             <column name="PATHNAME"/>
         </createIndex>
     </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="24">
+        <addColumn tableName="SS_FORUMS">
+			<column name="TEMPLATEHIDDEN" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
