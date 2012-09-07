@@ -116,6 +116,7 @@ public abstract class AbstractDefinableEntityResource extends AbstractFileResour
 
     @POST
     @Path("{id}/attachments")
+    @Consumes("*/*")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public FileProperties postAttachment_Raw(@PathParam("id") long id,
                                @QueryParam("file_name") String fileName,
