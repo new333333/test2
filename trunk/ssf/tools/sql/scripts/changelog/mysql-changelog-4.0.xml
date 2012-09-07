@@ -252,12 +252,7 @@
 			<column name="hasEntryExternalAcl" type="BIT"/>
         </addColumn>
     </changeSet>
-    <changeSet author="jong" context="schema" failOnError="true" id="27">
-        <createIndex indexName="pathName_Binder" tableName="SS_Forums" unique="true">
-            <column name="pathName"/>
-        </createIndex>
-    </changeSet>
-    <changeSet author="peter" context="schema" failOnError="true" id="28">
+    <changeSet author="peter" context="schema" failOnError="true" id="27">
         <addColumn tableName="SS_Forums">
 			<column name="templateHidden" type="BIT"/>
         </addColumn>

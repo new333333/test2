@@ -235,11 +235,6 @@
 			<column name="HASENTRYEXTERNALACL" type="NUMBER(1,0)"/>
         </addColumn>
     </changeSet>
-    <changeSet author="jong" context="schema" failOnError="true" id="23">
-        <createIndex indexName="PATHNAME_BINDER" tableName="SS_FORUMS" unique="true">
-            <column name="PATHNAME"/>
-        </createIndex>
-    </changeSet>
     <changeSet author="peter" context="schema" failOnError="true" id="24">
         <addColumn tableName="SS_FORUMS">
 			<column name="TEMPLATEHIDDEN" type="NUMBER(1,0)"/>
