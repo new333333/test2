@@ -4084,6 +4084,12 @@ public class GwtViewHelper {
 				case VIEWER:       access = NLT.get("collections.access.viewer");      break;
 				}
 			}
+			if (rights.getCanShareWithOthers()) {
+				if (0 < access.length()) {
+					access += " + ";
+				}
+				access += NLT.get("collections.access.sharer");
+			}
 			reply.add(new ShareAccessInfo(access));
 		}
 
@@ -4104,7 +4110,7 @@ public class GwtViewHelper {
 		for (GwtPerShareInfo si:  perShareInfos) {
 			// ...creating an ShareDateInfo for each share.
 			Date	shareDate  = si.getShareDate();
-			String	dateString = ((null == shareDate) ? "" : GwtServerHelper.getDateString(shareDate));
+			String	dateString = ((null == shareDate) ? "" : GwtServerHelper.getDateTimeString(shareDate, DateFormat.MEDIUM, DateFormat.SHORT));
 			reply.add(new ShareDateInfo(shareDate, dateString));
 		}
 
@@ -4126,7 +4132,7 @@ public class GwtViewHelper {
 			// ...creating an ShareExpirationInfo for each share.
 			boolean	isExpired        = si.isRightsExpired();
 			Date	expirationDate   = si.getRightsExpire();
-			String	expirationString = ((null == expirationDate) ? "" : GwtServerHelper.getDateString(expirationDate));
+			String	expirationString = ((null == expirationDate) ? "" : GwtServerHelper.getDateTimeString(expirationDate, DateFormat.MEDIUM, DateFormat.SHORT));
 			ShareExpirationInfo	sei = new ShareExpirationInfo(expirationDate, isExpired, expirationString);
 			if (isExpired) {
 				sei.setAddedStyle("vibe-dataTableShareStringValue-expired");

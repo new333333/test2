@@ -87,12 +87,12 @@ public class CollectionView extends DataTableFolderViewBase {
 			if (FolderColumn.SHOW_SHARE_MESSAGES_COLUMN) {
 				columnWidths.put(FolderColumn.COLUMN_TITLE,             new ColumnWidth(20));	// = 20
 				columnWidths.put(FolderColumn.COLUMN_COMMENTS,          new ColumnWidth( 7));	// = 27
-				columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_BY,   new ColumnWidth(13));	// = 40
-				columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_WITH, new ColumnWidth(13));	//     (By or with, never both.)
-				columnWidths.put(FolderColumn.COLUMN_SHARE_DATE,        new ColumnWidth( 7));	// = 47
-				columnWidths.put(FolderColumn.COLUMN_SHARE_EXPIRATION,  new ColumnWidth( 7));	// = 54
-				columnWidths.put(FolderColumn.COLUMN_SHARE_ACCESS,      new ColumnWidth( 7));	// = 61
-				columnWidths.put(FolderColumn.COLUMN_SHARE_MESSAGE,     new ColumnWidth(39));	// = 100%
+				columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_BY,   new ColumnWidth(10));	// = 37
+				columnWidths.put(FolderColumn.COLUMN_SHARE_SHARED_WITH, new ColumnWidth(10));	//     (By or with, never both.)
+				columnWidths.put(FolderColumn.COLUMN_SHARE_DATE,        new ColumnWidth( 9));	// = 46
+				columnWidths.put(FolderColumn.COLUMN_SHARE_EXPIRATION,  new ColumnWidth( 9));	// = 55
+				columnWidths.put(FolderColumn.COLUMN_SHARE_ACCESS,      new ColumnWidth(10));	// = 65
+				columnWidths.put(FolderColumn.COLUMN_SHARE_MESSAGE,     new ColumnWidth(35));	// = 100%
 			}
 			
 			else {
