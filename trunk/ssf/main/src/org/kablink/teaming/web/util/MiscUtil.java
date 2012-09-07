@@ -36,6 +36,7 @@ import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -481,6 +482,18 @@ public final class MiscUtil
 		}
 		return reply;
 	}
+
+	/**
+	 * Returns true if an email address is valid and false otherwise.
+	 * 
+	 * @param ema
+	 * 
+	 * @return
+	 */
+	public static boolean isEmailAddressValid( String usedAs, String ema )
+	{
+		return( null != validateEmailAddress( usedAs, ema ));
+	}// end isEmailAddressValid()
 	
 	/**
 	 * Performs a collated compare on two strings without generating any
@@ -647,6 +660,34 @@ public final class MiscUtil
 		return reply;
 	}// end validateEmailAddressCollection()
 
+	/**
+	 * Given an email address in string form, returns the corresponding
+	 * InternetAddress if the email address is valid and false
+	 * otherwise.
+	 * 
+	 * @param usedAs
+	 * @param ema
+	 * 
+	 * @return
+	 */
+	public static InternetAddress validateEmailAddress( String usedAs, String ema )
+	{
+		// If we we don't have an email address to validate...
+		ema = (( null == ema ) ? "" : ema.trim()); 
+		if ( 0 == ema.length() )
+		{
+			// ...return null.
+			return null;
+		}
+
+		// Otherwise, construct an InternetAddress from it...
+		InternetAddress ia = new InternetAddress();
+		try { ia.setAddress( ema ); } catch ( Exception e ) {};
+		
+		// ...and validate that.
+		return validateIA( usedAs, ia );
+	}// end validateEmailAddress()
+	
 	/*
 	 * Validates an InternetAddress as containing a valid email
 	 * address.
@@ -984,5 +1025,27 @@ public final class MiscUtil
 			}
 		}
 		return reply;
+	}
+	
+	/**
+	 * Validates that a Collection<Long> is non-null.
+	 * 
+	 * @param lC
+	 * 
+	 * @return
+	 */
+	public static Collection<Long> validateCL(Collection<Long> lC) {
+		return ((null == lC) ? new HashSet<Long>() : lC);
+	}
+	
+	/**
+	 * Validates that a Collection<String> is non-null.
+	 * 
+	 * @param lS
+	 * 
+	 * @return
+	 */
+	public static Collection<String> validateCS(Collection<String> sC) {
+		return ((null == sC) ? new HashSet<String>() : sC);
 	}
 }// end MiscUtil
