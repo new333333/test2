@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EmailAddress;
@@ -81,7 +82,7 @@ public class GwtEmailHelper {
 	private GwtEmailHelper() {
 		// Nothing to do.
 	}
-	
+
 	/**
 	 * Returns an EmailNotificationInfoRpcResponseData object
 	 * containing the email notification information for the current
@@ -320,14 +321,14 @@ public class GwtEmailHelper {
 	/**
 	 * Send a share notification mail message to a collection of users and/or explicit email addresses.
 	 * 
-	 * @param bs
-	 * @param share
-	 * @param sharedEntity
-	 * @param userIds - toList
-	 * @param teamIds
-	 * @param emailAddresses
-	 * @param ccIds - ccList
-	 * @param bccIds - bccList
+	 * @param bs				- Access to modules.
+	 * @param share				- Share item.
+	 * @param sharedEntity		- Entity (folder or folder entry) being shared.
+	 * @param principalIds		- toList,  users and groups
+	 * @param teamIds			- toList,  teams.
+	 * @param emailAddresses	- toList,  stand alone email address.
+	 * @param ccIds				- ccList,  users and groups
+	 * @param bccIds			- bccList, users and groups
 	 * 
 	 * @return
 	 * 
@@ -337,7 +338,7 @@ public class GwtEmailHelper {
 		AllModulesInjected	bs,				//
 		ShareItem			share,			//
 		DefinableEntity		sharedEntity,	//
-		Collection<Long>	userIds,		//
+		Collection<Long>	principalIds,	//
 		Collection<Long>	teamIds,		//
 		Collection<String>	emailAddresses,	//
 		Collection<Long>	ccIds, 			//
@@ -345,8 +346,15 @@ public class GwtEmailHelper {
 			throws GwtTeamingException
 	{
 		try {
-//!			...this needs to be implemented...
-			return null;
+			return
+				bs.getAdminModule().sendMail(
+					share,
+					sharedEntity,
+					principalIds,
+					teamIds,
+					emailAddresses,
+					ccIds,
+					bccIds);
 		}
 		
 		catch (Exception ex) {

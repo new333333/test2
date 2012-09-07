@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -63,6 +64,7 @@ import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -73,6 +75,7 @@ import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.PostingDef;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WeekendsAndHolidaysConfig;
@@ -124,6 +127,7 @@ import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
@@ -1468,6 +1472,61 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     		Collection<Long> bccIds, String subject, Description body) throws Exception {
     	// Always use the initial form of the method.
     	return sendMail(null, ids, teamIds, emailAddresses, ccIds, bccIds, subject, body, false); 
+    }
+    /**
+     * Send a share notification mail message to a collection of users
+     * and/or explicit email addresses.
+     * 
+     * @param share
+     * @param sharedEntity
+     * @param principalIds
+     * @param teamIds
+     * @param emailAddresses
+     * @param ccIds
+     * @param bccIds
+     * 
+     * @return
+     * 
+     * @throws Exception
+     */
+    @Override
+    public Map<String, Object> sendMail(ShareItem share, DefinableEntity sharedEntity, Collection<Long> principalIds, Collection<Long> teamIds,
+    		Collection<String> emailAddresses, Collection<Long> ccIds, Collection<Long> bccIds) throws Exception {
+    	// If sending email is not enabled in the system...
+		if (!(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isSendMailEnabled())) {
+			// ...throw an appropriate exception.
+			throw new ConfigurationException(NLT.get("errorcode.sendmail.disabled"));
+		}
+
+		// Allocate error tracking/reply objects.
+		List	errors = new ArrayList();
+		Map		result = new HashMap();
+		result.put(ObjectKeys.SENDMAIL_ERRORS, errors);
+		
+		// Allocate some maps of email addresses to locales we'll
+		// use for sending the notifications in the appropriate
+		// language(s).
+		Map<Locale, List<InternetAddress>> toEMAs  = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>> ccEMAs  = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>> bccEMAs = new HashMap<Locale, List<InternetAddress>>();
+
+		// Process the recipient collections we received into the
+		// appropriate email address to locale map.
+		EmailHelper.addPrincipalsToLocaleMap(              MailModule.TO,  toEMAs,  MiscUtil.validateCL(principalIds  ));
+		EmailHelper.addTeamsToLocaleMap(getBinderModule(), MailModule.TO,  toEMAs,  MiscUtil.validateCL(teamIds       ));
+		EmailHelper.addEMAsToLocaleMap(                    MailModule.TO,  toEMAs,  MiscUtil.validateCS(emailAddresses));
+		EmailHelper.addPrincipalsToLocaleMap(              MailModule.CC,  ccEMAs,  MiscUtil.validateCL(ccIds         ));
+		EmailHelper.addPrincipalsToLocaleMap(              MailModule.BCC, bccEMAs, MiscUtil.validateCL(bccIds        ));
+		
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
+		// Once we get here, we have maps containing the valid //
+		// email addresses we need to send notifications too   //
+		// mapped by the locale to use to send them.           //
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
+		
+//!		...this needs to be implemented...
+		
+    	return result;
     }
     
     private Set<InternetAddress> getEmail(Collection<Long>ids, List errors) {

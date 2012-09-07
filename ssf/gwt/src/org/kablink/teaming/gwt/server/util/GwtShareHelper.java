@@ -42,7 +42,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
@@ -75,6 +74,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -549,7 +549,6 @@ public class GwtShareHelper
 					// Create one.
 					callback = new RunasCallback()
 					{
-						@SuppressWarnings("rawtypes")
 						@Override
 						public Object doAs() 
 						{
@@ -789,7 +788,7 @@ public class GwtShareHelper
 		List emailErrors;
 		Set<Long> principalIds;
 		Set<Long> teamIds;
-		HashSet<String> emailAddress;
+		Set<Long> bccIds;
 		String bccEmailAddress;
 		EntityId entityId;
 		DefinableEntity sharedEntity;
@@ -826,16 +825,18 @@ public class GwtShareHelper
 		else
 			sharedEntity = ami.getFolderModule().getEntry( entityId.getBinderId(), entityId.getEntityId() );
 		
-		//See if this user wants to be BCC'd on all mail sent out
-		emailAddress = new HashSet<String>();
+		// Does this user want to be BCC'd on all mail sent out?
 		bccEmailAddress = currentUser.getBccEmailAddress();
-		if ( bccEmailAddress != null && !bccEmailAddress.equals("") )
+		if ( MiscUtil.hasString( bccEmailAddress ) )
 		{
-			if ( !emailAddress.contains( bccEmailAddress.trim() ) )
-			{
-				//Add the user's chosen bcc email address
-				emailAddress.add( bccEmailAddress.trim() );
-			}
+			// Yes!
+			// Add them to a BCC list.
+			bccIds = new HashSet<Long>();
+			bccIds.add( currentUser.getId() );
+		}
+		else
+		{
+			bccIds = null;
 		}
 		
 		emailErrors = null;
@@ -851,9 +852,9 @@ public class GwtShareHelper
 														sharedEntity,
 														principalIds,
 														teamIds,
-														emailAddress,
-														null,
-														null );
+														null,	// null -> No stand alone email addresses.
+														null,	// null -> No CC'ed users.
+														bccIds );
 				
 				if ( errorMap != null )
 				{
@@ -951,9 +952,9 @@ public class GwtShareHelper
 				errorMap = ami.getAdminModule().sendMail(
 														principalIds,
 														teamIds,
-														emailAddress,
-														null,
-														null,
+														null,	// null -> No stand alone email addresses.
+														null,	// null -> No CC'ed users.
+														bccIds,
 														mailTitle,
 														body );
 				

@@ -6065,20 +6065,26 @@ public class GwtServerHelper {
 	/**
 	 * Returns a Set<Long> of the member IDs of a team.
 	 * 
-	 * @param bs
+	 * @param bm
 	 * @param binderId
 	 * @param explodeGroups
 	 * 
 	 * @return
 	 */
-	public static Set<Long> getTeamMemberIds(AllModulesInjected bs, Long binderId, boolean explodeGroups) {
+	public static Set<Long> getTeamMemberIds(BinderModule bm, Long binderId, boolean explodeGroups) {
 		Set<Long> teamMemberIds = null;
-		try {teamMemberIds = bs.getBinderModule().getTeamMemberIds(binderId, explodeGroups);}
+		try {teamMemberIds = bm.getTeamMemberIds(binderId, explodeGroups);}
 		catch (Exception ex) {/* Ignored. */}
 		return validatePrincipalIds(teamMemberIds);
 	}
 	
+	public static Set<Long> getTeamMemberIds(AllModulesInjected bs, Long binderId, boolean explodeGroups) {
+		// Always use the initial form of the method.
+		return getTeamMemberIds(bs.getBinderModule(), binderId, explodeGroups);
+	}
+	
 	public static Set<Long> getTeamMemberIds(AllModulesInjected bs, Long binderId) {
+		// Always use the initial form of the method.
 		return getTeamMemberIds(bs, binderId, false);
 	}
 	
