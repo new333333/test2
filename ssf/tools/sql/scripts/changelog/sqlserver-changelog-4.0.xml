@@ -232,11 +232,6 @@
 			<column name="hasEntryExternalAcl" type="TINYINT"/>
         </addColumn>
     </changeSet>
-    <changeSet author="jong" context="schema" failOnError="true" id="22">
-        <createIndex indexName="pathName_Binder" schemaName="dbo" tableName="SS_Forums" unique="true">
-            <column name="pathName"/>
-        </createIndex>
-    </changeSet>
     <changeSet author="peter" context="schema" failOnError="true" id="23">
         <addColumn tableName="SS_Forums">
 			<column name="templateHidden" type="TINYINT"/>
