@@ -69,12 +69,7 @@ public class SelfResource extends AbstractResource {
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public User getSelf(@QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
                         @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
-        Long userId = getLoggedInUserId();
-        // Retrieve the raw entry.
-        Principal entry = getProfileModule().getEntry(userId);
-
-        if(!(entry instanceof org.kablink.teaming.domain.User))
-            throw new IllegalArgumentException(userId + " does not represent an user. It is " + entry.getClass().getSimpleName());
+        Principal entry = getLoggedInUser();
 
         User user = ResourceUtil.buildUser((org.kablink.teaming.domain.User) entry, includeAttachments, textDescriptions);
         user.setLink("/self");
@@ -82,6 +77,7 @@ public class SelfResource extends AbstractResource {
         if (user.getWorkspace()!=null) {
             user.addAdditionalLink("my_file_folders", user.getWorkspace().getLink() + "/library_folders");
         }
+        user.addAdditionalLink("file_folders", "/self/file_folders");
         user.addAdditionalLink("net_folders", "/self/net_folders");
         user.addAdditionalLink("shared_with_me", "/self/shared_with_me");
         user.addAdditionalLink("shared_by_me", "/self/shared_by_me");
@@ -141,6 +137,13 @@ public class SelfResource extends AbstractResource {
     }
 
     @GET
+    @Path("/file_folders")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public BinderBrief getFileFolders() {
+        return getFakeMyFileFolders();
+    }
+
+    @GET
     @Path("/net_folders")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public BinderBrief getNetFolders() {
@@ -185,6 +188,21 @@ public class SelfResource extends AbstractResource {
         binder.setTitle("My Favorites");
         binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace_star.png"));
         binder.addAdditionalLink("child_binders", "/self/favorites");
+        return binder;
+    }
+
+    private BinderBrief getFakeMyFileFolders() {
+        org.kablink.teaming.domain.User user = getLoggedInUser();
+        BinderBrief binder = new BinderBrief();
+        //TODO: localize
+        binder.setTitle("My Files");
+        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
+        String baseUri = "/workspaces/" + user.getWorkspaceId();
+        binder.addAdditionalLink("child_binders", baseUri + "/library_folders");
+        binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
+        binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
+        binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
+        binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
         return binder;
     }
 

@@ -83,6 +83,16 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return RequestContextHolder.getRequestContext().getUserId();
     }
 
+    protected org.kablink.teaming.domain.User getLoggedInUser() {
+        Long userId = getLoggedInUserId();
+        // Retrieve the raw entry.
+        Principal entry = getProfileModule().getEntry(userId);
+
+        if(!(entry instanceof org.kablink.teaming.domain.User))
+            throw new IllegalArgumentException(userId + " does not represent an user. It is " + entry.getClass().getSimpleName());
+        return (org.kablink.teaming.domain.User)entry;
+    }
+
     protected org.kablink.teaming.domain.User _getUser(long userId) {
         Principal entry = getProfileModule().getEntry(userId);
 

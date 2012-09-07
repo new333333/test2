@@ -7,6 +7,7 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.BinderUtils;
+import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
@@ -18,6 +19,7 @@ import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderTree;
 import org.kablink.teaming.rest.v1.model.FileProperties;
+import org.kablink.teaming.rest.v1.model.Folder;
 import org.kablink.teaming.rest.v1.model.PrincipalBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
@@ -51,6 +53,8 @@ import java.util.*;
  */
 abstract public class AbstractBinderResource extends AbstractDefinableEntityResource {
 
+    abstract protected String getBasePath();
+    
     /**
      * Returns the binder with the specified ID.
      * @param id    The ID of the binder to return.
@@ -124,7 +128,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 
     @GET
    	@Path("{id}/library_folders")
-       @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
    	public SearchResultList<BinderBrief> getLibraryFolders(@PathParam("id") long id,
                                                            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                            @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -134,7 +138,16 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return getSubBinders(id, SearchUtils.libraryFolders(), offset, maxCount, getBasePath() + id + "/library_folders", nextParams, textDescriptions);
    	}
 
-    abstract protected String getBasePath();
+    @POST
+   	@Path("{id}/library_folders")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+   	public Folder createLibraryFolder(@PathParam("id") long id,
+                                      org.kablink.teaming.rest.v1.model.BinderBrief binder,
+                                      @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
+            throws WriteFilesException, WriteEntryDataException {
+        return (Folder) _createLibraryFolder(id, binder, textDescriptions);
+   	}
 
     // Read entries
 	@GET
@@ -265,6 +278,15 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @Path("{id}/tags/{tagId}")
     public void deleteTag(@PathParam("id") Long id, @PathParam("tagId") String tagId) {
         getFolderModule().deleteTag(null, id, tagId);
+    }
+
+    protected Binder _createLibraryFolder(long parentId, BinderBrief newBinder, boolean textDescriptions) throws WriteFilesException, WriteEntryDataException {
+        org.kablink.teaming.domain.Binder parent = _getBinder(parentId);
+        if (newBinder.getTitle()==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No folder title was supplied in the POST data.");
+        }
+        org.kablink.teaming.domain.Binder binder = FolderUtils.createLibraryFolder(parent, newBinder.getTitle());
+        return ResourceUtil.buildBinder(binder, true, textDescriptions);
     }
 
     protected Binder createBinder(long parentId, Binder newBinder, Long templateId, boolean textDescriptions) throws WriteFilesException, WriteEntryDataException {
