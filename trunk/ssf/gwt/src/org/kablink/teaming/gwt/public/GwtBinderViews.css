@@ -7,7 +7,7 @@
 	.vibe-binderViewTools
 	{
 		display: block;
-		padding: 5px;
+		padding: 5px 5px 0;
 		border-top-left-radius: 5px;
 		border-top-right-radius: 5px;
 		-moz-border-radius-topleft: 5px;
