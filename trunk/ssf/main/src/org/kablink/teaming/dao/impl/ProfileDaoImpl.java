@@ -53,6 +53,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.kablink.teaming.ObjectKeys;
@@ -2399,37 +2400,30 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                new HibernateCallback() {
 	                    @Override
 						public Object doInHibernate(Session session) throws HibernateException {
-	                    	// Don't use alias of the first table to refer to property/column name associated with entity, 
-	                    	// since HQL won't treat it as nicely as it does without alias. 
-	                    	StringBuilder sb = new StringBuilder("select distinct recipientType, recipientId from org.kablink.teaming.domain.ShareItem where latest=:latestValue and (");
-	                    	int i;
-	                    	for(i = 0; i < rightNames.length; i++) {
-	                    		if(i > 0)
-	                    			sb.append(" or ");
-	                    		sb.append("(rightSet.")
-	                    		.append(rightNames[i])
-	                    		.append("=:rightValue")
-	                    		.append(i)
-	                    		.append(")");
+	                    	Criteria crit = session.createCriteria(ShareItem.class);
+	                    	crit.setProjection(Projections.projectionList()
+	                    			.add(Projections.property("recipientType"))
+	                    			.add(Projections.property("recipientId")));
+	                    	crit.add(Restrictions.eq("latest", Boolean.TRUE));
+                    		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();
+                    		disjunction.add(Restrictions.isNull("endDate"));
+                    		disjunction.add(Restrictions.gt("endDate", new Date()));
+                    		crit.add(disjunction);
+	                    	if(rightNames.length > 0) {
+		                    	disjunction = Restrictions.disjunction();
+		                    	for(String rightName:rightNames)
+		                    		disjunction.add(Restrictions.eq("rightSet."+rightName, Boolean.TRUE));
+		                    	crit.add(disjunction);
 	                    	}
-	                    	sb.append(") and (");
-	                        i = 0;
-	                    	for(EntityIdentifier sharedEntityIdentifier:sharedEntityIdentifiers) {
-	                    		if(i > 0)
-	                    			sb.append(" or ");
-	                    		sb.append("(sharedEntity_type=")
-	                    		.append(sharedEntityIdentifier.getEntityType().getValue())
-	                    		.append(" and sharedEntity_id=")
-	                    		.append(String.valueOf(sharedEntityIdentifier.getEntityId()))
-	                    		.append(")");
-	                    		i++;
+	                    	if(sharedEntityIdentifiers.size() > 0) {
+		                    	disjunction = Restrictions.disjunction();
+		                    	for(EntityIdentifier sharedEntityIdentifier:sharedEntityIdentifiers)
+		                    		disjunction.add(Restrictions.conjunction()
+		                    				.add(Restrictions.eq("sharedEntityIdentifier.type", sharedEntityIdentifier.getEntityType().getValue()))
+		                    				.add(Restrictions.eq("sharedEntityIdentifier.entityId", sharedEntityIdentifier.getEntityId())));
+		                    	crit.add(disjunction);
 	                    	}
-	                    	sb.append(")");
-                    		Query query = session.createQuery(sb.toString());
-                    		query.setBoolean("latestValue", true);
-                    		for(i = 0; i < rightNames.length; i++)
-                    			query.setBoolean("rightValue" + i, true);
-                    		return query.list();
+	                    	return crit.list();
 	                    }
 	                }
 	            );
