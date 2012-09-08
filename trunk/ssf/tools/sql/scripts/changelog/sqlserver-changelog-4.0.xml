@@ -232,7 +232,7 @@
 			<column name="hasEntryExternalAcl" type="TINYINT"/>
         </addColumn>
     </changeSet>
-    <changeSet author="peter" context="schema" failOnError="true" id="23">
+    <changeSet author="peter" context="schema" failOnError="true" id="22">
         <addColumn tableName="SS_Forums">
 			<column name="templateHidden" type="TINYINT"/>
         </addColumn>
