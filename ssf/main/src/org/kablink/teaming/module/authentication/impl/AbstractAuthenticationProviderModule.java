@@ -653,7 +653,8 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 				if(logger.isDebugEnabled())	
 					logger.debug("External authentication failed: " + e.toString());
 				exc = e;
-				if(authenticateLdapMatchingUsersUsingLdapOnly && (e instanceof BadCredentialsException) && !(e instanceof UsernameNotFoundException)) 
+				if((authenticateLdapMatchingUsersUsingLdapOnly && (e instanceof BadCredentialsException) && !(e instanceof UsernameNotFoundException))
+						|| (authentication instanceof OpenIDAuthenticationToken))
 					mustSkipLocalAuthentication = true;
 			}
 		}
