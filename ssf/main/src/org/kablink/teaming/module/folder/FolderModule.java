@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Entry;
@@ -677,7 +678,7 @@ public interface FolderModule {
 	 * @throws UncheckedIOException
 	 */
 	public boolean synchronize(Long folderId, StatusTicket statusTicket)
-		throws AccessControlException, FIException, UncheckedIOException;
+		throws AccessControlException, FIException, UncheckedIOException, ConfigurationException;
 	
 	public ScheduleInfo getSynchronizationSchedule(Long zoneId, Long folderId);	
 	public void setSynchronizationSchedule(ScheduleInfo config, Long folderId);
