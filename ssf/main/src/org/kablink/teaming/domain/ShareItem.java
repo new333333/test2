@@ -289,7 +289,6 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 		EDITOR("share.role.title.editor",
 				new WorkAreaOperation[] {
 				WorkAreaOperation.READ_ENTRIES, 
-				WorkAreaOperation.CREATE_ENTRIES, 
 				WorkAreaOperation.MODIFY_ENTRIES, 
 				WorkAreaOperation.ADD_REPLIES
 				}),
@@ -328,6 +327,14 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 					rightSet.setRight(workAreaOperation, true);
 			}
 			return rightSet;
+		}
+		
+		/**
+		 * 
+		 */
+		public WorkAreaOperation[] getWorkAreaOperations()
+		{
+			return workAreaOperations;
 		}
 	}
 

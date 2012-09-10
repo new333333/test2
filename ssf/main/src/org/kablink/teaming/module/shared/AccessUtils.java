@@ -100,8 +100,8 @@ public class AccessUtils  {
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
 	}
-	protected AccessControlManager getAccessControlManager() {
-		return accessControlManager;
+	public static AccessControlManager getAccessControlManager() {
+		return getInstance().accessControlManager;
 	}
 	public void setFunctionManager(FunctionManager functionManager) {
 		this.functionManager = functionManager;

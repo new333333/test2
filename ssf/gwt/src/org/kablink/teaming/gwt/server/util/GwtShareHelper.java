@@ -53,6 +53,9 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem.RecipientType;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
+import org.kablink.teaming.security.AccessControlManager;
+import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
@@ -70,6 +73,7 @@ import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -347,6 +351,93 @@ public class GwtShareHelper
 	}
 
 	/**
+	 * Return the "highest" access rights based on acls the logged-in user has to the given entity
+	 */
+	private static AccessRights getHighestEntityAccessRightsFromACLs(
+		AllModulesInjected ami,
+		EntityId entityId )
+	{
+		AccessRights accessRights;
+		AccessControlManager accessControlManager;
+		WorkArea workArea;
+		boolean access;
+		User currentUser;
+		
+		accessRights = AccessRights.VIEWER;
+		currentUser = GwtServerHelper.getCurrentUser();
+		accessControlManager = AccessUtils.getAccessControlManager();
+
+		if ( entityId.isBinder() )
+		{
+			workArea = ami.getBinderModule().getBinder( entityId.getBinderId() );
+		}
+		else
+		{
+			workArea = ami.getFolderModule().getEntry( null, entityId.getEntityId() );
+		}
+
+
+		// See if the user has "editor" rights
+		{
+			access = true;
+			for ( WorkAreaOperation nextOperation : ShareItem.Role.EDITOR.getWorkAreaOperations() )
+			{
+				if ( accessControlManager.testOperation( currentUser, workArea, nextOperation ) == false )
+				{
+					access = false;
+					break;
+				}
+			}
+			
+			if ( access )
+			{
+				accessRights = AccessRights.EDITOR;
+			}
+		}
+		
+		// Are we working with a binder?
+		if ( entityId.isBinder() )
+		{
+			// Does the user have "contributor" rights?
+			access = true;
+			for ( WorkAreaOperation nextOperation : ShareItem.Role.CONTRIBUTOR.getWorkAreaOperations() )
+			{
+				if ( accessControlManager.testOperation( currentUser, workArea, nextOperation ) == false )
+				{
+					access = false;
+					break;
+				}
+			}
+			
+			if ( access )
+			{
+				accessRights = AccessRights.CONTRIBUTOR;
+			}
+		}
+/**
+		if ( accessControlManager.testRightsGrantedBySharing(
+														GwtServerHelper.getCurrentUser(),
+														workArea,
+														ShareItem.Role.EDITOR.getWorkAreaOperations() ) )
+		{
+			accessRights = AccessRights.EDITOR;
+		}
+		
+		if ( entityId.isBinder() )
+		{
+			if ( accessControlManager.testRightsGrantedBySharing(
+														GwtServerHelper.getCurrentUser(),
+														workArea,
+														ShareItem.Role.CONTRIBUTOR.getWorkAreaOperations() ) )
+			{
+				accessRights = AccessRights.CONTRIBUTOR;
+			}
+		}
+*/
+		return accessRights;
+	}
+	
+	/**
 	 * Return the "highest" access rights the logged-in user has to the given entity
 	 */
 	private static AccessRights getHighestEntityAccessRights( AllModulesInjected ami, EntityId entityId )
@@ -357,12 +448,8 @@ public class GwtShareHelper
 		AccessRights accessRights;
 		
 		// Get the current user's acl rights to the given entity.
-		//!!!
-		if ( entityId.isBinder() )
-			accessRights = AccessRights.CONTRIBUTOR;
-		else
-			accessRights = AccessRights.EDITOR;
-
+		accessRights = getHighestEntityAccessRightsFromACLs( ami, entityId );
+		
 		// Get the entity type
 		entityIdentifier = getEntityIdentifierFromEntityId( entityId );
 
@@ -384,9 +471,6 @@ public class GwtShareHelper
 		if ( listOfShareItems != null && listOfShareItems.size() > 0 )
 		{
 			// Yes
-			//!!! Remove the following line of code after we have the code to get the acl rights
-			accessRights = AccessRights.VIEWER;
-
 			// Get the "highest" rights that have been given to the current user via a share.
 			for ( ShareItem nextShareItem : listOfShareItems )
 			{
