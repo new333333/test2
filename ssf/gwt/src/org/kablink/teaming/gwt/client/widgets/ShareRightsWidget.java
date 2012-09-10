@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
+import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.widgets.EditShareRightsDlg.EditShareRightsDlgClient;
 
 import com.google.gwt.core.client.Scheduler;
@@ -54,6 +55,7 @@ public class ShareRightsWidget extends Composite
 	implements ClickHandler
 {
 	private GwtShareItem m_shareInfo;
+	private AccessRights m_highestRightsPossible;
 	private InlineLabel m_rightsLabel;
 	private Image m_rightsImg;
 	private EditSuccessfulHandler m_editShareRightsHandler;
@@ -64,11 +66,14 @@ public class ShareRightsWidget extends Composite
 	/**
 	 * 
 	 */
-	public ShareRightsWidget( GwtShareItem shareInfo )
+	public ShareRightsWidget(
+		GwtShareItem shareInfo,
+		AccessRights highestRightsPossible )
 	{
 		ImageResource imageResource;
 		
 		m_shareInfo = shareInfo;
+		m_highestRightsPossible = highestRightsPossible;
 
 		m_rightsLabel = new InlineLabel( shareInfo.getShareRightsAsString() );
 		m_rightsLabel.addStyleName( "shareThisDlg_RightsLabel" );
@@ -114,7 +119,7 @@ public class ShareRightsWidget extends Composite
 			}
 			
 			// Invoke the "edit share rights" dialog.
-			m_editShareRightsDlg.init( m_shareInfo, m_editShareRightsHandler );
+			m_editShareRightsDlg.init( m_shareInfo, m_highestRightsPossible, m_editShareRightsHandler );
 			m_editShareRightsDlg.showRelativeToTarget( m_rightsLabel );
 		}
 		else

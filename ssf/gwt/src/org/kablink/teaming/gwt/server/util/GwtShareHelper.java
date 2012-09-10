@@ -67,6 +67,7 @@ import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
+import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.sharing.SharingModule;
@@ -346,6 +347,74 @@ public class GwtShareHelper
 	}
 
 	/**
+	 * Return the "highest" access rights the logged-in user has to the given entity
+	 */
+	private static AccessRights getHighestEntityAccessRights( AllModulesInjected ami, EntityId entityId )
+	{
+		ShareItemSelectSpec spec;
+		EntityIdentifier entityIdentifier;
+		List<ShareItem> listOfShareItems = null;
+		AccessRights accessRights;
+		
+		// Get the current user's acl rights to the given entity.
+		//!!!
+		if ( entityId.isBinder() )
+			accessRights = AccessRights.CONTRIBUTOR;
+		else
+			accessRights = AccessRights.EDITOR;
+
+		// Get the entity type
+		entityIdentifier = getEntityIdentifierFromEntityId( entityId );
+
+		spec = new ShareItemSelectSpec();
+		spec.setRecipients( GwtServerHelper.getCurrentUser().getId(), null, null );
+		spec.setSharedEntityIdentifier( entityIdentifier );
+		spec.setLatest( true );
+
+		try
+		{
+			listOfShareItems = ami.getSharingModule().getShareItems( spec );
+		}
+		catch ( Exception ex )
+		{
+			m_logger.error( "sharingModule.getShareItems() failed: " + ex.toString() );
+		}
+
+		// Has the given entity been shared with the current user?
+		if ( listOfShareItems != null && listOfShareItems.size() > 0 )
+		{
+			// Yes
+			//!!! Remove the following line of code after we have the code to get the acl rights
+			accessRights = AccessRights.VIEWER;
+
+			// Get the "highest" rights that have been given to the current user via a share.
+			for ( ShareItem nextShareItem : listOfShareItems )
+			{
+				ShareRights shareRights;
+				AccessRights nextAccessRights;
+				
+				shareRights = getShareRightsFromRightSet( nextShareItem.getRightSet() );
+				nextAccessRights = shareRights.getAccessRights();
+				
+				switch( accessRights )
+				{
+				case EDITOR:
+					if ( nextAccessRights == AccessRights.CONTRIBUTOR )
+						accessRights = nextAccessRights;
+					break;
+					
+				case VIEWER:
+				case UNKNOWN:
+					accessRights = nextAccessRights;
+					break;
+				}
+			}
+		}
+		
+		return accessRights;
+	}
+	
+	/**
 	 * Get the list of GwtShareItems for the given EntityId
 	 */
 	private static ArrayList<GwtShareItem> getListOfGwtShareItems(
@@ -549,6 +618,7 @@ public class GwtShareHelper
 					// Create one.
 					callback = new RunasCallback()
 					{
+						@SuppressWarnings("rawtypes")
 						@Override
 						public Object doAs() 
 						{
@@ -696,10 +766,15 @@ public class GwtShareHelper
 		{
 			ArrayList<GwtShareItem> listOfGwtShareItems;
 			String entityName;
-			
+			AccessRights accessRights;
+
 			// Get the name of the entity
 			entityName = getEntityName( ami, nextEntityId );
 			sharingInfo.setEntityName( nextEntityId, entityName );
+			
+			// Get the highest acccess rights the logged-in user has to this entity
+			accessRights = getHighestEntityAccessRights( ami, nextEntityId );
+			sharingInfo.setEntityAccessRights( nextEntityId, accessRights );
 			
 			// Get the list of GwtShareItem objects for the given user/entity
 			listOfGwtShareItems = getListOfGwtShareItems( ami, currentUser, nextEntityId );
@@ -1047,7 +1122,7 @@ public class GwtShareHelper
 				// recipient id just in case.
 				nextGwtShareItem.setRecipientId( shareItem.getRecipientId() );
 
-				if ( sharingData.getNotifyRecipients() && sharingData.getSendToValue() == SendToValue.ONLY_NEW_RECIPIENTS )
+				if ( sharingData.getNotifyRecipients() && (sharingData.getSendToValue() == SendToValue.ONLY_NEW_RECIPIENTS || sharingData.getSendToValue() == SendToValue.ONLY_MODIFIED_RECIPIENTS) )
 					sendEmail = true;
 			}
 			else

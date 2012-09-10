@@ -173,6 +173,8 @@ public class EditShareRightsDlg extends DlgBox
 			else
 				m_shareItem.setShareCanShareWithOthers( false );
 
+			m_shareItem.setIsDirty( true );
+			
 			// Do we have a handler we should call?
 			if ( m_editSuccessfulHandler != null )
 				m_editSuccessfulHandler.editSuccessful( Boolean.TRUE );
@@ -202,15 +204,19 @@ public class EditShareRightsDlg extends DlgBox
 	/**
 	 * Initialize the controls in the dialog with the values from the properties
 	 */
-	public void init( GwtShareItem shareItem, EditSuccessfulHandler editSuccessfulHandler )
+	public void init(
+		GwtShareItem shareItem,
+		AccessRights highestRightsPossible,
+		EditSuccessfulHandler editSuccessfulHandler )
 	{
 		ShareRights shareRights;
 
-		// Show the "contributor" radio button only if we are dealing with a binder.
-		m_contributorRb.setVisible( shareItem.getEntityId().isBinder() );
-
 		m_shareItem = shareItem;
 		m_editSuccessfulHandler = editSuccessfulHandler;
+		
+		m_viewerRb.setVisible( false );
+		m_editorRb.setVisible( false );
+		m_contributorRb.setVisible( false );
 		
 		m_viewerRb.setValue( false );
 		m_editorRb.setValue( false );
@@ -235,7 +241,29 @@ public class EditShareRightsDlg extends DlgBox
 		// Initialize the "can share with others" checkbox"
 		m_canShareCkbox.setValue( shareRights.getCanShareWithOthers() );
 		
-		//!!! Hide the controls for the rights the user can't give
+		// Hide/show the controls for the rights the user can/cannot give
+		switch ( highestRightsPossible )
+		{
+		case CONTRIBUTOR:
+			m_viewerRb.setVisible( true );
+			m_editorRb.setVisible( true );
+			
+			// Show the "contributor" radio button only if we are dealing with a binder.
+			m_contributorRb.setVisible( shareItem.getEntityId().isBinder() );
+			break;
+			
+		case EDITOR:
+			m_viewerRb.setVisible( true );
+			m_editorRb.setVisible( true );
+			m_contributorRb.setVisible( false );
+			break;
+			
+		case VIEWER:
+			m_viewerRb.setVisible( true );
+			m_editorRb.setVisible( false );
+			m_contributorRb.setVisible( false );
+			break;
+		}
 	}
 	
 	/**
