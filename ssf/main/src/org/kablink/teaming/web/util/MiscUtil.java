@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.mail.internet.AddressException;
@@ -1034,9 +1035,10 @@ public final class MiscUtil
 	 * 
 	 * @return
 	 */
-	public static Collection<Long> validateCL(Collection<Long> lC) {
-		return ((null == lC) ? new HashSet<Long>() : lC);
-	}
+	public static Collection<Long> validateCL(Collection<Long> lC)
+	{
+		return ( ( null == lC ) ? new HashSet<Long>() : lC );
+	}// end validateCL()
 	
 	/**
 	 * Validates that a Collection<String> is non-null.
@@ -1045,7 +1047,32 @@ public final class MiscUtil
 	 * 
 	 * @return
 	 */
-	public static Collection<String> validateCS(Collection<String> sC) {
-		return ((null == sC) ? new HashSet<String>() : sC);
-	}
+	public static Collection<String> validateCS(Collection<String> sC)
+	{
+		return ( ( null == sC ) ? new HashSet<String>() : sC );
+	}// end validateCS()
+	
+	/**
+	 * Validates that a List<InternetAddress> is non-null.
+	 * 
+	 * @param iaList
+	 * 
+	 * @return
+	 */
+	public static List<InternetAddress> validateIAL( List<InternetAddress> iaList )
+	{
+		return ( ( null == iaList ) ? new ArrayList<InternetAddress>() : iaList );
+	}// end validateIAL()
+	
+	/**
+	 * Validates that a List<Locale> is non-null.
+	 * 
+	 * @param lList
+	 * 
+	 * @return
+	 */
+	public static List<Locale> validateLL( List<Locale> lList )
+	{
+		return ( ( null == lList ) ? new ArrayList<Locale>() : lList );
+	}// end validateIAL()
 }// end MiscUtil
