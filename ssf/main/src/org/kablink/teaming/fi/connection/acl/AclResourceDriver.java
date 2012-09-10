@@ -152,8 +152,11 @@ public interface AclResourceDriver extends ResourceDriver {
 	/**
 	 * Tests a connection.
 	 * 
-	 * @return connection test status
+	 * @param proxyUsername Username of the proxy account
+	 * @param proxyPassword Password of the proxy account
+	 * @param subPath (optional) Sub-element path under the root (e.g. "a\b"), or <code>null</code> if the root is to be tested
+	 * @return
 	 */
-	public ConnectionTestStatus testConnection(String proxyUsername, String proxyPassword);
+	public ConnectionTestStatus testConnection(String proxyUsername, String proxyPassword, String subPath);
 	
 }
