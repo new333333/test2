@@ -310,4 +310,11 @@ public interface ProfileDao {
  	 */
  	public List<ShareItem> findShareItems(final ShareItemSelectSpec selectSpec);
 
+ 	/**
+ 	 * Find a list <code>ShareItem</code> that have been expired but yet to be handled.
+ 	 * 
+ 	 * @return
+ 	 */
+ 	public List<ShareItem> findExpiredAndNotYetHandledShareItems();
+ 	
  }

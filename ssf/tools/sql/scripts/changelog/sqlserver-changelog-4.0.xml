@@ -157,6 +157,7 @@
             <column name="endDate" type="DATETIME"/>
             <column name="recipient_type" type="SMALLINT"/>
             <column name="recipient_id" type="NUMERIC(19,0)"/>
+            <column name="expirationHandled" type="TINYINT"/>
             <column name="right_createEntries" type="TINYINT"/>
             <column name="right_modifyEntries" type="TINYINT"/>
             <column name="right_modifyEntryFields" type="TINYINT"/>

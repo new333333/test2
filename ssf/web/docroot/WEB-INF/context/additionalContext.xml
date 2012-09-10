@@ -38,6 +38,7 @@
 					<ref bean="licenseModule"/>
 					<ref bean="mailModule"/>
 					<ref bean="workflowModule"/>
+					<ref bean="sharingModule"/>
 					</list>
 				</property>
 			</bean>

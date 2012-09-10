@@ -41,13 +41,18 @@ import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.ShareItem.RecipientType;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.jobs.ExpiredShareHandler;
+import org.kablink.teaming.jobs.LicenseMonitor;
+import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
@@ -56,7 +61,14 @@ import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.util.Validator;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * This module gives us the transaction semantics to deal with the "Shared with Me" features.  
@@ -64,12 +76,20 @@ import org.kablink.teaming.util.SpringContextUtil;
  * @author Peter Hurley
  *
  */
-public class SharingModuleImpl extends CommonDependencyInjection implements SharingModule {
+public class SharingModuleImpl extends CommonDependencyInjection implements SharingModule, ZoneSchedule {
 
 	private FolderModule folderModule;
 	private BinderModule binderModule;
 	private ProfileModule profileModule;
+	private TransactionTemplate transactionTemplate;
 	
+    protected TransactionTemplate getTransactionTemplate() {
+		return transactionTemplate;
+	}
+	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+		this.transactionTemplate = transactionTemplate;
+	}
+
     @Override
 	public void checkAccess(ShareItem shareItem, SharingOperation operation)
 	    	throws AccessControlException {
@@ -258,21 +278,27 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		return accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING);
 	}
 
-    //RW transaction
+    //NO transaction
 	@Override
-	public void addShareItem(ShareItem shareItem) {
+	public void addShareItem(final ShareItem shareItem) {
 		// Access check (throws error if not allowed)
 		checkAccess(shareItem, SharingOperation.addShareItem);
 		
-		getCoreDao().save(shareItem);
-		
+		getTransactionTemplate().execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				getCoreDao().save(shareItem);
+				return null;
+			}
+		});
+
 		//Index the entity that is being shared
 		indexSharedEntity(shareItem);
 	}
 	
-    //RW transaction
+    //NO transaction
 	@Override
-	public void modifyShareItem(ShareItem latestShareItem, Long previousShareItemId) {
+	public void modifyShareItem(final ShareItem latestShareItem, final Long previousShareItemId) {
 		if(latestShareItem == null)
 			throw new IllegalArgumentException("Latest share item must be specified");
 		if(previousShareItemId == null)
@@ -283,45 +309,58 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		// Access check (throws error if not allowed)
 		checkAccess(latestShareItem, SharingOperation.modifyShareItem);
 		
-		// Update previous snapshot
-		try {
-			ShareItem previousShareItem = getProfileDao().loadShareItem(previousShareItemId);
-			
-			previousShareItem.setLatest(false);
-			
-			getCoreDao().update(previousShareItem);
-		}
-		catch(NoShareItemByTheIdException e) {
-			// The previous snapshot isn't found.
-			logger.warn("Previous share item with id '" + previousShareItemId + "' is not found.");
-		}
+		getTransactionTemplate().execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				// Update previous snapshot
+				try {
+					ShareItem previousShareItem = getProfileDao().loadShareItem(previousShareItemId);
+					
+					previousShareItem.setLatest(false);
+					
+					getCoreDao().update(previousShareItem);
+				}
+				catch(NoShareItemByTheIdException e) {
+					// The previous snapshot isn't found.
+					logger.warn("Previous share item with id '" + previousShareItemId + "' is not found.");
+				}
 
-		// Save new snapshot
-		getCoreDao().save(latestShareItem);
-		
+				// Save new snapshot
+				getCoreDao().save(latestShareItem);
+				
+				return null;
+			}
+		});
+
 		//Index the entity that is being shared
 		indexSharedEntity(latestShareItem);		
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.module.profile.ProfileModule#deleteShareItem(org.kablink.teaming.domain.ShareItem)
-	 */
-    //RW transaction
+    //NO transaction
 	@Override
 	public void deleteShareItem(Long shareItemId) {
+		final ShareItem shareItem;
 		try {
-			ShareItem shareItem = getProfileDao().loadShareItem(shareItemId);
-			// Access check (throws error if not allowed)
-			checkAccess(shareItem, SharingOperation.deleteShareItem);
-			
-			getCoreDao().delete(shareItem);
-			
-			//Index the entity that is being shared
-			indexSharedEntity(shareItem);
+			shareItem = getProfileDao().loadShareItem(shareItemId);
 		}
 		catch(NoShareItemByTheIdException e) {
 			// already gone, ok
+			return;
 		}
+		
+		// Access check (throws error if not allowed)
+		checkAccess(shareItem, SharingOperation.deleteShareItem);
+		
+		getTransactionTemplate().execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				getCoreDao().delete(shareItem);
+				return null;
+			}
+		});
+		
+		//Index the entity that is being shared
+		indexSharedEntity(shareItem);
 	}
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.module.profile.ProfileModule#getShareItem(java.lang.Long)
@@ -430,6 +469,46 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				entity.getEntityType() == EntityIdentifier.EntityType.workspace) {
 			getBinderModule().indexBinder(entity.getId());
 		}
+	}
+
+	protected ExpiredShareHandler getExpiredShareHandler(Workspace zone) {
+		String className = SPropsUtil.getString("job.expired.share.handler.class", "org.kablink.teaming.jobs.DefaultExpiredShareHandler");
+		return (ExpiredShareHandler) ReflectHelper.getInstance(className);
+	}
+	
+	//called on zone startup
+	@Override
+    public void startScheduledJobs(Workspace zone) {
+ 	   	if (zone.isDeleted()) return;
+ 	   	ExpiredShareHandler job = getExpiredShareHandler(zone);
+    	job.schedule(zone.getId(), SPropsUtil.getInt("job.expired.share.handler.interval.minutes", 5));
+	}
+
+	//called on zone delete
+	@Override
+	public void stopScheduledJobs(Workspace zone) {
+		ExpiredShareHandler job = getExpiredShareHandler(zone);
+   		job.remove(zone.getId());
+	}
+
+	//NO transaction
+	@Override
+	public void handleExpiredShareItem(final ShareItem shareItem) {
+		if(shareItem.isExpirationHandled())
+			return; // Already handled
+		
+		//Re-index the entity that has been shared and now expired.
+		indexSharedEntity(shareItem);		
+
+		// Mark the share item as handled
+		getTransactionTemplate().execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				shareItem.setExpirationHandled(true);
+				getCoreDao().update(shareItem);
+				return null;
+			}
+		});
 	}
 
 }

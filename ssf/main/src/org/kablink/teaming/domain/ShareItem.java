@@ -98,6 +98,8 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 	protected short recipientType;
 	protected Long recipientId;
 	protected RightSet rightSet;
+	// This field is meaningful only for expired shares.
+	protected Boolean expirationHandled;
 
 	// For use by Hibernate only
 	protected ShareItem() {
@@ -262,6 +264,20 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 	
 	public void setLatest(boolean current) {
 		this.latest = current;
+	}
+	
+	/*
+	 * This method is meaningful only for expired shares.
+	 */
+	public boolean isExpirationHandled() {
+		if(expirationHandled == null)
+			return false;
+		else
+			return expirationHandled.booleanValue();
+	}
+	
+	public void setExpirationHandled(boolean expirationHandled) {
+		this.expirationHandled = expirationHandled;
 	}
 	
 	public static enum Role {
