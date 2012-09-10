@@ -115,7 +115,7 @@ public class GwtNetFolderHelper
 			List<TemplateBinder> listOfTemplateBinders;
 			
 			// Find the template binder for mirrored folders.
-			listOfTemplateBinders = ami.getTemplateModule().getTemplates();
+			listOfTemplateBinders = ami.getTemplateModule().getTemplates(Boolean.TRUE);
 			if ( listOfTemplateBinders != null )
 			{
 				for ( TemplateBinder nextTemplateBinder : listOfTemplateBinders )
