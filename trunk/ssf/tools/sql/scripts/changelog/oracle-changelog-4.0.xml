@@ -157,6 +157,7 @@
             <column name="ENDDATE" type="TIMESTAMP(6)"/>
             <column name="RECIPIENT_TYPE" type="NUMBER(2,0)"/>
             <column name="RECIPIENT_ID" type="NUMBER(19,0)"/>
+            <column name="EXPIRATIONHANDLED" type="NUMBER(1,0)"/>
             <column name="RIGHT_CREATEENTRIES" type="NUMBER(1,0)"/>
             <column name="RIGHT_MODIFYENTRIES" type="NUMBER(1,0)"/>
             <column name="RIGHT_MODIFYENTRYFIELDS" type="NUMBER(1,0)"/>

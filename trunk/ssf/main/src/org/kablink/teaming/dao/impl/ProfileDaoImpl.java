@@ -2555,4 +2555,32 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "findShareItems(ShareItemSelectSpec)");
     	}	              	
  	}
+
+ 	@Override
+ 	public List<ShareItem> findExpiredAndNotYetHandledShareItems() {
+		long begin = System.nanoTime();
+		try {
+	      	List<ShareItem> result = (List<ShareItem>)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
+	                   		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();                    		
+                    		disjunction.add(Restrictions.isNull("expirationHandled"))
+	                    	.add(Restrictions.eq("expirationHandled", false));
+	                    	Criteria crit = session.createCriteria(ShareItem.class)
+	                    			.add(Restrictions.eq("latest", Boolean.TRUE))
+	                    			.add(Restrictions.lt("endDate", new Date()))
+	                    			.add(disjunction);
+	                    	return crit.list();
+	                    }
+	                }
+	            );
+	      	return result;
+    	}
+    	finally {
+    		end(begin, "findExpiredAndNotYetHandledShareItems()");
+    	}	              	
+
+ 	}
+
 }

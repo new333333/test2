@@ -131,4 +131,12 @@ public interface SharingModule {
  	 */
  	public DefinableEntity getSharedRecipient(ShareItem shareItem);
 
+ 	/**
+ 	 * Handles expired share item.
+ 	 * 
+ 	 * IMPORTANT: This is used by the background job only. 
+ 	 * 
+ 	 * @param shareItem
+ 	 */
+ 	public void handleExpiredShareItem(ShareItem shareItem);
 }
