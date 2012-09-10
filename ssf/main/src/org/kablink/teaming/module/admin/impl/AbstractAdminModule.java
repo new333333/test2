@@ -34,7 +34,6 @@ package org.kablink.teaming.module.admin.impl;
 
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -337,7 +336,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 
    	/**
 	 * Use operation so we can keep the logic out of application
-	 * and easisly change the required rights
+	 * and easily change the required rights
    	 * 
    	 */
   	@Override
@@ -1511,14 +1510,14 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			throw new ConfigurationException(NLT.get("errorcode.sendmail.disabled"));
 		}
 
-		// Allocate error tracking/reply objects.
+		// Allocate the error tracking/reply objects.
 		List	errors = new ArrayList();
 		Map		result = new HashMap();
 		result.put(ObjectKeys.SENDMAIL_ERRORS, errors);
 		
-		// Allocate some maps of email addresses to locales we'll
+		// Allocate the maps of email addresses to locales we'll
 		// use for sending the notifications in the appropriate
-		// language(s).
+		// locale(s).
 		Map<Locale, List<InternetAddress>> toIAsMap  = new HashMap<Locale, List<InternetAddress>>();
 		Map<Locale, List<InternetAddress>> ccIAsMap  = new HashMap<Locale, List<InternetAddress>>();
 		Map<Locale, List<InternetAddress>> bccIAsMap = new HashMap<Locale, List<InternetAddress>>();
@@ -1533,17 +1532,17 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
 		// Once we get here, we have maps containing the valid //
-		// email addresses we need to send notifications too   //
-		// mapped by the locale to use to send them.           //
+		// email addresses we need to send notifications to    //
+		// mapped with the locale to use to send them.         //
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
-		// Get what we need from the zone for sending mail.
+		// Get what we need from the zone for sending email.
 		Workspace		zone       = RequestContextHolder.getRequestContext().getZone();
 		MailModule		mm         = getMailModule();
 		String			mailSender = mm.getNotificationMailSenderName(zone);
 		String			defaultEMA = mm.getNotificationDefaultFrom(   zone); 
 
-		// Get what we need about the sending user for sending mail.
+		// Get what we need about the sending user for sending email.
 		Date			now         = new Date();
 		User			sendingUser = RequestContextHolder.getRequestContext().getUser();
 		TimeZone		tz          = sendingUser.getTimeZone();
@@ -1558,7 +1557,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		else template = "sharedFolderNotification.vm";
 		
 		// Scan the unique Locale's we need to localize the share
-		// notification email to.
+		// notification email into.
 		boolean			notifyAsBCC   = SPropsUtil.getBoolean("mail.notifyAsBCC", true);
 		List<Locale>	targetLocales = MiscUtil.validateLL(EmailHelper.getTargetLocales(toIAsMap, ccIAsMap, bccIAsMap));
 		for (Locale locale:  targetLocales) {
@@ -1574,14 +1573,14 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				toIAs.clear();
 			}
 
-			// Allocate a Map to hold the mail components for building
+			// Allocate a Map to hold the email components for building
 			// the mime...
 			Map mailMap = new HashMap();
 			
 			// ...add the from...
 			mailMap.put(MailModule.FROM, sendingIA);
 
-			// ...add the TO:s, CC:s and BCCs...
+			// ...add the recipients...
 			mailMap.put(MailModule.TO,  toIAs );
 			mailMap.put(MailModule.CC,  ccIAs );
 			mailMap.put(MailModule.BCC, bccIAs);
@@ -1592,37 +1591,26 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				shareTitle = ("--" + NLT.get("entry.noTitle", locale) + "--");
 			}
 			String subject = NLT.get("relevance.mailShared", new Object[]{Utils.getUserTitle(sendingUser)}, locale);
-			subject += " (" + shareTitle +")";
+			subject       += " (" + shareTitle +")";
 			mailMap.put(MailModule.SUBJECT, subject);
 			
 			// ...generate and add the HTML variant...
-			String shareExpiration = getShareExpiration(locale, share);
-			StringWriter htmlWriter = new StringWriter();
-			Notify notify = new Notify(NotifyType.summary, locale, tz, now);
-           	NotifyVisitor visitor = new NotifyVisitor(sharedEntity, notify, null, htmlWriter, NotifyVisitor.WriterType.HTML, null);
-		    VelocityContext ctx = NotifyBuilderUtil.getVelocityContext();
-			ctx.put("ssVisitor",         visitor        );
-			ctx.put("ssShare",           share          );
-			ctx.put("ssSharedEntity",    sharedEntity   );
-			ctx.put("ssShareExpiration", shareExpiration);
-			ctx.put("user",              sendingUser    );
+			StringWriter	writer  = new StringWriter();
+			Notify			notify  = new Notify(NotifyType.summary, locale, tz, now);
+           	NotifyVisitor	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.HTML, null);
+		    VelocityContext	ctx     = getShareVelocityContext(visitor, share, sharedEntity);
 			visitor.processTemplate(template, ctx);
-			EmailUtil.putHTML(mailMap, MailModule.HTML_MSG, htmlWriter.toString());
+			EmailUtil.putHTML(mailMap, MailModule.HTML_MSG, writer.toString());
 			
-			// ...generate and the TEXT variant...
-			StringWriter txtWriter  = new StringWriter();
-			notify = new Notify(NotifyType.summary, locale, tz, now);
-           	visitor = new NotifyVisitor(sharedEntity, notify, null, txtWriter, NotifyVisitor.WriterType.TEXT, null);
-		    ctx = NotifyBuilderUtil.getVelocityContext();
-			ctx.put("ssVisitor",         visitor        );
-			ctx.put("ssShare",           share          );
-			ctx.put("ssSharedEntity",    sharedEntity   );
-			ctx.put("ssShareExpiration", shareExpiration);
-			ctx.put("user",              sendingUser    );
+			// ...generate and add the TEXT variant...
+			writer  = new StringWriter();
+			notify  = new Notify(NotifyType.summary, locale, tz, now);
+           	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.TEXT, null);
+		    ctx     = getShareVelocityContext(visitor, share, sharedEntity);
 			visitor.processTemplate(template, ctx);
-			EmailUtil.putText(mailMap, MailModule.TEXT_MSG, txtWriter.toString());
+			EmailUtil.putText(mailMap, MailModule.TEXT_MSG, writer.toString());
 
-			// ...create the mime preparator... 
+			// ...create the mime helper... 
 			MimeSharePreparator helper = new MimeSharePreparator(share, sharedEntity, mailMap, logger);
 			helper.setDefaultFrom(sendingUser.getEmailAddress());
 			
@@ -1632,17 +1620,18 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			}
 			
 	 		catch (MailSendException ex) {
-	 			// The send failed!  Log the error...
+	 			// The send failed!  Log the exception...
 	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
 	 			logger.error("EXCEPTION:  Error sending mail:" + exMsg);
 				logger.debug("EXCEPTION", ex);
 				errors.add(exMsg);
 
-				// ...and if there were any sub-exceptions...
+				// ...and if there were any send failed
+				// ...sub-exceptions...
 				Exception[] exceptions = ex.getMessageExceptions();
 				int exCount = ((null == exceptions) ? 0 : exceptions.length);
 	 			if ((0 < exCount) && exceptions[0] instanceof SendFailedException) {
-	 				// ...return them in the error list.
+	 				// ...return them in the error list too.
 	 				SendFailedException sf = ((SendFailedException) exceptions[0]);
 	 				EmailHelper.addMailFailures(errors, sf.getInvalidAddresses(),     "share.notify.invalidAddresses"    );
 	 				EmailHelper.addMailFailures(errors, sf.getValidUnsentAddresses(), "share.notify.validUnsendAddresses");
@@ -1652,7 +1641,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 		
 	 		catch (MailAuthenticationException ex) {
 	 			// The send failed because we couldn't authenticate to
-	 			// the server!  Log the error.
+	 			// the email server!  Log the exception.
 	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
 	       		logger.error("EXCEPTION:  Authentication Exception:" + exMsg);				
 				logger.debug("EXCEPTION", ex);
@@ -1665,41 +1654,24 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	return result;
     }
 
-    /*
-     * Returns the localized string to display for a share expiration.
-     */
-    private static String getShareExpiration(Locale locale, ShareItem share) {
-    	// Does the share have an expiration date?
-    	String reply;
-		Date expiration = share.getEndDate();
-		if (null == expiration) {
-			// No!  It never expires.
-			reply = NLT.get("share.expires.never", locale);
-		}
+	/*
+	 * Returns a VelocityContext to use for share notification emails. 
+	 */
+	private static VelocityContext getShareVelocityContext(NotifyVisitor visitor, ShareItem share, DefinableEntity sharedEntity) {
+		// Create the context...
+	    VelocityContext	reply = NotifyBuilderUtil.getVelocityContext();
+	    
+	    // ...initialize it...
+		reply.put("ssVisitor",         visitor                                                                  );
+		reply.put("ssShare",           share                                                                    );
+		reply.put("ssSharedEntity",    sharedEntity                                                             );
+		reply.put("ssShareExpiration", EmailHelper.getShareExpiration(visitor.getNotifyDef().getLocale(), share));
+		reply.put("user",              RequestContextHolder.getRequestContext().getUser()                       );
 		
-		else {
-			// Yes, there's an expiration date!  Is the an expires
-			// after a number of days?
-			int days = share.getDaysToExpire();
-			if (0 < days) {
-				// Yes!  Generate the appropriate string.
-				reply = NLT.get("share.expires.after", new Object[]{days}, locale);
-			}
-			
-			else {
-				// No, there's no days!  It expires explicitly on the
-				// specified date.
-				DateFormat dateFmt = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, locale);
-				String dateText = dateFmt.format(expiration);
-				reply = NLT.get("share.expires.on", new Object[]{dateText}, locale);
-			}
-		}
-		
-		// If we get here, reply refers to the share expiration message
-		// in the given locale.  Return it.
+		// ...and return it.
 		return reply;
-    }
-    
+	}
+	
     private Set<InternetAddress> getEmail(Collection<Long>ids, List errors) {
     	Set<InternetAddress> addrs=null;
     	if (ids != null && !ids.isEmpty()) {

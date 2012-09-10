@@ -32,8 +32,10 @@
  */
 package org.kablink.teaming.web.util;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -50,6 +52,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -58,7 +61,6 @@ import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
-import org.kablink.util.Validator;
 
 /**
  * Helper methods for email handling.
@@ -257,14 +259,61 @@ public class EmailHelper {
 		return null;
 	}
 
-	/*
+	/**
 	 * Returns the string to use to inform about mail sending errors.
+	 * 
+	 * @param ex
+	 * 
+	 * @return
 	 */
 	public static String getMailExceptionMessage(Exception ex) {
-		if (Validator.isNotNull(ex.getLocalizedMessage())) return ex.getLocalizedMessage();
-		return ex.getMessage();
+		String reply = ex.getLocalizedMessage();
+		if (!(MiscUtil.hasString(reply))) {
+			reply = ex.getMessage();
+		}
+		return reply;
 	}
 	
+    /**
+     * Returns the localized string to display for a share expiration.
+     * 
+     * @param locale
+     * @param share
+     * 
+     * @return
+     */
+    public static String getShareExpiration(Locale locale, ShareItem share) {
+    	// Does the share have an expiration date?
+    	String reply;
+		Date expiration = share.getEndDate();
+		if (null == expiration) {
+			// No!  It never expires.
+			reply = NLT.get("share.expires.never", locale);
+		}
+		
+		else {
+			// Yes, there's an expiration date!  Is the an expires
+			// after a number of days?
+			int days = share.getDaysToExpire();
+			if (0 < days) {
+				// Yes!  Generate the appropriate string.
+				reply = NLT.get("share.expires.after", new Object[]{days}, locale);
+			}
+			
+			else {
+				// No, there's no days!  It expires explicitly on the
+				// specified date.
+				DateFormat dateFmt = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, locale);
+				String dateText = dateFmt.format(expiration);
+				reply = NLT.get("share.expires.on", new Object[]{dateText}, locale);
+			}
+		}
+		
+		// If we get here, reply refers to the share expiration message
+		// in the given locale.  Return it.
+		return reply;
+    }
+    
 	/**
 	 * Returns a List<Locale> of the unique Locale's stored in a
 	 * collection of Map<Locale, List<InternetAddress>>'s.
