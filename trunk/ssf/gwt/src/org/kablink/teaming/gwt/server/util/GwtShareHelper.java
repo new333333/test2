@@ -840,7 +840,7 @@ public class GwtShareHelper
 		}
 		
 		emailErrors = null;
-		if ( SPropsUtil.getBoolean( "UI.useNewShareEmail", false ) )
+		if ( SPropsUtil.getBoolean( "UI.useNewShareEmail", true ) )
 		{
 			try
 			{

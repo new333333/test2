@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.module.mail.impl;
 
 import java.io.File;
@@ -123,13 +122,13 @@ import org.springframework.transaction.support.TransactionTemplate;
  * The public methods exposed by this implementation are not transaction 
  * demarcated. If transactions are needed, the FolderEmailProcessors will be 
  * responsible.
+ * 
  * Of course, this finer granularity transactional control will be of no effect
  * if the caller of this service was already transactional (i.e., it controls
- * transaction boundary that is more coarse). Whenever possible, this practise 
+ * transaction boundary that is more coarse). Whenever possible, this practice 
  * is discouraged for obvious performance/scalability reasons.  
  *   
  * @author Janet McCann
- *
  */
 @SuppressWarnings("unchecked")
 public class MailModuleImpl extends CommonDependencyInjection implements MailModule, ZoneSchedule, InitializingBean {
@@ -143,6 +142,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	protected boolean sendVTODO = true;
 	protected int rcptToLimit = 500;
 //	protected Map<String,String> mailAccounts = new TreeMap(String.CASE_INSENSITIVE_ORDER);
+	
 	public MailModuleImpl() {
 	}
 
@@ -150,6 +150,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
 	}
+    
 	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
 		this.transactionTemplate = transactionTemplate;
 	}
@@ -158,6 +159,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	public IcalModule getIcalModule() {
 		return icalModule;
 	}
+	
 	public void setIcalModule(IcalModule icalModule) {
 		this.icalModule = icalModule;
 	}	
@@ -166,13 +168,16 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	public ReportModule getReportModule() {
 		return reportModule;
 	}
+	
 	public void setReportModule(ReportModule reportModule) {
 		this.reportModule = reportModule;
 	}
+	
 	private FolderModule folderModule;
 	public FolderModule getFolderModule() {
 		return folderModule;
 	}
+	
 	public void setFolderModule(FolderModule folderModule) {
 		this.folderModule = folderModule;
 	}
@@ -191,12 +196,15 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	public void setJndiAccessor(JndiAccessor jndiAccessor) {
 		this.jndiAccessor = jndiAccessor;
 	}
+	
 	public void setMailSender(JavaMailSender mailSender) {
 		this.mailSender = mailSender;
 	}
+	
 	/**
 	 * Called after bean is initialized.  
 	 */
+	@Override
 	public void afterPropertiesSet() {
 		//Get alias setting
 		useAliases = SPropsUtil.getBoolean("mail.posting.useAliases", false);
@@ -242,6 +250,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     	}
     	return (FillEmailSubscription)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultFillEmailSubscription.class);
  	}
+	
 	protected SendEmail getEmailJob(Workspace zone) {
     	String jobClass = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.SENDMAIL_JOB);
     	if (Validator.isNotNull(jobClass)) {
@@ -253,12 +262,16 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     	}
     	return (SendEmail)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultSendEmail.class);
 	}
+	
 	//called on zone delete
+	@Override
 	public void stopScheduledJobs(Workspace zone) {
 		FillEmailSubscription sub = getSubscriptionJob(zone);
 		sub.remove(zone.getId());
 	}
+	
 	//called on zone startup
+	@Override
 	public void startScheduledJobs(Workspace zone) {
 		if (zone.isDeleted()) return;
 		//make sure a delete job is scheduled for the zone
@@ -274,9 +287,13 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	public File getMailDirPath(Binder binder) {
 		return new File(mailRootDir + FilePathUtil.getBinderDirPath(binder));
 	}
+	
+	@Override
 	public String getMailProperty(String zoneName, MailModule.Property property) {
 		return getMailProperty(zoneName, property.getKey());
 	}
+	
+	@Override
 	public String getMailProperty(String zoneName, String name) {
 		String val = SZoneConfig.getString(zoneName, "mailConfiguration/property[@name='" + name + "']");
 		if (Validator.isNull(val)) {
@@ -284,13 +301,15 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		}
 		return val;
 	}
+	
+	@Override
 	public String getMailAttribute(String zoneName, String node, String name) {
 		Element result = SZoneConfig.getElement(zoneName, "mailConfiguration/" + node);
 		if (result == null) return null;
 		return result.attributeValue(name);
 	}
 
-// Think this is overkill
+//	Think this is overkill
 //	public String getMailAttribute(Binder binder, String node, String name) {
 //		String result = getMailAttribute(RequestContextHolder.getRequestContext().getZoneName(), "binder[@id='" + binder.getId().toString() +"']/" + node, name);
 //		if (result != null) return result;
@@ -298,20 +317,31 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 //		return getMailAttribute(RequestContextHolder.getRequestContext().getZoneName(), node, name);
 
 //	}
+	
 	protected JavaMailSender getMailSender(String jndiName) {
 		JavaMailSender sender=null;
 		sender = mailSenders.get(jndiName);
 		if (sender == null) throw new ConfigurationException("Missing JavaMailSender bean");
 		return sender;
 	}
+	
 	public JavaMailSender getMailSender(Binder binder) {
+		return getMailSender(getNotificationMailSenderName(binder));
+	}
+	
+	@Override
+	public String getNotificationDefaultFrom(Binder binder) {
+		return getMailSender(binder).getDefaultFrom();
+	}
+
+	@Override
+	public String getNotificationMailSenderName(Binder binder) {
 		String jndiName;
 		if (binder.isZone()) jndiName = PortabilityUtil.getJndiName(getMailAttribute(binder.getName(), "notify", "session"));
 		else jndiName = PortabilityUtil.getJndiName(getMailAttribute(RequestContextHolder.getRequestContext().getZoneName(), "notify", "session"));
 //		else jndiName = PortabilityUtil.getJndiName(getMailAttribute(binder, "notify", "session"));
-		return getMailSender(jndiName);
+		return jndiName;
 	}
-
 
 	protected List<String> getMailPosters(String zoneName) {
 		//posting map is indexed by zoneName.  
@@ -331,10 +361,11 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		mailPosters.put(zoneName, result);
 		return result;
 	}
+	
 	/**
 	 * Read mail from all incoming mail servers.
-	 *
 	 */
+	@Override
 	public void receivePostings() {
 		String folderName="inbox";
 		String prefix, auth;
@@ -469,10 +500,12 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 
 		}		
 	}
+	
 	private String getMessage(Exception ex) {
 		if (Validator.isNotNull(ex.getLocalizedMessage())) return ex.getLocalizedMessage();
 		return ex.getMessage();
 	}
+	
 	private void sendErrors(Binder binder, PostingDef postingDef, JavaMailSender srcSender, List errors) {
 		if (!errors.isEmpty()) {
 			try	{
@@ -510,10 +543,12 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		}
 		
 	}
+
     /*
      * Fill any subscriptions to modified entries.  Handles user requested subscriptions and administrator notifications that are not digest.
      * Begin represents the last time we got through this without errors and used as a query optimization.
      */
+	@Override
 	public Date fillSubscriptions(final Date begin)  {
 		final String updateString="update org.kablink.teaming.domain.NotifyStatus set lastFullSent=:p1 where ownerId in (:p2)";
  		final JavaMailSender mailSender = getMailSender(RequestContextHolder.getRequestContext().getZone());
@@ -521,6 +556,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		Date last = null;
 		try {
 			last = (Date)mailSender.send(new ConnectionCallback() {
+				@Override
 				public Object doWithConnection(Transport transport) throws MailException {
 					final Map values = new HashMap();
 					Date end = new Date();
@@ -631,6 +667,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 						for (int count=0; count<10; ++count) {
 							try {
 								getTransactionTemplate().execute(new TransactionCallback() {
+									@Override
 									public Object doInTransaction(TransactionStatus status) {
 										getCoreDao().executeUpdate(updateString, values);
 										return null;
@@ -723,14 +760,17 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			getReportModule().addEmailLog(emailLog);
 		}
 	}
+	
 	/**
 	 * Send email notifications for recent changes.  Only used for digest style messages
 	 */
-    public Date sendNotifications(final Long binderId, final Date begin) {
+    @Override
+	public Date sendNotifications(final Long binderId, final Date begin) {
 		final String updateString="update org.kablink.teaming.domain.NotifyStatus set lastDigestSent=:p1 where ownerId in (:p2)";
    		final Map values = new HashMap();
 		final JavaMailSender mailSender = getMailSender(RequestContextHolder.getRequestContext().getZone());
 		Date last = (Date)mailSender.send(new ConnectionCallback() {
+			@Override
 			public Object doWithConnection(Transport transport) throws MailException {
 				Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 				Binder binder = coreDao.loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId()); 
@@ -831,6 +871,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					for (int count=0; count<10; ++count) {
 						try {
 							getTransactionTemplate().execute(new TransactionCallback() {
+								@Override
 								public Object doInTransaction(TransactionStatus status) {
 									getCoreDao().executeUpdate(updateString, values);
 									return null;
@@ -858,10 +899,10 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			}});
 		return last;    
     }
-
  
     //used for re-try mail.  MimeMessage has been serialized 
-    public void sendMail(String mailSenderName, java.io.InputStream input) {
+    @Override
+	public void sendMail(String mailSenderName, java.io.InputStream input) {
     	JavaMailSender mailSender = getMailSender(mailSenderName);
  		
     	//Add an entry into the email log for this request
@@ -879,8 +920,10 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		}
  		getReportModule().addEmailLog(emailLog);
     }
+    
     //used for re-try mail.  MimeMessage has been serialized 
-    public void sendMail(String mailSenderName, String account, String password, java.io.InputStream input) {
+    @Override
+	public void sendMail(String mailSenderName, String account, String password, java.io.InputStream input) {
     	JavaMailSender mailSender = getMailSender(mailSenderName);
 
     	//Add an entry into the email log for this request
@@ -911,8 +954,10 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		}
  		getReportModule().addEmailLog(emailLog);
     }
-   //prepare mail and send it - caller must retry if desired
-    public void sendMail(String mailSenderName, MimeMessagePreparator mHelper) {
+    
+    //prepare mail and send it - caller must retry if desired
+    @Override
+	public void sendMail(String mailSenderName, MimeMessagePreparator mHelper) {
     	JavaMailSender mailSender = getMailSender(mailSenderName);
 		mHelper.setDefaultFrom(mailSender.getDefaultFrom());
 		//Use spring callback to wrap exceptions into something more useful than javas 
@@ -932,13 +977,17 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		mailSender.send(msg);
 		getReportModule().addEmailLog(emailLog);
 	}
+    
     //used to send prepared mail now.
-    public void sendMail(MimeMessage mailMsg) {
+    @Override
+	public void sendMail(MimeMessage mailMsg) {
        	Binder zone = RequestContextHolder.getRequestContext().getZone();
         sendMail(getMailSender(zone).getName(), mailMsg);
     }
+    
     //used to send prepared mail now.    
-    public void sendMail(String mailSenderName, MimeMessage mailMsg) {
+    @Override
+	public void sendMail(String mailSenderName, MimeMessage mailMsg) {
     	JavaMailSender mailSender = getMailSender(mailSenderName);
     	//Add an entry into the email log for this request
   		EmailLog emailLog = new EmailLog(EmailLogType.retry, mailMsg, EmailLogStatus.sent);
@@ -946,7 +995,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		getReportModule().addEmailLog(emailLog);
     }
  
-    public MailSentStatus sendMail(Binder binder, Map message, String comment) {
+    @Override
+	public MailSentStatus sendMail(Binder binder, Map message, String comment) {
   		JavaMailSender mailSender = getMailSender(binder);
 		Collection<InternetAddress> addrs = (Collection)message.get(MailModule.TO);
 		//Add in the BCC addresses since we now send everything via BCC
@@ -1021,7 +1071,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		return status;
     }
  
-    public MailSentStatus sendMail(Entry entry, Map message, String comment, boolean sendAttachments) {
+    @Override
+	public MailSentStatus sendMail(Entry entry, Map message, String comment, boolean sendAttachments) {
   		JavaMailSender mailSender = getMailSender(entry.getParentBinder());
 		Collection<InternetAddress> addrs = (Collection)message.get(MailModule.TO);
 		if ((Collection)message.get(MailModule.BCC) != null) {
@@ -1112,7 +1163,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     }
     
     // schedule mail delivery - 
-    public void scheduleMail(Binder binder, Map message, String comment) throws Exception {
+    @Override
+	public void scheduleMail(Binder binder, Map message, String comment) throws Exception {
   		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
   		JavaMailSender mailSender = getMailSender(binder);
  		Collection<InternetAddress> addrs = (Collection)message.get(MailModule.TO);
@@ -1146,6 +1198,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		}
 		getReportModule().addEmailLog(emailLog);
 	}
+    
     class MailStatus implements MailSentStatus {
     	Set<Address> failures;
     	Set<Address> queuedTo;
@@ -1159,20 +1212,27 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
        		if (addrs != null) sentTo.addAll(addrs);
        	 
        	}
-    	public Collection<Address> getFailedToSend() {
+       	
+    	@Override
+		public Collection<Address> getFailedToSend() {
     		if (failures == null) return Collections.EMPTY_SET;
     		return failures;
     	}
-    	public Collection<Address> getQueuedToSend() {
+    	
+    	@Override
+		public Collection<Address> getQueuedToSend() {
     		if (queuedTo == null) return Collections.EMPTY_SET;
     		return queuedTo;
     	}
-    	public Collection<Address> getSentTo() {
+    	
+    	@Override
+		public Collection<Address> getSentTo() {
     		if (sentTo == null) return Collections.EMPTY_SET;
     		sentTo.removeAll(getQueuedToSend());
     		sentTo.removeAll(getFailedToSend());
     		return sentTo;
     	}
+    	
     	protected void addFailures(Address[] addrs) {
     		if (addrs == null) return;
     		if (failures == null) failures = new HashSet();
@@ -1180,6 +1240,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     			failures.add(addrs[i]);
     		}
     	}
+    	
     	protected void addQueued(Address[] addrs) {
     		if (addrs == null) return;
        		if (queuedTo == null) queuedTo = new HashSet();

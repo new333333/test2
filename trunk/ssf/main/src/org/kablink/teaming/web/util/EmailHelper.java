@@ -215,6 +215,36 @@ public class EmailHelper {
 		}
 		return null;
 	}
+
+	/**
+	 * Returns a List<Locale> of the unique Locale's stored in a
+	 * collection of Map<Locale, List<InternetAddress>>'s.
+	 * 
+	 * @param localeMaps
+	 * 
+	 * @return
+	 */
+	public static List<Locale> getTargetLocales(Map<Locale, List<InternetAddress>> ... localeMaps) {
+		// Allocate a List<Locale> to return.
+		List<Locale> reply = new ArrayList<Locale>();
+
+		// Scan the locale maps.
+		for (Map<Locale, List<InternetAddress>> localeMap:  localeMaps) {
+			// Scan the Locale keys of this locale map.
+			for (Locale locale:  localeMap.keySet()) {
+				// If this Locale is not in the reply list...
+				if (!(isLocaleInList(reply, locale))) {
+					// ...add it.
+					reply.add(locale);
+				}
+			}
+		}
+		
+		// If we get here, reply refers to the unique Locale's referred
+		// to by a collection of Map<Locale, List<InternetAddress>>'s.
+		// Return it. 
+		return reply;
+	}
 	
 	/*
 	 * Returns a Set<Long> of the member IDs of a team.
@@ -246,6 +276,25 @@ public class EmailHelper {
 	}
 	
 	/*
+	 * Returns true if a List<Locale> contains a given locale and false
+	 * otherwise.
+	 */
+	private static boolean isLocaleInList(List<Locale> localeList, Locale locale) {
+		// Scan the List<Locale>.
+		for (Locale localeScan:  localeList) {
+			// Is this the Locale in question?
+			if (localeScan.equals(locale)) {
+				// Yes!  Return true.
+				return true;
+			}
+		}
+		
+		// If we get here, the List<Locale> did not contain the Locale
+		// in question.  Return false.
+		return false;
+	}
+	
+	/*
 	 * Returns false if a group, based on its ID, should be excluded
 	 * as the target of an email and true otherwise.
 	 */
@@ -263,7 +312,7 @@ public class EmailHelper {
 		// If we get here, the group should be included.  Return true.
 		return true;
 	}
-	
+
 	/*
 	 * Validates that the Long's in a Set<Long> are valid principal
 	 * IDs.

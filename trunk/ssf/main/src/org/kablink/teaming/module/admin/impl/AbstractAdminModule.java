@@ -33,6 +33,8 @@
 package org.kablink.teaming.module.admin.impl;
 
 import java.io.InputStream;
+import java.io.StringWriter;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -42,12 +44,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.mail.internet.InternetAddress;
 
+import org.apache.velocity.VelocityContext;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -70,6 +74,7 @@ import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.ExtensionInfo;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.MailConfig;
@@ -96,6 +101,10 @@ import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.dashboard.DashboardModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.module.definition.notify.Notify;
+import org.kablink.teaming.module.definition.notify.NotifyVisitor;
+import org.kablink.teaming.module.definition.notify.Notify.NotifyType;
+import org.kablink.teaming.module.definition.notify.NotifyBuilderUtil;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ical.IcalModule;
@@ -103,6 +112,7 @@ import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.mail.EmailUtil;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.mail.MailSentStatus;
+import org.kablink.teaming.module.mail.MimeSharePreparator;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.ObjectBuilder;
@@ -1489,7 +1499,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
      * 
      * @throws Exception
      */
-    @Override
+	@Override
     public Map<String, Object> sendMail(ShareItem share, DefinableEntity sharedEntity, Collection<Long> principalIds, Collection<Long> teamIds,
     		Collection<String> emailAddresses, Collection<Long> ccIds, Collection<Long> bccIds) throws Exception {
     	// If sending email is not enabled in the system...
@@ -1506,27 +1516,155 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// Allocate some maps of email addresses to locales we'll
 		// use for sending the notifications in the appropriate
 		// language(s).
-		Map<Locale, List<InternetAddress>> toEMAs  = new HashMap<Locale, List<InternetAddress>>();
-		Map<Locale, List<InternetAddress>> ccEMAs  = new HashMap<Locale, List<InternetAddress>>();
-		Map<Locale, List<InternetAddress>> bccEMAs = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>> toIAsMap  = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>> ccIAsMap  = new HashMap<Locale, List<InternetAddress>>();
+		Map<Locale, List<InternetAddress>> bccIAsMap = new HashMap<Locale, List<InternetAddress>>();
 
 		// Process the recipient collections we received into the
 		// appropriate email address to locale map.
-		EmailHelper.addPrincipalsToLocaleMap(              MailModule.TO,  toEMAs,  MiscUtil.validateCL(principalIds  ));
-		EmailHelper.addTeamsToLocaleMap(getBinderModule(), MailModule.TO,  toEMAs,  MiscUtil.validateCL(teamIds       ));
-		EmailHelper.addEMAsToLocaleMap(                    MailModule.TO,  toEMAs,  MiscUtil.validateCS(emailAddresses));
-		EmailHelper.addPrincipalsToLocaleMap(              MailModule.CC,  ccEMAs,  MiscUtil.validateCL(ccIds         ));
-		EmailHelper.addPrincipalsToLocaleMap(              MailModule.BCC, bccEMAs, MiscUtil.validateCL(bccIds        ));
-		
+		EmailHelper.addPrincipalsToLocaleMap(              MailModule.TO,  toIAsMap,  MiscUtil.validateCL(principalIds  ));
+		EmailHelper.addTeamsToLocaleMap(getBinderModule(), MailModule.TO,  toIAsMap,  MiscUtil.validateCL(teamIds       ));
+		EmailHelper.addEMAsToLocaleMap(                    MailModule.TO,  toIAsMap,  MiscUtil.validateCS(emailAddresses));
+		EmailHelper.addPrincipalsToLocaleMap(              MailModule.CC,  ccIAsMap,  MiscUtil.validateCL(ccIds         ));
+		EmailHelper.addPrincipalsToLocaleMap(              MailModule.BCC, bccIAsMap, MiscUtil.validateCL(bccIds        ));
+
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
 		// Once we get here, we have maps containing the valid //
 		// email addresses we need to send notifications too   //
 		// mapped by the locale to use to send them.           //
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
+		// Get what we need from the zone for sending mail.
+		Workspace		zone       = RequestContextHolder.getRequestContext().getZone();
+		MailModule		mm         = getMailModule();
+		String			mailSender = mm.getNotificationMailSenderName(zone);
+		String			defaultEMA = mm.getNotificationDefaultFrom(   zone); 
+
+		// Get what we need about the sending user for sending mail.
+		Date			now         = new Date();
+		User			sendingUser = RequestContextHolder.getRequestContext().getUser();
+		TimeZone		tz          = sendingUser.getTimeZone();
+		InternetAddress	sendingIA   = new InternetAddress();
+		String			sendersEMA  = sendingUser.getEmailAddress();
+		sendingIA.setAddress(MiscUtil.hasString(sendersEMA) ? sendersEMA : defaultEMA);
+
+		// What Velocity template should we use for this share?
+		String template;
+		if (sharedEntity instanceof FolderEntry)
+			 template = "sharedEntryNotification.vm";
+		else template = "sharedFolderNotification.vm";
 		
-//!		...this needs to be implemented...
-		
+		// Scan the unique Locale's we need to localize the share
+		// notification email to.
+		boolean			notifyAsBCC   = SPropsUtil.getBoolean("mail.notifyAsBCC", true);
+		List<Locale>	targetLocales = MiscUtil.validateLL(EmailHelper.getTargetLocales(toIAsMap, ccIAsMap, bccIAsMap));
+		for (Locale locale:  targetLocales) {
+			// Extract the TO:, CC: and BCC: lists for this Locale.
+			List<InternetAddress> toIAs  = MiscUtil.validateIAL(toIAsMap.get( locale));
+			List<InternetAddress> ccIAs  = MiscUtil.validateIAL(ccIAsMap.get( locale));
+			List<InternetAddress> bccIAs = MiscUtil.validateIAL(bccIAsMap.get(locale));
+			
+			// If we we're supposed to send notifications as BCC:s...
+			if (notifyAsBCC && (!(toIAs.isEmpty()))) {
+				// ...move the TO:s to the BCC:s.
+				bccIAs.addAll(toIAs);
+				toIAs.clear();
+			}
+
+			// Allocate a Map to hold the mail components for building
+			// the mime...
+			Map mailMap = new HashMap();
+			
+			// ...add the from...
+			mailMap.put(MailModule.FROM, sendingIA);
+
+			// ...add the TO:s, CC:s and BCCs...
+			mailMap.put(MailModule.TO,  toIAs );
+			mailMap.put(MailModule.CC,  ccIAs );
+			mailMap.put(MailModule.BCC, bccIAs);
+
+			// ...add the subject...
+			String shareTitle = sharedEntity.getTitle();
+			if (!(MiscUtil.hasString(shareTitle))) {
+				shareTitle = ("--" + NLT.get("entry.noTitle", locale) + "--");
+			}
+			String subject = NLT.get("relevance.mailShared", new Object[]{Utils.getUserTitle(sendingUser)}, locale);
+			subject += " (" + shareTitle +")";
+			mailMap.put(MailModule.SUBJECT, subject);
+			
+			// ...generate and add the HTML variant...
+			String shareExpiration = getShareExpiration(locale, share);
+			StringWriter htmlWriter = new StringWriter();
+			Notify notify = new Notify(NotifyType.summary, locale, tz, now);
+           	NotifyVisitor visitor = new NotifyVisitor(sharedEntity, notify, null, htmlWriter, NotifyVisitor.WriterType.HTML, null);
+		    VelocityContext ctx = NotifyBuilderUtil.getVelocityContext();
+			ctx.put("ssVisitor",         visitor        );
+			ctx.put("ssShare",           share          );
+			ctx.put("ssSharedEntity",    sharedEntity   );
+			ctx.put("ssShareExpiration", shareExpiration);
+			ctx.put("user",              sendingUser    );
+			visitor.processTemplate(template, ctx);
+			EmailUtil.putHTML(mailMap, MailModule.HTML_MSG, htmlWriter.toString());
+			
+			// ...generate and the TEXT variant...
+			StringWriter txtWriter  = new StringWriter();
+			notify = new Notify(NotifyType.summary, locale, tz, now);
+           	visitor = new NotifyVisitor(sharedEntity, notify, null, txtWriter, NotifyVisitor.WriterType.TEXT, null);
+		    ctx = NotifyBuilderUtil.getVelocityContext();
+			ctx.put("ssVisitor",         visitor        );
+			ctx.put("ssShare",           share          );
+			ctx.put("ssSharedEntity",    sharedEntity   );
+			ctx.put("ssShareExpiration", shareExpiration);
+			ctx.put("user",              sendingUser    );
+			visitor.processTemplate(template, ctx);
+			EmailUtil.putText(mailMap, MailModule.TEXT_MSG, txtWriter.toString());
+
+			// ...create the mime preparator... 
+			MimeSharePreparator helper = new MimeSharePreparator(share, sharedEntity, mailMap, logger);
+			helper.setDefaultFrom(sendingUser.getEmailAddress());
+			
+			// ...and send the email.
+			mm.sendMail(mailSender, helper);
+		}
+
+		// If we get here, result refers to a map of any errors, ...
+		// Return it.
     	return result;
+    }
+
+    /*
+     * Returns the localized string to display for a share expiration.
+     */
+    private static String getShareExpiration(Locale locale, ShareItem share) {
+    	// Does the share have an expiration date?
+    	String reply;
+		Date expiration = share.getEndDate();
+		if (null == expiration) {
+			// No!  It never expires.
+			reply = NLT.get("share.expires.never", locale);
+		}
+		
+		else {
+			// Yes, there's an expiration date!  Is the an expires
+			// after a number of days?
+			int days = share.getDaysToExpire();
+			if (0 < days) {
+				// Yes!  Generate the appropriate string.
+				reply = NLT.get("share.expires.after", new Object[]{days}, locale);
+			}
+			
+			else {
+				// No, there's no days!  It expires explicitly on the
+				// specified date.
+				DateFormat dateFmt = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, locale);
+				String dateText = dateFmt.format(expiration);
+				reply = NLT.get("share.expires.on", new Object[]{dateText}, locale);
+			}
+		}
+		
+		// If we get here, reply refers to the share expiration message
+		// in the given locale.  Return it.
+		return reply;
     }
     
     private Set<InternetAddress> getEmail(Collection<Long>ids, List errors) {
