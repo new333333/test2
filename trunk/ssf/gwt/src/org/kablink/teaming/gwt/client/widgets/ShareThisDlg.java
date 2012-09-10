@@ -719,7 +719,9 @@ public class ShareThisDlg extends DlgBox
 			
 			m_shareCellFormatter.setWordWrap( row, col, false );
 			m_shareCellFormatter.addStyleName( row, col, "shareThisDlg_RecipientTable_Cell" );
-			accessWidget = new ShareRightsWidget( shareItem );
+			accessWidget = new ShareRightsWidget(
+											shareItem,
+											m_sharingInfo.getAccessRights( shareItem.getEntityId() ) );
 			m_shareTable.setWidget( row, col, accessWidget );
 			++col;
 		}
@@ -2185,7 +2187,7 @@ public class ShareThisDlg extends DlgBox
 			tmpPanel.add( m_notifyCheckbox );
 			
 			m_sendToWidget = new ShareSendToWidget();
-			m_sendToWidget.init( SendToValue.ALL_RECIPIENTS );
+			m_sendToWidget.init( SendToValue.ONLY_MODIFIED_RECIPIENTS );
 			tmpPanel.add( m_sendToWidget );
 			
 			mainTable.getFlexCellFormatter().setColSpan( row, 0, 2 );
