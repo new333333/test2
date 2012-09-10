@@ -2422,7 +2422,7 @@ body, table td, select
 	color: #FFFFFF;
 	right: 0px;
 	position: absolute;
-	top: 15px;
+	top: 10px;
 	white-space: nowrap;
 	z-index: 20;
 }
@@ -4232,6 +4232,7 @@ td.datePickerMonth {
 
 .FilrAction_Img
 {
+	margin: 3px 12px;
 }
 
 .FilrAction_MainPanel
@@ -4261,6 +4262,8 @@ td.datePickerMonth {
 
 .FilrAction_Text
 {
+	padding-left: 5px;
+	padding-right: 5px;
 }
 
 /**
