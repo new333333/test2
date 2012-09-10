@@ -40,6 +40,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.logging.Log;
@@ -52,10 +53,12 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.util.Validator;
 
 /**
  * Helper methods for email handling.
@@ -162,7 +165,18 @@ public class EmailHelper {
 	 * @param ema
 	 */
 	public static void addEMAToUsersLocaleMap(String usedAs, Map<Locale, List<InternetAddress>> localeMap, User user, String ema) {
-		Locale					locale     = user.getLocale();
+		// If the user doesn't have a Locale defined...
+		Locale locale = user.getLocale();
+		if (null == locale) {
+			// ...and the current user doesn't have one either...
+			locale = RequestContextHolder.getRequestContext().getUser().getLocale();
+			if (null == locale){
+				// ...use the system's default.
+				locale = Locale.getDefault();
+			}
+		}
+
+		// What locale list do we store the email addresses into?
 		List<InternetAddress>	localeList = getLocaleList(localeMap, locale);
 		boolean					newLocale  = (null == localeList);
 		if (newLocale) {
@@ -187,6 +201,33 @@ public class EmailHelper {
 		}
 	}
 
+	/*
+	 * Adds an error to a List regarding an Address[] of email
+	 * addresses that could not be sent to.
+	 */
+	@SuppressWarnings("unchecked")
+	public static void addMailFailures(List errors, Address[] errorAddrs, String resourceKey) {
+		// Do we have anything to based the mail failures on?
+		int errorCount = ((null == errorAddrs) ? 0 : errorAddrs.length);
+		if ((null != errors) && (0 < errorCount) && MiscUtil.hasString(resourceKey)) {
+			// Yes!  Add the failed addresses to a string...
+			StringBuffer s = new StringBuffer("");
+			for (Address errorAddr: errorAddrs) {
+				if (0 < s.length()) {
+					s.append(", ");
+				}
+				s.append(errorAddr.toString());
+			}
+
+			// ...and log the error.
+			errors.add(
+				NLT.get(
+					resourceKey,
+					new String[]{s.toString()},
+					Locale.getDefault()));
+		}
+	}
+	
 	/*
 	 * Returns a Set<Long> of the IDs of the members of a group.
 	 */
@@ -216,6 +257,14 @@ public class EmailHelper {
 		return null;
 	}
 
+	/*
+	 * Returns the string to use to inform about mail sending errors.
+	 */
+	public static String getMailExceptionMessage(Exception ex) {
+		if (Validator.isNotNull(ex.getLocalizedMessage())) return ex.getLocalizedMessage();
+		return ex.getMessage();
+	}
+	
 	/**
 	 * Returns a List<Locale> of the unique Locale's stored in a
 	 * collection of Map<Locale, List<InternetAddress>>'s.

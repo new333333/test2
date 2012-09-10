@@ -49,6 +49,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.mail.SendFailedException;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.velocity.VelocityContext;
@@ -144,6 +145,8 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailSendException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -1623,8 +1626,38 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			MimeSharePreparator helper = new MimeSharePreparator(share, sharedEntity, mailMap, logger);
 			helper.setDefaultFrom(sendingUser.getEmailAddress());
 			
-			// ...and send the email.
-			mm.sendMail(mailSender, helper);
+			try {
+				// ...and send the email.
+				mm.sendMail(mailSender, helper);
+			}
+			
+	 		catch (MailSendException ex) {
+	 			// The send failed!  Log the error...
+	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
+	 			logger.error("EXCEPTION:  Error sending mail:" + exMsg);
+				logger.debug("EXCEPTION", ex);
+				errors.add(exMsg);
+
+				// ...and if there were any sub-exceptions...
+				Exception[] exceptions = ex.getMessageExceptions();
+				int exCount = ((null == exceptions) ? 0 : exceptions.length);
+	 			if ((0 < exCount) && exceptions[0] instanceof SendFailedException) {
+	 				// ...return them in the error list.
+	 				SendFailedException sf = ((SendFailedException) exceptions[0]);
+	 				EmailHelper.addMailFailures(errors, sf.getInvalidAddresses(),     "share.notify.invalidAddresses"    );
+	 				EmailHelper.addMailFailures(errors, sf.getValidUnsentAddresses(), "share.notify.validUnsendAddresses");
+	 				
+	 			}
+	 	   	}
+	 		
+	 		catch (MailAuthenticationException ex) {
+	 			// The send failed because we couldn't authenticate to
+	 			// the server!  Log the error.
+	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
+	       		logger.error("EXCEPTION:  Authentication Exception:" + exMsg);				
+				logger.debug("EXCEPTION", ex);
+				errors.add(exMsg);
+	 		} 
 		}
 
 		// If we get here, result refers to a map of any errors, ...
