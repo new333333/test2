@@ -61,7 +61,9 @@
 </c:if>
 <c:if test="${ licenseFilr == 'true' }">
   <ssf:ifAuthorizedByLicense featureName="com.novell.teaming.Filr">
-  	<c:set var="showIt" value="true"/>
+    <ssf:ifNotAuthorizedByLicense featureName="com.novell.teaming.Vibe">
+  	  <c:set var="showIt" value="true"/>
+  	</ssf:ifNotAuthorizedByLicense>
   </ssf:ifAuthorizedByLicense>
 </c:if>
 <c:if test="${ licenseFilrAndVibe == 'true' }">
