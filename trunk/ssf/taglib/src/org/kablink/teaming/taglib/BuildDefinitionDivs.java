@@ -552,8 +552,7 @@ public class BuildDefinitionDivs extends TagSupport {
 	}
 	//see if new item will meet uniqueness constaints
 	protected boolean testOption(Element item, Element sourceRoot, String name) {
-		if (item.attributeValue("multipleAllowed", "").equalsIgnoreCase("false") && 
-				sourceRoot.selectSingleNode("//item[@name='"+name+"']") != null) return false;
+		if (!DefinitionHelper.checkIfMultipleAllowed(rootElement, configDocument.getRootElement())) return false;
 
 		if (rootElement == null) return true;
 
@@ -745,6 +744,13 @@ public class BuildDefinitionDivs extends TagSupport {
 										}
 									} else {
 										count++;
+										for (int i = 0; i < propertyValues.size(); i++) {
+											if (((String)propertyValues.get(i)).equals(selection.attributeValue("name", ""))) {
+												//Remember that one of these properties is selected
+												selectedSeen = true;
+												break;
+											}
+										}
 									}
 								}
 								if (count > 0) {

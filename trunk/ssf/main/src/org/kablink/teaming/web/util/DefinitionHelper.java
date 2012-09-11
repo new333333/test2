@@ -439,6 +439,24 @@ public class DefinitionHelper {
 		}
 		return false;
 	}
+	//Routine to see if an item is inside a "conditional" element
+	public static boolean checkIfMultipleAllowed(Element item, Element root) {
+		if ("false".equals(item.attributeValue("multipleAllowed"))) {
+			Element parentItem = item;
+			while (root != null && !parentItem.equals(root)) {
+				String name = parentItem.attributeValue("name", "");
+				if (name.equals("conditional") || 
+						name.equals("conditionalView") || 
+						name.equals("conditionalProfileFormItem") || 
+						name.equals("conditionalProfileViewItem")) return true;
+				parentItem = parentItem.getParent();
+				if (parentItem == null) break;
+			}
+			return false;
+		}
+		return true;
+	}
+
     public static String getWebDAVURL(PortletRequest req, Folder folder, FolderEntry entry) {
     	String strEntryURL = "";
 		if (entry.getEntryDefId() == null) {
