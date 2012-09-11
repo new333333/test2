@@ -234,6 +234,7 @@ public enum TeamingEvents implements IsSerializable {
 	VIEW_UNREAD_ENTRIES,				// Show unread entries.
 	VIEW_WHATS_UNSEEN_IN_BINDER,		// Shows the items that are unseen in the current binder.
 	VIEW_WHATS_NEW_IN_BINDER,			// Shows the items that are new    in the current binder.
+	VIEW_WHO_HAS_ACCESS,				// Opens the who has access viewer on an item.
 
 	CHANGE_ENTRY_TYPE_SELECTED_ENTRIES,	// Changes the Entry Type of the Selected Entries.
 	CHANGE_FAVORITE_STATE,				// Changes the favorites state of a binder.

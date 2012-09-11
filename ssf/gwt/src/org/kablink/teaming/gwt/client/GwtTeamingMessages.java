@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.i18n.client.Messages;
@@ -587,6 +586,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_TrashView();
 	String codeSplitFailure_UserStatusControl();
 	String codeSplitFailure_ViewsMenuPopup();
+	String codeSplitFailure_WhoHasAccessDlg();
 	String codeSplitFailure_WorkspaceTreeControl();
 	
 	// Strings used to describe various event handling errors.
@@ -810,6 +810,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuViewsWhatsNewInWorkspace();
 	String mainMenuViewsWhatsUnreadInFolder();
 	String mainMenuViewsWhatsUnreadInWorkspace();
+	String mainMenuWhoHasAccessDlgHeader();
 	
 	// Strings used by the 'Add New Folder' dialog.
 	String addNewFolderDlgError_AddFailed();

@@ -121,6 +121,8 @@ import org.kablink.util.search.Constants;
  * @author drfoster@novell.com
  */
 public class GwtMenuHelper {
+	private final static boolean	SHOW_WHO_HAS_ACCESS_OPTION	= false;	// DRF:  false until I get it all working.
+	
 	protected static Log m_logger = LogFactory.getLog(GwtMenuHelper.class);
 
 	private final static String ABOUT					= "about";
@@ -361,7 +363,7 @@ public class GwtMenuHelper {
 			// No!  Add a ToolbarItem for email notification.
 			ToolbarItem emailTBI = new ToolbarItem(EMAIL);
 			markTBITitle(emailTBI, "toolbar.menu.subscribeToFolder"       );
-			markTBIHint(emailTBI, "toolbar.menu.title.emailSubscriptions" );
+			markTBIHint( emailTBI, "toolbar.menu.title.emailSubscriptions");
 			markTBIEvent(emailTBI, TeamingEvents.INVOKE_EMAIL_NOTIFICATION);
 			reply.addNestedItem(emailTBI);
 		}
@@ -1234,6 +1236,20 @@ public class GwtMenuHelper {
 					break;
 	        	}
 	        }
+		}
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for running the who has access viewer
+	 * on the selected entity.
+	 */
+	private static void constructEntryViewWhoHasAccess(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request) {
+		if (SHOW_WHO_HAS_ACCESS_OPTION) {
+			// Add a who has access item.
+			ToolbarItem whoHasAccessTBI = new ToolbarItem("1_whoHasAccess");
+			markTBITitle(whoHasAccessTBI, "toolbar.menu.who_has_access");
+			markTBIEvent(whoHasAccessTBI, TeamingEvents.VIEW_WHO_HAS_ACCESS);
+			entryToolbar.addNestedItem(whoHasAccessTBI);
 		}
 	}
 	
@@ -2180,9 +2196,10 @@ public class GwtMenuHelper {
 				if (GwtShareHelper.isEntitySharable(bs, fe)) {
 					constructEntryShareItem(actionToolbar, bs, request);
 				}
-				constructEntryDetailsItem(  actionToolbar, bs, request, "toolbar.details.view");
-				constructEntryViewHtmlItem( actionToolbar, bs, request, fe                    );
-				constructEntrySubscribeItem(actionToolbar, bs, request, true                  );
+				constructEntryDetailsItem(     actionToolbar, bs, request, "toolbar.details.view");
+				constructEntryViewHtmlItem(    actionToolbar, bs, request, fe                    );
+				constructEntryViewWhoHasAccess(actionToolbar, bs, request                        );
+				constructEntrySubscribeItem(   actionToolbar, bs, request, true                  );
 			}
 			
 			else if (eidType.equals(EntityType.folder.name())) {
@@ -2205,7 +2222,8 @@ public class GwtMenuHelper {
 					}
 					constructEntryFavoriteItem(actionToolbar, bs, request, isFavorite);
 				}
-				constructEntrySubscribeItem(   actionToolbar, bs, request, addShare  );
+				constructEntryViewWhoHasAccess(actionToolbar, bs, request      );
+				constructEntrySubscribeItem(   actionToolbar, bs, request, true);
 			}
 			
 			// If we get here, reply refers to the 
