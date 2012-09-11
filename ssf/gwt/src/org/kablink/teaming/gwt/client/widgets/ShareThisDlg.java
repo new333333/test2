@@ -940,7 +940,7 @@ public class ShareThisDlg extends DlgBox
 					m_shareWithTeamsLabel = new InlineLabel( GwtTeaming.getMessages().shareWithTeams() );
 					m_shareWithTeamsLabel.addStyleName( "shareThisDlg_shareWithTeamsLink" );
 
-					// Add a click handler to the "add external user" image.
+					// Add a click handler to the "share with teams" label.
 					clickHandler = new ClickHandler()
 					{
 						@Override

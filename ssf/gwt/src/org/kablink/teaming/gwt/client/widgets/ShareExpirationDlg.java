@@ -76,6 +76,8 @@ public class ShareExpirationDlg extends DlgBox
 	private TZDateBox m_dateBox;
 	private VibeFlowPanel m_expiresOnPanel;
 	private VibeFlowPanel m_expiresAfterPanel;
+
+	private static long MILLISEC_IN_A_DAY = 86400000; 
 	
 	/**
 	 * Callback interface to interact with the "Share expiration" dialog asynchronously after it loads. 
@@ -195,7 +197,6 @@ public class ShareExpirationDlg extends DlgBox
 			
 			dateFormat = DateTimeFormat.getFormat( PredefinedFormat.DATE_SHORT );
 			m_dateBox = new TZDateBox( new DatePicker(), (-1), new DateBox.DefaultFormat( dateFormat ) );
-			m_dateBox.setTZOffset( 0 );
 			m_dateBox.getDateBox().getTextBox().setVisibleLength( 8 );
 			table.setWidget( 0, 0, m_dateBox );
 			
@@ -371,6 +372,12 @@ public class ShareExpirationDlg extends DlgBox
 		value = m_dateBox.getValue();
 		if ( value == -1 )
 			value = null;
+		
+		if ( value != null )
+		{
+			// Have the share expire at 23:59:59 on the selected day
+			value += (MILLISEC_IN_A_DAY - 1000);
+		}
 		
 		return value;
 	}
