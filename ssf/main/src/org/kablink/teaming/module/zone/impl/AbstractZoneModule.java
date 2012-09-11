@@ -57,6 +57,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.LdapConnectionConfig;
+import org.kablink.teaming.domain.NoBinderByTheNameException;
 import org.kablink.teaming.domain.NoGroupByTheNameException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.PostingDef;
@@ -881,6 +882,17 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			WorkAreaOperation.deleteInstance("viewBinderTitle");
 		}
 		
+		//Make sure the Net Folders workspace exists
+		Binder netFoldersBinder = null;
+		try {
+			netFoldersBinder = getCoreDao().loadReservedBinder(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, zone.getId());
+		} catch(NoBinderByTheNameException e) {}
+		if (netFoldersBinder == null) {
+			//The Net Folders workspace doesn't exist, so create it
+			Workspace top = getCoreDao().findTopWorkspace(zone.getName());
+			HistoryStamp stamp = new HistoryStamp(superU);
+			Workspace netFoldersRoot = addNetFoldersRoot(top, stamp);
+		}
 		//Make sure resource driver map is initialized
 		getResourceDriverManager().resetResourceDriverList();
 
@@ -1002,6 +1014,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		addFileSyncAgent(profiles, stamp);
     		addGuest(profiles, stamp); 
     		Workspace globalRoot = addGlobalRoot(top, stamp);		
+    		Workspace netFoldersRoot = addNetFoldersRoot(top, stamp);		
     		Workspace teamRoot = addTeamRoot(top, stamp);
     		teamRoot.setFunctionMembershipInherited(false);
     		
@@ -1258,6 +1271,28 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getCoreDao().save(global);
 		getCoreDao().updateFileName(top, global, null, global.getTitle());
 		return global;
+	}
+	private Workspace addNetFoldersRoot(Workspace top, HistoryStamp stamp) {
+		Workspace netFolders = new Workspace();
+		netFolders.setCreation(stamp);
+		netFolders.setModification(stamp);
+		
+		netFolders.setName("_net_folders");
+		netFolders.setTitle(NLT.get("administration.initial.netFolders.title", "Net Folders"));
+		netFolders.setPathName(top.getPathName() + "/" + netFolders.getTitle());
+		netFolders.setZoneId(top.getId());
+		netFolders.setInternalId(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID);
+		netFolders.setIconName("/icons/workspace.gif");
+		getDefinitionModule().setDefaultBinderDefinition(netFolders);
+		top.addBinder(netFolders);
+		netFolders.setDefinitionsInherited(false);
+		List defs = netFolders.getDefinitions();
+		defs.add(netFolders.getEntryDef());
+		
+		//generate id for top and profiles
+		getCoreDao().save(netFolders);
+		getCoreDao().updateFileName(top, netFolders, null, netFolders.getTitle());
+		return netFolders;
 	}
 	private ProfileBinder addPersonalRoot(Workspace top) {
 		ProfileBinder profiles = new ProfileBinder();

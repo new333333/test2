@@ -118,6 +118,7 @@ public interface ObjectKeys {
 	public static final String TOP_WORKSPACE_INTERNALID="402883b90d0de1f3010d0df5582b0007";
 	public static final String TEAM_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b0009";
 	public static final String GLOBAL_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b000a";
+	public static final String NET_FOLDERS_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b001a";
 	//reserverd internalids for alluser group
 	public static final String ALL_USERS_GROUP_INTERNALID="402883b90d0de1f3010d0df5582b0006";
 	//reserverd internalids for allextuser group

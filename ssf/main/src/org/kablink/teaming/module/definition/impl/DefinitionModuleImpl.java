@@ -1054,8 +1054,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					if (Validator.isNull(name) && itemEleToAdd.attributeValue("type", "").equals("data"))
 						throw new DefinitionInvalidException("definition.error.nullname");
 					if (uniqueNames.containsKey(name)) {
-						//This name is not unique
-						throw new DefinitionInvalidException("definition.error.nameNotUnique", new Object[] {defId, name});
+						//Check if this item is inside a "conditional" element
+						if (!checkIfInConditional(item, root)) {
+							//This name is not unique and is not in a conditional element
+							throw new DefinitionInvalidException("definition.error.nameNotUnique", new Object[] {defId, name});
+						}
 					}
 				}
 
@@ -1068,9 +1071,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						Attribute attr = (Attribute) attrs.next();
 
 						// (rsordillo) Do not add non-required Attributes to new item
-						if (attr.getName().equals("canBeDeleted")
-						|| attr.getName().equals("multipleAllowed"))
+						if (attr.getName().equals("canBeDeleted") || DefinitionHelper.checkIfMultipleAllowed(itemEleToAdd, root)) {
 							continue;
+						}
 						newItem.addAttribute(attr.getName(), attr.getValue());
 					}
 
@@ -1455,8 +1458,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					//See if the item name is being changed
 					if (!name.equals(itemNamePropertyValue) &&
 							uniqueNames.containsKey(name)) {
-						//This name is not z
-						throw new DefinitionInvalidException("definition.error.nameNotUnique", new Object[] {defId, name});
+						//Check if this item is in a conditional element
+						if (!checkIfInConditional(item, root)) {
+							//This name is not unique and is not in a conditional element
+							throw new DefinitionInvalidException("definition.error.nameNotUnique", new Object[] {defId, name});
+						}
 					} else if (!name.equals(itemNamePropertyValue)) {
 						//The name is being changed. Check if this is a workflow state
 						if (itemType.equals("state") && "workflowProcess".equals(item.getParent().attributeValue("name"))) {
@@ -1584,6 +1590,20 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 		}
 
+	}
+	//Routine to see if an item is inside a "conditional" element
+	private boolean checkIfInConditional(Element item, Element root) {
+		Element parentItem = item;
+		while (!parentItem.equals(root)) {
+			String name = parentItem.attributeValue("name", "");
+			if (name.equals("conditional") || 
+					name.equals("conditionalView") || 
+					name.equals("conditionalProfileFormItem") || 
+					name.equals("conditionalProfileViewItem")) return true;
+			parentItem = parentItem.getParent();
+			if (parentItem == null) break;
+		}
+		return false;
 	}
 	private boolean checkIfNameReserved(String name) {
 		if (ReservedItemNames.contains(" " + name.toLowerCase() + " ")) return true;

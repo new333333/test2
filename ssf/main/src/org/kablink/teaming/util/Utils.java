@@ -711,6 +711,8 @@ public class Utils {
 			return Utils.checkIfFilrFamily(Definition.FOLDER_ENTRY, family);
 		} else if (type.equals("familySelectboxUserWorkspace")) {
 			return Utils.checkIfFilrFamily(Definition.USER_WORKSPACE_VIEW, family);
+		} else if (type.equals("familySelectboxUserProfile")) {
+			return Utils.checkIfFilrFamily(Definition.PROFILE_ENTRY_VIEW, family);
 		} else if (type.equals("familySelectboxExternalUserWorkspace")) {
 			return Utils.checkIfFilrFamily(Definition.EXTERNAL_USER_WORKSPACE_VIEW, family);
 		}
@@ -727,6 +729,8 @@ public class Utils {
 				return true;
 			}
 		} else if (defType == Definition.USER_WORKSPACE_VIEW && family.equals(Definition.FAMILY_USER_WORKSPACE)) {
+			return true;
+		} else if (defType == Definition.PROFILE_ENTRY_VIEW && family.equals(Definition.FAMILY_USER_PROFILE)) {
 			return true;
 		} else if (defType == Definition.EXTERNAL_USER_WORKSPACE_VIEW && 
 				family.equals(Definition.FAMILY_EXTERNAL_USER_WORKSPACE)) {

@@ -110,6 +110,7 @@ public class Definition extends PersistentTimestampObject  {
 	public static final String FAMILY_TEAM="team"; 
 	public static final String FAMILY_PROJECT="project"; 
 	public static final String FAMILY_USER_WORKSPACE="user"; 
+	public static final String FAMILY_USER_PROFILE="userProfile"; 
 	public static final String FAMILY_EXTERNAL_USER_WORKSPACE="external_user"; 
 	public static final String FAMILY_COMMENT="comment"; 
 	public static final String FAMILY_FILE_COMMENT="fileComment"; 
