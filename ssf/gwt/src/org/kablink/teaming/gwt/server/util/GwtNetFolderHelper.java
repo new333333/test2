@@ -385,6 +385,8 @@ public class GwtNetFolderHelper
 		criteria.add( criterion );
 		criterion = Restrictions.in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE} );
 		criteria.add( criterion );
+		criterion = Restrictions.in(Constants.IS_TOP_FOLDER_FIELD, new String[]{Constants.TRUE} );
+		criteria.add( criterion );
 
 		// Add in the sort information...
 		sortAscend = false;
