@@ -65,6 +65,7 @@ import org.kablink.teaming.gwt.client.event.TaskPurgeEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
+import org.kablink.teaming.gwt.client.event.ViewWhoHasAccessEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
@@ -180,7 +181,8 @@ public class TaskTable extends Composite
 		TaskMoveUpEvent.Handler,
 		TaskPurgeEvent.Handler,
 		UnlockSelectedEntriesEvent.Handler,
-		ViewSelectedEntryEvent.Handler
+		ViewSelectedEntryEvent.Handler,
+		ViewWhoHasAccessEvent.Handler
 {
 	private boolean						m_sortAscending;			//
 	private Column						m_sortColumn;				//
@@ -266,6 +268,7 @@ public class TaskTable extends Composite
 		TeamingEvents.TASK_PURGE,
 		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
 		TeamingEvents.VIEW_SELECTED_ENTRY,
+		TeamingEvents.VIEW_WHO_HAS_ACCESS,
 	};
 	
 	/*
@@ -3114,6 +3117,32 @@ public class TaskTable extends Composite
 						BinderViewsHelper.viewEntry(eid);
 						return;
 					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Handles ViewWhoHasAccessEvent's received by this class.
+	 * 
+	 * Implements the ViewWhoHasAccessEvent.Handler.onViewWhoHasAccess() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onViewWhoHasAccess(ViewWhoHasAccessEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
+			// Yes!  Invoke the view.
+			List<EntityId> eids = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(eids))) {
+				eids = getTaskIdsChecked();
+			}
+			if (GwtClientHelper.hasItems(eids)) {
+				for (EntityId eid:  eids) {
+					BinderViewsHelper.viewWhoHasAccess(eid);
+					return;
 				}
 			}
 		}

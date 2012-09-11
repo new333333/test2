@@ -3928,6 +3928,11 @@ td.datePickerMonth {
 	.vibe-confirmDlg-rootPanel                     {padding: 8px;}
 /* End:  Conformation dialog styles. */
 
+/* Start:  Who Has Access dialog styles. */
+	.vibe-whoHasAccessDlg_Content {margin: 20px 10px 10px 20px;}
+	.vibe-whoHasAccessDlg_Label   {}
+/* End:  Who Has Access dialog styles. */
+
 
 
 

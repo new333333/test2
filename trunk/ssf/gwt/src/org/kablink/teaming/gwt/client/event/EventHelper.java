@@ -1903,6 +1903,15 @@ public class EventHelper {
 				}				
 				break;
 			
+			case VIEW_WHO_HAS_ACCESS:
+				// A ViewWhoHasAccessEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ViewWhoHasAccessEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ViewWhoHasAccessEvent.registerEvent(eventBus, ((ViewWhoHasAccessEvent.Handler) eventHandler));
+				}
+				break;
+			
 			default:
 			case UNDEFINED:
 				// Whatever it is, we can't handle it!  Tell the user
@@ -2194,6 +2203,7 @@ public class EventHelper {
 			case VIEW_UNREAD_ENTRIES:               	hasHandler = (eventHandler instanceof ViewUnreadEntriesEvent.Handler);             break;
 			case VIEW_WHATS_NEW_IN_BINDER:				hasHandler = (eventHandler instanceof ViewWhatsNewInBinderEvent.Handler);          break;
 			case VIEW_WHATS_UNSEEN_IN_BINDER:			hasHandler = (eventHandler instanceof ViewWhatsUnseenInBinderEvent.Handler);       break;
+			case VIEW_WHO_HAS_ACCESS:                  	hasHandler = (eventHandler instanceof ViewWhoHasAccessEvent.Handler);              break;
 			
 			case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:    hasHandler = (eventHandler instanceof ChangeEntryTypeSelectedEntriesEvent.Handler);break;
 			case CHANGE_FAVORITE_STATE:                 hasHandler = (eventHandler instanceof ChangeFavoriteStateEvent.Handler);           break;

@@ -67,6 +67,7 @@ import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
+import org.kablink.teaming.gwt.client.event.ViewWhoHasAccessEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarAppointmentsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteFolderEntriesCmd;
@@ -154,7 +155,8 @@ public class CalendarFolderView extends FolderViewBase
 		ShareSelectedEntriesEvent.Handler,
 		SubscribeSelectedEntriesEvent.Handler,
 		UnlockSelectedEntriesEvent.Handler,
-		ViewSelectedEntryEvent.Handler
+		ViewSelectedEntryEvent.Handler,
+		ViewWhoHasAccessEvent.Handler
 {
 	private ArrayList<Appointment>				m_appointments;				//
 	private CalendarAppointment					m_selectedEvent;			//
@@ -193,6 +195,7 @@ public class CalendarFolderView extends FolderViewBase
 		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
 		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
 		TeamingEvents.VIEW_SELECTED_ENTRY,
+		TeamingEvents.VIEW_WHO_HAS_ACCESS,
 	};
 	
 	/**
@@ -1601,6 +1604,32 @@ public class CalendarFolderView extends FolderViewBase
 						BinderViewsHelper.viewEntry(eid);
 						return;
 					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Handles ViewWhoHasAccessEvent's received by this class.
+	 * 
+	 * Implements the ViewWhoHasAccessEvent.Handler.onViewWhoHasAccess() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onViewWhoHasAccess(ViewWhoHasAccessEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Invoke the view.
+			List<EntityId> eids = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(eids))) {
+				eids = getSelectedEntityIds();
+			}
+			if (GwtClientHelper.hasItems(eids)) {
+				for (EntityId eid:  eids) {
+					BinderViewsHelper.viewWhoHasAccess(eid);
+					return;
 				}
 			}
 		}

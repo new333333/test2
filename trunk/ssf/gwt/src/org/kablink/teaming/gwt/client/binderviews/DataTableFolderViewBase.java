@@ -105,6 +105,7 @@ import org.kablink.teaming.gwt.client.event.TrashRestoreSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewPinnedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
+import org.kablink.teaming.gwt.client.event.ViewWhoHasAccessEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
@@ -212,7 +213,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TrashRestoreSelectedEntriesEvent.Handler,
 		UnlockSelectedEntriesEvent.Handler,
 		ViewPinnedEntriesEvent.Handler,
-		ViewSelectedEntryEvent.Handler
+		ViewSelectedEntryEvent.Handler,
+		ViewWhoHasAccessEvent.Handler
 {
 	private boolean						m_fixedLayout;				//
 	private ColumnWidth					m_actionMenuColumnWidth;	//
@@ -283,6 +285,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
 		TeamingEvents.VIEW_PINNED_ENTRIES,
 		TeamingEvents.VIEW_SELECTED_ENTRY,
+		TeamingEvents.VIEW_WHO_HAS_ACCESS,
 	};
 	
 	/*
@@ -2432,6 +2435,32 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						BinderViewsHelper.viewEntry(eid);
 						return;
 					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Handles ViewWhoHasAccessEvent's received by this class.
+	 * 
+	 * Implements the ViewWhoHasAccessEvent.Handler.onViewWhoHasAccess() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onViewWhoHasAccess(ViewWhoHasAccessEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Invoke the view.
+			List<EntityId> eids = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(eids))) {
+				eids = getSelectedEntityIds();
+			}
+			if (GwtClientHelper.hasItems(eids)) {
+				for (EntityId eid:  eids) {
+					BinderViewsHelper.viewWhoHasAccess(eid);
+					return;
 				}
 			}
 		}

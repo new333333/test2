@@ -50,6 +50,8 @@ import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg;
 import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg.EmailNotificationDlgClient;
+import org.kablink.teaming.gwt.client.mainmenu.WhoHasAccessDlg;
+import org.kablink.teaming.gwt.client.mainmenu.WhoHasAccessDlg.WhoHasAccessDlgClient;
 import org.kablink.teaming.gwt.client.rpc.shared.DisableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.EnableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
@@ -90,6 +92,7 @@ public class BinderViewsHelper {
 	private static EmailNotificationDlg	m_enDlg;								// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntityId>. 
 	private static GwtTeamingMessages	m_messages = GwtTeaming.getMessages();	// Access to the GWT localized strings.
 	private static ShareThisDlg			m_shareDlg;								// An instance of a share this dialog.
+	private static WhoHasAccessDlg		m_whaDlg;								// An instance of a who has access dialog used to view who has access to an entity. 
 	
 	/*
 	 * Constructor method. 
@@ -959,6 +962,26 @@ public class BinderViewsHelper {
 		ShareThisDlg.initAndShow(m_shareDlg, null, caption, null, entityIds);
 	}
 
+	/*
+	 * Asynchronously invokes the who has access dialog on an entity.
+	 */
+	private static void showWhoHasAccessAsync(final EntityId entityId) {
+		ScheduledCommand doShow = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showWhoHasAccessNow(entityId);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doShow);
+	}
+	
+	/*
+	 * Synchronously invokes the who has access dialog on an entity.
+	 */
+	private static void showWhoHasAccessNow(final EntityId entityId) {
+		WhoHasAccessDlg.initAndShow(m_whaDlg, entityId);
+	}
+	
 	/**
 	 * Invokes the appropriate UI to subscribe to the entries based on
 	 * a List<EntityId> of the entries.
@@ -1158,5 +1181,58 @@ public class BinderViewsHelper {
 				}
 			}
 		});
+	}
+	
+	/**
+	 * Asynchronously runs the who has access viewer on the given
+	 * entity.
+	 * 
+	 * @param entityId
+	 */
+	public static void viewWhoHasAccess(final EntityId entityId) {
+		ScheduledCommand doView = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				viewWhoHasAccessNow(entityId);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doView);
+	}
+	
+	/*
+	 * Synchronously runs the who has access viewer on the given
+	 * entity.
+	 */
+	private static void viewWhoHasAccessNow(final EntityId entityId) {
+		// Have we instantiated a who has access dialog yet?
+		if (null == m_whaDlg) {
+			// No!  Instantiate one now.
+			WhoHasAccessDlg.createAsync(new WhoHasAccessDlgClient() {			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(final WhoHasAccessDlg whaDlg) {
+					// ...and show it.
+					m_whaDlg = whaDlg;
+					ScheduledCommand doSubscribe = new ScheduledCommand() {
+						@Override
+						public void execute() {
+							showWhoHasAccessAsync(entityId);
+						}
+					};
+					Scheduler.get().scheduleDeferred(doSubscribe);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've instantiated a who has access dialog already!
+			// Simply show it.
+			showWhoHasAccessAsync(entityId);
+		}
 	}
 }
