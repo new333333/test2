@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.CommentsWidget;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -62,7 +63,9 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.UIObject;
@@ -193,7 +196,9 @@ public class ManageCommentsDlg extends DlgBox implements KeyDownHandler {
 		m_fp.add(m_commentsWidget);
 		
 		// ...create the widgets to add comments...
-		VibeFlowPanel addCommentPanel = new VibeFlowPanel();
+		VibeFlexTable addCommentPanel = new VibeFlexTable();
+		addCommentPanel.setCellPadding(0);
+		addCommentPanel.setCellSpacing(0);
 		addCommentPanel.addStyleName("vibe-manageCommentsDlg-addCommentPanel");
 		String avatarUrl = GwtClientHelper.getRequestInfo().getUserAvatarUrl();
 		if (!(GwtClientHelper.hasString(avatarUrl))) {
@@ -201,11 +206,16 @@ public class ManageCommentsDlg extends DlgBox implements KeyDownHandler {
 		}
 		Image avatarImg = GwtClientHelper.buildImage(avatarUrl);
 		avatarImg.addStyleName("vibe-manageCommentsDlg-addCommentAvatar");
-		addCommentPanel.add(avatarImg);
+		addCommentPanel.setWidget(0, 0, avatarImg);
 		m_addCommentTA = new TextArea();
 		m_addCommentTA.addStyleName("vibe-manageCommentsDlg-addCommentTextArea");
 		m_addCommentTA.addKeyDownHandler(this);
-		addCommentPanel.add(m_addCommentTA);
+		addCommentPanel.setWidget(0, 1, m_addCommentTA);
+		addCommentPanel.getRowFormatter().setVerticalAlign(0, HasVerticalAlignment.ALIGN_TOP);
+		InlineLabel hint = new InlineLabel(m_messages.manageCommentsDlgWhoHasAccess());
+		hint.addStyleName("vibe-manageCommentsDlg-addCommentHint");
+		addCommentPanel.setWidget(1, 1, hint);
+		addCommentPanel.getCellFormatter().addStyleName(1, 1, "vibe-manageCommentsDlg-addCommentHintPanel");
 		m_fp.add(addCommentPanel);
 		
 		// ...and return the Panel that holds the dialog's contents.

@@ -1747,6 +1747,8 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the "Edit graphic properties" dialog
 	String editGraphicPropertiesDlgSetImageSize();
 
+	// Strings used in the Manage Comments dialog.
+	String manageCommentsDlgWhoHasAccess();
 	
 	// Strings used in the Manage Groups dialog
 	String manageGroupsDlgAddGroupLabel();
