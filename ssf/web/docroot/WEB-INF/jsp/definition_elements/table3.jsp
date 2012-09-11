@@ -42,7 +42,10 @@
 		Iterator itItems = item.elementIterator("item");
 		if (itItems.hasNext()) {
 %>
-<table cellspacing="0" cellpadding="0" width="100%">
+<c:set var="tableWidth" value="100%"/>
+<c:if test="${!empty property_tableWidth}"><c:set var="tableWidth" value="${property_tableWidth}"/></c:if>
+<c:if test="${property_tableWidth == '-'}"><c:set var="tableWidth" value=""/></c:if>
+<table cellspacing="0" cellpadding="0" width="${tableWidth}">
 <%
 			while (itItems.hasNext()) {
 %>
