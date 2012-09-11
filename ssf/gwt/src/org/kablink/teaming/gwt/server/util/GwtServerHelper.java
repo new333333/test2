@@ -6697,10 +6697,11 @@ public class GwtServerHelper {
 			if (ws.isReserved()) {
 				// Yes!  Then we can determine its type based on its
 				// internal ID.
-				if (ws.getInternalId().equals(ObjectKeys.TOP_WORKSPACE_INTERNALID)) reply = WorkspaceType.TOP;
-				if (ws.getInternalId().equals(ObjectKeys.TEAM_ROOT_INTERNALID))     reply = WorkspaceType.TEAM_ROOT;
-				if (ws.getInternalId().equals(ObjectKeys.GLOBAL_ROOT_INTERNALID))   reply = WorkspaceType.GLOBAL_ROOT;
-				if (ws.getInternalId().equals(ObjectKeys.PROFILE_ROOT_INTERNALID))  reply = WorkspaceType.PROFILE_ROOT;
+				if      (ws.getInternalId().equals(ObjectKeys.TOP_WORKSPACE_INTERNALID))    reply = WorkspaceType.TOP;
+				else if (ws.getInternalId().equals(ObjectKeys.TEAM_ROOT_INTERNALID))        reply = WorkspaceType.TEAM_ROOT;
+				else if (ws.getInternalId().equals(ObjectKeys.GLOBAL_ROOT_INTERNALID))      reply = WorkspaceType.GLOBAL_ROOT;
+				else if (ws.getInternalId().equals(ObjectKeys.PROFILE_ROOT_INTERNALID))     reply = WorkspaceType.PROFILE_ROOT;
+				else if (ws.getInternalId().equals(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID)) reply = WorkspaceType.NET_FOLDERS_ROOT;
 			}
 			else {
 				// No, it isn't a reserved workspace!  Is it a user workspace?

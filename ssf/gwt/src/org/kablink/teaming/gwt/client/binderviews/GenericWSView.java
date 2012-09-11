@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -128,8 +129,10 @@ public class GenericWSView extends WorkspaceViewBase implements ToolPanelReady
 			} );
 		}
 
-		// Add a place for the accessories.
+		// If we're not in Filr mode...
+		if ( ! ( GwtClientHelper.isLicenseFilr() ) )
 		{
+			// ...add a place for the accessories.
 			m_accessoriesPanel = new VibeFlowPanel();
 			m_accessoriesPanel.addStyleName( "vibe-genericWSView_AccessoriesPanel" );
 			m_mainPanel.add( m_accessoriesPanel );
