@@ -1133,6 +1133,9 @@
 		</properties>
 		<options optionCaption="__profile_options">
 			<option_select path="//item[@category='userFormLayout']" optionCaption="__layout_options" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" >
+			  <exclude name="mashupCanvas"/>
+			</option_select>
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/conditional.jsp" />
@@ -3720,6 +3723,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__name" type="text"/>
+			<property name="tableWidth" caption="__table_width" type="text" default="100%"/>
 			<property name="width1" caption="__col1width" type="text"/>
 			<property name="width2" caption="__col2width" type="text"/>
 			<property name="align1" caption="__col1align" type="selectbox" default="left">
@@ -3771,6 +3775,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__name" type="text"/>
+			<property name="tableWidth" caption="__table_width" type="text" default="100%"/>
 			<property name="width1" caption="__col1width" type="text"/>
 			<property name="width2" caption="__col2width" type="text"/>
 		</properties>
@@ -3816,6 +3821,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__name" type="text"/>
+			<property name="tableWidth" caption="__table_width" type="text" default="100%"/>
 			<property name="width1" caption="__col1width" type="text"/>
 			<property name="width2" caption="__col2width" type="text"/>
 			<property name="width3" caption="__col3width" type="text"/>
@@ -3878,6 +3884,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__name" type="text"/>
+			<property name="tableWidth" caption="__table_width" type="text" default="100%"/>
 			<property name="width1" caption="__col1width" type="text"/>
 			<property name="width2" caption="__col2width" type="text"/>
 			<property name="width3" caption="__col3width" type="text"/>
