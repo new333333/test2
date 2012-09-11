@@ -1082,6 +1082,11 @@
 				<option name="profileStd" caption="__profile_entry_type_BC" />
 				<option name="profileGWT" caption="__profile_entry_type_GWT" />
 			</property>
+			<property name="family" caption="__family" type="familySelectboxUserProfile" 
+				  default="userProfile" value="userProfile">
+				<option name="userProfile" caption="__family_userProfile" />
+				<help>ihelp.other.definition_family</help>
+			</property>
 		</properties>		
 		<operations>
 			<operation name="addOption" caption="__add" />
@@ -1134,7 +1139,7 @@
 		</jsps>
 	</item>
 		
-	<item name="conditionalProfileViewItem" caption="__conditional" category="profileViewLayout" display="form">
+	<item name="conditionalProfileViewItem" caption="__conditional" category="profileViewLayout" display="view">
 		<properties>
 			<property name="license" caption="__licenseOptions" type="selectbox" multipleAllowed="true">
 				<option name="vibe" caption="__licenseVibe" />
@@ -1146,10 +1151,29 @@
 		    </property>
 		</properties>
 		<options optionCaption="__profile_options">
+			<option name="profileEntryView"/>
+			<option name="profileEntryStandardView" />
+			<option name="profileEntrySimpleView" />
+			<option name="profileEntryBusinessCard"/>
+			<option name="profileEntryMiniBusinessCard" />			
+			<option name="profileTitle" caption="__profile_title"/>
+			<option name="profileEntryDataItem" definitionType="7" />
+			<option name="profileEntrySimpleViewElements" caption="__profile_entry_simple_view_elements" 
+				definitionType="7" />
+			<option name="profileEntryBusinessCardElements" caption="__profile_entry_business_card_elements" 
+				definitionType="7" />
+			<option name="profileEntryBusinessCardElements" caption="__profile_entry_business_card_elements" 
+				definitionType="7" />
+			<option name="profileEntryMiniBusinessCardElements" caption="__profile_entry_mini_business_card_elements" 
+				definitionType="7" />
+			<option name="entryAttachments" caption="__entry_attachments" />
+			<option_select path="//item[@category='commonEntryViewData']" />
+			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 			<option_select path="//item[@category='userViewLayout']" optionCaption="__layout_options" />
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/conditional.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/conditional.jsp" />
 		</jsps>
 	</item>
 		
@@ -1958,6 +1982,7 @@
 		<options optionCaption="__layout_options">
 			<option_select path="//item[@category='userViewLayout']" />
 			<option_select path="//item[@name='entryAttachments']" />
+			<option_select definitionType="7" path="//item[@category='profileViewLayout']" optionCaption="__layout_options" />
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_GWT.jsp" />
@@ -1972,6 +1997,7 @@
 			<option name="profileEntrySimpleViewElements" caption="__profile_entry_simple_view_elements" 
 				definitionType="7" initial="true" />
 			<option name="profileEntryDataItem" definitionType="7" />
+			<option_select definitionType="7" path="//item[@category='profileViewLayout']" optionCaption="__layout_options" />
 		</options>
 		
 		<jsps>
@@ -1988,6 +2014,7 @@
 			<option name="profileEntryDataItem" definitionType="7" />
 			<option name="entryAttachments" caption="__entry_attachments" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
+			<option_select definitionType="7" path="//item[@category='profileViewLayout']" />
 		</options>
 		
 		<jsps>
@@ -2004,6 +2031,7 @@
 			<option name="profileEntryDataItem" definitionType="7" />
 			<option name="entryAttachments" caption="__entry_attachments" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
+			<option_select path="//item[@category='profileViewLayout']" />
 		</options>
 		
 		<jsps>
@@ -3669,6 +3697,7 @@
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/conditional.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/conditional.jsp" />
 		</jsps>
 		<notify velocity="conditional.vm"/>
 	</item>

@@ -75,6 +75,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.search.SearchUtils;
@@ -139,7 +140,7 @@ public class GwtProfileHelper {
 				
 				Element item = (Element)configElement.selectSingleNode("//definition/item[@name='profileEntryStandardView']");
 				if(item != null) {
-					List<Element> itemList = item.selectNodes("item");
+					List<Element> itemList = getProfileCategoriesFromDefinition(item);
 					
 					//for each section header create a profile Info object to hold the information 
 					for(Element catItem: itemList){
@@ -279,7 +280,7 @@ public class GwtProfileHelper {
 				
 				Element item = (Element)configElement.selectSingleNode("//definition/item[@name='profileEntrySimpleView']");
 				if(item != null) {
-					List<Element> itemList = item.selectNodes("item[@name]");
+					List<Element> itemList = getProfileCategoriesFromDefinition(item);
 					
 					//for each section header create a profile Info object to hold the information 
 					for(Element catItem: itemList){
@@ -358,7 +359,51 @@ public class GwtProfileHelper {
 		
 		return profile;
 	}
+
+	/**
+	 * This is a help method to look through the definition and return a list of the 
+	 * profile categories to display
+	 * 
+	 * @param item     Element 
+	 */
+	private static List<Element> getProfileCategoriesFromDefinition(Element item) {
+		List<Element> result = new ArrayList<Element>();
+		List<Element> itemList = item.selectNodes("item[@name]");
+		//Look through the definition to find the profile categories
+		for (Element defItem: itemList) {
+			String name = defItem.attributeValue("name", "");
+			if (name.equals("conditionalProfileViewItem")) {
+				//This is a conditional by license clause. See if the license matches
+				boolean licenseIsOk = false;
+				List licenses = defItem.selectNodes("./properties/property[@name='license']");
+		    	for (int i=0; i < licenses.size(); ++i) {
+		    		Element licenseEle = (Element)licenses.get(i);
+		    		String licenseType = licenseEle.attributeValue("value",  "");
+		    		if (licenseType.equals("vibe") && Utils.checkIfVibe()) {
+		    			licenseIsOk = true;
+		    		} else if (licenseType.equals("filr") && Utils.checkIfFilr() && !Utils.checkIfVibe()) {
+		    			licenseIsOk = true;
+		    		} else if (licenseType.equals("filrAndVibe") && Utils.checkIfFilrAndVibe()) {
+		    			licenseIsOk = true;
+		    		} else if (licenseType.equals("kablink") && Utils.checkIfKablink()) {
+		    			licenseIsOk = true;
+		    		}
+		    	}
+		    	if (licenseIsOk) {
+		    		//Recurse down this path
+		    		result.addAll(getProfileCategoriesFromDefinition(defItem));
+		    	}
+
+			} else {
+				//This is probably a profile category, add it to the list
+				// TODO really check if this is a category
+				result.add(defItem);
+			}
+		}
+		return result;
+	}
 	
+
 	/**
 	 * This is a help method to create the ProfileAttribute objects that are related to the User Attributes
 	 * and CustomAttributes defined on the user object.

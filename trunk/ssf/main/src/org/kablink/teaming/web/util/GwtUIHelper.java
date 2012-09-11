@@ -1323,8 +1323,8 @@ public class GwtUIHelper {
 		boolean isLicenseFilrAndVibe = Utils.checkIfFilrAndVibe();
 		model.put("isLicenseFilrAndVibe", Boolean.toString(isLicenseFilrAndVibe));
 		
-		// Put out the flag that tells us if we are running Vibe.
-		boolean isLicenseVibe = Utils.checkIfVibe();
+		// Put out the flag that tells us if we are running the Vibe UI (which also includes Kablink).
+		boolean isLicenseVibe = (Utils.checkIfVibe() || Utils.checkIfKablink());
 		model.put("isLicenseVibe", Boolean.toString(isLicenseVibe));
 		
 		// Put out the flag indicating if the user is a site

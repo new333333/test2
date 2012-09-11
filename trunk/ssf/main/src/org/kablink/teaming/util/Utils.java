@@ -667,6 +667,7 @@ public class Utils {
 	
 	/**
 	 * Check if this is a Vibe license
+	 * Note: This is vibe only, It does not include Kablink. Use checkIfKablink() if you need to.
 	 * 
 	 * @return
 	 */
@@ -678,13 +679,23 @@ public class Utils {
 			return lo.isVibe();
 		}
 		
-		// No ssf*.properties override!  Check the license.
-		if (!checkIfFilrAndVibe() && (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Vibe") || 
-				(LicenseChecker.validLicenseExists()))) {
+		// No ssf*.properties override!  Check the license. 
+		if (!checkIfFilrAndVibe() && LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Vibe")) {
 			return true;
 		} else {
 			return false;
 		}
+	}
+	
+	/**
+	 * Check if this is a Kablink (i.e., no license)
+	 * 
+	 * @return
+	 */
+	public static boolean checkIfKablink() {
+		//See if no product licenses exist (vibe or filr)
+		if (!checkIfVibe() && !checkIfFilr()) return true;
+		return false;
 	}
 	
 	/**

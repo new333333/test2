@@ -811,6 +811,15 @@ public class GwtClientHelper {
 	}
 
 	/**
+	 * Returns true if we're running in Kablink mode and false otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isLicenseKablink() {
+		return !(getLicenseType().isLicensed());
+	}
+
+	/**
 	 * Returns true if we're running in a mode with Vibe enabled and
 	 * false otherwise.
 	 * 
