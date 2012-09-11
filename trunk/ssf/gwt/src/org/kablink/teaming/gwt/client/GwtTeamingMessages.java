@@ -562,6 +562,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ModifyNetFolderDlg();
 	String codeSplitFailure_ModifyNetFolderRootDlg();
 	String codeSplitFailure_MultiErrorAlertDlg();
+	String codeSplitFailure_NetFoldersWSView();
 	String codeSplitFailure_PersonalWorkspacesView();
 	String codeSplitFailure_ProfileAttributeWidget();
 	String codeSplitFailure_ProfileEntryDlg();

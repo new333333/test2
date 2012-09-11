@@ -44,6 +44,7 @@ public enum WorkspaceType implements IsSerializable {
 	DISCUSSIONS,
 	GLOBAL_ROOT,
 	LANDING_PAGE,
+	NET_FOLDERS_ROOT,
 	PROFILE_ROOT,
 	PROJECT_MANAGEMENT,
 	TEAM,

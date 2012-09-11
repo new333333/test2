@@ -294,19 +294,19 @@
 
 
 /* Start:  GWT workspace view styles. */
-	.vibe-discussionWSView_AccessoriesPanel, .vibe-teamWSView_AccessoriesPanel, .vibe-genericWSView_AccessoriesPanel, .vibe-projectManagementWSView_AccessoriesPanel, .vibe-personalWorkspacesView_AccessoriesPanel
+	.vibe-discussionWSView_AccessoriesPanel, .vibe-teamWSView_AccessoriesPanel, .vibe-genericWSView_AccessoriesPanel, .vibe-projectManagementWSView_AccessoriesPanel, .vibe-personalWorkspacesView_AccessoriesPanel, .vibe-netFoldersWSView_AccessoriesPanel
 	{
 	}
 	
-	.vibe-discussionWSView_BreadCrumbPanel, .vibe-teamWSView_BreadCrumbPanel, .vibe-genericWSView_BreadCrumbPanel, .vibe-projectManagementWSView_BreadCrumbPanel
+	.vibe-discussionWSView_BreadCrumbPanel, .vibe-teamWSView_BreadCrumbPanel, .vibe-genericWSView_BreadCrumbPanel, .vibe-projectManagementWSView_BreadCrumbPanel, .vibe-netFoldersWSView_BreadCrumbPanel
 	{
 	}
 	
-	.vibe-discussionWSView_DescPanel, .vibe-teamWSView_DescPanel, .vibe-genericWSView_DescPanel, .vibe-homeWSView_DescPanel, .vibe-projectManagementWSView_DescPanel, .vibe-personalWorkspacesView_DescPanel
+	.vibe-discussionWSView_DescPanel, .vibe-teamWSView_DescPanel, .vibe-genericWSView_DescPanel, .vibe-homeWSView_DescPanel, .vibe-projectManagementWSView_DescPanel, .vibe-personalWorkspacesView_DescPanel, .vibe-netFoldersWSView_DescPanel
 	{
 	}
 
-	.vibe-discussionWSView_FooterPanel, .vibe-genericWSView_FooterPanel, .vibe-homeWSView_FooterPanel, .vibe-projectManagementWSView_FooterPanel, .vibe-personalWorkspacesView_FooterPanel
+	.vibe-discussionWSView_FooterPanel, .vibe-genericWSView_FooterPanel, .vibe-homeWSView_FooterPanel, .vibe-projectManagementWSView_FooterPanel, .vibe-personalWorkspacesView_FooterPanel, .vibe-netFoldersWSView_FooterPanel
 	{
 	}
 	
@@ -323,7 +323,7 @@
 	{
 	}
 	
-	.vibe-discussionWSView_MainPanel, .vibe-teamWSView_MainPanel, .vibe-genericWSView_MainPanel, .vibe-homeWSView_MainPanel, .vibe-projectManagementWSView_MainPanel, .vibe-personalWorkspacesView_MainPanel
+	.vibe-discussionWSView_MainPanel, .vibe-teamWSView_MainPanel, .vibe-genericWSView_MainPanel, .vibe-homeWSView_MainPanel, .vibe-projectManagementWSView_MainPanel, .vibe-personalWorkspacesView_MainPanel, .vibe-netFoldersWSView_MainPanel
 	{
 		overflow: auto;
 	}
