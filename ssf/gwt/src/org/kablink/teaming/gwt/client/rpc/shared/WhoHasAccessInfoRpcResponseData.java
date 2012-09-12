@@ -51,9 +51,10 @@ public class WhoHasAccessInfoRpcResponseData implements IsSerializable, VibeRpcR
 	 * access.
 	 */
 	public static class AccessInfo implements IsSerializable {
-		private Long	m_id;		//
-		private String	m_hover;	//
-		private String	m_name;		//
+		private Long	m_id;			//
+		private String	m_avatarUrl;	//
+		private String	m_hover;		//
+		private String	m_name;			//
 		
 		/**
 		 * Constructor method. 
@@ -71,24 +72,61 @@ public class WhoHasAccessInfoRpcResponseData implements IsSerializable, VibeRpcR
 		 * @param id
 		 * @param name
 		 * @param hover
+		 * @param avatarUrl
 		 */
-		public AccessInfo(Long id, String name, String hover) {
+		public AccessInfo(Long id, String name, String hover, String avatarUrl) {
 			// Initialize this object...
 			this();
 			
 			// ...and store the parameters.
-			setId(   id   );
-			setName( name );
-			setHover(hover);
+			setId(       id       );
+			setName(     name     );
+			setHover(    hover    );
+			setAvatarUrl(avatarUrl);
 		}
-		
-		public Long   getId()    {return m_id;   }
-		public String getHover() {return m_hover;}
-		public String getName()  {return m_name; }
-		
-		public void setId(   Long   id)    {m_id    = id;   }
-		public void setHover(String hover) {m_hover = hover;}
-		public void setName( String name)  {m_name  = name; }
+
+		/**
+		 * Constructor method.
+		 * 
+		 * @param id
+		 * @param name
+		 * @param hover
+		 */
+		public AccessInfo(Long id, String name, String hover) {
+			// Initialize this object.
+			this(id, name, hover, null);
+		}
+
+		/**
+		 * Constructor method.
+		 * 
+		 * @param id
+		 * @param name
+		 */
+		public AccessInfo(Long id, String name) {
+			// Initialize this object.
+			this(id, name, "", null);
+		}
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public Long   getId()        {return m_id;       }
+		public String getAvatarUrl() {return m_avatarUrl;}
+		public String getHover()     {return m_hover;    }
+		public String getName()      {return m_name;     }
+
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setId(       Long   id)        {m_id        = id;       }
+		public void setAvatarUrl(String avatarUrl) {m_avatarUrl = avatarUrl;} 
+		public void setHover(    String hover)     {m_hover     = hover;    }
+		public void setName(     String name)      {m_name      = name;     }
 	}
 	
 	/**

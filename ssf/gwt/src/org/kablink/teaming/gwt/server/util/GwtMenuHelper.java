@@ -121,8 +121,6 @@ import org.kablink.util.search.Constants;
  * @author drfoster@novell.com
  */
 public class GwtMenuHelper {
-	private final static boolean	SHOW_WHO_HAS_ACCESS_OPTION	= false;	// DRF:  false until I get it all working.
-	
 	protected static Log m_logger = LogFactory.getLog(GwtMenuHelper.class);
 
 	private final static String ABOUT					= "about";
@@ -1244,13 +1242,11 @@ public class GwtMenuHelper {
 	 * on the selected entity.
 	 */
 	private static void constructEntryViewWhoHasAccess(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request) {
-		if (SHOW_WHO_HAS_ACCESS_OPTION) {
-			// Add a who has access item.
-			ToolbarItem whoHasAccessTBI = new ToolbarItem("1_whoHasAccess");
-			markTBITitle(whoHasAccessTBI, "toolbar.menu.who_has_access");
-			markTBIEvent(whoHasAccessTBI, TeamingEvents.VIEW_WHO_HAS_ACCESS);
-			entryToolbar.addNestedItem(whoHasAccessTBI);
-		}
+		// Add a who has access item.
+		ToolbarItem whoHasAccessTBI = new ToolbarItem("1_whoHasAccess");
+		markTBITitle(whoHasAccessTBI, "toolbar.menu.who_has_access");
+		markTBIEvent(whoHasAccessTBI, TeamingEvents.VIEW_WHO_HAS_ACCESS);
+		entryToolbar.addNestedItem(whoHasAccessTBI);
 	}
 	
 	/*

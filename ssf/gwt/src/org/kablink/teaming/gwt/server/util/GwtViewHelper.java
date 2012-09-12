@@ -83,6 +83,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SeenMap;
@@ -231,6 +232,36 @@ public class GwtViewHelper {
 	private final static int COMPARE_GREATER	=   1;
 	private final static int COMPARE_LESS		= (-1);
 	
+	/*
+	 * Inner class used to compare two AccessInfo's.
+	 * 
+	 * Two AccessInfo's are sorted by their name.
+	 */
+	private static class AccessInfoComparator implements Comparator<AccessInfo> {
+		/**
+		 * Constructor method.
+		 */
+		public AccessInfoComparator() {
+			// Initialize the super class.
+			super();
+		}
+
+		/**
+		 * Compares two AccessInfo objects.
+		 * 
+		 * Implements the Comparator.compare() method.
+		 * 
+		 * @param ai1
+		 * @param ai2
+		 * 
+		 * @return
+		 */
+		@Override
+		public int compare(AccessInfo ai1, AccessInfo ai2) {
+			return MiscUtil.safeSColatedCompare(ai1.getName(), ai2.getName());
+		}
+	}
+
 	/*
 	 * Inner class used to compare two GwtPerShareInfo's.
 	 * 
@@ -4470,7 +4501,7 @@ public class GwtViewHelper {
 			WorkArea workArea;
 			if (entityId.isBinder()) {
 				// Yes!  We use it directly as the work are. 
-				workArea = bs.getBinderModule().getBinder(entityId.getEntityId());
+				workArea = bs.getBinderModule().getBinderWithoutAccessCheck(entityId.getEntityId());
 			}
 			
 			else {
@@ -4487,7 +4518,7 @@ public class GwtViewHelper {
 				// area, otherwise we use the containing binder.
 				if (fe.hasEntryAcl())
 				     workArea = fe;
-				else workArea = bs.getBinderModule().getBinder(entityId.getBinderId());
+				else workArea = bs.getBinderModule().getBinderWithoutAccessCheck(entityId.getBinderId());
 			}
 
 			// Get the access control information for the work are.
@@ -4497,24 +4528,147 @@ public class GwtViewHelper {
 			List users  = ((List) model.get(WebKeys.ACCESS_SORTED_USERS ));
 			
 			// If there any groups with access...
-			if ((null != groups) && (!(groups.isEmpty()))) {
+			if (MiscUtil.hasItems(groups)) {
 				// ...scan them...
 				for (Object gO:  groups) {
 					// ...and add an AccessInfo for each to the reply.
-					Group group = ((Group) gO); 
-					reply.addGroup(new AccessInfo(group.getId(), group.getTitle(), ""));
+					Group group = ((Group) gO);
+					reply.addGroup(new AccessInfo(group.getId(), group.getTitle()));
 				}
 			}
 			
 			// If there are any users with access...
-			if ((null != users) && (!(users.isEmpty()))) {
+			if (MiscUtil.hasItems(users)) {
 				// ...scan them...
 				for (Object uO:  users) {
 					// ...and add an AccessInfo for each to the reply.
 					User user = ((User) uO);
-					reply.addUser(new AccessInfo(user.getId(), user.getTitle(), ""));
+					reply.addUser(
+						new AccessInfo(
+							user.getId(),
+							user.getTitle(),
+							"",
+							GwtServerHelper.getUserAvatarUrl(
+								bs,
+								request,
+								user)));
 				}
 			}
+
+			// Has this entity been shared?
+			ShareItemSelectSpec	spec = new ShareItemSelectSpec();
+			spec.setSharedEntityIdentifier(GwtShareHelper.getEntityIdentifierFromEntityId(entityId));
+			List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
+			if (MiscUtil.hasItems(shareItems)) {
+				// Yes!  Scan the shares.
+				List<Long> shareGroupIds = new ArrayList<Long>();
+				List<Long> shareTeamIds  = new ArrayList<Long>();
+				List<Long> shareUserIds  = new ArrayList<Long>();
+				for (ShareItem si:  shareItems) {
+					// If this share is expired or obsolete...
+					if (si.isExpired() || (!(si.isLatest()))) {
+						// ...skip it.
+						continue;
+					}
+
+					// Add the recipient ID to the appropriate list.
+					Long recipientId = si.getRecipientId();
+					switch (si.getRecipientType()) {
+					case group:  shareGroupIds.add(recipientId); break;
+					case team:   shareTeamIds.add( recipientId); break;
+					case user:   shareUserIds.add( recipientId); break;
+					}
+				}
+
+				// Are there any users that the item was shared with?
+				if (!(shareUserIds.isEmpty())) {
+					// Yes!  Can we resolve them?
+					List shareUsers = ResolveIds.getPrincipals(shareUserIds, true);
+					if (MiscUtil.hasItems(shareUsers)) {
+						// Yes!  Scan them...
+						for (Object u:  shareUsers) {
+							if (u instanceof UserPrincipal) {
+								// ...and add an AccessInfo for each to
+								// ...the reply.
+								User shareUser = ((User) u);
+								reply.addUser(
+									new AccessInfo(
+										shareUser.getId(),
+										shareUser.getTitle(),
+										"",
+										GwtServerHelper.getUserAvatarUrl(
+											bs,
+											request,
+											shareUser)));
+							}
+						}
+					}
+				}
+				
+				// Are there any groups that the item was shared with?
+				if (!(shareGroupIds.isEmpty())) {
+					// Yes!  Can we resolve them?
+					List shareGroups = ResolveIds.getPrincipals(shareGroupIds, true);
+					if (MiscUtil.hasItems(shareGroups)) {
+						// Yes!  Scan them...
+						for (Object g:  shareGroups) {
+							if (g instanceof GroupPrincipal) {
+								// ...and add an AccessInfo for each to
+								// ...the reply.
+								Group shareGroup = ((Group) g);
+								reply.addGroup(new AccessInfo(shareGroup.getId(), shareGroup.getTitle()));
+							}
+						}
+					}
+				}
+				
+				// Are there any teams that the item was shared with?
+				if (!(shareTeamIds.isEmpty())) {
+					// Yes!  Scan them.
+					for (Long teamId:  shareTeamIds) {
+						// Does this team have any members?
+						Set<Long> teamMemberIds = GwtServerHelper.getTeamMemberIds(bs, teamId, false);
+						if (MiscUtil.hasItems(teamMemberIds)) {
+							// Yes!  Can we resolve them?
+							List sharePrincipals = ResolveIds.getPrincipals(teamMemberIds);
+							if (MiscUtil.hasItems(sharePrincipals)) {
+								// Yes!  Scan them...
+								for (Object p:  sharePrincipals) {
+									// ...and for any users...
+									if (p instanceof UserPrincipal) {
+										// ...and add an AccessInfo for
+										// ...each to the reply.
+										User shareUser = ((User) p);
+										reply.addUser(
+											new AccessInfo(
+												shareUser.getId(),
+												shareUser.getTitle(),
+												"",
+												GwtServerHelper.getUserAvatarUrl(
+													bs,
+													request,
+													shareUser)));
+									}
+									
+									// ...and for any groups...
+									else if (p instanceof GroupPrincipal) {
+										// ...and add an AccessInfo for
+										// ...each to the reply.
+										Group shareGroup = ((Group) p);
+										reply.addGroup(new AccessInfo(shareGroup.getId(), shareGroup.getTitle()));
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			// Sort the List<AccessInfo>'s in the object we're
+			// returning.
+			Comparator<AccessInfo> aiComparator = new AccessInfoComparator();
+			Collections.sort(reply.getGroups(), aiComparator);
+			Collections.sort(reply.getUsers(),  aiComparator);
 
 			// If we get here, reply refers to the
 			// WhoHasAccessInfoRpcResponseData of the entry types for

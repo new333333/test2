@@ -3929,8 +3929,16 @@ td.datePickerMonth {
 /* End:  Conformation dialog styles. */
 
 /* Start:  Who Has Access dialog styles. */
-	.vibe-whoHasAccessDlg_Content {margin: 20px 10px 10px 20px;}
-	.vibe-whoHasAccessDlg_Label   {}
+	.vibe-whoHasAccessDlg-content           {margin: 20px 10px 10px 20px;}
+	.vibe-whoHasAccessDlg-label             {}
+	.vibe-whoHasAccessDlg-readingPanel      {}
+	.vibe-whoHasAccessDlg-readingLabel      {vertical-align: top; margin-left: 5px;}
+	.vibe-whoHasAccessDlg-scrollPanel       {padding: 3px;}
+	.vibe-whoHasAccessDlg-scrollPanelCell   {border-style: solid solid solid; border-width: 1px; border-color: #D2D5D1; vertical-align: top;}
+	.vibe-whoHasAccessDlg-scrollPanelGroups {} 
+	.vibe-whoHasAccessDlg-scrollPanelHeader {white-space: nowrap; font-weight: bold;} 
+	.vibe-whoHasAccessDlg-scrollPanelLimit  {height: 150px;}
+	.vibe-whoHasAccessDlg-scrollPanelUsers  {} 
 /* End:  Who Has Access dialog styles. */
 
 

@@ -268,8 +268,10 @@ public class GwtShareHelper
 	
 	/**
 	 * Return an EntityIdentifier for the given EntityId
+	 * 
+	 * @param entityId
 	 */
-	private static EntityIdentifier getEntityIdentifierFromEntityId( EntityId entityId )
+	public static EntityIdentifier getEntityIdentifierFromEntityId( EntityId entityId )
 	{
 		EntityIdentifier entityIdentifier;
 		EntityType entityType;

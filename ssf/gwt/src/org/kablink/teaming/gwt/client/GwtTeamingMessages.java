@@ -811,7 +811,11 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuViewsWhatsNewInWorkspace();
 	String mainMenuViewsWhatsUnreadInFolder();
 	String mainMenuViewsWhatsUnreadInWorkspace();
+	String mainMenuWhoHasAccessDlgGroupsWithAccess();
 	String mainMenuWhoHasAccessDlgHeader();
+	String mainMenuWhoHasAccessDlgNone();
+	String mainMenuWhoHasAccessDlgReading();
+	String mainMenuWhoHasAccessDlgUsersWithAccess();
 	
 	// Strings used by the 'Add New Folder' dialog.
 	String addNewFolderDlgError_AddFailed();
