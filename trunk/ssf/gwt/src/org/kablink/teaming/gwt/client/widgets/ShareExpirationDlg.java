@@ -186,6 +186,7 @@ public class ShareExpirationDlg extends DlgBox
 			DateTimeFormat dateFormat;
 			ImageResource imgResource;
 			Image img;
+			long offset;
 
 			m_expiresOnPanel = new VibeFlowPanel();
 			m_expiresOnPanel.addStyleName( "shareExpirationDlg_expiresOnPanel" );
@@ -197,6 +198,8 @@ public class ShareExpirationDlg extends DlgBox
 			
 			dateFormat = DateTimeFormat.getFormat( PredefinedFormat.DATE_SHORT );
 			m_dateBox = new TZDateBox( new DatePicker(), (-1), new DateBox.DefaultFormat( dateFormat ) );
+			offset = GwtTeaming.m_requestInfo.getTimeZoneOffsetHour() * 60 * 60 * 1000;
+			m_dateBox.setTZOffset( offset );
 			m_dateBox.getDateBox().getTextBox().setVisibleLength( 8 );
 			table.setWidget( 0, 0, m_dateBox );
 			
@@ -377,6 +380,9 @@ public class ShareExpirationDlg extends DlgBox
 		{
 			// Have the share expire at 23:59:59 on the selected day
 			value += (MILLISEC_IN_A_DAY - 1000);
+
+			// Convert the time to GMT
+			value += (GwtTeaming.m_requestInfo.getTimeZoneOffsetHour() * 60 * 60 * 1000);
 		}
 		
 		return value;
