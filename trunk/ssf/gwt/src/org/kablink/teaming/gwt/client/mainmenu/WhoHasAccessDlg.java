@@ -69,7 +69,6 @@ import com.google.gwt.user.client.ui.Widget;
  *  
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
 public class WhoHasAccessDlg extends DlgBox {
 	private GwtTeamingMainMenuImageBundle	m_images;			// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;			// Access to Vibe's messages.
@@ -140,7 +139,7 @@ public class WhoHasAccessDlg extends DlgBox {
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
-			m_messages.mainMenuWhoHasAccessDlgHeader(),
+			"",								// Dialog caption set when the dialog runs.
 			getSimpleSuccessfulHandler(),	// The dialog's EditSuccessfulHandler.
 			getSimpleCanceledHandler(),		// The dialog's EditCanceledHandler.
 			null);							// Create callback data.  Unused. 
@@ -211,6 +210,17 @@ public class WhoHasAccessDlg extends DlgBox {
 	}
 
 	/*
+	 * Returns the URL to the image to display for the avatar.
+	 */
+	private String getAvatarUrl(AccessInfo ai, boolean isUser) {
+		String reply = ai.getAvatarUrl();
+		if (!(GwtClientHelper.hasString(reply))) {
+			reply = (isUser ? m_images.userPhoto().getSafeUri().asString() : m_images.spacer1px().getSafeUri().asString());
+		}
+		return reply;
+	}
+	
+	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
@@ -267,6 +277,10 @@ public class WhoHasAccessDlg extends DlgBox {
 	 * WhoHasAccessInfoRpcResponseData object.
 	 */
 	private void populateFromWhoHasAccessInfoNow() {
+		// Set the dialog's caption based on the title of the entity
+		// we're showing who has access to.
+		setCaption(m_messages.mainMenuWhoHasAccessDlgHeader(m_whoHasAccessInfo.getEntityTitle()));
+		
 		// Clear the current content of the dialog...
 		m_ft.removeAllRows();
 
@@ -281,7 +295,7 @@ public class WhoHasAccessDlg extends DlgBox {
 		if (scroll) {
 			usersPanel.addStyleName("vibe-whoHasAccessDlg-scrollPanelLimit");
 		}
-		populateScrollPanel(usersPanel, userList);
+		populateScrollPanel(usersPanel, userList, true);
 		
 		// ...create the group list...
 		ScrollPanel groupsPanel = new ScrollPanel();
@@ -289,7 +303,7 @@ public class WhoHasAccessDlg extends DlgBox {
 		if (scroll) {
 			groupsPanel.addStyleName("vibe-whoHasAccessDlg-scrollPanelLimit");
 		}
-		populateScrollPanel(groupsPanel, groupList);
+		populateScrollPanel(groupsPanel, groupList, false);
 		
 		// ...and tie it all together.
 		populateTableColumn(0, m_messages.mainMenuWhoHasAccessDlgUsersWithAccess(),  usersPanel );
@@ -304,17 +318,41 @@ public class WhoHasAccessDlg extends DlgBox {
 	 * Populates a ScrollPanel with the information from a
 	 * List<AccessInfo>.
 	 */
-	private void populateScrollPanel(ScrollPanel scrollPanel, List<AccessInfo> accessList) {
-		if ((null == accessList) || accessList.isEmpty()) {
-			scrollPanel.add(new DlgLabel(m_messages.mainMenuWhoHasAccessDlgNone()));
+	private void populateScrollPanel(ScrollPanel scrollPanel, List<AccessInfo> accessList, boolean isUserList) {
+		// Are there any AccessInfo's to populate the ScrollPanel with?
+		if (GwtClientHelper.hasItems(accessList)) {
+			// Yes!  Create a panel to hold them...
+			VerticalPanel vp = new VibeVerticalPanel(null, null);
+			scrollPanel.add(vp);
+
+			// ...scan them...
+			boolean showAvatars = AccessInfo.listContainsAvatars(accessList);
+			for (AccessInfo ai:  accessList) {
+				// ...and add items for them to the ScrollPanel.
+				DlgLabel aiLabel = new DlgLabel(ai.getName(), "gwtUI_nowrap", ai.getHover());
+				Widget   aiWidget;
+				if (showAvatars) {
+					FlowPanel fp = new VibeFlowPanel();
+					fp.addStyleName("vibe-whoHasAccessDlg-scrollPanelWithImg");
+					Image aiAvatar = GwtClientHelper.buildImage(getAvatarUrl(ai, isUserList));
+					aiAvatar.addStyleName("vibe-whoHasAccessDlg-scrollPanelImg");
+					fp.add(aiAvatar);
+					fp.add(aiLabel);
+					aiWidget = fp;
+				}
+				
+				else {
+					aiWidget = aiLabel;
+				}
+				
+				vp.add(aiWidget);
+			}
 		}
 		
 		else {
-			VerticalPanel vp = new VibeVerticalPanel(null, null);
-			scrollPanel.add(vp);
-			for (AccessInfo ai:  accessList) {
-				vp.add(new DlgLabel(ai.getName(), null, ai.getHover()));	// null -> No additional styles.
-			}
+			// No, there aren't any AccessInfo's!  Added a message to
+			// the ScrollPanel saying as much.
+			scrollPanel.add(new DlgLabel(m_messages.mainMenuWhoHasAccessDlgNone()));
 		}
 	}
 

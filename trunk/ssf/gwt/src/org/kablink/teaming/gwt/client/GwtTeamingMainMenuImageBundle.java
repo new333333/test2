@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client;
 
 import com.google.gwt.resources.client.ClientBundle;
@@ -142,5 +141,9 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/delete_16.gif")
-	public ImageResource tagDelete();	
+	public ImageResource tagDelete();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/UserPhoto.png")
+	public ImageResource userPhoto();
 }

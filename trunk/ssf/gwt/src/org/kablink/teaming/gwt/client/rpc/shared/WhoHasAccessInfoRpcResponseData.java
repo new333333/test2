@@ -43,8 +43,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class WhoHasAccessInfoRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private List<AccessInfo>	m_groups;	//
-	private List<AccessInfo>	m_users;	//
+	private List<AccessInfo>	m_groups;		//
+	private List<AccessInfo>	m_users;		//
+	private String				m_entityTitle;	//
 
 	/**
 	 * Inner class used to track information about an entity that has
@@ -127,6 +128,49 @@ public class WhoHasAccessInfoRpcResponseData implements IsSerializable, VibeRpcR
 		public void setAvatarUrl(String avatarUrl) {m_avatarUrl = avatarUrl;} 
 		public void setHover(    String hover)     {m_hover     = hover;    }
 		public void setName(     String name)      {m_name      = name;     }
+		
+		/**
+		 * Returns true if an AccessInfo is in a List<AccessInfo>, based on
+		 * its ID and false otherwise.
+		 * 
+		 * @param accessList
+		 * @param access
+		 * 
+		 * @return
+		 */
+		public static boolean isAccessInList(List<AccessInfo> accessList, AccessInfo access) {
+			if ((null == accessList) || accessList.isEmpty() || (null == access)) {
+				return false;
+			}
+			
+			for (AccessInfo ai:  accessList) {
+				if (ai.getId().equals(access.getId())) {
+					return true;
+				}
+			}
+			
+			return false;
+		}
+
+		/**
+		 * Returns true if any of the AccessInfo's in a List<AccessInfo>
+		 * reference an avatar and false otherwise.
+		 * 
+		 * @param accessList
+		 * 
+		 * @return
+		 */
+		public static boolean listContainsAvatars(List<AccessInfo> accessList) {
+			if ((null != accessList) && (!(accessList.isEmpty()))) {
+				for (AccessInfo ai:  accessList) {
+					String avatarUrl = ai.getAvatarUrl();
+					if ((null != avatarUrl) && (0 < avatarUrl.length())) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 	}
 	
 	/**
@@ -140,51 +184,43 @@ public class WhoHasAccessInfoRpcResponseData implements IsSerializable, VibeRpcR
 	}
 	
 	/**
+	 * Constructor method. 
+	 * 
+	 * @param entityTitle
+	 */
+	public WhoHasAccessInfoRpcResponseData(String entityTitle) {
+		// Initialize the this object...
+		this();
+		
+		// ...and store the parameter.
+		setEntityTitle(entityTitle);
+	}
+	
+	/**
 	 * List add'er methods.
 	 * 
 	 * @param
 	 */
-	public void addGroup(AccessInfo group) {validateGroupList(); if (!(isAccessInList(m_groups, group))) m_groups.add(group);}
-	public void addUser( AccessInfo user)  {validateUserList();  if (!(isAccessInList(m_users,  user ))) m_users.add( user );}
+	public void addGroup(AccessInfo group) {validateGroupList(); if (!(AccessInfo.isAccessInList(m_groups, group))) m_groups.add(group);}
+	public void addUser( AccessInfo user)  {validateUserList();  if (!(AccessInfo.isAccessInList(m_users,  user ))) m_users.add( user );}
 	
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public List<AccessInfo> getGroups() {validateGroupList(); return m_groups;}
-	public List<AccessInfo> getUsers()  {validateUserList();  return m_users; }
+	public List<AccessInfo> getGroups()      {validateGroupList(); return m_groups;     }
+	public List<AccessInfo> getUsers()       {validateUserList();  return m_users;      }
+	public String           getEntityTitle() {                     return m_entityTitle;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setGroupList(List<AccessInfo> groups) {m_groups = groups;}
-	public void setUserList( List<AccessInfo> users)  {m_users  = users; }
-
-	/**
-	 * Returns true if an AccessInfo is in a List<AccessInfo>, based on
-	 * its ID and false otherwise.
-	 * 
-	 * @param accessList
-	 * @param access
-	 * 
-	 * @return
-	 */
-	public static boolean isAccessInList(List<AccessInfo> accessList, AccessInfo access) {
-		if ((null == accessList) || accessList.isEmpty() || (null == access)) {
-			return false;
-		}
-		
-		for (AccessInfo ai:  accessList) {
-			if (ai.getId().equals(access.getId())) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
+	public void setGroupList(List<AccessInfo> groups) {m_groups      = groups;     }
+	public void setUserList( List<AccessInfo> users)  {m_users       = users;      }
+	public void setEntityTitle(String entityTitle)    {m_entityTitle = entityTitle;}
 
 	/*
 	 * List validation.  Used to guard against null pointer references

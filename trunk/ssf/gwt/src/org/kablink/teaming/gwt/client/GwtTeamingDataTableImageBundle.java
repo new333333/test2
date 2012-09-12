@@ -124,6 +124,6 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource unread();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/UserPhoto.png")
+	@Source("org/kablink/teaming/gwt/public/images/UserPhoto.png")
 	public ImageResource userPhoto();
 }
