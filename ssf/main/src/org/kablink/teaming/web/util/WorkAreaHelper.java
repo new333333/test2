@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,7 +41,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -54,11 +53,9 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.security.function.Condition;
@@ -72,11 +69,26 @@ import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings("unchecked")
 public class WorkAreaHelper {
 	public static void buildAccessControlTableBeans(AllModulesInjected bs, RenderRequest request, RenderResponse response, 
 			WorkArea wArea, List functions, List membership, Map model, boolean ignoreFormData) {
+		buildAccessControlTableBeansImpl(bs, request.getParameterMap(), wArea, functions, membership, model, ignoreFormData);
+	}
+	
+	public static void buildAccessControlTableBeans(AllModulesInjected bs,
+			WorkArea wArea, List functions, List membership, Map model) {
+		buildAccessControlTableBeansImpl(bs, new HashMap(), wArea, functions, membership, model, true);
+	}
+	
+	private static void buildAccessControlTableBeansImpl(AllModulesInjected bs, Map formData, 
+			WorkArea wArea, List functions, List membership, Map model, boolean ignoreFormData) {
 		User user = RequestContextHolder.getRequestContext().getUser();
-		Map formData = request.getParameterMap();
 		boolean roleTypeEntry = false;
 		if (wArea instanceof Entry) roleTypeEntry = true;
 		boolean roleTypeZone = false;
@@ -464,6 +476,7 @@ public class WorkAreaHelper {
 	public static void buildRoleConditionBeans(AllModulesInjected bs, Map model) {
 		List<Condition> conditions = bs.getAdminModule().getFunctionConditions();
 		model.put(WebKeys.FUNCTION_CONDITIONS, conditions);
+		@SuppressWarnings("unused")
 		Binder topBinder = bs.getWorkspaceModule().getTopWorkspace();
 	}
 		

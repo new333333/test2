@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -77,15 +77,15 @@ import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WorkAreaHelper;
 import org.springframework.web.portlet.ModelAndView;
 
-
 /**
  * This controller/jsp is used by administration/ConfigureAccessController
  * Keep in sync
+ * 
  * @author Peter Hurley
- *
  */
 @SuppressWarnings({"unchecked", "unused"})
 public class AccessControlController extends AbstractBinderController {
+	@Override
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -173,6 +173,7 @@ public class AccessControlController extends AbstractBinderController {
 			
 		}
 	}
+	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -309,6 +310,12 @@ public class AccessControlController extends AbstractBinderController {
 	}
 	//used by ajax controller
 	public static void setupAccess(AllModulesInjected bs, RenderRequest request, RenderResponse response, WorkArea wArea, Map model) {
+		setupAccessImpl(bs, request, response, wArea, model);
+	}
+	public static void setupAccess(AllModulesInjected bs, WorkArea wArea, Map model) {
+		setupAccessImpl(bs, null, null, wArea, model);
+	}
+	private static void setupAccessImpl(AllModulesInjected bs, RenderRequest request, RenderResponse response, WorkArea wArea, Map model) {
 		String scope = ObjectKeys.ROLE_TYPE_BINDER;
 		List<Function> extraFunctions = new ArrayList<Function>();
 		if (wArea instanceof ZoneConfig) scope = ObjectKeys.ROLE_TYPE_ZONE;
@@ -388,8 +395,9 @@ public class AccessControlController extends AbstractBinderController {
 		} else {
 			membership = bs.getAdminModule().getWorkAreaFunctionMemberships(wArea);
 		}
-		WorkAreaHelper.buildAccessControlTableBeans(bs, request, response, wArea, functions, 
-				membership, model, false);
+		if (null == request)
+			 WorkAreaHelper.buildAccessControlTableBeans(bs,                    wArea, functions, membership, model       );
+		else WorkAreaHelper.buildAccessControlTableBeans(bs, request, response, wArea, functions, membership, model, false);
 
 		if (!wArea.isFunctionMembershipInherited()) {
 			WorkArea parentArea = wArea.getParentWorkArea();
@@ -401,8 +409,9 @@ public class AccessControlController extends AbstractBinderController {
 					parentMembership = bs.getAdminModule().getWorkAreaFunctionMemberships(parentArea);
 				}
 				Map modelParent = new HashMap();
-				WorkAreaHelper.buildAccessControlTableBeans(bs, request, response, parentArea, 
-						functions, parentMembership, modelParent, true);
+				if (null == request)
+				     WorkAreaHelper.buildAccessControlTableBeans(bs,                    parentArea, functions, parentMembership, modelParent      );
+				else WorkAreaHelper.buildAccessControlTableBeans(bs, request, response, parentArea, functions, parentMembership, modelParent, true);
 				model.put(WebKeys.ACCESS_PARENT, modelParent);
 				WorkAreaHelper.mergeAccessControlTableBeans(model);
 			}
