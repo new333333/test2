@@ -59,6 +59,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
@@ -72,6 +73,8 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationT
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
+import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
@@ -358,27 +361,22 @@ public class GwtShareHelper
 		EntityId entityId )
 	{
 		AccessRights accessRights;
-		AccessControlManager accessControlManager;
-		WorkArea workArea;
-		boolean access;
-		User currentUser;
 		
 		accessRights = AccessRights.VIEWER;
-		currentUser = GwtServerHelper.getCurrentUser();
-		accessControlManager = AccessUtils.getAccessControlManager();
 
 		if ( entityId.isBinder() )
 		{
-			workArea = ami.getBinderModule().getBinder( entityId.getBinderId() );
-		}
-		else
-		{
-			workArea = ami.getFolderModule().getEntry( null, entityId.getEntityId() );
-		}
+			boolean access;
+			WorkArea workArea;
+			AccessControlManager accessControlManager;
+			User currentUser;
 
+			accessControlManager = AccessUtils.getAccessControlManager();
+			currentUser = GwtServerHelper.getCurrentUser();
 
-		// See if the user has "editor" rights
-		{
+			workArea = ami.getBinderModule().getBinder( entityId.getEntityId() );
+
+			// See if the user has editor rights
 			access = true;
 			for ( WorkAreaOperation nextOperation : ShareItem.Role.EDITOR.getWorkAreaOperations() )
 			{
@@ -393,11 +391,7 @@ public class GwtShareHelper
 			{
 				accessRights = AccessRights.EDITOR;
 			}
-		}
-		
-		// Are we working with a binder?
-		if ( entityId.isBinder() )
-		{
+
 			// Does the user have "contributor" rights?
 			access = true;
 			for ( WorkAreaOperation nextOperation : ShareItem.Role.CONTRIBUTOR.getWorkAreaOperations() )
@@ -412,6 +406,22 @@ public class GwtShareHelper
 			if ( access )
 			{
 				accessRights = AccessRights.CONTRIBUTOR;
+			}
+		}
+		else
+		{
+			FolderModule folderModule;
+			FolderEntry folderEntry;
+			
+			folderModule = ami.getFolderModule();
+			folderEntry = ami.getFolderModule().getEntry( null, entityId.getEntityId() );
+			
+			// Does the user have "editor" rights?
+			if ( folderModule.testAccess( folderEntry, FolderOperation.readEntry ) &&
+				 folderModule.testAccess( folderEntry, FolderOperation.modifyEntry ) && 
+				 folderModule.testAccess( folderEntry, FolderOperation.addReply ) )
+			{
+				accessRights = AccessRights.EDITOR;
 			}
 		}
 /**
