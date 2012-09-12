@@ -35,6 +35,9 @@ package org.kablink.teaming.gwt.client.mainmenu;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.GetWhoHasAccessCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.rpc.shared.WhoHasAccessInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -44,6 +47,7 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
@@ -56,10 +60,11 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 @SuppressWarnings("unused")
 public class WhoHasAccessDlg extends DlgBox {
-	private GwtTeamingMainMenuImageBundle	m_images;		// Access to Vibe's images.
-	private GwtTeamingMessages				m_messages;		// Access to Vibe's messages.
-	private EntityId						m_entityId;		// EntityId of the entity whose access is being viewed.
-	private VerticalPanel					m_vp;			//
+	private GwtTeamingMainMenuImageBundle	m_images;			// Access to Vibe's images.
+	private GwtTeamingMessages				m_messages;			// Access to Vibe's messages.
+	private EntityId						m_entityId;			// EntityId of the entity whose access is being viewed.
+	private VerticalPanel					m_vp;				//
+	private WhoHasAccessInfoRpcResponseData	m_whoHasAccessInfo;	//
 
 	/*
 	 * Inner class that wraps items displayed in the dialog's content.
@@ -172,8 +177,23 @@ public class WhoHasAccessDlg extends DlgBox {
 	 * Synchronously populates the contents of the dialog.
 	 */
 	private void populateDlgNow() {
-//!		...this needs to be implemented...
-		populateFromWhoHasAccessInfoAsync();
+		GetWhoHasAccessCmd gwhaCmd = new GetWhoHasAccessCmd(m_entityId);
+		GwtClientHelper.executeCommand(gwhaCmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetWhoHasAccess());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Extract the who has access information from the
+				// response data and use it to populate the dialog.
+				m_whoHasAccessInfo = ((WhoHasAccessInfoRpcResponseData) response.getResponseData());
+				populateFromWhoHasAccessInfoAsync();
+			}
+		});
 	}
 
 	/*

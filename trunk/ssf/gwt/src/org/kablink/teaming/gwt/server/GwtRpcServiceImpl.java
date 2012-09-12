@@ -1826,6 +1826,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case GET_WHO_HAS_ACCESS:
+		{
+			GetWhoHasAccessCmd gwhaCmd = ((GetWhoHasAccessCmd) cmd);
+			WhoHasAccessInfoRpcResponseData result = GwtViewHelper.getWhoHasAccess( this, getRequest( ri ), gwhaCmd.getEntityId() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_WORKSPACE_CONTRIBUTOR_IDS:
 		{
 			GetWorkspaceContributorIdsCmd gwciCmd;

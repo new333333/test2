@@ -82,6 +82,7 @@ import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SeenMap;
@@ -114,6 +115,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
+import org.kablink.teaming.gwt.client.rpc.shared.WhoHasAccessInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.WhoHasAccessInfoRpcResponseData.AccessInfo;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.gwt.client.util.BinderFilter;
@@ -152,6 +155,7 @@ import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
+import org.kablink.teaming.portlet.binder.AccessControlController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.RenderRequestImpl;
 import org.kablink.teaming.portletadapter.portlet.RenderResponseImpl;
@@ -159,6 +163,7 @@ import org.kablink.teaming.portletadapter.support.AdaptedPortlets;
 import org.kablink.teaming.portletadapter.support.KeyNames;
 import org.kablink.teaming.portletadapter.support.PortletInfo;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.runwith.RunWithCallback;
 import org.kablink.teaming.security.runwith.RunWithTemplate;
@@ -4441,6 +4446,92 @@ public class GwtViewHelper {
 		return url.toString();
 	}
 
+	/**
+	 * Returns a WhoHasAccessInfoRcpResponseData object containing the
+	 * names of the users, groups and teams that have access to an
+	 * entity.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param entityId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	@SuppressWarnings("unchecked")
+	public static WhoHasAccessInfoRpcResponseData getWhoHasAccess(AllModulesInjected bs, HttpServletRequest request, EntityId entityId) throws GwtTeamingException {
+		try {
+			// Allocate an WhoHasAccessInfoRpcResponseData to track the entry
+			// types for the requested binders.
+			WhoHasAccessInfoRpcResponseData reply = new WhoHasAccessInfoRpcResponseData();
+
+			// Is the entity a binder? 
+			WorkArea workArea;
+			if (entityId.isBinder()) {
+				// Yes!  We use it directly as the work are. 
+				workArea = bs.getBinderModule().getBinder(entityId.getEntityId());
+			}
+			
+			else {
+				// No, the entity isn't a binder, it must be a folder
+				// entry!  Access the top entry in the chain (in case
+				// this is a comment, ...)
+				FolderEntry	fe    = bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
+				FolderEntry	feTop = fe.getTopEntry();
+				if (null != feTop) {
+					fe = feTop;
+				}
+				
+				// If the entry has its own ACLs, we use it as the work
+				// area, otherwise we use the containing binder.
+				if (fe.hasEntryAcl())
+				     workArea = fe;
+				else workArea = bs.getBinderModule().getBinder(entityId.getBinderId());
+			}
+
+			// Get the access control information for the work are.
+			Map model = new HashMap();
+			AccessControlController.setupAccess(bs, workArea, model);
+			List groups = ((List) model.get(WebKeys.ACCESS_SORTED_GROUPS));
+			List users  = ((List) model.get(WebKeys.ACCESS_SORTED_USERS ));
+			
+			// If there any groups with access...
+			if ((null != groups) && (!(groups.isEmpty()))) {
+				// ...scan them...
+				for (Object gO:  groups) {
+					// ...and add an AccessInfo for each to the reply.
+					Group group = ((Group) gO); 
+					reply.addGroup(new AccessInfo(group.getId(), group.getTitle(), ""));
+				}
+			}
+			
+			// If there are any users with access...
+			if ((null != users) && (!(users.isEmpty()))) {
+				// ...scan them...
+				for (Object uO:  users) {
+					// ...and add an AccessInfo for each to the reply.
+					User user = ((User) uO);
+					reply.addUser(new AccessInfo(user.getId(), user.getTitle(), ""));
+				}
+			}
+
+			// If we get here, reply refers to the
+			// WhoHasAccessInfoRpcResponseData of the entry types for
+			// the requested binders.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getWhoHasAccess( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
 	/*
 	 * Initializes a ViewInfo based on a binder ID.
 	 * 
