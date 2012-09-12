@@ -1056,7 +1056,9 @@ public class ShareThisDlg extends DlgBox
 						caught,
 						GwtTeaming.getMessages().rpcFailure_ShareEntry() );
 					
-					hide();
+					// Enable the Ok button.
+					hideStatusMsg();
+					setOkEnabled( true );
 				}// end onFailure()
 
 				@Override
@@ -1111,6 +1113,10 @@ public class ShareThisDlg extends DlgBox
 								// Yes
 								// Make the error panel visible.
 								showErrors();
+
+								// Enable the Ok button.
+								hideStatusMsg();
+								setOkEnabled( true );
 							}
 							else
 							{
@@ -1126,6 +1132,10 @@ public class ShareThisDlg extends DlgBox
 				}// end onSuccess()				
 			};
 		}
+
+		// Disable the Ok button.
+		showStatusMsg( GwtTeaming.getMessages().shareDlg_savingShareInfo() );
+		setOkEnabled( false );
 		
 		sharingData = new GwtSharingInfo();
 		sharingData.setEntityNamesMap( m_sharingInfo.getEntityNamesMap() );
@@ -1518,6 +1528,10 @@ public class ShareThisDlg extends DlgBox
 		// depending on how many entities we are sharing.
 		setColumnHeaders();
 		
+		// Enable the Ok button.
+		hideStatusMsg();
+		setOkEnabled( true );
+
 		if ( m_findCtrl != null )
 		{
 			m_findCtrl.setInitialSearchString( "" );

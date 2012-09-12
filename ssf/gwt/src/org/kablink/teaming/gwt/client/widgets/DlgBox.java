@@ -48,6 +48,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -77,7 +78,9 @@ public abstract class DlgBox extends PopupPanel
 	private FlowPanel				m_captionImagePanel;		//
 	private FlowPanel 				m_errorPanel;				//
 	private Panel 					m_contentPanel;				//
-	private FlowPanel 				m_footerPanel;				//
+	private FlowPanel				m_footerPanel;				//
+	private InlineLabel 			m_statusLabel;
+	private Image					m_statusImg;
 	private int 					m_id;						//
     	
 	protected static int			m_numDlgsVisible = 0;		// Number of dialogs that are currently visible.
@@ -304,6 +307,22 @@ public abstract class DlgBox extends PopupPanel
 			m_footerPanel.addStyleName( "displayNone" );
 		}
 		
+		// Add a panel that will display a status message
+		{
+			ImageResource imgResource;
+			
+			imgResource = GwtTeaming.getImageBundle().spinner16();
+			m_statusImg = new Image( imgResource );
+			m_statusImg.getElement().setAttribute( "align", "absmiddle" );
+			m_statusImg.setVisible( false );
+			m_footerPanel.add( m_statusImg );
+
+			m_statusLabel = new InlineLabel();
+			m_statusLabel.addStyleName( "dlgBox_statusMsg" );
+			m_statusLabel.setVisible( false );
+			m_footerPanel.add( m_statusLabel );
+		}
+
 		// Create the appropriate buttons based on the value of m_dlgBtnMode.
 		createFooterButtons( m_dlgBtnMode );
 		
@@ -555,6 +574,15 @@ public abstract class DlgBox extends PopupPanel
 	}
 	
 	/**
+	 * 
+	 */
+	public void hideStatusMsg()
+	{
+		m_statusLabel.setVisible( false );
+		m_statusImg.setVisible( false );
+	}
+	
+	/**
 	 * Initialize the edit/cancel handlers.
 	 */
 	public void initHandlers(
@@ -790,6 +818,17 @@ public abstract class DlgBox extends PopupPanel
 			}
 		};
 		setPopupPositionAndShow( posCallback );
+	}
+	
+	/**
+	 * 
+	 */
+	public void showStatusMsg( String statusMsg )
+	{
+		m_statusLabel.setText( statusMsg );
+		m_statusLabel.setTitle( statusMsg );
+		m_statusLabel.setVisible( true );
+		m_statusImg.setVisible( true );
 	}
 	
 	

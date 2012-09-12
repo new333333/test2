@@ -1052,6 +1052,13 @@ body, table td, select
 	cursor: pointer;
 }
 
+.dlgBox_statusMsg
+{
+	color: red;
+	font-style: italic;
+}
+
+
 .dlgInstructions
 {
 	font-family: Arial,sans-serif;

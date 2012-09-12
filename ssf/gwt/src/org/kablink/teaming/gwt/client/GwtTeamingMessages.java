@@ -1168,6 +1168,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_noteLabel();
 	String shareDlg_notifyLabel();
 	String shareDlg_rightsLabel();
+	String shareDlg_savingShareInfo();
 	String shareDlg_shareLabel();
 	String shareDlg_sharingLabel();
 	String shareDlg_addExternalUserTitle();
