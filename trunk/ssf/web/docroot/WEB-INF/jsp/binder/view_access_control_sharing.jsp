@@ -38,6 +38,9 @@
 <%@ page import="org.kablink.teaming.security.function.Function" %>
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.HashSet" %>
+<%@ page import="java.util.List" %>
+<%@ page import="org.kablink.teaming.domain.Principal"     %>
+<%@ page import="org.kablink.teaming.util.ResolveIds" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("binder.configure.access_control.sharing.manageShares") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
@@ -111,11 +114,17 @@ function setItemToDelete(id) {
 	 </thead>
 	 
       <c:forEach var="shareItem" items="${ss_accessControlShareItems}">
+      	<jsp:useBean id="shareItem" type="org.kablink.teaming.domain.ShareItem" />
+      	<%
+      		List sharers = ResolveIds.getPrincipals(String.valueOf(shareItem.getSharerId().longValue()));
+      	if (!sharers.isEmpty()) {
+      		Principal sharer = (Principal)sharers.get(0);
+      	%>
         <c:set var="recipient" value="${ss_accessControlShareItemRecipients[shareItem.id]}"/>
         <tr>
           <td class="ss_table_paragraph">
-            ${shareItem.creation.principal.title }
-            <span class="ss_small">&nbsp;(${shareItem.creation.principal.name})</span>
+            <%= sharer.getTitle() %>
+            <span class="ss_small">&nbsp;(<%= sharer.getName() %>)</span>
           </td>
           <td class="ss_table_paragraph">
 			<img src="<html:imagesPath/>icons/${shareItem.recipientType.icon}"/> 
@@ -167,6 +176,7 @@ function setItemToDelete(id) {
               >
           </td>
         </tr>
+        <% } %>
       </c:forEach>
     </table>
 
