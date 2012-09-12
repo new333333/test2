@@ -4493,22 +4493,24 @@ public class GwtViewHelper {
 	@SuppressWarnings("unchecked")
 	public static WhoHasAccessInfoRpcResponseData getWhoHasAccess(AllModulesInjected bs, HttpServletRequest request, EntityId entityId) throws GwtTeamingException {
 		try {
-			// Allocate an WhoHasAccessInfoRpcResponseData to track the entry
-			// types for the requested binders.
-			WhoHasAccessInfoRpcResponseData reply = new WhoHasAccessInfoRpcResponseData();
-
-			// Is the entity a binder? 
+			// Is the entity a binder?
+			String entityTitle;
 			WorkArea workArea;
 			if (entityId.isBinder()) {
 				// Yes!  We use it directly as the work are. 
-				workArea = bs.getBinderModule().getBinderWithoutAccessCheck(entityId.getEntityId());
+				Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck(entityId.getEntityId());
+				entityTitle   = binder.getTitle();
+				
+				workArea = binder;
 			}
 			
 			else {
 				// No, the entity isn't a binder, it must be a folder
 				// entry!  Access the top entry in the chain (in case
 				// this is a comment, ...)
-				FolderEntry	fe    = bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
+				FolderEntry	fe = bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
+				entityTitle = fe.getTitle();
+				
 				FolderEntry	feTop = fe.getTopEntry();
 				if (null != feTop) {
 					fe = feTop;
@@ -4521,6 +4523,10 @@ public class GwtViewHelper {
 				else workArea = bs.getBinderModule().getBinderWithoutAccessCheck(entityId.getBinderId());
 			}
 
+			// Allocate an WhoHasAccessInfoRpcResponseData to track the entry
+			// types for the requested binders.
+			WhoHasAccessInfoRpcResponseData reply = new WhoHasAccessInfoRpcResponseData(entityTitle);
+			
 			// Get the access control information for the work are.
 			Map model = new HashMap();
 			AccessControlController.setupAccess(bs, workArea, model);
