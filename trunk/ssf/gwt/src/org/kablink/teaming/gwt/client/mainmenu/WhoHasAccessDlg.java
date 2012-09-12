@@ -32,15 +32,21 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.GetWhoHasAccessCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.WhoHasAccessInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.WhoHasAccessInfoRpcResponseData.AccessInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
+import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -48,10 +54,15 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Implements Vibe's Who Has Access dialog.
@@ -63,8 +74,10 @@ public class WhoHasAccessDlg extends DlgBox {
 	private GwtTeamingMainMenuImageBundle	m_images;			// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;			// Access to Vibe's messages.
 	private EntityId						m_entityId;			// EntityId of the entity whose access is being viewed.
-	private VerticalPanel					m_vp;				//
-	private WhoHasAccessInfoRpcResponseData	m_whoHasAccessInfo;	//
+	private FlexTable 						m_ft;				// Table that holds the dialog's content.
+	private WhoHasAccessInfoRpcResponseData	m_whoHasAccessInfo;	// The 'Who Has Access' information to populate the table with.
+	
+	private final static int    SCROLL_WHEN	= 5;	// Count of items in one of the ScrollPanel's when scroll bars are enabled.
 
 	/*
 	 * Inner class that wraps items displayed in the dialog's content.
@@ -74,14 +87,18 @@ public class WhoHasAccessDlg extends DlgBox {
 		 * Constructor method.
 		 * 
 		 * @param label
+		 * @param style
 		 * @param title
 		 */
-		public DlgLabel(String label, String title) {
+		public DlgLabel(String label, String style, String title) {
 			super(label);
+			addStyleName("vibe-whoHasAccessDlg-label");
+			if (GwtClientHelper.hasString(style)) {
+				addStyleName(style);
+			}
 			if (GwtClientHelper.hasString(title)) {
 				setTitle(title);
 			}
-			addStyleName("vibe-whoHasAccessDlg_Label");
 		}
 		
 		/**
@@ -91,7 +108,18 @@ public class WhoHasAccessDlg extends DlgBox {
 		 */
 		public DlgLabel(String label) {
 			// Always use the initial form of the method.
-			this(label, null);
+			this(label, null, null);
+		}
+		
+		/**
+		 * Constructor method.
+		 * 
+		 * @param label
+		 * @param style
+		 */
+		public DlgLabel(String label, String style) {
+			// Always use the initial form of the method.
+			this(label, style, null);
 		}
 	}
 
@@ -118,6 +146,13 @@ public class WhoHasAccessDlg extends DlgBox {
 			null);							// Create callback data.  Unused. 
 	}
 
+	/*
+	 * Constructs and returns an Image with a spinner in it.
+	 */
+	private Image buildSpinnerImage() {
+		return GwtClientHelper.buildImage(m_images.spinner());
+	}
+
 	/**
 	 * Creates all the controls that make up the dialog.
 	 * 
@@ -130,9 +165,24 @@ public class WhoHasAccessDlg extends DlgBox {
 	@Override
 	public Panel createContent(Object callbackData) {
 		// Create and return a panel to hold the dialog's content.
-		m_vp = new VerticalPanel();
-		m_vp.addStyleName("vibe-whoHasAccessDlg_Content");
-		return m_vp;
+		m_ft = new VibeFlexTable();
+		m_ft.addStyleName("vibe-whoHasAccessDlg-content");
+		return m_ft;
+	}
+
+	/*
+	 * Clears the contents of the dialog and displays a message that
+	 * we're reading the access information for the entity.
+	 */
+	private void displayReading() {
+		m_ft.removeAllRows();
+		FlowPanel fp = new FlowPanel();
+		fp.addStyleName("vibe-whoHasAccessDlg-readingPanel");
+		fp.add(buildSpinnerImage());
+		DlgLabel l = new DlgLabel(m_messages.mainMenuWhoHasAccessDlgReading());
+		l.addStyleName("vibe-whoHasAccessDlg-readingLabel");
+		fp.add(l);
+		m_ft.setWidget(0, 0, fp);
 	}
 
 	/**
@@ -184,6 +234,8 @@ public class WhoHasAccessDlg extends DlgBox {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_GetWhoHasAccess());
+				
+				hide();
 			}
 			
 			@Override
@@ -215,15 +267,64 @@ public class WhoHasAccessDlg extends DlgBox {
 	 * WhoHasAccessInfoRpcResponseData object.
 	 */
 	private void populateFromWhoHasAccessInfoNow() {
-		// Clear the current content of the content panel.
-		m_vp.clear();
+		// Clear the current content of the dialog...
+		m_ft.removeAllRows();
+
+		// ...extract the lists from the who has access info...
+		List<AccessInfo>	userList  = m_whoHasAccessInfo.getUsers();  int users  = userList.size(); 
+		List<AccessInfo>	groupList = m_whoHasAccessInfo.getGroups(); int groups = groupList.size();
+		boolean				scroll    = ((users >= SCROLL_WHEN) || (groups >= SCROLL_WHEN));
+
+		// ...create the user list...
+		ScrollPanel usersPanel = new ScrollPanel();
+		usersPanel.addStyleName("vibe-whoHasAccessDlg-scrollPanel vibe-whoHasAccessDlg-scrollPanelUsers");
+		if (scroll) {
+			usersPanel.addStyleName("vibe-whoHasAccessDlg-scrollPanelLimit");
+		}
+		populateScrollPanel(usersPanel, userList);
 		
-//!		...this needs to be implemented...
-		m_vp.add(new DlgLabel("...this needs to be implemented..."));
+		// ...create the group list...
+		ScrollPanel groupsPanel = new ScrollPanel();
+		groupsPanel.addStyleName("vibe-whoHasAccessDlg-scrollPanel vibe-whoHasAccessDlg-scrollPanelGroups");
+		if (scroll) {
+			groupsPanel.addStyleName("vibe-whoHasAccessDlg-scrollPanelLimit");
+		}
+		populateScrollPanel(groupsPanel, groupList);
+		
+		// ...and tie it all together.
+		populateTableColumn(0, m_messages.mainMenuWhoHasAccessDlgUsersWithAccess(),  usersPanel );
+		populateTableColumn(1, m_messages.mainMenuWhoHasAccessDlgGroupsWithAccess(), groupsPanel);
 		
 		// Show the dialog (perhaps again) so that it can be positioned
 		// correctly based on its new content.
 		show(true);
+	}
+
+	/*
+	 * Populates a ScrollPanel with the information from a
+	 * List<AccessInfo>.
+	 */
+	private void populateScrollPanel(ScrollPanel scrollPanel, List<AccessInfo> accessList) {
+		if ((null == accessList) || accessList.isEmpty()) {
+			scrollPanel.add(new DlgLabel(m_messages.mainMenuWhoHasAccessDlgNone()));
+		}
+		
+		else {
+			VerticalPanel vp = new VibeVerticalPanel(null, null);
+			scrollPanel.add(vp);
+			for (AccessInfo ai:  accessList) {
+				vp.add(new DlgLabel(ai.getName(), null, ai.getHover()));	// null -> No additional styles.
+			}
+		}
+	}
+
+	/*
+	 * Populates a column in the who has access FlexTable
+	 */
+	private void populateTableColumn(int column, String header, ScrollPanel sp) {
+		m_ft.setWidget(0, column, new DlgLabel(header, "vibe-whoHasAccessDlg-scrollPanelHeader"));
+		m_ft.setWidget(1, column, sp);
+		m_ft.getCellFormatter().addStyleName(1, column, "vibe-whoHasAccessDlg-scrollPanelCell");
 	}
 	
 	/*
@@ -249,6 +350,7 @@ public class WhoHasAccessDlg extends DlgBox {
 		m_entityId = entityId;
 
 		// ...and start populating the dialog and show it.
+		displayReading();
 		populateDlgAsync();
 		show(true);
 	}
