@@ -109,12 +109,17 @@ public class ShareExpirationValue
 			on = "";
 			if ( m_value != null )
 			{
+				int offsetMinutes;
 				Date date;
 				com.google.gwt.i18n.shared.DateTimeFormat dtFormat;
+				com.google.gwt.i18n.shared.TimeZone timeZone;
 				
 				date = new Date( m_value );
 				dtFormat = DateTimeFormat.getFormat( PredefinedFormat.DATE_SHORT );
-				on = dtFormat.format( date );
+				offsetMinutes = GwtTeaming.m_requestInfo.getTimeZoneOffsetHour() * 60 * -1;
+			    timeZone = com.google.gwt.i18n.client.TimeZone.createTimeZone( offsetMinutes );
+
+				on = dtFormat.format( date, timeZone );
 			}
 			
 			return GwtTeaming.getMessages().shareDlg_expiresOn( on );
