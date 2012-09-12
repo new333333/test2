@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_user" caption="__definition_default_user" type="7" nextId="192" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007"> 
+<definition name="_user" caption="__definition_default_user" type="7" nextId="197" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007"> 
   <item name="profileEntryForm" caption="__profile_entry_form_definition" type="form" id="1" display="form"> 
     <properties/>  
     <item name="profileEntryFormForm" caption="__form" id="2" display="form"> 
@@ -18,12 +18,12 @@
           <property name="width" value=""/> 
         </properties> 
       </item>  
-      <item id="185" name="conditionalProfileFormItem" caption="__conditional" category="profileFormLayout" display="form">
-        <properties>
-          <property name="license" value="vibe"/>
-          <property name="license" value="filrAndVibe"/>
-          <property name="license" value="kablink"/>
-        </properties>
+      <item id="185" name="conditionalProfileFormItem" caption="__conditional" category="profileFormLayout" display="form"> 
+        <properties> 
+          <property name="license" value="vibe"/>  
+          <property name="license" value="filrAndVibe"/>  
+          <property name="license" value="kablink"/> 
+        </properties>  
         <item name="table3" caption="__three_column_table" id="19" category="generalLayout" display="form"> 
           <item name="profileFirstName" caption="__firstName" type="data" id="5" category="profileEntryData"> 
             <properties> 
@@ -51,55 +51,55 @@
               <property name="required" value=""/> 
             </properties> 
           </item>  
-          <properties>
-            <property name="caption" value=""/>
-            <property name="name" value="table1"/>
-            <property name="tableWidth" value="-"/>
-            <property name="width1" value=""/>
-            <property name="width2" value=""/>
-            <property name="width3" value=""/>
-            <property name="align1" value="left"/>
-            <property name="align2" value="left"/>
-            <property name="align3" value="left"/>
-            <property name="valign1" value="top"/>
-            <property name="valign2" value="top"/>
-            <property name="valign3" value="top"/>
-          </properties>
-        </item>
-      </item>
-      <item id="186" name="conditionalProfileFormItem" caption="__conditional" category="profileFormLayout" display="form">
-        <properties>
-          <property name="license" value="filr"/>
-        </properties>
-        <item id="187" name="table2" caption="__two_column_table" category="generalLayout" display="form">
-          <item name="profileFirstName" caption="__firstName" type="data" dataType="name" multipleAllowed="false" category="profileEntryData" display="form" id="188">
-            <properties>
-              <property name="caption" value="__firstName"/>
-              <property name="name" value="firstName"/>
-              <property name="width" value=""/>
-              <property name="required" value="false"/>
-            </properties>
-          </item>
-          <item name="profileLastName" caption="__lastName" type="data" dataType="name" multipleAllowed="false" category="profileEntryData" display="form" id="189">
-            <properties>
-              <property name="caption" value="__lastName"/>
-              <property name="name" value="lastName"/>
-              <property name="width" value=""/>
-              <property name="required" value="false"/>
-            </properties>
-          </item>
-          <properties>
-            <property name="caption" value=""/>
-            <property name="name" value="table1_filr"/>
-            <property name="tableWidth" value="-"/>
-            <property name="width1" value=""/>
-            <property name="width2" value=""/>
-            <property name="align1" value="left"/>
-            <property name="align2" value="left"/>
-            <property name="valign1" value="top"/>
-            <property name="valign2" value="top"/>
-          </properties>
-        </item>
+          <properties> 
+            <property name="caption" value=""/>  
+            <property name="name" value="table1"/>  
+            <property name="tableWidth" value="-"/>  
+            <property name="width1" value=""/>  
+            <property name="width2" value=""/>  
+            <property name="width3" value=""/>  
+            <property name="align1" value="left"/>  
+            <property name="align2" value="left"/>  
+            <property name="align3" value="left"/>  
+            <property name="valign1" value="top"/>  
+            <property name="valign2" value="top"/>  
+            <property name="valign3" value="top"/> 
+          </properties> 
+        </item> 
+      </item>  
+      <item id="186" name="conditionalProfileFormItem" caption="__conditional" category="profileFormLayout" display="form"> 
+        <properties> 
+          <property name="license" value="filr"/> 
+        </properties>  
+        <item id="187" name="table2" caption="__two_column_table" category="generalLayout" display="form"> 
+          <item name="profileFirstName" caption="__firstName" type="data" dataType="name" multipleAllowed="false" category="profileEntryData" display="form" id="188"> 
+            <properties> 
+              <property name="caption" value="__firstName"/>  
+              <property name="name" value="firstName"/>  
+              <property name="width" value=""/>  
+              <property name="required" value="false"/> 
+            </properties> 
+          </item>  
+          <item name="profileLastName" caption="__lastName" type="data" dataType="name" multipleAllowed="false" category="profileEntryData" display="form" id="189"> 
+            <properties> 
+              <property name="caption" value="__lastName"/>  
+              <property name="name" value="lastName"/>  
+              <property name="width" value=""/>  
+              <property name="required" value="false"/> 
+            </properties> 
+          </item>  
+          <properties> 
+            <property name="caption" value=""/>  
+            <property name="name" value="table1_filr"/>  
+            <property name="tableWidth" value="-"/>  
+            <property name="width1" value=""/>  
+            <property name="width2" value=""/>  
+            <property name="align1" value="left"/>  
+            <property name="align2" value="left"/>  
+            <property name="valign1" value="top"/>  
+            <property name="valign2" value="top"/> 
+          </properties> 
+        </item> 
       </item>  
       <item name="profileEntryPicture" caption="__profile_entry_picture" type="data" id="4"> 
         <properties> 
@@ -363,10 +363,10 @@
           </item> 
         </item> 
       </item>  
-      <properties>
-        <property name="name" value="form1"/>
-        <property name="type" value="form"/>
-      </properties>
+      <properties> 
+        <property name="name" value="form1"/>  
+        <property name="type" value="form"/> 
+      </properties> 
     </item> 
   </item>  
   <item name="profileEntryView" caption="__profile_entry_view_definition" id="13" display="view"> 
@@ -424,13 +424,13 @@
         <property name="name" value="locale"/> 
       </properties> 
     </item>  
-    <item id="160" name="conditionalProfileViewItem" caption="__conditional" category="profileViewLayout" display="form">
-      <properties>
-        <property name="license" value="vibe"/>
-        <property name="license" value="filrAndVibe"/>
-        <property name="license" value="kablink"/>
-      </properties>
-    </item>
+    <item id="160" name="conditionalProfileViewItem" caption="__conditional" category="profileViewLayout" display="form"> 
+      <properties> 
+        <property name="license" value="vibe"/>  
+        <property name="license" value="filrAndVibe"/>  
+        <property name="license" value="kablink"/> 
+      </properties> 
+    </item> 
   </item>  
   <item name="profileEntryBusinessCard" caption="__profile_entry_business_card_definition" id="15" display="view"> 
     <properties/>  
@@ -450,44 +450,44 @@
   </item>  
   <item name="profileEntryMiniBusinessCard" caption="__profile_entry_mini_business_card_definition" id="17" display="view"> 
     <properties/>  
-    <item id="178" name="conditionalProfileViewItem" caption="__conditional" category="profileViewLayout" display="view">
-      <properties>
-        <property name="license" value="vibe"/>
-        <property name="license" value="filrAndVibe"/>
-        <property name="license" value="kablink"/>
-      </properties>
+    <item id="178" name="conditionalProfileViewItem" caption="__conditional" category="profileViewLayout" display="view"> 
+      <properties> 
+        <property name="license" value="vibe"/>  
+        <property name="license" value="filrAndVibe"/>  
+        <property name="license" value="kablink"/> 
+      </properties>  
       <item name="profileEntryMiniBusinessCardElements" caption="__profile_entry_mini_business_card_elements" id="18" display="view"> 
-        <properties>
-          <property name="_elements" value="title"/>
-          <property name="_elements" value="phone"/>
-          <property name="_elements" value="emailAddress"/>
-          <property name="_elements" value="mobileEmailAddress"/>
-          <property name="_elements" value="txtEmailAddress"/>
-        </properties>
-      </item>
-    </item>
-    <item id="179" name="conditionalProfileViewItem" caption="__conditional" category="profileViewLayout" display="view">
-      <properties>
-        <property name="license" value="filr"/>
-      </properties>
-      <item id="180" name="profileEntryMiniBusinessCardElements" caption="__profile_entry_mini_business_card_elements" display="view">
-        <properties>
-          <property name="_elements" value="name"/>
-          <property name="_elements" value="title"/>
-          <property name="_elements" value="phone"/>
-          <property name="_elements" value="emailAddress"/>
-        </properties>
-      </item>
-    </item>
+        <properties> 
+          <property name="_elements" value="title"/>  
+          <property name="_elements" value="phone"/>  
+          <property name="_elements" value="emailAddress"/>  
+          <property name="_elements" value="mobileEmailAddress"/>  
+          <property name="_elements" value="txtEmailAddress"/> 
+        </properties> 
+      </item> 
+    </item>  
+    <item id="179" name="conditionalProfileViewItem" caption="__conditional" category="profileViewLayout" display="view"> 
+      <properties> 
+        <property name="license" value="filr"/> 
+      </properties>  
+      <item id="180" name="profileEntryMiniBusinessCardElements" caption="__profile_entry_mini_business_card_elements" display="view"> 
+        <properties> 
+          <property name="_elements" value="name"/>  
+          <property name="_elements" value="title"/>  
+          <property name="_elements" value="phone"/>  
+          <property name="_elements" value="emailAddress"/> 
+        </properties> 
+      </item> 
+    </item> 
   </item>  
   <item name="profileEntryStandardView" caption="__profile_entry_standard_view" id="61" display="view"> 
     <properties/>  
-    <item id="161" name="conditionalProfileViewItem" caption="__conditional" category="profileViewLayout" display="form">
-      <properties>
-        <property name="license" value="vibe"/>
-        <property name="license" value="filrAndVibe"/>
-        <property name="license" value="kablink"/>
-      </properties>
+    <item id="161" name="conditionalProfileViewItem" caption="__conditional" category="profileViewLayout" display="form"> 
+      <properties> 
+        <property name="license" value="vibe"/>  
+        <property name="license" value="filrAndVibe"/>  
+        <property name="license" value="kablink"/> 
+      </properties>  
       <item name="profileHeadingPersonalView" caption="__profile_heading_Personal_div" category="userViewLayout" display="view" id="64"> 
         <properties> 
           <property name="caption" value="__profile_heading_Personal_div"/> 
@@ -522,7 +522,7 @@
             <property name="required" value=""/> 
           </properties> 
         </item> 
-      </item>
+      </item>  
       <item name="profileHeadingContactView" caption="__profile_heading_Contact_div" category="userViewLayout" display="view" id="68"> 
         <properties> 
           <property name="caption" value="__profile_heading_Contact_div"/> 
@@ -586,7 +586,7 @@
             <property name="name" value="skypeId"/> 
           </properties> 
         </item> 
-      </item>
+      </item>  
       <item name="profileHeadingOrgView" caption="__profile_heading_Org_div" category="userViewLayout" display="view" id="76"> 
         <properties> 
           <property name="caption" value="__profile_heading_Org_div"/> 
@@ -623,7 +623,7 @@
             <property name="required" value=""/> 
           </properties> 
         </item> 
-      </item>
+      </item>  
       <item name="profileHeadingOtherView" caption="__profile_heading_Other_div" category="userViewLayout" display="view" id="111"> 
         <properties> 
           <property name="caption" value="__profile_heading_Other_div"/> 
@@ -634,7 +634,7 @@
             <property name="name" value="responsibilities"/> 
           </properties> 
         </item> 
-      </item>
+      </item>  
       <item name="profileHeadingPhotosAndImagesView" caption="__profile_heading_PhotosAndImages_div" category="userViewLayout" display="view" id="86"> 
         <properties> 
           <property name="caption" value="__profile_heading_PhotosAndImages_div"/> 
@@ -645,7 +645,7 @@
             <property name="name" value="picture"/> 
           </properties> 
         </item> 
-      </item>
+      </item>  
       <item name="profileSidePanelView" caption="__profile_sidePanel_div" category="userViewLayout" display="view" id="120"> 
         <properties> 
           <property name="caption" value=""/> 
@@ -681,54 +681,81 @@
             <property name="caption" value="__savedSearches"/> 
           </properties> 
         </item> 
-      </item>
-    </item>
-    <item id="162" name="conditionalProfileViewItem" caption="__conditional" category="profileViewLayout" display="form">
-      <properties>
-        <property name="license" value="filr"/>
-      </properties>
-      <item id="163" name="profileHeadingPersonalView" caption="__profile_heading_Personal_div" category="userViewLayout" display="view">
+      </item> 
+    </item>  
+    <item id="162" name="conditionalProfileViewItem" caption="__conditional" category="profileViewLayout" display="form"> 
+      <properties> 
+        <property name="license" value="filr"/> 
+      </properties>  
+      <item id="163" name="profileHeadingPersonalView" caption="__profile_heading_Personal_div" category="userViewLayout" display="view"> 
+        <properties> 
+          <property name="caption" value="__profile_heading_Personal_div"/> 
+        </properties>  
+        <item name="profileJobTitle" caption="__jobTitle" type="data" id="164"> 
+          <properties> 
+            <property name="caption" value="__jobTitle"/>  
+            <property name="name" value="jobTitle"/>  
+            <property name="width" value=""/>  
+            <property name="required" value=""/> 
+          </properties> 
+        </item> 
+      </item>  
+      <item id="170" name="profileHeadingContactView" caption="__profile_heading_Contact_div" category="userViewLayout" display="view"> 
+        <properties> 
+          <property name="caption" value="__profile_heading_Contact_div"/> 
+        </properties>  
+        <item name="profileEmailAddress" caption="__emailAddress" type="data" id="173"> 
+          <properties> 
+            <property name="caption" value="__emailAddress"/>  
+            <property name="name" value="emailAddress"/>  
+            <property name="width" value=""/>  
+            <property name="required" value=""/> 
+          </properties> 
+        </item>  
+        <item id="177" name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" formItem="profilePhone"> 
+          <properties> 
+            <property name="caption" value="__phone"/>  
+            <property name="name" value="phone"/> 
+          </properties> 
+        </item> 
+      </item>  
+      <item id="192" name="profileHeadingPhotosAndImagesView" caption="__profile_heading_PhotosAndImages_div" category="userViewLayout" display="view">
         <properties>
-          <property name="caption" value="__profile_heading_Personal_div"/>
+          <property name="caption" value="__profile_heading_PhotosAndImages_div"/>
         </properties>
-        <item name="profileJobTitle" caption="__jobTitle" type="data" id="164">
+        <item id="193" name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" formItem="profileEntryPicture">
           <properties>
-            <property name="caption" value="__jobTitle"/>
-            <property name="name" value="jobTitle"/>
-            <property name="width" value=""/>
-            <property name="required" value=""/>
+            <property name="caption" value="__profile_entry_picture"/>
+            <property name="name" value="picture"/>
           </properties>
         </item>
       </item>
-      <item id="170" name="profileHeadingContactView" caption="__profile_heading_Contact_div" category="userViewLayout" display="view">
+      <item id="194" name="profileSidePanelView" caption="__profile_sidePanel_div" category="userViewLayout" display="view">
         <properties>
-          <property name="caption" value="__profile_heading_Contact_div"/>
+          <property name="caption" value=""/>
         </properties>
-        <item name="profileEmailAddress" caption="__emailAddress" type="data" id="173">
+        <item id="195" name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" formItem="htmlEditorTextarea">
           <properties>
-            <property name="caption" value="__emailAddress"/>
-            <property name="name" value="emailAddress"/>
-            <property name="width" value=""/>
-            <property name="required" value=""/>
+            <property name="caption" value="__aboutMe"/>
+            <property name="name" value="aboutMe"/>
           </properties>
         </item>
-        <item id="177" name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" formItem="profilePhone">
+        <item name="profileGroups" caption="__groups" multipleAllowed="false" category="userSideViewLayout" display="view" id="196">
           <properties>
-            <property name="caption" value="__phone"/>
-            <property name="name" value="phone"/>
+            <property name="caption" value="__groups"/>
           </properties>
         </item>
       </item>
-    </item>
+    </item> 
   </item>  
   <item name="profileEntrySimpleView" caption="__profile_entry_simple_view" id="62" display="view"> 
     <properties/>  
-    <item id="181" name="conditionalProfileViewItem" caption="__conditional" category="profileViewLayout" display="view">
-      <properties>
-        <property name="license" value="vibe"/>
-        <property name="license" value="filrAndVibe"/>
-        <property name="license" value="kablink"/>
-      </properties>
+    <item id="181" name="conditionalProfileViewItem" caption="__conditional" category="profileViewLayout" display="view"> 
+      <properties> 
+        <property name="license" value="vibe"/>  
+        <property name="license" value="filrAndVibe"/>  
+        <property name="license" value="kablink"/> 
+      </properties>  
       <item name="profileEntrySimpleViewElements" caption="__profile_entry_simple_view_elements" id="63" display="view"> 
         <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" id="94" formItem="profileEntryPicture"> 
           <properties> 
@@ -752,27 +779,27 @@
           <operation name="modifyItem" caption="__modify"/>  
           <operation name="moveItem" caption="__move"/> 
         </operations> 
-      </item>
-    </item>
-    <item id="182" name="conditionalProfileViewItem" caption="__conditional" category="profileViewLayout" display="view">
-      <properties>
-        <property name="license" value="filr"/>
-      </properties>
-      <item id="183" name="profileEntrySimpleViewElements" caption="__profile_entry_simple_view_elements" display="view">
-        <properties>
-          <property name="_elements" value="name"/>
-          <property name="_elements" value="title"/>
-          <property name="_elements" value="phone"/>
-          <property name="_elements" value="emailAddress"/>
-        </properties>
-        <item id="184" name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" formItem="profileEntryPicture">
-          <properties>
-            <property name="caption" value="__profile_entry_picture"/>
-            <property name="name" value="picture"/>
-          </properties>
-        </item>
-      </item>
-    </item>
+      </item> 
+    </item>  
+    <item id="182" name="conditionalProfileViewItem" caption="__conditional" category="profileViewLayout" display="view"> 
+      <properties> 
+        <property name="license" value="filr"/> 
+      </properties>  
+      <item id="183" name="profileEntrySimpleViewElements" caption="__profile_entry_simple_view_elements" display="view"> 
+        <properties> 
+          <property name="_elements" value="name"/>  
+          <property name="_elements" value="title"/>  
+          <property name="_elements" value="phone"/>  
+          <property name="_elements" value="emailAddress"/> 
+        </properties>  
+        <item id="184" name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" formItem="profileEntryPicture"> 
+          <properties> 
+            <property name="caption" value="__profile_entry_picture"/>  
+            <property name="name" value="picture"/> 
+          </properties> 
+        </item> 
+      </item> 
+    </item> 
   </item>  
   <properties> 
     <property name="caption" value="__definition_default_user"/>  
