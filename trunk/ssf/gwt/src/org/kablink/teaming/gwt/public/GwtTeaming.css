@@ -3949,7 +3949,7 @@ td.datePickerMonth {
 
 /* Start:  Who Has Access dialog styles. */
 	.vibe-whoHasAccessDlg-content            {margin: 10px 10px 10px 13px;}
-	.vibe-whoHasAccessDlg-headerImg          {height: 25px; width: 25px;}
+	.vibe-whoHasAccessDlg-headerImg          {height: 25px; width: 25px; padding-right: 3px;}
 	.vibe-whoHasAccessDlg-headerLabel        {white-space: nowrap; font-weight: bold;}
 	.vibe-whoHasAccessDlg-headerPanel        {display: inline; white-space: nowrap; padding-bottom: 13px; vertical-align: middle;}
 	.vibe-whoHasAccessDlg-label              {}
