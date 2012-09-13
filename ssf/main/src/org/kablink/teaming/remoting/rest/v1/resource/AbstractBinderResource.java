@@ -307,21 +307,20 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
     }
 
-    protected SearchResultList<SearchableObject> getSubEntities(long id, boolean recursive, boolean onlyLibrary, String keyword,
+    protected SearchResultList<SearchableObject> getSubEntities(long id, boolean recursive, boolean includeBinders,
+                                                                boolean includeFolderEntries, boolean includeFiles,
+                                                                boolean includeReplies,
+                                                                boolean onlyLibrary, String keyword,
                                                                 Integer offset, Integer maxCount, String nextUrl, Map<String, String> nextParams, boolean textDescriptions) {
         _getBinder(id);
         Junction criterion = Restrictions.conjunction();
 
         criterion.add(buildSearchBinderCriterion(id, recursive));
+        criterion.add(buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
         if (onlyLibrary) {
-//            criterion.add(Restrictions.disjunction()
-//                    .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT))
-//                    .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER))
-//            );
             criterion.add(buildLibraryCriterion(onlyLibrary));
         }
         if (keyword!=null) {
-//            criterion.add(Restrictions.like(Constants.GENERAL_TEXT_FIELD, keyword));
             criterion.add(buildKeywordCriterion(keyword));
         }
         Criteria crit = new Criteria();

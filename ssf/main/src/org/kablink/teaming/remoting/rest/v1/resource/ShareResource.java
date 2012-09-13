@@ -166,6 +166,10 @@ public class ShareResource extends AbstractResource {
     @Path("/with_user/{id}/library_entities")
     public SearchResultList<SearchableObject> getLibraryEntitiesSharedWithUser(@PathParam("id") Long userId,
                                                       @QueryParam("recursive") @DefaultValue("false") boolean recursive,
+                                                      @QueryParam("binders") @DefaultValue("true") boolean includeBinders,
+                                                      @QueryParam("folder_entries") @DefaultValue("true") boolean includeFolderEntries,
+                                                      @QueryParam("files") @DefaultValue("true") boolean includeFiles,
+                                                      @QueryParam("replies") @DefaultValue("true") boolean includeReplies,
                                                       @QueryParam("keyword") String keyword,
                                                       @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                       @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -200,6 +204,7 @@ public class ShareResource extends AbstractResource {
                 searchContext.add(shareCrit);
             }
             criterion.add(searchContext);
+            criterion.add(buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
             criterion.add(buildLibraryCriterion(true));
             Map<String, String> nextParams = new HashMap<String, String>();
             nextParams.put("recursive", Boolean.toString(recursive));
