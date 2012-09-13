@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.datatable;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.ShareMessageInfo;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -42,7 +43,6 @@ import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 
 /**
@@ -93,7 +93,11 @@ public class ShareStringValueCell extends AbstractCell<List<ShareStringValue>> {
 				fp.addStyleName("margintop3px");
 			}
 			svsIndex += 1;
-			Label l = new Label(ssv.getValue());
+			String	v = ssv.getValue();
+			Label	l = new Label(v);
+			if (ssv instanceof ShareMessageInfo) {
+				l.setTitle(ssv.getValue());
+			}
 			l.addStyleName("vibe-dataTableShareStringValue-label");
 			String addedStyle = ssv.getAddedStyle();
 			if (GwtClientHelper.hasString(addedStyle)) {
