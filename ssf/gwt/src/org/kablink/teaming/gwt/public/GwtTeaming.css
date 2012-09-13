@@ -535,6 +535,12 @@
 	padding-top: 8px;
 }
 
+.shareThisDlg_NoNote
+{
+	color: red !important;
+	font-style: italic;
+}
+
 .shareThisDlg_ExpiresLabel, .shareThisDlg_DefaultExpiresLabel
 {
 	color: #5691A6;

@@ -563,6 +563,8 @@ public class ShareThisDlg extends DlgBox
 			note = m_shareItem.getComments();
 			noteTitle = note;
 
+			m_noteLabel.removeStyleName( "shareThisDlg_NoNote" );
+
 			if ( note != null && note.length() > 14 )
 			{
 				note = note.substring( 0, 14 );
@@ -572,6 +574,7 @@ public class ShareThisDlg extends DlgBox
 			{
 				note = GwtTeaming.getMessages().shareDlg_noNote();
 				noteTitle = GwtTeaming.getMessages().shareDlg_clickToAddNote();
+				m_noteLabel.addStyleName( "shareThisDlg_NoNote" );
 			}
 
 			m_noteLabel.setText( note );
