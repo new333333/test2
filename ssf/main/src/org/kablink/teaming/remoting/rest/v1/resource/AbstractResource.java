@@ -305,7 +305,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     protected Criterion buildKeywordCriterion(String keyword) {
         return Restrictions.disjunction()
                 .add(Restrictions.like(Constants.TITLE_FIELD, keyword))
-                .add(Restrictions.like(Constants.DESC_FIELD, keyword))
+                .add(Restrictions.like(Constants.DESC_TEXT_FIELD, keyword))
                 .add(Restrictions.like(Constants.GENERAL_TEXT_FIELD, keyword));
     }
 
