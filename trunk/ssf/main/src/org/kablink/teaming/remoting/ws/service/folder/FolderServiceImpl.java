@@ -95,7 +95,7 @@ import org.kablink.teaming.remoting.ws.model.FolderEntryBrief;
 import org.kablink.teaming.remoting.ws.model.FolderEntryCollection;
 import org.kablink.teaming.remoting.ws.util.DomInputData;
 import org.kablink.teaming.remoting.ws.util.ModelInputData;
-import org.kablink.teaming.util.DatedMultipartFile;
+import org.kablink.teaming.util.ExtendedMultipartFile;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
@@ -286,7 +286,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 			File file = new File(rootPath, stagedFileRelativePath);
 			
 			// Wrap it in a datastructure expected by our app.
-			DatedMultipartFile mf = new DatedMultipartFile(fileName, file, false, modifier, modificationDate==null?null:modificationDate.getTime());
+			ExtendedMultipartFile mf = new ExtendedMultipartFile(fileName, file, false, modifier, modificationDate==null?null:modificationDate.getTime());
 			
 			// Create a map of file item names to items 
 			Map fileItems = new HashMap();

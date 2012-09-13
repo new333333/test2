@@ -307,18 +307,38 @@ public class FileUploadItem {
 	 * @return
 	 */
 	public Date getModDate() {
-		if(mf instanceof FileModDateSupport)
-			return ((FileModDateSupport) mf).getModDate();
+		if(mf instanceof FileExtendedSupport)
+			return ((FileExtendedSupport) mf).getModDate();
 		else
 			return null;
 	}
 
 	public String getModifierName() {
-		if(mf instanceof FileModDateSupport)
-			return ((FileModDateSupport) mf).getModifier();
+		if(mf instanceof FileExtendedSupport)
+			return ((FileExtendedSupport) mf).getModifierName();
 		else
 			return null;
 	}
+	public Long getModifierId() {
+		if(mf instanceof FileExtendedSupport)
+			return ((FileExtendedSupport) mf).getModifierId();
+		else
+			return null;
+	}
+	
+	public String getCreatorName() {
+		if(mf instanceof FileExtendedSupport)
+			return ((FileExtendedSupport) mf).getCreatorName();
+		else
+			return null;
+	}
+	public Long getCreatorId() {
+		if(mf instanceof FileExtendedSupport)
+			return ((FileExtendedSupport) mf).getCreatorId();
+		else
+			return null;
+	}
+	
 	public boolean isSynchToRepository() {
 		return synchToRepository;
 	}

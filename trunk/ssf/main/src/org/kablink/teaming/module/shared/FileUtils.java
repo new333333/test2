@@ -58,7 +58,7 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.util.DatedMultipartFile;
+import org.kablink.teaming.util.ExtendedMultipartFile;
 import org.kablink.teaming.util.NoContentMultipartFile;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -146,7 +146,7 @@ public class FileUtils {
 			if(modDate != null) {
 				options = new HashMap();
 				options.put(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE, Boolean.TRUE);
-				mf = new DatedMultipartFile(filename, is, modDate);
+				mf = new ExtendedMultipartFile(filename, is, modDate);
 			}
 			else {
 				mf = new SimpleMultipartFile(filename, is); 					
@@ -184,7 +184,7 @@ public class FileUtils {
 		if (modDate != null) {
 			options = new HashMap();
 			options.put(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE, Boolean.TRUE);
-			mf = new DatedMultipartFile(filename, is, modDate);
+			mf = new ExtendedMultipartFile(filename, is, modDate);
 		} else {
 			mf = new SimpleMultipartFile(filename, is);
 		}

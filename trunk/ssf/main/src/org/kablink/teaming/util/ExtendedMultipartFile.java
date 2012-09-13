@@ -32,19 +32,76 @@
  */
 package org.kablink.teaming.util;
 
+import java.io.InputStream;
 import java.util.Date;
+import java.io.File;
 
-public interface FileModDateSupport {
+public class ExtendedMultipartFile extends SimpleMultipartFile implements FileExtendedSupport {
 
-	/**
-	 * Return modification date. It may be <code>null</code>.
-	 * 
-	 * @return
-	 */
-	public Date getModDate();
-	/**
-	 * Return modifier user name. It may be <code>null</code>.
-	 * @return
-	 */
-	public String getModifier();
+	private Date modDate=null;
+	private Long modifierId=null;
+	private String modifierName=null;
+	private Long creatorId=null;
+	private String creatorName=null;
+	
+
+	public ExtendedMultipartFile(String fileName, InputStream content) {
+		super(fileName, content);
+	}
+	
+	public ExtendedMultipartFile(String fileName, InputStream content, Date modificationDate) {
+		super(fileName, content);
+		this.modDate = modificationDate;
+	}
+	
+	public ExtendedMultipartFile(String fileName, File file, boolean deleteOnClose, Date modificationDate) {
+		super(fileName, file, deleteOnClose);
+		this.modDate = modificationDate;
+	}
+
+	public ExtendedMultipartFile(String fileName, File file, boolean deleteOnClose, String modifierName, Date modificationDate) {
+		super(fileName, file, deleteOnClose);
+		this.modDate = modificationDate;
+		this.modifierName = modifierName;
+	}
+	
+	@Override
+	public Date getModDate() {
+		return modDate;
+	}
+	public void setModDate(Date modDate) {
+		this.modDate = modDate;
+	}
+	
+	@Override
+	public String getModifierName() {
+		return modifierName;
+	}
+	public void setModifierName(String modifierName) {
+		this.modifierName = modifierName;
+	}
+
+	@Override
+	public Long getModifierId() {
+		return modifierId;
+	}
+	public void setModifierId(Long modifierId) {
+		this.modifierId = modifierId;
+	}
+
+	@Override
+	public String getCreatorName() {
+		return creatorName;
+	}
+	public void setCreatorName(String creatorName) {
+		this.creatorName = creatorName;
+	}
+
+	@Override
+	public Long getCreatorId() {
+		return creatorId;
+	}
+	public void setCreatorId(Long creatorId) {
+		this.creatorId = creatorId;
+	}
 }

@@ -63,7 +63,7 @@ import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.util.DatedMultipartFile;
+import org.kablink.teaming.util.ExtendedMultipartFile;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SimpleProfiler;
@@ -102,11 +102,31 @@ public class FolderUtils {
 	 * @throws WriteFilesException
 	 */
 	public static FolderEntry createLibraryEntry(Folder folder, String fileName,
-			InputStream content, Date modDate, boolean synchToSourceIfMirrored) 
+			InputStream content, Date modDate, boolean synchToSourceIfMirrored)
+					throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
+		return createLibraryEntry(folder, fileName, content, null, modDate, synchToSourceIfMirrored);
+	}
+	
+	/**
+	 * Create a library entry.
+	 * 
+	 * @param folder
+	 * @param fileName
+	 * @param content
+	 * @param modDate
+	 * @param synchToSourceIfMirrored applicable to mirrored folder only; 
+	 * this value is ignored for non-mirrored folder
+	 * @return
+	 * @throws ConfigurationException
+	 * @throws AccessControlException
+	 * @throws WriteFilesException
+	 */
+	public static FolderEntry createLibraryEntry(Folder folder, String fileName,
+			InputStream content, Long creatorId, Date modDate, boolean synchToSourceIfMirrored) 
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		if(folder.isLibrary()) {
 			if(folder.isMirrored()) {
-				return createMirroredEntry(folder, fileName, content, modDate, synchToSourceIfMirrored);
+				return createMirroredEntry(folder, fileName, content, creatorId, modDate, synchToSourceIfMirrored);
 			}
 			else {
 				return createNonMirroredEntry(folder, fileName, content, modDate);
@@ -326,7 +346,7 @@ public class FolderUtils {
 		// Wrap the input stream in a datastructure suitable for our business module.
 		MultipartFile mf;
 		if(modDate != null)
-			mf = new DatedMultipartFile(fileName, content, modDate);
+			mf = new ExtendedMultipartFile(fileName, content, modDate);
 		else
 			mf = new SimpleMultipartFile(fileName, content); 
 		
@@ -340,7 +360,7 @@ public class FolderUtils {
 	}
 	
 	private static FolderEntry createMirroredEntry(Folder folder, String fileName, 
-			InputStream content, Date modDate, boolean synchToSource)
+			InputStream content, Long creatorId, Date modDate, boolean synchToSource)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
@@ -351,11 +371,24 @@ public class FolderUtils {
 		// Wrap the input stream in a datastructure suitable for our business module.
 		MultipartFile mf;
 		Map options = null;
-		if(modDate != null) {
-			mf = new DatedMultipartFile(fileName, content, modDate);
-			Calendar modCal = Calendar.getInstance();
-			modCal.setTime(modDate);
-			options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modCal);
+		if(modDate != null || creatorId != null) {
+			ExtendedMultipartFile dmf = new ExtendedMultipartFile(fileName, content);
+			if(modDate != null) {
+				dmf.setModDate(modDate);
+				Calendar modCal = Calendar.getInstance();
+				modCal.setTime(modDate);
+				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modCal);
+			}
+			if(creatorId != null) {
+				dmf.setCreatorId(creatorId);
+				// For newly created file, it doesn't make sense if the modifier were different from the creator.
+				dmf.setModifierId(creatorId);
+				options.put(ObjectKeys.INPUT_OPTION_CREATION_ID, creatorId);
+				// For newly created entry, it doesn't make sense if the modifier were different from the creator 
+				// (more precisely speaking, there has not been any modification yet).
+				options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_ID, creatorId);
+			}
+			mf = dmf;
 		}
 		else {
 			mf = new SimpleMultipartFile(fileName, content); 
@@ -399,7 +432,7 @@ public class FolderUtils {
 		// Wrap the input stream in a datastructure suitable for our business module.
 		MultipartFile mf;
 		if(modDate != null)
-			mf = new DatedMultipartFile(fileName, content, modDate);
+			mf = new ExtendedMultipartFile(fileName, content, modDate);
 		else
 			mf = new SimpleMultipartFile(fileName, content); 
 		
@@ -426,7 +459,7 @@ public class FolderUtils {
 		// Wrap the input stream in a datastructure suitable for our business module.
 		MultipartFile mf;
 		if(modDate != null)
-			mf = new DatedMultipartFile(fileName, content, modDate);
+			mf = new ExtendedMultipartFile(fileName, content, modDate);
 		else
 			mf = new SimpleMultipartFile(fileName, content); 
 		

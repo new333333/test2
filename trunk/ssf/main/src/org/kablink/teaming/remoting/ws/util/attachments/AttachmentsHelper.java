@@ -162,7 +162,7 @@ public class AttachmentsHelper  {
 		}
 
 		// Wrap it up in a datastructure expected by our app.
-		AxisMultipartFile mf = new AxisMultipartFile(fileName, dh, null, null); 
+		AxisMultipartFile mf = new AxisMultipartFile(fileName, dh, null); 
 		// Create a map of file item names to items 
 		Map fileItems = new HashMap();
 		fileItems.put(fileUploadDataItemName, mf);
