@@ -107,40 +107,37 @@ public class ResourceUtil {
 
     public static FolderEntryBrief buildFolderEntryBrief(org.kablink.teaming.domain.FolderEntry entry) {
         FolderEntryBrief model = new FolderEntryBrief();
-        populateEntryBrief(model, entry);
-        model.setDocLevel(entry.getDocLevel());
-        model.setDocNumber(entry.getDocNumber());
-        List<String> filenames = new ArrayList<String>();
-        for (FileAttachment attach : entry.getFileAttachments()) {
-            filenames.add(attach.getName());
-        }
-        model.setFileNames(filenames.toArray(new String[filenames.size()]));
+        populateBaseFolderEntryBrief(model, entry);
         LinkUriUtil.populateFolderEntryLinks(model, model.getId());
         return model;
     }
 
     public static FolderEntry buildFolderEntry(org.kablink.teaming.domain.FolderEntry entry, boolean includeAttachments, boolean textDescriptions) {
         FolderEntry model = new FolderEntry();
-        populateEntry(model, entry, includeAttachments, textDescriptions);
-        if (entry.isTop()) {
-            model.setEntryType(Constants.ENTRY_TYPE_ENTRY);
-        } else {
-            model.setEntryType(Constants.ENTRY_TYPE_REPLY);
-        }
-        model.setDocLevel(entry.getDocLevel());
-        model.setDocNumber(entry.getDocNumber());
+        populateBaseFolderEntry(model, entry, includeAttachments, textDescriptions);
+        model.setEntryType(Constants.ENTRY_TYPE_ENTRY);
         model.setReservation(buildHistoryStamp(entry.getReservation()));
-        model.setReplyCount(entry.getReplyCount());
-        model.setTotalReplyCount(entry.getTotalReplyCount());
-        org.kablink.teaming.domain.FolderEntry parent = entry.getParentEntry();
-        if (parent!=null) {
-            model.setParentEntry(new LongIdLinkPair(parent.getId(), LinkUriUtil.getFolderEntryLinkUri(parent.getId())));
-        }
+        LinkUriUtil.populateFolderEntryLinks(model, model.getId());
+        return model;
+    }
+
+    public static Reply buildReply(org.kablink.teaming.domain.FolderEntry entry, boolean includeAttachments, boolean textDescriptions) {
+        Reply model = new Reply();
+        populateBaseFolderEntry(model, entry, includeAttachments, textDescriptions);
+        model.setEntryType(Constants.ENTRY_TYPE_REPLY);
         org.kablink.teaming.domain.FolderEntry top = entry.getTopEntry();
         if (top!=null) {
             model.setTopEntry(new LongIdLinkPair(top.getId(), LinkUriUtil.getFolderEntryLinkUri(top.getId())));
+            org.kablink.teaming.domain.FolderEntry parent = entry.getParentEntry();
+            if (parent!=null) {
+                if (parent.getId().equals(top.getId())) {
+                    model.setParentEntry(model.getTopEntry());
+                } else {
+                    model.setParentEntry(new LongIdLinkPair(parent.getId(), LinkUriUtil.getReplyLinkUri(parent.getId())));
+                }
+            }
         }
-        LinkUriUtil.populateFolderEntryLinks(model, model.getId());
+        LinkUriUtil.populateReplyLinks(model, model.getId());
         return model;
     }
 
@@ -395,6 +392,30 @@ public class ResourceUtil {
 
     public static EntityId buildEntityId(EntityIdentifier.EntityType type, Long id) {
         return new EntityId(id, type.name(), LinkUriUtil.getDefinableEntityLinkUri(type, id));
+    }
+
+    private static void populateBaseFolderEntryBrief(BaseFolderEntryBrief model, org.kablink.teaming.domain.FolderEntry entry) {
+        populateEntryBrief(model, entry);
+        model.setDocLevel(entry.getDocLevel());
+        model.setDocNumber(entry.getDocNumber());
+        List<String> filenames = new ArrayList<String>();
+        for (FileAttachment attach : entry.getFileAttachments()) {
+            filenames.add(attach.getName());
+        }
+        model.setFileNames(filenames.toArray(new String[filenames.size()]));
+    }
+
+    private static void populateBaseFolderEntry(BaseFolderEntry model, org.kablink.teaming.domain.FolderEntry entry, boolean includeAttachments, boolean textDescriptions) {
+        populateEntry(model, entry, includeAttachments, textDescriptions);
+        if (entry.isTop()) {
+            model.setEntryType(Constants.ENTRY_TYPE_ENTRY);
+        } else {
+            model.setEntryType(Constants.ENTRY_TYPE_REPLY);
+        }
+        model.setDocLevel(entry.getDocLevel());
+        model.setDocNumber(entry.getDocNumber());
+        model.setReplyCount(entry.getReplyCount());
+        model.setTotalReplyCount(entry.getTotalReplyCount());
     }
 
     private static void populateDefinableEntity(DefinableEntity model, org.kablink.teaming.domain.DefinableEntity entity, boolean includeAttachments, boolean textDescriptions) {

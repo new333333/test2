@@ -56,7 +56,7 @@ public class UniversalBuilder implements SearchResultBuilder<SearchableObject> {
             buildersByDocType.put(Constants.DOC_TYPE_ATTACHMENT, FilePropertiesBuilder.class);
             buildersByDocType.put(Constants.DOC_TYPE_BINDER, BinderBriefBuilder.class);
             buildersByEntryType.put(Constants.ENTRY_TYPE_ENTRY, FolderEntryBriefBuilder.class);
-            buildersByEntryType.put(Constants.ENTRY_TYPE_REPLY, FolderEntryBriefBuilder.class);
+            buildersByEntryType.put(Constants.ENTRY_TYPE_REPLY, ReplyBriefBuilder.class);
             buildersByEntryType.put(Constants.ENTRY_TYPE_USER, UserBriefBuilder.class);
             buildersByEntryType.put(Constants.ENTRY_TYPE_GROUP, GroupBriefBuilder.class);
             buildersByEntryType.put(Constants.ENTRY_TYPE_APPLICATION, ApplicationBriefBuilder.class);
