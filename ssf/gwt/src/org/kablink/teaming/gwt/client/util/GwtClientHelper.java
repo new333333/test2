@@ -741,6 +741,17 @@ public class GwtClientHelper {
 	public static native void invokeSimpleProfile(Element htmlElement, String binderId, String userName) /*-{
 		$wnd.top.ss_invokeSimpleProfile(htmlElement, binderId, userName);
 	}-*/;
+
+	/**
+	 * Returns true if the control key is currently pressed and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isControlKeyDown() {
+		GwtMainPage mp = GwtTeaming.getMainPage();
+		return ((null != mp) && mp.isControlKeyDown());
+	}
 	
 	/**
 	 * Returns true if the UI is in debug mode for the landing page

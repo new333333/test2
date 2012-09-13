@@ -947,6 +947,12 @@ public class GwtViewHelper {
 				// Yes!  Skip it.
 				continue;
 			}
+
+			// Did user somehow share the item with themselves?
+			if (si.getSharerId().equals(userId)) {
+				// Yes!  Skip it.
+				continue;
+			}
 			
 			// Is this share item's entity in the trash?
 			DefinableEntity siEntity = sm.getSharedEntity(si);
