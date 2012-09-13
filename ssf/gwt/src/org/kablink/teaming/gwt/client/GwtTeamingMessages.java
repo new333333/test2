@@ -1893,6 +1893,7 @@ public interface GwtTeamingMessages extends Messages
 	String manageNetFoldersDlg_Header();
 	String manageNetFoldersDlg_NameCol();
 	String manageNetFoldersDlg_NoNetFoldersLabel();
+	String manageNetFoldersDlg_PromptForSync();
 	String manageNetFoldersDlg_RootCol();
 	String manageNetFoldersDlg_SelectFoldersToDelete();
 	String manageNetFoldersDlg_SelectFoldersToSync();

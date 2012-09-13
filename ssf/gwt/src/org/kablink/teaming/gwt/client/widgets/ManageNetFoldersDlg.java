@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -756,27 +757,47 @@ public class ManageNetFoldersDlg extends DlgBox
 	@Override
 	public void onNetFolderCreated( NetFolderCreatedEvent event )
 	{
-		NetFolder netFolder;
+		final NetFolder netFolder;
 
 		// Get the newly created net folder.
 		netFolder = event.getNetFolder();
 		
 		if ( netFolder != null )
 		{
-			// Add the net folder as the first item in the list.
-			m_listOfNetFolders.add( 0, netFolder );
+			Scheduler.ScheduledCommand cmd;
 			
-			// Update the table to reflect the new folder we just created.
-			m_dataProvider.refresh();
-			
-			// Go to the first page.
-			m_pager.firstPage();
-			
-			// Select the newly created folder.
-			m_selectionModel.setSelected( netFolder, true );
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					// Add the net folder as the first item in the list.
+					m_listOfNetFolders.add( 0, netFolder );
+					
+					// Update the table to reflect the new folder we just created.
+					m_dataProvider.refresh();
+					
+					// Go to the first page.
+					m_pager.firstPage();
+					
+					// Select the newly created folder.
+					m_selectionModel.setSelected( netFolder, true );
 
-			// Tell the table how many folders we have.
-			m_netFoldersTable.setRowCount( m_listOfNetFolders.size(), true );
+					// Tell the table how many folders we have.
+					m_netFoldersTable.setRowCount( m_listOfNetFolders.size(), true );
+					
+					// Ask the user if they want to sync the newly created net folder.
+					if ( Window.confirm( GwtTeaming.getMessages().manageNetFoldersDlg_PromptForSync() ) )
+					{
+						HashSet<NetFolder> folders;
+						
+						folders = new HashSet<NetFolder>();
+						folders.add( netFolder );
+						syncNetFolders( folders );
+					}
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 	
@@ -813,23 +834,15 @@ public class ManageNetFoldersDlg extends DlgBox
 	}
 
 	/**
-	 * Sync the selected net folders.
+	 * Sync the given net folders
 	 */
-	private void syncSelectedNetFolders()
+	private void syncNetFolders( final Set<NetFolder> selectedFolders )
 	{
-		final Set<NetFolder> selectedFolders;
 		SyncNetFoldersCmd cmd;
 		AsyncCallback<VibeRpcResponse> rpcCallback = null;
-		
-		selectedFolders = getSelectedNetFolders();
 
-		// Do we have any net folders to sync?
 		if ( selectedFolders == null || selectedFolders.size() == 0 )
-		{
-			// No
-			Window.alert( GwtTeaming.getMessages().manageNetFoldersDlg_SelectFoldersToSync() );
 			return;
-		}
 		
 		// Mark each of the selected net folders as "sync in progress"
 		for ( NetFolder nextNetFolder : selectedFolders )
@@ -926,6 +939,26 @@ public class ManageNetFoldersDlg extends DlgBox
 		// Issue an ajax request to sync the list of net folders.
 		cmd = new SyncNetFoldersCmd( selectedFolders );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
+	}
+	
+	/**
+	 * Sync the selected net folders.
+	 */
+	private void syncSelectedNetFolders()
+	{
+		Set<NetFolder> selectedFolders;
+		
+		selectedFolders = getSelectedNetFolders();
+
+		// Do we have any net folders to sync?
+		if ( selectedFolders == null || selectedFolders.size() == 0 )
+		{
+			// No
+			Window.alert( GwtTeaming.getMessages().manageNetFoldersDlg_SelectFoldersToSync() );
+			return;
+		}
+		
+		syncNetFolders( selectedFolders );
 	}
 	
 	/**
