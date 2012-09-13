@@ -1540,8 +1540,6 @@ public class ShareThisDlg extends DlgBox
 			m_findCtrl.setSearchType( SearchType.PRINCIPAL );
 		}
 		
-		m_notifyCheckbox.setValue( true );
-
 		// Remove all of the rows from the table.
 		// We start at row 1 so we don't delete the header.
 		while ( m_shareTable.getRowCount() > 1 )
@@ -2198,6 +2196,7 @@ public class ShareThisDlg extends DlgBox
 		{
 			tmpPanel = new FlowPanel();
 			m_notifyCheckbox = new CheckBox( GwtTeaming.getMessages().shareDlg_notifyLabel() );
+			m_notifyCheckbox.setValue( true );
 			tmpPanel.add( m_notifyCheckbox );
 			
 			m_sendToWidget = new ShareSendToWidget();

@@ -51,7 +51,6 @@ public class NetFolder
 	private String m_name;
 	private String m_relativePath;
 	private String m_netFolderRootName;
-	private Long m_parentBinderId;
 	private NetFolderStatus m_status;
 	private String m_statusTicketId;
 	private GwtSchedule m_syncSchedule;
@@ -85,7 +84,6 @@ public class NetFolder
 		m_name = netFolder.getName();
 		m_relativePath = netFolder.getRelativePath();
 		m_netFolderRootName = netFolder.getNetFolderRootName();
-		m_parentBinderId = netFolder.getParentBinderId();
 		m_statusTicketId = netFolder.getStatusTicketId();
 		m_syncSchedule = netFolder.getSyncSchedule();
 	}
@@ -112,25 +110,6 @@ public class NetFolder
 	public String getNetFolderRootName()
 	{
 		return m_netFolderRootName;
-	}
-	
-	/**
-	 * 
-	 */
-	public Long getParentBinderId()
-	{
-		return m_parentBinderId;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getParentBinderIdAsString()
-	{
-		if ( m_parentBinderId != null )
-			return m_parentBinderId.toString();
-		
-		return null;
 	}
 	
 	/**
@@ -189,14 +168,6 @@ public class NetFolder
 	public void setNetFolderRootName( String rootName )
 	{
 		m_netFolderRootName = rootName;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setParentBinderId( Long id )
-	{
-		m_parentBinderId = id;
 	}
 	
 	/**

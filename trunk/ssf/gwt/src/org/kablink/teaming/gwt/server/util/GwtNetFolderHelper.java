@@ -45,6 +45,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Group;
@@ -75,7 +76,9 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.GwtUIHelper;
@@ -107,36 +110,54 @@ public class GwtNetFolderHelper
 		NetFolder netFolder ) throws GwtTeamingException
 	{
 		NetFolder newNetFolder = null;
+		Binder binder;
+		Long templateId = null;
+		List<TemplateBinder> listOfTemplateBinders;
 		
-		try
+		
+		// Find the template binder for mirrored folders.
+		listOfTemplateBinders = ami.getTemplateModule().getTemplates(Boolean.TRUE);
+		if ( listOfTemplateBinders != null )
 		{
-			Binder binder;
-			Long templateId = null;
-			List<TemplateBinder> listOfTemplateBinders;
-			
-			// Find the template binder for mirrored folders.
-			listOfTemplateBinders = ami.getTemplateModule().getTemplates(Boolean.TRUE);
-			if ( listOfTemplateBinders != null )
+			for ( TemplateBinder nextTemplateBinder : listOfTemplateBinders )
 			{
-				for ( TemplateBinder nextTemplateBinder : listOfTemplateBinders )
+				String internalId;
+				
+				internalId = nextTemplateBinder.getInternalId();
+				if ( internalId != null && internalId.equalsIgnoreCase( ObjectKeys.DEFAULT_FOLDER_FILR_ROOT_CONFIG ) )
 				{
-					String internalId;
-					
-					internalId = nextTemplateBinder.getInternalId();
-					if ( internalId != null && internalId.equalsIgnoreCase( ObjectKeys.DEFAULT_FOLDER_FILR_ROOT_CONFIG ) )
-					{
-						templateId = nextTemplateBinder.getId();
-						break;
-					}
+					templateId = nextTemplateBinder.getId();
+					break;
 				}
 			}
+		}
 
-			if ( templateId != null )
+		if ( templateId != null )
+		{
+			Binder parentBinder;
+			
+			// Get the binder where all net folders are created
+			try
+			{
+				parentBinder = getCoreDao().loadReservedBinder(
+														ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
+														RequestContextHolder.getRequestContext().getZoneId() );
+			}
+			catch ( Exception ex )
+			{
+				GwtTeamingException gtEx;
+				
+				gtEx = GwtServerHelper.getGwtTeamingException();
+				gtEx.setAdditionalDetails( NLT.get( "netfolder.cant.load.parent.binder" ) );
+				throw gtEx;				
+			}
+			
+			try
 			{
 				// Create the binder
 				binder = ami.getTemplateModule().addBinder(
 														templateId,
-														netFolder.getParentBinderId(),
+														parentBinder.getId(),
 														netFolder.getName(),
 														netFolder.getName() );
 				
@@ -158,38 +179,38 @@ public class GwtNetFolderHelper
 	
 		   			ami.getBinderModule().modifyBinder( binder.getId(), mid, fileMap, deleteAtts, null );				
 				}
-				
-				// Set the net folder's sync schedule
-				{
-					ScheduleInfo scheduleInfo;
-					
-					scheduleInfo = getScheduleInfoFromGwtSchedule( netFolder.getSyncSchedule() );
-					if ( scheduleInfo != null )
-					{
-						scheduleInfo.setFolderId( binder.getId() );
-						ami.getFolderModule().setSynchronizationSchedule( scheduleInfo, binder.getId() );
-					}
-				}
-				
-				newNetFolder = new NetFolder();
-				newNetFolder.setName( netFolder.getName() );
-				newNetFolder.setNetFolderRootName( netFolder.getNetFolderRootName() );
-				newNetFolder.setRelativePath( netFolder.getRelativePath() );
-				newNetFolder.setParentBinderId( netFolder.getParentBinderId() );
-				newNetFolder.setId( binder.getId() );
-				newNetFolder.setStatus( NetFolderStatus.READY );
-				newNetFolder.setSyncSchedule( netFolder.getSyncSchedule() );
 			}
-			else
-				throw new GwtTeamingException( ExceptionType.UNKNOWN, "Could not find the template binder for a mirrored folder" );
-		}
-		catch ( Exception ex )
-		{
-			GwtTeamingException gtEx;
+			catch ( Exception ex )
+			{
+				GwtTeamingException gtEx;
+				
+				gtEx = GwtServerHelper.getGwtTeamingException( ex );
+				gtEx.setAdditionalDetails( ex.toString() );
+				throw gtEx;				
+			}
 			
-			gtEx = GwtServerHelper.getGwtTeamingException( ex );
-			throw gtEx;				
+			// Set the net folder's sync schedule
+			{
+				ScheduleInfo scheduleInfo;
+				
+				scheduleInfo = getScheduleInfoFromGwtSchedule( netFolder.getSyncSchedule() );
+				if ( scheduleInfo != null )
+				{
+					scheduleInfo.setFolderId( binder.getId() );
+					ami.getFolderModule().setSynchronizationSchedule( scheduleInfo, binder.getId() );
+				}
+			}
+			
+			newNetFolder = new NetFolder();
+			newNetFolder.setName( netFolder.getName() );
+			newNetFolder.setNetFolderRootName( netFolder.getNetFolderRootName() );
+			newNetFolder.setRelativePath( netFolder.getRelativePath() );
+			newNetFolder.setId( binder.getId() );
+			newNetFolder.setStatus( NetFolderStatus.READY );
+			newNetFolder.setSyncSchedule( netFolder.getSyncSchedule() );
 		}
+		else
+			throw new GwtTeamingException( ExceptionType.UNKNOWN, "Could not find the template binder for a mirrored folder" );
 		
 		return newNetFolder;
 	}
@@ -470,6 +491,14 @@ public class GwtNetFolderHelper
 	}
 	
 	/**
+	 * 
+	 */
+	private static CoreDao getCoreDao()
+	{
+		return (CoreDao) SpringContextUtil.getBean( "coreDao" );
+	}
+	
+	/**
 	 * Return the appropriate DriverType from the given NetFolderRootType
 	 */
 	private static DriverType getDriverType( NetFolderRootType type )
@@ -654,7 +683,6 @@ public class GwtNetFolderHelper
 		netFolder.setName( binder.getTitle() );
 		netFolder.setNetFolderRootName( binder.getResourceDriverName() );
 		netFolder.setRelativePath( binder.getResourcePath() );
-		netFolder.setParentBinderId( binder.getParentBinder().getId() );
 		netFolder.setStatus( NetFolderStatus.READY );
 		
 		// Get the net folder's sync schedule.

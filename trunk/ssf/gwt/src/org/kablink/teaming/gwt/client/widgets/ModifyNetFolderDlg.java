@@ -37,12 +37,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
-import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtSchedule;
-import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.NetFolder;
@@ -50,40 +47,30 @@ import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.NetFolderCreatedEvent;
 import org.kablink.teaming.gwt.client.event.NetFolderModifiedEvent;
-import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateNetFolderCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyNetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
-import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
@@ -94,20 +81,14 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 public class ModifyNetFolderDlg extends DlgBox
 	implements
-		EditSuccessfulHandler,
-		SearchFindResultsEvent.Handler
+		EditSuccessfulHandler
 {
 	private NetFolder m_netFolder;	// If we are modifying a net folder this is the net folder.
 	private TextBox m_nameTxtBox;
 	private TextBox m_relativePathTxtBox;
 	private ListBox m_netFolderRootsListbox;
 	private InlineLabel m_noNetFolderRootsLabel;
-	private InlineLabel m_parentFolderNameLabel;
-	private Button m_editBtn;
-	private FlowPanel m_findPanel;
-	private FindCtrl m_findCtrl;
 	private ScheduleWidget m_scheduleWidget;
-	private String m_parentFolderId = null;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 
 	
@@ -116,7 +97,6 @@ public class ModifyNetFolderDlg extends DlgBox
 	// this array is used.
 	private static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[]
     {
-		TeamingEvents.SEARCH_FIND_RESULTS,
 	};
 
 	
@@ -199,17 +179,6 @@ public class ModifyNetFolderDlg extends DlgBox
 			++nextRow;
 		}
 		
-		// Create the controls for "relative path"
-		{
-			label = new InlineLabel( messages.modifyNetFolderDlg_RelativePathLabel() );
-			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
-			
-			m_relativePathTxtBox = new TextBox();
-			m_relativePathTxtBox.setVisibleLength( 50 );
-			table.setWidget( nextRow, 1, m_relativePathTxtBox );
-			++nextRow;
-		}
-		
 		// Create the controls for "net folder root"
 		{
 			FlowPanel flowPanel;
@@ -232,131 +201,15 @@ public class ModifyNetFolderDlg extends DlgBox
 			++nextRow;
 		}
 		
-		// Create the controls needed to select the parent folder
+		// Create the controls for "relative path"
 		{
-			FlowPanel panel;
-			
-			// Add a label that will say Current folder:
-			label = new InlineLabel( messages.modifyNetFolderDlg_ParentFolderLabel() );
+			label = new InlineLabel( messages.modifyNetFolderDlg_RelativePathLabel() );
 			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
 			
-			// Add a label to hold the name of the selected folder.
-			m_parentFolderNameLabel = new InlineLabel( GwtTeaming.getMessages().noFolderSelected() );
-			m_parentFolderNameLabel.addStyleName( "noFolderSelected" );
-			m_parentFolderNameLabel.addStyleName( "marginLeftPoint25em" );
-			m_parentFolderNameLabel.addStyleName( "marginright10px" );
-			panel = new FlowPanel();
-			panel.add( m_parentFolderNameLabel );
-
-			// Add an "Edit" button
-			{
-				ClickHandler clickHandler;
-				
-				m_editBtn = new Button( GwtTeaming.getMessages().edit() );
-				m_editBtn.addStyleName( "teamingButton" );
-				panel.add( m_editBtn );
-				
-				clickHandler = new ClickHandler()
-				{
-					/**
-					 * 
-					 */
-					@Override
-					public void onClick( ClickEvent event )
-					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							/**
-							 * 
-							 */
-							@Override
-							public void execute()
-							{
-								// Make the find control visible.
-								showFindControl();
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-					
-				};
-				m_editBtn.addClickHandler( clickHandler );
-			}
-
-			table.setWidget( nextRow, 1, panel );
+			m_relativePathTxtBox = new TextBox();
+			m_relativePathTxtBox.setVisibleLength( 50 );
+			table.setWidget( nextRow, 1, m_relativePathTxtBox );
 			++nextRow;
-		
-			// Add a "find" control
-			{
-				InlineLabel findLabel;
-				
-				m_findPanel = new FlowPanel();
-				m_findPanel.addStyleName( "findCtrlPanel" );
-				m_findPanel.setVisible( false );
-				
-				// Add an image the user can click on to close the find panel.
-				{
-					Image img;
-					ImageResource imageResource;
-					ClickHandler clickHandler;
-					
-					imageResource = GwtTeaming.getImageBundle().closeX();
-					img = new Image( imageResource );
-					img.addStyleName( "findCtrlCloseImg" );
-					img.getElement().setAttribute( "title", GwtTeaming.getMessages().close() );
-					m_findPanel.add( img );
-			
-					// Add a click handler to the "close" image.
-					clickHandler = new ClickHandler()
-					{
-						@Override
-						public void onClick( ClickEvent clickEvent )
-						{
-							Scheduler.ScheduledCommand cmd;
-							
-							cmd = new Scheduler.ScheduledCommand()
-							{
-								@Override
-								public void execute()
-								{
-									// Close the panel that holds find controls.
-									hideFindControl();
-								}
-							};
-							Scheduler.get().scheduleDeferred( cmd );
-						}
-					};
-					img.addClickHandler( clickHandler );
-				}
-				
-				final FlexTable findTable = new FlexTable();
-				
-				findLabel = new InlineLabel( GwtTeaming.getMessages().find() );
-				findLabel.addStyleName( "findCtrlLabel" );
-				findTable.setWidget( 0, 0, findLabel );
-				
-				FindCtrl.createAsync(
-								this,
-								SearchType.PLACES,
-								new FindCtrlClient() {				
-					@Override
-					public void onUnavailable()
-					{
-						// Nothing to do.  Error handled in asynchronous provider.
-					}
-					
-					@Override
-					public void onSuccess( FindCtrl findCtrl )
-					{
-						m_findCtrl = findCtrl;
-						findTable.setWidget( 0, 1, m_findCtrl );
-					}
-				} );
-				
-				m_findPanel.add( findTable );
-			}
 		}
 		
 		// Create the controls for defining the sync schedule
@@ -382,7 +235,6 @@ public class ModifyNetFolderDlg extends DlgBox
 		}
 		
 		mainPanel.add( table );
-		mainPanel.add( m_findPanel );
 		mainPanel.add( captionPanel );
 
 		return mainPanel;
@@ -410,7 +262,6 @@ public class ModifyNetFolderDlg extends DlgBox
 				errorPanel = getErrorPanel();
 				errorPanel.clear();
 				
-				errMsg = GwtTeaming.getMessages().modifyNetFolderDlg_ErrorCreatingNetFolder( caught.toString() );
 				if ( caught instanceof GwtTeamingException )
 				{
 					GwtTeamingException ex;
@@ -423,7 +274,16 @@ public class ModifyNetFolderDlg extends DlgBox
 						desc = GwtTeaming.getMessages().modifyNetFolderDlg_NetFolderAlreadyExists();
 						errMsg = GwtTeaming.getMessages().modifyNetFolderDlg_ErrorCreatingNetFolder( desc );
 					}
+					else
+					{
+						errMsg = GwtTeaming.getMessages().modifyNetFolderDlg_ErrorCreatingNetFolder( ex.getAdditionalDetails() );
+					}
 				}
+				else
+				{
+					errMsg = GwtTeaming.getMessages().modifyNetFolderDlg_ErrorCreatingNetFolder( caught.toString() );
+				}
+				
 				label = new Label( errMsg );
 				label.addStyleName( "dlgErrorLabel" );
 				errorPanel.add( label );
@@ -487,12 +347,6 @@ public class ModifyNetFolderDlg extends DlgBox
 				return false;
 			}
 			
-			// Did the user select a binder to create the net folder in.
-			if ( isParentBinderValid() == false )
-			{
-				return false;
-			}
-			
 			// Issue an rpc request to create the net folder.  If the rpc request is successful,
 			// close this dialog.
 			createNetFolderAndClose();
@@ -524,57 +378,6 @@ public class ModifyNetFolderDlg extends DlgBox
 			return m_nameTxtBox;
 		
 		return m_relativePathTxtBox;
-	}
-	
-	/**
-	 * Issue an ajax request to get the folder for the given id.  After we get the folder
-	 * we will update the name of the selected folder.
-	 */
-	private void getParentFolder()
-	{
-		if ( m_parentFolderId != null )
-		{
-			GetFolderCmd cmd;
-			AsyncCallback<VibeRpcResponse> callback;
-			
-			callback = new AsyncCallback<VibeRpcResponse>()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void onFailure( Throwable t )
-				{
-					GwtClientHelper.handleGwtRPCFailure(
-						t,
-						GwtTeaming.getMessages().rpcFailure_GetFolder(),
-						m_parentFolderId );
-				}
-		
-				/**
-				 * 
-				 * @param result
-				 */
-				@Override
-				public void onSuccess( VibeRpcResponse response )
-				{
-					GwtFolder gwtFolder;
-					
-					gwtFolder = (GwtFolder) response.getResponseData();
-					
-					if ( gwtFolder != null )
-					{
-						// Update the name of the selected folder.
-						m_parentFolderNameLabel.setText( gwtFolder.getFolderName() );
-						m_parentFolderNameLabel.removeStyleName( "noFolderSelected" );
-						m_parentFolderNameLabel.addStyleName( "bold" );
-					}
-				}
-			};
-	
-			cmd = new GetFolderCmd( null, m_parentFolderId );
-			GwtClientHelper.executeCommand( cmd, callback );
-		}
 	}
 	
 	/**
@@ -659,7 +462,6 @@ public class ModifyNetFolderDlg extends DlgBox
 		netFolder.setName( getName() );
 		netFolder.setRelativePath( getRelativePath() );
 		netFolder.setNetFolderRootName( getNetFolderRootName() );
-		netFolder.setParentBinderId( getParentBinderId() );
 		netFolder.setSyncSchedule( getSyncSchedule() );
 		
 		if ( m_netFolder != null )
@@ -699,17 +501,6 @@ public class ModifyNetFolderDlg extends DlgBox
 	}
 	
 	/**
-	 * Return the id of the binder the user selected to create the net folder in.
-	 */
-	private Long getParentBinderId()
-	{
-		if ( m_parentFolderId != null )
-			return Long.valueOf( m_parentFolderId );
-		
-		return null;
-	}
-	
-	/**
 	 * Return the relative path entered by the user.
 	 */
 	private String getRelativePath()
@@ -728,25 +519,6 @@ public class ModifyNetFolderDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private void hideFindControl()
-	{
-		m_findPanel.setVisible( false );
-		if ( m_findCtrl != null )
-			m_findCtrl.hideSearchResults();
-	}
-
-	/**
-	 * Hide all of the controls related to selecting a parent folder
-	 */
-	private void hideParentFolderControls()
-	{
-		m_editBtn.setVisible( false );
-		m_findPanel.setVisible( false );
-	}
-	
-	/**
-	 * 
-	 */
 	public void init( NetFolder netFolder )
 	{
 		hideErrorPanel();
@@ -759,7 +531,6 @@ public class ModifyNetFolderDlg extends DlgBox
 		m_netFolderRootsListbox.clear();
 		m_netFolderRootsListbox.setVisible( false );
 		m_noNetFolderRootsLabel.setVisible( false );
-		m_parentFolderId = null;
 		
 		// Clear out the sync schedule controls
 		m_scheduleWidget.init( null );
@@ -777,13 +548,6 @@ public class ModifyNetFolderDlg extends DlgBox
 			
 			m_relativePathTxtBox.setValue( netFolder.getRelativePath() );
 			
-			// Hide all of the controls related to selecting a parent folder
-			hideParentFolderControls();
-			
-			// Get the name of the parent binder
-			m_parentFolderId = m_netFolder.getParentBinderIdAsString();
-			getParentFolder();
-			
 			// Initialize the sync schedule controls
 			m_scheduleWidget.init( m_netFolder.getSyncSchedule() );
 		}
@@ -795,16 +559,6 @@ public class ModifyNetFolderDlg extends DlgBox
 			
 			// Enable the "Name" field.
 			m_nameTxtBox.setEnabled( true );
-			
-			// Show all of the controls related to selecting a parent folder.
-			showParentFolderControls();
-			
-			if ( m_findCtrl != null )
-				m_findCtrl.setInitialSearchString( "" );
-
-			m_parentFolderNameLabel.setText( GwtTeaming.getMessages().noFolderSelected() );
-			m_parentFolderNameLabel.addStyleName( "noFolderSelected" );
-			m_parentFolderNameLabel.removeStyleName( "bold" );
 		}
 		
 		// Issue an ajax request to get the list of net folder roots this user has
@@ -824,30 +578,6 @@ public class ModifyNetFolderDlg extends DlgBox
 		{
 			Window.alert( GwtTeaming.getMessages().modifyNetFolderDlg_NameRequired() );
 			return false;
-		}
-		
-		return true;
-	}
-	
-	/**
-	 * Did the user select a binder to create the net folder in?
-	 */
-	private boolean isParentBinderValid()
-	{
-		// Are we dealing with an existing net folder?
-		if ( m_netFolder == null )
-		{
-			Long binderId;
-			
-			// No
-			// Did the user select a binder to create the net folder in.
-			binderId = getParentBinderId();
-			if ( binderId == null )
-			{
-				// No
-				Window.alert( GwtTeaming.getMessages().modifyNetFolderDlg_ParentBinderRequired() );
-				return false;
-			}
 		}
 		
 		return true;
@@ -879,7 +609,6 @@ public class ModifyNetFolderDlg extends DlgBox
 				errorPanel = getErrorPanel();
 				errorPanel.clear();
 				
-				errMsg = GwtTeaming.getMessages().modifyNetFolderDlg_ErrorModifyingNetFolder( caught.toString() );
 				if ( caught instanceof GwtTeamingException )
 				{
 					GwtTeamingException ex;
@@ -892,7 +621,16 @@ public class ModifyNetFolderDlg extends DlgBox
 						desc = GwtTeaming.getMessages().modifyNetFolderDlg_InsufficientRights();
 						errMsg = GwtTeaming.getMessages().modifyNetFolderDlg_ErrorModifyingNetFolder( desc );
 					}
+					else
+					{
+						errMsg = GwtTeaming.getMessages().modifyNetFolderDlg_ErrorModifyingNetFolder( ex.getAdditionalDetails() );
+					}
 				}
+				else
+				{
+					errMsg = GwtTeaming.getMessages().modifyNetFolderDlg_ErrorModifyingNetFolder( caught.toString() );
+				}
+				
 				label = new Label( errMsg );
 				label.addStyleName( "dlgErrorLabel" );
 				errorPanel.add( label );
@@ -945,40 +683,6 @@ public class ModifyNetFolderDlg extends DlgBox
 		unregisterEvents();
 	}
 	
-	/**
-	 * Handles SearchFindResultsEvent's received by this class.
-	 * 
-	 * Implements the SearchFindResultsEvent.Handler.onSearchFindResults() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onSearchFindResults( SearchFindResultsEvent event )
-	{
-		// If the find results aren't for this widget...
-		if ( !((Widget) event.getSource()).equals( this ) )
-		{
-			// ...ignore the event.
-			return;
-		}
-		
-		// Make sure we are dealing with a GwtFolder object.
-		GwtTeamingItem selectedObj = event.getSearchResults();
-		if ( selectedObj instanceof GwtFolder )
-		{
-			GwtFolder gwtFolder;
-			
-			gwtFolder = (GwtFolder) selectedObj;
-			m_parentFolderId = gwtFolder.getFolderId();
-			
-			// Hide the find control.
-			hideFindControl();
-			
-			// Issue an ajax request to get information about the selected folder.
-			getParentFolder();
-		}
-	}
-
 	/*
 	 * Registers any global event handlers that need to be registered.
 	 */
@@ -1003,31 +707,6 @@ public class ModifyNetFolderDlg extends DlgBox
 		}
 	}
 
-	/**
-	 * Show the find control and give it the focus.
-	 */
-	private void showFindControl()
-	{
-		m_findPanel.setVisible( true );
-
-		if ( m_findCtrl != null )
-		{
-			FocusWidget focusWidget;
-
-			focusWidget = m_findCtrl.getFocusWidget();
-			if ( focusWidget != null )
-				focusWidget.setFocus( true );
-		}
-	}
-	
-	/**
-	 * Show all of the controls related to selecting a parent folder
-	 */
-	private void showParentFolderControls()
-	{
-		m_editBtn.setVisible( true );
-	}
-	
 	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */
