@@ -812,7 +812,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuViewsWhatsUnreadInFolder();
 	String mainMenuViewsWhatsUnreadInWorkspace();
 	String mainMenuWhoHasAccessDlgGroupsWithAccess();
-	String mainMenuWhoHasAccessDlgHeader(String entityTitle);
+	String mainMenuWhoHasAccessDlgHeader();
 	String mainMenuWhoHasAccessDlgNone();
 	String mainMenuWhoHasAccessDlgReading();
 	String mainMenuWhoHasAccessDlgUsersWithAccess();

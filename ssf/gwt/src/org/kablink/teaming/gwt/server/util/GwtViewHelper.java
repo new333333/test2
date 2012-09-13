@@ -1854,7 +1854,7 @@ public class GwtViewHelper {
 				Binder binder = binderMap.get(fr.getEntityId().getEntityId());
 				if (null != binder) {
 					// Yes!  Store its icon names...
-					fr.setBinderIcon(binder.getIconName(), BinderIconSize.SMALL);
+					fr.setBinderIcon(binder.getIconName(),                BinderIconSize.SMALL );
 					fr.setBinderIcon(binder.getIconName(IconSize.MEDIUM), BinderIconSize.MEDIUM);
 					fr.setBinderIcon(binder.getIconName(IconSize.LARGE ), BinderIconSize.LARGE );
 
@@ -4493,14 +4493,19 @@ public class GwtViewHelper {
 	@SuppressWarnings("unchecked")
 	public static WhoHasAccessInfoRpcResponseData getWhoHasAccess(AllModulesInjected bs, HttpServletRequest request, EntityId entityId) throws GwtTeamingException {
 		try {
+			// Allocate an WhoHasAccessInfoRpcResponseData to track the entry
+			// types for the requested binders.
+			WhoHasAccessInfoRpcResponseData reply = new WhoHasAccessInfoRpcResponseData();
+			
 			// Is the entity a binder?
-			String entityTitle;
 			WorkArea workArea;
 			if (entityId.isBinder()) {
 				// Yes!  We use it directly as the work are. 
 				Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck(entityId.getEntityId());
-				entityTitle   = binder.getTitle();
-				
+				reply.setEntityTitle(binder.getTitle()                                         );
+				reply.setEntityIcon( binder.getIconName(),                BinderIconSize.SMALL );
+				reply.setEntityIcon( binder.getIconName(IconSize.MEDIUM), BinderIconSize.MEDIUM);
+				reply.setEntityIcon( binder.getIconName(IconSize.LARGE ), BinderIconSize.LARGE );
 				workArea = binder;
 			}
 			
@@ -4509,8 +4514,7 @@ public class GwtViewHelper {
 				// entry!  Access the top entry in the chain (in case
 				// this is a comment, ...)
 				FolderEntry	fe = bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
-				entityTitle = fe.getTitle();
-				
+				reply.setEntityTitle(fe.getTitle());
 				FolderEntry	feTop = fe.getTopEntry();
 				if (null != feTop) {
 					fe = feTop;
@@ -4523,10 +4527,6 @@ public class GwtViewHelper {
 				else workArea = bs.getBinderModule().getBinderWithoutAccessCheck(entityId.getBinderId());
 			}
 
-			// Allocate an WhoHasAccessInfoRpcResponseData to track the entry
-			// types for the requested binders.
-			WhoHasAccessInfoRpcResponseData reply = new WhoHasAccessInfoRpcResponseData(entityTitle);
-			
 			// Get the access control information for the work are.
 			Map model = new HashMap();
 			AccessControlController.setupAccess(bs, workArea, model);
