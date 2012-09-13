@@ -159,6 +159,7 @@ public class LinkUriUtil {
             model.addAdditionalLink("child_library_tree", model.getLink() + "/library_tree");
             model.addAdditionalLink("child_library_files", model.getLink() + "/library_files");
         }
+        model.addAdditionalLink("recent_activity", model.getLink() + "/recent_activity");
         model.addAdditionalLink("team_members", model.getLink() + "/team_members");
         model.addAdditionalLink("tags", model.getLink() + "/tags");
     }
@@ -167,7 +168,6 @@ public class LinkUriUtil {
         populateBinderLinks(model);
         model.addAdditionalLink("child_workspaces", model.getLink() + "/workspaces");
         model.addAdditionalLink("child_folders", model.getLink() + "/folders");
-        model.addAdditionalLink("recent_activity", model.getLink() + "/recent_activity");
     }
 
     public static void populateFolderLinks(BaseRestObject model) {

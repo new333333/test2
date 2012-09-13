@@ -42,6 +42,7 @@ import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Junction;
@@ -50,10 +51,13 @@ import org.kablink.util.search.Restrictions;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.kablink.util.search.Restrictions.in;
@@ -133,6 +137,24 @@ public class NetFoldersResource extends AbstractResource {
                     "/net_folders/library_entities", nextParams, offset);
         }
         return results;
+    }
+
+    @GET
+    @Path("/recent_activity")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<SearchableObject> getRecentActivity(@QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                @QueryParam("first") @DefaultValue("0") Integer offset,
+                @QueryParam("count") @DefaultValue("20") Integer maxCount) {
+        SearchResultList<BinderBrief> folders = getNetFolders(true, 0, -1);
+        if (folders.getCount()==0) {
+            return new SearchResultList<SearchableObject>();
+        }
+        List<String> binders = new ArrayList<String>();
+        for (BinderBrief binder : folders.getResults()) {
+            binders.add(binder.getId().toString());
+        }
+        Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, binders, null, null, true, Constants.LASTACTIVITY_FIELD);
+        return _getRecentActivity(textDescriptions, offset, maxCount, criteria, "/net_folders/recent_activity");
     }
 
 }

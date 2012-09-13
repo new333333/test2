@@ -26,6 +26,7 @@ import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.*;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.util.search.*;
 
 import javax.ws.rs.*;
@@ -122,6 +123,19 @@ public class ShareResource extends AbstractResource {
             results.appendAll(getSubFiles(getSharedByBinders(userId, true), true));
         }
         return results;
+    }
+
+    @GET
+    @Path("/by_user/{id}/recent_activity")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<SearchableObject> getRecentActivityInSharedByUser(
+            @PathParam("id") Long userId,
+            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+            @QueryParam("first") @DefaultValue("0") Integer offset,
+            @QueryParam("count") @DefaultValue("20") Integer maxCount) {
+        ShareItemSelectSpec spec = new ShareItemSelectSpec();
+        spec.setSharerId(userId);
+        return _getRecentActivity(textDescriptions, offset, maxCount, spec, "/shares/by_user/" + userId + "/recent_activity");
     }
 
     @GET
@@ -269,6 +283,38 @@ public class ShareResource extends AbstractResource {
                                                    @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
         SharedBinderBrief [] sharedBinders = getSharedWithBinders(userId, true);
         return getSubBinderTree(sharedBinders, buildLibraryTreeCriterion(), textDescriptions);
+    }
+
+    @GET
+    @Path("/with_user/{id}/recent_activity")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<SearchableObject> getRecentActivityInSharedWithUser(
+            @PathParam("id") Long userId,
+            @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+            @QueryParam("first") @DefaultValue("0") Integer offset,
+            @QueryParam("count") @DefaultValue("20") Integer maxCount) {
+        ShareItemSelectSpec spec = new ShareItemSelectSpec();
+        spec.setRecipientsFromUserMembership(userId);
+        return _getRecentActivity(textDescriptions, offset, maxCount, spec, "/shares/with_user/" + userId + "/recent_activity");
+    }
+
+    private SearchResultList<SearchableObject> _getRecentActivity(boolean textDescriptions, Integer offset, Integer maxCount, ShareItemSelectSpec spec, String nextUrl) {
+        List<String> binderIds = new ArrayList<String>();
+        List<String> entryIds = new ArrayList<String>();
+        List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
+        if (shareItems.size()==0) {
+            return new SearchResultList<SearchableObject>();
+        }
+        for (ShareItem shareItem : shareItems) {
+            EntityIdentifier entityId = shareItem.getSharedEntityIdentifier();
+            if (entityId.getEntityType()== EntityIdentifier.EntityType.folderEntry) {
+                entryIds.add(entityId.getEntityId().toString());
+            } else if (entityId.getEntityType()== EntityIdentifier.EntityType.folder || entityId.getEntityType()== EntityIdentifier.EntityType.workspace) {
+                binderIds.add(entityId.getEntityId().toString());
+            }
+        }
+        Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, binderIds, entryIds, null, true, Constants.LASTACTIVITY_FIELD);
+        return _getRecentActivity(textDescriptions, offset, maxCount, criteria, nextUrl);
     }
 
     protected SharedBinderBrief [] getSharedByBinders(Long userId, boolean onlyLibrary)  {

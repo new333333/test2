@@ -203,6 +203,7 @@ public class SelfResource extends AbstractResource {
         binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
         binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
     }
 
@@ -221,6 +222,7 @@ public class SelfResource extends AbstractResource {
         binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
         binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
     }
 
@@ -238,6 +240,7 @@ public class SelfResource extends AbstractResource {
         binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
 //        binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
     }
 
@@ -255,6 +258,7 @@ public class SelfResource extends AbstractResource {
         //binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri);
         //binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
     }
 }

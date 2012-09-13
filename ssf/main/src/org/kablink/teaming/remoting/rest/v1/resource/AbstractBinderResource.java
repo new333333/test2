@@ -176,6 +176,19 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 	}
 
     @GET
+    @Path("{id}/recent_activity")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public SearchResultList<SearchableObject> getRecentActivity(@PathParam("id") Long id,
+                                                                @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                @QueryParam("first") @DefaultValue("0") Integer offset,
+                @QueryParam("count") @DefaultValue("20") Integer maxCount) {
+        List<String> binders = new ArrayList<String>();
+        binders.add(id.toString());
+        Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, binders, null, null, true, Constants.LASTACTIVITY_FIELD);
+        return _getRecentActivity(textDescriptions, offset, maxCount, criteria, this.getBasePath() + id + "/recent_activity");
+    }
+
+    @GET
    	@Path("{id}/team_members")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
    	public SearchResultList<TeamMember> getTeamMembers(@PathParam("id") long id,
