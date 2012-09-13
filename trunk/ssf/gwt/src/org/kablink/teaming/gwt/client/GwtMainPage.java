@@ -158,9 +158,12 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
@@ -228,6 +231,7 @@ public class GwtMainPage extends ResizeComposite
 	public static RequestInfo m_requestInfo = jsGetRequestInfo();;
 	public static ContentControl m_contentCtrl;
 
+	private boolean m_controlKeyDown;
 	private AddNewFolderDlg m_addNewFolderDlg = null;
 	private VibeDockLayoutPanel m_mainPanel = null;
 	private DockLayoutPanel m_splitLayoutPanel = null;
@@ -542,12 +546,39 @@ public class GwtMainPage extends ResizeComposite
 			}// end onSuccess()
 		} );
 	}// end ActivityStreamCtrl()
-	
+
+	/*
+	 * Adds a native preview handler that we can use to watch for
+	 * various keyboard states, ...
+	 */
+	private void addNativePreviewHandler() {
+		Event.addNativePreviewHandler(new Event.NativePreviewHandler() {
+			@Override
+			public void onPreviewNativeEvent(NativePreviewEvent event) {
+				if (!event.isCanceled()) {
+					NativeEvent ne = event.getNativeEvent();
+					switch (event.getTypeInt()) {
+					case Event.ONKEYDOWN:
+						m_controlKeyDown = (17 == ne.getKeyCode());
+						break;
+						
+					case Event.ONKEYUP:
+						m_controlKeyDown = false;
+						break;
+					}
+				}
+			}
+		});
+	}
 	/*
 	 * Starts the initializations of the main page.
 	 */
 	private void constructMainPage_Start()
 	{
+		// Add a native preview handler that we can use to watch for
+		// various keyboard states, ...
+		addNativePreviewHandler();
+		
 		// Initialize the flag indicating of we're running Novell Vibe
 		// vs. Kablink Vibe...
 		m_novellTeaming = m_requestInfo.isNovellTeaming();
@@ -3278,6 +3309,17 @@ public class GwtMainPage extends ResizeComposite
 		return ( ( null != m_adminControl ) && m_adminControl.isShowing() );
 	}// end isAdminActive()
 
+	/**
+	 * Returns true if the control key is currently pressed and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isControlKeyDown()
+	{
+		return m_controlKeyDown;
+	}
+	
 	/**
 	 * Returns true if we currently processing search results and false
 	 * otherwise.

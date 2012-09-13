@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.binderviews.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.ChangeEntryTypesDlg;
@@ -75,6 +76,7 @@ import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.UIObject;
@@ -420,12 +422,18 @@ public class BinderViewsHelper {
 	 * For browsers that support it, that will be the HTML5 file upload
 	 * facility.  For all others, that will be the Java Applet.
 	 * 
+	 * For browsers that support HTML5, the applet can still be used by
+	 * holding down the control key when this event is fired.
+	 * Typically, the user would hold it down while click 'Add Files'
+	 * on the entry menu.
+	 * 
 	 * @param folderInfo
 	 * @param showRelativeWidget
 	 */
 	public static void invokeDropBox(final BinderInfo folderInfo, final UIObject showRelativeWidget) {
-		// Are we running in a browser that support file uploads using HTML5?
-		if (AddFilesHtml5Popup.browserSupportsHtml5()) {
+		// Are we running in a browser that support file uploads using
+		// HTML5 and is the control key not pressed?
+		if (AddFilesHtml5Popup.browserSupportsHtml5() && (!(GwtClientHelper.isControlKeyDown()))) {
 			// Yes!  Have we instantiated an HTML5 add files popup yet?
 			if (null == m_addFilesHtml5Popup) {
 				// No!  Instantiate one now...
