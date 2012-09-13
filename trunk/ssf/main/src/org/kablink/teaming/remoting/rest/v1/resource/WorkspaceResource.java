@@ -239,25 +239,6 @@ public class WorkspaceResource extends AbstractBinderResource {
                 keyword, offset, maxCount, "/workspaces/" + id + "/library_entities", nextParams, textDescriptions);
 	}
 
-    @GET
-    @Path("{id}/recent_activity")
-   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResultList<SearchableObject> getRecentActivity(@PathParam("id") Long id,
-                                                                @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
-                @QueryParam("first") @DefaultValue("0") Integer offset,
-                @QueryParam("count") @DefaultValue("20") Integer maxCount) {
-        List<String> workspaces = new ArrayList<String>();
-        workspaces.add(id.toString());
-        Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, workspaces, null, null, true, Constants.LASTACTIVITY_FIELD);
-        Map resultsMap = getBinderModule().executeSearchQuery(criteria, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
-        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
-        Map<String, String> nextParams = new HashMap<String, String>();
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap,
-                "/workspaces/" + id + "/recent_activity", nextParams, offset);
-        return results;
-    }
-
     @Override
     protected Binder _getBinder(long id) {
         return _getWorkspace(id);

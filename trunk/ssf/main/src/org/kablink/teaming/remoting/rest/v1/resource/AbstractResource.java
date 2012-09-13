@@ -51,8 +51,12 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
+import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
+import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
@@ -65,6 +69,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -99,6 +104,16 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if(!(entry instanceof org.kablink.teaming.domain.User))
             throw new IllegalArgumentException(userId + " does not represent an user. It is " + entry.getClass().getSimpleName());
         return (org.kablink.teaming.domain.User) entry;
+    }
+
+    protected SearchResultList<SearchableObject> _getRecentActivity(boolean textDescriptions, Integer offset, Integer maxCount, Criteria criteria, String nextUrl) {
+        Map resultsMap = getBinderModule().executeSearchQuery(criteria, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
+        Map<String, String> nextParams = new HashMap<String, String>();
+        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(textDescriptions), resultsMap,
+                nextUrl, nextParams, offset);
+        return results;
     }
 
     protected Document getDocument(String xml) {
