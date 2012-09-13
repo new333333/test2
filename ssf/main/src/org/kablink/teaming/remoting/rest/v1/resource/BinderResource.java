@@ -67,7 +67,7 @@ import java.util.Set;
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class BinderResource extends AbstractResource {
     @GET
-    public SearchResultList<BinderBrief> getBinders(@QueryParam("id") Set<Integer> ids,
+    public SearchResultList<BinderBrief> getBinders(@QueryParam("id") Set<Long> ids,
                                                     @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                     @QueryParam("first") @DefaultValue("0") Integer offset,
                                                     @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
@@ -75,7 +75,7 @@ public class BinderResource extends AbstractResource {
         criterion.add(buildBindersCriterion());
         if (ids!=null) {
             Junction or = Restrictions.disjunction();
-            for (Integer id : ids) {
+            for (Long id : ids) {
                 or.add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
             }
             criterion.add(or);
