@@ -35,6 +35,9 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.util.BinderIconSize;
+import org.kablink.teaming.gwt.client.util.BinderIcons;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -43,9 +46,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class WhoHasAccessInfoRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private List<AccessInfo>	m_groups;		//
-	private List<AccessInfo>	m_users;		//
-	private String				m_entityTitle;	//
+	private BinderIcons			m_entityIcons;		//
+	private List<AccessInfo>	m_groups;			//
+	private List<AccessInfo>	m_users;			//
+	private String				m_entityTitle;		//
 
 	/**
 	 * Inner class used to track information about an entity that has
@@ -179,8 +183,11 @@ public class WhoHasAccessInfoRpcResponseData implements IsSerializable, VibeRpcR
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
 	public WhoHasAccessInfoRpcResponseData() {
-		// Initialize the super class.
+		// Initialize the super class...
 		super();
+		
+		// ...and initialize everything else.
+		m_entityIcons = new BinderIcons();
 	}
 	
 	/**
@@ -209,18 +216,20 @@ public class WhoHasAccessInfoRpcResponseData implements IsSerializable, VibeRpcR
 	 * 
 	 * @return
 	 */
-	public List<AccessInfo> getGroups()      {validateGroupList(); return m_groups;     }
-	public List<AccessInfo> getUsers()       {validateUserList();  return m_users;      }
-	public String           getEntityTitle() {                     return m_entityTitle;}
+	public List<AccessInfo> getGroups()                                  {validateGroupList(); return m_groups;              }
+	public List<AccessInfo> getUsers()                                   {validateUserList();  return m_users;               }
+	public String           getEntityIcon(BinderIconSize entityIconSize) {return m_entityIcons.getBinderIcon(entityIconSize);}
+	public String           getEntityTitle()                             {                     return m_entityTitle;         }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setGroupList(List<AccessInfo> groups) {m_groups      = groups;     }
-	public void setUserList( List<AccessInfo> users)  {m_users       = users;      }
-	public void setEntityTitle(String entityTitle)    {m_entityTitle = entityTitle;}
+	public void setGroupList(  List<AccessInfo> groups)                                    {m_groups      = groups;                                 }
+	public void setUserList(   List<AccessInfo> users)                                     {m_users       = users;                                  }
+	public void setEntityIcon( String           entityIcon, BinderIconSize entityIconSize) {m_entityIcons.setBinderIcon(entityIcon, entityIconSize);}
+	public void setEntityTitle(String           entityTitle)                               {m_entityTitle = entityTitle;                            }
 
 	/*
 	 * List validation.  Used to guard against null pointer references
