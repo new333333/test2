@@ -34,6 +34,7 @@ public class FolderEntryBriefBuilder extends DefinableEntityBriefBuilder impleme
         }
         model.setFileNames(getValueAsStringArray(entry.get(Constants.FILENAME_FIELD)));
 
+        model.setTotalReplyCount(getInt(entry, Constants.TOTALREPLYCOUNT_FIELD));
         Long parentEntryId = getLong(entry, Constants.ENTRY_PARENT_ID_FIELD);
         if (parentEntryId!=null) {
             model.setParentEntry(new LongIdLinkPair(parentEntryId, LinkUriUtil.getFolderEntryLinkUri(parentEntryId)));

@@ -14,6 +14,7 @@ public class FolderEntryBrief extends EntryBrief {
    	private String docNumber;
    	private Integer docLevel;
     private String[] fileNames;
+    private Integer totalReplyCount;
     private LongIdLinkPair parentEntry;
     private LongIdLinkPair topEntry;
 
@@ -61,5 +62,14 @@ public class FolderEntryBrief extends EntryBrief {
 
     public void setTopEntry(LongIdLinkPair topEntry) {
         this.topEntry = topEntry;
+    }
+
+    @XmlElement(name = "total_reply_count")
+    public Integer getTotalReplyCount() {
+        return totalReplyCount;
+    }
+
+    public void setTotalReplyCount(Integer totalReplyCount) {
+        this.totalReplyCount = totalReplyCount;
     }
 }

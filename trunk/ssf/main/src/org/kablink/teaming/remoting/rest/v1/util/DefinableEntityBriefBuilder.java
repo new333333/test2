@@ -112,6 +112,14 @@ abstract public class DefinableEntityBriefBuilder {
         return value;
     }
 
+    public static Integer getInt(Map entry, String fieldName) {
+        Integer parentBinderId = null;
+        String parentBinderIdStr = (String) entry.get(fieldName);
+        if(Validator.isNotNull(parentBinderIdStr))
+            parentBinderId = Integer.valueOf(parentBinderIdStr);
+        return parentBinderId;
+    }
+
     public static Long getLong(Map entry, String fieldName) {
         Long parentBinderId = null;
         String parentBinderIdStr = (String) entry.get(fieldName);
