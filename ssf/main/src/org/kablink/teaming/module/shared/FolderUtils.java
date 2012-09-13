@@ -34,6 +34,7 @@ package org.kablink.teaming.module.shared;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -349,10 +350,16 @@ public class FolderUtils {
 		
 		// Wrap the input stream in a datastructure suitable for our business module.
 		MultipartFile mf;
-		if(modDate != null)
+		Map options = null;
+		if(modDate != null) {
 			mf = new DatedMultipartFile(fileName, content, modDate);
-		else
+			Calendar modCal = Calendar.getInstance();
+			modCal.setTime(modDate);
+			options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modCal);
+		}
+		else {
 			mf = new SimpleMultipartFile(fileName, content); 
+		}
 		
 		Map fileItems = new HashMap(); // Map of element names to file items	
 		fileItems.put(elementNameAndRepository[0], mf); // single file item
@@ -363,7 +370,7 @@ public class FolderUtils {
 		if(elementNameAndRepository[1] != null)
 			data.put(elementNameAndRepository[1], ObjectKeys.FI_ADAPTER);
 		
-		return getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems, null);
+		return getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems, options);
 	}
 
 	/**
