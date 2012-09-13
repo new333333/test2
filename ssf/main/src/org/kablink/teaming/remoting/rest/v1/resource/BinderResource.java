@@ -44,6 +44,9 @@ import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criterion;
+import org.kablink.util.search.Junction;
+import org.kablink.util.search.Restrictions;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DefaultValue;
@@ -57,16 +60,27 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Path("/binders")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class BinderResource extends AbstractResource {
     @GET
-    public SearchResultList<BinderBrief> getBinders(@QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+    public SearchResultList<BinderBrief> getBinders(@QueryParam("id") Set<Integer> ids,
+                                                    @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                     @QueryParam("first") @DefaultValue("0") Integer offset,
                                                     @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        Document queryDoc = buildQueryDocument("<query/>", buildBindersCriterion());
+        Junction criterion = Restrictions.conjunction();
+        criterion.add(buildBindersCriterion());
+        if (ids!=null) {
+            Junction or = Restrictions.disjunction();
+            for (Integer id : ids) {
+                or.add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
+            }
+            criterion.add(or);
+        }
+        Document queryDoc = buildQueryDocument("<query/>", criterion);
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(textDescriptions), resultsMap, "/binders", null, offset);
