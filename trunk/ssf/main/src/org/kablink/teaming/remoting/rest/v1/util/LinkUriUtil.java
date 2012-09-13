@@ -100,6 +100,10 @@ public class LinkUriUtil {
         return null;
     }
 
+    public static String getReplyLinkUri(Long id) {
+        return "/replies/" + id;
+    }
+
     public static String getFolderEntryLinkUri(Long id) {
         return getDefinableEntityLinkUri(EntityIdentifier.EntityType.folderEntry, id);
     }
@@ -128,13 +132,22 @@ public class LinkUriUtil {
         model.addAdditionalLink("attachments", model.getLink() + "/attachments");
     }
 
-    public static void populateFolderEntryLinks(BaseRestObject model, Long id) {
-        model.setLink(getFolderEntryLinkUri(id));
+    public static void populateBaseFolderEntryLinks(BaseRestObject model) {
         populateDefinableEntityLinks(model);
-        model.addAdditionalLink("reservation", model.getLink() + "/reservation");
         model.addAdditionalLink("replies", model.getLink() + "/replies");
         model.addAdditionalLink("reply_tree", model.getLink() + "/reply_tree");
         model.addAdditionalLink("tags", model.getLink() + "/tags");
+    }
+
+    public static void populateReplyLinks(BaseRestObject model, Long id) {
+        model.setLink(getReplyLinkUri(id));
+        populateBaseFolderEntryLinks(model);
+    }
+
+    public static void populateFolderEntryLinks(BaseRestObject model, Long id) {
+        model.setLink(getFolderEntryLinkUri(id));
+        populateBaseFolderEntryLinks(model);
+        model.addAdditionalLink("reservation", model.getLink() + "/reservation");
     }
 
     public static void populateUserLinks(BaseRestObject model) {

@@ -42,6 +42,7 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
+import org.kablink.teaming.remoting.rest.v1.util.ReplyBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
@@ -51,6 +52,7 @@ import org.kablink.teaming.rest.v1.model.HistoryStamp;
 import org.kablink.teaming.rest.v1.model.Operation;
 import org.kablink.teaming.rest.v1.model.Permission;
 import org.kablink.teaming.rest.v1.model.Reply;
+import org.kablink.teaming.rest.v1.model.ReplyBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchResultTree;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
@@ -80,18 +82,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@Path("/folder_entries")
+@Path("/replies")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class FolderEntryResource extends AbstractFolderEntryResource {
+public class ReplyResource extends AbstractFolderEntryResource {
 
 	@GET
-	public SearchResultList<FolderEntryBrief> getFolderEntries(@QueryParam("id") Set<Long> ids,
-                                                               @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
-                                                               @QueryParam("first") @DefaultValue("0") Integer offset,
-			                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+	public SearchResultList<ReplyBrief> getReply(@QueryParam("id") Set<Long> ids,
+                                                 @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
+                                                 @QueryParam("first") @DefaultValue("0") Integer offset,
+			                                     @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         Junction criterion = Restrictions.conjunction();
-        criterion.add(buildEntriesCriterion());
+        criterion.add(buildRepliesCriterion());
         if (ids!=null) {
             Junction or = Restrictions.disjunction();
             for (Long id : ids) {
@@ -100,72 +102,24 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
             criterion.add(or);
         }
         Document queryDoc = buildQueryDocument("<query/>", criterion);
-        Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
-        SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(offset);
+        Map replies = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        SearchResultList<ReplyBrief> results = new SearchResultList<ReplyBrief>(offset);
         Map<String, String> nextParams = new HashMap<String, String>();
         nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(textDescriptions), folderEntries, "/folder_entries", nextParams, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new ReplyBriefBuilder(textDescriptions), replies, "/replies", nextParams, offset);
         return results;
 	}
-
-	@POST
-    @Path("legacy_query")
-	public SearchResultList<FolderEntryBrief> getFolderEntriesViaLegacyQuery(@Context HttpServletRequest request,
-                                                                             @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
-                                                         @QueryParam("first") @DefaultValue("0") Integer offset,
-			                                             @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
-        String query = getRawInputStreamAsString(request);
-        Document queryDoc = buildQueryDocument(query, buildEntriesCriterion());
-        Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
-        SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(offset);
-        Map<String, String> nextParams = new HashMap<String, String>();
-        nextParams.put("text_descriptions", Boolean.toString(textDescriptions));
-        SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(textDescriptions), folderEntries, "/folder_entries/legacy_query", nextParams, offset);
-        return results;
-	}
-
-    @GET
-    @Path("operations")
-    public SearchResultList<Operation> getOperations() {
-        SearchResultList<Operation> results = new SearchResultList<Operation>();
-        for (FolderModule.FolderOperation operation : FolderModule.FolderOperation.values()) {
-            if (operation.appliesToEntries()) {
-                results.append(ResourceUtil.buildFolderEntryOperation(operation));
-            }
-        }
-        return results;
-    }
-
-    @GET
-    @Path("operations/{name}")
-    public Operation getOperation(@PathParam("name") String id) {
-        FolderModule.FolderOperation folderOp = getFolderOperation(id);
-        if (folderOp!=null) {
-            return ResourceUtil.buildFolderEntryOperation(folderOp);
-        }
-        throw new NotFoundException(ApiErrorCode.BAD_INPUT, id);
-    }
-
-    @GET
-    @Path("operations/{name}/permissions")
-    public SearchResultList<Permission> testPermissions(@PathParam("name") String id, @QueryParam("entry")List<Long> entryIds) {
-        FolderModule.FolderOperation folderOp = getFolderOperation(id);
-        if (folderOp!=null && folderOp.appliesToEntries()) {
-            return testFolderPermissions(EntityIdentifier.EntityType.folderEntry, folderOp, entryIds);
-        }
-        throw new NotFoundException(ApiErrorCode.BAD_INPUT, "Checking permissions is not supported for the operation: " + id);
-    }
 
 	// Read folder entry
 	@GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public FolderEntry getFolderEntry(
+	public Reply getReply(
 			@PathParam("id") long id,
             @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
             @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) {
         org.kablink.teaming.domain.FolderEntry hEntry = _getFolderEntry(id);
-		return ResourceUtil.buildFolderEntry(hEntry, includeAttachments, textDescriptions);
+		return ResourceUtil.buildReply(hEntry, includeAttachments, textDescriptions);
 	}
 
     // Update folder entry
@@ -173,7 +127,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public FolderEntry putFolderEntry(@PathParam("id") long id, FolderEntry entry,
+	public Reply putReply(@PathParam("id") long id, Reply entry,
                                       @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
             throws WriteFilesException, WriteEntryDataException {
         SimpleProfiler.start("folderService_modifyEntry");
@@ -183,37 +137,15 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
         // Read it back from the database
         org.kablink.teaming.domain.Entry dEntry = getFolderModule().getEntry(null, id);
         SimpleProfiler.stop("folderService_modifyEntry");
-        return ResourceUtil.buildFolderEntry((org.kablink.teaming.domain.FolderEntry) dEntry, true, textDescriptions);
+        return ResourceUtil.buildReply((org.kablink.teaming.domain.FolderEntry) dEntry, true, textDescriptions);
 	}
-
-    @GET
-    @Path("{id}/reservation")
-    public HistoryStamp getReservation(@PathParam("id") Long id) {
-        org.kablink.teaming.domain.FolderEntry hEntry = _getFolderEntry(id);
-        org.kablink.teaming.domain.HistoryStamp reservation = hEntry.getReservation();
-        return ResourceUtil.buildHistoryStamp(reservation);
-    }
-
-    @PUT
-    @Path("{id}/reservation")
-    public HistoryStamp reserve(@PathParam("id") Long id) {
-        _getFolderEntry(id);
-        org.kablink.teaming.domain.HistoryStamp reservation = getFolderModule().reserveEntry(null, id);
-        return ResourceUtil.buildHistoryStamp(reservation);
-    }
-
-    @DELETE
-    @Path("{id}/reservation")
-    public void unreserve(@PathParam("id") Long id) {
-        getFolderModule().unreserveEntry(null, id);
-    }
 
     protected org.kablink.teaming.domain.FolderEntry _getFolderEntry(long id) {
         org.kablink.teaming.domain.FolderEntry hEntry = getFolderModule().getEntry(null, id);
         if (hEntry.isPreDeleted()) {
             throw new NoFolderEntryByTheIdException(id);
         }
-        if (!hEntry.isTop()) {
+        if (hEntry.isTop()) {
             throw new NoFolderEntryByTheIdException(id);
         }
         return hEntry;

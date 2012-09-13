@@ -36,15 +36,26 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 // This annotation is necessary not only for XML but also for JSON representation.
-@XmlRootElement (name="folder_entry")
-public class FolderEntry extends BaseFolderEntry {
-    private HistoryStamp reservation;
+@XmlRootElement (name="reply_brief")
+public class ReplyBrief extends BaseFolderEntryBrief {
+    private LongIdLinkPair parentEntry;
+    private LongIdLinkPair topEntry;
 
-    public HistoryStamp getReservation() {
-        return reservation;
+    @XmlElement(name = "parent_entry")
+    public LongIdLinkPair getParentEntry() {
+        return parentEntry;
     }
 
-    public void setReservation(HistoryStamp reservation) {
-        this.reservation = reservation;
+    public void setParentEntry(LongIdLinkPair parentEntry) {
+        this.parentEntry = parentEntry;
+    }
+
+    @XmlElement(name = "top_entry")
+    public LongIdLinkPair getTopEntry() {
+        return topEntry;
+    }
+
+    public void setTopEntry(LongIdLinkPair topEntry) {
+        this.topEntry = topEntry;
     }
 }
