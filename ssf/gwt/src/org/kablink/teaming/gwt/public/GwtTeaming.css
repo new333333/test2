@@ -329,8 +329,8 @@
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	cursor: pointer;
-	-moz-border-radius: 5px;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -339,7 +339,9 @@
 	left: 0;
 	position: absolute;
 	top: 1px;
-	width: 25px;
+	width: 30px;
+	height: 30px;
+	border-radius: 2px;
 }
 
 .activityStreamTopEntryAvatarImg
@@ -348,6 +350,8 @@
 	position: absolute;
 	top: 1px;
 	width: 40px;
+	height: 40px;
+	border-radius: 2px;
 }
 
 .activityStreamCommentHeader
@@ -2612,6 +2616,7 @@ body, table td, select
 	-webkit-border-radius: 15px;
     text-align: center !important;
 	}
+
 .teamingDlgBoxFooter .gwt-Button:hover {
 	color: #135c8f !important;
     white-space: nowrap !important;
@@ -2704,9 +2709,9 @@ body, table td, select
 
 .teamingDlgBox .popupContent
 {
-	background-color: #f6f6f6;
-	-moz-border-radius: 5px;
+	background-color: #fafafa;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -2719,16 +2724,17 @@ body, table td, select
 /* Styles for the footer of a dialog box. */
 .teamingDlgBoxFooter
 {
-	background-color: #EAEBE8;
-	border-top: 1px solid #BABDB6;
+	background-color: #f6f6f6;
+	box-shadow: 0px 2px 3px #e0e0e0 inset;
+	border-top: 1px solid #cccccc;
 	margin-top: 0.5em;
 	padding: 0.5em;
 	text-align: right;
 	vertical-align: middle;
-	-moz-border-radius-bottomleft: 3px;
-	-moz-border-radius-bottomright: 3px;
 	border-bottom-left-radius: 3px;
 	border-bottom-right-radius: 3px;
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
 	-webkit-border-bottom-left-radius: 3px;
 	-webkit-border-bottom-right-radius: 3px;
 }
@@ -3945,7 +3951,7 @@ td.datePickerMonth {
 	.vibe-whoHasAccessDlg-scrollPanelCell    {border-style: solid solid solid; border-width: 1px; border-color: #D2D5D1; vertical-align: top; width: 250px;}
 	.vibe-whoHasAccessDlg-scrollPanelGroups  {} 
 	.vibe-whoHasAccessDlg-scrollPanelHeader  {white-space: nowrap; font-weight: bold;} 
-	.vibe-whoHasAccessDlg-scrollPanelImg     {height: 25px; width: 25px; padding-right: 3px; padding-bottom: 1px;}
+	.vibe-whoHasAccessDlg-scrollPanelImg     {height: 25px; width: 25px; padding-right: 3px; padding-bottom: 1px; border-radius: 2px;}
 	.vibe-whoHasAccessDlg-scrollPanelLimit   {height: 150px;}
 	.vibe-whoHasAccessDlg-scrollPanelUsers   {} 
 /* End:  Who Has Access dialog styles. */
@@ -4255,6 +4261,8 @@ td.datePickerMonth {
 .FilrAction_Img
 {
 	margin: 3px 12px;
+	width: 48px;
+	height: 48px;
 }
 
 .FilrAction_MainPanel
@@ -4272,14 +4280,15 @@ td.datePickerMonth {
 {
 	background: url(images/trans20_91daf2.png) repeat;
     border: 1px solid #3C4143;
-    border-radius: 5px 5px 5px 5px;
+    border-radius: 2px;
     cursor: pointer;
 }
 
 .FilrAction_Selected
 {
 	background: url(images/trans30_black.png) repeat;
-	border-radius: 4px 4px 4px 4px;
+	border-radius: 2px;
+	box-shadow:	0 1px 4px #1F1F1F inset;
 }
 
 .FilrAction_Text

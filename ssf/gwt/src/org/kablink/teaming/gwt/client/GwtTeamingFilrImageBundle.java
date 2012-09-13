@@ -92,8 +92,8 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource myFiles_large();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/myfiles_transparent_40.png")
-	public ImageResource myFiles_transparent_40();
+	@Source("org/kablink/teaming/gwt/public/images/Filr/myfiles_transparent_48.png")
+	public ImageResource myFiles_transparent_48();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/netfolder.png")
@@ -108,8 +108,8 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource netFolder_large();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/netfolders_transparent_40.png")
-	public ImageResource netFolders_transparent_40();
+	@Source("org/kablink/teaming/gwt/public/images/Filr/netfolders_transparent_48.png")
+	public ImageResource netFolders_transparent_48();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/group.png")
@@ -152,10 +152,10 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource sharedWithMe_large();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/shared_with_me_transparent_40.png")
-	public ImageResource sharedWithMe_transparent_40();
+	@Source("org/kablink/teaming/gwt/public/images/Filr/shared_with_me_transparent_48.png")
+	public ImageResource sharedWithMe_transparent_48();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/whatsnew_transparent_40.png")
-	public ImageResource whatsNew_transparent_40();
+	@Source("org/kablink/teaming/gwt/public/images/Filr/whatsnew_transparent_48.png")
+	public ImageResource whatsNew_transparent_48();
 }

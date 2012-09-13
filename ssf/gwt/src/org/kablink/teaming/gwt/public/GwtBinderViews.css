@@ -146,15 +146,15 @@
 		.vibe-dataTableActions-img                {}
 		.vibe-dataTableActions-menuDropDown       {}
 		.vibe-dataTableActions-menuPopupItem      {white-space: nowrap;}
-		.vibe-dataTableAssignment-control         {}
+		.vibe-dataTableAssignment-control         {vertical-align:text-bottom;}
 		.vibe-dataTableAssignment-disabled        {color: #c4c4c4;}
 		.vibe-dataTableAssignment-enabled         {color: #353838;}
-		.vibe-dataTableAssignment-image           {height: 25px;}
+		.vibe-dataTableAssignment-image           {height: 25px; width: 25px; border-radius: 2px; margin-right: 3px;}
 		.vibe-dataTableAssignment-label           {display: inline; font-weight: bold; padding-left: 2px !important;}
 		.vibe-dataTableAssignment-labelIE         {vertical-align: -5px;}
 		.vibe-dataTableAssignment-list            {}
 		.vibe-dataTableAssignment-panel           {white-space: nowrap;}
-		.vibe-dataTableComments-panel             {background: url(images/comments_25.png) no-repeat scroll center center transparent; color: #135c8f; font-size: 12px; font-weight: bold; padding-top: 2px; padding-bottom: 5px; padding-left: 8px; padding-right: 8px; text-align: center; display: inline;}
+		.vibe-dataTableComments-panel             {background: url(images/comments_25.png) no-repeat scroll center center transparent; color: #135c8f; font-size: 12px; font-weight: bold; padding-top: 4px; padding-bottom: 5px; padding-left: 8px; padding-right: 8px; text-align: center; display: inline;}
 		.vibe-dataTableComments-panel0            {opacity: 0.4; filter: alpha(opacity=40);}
 		.vibe-dataTableCustom-anchor              {}
 		.vibe-dataTableCustom-anchor-label        {}
@@ -186,11 +186,11 @@
 		.vibe-dataTableGuest-infoTitle            {display: block;}
 		.vibe-dataTableItem-Img                   {vertical-align: middle; margin-right: 2px;}
 		.vibe-dataTableLink-hover                 {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
-		.vibe-dataTablePresence-control           {}
+		.vibe-dataTablePresence-control           {vertical-align: text-bottom;}
 		.vibe-dataTablePresence-label             {display: inline; font-weight: bold; padding-left: 2px !important;}
 		.vibe-dataTablePresence-disabled          {color: #c4c4c4;}
 		.vibe-dataTablePresence-enabled           {color: #353838;}
-		.vibe-dataTablePresence-image             {height: 25px;}
+		.vibe-dataTablePresence-image             {width: 25px; height: 25px; border-radius: 2px; margin-right: 3px;}
 		.vibe-dataTableShareStringValue-expired   {color: red; font-weight: bold;}
 		.vibe-dataTableShareStringValue-label     {white-space: nowrap; padding-top: 5px;}
 		.vibe-dataTableShareStringValue-panel     {white-space: nowrap; height: 25px;}
@@ -369,7 +369,7 @@
 
 /* Start:  Manage comments dialog styles. */
 	.vibe-manageCommentsDlg .popupContent       {background-color: white !important;}
-	.vibe-manageCommentsDlg-addCommentAvatar    {vertical-align: top !important; padding: 5px 10px; width: 30px; height: 30px}
+	.vibe-manageCommentsDlg-addCommentAvatar    {vertical-align: top !important; padding: 5px 10px; width: 30px; height: 30px; border-radius: 2px;}
 	.vibe-manageCommentsDlg-addCommentHint      {color: #4D6D8B; font-size: 1em;}
 	.vibe-manageCommentsDlg-addCommentHintPanel {padding-top: 5px;}
 	.vibe-manageCommentsDlg-addCommentPanel     {color: #353838; background-color: #F6F6F6; border-top-color: #cccccc; border-top-style: solid; border-top-width: 1px; width: 100%; padding-top: 15px; padding-bottom: 15px; box-shadow: 0px 2px 3px #e0e0e0 inset;}

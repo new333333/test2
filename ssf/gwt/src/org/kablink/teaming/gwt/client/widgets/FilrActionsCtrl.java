@@ -125,8 +125,8 @@ public class FilrActionsCtrl extends Composite
 			img = new Image( imgResource );
 			img.setAltText( text );
 			img.setTitle( text );
-			img.setWidth( "40px" );
-			img.setHeight( "40px" );
+			img.setWidth( "48px" );
+			img.setHeight( "48px" );
 			img.getElement().setAttribute( "border", "0" );
 			img.getElement().setAttribute( "align", "top" );
 			img.addStyleName( "FilrAction_Img" );
@@ -218,7 +218,7 @@ public class FilrActionsCtrl extends Composite
 			}
 		};
 		m_myFilesAction = new FilrAction(
-										imgBundle.myFiles_transparent_40(),
+										imgBundle.myFiles_transparent_48(),
 										messages.myFiles(),
 										cmd );
 		m_myFilesAction.addDomHandler( this, ClickEvent.getType() );
@@ -236,7 +236,7 @@ public class FilrActionsCtrl extends Composite
 			}
 		};
 		m_sharedWithMeAction = new FilrAction(
-											imgBundle.sharedWithMe_transparent_40(),
+											imgBundle.sharedWithMe_transparent_48(),
 											messages.sharedWithMe(),
 											cmd );
 		m_sharedWithMeAction.addDomHandler( this, ClickEvent.getType() );
@@ -254,7 +254,7 @@ public class FilrActionsCtrl extends Composite
 			}
 		};
 		m_netFoldersAction = new FilrAction(
-										imgBundle.netFolders_transparent_40(),
+										imgBundle.netFolders_transparent_48(),
 										messages.netFolders(),
 										cmd );
 		m_netFoldersAction.addDomHandler( this, ClickEvent.getType() );
@@ -300,7 +300,7 @@ public class FilrActionsCtrl extends Composite
 			}
 		};
 		m_whatsNewAction = new FilrAction(
-										imgBundle.whatsNew_transparent_40(),
+										imgBundle.whatsNew_transparent_48(),
 										messages.whatsNew(),
 										cmd );
 		m_whatsNewAction.addDomHandler( this, ClickEvent.getType() );
