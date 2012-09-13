@@ -188,12 +188,36 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return criteria;
     }
 
+    protected Criterion buildDocTypeCriterion(boolean includeBinders, boolean includeFolderEntries, boolean includeFiles, boolean includeReplies) {
+        Junction types = Restrictions.disjunction();
+        // Include a restriction that will always evaluate to false.  That way if all of the include* parameters are false
+        // no results will be returned (instead of all results being returned)
+        types.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, "_fake_"));
+        if (includeBinders) {
+            types.add(buildBindersCriterion());
+        }
+        if (includeFiles) {
+            types.add(buildAttachmentsCriterion());
+        }
+        if (includeFolderEntries) {
+            types.add(buildEntriesCriterion());
+        }
+        if (includeReplies) {
+            types.add(buildRepliesCriterion());
+        }
+        return types;
+    }
+
     protected Criterion buildEntryCriterion(Long id) {
         return Restrictions.conjunction()
         			.add(buildEntriesAndRepliesCriterion())
                     .add(Restrictions.disjunction()
                             .add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()))
                             .add(Restrictions.eq(Constants.ENTRY_TOP_ENTRY_ID_FIELD, id.toString())));
+    }
+
+    protected Criterion buildAttachmentsCriterion() {
+        return Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT);
     }
 
     protected Criterion buildAttachmentCriterion(Long entryId) {

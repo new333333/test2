@@ -303,6 +303,10 @@ public class FolderResource extends AbstractBinderResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<SearchableObject> getLibraryFiles(@PathParam("id") long id,
                                                   @QueryParam("recursive") @DefaultValue("false") boolean recursive,
+                                                  @QueryParam("binders") @DefaultValue("true") boolean includeBinders,
+                                                  @QueryParam("folder_entries") @DefaultValue("true") boolean includeFolderEntries,
+                                                  @QueryParam("files") @DefaultValue("true") boolean includeFiles,
+                                                  @QueryParam("replies") @DefaultValue("true") boolean includeReplies,
                                                   @QueryParam("keyword") String keyword,
                                                   @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
                                                   @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -313,7 +317,8 @@ public class FolderResource extends AbstractBinderResource {
         if (keyword!=null) {
             nextParams.put("keyword", keyword);
         }
-        return getSubEntities(id, recursive, true, keyword, offset, maxCount, "/folders/" + id + "/library_entities", nextParams, textDescriptions);
+        return getSubEntities(id, recursive, includeBinders, includeFolderEntries, includeFiles, includeReplies,
+                true, keyword, offset, maxCount, "/folders/" + id + "/library_entities", nextParams, textDescriptions);
 	}
 
     @Override

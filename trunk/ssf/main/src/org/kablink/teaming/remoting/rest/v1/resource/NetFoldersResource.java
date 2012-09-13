@@ -90,10 +90,14 @@ public class NetFoldersResource extends AbstractResource {
     @Path("/library_entities")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<SearchableObject> getLibraryEntities(@QueryParam("recursive") @DefaultValue("false") boolean recursive,
+                                                                 @QueryParam("binders") @DefaultValue("true") boolean includeBinders,
+                                                                 @QueryParam("folder_entries") @DefaultValue("true") boolean includeFolderEntries,
+                                                                 @QueryParam("files") @DefaultValue("true") boolean includeFiles,
+                                                                 @QueryParam("replies") @DefaultValue("true") boolean includeReplies,
                                                                  @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions,
-            @QueryParam("keyword") String keyword,
-            @QueryParam("first") @DefaultValue("0") Integer offset,
-            @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+                                                                 @QueryParam("keyword") String keyword,
+                                                                 @QueryParam("first") @DefaultValue("0") Integer offset,
+                                                                 @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
         SearchResultList<BinderBrief> netFolders = getNetFolders(textDescriptions, 0, -1);
         if (netFolders.getCount()>0) {
@@ -112,6 +116,7 @@ public class NetFoldersResource extends AbstractResource {
             if (keyword!=null) {
                 criterion.add(buildKeywordCriterion(keyword));
             }
+            criterion.add(buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
             criterion.add(buildLibraryCriterion(true));
             Map<String, String> nextParams = new HashMap<String, String>();
             nextParams.put("recursive", Boolean.toString(recursive));
