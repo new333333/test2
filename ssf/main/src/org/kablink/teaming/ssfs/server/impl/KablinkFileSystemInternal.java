@@ -79,7 +79,7 @@ import org.kablink.teaming.ssfs.TypeMismatchException;
 import org.kablink.teaming.ssfs.server.KablinkFileSystem;
 import org.kablink.teaming.ssfs.server.KablinkFileSystemException;
 import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.DatedMultipartFile;
+import org.kablink.teaming.util.ExtendedMultipartFile;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
@@ -617,7 +617,7 @@ public class KablinkFileSystemInternal implements KablinkFileSystem {
 	private void writeResourceInternal(Map uri, Map objMap, InputStream in) 
 		throws NoAccessException {
 		// Wrap the input stream in a datastructure suitable for our business module. 
-		DatedMultipartFile mf = new DatedMultipartFile(getFilePath(uri), in);
+		ExtendedMultipartFile mf = new ExtendedMultipartFile(getFilePath(uri), in);
 		
 		Map fileItems = new HashMap(); // Map of names to file items
 		InputDataAccessor inputData;   // Input data other than file

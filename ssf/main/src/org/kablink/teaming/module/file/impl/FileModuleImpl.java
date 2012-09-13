@@ -130,7 +130,7 @@ import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.util.DatedMultipartFile;
+import org.kablink.teaming.util.ExtendedMultipartFile;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.FilePathUtil;
 import org.kablink.teaming.util.FileStore;
@@ -873,7 +873,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	if (Validator.isNull(name)) type = FileUploadItem.TYPE_ATTACHMENT;
     			
 		// Preserve modification time of the source for the target
-		file = new DatedMultipartFile(va.getFileItem().getName(),
+		file = new ExtendedMultipartFile(va.getFileItem().getName(),
 			readFile(binder, entity, va), va.getModification().getDate());
 		fui = new FileUploadItem(type, name, file, va.getRepositoryName());
    		fuis.add(fui);
@@ -1158,7 +1158,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
   			}
   			String toFileName = (toFileNames != null)? toFileNames[i] : fa.getFileItem().getName();
 			// Preserve modification time of the source for the target
-  			file = new DatedMultipartFile(toFileName,
+  			file = new ExtendedMultipartFile(toFileName,
 				readFile(binder, entity, fa), fa.getModification().getDate());
     		int type = FileUploadItem.TYPE_FILE;
     		if(Validator.isNull(targetName))
@@ -2469,23 +2469,59 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	private FileAttachment createFileAttachment(DefinableEntity entry, FileUploadItem fui) {
     	// TODO Take care of file path info?
     	
-        User user = RequestContextHolder.getRequestContext().getUser();
-
+		Long zoneId =  RequestContextHolder.getRequestContext().getZoneId();
+		
         String relativeFilePath = fui.getOriginalFilename();
 	
 		FileAttachment fAtt = new FileAttachment();
 		fAtt.setOwner(entry);
-		fAtt.setCreation(new HistoryStamp(user));
-		HistoryStamp mod;
-		if(fui.getModDate() != null) { // mod date specified
-			String name = fui.getModifierName();
-			if (Validator.isNotNull(name)) {
-				user = getProfileDao().findUserByName(name, RequestContextHolder.getRequestContext().getZoneName());
+		
+		User creator = RequestContextHolder.getRequestContext().getUser();
+		if(fui.getCreatorId() != null) {
+			try {
+				creator = getProfileDao().loadUser(fui.getCreatorId(), zoneId);
 			}
-			mod = new HistoryStamp(user, fui.getModDate());
-		} else // set mod date equal to creation date
-			mod = fAtt.getCreation();
+			catch(Exception e) {
+				logger.warn("Error loading user by ID '" + fui.getCreatorId() + "'", e);
+			}
+		}
+		else if(fui.getCreatorName() != null) {
+			try {
+				creator = getProfileDao().findUserByName(fui.getCreatorName(), zoneId);
+			}
+			catch(Exception e) {
+				logger.warn("Error loading user by name '" + fui.getCreatorName() + "'", e);
+			}
+		}
+		HistoryStamp creation = new HistoryStamp(creator);
+		fAtt.setCreation(creation);
+		
+		Date modDate;
+		if(fui.getModDate() != null)
+			modDate = fui.getModDate();
+		else 
+			modDate = creation.getDate();
+		
+		User modifier = (User) creation.getPrincipal();
+		if(fui.getModifierId() != null) {
+			try {
+				modifier = getProfileDao().loadUser(fui.getModifierId(), zoneId);
+			}
+			catch(Exception e) {
+				logger.warn("Error loading user by ID '" + fui.getModifierId() + "'", e);
+			}
+		}
+		else if(fui.getModifierName() != null) {
+			try {
+				modifier = getProfileDao().findUserByName(fui.getModifierName(), zoneId);
+			}
+			catch(Exception e) {
+				logger.warn("Error loading user by name '" + fui.getModifierName() + "'", e);
+			}
+		}
+		HistoryStamp mod = new HistoryStamp(modifier, modDate);
 		fAtt.setModification(mod);
+		
 		fAtt.setLastVersion(1);
 		fAtt.setMajorVersion(1);
 		fAtt.setMinorVersion(0);
