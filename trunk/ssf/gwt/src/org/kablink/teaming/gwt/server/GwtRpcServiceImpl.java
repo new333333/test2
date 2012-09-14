@@ -3588,18 +3588,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	private GwtBrandingData getSiteBrandingData( HttpRequestInfo ri ) throws GwtTeamingException
 	{
-		Binder topWorkspace;
 		GwtBrandingData brandingData;
 		
 		try
 		{
+			Long topWorkspaceId;
 			String binderId;
 			
 			// Get the top workspace.
-			topWorkspace = getWorkspaceModule().getTopWorkspace();				
+			topWorkspaceId = getWorkspaceModule().getTopWorkspaceId();				
 		
 			// Get the branding data from the top workspace.
-			binderId = topWorkspace.getId().toString();
+			binderId = topWorkspaceId.toString();
 			brandingData = GwtServerHelper.getBinderBrandingData( this, binderId, getRequest( ri ) );
 		}
 		catch (Exception e)
@@ -4172,8 +4172,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		else
 		{
-			binder = getWorkspaceModule().getTopWorkspace();
-			reply = String.valueOf( binder.getId() );
+			Long topWSId = getWorkspaceModule().getTopWorkspaceId();
+			reply = String.valueOf( topWSId );
 		}
 		
 		return reply;
