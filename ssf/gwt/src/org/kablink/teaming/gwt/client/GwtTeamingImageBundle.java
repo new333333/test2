@@ -673,6 +673,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource userActionsPanel_ViewSharedByMe();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/Filr_userlist_40w.png")
+	public ImageResource userList();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/folder_wiki_large.gif")
 	public ImageResource wikiFolderLarge();
 	

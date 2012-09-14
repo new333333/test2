@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
@@ -48,10 +49,13 @@ import org.kablink.teaming.gwt.client.mainmenu.GlobalSearchComposite;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.SystemBinderType;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
@@ -94,6 +98,7 @@ public class MastHead extends Composite
 	private MastheadPopupMenu m_popupMenu = null;
 	private UserActionsPopup m_userActionsPopup = null;
 	private FilrActionsCtrl m_filrActionsCtrl;
+	private String m_personalWorkspacesUrl = null;
 
 	private GwtBrandingData m_siteBrandingData = null;
 	private GwtBrandingData m_binderBrandingData = null;
@@ -173,6 +178,43 @@ public class MastHead extends Composite
 			FlowPanel globalSearchPanel;
 			
 			// Yes
+			// Create a link for the user to click on that will invoke "Users in the system" page
+			{
+				FlowPanel panel;
+				FlowPanel imgPanel;
+				Image img;
+				
+				panel = new FlowPanel();
+				panel.addStyleName( "mastheadFilr_PeoplePanel" );
+				
+				imgPanel = new FlowPanel();
+				imgPanel.addStyleName( "mastheadFilr_PeopleImgPanel" );
+				img = new Image( GwtTeaming.getImageBundle().userList() );
+				img.addStyleName( "mastheadFilr_PeopleImg" );
+				img.addClickHandler( new ClickHandler()
+				{
+					@Override
+					public void onClick( ClickEvent event )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								invokeUsersPage();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				} );
+				imgPanel.add( img );
+				panel.add( imgPanel );
+				
+				m_mainMastheadPanel.add( panel );
+			}
+			
 			// Create a Filr Actions panel
 			m_filrActionsCtrl = new FilrActionsCtrl();
 			m_filrActionsCtrl.addStyleName( "mastheadFilrActionsPanel" );
@@ -670,6 +712,87 @@ public class MastHead extends Composite
 				m_userActionsPopup.setPopupPosition( left, top );
 			}
 		} );
+	}
+	
+	/**
+	 * 
+	 */
+	private void invokeUsersPage()
+	{
+		// Do we have the url to the "personal workspaces" binder?
+		if ( m_personalWorkspacesUrl == null )
+		{
+			GetSystemBinderPermalinkCmd cmd;
+			AsyncCallback<VibeRpcResponse> rpcCallback;
+
+			// No
+			rpcCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onFailure( Throwable t )
+				{
+					// Note:  We don't pass a string here such as
+					//   rpcFailure_GetSiteAdminUrl() because it would
+					//   get displayed for guest, and all other
+					//   non-admin users.  Not passing a string here
+					//   allows the proper exception handling to occur
+					//   but will NOT display an error to the user.
+					GwtClientHelper.handleGwtRPCFailure( t );
+				}
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				@Override
+				public void onSuccess( VibeRpcResponse response )
+				{
+					String url;
+					StringRpcResponseData responseData;
+					
+					responseData = (StringRpcResponseData) response.getResponseData();
+					url = responseData.getStringValue();
+					
+					// Did we get a url for the "personal workspace"?
+					if ( url != null && url.length() > 0 )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						// Yes
+						m_personalWorkspacesUrl = url;
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							/**
+							 * 
+							 */
+							@Override
+							public void execute()
+							{
+								invokeUsersPage();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				}
+			};
+			
+			// Issue an ajax request to get the "personal workspaces" url
+			cmd = new GetSystemBinderPermalinkCmd( SystemBinderType.PROFILE_ROOT );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		}
+		else
+		{
+			OnSelectBinderInfo osbInfo;
+			
+			// Invoke the "Users" page.
+			osbInfo = new OnSelectBinderInfo(
+										m_personalWorkspacesUrl,
+										Instigator.GOTO_CONTENT_URL );
+			GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
+		}
 	}
 	
 	/**
