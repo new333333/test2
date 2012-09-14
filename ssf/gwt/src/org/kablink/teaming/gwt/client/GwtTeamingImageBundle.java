@@ -633,10 +633,6 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource openIdAuthProvider_unknown();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Masthead/personal_prefs_2.png")
-	public ImageResource userActionsPanel_PersonalPreferences();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/folder_photo_large.png")
 	public ImageResource photoAlbumFolderLarge();
 	
@@ -656,6 +652,18 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/triangle_w.png")
 	public ImageResource triangle();
 	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/admin_console_2.png")
+	public ImageResource userActionsPanel_Admin();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/help_2.png")
+	public ImageResource userActionsPanel_Help();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/personal_prefs_2.png")
+	public ImageResource userActionsPanel_PersonalPreferences();
+
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Masthead/view_profile.png")
 	public ImageResource userActionsPanel_ViewProfile();

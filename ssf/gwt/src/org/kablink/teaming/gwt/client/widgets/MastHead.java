@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
@@ -45,7 +46,9 @@ import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.mainmenu.GlobalSearchComposite;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -63,6 +66,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -215,52 +219,56 @@ public class MastHead extends Composite
 			// Add login to the masthead.
 			addLoginAction();
 
-			// Create the actions popup menu.
-			m_popupMenu = new MastheadPopupMenu( m_mastheadBinderId, m_requestInfo.isUserLoggedIn(), true, true );
-			
-			// Add an image for the user to click on to pop up the actions menu
+			// We only show the popup menu if we are not running Filr.
+			if ( m_requestInfo.isLicenseFilr() == false )
 			{
-				ClickHandler clickHandler;
-				final FlowPanel panel;
-				Image img;
+				// Create the actions popup menu.
+				m_popupMenu = new MastheadPopupMenu( m_mastheadBinderId, m_requestInfo.isUserLoggedIn(), true, true );
 				
-				// Add a separator
-				if ( m_requestInfo.isUserLoggedIn() == false )
+				// Add an image for the user to click on to pop up the actions menu
 				{
-					InlineLabel separator;
+					ClickHandler clickHandler;
+					final FlowPanel panel;
+					Image img;
 					
-					separator = new InlineLabel( "|" );
-					separator.addStyleName( "mastheadActionsSeparator" );
-					m_globalActionsPanel.add( separator );
-				}
-				
-				panel = new FlowPanel();
-				panel.addStyleName( "mastheadMenuPanel" );
-				panel.addStyleName( "brandingLink" );
-				
-				clickHandler = new ClickHandler()
-				{
-					/**
-					 * 
-					 */
-					@Override
-					public void onClick( ClickEvent event )
+					// Add a separator
+					if ( m_requestInfo.isUserLoggedIn() == false )
 					{
-						m_popupMenu.showRelativeToTarget( panel );
+						InlineLabel separator;
+						
+						separator = new InlineLabel( "|" );
+						separator.addStyleName( "mastheadActionsSeparator" );
+						m_globalActionsPanel.add( separator );
 					}
-				};
-
-				img = new Image( GwtTeaming.getImageBundle().mastheadActions() );
-				img.addClickHandler( clickHandler );
-				img.getElement().setAttribute( "align", "absmiddle" );
-				panel.add( img );
-				
-				img = new Image( GwtTeaming.getImageBundle().mastheadActions2() );
-				img.addClickHandler( clickHandler );
-				img.getElement().setAttribute( "align", "absmiddle" );
-				panel.add( img );
-				
-				m_globalActionsPanel.add( panel );
+					
+					panel = new FlowPanel();
+					panel.addStyleName( "mastheadMenuPanel" );
+					panel.addStyleName( "brandingLink" );
+					
+					clickHandler = new ClickHandler()
+					{
+						/**
+						 * 
+						 */
+						@Override
+						public void onClick( ClickEvent event )
+						{
+							m_popupMenu.showRelativeToTarget( panel );
+						}
+					};
+	
+					img = new Image( GwtTeaming.getImageBundle().mastheadActions() );
+					img.addClickHandler( clickHandler );
+					img.getElement().setAttribute( "align", "absmiddle" );
+					panel.add( img );
+					
+					img = new Image( GwtTeaming.getImageBundle().mastheadActions2() );
+					img.addClickHandler( clickHandler );
+					img.getElement().setAttribute( "align", "absmiddle" );
+					panel.add( img );
+					
+					m_globalActionsPanel.add( panel );
+				}
 			}
 			
 			m_mainMastheadPanel.add( m_globalActionsPanel );
@@ -356,6 +364,9 @@ public class MastHead extends Composite
 			}// end onSuccess()
 		};
 
+		// Check to see if there are any upgrade actions that need to be performed.
+		checkForUpgradeActions();
+		
 		// All composites must call initWidget() in their constructors.
 		initWidget( m_mainMastheadPanel );
 
@@ -426,6 +437,8 @@ public class MastHead extends Composite
 		// Is the user logged in?
 		if ( m_requestInfo.isUserLoggedIn() == false )
 		{
+			FlowPanel panel;
+			
 			// Add a separator
 			{
 				InlineLabel separator;
@@ -436,6 +449,9 @@ public class MastHead extends Composite
 			}
 
 			// No, add the "login" action.
+			panel = new FlowPanel();
+			panel.addStyleName( "brandingLink" );
+			
 			m_loginLink = new InlineLabel( GwtTeaming.getMessages().loginHint() );
 			m_loginLink.addStyleName( "brandingLink" );
 			m_loginLink.addClickHandler( this );
@@ -443,11 +459,84 @@ public class MastHead extends Composite
 			linkElement = m_loginLink.getElement();
 			linkElement.setId( "mhLoginAction" );
 			
-			m_globalActionsPanel.add( m_loginLink );
+			panel.add( m_loginLink );
+			m_globalActionsPanel.add( panel );
 		}
 	}
 	
 	
+	/**
+	 * Issue an ajax request to see if the user has rights to run the "site administration" page.
+	 * If they do we will check to see if there are any upgrade actions that need to be done.
+	 */
+	private void checkForUpgradeActions()
+	{
+		AsyncCallback<VibeRpcResponse> rpcCallback;
+
+		rpcCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onFailure( Throwable t )
+			{
+				// Note:  We don't pass a string here such as
+				//   rpcFailure_GetSiteAdminUrl() because it would
+				//   get displayed for guest, and all other
+				//   non-admin users.  Not passing a string here
+				//   allows the proper exception handling to occur
+				//   but will NOT display an error to the user.
+				GwtClientHelper.handleGwtRPCFailure( t );
+			}
+	
+			/**
+			 * 
+			 * @param result
+			 */
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				String url;
+				StringRpcResponseData responseData;
+				
+				responseData = (StringRpcResponseData) response.getResponseData();
+				url = responseData.getStringValue();
+				
+				// Did we get a url for the "site administration" action?
+				if ( url != null && url.length() > 0 )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					// Yes
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						/**
+						 * 
+						 */
+						@Override
+						public void execute()
+						{
+							// Since the user has administration rights, show them a list of
+							// upgrade tasks that still need to be performed.
+							// Sent event to check for tasks
+							AdministrationUpgradeCheckEvent.fireOne();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			}
+		};
+		
+		// Issue an ajax request to get the url for the "site administration" action.
+		{
+			GetSiteAdminUrlCmd cmd;
+
+			cmd = new GetSiteAdminUrlCmd( getBinderId() );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		}
+	}
+
 	/**
 	 * Return the binder id we are working with.
 	 */
@@ -563,7 +652,24 @@ public class MastHead extends Composite
 			}
 		}
 
-		m_userActionsPopup.show();
+		m_userActionsPopup.setPopupPositionAndShow( new PopupPanel.PositionCallback()
+		{
+			@Override
+			public void setPosition(int offsetWidth, int offsetHeight)
+			{
+				int left;
+				int top;
+				
+				// Align the right edge of the popup with the right edge of the user name
+				left = m_userNamePanel.getAbsoluteLeft();
+				left -= (offsetWidth - m_userNamePanel.getOffsetWidth());
+				left -= 20;
+				top = m_userNamePanel.getAbsoluteTop() + m_userNamePanel.getOffsetHeight() + 12;
+				m_userActionsPopup.setPopupPosition( left, top );
+				
+				m_userActionsPopup.setPopupPosition( left, top );
+			}
+		} );
 	}
 	
 	/**

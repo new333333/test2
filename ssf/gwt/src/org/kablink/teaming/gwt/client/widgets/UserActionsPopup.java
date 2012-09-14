@@ -33,11 +33,18 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.AdministrationEvent;
+import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.EditPersonalPreferencesEvent;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
+import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
+import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.ShowCollectionEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
@@ -45,6 +52,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -60,11 +68,15 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
 public class UserActionsPopup extends TeamingPopupPanel
 {
 	private FlowPanel m_footerPanel;
+	private FlowPanel m_contentPanel;
 
 	/**
 	 * 
 	 */
-	public UserActionsPopup( String userName, boolean autoHide, boolean modal )
+	public UserActionsPopup(
+		String userName,
+		boolean autoHide,
+		boolean modal )
 	{
 		super( autoHide, modal );
 	
@@ -202,41 +214,126 @@ public class UserActionsPopup extends TeamingPopupPanel
 	}
 	
 	/**
+	 * Issue an ajax request to see if the user has rights to run the "site administration" page.
+	 * If they don't we will remove the "administration" menu item from the menu.
+	 */
+	private void checkAdminRights()
+	{
+		AsyncCallback<VibeRpcResponse> rpcCallback;
+
+		rpcCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onFailure( Throwable t )
+			{
+				// Note:  We don't pass a string here such as
+				//   rpcFailure_GetSiteAdminUrl() because it would
+				//   get displayed for guest, and all other
+				//   non-admin users.  Not passing a string here
+				//   allows the proper exception handling to occur
+				//   but will NOT display an error to the user.
+				GwtClientHelper.handleGwtRPCFailure( t );
+			}
+	
+			/**
+			 * 
+			 * @param result
+			 */
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				String url;
+				StringRpcResponseData responseData;
+				
+				responseData = (StringRpcResponseData) response.getResponseData();
+				url = responseData.getStringValue();
+				
+				// Did we get a url for the "site administration" action?
+				if ( url != null && url.length() > 0 )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					// Yes
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						/**
+						 * 
+						 */
+						@Override
+						public void execute()
+						{
+							FlowPanel actionPanel;
+							
+							// Add "Administration"
+							actionPanel = addAction(
+												GwtTeaming.getMessages().adminMenuItem(),
+												GwtTeaming.getImageBundle().userActionsPanel_Admin(),
+												new AdministrationEvent() );
+							m_contentPanel.insert( actionPanel, 0 );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			}
+		};
+		
+		// Issue an ajax request to get the url for the "site administration" action.
+		{
+			GetSiteAdminUrlCmd cmd;
+
+			cmd = new GetSiteAdminUrlCmd( GwtTeaming.m_requestInfo.getBinderId() );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		}
+	}
+
+	/**
 	 * 
 	 */
 	private FlowPanel createActionsPanel( String userName )
 	{
 		FlowPanel panel;
-		FlowPanel contentPanel;
 		FlowPanel actionPanel;
 		
 		panel = new FlowPanel();
 		panel.addStyleName( "userActionsPopup_ActionsPanel" );
 		
-		contentPanel = new FlowPanel();
-		contentPanel.addStyleName( "userActionsPopup_ActionsPanel_ContentPanel" );
-		panel.add( contentPanel );
+		m_contentPanel = new FlowPanel();
+		m_contentPanel.addStyleName( "userActionsPopup_ActionsPanel_ContentPanel" );
+		panel.add( m_contentPanel );
 		
 		// Add "View Profile"
 		actionPanel = addAction(
 							GwtTeaming.getMessages().userActionsPanel_ViewProfile(),
 							GwtTeaming.getImageBundle().userActionsPanel_ViewProfile(),
 							new GotoMyWorkspaceEvent() );
-		contentPanel.add( actionPanel );
+		m_contentPanel.add( actionPanel );
 		
 		// Add "View Shared By Me"
 		actionPanel = addAction(
 							GwtTeaming.getMessages().userActionsPanel_ViewSharedByMe(),
 							GwtTeaming.getImageBundle().userActionsPanel_ViewSharedByMe(),
 							new ShowCollectionEvent( CollectionType.SHARED_BY_ME ) );
-		contentPanel.add( actionPanel );
+		m_contentPanel.add( actionPanel );
 		
 		// Add "Personal Preferences"
 		actionPanel = addAction(
 							GwtTeaming.getMessages().userActionsPanel_PersonalPreferences(),
 							GwtTeaming.getImageBundle().userActionsPanel_PersonalPreferences(),
 							new EditPersonalPreferencesEvent() );
-		contentPanel.add( actionPanel );
+		m_contentPanel.add( actionPanel );
+		
+		// Add "Help"
+		actionPanel = addAction(
+							GwtTeaming.getMessages().helpMenuItem(),
+							GwtTeaming.getImageBundle().userActionsPanel_Help(),
+							new InvokeHelpEvent() );
+		m_contentPanel.add( actionPanel );
+
+		// Issue an ajax request to see if the user has rights to run the administration page.
+		checkAdminRights();
 		
 		return panel;
 	}
@@ -247,32 +344,64 @@ public class UserActionsPopup extends TeamingPopupPanel
 	private FlowPanel createFooterPanel()
 	{
 		FlowPanel panel;
-		InlineLabel signOutLabel;
 		
 		panel = new FlowPanel();
 		panel.addStyleName( "userActionsPopup_FooterPanel" );
 		
-		signOutLabel = new InlineLabel( GwtTeaming.getMessages().signOut() );
-		signOutLabel.addStyleName( "userActionsPopup_SignOutLabel" );
-		signOutLabel.addClickHandler( new ClickHandler()
+		if ( GwtTeaming.m_requestInfo.isUserLoggedIn() )
 		{
-			@Override
-			public void onClick( ClickEvent event )
+			InlineLabel signOutLabel;
+
+			signOutLabel = new InlineLabel( GwtTeaming.getMessages().signOut() );
+			signOutLabel.addStyleName( "userActionsPopup_SignOutLabel" );
+			signOutLabel.addClickHandler( new ClickHandler()
 			{
-				Scheduler.ScheduledCommand cmd;
-				
-				cmd = new Scheduler.ScheduledCommand()
+				@Override
+				public void onClick( ClickEvent event )
 				{
-					@Override
-					public void execute()
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
 					{
-						LogoutEvent.fireOne();
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
-			}
-		} );
-		panel.add( signOutLabel );
+						@Override
+						public void execute()
+						{
+							hide();
+							LogoutEvent.fireOne();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			panel.add( signOutLabel );
+		}
+		else
+		{
+			InlineLabel signInLabel;
+
+			signInLabel = new InlineLabel( GwtTeaming.getMessages().login() );
+			signInLabel.addStyleName( "userActionsPopup_SignOutLabel" );
+			signInLabel.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							hide();
+							LoginEvent.fireOne();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			panel.add( signInLabel );
+		}
 		
 		return panel;
 	}
