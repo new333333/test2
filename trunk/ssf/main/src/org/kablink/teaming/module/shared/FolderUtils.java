@@ -184,7 +184,7 @@ public class FolderUtils {
 	 * @throws WriteFilesException
 	 */
 	public static Binder createMirroredFolder(Binder parentBinder, String folderName, 
-			String resourceDriverName, String resourcePath, boolean synchToSource)
+			String resourceDriverName, String resourcePath, Long creatorId, Date modDate, boolean synchToSource)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		if(EntityType.folder != parentBinder.getEntityType() || !parentBinder.isMirrored())
 			throw new IllegalArgumentException("The parent binder '" + parentBinder.getId() + "' is not a mirrored folder");
@@ -202,10 +202,24 @@ public class FolderUtils {
 		if(resourcePath != null)
 			data.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, resourcePath);
 		data.put(ObjectKeys.PI_SYNCH_TO_SOURCE, Boolean.toString(synchToSource));
-		Map params = new HashMap();
-		params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
+		Map options = new HashMap();
+		options.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
+		
+		if(modDate != null) {
+			Calendar modCal = Calendar.getInstance();
+			modCal.setTime(modDate);
+			options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modCal);
+		}
+		
+		if(creatorId != null) {
+			options.put(ObjectKeys.INPUT_OPTION_CREATION_ID, creatorId);
+			// For newly created folder, it doesn't make sense if the modifier were different from the creator 
+			// (more precisely speaking, there has not been any modification yet).
+			options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_ID, creatorId);
+		}
+		
 		Binder binder = getBinderModule().addBinder(parentBinder.getId(), def.getId(), 
-					new MapInputData(data), null, params);
+					new MapInputData(data), null, options);
 		
 		// Inherit configuration.
 		inheritAll(binder.getId());
@@ -228,7 +242,7 @@ public class FolderUtils {
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Binder binder;
 		if((EntityType.folder == parentBinder.getEntityType()) && parentBinder.isMirrored()) {
-			binder = createMirroredFolder(parentBinder, folderName, parentBinder.getResourceDriverName(), null, true);
+			binder = createMirroredFolder(parentBinder, folderName, parentBinder.getResourceDriverName(), null, null, null, true);
 		}
 		else { 
 			binder = createNonMirroredLibraryFolder(parentBinder, folderName);
