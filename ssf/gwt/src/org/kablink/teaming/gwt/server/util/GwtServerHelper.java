@@ -3311,13 +3311,13 @@ public class GwtServerHelper {
 				
 				// Are we dealing with site branding?
 				{
-					Binder topWorkspace;
+					Long topWorkspaceId;
 					
-					// Get the top workspace.
-					topWorkspace = allModules.getWorkspaceModule().getTopWorkspace();				
+					// Get the top workspace ID.
+					topWorkspaceId = allModules.getWorkspaceModule().getTopWorkspaceId();				
 					
 					// Are we dealing with the site branding.
-					if ( binderIdL.compareTo( topWorkspace.getId() ) == 0 )
+					if ( binderIdL.compareTo( topWorkspaceId ) == 0 )
 					{
 						// Yes
 						brandingData.setIsSiteBranding( true );

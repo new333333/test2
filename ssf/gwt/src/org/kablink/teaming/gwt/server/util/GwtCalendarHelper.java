@@ -632,7 +632,7 @@ public class GwtCalendarHelper {
 					Element filterFolderId        = ((Element) baseFilter.getRootElement().selectSingleNode("//filterTerms/filterTerm[@filterType='foldersList']/filterFolderId"));
 					if ((null != foldersListFilterTerm) && (null != filterFolderId)) {
 						foldersListFilterTerm.addAttribute("filterType", "ancestriesList");
-						filterFolderId.setText(String.valueOf(bs.getWorkspaceModule().getTopWorkspace().getId()));
+						filterFolderId.setText(String.valueOf(bs.getWorkspaceModule().getTopWorkspaceId()));
 					}
 				}
 
