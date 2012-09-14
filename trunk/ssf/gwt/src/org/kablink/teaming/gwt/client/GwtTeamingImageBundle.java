@@ -631,7 +631,11 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/OpenIDAuthProviders/unknown.png")
 	public ImageResource openIdAuthProvider_unknown();
-	
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/personal_prefs_2.png")
+	public ImageResource userActionsPanel_PersonalPreferences();
+
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/folder_photo_large.png")
 	public ImageResource photoAlbumFolderLarge();
@@ -648,6 +652,18 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/folder_trash_large.png")
 	public ImageResource trashFolderLarge();
 	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/triangle_w.png")
+	public ImageResource triangle();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/view_profile.png")
+	public ImageResource userActionsPanel_ViewProfile();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/view_shared_by_me.png")
+	public ImageResource userActionsPanel_ViewSharedByMe();
+
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/folder_wiki_large.gif")
 	public ImageResource wikiFolderLarge();

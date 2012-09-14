@@ -260,24 +260,6 @@ public class FilrActionsCtrl extends Composite
 		m_netFoldersAction.addDomHandler( this, ClickEvent.getType() );
 		m_mainPanel.add( m_netFoldersAction );
 		
-		// Add the "Shared by Me" action
-		cmd = new Command()
-		{
-			@Override
-			public void execute()
-			{
-				FilrActionsCtrl.closeAdminConsole();
-
-				GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_BY_ME ) );
-			}
-		};
-		m_sharedByMeAction = new FilrAction(
-										imgBundle.sharedByMe_transparent_40(),
-										messages.sharedByMe(),
-										cmd );
-		m_sharedByMeAction.addDomHandler( this, ClickEvent.getType() );
-		m_mainPanel.add( m_sharedByMeAction );
-		
 		// Add the "What's New" action
 		cmd = new Command()
 		{
