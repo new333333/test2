@@ -36,21 +36,11 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.event.AdministrationEvent;
-import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
-import org.kablink.teaming.gwt.client.event.EditPersonalPreferencesEvent;
-import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
 import org.kablink.teaming.gwt.client.event.ViewResourceLibraryEvent;
 import org.kablink.teaming.gwt.client.event.ViewTeamingFeedEvent;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
-import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 
 /**
@@ -82,15 +72,6 @@ public class MastheadPopupMenu extends PopupMenu
 				
 				addSeparator = false;
 				
-				// Create the "Administration" menu item.
-				{
-					img = new Image( GwtTeaming.getImageBundle().adminMenuImg() );
-					m_adminMenuItem = addMenuItem( new AdministrationEvent(), img, messages.adminMenuItem() );
-					
-					// Issue an ajax request to see if the user has rights to run the "site adminitration" page.
-					checkAdminRights( mastheadBinderId );
-				}
-				
 				// Create the "Open News Feed" menu item.
 				if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
 				{
@@ -111,88 +92,6 @@ public class MastheadPopupMenu extends PopupMenu
 				img = new Image( GwtTeaming.getImageBundle().resourceLibMenuImg() );
 				addMenuItem( new ViewResourceLibraryEvent(), img, messages.resourceLibMenuItem() );
 			}
-
-			// Create the "Help" menu item.
-			{
-				img = new Image( GwtTeaming.getImageBundle().helpMenuImg() );
-				addMenuItem( new InvokeHelpEvent(), img, messages.helpMenuItem() );
-			}
-		}
-	}
-	
-
-	/**
-	 * Issue an ajax request to see if the user has rights to run the "site administration" page.
-	 * If they don't we will remove the "administration" menu item from the menu.
-	 */
-	private void checkAdminRights( String mastheadBinderId )
-	{
-		AsyncCallback<VibeRpcResponse> rpcCallback;
-
-		rpcCallback = new AsyncCallback<VibeRpcResponse>()
-		{
-			/**
-			 * 
-			 */
-			public void onFailure( Throwable t )
-			{
-				// Note:  We don't pass a string here such as
-				//   rpcFailure_GetSiteAdminUrl() because it would
-				//   get displayed for guest, and all other
-				//   non-admin users.  Not passing a string here
-				//   allows the proper exception handling to occur
-				//   but will NOT display an error to the user.
-				GwtClientHelper.handleGwtRPCFailure( t );
-				
-				// The user does not have the rights to run the "site administration" page.
-				// Remove the admin menu item.
-				removeMenuItem( m_adminMenuItem );
-				m_adminMenuItem = null;
-			}
-	
-			/**
-			 * 
-			 * @param result
-			 */
-			public void onSuccess( VibeRpcResponse response )
-			{
-				String url;
-				StringRpcResponseData responseData;
-				
-				responseData = (StringRpcResponseData) response.getResponseData();
-				url = responseData.getStringValue();
-				
-				// Did we get a url for the "site administration" action?
-				if ( url != null && url.length() > 0 )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					// Yes
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						/**
-						 * 
-						 */
-						public void execute()
-						{
-							// Since the user has administration rights, show them a list of
-							// upgrade tasks that still need to be performed.
-							// Sent event to check for tasks
-							AdministrationUpgradeCheckEvent.fireOne();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			}
-		};
-		
-		// Issue an ajax request to get the url for the "site administration" action.
-		if ( mastheadBinderId != null && mastheadBinderId.length() > 0 )
-		{
-			GetSiteAdminUrlCmd cmd;
-
-			cmd = new GetSiteAdminUrlCmd( mastheadBinderId );
-			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}
 	}
 }
