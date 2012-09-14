@@ -108,6 +108,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.*;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.SystemBinderType;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
@@ -1605,6 +1606,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetSubscriptionDataCmd gsdCmd = ((GetSubscriptionDataCmd) cmd);
 			SubscriptionData result = getSubscriptionData( ri, gsdCmd.getEntryId() );
 			response = new VibeRpcResponse( new SubscriptionDataRpcResponseData( result ));
+			return response;
+		}
+		
+		case GET_SYSTEM_BINDER_PERMALINK:
+		{
+			GetSystemBinderPermalinkCmd gsbpCmd;
+			String permalink;
+			StringRpcResponseData responseData;
+			
+			gsbpCmd = (GetSystemBinderPermalinkCmd) cmd;
+			permalink = GwtServerHelper.getSystemBinderPermalink(
+														getRequest( ri ),
+														gsbpCmd.getSystemBinderType() );
+			responseData = new StringRpcResponseData( permalink );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		

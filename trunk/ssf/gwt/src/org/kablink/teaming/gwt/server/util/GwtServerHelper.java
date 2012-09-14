@@ -80,6 +80,7 @@ import org.kablink.teaming.context.request.HttpSessionContext;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.SessionContext;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CommaSeparatedValue;
@@ -147,6 +148,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.CollectionPointData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.SystemBinderType;
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
@@ -3912,6 +3914,14 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * 
+	 */
+	private static CoreDao getCoreDao()
+	{
+		return (CoreDao) SpringContextUtil.getBean( "coreDao" );
+	}
+	
+	/**
 	 * Returns the User object of the currently logged in user.
 	 * 
 	 * @return
@@ -5993,6 +6003,62 @@ public class GwtServerHelper {
 		// If we get here, reply refers to an empty string or the
 		// appropriate string value for the key from the entry map.
 		// Return it.
+		return reply;
+	}
+	
+	/**
+	 * Return the permalink for the given system binder URL.
+	 */
+	public static String getSystemBinderPermalink( HttpServletRequest req, SystemBinderType sysBinderType )
+	{
+		String reply = "";
+		
+		try
+		{
+			Binder binder;
+			String internalId;
+			
+			switch ( sysBinderType )
+			{
+			case GLOBAL_ROOT:
+				internalId = ObjectKeys.GLOBAL_ROOT_INTERNALID;
+				break;
+				
+			case NET_FOLDER_ROOT:
+				internalId = ObjectKeys.NET_FOLDERS_ROOT_INTERNALID;
+				break;
+			
+			case PROFILE_ROOT:
+				internalId = ObjectKeys.PROFILE_ROOT_INTERNALID;
+				break;
+				
+			case TEAM_ROOT:
+				internalId = ObjectKeys.TEAM_ROOT_INTERNALID;
+				break;
+				
+			case TOP_WORKSPACE:
+				internalId = ObjectKeys.TOP_WORKSPACE_INTERNALID;
+				break;
+			
+			case UNKNOWN:
+			default:
+				internalId = null;
+				break;
+			}
+			
+			if ( internalId != null )
+			{
+				binder = getCoreDao().loadReservedBinder(
+														internalId,
+														RequestContextHolder.getRequestContext().getZoneId() );
+	
+				reply = PermaLinkUtil.getPermalink( req, binder );
+			}
+		}
+		catch ( Exception ex )
+		{
+		}
+		
 		return reply;
 	}
 	
