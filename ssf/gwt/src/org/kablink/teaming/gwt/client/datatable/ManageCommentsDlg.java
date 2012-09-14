@@ -49,7 +49,6 @@ import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.CommentsWidget;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
-import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -65,6 +64,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
@@ -80,6 +80,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class ManageCommentsDlg extends DlgBox implements KeyDownHandler {
+	private boolean							m_isIE;						//
 	private CommentAddedCallback			m_commentAddedCallback;		// Callback interface used to tell the callee a new comment was added.
 	private CommentsInfo					m_commentsInfo;				// The CommentsInfo the ManageCommentsDlg is running against.
 	private CommentsWidget					m_commentsWidget;			// Widget that displays the current comments.
@@ -112,6 +113,7 @@ public class ManageCommentsDlg extends DlgBox implements KeyDownHandler {
 			false);					// false -> Don't show footer.
 
 		// ...initialize everything else...
+		m_isIE     = GwtClientHelper.jsIsIE();
 		m_images   = GwtTeaming.getDataTableImageBundle();
 		m_messages = GwtTeaming.getMessages();
 	
@@ -199,10 +201,13 @@ public class ManageCommentsDlg extends DlgBox implements KeyDownHandler {
 		m_fp.add(m_commentsWidget);
 		
 		// ...create the widgets to add comments...
-		VibeFlexTable addCommentPanel = new VibeFlexTable();
+		FlexTable addCommentPanel = new FlexTable();
 		addCommentPanel.setCellPadding(0);
 		addCommentPanel.setCellSpacing(0);
 		addCommentPanel.addStyleName("vibe-manageCommentsDlg-addCommentPanel");
+		if (!m_isIE) {
+			addCommentPanel.addStyleName("vibe-manageCommentsDlg-addCommentPanel-nonIE");
+		}
 		String avatarUrl = GwtClientHelper.getRequestInfo().getUserAvatarUrl();
 		if (!(GwtClientHelper.hasString(avatarUrl))) {
 			avatarUrl = m_images.userPhoto().getSafeUri().asString();
@@ -221,7 +226,11 @@ public class ManageCommentsDlg extends DlgBox implements KeyDownHandler {
 		hint.addStyleName("vibe-manageCommentsDlg-addCommentHint");
 		hintPanel.add(hint);
 		Button sendButton = new Button(m_messages.manageCommentsDlgSend());
-		sendButton.addStyleName("vibe-manageCommentsDlg-sendButton");
+		String sendStyle = "vibe-manageCommentsDlg-sendButton";
+		if (m_isIE)
+		     sendStyle += " vibe-manageCommentsDlg-sendButton-IE";
+		else sendStyle += " vibe-manageCommentsDlg-sendButton-nonIE";
+		sendButton.addStyleName(sendStyle);
 		sendButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {

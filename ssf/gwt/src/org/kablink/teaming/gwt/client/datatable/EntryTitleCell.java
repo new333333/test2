@@ -71,20 +71,22 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * @author drfoster@novell.com
  */
 public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
+	private boolean			m_isFilr;			//
 	private HoverHintPopup	m_hoverHintPopup;	//
 	
 	/**
 	 * Constructor method.
 	 */
 	public EntryTitleCell() {
-		/*
-		 * Sink the events we need to process an entry title.
-	     */
+		// Sink the events we need to process an entry title...
 		super(
 			VibeDataTableConstants.CELL_EVENT_CLICK,
 			VibeDataTableConstants.CELL_EVENT_KEYDOWN,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOVER,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
+		
+		// ...and initialize everything else.
+		m_isFilr = GwtClientHelper.isLicenseFilr();
 	}
 
 	/*
@@ -270,7 +272,12 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			eventTarget.addClassName("vibe-dataTableLink-hover");
 			
 			// ...if have a description...
-			String description = eti.getDescription();
+			String	description       = eti.getDescription();
+			boolean	descriptionIsHTML = eti.isDescriptionHtml();
+			if (m_isFilr && eti.isFile() && (!(GwtClientHelper.hasString(description)))) {
+				description       = eti.getTitle();
+				descriptionIsHTML = false;
+			}
 			if (GwtClientHelper.hasString(description)) {
 				// ...and we haven't create a popup panel for the hover
 				// ...HTML yet...
@@ -280,7 +287,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 				}
 				
 				// ...and show it with the description HTML.
-				m_hoverHintPopup.setHoverText(description, eti.isDescriptionHtml());
+				m_hoverHintPopup.setHoverText(description, descriptionIsHTML);
 				m_hoverHintPopup.showHintRelativeTo(eventTarget);
 			}
 			
@@ -337,15 +344,28 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			return;
 		}
 
-		// If we're dealing with an item in the trash...
+		// Initialize the variables required to render the title cell.
 		Image			binderImg    = ((Image) eti.getClientItemImage());
 		String			entryIdS     = String.valueOf(eti.getEntityId().getEntityId());
-		VibeFlowPanel	fp           = new VibeFlowPanel();
 		String			entityType   = eti.getEntityId().getEntityType();
 		boolean			entryUnseen  = (!(eti.isSeen()));
 		boolean			hasBinderImg = (null != binderImg);
 		boolean			isTrash      = eti.isTrash();
 		boolean			isEntry      = entityType.equals("folderEntry");
+		VibeFlowPanel	html         = new VibeFlowPanel();
+		VibeFlowPanel	fp           = new VibeFlowPanel();
+		
+		// In Filr...
+		html.add(fp);
+		fp.addStyleName("vibe-dataTableEntry-panel");
+		if (m_isFilr) {
+			// ...we don't word wrap the title of files or folders.
+			if (eti.isFile() || eti.getEntityId().isBinder()) {
+				fp.addStyleName("gwtUI_nowrap");
+			}
+		}
+		
+		// If we're dealing with an item in the trash...
 		if (isTrash) {
 			// ...and we know what type of item it is...
 			if (null != entityType) {
@@ -401,7 +421,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		fp.add(titleLabel);
 		
 		// ...and render that into the cell.
-		SafeHtml rendered = SafeHtmlUtils.fromTrustedString(fp.getElement().getInnerHTML());
+		SafeHtml rendered = SafeHtmlUtils.fromTrustedString(html.getElement().getInnerHTML());
 		sb.append(rendered);
 	}
 }

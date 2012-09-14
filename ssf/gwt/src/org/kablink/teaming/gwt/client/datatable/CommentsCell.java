@@ -38,7 +38,6 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.CommentAddedCallback;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
-import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -185,11 +184,13 @@ public class CommentsCell extends AbstractCell<CommentsInfo> implements CommentA
 		VibeFlowPanel html = new VibeFlowPanel();
 		if (commentsInfo.getEntityId().isEntry()) {
 			// Yes!  Generate the number of comments panel...
-			VibeFlowPanel cp = new VibeFlowPanel();
-			cp.addStyleName("vibe-dataTableComments-panel");
-			Element cpE = cp.getElement();
-			cp.addStyleName("cursorPointer"                        );
-			cp.setTitle(    m_messages.vibeDataTable_Alt_Comments());
+			VibeFlowPanel commentPanel = new VibeFlowPanel();
+			commentPanel.addStyleName("vibe-dataTableComments-panel");
+			VibeFlowPanel commentBubble = new VibeFlowPanel();
+			commentBubble.addStyleName("vibe-dataTableComments-bubble");
+			Element cpE = commentBubble.getElement();
+			commentBubble.addStyleName("cursorPointer"                        );
+			commentBubble.setTitle(    m_messages.vibeDataTable_Alt_Comments());
 			cpE.setId(commentsInfo.getEntityId().getEntityIdString());
 			cpE.setAttribute(
 				VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE,
@@ -207,7 +208,8 @@ public class CommentsCell extends AbstractCell<CommentsInfo> implements CommentA
 			cpE.setInnerHTML(comments);
 			
 			// ...and render it as the cell's HTML.
-			html.add(cp);
+			commentPanel.add(commentBubble);
+			html.add(commentPanel);
 		}
 		
 		// ...and render that into the cell.
