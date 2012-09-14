@@ -810,7 +810,7 @@ public class GwtUIHelper {
 		Long topWSId;
 		
 		try {
-			topWSId = bs.getWorkspaceModule().getTopWorkspace().getId();
+			topWSId = bs.getWorkspaceModule().getTopWorkspaceId();
 		}
 		catch (Exception e) {
 			topWSId = null;
