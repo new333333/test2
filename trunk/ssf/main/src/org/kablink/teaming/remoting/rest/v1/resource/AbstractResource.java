@@ -48,16 +48,21 @@ import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
+import org.kablink.teaming.rest.v1.model.EntityId;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
+import org.kablink.teaming.rest.v1.model.Share;
 import org.kablink.teaming.search.SearchUtils;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.util.api.ApiErrorCode;
@@ -333,5 +338,59 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             }
         }
         return queryDoc;
+    }
+
+    protected ShareItem toShareItem(Share share) {
+        if (share==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The request body must contain a 'Share' object.");
+        }
+        EntityId sharedEntity = share.getSharedEntity();
+        if (sharedEntity==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'shared_entity' value.");
+        }
+        if (sharedEntity.getId()==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'shared_entity.id' value.");
+        }
+        if (sharedEntity.getType()==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'shared_entity.type' value.");
+        }
+        EntityId recipient = share.getRecipient();
+        if (recipient==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'recipient' value.");
+        }
+        if (recipient.getId()==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'recipient.id' value.");
+        }
+        if (recipient.getType()==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'recipient.type' value.");
+        }
+        if (share.getRole()==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'role' value.");
+        }
+
+        EntityIdentifier.EntityType entityType;
+        try {
+            entityType = EntityIdentifier.EntityType.valueOf(sharedEntity.getType());
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The shared_entity.type value must be one of the following: folder, workspace, folderEntry");
+        }
+        EntityIdentifier entity = new EntityIdentifier(sharedEntity.getId(), entityType);
+        ShareItem.RecipientType recType;
+        try {
+            recType = ShareItem.RecipientType.valueOf(recipient.getType());
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The recipient.type value must be one of the following: user, group, team");
+        }
+        ShareItem.Role role;
+        try {
+            role = ShareItem.Role.valueOf(share.getRole());
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The 'role' value must be one of the following: VIEWER, EDITOR, CONTRIBUTOR");
+        }
+        WorkAreaOperation.RightSet rights = (WorkAreaOperation.RightSet) role.getRightSet().clone();
+        if (Boolean.TRUE.equals(share.isCanShare())) {
+            rights.setAllowSharing(true);
+        }
+        return new ShareItem(getLoggedInUserId(), entity, share.getComment(), share.getEndDate(), recType, recipient.getId(), rights);
     }
 }

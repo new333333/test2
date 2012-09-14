@@ -1,8 +1,11 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoTagByTheIdException;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -18,11 +21,13 @@ import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderTree;
+import org.kablink.teaming.rest.v1.model.EntityId;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.Folder;
 import org.kablink.teaming.rest.v1.model.PrincipalBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
+import org.kablink.teaming.rest.v1.model.Share;
 import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.rest.v1.model.TeamMember;
 import org.kablink.teaming.search.SearchUtils;
@@ -186,6 +191,31 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         binders.add(id.toString());
         Criteria criteria = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(this, binders, null, null, true, Constants.LASTACTIVITY_FIELD);
         return _getRecentActivity(textDescriptions, offset, maxCount, criteria, this.getBasePath() + id + "/recent_activity");
+    }
+
+    @GET
+    @Path("{id}/shares")
+    public SearchResultList<Share> getShares(@PathParam("id") Long id) {
+        org.kablink.teaming.domain.Binder binder = _getBinder(id);
+        ShareItemSelectSpec spec = new ShareItemSelectSpec();
+        spec.setSharerId(getLoggedInUserId());
+        spec.setSharedEntityIdentifier(new EntityIdentifier(id, binder.getEntityType()));
+        SearchResultList<Share> results = new SearchResultList<Share>();
+        List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
+        for (ShareItem shareItem : shareItems) {
+            results.append(ResourceUtil.buildShare(shareItem));
+        }
+        return results;
+    }
+
+    @POST
+    @Path("{id}/shares")
+    public Share shareEntity(@PathParam("id") Long id, Share share) {
+        org.kablink.teaming.domain.Binder binder = _getBinder(id);
+        share.setSharedEntity(new EntityId(id, binder.getEntityType().name(), null));
+        ShareItem item = toShareItem(share);
+        getSharingModule().addShareItem(item);
+        return ResourceUtil.buildShare(item);
     }
 
     @GET

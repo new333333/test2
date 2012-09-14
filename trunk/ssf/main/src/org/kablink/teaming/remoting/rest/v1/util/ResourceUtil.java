@@ -714,9 +714,12 @@ public class ResourceUtil {
             link = LinkUriUtil.getBinderLinkUri(recipientId);
         }
         if (link!=null) {
-            model.setRecipient(new LongIdLinkPair(recipientId, link));
+            model.setRecipient(new EntityId(recipientId, recipType.name(), link));
         }
+        model.setRole(shareItem.getRole().name());
         model.setSharedEntity(buildEntityId(shareItem.getSharedEntityIdentifier()));
+        model.setCanShare(shareItem.getRightSet().isAllowSharing());
+        model.setLink(LinkUriUtil.getShareLinkUri(model.getId()));
         return model;
     }
 

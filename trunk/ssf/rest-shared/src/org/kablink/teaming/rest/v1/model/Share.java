@@ -34,8 +34,10 @@ public class Share extends BaseRestObject {
     protected int daysToExpire;
     protected Date startDate;
     protected Date endDate;
-    private LongIdLinkPair recipient;
+    private EntityId recipient;
     private EntityId sharedEntity;
+    private String role;
+    private Boolean canShare;
 
     public String getComment() {
         return comment;
@@ -88,11 +90,11 @@ public class Share extends BaseRestObject {
         this.id = id;
     }
 
-    public LongIdLinkPair getRecipient() {
+    public EntityId getRecipient() {
         return recipient;
     }
 
-    public void setRecipient(LongIdLinkPair recipient) {
+    public void setRecipient(EntityId recipient) {
         this.recipient = recipient;
     }
 
@@ -103,5 +105,22 @@ public class Share extends BaseRestObject {
 
     public void setSharedEntity(EntityId sharedEntity) {
         this.sharedEntity = sharedEntity;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    @XmlElement(name = "can_share")
+    public Boolean isCanShare() {
+        return canShare;
+    }
+
+    public void setCanShare(Boolean canShare) {
+        this.canShare = canShare;
     }
 }
