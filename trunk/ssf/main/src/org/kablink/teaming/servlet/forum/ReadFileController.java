@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.servlet.forum;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -124,10 +125,17 @@ public class ReadFileController extends AbstractReadFileController {
 							zipOut.putArchiveEntry(new ZipArchiveEntry(attName));
 							FileUtil.copy(fileStream, zipOut);
 							zipOut.closeArchiveEntry();
-	
-							fileStream.close();
 						} catch (Exception e) {
 							logger.error(e);
+						}
+						finally {
+							try {
+								if(fileStream != null) {
+									fileStream.close();
+									fileStream = null;
+								}
+							}
+							catch(IOException ignore) {}
 						}
 					}
 				}
@@ -201,10 +209,17 @@ public class ReadFileController extends AbstractReadFileController {
 								"KB took " + (System.nanoTime()-startTime)/1000000.0 + " ms");
 						*/
 						zipOut.closeArchiveEntry();
-
-						fileStream.close();
 					} catch (Exception e) {
 						logger.error(e);
+					}
+					finally {
+						try {
+							if(fileStream != null) {
+								fileStream.close();
+								fileStream = null;
+							}
+						}
+						catch(IOException ignore) {}
 					}
 					zipOut.finish();
 				}

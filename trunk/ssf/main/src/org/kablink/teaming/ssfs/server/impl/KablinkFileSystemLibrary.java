@@ -33,6 +33,7 @@
 package org.kablink.teaming.ssfs.server.impl;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -603,8 +604,15 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 		InputStream fromContent = bs.getFileModule().readFile
 		(fromEntry.getParentFolder(), fromEntry, fromFA);
 	
-		createLibraryFolderEntry(toParentFolder, fileName, fromContent, 
+		try {
+			createLibraryFolderEntry(toParentFolder, fileName, fromContent, 
 				fromFA.getModification().getDate());
+		}
+		finally {
+			try {
+				fromContent.close();
+			} catch (IOException ignore) {}
+		}
 	}
 	
 	/**
@@ -623,7 +631,14 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 		InputStream fromContent = bs.getFileModule().readFile
 		(fromEntry.getParentFolder(), fromEntry, fromFA);
 	
-		modifyLibraryFolderEntry(toEntry, fileName, fromContent, fromFA.getModification().getDate());
+		try {
+			modifyLibraryFolderEntry(toEntry, fileName, fromContent, fromFA.getModification().getDate());
+		}
+		finally {
+			try {
+				fromContent.close();
+			} catch (IOException ignore) {}
+		}
 	}
 	
 	private String objectInfo(Map uri, Map objMap) throws NoAccessException {
