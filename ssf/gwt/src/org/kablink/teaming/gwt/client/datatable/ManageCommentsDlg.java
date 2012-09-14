@@ -56,12 +56,15 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
@@ -212,10 +215,25 @@ public class ManageCommentsDlg extends DlgBox implements KeyDownHandler {
 		m_addCommentTA.addKeyDownHandler(this);
 		addCommentPanel.setWidget(0, 1, m_addCommentTA);
 		addCommentPanel.getRowFormatter().setVerticalAlign(0, HasVerticalAlignment.ALIGN_TOP);
+		VibeFlowPanel hintPanel = new VibeFlowPanel();
+		hintPanel.addStyleName("vibe-manageCommentsDlg-addCommentHintPanel");
 		InlineLabel hint = new InlineLabel(m_messages.manageCommentsDlgWhoHasAccess());
 		hint.addStyleName("vibe-manageCommentsDlg-addCommentHint");
-		addCommentPanel.setWidget(1, 1, hint);
-		addCommentPanel.getCellFormatter().addStyleName(1, 1, "vibe-manageCommentsDlg-addCommentHintPanel");
+		hintPanel.add(hint);
+		Button sendButton = new Button(m_messages.manageCommentsDlgSend());
+		sendButton.addStyleName("vibe-manageCommentsDlg-sendButton");
+		sendButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				String comment = getTrimmedComment();
+				if (GwtClientHelper.hasString(comment)) {
+					addCommentAsync(comment);
+				}
+			}
+		});
+		sendButton.addKeyDownHandler(this);
+		hintPanel.add(sendButton);
+		addCommentPanel.setWidget(1, 1, hintPanel);
 		m_fp.add(addCommentPanel);
 		
 		// ...and return the Panel that holds the dialog's contents.
@@ -247,6 +265,18 @@ public class ManageCommentsDlg extends DlgBox implements KeyDownHandler {
 		return m_addCommentTA;
 	}
 
+	/*
+	 * Returns a non-null comment string with the leading and trailing
+	 * white space trimmed off.
+	 */
+	private String getTrimmedComment() {
+		String comment = m_addCommentTA.getText();
+		if (null == comment)
+		     comment = "";
+		else comment = comment.trim();
+		return comment;
+	}
+	
 	/**
 	 * Called when the data table is attached.
 	 * 
@@ -281,21 +311,11 @@ public class ManageCommentsDlg extends DlgBox implements KeyDownHandler {
 	 */
 	@Override
 	public void onKeyDown(KeyDownEvent event) {
-		String comment = m_addCommentTA.getText();
-		if (null == comment)
-		     comment = "";
-		else comment = comment.trim();
+		String comment = getTrimmedComment();
 		boolean hasComment = GwtClientHelper.hasString(comment);
 		
 		// What key is being pressed?
 		switch (event.getNativeEvent().getKeyCode()) {
-		case KeyCodes.KEY_ENTER:
-			// Enter!  Has the user entered any text for a comment?
-			if (hasComment) {
-				addCommentAsync(comment);
-			}
-			break;
-			
 		case KeyCodes.KEY_ESCAPE:
 			// Escape!  Has the user entered any text for a comment?
 			if (!hasComment) {

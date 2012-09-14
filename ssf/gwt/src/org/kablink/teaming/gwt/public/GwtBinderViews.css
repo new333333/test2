@@ -371,13 +371,48 @@
 	.vibe-manageCommentsDlg .popupContent       {background-color: white !important;}
 	.vibe-manageCommentsDlg-addCommentAvatar    {vertical-align: top !important; padding: 5px 10px; width: 30px; height: 30px; border-radius: 2px;}
 	.vibe-manageCommentsDlg-addCommentHint      {color: #4D6D8B; font-size: 1em;}
-	.vibe-manageCommentsDlg-addCommentHintPanel {padding-top: 5px;}
+	.vibe-manageCommentsDlg-addCommentHintPanel {padding-top: 5px; padding-right: 5px;}
 	.vibe-manageCommentsDlg-addCommentPanel     {color: #353838; background-color: #F6F6F6; border-top-color: #cccccc; border-top-style: solid; border-top-width: 1px; width: 100%; padding-top: 15px; padding-bottom: 15px; box-shadow: 0px 2px 3px #e0e0e0 inset;}
 	.vibe-manageCommentsDlg-addCommentTextArea  {background-color: white; font-family: Arial, Helvetica, sans-serif; font-size: 14px; width: 500px; height: 45px; padding: 5px; border: 1px solid #E0E0E0; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
 	.vibe-manageCommentsDlg-captionImg          {width: 36px; height: 36px;}
+	.vibe-manageCommentsDlg-commentsWidget      {height: 300px; overflow: auto; width: 550px;}
 	.vibe-manageCommentsDlg-label               {}
 	.vibe-manageCommentsDlg-panel               {}
-	.vibe-manageCommentsDlg-commentsWidget      {height: 300px; overflow: auto; width: 550px;}
+	.vibe-manageCommentsDlg-sendButton          {
+		color:#fff;
+	 	font-size: 14px !important;
+	    font-family: Arial, sans-serif !important;
+	    text-align: center !important;
+	 	float: right;
+	  	white-space: nowrap !important;
+		border: 0px;
+	  	background: #949494 none repeat scroll 0 0;
+		margin-right:3px;
+		padding: 2px 10px;
+		text-decoration:none;
+	  	cursor: pointer;
+		border-radius: 15px;
+		-moz-border-radius: 15px;
+		-webkit-border-radius: 15px;
+	}
+	.vibe-manageCommentsDlg-sendButton:hover {
+		color: #135c8f !important;
+		font-size: 14px !important;
+		float: right;
+	    white-space: nowrap !important;
+	    text-decoration: none !important;
+		border: 0px;
+		background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -webkit-gradient(linear, left bottom, left top, color-stop(0.47, #A8D4DD), color-stop(0.53, #D5EDF1), color-stop(1, #C8E4E9));
+		border-radius: 15px;
+		-moz-border-radius: 15px;
+		-webkit-border-radius: 15px;
+	}
 /* End:  Manage comments dialog styles. */
 
 /* Start:  Size columns dialog styles. */
