@@ -21,12 +21,15 @@ import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.module.file.FileIndexData;
+import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.search.SearchUtils;
+import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.*;
 
 import javax.ws.rs.*;
@@ -46,6 +49,34 @@ import java.util.Set;
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class ShareResource extends AbstractResource {
+
+    @GET
+    @Path("/{id}")
+    public Share getShare(@PathParam("id") Long id) {
+        ShareItem share = getSharingModule().getShareItem(id);
+        return ResourceUtil.buildShare(share);
+    }
+
+    @POST
+    @Path("/{id}")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Share updateShare(@PathParam("id") Long id, Share share) {
+        ShareItem origItem = getSharingModule().getShareItem(id);
+        // You can't change the shared entity or the recipient via this API.  Perhaps I should fail if the client supplies
+        // these values and they don't match?
+        share.setSharedEntity(new EntityId(origItem.getEntityIdentifier().getEntityId(), origItem.getEntityType().name(), null));
+        share.setRecipient(new EntityId(origItem.getRecipientId(), origItem.getRecipientType().name(), null));
+        ShareItem shareItem = toShareItem(share);
+        getSharingModule().modifyShareItem(shareItem, id);
+        return ResourceUtil.buildShare(shareItem);
+    }
+
+    @DELETE
+    @Path("/{id}")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public void deleteShare(@PathParam("id") Long id) {
+        getSharingModule().deleteShareItem(id);
+    }
 
     @GET
     @Path("/by_user/{id}")
@@ -417,5 +448,4 @@ public class ShareResource extends AbstractResource {
         }
         return Restrictions.in(Constants.ENTRY_ANCESTRY, idList);
     }
-
 }

@@ -124,6 +124,10 @@ public class LinkUriUtil {
         return "/files/" + fp.getId();
     }
 
+    public static String getShareLinkUri(Long id) {
+        return "/shares/" + id;
+    }
+
     public static String getFileVersionBaseLinkUri(FileVersionProperties fp) {
         return "/file_versions/" + fp.getId();
     }

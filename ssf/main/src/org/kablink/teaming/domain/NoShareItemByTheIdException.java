@@ -60,6 +60,6 @@ public class NoShareItemByTheIdException extends NoObjectByTheIdException {
 		 */
 		@Override
 		public ApiErrorCode getApiErrorCode() {
-			return ApiErrorCode.GROUP_NOT_FOUND;
+			return ApiErrorCode.SHAREITEM_NOT_FOUND;
 		}
 }

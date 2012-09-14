@@ -34,9 +34,11 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
 import org.dom4j.Document;
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoTagByTheIdException;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -45,6 +47,7 @@ import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.rest.v1.model.EntityId;
 import org.kablink.teaming.rest.v1.model.FolderEntry;
 import org.kablink.teaming.rest.v1.model.FolderEntryBrief;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
@@ -54,6 +57,7 @@ import org.kablink.teaming.rest.v1.model.Reply;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchResultTree;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
+import org.kablink.teaming.rest.v1.model.Share;
 import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.api.ApiErrorCode;
@@ -206,6 +210,31 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
     @Path("{id}/reservation")
     public void unreserve(@PathParam("id") Long id) {
         getFolderModule().unreserveEntry(null, id);
+    }
+
+    @GET
+    @Path("{id}/shares")
+    public SearchResultList<Share> getShares(@PathParam("id") Long id) {
+        _getFolderEntry(id);
+        ShareItemSelectSpec spec = new ShareItemSelectSpec();
+        spec.setSharerId(getLoggedInUserId());
+        spec.setSharedEntityIdentifier(new EntityIdentifier(id, EntityIdentifier.EntityType.folderEntry));
+        SearchResultList<Share> results = new SearchResultList<Share>();
+        List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
+        for (ShareItem shareItem : shareItems) {
+            results.append(ResourceUtil.buildShare(shareItem));
+        }
+        return results;
+    }
+
+    @POST
+    @Path("{id}/shares")
+    public Share shareEntity(@PathParam("id") Long id, Share share) {
+        _getFolderEntry(id);
+        share.setSharedEntity(new EntityId(id, EntityIdentifier.EntityType.folderEntry.name(), null));
+        ShareItem item = toShareItem(share);
+        getSharingModule().addShareItem(item);
+        return ResourceUtil.buildShare(item);
     }
 
     protected org.kablink.teaming.domain.FolderEntry _getFolderEntry(long id) {
