@@ -365,8 +365,8 @@ public class WhoHasAccessDlg extends DlgBox {
 		populateScrollPanel(groupsPanel, groupList, false);
 		
 		// ...and tie it all together.
-		populateTableColumn(LIST_CAPTION_ROW, m_messages.mainMenuWhoHasAccessDlgUsersWithAccess(),  usersPanel );
-		populateTableColumn(LIST_ROW,         m_messages.mainMenuWhoHasAccessDlgGroupsWithAccess(), groupsPanel);
+		populateTableColumn(0, m_messages.mainMenuWhoHasAccessDlgUsersWithAccess(),  usersPanel );
+		populateTableColumn(1, m_messages.mainMenuWhoHasAccessDlgGroupsWithAccess(), groupsPanel);
 		
 		// Show the dialog (perhaps again) so that it can be positioned
 		// correctly based on its new content.
