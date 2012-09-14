@@ -78,6 +78,10 @@ public class MastheadPopupMenu extends PopupMenu
 			
 			if ( isUserLoggedIn )
 			{
+				boolean addSeparator;
+				
+				addSeparator = false;
+				
 				// Create the "Administration" menu item.
 				{
 					img = new Image( GwtTeaming.getImageBundle().adminMenuImg() );
@@ -87,19 +91,18 @@ public class MastheadPopupMenu extends PopupMenu
 					checkAdminRights( mastheadBinderId );
 				}
 				
-				// Create the "Personal preferences" menu item.
-				img = new Image( GwtTeaming.getImageBundle().personalPrefsMenuImg() );
-				addMenuItem( new EditPersonalPreferencesEvent(), img, messages.personalPrefsMenuItem() );
-			
 				// Create the "Open News Feed" menu item.
 				if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
 				{
 					img = new Image( GwtTeaming.getImageBundle().newsFeedMenuImg() );
 					addMenuItem( new ViewTeamingFeedEvent(), img, messages.newsFeedMenuItem() );
+					
+					addSeparator = true;
 				}
 				
 				// Add a separator
-				addSeparator();
+				if ( addSeparator )
+					addSeparator();
 			}
 			
 			// Create the "Vibe Resource Library" menu item.

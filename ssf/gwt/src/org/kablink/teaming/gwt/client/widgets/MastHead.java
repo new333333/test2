@@ -34,9 +34,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
-import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
 import org.kablink.teaming.gwt.client.event.SizeChangedEvent;
@@ -61,6 +59,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
@@ -83,12 +82,13 @@ public class MastHead extends Composite
 	private RequestInfo m_requestInfo = null;
 	private String m_mastheadBinderId = null;
 	private FlowPanel m_mainMastheadPanel = null;
-	private FlowPanel m_globalActionsPanel = null;
-	private InlineLabel m_logoutLink = null;
+	private HorizontalPanel m_globalActionsPanel = null;
+	private FlowPanel m_userNamePanel;
 	private InlineLabel m_loginLink = null;
 	private InlineLabel m_userName = null;
 	private Label m_betaLabel = null;
 	private MastheadPopupMenu m_popupMenu = null;
+	private UserActionsPopup m_userActionsPopup = null;
 	private FilrActionsCtrl m_filrActionsCtrl;
 
 	private GwtBrandingData m_siteBrandingData = null;
@@ -185,26 +185,35 @@ public class MastHead extends Composite
 		
 		// Create the panel that will hold the global actions such as Administration", "Logout" etc
 		{
-			m_globalActionsPanel = new FlowPanel();
+			m_globalActionsPanel = new HorizontalPanel();
 			m_globalActionsPanel.addStyleName( "mastheadGlobalActionsPanel" );
 			
 			// Create a label that holds the logged-in user's name.
 			{
+				Image img;
+				
+				m_userNamePanel = new FlowPanel();
+				m_userNamePanel.setStylePrimaryName( "mastheadUserName" );
+				m_userNamePanel.addStyleName( "brandingLink" );
+				m_userNamePanel.addDomHandler( this, ClickEvent.getType() );
+				m_globalActionsPanel.add( m_userNamePanel );
+
 				String userName = requestInfo.getUserName();
 				if ( !GwtClientHelper.hasString( userName ) )
 				{
 					userName = requestInfo.getUserLoginId();
 				}
 				m_userName = new InlineLabel( userName );
-				m_userName.setStylePrimaryName( "mastheadUserName" );
-				m_userName.addStyleName( "brandingLink" );
-				m_userName.addClickHandler( this );
 				m_userName.getElement().setId( "mhUserName" );
-				m_globalActionsPanel.add( m_userName );
+				m_userNamePanel.add( m_userName );
+
+				img = new Image( GwtTeaming.getImageBundle().mastheadActions2() );
+				img.getElement().setAttribute( "align", "absmiddle" );
+				m_userNamePanel.add( img );
 			}
 			
-			// Add Login or Logout to the masthead.
-			addLoginLogoutAction();
+			// Add login to the masthead.
+			addLoginAction();
 
 			// Create the actions popup menu.
 			m_popupMenu = new MastheadPopupMenu( m_mastheadBinderId, m_requestInfo.isUserLoggedIn(), true, true );
@@ -216,6 +225,7 @@ public class MastHead extends Composite
 				Image img;
 				
 				// Add a separator
+				if ( m_requestInfo.isUserLoggedIn() == false )
 				{
 					InlineLabel separator;
 					
@@ -407,36 +417,24 @@ public class MastHead extends Composite
 	}
 	
 	/**
-	 * Add the "login" or "logout" action to the global actions part of the masthead.
+	 * Add the "login" action to the global actions part of the masthead.
 	 */
-	private void addLoginLogoutAction()
+	private void addLoginAction()
 	{
 		Element linkElement;
 
-		// Add a separator
-		{
-			InlineLabel separator;
-			
-			separator = new InlineLabel( "|" );
-			separator.addStyleName( "mastheadActionsSeparator" );
-			m_globalActionsPanel.add( separator );
-		}
-
 		// Is the user logged in?
-		if ( m_requestInfo.isUserLoggedIn() )
+		if ( m_requestInfo.isUserLoggedIn() == false )
 		{
-			// Yes, add the "logout" action.
-			m_logoutLink = new InlineLabel( GwtTeaming.getMessages().logoutHint() );
-			m_logoutLink.addStyleName( "brandingLink" );
-			m_logoutLink.addClickHandler( this );
-			m_logoutLink.setTitle( GwtTeaming.getMessages().logoutHint() );
-			linkElement = m_logoutLink.getElement();
-			linkElement.setId( "mhLogoutAction" );
-			
-			m_globalActionsPanel.add( m_logoutLink );
-		}
-		else
-		{
+			// Add a separator
+			{
+				InlineLabel separator;
+				
+				separator = new InlineLabel( "|" );
+				separator.addStyleName( "mastheadActionsSeparator" );
+				m_globalActionsPanel.add( separator );
+			}
+
 			// No, add the "login" action.
 			m_loginLink = new InlineLabel( GwtTeaming.getMessages().loginHint() );
 			m_loginLink.addStyleName( "brandingLink" );
@@ -536,16 +534,37 @@ public class MastHead extends Composite
 		GwtClientHelper.executeCommand( cmd, m_rpcGetSiteBrandingCallback );
 	}
 	
-
 	/**
 	 * Hide the logout link.  We will do this if we are running in captive mode.
 	 */
 	public void hideLogoutLink()
 	{
-		if ( m_logoutLink != null )
-			m_logoutLink.setVisible( false );
+		if ( m_userActionsPopup != null )
+			m_userActionsPopup.hideLogoutLink();
 	}
-	
+
+	/**
+	 * 
+	 */
+	private void invokeUserActionsPopup()
+	{
+		if ( m_userActionsPopup == null )
+		{
+			m_userActionsPopup = new UserActionsPopup( m_userName.getText(), true, false );
+
+			// Set the position of the popup
+			{
+				int left;
+				int top;
+				
+				left = m_userNamePanel.getAbsoluteLeft() - (m_userNamePanel.getOffsetWidth() / 2);
+				top = m_userNamePanel.getAbsoluteTop() + m_userNamePanel.getOffsetHeight() + 12;
+				m_userActionsPopup.setPopupPosition( left, top );
+			}
+		}
+
+		m_userActionsPopup.show();
+	}
 	
 	/**
 	 * This method gets called when the user clicks on something in the branding panel.
@@ -558,18 +577,13 @@ public class MastHead extends Composite
 		// Get the widget that was clicked on.
 		eventSource = (Widget) event.getSource();
 
-		// Send Appropriate event
-		if ( eventSource == m_logoutLink )
-		{
-			LogoutEvent.fireOne();
-		}
-		else if ( eventSource == m_loginLink )
+		if ( eventSource == m_loginLink )
 		{
 			LoginEvent.fireOne();
 		}
-		else if ( eventSource == m_userName )
+		else if ( eventSource == m_userName || eventSource == m_userNamePanel )
 		{
-			GotoMyWorkspaceEvent.fireOneAsync();
+			invokeUserActionsPopup();
 		}
 	}// end onClick()
 	

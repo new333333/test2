@@ -233,6 +233,7 @@ public interface GwtTeamingMessages extends Messages
 	String send();
 	String showBorder();
 	String showTitle();
+	String signOut();
 	String title();
 	String unknownFileUploadError( String error);
 	String vibeInsideLandingPage();
@@ -1944,5 +1945,10 @@ public interface GwtTeamingMessages extends Messages
 	String editShareRightsDlg_EditorLabel();
 	String editShareRightsDlg_GrantRightsLabel();
 	String editShareRightsDlg_ViewerLabel();
+
+	// Strings used in the User Actions Popup
+	String userActionsPanel_PersonalPreferences();
+	String userActionsPanel_ViewProfile();
+	String userActionsPanel_ViewSharedByMe();
 	
 }// end GwtTeamingMessages
