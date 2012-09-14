@@ -536,7 +536,6 @@ public class ExportHelper {
 			FileUtil.copy(fileStream, zipOut);
 			zipOut.closeEntry();
 
-			fileStream.close();
 			Integer count = (Integer)reportMap.get(files);
 			reportMap.put(files, ++count);
 		} catch (Exception e) {
@@ -547,7 +546,6 @@ public class ExportHelper {
 				String eMsg = NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
 						", entryId=" + entity.getId().toString() + ", " + fileName;
 				logger.error(eMsg);
-				if (fileStream != null) fileStream.close();
 				Integer c = (Integer)reportMap.get(errors);
 				reportMap.put(errors, ++c);
 				((List)reportMap.get(errorList)).add(eMsg);
@@ -559,6 +557,13 @@ public class ExportHelper {
 						"Error processing this attachment").getBytes());
 				zipOut.closeEntry();
 			}
+		}
+		finally {
+			try {
+				if(fileStream != null)
+					fileStream.close();
+			}
+			catch(IOException ignore) {}
 		}
 
 		// older versions, from highest to lowest
@@ -580,7 +585,6 @@ public class ExportHelper {
 				FileUtil.copy(fileStream, zipOut);
 				zipOut.closeEntry();
 
-				fileStream.close();
 				Integer count = (Integer)reportMap.get(files);
 				reportMap.put(files, ++count);
 			} catch (Exception e) {
@@ -591,7 +595,6 @@ public class ExportHelper {
 					String eMsg = NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
 							", entryId=" + entity.getId().toString() + ", " + fileName;
 					logger.error(eMsg);
-					if (fileStream != null) fileStream.close();
 					Integer c = (Integer)reportMap.get(errors);
 					reportMap.put(errors, ++c);
 					((List)reportMap.get(errorList)).add(eMsg);
@@ -604,6 +607,13 @@ public class ExportHelper {
 							"Error processing this attachment").getBytes());
 					zipOut.closeEntry();
 				}
+			}
+			finally {
+				try {
+					if(fileStream != null)
+						fileStream.close();
+				}
+				catch(IOException ignore) {}
 			}
 		}
 

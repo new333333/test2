@@ -888,7 +888,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	try {	
     		writeFiles(binder, entity, fuis, null, prune2);
     	}
-    	finally {}
+    	finally {
+	    	for(FileUploadItem f : fuis) {
+	    		try {
+	    			f.delete();
+	    		}
+	    		catch(IOException ignore) {}
+	    	}
+    	}
     	if (prune && maxVersionsToKeep != null && maxVersionsToKeep == 0) {
     		//This is a special case. Make sure to keep at least one version
     		pruneFileVersions(binder, entity, maxVersionsToKeep + 1);
