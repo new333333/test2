@@ -384,7 +384,7 @@ public class FolderUtils {
 		
 		// Wrap the input stream in a datastructure suitable for our business module.
 		MultipartFile mf;
-		Map options = null;
+		Map options = new HashMap();
 		if(modDate != null || creatorId != null) {
 			ExtendedMultipartFile dmf = new ExtendedMultipartFile(fileName, content);
 			if(modDate != null) {
