@@ -64,6 +64,9 @@
             <column name="accountName" type="VARCHAR(255)"/>
             <column name="password" type="VARCHAR(255)"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="peter" context="schema" failOnError="true" id="8">
         <addColumn tableName="SS_ResourceDriver">
@@ -134,6 +137,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong" context="schema" failOnError="true" id="11">
         <createIndex indexName="name_OpenIDProviders" tableName="SS_OpenIDProviders" unique="true">
@@ -180,6 +186,9 @@
             <column name="right_viewBinderTitle" type="BIT"/>
             <column name="right_allowSharing" type="BIT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong" context="schema" failOnError="true" id="13">
         <createIndex indexName="sharerId_shareitem" tableName="SS_ShareItem" unique="false">
