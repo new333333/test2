@@ -26,6 +26,9 @@
             <column name="EXCEPTIONHANDLER_" type="BIGINT"/>
             <column name="EXCEPTIONHANDLERINDEX_" type="INT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-2">
         <createTable tableName="JBPM_BYTEARRAY">
@@ -35,6 +38,9 @@
             <column name="NAME_" type="VARCHAR(255)"/>
             <column name="FILEDEFINITION_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-3">
         <createTable tableName="JBPM_BYTEBLOCK">
@@ -46,6 +52,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-4">
         <createTable tableName="JBPM_COMMENT">
@@ -63,6 +72,9 @@
             <column name="TOKENINDEX_" type="INT"/>
             <column name="TASKINSTANCEINDEX_" type="INT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-5">
         <createTable tableName="JBPM_DECISIONCONDITIONS">
@@ -75,6 +87,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-6">
         <createTable tableName="JBPM_DELEGATION">
@@ -86,6 +101,9 @@
             <column name="CONFIGTYPE_" type="VARCHAR(255)"/>
             <column name="PROCESSDEFINITION_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-7">
         <createTable tableName="JBPM_EVENT">
@@ -100,6 +118,9 @@
             <column name="TRANSITION_" type="BIGINT"/>
             <column name="TASK_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-8">
         <createTable tableName="JBPM_EXCEPTIONHANDLER">
@@ -115,6 +136,9 @@
             <column name="TRANSITION_" type="BIGINT"/>
             <column name="TASK_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-9">
         <createTable tableName="JBPM_LOG">
@@ -163,6 +187,9 @@
             <column name="OLDBYTEARRAY_" type="BIGINT"/>
             <column name="NEWBYTEARRAY_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-10">
         <createTable tableName="JBPM_MESSAGE">
@@ -182,6 +209,9 @@
             <column name="TASKINSTANCE_" type="BIGINT"/>
             <column name="NODE_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-11">
         <createTable tableName="JBPM_MODULEDEFINITION">
@@ -195,6 +225,9 @@
             <column name="PROCESSDEFINITION_" type="BIGINT"/>
             <column name="STARTTASK_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-12">
         <createTable tableName="JBPM_MODULEINSTANCE">
@@ -208,6 +241,9 @@
             <column name="TASKMGMTDEFINITION_" type="BIGINT"/>
             <column name="NAME_" type="VARCHAR(255)"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-13">
         <createTable tableName="JBPM_NODE">
@@ -230,6 +266,9 @@
             <column name="ENDTASKS_" type="BIT"/>
             <column name="NODECOLLECTIONINDEX_" type="INT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-14">
         <createTable tableName="JBPM_POOLEDACTOR">
@@ -239,6 +278,9 @@
             <column name="ACTORID_" type="VARCHAR(255)"/>
             <column name="SWIMLANEINSTANCE_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-15">
         <createTable tableName="JBPM_PROCESSDEFINITION">
@@ -250,6 +292,9 @@
             <column name="ISTERMINATIONIMPLICIT_" type="BIT"/>
             <column name="STARTSTATE_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-16">
         <createTable tableName="JBPM_PROCESSINSTANCE">
@@ -266,6 +311,9 @@
             <column name="ROOTTOKEN_" type="BIGINT"/>
             <column name="SUPERPROCESSTOKEN_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-17">
         <createTable tableName="JBPM_RUNTIMEACTION">
@@ -282,6 +330,9 @@
             <column name="ACTION_" type="BIGINT"/>
             <column name="PROCESSINSTANCEINDEX_" type="INT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-18">
         <createTable tableName="JBPM_SWIMLANE">
@@ -294,6 +345,9 @@
             <column name="ASSIGNMENTDELEGATION_" type="BIGINT"/>
             <column name="TASKMGMTDEFINITION_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-19">
         <createTable tableName="JBPM_SWIMLANEINSTANCE">
@@ -305,6 +359,9 @@
             <column name="SWIMLANE_" type="BIGINT"/>
             <column name="TASKMGMTINSTANCE_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-20">
         <createTable tableName="JBPM_TASK">
@@ -326,6 +383,9 @@
             <column name="SWIMLANE_" type="BIGINT"/>
             <column name="TASKCONTROLLER_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-21">
         <createTable tableName="JBPM_TASKACTORPOOL">
@@ -336,6 +396,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-22">
         <createTable tableName="JBPM_TASKCONTROLLER">
@@ -344,6 +407,9 @@
             </column>
             <column name="TASKCONTROLLERDELEGATION_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-23">
         <createTable tableName="JBPM_TASKINSTANCE">
@@ -371,6 +437,9 @@
             <column name="SWIMLANINSTANCE_" type="BIGINT"/>
             <column name="TASKMGMTINSTANCE_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-24">
         <createTable tableName="JBPM_TIMER">
@@ -390,6 +459,9 @@
             <column name="GRAPHELEMENTTYPE_" type="VARCHAR(255)"/>
             <column name="GRAPHELEMENT_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-25">
         <createTable tableName="JBPM_TOKEN">
@@ -412,6 +484,9 @@
             <column name="PARENT_" type="BIGINT"/>
             <column name="SUBPROCESSINSTANCE_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-26">
         <createTable tableName="JBPM_TOKENVARIABLEMAP">
@@ -421,6 +496,9 @@
             <column name="TOKEN_" type="BIGINT"/>
             <column name="CONTEXTINSTANCE_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-27">
         <createTable tableName="JBPM_TRANSITION">
@@ -433,6 +511,9 @@
             <column name="TO_" type="BIGINT"/>
             <column name="FROMINDEX_" type="INT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-28">
         <createTable tableName="JBPM_VARIABLEACCESS">
@@ -447,6 +528,9 @@
             <column name="INDEX_" type="INT"/>
             <column name="SCRIPT_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-29">
         <createTable tableName="JBPM_VARIABLEINSTANCE">
@@ -470,6 +554,9 @@
             <column name="STRINGVALUE_" type="VARCHAR(255)"/>
             <column name="TASKINSTANCE_" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-30">
         <createTable tableName="SS_Attachments">
@@ -519,6 +606,9 @@
             <column name="versionName" type="VARCHAR(256)"/>
             <column name="parentAttachment" type="CHAR(32)"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-31">
         <createTable tableName="SS_AuditTrail">
@@ -548,6 +638,9 @@
             <column name="definitionId" type="VARCHAR(32)"/>
             <column name="ended" type="BIT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-32">
         <createTable tableName="SS_BinderQuota">
@@ -561,6 +654,9 @@
             <column name="diskSpaceUsed" type="BIGINT"/>
             <column name="diskSpaceUsedCumulative" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-33">
         <createTable tableName="SS_ChangeLogs">
@@ -580,6 +676,9 @@
             <column name="owningBinderId" type="BIGINT"/>
             <column name="owningBinderKey" type="VARCHAR(255)"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-34">
         <createTable tableName="SS_CustomAttributes">
@@ -610,6 +709,9 @@
             <column name="position" type="INT"/>
             <column name="parent" type="CHAR(32)"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-35">
         <createTable tableName="SS_Dashboards">
@@ -636,6 +738,9 @@
             <column name="binderId" type="BIGINT"/>
             <column name="portletName" type="VARCHAR(256)"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-36">
         <createTable tableName="SS_DefinitionMap">
@@ -649,6 +754,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-37">
         <createTable tableName="SS_Definitions">
@@ -673,6 +781,9 @@
             <column name="modification_date" type="DATETIME"/>
             <column name="modification_principal" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-38">
         <createTable tableName="SS_EmailAddresses">
@@ -687,6 +798,9 @@
             </column>
             <column name="address" type="VARCHAR(256)"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-39">
         <createTable tableName="SS_EmailLog">
@@ -711,6 +825,9 @@
             <column name="toEmailAddresses" type="LONGTEXT"/>
             <column name="fileAttachments" type="LONGTEXT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-40">
         <createTable tableName="SS_Events">
@@ -755,6 +872,9 @@
             <column name="calUid" type="VARCHAR(255)"/>
             <column name="freeBusy" type="VARCHAR(32)"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-41">
         <createTable tableName="SS_Extensions">
@@ -776,6 +896,9 @@
             <column name="dateDeployed" type="VARCHAR(255)"/>
             <column name="zoneId" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-42">
         <createTable tableName="SS_FolderEntries">
@@ -824,6 +947,9 @@
             <column name="ratings_count" type="BIGINT"/>
             <column name="popularity" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-43">
         <createTable tableName="SS_FolderEntryStats">
@@ -833,6 +959,9 @@
             <column name="zoneId" type="BIGINT"/>
             <column name="popularity" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-44">
         <createTable tableName="SS_Forums">
@@ -909,6 +1038,9 @@
             <column name="tDescription_text" type="LONGTEXT"/>
             <column name="tDescription_format" type="INT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-45">
         <createTable tableName="SS_FunctionConditionMap">
@@ -918,6 +1050,9 @@
             <column name="meet" type="VARCHAR(16)"/>
             <column name="conditionId" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-46">
         <createTable tableName="SS_FunctionConditions">
@@ -937,6 +1072,9 @@
             <column name="description_text" type="LONGTEXT"/>
             <column name="description_format" type="INT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-47">
         <createTable tableName="SS_FunctionOperations">
@@ -947,6 +1085,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-48">
         <createTable tableName="SS_Functions">
@@ -966,6 +1107,9 @@
             <column name="zoneWide" type="BIT"/>
             <column name="scope" type="VARCHAR(16)"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-49">
         <createTable tableName="SS_IndexingJournal">
@@ -978,6 +1122,9 @@
             <column name="operationName" type="VARCHAR(32)"/>
             <column name="operationArgs" type="LONGBLOB"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-50">
         <createTable tableName="SS_IndexNode">
@@ -990,6 +1137,9 @@
             <column name="accessMode" type="VARCHAR(16)"/>
             <column name="inSynch" type="BIT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-51">
         <createTable tableName="SS_LdapConnectionConfig">
@@ -1007,6 +1157,9 @@
             <column name="position" type="INT"/>
             <column name="ldapGuidAttribute" type="VARCHAR(255)"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-52">
         <createTable tableName="SS_LibraryEntries">
@@ -1022,6 +1175,9 @@
             <column name="zoneId" type="BIGINT"/>
             <column name="entityId" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-53">
         <createTable tableName="SS_LicenseStats">
@@ -1037,6 +1193,9 @@
             <column name="activeUserCount" type="BIGINT"/>
             <column name="checksum" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-54">
         <createTable tableName="SS_Notifications">
@@ -1047,6 +1206,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-55">
         <createTable tableName="SS_NotifyStatus">
@@ -1061,6 +1223,9 @@
             <column name="lastDigestSent" type="DATETIME"/>
             <column name="lastFullSent" type="DATETIME"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-56">
         <createTable tableName="SS_Postings">
@@ -1081,6 +1246,9 @@
             <column name="definition" type="CHAR(32)"/>
             <column name="replyPostingOption" type="INT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-57">
         <createTable tableName="SS_PrincipalMembership">
@@ -1091,6 +1259,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-58">
         <createTable tableName="SS_Principals">
@@ -1157,6 +1328,9 @@
             <column name="dynamic" type="BIT"/>
             <column name="ldapQuery" type="LONGTEXT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-59">
         <createTable tableName="SS_Ratings">
@@ -1173,6 +1347,9 @@
             <column name="rating" type="BIGINT"/>
             <column name="readCount" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-60">
         <createTable tableName="SS_SeenMap">
@@ -1186,6 +1363,9 @@
             <column name="lastPrune" type="DATETIME"/>
             <column name="pruneDays" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-61">
         <createTable tableName="SS_SharedEntity">
@@ -1200,6 +1380,9 @@
             <column name="entityType" type="VARCHAR(16)"/>
             <column name="entityId" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-62">
         <createTable tableName="SS_SimpleName">
@@ -1213,6 +1396,9 @@
             <column name="binderId" type="BIGINT"/>
             <column name="binderType" type="VARCHAR(16)"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-63">
         <createTable tableName="SS_Subscriptions">
@@ -1229,6 +1415,9 @@
             <column name="style" type="INT"/>
             <column name="encodedStyles" type="VARCHAR(256)"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-64">
         <createTable tableName="SS_Tags">
@@ -1243,6 +1432,9 @@
             <column name="name" type="VARCHAR(64)"/>
             <column name="isPublic" type="BIT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-65">
         <createTable tableName="SS_TokenInfo">
@@ -1262,6 +1454,9 @@
             <column name="requesterId" type="BIGINT"/>
             <column name="clientAddr" type="VARCHAR(128)"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-66">
         <createTable tableName="SS_UserProperties">
@@ -1276,6 +1471,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-67">
         <createTable tableName="SS_WorkAreaFunctionMembers">
@@ -1286,6 +1484,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-68">
         <createTable tableName="SS_WorkAreaFunctionMemberships">
@@ -1308,6 +1509,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-69">
         <createTable tableName="SS_WorkflowHistory">
@@ -1329,6 +1533,9 @@
             <column name="definitionId" type="VARCHAR(32)"/>
             <column name="ended" type="BIT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-70">
         <createTable tableName="SS_WorkflowMap">
@@ -1342,6 +1549,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-71">
         <createTable tableName="SS_WorkflowResponses">
@@ -1362,6 +1572,9 @@
             <column name="responderId" type="BIGINT"/>
             <column name="responseDate" type="DATETIME"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-72">
         <createTable tableName="SS_WorkflowStates">
@@ -1386,6 +1599,9 @@
             <column name="timerId" type="BIGINT"/>
             <column name="definition" type="CHAR(32)"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-73">
         <createTable tableName="SS_ZoneConfig">
@@ -1417,6 +1633,9 @@
             <column name="allowSelfRegistration" type="BIT"/>
             <column name="lastUpdate" type="BIGINT"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-74">
         <createTable tableName="SS_ZoneInfo">
@@ -1431,6 +1650,9 @@
             </column>
             <column name="virtualHost" type="VARCHAR(255)"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-75">
         <createTable tableName="SSQRTZ_BLOB_TRIGGERS">
@@ -1442,6 +1664,9 @@
             </column>
             <column name="BLOB_DATA" type="BLOB"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-76">
         <createTable tableName="SSQRTZ_CALENDARS">
@@ -1452,6 +1677,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-77">
         <createTable tableName="SSQRTZ_CRON_TRIGGERS">
@@ -1466,6 +1694,9 @@
             </column>
             <column name="TIME_ZONE_ID" type="VARCHAR(80)"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-78">
         <createTable tableName="SSQRTZ_FIRED_TRIGGERS">
@@ -1498,6 +1729,9 @@
             <column name="IS_STATEFUL" type="VARCHAR(1)"/>
             <column name="REQUESTS_RECOVERY" type="VARCHAR(1)"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-79">
         <createTable tableName="SSQRTZ_JOB_DETAILS">
@@ -1525,6 +1759,9 @@
             </column>
             <column name="JOB_DATA" type="BLOB"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-80">
         <createTable tableName="SSQRTZ_JOB_LISTENERS">
@@ -1538,6 +1775,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-81">
         <createTable tableName="SSQRTZ_LOCKS">
@@ -1545,6 +1785,9 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-82">
         <createTable tableName="SSQRTZ_PAUSED_TRIGGER_GRPS">
@@ -1552,6 +1795,9 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-83">
         <createTable tableName="SSQRTZ_SCHEDULER_STATE">
@@ -1565,6 +1811,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-84">
         <createTable tableName="SSQRTZ_SIMPLE_TRIGGERS">
@@ -1584,6 +1833,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-85">
         <createTable tableName="SSQRTZ_TRIGGER_LISTENERS">
@@ -1597,6 +1849,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-86">
         <createTable tableName="SSQRTZ_TRIGGERS">
@@ -1633,6 +1888,9 @@
             <column name="MISFIRE_INSTR" type="SMALLINT"/>
             <column name="JOB_DATA" type="BLOB"/>
         </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325864746197-87">
         <addPrimaryKey columnNames="PROCESSFILE_, INDEX_" tableName="JBPM_BYTEBLOCK"/>
