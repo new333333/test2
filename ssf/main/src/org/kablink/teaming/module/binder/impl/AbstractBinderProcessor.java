@@ -43,6 +43,7 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -2639,7 +2640,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	}
 	protected void processCreationTimestamp(DefinableEntity entity, Map options) {
 		User user;
-		if (options != null && options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE)) {
+		if (options != null && (
+				options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) ||
+				options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_ID) ||
+				options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_NAME))) {
 			Calendar date = (Calendar)options.get(ObjectKeys.INPUT_OPTION_CREATION_DATE);
 			Long id = (Long)options.get(ObjectKeys.INPUT_OPTION_CREATION_ID);
 			String name = (String)options.get(ObjectKeys.INPUT_OPTION_CREATION_NAME);
@@ -2652,7 +2656,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			else { // neither id nor name specified
 				user = RequestContextHolder.getRequestContext().getUser();				
 			}
-			entity.setCreation(new HistoryStamp(user, date.getTime()));
+			entity.setCreation(new HistoryStamp(user, (date != null)? date.getTime():new Date()));
 		} else {
 			entity.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
 		}
