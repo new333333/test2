@@ -97,4 +97,9 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 		return null;
 	}
 
+	@Override
+	public ResourceDriver createResourceDriver(ResourceDriverConfig config) {
+		return null;
+	}
+
 }

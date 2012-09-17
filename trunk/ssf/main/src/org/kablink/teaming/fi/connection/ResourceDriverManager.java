@@ -92,4 +92,14 @@ public interface ResourceDriverManager {
 	 * @throws FIException
 	 */
 	public boolean isReadonly(String driverName) throws FIException;
+
+	/**
+	 * Create a resource driver from the config object.
+	 * This is used for testing purpose only.
+	 * 
+	 * @param config
+	 * @return
+	 */
+	public ResourceDriver createResourceDriver(ResourceDriverConfig config);
+
 }
