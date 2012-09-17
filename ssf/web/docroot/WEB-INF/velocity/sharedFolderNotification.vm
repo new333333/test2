@@ -28,13 +28,18 @@
  *#
 #if ($ssVisitor.isHtml())  
 	<a href="$ssVisitor.getPermaLink($ssSharedEntity)">$esc.html(${ssSharedEntity.ParentBinder.PathName})/$esc.html(${ssSharedEntity.Title})</a><br/><br/>
-	$esc.html(${ssShare.Comment})<br /><br />
+	#if (${ssShare.Comment})
+		$esc.html(${ssShare.Comment})
+	#end
+	<br /><br />
 	$esc.html(${ssShareExpiration})<br />
 
 #else
 	#ss_printLn($ssVisitor.getPermaLink($ssSharedEntity))
 	
-	#ss_printLn(${ssShare.Comment})
+	#if (${ssShare.Comment})
+		#ss_printLn(${ssShare.Comment})
+	#end
 	
 	#ss_printLn(${ssShareExpiration})
 #end
