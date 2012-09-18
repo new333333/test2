@@ -114,9 +114,20 @@ public class LoginFilter  implements Filter {
 					String landingPageUrl = getWapLandingPageURL(req);
 					res.sendRedirect(landingPageUrl);
 				} else {
+					String refererUrl;
+					
 					// Not a mobile device, or a mobile device in full UI mode
-					String workspaceUrl = getWorkspaceURL(req);
-					res.sendRedirect(workspaceUrl);
+					// Do we have a referer url?
+					refererUrl = (String)req.getAttribute( WebKeys.REFERER_URL );
+					if ( refererUrl != null && refererUrl.length() > 0 )
+					{
+						res.sendRedirect( refererUrl );
+					}
+					else
+					{
+						String workspaceUrl = getWorkspaceURL(req);
+						res.sendRedirect(workspaceUrl);
+					}
 				}
 			}
 			else {

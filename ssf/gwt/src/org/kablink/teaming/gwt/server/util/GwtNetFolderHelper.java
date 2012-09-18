@@ -54,6 +54,11 @@ import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.fi.connection.ResourceDriver;
+import org.kablink.teaming.fi.connection.ResourceDriverManager;
+import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
+import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
+import org.kablink.teaming.fi.connection.acl.AclResourceDriver.ConnectionTestStatus;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.GwtSchedule.DayFrequency;
@@ -64,6 +69,8 @@ import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.NetFolder.NetFolderStatus;
+import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse;
+import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse.GwtConnectionTestStatusCode;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.NetFolderRootType;
 import org.kablink.teaming.jobs.Schedule;
 import org.kablink.teaming.jobs.ScheduleInfo;
@@ -923,5 +930,110 @@ public class GwtNetFolderHelper
 		}
 		
 		return netFolders;
+	}
+	
+	/**
+	 * Test the given connection
+	 */
+	private static GwtConnectionTestStatusCode testConnection(
+		String driverName,
+		NetFolderRootType rootType,
+		String rootPath,
+		String subPath,
+		String proxyName,
+		String proxyPwd )
+	{
+		String name;
+		ResourceDriverConfig rdConfig = null;
+		DriverType driverType;
+		ResourceDriver resourceDriver;
+		ResourceDriverManager rdManager;
+		GwtConnectionTestStatusCode statusCode;
+		
+		statusCode = GwtConnectionTestStatusCode.UNKNOWN;
+		
+		name = driverName;
+		if ( name != null )
+			name = "test-connection-" + name + "test-connection";
+		else
+			name = "test-connection-net-folder-root-test-connection";
+		
+		rdConfig = new ResourceDriverConfig();
+		rdConfig.setName( name );
+		driverType = getDriverType( rootType );
+		rdConfig.setDriverType( driverType );
+		rdConfig.setZoneId( RequestContextHolder.getRequestContext().getZoneId() );
+		rdConfig.setRootPath( rootPath );
+   		rdConfig.setReadOnly( false );
+   		rdConfig.setSynchTopDelete( false );
+   		rdConfig.setAccountName( proxyName );
+   		rdConfig.setPassword( proxyPwd );
+		
+   		rdManager = ResourceDriverManagerUtil.getResourceDriverManager();
+   		resourceDriver = rdManager.createResourceDriver( rdConfig );
+   		if ( resourceDriver != null && resourceDriver instanceof AclResourceDriver )
+   		{
+   			AclResourceDriver aclDriver;
+			ConnectionTestStatus status;
+   			
+   			aclDriver = (AclResourceDriver) resourceDriver;
+   			aclDriver.initialize();
+   			status = aclDriver.testConnection(
+		   								proxyName,
+		   								proxyPwd,
+		   								subPath );
+
+   			switch ( status.getCode() )
+   			{
+   			case NETWORK_ERROR:
+   				statusCode = GwtConnectionTestStatusCode.NETWORK_ERROR;
+   				break;
+   			
+   			case NORMAL:
+   				statusCode = GwtConnectionTestStatusCode.NORMAL;
+   				break;
+   			
+   			case PROXY_CREDENTIALS_ERROR:
+   				statusCode = GwtConnectionTestStatusCode.PROXY_CREDENTIALS_ERROR;
+   				break;
+   			
+   			default:
+   				statusCode = GwtConnectionTestStatusCode.UNKNOWN;
+   				break;
+   			}
+
+   			aclDriver.shutdown();
+   		}
+   		
+   		return statusCode;
+	}
+
+	/**
+	 * Test the connection for the given net folder root
+	 */
+	public static TestNetFolderConnectionResponse testNetFolderConnection(
+		String rootName,
+		NetFolderRootType rootType,
+		String rootPath,
+		String subPath,
+		String proxyName,
+		String proxyPwd )
+	{
+		TestNetFolderConnectionResponse response;
+		GwtConnectionTestStatusCode statusCode;
+		
+		response = new TestNetFolderConnectionResponse();
+		
+		statusCode = testConnection(
+								rootName,
+								rootType,
+								rootPath,
+								subPath,
+								proxyName,
+								proxyPwd );
+			
+		response.setStatusCode( statusCode );
+		
+		return response;
 	}
 }

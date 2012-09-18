@@ -58,6 +58,8 @@ import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateNetFolderRootCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyNetFolderRootCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -83,6 +85,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -125,10 +128,13 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private TextBox m_hostUrlTxtBox;
 	private CheckBox m_allowSelfSignedCertsCkbox;
 	private CheckBox m_isSharePointServerCkbox;
+	private FlowPanel m_inProgressPanel;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 	private FlexCellFormatter m_privilegedPrincipalsCellFormatter;
 	private HTMLTable.RowFormatter m_privilegedPrincipalsRowFormatter;
 	private ImageResource m_deleteImgR;
+	
+	private static boolean m_showPrivilegedUsersUI = false;
 
 	
 	// The following defines the TeamingEvents that are handled by
@@ -502,6 +508,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		}
 		
 		// Create a select control for selecting the type of net folder root
+		if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
 		{
 			label = new InlineLabel( messages.modifyNetFolderRootDlg_TypeLabel() );
 			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
@@ -610,10 +617,69 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			m_proxyPwdTxtBox.setVisibleLength( 30 );
 			table.setWidget( nextRow, 1, m_proxyPwdTxtBox );
 			++nextRow;
+			
+			// Add a "test connection" button
+			{
+				Button testConnectionBtn;
+				
+				// Add "Test connection" button
+				testConnectionBtn = new Button( messages.modifyNetFolderRootDlg_TestConnectionLabel() );
+				testConnectionBtn.addStyleName( "teamingButton" );
+				testConnectionBtn.addClickHandler( new ClickHandler()
+				{
+					/**
+					 * 
+					 */
+					@Override
+					public void onClick( ClickEvent event )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							/**
+							 * 
+							 */
+							@Override
+							public void execute()
+							{
+								testConnection();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+					
+				} );
+				
+				table.setWidget( nextRow, 0, testConnectionBtn );
+
+				// Add a panel that will display "Testing connection..." message
+				{
+					ImageResource imgResource;
+					Image img;
+					
+					m_inProgressPanel = new FlowPanel();
+					m_inProgressPanel.addStyleName( "testConnection_InProgress" );
+					m_inProgressPanel.setVisible( false );
+
+					imgResource = GwtTeaming.getImageBundle().spinner16();
+					img = new Image( imgResource );
+					img.getElement().setAttribute( "align", "absmiddle" );
+					m_inProgressPanel.add( img );
+
+					label = new InlineLabel( GwtTeaming.getMessages().testConnection_InProgressLabel() );
+					m_inProgressPanel.add( label );
+					
+					table.setWidget( nextRow, 1, m_inProgressPanel );
+				}
+				
+				++nextRow;
+			}
 		}
 		
 		// Create the controls used to select who can create net folders using this
 		// net folder root.
+		if ( m_showPrivilegedUsersUI )
 		{
 			// Create the FindCtrl
 			{
@@ -767,25 +833,28 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	{
 		int selectedIndex;
 		
-		selectedIndex = m_rootTypeListbox.getSelectedIndex();
-		if ( selectedIndex >= 0 )
+		if ( m_rootTypeListbox != null )
 		{
-			NetFolderRootType type;
-			boolean visible;
-			
-			// Get the selected root type;
-			type = getSelectedRootType();
-
-			visible = false;
-			if ( type == NetFolderRootType.WEB_DAV )
-				visible = true;
-			
-			// Show/hide the controls that are WebDAV specific
-			m_webDavSpacerPanel.setVisible( visible );
-			m_hostUrlLabel.setVisible( visible );
-			m_hostUrlTxtBox.setVisible( visible );
-			m_allowSelfSignedCertsCkbox.setVisible( visible );
-			m_isSharePointServerCkbox.setVisible( visible );
+			selectedIndex = m_rootTypeListbox.getSelectedIndex();
+			if ( selectedIndex >= 0 )
+			{
+				NetFolderRootType type;
+				boolean visible;
+				
+				// Get the selected root type;
+				type = getSelectedRootType();
+	
+				visible = false;
+				if ( type == NetFolderRootType.WEB_DAV )
+					visible = true;
+				
+				// Show/hide the controls that are WebDAV specific
+				m_webDavSpacerPanel.setVisible( visible );
+				m_hostUrlLabel.setVisible( visible );
+				m_hostUrlTxtBox.setVisible( visible );
+				m_allowSelfSignedCertsCkbox.setVisible( visible );
+				m_isSharePointServerCkbox.setVisible( visible );
+			}
 		}
 	}
 	
@@ -801,21 +870,24 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	@Override
 	public boolean editCanceled()
 	{
-		int i;
-		
-		// Go through the list of privileged principals and close any "Group Membership" popups that may be open.
-		for (i = 1; i < m_privilegedPrincipalsTable.getRowCount(); ++i)
+		if ( m_showPrivilegedUsersUI )
 		{
-			Widget widget;
+			int i;
 			
-			if ( m_privilegedPrincipalsTable.getCellCount( i ) > 2 )
+			// Go through the list of privileged principals and close any "Group Membership" popups that may be open.
+			for (i = 1; i < m_privilegedPrincipalsTable.getRowCount(); ++i)
 			{
-				// Get the PrincipalNameWidget from the first column.
-				widget = m_privilegedPrincipalsTable.getWidget( i, 0 );
-				if ( widget != null && widget instanceof PrincipalNameWidget )
+				Widget widget;
+				
+				if ( m_privilegedPrincipalsTable.getCellCount( i ) > 2 )
 				{
-					// Close any group membership popup that this widget may have open.
-					((PrincipalNameWidget) widget).closePopups();
+					// Get the PrincipalNameWidget from the first column.
+					widget = m_privilegedPrincipalsTable.getWidget( i, 0 );
+					if ( widget != null && widget instanceof PrincipalNameWidget )
+					{
+						// Close any group membership popup that this widget may have open.
+						((PrincipalNameWidget) widget).closePopups();
+					}
 				}
 			}
 		}
@@ -1002,7 +1074,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		netFolderRoot.setRootPath( getRootPath() );
 		netFolderRoot.setProxyName( getProxyName() );
 		netFolderRoot.setProxyPwd( getProxyPwd() );
-		netFolderRoot.setListOfPrincipals( getListOfPrivilegedPrincipals() );
+		if ( m_showPrivilegedUsersUI )
+			netFolderRoot.setListOfPrincipals( getListOfPrivilegedPrincipals() );
 		
 		if ( getSelectedRootType() == NetFolderRootType.WEB_DAV )
 		{
@@ -1056,27 +1129,32 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private NetFolderRootType getSelectedRootType()
 	{
 		int selectedIndex;
-		
-		selectedIndex = m_rootTypeListbox.getSelectedIndex();
-		if ( selectedIndex >= 0 )
-		{
-			String value;
 
-			value = m_rootTypeListbox.getValue( selectedIndex );
-			if ( value != null )
+		if ( m_rootTypeListbox != null )
+		{
+			selectedIndex = m_rootTypeListbox.getSelectedIndex();
+			if ( selectedIndex >= 0 )
 			{
-				if ( value.equalsIgnoreCase( NetFolderRootType.FILE_SYSTEM.toString() ) )
-					return NetFolderRootType.FILE_SYSTEM;
-				
-				if ( value.equalsIgnoreCase( NetFolderRootType.WEB_DAV.toString() ) )
-					return NetFolderRootType.WEB_DAV;
-				
-				if ( value.equalsIgnoreCase( NetFolderRootType.FAMT.toString() ) )
-					return NetFolderRootType.FAMT;
+				String value;
+	
+				value = m_rootTypeListbox.getValue( selectedIndex );
+				if ( value != null )
+				{
+					if ( value.equalsIgnoreCase( NetFolderRootType.FILE_SYSTEM.toString() ) )
+						return NetFolderRootType.FILE_SYSTEM;
+					
+					if ( value.equalsIgnoreCase( NetFolderRootType.WEB_DAV.toString() ) )
+						return NetFolderRootType.WEB_DAV;
+					
+					if ( value.equalsIgnoreCase( NetFolderRootType.FAMT.toString() ) )
+						return NetFolderRootType.FAMT;
+				}
 			}
+			
+			return NetFolderRootType.UNKNOWN;
 		}
 		
-		return NetFolderRootType.UNKNOWN;
+		return NetFolderRootType.FAMT;
 	}
 
 	/**
@@ -1111,7 +1189,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 
 		// Clear existing data in the controls.
 		m_nameTxtBox.setValue( "" );
-		GwtClientHelper.selectListboxItemByValue( m_rootTypeListbox, NetFolderRootType.FAMT.toString() );
+		if ( m_rootTypeListbox != null )
+			GwtClientHelper.selectListboxItemByValue( m_rootTypeListbox, NetFolderRootType.FAMT.toString() );
 		m_rootPathTxtBox.setValue( "" );
 		m_proxyNameTxtBox.setValue( "" );
 		m_proxyPwdTxtBox.setValue( "" );
@@ -1119,17 +1198,20 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		m_allowSelfSignedCertsCkbox.setValue( false );
 		m_isSharePointServerCkbox.setValue( false );
 
-		// Remove all of the rows from the table.
-		// We start at row 1 so we don't delete the header.
-		while ( m_privilegedPrincipalsTable.getRowCount() > 1 )
+		if ( m_showPrivilegedUsersUI )
 		{
-			// Remove the 1st row that holds share information.
-			m_privilegedPrincipalsTable.removeRow( 1 );
+			// Remove all of the rows from the table.
+			// We start at row 1 so we don't delete the header.
+			while ( m_privilegedPrincipalsTable.getRowCount() > 1 )
+			{
+				// Remove the 1st row that holds share information.
+				m_privilegedPrincipalsTable.removeRow( 1 );
+			}
+			
+			// Add a message to the table telling the user there are no privileged principals.
+			addNoPrivilegedPrincipalsMessage();
+			adjustPrivilegedPrincipalsTablePanelHeight();
 		}
-		
-		// Add a message to the table telling the user there are no privileged principals.
-		addNoPrivilegedPrincipalsMessage();
-		adjustPrivilegedPrincipalsTablePanelHeight();
 
 		// Are we modifying an existing net folder root?
 		if ( m_netFolderRoot != null )
@@ -1145,7 +1227,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			m_nameTxtBox.setEnabled( false );
 			
 			// Select the appropriate root type.
-			GwtClientHelper.selectListboxItemByValue( m_rootTypeListbox, netFolderRoot.getRootType().toString() );
+			if ( m_rootTypeListbox != null )
+				GwtClientHelper.selectListboxItemByValue( m_rootTypeListbox, netFolderRoot.getRootType().toString() );
 
 			// If the root type is WebDAV, initialize the WebDAV specific controls
 			if ( netFolderRoot.getRootType() == NetFolderRootType.WEB_DAV )
@@ -1158,14 +1241,17 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			m_rootPathTxtBox.setValue( netFolderRoot.getRootPath() );
 			m_proxyNameTxtBox.setValue( netFolderRoot.getProxyName() );
 			m_proxyPwdTxtBox.setValue( netFolderRoot.getProxyPwd() );
-			
-			// Add the list of principals that have rights to this root
-			listOfPrincipals = m_netFolderRoot.getListOfPrincipals();
-			if ( listOfPrincipals != null )
+		
+			if ( m_showPrivilegedUsersUI )
 			{
-				for ( GwtPrincipal nextPrincipal : listOfPrincipals )
+				// Add the list of principals that have rights to this root
+				listOfPrincipals = m_netFolderRoot.getListOfPrincipals();
+				if ( listOfPrincipals != null )
 				{
-					addPrivilegedPrincipal( nextPrincipal, false );
+					for ( GwtPrincipal nextPrincipal : listOfPrincipals )
+					{
+						addPrivilegedPrincipal( nextPrincipal, false );
+					}
 				}
 			}
 		}
@@ -1497,6 +1583,81 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			m_privilegedPrincipalsCellFormatter.addStyleName( 0, col, "oltHeaderPadding" );
 		}
 		m_privilegedPrincipalsCellFormatter.addStyleName( 0, m_numCols-1, "oltBorderRight" );
+	}
+	
+	/**
+	 * Test the connection to the server to see if the information they have entered is valid.
+	 */
+	private void testConnection()
+	{
+		NetFolderRoot netFolderRoot;
+		AsyncCallback<VibeRpcResponse> rpcCallback;
+		TestNetFolderConnectionCmd cmd;
+
+		// Is there a "test connection" request currently running?
+		if ( m_inProgressPanel.isVisible() )
+		{
+			// Yes, bail
+			return;
+		}
+		
+		m_inProgressPanel.setVisible( true );
+		
+		netFolderRoot = getNetFolderRootFromDlg();
+		
+		rpcCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable caught )
+			{
+				String errMsg;
+				
+				m_inProgressPanel.setVisible( false );
+				errMsg = GwtTeaming.getMessages().rpcFailure_ErrorTestingNetFolderRootConnection();
+				Window.alert( errMsg );
+			}
+
+			@Override
+			public void onSuccess( VibeRpcResponse result )
+			{
+				TestNetFolderConnectionResponse response;
+				String msg;
+				
+				response = (TestNetFolderConnectionResponse) result.getResponseData();
+				switch ( response.getStatusCode() )
+				{
+				case NETWORK_ERROR:
+					msg = GwtTeaming.getMessages().testConnection_NetworkError();
+					break;
+				
+				case NORMAL:
+					msg = GwtTeaming.getMessages().testConnection_Normal();
+					break;
+				
+				case PROXY_CREDENTIALS_ERROR:
+					msg = GwtTeaming.getMessages().testConnection_ProxyCredentialsError();
+					break;
+				
+				case UNKNOWN:
+				default:
+					msg = GwtTeaming.getMessages().testConnection_UnknownStatus();
+					break;
+				}
+				
+				m_inProgressPanel.setVisible( false );
+				Window.alert( msg );
+			}						
+		};
+		
+		// Issue an rpc request to test net folder root connection
+		cmd = new TestNetFolderConnectionCmd(
+										netFolderRoot.getName(),
+										netFolderRoot.getRootType(),
+										netFolderRoot.getRootPath(),
+										"",
+										netFolderRoot.getProxyName(),
+										netFolderRoot.getProxyPwd() ); 
+		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 	
 	/**

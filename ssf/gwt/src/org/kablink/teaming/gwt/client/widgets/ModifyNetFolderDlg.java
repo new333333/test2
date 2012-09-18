@@ -52,6 +52,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.CreateNetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyNetFolderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -60,12 +62,17 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -89,6 +96,8 @@ public class ModifyNetFolderDlg extends DlgBox
 	private ListBox m_netFolderRootsListbox;
 	private InlineLabel m_noNetFolderRootsLabel;
 	private ScheduleWidget m_scheduleWidget;
+	private FlowPanel m_inProgressPanel;
+	private List<NetFolderRoot> m_listOfNetFolderRoots;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 
 	
@@ -132,6 +141,7 @@ public class ModifyNetFolderDlg extends DlgBox
 	 */
 	private void addNetFolderRoots( List<NetFolderRoot> listOfNetFolderRoots )
 	{
+		m_listOfNetFolderRoots = listOfNetFolderRoots;
 		m_netFolderRootsListbox.clear();
 		
 		if ( listOfNetFolderRoots != null )
@@ -209,6 +219,64 @@ public class ModifyNetFolderDlg extends DlgBox
 			m_relativePathTxtBox = new TextBox();
 			m_relativePathTxtBox.setVisibleLength( 50 );
 			table.setWidget( nextRow, 1, m_relativePathTxtBox );
+			++nextRow;
+		}
+		
+		// Add a "test connection" button
+		{
+			Button testConnectionBtn;
+			
+			// Add "Test connection" button
+			testConnectionBtn = new Button( messages.modifyNetFolderRootDlg_TestConnectionLabel() );
+			testConnectionBtn.addStyleName( "teamingButton" );
+			testConnectionBtn.addClickHandler( new ClickHandler()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						/**
+						 * 
+						 */
+						@Override
+						public void execute()
+						{
+							testConnection();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+				
+			} );
+			
+			table.setWidget( nextRow, 0, testConnectionBtn );
+
+			// Add a panel that will display "Testing connection..." message
+			{
+				ImageResource imgResource;
+				Image img;
+				
+				m_inProgressPanel = new FlowPanel();
+				m_inProgressPanel.addStyleName( "testConnection_InProgress" );
+				m_inProgressPanel.setVisible( false );
+
+				imgResource = GwtTeaming.getImageBundle().spinner16();
+				img = new Image( imgResource );
+				img.getElement().setAttribute( "align", "absmiddle" );
+				m_inProgressPanel.add( img );
+
+				label = new InlineLabel( GwtTeaming.getMessages().testConnection_InProgressLabel() );
+				m_inProgressPanel.add( label );
+				
+				table.setWidget( nextRow, 1, m_inProgressPanel );
+			}
+			
 			++nextRow;
 		}
 		
@@ -389,6 +457,8 @@ public class ModifyNetFolderDlg extends DlgBox
 		GetNetFolderRootsCmd cmd;
 		AsyncCallback<VibeRpcResponse> rpcCallback = null;
 
+		m_listOfNetFolderRoots = null;
+		
 		// Create the callback that will be used when we issue an ajax call to get the net folder roots.
 		rpcCallback = new AsyncCallback<VibeRpcResponse>()
 		{
@@ -469,14 +539,12 @@ public class ModifyNetFolderDlg extends DlgBox
 		
 		return netFolder;
 	}
-	
+
 	/**
-	 * Return the name of the selected net folder root.
+	 * Return the selected net folder root
 	 */
-	private String getNetFolderRootName()
+	private NetFolderRoot getNetFolderRoot()
 	{
-		String rootName = null;
-		
 		// Are there any net folder roots to select from?
 		if ( m_netFolderRootsListbox.getItemCount() > 0 )
 		{
@@ -485,10 +553,39 @@ public class ModifyNetFolderDlg extends DlgBox
 			// Yes
 			selectedIndex = m_netFolderRootsListbox.getSelectedIndex();
 			if ( selectedIndex >= 0 )
+			{
+				String rootName;
+				
 				rootName = m_netFolderRootsListbox.getValue( selectedIndex );
+				
+				// Find the NetFolderRoot by name.
+				if ( m_listOfNetFolderRoots != null )
+				{
+					for ( NetFolderRoot nextRoot : m_listOfNetFolderRoots )
+					{
+						if ( rootName.equalsIgnoreCase( nextRoot.getName() ) )
+							return nextRoot;
+					}
+				}
+			}
 		}
 		
-		return rootName;
+		return null;
+	}
+	
+	/**
+	 * Return the name of the selected net folder root.
+	 */
+	private String getNetFolderRootName()
+	{
+		NetFolderRoot root;
+		
+		// Get the selected net folder root.
+		root = getNetFolderRoot();
+		if ( root != null )
+			return root.getName();
+		
+		return null;
 	}
 	
 	
@@ -707,6 +804,87 @@ public class ModifyNetFolderDlg extends DlgBox
 		}
 	}
 
+	/**
+	 * Test the connection to the server to see if the information they have entered is valid.
+	 */
+	private void testConnection()
+	{
+		NetFolder netFolder;
+		NetFolderRoot root;
+		AsyncCallback<VibeRpcResponse> rpcCallback;
+		TestNetFolderConnectionCmd cmd;
+
+		// Is there a "test connection" request currently running?
+		if ( m_inProgressPanel.isVisible() )
+		{
+			// Yes, bail
+			return;
+		}
+		
+		m_inProgressPanel.setVisible( true );
+		
+		// Create a NetFolder object that holds the information about the net folder
+		netFolder = getNetFolderFromDlg();
+		root = getNetFolderRoot();
+		
+		if ( root != null )
+		{
+			rpcCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				@Override
+				public void onFailure( Throwable caught )
+				{
+					String errMsg;
+					
+					m_inProgressPanel.setVisible( false );
+					errMsg = GwtTeaming.getMessages().rpcFailure_ErrorTestingNetFolderRootConnection();
+					Window.alert( errMsg );
+				}
+	
+				@Override
+				public void onSuccess( VibeRpcResponse result )
+				{
+					TestNetFolderConnectionResponse response;
+					String msg;
+					
+					response = (TestNetFolderConnectionResponse) result.getResponseData();
+					switch ( response.getStatusCode() )
+					{
+					case NETWORK_ERROR:
+						msg = GwtTeaming.getMessages().testConnection_NetworkError();
+						break;
+					
+					case NORMAL:
+						msg = GwtTeaming.getMessages().testConnection_Normal();
+						break;
+					
+					case PROXY_CREDENTIALS_ERROR:
+						msg = GwtTeaming.getMessages().testConnection_ProxyCredentialsError();
+						break;
+					
+					case UNKNOWN:
+					default:
+						msg = GwtTeaming.getMessages().testConnection_UnknownStatus();
+						break;
+					}
+					
+					m_inProgressPanel.setVisible( false );
+					Window.alert( msg );
+				}						
+			};
+			
+			// Issue an rpc request to test net folder root connection
+			cmd = new TestNetFolderConnectionCmd( 
+											root.getName(),
+											root.getRootType(),
+											root.getRootPath(),
+											netFolder.getRelativePath(),
+											root.getProxyName(),
+											root.getProxyPwd() ); 
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		}
+	}
+	
 	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */

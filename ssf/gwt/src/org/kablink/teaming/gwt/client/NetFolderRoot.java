@@ -161,9 +161,12 @@ public class NetFolderRoot
 		HashSet<Long> principalIds;
 		
 		principalIds = new HashSet<Long>();
-		for (GwtPrincipal nextPrincipal : m_principals)
+		if ( m_principals != null )
 		{
-			principalIds.add( nextPrincipal.getIdLong() );
+			for (GwtPrincipal nextPrincipal : m_principals)
+			{
+				principalIds.add( nextPrincipal.getIdLong() );
+			}
 		}
 		
 		return principalIds;
