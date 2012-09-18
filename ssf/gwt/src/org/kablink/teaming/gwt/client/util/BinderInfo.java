@@ -43,20 +43,20 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class BinderInfo implements IsSerializable, VibeRpcResponseData {
-	private BinderType    	m_binderType               = BinderType.OTHER;				//
-	private boolean       	m_binderDescExpanded       = true;							//
-	private boolean       	m_binderDescHTML           = false;							//
-	private boolean       	m_isLibrary                = false;							//
-	private boolean       	m_mirroredDriverConfigured = false;							//
-	private CollectionType	m_collectionType           = CollectionType.OTHER;			//
-	private FolderType    	m_folderType               = FolderType.NOT_A_FOLDER;		//
-	private Long          	m_numUnread                = 0L;							// Number of unread entries in this binder and sub binders.
-	private String        	m_binderId                 = "";							//
-	private String        	m_binderTitle              = "";							//
-	private String		  	m_binderDesc	           = "";							//
-	private String        	m_entityType               = "";							//
-	private WorkspaceType 	m_wsType                   = WorkspaceType.NOT_A_WORKSPACE;	//
-	private String        	m_parentBinderId           = "";							//
+	private BinderType    	m_binderType               = BinderType.OTHER;					//
+	private boolean       	m_binderDescExpanded       = true;								//
+	private boolean       	m_binderDescHTML           = false;								//
+	private boolean       	m_isLibrary                = false;								//
+	private boolean       	m_mirroredDriverConfigured = false;								//
+	private CollectionType	m_collectionType           = CollectionType.NOT_A_COLLECTION;	//
+	private FolderType    	m_folderType               = FolderType.NOT_A_FOLDER;			//
+	private Long          	m_numUnread                = 0L;								// Number of unread entries in this binder and sub binders.
+	private String        	m_binderId                 = "";								//
+	private String        	m_binderTitle              = "";								//
+	private String		  	m_binderDesc	           = "";								//
+	private String        	m_entityType               = "";								//
+	private WorkspaceType 	m_wsType                   = WorkspaceType.NOT_A_WORKSPACE;		//
+	private String        	m_parentBinderId           = "";								//
 	
 	/**
 	 * Constructor method.
@@ -97,21 +97,22 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @return
 	 */
-	public BinderType     getBinderType()              {return                m_binderType;              }
-	public boolean        isBinderDescExpanded()       {return                m_binderDescExpanded;      }
-	public boolean        isBinderDescHTML()           {return                m_binderDescHTML;          }
-	public boolean        isLibrary()                  {return                m_isLibrary;               }
-	public boolean        isMirroredDriverConfigured() {return                m_mirroredDriverConfigured;}
-	public CollectionType getCollectionType()          {return                m_collectionType;          }
-	public FolderType     getFolderType()              {return                m_folderType;              }
-	public Long           getBinderIdAsLong()          {return Long.parseLong(m_binderId);               }
-	public String         getBinderId()                {return                m_binderId;                }
-	public String         getParentBinderId()          {return                m_parentBinderId;          }
-	public String         getBinderTitle()             {return                m_binderTitle;             }
-	public String		  getBinderDesc()              {return                m_binderDesc;              }
-	public Long           getNumUnread()               {return                m_numUnread;               }
-	public String         getEntityType()              {return                m_entityType;              }
-	public WorkspaceType  getWorkspaceType()           {return                m_wsType;                  }
+	public BinderType     getBinderType()              {return                            m_binderType;              }
+	public boolean        isBinderAccessible()         {return (!(BinderType.OTHER.equals(m_binderType)));           }
+	public boolean        isBinderDescExpanded()       {return                            m_binderDescExpanded;      }
+	public boolean        isBinderDescHTML()           {return                            m_binderDescHTML;          }
+	public boolean        isLibrary()                  {return                            m_isLibrary;               }
+	public boolean        isMirroredDriverConfigured() {return                            m_mirroredDriverConfigured;}
+	public CollectionType getCollectionType()          {return                            m_collectionType;          }
+	public FolderType     getFolderType()              {return                            m_folderType;              }
+	public Long           getBinderIdAsLong()          {return Long.parseLong(            m_binderId);               }
+	public String         getBinderId()                {return                            m_binderId;                }
+	public String         getParentBinderId()          {return                            m_parentBinderId;          }
+	public String         getBinderTitle()             {return                            m_binderTitle;             }
+	public String		  getBinderDesc()              {return                            m_binderDesc;              }
+	public Long           getNumUnread()               {return                            m_numUnread;               }
+	public String         getEntityType()              {return                            m_entityType;              }
+	public WorkspaceType  getWorkspaceType()           {return                            m_wsType;                  }
 	public Long           getParentBinderIdAsLong()    {
 		Long reply;
 		if ((null == m_parentBinderId) || (0 == m_parentBinderId.length()))

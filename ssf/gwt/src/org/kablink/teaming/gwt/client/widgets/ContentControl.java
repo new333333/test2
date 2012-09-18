@@ -846,8 +846,16 @@ public class ContentControl extends Composite
 						break;
 					
 					default:
-						// Something we don't know how to handle!
-						GwtClientHelper.debugAlert( "ContentControl.setViewNow( Unhandled BinderType:  " + bt.name() + " )" );
+						// If we're viewing an entry and don't have
+						// access to the binder, we don't want to
+						// display an error.  Otherwise...
+						boolean noError = ( ViewType.BINDER_WITH_ENTRY_VIEW.equals( vt ) && ( ! ( bi.isBinderAccessible() ) ) );
+						if ( ! noError )
+						{
+							// ...it's something we don't know how to
+							// ...handle!
+							GwtClientHelper.debugAlert( "ContentControl.setViewNow( Unhandled BinderType:  " + bt.name() + " )" );
+						}
 						break;
 					}
 					break;
