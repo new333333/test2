@@ -184,7 +184,7 @@ public class FolderUtils {
 	 * @throws WriteFilesException
 	 */
 	public static Binder createMirroredFolder(Binder parentBinder, String folderName, 
-			String resourceDriverName, String resourcePath, Long creatorId, Date modDate, boolean synchToSource)
+			String resourceDriverName, String resourcePath, Long ownerId, Long creatorId, Date modDate, boolean synchToSource)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		if(EntityType.folder != parentBinder.getEntityType() || !parentBinder.isMirrored())
 			throw new IllegalArgumentException("The parent binder '" + parentBinder.getId() + "' is not a mirrored folder");
@@ -210,6 +210,9 @@ public class FolderUtils {
 			modCal.setTime(modDate);
 			options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modCal);
 		}
+		
+		if(ownerId != null)
+			options.put(ObjectKeys.INPUT_OPTION_OWNER_ID, ownerId);
 		
 		if(creatorId != null) {
 			options.put(ObjectKeys.INPUT_OPTION_CREATION_ID, creatorId);
@@ -242,7 +245,7 @@ public class FolderUtils {
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Binder binder;
 		if((EntityType.folder == parentBinder.getEntityType()) && parentBinder.isMirrored()) {
-			binder = createMirroredFolder(parentBinder, folderName, parentBinder.getResourceDriverName(), null, null, null, true);
+			binder = createMirroredFolder(parentBinder, folderName, parentBinder.getResourceDriverName(), null, null, null, null, true);
 		}
 		else { 
 			binder = createNonMirroredLibraryFolder(parentBinder, folderName);
