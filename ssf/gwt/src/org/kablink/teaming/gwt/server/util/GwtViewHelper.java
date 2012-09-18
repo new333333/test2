@@ -136,6 +136,7 @@ import org.kablink.teaming.gwt.client.util.ShareAccessInfo;
 import org.kablink.teaming.gwt.client.util.ShareDateInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationInfo;
 import org.kablink.teaming.gwt.client.util.ShareMessageInfo;
+import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
 import org.kablink.teaming.gwt.server.util.GwtSharedMeItem;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
@@ -268,12 +269,19 @@ public class GwtViewHelper {
 	 * Two GwtPerShareInfo's are sorted by their share date.
 	 */
 	private static class PerShareInfoComparator implements Comparator<GwtPerShareInfo> {
+		private boolean			m_sortDescend;	// true -> Sort the list descending.  false -> Sort it ascending.
+		private CollectionType	m_ct;			// The collection type of the per share info's being sorted.
+		
 		/**
 		 * Constructor method.
 		 */
-		public PerShareInfoComparator() {
-			// Initialize the super class.
+		public PerShareInfoComparator(CollectionType ct, boolean sortDescend) {
+			// Initialize the super class...
 			super();
+			
+			// ...and store the parameters.
+			m_ct          = ct;
+			m_sortDescend = sortDescend;
 		}
 
 		/**
@@ -282,21 +290,112 @@ public class GwtViewHelper {
 		 * Implements the Comparator.compare() method.
 		 * 
 		 * @param psi1
-		 * @param entryMap2
+		 * @param psi2
 		 * 
 		 * @return
 		 */
 		@Override
 		public int compare(GwtPerShareInfo psi1, GwtPerShareInfo psi2) {
 			int  reply;
+			if (CollectionType.SHARED_WITH_ME.equals(m_ct))
+			     reply = compareByRights(psi1, psi2);
+			else reply = compareByDates( psi1, psi2);
+			
+			// If we're doing a descending sort...
+			if (m_sortDescend) {
+				// ...invert the reply.
+				reply = (-reply);
+			}
+			
+			// If we get here, reply contains the appropriate value for
+			// the compare.  Return it.
+			return reply;
+		}
+
+		/*
+		 * Compares two GwtPerShareInfo objects by share dates.
+		 */
+		private int compareByDates(GwtPerShareInfo psi1, GwtPerShareInfo psi2) {
+			int  reply;
 			Date d1    = psi1.getShareDate(); long l1 = ((null == d1) ? 0 : d1.getTime());
 			Date d2    = psi2.getShareDate(); long l2 = ((null == d2) ? 0 : d2.getTime());
 			if (l1 < l2)
 				 reply = COMPARE_LESS;
 			else reply = COMPARE_GREATER;
-
-			// If we get here, reply contains the appropriate value for
-			// the compare.  Return it.
+			return reply;
+		}
+		
+		/*
+		 * Compares two GwtPerShareInfo objects by share rights.
+		 */
+		private int compareByRights(GwtPerShareInfo psi1, GwtPerShareInfo psi2) {
+			int reply = COMPARE_EQUAL;
+			AccessRights ar1 = psi1.getRights().getAccessRights();
+			AccessRights ar2 = psi2.getRights().getAccessRights();
+			switch (ar1) {
+			case VIEWER:
+				switch (ar2) {
+				case VIEWER:
+					reply = compareBySharable(psi1, psi2);
+					break;
+					
+				case EDITOR:
+				case CONTRIBUTOR:
+					reply = COMPARE_LESS;
+					break;
+				}
+				break;
+				
+			case EDITOR:
+				switch (ar2) {
+				case VIEWER:
+					reply = COMPARE_GREATER;
+					break;
+					
+				case EDITOR:
+					reply = compareBySharable(psi1, psi2);
+					break;
+					
+				case CONTRIBUTOR:
+					reply = COMPARE_LESS;
+					break;
+				}
+				break;
+			
+			case CONTRIBUTOR:
+				switch (ar2) {
+				case VIEWER:
+				case EDITOR:
+					reply = COMPARE_GREATER;
+					break;
+					
+				case CONTRIBUTOR:
+					reply = compareBySharable(psi1, psi2);
+					break;
+				}
+				break;
+			}
+			
+			// If the rights compare equal...
+			if (COMPARE_EQUAL == reply) {
+				// ...compare by dates too.
+				reply = compareByDates(psi1, psi2);
+			}
+			
+			return reply;
+		}
+		
+		/*
+		 * Compares two GwtPerShareInfo objects by whether they're
+		 * sharable.
+		 */
+		private int compareBySharable(GwtPerShareInfo psi1, GwtPerShareInfo psi2) {
+			int reply;
+			boolean isSharable1 = psi1.getRights().getCanShareWithOthers();
+			boolean isSharable2 = psi2.getRights().getCanShareWithOthers();
+			if      (isSharable1 == isSharable2) reply = COMPARE_EQUAL;
+			else if (isSharable1)                reply = COMPARE_GREATER;
+			else                                 reply = COMPARE_LESS;
 			return reply;
 		}
 
@@ -306,9 +405,9 @@ public class GwtViewHelper {
 		 * 
 		 * @param shareItems
 		 */
-		public static void sortPerShareInfoLists(List<GwtSharedMeItem> shareItems) {
+		public static void sortPerShareInfoLists(CollectionType ct, boolean sortDescend, List<GwtSharedMeItem> shareItems) {
 			// Scan the List<GwtSharedMeItem>.
-			Comparator<GwtPerShareInfo> psiComparator = new PerShareInfoComparator();
+			Comparator<GwtPerShareInfo> psiComparator = new PerShareInfoComparator(ct, sortDescend);
 			for (GwtSharedMeItem meItem:  shareItems) {
 				// If this GwtSharedMeItem has any GwtPerShareInfo's...
 				List<GwtPerShareInfo> psiList = meItem.getPerShareInfos();
@@ -915,7 +1014,7 @@ public class GwtViewHelper {
 
 		// Sort the GwtPerShareInfo's attached to the
 		// List<GwtSharedMeItem> we're going to return.
-		PerShareInfoComparator.sortPerShareInfoLists(reply);
+		PerShareInfoComparator.sortPerShareInfoLists(CollectionType.SHARED_BY_ME, false, reply);
 		
 		// If we get here, reply refers to the List<GwtSharedMeItem>
 		// built from condensing the List<ShareItem>.  Return it.
@@ -1004,7 +1103,7 @@ public class GwtViewHelper {
 		
 		// Sort the GwtPerShareInfo's attached to the
 		// List<GwtSharedMeItem> we're going to return.
-		PerShareInfoComparator.sortPerShareInfoLists(reply);
+		PerShareInfoComparator.sortPerShareInfoLists(CollectionType.SHARED_WITH_ME, true, reply);
 		
 		// If we get here, reply refers to the List<GwtSharedMeItem>
 		// built from condensing the List<ShareItem>.  Return it.
