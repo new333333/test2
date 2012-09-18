@@ -3070,21 +3070,28 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 							authorIds = new ArrayList<Long>();
 							authorIds.add( authorId );
-							authorPrincipals = getProfileModule().getPrincipals( authorIds );
-							
-							if ( MiscUtil.hasItems( authorPrincipals ) )
+							try
 							{
-								Principal authorPrincipal;
+								authorPrincipals = getProfileModule().getPrincipals( authorIds );
 								
-								authorPrincipal = authorPrincipals.first();
-								if ( authorPrincipal != null )
+								if ( MiscUtil.hasItems( authorPrincipals ) )
 								{
-									Long workspaceId;
+									Principal authorPrincipal;
 									
-									workspaceId = authorPrincipal.getWorkspaceId();
-									if ( workspaceId != null )
-										folderEntry.setAuthorWorkspaceId( workspaceId.toString() );
+									authorPrincipal = authorPrincipals.first();
+									if ( authorPrincipal != null )
+									{
+										Long workspaceId;
+										
+										workspaceId = authorPrincipal.getWorkspaceId();
+										if ( workspaceId != null )
+											folderEntry.setAuthorWorkspaceId( workspaceId.toString() );
+									}
 								}
+							}
+							catch ( Exception ex )
+							{
+								// Nothing to do.
 							}
 						}
 					}
