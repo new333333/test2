@@ -188,6 +188,12 @@ public class CommentsCell extends AbstractCell<CommentsInfo> implements CommentA
 			commentPanel.addStyleName("vibe-dataTableComments-panel");
 			VibeFlowPanel commentBubble = new VibeFlowPanel();
 			commentBubble.addStyleName("vibe-dataTableComments-bubble");
+			int commentCount = commentsInfo.getCommentsCount();
+			String addedBubbleStyle;
+			if (1000 <= commentCount)
+			     addedBubbleStyle = "vibe-dataTableComments-bubbleBig";
+			else addedBubbleStyle = "vibe-dataTableComments-bubbleSmall";
+			commentBubble.addStyleName(addedBubbleStyle);
 			Element cpE = commentBubble.getElement();
 			commentBubble.addStyleName("cursorPointer"                        );
 			commentBubble.setTitle(    m_messages.vibeDataTable_Alt_Comments());
@@ -196,14 +202,13 @@ public class CommentsCell extends AbstractCell<CommentsInfo> implements CommentA
 				VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE,
 				VibeDataTableConstants.CELL_WIDGET_ENTRY_COMMENTS_PANEL);
 			
-			int commentCount = commentsInfo.getCommentsCount();
 			String comments;
 			if (0 == commentCount) {
 				cpE.addClassName("vibe-dataTableComments-panel0");
 				comments = "&nbsp;&nbsp;";
 			}
 			else {
-				comments = String.valueOf(commentsInfo.getCommentsCount());
+				comments = String.valueOf(commentCount);
 			}
 			cpE.setInnerHTML(comments);
 			
