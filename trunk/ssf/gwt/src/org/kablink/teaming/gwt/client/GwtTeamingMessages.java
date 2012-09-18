@@ -479,6 +479,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_ShareEntry();
 	String rpcFailure_SyncNetFolders();
 	String rpcFailure_TestGroupMembershipCriteria();
+	String rpcFailure_ErrorTestingNetFolderRootConnection();
 	String rpcFailure_TrackingBinder();
 	String rpcFailure_TrackingPerson();
 	String rpcFailure_TrashPurgeAll();
@@ -1881,6 +1882,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderRootDlg_RootAlreadyExists();
 	String modifyNetFolderRootDlg_RootPathLabel();
 	String modifyNetFolderRootDlg_SelectPrincipalsLabel();
+	String modifyNetFolderRootDlg_TestConnectionLabel();
 	String modifyNetFolderRootDlg_TypeLabel();
 	String modifyNetFolderRootDlg_TypeCol();
 	String modifyNetFolderRootDlg_Type_Famt();
@@ -1951,5 +1953,12 @@ public interface GwtTeamingMessages extends Messages
 	String userActionsPanel_PersonalPreferences();
 	String userActionsPanel_ViewProfile();
 	String userActionsPanel_ViewSharedByMe();
-	
+
+	// Strings used when testing a net folder and net folder root connection
+	String testConnection_InProgressLabel();
+	String testConnection_NetworkError();
+	String testConnection_Normal();
+	String testConnection_ProxyCredentialsError();
+	String testConnection_UnknownStatus();
+
 }// end GwtTeamingMessages

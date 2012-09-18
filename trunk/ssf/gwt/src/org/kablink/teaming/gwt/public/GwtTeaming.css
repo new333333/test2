@@ -4058,7 +4058,7 @@ td.datePickerMonth {
 	font-style: italic;
 }
 
-.testLdapQueryInProgress
+.testLdapQueryInProgress, .testConnection_InProgress
 {
 	color: red;
 	font-style: italic;

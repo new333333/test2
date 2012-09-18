@@ -108,7 +108,6 @@ import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.*;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
-import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.SystemBinderType;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
@@ -2454,6 +2453,23 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case TEST_NET_FOLDER_CONNECTION:
+		{
+			TestNetFolderConnectionCmd tcCmd;
+			TestNetFolderConnectionResponse responseData;
+			
+			tcCmd = (TestNetFolderConnectionCmd) cmd;
+			responseData = GwtNetFolderHelper.testNetFolderConnection(
+																tcCmd.getRootName(),
+																tcCmd.getRootType(),
+																tcCmd.getRootPath(),
+																tcCmd.getSubPath(),
+																tcCmd.getProxyName(),
+																tcCmd.getProxyPwd() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case TRACK_BINDER:
 		{
 			TrackBinderCmd tbCmd;
@@ -2932,7 +2948,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private GwtFolderEntry getEntry( HttpRequestInfo ri, String zoneUUID, String entryId, int numRepliesToGet, boolean getFileAttachments ) throws GwtTeamingException
 	{
 		FolderModule folderModule;
@@ -3262,7 +3278,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private ArrayList<GwtFolderEntry> getFolderEntries( HttpRequestInfo ri, String zoneUUID, String folderId, int numEntriesToRead, int numReplies, boolean getFileAttachments ) throws GwtTeamingException
 	{
 		ArrayList<GwtFolderEntry> entries;
