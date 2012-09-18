@@ -1208,7 +1208,7 @@ public class GwtMainPage extends ResizeComposite
 		m_searchTabId = searchTabId;
 		
 		jsFixupGwtMainTitle();
-		
+
 		GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd( binderInfo.getBinderId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
@@ -1234,7 +1234,7 @@ public class GwtMainPage extends ResizeComposite
 					binderInfo,
 					binderPermalink,
 					instigator );
-				if ( GwtClientHelper.validateOSBI( osbInfo ) )
+				if ( GwtClientHelper.validateOSBI( osbInfo, binderInfo.isBinderAccessible() ) )
 				{
 					GwtTeaming.fireEvent( new ContextChangedEvent( osbInfo ) );
 				}
