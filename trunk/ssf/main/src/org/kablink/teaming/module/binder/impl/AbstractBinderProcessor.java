@@ -405,7 +405,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         processCreationTimestamp(binder, ctx);
         processModificationTimestamp(binder, binder.getCreation(), ctx);
         binder.setLogVersion(Long.valueOf(1));
-        binder.setOwner(binder.getCreation().getPrincipal());
+        
+        Principal owner = binder.getCreation().getPrincipal();
+        if(ctx.containsKey(ObjectKeys.INPUT_OPTION_OWNER_ID)) {
+        	try {
+        		owner = getProfileDao().loadUser((Long)ctx.get(ObjectKeys.INPUT_OPTION_OWNER_ID), RequestContextHolder.getRequestContext().getZoneId());
+        	}
+        	catch(Exception e) {
+        		logger.warn("Error loading owning user '" + ctx.get(ObjectKeys.INPUT_OPTION_OWNER_ID).toString() + "'. Defaulting to creator.");
+        	}
+        }
+        binder.setOwner(owner);
 
        	//force a lock so contention on the sortKey is reduced
         Object lock = ctx.get(ObjectKeys.INPUT_OPTION_FORCE_LOCK);
