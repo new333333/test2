@@ -1016,7 +1016,7 @@ public class GwtTaskHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings("unchecked")
 	public static List<TaskInfo> getMyTasks(AllModulesInjected ami, HttpServletRequest request) {
 		boolean clientBundle;
 		Map options = new HashMap();
