@@ -1612,8 +1612,8 @@ public class GwtActivityStreamHelper {
 			spec.setSharerIds(users);
 			List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
 			for (ShareItem si:  shareItems) {
-				// Is this share expired?
-				if (si.isExpired()) {
+				// Is this share expired or obsolete?
+				if (si.isExpired() || (!(si.isLatest()))) {
 					// Yes!  Skip it.
 					continue;
 				}
@@ -1622,8 +1622,8 @@ public class GwtActivityStreamHelper {
 				EntityIdentifier	siEntityIdentifier = si.getSharedEntityIdentifier();
 				EntityType			siEntityType       = siEntityIdentifier.getEntityType();
 				String				siEntityId         = String.valueOf(siEntityIdentifier.getEntityId());
-				if      (trackFolders && siEntityType.equals(EntityType.folder))      folderIds.add(siEntityId);
-				else if (trackEntries && siEntityType.equals(EntityType.folderEntry)) entryIds.add( siEntityId);
+				if      (trackFolders && siEntityType.equals(EntityType.folder))      ListUtil.addStringToListStringIfUnique(folderIds, siEntityId);
+				else if (trackEntries && siEntityType.equals(EntityType.folderEntry)) ListUtil.addStringToListStringIfUnique(entryIds,  siEntityId);
 			}
 			
 			break;
@@ -1636,8 +1636,8 @@ public class GwtActivityStreamHelper {
 			spec.setRecipientsFromUserMembership(user.getId());
 			List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
 			for (ShareItem si:  shareItems) {
-				// Is this share expired?
-				if (si.isExpired()) {
+				// Is this share expired or obsolete?
+				if (si.isExpired() || (!(si.isLatest()))) {
 					// Yes!  Skip it.
 					continue;
 				}
@@ -1646,8 +1646,8 @@ public class GwtActivityStreamHelper {
 				EntityIdentifier	siEntityIdentifier = si.getSharedEntityIdentifier();
 				EntityType			siEntityType       = siEntityIdentifier.getEntityType();
 				String				siEntityId         = String.valueOf(siEntityIdentifier.getEntityId());
-				if      (trackFolders && siEntityType.equals(EntityType.folder))      folderIds.add(siEntityId);
-				else if (trackEntries && siEntityType.equals(EntityType.folderEntry)) entryIds.add( siEntityId);
+				if      (trackFolders && siEntityType.equals(EntityType.folder))      ListUtil.addStringToListStringIfUnique(folderIds, siEntityId);
+				else if (trackEntries && siEntityType.equals(EntityType.folderEntry)) ListUtil.addStringToListStringIfUnique(entryIds,  siEntityId);
 			}
 			
 			break;

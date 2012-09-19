@@ -81,6 +81,23 @@ public final class ListUtil {
 	}
 	
 	/**
+	 * Adds a String to a List<String> if it's not already there.
+	 * 
+	 * @param sList
+	 * @param s
+	 */
+	public static void addStringToListStringIfUnique(List<String> sList, String s) {
+		// Do we have a String to add and a list to add it to?
+		if (MiscUtil.hasString(s) && (null != sList)) {
+			// Yes!  If the List<String> doesn't contain the String...
+			if (!(sList.contains(s))) {
+				// ...add it.
+				sList.add(s);
+			}
+		}
+	}
+	
+	/**
 	 * Stores the strings from a String[] into a List<String>.
 	 * 
 	 * @param sA
