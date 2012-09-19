@@ -40,6 +40,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -107,6 +109,39 @@ public class GwtNetFolderHelper
 {
 	protected static Log m_logger = LogFactory.getLog( GwtNetFolderHelper.class );
 
+	
+	/**
+	 * Check the status of each net folder in the list.
+	 */
+	public static Set<NetFolder> checkNetFoldersStatus(
+		AllModulesInjected ami,
+		HttpServletRequest req,
+		Set<NetFolder> netFolders ) throws GwtTeamingException
+	{
+		for ( NetFolder nextNetFolder : netFolders )
+		{
+			String statusTicketId;
+
+			statusTicketId = nextNetFolder.getStatusTicketId();
+			if ( statusTicketId != null )
+			{
+				StatusTicket statusTicket;
+				
+				statusTicket = GwtWebStatusTicket.findStatusTicket( statusTicketId, req );
+				if ( statusTicket != null )
+				{
+					if ( statusTicket.isDone() )
+						nextNetFolder.setStatus( NetFolderStatus.READY );
+				}
+				else
+				{
+					nextNetFolder.setStatus( NetFolderStatus.READY );
+				}
+			}
+		}
+		
+		return netFolders;
+	}
 	
 	/**
 	 * Create a new net folder from the given data
@@ -895,6 +930,7 @@ public class GwtNetFolderHelper
 	 */
 	public static Set<NetFolder> syncNetFolders(
 		AllModulesInjected ami,
+		HttpServletRequest req,
 		Set<NetFolder> netFolders ) throws GwtTeamingException
 	{
 		for ( NetFolder nextNetFolder : netFolders )
@@ -905,7 +941,7 @@ public class GwtNetFolderHelper
 				String statusTicketId;
 
 				statusTicketId = "sync_net_folder_" + nextNetFolder.getId();
-				//statusTicket = WebStatusTicket.newStatusTicket( statusTicketId, request);
+				statusTicket = GwtWebStatusTicket.newStatusTicket( statusTicketId, req );
 				if( ami.getFolderModule().synchronize( nextNetFolder.getId(), statusTicket ) )
 				{
 					// The binder was not deleted (typical situation).

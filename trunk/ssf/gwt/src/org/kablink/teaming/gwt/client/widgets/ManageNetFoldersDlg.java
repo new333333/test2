@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -47,6 +48,8 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.NetFolderCreatedEvent;
 import org.kablink.teaming.gwt.client.event.NetFolderModifiedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.CheckNetFoldersStatusCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.CheckNetFoldersStatusRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFoldersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFoldersCmd;
@@ -73,6 +76,7 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -179,6 +183,79 @@ public class ManageNetFoldersDlg extends DlgBox
 		m_netFoldersTable.setRowCount( m_listOfNetFolders.size(), true );
 	}
 
+	/**
+	 * Check the sync status of each net folder that has a sync in progress.
+	 */
+	private void checkSyncStatus()
+	{
+		HashSet<NetFolder> listOfNetFoldersToCheck;
+		
+		listOfNetFoldersToCheck = new HashSet<NetFolder>();
+		
+		if ( m_listOfNetFolders != null )
+		{
+			for ( NetFolder nextFolder : m_listOfNetFolders )
+			{
+				if ( nextFolder.getStatus() == NetFolderStatus.SYNC_IN_PROGRESS &&
+					 nextFolder.getStatusTicketId() != null )
+				{
+					listOfNetFoldersToCheck.add( nextFolder );
+				}
+			}
+		}
+		
+		if ( listOfNetFoldersToCheck.size() > 0 )
+		{
+			CheckNetFoldersStatusCmd cmd;
+			AsyncCallback<VibeRpcResponse> rpcCallback = null;
+
+			// Create the callback that will be used when we issue an ajax call
+			// to sync the net folders.
+			rpcCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				@Override
+				public void onFailure( final Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+											t,
+											GwtTeaming.getMessages().rpcFailure_CheckNetFoldersStatus() );
+				}
+		
+				@Override
+				public void onSuccess( final VibeRpcResponse response )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							CheckNetFoldersStatusRpcResponseData responseData;
+							
+							responseData = (CheckNetFoldersStatusRpcResponseData) response.getResponseData();
+							
+							if ( responseData != null )
+							{
+								Set<NetFolder> listOfNetFolders;
+								
+								listOfNetFolders = responseData.getListOfNetFolders();
+								
+								// Update the status of each of the folders.
+								updateFolderStatus( listOfNetFolders );
+							}
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+
+			// Issue an ajax request to sync the list of net folders.
+			cmd = new CheckNetFoldersStatusCmd( listOfNetFoldersToCheck );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		}
+	}
+	
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
@@ -895,37 +972,7 @@ public class ManageNetFoldersDlg extends DlgBox
 							
 							listOfNetFolders = responseData.getListOfNetFolders();
 							
-							if ( listOfNetFolders != null )
-							{
-								// Spin through the list of net folders we started the sync process on
-								for ( NetFolder nextNetFolder : listOfNetFolders )
-								{
-									// Was this net folder deleted as a result of the sync process?
-									if ( nextNetFolder.getStatus() == NetFolderStatus.DELETED_BY_SYNC_PROCESS )
-									{
-										NetFolder netFolderToDelete;
-										
-										// Find this net folder in our list and remove it.
-										netFolderToDelete = findNetFolderById( nextNetFolder.getId() );
-										if ( netFolderToDelete != null )
-										{
-											if ( netFolderToDelete != null )
-												m_listOfNetFolders.remove( netFolderToDelete );
-										}
-									}
-									else
-									{
-										//!!! We need to use the status ticket to request the
-										// status on the sync.
-									}
-								}
-								
-								// Update the table to reflect the fact that we sync'd a net folder.
-								m_dataProvider.refresh();
-
-								// Tell the table how many net folders we have.
-								m_netFoldersTable.setRowCount( m_listOfNetFolders.size(), true );
-							}
+							updateFolderStatus( listOfNetFolders );
 						}
 					}
 				};
@@ -959,6 +1006,72 @@ public class ManageNetFoldersDlg extends DlgBox
 		}
 		
 		syncNetFolders( selectedFolders );
+	}
+	
+	/**
+	 * For each net folder in the given list, find the net folder in our internal list
+	 * and update its status
+	 */
+	private void updateFolderStatus( Set<NetFolder> listOfNetFolders )
+	{
+		if ( listOfNetFolders != null )
+		{
+			boolean checkAgain;
+			
+			checkAgain = false;
+			
+			for ( NetFolder nextNetFolder : listOfNetFolders )
+			{
+				NetFolder ourNetFolder;
+				
+				ourNetFolder = findNetFolderById( nextNetFolder.getId() );
+				
+				if ( ourNetFolder != null )
+				{
+					NetFolderStatus status;
+					String statusTicketId;
+
+					status = nextNetFolder.getStatus();
+					ourNetFolder.setStatus( status );
+					
+					statusTicketId = nextNetFolder.getStatusTicketId();
+					ourNetFolder.setStatusTicketId( statusTicketId );
+					
+					// Was this net folder deleted as a result of the sync process?
+					if ( status == NetFolderStatus.DELETED_BY_SYNC_PROCESS )
+					{
+						// Yes
+						// Find this net folder in our list and remove it.
+						m_listOfNetFolders.remove( ourNetFolder );
+					}
+					else if ( status != NetFolderStatus.READY )
+					{
+						checkAgain = true;
+					}
+				}
+			}
+			
+			// Update the table to reflect the fact that we sync'd a net folder.
+			m_dataProvider.refresh();
+
+			// Tell the table how many net folders we have.
+			m_netFoldersTable.setRowCount( m_listOfNetFolders.size(), true );
+			
+			if ( checkAgain )
+			{
+				Timer timer;
+				
+				timer = new Timer()
+				{
+					@Override
+					public void run()
+					{
+						checkSyncStatus();
+					}
+				};
+				timer.schedule( 5000 );
+			}
+		}
 	}
 	
 	/**
