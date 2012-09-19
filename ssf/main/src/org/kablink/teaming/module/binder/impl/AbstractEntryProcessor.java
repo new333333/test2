@@ -109,8 +109,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 /**
- *
- * Add entries to the binder
+ * Add entries to the binder.
+ * 
  * @author Jong Kim
  */
 @SuppressWarnings("unchecked")
@@ -1428,6 +1428,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		// Search mode is not specified by the caller. Let's see if we can figure it out.
     		if(searchBinder != null && AccessUtils.testReadAccess(searchBinder)) {
     			searchMode = Integer.valueOf(Constants.SEARCH_MODE_PREAPPROVED_PARENTS);
+    		}
+    		else {
+    			searchMode = Constants.SEARCH_MODE_NORMAL;
     		}
     	}
     	
