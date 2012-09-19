@@ -75,7 +75,7 @@ public class GwtStatisticsHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings("unchecked")
 	public static List<Map> getEntryDefMaps(Statistics stats, String entryFamily) {
 		// Allocate a List<Map> we can return.
 		List<Map> reply = new ArrayList<Map>();
@@ -147,7 +147,7 @@ public class GwtStatisticsHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings("unchecked")
 	public static MilestoneStats getMilestoneStatistics( Folder folder )
 	{
 		MilestoneStats milestoneStats;

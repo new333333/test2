@@ -4146,7 +4146,7 @@ public class GwtViewHelper {
 	/*
 	 * Resolves, if possible, a user ID to a User object.
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings("unchecked")
 	private static User getResolvedUser(Long userId) {
 		User user = null;
 		String userIdS = String.valueOf(userId);
@@ -5011,7 +5011,7 @@ public class GwtViewHelper {
 	 * Performs any post processing on the search entries being
 	 * returned for a 'Shared by/with Me' collection view.
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings("unchecked")
 	private static List<Map> postProcessSharedMeMap(List<Map> searchEntries, List<GwtSharedMeItem> shareItems, boolean sortDescend, String sortBy) {
 		// Do we have any search entries to process?
 		if (MiscUtil.hasItems(searchEntries)) {
