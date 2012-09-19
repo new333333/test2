@@ -190,6 +190,7 @@ public class MastHead extends Composite
 				imgPanel = new FlowPanel();
 				imgPanel.addStyleName( "mastheadFilr_PeopleImgPanel" );
 				img = new Image( GwtTeaming.getImageBundle().userList() );
+				img.setTitle( GwtTeaming.getMessages().invokeUserListHint() );
 				img.addStyleName( "mastheadFilr_PeopleImg" );
 				img.addClickHandler( new ClickHandler()
 				{

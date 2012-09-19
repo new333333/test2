@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.NetFolderCreatedEvent;
 import org.kablink.teaming.gwt.client.event.NetFolderModifiedEvent;
+import org.kablink.teaming.gwt.client.event.NetFolderRootCreatedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateNetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsCmd;
@@ -57,10 +58,12 @@ import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.ModifyNetFolderRootDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -88,7 +91,8 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 public class ModifyNetFolderDlg extends DlgBox
 	implements
-		EditSuccessfulHandler
+		EditSuccessfulHandler,
+		NetFolderRootCreatedEvent.Handler
 {
 	private NetFolder m_netFolder;	// If we are modifying a net folder this is the net folder.
 	private TextBox m_nameTxtBox;
@@ -97,6 +101,7 @@ public class ModifyNetFolderDlg extends DlgBox
 	private InlineLabel m_noNetFolderRootsLabel;
 	private ScheduleWidget m_scheduleWidget;
 	private FlowPanel m_inProgressPanel;
+	private ModifyNetFolderRootDlg m_modifyNetFolderRootDlg;
 	private List<NetFolderRoot> m_listOfNetFolderRoots;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 
@@ -106,6 +111,7 @@ public class ModifyNetFolderDlg extends DlgBox
 	// this array is used.
 	private static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[]
     {
+		TeamingEvents.NET_FOLDER_ROOT_CREATED,
 	};
 
 	
@@ -192,6 +198,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		// Create the controls for "net folder root"
 		{
 			FlowPanel flowPanel;
+			Button createRootBtn;
 			
 			label = new InlineLabel( messages.modifyNetFolderDlg_NetFolderRootLabel() );
 			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
@@ -207,6 +214,37 @@ public class ModifyNetFolderDlg extends DlgBox
 			m_noNetFolderRootsLabel = new InlineLabel( messages.modifyNetFolderDlg_NoNetFolderRootsLabel() );
 			flowPanel.add( m_noNetFolderRootsLabel );
 			
+			// Add "Create net folder root" button
+			createRootBtn = new Button( messages.modifyNetFolderDlg_CreateNetFolderRootLabel() );
+			createRootBtn.addStyleName( "teamingButton" );
+			createRootBtn.addStyleName( "marginleft3" );
+			flowPanel.add( createRootBtn );
+			createRootBtn.addClickHandler( new ClickHandler()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						/**
+						 * 
+						 */
+						@Override
+						public void execute()
+						{
+							invokeCreateNetFolderRootDlg();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+				
+			} );
+
 			table.setWidget( nextRow, 1, flowPanel );
 			++nextRow;
 		}
@@ -504,10 +542,16 @@ public class ModifyNetFolderDlg extends DlgBox
 						}
 						else
 						{
-							// No, hide the listbox and display a message that tells the user
-							// there aren't any net folder roots they have permission to use.
+							// No, hide the listbox
 							m_netFolderRootsListbox.setVisible( false );
 							m_noNetFolderRootsLabel.setVisible( true );
+
+							// Tell the user they need to create a net folder root before they
+							// can create a net folder.
+							Window.alert( GwtTeaming.getMessages().modifyNetFolderDlg_NoNetFolderRootsPrompt() );
+							
+							// Invoke the "Create net folder root dialog"
+							invokeCreateNetFolderRootDlg();
 						}
 					}
 				};
@@ -664,6 +708,61 @@ public class ModifyNetFolderDlg extends DlgBox
 	}
 	
 	/**
+	 * Invoke the "create net folder root" dialog
+	 */
+	private void invokeCreateNetFolderRootDlg()
+	{
+		int x;
+		int y;
+		
+		// Get the position of this dialog.
+		x = getAbsoluteLeft() + 50;
+		y = getAbsoluteTop() + 50;
+		
+		if ( m_modifyNetFolderRootDlg == null )
+		{
+			ModifyNetFolderRootDlg.createAsync(
+											false, 
+											true,
+											x, 
+											y,
+											new ModifyNetFolderRootDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ModifyNetFolderRootDlg mnfrDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_modifyNetFolderRootDlg = mnfrDlg;
+							
+							m_modifyNetFolderRootDlg.init( null );
+							m_modifyNetFolderRootDlg.show();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+		}
+		else
+		{
+			m_modifyNetFolderRootDlg.init( null );
+			m_modifyNetFolderRootDlg.setPopupPosition( x, y );
+			m_modifyNetFolderRootDlg.show();
+		}
+	}
+	
+	/**
 	 * Is the name entered by the user valid?
 	 */
 	private boolean isNameValid()
@@ -803,6 +902,37 @@ public class ModifyNetFolderDlg extends DlgBox
 											m_registeredEventHandlers );
 		}
 	}
+
+	/**
+	 * Handles the NetFolderRootCreatedEvent received by this class
+	 */
+	@Override
+	public void onNetFolderRootCreated( NetFolderRootCreatedEvent event )
+	{
+		NetFolderRoot root;
+
+		// Get the newly created net folder root.
+		root = event.getNetFolderRoot();
+		
+		if ( root != null )
+		{
+			// Add the net folder root as the first item in the list.
+			if ( m_listOfNetFolderRoots == null )
+				m_listOfNetFolderRoots = new ArrayList<NetFolderRoot>();
+			
+			m_listOfNetFolderRoots.add( root );
+
+			// Add the net folder root to the listbox
+			m_netFolderRootsListbox.addItem( root.getName(), root.getName() );
+			
+			// Select the new net folder root.
+			GwtClientHelper.selectListboxItemByValue( m_netFolderRootsListbox, root.getName() );
+			
+			m_netFolderRootsListbox.setVisible( true );
+			m_noNetFolderRootsLabel.setVisible( false );
+		}
+	}
+	
 
 	/**
 	 * Test the connection to the server to see if the information they have entered is valid.
