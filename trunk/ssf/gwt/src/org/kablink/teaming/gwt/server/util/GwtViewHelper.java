@@ -115,6 +115,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateUploadsCmd.UploadInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.rpc.shared.WhoHasAccessInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.WhoHasAccessInfoRpcResponseData.AccessInfo;
@@ -5983,9 +5984,56 @@ public class GwtViewHelper {
 		}
 	}
 
-	/*
+	/**
+	 * Validates that the user can upload the files/folders in
+	 * List<UploadInfo> of things pending upload.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderInfo
+	 * @param uploads
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData validateUploads(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<UploadInfo> uploads) throws GwtTeamingException {
+		try {
+			// Allocate an error list response we can return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+
+			// We're we given anything to validate?
+			if (MiscUtil.hasItems(uploads)) {
+				// Yes!  Scan the UploadInfo's.
+				for (UploadInfo upload:  uploads) {
+//!					...this needs to be implemented...
+				}
+			}
+			
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing any errors we
+			// encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.validateUploads( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
+	/**
 	 * Returns true if a string values contains a quick filter and
 	 * false otherwise.
+	 * 
+	 * @param value
+	 * @param quickFilter
+	 * 
+	 * @return
 	 */
 	public static boolean valueContainsQuickFilter(String value, String quickFilter) {
 		if (null != value) {

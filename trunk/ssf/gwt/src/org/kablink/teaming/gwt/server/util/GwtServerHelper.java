@@ -7642,6 +7642,7 @@ public class GwtServerHelper {
 		case UNTRACK_PERSON:
 		case UPLOAD_FILE_BLOB:
 		case VALIDATE_ENTRY_EVENTS:
+		case VALIDATE_UPLOADS:
 			break;
 			
 		default:

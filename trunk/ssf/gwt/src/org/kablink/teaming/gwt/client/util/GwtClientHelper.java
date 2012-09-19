@@ -1086,6 +1086,17 @@ public class GwtClientHelper {
 	}-*/;
 	
 	/**
+	 * Returns true if we're running in any Gecko based browser and
+	 * false otherwise.
+	 * 
+	 * @return
+	 */
+	public static native boolean jsIsGecko() /*-{
+		var agent = navigator.userAgent.toLowerCase();
+		return (agent.indexOf("gecko") != (-1));
+	}-*/;
+	
+	/**
 	 * Returns true if we're running in any flavor of IE and false
 	 * otherwise.
 	 * 
@@ -1099,6 +1110,17 @@ public class GwtClientHelper {
 			return true;
 		}
 		return false;
+	}-*/;
+	
+	/**
+	 * Returns true if we're running in any Webkit based browser and
+	 * false otherwise.
+	 * 
+	 * @return
+	 */
+	public static native boolean jsIsWebkit() /*-{
+		var agent = navigator.userAgent.toLowerCase();
+		return (agent.indexOf("webkit") != (-1));
 	}-*/;
 	
 	/**

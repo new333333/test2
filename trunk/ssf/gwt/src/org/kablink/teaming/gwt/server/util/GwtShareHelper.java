@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -58,7 +57,6 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
@@ -79,13 +77,7 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.MiscUtil;
-import org.kablink.teaming.web.util.PermaLinkUtil;
-
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 
 /**
  * Helper methods for the GWT UI server code that services share requests.
@@ -1011,135 +1003,29 @@ public class GwtShareHelper
 		}
 		
 		emailErrors = null;
-		if ( SPropsUtil.getBoolean( "UI.useNewShareEmail", true ) )
+		try
 		{
-			try
+			Map<String,Object> errorMap;
+			
+			errorMap = GwtEmailHelper.sendShareNotification(
+													ami,
+													shareItem,
+													sharedEntity,
+													principalIds,
+													teamIds,
+													null,	// null -> No stand alone email addresses.
+													null,	// null -> No CC'ed users.
+													bccIds );
+			
+			if ( errorMap != null )
 			{
-				Map<String,Object> errorMap;
-				
-				errorMap = GwtEmailHelper.sendShareNotification(
-														ami,
-														shareItem,
-														sharedEntity,
-														principalIds,
-														teamIds,
-														null,	// null -> No stand alone email addresses.
-														null,	// null -> No CC'ed users.
-														bccIds );
-				
-				if ( errorMap != null )
-				{
-					emailErrors = (List) errorMap.get( ObjectKeys.SENDMAIL_ERRORS );
-				}
-			}
-			catch ( Exception ex )
-			{
-				m_logger.error( "GwtEmailHelper.sendShareNotification() threw an exception: " + ex.toString() );
+				emailErrors = (List) errorMap.get( ObjectKeys.SENDMAIL_ERRORS );
 			}
 		}
-		
-		else
+		catch ( Exception ex )
 		{
-			String desc;
-			String mailTitle;
-			Description body;
-			String comments;
-			String title;
-			String shortTitle;
-			
-			title = sharedEntity.getTitle();
-			shortTitle = title;
-			
-			if ( sharedEntity.getParentBinder() != null )
-				title = sharedEntity.getParentBinder().getPathName() + "/" + title;
-	
-			comments = gwtShareItem.getComments();
-			if ( comments != null )
-			{
-				SafeHtmlBuilder builder;
-	
-				// HTML escape the text entered by the user and replace newlines with <br>
-				builder = new SafeHtmlBuilder();
-				builder = builder.appendEscapedLines( comments );
-				comments = builder.toSafeHtml().asString();
-			}
-			else
-				comments = "";
-			
-			// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
-			desc = "<a href=\"" + PermaLinkUtil.getPermalinkForEmail( sharedEntity ) + "\">" + title + "</a><br/><br/>" + comments;
-			desc += "<br/><br/>";
-			// Append when the share expires
-			{
-				ShareExpirationValue expirationValue;
-				
-				expirationValue = gwtShareItem.getShareExpirationValue();
-				switch ( expirationValue.getExpirationType() )
-				{
-				case NEVER:
-					desc += NLT.get( "share.expires.never" );
-					break;
-				
-				case AFTER_DAYS:
-				{
-					int daysToExpire;
-	
-					daysToExpire = expirationValue.getValue().intValue();
-					desc += NLT.get( "share.expires.after", new Object[]{ daysToExpire } );
-					break;
-				}
-				
-				case ON_DATE:
-				{
-					Long endDate;
-					
-					endDate = expirationValue.getValue();
-					if ( endDate != null )
-					{
-						Date date;
-						DateFormat dateFmt;
-						String dateText;
-						
-						date = new Date( endDate );
-						dateFmt = DateFormat.getDateTimeInstance( DateFormat.MEDIUM, DateFormat.SHORT, NLT.getTeamingLocale() );
-						dateText = dateFmt.format( date );
-						
-						desc += NLT.get( "share.expires.on", new Object[]{ dateText } );
-					}
-					break;
-				}
-				}
-			}
-			body = new Description( desc );
-	
-			mailTitle = NLT.get( "relevance.mailShared", new Object[]{Utils.getUserTitle( currentUser )} );
-			mailTitle += " (" + shortTitle +")";
-	
-			try
-			{
-				Map<String,Object> errorMap;
-				
-				// Send the email notification
-				errorMap = ami.getAdminModule().sendMail(
-														principalIds,
-														teamIds,
-														null,	// null -> No stand alone email addresses.
-														null,	// null -> No CC'ed users.
-														bccIds,
-														mailTitle,
-														body );
-				
-				if ( errorMap != null )
-				{
-					emailErrors = (List) errorMap.get( ObjectKeys.SENDMAIL_ERRORS );
-				}
-			}
-			catch ( Exception ex )
-			{
-				m_logger.error( "adminModule.sendMail() threw an exception: " + ex.toString() );
-			}
+			m_logger.error( "GwtEmailHelper.sendShareNotification() threw an exception: " + ex.toString() );
 		}
-
 		return emailErrors;
 	}
 		
