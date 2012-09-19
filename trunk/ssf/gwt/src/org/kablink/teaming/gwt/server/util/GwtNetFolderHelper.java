@@ -146,7 +146,7 @@ public class GwtNetFolderHelper
 	/**
 	 * Create a new net folder from the given data
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	public static NetFolder createNetFolder(
 		AllModulesInjected ami,
 		NetFolder netFolder ) throws GwtTeamingException
@@ -261,7 +261,7 @@ public class GwtNetFolderHelper
 	/**
 	 * Create a new net folder root from the given data
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	public static NetFolderRoot createNetFolderRoot(
 		AllModulesInjected ami,
 		NetFolderRoot netFolderRoot ) throws GwtTeamingException
@@ -405,7 +405,7 @@ public class GwtNetFolderHelper
 	/**
 	 * Return a list of all the net folders 
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	public static List<NetFolder> getAllNetFolders( AllModulesInjected ami )
 	{
 		Criteria criteria;
@@ -867,7 +867,7 @@ public class GwtNetFolderHelper
 	/**
 	 * Modify the net folder root from the given data
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	public static NetFolderRoot modifyNetFolderRoot(
 		AllModulesInjected ami,
 		NetFolderRoot netFolderRoot ) throws GwtTeamingException

@@ -706,7 +706,6 @@ public class GwtShareHelper
 					// Create one.
 					callback = new RunasCallback()
 					{
-						@SuppressWarnings("rawtypes")
 						@Override
 						public Object doAs() 
 						{
@@ -1032,7 +1031,7 @@ public class GwtShareHelper
 	/**
 	 * Save the given share data. 
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	public static GwtShareEntryResults shareEntry(
 		AllModulesInjected ami,
 		GwtSharingInfo sharingData )

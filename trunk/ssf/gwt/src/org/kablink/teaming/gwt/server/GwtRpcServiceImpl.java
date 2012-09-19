@@ -2970,7 +2970,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	private GwtFolderEntry getEntry( HttpRequestInfo ri, String zoneUUID, String entryId, int numRepliesToGet, boolean getFileAttachments ) throws GwtTeamingException
 	{
 		FolderModule folderModule;
@@ -3307,7 +3307,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	private ArrayList<GwtFolderEntry> getFolderEntries( HttpRequestInfo ri, String zoneUUID, String folderId, int numEntriesToRead, int numReplies, boolean getFileAttachments ) throws GwtTeamingException
 	{
 		ArrayList<GwtFolderEntry> entries;
