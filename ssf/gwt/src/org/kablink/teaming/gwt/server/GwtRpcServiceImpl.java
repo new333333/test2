@@ -2662,6 +2662,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case VALIDATE_UPLOADS:
+		{
+			ValidateUploadsCmd veaCmd  = ((ValidateUploadsCmd) cmd);
+			ErrorListRpcResponseData responseData = GwtViewHelper.validateUploads( this, getRequest( ri ), veaCmd.getFolderInfo(), veaCmd.getUploads() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		}
 		
 		String details = ("Unknown command: " + cmdEnum.name() + " (" +cmd.getClass().getName() + ")");

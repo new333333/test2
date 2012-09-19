@@ -500,6 +500,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_UpdateCalendarEventTask();
 	String rpcFailure_UpdateFavorites();
 	String rpcFailure_UploadFileBlob();
+	String rpcFailure_ValidateUploads();
 
 	// Strings used to describe various split point load failures.
 	String codeSplitFailure_AccessoriesPanel();
@@ -1580,6 +1581,7 @@ public interface GwtTeamingMessages extends Messages
 	String addFilesHtml5PopupProgressItem();
 	String addFilesHtml5PopupProgressTotal();
 	String addFilesHtml5PopupReadError(String fileName, String errorDesc);
+	String addFilesHtml5PopupUploadValidationError();
 	
 	// Strings used in the "Child binders widget"
 	String workspacesHeader();

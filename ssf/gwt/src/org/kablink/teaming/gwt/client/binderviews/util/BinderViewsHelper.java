@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.binderviews.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.ChangeEntryTypesDlg;
@@ -76,7 +75,6 @@ import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.UIObject;

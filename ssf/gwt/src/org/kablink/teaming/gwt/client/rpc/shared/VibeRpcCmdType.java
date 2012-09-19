@@ -263,6 +263,7 @@ public enum VibeRpcCmdType implements IsSerializable
 	UNTRACK_PERSON,
 	UPLOAD_FILE_BLOB,
 	VALIDATE_ENTRY_EVENTS,
+	VALIDATE_UPLOADS,
 	
 	UNDEFINED;
 

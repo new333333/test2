@@ -43,8 +43,10 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.AbortFileUploadCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UploadFileBlobCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateUploadsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -133,10 +135,6 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private ProgressBar						m_pbPerItem;				// Displays a per item progress bar as items are uploaded to the server.
 	private ProgressBar						m_pbTotal;					// Displays a total    progress bar as items are uploaded to the server.
 
-	// Controls whether the HTML5 popup will be used vs. the Java
-	// applet to upload files.
-	private static boolean USE_HTML5_POPUP	= true;	//
-	
 	// true -> Information about file blobs being uploaded is displayed
 	// via alerts.  false -> They're not.
 	private static boolean TRACE_BLOBS	= false;	//
@@ -179,7 +177,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	private AddFilesHtml5Popup() {
 		// Initialize the superclass...
 		super(false, true);
-
+		
 		// ...initialize everything else...
 		m_images   = GwtTeaming.getDataTableImageBundle();
 		m_messages = GwtTeaming.getMessages();
@@ -232,7 +230,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * @return
 	 */
 	public static boolean browserSupportsHtml5() {
-		return (USE_HTML5_POPUP && GwtClientHelper.jsBrowserSupportsHtml5FileAPIs());
+		return GwtClientHelper.jsBrowserSupportsHtml5FileAPIs();
 	}
 
 	/*
@@ -397,8 +395,8 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 					return;
 					
 				case NOT_FOUND_ERR:
-					// If we're running on Chrome...
-					if (GwtClientHelper.jsIsChrome()) {
+					// If we're running on WebKit...
+					if (GwtClientHelper.jsIsWebkit()) {
 						// ...treat this as the user having uploaded
 						// ...a folder, which is not supported.
 						m_ignoredAsFolders.add(getCurrentFile());
@@ -456,7 +454,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 * Returns true if a file is a folder and false otherwise.
 	 * 
 	 * There's currently no reliable check for a File being a folder
-	 * in Chrome.
+	 * in a WebKit browser.
 	 */
 	private boolean isFirefoxFolder(File file) {
 		return ((0 == file.getSize()) && (!(GwtClientHelper.hasString(file.getType()))) && GwtClientHelper.jsIsFirefox());
@@ -824,7 +822,7 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			// ...start upload them...
 			m_readTotal = m_readQueue.size();
 			m_readThis  = 0;
-			uploadNextAsync();
+			validateFileListAsync();
 		}
 		
 		else {
@@ -1026,6 +1024,60 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 */
 	private boolean uploadsPending() {
 		return (!(m_readQueue.isEmpty()));
+	}
+
+	/*
+	 * Asynchronously validates the file list to be uploaded and starts
+	 * the upload if everything is valid.
+	 */
+	private void validateFileListAsync() {
+		Scheduler.ScheduledCommand doValidate = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				validateFileListNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doValidate);
+	}
+	
+	/*
+	 * Synchronously validates the file list to be uploaded and starts
+	 * the upload if everything is valid.
+	 */
+	private void validateFileListNow() {
+		// Create a command to validate what's to be uploaded...
+		final ValidateUploadsCmd cmd = new ValidateUploadsCmd(m_folderInfo);
+		for (File file:  m_readQueue) {
+			cmd.addFile(file.getName(), file.getSize());
+		}
+		
+		// ...and check if things are valid.
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_ValidateUploads());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				// Did we get any errors back from the validation?
+				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) result.getResponseData());
+				List<String> errors = responseData.getErrorList();
+				int count = ((null == errors) ? 0 : errors.size());
+				if (0 < count) {
+					// Yes!  Tell the user about them.
+					GwtClientHelper.displayMultipleErrors(m_messages.addFilesHtml5PopupUploadValidationError(), errors);
+				}
+				
+				else {
+					// No, we didn't get any errors back from the
+					// validation!  Start the upload.
+					uploadNextAsync();
+				}
+			}
+		});
 	}
 	
 	
