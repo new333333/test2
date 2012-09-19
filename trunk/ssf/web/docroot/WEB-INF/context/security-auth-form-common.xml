@@ -26,6 +26,7 @@
     
     <bean id="authenticationSuccessHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler" >
 		<property name="defaultTargetUrl" value="/a/"/>    
+		<property name="targetUrlParameter" value="spring-security-redirect"/>
     </bean>
     
     <bean id="authenticationFailureHandler" class="org.kablink.teaming.spring.security.SimpleUrlAuthenticationFailureHandler">
