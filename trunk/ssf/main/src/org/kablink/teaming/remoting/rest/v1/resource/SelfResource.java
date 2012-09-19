@@ -237,6 +237,7 @@ public class SelfResource extends AbstractResource {
 //        binder.addAdditionalLink("child_binder_tree", baseUri + "/binder_tree");
         binder.addAdditionalLink("child_entries", baseUri + "/entries");
         binder.addAdditionalLink("child_files", baseUri + "/files");
+        binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
         binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
 //        binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
