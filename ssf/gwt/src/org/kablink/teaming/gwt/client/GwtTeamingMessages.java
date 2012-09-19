@@ -611,6 +611,7 @@ public interface GwtTeamingMessages extends Messages
 	String guest();
 	String helpMenuItem();
 	String helpHint();
+	String invokeUserListHint();
 	String loginHint();
 	String logoutHint();
 	String myWorkspaceHint();
@@ -1896,6 +1897,7 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the Manage Net Folders dialog
 	String manageNetFoldersDlg_AddNetFolderLabel();
 	String manageNetFoldersDlg_ConfirmDelete( String netFolderName );
+	String modifyNetFolderDlg_CreateNetFolderRootLabel();
 	String manageNetFoldersDlg_DeleteNetFolderLabel();
 	String manageNetFoldersDlg_Header();
 	String manageNetFoldersDlg_NameCol();
@@ -1920,6 +1922,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_NetFolderAlreadyExists();
 	String modifyNetFolderDlg_NetFolderRootLabel();
 	String modifyNetFolderDlg_NoNetFolderRootsLabel();
+	String modifyNetFolderDlg_NoNetFolderRootsPrompt();
 	String modifyNetFolderDlg_ParentBinderRequired();
 	String modifyNetFolderDlg_ParentFolderLabel();
 	String manageNetFoldersDlg_RelativePathCol();

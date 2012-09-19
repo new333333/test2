@@ -968,7 +968,7 @@ body, table td, select
 .marginleft1     {margin-left:   1em;}
 .marginleft2     {margin-left:   2em;}
 .marginleft2px   {margin-left:   2px;}
-.marginleft3     {margin-left:   3em;}
+.marginleft3     {margin-left:   3em !important;}
 .marginleft4     {margin-left:   4em;}
 .marginleft5px   {margin-left:   5px;}
 .marginleft8px   {margin-left:   8px;}
