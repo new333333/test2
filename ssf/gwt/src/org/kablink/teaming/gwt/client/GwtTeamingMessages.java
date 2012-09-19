@@ -298,6 +298,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_ChangeEntryTypes();
 	String rpcFailure_ChangeFavoriteState();
 	String rpcFailure_CheckForActivityStreamChanges();
+	String rpcFailure_CheckNetFoldersStatus();
 	String rpcFailure_CollapseSubtasks();
 	String rpcFailure_CopyEntries();
 	String rpcFailure_CreateBlogPage();
