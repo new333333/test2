@@ -248,6 +248,9 @@ public abstract class Principal extends Entry implements IPrincipal {
     	return foreignName;
     }
     public void setForeignName(String foreignName) {
+    	// We always store foreign name in lower case in the database so that we can perform lookup efficienty.
+    	if(foreignName != null)
+    		foreignName = foreignName.toLowerCase();
     	this.foreignName = foreignName;
     }
     
