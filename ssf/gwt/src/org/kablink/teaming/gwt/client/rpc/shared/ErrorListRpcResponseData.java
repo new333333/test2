@@ -72,7 +72,8 @@ public class ErrorListRpcResponseData implements IsSerializable, VibeRpcResponse
 	 * 
 	 * @return
 	 */
-	public List<String> getErrorList() {return m_errorList;}
+	public boolean      hasErrors()    {return ((null != m_errorList) && (!(m_errorList.isEmpty())));}
+	public List<String> getErrorList() {return m_errorList;                                          }
 	
 	/**
 	 * Set'er methods.

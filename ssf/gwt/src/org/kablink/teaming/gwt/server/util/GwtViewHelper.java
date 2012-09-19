@@ -147,6 +147,7 @@ import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -233,6 +234,9 @@ public class GwtViewHelper {
 	private final static int COMPARE_EQUAL		=   0;
 	private final static int COMPARE_GREATER	=   1;
 	private final static int COMPARE_LESS		= (-1);
+	
+	// Used in various file size calculations, ...
+	private final static long MEGABYTES = (1024l * 1024l);
 	
 	/*
 	 * Inner class used to compare two AccessInfo's.
@@ -6004,10 +6008,78 @@ public class GwtViewHelper {
 
 			// We're we given anything to validate?
 			if (MiscUtil.hasItems(uploads)) {
-				// Yes!  Scan the UploadInfo's.
-				for (UploadInfo upload:  uploads) {
-//!					...this needs to be implemented...
+				// Yes!  Access the objects we need to perform the
+				// analysis.
+				AdminModule		am                = bs.getAdminModule();
+				BinderModule	bm                = bs.getBinderModule();
+				ProfileModule	pm                = bs.getProfileModule();
+				Binder			binder            = bs.getBinderModule().getBinder(folderInfo.getBinderIdAsLong());
+				Long			userFileSizeLimit = am.getUserFileSizeLimit();
+				
+				// What do we need to check?
+				boolean	checkBinderQuotas      = bm.isBinderDiskQuotaEnabled();
+				boolean	checkUserQuotas        = am.isQuotaEnabled();
+				boolean	checkUserFileSizeLimit = ((null != userFileSizeLimit) && (0 < userFileSizeLimit));
+				if (checkUserFileSizeLimit) {
+					userFileSizeLimit = (userFileSizeLimit * MEGABYTES);
 				}
+				
+				// Do we need to worry about quotas?
+				if (checkBinderQuotas || checkUserQuotas || checkUserFileSizeLimit) {
+					// Yes!  Scan the UploadInfo's.
+					long totalSize = 0l;
+					for (UploadInfo upload:  uploads) {
+						// Is this upload a file?
+						if (upload.isFile()) {
+							// Yes!  Does its size exceed the user's
+							// file size limit?
+							long size = upload.getSize();
+							if (checkUserFileSizeLimit && (size > userFileSizeLimit)) {
+								// Yes!  Add an appropriate error the
+								// reply.
+								reply.addError(NLT.get("validateUploadError.quotaExceeded.file", new String[]{upload.getName(), String.valueOf(userFileSizeLimit)}));
+							}
+							
+							// Add this file's size to the running
+							// total.
+							totalSize += size;
+						}
+					}
+
+					// Will the total size of all the files being
+					// uploaded exceed this binder's remaining quota?
+					if (checkBinderQuotas && (!(bm.isBinderDiskQuotaOk(binder, totalSize)))) {
+						// Yes!  Add an appropriate error the reply.
+						reply.addError(NLT.get("validateUploadError.quotaExceeded.folder", new String[]{String.valueOf(bm.getMinBinderQuotaLeft(binder) / MEGABYTES)}));
+					}
+
+					// Do we need to check the total upload size against
+					// this user's quota?
+					long userQuota         = pm.getDiskQuota();
+					long userQuotaMB       = (userQuota * MEGABYTES);
+					Long userDiskSpaceUsed = GwtServerHelper.getCurrentUser().getDiskSpaceUsed();
+					if ((0l < userQuota) && (null != userDiskSpaceUsed)) {
+						// Yes!  Does it exceed the user's quota?
+						if ((totalSize + userDiskSpaceUsed) > userQuotaMB) {
+							// Yes!  Add an appropriate error the
+							// reply.
+							reply.addError(NLT.get("validateUploadError.quotaExceeded.user", new String[]{String.valueOf(userQuota)}));
+						}
+					}
+
+					// If we detected any quota errors...
+					if (reply.hasErrors()) {
+						// ...we'll stop with the analysis and return
+						// ...what we've got.
+						return reply;
+					}
+				}
+				
+				// Left to validate:
+				// 1) File  name validation (bogus characters, ...)
+				// 1) File  naming conflicts.
+				// 2) Entry title  conflicts.
+//!				...this needs to be implemented...
 			}
 			
 			// If we get here, reply refers to an
