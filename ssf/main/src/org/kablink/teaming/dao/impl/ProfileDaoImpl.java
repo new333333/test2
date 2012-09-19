@@ -562,6 +562,39 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	   	}	        
  	}
 
+    @Override
+ 	public User findUserByForeignName(final String foreignName, final Long zoneId) 
+		throws NoUserByTheNameException {
+ 	   long begin = System.nanoTime();
+ 	   try {
+ 	       User user = (User)getHibernateTemplate().execute(
+ 	                new HibernateCallback() {
+ 	                    @Override
+ 						public Object doInHibernate(Session session) throws HibernateException {
+ 	                	   //only returns active users
+ 	                 	   User user = (User)session.getNamedQuery( "find-User-By-ForeignName" )
+ 	                             		.setString( ParameterNames.FOREIGN_NAME, foreignName )
+ 	                             		.setLong( ParameterNames.ZONE_ID, zoneId )
+ 	                             		.setCacheable( isPrincipalQueryCacheable() )
+ 	                             		.uniqueResult();
+ 	                        //query ensures user is not deleted and not disabled
+ 	                 	   	if (user == null)
+ 	                            throw new NoUserByTheNameException(foreignName); 
+ 	                 	   	else 
+ 	                 	   		return user;
+ 	                    }
+ 	                }
+ 	             );		
+ 	        user = (User) filterInaccessiblePrincipal(user);
+ 	        if (user == null) 
+ 	        	throw new NoUserByTheNameException(foreignName); 
+ 	        return user;
+ 	   	}
+ 	   	finally {
+ 	   		end(begin, "findUserByForeignName(String,Long)");
+ 	   	}	        
+ 	}
+
  	/**
  	 * Find an user in the ss_principals table using the ldap guid.
  	 */
@@ -634,6 +667,35 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	   finally
 	   {
 		   end(begin, "findPrincipalIdByLdapGuid(String,Long)");
+	   }	        
+	}
+
+ 	@Override
+	public Long findPrincipalIdByForeignName( final String foreignName, final Long zoneId ) 
+	{
+	   long begin = System.nanoTime();
+	   try
+	   {
+	       Long id = (Long)getHibernateTemplate().execute(
+                new HibernateCallback()
+                {
+                    @Override
+					public Object doInHibernate(Session session) throws HibernateException
+                    {
+                 	   //only returns active principals
+                  	   return session.getNamedQuery( "find-Principal-id-By-ForeignName" )
+                             		.setString( ParameterNames.FOREIGN_NAME, foreignName )
+                             		.setLong( ParameterNames.ZONE_ID, zoneId )
+                             		.setCacheable( isPrincipalQueryCacheable() )
+                             		.uniqueResult();
+                    }
+                }
+             );		
+	       return id;
+	   }
+	   finally
+	   {
+		   end(begin, "findPrincipalIdByForeignName(String,Long)");
 	   }	        
 	}
 

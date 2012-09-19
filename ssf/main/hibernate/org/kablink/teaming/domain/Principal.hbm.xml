@@ -147,6 +147,8 @@
   <query name="find-Principal-Company"><![CDATA[from org.kablink.teaming.domain.Principal user where lower(user.name)=:userName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
   <query name="find-User-By-LdapGuid-Company"><![CDATA[from org.kablink.teaming.domain.User user where user.ldapGuid=:ldapGuid and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
   <query name="find-Principal-id-By-LdapGuid-Company"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.ldapGuid=:ldapGuid and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
+  <query name="find-User-By-ForeignName"><![CDATA[from org.kablink.teaming.domain.User user where user.foreignName=:foreignName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
+  <query name="find-Principal-id-By-ForeignName"><![CDATA[select p.id from org.kablink.teaming.domain.Principal p where p.foreignName=:foreignName and p.zoneId=:zoneId and p.deleted=false and p.disabled=false]]></query>
 
   <query name="find-User-Company-By-Range"><![CDATA[from org.kablink.teaming.domain.User user where user.name>=:lowerUserName and user.name<=:upperUserName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
   <query name="find-User-Company-DeadOrAlive-By-Range"><![CDATA[from org.kablink.teaming.domain.User user where user.name>=:lowerUserName and user.name<=:upperUserName and user.zoneId=:zoneId]]></query>
