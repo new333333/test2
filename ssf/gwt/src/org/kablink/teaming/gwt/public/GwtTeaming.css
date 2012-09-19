@@ -537,7 +537,7 @@
 
 .shareThisDlg_NoNote
 {
-	color: red !important;
+	color: #949494 !important;
 	font-style: italic;
 }
 
@@ -1064,7 +1064,7 @@ body, table td, select
 
 .dlgBox_statusMsg
 {
-	color: red;
+	color: #949494;
 	font-style: italic;
 }
 
@@ -2643,7 +2643,7 @@ body, table td, select
 
 .teamingDlgBoxFooter .gwt-Button {
 	color:#fff;
- 	font-size: 11px;
+ 	font-size: 12px;
     font-family: Arial, sans-serif !important;
 	background: #949494 none repeat scroll 0 0;
 	margin-right:3px;
@@ -2652,8 +2652,8 @@ body, table td, select
   	cursor: pointer;
   	white-space: nowrap;
 	border: 0px;
-	-moz-border-radius: 15px;
 	border-radius: 15px;
+	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
     text-align: center !important;
 	}
@@ -2662,6 +2662,7 @@ body, table td, select
 	color: #135c8f !important;
     white-space: nowrap !important;
     text-decoration: none !important;
+	font-size: 12px;
 	border: 0px;
 	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
@@ -2768,8 +2769,8 @@ body, table td, select
 	background-color: #f6f6f6;
 	box-shadow: 0px 2px 3px #e0e0e0 inset;
 	border-top: 1px solid #cccccc;
-	margin-top: 0.5em;
-	padding: 0.5em;
+	margin-top: 10px;
+	padding: 10px;
 	text-align: right;
 	vertical-align: middle;
 	border-bottom-left-radius: 3px;
