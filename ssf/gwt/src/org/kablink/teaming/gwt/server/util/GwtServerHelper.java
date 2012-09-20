@@ -2796,21 +2796,14 @@ public class GwtServerHelper {
 				}
 			}
 			
-			// Does the user have rights to "configure guest access"?
+			// Does the user have rights to "configure user access"?
 			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
 			{
 				// Yes
-				if ( ReleaseInfo.isLicenseRequiredEdition() )
-					title = NLT.get( "administration.configure_userAccessOnly", NLT.get( "administration.configure_userAccess" ) );
-				else
-					title = NLT.get( "administration.configure_userAccess" );
+				title = NLT.get( "administration.configure_userAccess" );
 
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
-				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_USER_ACCESS );
-				url = adaptedUrl.toString();
-				
 				adminAction = new GwtAdminAction();
-				adminAction.init( title, url, AdminAction.CONFIGURE_GUEST_ACCESS );
+				adminAction.init( title, "", AdminAction.CONFIGURE_USER_ACCESS );
 				
 				// Add this action to the "system" category
 				systemCategory.addAdminOption( adminAction );

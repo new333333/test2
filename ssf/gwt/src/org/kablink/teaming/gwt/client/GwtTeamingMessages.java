@@ -523,6 +523,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ChildBindersWidget();
 	String codeSplitFailure_ClipboardDlg();
 	String codeSplitFailure_CollectionView();
+	String codeSplitFailure_ConfigureUserAccessDlg();
 	String codeSplitFailure_ConfirmDlg();
 	String codeSplitFailure_ContentControl();
 	String codeSplitFailure_CreateBlogPageDlg();
@@ -1967,4 +1968,11 @@ public interface GwtTeamingMessages extends Messages
 	String testConnection_ProxyCredentialsError();
 	String testConnection_UnknownStatus();
 
+	// Strings used in the Configure User Access dialog
+	String configureUserAccessDlg_Header();
+	String configureUserAccessDlg_AllowGuestAccessLabel();
+	String configureUserAccessDlg_AllowSelfRegInternalUserAccountLabel();
+	String configureUserAccessDlg_AllowExternalUserAccessLabel();
+	String configureUserAccessDlg_AllowSelfRegExternalUserAccountLabel();
+	
 }// end GwtTeamingMessages

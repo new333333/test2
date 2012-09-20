@@ -93,6 +93,7 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 	/**
 	 * Create the header, content and footer for the dialog box.
 	 */
+	@Override
 	public void createAllDlgContent(String caption,
 			EditSuccessfulHandler editSuccessfulHandler,// We will call this
 														// handler when the user
@@ -139,6 +140,7 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 	/**
 	 * Override the createHeader() method because we need to make it nicer.
 	 */
+	@Override
 	public Panel createHeader(String caption) {
 		FlowPanel panel;
 
@@ -166,6 +168,7 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 		panel.add(closeA);
 
 		closeA.addClickHandler(new ClickHandler() {
+			@Override
 			public void onClick(ClickEvent event) {
 				hide();
 			}
@@ -175,6 +178,7 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 	}// end createHeader()
 
 	
+	@Override
 	public Panel createContent(Object propertiesObj) {
 		FlowPanel panel = new FlowPanel();
 		panel.addStyleName("modifyAvatarDlgContent");
@@ -218,6 +222,7 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 		removeAvatar.setText(GwtTeaming.getMessages().profileRemoveAvatar());
 		
 		setDefaultAvatar.addClickHandler(new ClickHandler(){
+			@Override
 			public void onClick(ClickEvent event) {
 				//get the ordered list of picture id's, with this one at the top
 				Hidden hidden = new Hidden("picture__order", getReOrderList());
@@ -227,6 +232,7 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 		});
 
 		removeAvatar.addClickHandler(new ClickHandler(){
+			@Override
 			public void onClick(ClickEvent event) {
 				Hidden hidden = new Hidden("_delete_"+ attach.getId(), "");
 				formPanel.add(hidden);
@@ -235,21 +241,25 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 		
 		
 		setDefaultAvatar.addMouseOverHandler(new MouseOverHandler() {
+			@Override
 			public void onMouseOver(MouseOverEvent event) {
 				setDefaultAvatar.addStyleName("qView-action2");
 			}});
 		
 		setDefaultAvatar.addMouseOutHandler(new MouseOutHandler(){
+			@Override
 			public void onMouseOut(MouseOutEvent event) {
 				setDefaultAvatar.removeStyleName("qView-action2");
 			}});
 		
 		removeAvatar.addMouseOverHandler(new MouseOverHandler() {
+			@Override
 			public void onMouseOver(MouseOverEvent event) {
 				removeAvatar.addStyleName("qView-action2");
 			}});
 		
 		removeAvatar.addMouseOutHandler(new MouseOutHandler(){
+			@Override
 			public void onMouseOut(MouseOutEvent event) {
 				removeAvatar.removeStyleName("qView-action2");
 			}});
@@ -305,7 +315,8 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 	 * Override the createFooter() method so we can control what buttons are in
 	 * the footer.
 	 */
-	public Panel createFooter() {
+	@Override
+	public FlowPanel createFooter() {
 		FlowPanel panel;
 
 		panel = new FlowPanel();
@@ -314,10 +325,12 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 		return panel;
 	}// end createFooter()
 
+	@Override
 	public Object getDataFromDlg() {
 		return null;
 	}
 
+	@Override
 	public FocusWidget getFocusWidget() {
 		return null;
 	}
@@ -326,6 +339,7 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 	/**
 	 * Using this onPreviewNativeEvent to check if the mouse click is in the input widget 
 	 */
+	@Override
 	public void onPreviewNativeEvent(NativePreviewEvent previewEvent) {
 
 
@@ -372,6 +386,7 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 	/**
 	 * This method will get called when we get the response to our "modify binder" request.
 	 */
+	@Override
 	public void onSubmitComplete( FormPanel.SubmitCompleteEvent event )
 	{
 		// Do we have an editSuccessfulHandler?

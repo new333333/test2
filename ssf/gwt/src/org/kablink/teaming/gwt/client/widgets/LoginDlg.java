@@ -480,7 +480,7 @@ public class LoginDlg extends DlgBox
 	 * Override the createFooter() method so we can control what buttons are in the footer.
 	 */
 	@Override
-	public Panel createFooter()
+	public FlowPanel createFooter()
 	{
 		return null;
 	}// end createFooter()
