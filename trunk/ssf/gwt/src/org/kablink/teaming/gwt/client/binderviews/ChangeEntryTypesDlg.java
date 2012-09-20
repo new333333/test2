@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ChangeEntryTypesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData.EntryType;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryTypesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -61,13 +62,11 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 
-
 /**
  * Implements Vibe's change entry types dialog.
  *  
  * @author drfoster@novell.com
  */
-//@SuppressWarnings("unused")
 public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler {
 	private EntryType			m_baseEntryType;	// The EntryType of an individual item, if all that was requested.
 	private GwtTeamingMessages	m_messages;			// Access to Vibe's messages.
@@ -152,7 +151,7 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 			public void onSuccess(VibeRpcResponse response) {
 				// Perhaps!  Did we get any errors back?
 				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
-				List<String> changeErrors = responseData.getErrorList();
+				List<ErrorInfo> changeErrors = responseData.getErrorList();
 				if ((null != changeErrors) && (!(changeErrors.isEmpty()))) {
 					// Yes!  Display them to the user.
 					GwtClientHelper.displayMultipleErrors(

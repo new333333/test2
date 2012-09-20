@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.CopyEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.CopyMoveEntriesCmdBase;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.MoveEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -180,7 +181,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 			final GwtFolder              targetFolder,
 			final List<EntityId>         sourceEntityIds,
 			final int                    totalEntityCount,
-			final List<String>           collectedErrors) {
+			final List<ErrorInfo>        collectedErrors) {
 		ScheduledCommand doCopyMove = new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -203,7 +204,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 			final GwtFolder              targetFolder,
 			final List<EntityId>         sourceEntityIds,
 			final int                    totalEntityCount,
-			final List<String>           collectedErrors) {
+			final List<ErrorInfo>        collectedErrors) {
 		// Do we need to send the request to copy/move in chunks?  (We
 		// do if we've already been sending chunks or the source list
 		// contains more items then our threshold.)
@@ -284,7 +285,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 			final GwtFolder              targetFolder,
 			final List<EntityId>         sourceEntityIds,
 			final int                    totalEntityCount,
-			final List<String>           collectedErrors,
+			final List<ErrorInfo>        collectedErrors,
 			final boolean                moreRemaining) {
 		// Send the request to copy/move the entries.
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
@@ -299,12 +300,12 @@ public class CopyMoveEntriesDlg extends DlgBox
 			public void onSuccess(VibeRpcResponse response) {
 				// Did everything we ask get copied/moved?
 				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
-				List<String> chunkErrors = responseData.getErrorList();
+				List<ErrorInfo> chunkErrors = responseData.getErrorList();
 				int chunkErrorCount = ((null == chunkErrors) ? 0 : chunkErrors.size());
 				if (0 < chunkErrorCount) {
 					// No!  Copy the errors into the List<String> we're
 					// collecting them in.
-					for (String chunkError:  chunkErrors) {
+					for (ErrorInfo chunkError:  chunkErrors) {
 						collectedErrors.add(chunkError);
 					}
 				}
@@ -416,9 +417,9 @@ public class CopyMoveEntriesDlg extends DlgBox
 
 		// No, the target is a unique folder!  Create the appropriate
 		// copy/move command...
-		List<EntityId> sourceEntityIds  = cloneEntityIds(m_entityIds);	// We use a clone because we manipulate the list's contents during the copy/move.
-		int            totalEntityCount = sourceEntityIds.size();		// Total number of entities that we're starting with.
-		List<String>   collectedErrors  = new ArrayList<String>();
+		List<EntityId>  sourceEntityIds  = cloneEntityIds(m_entityIds);	// We use a clone because we manipulate the list's contents during the copy/move.
+		int             totalEntityCount = sourceEntityIds.size();		// Total number of entities that we're starting with.
+		List<ErrorInfo> collectedErrors  = new ArrayList<ErrorInfo>();
 		
 		CopyMoveEntriesCmdBase cmd;
 		if (m_doCopy)

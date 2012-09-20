@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.DeletePurgeUsersCmdBase;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteUserWorkspacesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.PurgeUserWorkspacesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PurgeUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -66,8 +67,8 @@ public class DeletePurgeUsersHelper {
 	private boolean					m_operationCanceled;	// Set true if the operation gets canceled.
 	private DeletePurgeUsersCmdBase	m_dpuCmd;				// The delete/purge users command to perform.
 	private int						m_totalUserCount;		// Count of items in m_sourceUserIds.
+	private List<ErrorInfo>			m_collectedErrors;		// Collects errors that occur while processing an operation on the list of users. 
 	private List<Long>				m_sourceUserIds;		// The user IDs being operated on.
-	private List<String>			m_collectedErrors;		// Collects errors that occur while processing an operation on the list of users. 
 	private Map<StringIds, String>	m_strMap;				// Initialized with a map of the strings used to run the operation.
 	
 	// The following are used to manage the strings displayed by a
@@ -98,7 +99,7 @@ public class DeletePurgeUsersHelper {
 		m_dpuCmd         = dpuCmd;
 		
 		// ...and initialize everything else.
-		m_collectedErrors = new ArrayList<String>();
+		m_collectedErrors = new ArrayList<ErrorInfo>();
 	}
 
 	/**
@@ -317,12 +318,12 @@ public class DeletePurgeUsersHelper {
 				
 				// Did everything we ask get done?
 				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
-				List<String> chunkErrors = responseData.getErrorList();
+				List<ErrorInfo> chunkErrors = responseData.getErrorList();
 				int chunkErrorCount = ((null == chunkErrors) ? 0 : chunkErrors.size());
 				if (0 < chunkErrorCount) {
-					// No!  Copy the errors into the List<String> we're
-					// collecting them in.
-					for (String chunkError:  chunkErrors) {
+					// No!  Copy the errors into the List<ErrorInfo>
+					// we're collecting them in.
+					for (ErrorInfo chunkError:  chunkErrors) {
 						m_collectedErrors.add(chunkError);
 					}
 				}

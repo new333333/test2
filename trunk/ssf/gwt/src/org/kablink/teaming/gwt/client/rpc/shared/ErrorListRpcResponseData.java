@@ -44,7 +44,79 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class ErrorListRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private List<String> m_errorList;	//
+	private List<ErrorInfo> m_errorList;	//
+
+	/**
+	 * Inner class used use to represent an instance of an error
+	 * message.
+	 */
+	public static class ErrorInfo implements IsSerializable {
+		private ErrorLevel	m_level;	//
+		private String		m_message;	//
+		
+		/**
+		 * Constructor method.
+		 * 
+		 * GWT serialization requires a zero length constructor.
+		 */
+		public ErrorInfo() {
+			// Initialize the super class...
+			super();
+
+			// ...and initialize anything else requiring
+			// ...initialization.
+			setLevel(ErrorLevel.ERROR);
+		}
+
+		/**
+		 * Constructor method.
+		 * 
+		 * @param message
+		 * @param level
+		 */
+		public ErrorInfo(String message, ErrorLevel level) {
+			// Initialize this object...
+			this();
+			
+			// ...and store the parameters.
+			setMessage(message);
+			setLevel(  level  );
+		}
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public ErrorLevel getLevel()   {return m_level;  }
+		public String     getMessage() {return m_message;}
+		
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setLevel(  ErrorLevel level)   {m_level   = level;  }
+		public void setMessage(String     message) {m_message = message;}
+		
+		/**
+		 * Creator methods.
+		 * 
+		 * @param message
+		 * 
+		 * @return
+		 */
+		public static ErrorInfo createError(  String message) {return new ErrorInfo(message, ErrorLevel.ERROR);  }
+		public static ErrorInfo createWarning(String message) {return new ErrorInfo(message, ErrorLevel.WARNING);}
+	}
+
+	/**
+	 * Enumeration to specify the level of an error.
+	 */
+	public enum ErrorLevel implements IsSerializable {
+		ERROR,
+		WARNING,
+	}
 	
 	/**
 	 * Constructor method.
@@ -62,34 +134,92 @@ public class ErrorListRpcResponseData implements IsSerializable, VibeRpcResponse
 	 * 
 	 * @param errorList
 	 */
-	public ErrorListRpcResponseData(List<String> errorList) {
+	public ErrorListRpcResponseData(List<ErrorInfo> errorList) {
+		// Initialize this object...
 		this();
+		
+		// ...and store the parameter.
 		setErrorList(errorList);
 	}
+	
+	/**
+	 * Add'er methods.
+	 * 
+	 * @param
+	 */
+	public void addError(  String error)   {addMessage(error,   ErrorLevel.ERROR);  }
+	public void addWarning(String warning) {addMessage(warning, ErrorLevel.WARNING);}
 	
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public boolean      hasErrors()    {return ((null != m_errorList) && (!(m_errorList.isEmpty())));}
-	public List<String> getErrorList() {return m_errorList;                                          }
+	public boolean         hasErrors()    {return ((null != m_errorList) && (!(m_errorList.isEmpty())));}
+	public List<ErrorInfo> getErrorList() {return m_errorList;                                          }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setErrorList(List<String> errorList) {m_errorList = errorList;}
+	public void setErrorList(List<ErrorInfo> errorList) {m_errorList = errorList;}
 
 	/**
-	 * Adds an error to the list.
+	 * Returns the count of errors in the List<ErrorInfo>.
 	 * 
-	 * @param error
+	 * @param errors
+	 * 
+	 * @return
 	 */
-	public void addError(String error) {
-		// If we weren't given an error...
-		if ((null == error) || (0 == error.length())) {
+	public int getErrorCount() {
+		return getLevelCount(ErrorLevel.ERROR);
+	}
+	
+	/*
+	 * Returns the count of a specific error level in the
+	 * List<ErrorInfo>.
+	 */
+	private int getLevelCount(ErrorLevel level) {
+		int reply = 0;
+		if ((null != m_errorList) && (!(m_errorList.isEmpty()))) {
+			for (ErrorInfo error:  m_errorList) {
+				if (level.equals(error.getLevel())) {
+					reply += 1;
+				}
+			}
+		}
+		return reply;
+	}
+	
+	/**
+	 * Returns the total message count in the List<ErrorInfo>.
+	 * 
+	 * @param errors
+	 * 
+	 * @return
+	 */
+	public int getTotalMessageCount() {
+		return ((null == m_errorList) ? 0 : m_errorList.size());
+	}
+	
+	/**
+	 * Returns the count of Warnings in the List<ErrorInfo>.
+	 * 
+	 * @param errors
+	 * 
+	 * @return
+	 */
+	public int getWarningCount() {
+		return getLevelCount(ErrorLevel.WARNING);
+	}
+	
+	/*
+	 * Adds a message to the list.
+	 */
+	private void addMessage(String message, ErrorLevel level) {
+		// If we weren't given a message...
+		if ((null == message) || (0 == message.length())) {
 			// ...bail.
 			return;
 		}
@@ -97,10 +227,10 @@ public class ErrorListRpcResponseData implements IsSerializable, VibeRpcResponse
 		// If we don't have an error list yet...
 		if (null == m_errorList) {
 			// ...allocate one.
-			m_errorList = new ArrayList<String>();
+			m_errorList = new ArrayList<ErrorInfo>();
 		}
 
-		// Add the error to the list.
-		m_errorList.add(error);
+		// Add the message to the list.
+		m_errorList.add(new ErrorInfo(message, level));
 	}
 }

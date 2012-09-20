@@ -81,6 +81,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.TaskDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -655,7 +656,7 @@ public class GwtTaskHelper {
 	public static ErrorListRpcResponseData deleteTasks(HttpServletRequest request, AllModulesInjected bs, List<EntityId> taskIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 
 			// If we get here, we have rights to delete all the tasks
 			// that we were given.  Scan them...
@@ -1712,7 +1713,7 @@ public class GwtTaskHelper {
 	public static ErrorListRpcResponseData purgeTasks(HttpServletRequest request, AllModulesInjected bs, List<EntityId> taskIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 
 			// If we get here, we have rights to purge all the tasks
 			// that we were given.  Scan them...

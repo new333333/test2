@@ -108,6 +108,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.CreateFolderRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData.EntryType;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderFiltersRpcResponseData;
@@ -597,7 +598,7 @@ public class GwtViewHelper {
 	public static CreateFolderRpcResponseData addNewFolder(AllModulesInjected bs, HttpServletRequest request, Long binderId, Long folderTemplateId, String folderName) throws GwtTeamingException {
 		try {
 			// Allocate a response we can return.
-			CreateFolderRpcResponseData reply = new CreateFolderRpcResponseData(new ArrayList<String>());
+			CreateFolderRpcResponseData reply = new CreateFolderRpcResponseData(new ArrayList<ErrorInfo>());
 
 			try {
 				// Can we create the new folder?
@@ -915,7 +916,7 @@ public class GwtViewHelper {
 	public static ErrorListRpcResponseData changeEntryTypes(AllModulesInjected bs, HttpServletRequest request, String defId, List<EntityId> entityIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 			
 			// Were we given the IDs of any entries to change their
 			// entry types and the entry type to change them to?
@@ -1130,7 +1131,7 @@ public class GwtViewHelper {
 	public static ErrorListRpcResponseData copyEntries(AllModulesInjected bs, HttpServletRequest request, Long targetFolderId, List<EntityId> entityIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 
 			// Were we given the IDs of any entries to copy?
 			if (MiscUtil.hasItems(entityIds)) {
@@ -1203,7 +1204,7 @@ public class GwtViewHelper {
 	public static ErrorListRpcResponseData deleteUserWorkspaces(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 
 			// Were we given the IDs of any users to delete?
 			Long currentUserId = GwtServerHelper.getCurrentUserId(); 
@@ -1281,7 +1282,7 @@ public class GwtViewHelper {
 	public static ErrorListRpcResponseData disableUsers(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 
 			// Were we given the IDs of any users to disable?
 			Long currentUserId = GwtServerHelper.getCurrentUserId(); 
@@ -1418,7 +1419,7 @@ public class GwtViewHelper {
 	public static ErrorListRpcResponseData enableUsers(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 
 			// Were we given the IDs of any users to enable?
 			if (MiscUtil.hasItems(userIds)) {
@@ -4906,7 +4907,7 @@ public class GwtViewHelper {
 	public static ErrorListRpcResponseData lockEntries(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 
 			// Were we given the IDs of any entries to lock?
 			if (MiscUtil.hasItems(entityIds)) {
@@ -4967,7 +4968,7 @@ public class GwtViewHelper {
 	public static ErrorListRpcResponseData moveEntries(AllModulesInjected bs, HttpServletRequest request, Long targetFolderId, List<EntityId> entityIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 
 			// Were we given the IDs of any entries to move?
 			if (MiscUtil.hasItems(entityIds)) {
@@ -5121,7 +5122,7 @@ public class GwtViewHelper {
 	public static ErrorListRpcResponseData purgeUsers(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, boolean purgeMirrored) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 
 			// Were we given the IDs of any users to purge?
 			Long currentUserId = GwtServerHelper.getCurrentUserId(); 
@@ -5205,7 +5206,7 @@ public class GwtViewHelper {
 	public static ErrorListRpcResponseData purgeUserWorkspaces(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, boolean purgeMirrored) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 
 			// Were we given the IDs of any users to purge?
 			Long currentUserId = GwtServerHelper.getCurrentUserId(); 
@@ -5283,7 +5284,7 @@ public class GwtViewHelper {
 	public static ErrorListRpcResponseData unlockEntries(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 
 			// Were we given the IDs of any entries to unlock?
 			if (MiscUtil.hasItems(entityIds)) {
@@ -6004,7 +6005,7 @@ public class GwtViewHelper {
 	public static ErrorListRpcResponseData validateUploads(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<UploadInfo> uploads) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 
 			// We're we given anything to validate?
 			if (MiscUtil.hasItems(uploads)) {

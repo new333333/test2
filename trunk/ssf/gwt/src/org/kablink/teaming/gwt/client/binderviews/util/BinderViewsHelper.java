@@ -55,6 +55,7 @@ import org.kablink.teaming.gwt.client.mainmenu.WhoHasAccessDlg.WhoHasAccessDlgCl
 import org.kablink.teaming.gwt.client.rpc.shared.DisableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.EnableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.LockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
@@ -348,7 +349,7 @@ public class BinderViewsHelper {
 				// Did everything we ask get disabled?
 				busy.hide();
 				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
-				List<String> errors = responseData.getErrorList();
+				List<ErrorInfo> errors = responseData.getErrorList();
 				int count = ((null == errors) ? 0 : errors.size());
 				if (0 < count) {
 					// No!  Tell the user about the problem.
@@ -397,7 +398,7 @@ public class BinderViewsHelper {
 				// Did everything we ask get enabled?
 				busy.hide();
 				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
-				List<String> errors = responseData.getErrorList();
+				List<ErrorInfo> errors = responseData.getErrorList();
 				int count = ((null == errors) ? 0 : errors.size());
 				if (0 < count) {
 					// No!  Tell the user about the problem.
@@ -540,7 +541,7 @@ public class BinderViewsHelper {
 				// Did everything we ask get locked?
 				busy.hide();
 				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
-				List<String> errors = responseData.getErrorList();
+				List<ErrorInfo> errors = responseData.getErrorList();
 				int count = ((null == errors) ? 0 : errors.size());
 				if (0 < count) {
 					// No!  Tell the user about the problem.
@@ -1096,7 +1097,7 @@ public class BinderViewsHelper {
 				// Did everything we ask get unlocked?
 				busy.hide();
 				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
-				List<String> errors = responseData.getErrorList();
+				List<ErrorInfo> errors = responseData.getErrorList();
 				int count = ((null == errors) ? 0 : errors.size());
 				if (0 < count) {
 					// No!  Tell the user about the problem.

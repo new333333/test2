@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
@@ -359,7 +360,7 @@ public class GwtClientHelper {
 	 * @param multiErrors
 	 * @param delay
 	 */
-	public static void displayMultipleErrors(final String baseError, final List<String> multiErrors, final int delay) {
+	public static void displayMultipleErrors(final String baseError, final List<ErrorInfo> multiErrors, final int delay) {
 		if (null == m_meaDlg) {
 			MultiErrorAlertDlg.createAsync(new MultiErrorAlertDlgClient() {
 				@Override
@@ -382,7 +383,7 @@ public class GwtClientHelper {
 			
 	}
 	
-	public static void displayMultipleErrors(String baseError, List<String> multiErrors) {
+	public static void displayMultipleErrors(String baseError, List<ErrorInfo> multiErrors) {
 		// Always use the initial form of the method.
 		displayMultipleErrors(baseError, multiErrors, 0);
 	}
@@ -390,7 +391,7 @@ public class GwtClientHelper {
 	/*
 	 * Asynchronously displays the list of multiple error messages.
 	 */
-	private static void displayMultipleErrorsAsync(final String baseError, final List<String> multiErrors, final int delay) {
+	private static void displayMultipleErrorsAsync(final String baseError, final List<ErrorInfo> multiErrors, final int delay) {
 		// Do we have anything to display?
 		if (hasString(baseError) && hasItems(multiErrors)) {
 			// Yes!  If we don't have a specific amount of time to
@@ -423,7 +424,7 @@ public class GwtClientHelper {
 	/*
 	 * Synchronously displays the list of multiple error messages.
 	 */
-	private static void displayMultipleErrorsNow(String baseError, List<String> multiErrors) {
+	private static void displayMultipleErrorsNow(String baseError, List<ErrorInfo> multiErrors) {
 		MultiErrorAlertDlg.initAndShow(m_meaDlg, baseError, multiErrors);
 	}
 
