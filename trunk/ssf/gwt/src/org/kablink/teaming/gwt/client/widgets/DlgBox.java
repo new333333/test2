@@ -76,12 +76,15 @@ public abstract class DlgBox extends PopupPanel
 	protected boolean 				m_visible;					//
 	private Label 					m_caption;					//
 	private FlowPanel				m_captionImagePanel;		//
+	private Panel					m_headerPanel;
 	private FlowPanel 				m_errorPanel;				//
 	private Panel 					m_contentPanel;				//
 	private FlowPanel				m_footerPanel;				//
 	private InlineLabel 			m_statusLabel;
 	private Image					m_statusImg;
 	private int 					m_id;						//
+	private boolean					m_fixedSize;
+	private Integer					m_height;
     	
 	protected static int			m_numDlgsVisible = 0;		// Number of dialogs that are currently visible.
 	private   static int			m_uniqueId       = 100;		//
@@ -103,7 +106,7 @@ public abstract class DlgBox extends PopupPanel
 		int xPos,
 		int yPos )
 	{
-		this( autoHide, modal, xPos, yPos, DlgButtonMode.OkCancel, true );
+		this( autoHide, modal, xPos, yPos, null, null, DlgButtonMode.OkCancel, true );
 	}
 	
 	/**
@@ -116,7 +119,7 @@ public abstract class DlgBox extends PopupPanel
 		int yPos,
 		boolean showFooter )
 	{
-		this( autoHide, modal, xPos, yPos, DlgButtonMode.OkCancel, showFooter );
+		this( autoHide, modal, xPos, yPos, null, null, DlgButtonMode.OkCancel, showFooter );
 	}
 	
 	/**
@@ -126,7 +129,7 @@ public abstract class DlgBox extends PopupPanel
 		boolean autoHide,
 		boolean modal )
 	{
-		this( autoHide, modal, 0, 0, DlgButtonMode.OkCancel, true );
+		this( autoHide, modal, 0, 0, null, null, DlgButtonMode.OkCancel, true );
 	}
 	
 	/**
@@ -137,7 +140,7 @@ public abstract class DlgBox extends PopupPanel
 		boolean modal,
 		boolean showFooter )
 	{
-		this( autoHide, modal, 0, 0, DlgButtonMode.OkCancel, showFooter );
+		this( autoHide, modal, 0, 0, null, null, DlgButtonMode.OkCancel, showFooter );
 	}
 	
 	/**
@@ -148,7 +151,7 @@ public abstract class DlgBox extends PopupPanel
 		boolean modal,
 		DlgButtonMode dlgBtnMode )
 	{
-		this( autoHide, modal, 0, 0, dlgBtnMode, true );
+		this( autoHide, modal, 0, 0, null, null, dlgBtnMode, true );
 	}
 	
 	/**
@@ -160,7 +163,7 @@ public abstract class DlgBox extends PopupPanel
 		DlgButtonMode dlgBtnMode,
 		boolean showFooter )
 	{
-		this( autoHide, modal, 0, 0, dlgBtnMode, showFooter );
+		this( autoHide, modal, 0, 0, null, null, dlgBtnMode, showFooter );
 	}
 	
 	/**
@@ -173,7 +176,7 @@ public abstract class DlgBox extends PopupPanel
 		int yPos,
 		DlgButtonMode dlgBtnMode )
 	{
-		this( autoHide, modal, xPos, yPos, dlgBtnMode, true );
+		this( autoHide, modal, xPos, yPos, null, null, dlgBtnMode, true );
 	}
 	
 	/**
@@ -184,11 +187,38 @@ public abstract class DlgBox extends PopupPanel
 		boolean modal,
 		int xPos,
 		int yPos,
+		Integer width,
+		Integer height,
+		DlgButtonMode dlgBtnMode )
+	{
+		this( autoHide, modal, xPos, yPos, width, height, dlgBtnMode, true );
+	}
+	
+	/**
+	 * 
+	 */
+	public DlgBox(
+		boolean autoHide,
+		boolean modal,
+		int xPos,
+		int yPos,
+		Integer width,
+		Integer height,
 		DlgButtonMode dlgBtnMode,
 		boolean showFooter )
 	{
 		// Since we are providing the modal behavior, always pass false into super()
 		super( autoHide, false );
+		
+		m_fixedSize = false;
+		if ( width != null && height != null )
+		{
+			m_fixedSize = true;
+			m_height = height;
+
+			setWidth( width.toString() + "px" );
+			setHeight( height.toString() + "px" );
+		}
 		
 		// Should this dialog be modal?
 		m_modal = modal;
@@ -224,6 +254,30 @@ public abstract class DlgBox extends PopupPanel
 					public void execute()
 					{
 						makeDraggable( String.valueOf( m_id ) );
+						
+						// Are we dealing with a fixed sized dialog?
+						if ( m_fixedSize )
+						{
+							int spaceNeeded;
+							int contentPanelHeight;
+							
+							// Yes, make sure the content panel takes up all the room minus the room
+							// needed by the header and footer.
+							spaceNeeded = 0;
+							if ( m_headerPanel != null )
+								spaceNeeded += m_headerPanel.getOffsetHeight();
+							
+							if ( m_errorPanel != null )
+								spaceNeeded += m_errorPanel.getOffsetHeight();
+							
+							if ( m_footerPanel != null )
+								spaceNeeded += m_footerPanel.getOffsetHeight();
+							
+							spaceNeeded += 20;
+							
+							contentPanelHeight = m_height - spaceNeeded;
+							m_contentPanel.setHeight( String.valueOf( contentPanelHeight ) + "px" );
+						}
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
@@ -247,8 +301,6 @@ public abstract class DlgBox extends PopupPanel
 		Object properties ) 					// Where properties used in the dialog are read from and saved to.
 	{
 		FlowPanel	panel;
-		Panel		header;
-		Panel		footer;
 		
 		panel = new FlowPanel();
 		
@@ -269,8 +321,8 @@ public abstract class DlgBox extends PopupPanel
 		}
 		
 		// Add the header.
-		header = createHeader( caption );
-		panel.add( header );
+		m_headerPanel = createHeader( caption );
+		panel.add( m_headerPanel );
 		
 		// Create a panel where errors can be displayed.
 		m_errorPanel = new FlowPanel();
@@ -283,9 +335,9 @@ public abstract class DlgBox extends PopupPanel
 		panel.add( m_contentPanel );
 		
 		// Create the footer.
-		footer = createFooter();
-		if ( footer != null )
-			panel.add( footer );
+		m_footerPanel = createFooter();
+		if ( m_footerPanel != null )
+			panel.add( m_footerPanel );
 		
 		// Initialize the handlers
 		initHandlers( editSuccessfulHandler, editCanceledHandler );
@@ -297,7 +349,7 @@ public abstract class DlgBox extends PopupPanel
 	/*
 	 * Create the footer panel for this dialog box.
 	 */
-	public Panel createFooter()
+	public FlowPanel createFooter()
 	{
 		m_footerPanel = new FlowPanel();
 		

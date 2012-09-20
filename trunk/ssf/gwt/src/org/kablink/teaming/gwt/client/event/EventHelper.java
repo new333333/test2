@@ -89,6 +89,7 @@ public class EventHelper {
 		case INVOKE_CLIPBOARD:						reply = new InvokeClipboardEvent();               break;
 		case INVOKE_CONFIGURE_COLUMNS:				reply = new InvokeConfigureColumnsEvent();        break;
 		case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	reply = new InvokeConfigureFileSyncAppDlgEvent(); break;
+		case INVOKE_CONFIGURE_USER_ACCESS_DLG:		reply = new InvokeConfigureUserAccessDlgEvent();  break;
 		case INVOKE_EMAIL_NOTIFICATION:         	reply = new InvokeEmailNotificationEvent();       break;
 		case INVOKE_HELP:                       	reply = new InvokeHelpEvent();                    break;
 		case INVOKE_MANAGE_NET_FOLDERS_DLG:			reply = new InvokeManageNetFoldersDlgEvent();	  break;
@@ -830,6 +831,15 @@ public class EventHelper {
 				{
 					handlerNotDefined = false;
 					registrationHandler = InvokeConfigureFileSyncAppDlgEvent.registerEvent( eventBus, ((InvokeConfigureFileSyncAppDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case INVOKE_CONFIGURE_USER_ACCESS_DLG:
+				// An InvokeConfigureUserAccessDlgEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof InvokeConfigureUserAccessDlgEvent.Handler)
+				{
+					handlerNotDefined = false;
+					registrationHandler = InvokeConfigureUserAccessDlgEvent.registerEvent( eventBus, ((InvokeConfigureUserAccessDlgEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2082,6 +2092,7 @@ public class EventHelper {
 			case INVOKE_COLUMN_RESIZER:				    hasHandler = (eventHandler instanceof InvokeColumnResizerEvent.Handler);           break;
 			case INVOKE_CONFIGURE_COLUMNS:				hasHandler = (eventHandler instanceof InvokeConfigureColumnsEvent.Handler);        break;
 			case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	hasHandler = (eventHandler instanceof InvokeConfigureFileSyncAppDlgEvent.Handler); break;
+			case INVOKE_CONFIGURE_USER_ACCESS_DLG:		hasHandler = (eventHandler instanceof InvokeConfigureUserAccessDlgEvent.Handler);  break;
 			case INVOKE_DROPBOX:						hasHandler = (eventHandler instanceof InvokeDropBoxEvent.Handler);                 break;
 			case INVOKE_EMAIL_NOTIFICATION:         	hasHandler = (eventHandler instanceof InvokeEmailNotificationEvent.Handler);       break;
 			case INVOKE_HELP:                       	hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                    break;

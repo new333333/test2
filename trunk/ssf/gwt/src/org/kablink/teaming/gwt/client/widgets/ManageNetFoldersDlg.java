@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -107,7 +106,6 @@ public class ManageNetFoldersDlg extends DlgBox
 	private List<NetFolder> m_listOfNetFolders;
 	private ModifyNetFolderDlg m_modifyNetFolderDlg;
     private int m_width;
-    private int m_height;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -151,7 +149,6 @@ public class ManageNetFoldersDlg extends DlgBox
 		
 		// Create the header, content and footer of this dialog box.
 		m_width = width;
-		m_height = height;
 		createAllDlgContent( GwtTeaming.getMessages().manageNetFoldersDlg_Header(), null, null, null );
 	}
 

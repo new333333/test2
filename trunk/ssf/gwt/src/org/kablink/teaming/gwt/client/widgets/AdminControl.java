@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFolderRootsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFoldersDlgEvent;
@@ -62,6 +63,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ConfigureUserAccessDlg.ConfigureUserAccessDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 import org.kablink.teaming.gwt.client.widgets.ManageGroupsDlg.ManageGroupsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFolderRootsDlg.ManageNetFolderRootsDlgClient;
@@ -102,6 +104,7 @@ public class AdminControl extends TeamingPopupPanel
 	implements 
 	// Event handlers implemented by this class.
 		InvokeConfigureFileSyncAppDlgEvent.Handler,
+		InvokeConfigureUserAccessDlgEvent.Handler,
 		InvokeManageNetFoldersDlgEvent.Handler,
 		InvokeManageNetFolderRootsDlgEvent.Handler,
 		InvokeManageGroupsDlgEvent.Handler,
@@ -115,10 +118,13 @@ public class AdminControl extends TeamingPopupPanel
 	private int m_contentControlY;
 	private int m_contentControlWidth;
 	private int m_contentControlHeight;
+	private int m_dlgWidth;
+	private int m_dlgHeight;
 	private ConfigureFileSyncAppDlg m_configureFileSyncAppDlg = null;
 	private ManageGroupsDlg m_manageGroupsDlg = null;
 	private ManageNetFoldersDlg m_manageNetFoldersDlg = null;
 	private ManageNetFolderRootsDlg m_manageNetFolderRootsDlg = null;
+	private ConfigureUserAccessDlg m_configureUserAccessDlg = null;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -126,6 +132,7 @@ public class AdminControl extends TeamingPopupPanel
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Administration events.
 		TeamingEvents.INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,
+		TeamingEvents.INVOKE_CONFIGURE_USER_ACCESS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
 		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
@@ -687,6 +694,14 @@ public class AdminControl extends TeamingPopupPanel
 			// Fire the event to invoke the "Configure File Sync" dialog.
 			InvokeConfigureFileSyncAppDlgEvent.fireOne();
 		}
+		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_USER_ACCESS )
+		{
+			hideContentPanel();
+			
+			// Fire the event to invoke the "Configure User Access" dialog
+			InvokeConfigureUserAccessDlgEvent.fireOne();
+			
+		}
 		else if ( adminAction.getActionType() == AdminAction.MANAGE_GROUPS )
 		{
 			hideContentPanel();
@@ -932,6 +947,10 @@ public class AdminControl extends TeamingPopupPanel
 		m_contentControlWidth = width;
 		m_contentControlHeight = height + GwtConstants.PANEL_PADDING;
 		m_contentControl.setDimensions( m_contentControlWidth, m_contentControlHeight );
+		
+		// Set the width and height that should be used by GWT dialogs
+		m_dlgWidth = m_contentControlWidth - 12;
+		m_dlgHeight = m_contentControlHeight - 10;
 
 		// Set the left position of the content control.
 		style = m_contentControl.getElement().getStyle();
@@ -1167,6 +1186,76 @@ public class AdminControl extends TeamingPopupPanel
 			// Issue an ajax request to get the File Sync App configuration from the db.
 			cmd = new GetFileSyncAppConfigurationCmd();
 			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
+		}
+	}
+	
+
+	/**
+	 * Handles InvokeConfigureUserAccessDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeConfigureUserAccessDlgEvent.Handler.onInvokeConfigureUserAccessDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeConfigureUserAccessDlg( InvokeConfigureUserAccessDlgEvent event )
+	{
+		int x;
+		int y;
+		
+		// Get the position of the content control.
+		x = m_contentControlX;
+		y = m_contentControlY;
+		
+		// Have we already created a "Manage Net Folders" dialog?
+		if ( m_configureUserAccessDlg == null )
+		{
+			int width;
+			int height;
+			
+			// No, create one.
+			height = m_dlgHeight;
+			width = m_dlgWidth;
+			ConfigureUserAccessDlg.createAsync(
+											false, 
+											true,
+											x, 
+											y,
+											width,
+											height,
+											new ConfigureUserAccessDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ConfigureUserAccessDlg cuaDlg )
+				{
+					ScheduledCommand cmd;
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_configureUserAccessDlg = cuaDlg;
+							
+							m_configureUserAccessDlg.init();
+							m_configureUserAccessDlg.show();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+		}
+		else
+		{
+			m_configureUserAccessDlg.init();
+			m_configureUserAccessDlg.setPopupPosition( x, y );
+			m_configureUserAccessDlg.show();
 		}
 	}
 	

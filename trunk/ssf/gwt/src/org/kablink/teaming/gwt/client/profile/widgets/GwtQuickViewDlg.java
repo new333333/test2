@@ -378,7 +378,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	 * the footer.
 	 */
 	@Override
-	public Panel createFooter() {
+	public FlowPanel createFooter() {
 		FlowPanel panel;
 
 		panel = new FlowPanel();
