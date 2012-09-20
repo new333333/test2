@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
@@ -43,11 +42,8 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent;
 import org.kablink.teaming.gwt.client.event.ShowCollectionEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
-import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CollectionType;
-import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 
@@ -83,8 +79,6 @@ public class FilrActionsCtrl extends Composite
 	private FilrAction m_sharedWithMeAction;
 	private FilrAction m_netFoldersAction;
 	private FilrAction m_sharedByMeAction;
-	private FilrAction m_preWhatsNewAction;
-	private FilrAction m_whatsNewAction;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -101,15 +95,28 @@ public class FilrActionsCtrl extends Composite
 	/**
 	 * 
 	 */
+	public enum FilrActionType
+	{
+		MY_FILES,
+		NET_FOLDERS,
+		SHARED_BY_ME,
+		SHARED_WITH_ME,
+		UNKNOWN
+	}
+	/**
+	 * 
+	 */
 	public class FilrAction extends Composite
 	{
 		private Command m_cmd;
 		private FlowPanel m_mainPanel;
+		private FilrActionType m_type;
 		
 		/**
 		 * 
 		 */
 		public FilrAction(
+						FilrActionType type,
 						ImageResource imgResource,
 						String text,
 						Command cmd )
@@ -117,6 +124,7 @@ public class FilrActionsCtrl extends Composite
 			Label label;
 			Image img;
 			
+			m_type = type;
 			m_cmd = cmd;
 			
 			m_mainPanel = new FlowPanel();
@@ -148,6 +156,14 @@ public class FilrActionsCtrl extends Composite
 				m_cmd.execute();
 		}
 
+		/**
+		 * 
+		 */
+		private FilrActionType getActionType()
+		{
+			return m_type;
+		}
+		
 		/**
 		 * Set the font color used to display the name of the action
 		 */
@@ -218,6 +234,7 @@ public class FilrActionsCtrl extends Composite
 			}
 		};
 		m_myFilesAction = new FilrAction(
+										FilrActionType.MY_FILES,
 										imgBundle.myFiles_transparent_48(),
 										messages.myFiles(),
 										cmd );
@@ -236,11 +253,31 @@ public class FilrActionsCtrl extends Composite
 			}
 		};
 		m_sharedWithMeAction = new FilrAction(
+											FilrActionType.SHARED_WITH_ME,
 											imgBundle.sharedWithMe_transparent_48(),
 											messages.sharedWithMe(),
 											cmd );
 		m_sharedWithMeAction.addDomHandler( this, ClickEvent.getType() );
 		m_mainPanel.add( m_sharedWithMeAction );
+		
+		// Add the "Shared by Me" action
+		cmd = new Command()
+		{
+			@Override
+			public void execute()
+			{
+				FilrActionsCtrl.closeAdminConsole();
+
+				GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_BY_ME ) );
+			}
+		};
+		m_sharedByMeAction = new FilrAction(
+										FilrActionType.SHARED_BY_ME,
+										imgBundle.sharedByMe_transparent_40(),
+										messages.sharedByMe(),
+										cmd );
+		m_sharedByMeAction.addDomHandler( this, ClickEvent.getType() );
+		m_mainPanel.add( m_sharedByMeAction );
 		
 		// Add the "File Spaces" action
 		cmd = new Command()
@@ -254,39 +291,12 @@ public class FilrActionsCtrl extends Composite
 			}
 		};
 		m_netFoldersAction = new FilrAction(
+										FilrActionType.NET_FOLDERS,
 										imgBundle.netFolders_transparent_48(),
 										messages.netFolders(),
 										cmd );
 		m_netFoldersAction.addDomHandler( this, ClickEvent.getType() );
 		m_mainPanel.add( m_netFoldersAction );
-		
-		// Add the "What's New" action
-		cmd = new Command()
-		{
-			@Override
-			public void execute()
-			{
-				ActivityStreamInfo asi;
-				
-				FilrActionsCtrl.closeAdminConsole();
-
-				//!!!
-				// Figure out which collection point is selected and invoke "what's new"
-				// on that collection point.
-				asi = new ActivityStreamInfo();
-				asi.setActivityStream( ActivityStream.SHARED_WITH_ME );
-				//!!!asi.setBinderId( m_contextBinder.getBinderId() );
-				//!!!asi.setTitle( m_contextBinder.getBinderTitle() );
-
-				GwtTeaming.fireEvent( new ActivityStreamEnterEvent( asi, ActivityStreamDataType.OTHER ) );
-			}
-		};
-		m_whatsNewAction = new FilrAction(
-										imgBundle.whatsNew_transparent_48(),
-										messages.whatsNew(),
-										cmd );
-		m_whatsNewAction.addDomHandler( this, ClickEvent.getType() );
-		m_mainPanel.add( m_whatsNewAction );
 		
 		initWidget( m_mainPanel );
 	}
@@ -303,7 +313,18 @@ public class FilrActionsCtrl extends Composite
 			AdministrationExitEvent.fireOne();
 		}
 	}
-
+	
+	/**
+	 * 
+	 */
+	public FilrActionType getSelectedActionType()
+	{
+		if ( m_selectedAction != null )
+			return m_selectedAction.getActionType();
+		
+		return FilrActionType.UNKNOWN;
+	}
+	
 	/**
 	 * 
 	 */
@@ -344,8 +365,6 @@ public class FilrActionsCtrl extends Composite
 	 */
 	@Override
 	public void onActivityStreamExit(ActivityStreamExitEvent event) {
-		selectAction(m_preWhatsNewAction);
-		m_preWhatsNewAction = null;
 	}
 
 	/**
@@ -438,10 +457,6 @@ public class FilrActionsCtrl extends Composite
 		// Do we have an action that is already selected?
 		if ( m_selectedAction != null )
 			m_selectedAction.setIsSelected( false );
-
-
-		if (action == m_whatsNewAction)
-			m_preWhatsNewAction = m_selectedAction;	// Save the FilrAction that was selected before What's New.
 
 		m_selectedAction = action;
 		m_selectedAction.setIsSelected( true );

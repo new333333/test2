@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
@@ -53,9 +54,13 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.SystemBinderType;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.widgets.FilrActionsCtrl.FilrActionType;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
@@ -205,6 +210,44 @@ public class MastHead extends Composite
 							public void execute()
 							{
 								invokeUsersPage();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				} );
+				imgPanel.add( img );
+				panel.add( imgPanel );
+				
+				m_mainMastheadPanel.add( panel );
+			}
+			
+			// Create a link for the user to click on that will invoke "what's new"
+			{
+				FlowPanel panel;
+				FlowPanel imgPanel;
+				Image img;
+				
+				panel = new FlowPanel();
+				panel.addStyleName( "mastheadFilr_WhatsNewPanel" );
+				
+				imgPanel = new FlowPanel();
+				imgPanel.addStyleName( "mastheadFilr_WhatsNewImgPanel" );
+				img = new Image( GwtTeaming.getImageBundle().masthead_WhatsNew() );
+				img.setTitle( GwtTeaming.getMessages().whatsNew() );
+				img.addStyleName( "mastheadFilr_WhatsNewImg" );
+				img.addClickHandler( new ClickHandler()
+				{
+					@Override
+					public void onClick( ClickEvent event )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								invokeWhatsNew();
 							}
 						};
 						Scheduler.get().scheduleDeferred( cmd );
@@ -794,6 +837,62 @@ public class MastHead extends Composite
 										Instigator.GOTO_CONTENT_URL );
 			GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
 		}
+	}
+	
+	/**
+	 * Invoke the Whats New page
+	 */
+	private void invokeWhatsNew()
+	{
+		ActivityStreamInfo asi;
+		ActivityStream as;
+		
+		FilrActionsCtrl.closeAdminConsole();
+
+		asi = new ActivityStreamInfo();
+
+		// Get the selected action from the FilrActionsCtrl
+		if ( m_filrActionsCtrl != null )
+		{
+			FilrActionType filrActionType;
+
+			filrActionType = m_filrActionsCtrl.getSelectedActionType();
+
+			// Figure out which collection point is selected and invoke "what's new"
+			// on that collection point.
+			switch ( filrActionType )
+			{
+			case MY_FILES:
+				as = ActivityStream.MY_FILES;
+				break;
+			
+			case NET_FOLDERS:
+				as = ActivityStream.NET_FOLDERS;
+				break;
+				
+			case SHARED_BY_ME:
+				as = ActivityStream.SHARED_BY_ME;
+				break;
+				
+			case SHARED_WITH_ME:
+				as = ActivityStream.SHARED_WITH_ME;
+				break;
+			
+			case UNKNOWN:
+			default:
+				as = ActivityStream.SHARED_WITH_ME;
+				break;
+			}
+		}
+		else
+		{
+			as = ActivityStream.CURRENT_BINDER;
+			//!!!asi.setBinderId( m_mastheadBinderId );
+		}
+
+		asi.setActivityStream( as );
+		
+		GwtTeaming.fireEvent( new ActivityStreamEnterEvent( asi, ActivityStreamDataType.OTHER ) );
 	}
 	
 	/**
