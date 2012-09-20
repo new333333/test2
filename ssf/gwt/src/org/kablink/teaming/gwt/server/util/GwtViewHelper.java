@@ -2594,7 +2594,7 @@ public class GwtViewHelper {
 	private static String[] getFolderColumnNames(FolderType ft) {
 		String[] reply;
 		switch (ft) {
-		case FILE:       reply = pruneColumnNames(ft, "title", "comments",    "size",     "html",   "state",  "author", "date" ); break;
+		case FILE:       reply = pruneColumnNames(ft, "title", "comments",    "size",     "state",  "author", "date"           ); break;
 		case GUESTBOOK:  reply = pruneColumnNames(ft, "guest", "title",       "date",     "descriptionHtml"                    ); break;
 		case MILESTONE:  reply = pruneColumnNames(ft, "title", "responsible", "tasks",    "status", "dueDate"                  ); break;
 		case MINIBLOG:   reply = pruneColumnNames(ft, "title", "description"                                                   ); break;
