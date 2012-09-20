@@ -2425,7 +2425,7 @@ body, table td, select
 	position: absolute;
 }
 
-.mastheadFilr_PeopleImg
+.mastheadFilr_PeopleImg, .mastheadFilr_WhatsNewImg
 {
 	color: #FFFFFF;
 	font-size: 12px;
@@ -2444,7 +2444,7 @@ body, table td, select
 	text-align: center;
 }
 
-.mastheadFilr_PeopleImgPanel:hover
+.mastheadFilr_PeopleImgPanel:hover, .mastheadFilr_WhatsNewImgPanel:hover
 {
 	background-image: url(images/trans20_91daf2.png);
 	background-repeat: repeat;
@@ -2459,6 +2459,15 @@ body, table td, select
 	top: 45px;
 	z-index: 400;
 }
+
+.mastheadFilr_WhatsNewPanel
+{
+	left: 70px;
+	position: absolute;
+	top: 45px;
+	z-index: 400;
+}
+
 
 .mastheadFilrSearchComposite
 {

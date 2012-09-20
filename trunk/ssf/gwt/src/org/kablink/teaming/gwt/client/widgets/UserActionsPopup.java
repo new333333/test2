@@ -311,13 +311,6 @@ public class UserActionsPopup extends TeamingPopupPanel
 							new GotoMyWorkspaceEvent() );
 		m_contentPanel.add( actionPanel );
 		
-		// Add "View Shared By Me"
-		actionPanel = addAction(
-							GwtTeaming.getMessages().userActionsPanel_ViewSharedByMe(),
-							GwtTeaming.getImageBundle().userActionsPanel_ViewSharedByMe(),
-							new ShowCollectionEvent( CollectionType.SHARED_BY_ME ) );
-		m_contentPanel.add( actionPanel );
-		
 		// Add "Personal Preferences"
 		actionPanel = addAction(
 							GwtTeaming.getMessages().userActionsPanel_PersonalPreferences(),
