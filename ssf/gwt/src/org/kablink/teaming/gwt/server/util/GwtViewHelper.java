@@ -965,7 +965,7 @@ public class GwtViewHelper {
 	 * Converts a List<ShareItem> into a List<GwtShareMeItem>
 	 * representing the 'Shared by Me' items.
 	 */
-	private static List<GwtSharedMeItem> convertItemListToByMeList(AllModulesInjected bs, HttpServletRequest request, List<ShareItem> shareItems, Long userId) {
+	private static List<GwtSharedMeItem> convertItemListToByMeList(AllModulesInjected bs, HttpServletRequest request, List<ShareItem> shareItems, Long userId) throws Exception {
 		// Allocate a List<GwtSharedMeItem> to hold the converted
 		// List<ShareItem> information.
 		List<GwtSharedMeItem> reply = new ArrayList<GwtSharedMeItem>();
@@ -985,9 +985,33 @@ public class GwtViewHelper {
 				// Yes!  Skip it.
 				continue;
 			}
+
+			// Can we access the shared entity?
+			DefinableEntity	siEntity;
+			try {
+				siEntity = sm.getSharedEntity(si);
+			}
+			catch (Exception e) {
+				// No!  If it was because of an access control
+				// exception...
+				if (e instanceof AccessControlException) {
+					// ...we'll simply skip it.  This can happen if
+					// ...somebody revokes the users right to an
+					// ...item they previously shared.
+					siEntity = null;
+				}
+				
+				else {
+					// ...otherwise, propagate the exception.
+					throw e;
+				}
+			}
+			if (null == siEntity) {
+				// No!  Skip it
+				continue;
+			}
 			
 			// Is this share item's entity in the trash?
-			DefinableEntity siEntity = sm.getSharedEntity(si);
 			if (GwtServerHelper.isEntityPreDeleted(siEntity)) {
 				// Yes!  Skip it.
 				continue;
@@ -4167,7 +4191,7 @@ public class GwtViewHelper {
 	 * Returns a List<GwtSharedMeItem> of the items shared by the
 	 * current user.
 	 */
-	private static List<GwtSharedMeItem> getSharedByMeItems(AllModulesInjected bs, HttpServletRequest request) {
+	private static List<GwtSharedMeItem> getSharedByMeItems(AllModulesInjected bs, HttpServletRequest request) throws Exception {
 		// Construct a list containing just this user's ID...
 		Long		userId = GwtServerHelper.getCurrentUserId();
 		List<Long>	users  = new ArrayList<Long>();
