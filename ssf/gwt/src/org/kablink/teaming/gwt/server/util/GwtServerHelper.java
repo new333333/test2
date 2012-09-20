@@ -147,6 +147,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.C
 import org.kablink.teaming.gwt.client.rpc.shared.CollectionPointData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.SystemBinderType;
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
@@ -1711,7 +1712,7 @@ public class GwtServerHelper {
 	public static ErrorListRpcResponseData deleteFolderEntries(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 
 			// Scan the entry IDs...
 			for (EntityId entityId:  entityIds) {
@@ -5802,7 +5803,7 @@ public class GwtServerHelper {
 	public static List<GroupInfo> getGroups(HttpServletRequest request, AllModulesInjected bs, Long userId) {
 		// Allocate an ArrayList<GroupInfo> to hold the groups.
 		ArrayList<GroupInfo> reply = new ArrayList<GroupInfo>();
-
+		
 		// Scan the groups the current user is a member of...
 		ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
 		List<Long> userIds = new ArrayList<Long>();
@@ -5810,7 +5811,8 @@ public class GwtServerHelper {
 		List users = ResolveIds.getPrincipals(userIds, true);
 		if (!users.isEmpty()) {
 			Principal p = (Principal)users.get(0);
-			Set<Long> groupIds = profileDao.getAllGroupMembership(p.getId(), RequestContextHolder.getRequestContext().getZoneId());
+		    Set<Long> groupIds = profileDao.getPrincipalIds(p);
+		    groupIds.remove(userId);
 			List<Group> groups = profileDao.loadGroups(groupIds, RequestContextHolder.getRequestContext().getZoneId());
 			for (Group myGroup : groups) {
 				// ...adding a GroupInfo for each to the reply list.
@@ -7755,7 +7757,7 @@ public class GwtServerHelper {
 	public static ErrorListRpcResponseData purgeFolderEntries(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, boolean deleteMirroredSource) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<String>());
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 
 			// Scan the entry IDs...
 			BinderModule bm = bs.getBinderModule();

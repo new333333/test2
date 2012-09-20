@@ -34,6 +34,8 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -64,7 +66,7 @@ public class CreateFolderRpcResponseData implements IsSerializable, VibeRpcRespo
 	 * 
 	 * @param errorList
 	 */
-	public CreateFolderRpcResponseData( List<String> errorList )
+	public CreateFolderRpcResponseData( List<ErrorInfo> errorList )
 	{
 		this();
 		setErrorList( errorList );
@@ -97,7 +99,7 @@ public class CreateFolderRpcResponseData implements IsSerializable, VibeRpcRespo
 	/**
 	 * 
 	 */
-	public List<String> getErrorList()
+	public List<ErrorInfo> getErrorList()
 	{
 		if ( m_errorList != null )
 			return m_errorList.getErrorList();
@@ -124,7 +126,7 @@ public class CreateFolderRpcResponseData implements IsSerializable, VibeRpcRespo
 	/**
 	 * 
 	 */
-	public void setErrorList( List<String> errorList )
+	public void setErrorList( List<ErrorInfo> errorList )
 	{
 		if ( m_errorList == null )
 			m_errorList = new ErrorListRpcResponseData();

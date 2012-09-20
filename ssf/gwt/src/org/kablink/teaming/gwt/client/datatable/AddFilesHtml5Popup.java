@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.AbortFileUploadCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UploadFileBlobCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateUploadsCmd;
@@ -1062,18 +1063,18 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 
 			@Override
 			public void onSuccess(VibeRpcResponse result) {
-				// Did we get any errors back from the validation?
+				// Did we get any messages back from the validation?
 				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) result.getResponseData());
-				List<String> errors = responseData.getErrorList();
-				int count = ((null == errors) ? 0 : errors.size());
+				List<ErrorInfo> errors = responseData.getErrorList();
+				int count = responseData.getTotalMessageCount();
 				if (0 < count) {
 					// Yes!  Tell the user about them.
 					GwtClientHelper.displayMultipleErrors(m_messages.addFilesHtml5PopupUploadValidationError(), errors);
 				}
-				
-				else {
-					// No, we didn't get any errors back from the
-					// validation!  Start the upload.
+
+				// If we didn't get any errors (warnings are fine)...
+				if (0 == responseData.getErrorCount()) {
+					// ...start the upload.
 					uploadNextAsync();
 				}
 			}

@@ -72,6 +72,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.CalendarAppointmentsRpcResponse
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarAppointmentsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarDisplayDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarDisplayDateCmd;
@@ -580,7 +581,7 @@ public class CalendarFolderView extends FolderViewBase
 								public void onSuccess(VibeRpcResponse response) {
 									// Perhaps!  Did we get any errors?
 									ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
-									List<String> errors = responseData.getErrorList();
+									List<ErrorInfo> errors = responseData.getErrorList();
 									if ((null != errors) && (!(errors.isEmpty()))) {
 										// Yes!  Display them.
 										GwtClientHelper.displayMultipleErrors(
@@ -700,7 +701,7 @@ public class CalendarFolderView extends FolderViewBase
 								public void onSuccess(VibeRpcResponse response) {
 									// Perhaps!  Did we get any errors?
 									ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
-									List<String> errors = responseData.getErrorList();
+									List<ErrorInfo> errors = responseData.getErrorList();
 									if ((null != errors) && (!(errors.isEmpty()))) {
 										// Yes!  Display them.
 										GwtClientHelper.displayMultipleErrors(

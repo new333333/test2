@@ -37,6 +37,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -61,7 +62,7 @@ public class MultiErrorAlertDlg extends DlgBox {
 	private boolean					m_dialogReady;	// Set true once the dialog is ready for display.
 	private GwtTeamingImageBundle	m_images;		// Access to Vibe's images.
 	private GwtTeamingMessages		m_messages;		// Access to Vibe's messages.
-	private List<String>			m_errors;		//
+	private List<ErrorInfo>			m_errors;		//
 	private String					m_baseError;	//
 	private VibeFlowPanel			m_fp;			// The panel holding the dialog's content.
 
@@ -171,7 +172,7 @@ public class MultiErrorAlertDlg extends DlgBox {
 		fcf.setColSpan(0, 1, 2);
 
 		// ...scan the individual errors...
-		for (String error:  m_errors) {
+		for (ErrorInfo error:  m_errors) {
 			// ...adding a spacer...
 			int row = grid.getRowCount();
 			Image spacerImg = new Image(m_images.spacer1px());
@@ -180,7 +181,7 @@ public class MultiErrorAlertDlg extends DlgBox {
 			grid.setWidget(row, 1, spacerImg);
 
 			// ...and label for each.
-			il = new InlineLabel(error);
+			il = new InlineLabel(error.getMessage());
 			il.addStyleName("vibe-multiErrorAlertDlg-eachError");
 			il.setWordWrap(false);
 			grid.setWidget(row, 2, il);
@@ -195,7 +196,7 @@ public class MultiErrorAlertDlg extends DlgBox {
 	 * Asynchronously runs the given instance of the multi-error alert
 	 * dialog.
 	 */
-	private static void runDlgAsync(final MultiErrorAlertDlg meaDlg, final String baseError, final List<String> errors) {
+	private static void runDlgAsync(final MultiErrorAlertDlg meaDlg, final String baseError, final List<ErrorInfo> errors) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -209,7 +210,7 @@ public class MultiErrorAlertDlg extends DlgBox {
 	 * Synchronously runs the given instance of the multi-error alert
 	 * dialog.
 	 */
-	private void runDlgNow(String baseError, List<String> errors) {
+	private void runDlgNow(String baseError, List<ErrorInfo> errors) {
 		// Store the parameter and populate the dialog.
 		m_baseError = baseError;
 		m_errors    = errors;
@@ -258,7 +259,7 @@ public class MultiErrorAlertDlg extends DlgBox {
 			// initAndShow parameters,
 			final MultiErrorAlertDlg	meaDlg,
 			final String				baseError,
-			final List<String>			errors) {
+			final List<ErrorInfo>		errors) {
 		GWT.runAsync(MultiErrorAlertDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -304,7 +305,7 @@ public class MultiErrorAlertDlg extends DlgBox {
 	 * @param baseError
 	 * @param errors
 	 */
-	public static void initAndShow(MultiErrorAlertDlg meaDlg, String baseError, List<String> errors) {
+	public static void initAndShow(MultiErrorAlertDlg meaDlg, String baseError, List<ErrorInfo> errors) {
 		doAsyncOperation(null, meaDlg, baseError, errors);
 	}
 }
