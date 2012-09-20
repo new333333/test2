@@ -69,5 +69,12 @@ public interface AclResourceSession extends ResourceSession {
 	 * @return
 	 */
 	public String getOwnerPrincipalId();
+	
+	/**
+	 * Returns the representation type of the principal ID for the owner of the resource.
+	 * 
+	 * @return
+	 */
+	public String getOwnerPrincipalIdType();
 
 }

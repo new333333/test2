@@ -50,12 +50,13 @@ public interface AclItemPrincipalMapper {
 	 * A concrete implementation of this method must be thread-safe, that is, safe for
 	 * use by multiple concurrent threads on the same object instance.
 	 * 
+	 * @param aclItemPrincipalIdType ACL item principal ID type
 	 * @param aclItemPrincipalId ACL item principal ID
 	 * @return Vibe principal ID
 	 * @throws AclItemPrincipalMappingException
 	 * 
 	 */
-	public Long toVibePrincipalId(String aclItemPrincipalId) throws AclItemPrincipalMappingException;
+	public Long toVibePrincipalId(String aclItemPrincipalIdType, String aclItemPrincipalId) throws AclItemPrincipalMappingException;
 	
 	/**
 	 * Returns the ACL item principal ID corresponding to the specified Vibe user object. 

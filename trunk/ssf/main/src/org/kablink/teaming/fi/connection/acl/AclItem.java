@@ -44,20 +44,25 @@ import java.util.Set;
 public class AclItem {
 	
 	private String permissionName;
+	private String principalIdType;
 	private Set<String> principalIds;
 	
 	/**
 	 * Constructor
 	 * 
 	 * @param permissionName
+	 * @param principalIdType
 	 * @param principalIds
 	 */
-	public AclItem(String permissionName, Set<String> principalIds) {
+	public AclItem(String permissionName, String principalIdType, Set<String> principalIds) {
 		if(permissionName == null)
 			throw new IllegalArgumentException("Permission name must be specified");
+		if(principalIdType == null)
+			throw new IllegalArgumentException("principal ID type must be specified");
 		if(principalIds == null)
 			throw new IllegalArgumentException("Principal IDs must be specified");
 		this.permissionName = permissionName;
+		this.principalIdType = principalIdType;
 		this.principalIds = principalIds;
 	}
 	
@@ -68,6 +73,19 @@ public class AclItem {
 	 */
 	public String getPermissionName() {
 		return permissionName;
+	}
+	
+	/**
+	 * Returns the principal ID type.
+	 *  
+	 * This information can be used to differentiate between different representations of principal
+	 * identities that might need to be supported by a single resource driver implementation.
+	 * This information is used in conjunction with <code>AclItemPrincipalMapper</code>.
+	 *  
+	 * @return
+	 */
+	public String getPrincipalIdType() {
+		return principalIdType;
 	}
 	
 	/**
@@ -91,6 +109,8 @@ public class AclItem {
 		AclItem other = (AclItem)obj;
 		if(!permissionName.equals(other.permissionName))
 			return false;
+		if(!principalIdType.equals(other.principalIdType))
+			return false;
 		if(!principalIds.equals(other.principalIds))
 			return false;
 		return true;
@@ -102,6 +122,7 @@ public class AclItem {
 	@Override 
 	public int hashCode() {
 		int h = permissionName.hashCode();
+		h = h * 127 + principalIdType.hashCode();
 		h = h * 127 + principalIds.hashCode();
 		return h;
 	}
