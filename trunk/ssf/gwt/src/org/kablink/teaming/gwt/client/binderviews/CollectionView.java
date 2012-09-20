@@ -80,6 +80,10 @@ public class CollectionView extends DataTableFolderViewBase {
 	@Override
 	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
 		switch (getFolderInfo().getCollectionType()) {
+		case MY_FILES:
+			columnWidths.put(FolderColumn.COLUMN_FAMILY, new ColumnWidth(20));
+			break;
+			
 		case NET_FOLDERS:
 			columnWidths.put(FolderColumn.COLUMN_TITLE,            new ColumnWidth(30));	// = 30
 			columnWidths.put(FolderColumn.COLUMN_DATE,             new ColumnWidth(10));	// = 40
