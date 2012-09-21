@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.binderviews;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -40,6 +39,7 @@ import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.LandingPageWidget;
 import org.kablink.teaming.gwt.client.widgets.LandingPageWidget.LandingPageWidgetClient;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -48,14 +48,14 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.Window;
 
-
 /**
  * This widget is the Home (top) Workspace.  It is used to display a home workspace
+ * 
  * @author jwootton
- *
  */
 public class HomeWSView extends WorkspaceViewBase implements ToolPanelReady
 {
+	private VibeFlowPanel m_breadCrumbPanel;
 	private VibeFlowPanel m_mainPanel;
 	private VibeFlowPanel m_descPanel;
 	private VibeFlowPanel m_lpPanel;
@@ -85,7 +85,31 @@ public class HomeWSView extends WorkspaceViewBase implements ToolPanelReady
 	{
 		m_mainPanel = new VibeFlowPanel();
 		m_mainPanel.addStyleName( "vibe-homeWSView_MainPanel" );
-		
+
+		// In Filr mode...
+		if ( GwtClientHelper.isLicenseFilr() )
+		{
+			// ...add a place for the bread crumb control to live.
+			m_breadCrumbPanel = new VibeFlowPanel();
+			m_breadCrumbPanel.addStyleName( "vibe-homeWSView_BreadCrumbPanel" );
+			m_mainPanel.add( m_breadCrumbPanel );
+	
+			BreadCrumbPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( ToolPanelBase breadCrumb )
+				{
+					m_breadCrumbPanel.add( breadCrumb );
+				}
+			} );
+		}
+
 		// Add a place for the description to live.
 		{
 			m_descPanel = new VibeFlowPanel();

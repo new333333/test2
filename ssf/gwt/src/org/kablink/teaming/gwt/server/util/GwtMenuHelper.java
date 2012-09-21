@@ -218,16 +218,18 @@ public class GwtMenuHelper {
 			if (EntityIdentifier.EntityType.profiles != binder.getEntityType()) {
 				// Yes!  Add the various binder based
 				// ToolbarItem's.
-				miscTBI.addNestedItem( constructClipboardItem()                    );
-				miscTBI.addNestedItem( constructSendEmailToItem(    request, binder));
+				miscTBI.addNestedItem(constructClipboardItem()                     );
+				miscTBI.addNestedItem(constructSendEmailToItem(    request, binder));
 				if (GwtShareHelper.isEntitySharable(bs, binder)) {
-					miscTBI.addNestedItem( constructShareBinderItem(request, binder));
+					miscTBI.addNestedItem(constructShareBinderItem(request, binder));
 				}
-				miscTBI.addNestedItem( constructMobileUiItem(       request, binder));
+				miscTBI.addNestedItem(constructMobileUiItem(       request, binder));
 				if (!isFilr) {
-					miscTBI.addNestedItems(constructTrackBinderItem(bs,      binder));
+					miscTBI.addNestedItems(constructTrackBinderItem(bs,     binder));
 				}
-				miscTBI.addNestedItem( constructTrashItem(          request, binder));
+				if (isBinderTrashEnabled(binder)) {
+					miscTBI.addNestedItem(constructTrashItem(      request, binder));
+				}
 			}
 		}
 	}
@@ -2683,6 +2685,29 @@ public class GwtMenuHelper {
 		}
 	}
 
+	/*
+	 * Returns true if the given binder supports trash operations
+	 * and false otherwise.
+	 */
+	private static boolean isBinderTrashEnabled(Binder binder) {
+		boolean reply = true;
+		if (binder instanceof Folder) {
+			Folder folder = ((Folder) binder);
+			reply = (!(folder.isMirrored()));
+		}
+		
+		else if (binder instanceof Workspace) {
+			Workspace ws = ((Workspace) binder);
+			if (ws.isReserved()) {
+				if (ws.getInternalId().equals(ObjectKeys.PROFILE_ROOT_INTERNALID) ||
+				    ws.getInternalId().equals(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID)) {
+					reply = false;
+				}
+			}
+		}
+		return reply;
+	}
+	
 	/*
 	 * Returns true if a folder is writable mirrored folder and false
 	 * otherwise.
