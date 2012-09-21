@@ -217,6 +217,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		ViewWhoHasAccessEvent.Handler
 {
 	private boolean						m_fixedLayout;				//
+	private Column<FolderRow, Boolean>	m_selectColumn;				//
 	private ColumnWidth					m_actionMenuColumnWidth;	//
 	private ColumnWidth					m_defaultColumnWidth;		//
 	private FolderRowPager 				m_dataTablePager;			// Pager widgets at the bottom of the data table.
@@ -725,7 +726,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 
 		// ...define a column for it...
 		VibeCheckboxCell cbRowCell = new VibeCheckboxCell();
-		final Column<FolderRow, Boolean> column = new Column<FolderRow, Boolean>(cbRowCell) {
+		m_selectColumn = new Column<FolderRow, Boolean>(cbRowCell) {
 			@Override
 			public Boolean getValue(FolderRow row) {
 				return selectionModel.isSelected(row);
@@ -734,7 +735,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 
 		// ...connect updating the contents of the table when the
 		// ...check box is checked or unchecked...
-		column.setFieldUpdater(new FieldUpdater<FolderRow, Boolean>() {
+		m_selectColumn.setFieldUpdater(new FieldUpdater<FolderRow, Boolean>() {
 			@Override
 			public void update(int index, FolderRow row, Boolean checked) {
 				selectionModel.setSelected(row, checked);
@@ -755,10 +756,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		});
 
 		// ...and connect it all together.
-		column.setSortable(     false                                       ); 
-	    m_dataTable.addColumn(column, saHeader);
-	    setColumnStyles(column, FolderColumn.COLUMN_SELECT, colIndex        );
-	    setColumnWidth(         FolderColumn.COLUMN_SELECT, column, pctTotal);
+		m_selectColumn.setSortable(     false                                       ); 
+	    m_dataTable.addColumn(m_selectColumn, saHeader);
+	    setColumnStyles(m_selectColumn, FolderColumn.COLUMN_SELECT, colIndex        );
+	    setColumnWidth(         FolderColumn.COLUMN_SELECT, m_selectColumn, pctTotal);
 	}
 
 	/**
@@ -964,7 +965,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 
 		// ...if this view supports entry selections...
 		FolderColumn fc;
-		if (canSelectEntries()) {
+		if (canSelectEntries() && (null != m_selectColumn)) {
 			// ...add a column for the checkbox selector...
 			fc = new FolderColumn();
 			fc.setColumnName(FolderColumn.COLUMN_SELECT);
@@ -1108,7 +1109,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		}
 		return reply;
 	}
-	
+
 	/*
 	 * Initializes various data members for the class.
 	 */
@@ -2652,6 +2653,28 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		}
 	}
 
+	/**
+	 * Removes the select column in the data table.
+	 * 
+	 * A view will call this, for example, if there's nothing in its
+	 * entry menu that can act upon selections.
+	 */
+	public void removeSelectColumn() {
+		// If we have a select column defined...
+		if (null != m_selectColumn) {
+			// ...remove it from the data table...
+			m_dataTable.removeColumn(m_selectColumn);
+			
+			// ...forget about it...
+			m_selectColumn = null;
+
+			// ...and account for it in the other column's indexes.
+			for (FolderColumn fc:  m_folderColumnsList) {
+				fc.setDisplayIndex(fc.getDisplayIndex() - 1);
+			}
+		}
+	}
+	
 	/*
 	 * Asynchronously resets the the content of the data table.
 	 * 

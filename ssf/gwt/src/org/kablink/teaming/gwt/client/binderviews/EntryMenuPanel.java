@@ -230,6 +230,22 @@ public class EntryMenuPanel extends ToolPanelBase
 	public VibeFlowPanel getQuickFilterPanel()   {return m_quickFilterPanel;  }
 	public VibeMenuItem  getAddFilesMenuItem()   {return m_addFilesMenu;      }
 	
+
+	/**
+	 * Returns a count of the menu actions that appear on the entry
+	 * menu.
+	 * 
+	 * @return
+	 */
+	public int getMenuActions() {
+		int reply = 0;
+		ToolbarItem entryTBI = ToolbarItem.getNestedToolbarItem(m_toolbarItems, "ssEntryToolbar");
+		if (null != entryTBI) {
+			reply = entryTBI.getNestedItemsList().size();
+		}
+		return reply;
+	}
+	
 	/*
 	 * Asynchronously construct's the contents of the entry menu panel.
 	 */

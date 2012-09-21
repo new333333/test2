@@ -42,6 +42,9 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 
 /**
@@ -180,5 +183,72 @@ public class PersonalWorkspacesView extends DataTableFolderViewBase {
 	@Override
 	public void resizeView() {
 		// Nothing to do.
+	}
+	
+	/*
+	 * Asynchronously validates whether the select checkboxes in the
+	 * data table should stay.  If there's no commands available for
+	 * them to be used with, they shouldn't. 
+	 */
+	private void validateSelectSupportAsync(int delay) {
+		if (0 == delay) {
+			ScheduledCommand doValidate = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					validateSelectSupportNow();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doValidate);
+		}
+		
+		else {
+			Timer timer = new Timer() {
+				@Override
+				public void run() {
+					validateSelectSupportNow();
+				}
+			};
+			timer.schedule(delay);
+		}
+	}
+
+	/*
+	 * Asynchronously validates whether the select checkboxes in the
+	 * data table should stay.  If there's no commands available for
+	 * them to be used with, they shouldn't. 
+	 */
+	private void validateSelectSupportAsync() {
+		validateSelectSupportAsync(ENTRY_MENU_READY_DELAY);
+	}
+	
+	/*
+	 * Synchronously validates whether the select checkboxes in the
+	 * data table should stay.  If there's no commands available for
+	 * them to be used with, they shouldn't. 
+	 */
+	private void validateSelectSupportNow() {
+		// If there's nothing in the entry menu for the user to act
+		// on...
+		EntryMenuPanel emp = getEntryMenuPanel();
+		if ((null == emp) || (0 == emp.getMenuActions())) {
+			// ...tell the data table to remove the selection column.
+			removeSelectColumn();
+		}
+	}
+	
+	/**
+	 * Called when everything about the view (tool panels, ...) is
+	 * complete.
+	 * 
+	 * Overrides the FolderViewBase.viewComplete() method.
+	 */
+	@Override
+	public void viewComplete() {
+		// Tell the super class the view is complete...
+		super.viewComplete();
+		
+		// ...and validate whether the select checkboxes should appear
+		// ...in the data table or not.
+		validateSelectSupportAsync();
 	}
 }

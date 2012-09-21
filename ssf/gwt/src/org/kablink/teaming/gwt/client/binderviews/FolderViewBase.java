@@ -106,6 +106,10 @@ public abstract class FolderViewBase extends ViewBase implements ToolPanelReady 
 	// wait for things to stabilize.
 	public final static int INITIAL_RESIZE_DELAY	= 500;
 	
+	// Amount of time the a view should delay to wait for things to
+	// stabilize before querying the entry menu about its contents.
+	public final static int ENTRY_MENU_READY_DELAY	= 500;
+	
 	// The following define the indexes into a VibeVerticalPanel of the
 	// various panels that make up a folder view.
 	public final static int BREADCRUMB_PANEL_INDEX			= 0;
