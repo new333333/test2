@@ -141,6 +141,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class LdapModuleImpl extends CommonDependencyInjection implements LdapModule {
 	protected Log logger = LogFactory.getLog(getClass());
 	
+	private static final String OBJECT_SID_ATTRIBUTE = "objectSid";
+	private static final String OBJECT_GUID_ATTRIBUTE = "objectGUID";
+	
 	protected String [] principalAttrs = new String[]{
 												ObjectKeys.FIELD_PRINCIPAL_NAME,
 												ObjectKeys.FIELD_ID,
@@ -2467,7 +2470,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Get the names of the group attributes
 					attributeNames = groupCoordinator.getAttributeNames();
 					
-					len = 1;
+					len = 2;
 					if ( attributeNames != null )
 						len += attributeNames.length;
 					
@@ -2489,6 +2492,16 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					
 					attributesToRead[index] = ldapGuidAttribute;
+					++index;
+					
+					// Is the ldap directory AD?
+					if ( ldapGuidAttribute != null && ldapGuidAttribute.equalsIgnoreCase( OBJECT_GUID_ATTRIBUTE ) );
+					{
+						// Yes
+						// Add "objectSid" to the list of ldap attributes to read.
+						attributesToRead[index] = OBJECT_SID_ATTRIBUTE;
+						++index;
+					}
 				}
 				
 				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), sch);
@@ -2654,8 +2667,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		ldapGuidAttributeName = config.getLdapGuidAttribute();
 		if ( ldapGuidAttributeName != null && ldapGuidAttributeName.length() > 0 )
 		{
-			// Specify that we want the ldap guid attibute returned as binary data.
-			env.put( "java.naming.ldap.attributes.binary", ldapGuidAttributeName );
+			// Specify that we want the ldap guid and the objectSid attibute returned as binary data.
+			env.put( "java.naming.ldap.attributes.binary", ldapGuidAttributeName + " " + OBJECT_SID_ATTRIBUTE );
 		}
 		
 		env.put(Context.PROVIDER_URL, url);
@@ -2687,8 +2700,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			// Create an array large enough to hold all the ldap attribute names found
 			// in the mapping plus the name of the attribute that uniquely identifies
-			// a user plus the ldap attribute that identifies a user.
-			attributeNames = new String[userAttributeNames.length + 2];
+			// a user plus the ldap attribute that identifies a user plus the objectSid.
+			attributeNames = new String[userAttributeNames.length + 3];
 			
 			for (i = 0; i < userAttributeNames.length; ++i)
 			{
@@ -2709,6 +2722,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			{
 				attributeNames[i] = attrName;
 				++i;
+				
+				// Is the ldap directory AD?
+				if ( attrName.equalsIgnoreCase( OBJECT_GUID_ATTRIBUTE ) )
+				{
+					// Yes
+					// Add "objectSid" to the list of ldap attributes to read.
+					attributeNames[i] = OBJECT_SID_ATTRIBUTE;
+					++i;
+				}
 			}
 		}
 		
@@ -2769,6 +2791,17 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			ldapGuid = getLdapGuid( attrs, ldapGuidAttribute );
 			mods.put( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID, ldapGuid );
+
+			// Is the ldap directory AD?
+			if ( ldapGuidAttribute.equalsIgnoreCase( OBJECT_GUID_ATTRIBUTE ) )
+			{
+				String objectSid;
+				
+				// Yes
+				// Add "objectSid" to the list of ldap attributes to read.
+				objectSid = getObjectSid( attrs );
+				mods.put( ObjectKeys.FIELD_PRINCIPAL_OBJECTSID, objectSid );
+			}
 		}
 	}
 	
@@ -2829,6 +2862,97 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		return ldapGuidStr;
 	}// end getLdapGuid()
+
+	/**
+	 * Get a string representation of the value found in the objectSid attribute by converting the
+	 * objectSid byte array into a string.
+	 * For a description of the string syntax see these sites:
+	 * http://msdn.microsoft.com/en-us/library/cc230371(PROT.10).aspx
+	 * http://msdn.microsoft.com/en-us/library/ff632068(v=prot.10).aspx
+	 */
+	private static String getObjectSid( Attributes attrs )
+	{
+		Attribute attrib;
+
+		// Get the ldap attribute that holds the objectSid.
+		attrib = attrs.get( OBJECT_SID_ATTRIBUTE );
+		if ( attrib != null )
+		{
+			try
+			{
+				Object value;
+				
+				value = attrib.get();
+				if ( value != null && value instanceof byte[] )
+				{
+					StringBuilder strSID;
+					byte[] bytes;
+					
+					bytes = (byte[]) value;
+					
+					// Add the 'S' prefix
+					strSID = new StringBuilder( "S-" );
+
+					// bytes[0] : in the array is the version (must be 1 but might change in the future)
+					strSID.append( bytes[0] );
+					strSID.append('-');
+
+					// bytes[2..7] : the Authority
+					{
+						StringBuilder tmpBuff;
+					
+						tmpBuff = new StringBuilder();
+						for (int t=2; t<=7; t++)
+						{
+							String hexString;
+
+							hexString = Integer.toHexString( bytes[t] & 0xFF );
+							tmpBuff.append( hexString );
+						}
+						strSID.append( Long.parseLong( tmpBuff.toString(), 16 ) );
+					}
+
+					// Add the sub authorities
+					{
+						int count;
+						
+						// bytes[1] : the sub authorities count
+						count = bytes[1];
+
+						// bytes[8..end] : the sub authorities (these are Integers - notice the endian)
+						for (int i = 0; i < count; i++) 
+						{
+							int currSubAuthOffset;
+							StringBuilder tmpBuff;
+							
+							tmpBuff = new StringBuilder();
+							
+							currSubAuthOffset = i*4;
+							tmpBuff.append( String.format(
+													"%02X%02X%02X%02X", 
+													(bytes[11 + currSubAuthOffset] & 0xFF),
+													(bytes[10 + currSubAuthOffset] & 0xFF),
+													(bytes[9 + currSubAuthOffset] & 0xFF),
+													(bytes[8 + currSubAuthOffset] & 0xFF)));
+
+							strSID.append('-');
+							strSID.append( Long.parseLong( tmpBuff.toString(), 16 ) );
+						}
+					}
+
+				   // That's it - we have the SID
+				   return strSID.toString();
+				}
+			}
+			catch (NamingException ex)
+			{
+				// Nothing to do.
+			}
+		}
+
+		// If we get here, something did not work.
+		return null;
+	}
 	
 	/**
 	 * Read the default locale id from the global properties
