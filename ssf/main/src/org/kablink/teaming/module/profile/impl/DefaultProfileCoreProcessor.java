@@ -492,6 +492,12 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     		entryData.put( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID, inputData.getSingleValue( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID ) );
     	} 
 
+       	// Handle the objectSid attribute
+   		if ( inputData.exists( ObjectKeys.FIELD_PRINCIPAL_OBJECTSID ) && !entryData.containsKey( ObjectKeys.FIELD_PRINCIPAL_OBJECTSID ) )
+   		{
+    		entryData.put( ObjectKeys.FIELD_PRINCIPAL_OBJECTSID, inputData.getSingleValue( ObjectKeys.FIELD_PRINCIPAL_OBJECTSID ) );
+    	} 
+
    		String name = (String)entryData.get(ObjectKeys.FIELD_PRINCIPAL_NAME);
        	if (Validator.isNotNull(name)) {
        		//remove blanks

@@ -619,6 +619,7 @@ public interface ObjectKeys {
     public static final String FIELD_USER_IDENTITY_SOURCE="identitySource";
     public static final String FIELD_PRINCIPAL_FOREIGNNAME="foreignName";
     public static final String FIELD_PRINCIPAL_LDAPGUID="ldapGuid";
+    public static final String FIELD_PRINCIPAL_OBJECTSID = "objectSid";
     public static final String FIELD_PRINCIPAL_NAME="name";
     public static final String FIELD_PRINCIPAL_TYPE="type";
     public static final String FIELD_PRINCIPAL_DISABLED="disabled";
