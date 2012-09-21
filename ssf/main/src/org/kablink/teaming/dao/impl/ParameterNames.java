@@ -51,6 +51,7 @@ public class ParameterNames {
     public static final String NAME="name";
     public static final String EMAIL_ADDRESS="emailAddress";
     public static final String LDAP_UGID="ldapGuid";
+    public static final String OBJECT_SID="objectSid";
     public static final String FOREIGN_NAME="foreignName";
 }
 

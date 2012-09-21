@@ -127,10 +127,15 @@ public interface ProfileDao {
 		throws NoUserByTheNameException;
 
  	public User findUserByLdapGuid( String ldapGuid, Long zoneId ) 
- 		throws NoUserByTheNameException;
- 	
+ 	 		throws NoUserByTheNameException;
+ 	 	
  	public Long findPrincipalIdByLdapGuid(String ldapGuid, Long zoneId);
- 	
+ 	 	
+ 	public User findUserByObjectSid( String objectSid, Long zoneId ) 
+ 	 	 		throws NoUserByTheNameException;
+ 	 	 	
+ 	public Long findPrincipalIdByObjectSid(String objectSid, Long zoneId);
+ 	 	 	
  	public Long findPrincipalIdByForeignName(String foreignName, Long zoneId);
 
  	public Principal findPrincipalByName(String name, Long zoneId) 
