@@ -1064,16 +1064,27 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 			@Override
 			public void onSuccess(VibeRpcResponse result) {
 				// Did we get any messages back from the validation?
-				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) result.getResponseData());
-				List<ErrorInfo> errors = responseData.getErrorList();
-				int count = responseData.getTotalMessageCount();
-				if (0 < count) {
-					// Yes!  Tell the user about them.
+				ErrorListRpcResponseData	responseData = ((ErrorListRpcResponseData) result.getResponseData());
+				List<ErrorInfo>				errors       = responseData.getErrorList();
+				int							errorCount   = responseData.getErrorCount();
+				int							totalCount   = responseData.getTotalMessageCount();
+				if (0 < totalCount) {
+					// Yes!  Display them to the user...
 					GwtClientHelper.displayMultipleErrors(m_messages.addFilesHtml5PopupUploadValidationError(), errors);
+
+					// ...and if there were any errors (vs. just
+					// ...warnings)...
+					if (0 < errorCount) {
+						// ...abort the uploads that were requested.
+						// ...We call uploadNext to clean up the
+						// ...display from the failed uploads.
+						abortUpload();
+						uploadNextNow();
+					}
 				}
 
 				// If we didn't get any errors (warnings are fine)...
-				if (0 == responseData.getErrorCount()) {
+				if (0 == errorCount) {
 					// ...start the upload.
 					uploadNextAsync();
 				}
