@@ -36,9 +36,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent;
+import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent.ManageMenuPopupCallback;
+import org.kablink.teaming.gwt.client.event.HideManageMenuEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeCollapsedEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeExpandedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
+import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -54,8 +59,12 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RequiresResize;
@@ -74,6 +83,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 		TreeNodeExpandedEvent.Handler
 {
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private ManageMenuPopup				m_selectorConfigPopup;		//
 	private VibeFlowPanel				m_fp;						// The panel holding the content.
 	
 	// The following defines the TeamingEvents that are handled by
@@ -128,6 +138,81 @@ public class BreadCrumbPanel extends ToolPanelBase
 	}
 
 	/*
+	 * Adds access to the binder configuration menu.
+	 */
+	private void addProfileRootConfig(VibeFlowPanel fp) {
+		// For a trash view...
+		if (m_binderInfo.isBinderTrash()) {
+			// ...we don't show the binder configuration menu.
+			return;
+		}
+		
+		// Create an anchor to run the configuration menu on this
+		// binder.
+		final Anchor  selectorConfigA  = new Anchor();
+		final Element selectorConfigAE = selectorConfigA.getElement();
+		selectorConfigA.setTitle(m_binderInfo.isBinderFolder() ? m_messages.treeAltConfigureFolder() : m_messages.treeAltConfigureWorkspace());
+		Image selectorConfigImg = GwtClientHelper.buildImage(m_images.configOptions());
+		selectorConfigImg.addStyleName("breadCrumb_ContentTail_configureImg");
+		selectorConfigAE.appendChild(selectorConfigImg.getElement());
+		selectorConfigA.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				if (null == m_selectorConfigPopup)
+				     buildAndRunSelectorConfigMenuAsync(selectorConfigA);
+				else runSelectorConfigMenuAsync(        selectorConfigA);
+			}
+		});
+		fp.add(selectorConfigA);
+		
+		// ...and hide the manage menu in the main menu bar.
+		HideManageMenuEvent.fireOneAsync();
+	}
+	
+	/*
+	 * Asynchronously builds and runs the selector configuration menu.
+	 */
+	private void buildAndRunSelectorConfigMenuAsync(final Anchor selectorConfigA) {
+		ScheduledCommand doBuildAndRunMenu = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				buildAndRunSelectorConfigMenuNow(selectorConfigA);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doBuildAndRunMenu);
+	}
+	
+	/*
+	 * Synchronously builds and runs the selector configuration menu.
+	 */
+	private void buildAndRunSelectorConfigMenuNow(final Anchor selectorConfigA) {
+		GwtTeaming.fireEvent(
+			new GetManageMenuPopupEvent(new ManageMenuPopupCallback() {
+				@Override
+				public void manageMenuPopup(ManageMenuPopup mmp) {
+					// Is there anything in the selector configuration
+					// menu?
+					m_selectorConfigPopup = mmp;
+					if ((null == m_selectorConfigPopup) || (!(m_selectorConfigPopup.shouldShowMenu()))) {
+						// No!  Clear the selector widget, tell the
+						// user about the problem and bail.
+						clearSelectorConfig();
+						GwtClientHelper.deferredAlert(m_messages.treeErrorNoManageMenu());
+					}
+					
+					else {
+						// Yes, there's stuff in the selector
+						// configuration menu!  Complete populating it
+						// and run it.
+						m_selectorConfigPopup.setCurrentBinder(m_binderInfo);
+						m_selectorConfigPopup.populateMenu();
+						runSelectorConfigMenuAsync(selectorConfigA);
+					}
+				}
+			}));
+	}
+	
+	/*
 	 * Asynchronously handles the panel being resized.
 	 */
 	private void doResizeAsync() {
@@ -138,6 +223,17 @@ public class BreadCrumbPanel extends ToolPanelBase
 			}
 		};
 		Scheduler.get().scheduleDeferred(doResize);
+	}
+	
+	/*
+	 * Clears an previous binder configuration panel and menu.
+	 */
+	private void clearSelectorConfig() {
+		// Clear the previous menu.
+		if (null != m_selectorConfigPopup) {
+			m_selectorConfigPopup.clearItems();
+			m_selectorConfigPopup = null;
+		}
 	}
 	
 	/*
@@ -231,6 +327,8 @@ public class BreadCrumbPanel extends ToolPanelBase
 			InlineLabel il = new InlineLabel(m_messages.vibeDataTable_People());
 			il.addStyleName("vibe-breadCrumbProfiles-label");
 			fp.add(il);
+			
+			addProfileRootConfig(fp);
 
 			// ...tie it all together and tell our container that we're
 			// ...ready.
@@ -361,6 +459,29 @@ public class BreadCrumbPanel extends ToolPanelBase
 		// Reset the widgets and reload the bread crumb tree.
 		m_fp.clear();
 		loadPart1Async();
+	}
+	
+	/*
+	 * Asynchronously runs the selector configuration menu.
+	 */
+	private void runSelectorConfigMenuAsync(final Anchor selectorConfigA) {
+		ScheduledCommand doRunMenu = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				runSelectorConfigMenuNow(selectorConfigA);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doRunMenu);
+	}
+	
+	/*
+	 * Synchronously runs the selector configuration menu.
+	 */
+	private void runSelectorConfigMenuNow(final Anchor selectorConfigA) {
+		final PopupMenu configureDropdownMenu = new PopupMenu(true, false, false);
+		configureDropdownMenu.addStyleName("vibe-configureMenuBarDropDown");
+		configureDropdownMenu.setMenu(m_selectorConfigPopup.getMenuBar());
+		configureDropdownMenu.showRelativeToTarget(selectorConfigA);
 	}
 	
 	/*

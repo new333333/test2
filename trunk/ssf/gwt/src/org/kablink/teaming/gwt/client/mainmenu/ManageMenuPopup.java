@@ -65,6 +65,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private List<ToolbarItem>	m_miscBucket;			// List of miscellaneous  items for the context based menu.
 	private List<ToolbarItem>	m_teamAndEmailBucket;	// List of team and email items for the context based menu.
 	private List<ToolbarItem>	m_toolbarItemList;		// The context based toolbar requirements.
+	private List<ToolbarItem>	m_filrBucket;			// List of Filr specific  items for the context based menu.
 	private TagThisDlg			m_tagThisDlg;			//
 	private TeamManagementInfo	m_tmi;					// The team management information for which team management menu items should appear on the menu.
 	private ToolbarItem			m_brandingTBI;			// The branding                  toolbar item, if found.
@@ -76,6 +77,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private ToolbarItem			m_shareThisTBI;			// The share this                toolbar item, if found.
 	private ToolbarItem			m_trackBinderTBI;		// The binder tracking           toolbar item, if found.
 	private ToolbarItem			m_trackPersonTBI;		// The person tracking           toolbar item, if found.
+	private ToolbarItem			m_trashTBI;				// The trash                     toolbar item, if found.
 	
 	private final String IDBASE = "manage_";	// Base ID for the items created in this menu.
 
@@ -174,6 +176,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		// Allocate the bucket lists.
 		m_actionsBucket      = new ArrayList<ToolbarItem>();
 		m_configBucket       = new ArrayList<ToolbarItem>();
+		m_filrBucket         = new ArrayList<ToolbarItem>();
 		m_ignoreBucket       = new ArrayList<ToolbarItem>();
 		m_miscBucket         = new ArrayList<ToolbarItem>();
 		m_teamAndEmailBucket = new ArrayList<ToolbarItem>();
@@ -241,13 +244,18 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		if (null != m_trackBinderTBI) m_miscBucket.add(m_trackBinderTBI);
 		if (null != m_shareThisTBI)   m_miscBucket.add(m_shareThisTBI);
 		
-		// ...and finally, the configuration section.
+		// ...then the configuration section...
 		if (null != m_brandingTBI) {
 			m_configBucket.add(m_brandingTBI);
 		}
 		addNestedItemFromUrl(m_configBucket, m_commonActionsTBI, "configure_definitions");
 		addNestedItemFromUrl(m_configBucket, m_commonActionsTBI, "config_email");
 		addNestedItemFromUrl(m_configBucket, m_commonActionsTBI, "configure_access_control");
+		
+		// ...and finally, the Filr section.
+		if (null != m_trashTBI) {
+			m_filrBucket.add(m_trashTBI);
+		}
 		
 		// When all is said and done, where going to render anything
 		// that's left in the menus from the server at the bottom of
@@ -364,11 +372,12 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			}
 			
 			else if (tbName.equalsIgnoreCase("ssGwtMiscToolbar")) {
-				m_brandingTBI          = tbi.getNestedToolbarItem("branding");
-				m_emailContributorsTBI = tbi.getNestedToolbarItem("sendEmail");
-				m_shareThisTBI         = tbi.getNestedToolbarItem("share");
-				m_trackBinderTBI       = tbi.getNestedToolbarItem("track");
+				m_brandingTBI          = tbi.getNestedToolbarItem("branding"   );
+				m_emailContributorsTBI = tbi.getNestedToolbarItem("sendEmail"  );
+				m_shareThisTBI         = tbi.getNestedToolbarItem("share"      );
+				m_trackBinderTBI       = tbi.getNestedToolbarItem("track"      );
 				m_trackPersonTBI       = tbi.getNestedToolbarItem("trackPerson");
+				m_trashTBI             = tbi.getNestedToolbarItem("trash"      );
 			}
 		}
 		
@@ -383,6 +392,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			 (null != m_trackPersonTBI)                                                      ||
 			((null != m_calendarImportTBI)   && m_calendarImportTBI.hasNestedToolbarItems()) ||
 			((null != m_commonActionsTBI)    && m_commonActionsTBI.hasNestedToolbarItems())  ||
+			((null != m_trashTBI)            && GwtClientHelper.isLicenseFilr())             ||
 			((null != m_folderViewsTBI)      && m_folderViewsTBI.hasNestedToolbarItems(2)));
 		if (reply) {
 			fillBuckets();
@@ -476,7 +486,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				// ...and add a spacer when required.
 				addSpacerMenuItem();
 			}
-			if (!(GwtClientHelper.isLicenseFilr())) {
+			boolean isFilr = GwtClientHelper.isLicenseFilr();
+			if (!(isFilr)) {
 				showTagThis();
 			}
 			addContextMenuItemsFromList(IDBASE, m_miscBucket);
@@ -491,6 +502,16 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			addContextMenuItem(IDBASE, m_emailNotificationTBI);
 			showFolderOptions(m_folderViewsTBI, m_calendarImportTBI);
 
+			// Then the Filr section...
+			boolean hasFilrSection = (isFilr && (!(m_filrBucket.isEmpty())));
+			if (hasFilrSection) {
+				if (isSpacerNeeded()) {
+					// ...and add a spacer when required.
+					addSpacerMenuItem();
+				}
+				addContextMenuItemsFromList(IDBASE, m_filrBucket);
+			}
+			
 			// Finally, a section containing anything that's left over.
 			boolean hasLeftOversSection = ((null != m_commonActionsTBI) && m_commonActionsTBI.hasNestedToolbarItems());
 			if (hasLeftOversSection && isSpacerNeeded()) {

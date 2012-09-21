@@ -70,8 +70,14 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
 @SuppressWarnings("unchecked")
 public class Utils {
 	private static Log m_logger = LogFactory.getLog( Utils.class );
@@ -916,8 +922,10 @@ public class Utils {
 			String root = name.substring(0, i);
 			String ext  = name.substring(i, name.length());
 			return (root + sizePart + ext);
-		} else {
+		} else if (MiscUtil.hasString(name)) {
 			return (name + sizePart);
+		} else {
+			return name;
 		}
 	}
 }

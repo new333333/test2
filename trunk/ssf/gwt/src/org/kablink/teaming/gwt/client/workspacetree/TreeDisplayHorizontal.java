@@ -342,6 +342,12 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * Adds access to the binder configuration menu.
 	 */
 	private void addBinderConfig(FlowPanel fp, TreeInfo ti) {
+		// For a trash view...
+		if (isTrash()) {
+			// ...we don't show the binder configuration menu.
+			return;
+		}
+		
 		// Create an anchor to run the configuration menu on this
 		// binder.
 		final Anchor  selectorConfigA  = new Anchor();
@@ -539,6 +545,12 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * TreeInfo in the bread crumb list.
 	 */
 	private TreeInfo getPreviousTI(TreeInfo ti) {
+		// If we're in a trash view...
+		if (isTrash()) {
+			// ...the previous TreeInfo is the one were on.
+			return ti;
+		}
+		
 		// Scan the TreeInfo's in the bread crumb list.
 		TreeInfo prevTI = null;
 		for (TreeInfo tiScan:  getRootTreeInfoList()) {
@@ -778,7 +790,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 
 			// Is the node above the tail binder a folder?
 			final TreeInfo prevTI = getPreviousTI(ti);
-			if ((null != prevTI) && (BinderType.FOLDER == prevTI.getBinderInfo().getBinderType())) {
+			if ((null != prevTI) && (isTrash() || (BinderType.FOLDER == prevTI.getBinderInfo().getBinderType()))) {
 				// Yes!  Add an up button to navigate to it...
 				addUpButton(
 					fp,
