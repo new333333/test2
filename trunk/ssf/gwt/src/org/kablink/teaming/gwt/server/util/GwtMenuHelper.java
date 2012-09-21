@@ -477,41 +477,46 @@ public class GwtMenuHelper {
 				}
 			}
 			
-			// Does this folder have more than one entry definition or
-			// is for other than a guest book folder?
-			if ((1 < defaultEntryDefs) || (!hasVT) || (!(isViewGuestBook(viewType)))) {
-				// Yes!  Added items for each entry type.  (Note that
-				// we skip this on guest books because they get their
-				// own 'Sign the Guest Book' top level menu item.)
-				int count = 1;
-				int	defaultEntryDefIndex = ListFolderHelper.getDefaultFolderEntryDefinitionIndex(
-					RequestContextHolder.getRequestContext().getUser().getId(),
-					bs.getProfileModule(),
-					folder,
-					defaultEntryDefinitions);
-				Map<String, Boolean> usedTitles = new HashMap<String, Boolean>();
-				for (int i = 0; i < defaultEntryDefinitions.size(); i += 1) {
-					Definition def = ((Definition) defaultEntryDefinitions.get(i));
-					url = createActionUrl(request);
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
-					url.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
-					url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-					String title = NLT.getDef(def.getTitle());
-					if (null != usedTitles.get("title")) {
-						title = (title + " (" + String.valueOf(count++) + ")");
+			// Do we need to include new entry options?
+			boolean includeNewEntries = ((!(Utils.checkIfFilr())) || (!(SsfsUtil.supportApplets(request))) || (1 < defaultEntryDefs));
+			if (includeNewEntries) {
+				// Yes!  Does this folder have more than one entry
+				// definition or is for other than a guest book
+				// folder?
+				if ((1 < defaultEntryDefs) || (!hasVT) || (!(isViewGuestBook(viewType)))) {
+					// Yes!  Added items for each entry type.  (Note that
+					// we skip this on guest books because they get their
+					// own 'Sign the Guest Book' top level menu item.)
+					int count = 1;
+					int	defaultEntryDefIndex = ListFolderHelper.getDefaultFolderEntryDefinitionIndex(
+						RequestContextHolder.getRequestContext().getUser().getId(),
+						bs.getProfileModule(),
+						folder,
+						defaultEntryDefinitions);
+					Map<String, Boolean> usedTitles = new HashMap<String, Boolean>();
+					for (int i = 0; i < defaultEntryDefinitions.size(); i += 1) {
+						Definition def = ((Definition) defaultEntryDefinitions.get(i));
+						url = createActionUrl(request);
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
+						url.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
+						url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+						String title = NLT.getDef(def.getTitle());
+						if (null != usedTitles.get("title")) {
+							title = (title + " (" + String.valueOf(count++) + ")");
+						}
+						
+						ToolbarItem entriesTBI = new ToolbarItem("entries");
+						markTBITitleRes(entriesTBI, title);
+						markTBIPopup(   entriesTBI       );
+						markTBIUrl(     entriesTBI, url  );
+						if (i == defaultEntryDefIndex) {
+							markTBIDefault(entriesTBI);
+						}
+						if ((0 == i) && addTBI.hasNestedToolbarItems()) {
+							addTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+						}
+						addTBI.addNestedItem(entriesTBI);
 					}
-					
-					ToolbarItem entriesTBI = new ToolbarItem("entries");
-					markTBITitleRes(entriesTBI, title);
-					markTBIPopup(   entriesTBI       );
-					markTBIUrl(     entriesTBI, url  );
-					if (i == defaultEntryDefIndex) {
-						markTBIDefault(entriesTBI);
-					}
-					if ((0 == i) && addTBI.hasNestedToolbarItems()) {
-						addTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
-					}
-					addTBI.addNestedItem(entriesTBI);
 				}
 			}
 		}
