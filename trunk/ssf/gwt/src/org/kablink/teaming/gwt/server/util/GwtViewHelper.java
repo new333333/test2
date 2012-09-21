@@ -201,6 +201,7 @@ import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.teaming.web.util.TrashHelper.TrashEntry;
 import org.kablink.teaming.web.util.TrashHelper.TrashResponse;
+import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
@@ -491,7 +492,6 @@ public class GwtViewHelper {
 				}
 				
 				// Sort on any other columns that make sense here.
-//!				...this needs to be implemented...
 			}
 
 			// If we're doing a descending sort...
@@ -6037,8 +6037,9 @@ public class GwtViewHelper {
 				// analysis.
 				AdminModule		am                = bs.getAdminModule();
 				BinderModule	bm                = bs.getBinderModule();
+				FolderModule	fm                = bs.getFolderModule();
 				ProfileModule	pm                = bs.getProfileModule();
-				Binder			binder            = bs.getBinderModule().getBinder(folderInfo.getBinderIdAsLong());
+				Folder			folder            = fm.getFolder(folderInfo.getBinderIdAsLong());
 				Long			userFileSizeLimit = am.getUserFileSizeLimit();
 				
 				// What do we need to check?
@@ -6073,9 +6074,9 @@ public class GwtViewHelper {
 
 					// Will the total size of all the files being
 					// uploaded exceed this binder's remaining quota?
-					if (checkBinderQuotas && (!(bm.isBinderDiskQuotaOk(binder, totalSize)))) {
+					if (checkBinderQuotas && (!(bm.isBinderDiskQuotaOk(folder, totalSize)))) {
 						// Yes!  Add an appropriate error the reply.
-						reply.addError(NLT.get("validateUploadError.quotaExceeded.folder", new String[]{String.valueOf(bm.getMinBinderQuotaLeft(binder) / MEGABYTES)}));
+						reply.addError(NLT.get("validateUploadError.quotaExceeded.folder", new String[]{String.valueOf(bm.getMinBinderQuotaLeft(folder) / MEGABYTES)}));
 					}
 
 					// Do we need to check the total upload size against
@@ -6099,12 +6100,26 @@ public class GwtViewHelper {
 						return reply;
 					}
 				}
-				
-				// Left to validate:
-				// 1) File  name validation (bogus characters, ...)
-				// 1) File  naming conflicts.
-				// 2) Entry title  conflicts.
-//!				...this needs to be implemented...
+
+				// Scan the UploadInfo's again.
+				for (UploadInfo upload:  uploads) {
+					// Is this a file upload?
+					String name = upload.getName();
+					if (upload.isFile()) {
+						// Yes!  Does it contain a valid name?
+						if (Validator.containsPathCharacters(name)) {
+							reply.addError(NLT.get("validateUploadError.invalidName.file", new String[]{name}));
+						}
+					}
+					
+					else {
+						// No, it must be a folder upload!  Does it
+						// contain a valid name?
+						if (!(BinderHelper.isBinderNameLegal(name))) {
+							reply.addError(NLT.get("validateUploadError.invalidName.folder", new String[]{name}));
+						}
+					}
+				}
 			}
 			
 			// If we get here, reply refers to an
