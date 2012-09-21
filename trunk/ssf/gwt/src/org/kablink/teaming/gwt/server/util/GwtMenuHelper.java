@@ -1717,11 +1717,15 @@ public class GwtMenuHelper {
 	 */
 	private static void constructFooterFolderItems(ToolbarItem footerToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
 		// Construct the permalink item...
+		String key;
+		if (Utils.checkIfFilr())
+		     key = "toolbar.menu.folderPermalink.filr";
+		else key = "toolbar.menu.folderPermalink";
 		String permaLink = PermaLinkUtil.getPermalink(request, folder);
-		ToolbarItem permalinkTBI = new ToolbarItem(PERMALINK     );
-		markTBITitle(permalinkTBI, "toolbar.menu.folderPermalink");
-		markTBIUrl(  permalinkTBI, permaLink                     );
-		footerToolbar.addNestedItem(permalinkTBI                 );
+		ToolbarItem permalinkTBI = new ToolbarItem(PERMALINK);
+		markTBITitle(permalinkTBI, key                      );
+		markTBIUrl(  permalinkTBI, permaLink                );
+		footerToolbar.addNestedItem(permalinkTBI            );
 
 		// ...for file folders...
 		if (folder.isLibrary()) {
