@@ -250,15 +250,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				return false;
 			}
 		}
-		boolean isExternalAclControlledOperation = false;
-		if (workArea.isAclExternallyControlled()) {
-			//This is a workarea with external ACLs
-			List<WorkAreaOperation> ardWaos = workArea.getExternallyControlledRights();
-			if (ardWaos.contains(workAreaOperation)) {
-				//This right is controlled externally
-				isExternalAclControlledOperation = true;
-			}
-		}
+		boolean isExternalAclControlledOperation = isExternalAclControlledOperation(workArea, workAreaOperation);
 		if ((!isExternalAclControlledOperation && workArea.isFunctionMembershipInherited()) || 
 				(isExternalAclControlledOperation && workArea.isExtFunctionMembershipInherited())) {
 			WorkArea parentWorkArea = workArea.getParentWorkArea();
@@ -456,8 +448,8 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     }
 
     @Override
-    public boolean testRightsGrantedBySharing(User user, WorkArea workArea, WorkAreaOperation[] workAreaOperations) {
-    	return testRightsGrantedBySharing(user, workArea, workAreaOperations, null);
+    public boolean testRightGrantedBySharing(User user, WorkArea workArea, WorkAreaOperation workAreaOperation) {
+    	return testRightGrantedBySharing(user, workArea, workAreaOperation, null);
     }
 
     private boolean testRightGrantedBySharing(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation, Set<Long> userMembers) {
@@ -465,25 +457,40 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     	if(workAreaStart != workArea)
     		return false;
     	
-    	return testRightsGrantedBySharing(user, workArea, new WorkAreaOperation[]{workAreaOperation}, userMembers);
+    	return testRightGrantedBySharing(user, workArea, workAreaOperation, userMembers);
     }
     
-    private boolean testRightsGrantedBySharing(User user, WorkArea workArea, WorkAreaOperation[] workAreaOperations, Set<Long> userMembers) {
+    private boolean isExternalAclControlledOperation(WorkArea workArea, WorkAreaOperation workAreaOperation) {
+		boolean isExternalAclControlledOperation = false;
+		if (workArea.isAclExternallyControlled()) {
+			//This is a workarea with external ACLs
+			List<WorkAreaOperation> ardWaos = workArea.getExternallyControlledRights();
+			if (ardWaos.contains(workAreaOperation)) {
+				//This right is controlled externally
+				isExternalAclControlledOperation = true;
+			}
+		}
+		return isExternalAclControlledOperation;
+    }
+    
+    private boolean testRightGrantedBySharing(User user, WorkArea workArea, WorkAreaOperation workAreaOperation, Set<Long> userMembers) {
     	// Share-granted access rights can be defined only on DefinableEntity
     	if(!(workArea instanceof DefinableEntity))
     		return false;
     	
-    	List<EntityIdentifier> chain = new ArrayList<EntityIdentifier>();
+    	// Whether a sharing on a folder should apply recursively on the member entries and sub-folders or not
+    	// is controlled strictly by the regular Vibe-side inheritance setting. The inheritance setting associated
+    	// with external ACLs has NO effect on the scope of sharing. In other word, it doesn't matter whether
+    	// the entity inherits its external ACLs from their parents or not.
+		List<EntityIdentifier> chain = new ArrayList<EntityIdentifier>();
     	chain.add(((DefinableEntity) workArea).getEntityIdentifier());
     	while(workArea.isFunctionMembershipInherited()) {
     		workArea = workArea.getParentWorkArea();
     		if(workArea instanceof DefinableEntity)
     			chain.add(((DefinableEntity)workArea).getEntityIdentifier());
     	}
-    	String[] rightNames = new String[workAreaOperations.length];
-    	for(int i = 0; i < workAreaOperations.length; i++)
-    		rightNames[i] = workAreaOperations[i].getName();
-    	Map<ShareItem.RecipientType, Set<Long>> shareMembers = getProfileDao().getRecipientIdsWithGrantedRightsToSharedEntities(chain, rightNames);
+    	Map<ShareItem.RecipientType, Set<Long>> shareMembers = getProfileDao().getRecipientIdsWithGrantedRightToSharedEntities(chain, workAreaOperation.getName());
+    	
     	// Check if at least one entity in the ACL inheritance parentage chain grants the specified access to the user directly.
     	if(shareMembers.get(ShareItem.RecipientType.user).contains(user.getId()))
     		return true;

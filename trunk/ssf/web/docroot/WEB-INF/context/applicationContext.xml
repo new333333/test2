@@ -916,6 +916,7 @@
 				<property name="folderModule"><ref bean="folderModule"/></property>
 				<property name="binderModule"><ref bean="binderModule"/></property>
 				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+				<property name="processorManager"><ref bean="modelProcessorManager"/></property>				
 			</bean>
 		</property>
 		<!-- Transaction is managed using transactionTemplate -->

@@ -1611,7 +1611,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //not really meant to be overridden, but here to share code
  
     @Override
-	public void indexFunctionMembership(Binder binder, boolean cascade) {
+	public void indexFunctionMembership(Binder binder, boolean cascade, Boolean runInBackground) {
 		String value = EntityIndexUtils.getFolderAclString(binder);
     	if (cascade) {
     		Map params = new HashMap();
@@ -1623,7 +1623,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        		List<Long>ids = pruneUpdateList(binder, notBinders);
     		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000) - 10;  //account for others in search
     		if (ids.size() <= limit) {
-    			doFieldUpdate(binder, ids, Constants.FOLDER_ACL_FIELD, value);
+    			doFieldUpdate(binder, ids, Constants.FOLDER_ACL_FIELD, value, runInBackground);
     			doRssUpdate(binder);
     		} else {
     			//revert to walking the tree
@@ -1651,7 +1651,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			doRssUpdate(binders);
     		}
     	} else {
-       		doFieldUpdate(binder, Constants.FOLDER_ACL_FIELD, value);
+       		doFieldUpdate(binder, Constants.FOLDER_ACL_FIELD, value, runInBackground);
        		doRssUpdate(binder);
        	    		
     	}
@@ -1670,7 +1670,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        		List<Long>ids = pruneUpdateList(binder, notBinders);
        		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000) - 10;  //account for others in search
     		if (ids.size() <= limit) {
-          		doFieldUpdate(binder, ids, Constants.TEAM_ACL_FIELD, value);
+          		doFieldUpdate(binder, ids, Constants.TEAM_ACL_FIELD, value, null);
           		doRssUpdate(binder);
        		} else {
        			List<Binder> binders = new ArrayList();
@@ -1697,7 +1697,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         		doRssUpdate(binders);
        		}
     	} else {
-    		doFieldUpdate(binder, Constants.TEAM_ACL_FIELD, value);
+    		doFieldUpdate(binder, Constants.TEAM_ACL_FIELD, value, null);
     		doRssUpdate(binder);
     	}
     	
@@ -1735,7 +1735,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  		doFieldUpdate(binders, Constants.BINDER_OWNER_ACL_FIELD, value);     		
      }
 
-     private void executeUpdateQuery(Criteria crit, String field, String value) {
+     private void executeUpdateQuery(Criteria crit, String field, String value, Boolean runInBackground) {
 
 		org.apache.lucene.document.Document doc;
 		List<Long> binders = new ArrayList<Long>();
@@ -1766,17 +1766,33 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				}
 			}
 		}
-		// Setup the background job for reindexing
-		User user = RequestContextHolder.getRequestContext().getUser();
-		BinderReindex job=null;
-		if (job == null) job = (BinderReindex)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultBinderReindex.class);
-		job.schedule(binders, user, false); 
+		
+		if(Boolean.FALSE.equals(runInBackground)) {
+	    	for (Long id:binders) {
+				try {
+					getBinderModule().indexBinderIncremental(id, false);
+				} catch (NoObjectByTheIdException ex) {
+					//gone, skip it
+				} catch (Exception ex) {
+					//try again
+					logger.error(NLT.get("profile.titlechange.index.error") + " (binder " + id.toString() + ") " + ex.toString());
+					continue;
+				}
+	    	}
+		}
+		else {
+			// Setup the background job for reindexing
+			User user = RequestContextHolder.getRequestContext().getUser();
+			BinderReindex job=null;
+			if (job == null) job = (BinderReindex)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultBinderReindex.class);
+			job.schedule(binders, user, false); 
+		}
 
 	}
      
      // this will update the binder, its attachments and entries, and
 		// subfolders and entries that inherit
-     private void doFieldUpdate(Binder binder, List<Long>notBinderIds, String field, String value) {
+     private void doFieldUpdate(Binder binder, List<Long>notBinderIds, String field, String value, Boolean runInBackground) {
  		// Now, create a query which can be used by the index update method to modify all the
 		// entries, replies, attachments, and binders(workspaces) in the index 
  		Criteria crit = new Criteria()
@@ -1787,12 +1803,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				.add(in(Constants.ENTRY_ANCESTRY, LongIdUtil.getIdsAsStringSet(notBinderIds)))
 			);
  		}
-		executeUpdateQuery(crit, field, value);
+		executeUpdateQuery(crit, field, value, runInBackground);
     }
 
 
   	//this will update just the binder, its attachments and entries only
-     private void doFieldUpdate(Binder binder, String field, String value) {
+     private void doFieldUpdate(Binder binder, String field, String value, Boolean runInBackground) {
   		// Now, create a query which can be used by the index update method to modify all the
  		// entries, replies, attachments, and binders(workspaces) in the index 
     	//_binderId= OR (_docId= AND (_docType=binder OR _attType=binder)) 
@@ -1807,7 +1823,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			)
     		)
     	);
-		executeUpdateQuery(crit, field, value);
+		executeUpdateQuery(crit, field, value, runInBackground);
      }
  
     private void doFieldUpdate(Collection<Binder>binders, String field, String value) {
@@ -1830,7 +1846,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			)
     		)
     	);
-		executeUpdateQuery(crit, field, value);
+		executeUpdateQuery(crit, field, value, null);
      }
     
     private void doRssDelete(Binder binder) {

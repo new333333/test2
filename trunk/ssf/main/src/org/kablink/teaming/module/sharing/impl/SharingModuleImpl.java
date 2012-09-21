@@ -54,6 +54,7 @@ import org.kablink.teaming.jobs.ExpiredShareHandler;
 import org.kablink.teaming.jobs.LicenseMonitor;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -489,7 +490,11 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		}
 		else if (entity.getEntityType() == EntityIdentifier.EntityType.folder || 
 				entity.getEntityType() == EntityIdentifier.EntityType.workspace) {
-			getBinderModule().indexBinder(entity.getId());
+			// Sharing a binder can give the recipient access not only to the binder being explicitly
+			// shared but also to the sub-binders as long as those sub-binders inherit ACLs from
+			// their parents. 
+			Binder binder = (Binder) entity;
+			loadBinderProcessor(binder).indexFunctionMembership(binder, true, Boolean.FALSE);
 		}
 	}
 
@@ -531,6 +536,10 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				return null;
 			}
 		});
+	}
+
+	private BinderProcessor loadBinderProcessor(Binder binder) {
+		return (BinderProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 	}
 
 }

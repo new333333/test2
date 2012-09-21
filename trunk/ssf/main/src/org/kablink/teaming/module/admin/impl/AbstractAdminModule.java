@@ -1034,7 +1034,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
       	boolean conditionsExist = checkIfConditionsExist(workArea);
 		if ((!original.equals(current) || conditionsExist || conditionsExistInOrigianl) && (workArea instanceof Binder)) {
 			Binder binder = (Binder)workArea;
-			loadBinderProcessor(binder).indexFunctionMembership(binder, true);
+			loadBinderProcessor(binder).indexFunctionMembership(binder, true, null);
 		} else if (!original.equals(current) && workArea instanceof Entry) {
 			Entry entry = (Entry)workArea;
 			List entries = new ArrayList();
@@ -1282,7 +1282,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         //index outside of transaction
         if (index && (workArea instanceof Binder)) {
 			Binder binder = (Binder)workArea;
-			loadBinderProcessor(binder).indexFunctionMembership(binder, true);
+			loadBinderProcessor(binder).indexFunctionMembership(binder, true, null);
 		}
      } 
 	private void processAccessChangeLog(WorkArea workArea, String operation) {
