@@ -238,4 +238,14 @@
 			<column name="templateHidden" type="TINYINT"/>
         </addColumn>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="23">
+        <addColumn tableName="SS_Principals">
+			<column name="objectSid" type="VARCHAR(128)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="24">
+        <createIndex indexName="objectSid_principal" schemaName="dbo" tableName="SS_Principals" unique="false">
+            <column name="objectSid"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
