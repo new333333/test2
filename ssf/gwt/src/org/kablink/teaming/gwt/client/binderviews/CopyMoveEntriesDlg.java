@@ -43,7 +43,7 @@ import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtFolder;
-import org.kablink.teaming.gwt.client.GwtSearchCriteria;
+import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -540,7 +540,8 @@ public class CopyMoveEntriesDlg extends DlgBox
 	 * Synchronously loads the find control.
 	 */
 	private void loadPart1Now() {
-		FindCtrl.createAsync(this, GwtSearchCriteria.SearchType.FOLDERS, new FindCtrlClient() {			
+		SearchType st = (EntityId.areEntriesInEntityIds(m_entityIds) ? SearchType.FOLDERS : SearchType.PLACES); 
+		FindCtrl.createAsync(this, st, new FindCtrlClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in
