@@ -78,6 +78,7 @@ import com.google.gwt.user.client.ui.TextBox;
  * @author drfoster@novell.com
  */
 public class FooterPanel extends ToolPanelBase {
+	private boolean					m_isFilr;		//
 	private GwtTeamingImageBundle	m_images;		//
 	private GwtTeamingMessages		m_messages;		//
 	private List<ToolbarItem>		m_toolbarIems;	//
@@ -122,6 +123,7 @@ public class FooterPanel extends ToolPanelBase {
 		// ...initialize the data members...
 		m_images   = GwtTeaming.getImageBundle();
 		m_messages = GwtTeaming.getMessages();
+		m_isFilr   = GwtClientHelper.isLicenseFilr();
 		initFooterStrings();
 		
 		// ...and construct the panel.
@@ -166,25 +168,10 @@ public class FooterPanel extends ToolPanelBase {
 		if (null == m_strMap)
 		     m_strMap = new HashMap<StringIds, String>();
 		else m_strMap.clear();
-		
-//!		...this needs to be implemented...
-/*	
-		CAPTION_ATOM,
-		CAPTION_EMAIL_ADDRESSES,
-		CAPTION_ICAL,
-		CAPTION_PERMALINK,
-		CAPTION_RSS,
-		CAPTION_WEBDAV,
 
-		KEY_ATOM,
-		KEY_EMAIL_ADDRESSES,
-		KEY_HEADER,
-		KEY_ICAL,
-		KEY_PERMALINK,
-		KEY_RSS,
-		KEY_WEBDAV,
-*/
-		if (GwtClientHelper.isLicenseFilr()) {
+		// ...and if we're in Filr mode...
+		if (m_isFilr) {
+			// ...load the Filr specific strings...
 			m_strMap.put(StringIds.CAPTION_ATOM,            m_messages.vibeBinderFooter_Filr_AtomUrl());
 			m_strMap.put(StringIds.CAPTION_EMAIL_ADDRESSES, m_messages.vibeBinderFooter_Filr_EmailAddresses());
 			m_strMap.put(StringIds.CAPTION_ICAL,            m_messages.vibeBinderFooter_Filr_iCalUrl());
@@ -203,6 +190,7 @@ public class FooterPanel extends ToolPanelBase {
 		}
 		
 		else {
+			// ...otherwise, load the Vibe specific strings...
 			m_strMap.put(StringIds.CAPTION_ATOM,            m_messages.vibeBinderFooter_Vibe_AtomUrl());
 			m_strMap.put(StringIds.CAPTION_EMAIL_ADDRESSES, m_messages.vibeBinderFooter_Vibe_EmailAddresses());
 			m_strMap.put(StringIds.CAPTION_ICAL,            m_messages.vibeBinderFooter_Vibe_iCalUrl());
@@ -451,20 +439,23 @@ public class FooterPanel extends ToolPanelBase {
 			}
 		}
 
-		// ...if there's an RSS URL defined...
-		ToolbarItem rssTBI = m_footerTBI.getNestedToolbarItem("subscribeRSS");
-		if (null != rssTBI) {
-			// ...add a link opener for it...
-			rowDataPanel = renderRow(linksGrid, cf, m_strMap.get(StringIds.CAPTION_RSS));
-			renderRowLinkOpener(rowDataPanel, rssTBI.getUrl());
-		}
-
-		// ...if there's an atom URL defined...
-		ToolbarItem atomTBI = m_footerTBI.getNestedToolbarItem("subscribeAtom");
-		if (null != atomTBI) {
-			// ...add a link opener for it...
-			rowDataPanel = renderRow(linksGrid, cf, m_strMap.get(StringIds.CAPTION_ATOM));
-			renderRowLinkOpener(rowDataPanel, atomTBI.getUrl());
+		// ...if we not in Filr mode...
+		if (!m_isFilr) {
+			// ...if there's an RSS URL defined...
+			ToolbarItem rssTBI = m_footerTBI.getNestedToolbarItem("subscribeRSS");
+			if (null != rssTBI) {
+				// ...add a link opener for it...
+				rowDataPanel = renderRow(linksGrid, cf, m_strMap.get(StringIds.CAPTION_RSS));
+				renderRowLinkOpener(rowDataPanel, rssTBI.getUrl());
+			}
+	
+			// ...if there's an atom URL defined...
+			ToolbarItem atomTBI = m_footerTBI.getNestedToolbarItem("subscribeAtom");
+			if (null != atomTBI) {
+				// ...add a link opener for it...
+				rowDataPanel = renderRow(linksGrid, cf, m_strMap.get(StringIds.CAPTION_ATOM));
+				renderRowLinkOpener(rowDataPanel, atomTBI.getUrl());
+			}
 		}
 
 		// ...if there's a WebDAV URL defined...
@@ -501,17 +492,22 @@ public class FooterPanel extends ToolPanelBase {
 		cf.setColSpan(    0, 0, 2 );
 
 		// ...add rows for each item type...
-		renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_PERMALINK), m_strMap.get(StringIds.KEY_PERMALINK)      );
-		renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_ICAL),      m_strMap.get(StringIds.KEY_EMAIL_ADDRESSES));
-		renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_WEBDAV),    m_strMap.get(StringIds.KEY_WEBDAV)         );
-		renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_ICAL),      m_strMap.get(StringIds.KEY_ICAL)           );
-		renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_RSS),       m_strMap.get(StringIds.KEY_RSS)            );
+		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_PERMALINK), m_strMap.get(StringIds.KEY_PERMALINK)      );
+		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_ICAL),      m_strMap.get(StringIds.KEY_EMAIL_ADDRESSES));
+		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_WEBDAV),    m_strMap.get(StringIds.KEY_WEBDAV)         );
+		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_ICAL),      m_strMap.get(StringIds.KEY_ICAL)           );
+		if (!m_isFilr) {
+			renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_RSS),       m_strMap.get(StringIds.KEY_RSS)            );
+		}
 
-		// ...and add a footer with further explanations.
-		VibeFlowPanel keyFooterPanel = new VibeFlowPanel();
-		keyFooterPanel.addStyleName("vibe-footerDataHintGridFooter");
-		linksPanel.add(keyFooterPanel);
-		keyFooterPanel.add(new InlineLabel(m_strMap.get(StringIds.KEY_FOOTER)));
+		// ...and add a footer with further explanations if necessary.
+		String footerHint = m_strMap.get(StringIds.KEY_FOOTER);
+		if (GwtClientHelper.hasString(footerHint)) {
+			VibeFlowPanel keyFooterPanel = new VibeFlowPanel();
+			keyFooterPanel.addStyleName("vibe-footerDataHintGridFooter");
+			linksPanel.add(keyFooterPanel);
+			keyFooterPanel.add(new InlineLabel(footerHint));
+		}
 
 		// Finally, force the container to resize to reflect the
 		// expanded footer.
