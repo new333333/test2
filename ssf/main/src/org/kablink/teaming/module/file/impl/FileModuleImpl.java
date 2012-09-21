@@ -376,7 +376,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			FileAttachment fAtt, FilesErrors errors) {
 		boolean involvesExtAcl = involvesExternalAcl(binder, fAtt.getRepositoryName());
 		if(involvesExtAcl)
-			setupAccessModeForExternalAcl(entry, new WorkAreaOperation[]{WorkAreaOperation.DELETE_ENTRIES});
+			setupAccessModeForExternalAcl(entry, WorkAreaOperation.DELETE_ENTRIES);
 		
 		try {
 			if(errors == null)
@@ -416,7 +416,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			OutputStream out) {
 		boolean involvesExtAcl = involvesExternalAcl(binder, fa.getRepositoryName());
 		if(involvesExtAcl)
-			setupAccessModeForExternalAcl(entry, new WorkAreaOperation[]{WorkAreaOperation.READ_ENTRIES});
+			setupAccessModeForExternalAcl(entry, WorkAreaOperation.READ_ENTRIES);
 		
 		try {
 			String versionName = null;
@@ -449,7 +449,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) { 
 		boolean involvesExtAcl = involvesExternalAcl(binder, fa.getRepositoryName());
 		if(involvesExtAcl)
-			setupAccessModeForExternalAcl(entry, new WorkAreaOperation[]{WorkAreaOperation.READ_ENTRIES});
+			setupAccessModeForExternalAcl(entry, WorkAreaOperation.READ_ENTRIES);
 		
 		try {
 			return readFile(binder, entry, fa, false);
@@ -1888,9 +1888,17 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	 */
     private boolean writeFileTransactional(Binder binder, DefinableEntity entry, 
     		FileUploadItem fui, FilesErrors errors) {
+		String relativeFilePath = fui.getOriginalFilename();
+		String repositoryName = fui.getRepositoryName();
+		FileAttachment fAtt = entry.getFileAttachment(relativeFilePath);
+
 		boolean involvesExtAcl = involvesExternalAcl(binder, fui.getRepositoryName());
-		if(involvesExtAcl)
-			setupAccessModeForExternalAcl(entry, new WorkAreaOperation[]{WorkAreaOperation.CREATE_ENTRIES, WorkAreaOperation.MODIFY_ENTRIES});
+		if(involvesExtAcl) {
+    		if(fAtt == null) // New file for the entry
+    			setupAccessModeForExternalAcl(entry, WorkAreaOperation.CREATE_ENTRIES);
+    		else // Existing file for the entry
+    			setupAccessModeForExternalAcl(entry, WorkAreaOperation.MODIFY_ENTRIES);    			
+		}
     	
 		try {
 	    	/// Work Flow:
@@ -1921,10 +1929,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    		}
 	
 	    	}
-	
-			String relativeFilePath = fui.getOriginalFilename();
-			String repositoryName = fui.getRepositoryName();
-			FileAttachment fAtt = entry.getFileAttachment(relativeFilePath);
 	
 	    	if(!writeFilePreCheck(binder, entry, fui, errors))
 	    		return false;
@@ -3008,7 +3012,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 	
-	private void setupAccessModeForExternalAcl(DefinableEntity entity, WorkAreaOperation[] workAreaOperations) {
+	private void setupAccessModeForExternalAcl(DefinableEntity entity, WorkAreaOperation workAreaOperation) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		
 		if(ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) {
@@ -3027,14 +3031,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			if(entity instanceof FolderEntry) {
 				FolderEntry entry = (FolderEntry) entity;
 				if(entry.hasEntryExternalAcl()) { // This entry has its own (external) ACL
-					shareGrantedAccess = getAccessControlManager().testRightsGrantedBySharing(user, entry, workAreaOperations);
+					shareGrantedAccess = getAccessControlManager().testRightGrantedBySharing(user, entry, workAreaOperation);
 				}
 				else { // This entry inherits its ACL from the parent folder
-					shareGrantedAccess = getAccessControlManager().testRightsGrantedBySharing(user, entry.getParentFolder(), workAreaOperations);
+					shareGrantedAccess = getAccessControlManager().testRightGrantedBySharing(user, entry.getParentFolder(), workAreaOperation);
 				}
 			}
 			else if(entity instanceof Folder) {
-				shareGrantedAccess = getAccessControlManager().testRightsGrantedBySharing(user, (Folder) entity, workAreaOperations);			
+				shareGrantedAccess = getAccessControlManager().testRightGrantedBySharing(user, (Folder) entity, workAreaOperation);			
 			}
 			else {
 				// Sharing facility only supports folders and folder entries, which means that the user

@@ -80,6 +80,7 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
+import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.LongIdUtil;
@@ -663,18 +664,28 @@ public class EntityIndexUtils {
     
     //Routine to add the sharing ids into the index doc
     private static void addSharingIds(Document doc, DefinableEntity entity) {
+    	Set<EntityIdentifier> entityIdentifiers = new HashSet<EntityIdentifier>();
+     	ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
     	String entryAclField, teamAclField;
     	if (entity instanceof FolderEntry) {
     		entryAclField = Constants.ENTRY_ACL_FIELD;
     		teamAclField = Constants.TEAM_ACL_FIELD;
-    	} else {
+         	entityIdentifiers.add(entity.getEntityIdentifier());
+    	} else if(entity instanceof Folder) {
     		entryAclField = Constants.FOLDER_ACL_FIELD;
     		teamAclField = Constants.TEAM_ACL_FIELD;
+    		WorkArea workArea = (Folder) entity;
+        	entityIdentifiers.add(entity.getEntityIdentifier());
+        	while(workArea.isFunctionMembershipInherited()) {
+        		workArea = workArea.getParentWorkArea();
+        		if(workArea instanceof DefinableEntity)
+        			entityIdentifiers.add(((DefinableEntity)workArea).getEntityIdentifier());
+        	}
+    	}
+    	else {
+    		return; // sharing not supported
     	}
     	Long allUsersId = Utils.getAllUsersGroupId();
-    	Set<EntityIdentifier> entityIdentifiers = new HashSet<EntityIdentifier>();
-    	entityIdentifiers.add(entity.getEntityIdentifier());
-     	ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
      	Map<RecipientType, Set<Long>> idMap = profileDao.getRecipientIdsWithGrantedRightToSharedEntities(
      			entityIdentifiers, WorkAreaOperation.READ_ENTRIES.getName());
      	for (Long id : idMap.get(RecipientType.user)) {

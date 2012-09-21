@@ -178,7 +178,7 @@ public class NullAccessControlManager implements AccessControlManager {
     }
     
 	@Override
-    public boolean testRightsGrantedBySharing(User user, WorkArea workArea, WorkAreaOperation[] workAreaOperations) {
+    public boolean testRightGrantedBySharing(User user, WorkArea workArea, WorkAreaOperation workAreaOperation) {
 		return false; // Assume there's no sharing
 	}
 }
