@@ -241,4 +241,14 @@
 			<column name="TEMPLATEHIDDEN" type="NUMBER(1,0)"/>
         </addColumn>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="24">
+        <addColumn tableName="SS_PRINCIPALS">
+			<column name="OBJECTSID" type="VARCHAR2(128 CHAR)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="25">
+        <createIndex indexName="OBJECTSID_PRINCIPAL" tableName="SS_PRINCIPALS" unique="false">
+            <column name="OBJECTSID"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>

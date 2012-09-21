@@ -72,6 +72,7 @@ public abstract class Principal extends Entry implements IPrincipal {
     protected String name;
     protected String foreignName="";
     protected String ldapGuid="";
+    protected String objectSid;
     protected List memberOf;//initialized by hiberate access=field
     protected Long workspaceId;
     protected List iMemberOf;
@@ -274,7 +275,14 @@ public abstract class Principal extends Entry implements IPrincipal {
     }// end setLdapGuid()
     
 
-    /**
+    public String getObjectSid() {
+		return objectSid;
+	}
+	public void setObjectSid(String objectSid) {
+		this.objectSid = objectSid;
+	}
+	
+	/**
      * This method will return true if this object is a "local" principal.  In other words, this
      * object was not sync'd from an ldap source.
      */
