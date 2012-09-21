@@ -1899,8 +1899,11 @@ public class CalendarFolderView extends FolderViewBase
 	 */
 	@Override
 	public void viewComplete() {
-		// Tell the calendar to resize itself now that it can determine
-		// how big everything is.
+		// Tell the super class the view is complete...
+		super.viewComplete();
+		
+		// ...and tell the calendar to resize itself now that it can
+		// ...determine how big everything is.
 		resizeViewAsync();
 	}
 	
