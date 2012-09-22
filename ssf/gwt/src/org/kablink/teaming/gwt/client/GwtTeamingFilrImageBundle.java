@@ -136,7 +136,7 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource sharedByMe_large();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/shared_by_me_transparent_40.png")
+	@Source("org/kablink/teaming/gwt/public/images/Filr/shared_by_me_transparent_48.png")
 	public ImageResource sharedByMe_transparent_40();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
