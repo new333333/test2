@@ -4705,6 +4705,7 @@ public class GwtViewHelper {
 			// Has this entity been shared?
 			ShareItemSelectSpec	spec = new ShareItemSelectSpec();
 			spec.setSharedEntityIdentifier(GwtShareHelper.getEntityIdentifierFromEntityId(entityId));
+			spec.setAccountForInheritance(true);
 			List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
 			if (MiscUtil.hasItems(shareItems)) {
 				// Yes!  Scan the shares.
