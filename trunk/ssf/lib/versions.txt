@@ -41,7 +41,7 @@ ezmorph 1.0.1
 firebug-lite 1.2
 groovy 1.8.5
 Guice 3.0
-gwt 2.4.0 (Google Web Toolkit)
+gwt 2.5rc1 (Google Web Toolkit)
 gwt-cal 0.9.3 (GWT Calendar widget)
 gwt-dnd 3.1.2 (GWT drag-and-drop support)
 gwt-log 3.1.8 (GWT logging facility)
