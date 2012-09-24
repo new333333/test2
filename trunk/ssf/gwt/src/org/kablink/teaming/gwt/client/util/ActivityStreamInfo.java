@@ -304,33 +304,64 @@ public class ActivityStreamInfo
 		}
 
 		// If the ActivityStream enumeration values don't match...
-		if (getActivityStream() != asi2.getActivityStream()) {
+		ActivityStream as1 =      getActivityStream();
+		ActivityStream as2 = asi2.getActivityStream();
+		if (!(as1.equals(as2))) {
 			// ...they don't match.
-			return false;
-		}
-
-		// If they don't contain the same number of binder IDs...
-		String[] bIds1 =      getBinderIds(); int c1 = ((null == bIds1) ? (-1) : bIds1.length);
-		String[] bIds2 = asi2.getBinderIds(); int c2 = ((null == bIds2) ? (-1) : bIds2.length);
-		if (c1 != c2) {
-			// ...they don't match.
-			return false;
-		}
-
-		// If both lists were null or empty...
-		if (0 >= c1) {
-			// ...they match.
-			return true;
-		}
-
-		// Scan the binder IDs...
-		for (int i = 0; i < c1; i += 1) {
-			// ...if any don't match...
-			String id1 = bIds1[i]; if (null == id1) id1 = "";
-			String id2 = bIds2[i]; if (null == id2) id2 = "";
-			if (!(id1.equals(id2))) {
-				// ...they're not equal.
+			switch (as1) {
+			default:
 				return false;
+				
+			case CURRENT_BINDER:
+			case SPECIFIC_BINDER:
+			case SPECIFIC_FOLDER:
+				switch (as2) {
+				default:
+					return false;
+					
+				case CURRENT_BINDER:
+				case SPECIFIC_BINDER:
+				case SPECIFIC_FOLDER:
+					break;
+				}
+				break;
+			}
+		}
+
+		// Do we need to check binder IDs for this activity stream?
+		boolean checkBinderIds;
+		switch (as1) {
+		case MY_FILES:
+		case NET_FOLDERS:
+		case SHARED_BY_ME:
+		case SHARED_WITH_ME:  checkBinderIds = false; break;
+		default:              checkBinderIds = true;  break;
+		}
+		if (checkBinderIds) {
+			// Yes!  If they don't contain the same number of binder
+			// IDs...
+			String[] bIds1 =      getBinderIds(); int c1 = ((null == bIds1) ? (-1) : bIds1.length);
+			String[] bIds2 = asi2.getBinderIds(); int c2 = ((null == bIds2) ? (-1) : bIds2.length);
+			if (c1 != c2) {
+				// ...they don't match.
+				return false;
+			}
+	
+			// If both lists were null or empty...
+			if (0 >= c1) {
+				// ...they match.
+				return true;
+			}
+	
+			// Scan the binder IDs...
+			for (int i = 0; i < c1; i += 1) {
+				// ...if any don't match...
+				String id1 = bIds1[i]; if (null == id1) id1 = "";
+				String id2 = bIds2[i]; if (null == id2) id2 = "";
+				if (!(id1.equals(id2))) {
+					// ...they're not equal.
+					return false;
+				}
 			}
 		}
 
