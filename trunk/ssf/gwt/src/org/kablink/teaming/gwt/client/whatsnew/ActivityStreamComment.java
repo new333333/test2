@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client.whatsnew;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
@@ -67,7 +68,7 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 			ActivityStreamTopEntry topEntry,
 			DescViewFormat descViewFormat )
 	{
-		this( activityStreamCtrl, topEntry, descViewFormat, true );
+		this( activityStreamCtrl, topEntry, descViewFormat, !GwtTeaming.m_requestInfo.isLicenseFilr() );
 	}
 
 	/**
