@@ -1231,16 +1231,22 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					
 					syncUsers(zone, ctx, config, userCoordinator);
 				}
-		  		catch (NamingException namingEx)
+		  		catch (Exception ex)
 		  		{
-		  			logError(NLT.get("errorcode.ldap.context"), namingEx);
+		  			if ( ex instanceof NamingException )
+		  			{
+			  			logError(NLT.get("errorcode.ldap.context"), ex);
+			  			
+			  			LdapSyncException	ldapSyncEx;
+			  			
+			  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
+			  			// the LdapConnectionConfig object that was being used when the error happened.
+			  			ldapSyncEx = new LdapSyncException( config, (NamingException)ex );
+			  			throw ldapSyncEx;
+		  			}
 		  			
-		  			LdapSyncException	ldapSyncEx;
-		  			
-		  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
-		  			// the LdapConnectionConfig object that was being used when the error happened.
-		  			ldapSyncEx = new LdapSyncException( config, namingEx );
-		  			throw ldapSyncEx;
+		  			logger.error( "Unknown exception: " + ex.toString() );
+		  			throw new LdapSyncException( config, new NamingException( ex.toString() ) );
 		  		}
 		  		finally {
 					if (ctx != null) {
