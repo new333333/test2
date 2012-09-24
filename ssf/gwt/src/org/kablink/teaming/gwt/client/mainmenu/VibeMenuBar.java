@@ -36,8 +36,8 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
@@ -144,7 +144,7 @@ public class VibeMenuBar extends MenuBar {
 	}
 	
 	@Override
-	public MenuItem addItem(SafeHtml html, Command cmd) {
+	public MenuItem addItem(SafeHtml html, ScheduledCommand cmd) {
 		MenuItem reply = super.addItem(html, cmd);
 		m_itemCount   += 1;
 		m_spacerNeeded = true;
@@ -160,7 +160,7 @@ public class VibeMenuBar extends MenuBar {
 	}
 	
 	@Override
-	public MenuItem addItem(String text, boolean asHtml, Command cmd) {
+	public MenuItem addItem(String text, boolean asHtml, ScheduledCommand cmd) {
 		MenuItem reply = super.addItem(text, asHtml, cmd);
 		m_itemCount   += 1;
 		m_spacerNeeded = true;
@@ -176,7 +176,7 @@ public class VibeMenuBar extends MenuBar {
 	}
 	
 	@Override
-	public MenuItem addItem(String text, Command cmd) {
+	public MenuItem addItem(String text, ScheduledCommand cmd) {
 		MenuItem reply = super.addItem(text, cmd);
 		m_itemCount   += 1;
 		m_spacerNeeded = true;
