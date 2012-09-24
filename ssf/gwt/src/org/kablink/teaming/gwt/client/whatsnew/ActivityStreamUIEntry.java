@@ -58,8 +58,6 @@ import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -98,8 +96,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private Image m_actionsImg1;
 	private Image m_actionsImg2;
 	private Image m_unreadImg;
-	private Image m_expandDescImg;
-	private Image m_collapseDescImg;
 	private InlineLabel m_title;
 	private InlineLabel m_actionsLabel;
 	private FlowPanel m_mainPanel;
@@ -291,25 +287,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 		panel = new FlowPanel();
 		panel.addStyleName( getContentPanelStyleName() );
 
-		// Create a expand desc image and a collapse desc image
-		{
-			ImageResource imageResource;
-			
-			imageResource = GwtTeaming.getImageBundle().expander();
-			m_expandDescImg = new Image( imageResource );
-			m_expandDescImg.addStyleName( "activityStreamExpandDescImg" );
-			m_expandDescImg.setTitle( GwtTeaming.getMessages().showEntireDescHint() );
-			m_expandDescImg.setVisible( false );
-			panel.add( m_expandDescImg );
-			
-			imageResource = GwtTeaming.getImageBundle().collapser();
-			m_collapseDescImg = new Image( imageResource );
-			m_collapseDescImg.addStyleName( "activityStreamCollapseDescImg" );
-			m_collapseDescImg.setTitle( GwtTeaming.getMessages().showPartialDescHint() );
-			m_collapseDescImg.setVisible( false );
-			panel.add( m_collapseDescImg );
-		}
-		
 		m_presencePanel = new FlowPanel();
 		m_presencePanel.addStyleName( getPresencePanelStyleName() );
 		panel.add( m_presencePanel );
@@ -362,37 +339,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 				}
 				
 			};
-			
-			// Use this click handler for the expand/collapse description images.
-			m_expandDescImg.addClickHandler( m_descClickHandler );
-			m_collapseDescImg.addClickHandler( m_descClickHandler );
-		}
-		
-		{
-			Scheduler.ScheduledCommand cmd;
-			
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				@Override
-				public void execute()
-				{
-					int top;
-					Style style;
-					
-					// Set the position of the expand/collapse images to be just to the left
-					// of the top of the description.
-					top = m_descPanel.getAbsoluteTop() - m_mainPanel.getAbsoluteTop();
-					if ( m_showTitle )
-						top -= 20;
-
-					style = m_expandDescImg.getElement().getStyle();
-					style.setTop( top, Unit.PX );
-
-					style = m_collapseDescImg.getElement().getStyle();
-					style.setTop( top, Unit.PX );
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
 		}
 		
 		return panel;
@@ -982,37 +928,15 @@ public abstract class ActivityStreamUIEntry extends Composite
 		if ( desc != null && desc.length() > 0 )
 		{
 			int panelHeight;
-			int childrenHeight;
-			NodeList<Node> children;
+			int scrollHeight;
 			
 			// Yes
 			// Get the height of the panel that holds the description
 			panelHeight = m_descPanel.getOffsetHeight();
 			
-			// Get the height of all the children that live in the description panel.
-			childrenHeight = 4;
-			children = m_descPanel.getElement().getChildNodes();
-			if ( children != null )
-			{
-				int i;
-
-				for (i = 0; i < children.getLength(); ++i)
-				{
-					Node nextChildNode;
-					
-					nextChildNode = children.getItem( i );
-					
-					if ( nextChildNode instanceof Element )
-					{
-						Element nextChildElement;
-						
-						nextChildElement = (Element) nextChildNode;
-						childrenHeight += nextChildElement.getOffsetHeight();
-					}
-				}
-			}
+			scrollHeight = m_descPanel.getElement().getScrollHeight();
 			
-			if ( childrenHeight > panelHeight )
+			if ( scrollHeight > panelHeight )
 				return false;
 		}
 		
@@ -1226,10 +1150,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 			m_actionsImg1.setVisible( true );
 
 			m_actionsLabel.removeStyleName( "activityStreamActionsLabelBold" );
-			
-			// Hide the expand/collapse description image.
-			m_collapseDescImg.setVisible( false );
-			m_expandDescImg.setVisible( false );
 		}
 	}
 
@@ -1258,9 +1178,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 			m_actionsImg2.setVisible( true );
 
 			m_actionsLabel.addStyleName( "activityStreamActionsLabelBold" );
-
-			// Display the expand/collapse description image
-			updateExpandCollapseDescImage();
 		}
 	}
 
@@ -1413,46 +1330,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 			
 			// Add the appropriate style on the description panel.
 			m_descPanel.addStyleName( getDescStyleName() );
-			
-			if ( m_expandDescImg.isVisible() || m_collapseDescImg.isVisible() )
-			{
-				// Update the expand/collapse image
-				updateExpandCollapseDescImage();
-			}
-		}
-	}
-	
-	/**
-	 * Update the image that is used to expand/collapse the description
-	 */
-	private void updateExpandCollapseDescImage()
-	{
-		m_descPanel.setTitle( "" );
-		m_expandDescImg.setVisible( false );
-		m_collapseDescImg.setVisible( false );
-
-		// Is the description clickable?
-		if ( m_descClickHandlerReg != null )
-		{
-			// Yes
-			// Display either the expand or collapse image.
-			if ( m_descViewFormat == DescViewFormat.FULL )
-			{
-				m_descPanel.setTitle( GwtTeaming.getMessages().showPartialDescHint() );
-				m_expandDescImg.setVisible( false );
-				m_collapseDescImg.setVisible( true );
-			}
-			else
-			{
-				// Is the description totally visible?
-				if ( isDescTotallyVisible() == false )
-				{
-					// No
-					m_descPanel.setTitle( GwtTeaming.getMessages().showEntireDescHint() );
-					m_expandDescImg.setVisible( true );
-					m_collapseDescImg.setVisible( false );
-				}
-			}
 		}
 	}
 	
