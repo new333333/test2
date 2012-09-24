@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent.ManageMenuPopupCallback;
@@ -45,6 +46,8 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -105,10 +108,34 @@ public class BreadCrumbPanel extends ToolPanelBase
 		// Initialize the super class...
 		super(containerResizer, binderInfo, toolPanelReady);
 		
-		// ...and construct the panel.
+		// ...construct the root panel...
+		VibeFlowPanel rootContainer = new VibeFlowPanel();
+		rootContainer.addStyleName("vibe-binderViewTools vibe-breadCrumbRoot");
+
+		// ...construct the bread crumb tree panel...
 		m_fp = new VibeFlowPanel();
-		m_fp.addStyleName("vibe-binderViewTools vibe-breadCrumbPanel");
-		initWidget(m_fp);
+		m_fp.addStyleName("vibe-breadCrumbPanel");
+		rootContainer.add(m_fp);
+
+		// ...if required...
+		if (needsWhatsNewLink()) {
+			// ...construct the What's New link...
+			VibeFlowPanel whatsNewPanel = new VibeFlowPanel();
+			whatsNewPanel.addStyleName("vibe-breadCrumbWhatsNewPanel");
+			InlineLabel whatsNewLabel = new InlineLabel(m_messages.vibeDataTable_WhatsNew());
+			whatsNewLabel.addStyleName("vibe-breadCrumbWhatsNewLink");
+			whatsNewLabel.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					showWhatsNewAsync();
+				}
+			});
+			whatsNewPanel.add(whatsNewLabel);
+			rootContainer.add(whatsNewPanel);
+		}
+
+		// ...and tie it all together.
+		initWidget(rootContainer);
 		loadPart1Async();
 	}
 
@@ -364,6 +391,14 @@ public class BreadCrumbPanel extends ToolPanelBase
 			});
 		}
 	}
+
+	/*
+	 * Return true if the binder being viewed requires a What's New
+	 * link and false otherwise.
+	 */
+	private boolean needsWhatsNewLink() {
+		return (!(m_binderInfo.isBinderTrash()));
+	}
 	
 	/**
 	 * Called when the accessories panel is attached to the document.
@@ -483,7 +518,53 @@ public class BreadCrumbPanel extends ToolPanelBase
 		configureDropdownMenu.setMenu(m_selectorConfigPopup.getMenuBar());
 		configureDropdownMenu.showRelativeToTarget(selectorConfigA);
 	}
-	
+
+	/*
+	 * Asynchronously runs What's New on the current binder.
+	 */
+	private void showWhatsNewAsync() {
+		ScheduledCommand doWhatsNew = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showWhatsNewNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doWhatsNew);
+	}
+
+	/*
+	 * Synchronously runs What's New on the current binder.
+	 */
+	private void showWhatsNewNow() {
+		// Are we viewing a collection?
+		ActivityStreamInfo asi = new ActivityStreamInfo();
+		if (m_binderInfo.isBinderCollection()) {
+			// Yes!  Determine the appropriate collection
+			// ActivityStream to view.
+			ActivityStream as;
+			switch (m_binderInfo.getCollectionType()) {
+			default:
+			case MY_FILES:        as = ActivityStream.MY_FILES;       break;
+			case NET_FOLDERS:     as = ActivityStream.NET_FOLDERS;    break;
+			case SHARED_BY_ME:    as = ActivityStream.SHARED_BY_ME;   break;
+			case SHARED_WITH_ME:  as = ActivityStream.SHARED_WITH_ME; break;
+			}
+			asi.setActivityStream(as);
+		}
+		
+		else {
+			// No, we are viewing a collection!  We must be viewing
+			// a binder.  Determine the appropriate activity stream to
+			// view.
+			ActivityStream as = (m_binderInfo.isBinderFolder() ? ActivityStream.SPECIFIC_FOLDER : ActivityStream.SPECIFIC_BINDER);
+			asi.setActivityStream(as);
+			asi.setBinderId(m_binderInfo.getBinderId());
+		}
+		
+		// Finally, fire the appropriate activity stream event.
+		GwtTeaming.fireEvent(new ActivityStreamEnterEvent(asi));
+	}
+
 	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */

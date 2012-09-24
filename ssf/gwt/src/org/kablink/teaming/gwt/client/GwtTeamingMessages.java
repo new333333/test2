@@ -1536,6 +1536,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_View();
 	String vibeDataTable_Warning_NoEntryActions();
 	String vibeDataTable_Warning_ShareNoRights();
+	String vibeDataTable_WhatsNew();
 	
 	// String used in the Landing Page
 	String nowFollowingBinder();

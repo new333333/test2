@@ -709,7 +709,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		else {
 			// No, we aren't in activity stream mode!  Build a TreeInfo
 			// for the activity streams...
-			final String selectedBinderId = m_selectedBinderInfo.getBinderId();
+			String[] binderIds = defaultASI.getBinderIds();
+			String bId;
+			if ((null != binderIds) && (0 < binderIds.length))
+			     bId = binderIds[0];
+			else bId = m_selectedBinderInfo.getBinderId();
+			final String selectedBinderId = bId;
 			GetVerticalActivityStreamsTreeCmd cmd = new GetVerticalActivityStreamsTreeCmd(selectedBinderId);
 			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
