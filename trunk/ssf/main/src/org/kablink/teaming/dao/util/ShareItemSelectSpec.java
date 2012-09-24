@@ -95,6 +95,8 @@ public class ShareItemSelectSpec {
 	public Collection<String> onRights;
 	public boolean onRightsDisjunctive = true;
 	
+	public boolean accountForInheritance = false;
+	
 	/**
 	 * Defines selection criterion with a specific value of "latest" attribute.
 	 * 
@@ -303,6 +305,15 @@ public class ShareItemSelectSpec {
 	public void setOrder(String orderByFieldName, boolean orderByDescending) {
 		this.orderByFieldName = orderByFieldName;
 		this.orderByDescending = orderByDescending;
+	}
+	
+	/**
+	 *  Defines selection criterion around whether to account for inherited share rights or not.
+	 *  
+	 * @param accountForInheritance
+	 */
+	public void setAccountForInheritance(boolean accountForInheritance) {
+		this.accountForInheritance = accountForInheritance;
 	}
 	
 	private ProfileDao getProfileDao() {

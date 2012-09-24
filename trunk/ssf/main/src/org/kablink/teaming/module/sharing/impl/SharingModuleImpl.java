@@ -33,7 +33,9 @@
 package org.kablink.teaming.module.sharing.impl;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -41,6 +43,7 @@ import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FolderEntry;
@@ -61,6 +64,7 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
+import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
@@ -416,26 +420,81 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		// Access check?
 		// There is no access check on getting shareItems due to performance concerns. 
 		// We are counting on the UI to not show items that the user is not allowed to see.
-		return getProfileDao().findShareItems(selectSpec);
+		
+		if(selectSpec.accountForInheritance && selectSpec.sharedEntityIdentifiers != null && selectSpec.sharedEntityIdentifiers.size() > 0) {
+			Collection<EntityIdentifier> orig = selectSpec.sharedEntityIdentifiers;
+			HashSet<EntityIdentifier> copy = new HashSet<EntityIdentifier>(orig);
+			for(EntityIdentifier entityIdentifier:orig) {
+				addShareRightInheritingParents(entityIdentifier, copy);
+			}
+			selectSpec.sharedEntityIdentifiers = copy;
+			List<ShareItem> result = getProfileDao().findShareItems(selectSpec);
+			selectSpec.sharedEntityIdentifiers = orig; // Restore the original
+			return result;
+		}
+		else {
+			return getProfileDao().findShareItems(selectSpec);
+		}
 	}
     
+	private void addShareRightInheritingParents(EntityIdentifier entityIdentifier, Set<EntityIdentifier> set) {
+		DefinableEntity entity;
+		
+		try {
+			entity = loadDefinableEntity(entityIdentifier);
+		}
+		catch(Exception e) {
+			logger.warn("Error loading shared entity '" + entityIdentifier.toString() + "': " + e.toString());
+			return;
+		}
+		
+		if(entity instanceof FolderEntry) {
+			FolderEntry entry = (FolderEntry) entity;
+			if(!entry.hasEntryAcl() || (entry.hasEntryAcl() && entry.isIncludeFolderAcl())) {
+				// This entry inherits the parent's ACLs.
+				set.add(entry.getParentFolder().getEntityIdentifier());
+				WorkArea workArea = entry.getParentFolder();
+	        	while(workArea.isFunctionMembershipInherited()) {
+	        		workArea = workArea.getParentWorkArea();
+	        		if(workArea instanceof DefinableEntity)
+	        			set.add(((DefinableEntity)workArea).getEntityIdentifier());
+	        	}
+			}
+		}
+		else if(entity instanceof Folder) {
+	   		WorkArea workArea = (Folder) entity;
+        	while(workArea.isFunctionMembershipInherited()) {
+        		workArea = workArea.getParentWorkArea();
+        		if(workArea instanceof DefinableEntity)
+        			set.add(((DefinableEntity)workArea).getEntityIdentifier());
+        	}
+		}
+		else {
+			logger.warn("Invalid shared entity '" + entityIdentifier + "'");
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.module.sharing.SharingModule#getSharedEntity(org.kablink.teaming.domain.ShareItem)
 	 */
 	@Override
 	public DefinableEntity getSharedEntity(ShareItem shareItem) {
-		EntityIdentifier.EntityType entityType = shareItem.getSharedEntityIdentifier().getEntityType();
+		return loadDefinableEntity(shareItem.getSharedEntityIdentifier());
+	}
+
+	private DefinableEntity loadDefinableEntity(EntityIdentifier entityIdentifier) {
+		EntityIdentifier.EntityType entityType = entityIdentifier.getEntityType();
 		if(entityType == EntityIdentifier.EntityType.folderEntry) {
-			return getFolderModule().getEntry(null, shareItem.getSharedEntityIdentifier().getEntityId());
+			return getFolderModule().getEntry(null, entityIdentifier.getEntityId());
 		}
 		else if(entityType == EntityIdentifier.EntityType.folder || entityType == EntityIdentifier.EntityType.workspace) {
-			return getBinderModule().getBinder(shareItem.getSharedEntityIdentifier().getEntityId());
+			return getBinderModule().getBinder(entityIdentifier.getEntityId());
 		}
 		else {
 			throw new IllegalArgumentException("Unsupported entity type '" + entityType.name() + "' for sharing");
 		}
 	}
-
+	
 	@Override
 	public DefinableEntity getSharedRecipient(ShareItem shareItem) {
 		ShareItem.RecipientType recipientType = shareItem.getRecipientType();
