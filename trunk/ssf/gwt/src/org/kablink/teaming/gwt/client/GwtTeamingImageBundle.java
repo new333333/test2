@@ -673,11 +673,11 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource userActionsPanel_ViewSharedByMe();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Masthead/Filr_userlist_40w.png")
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/Filr_userlist_30.png")
 	public ImageResource userList();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Masthead/Filr_whatsnew.png")
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/Filr_whatsnew_30.png")
 	public ImageResource masthead_WhatsNew();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
