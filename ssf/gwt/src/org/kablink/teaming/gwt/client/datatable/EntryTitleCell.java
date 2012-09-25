@@ -90,6 +90,24 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	}
 
 	/*
+	 * Adds the styles to an element to reflect a mouse hover.
+	 */
+	private void hoverStyleAdd(EntryTitleInfo eti, Element e) {
+		e.addClassName("vibe-dataTableLink-hover");
+		if (null != eti.getClientItemImage()) {
+			e.addClassName("vibe-dataTableLink-hoverNoLPad");
+		}
+	}
+	
+	/*
+	 * Removes the styles from an element that reflect a mouse hover.
+	 */
+	private void hoverStyleRemove(EntryTitleInfo eti, Element e) {
+		e.removeClassName("vibe-dataTableLink-hover"      );
+		e.removeClassName("vibe-dataTableLink-hoverNoLPad");
+	}
+	
+	/*
 	 * Invokes a file download on an entry's file.
 	 */
 	private void invokeFileDownload(final EntryTitleInfo eti, Element pElement) {
@@ -241,6 +259,10 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
     	// Which of our entry title widgets is being operated on? 
 		Element eventTarget = Element.as(event.getEventTarget());
 		String wt = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
+		if (!(GwtClientHelper.hasString(wt))) {
+			eventTarget = eventTarget.getParentElement();
+			wt = eventTarget.getAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE);
+		}
 		boolean isLabel     = ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL ));
 		boolean isUnseenImg = ((null != wt) && wt.equals(VibeDataTableConstants.CELL_WIDGET_ENTRY_UNSEEN_IMAGE));
 
@@ -256,7 +278,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
     		// A click!  Is it the label being clicked?
     		if (isLabel) {
     			// Yes!  Strip off any over style.
-    			eventTarget.removeClassName("vibe-dataTableLink-hover");
+    			hoverStyleRemove(eti, eventTarget);
     			if (eti.isFile())
         		     invokeFileDownload(eti, eventTarget);
     			else invokeViewEntry(   eti, eventTarget);
@@ -269,7 +291,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
     	
     	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOVER.equals(eventType)) {
     		// A mouse over!  Add the hover style...
-			eventTarget.addClassName("vibe-dataTableLink-hover");
+    		hoverStyleAdd(eti, eventTarget);
 			
 			// ...if have a description...
 			String	description       = eti.getDescription();
@@ -298,7 +320,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
     	
     	else if (isLabel && VibeDataTableConstants.CELL_EVENT_MOUSEOUT.equals(eventType)) {
     		// A mouse out!  Remove the hover style...
-			eventTarget.removeClassName("vibe-dataTableLink-hover");
+    		hoverStyleRemove(eti, eventTarget);
 			
 			// ...and if there's a title hint panel...
 			if (null != m_hoverHintPopup) {
@@ -366,6 +388,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		}
 		
 		// If we're dealing with an item in the trash...
+		Image titleImg = null;
 		if (isTrash) {
 			// ...and we know what type of item it is...
 			if (null != entityType) {
@@ -382,7 +405,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 					Image i = (hasBinderImg ? binderImg : GwtClientHelper.buildImage(entityImage));
 					i.setTitle(entityAlt);
 					i.addStyleName("vibe-dataTableEntity-Marker");
-					fp.add(i);
+					titleImg = i;
 				}
 			}
 		}
@@ -404,21 +427,36 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		if ((!isTrash) && hasBinderImg) {
 			// Yes!  Add it to the flow panel.
 			binderImg.addStyleName("vibe-dataTableItem-Img");
-			fp.add(binderImg);
+			titleImg = binderImg;
 		}
-
+		
 		// ...add the title link...
+		VibeFlowPanel titlePanel;
+		if (null != titleImg) {
+			titlePanel = new VibeFlowPanel();
+			titlePanel.setStyleName("vibe-dataTableEntry-titleLinkPanel");
+			titlePanel.add(titleImg);
+		}
+		else {
+			titlePanel = null;
+		}
 		boolean titleIsLink = ((!isTrash) || ((null != entityType) && entityType.equals("folderEntry")));
 		InlineLabel titleLabel = new InlineLabel(eti.getTitle());
 		titleLabel.addStyleName(titleIsLink ? "vibe-dataTableEntry-title" : "vibe-dataTableEntry-titleNoLink");
 		if ((!isTrash) && entryUnseen) {
 			titleLabel.addStyleName("bold");
 		}
-		Element elE = titleLabel.getElement(); 
+		Element elE = ((null == titlePanel) ? titleLabel.getElement() : titlePanel.getElement()); 
 		String widgetAttr = (titleIsLink ? VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL : VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL_NOLINK);
 		elE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, widgetAttr);
 		elE.setId(VibeDataTableConstants.CELL_WIDGET_ENTRY_TITLE_LABEL + "_" + entryIdS);
-		fp.add(titleLabel);
+		if (null == titlePanel) {
+			fp.add(titleLabel);
+		}
+		else {
+			titlePanel.add(titleLabel);
+			fp.add(titlePanel);
+		}
 		
 		// ...and render that into the cell.
 		SafeHtml rendered = SafeHtmlUtils.fromTrustedString(html.getElement().getInnerHTML());
