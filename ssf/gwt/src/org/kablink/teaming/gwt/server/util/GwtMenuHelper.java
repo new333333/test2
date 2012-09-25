@@ -478,7 +478,8 @@ public class GwtMenuHelper {
 			}
 			
 			// Do we need to include new entry options?
-			boolean includeNewEntries = ((!(Utils.checkIfFilr())) || (!(SsfsUtil.supportApplets(request))) || (1 < defaultEntryDefs));
+			boolean isFileFolder      = GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder));
+			boolean includeNewEntries = ((!(Utils.checkIfFilr())) || (!(SsfsUtil.supportApplets(request))) || (1 < defaultEntryDefs) || (!isFileFolder));
 			if (includeNewEntries) {
 				// Yes!  Does this folder have more than one entry
 				// definition or is for other than a guest book

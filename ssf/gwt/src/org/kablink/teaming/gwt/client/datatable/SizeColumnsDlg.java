@@ -112,7 +112,8 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 	private RowFormatter					m_dataTableRF;			//
 	private ScrollPanel						m_sp;					// ScrollPanel with the dialog's contents.
 
-	private final static int PADDING_FOR_DLG_HEADER	= 25;
+	private final static int DATA_TABLE_ROW_HEIGHT	= 32;	// Height of a row in a data table.
+	private final static int PADDING_FOR_DLG_HEADER	= 25;	// Spacing to allow for the dialog header.
 
 	// The following define the column indexes into the FlexTable used
 	// to edit the column sizes.
@@ -545,7 +546,7 @@ public class SizeColumnsDlg extends DlgBox implements EditSuccessfulHandler, Edi
 				int left  = ((0 >= wDiff) ? 0 : (wDiff / 2));
 
 				// ...and top dialog positions...
-				int top = (m_dtAbsTop + PADDING_FOR_DLG_HEADER);
+				int top = (m_dtAbsTop + PADDING_FOR_DLG_HEADER + (2 * DATA_TABLE_ROW_HEIGHT));
 				
 				// ...and put the dialog there.
 				setPopupPosition(left, top);

@@ -366,8 +366,11 @@ public class EntryMenuPanel extends ToolPanelBase
 			// Yes!  Scan its nested items..
 			for (ToolbarItem perEntryTBI:  entryTBI.getNestedItemsList()) {
 				// ...rendering each of them.
-				if (perEntryTBI.hasNestedToolbarItems()) {
-					renderStructuredTBI(m_entryMenu, null, perEntryTBI);
+				List<ToolbarItem> nestedTBI = perEntryTBI.getNestedItemsList();
+				if (GwtClientHelper.hasItems(nestedTBI)) {
+					if (nestedTBI.size() == 1)
+					     renderSimpleTBI(    m_entryMenu, null, nestedTBI.get(0), false);
+					else renderStructuredTBI(m_entryMenu, null, perEntryTBI            );
 				}
 				
 				else if (perEntryTBI.isSeparator()) {
