@@ -69,6 +69,7 @@ import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogPages;
+import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
@@ -554,6 +555,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			evbCmd = (ExpandVerticalBucketCmd) cmd;
 			result = expandVerticalBucket( ri, evbCmd.getBucketInfo() );
 			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case FIND_USER_BY_EMAIL_ADDRESS:
+		{
+			FindUserByEmailAddressCmd fuCmd;
+			GwtUser gwtUser;
+			
+			fuCmd = (FindUserByEmailAddressCmd) cmd;
+			gwtUser = GwtSearchHelper.findUserByEmailAddress( this, req, fuCmd.getEmailAddress() );
+			response = new VibeRpcResponse( gwtUser );
 			return response;
 		}
 

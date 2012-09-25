@@ -128,6 +128,52 @@ public class GwtSearchHelper
 	}// end executeSearch()
 	
 	
+	/**
+	 * Try to find a user with the given email address
+	 */
+	public static GwtUser findUserByEmailAddress(
+		AllModulesInjected ami,
+		HttpServletRequest request,
+		String emailAddress )
+	{
+		SortedSet<User> users;
+		GwtUser gwtUser = null;
+		
+		// Try to find the user by primary email.
+		users = ami.getProfileModule().getUsersByEmail( emailAddress, Principal.PRIMARY_EMAIL );
+		if ( users == null || users.size() == 0 )
+		{
+			// Didn't find a user.
+			// Try to find the user by their mobile email address
+			users = ami.getProfileModule().getUsersByEmail( emailAddress, Principal.MOBILE_EMAIL );
+			if ( users == null || users.size() == 0 )
+			{
+				// Didn't find a user
+				// Try to find the user by their text email address
+				users = ami.getProfileModule().getUsersByEmail( emailAddress, Principal.TEXT_EMAIL );
+			}
+		}
+		
+		if ( users != null && users.size() > 0 )
+		{
+			try
+			{
+				User user;
+				String userId;
+				
+				user = users.first();
+				userId = user.getId().toString();
+				gwtUser = getGwtUser( ami, request, GwtSearchCriteria.SearchType.PERSON, userId );
+			}
+			catch ( GwtTeamingException ex )
+			{
+				// Nothing to do.
+			}
+		}
+
+		return gwtUser;
+	}
+	
 	/*
 	 * This method is meant to search for applications or entries or groups or places or tags or teams or users.
 	 */
