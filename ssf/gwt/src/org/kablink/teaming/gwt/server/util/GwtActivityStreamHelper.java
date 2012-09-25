@@ -506,7 +506,15 @@ public class GwtActivityStreamHelper {
 				// Have we resolved all the comments we need to display
 				// for this top level entry?
 				List<ASEntryData> commentEntryDataList = topEntryData.getCommentEntryDataList();
-				if (commentEntryDataList.size() < activeComments) {
+				
+				// We only want the last n comments.  If we have already added n comments to the
+				// top level entry, remove the first one.
+				if ( commentEntryDataList.size() == activeComments )
+				{
+					commentEntryDataList.remove( 0 );
+				}
+
+				if ( commentEntryDataList.size() < activeComments ) {
 					// No!  Add a stubbed out ASEntryData to the
 					// comment List<ASEntryData> that we're completing.
 					if (!isAll) {

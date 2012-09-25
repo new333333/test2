@@ -551,10 +551,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		
 		// Add this ui widget to panel that holds all comments
 		commentsPanel = getCommentsPanel();
-		if ( commentsPanel.getWidgetCount() > 0 )
-			commentsPanel.insert( commentUI, 0 );
-		else
-			commentsPanel.add( commentUI );
+		commentsPanel.add( commentUI );
 		
 		// Update the number of comments on this top entry.
 		++m_numComments;
