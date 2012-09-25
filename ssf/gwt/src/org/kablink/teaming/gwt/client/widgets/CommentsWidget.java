@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -52,6 +53,8 @@ import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStream
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 
@@ -69,6 +72,9 @@ public class CommentsWidget extends Composite
 	private ActivityStreamCtrl m_activityStreamCtrl;
 	private AsyncCallback<VibeRpcResponse> m_getCommentsCallback;
 	private boolean m_showTitle;
+	
+	private static final BigDecimal DELTA = BigDecimal.valueOf( 1, 1 );
+	
 
 	/**
 	 * 
@@ -108,7 +114,9 @@ public class CommentsWidget extends Composite
 		m_mainPanel.add( commentUI );
 		
 		if ( scrollIntoView )
-			commentUI.getElement().scrollIntoView();
+		{
+			showNewComment( commentUI );
+		}
 	}
 	
 	/**
@@ -218,12 +226,6 @@ public class CommentsWidget extends Composite
 		m_commentsInfo = commentsInfo;
 		m_commentAddedCallback = commentAddedCallback;
 		
-//!		Note:  Dennis -> Jay:
-//!		...Jay, you need to do whatever you need to do so that if
-//!		...m_commentAddedCallback is not null, its
-//!		...m_commentAddedCallback.commentAdded(CommentInfo) method gets
-//!		...called with each comment added.
-		
 		// Have we created an ActivityStreamCtrl before?
 		if ( m_activityStreamCtrl == null )
 		{
@@ -281,6 +283,60 @@ public class CommentsWidget extends Composite
 	public void insertReply( ActivityStreamEntry reply )
 	{
 		addComment( reply, true );
+		
+		if ( m_commentAddedCallback != null )
+			m_commentAddedCallback.commentAdded( m_commentsInfo );
+	}
+	
+	/**
+	 * 
+	 */
+	private void showNewComment( ActivityStreamComment asComment )
+	{
+		Timer showTimer;
+		final Element element;
+		
+		element = asComment.getElement();
+		
+		element.scrollIntoView();
+		element.getStyle().setOpacity( 0 );
+
+		showTimer = new Timer()
+		{
+			@Override
+			public void run()
+			{
+				String opacityStr;
+				boolean increased = false;
+
+				opacityStr = element.getStyle().getOpacity();
+				if ( opacityStr != null && opacityStr.length() > 0 )
+				{
+					try
+					{
+						BigDecimal opacity;
+				
+						opacity = new BigDecimal( opacityStr );
+						if ( opacity.compareTo( new BigDecimal( 1 ) ) < 0 )
+						{
+							element.getStyle().setOpacity( opacity.add( DELTA ).doubleValue() );
+							increased = true;
+						}
+					}
+					catch ( NumberFormatException nfe )
+					{
+					}
+				}
+				
+				if ( increased == false )
+				{
+					element.getStyle().setOpacity( 1 );
+					cancel();
+				}
+			}
+		};
+         
+		showTimer.scheduleRepeating( 75 );
 	}
 }
 
