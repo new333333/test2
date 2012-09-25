@@ -2663,6 +2663,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case VALIDATE_EMAIL_ADDRESS:
+		{
+			ValidateEmailAddressCmd vemCmd;
+			Boolean result;
+			BooleanRpcResponseData responseData;
+			
+			vemCmd = (ValidateEmailAddressCmd) cmd;
+			result = GwtServerHelper.validateEmailAddress( vemCmd.getEmailAddress(), vemCmd.getAddressField() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case VALIDATE_ENTRY_EVENTS:
 		{
 			ValidateEntryEventsCmd veaCmd  = ((ValidateEntryEventsCmd) cmd);

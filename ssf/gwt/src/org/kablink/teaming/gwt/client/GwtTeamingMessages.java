@@ -501,6 +501,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_UpdateCalendarEventTask();
 	String rpcFailure_UpdateFavorites();
 	String rpcFailure_UploadFileBlob();
+	String rpcFailure_ValidateEmailAddress();
 	String rpcFailure_ValidateUploads();
 
 	// Strings used to describe various split point load failures.
@@ -1166,6 +1167,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_clickToAddNote();
 	String shareDlg_contributor();
 	String shareDlg_editor();
+	String shareDlg_emailAddressInvalidPrompt();
 	String shareDlg_expiresAfter( String after );
 	String shareDlg_expiresLabel();
 	String shareDlg_expiresNever();
