@@ -4871,6 +4871,15 @@ function ss_resizeEntryHistoryIframe(iframeId, loadingId) {
 }
 
 function ss_showForumEntry(url, isDashboard) {
+	if (window.top.ss_showForumEntryGwt) {
+		window.top.ss_showForumEntryGwt(url, isDashboard);
+		return true;
+	}
+	
+	return ss_showForumEntryJSP(url, isDashboard);
+}
+
+function ss_showForumEntryJSP(url, isDashboard) {
 	//ss_debug("**** ss_showForumEntry - window name: "+window.name);
 	if (typeof ss_showForumEntryOverride != "undefined") {
 		ss_showForumEntryOverride(url, isDashboard);
@@ -4921,6 +4930,11 @@ function ss_showForumEntry(url, isDashboard) {
 }
 
 function ss_showForumEntryInIframe_Overlay(url) {
+	if (window.top.ss_showForumEntryGwt) {
+		window.top.ss_showForumEntryGwt(url, 'no');
+		return true;
+	}
+	
 	try {
 		if (self.parent && self != self.parent && typeof self.parent.ss_showForumEntryInIframe != "undefined") {
 			self.parent.ss_showForumEntryInIframe(url);
@@ -4987,6 +5001,11 @@ function ss_showForumEntryInIframe_Overlay(url) {
 }
 
 function ss_showForumEntryInIframe_Popup(url) {
+	if (window.top.ss_showForumEntryGwt) {
+		window.top.ss_showForumEntryGwt(url, 'no');
+		return true;
+	}
+	
     // ss_debug('popup width = ' + ss_viewEntryPopupWidth)
     // ss_debug('popup height = ' + ss_viewEntryPopupHeight)
     var wObj = self.document.getElementById('ss_showfolder')
@@ -5014,6 +5033,11 @@ function ss_showForumEntryInIframe_Popup(url) {
 }
 
 function ss_showForumEntryInIframe_Newpage(url) {
+	if (window.top.ss_showForumEntryGwt) {
+		window.top.ss_showForumEntryGwt(url, 'no');
+		return true;
+	}
+	
 	ss_setSelfLocation(url);
     return false;
 }

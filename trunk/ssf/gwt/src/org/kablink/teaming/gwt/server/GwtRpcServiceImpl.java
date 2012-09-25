@@ -164,13 +164,11 @@ import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.presence.PresenceInfo;
 import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SimpleProfiler;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
@@ -1456,7 +1454,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			GwtPersonalPreferences prefs;
 			
-			prefs = getPersonalPreferences( ri );
+			prefs = GwtServerHelper.getPersonalPreferences( this, getRequest( ri ) );
 			response = new VibeRpcResponse( prefs );
 			return response;
 		}
@@ -3502,98 +3500,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}
 	
 	/**
-	 * Return a GwtPersonalPreferences object that holds the personal preferences for the logged in user.
-	 * 
-	 * @param ri
-	 * 
-	 * @return
-	 */
-	private GwtPersonalPreferences getPersonalPreferences( HttpRequestInfo ri )
-	{
-		GwtPersonalPreferences personalPrefs;
-		
-		personalPrefs = new GwtPersonalPreferences();
-		
-		try
-		{
-			User user;
-			
-			// Is the current user the guest user?
-			user = GwtServerHelper.getCurrentUser();
-			
-			// Are we dealing with the guest user?
-			if ( !(ObjectKeys.GUEST_USER_INTERNALID.equals( user.getInternalId() ) ) )
-			{
-				String displayStyle;
-				
-				// No
-				// Get the user's display style preference
-				displayStyle = user.getDisplayStyle();
-				personalPrefs.setDisplayStyle( displayStyle );
-				
-				// Get the tutorial panel state.
-				{
-					String tutorialPanelState;
-
-					tutorialPanelState = getTutorialPanelState( ri );
-
-					// Is the tutorial panel open?
-					if ( tutorialPanelState != null && tutorialPanelState.equalsIgnoreCase( "1" ) )
-					{
-						// No
-						personalPrefs.setShowTutorialPanel( false );
-					}
-					else
-						personalPrefs.setShowTutorialPanel( true );
-				}
-				
-				// Get the number of entries per page that should be displayed when a folder is selected.
-				{
-					UserProperties userProperties;
-					String value;
-					Integer numEntriesPerPage = Integer.valueOf(SPropsUtil.getString("folder.records.listed"));
-					
-					userProperties = getProfileModule().getUserProperties( user.getId() );
-					value = (String) userProperties.getProperty( ObjectKeys.PAGE_ENTRIES_PER_PAGE );
-					if ( value != null && value.length() > 0 )
-					{
-						try
-						{
-							numEntriesPerPage = Integer.parseInt( value );
-						}
-						catch (NumberFormatException nfe)
-						{
-							m_logger.warn( "In GwtRpcServiceImpl.getPersonalPreferences(), num entries per page is not an integer." );
-						}
-					}
-					
-					personalPrefs.setNumEntriesPerPage( numEntriesPerPage );
-				}
-				
-				// Set the flag that indicates whether "editor overrides" are supported.
-				personalPrefs.setEditorOverrideSupported( SsfsUtil.supportAttachmentEdit() );
-			}
-			else
-			{
-				m_logger.warn( "GwtRpcServiceImpl.getPersonalPreferences(), user is guest." );
-			}
-		}
-		catch (AccessControlException acEx)
-		{
-			// Nothing to do
-			m_logger.warn( "GwtRpcServiceImpl.getPersonalPreferences() AccessControlException" );
-		}
-		catch (Exception e)
-		{
-			// Nothing to do
-			m_logger.warn( "GwtRpcServiceImpl.getPersonalPreferences() unknown exception" );
-		}
-		
-		return personalPrefs;
-	}// end getPersonalPreferences()
-	
-	
-	/**
 	 * Return the url needed to invoke the "Send to friend" page.
 	 */
 	private String getSendToFriendUrl( HttpRequestInfo ri, String entryId ) throws GwtTeamingException
@@ -3881,34 +3787,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 	}
 
-    /**
-     * 
-	 * @param ri
-	 * 
-	 * @return
-     */
-    private String getTutorialPanelState( HttpRequestInfo ri )
-    {
-    	UserProperties	userProperties;
-    	ProfileModule	profileModule;
-    	String			tutorialPanelState;
-    	
-    	profileModule = getProfileModule();
-
-    	userProperties = profileModule.getUserProperties( null );
-		tutorialPanelState = (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE );
-
-		// Do we have a tutorial panel state?
-		if ( tutorialPanelState == null || tutorialPanelState.length() == 0 )
-		{
-			// No, default to expanded.
-			tutorialPanelState = "2";
-		}
-		
-    	return tutorialPanelState;
-    }// end getTutorialPanelState()
-    
-    
 	/**
 	 * Return a GwtUpgradeInfo object.
 	 *

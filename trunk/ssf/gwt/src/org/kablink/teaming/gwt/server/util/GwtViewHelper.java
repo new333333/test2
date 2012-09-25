@@ -4597,6 +4597,16 @@ public class GwtViewHelper {
 			vi.setViewType(ViewType.VIEW_PROFILE_ENTRY);
 		}
 		
+		else if (action.equals(WebKeys.ACTION_VIEW_FOLDER_ENTRY)) {
+			// A view folder entry!  Mark the ViewInfo as such.
+			vi.setViewType(ViewType.FOLDER_ENTRY);
+			String entryViewStyle = GwtServerHelper.getPersonalPreferences(bs, request).getDisplayStyle();
+			if (!(MiscUtil.hasString(entryViewStyle))) {
+				entryViewStyle = ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE;
+			}
+			vi.setEntryViewStyle(entryViewStyle);
+		}
+		
 		// If we get here reply refers to the BinderInfo requested or
 		// is null.  Return it.
 		if (m_logger.isDebugEnabled()) {

@@ -89,7 +89,6 @@ import org.kablink.teaming.gwt.client.event.ShowTrashEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.ShowTeamWSEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.ViewFolderEntryEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -113,6 +112,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.FrameElement;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -153,6 +153,8 @@ public class ContentControl extends Composite
 		ShowTeamWSEvent.Handler,
 		ShowTrashEvent.Handler
 {
+	private static final boolean SHOW_GWT_ENTRY_VIEWER	= false;	// DRF (20120925):  false until I get it working.
+	
 	private boolean		m_contentInGWT;								//
 	private boolean		m_isAdminContent;							//
 	private boolean		m_isDebugUI;								//
@@ -420,6 +422,17 @@ public class ContentControl extends Composite
 		}
 	}-*/;
 
+	/*
+	 * Runs the given URL in the JSP entry 
+	 */
+	private native void jsViewFolderEntry( String url, String isDashboard )
+	/*-{
+		if ( $wnd.ss_showForumEntryJSP !== undefined )
+			$wnd.ss_showForumEntryJSP( url, isDashboard );
+		else
+			alert( 'ss_showForumEntryJSP() is undefined' );
+	}-*/;
+	
 	/**
 	 * Pushes a URL on the content history stack.
 	 * 
@@ -636,9 +649,14 @@ public class ContentControl extends Composite
 									
 									if ( ViewType.BINDER_WITH_ENTRY_VIEW.equals( vt ) )
 									{
-										GwtTeaming.fireEventAsync(
-											new ViewFolderEntryEvent(
-												vi.getEntryViewUrl() ));
+										OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+											vi.getEntryViewUrl(),
+											Instigator.GOTO_CONTENT_URL );
+											
+										if ( GwtClientHelper.validateOSBI( osbInfo ) )
+										{
+											GwtTeaming.fireEventAsync( new ChangeContextEvent( osbInfo ) );
+										}
 									}
 								}// end execute()
 							};
@@ -859,6 +877,17 @@ public class ContentControl extends Composite
 						break;
 					}
 					break;
+				
+				case FOLDER_ENTRY:
+					if ( SHOW_GWT_ENTRY_VIEWER ) {
+//!						...this needs to be implemented...
+						Window.alert( "Entry URL:  '" + url + "'\n, View Style:  '" + vi.getEntryViewStyle() + "'");
+//!						m_contentInGWT = true;
+//!						break;
+					}
+					
+					jsViewFolderEntry( url, "no" );
+					return;
 					
 				case ADD_BINDER:
 				case ADD_FOLDER_ENTRY:
