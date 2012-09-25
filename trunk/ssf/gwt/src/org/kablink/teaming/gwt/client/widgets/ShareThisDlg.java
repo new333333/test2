@@ -55,12 +55,14 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSharingInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailAddressCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseData;
@@ -1567,6 +1569,12 @@ public class ShareThisDlg extends DlgBox
 		
 		emailAddress = m_findCtrl.getText();
 
+		// Clear what the user has typed.
+		m_findCtrl.clearText();
+
+		// Hide the search-results widget.
+		m_findCtrl.hideSearchResults();
+
 		if ( emailAddress != null && emailAddress.length() > 0 )
 		{
 			findUserCallback = new AsyncCallback<VibeRpcResponse>()
@@ -1601,32 +1609,9 @@ public class ShareThisDlg extends DlgBox
 							else
 							{
 								// No
-								// Create a GwtShareItem for every entity we are sharing with.
-								for ( EntityId nextEntityId : m_entityIds )
-								{
-									GwtShareItem shareItem;
-					
-									shareItem = new GwtShareItem();
-									shareItem.setEntityId( nextEntityId );
-									shareItem.setEntityName( getEntityName( nextEntityId ) );
-									shareItem.setRecipientName( emailAddress );
-									shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
-									shareItem.setShareAccessRights( getDefaultShareAccessRights() );
-									shareItem.setShareCanShareWithOthers( getDefaultShareCanShareWithOthers() );
-									shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
-									
-									// Is this external user already in the list?
-									if ( findShareItem( shareItem ) == -1 )
-									{
-										// No, add it
-										addShare( shareItem, true );
-									}
-									else
-									{
-										// Tell the user the item has already been shared with the external user.
-										Window.alert( GwtTeaming.getMessages().shareDlg_alreadySharedWithSelectedRecipient( emailAddress ) );
-									}
-								}
+								// Validate the mail address that was entered.  If the email address
+								// is valid then add it to the list of recipients
+								validateEmailAddress( emailAddress );
 							}
 						}
 					};
@@ -1638,9 +1623,6 @@ public class ShareThisDlg extends DlgBox
 			// with an internal user.
 			FindUserByEmailAddressCmd cmd = new FindUserByEmailAddressCmd( emailAddress );
 			GwtClientHelper.executeCommand( cmd, findUserCallback );
-			
-			// Clear what the user has typed.
-			m_findCtrl.clearText();
 		}
 	}
 	
@@ -2386,6 +2368,103 @@ public class ShareThisDlg extends DlgBox
 			// ...list.)
 			EventHelper.unregisterEventHandlers( m_registeredEventHandlers );
 		}
+	}
+	
+	/**
+	 * Validate the given email address.  If it is valid add it to the list of recipients
+	 */
+	private void validateEmailAddress( final String emailAddress )
+	{
+		AsyncCallback<VibeRpcResponse> validationCallback;
+
+		validationCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable caught )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+												caught,
+												GwtTeaming.getMessages().rpcFailure_ValidateEmailAddress() );
+			}
+
+			@Override
+			public void onSuccess( final VibeRpcResponse vibeResult )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						boolean addToRecipientList = false;
+						
+						if ( vibeResult.getResponseData() != null )
+						{
+							BooleanRpcResponseData responseData;
+							
+							// Is the email valid?
+							responseData = (BooleanRpcResponseData) vibeResult.getResponseData();
+							if ( responseData.getBooleanValue() == true )
+							{
+								// Yes
+								addToRecipientList = true;
+							}
+							else
+							{
+								// No, ask the user if they still want to share with this email address.
+								if ( Window.confirm( GwtTeaming.getMessages().shareDlg_emailAddressInvalidPrompt() ) == true )
+									addToRecipientList = true;
+								else
+								{
+									// Put the email address back in the find control
+									m_findCtrl.setInitialSearchString( emailAddress );
+								}
+							}
+						}
+						
+						// Should we add the email address to the list of recipients?
+						if ( addToRecipientList )
+						{
+							// Yes
+							// Create a GwtShareItem for every entity we are sharing with.
+							for ( EntityId nextEntityId : m_entityIds )
+							{
+								GwtShareItem shareItem;
+
+								shareItem = new GwtShareItem();
+								shareItem.setEntityId( nextEntityId );
+								shareItem.setEntityName( getEntityName( nextEntityId ) );
+								shareItem.setRecipientName( emailAddress );
+								shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
+								shareItem.setShareAccessRights( getDefaultShareAccessRights() );
+								shareItem.setShareCanShareWithOthers( getDefaultShareCanShareWithOthers() );
+								shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
+								
+								// Is this external user already in the list?
+								if ( findShareItem( shareItem ) == -1 )
+								{
+									// No, add it
+									addShare( shareItem, true );
+								}
+								else
+								{
+									// Tell the user the item has already been shared with the external user.
+									Window.alert( GwtTeaming.getMessages().shareDlg_alreadySharedWithSelectedRecipient( emailAddress ) );
+								}
+							}
+						}
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}				
+		};
+
+		// Issue an ajax request to validate the email address.
+		ValidateEmailAddressCmd cmd = new ValidateEmailAddressCmd(
+															emailAddress,
+															ValidateEmailAddressCmd.AddressField.MAIL_TO );
+		GwtClientHelper.executeCommand( cmd, validationCallback );
 	}
 
 	

@@ -161,6 +161,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailAddressCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmdType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
@@ -211,6 +212,7 @@ import org.kablink.teaming.module.ldap.LdapModule.LdapOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.license.LicenseModule.LicenseOperation;
+import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.resourcedriver.RDException;
@@ -7637,6 +7639,7 @@ public class GwtServerHelper {
 		case UNTRACK_BINDER:
 		case UNTRACK_PERSON:
 		case UPLOAD_FILE_BLOB:
+		case VALIDATE_EMAIL_ADDRESS:
 		case VALIDATE_ENTRY_EVENTS:
 		case VALIDATE_UPLOADS:
 			break;
@@ -8536,6 +8539,34 @@ public class GwtServerHelper {
 
 		// If we get here, everything worked.
 		return Boolean.TRUE;
+	}
+	
+	/**
+	 * Validate the given email address
+	 */
+	public static Boolean validateEmailAddress(
+		String emailAddress,
+		ValidateEmailAddressCmd.AddressField addressField )
+	{
+		String usedAs;
+		
+		switch ( addressField )
+		{
+		case MAIL_BC:
+			usedAs = MailModule.BCC;
+			break;
+		
+		case MAIL_CC:
+			usedAs = MailModule.CC;
+			break;
+		
+		case MAIL_TO:
+		default:
+			usedAs = MailModule.TO;
+			break;
+		}
+		
+		return MiscUtil.isEmailAddressValid( usedAs, emailAddress );
 	}
 	
 	/**
