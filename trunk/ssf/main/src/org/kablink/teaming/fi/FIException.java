@@ -52,6 +52,7 @@ public class FIException extends UncheckedCodedException {
 	public static final String FAILED_TO_SYNCHRONIZE_NOT_DIRECTORY="fi.error.failed.to.synchronize.not.directory";
 	public static final String CANNOT_ADD_FOLDER_ANCESTER="fi.error.cannot.add.folder.ancester";
 	public static final String CANNOT_MAP_TO_EXTERNAL_PRINCIPAL_ID="fi.error.cannot.map.to.external.principal.id";
+	public static final String CREDENTIAL_UNAVAILABLE_FOR_USER="fi.error.credential.unavailable.for.user";
 	
     public FIException(String errorCode, Object arg) {
     	super(errorCode, new Object[]{arg});
