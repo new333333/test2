@@ -120,6 +120,7 @@ import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtOpenIDAuthenticationProvider;
+import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -233,6 +234,7 @@ import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
+import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -5852,6 +5854,69 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return a GwtPersonalPreferences object that holds the personal
+	 * preferences for the logged in user.
+	 * 
+	 * @param bs
+	 * @param request
+	 * 
+	 * @return
+	 */
+	public static GwtPersonalPreferences getPersonalPreferences(AllModulesInjected bs, HttpServletRequest request) {
+		GwtPersonalPreferences personalPrefs = new GwtPersonalPreferences();
+		try {
+			// Are we dealing with the guest user?
+			User user = GwtServerHelper.getCurrentUser();
+			if (!(ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()))) {
+				// No!  Get the user's display style preference.
+				String displayStyle = user.getDisplayStyle();
+				personalPrefs.setDisplayStyle(displayStyle);
+				
+				// Is the tutorial panel open?
+				String tutorialPanelState = getTutorialPanelState(bs, request);
+				if ((null != tutorialPanelState) && tutorialPanelState.equalsIgnoreCase("1"))
+				     personalPrefs.setShowTutorialPanel(false);
+				else personalPrefs.setShowTutorialPanel(true );
+				
+				// Get the number of entries per page that should be
+				// displayed when a folder is selected.
+				Integer numEntriesPerPage = Integer.valueOf(SPropsUtil.getString("folder.records.listed"));
+				UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
+				String value = ((String) userProperties.getProperty(ObjectKeys.PAGE_ENTRIES_PER_PAGE));
+				if (MiscUtil.hasString(value)) {
+					try {
+						numEntriesPerPage = Integer.parseInt(value);
+					}
+					catch (NumberFormatException nfe) {
+						m_logger.warn("GwtServerHelper.getPersonalPreferences():  num entries per page is not an integer.");
+					}
+				}
+				personalPrefs.setNumEntriesPerPage(numEntriesPerPage);
+				
+				// Set the flag that indicates whether 'editor
+				// overrides; are supported.
+				personalPrefs.setEditorOverrideSupported(SsfsUtil.supportAttachmentEdit());
+			}
+			
+			else {
+				m_logger.warn("GwtServerHelper.getPersonalPreferences():  User is guest.");
+			}
+		}
+		
+		catch (AccessControlException acEx) {
+			// Nothing to do.
+			m_logger.warn("GwtServerHelper.getPersonalPreferences():  AccessControlException");
+		}
+		
+		catch (Exception e) {
+			// Nothing to do.
+			m_logger.warn("GwtServerHelper.getPersonalPreferences():  Unknown exception");
+		}
+		
+		return personalPrefs;
+	}
+	
+	/**
 	 * Return subscription data for the given entry id.
 	 */
 	public static SubscriptionData getSubscriptionData( AllModulesInjected bs, String entryId )
@@ -6151,6 +6216,26 @@ public class GwtServerHelper {
 		return getTeamMemberIds(bs, binderId, false);
 	}
 	
+    /**
+     * 
+	 * @param ri
+	 * 
+	 * @return
+     */
+    public static String getTutorialPanelState(AllModulesInjected bs, HttpServletRequest request) {
+    	ProfileModule	profileModule = bs.getProfileModule();
+    	UserProperties	userProperties = profileModule.getUserProperties( null );
+    	String			tutorialPanelState = (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_TUTORIAL_PANEL_STATE );
+
+		// Do we have a tutorial panel state?
+		if (!(MiscUtil.hasString(tutorialPanelState))) {
+			// No, default to expanded.
+			tutorialPanelState = "2";
+		}
+		
+    	return tutorialPanelState;
+    }
+    
 	/**
 	 * Returns the Object from an entry map.
 	 * 

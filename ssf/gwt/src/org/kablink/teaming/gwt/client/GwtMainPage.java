@@ -1021,6 +1021,9 @@ public class GwtMainPage extends ResizeComposite
 		
 		// Initialize the JavaScript that invokes the admin page.
 		initInvokeAdminPageJS( this );
+		
+		// Initialize the JavaScript that runs the entry viewer.
+		initShowForumEntry( this );
 	}
 
 	/*
@@ -1060,6 +1063,16 @@ public class GwtMainPage extends ResizeComposite
 		$wnd.ss_invokeTagDlg = function( entryId, entryTitle, div )
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::invokeTagDlg(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/dom/client/Element;)( entryId, entryTitle, div );
+		}
+	}-*/;
+	
+	/*
+	 * Called to create a JavaScript method that can be called to show an entry viewer.
+	 */
+	private native void initShowForumEntry( GwtMainPage gwtMainPage ) /*-{
+		$wnd.ss_showForumEntryGwt = function( url, isDashboard )
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::viewFolderEntry(Ljava/lang/String;Ljava/lang/String;)( url, isDashboard );
 		}
 	}-*/;
 
@@ -1822,18 +1835,22 @@ public class GwtMainPage extends ResizeComposite
 		super.onResize();
 		relayoutPage( false );
 	}// end onResize()
-	
-	
-	/**
-	 * 
-	 */
-	private native void viewFolderEntry( String url ) /*-{
-		if ( $wnd.ss_showForumEntry !== undefined )
-			$wnd.ss_showForumEntry( url, 'no' );
-		else
-			alert( 'ss_showForumEntry() is undefined' );
-	}-*/;
 
+	
+	/*
+	 * Runs the given URL in the JSP entry 
+	 */
+	private void viewFolderEntry( String url )
+	{
+		gotoUrlAsync( url );
+	}
+
+	private void viewFolderEntry( String url, String isDashboard )
+	{
+		// Always use the initial form of the method.
+		viewFolderEntry( url );
+	}
+	
 	/*
 	 * This method will be called asynchronously goto a URL,
 	 * permalink or otherwise, received as a parameter.
