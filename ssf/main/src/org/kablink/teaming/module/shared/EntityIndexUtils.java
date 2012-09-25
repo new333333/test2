@@ -639,12 +639,12 @@ public class EntityIndexUtils {
     	}
     	return ids;
     }
-    public static String getEntryAclString(Binder binder, Entry entry) {
+    private static String getEntryAclString(Binder binder, Entry entry) {
      	if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop()) {
     		//This is a reply to a folder entry. Get the acl of the top entry
     		entry = ((FolderEntry)entry).getTopEntry();
     	}
-    	if (entry.hasEntryAcl()) {
+    	if (entry.hasEntryAcl() || entry.hasEntryExternalAcl()) {
 			Set<String> entryIds = AccessUtils.getReadAccessIds(entry);
 	   		String ids = LongIdUtil.getIdsAsString(entryIds);
 	        return ids.trim();
