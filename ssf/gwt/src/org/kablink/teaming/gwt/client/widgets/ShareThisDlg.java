@@ -55,6 +55,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsCmd;
@@ -623,6 +624,97 @@ public class ShareThisDlg extends DlgBox
 		m_shareTable.setText( row, 0, GwtTeaming.getMessages().noShareRecipients() );
 	}
 	
+	/**
+	 * Add a share for the given GwtTeamingItem
+	 */
+	private void addShare( GwtTeamingItem gwtTeamingItem )
+	{
+		if ( gwtTeamingItem == null )
+			return;
+		
+		for ( EntityId nextEntityId : m_entityIds )
+		{
+			GwtShareItem shareItem = null;
+			
+			// Are we dealing with a User?
+			if ( gwtTeamingItem instanceof GwtUser )
+			{
+				GwtUser user;
+				String userId;
+				
+				// Yes
+				user = (GwtUser) gwtTeamingItem;
+				
+				// Is the user trying to share the item with themselves?
+				userId = GwtClientHelper.getRequestInfo().getUserId();
+				if ( userId != null && userId.equalsIgnoreCase( user.getUserId() ) )
+				{
+					// Yes, tell them they can't.
+					Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithYourself() );
+					return;
+				}
+				
+				// Is this an external user?
+				if ( user.getIdentitySource() == IdentitySource.EXTERNAL )
+				{
+					// Yes, is sharing this entity with an external user allowed?
+					if ( m_sharingInfo.getCanShareWithExternalUsers() == false )
+					{
+						// No, tell the user they can't do this.
+						Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithExternalUser() );
+						return;
+					}
+				}
+				
+				shareItem = new GwtShareItem();
+				shareItem.setRecipientName( user.getName() );
+				if ( user.getIdentitySource() == GwtUser.IdentitySource.EXTERNAL )
+					shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
+				else
+					shareItem.setRecipientType( GwtRecipientType.USER );
+				shareItem.setRecipientId( Long.valueOf( user.getUserId() ) );
+			}
+			// Are we dealing with a group?
+			else if ( gwtTeamingItem instanceof GwtGroup )
+			{
+				GwtGroup group;
+				
+				// Yes
+				group = (GwtGroup) gwtTeamingItem;
+				
+				shareItem = new GwtShareItem();
+				shareItem.setRecipientName( group.getShortDisplayName() );
+				shareItem.setRecipientType( GwtRecipientType.GROUP );
+				shareItem.setRecipientId( Long.valueOf( group.getId() ) );
+			}
+
+			// Do we have an object to add to our list of shares?
+			if ( shareItem != null )
+			{
+				// Yes
+				shareItem.setEntityId( nextEntityId );
+				shareItem.setEntityName( getEntityName( nextEntityId ) );
+				
+				// Has the item already been shared with the recipient
+				if ( findShareItem( shareItem ) == -1 )
+				{
+					// No
+					shareItem.setShareAccessRights( getDefaultShareAccessRights() );
+					shareItem.setShareCanShareWithOthers( getDefaultShareCanShareWithOthers() );
+					shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
+					shareItem.setComments( getDefaultComment() );
+					
+					// Add the recipient to our list of recipients
+					addShare( shareItem, true );
+				}
+				else
+				{
+					// Yes, tell the user
+					Window.alert( GwtTeaming.getMessages().shareDlg_alreadySharedWithSelectedRecipient( shareItem.getRecipientName() ) );
+				}
+			}
+		}// end for()
+	}
 	
 	/**
 	 * Add the given share to the end of the table that holds the list of shares
@@ -1463,7 +1555,8 @@ public class ShareThisDlg extends DlgBox
 	 */
 	private void handleClickOnAddExternalUser()
 	{
-		String emailAddress;
+		final String emailAddress;
+		AsyncCallback<VibeRpcResponse> findUserCallback;
 
 		// Is sharing with an external user ok to do?
 		if ( m_sharingInfo.getCanShareWithExternalUsers() == false )
@@ -1476,35 +1569,78 @@ public class ShareThisDlg extends DlgBox
 
 		if ( emailAddress != null && emailAddress.length() > 0 )
 		{
+			findUserCallback = new AsyncCallback<VibeRpcResponse>()
+			{
+				@Override
+				public void onFailure( Throwable caught )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+													caught,
+													GwtTeaming.getMessages().rpcFailure_FindUserByEmailAddress() );
+				}
+
+				@Override
+				public void onSuccess( final VibeRpcResponse vibeResult )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							GwtUser gwtUser;
+							
+							// Was the email associated with an internal user?
+							if ( vibeResult.getResponseData() != null )
+							{
+								// Yes
+								gwtUser = (GwtUser) vibeResult.getResponseData();
+								addShare( gwtUser );
+							}
+							else
+							{
+								// No
+								// Create a GwtShareItem for every entity we are sharing with.
+								for ( EntityId nextEntityId : m_entityIds )
+								{
+									GwtShareItem shareItem;
+					
+									shareItem = new GwtShareItem();
+									shareItem.setEntityId( nextEntityId );
+									shareItem.setEntityName( getEntityName( nextEntityId ) );
+									shareItem.setRecipientName( emailAddress );
+									shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
+									shareItem.setShareAccessRights( getDefaultShareAccessRights() );
+									shareItem.setShareCanShareWithOthers( getDefaultShareCanShareWithOthers() );
+									shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
+									
+									// Is this external user already in the list?
+									if ( findShareItem( shareItem ) == -1 )
+									{
+										// No, add it
+										addShare( shareItem, true );
+									}
+									else
+									{
+										// Tell the user the item has already been shared with the external user.
+										Window.alert( GwtTeaming.getMessages().shareDlg_alreadySharedWithSelectedRecipient( emailAddress ) );
+									}
+								}
+							}
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}				
+			};
+
+			// Issue an ajax request to see if the email address that was entered is associated
+			// with an internal user.
+			FindUserByEmailAddressCmd cmd = new FindUserByEmailAddressCmd( emailAddress );
+			GwtClientHelper.executeCommand( cmd, findUserCallback );
+			
 			// Clear what the user has typed.
 			m_findCtrl.clearText();
-			
-			// Create a GwtShareItem for every entity we are sharing with.
-			for ( EntityId nextEntityId : m_entityIds )
-			{
-				GwtShareItem shareItem;
-
-				shareItem = new GwtShareItem();
-				shareItem.setEntityId( nextEntityId );
-				shareItem.setEntityName( getEntityName( nextEntityId ) );
-				shareItem.setRecipientName( emailAddress );
-				shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
-				shareItem.setShareAccessRights( getDefaultShareAccessRights() );
-				shareItem.setShareCanShareWithOthers( getDefaultShareCanShareWithOthers() );
-				shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
-				
-				// Is this external user already in the list?
-				if ( findShareItem( shareItem ) == -1 )
-				{
-					// No, add it
-					addShare( shareItem, true );
-				}
-				else
-				{
-					// Tell the user the item has already been shared with the external user.
-					Window.alert( GwtTeaming.getMessages().shareDlg_alreadySharedWithSelectedRecipient( emailAddress ) );
-				}
-			}
 		}
 	}
 	
@@ -1972,88 +2108,7 @@ public class ShareThisDlg extends DlgBox
 				m_findCtrl.clearText();
 
 				// Create a GwtShareItem for every entity we are sharing with.
-				for ( EntityId nextEntityId : m_entityIds )
-				{
-					GwtShareItem shareItem = null;
-					
-					// Are we dealing with a User?
-					if ( selectedObj instanceof GwtUser )
-					{
-						GwtUser user;
-						String userId;
-						
-						// Yes
-						user = (GwtUser) selectedObj;
-						
-						// Is the user trying to share the item with themselves?
-						userId = GwtClientHelper.getRequestInfo().getUserId();
-						if ( userId != null && userId.equalsIgnoreCase( user.getUserId() ) )
-						{
-							// Yes, tell them they can't.
-							Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithYourself() );
-							return;
-						}
-						
-						// Is this an external user?
-						if ( user.getIdentitySource() == IdentitySource.EXTERNAL )
-						{
-							// Yes, is sharing this entity with an external user allowed?
-							if ( m_sharingInfo.getCanShareWithExternalUsers() == false )
-							{
-								// No, tell the user they can't do this.
-								Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithExternalUser() );
-								return;
-							}
-						}
-						
-						shareItem = new GwtShareItem();
-						shareItem.setRecipientName( user.getName() );
-						if ( user.getIdentitySource() == GwtUser.IdentitySource.EXTERNAL )
-							shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
-						else
-							shareItem.setRecipientType( GwtRecipientType.USER );
-						shareItem.setRecipientId( Long.valueOf( user.getUserId() ) );
-					}
-					// Are we dealing with a group?
-					else if ( selectedObj instanceof GwtGroup )
-					{
-						GwtGroup group;
-						
-						// Yes
-						group = (GwtGroup) selectedObj;
-						
-						shareItem = new GwtShareItem();
-						shareItem.setRecipientName( group.getShortDisplayName() );
-						shareItem.setRecipientType( GwtRecipientType.GROUP );
-						shareItem.setRecipientId( Long.valueOf( group.getId() ) );
-					}
-	
-					// Do we have an object to add to our list of shares?
-					if ( shareItem != null )
-					{
-						// Yes
-						shareItem.setEntityId( nextEntityId );
-						shareItem.setEntityName( getEntityName( nextEntityId ) );
-						
-						// Has the item already been shared with the recipient
-						if ( findShareItem( shareItem ) == -1 )
-						{
-							// No
-							shareItem.setShareAccessRights( getDefaultShareAccessRights() );
-							shareItem.setShareCanShareWithOthers( getDefaultShareCanShareWithOthers() );
-							shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
-							shareItem.setComments( getDefaultComment() );
-							
-							// Add the recipient to our list of recipients
-							addShare( shareItem, true );
-						}
-						else
-						{
-							// Yes, tell the user
-							Window.alert( GwtTeaming.getMessages().shareDlg_alreadySharedWithSelectedRecipient( shareItem.getRecipientName() ) );
-						}
-					}
-				}// end for()
+				addShare( selectedObj );
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );

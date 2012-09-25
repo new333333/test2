@@ -33,6 +33,8 @@
 package org.kablink.teaming.gwt.client;
 
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -41,7 +43,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author drfoster@novell.com
  */
-public class GwtUser extends GwtPrincipal implements IsSerializable {
+public class GwtUser extends GwtPrincipal
+	implements IsSerializable, VibeRpcResponseData
+{
 	private String m_name;
 	private String m_title;
 	private String m_userId;

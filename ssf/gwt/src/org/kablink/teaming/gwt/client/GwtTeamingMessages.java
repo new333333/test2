@@ -317,6 +317,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_executeEnhancedViewJsp();
 	String rpcFailure_ExpandBucket();
 	String rpcFailure_ExpandSubtasks();
+	String rpcFailure_FindUserByEmailAddress();
 	String rpcFailure_FolderDoesNotExist();
 	String rpcFailure_GetAccessoryStatus();
 	String rpcFailure_GetActivityStreamParams();
