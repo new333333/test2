@@ -426,6 +426,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
     		checkPasswordRequirement(authentication);
     		
        		Authentication result = null;
+       		Object credentials = authentication.getCredentials();
        		
         	// Are we dealing with one of Teaming's system accounts such as "admin" or "guest"?
         	if ( !MiscUtil.isSystemUserAccount( authentication.getName() ) )
@@ -470,7 +471,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		    					authenticationServiceProvider,
 		    					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
 		    					loginName, 
-		    					(String) result.getCredentials(),
+		    					(String) credentials,
 		    					createUser,
 		    					passwordAutoSynch,
 		    					ignorePassword,
@@ -485,7 +486,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	        					authenticationServiceProvider,
 	        					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
 	        					loginName, 
-	        					(String) result.getCredentials(),
+	        					(String) credentials,
 	        					false, 
 	        					false, 
 	        					true, 
@@ -528,7 +529,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
     					AuthenticationServiceProvider.LOCAL,
     					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
     					(String) result.getName(), 
-    					(String) result.getCredentials(),
+    					(String) credentials,
     					false, 
     					false, 
     					true, 
