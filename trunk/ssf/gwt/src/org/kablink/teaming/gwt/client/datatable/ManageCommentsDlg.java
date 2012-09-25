@@ -162,7 +162,7 @@ public class ManageCommentsDlg extends DlgBox implements KeyDownHandler {
 					@Override
 					public void execute() {
 						// Add the comment to the comment widget...
-						m_commentsWidget.addComment(asEntry, false, true);
+						m_commentsWidget.addComment(asEntry, true);
 						
 						// ...clear the text from the TextArea...
 						m_addCommentTA.setText("");

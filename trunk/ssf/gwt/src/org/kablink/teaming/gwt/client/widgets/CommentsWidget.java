@@ -88,9 +88,9 @@ public class CommentsWidget extends Composite
 	 * 
 	 * @param activityStreamEntry
 	 * @param append
-	 * @param fromCommentManager	true -> Called from ManageCommentsDlg.  false -> It's not called from there.
+	 * @param scrollIntoView
 	 */
-	public void addComment( ActivityStreamEntry activityStreamEntry, boolean append, boolean fromCommentManager )
+	public void addComment( ActivityStreamEntry activityStreamEntry, boolean scrollIntoView )
 	{
 //!		Note:  Dennis -> Jay:
 //!		...Jay, you need to do whatever you need to reflect the
@@ -105,18 +105,12 @@ public class CommentsWidget extends Composite
 											m_showTitle );
 		commentUI.addStyleName( "commentsWidget_commentStylesOverride" );
 		commentUI.setData( activityStreamEntry );
-		if ( append )
-			m_mainPanel.add( commentUI );
-		else
-			m_mainPanel.insert( commentUI, 0 );
+		m_mainPanel.add( commentUI );
+		
+		if ( scrollIntoView )
+			commentUI.getElement().scrollIntoView();
 	}
 	
-	public void addComment( ActivityStreamEntry activityStreamEntry, boolean append )
-	{
-		// Always use the initial form of the method.
-		addComment( activityStreamEntry, append, false );	// false -> Not from comment manager (i.e., ManageCommentsDlg.)
-	}
-
 	/**
 	 * Issue an rpc request to get the comments for the given entity
 	 */
@@ -173,7 +167,7 @@ public class CommentsWidget extends Composite
 									// Yes
 									for (ActivityStreamEntry nextComment: listOfComments)
 									{
-										addComment( nextComment, true );
+										addComment( nextComment, false );
 									}
 								}
 							}
@@ -286,7 +280,7 @@ public class CommentsWidget extends Composite
 	@Override
 	public void insertReply( ActivityStreamEntry reply )
 	{
-		addComment( reply, false );
+		addComment( reply, true );
 	}
 }
 

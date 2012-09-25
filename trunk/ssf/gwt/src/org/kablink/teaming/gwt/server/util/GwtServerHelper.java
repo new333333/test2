@@ -930,7 +930,7 @@ public class GwtServerHelper {
 				}
 			}
 
-			if ( replyDefId == null )
+			if ( replyDefId == null || replyDefId.length() == 0 )
 				replyDefId = entry.getEntryDefId();
 		}
 		

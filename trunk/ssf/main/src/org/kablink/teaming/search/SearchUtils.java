@@ -120,7 +120,7 @@ public class SearchUtils {
 		crit.add(in(ENTRY_TYPE_FIELD,new String[] {Constants.ENTRY_TYPE_REPLY}))
 			.add(in(DOC_TYPE_FIELD,new String[] {Constants.DOC_TYPE_ENTRY}))
 			.add(in(entryReplyType, entryIds));
-		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
+		crit.addOrder(Order.asc(MODIFICATION_DATE_FIELD));
 		return crit;
 	}
 	
