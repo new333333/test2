@@ -43,10 +43,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class ViewInfo implements IsSerializable, VibeRpcResponseData {
-	private BinderInfo	m_binderInfo;		// If view type is binder, a BinderInfo object that describes it.
-	private String		m_entryViewStyle;	//
-	private String		m_entryViewUrl;		//
-	private ViewType	m_viewType;			//
+	private BinderInfo			m_binderInfo;	// If m_viewType is BINDER or BINDER_WITH_ENTRY_VIEW, a BinderInfo object that describes it.
+	private String				m_entryViewUrl;	// If m_viewType is BINDER_WITH_ENTRY_VIEW, the URL to use to view the entry AFTER loading the binder.
+	private ViewFolderEntryInfo	m_vfei;			// If m_viewType is FOLDER_ENTRY, a ViewFolderEntryInfo object that describes it.
+	private ViewType			m_viewType;		// The type of the view.
 	
 	/**
 	 * Constructor method.
@@ -79,20 +79,20 @@ public class ViewInfo implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @return
 	 */
-	public boolean    isAdvancedSearchView() {return  ViewType.ADVANCED_SEARCH.equals(m_viewType);                                                       }
-	public boolean    isBinderView()         {return (ViewType.BINDER.equals(         m_viewType) || ViewType.BINDER_WITH_ENTRY_VIEW.equals(m_viewType));}
-	public BinderInfo getBinderInfo()        {return m_binderInfo;                                                                                       }
-	public String     getEntryViewStyle()    {return m_entryViewStyle;                                                                                   }
-	public String     getEntryViewUrl()      {return m_entryViewUrl;                                                                                     }
-	public ViewType   getViewType()          {return m_viewType;                                                                                         }
+	public boolean             isAdvancedSearchView() {return  ViewType.ADVANCED_SEARCH.equals(m_viewType);                                                       }
+	public boolean             isBinderView()         {return (ViewType.BINDER.equals(         m_viewType) || ViewType.BINDER_WITH_ENTRY_VIEW.equals(m_viewType));}
+	public BinderInfo          getBinderInfo()        {return m_binderInfo;                                                                                       }
+	public String              getEntryViewUrl()      {return m_entryViewUrl;                                                                                     }
+	public ViewFolderEntryInfo getFolderEntryInfo()   {return m_vfei;                                                                                             }
+	public ViewType            getViewType()          {return m_viewType;                                                                                         }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @return
 	 */
-	public void setBinderInfo(    BinderInfo binderInfo)     {m_binderInfo     = binderInfo;    }
-	public void setEntryViewStyle(String     entryViewStyle) {m_entryViewStyle = entryViewStyle;}
-	public void setEntryViewUrl(  String     entryViewUrl)   {m_entryViewUrl   = entryViewUrl;  }
-	public void setViewType(      ViewType   viewType)       {m_viewType       = viewType;      }	
+	public void setBinderInfo(         BinderInfo          binderInfo)   {m_binderInfo   = binderInfo;  }
+	public void setEntryViewUrl(       String              entryViewUrl) {m_entryViewUrl = entryViewUrl;}
+	public void setViewFolderEntryInfo(ViewFolderEntryInfo vfei)         {m_vfei         = vfei;        }
+	public void setViewType(           ViewType            viewType)     {m_viewType     = viewType;    }	
 }

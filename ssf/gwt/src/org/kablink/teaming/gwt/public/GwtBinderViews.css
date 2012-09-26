@@ -500,6 +500,19 @@
 	.vibe-changeEntryTypesRootPanel  {padding: 6px;}
 /* End:  Change entry types dialog styles. */
 
+/* Start:  Folder entry composite styles. */
+	.vibe-folderEntryComposite-panel {padding: 10px;}
+/* End:  Folder entry composite styles. */
+
+/* Start:  Folder entry dialog styles. */
+	.vibe-folderEntryDlgBox .popupContent {background-color: white !important;}
+	.vibe-folderEntryDlg-panel            {}
+/* End:  Folder entry dialog styles. */
+
+/* Start:  Folder entry view styles. */
+	.vibe-folderEntryView-panel {}
+/* End:  Folder entry view styles. */
+
 /* Start:  Profile entry dialog styles. */
 	.vibe-profileEntryDlg-attrCaption {font-weight: bold; padding-right: 3px;}
 	.vibe-profileEntryDlg-attrValue   {}

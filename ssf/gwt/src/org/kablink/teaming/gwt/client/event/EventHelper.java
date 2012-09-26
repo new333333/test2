@@ -1409,6 +1409,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case SHOW_FOLDER_ENTRY:
+				// A ShowFolderEntryEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ShowFolderEntryEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShowFolderEntryEvent.registerEvent(eventBus, ((ShowFolderEntryEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case SHOW_GENERIC_WORKSPACE:
 				// A ShowGenericWSEvent!  Can the event handler we were given handle that?
 				if ( eventHandler instanceof ShowGenericWSEvent.Handler )
@@ -2148,6 +2157,7 @@ public class EventHelper {
 			case SHOW_DISCUSSION_FOLDER:				hasHandler = (eventHandler instanceof ShowDiscussionFolderEvent.Handler);		   break;
 			case SHOW_DISCUSSION_WORKSPACE:				hasHandler = (eventHandler instanceof ShowDiscussionWSEvent.Handler);			   break;
 			case SHOW_FILE_FOLDER:						hasHandler = (eventHandler instanceof ShowFileFolderEvent.Handler);		           break;
+			case SHOW_FOLDER_ENTRY:						hasHandler = (eventHandler instanceof ShowFolderEntryEvent.Handler);		       break;
 			case SHOW_GENERIC_WORKSPACE:				hasHandler = (eventHandler instanceof ShowGenericWSEvent.Handler);			   	   break;
 			case SHOW_GLOBAL_WORKSPACE:					hasHandler = (eventHandler instanceof ShowGlobalWSEvent.Handler);			   	   break;
 			case SHOW_GUESTBOOK_FOLDER:				    hasHandler = (eventHandler instanceof ShowGuestbookFolderEvent.Handler);		   break;

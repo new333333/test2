@@ -168,7 +168,8 @@ public enum TeamingEvents implements IsSerializable {
 	SHOW_CONTENT_CONTROL,				// Shows the ContentControl.
 	SHOW_DISCUSSION_FOLDER,				// Shows a discussion folder.
 	SHOW_DISCUSSION_WORKSPACE,			// Shows a discussion workspace.
-	SHOW_FILE_FOLDER,					// Shows a file       folder.
+	SHOW_FILE_FOLDER,					// Shows a file folder.
+	SHOW_FOLDER_ENTRY,					// Shows a folder entry view.
 	SHOW_GENERIC_WORKSPACE,				// Shows a generic workspace.
 	SHOW_GLOBAL_WORKSPACE,				// Shows the global workspace
 	SHOW_GUESTBOOK_FOLDER,				// Shows a guest book folder.
