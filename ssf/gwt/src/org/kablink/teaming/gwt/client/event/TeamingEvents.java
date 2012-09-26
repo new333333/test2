@@ -227,7 +227,6 @@ public enum TeamingEvents implements IsSerializable {
 	
 	VIEW_ALL_ENTRIES,					// Shows all entries.
 	VIEW_CURRENT_BINDER_TEAM_MEMBERS,	// Views the Team Membership of the current binder.
-	VIEW_FOLDER_ENTRY,					// Open an entry for viewing.
 	VIEW_FORUM_ENTRY,					// Opens an entry for viewing.
 	VIEW_PINNED_ENTRIES,				// Toggles the state of viewing pinned entries.
 	VIEW_RESOURCE_LIBRARY,				// Shows the resource library page.

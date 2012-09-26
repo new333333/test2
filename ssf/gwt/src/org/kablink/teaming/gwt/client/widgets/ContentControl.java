@@ -93,6 +93,7 @@ import org.kablink.teaming.gwt.client.event.ShowTrashEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.ShowTeamWSEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -157,7 +158,8 @@ public class ContentControl extends Composite
 		ShowTaskFolderEvent.Handler,
 		ShowTeamRootWSEvent.Handler,
 		ShowTeamWSEvent.Handler,
-		ShowTrashEvent.Handler
+		ShowTrashEvent.Handler,
+		ViewForumEntryEvent.Handler
 {
 	private static final boolean SHOW_GWT_ENTRY_VIEWER	= false;	// DRF (20120925):  false until I get it working.
 	
@@ -206,6 +208,9 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_TEAM_ROOT_WORKSPACE,
 		TeamingEvents.SHOW_TEAM_WORKSPACE,
 		TeamingEvents.SHOW_TRASH,
+		
+		// View events.
+		TeamingEvents.VIEW_FORUM_ENTRY,
 	};
 
 	// Maximum number of URLs tracked in the content history stack.
@@ -1894,6 +1899,19 @@ public class ContentControl extends Composite
 		void onUnavailable();
 	}
 
+	/**
+	 * Handles ViewForumEntryEvent's received by this class.
+	 * 
+	 * Implements the ViewForumEntryEvent.Handler.onViewForumEntry() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onViewForumEntry( ViewForumEntryEvent event )
+	{
+		setViewFromUrl( event.getViewForumEntryUrl(), Instigator.VIEW_FOLDER_ENTRY );
+	}
+	
 	/**
 	 * Loads the ContentControl split point and returns an instance of
 	 * it via the callback.
