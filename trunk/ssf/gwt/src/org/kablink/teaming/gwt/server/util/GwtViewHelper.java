@@ -145,6 +145,7 @@ import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
+import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
@@ -4600,11 +4601,19 @@ public class GwtViewHelper {
 		else if (action.equals(WebKeys.ACTION_VIEW_FOLDER_ENTRY)) {
 			// A view folder entry!  Mark the ViewInfo as such.
 			vi.setViewType(ViewType.FOLDER_ENTRY);
-			String entryViewStyle = GwtServerHelper.getPersonalPreferences(bs, request).getDisplayStyle();
-			if (!(MiscUtil.hasString(entryViewStyle))) {
-				entryViewStyle = ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE;
+			String viewStyle = GwtServerHelper.getPersonalPreferences(bs, request).getDisplayStyle();
+			if (!(MiscUtil.hasString(viewStyle))) {
+				viewStyle = ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE;
 			}
-			vi.setEntryViewStyle(entryViewStyle);
+			Long binderId = getQueryParameterLong(nvMap, WebKeys.URL_BINDER_ID);
+			Long entryId  = getQueryParameterLong(nvMap, WebKeys.URL_ENTRY_ID );
+			FolderEntry fe = bs.getFolderModule().getEntry(binderId, entryId);
+			String feTitle = fe.getTitle();
+			if (!(MiscUtil.hasString(feTitle))) {
+				feTitle = ("--" + NLT.get("entry.noTitle") + "--");
+			}
+			ViewFolderEntryInfo vfei = new ViewFolderEntryInfo(binderId, entryId, feTitle, viewStyle);
+			vi.setViewFolderEntryInfo(vfei);
 		}
 		
 		// If we get here reply refers to the BinderInfo requested or

@@ -41,6 +41,9 @@ import org.kablink.teaming.gwt.client.binderviews.CollectionView;
 import org.kablink.teaming.gwt.client.binderviews.DiscussionFolderView;
 import org.kablink.teaming.gwt.client.binderviews.DiscussionWSView;
 import org.kablink.teaming.gwt.client.binderviews.FileFolderView;
+import org.kablink.teaming.gwt.client.binderviews.FolderEntryDlg;
+import org.kablink.teaming.gwt.client.binderviews.FolderEntryDlg.FolderEntryDlgClient;
+import org.kablink.teaming.gwt.client.binderviews.FolderEntryView;
 import org.kablink.teaming.gwt.client.binderviews.GenericWSView;
 import org.kablink.teaming.gwt.client.binderviews.GuestbookFolderView;
 import org.kablink.teaming.gwt.client.binderviews.HomeWSView;
@@ -71,6 +74,7 @@ import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
 import org.kablink.teaming.gwt.client.event.ShowDiscussionFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowDiscussionWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowFileFolderEvent;
+import org.kablink.teaming.gwt.client.event.ShowFolderEntryEvent;
 import org.kablink.teaming.gwt.client.event.ShowGenericWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowGlobalWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowGuestbookFolderEvent;
@@ -97,6 +101,7 @@ import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
@@ -112,7 +117,6 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.FrameElement;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -124,6 +128,7 @@ import com.google.gwt.user.client.ui.NamedFrame;
  * 
  * @author jwootton@novell.com
  */
+@SuppressWarnings("unused")
 public class ContentControl extends Composite
 	implements
 	// Event handlers implemented by this class.
@@ -136,6 +141,7 @@ public class ContentControl extends Composite
 		ShowDiscussionFolderEvent.Handler,
 		ShowDiscussionWSEvent.Handler,
 		ShowFileFolderEvent.Handler,
+		ShowFolderEntryEvent.Handler,
 		ShowGenericWSEvent.Handler,
 		ShowGlobalWSEvent.Handler,
 		ShowGuestbookFolderEvent.Handler,
@@ -155,13 +161,14 @@ public class ContentControl extends Composite
 {
 	private static final boolean SHOW_GWT_ENTRY_VIEWER	= false;	// DRF (20120925):  false until I get it working.
 	
-	private boolean		m_contentInGWT;								//
-	private boolean		m_isAdminContent;							//
-	private boolean		m_isDebugUI;								//
-	private boolean		m_isDebugLP;								//
-	private GwtMainPage	m_mainPage;									//
-	private Instigator	m_contentInstigator = Instigator.UNKNOWN;	//
-	private NamedFrame	m_frame;									//
+	private boolean			m_isAdminContent;							//
+	private boolean			m_isDebugUI;								//
+	private boolean			m_isDebugLP;								//
+	private FolderEntryDlg	m_folderEntryDlg;							//
+	private GwtMainPage		m_mainPage;									//
+	private Instigator		m_contentInstigator = Instigator.UNKNOWN;	//
+	private NamedFrame		m_frame;									//
+	private ViewMode		m_viewMode = ViewMode.JSP_CONTENT_VIEW;		//
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -182,6 +189,7 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_DISCUSSION_FOLDER,
 		TeamingEvents.SHOW_DISCUSSION_WORKSPACE,
 		TeamingEvents.SHOW_FILE_FOLDER,
+		TeamingEvents.SHOW_FOLDER_ENTRY,
 		TeamingEvents.SHOW_GENERIC_WORKSPACE,
 		TeamingEvents.SHOW_GLOBAL_WORKSPACE,
 		TeamingEvents.SHOW_GUESTBOOK_FOLDER,
@@ -202,7 +210,15 @@ public class ContentControl extends Composite
 
 	// Maximum number of URLs tracked in the content history stack.
 	public final static int CONTENT_HISTORY_MAXDEPTH	= 2;
-	
+
+	// The following enumeration is used in setViewNow() to specify how
+	// a particular view is being handled. 
+	private enum ViewMode {
+		GWT_CONTENT_VIEW,	// One of our GWT based views that lives in the content area.
+		JSP_CONTENT_VIEW,	// A legacy JSP view that lives in the content IFRAME.
+		JSP_ENTRY_VIEW,		// A legacy JSP view that lives in the entry   IFRAME.
+		POPUP_VIEW,			// A popup dialog.
+	}
 	
 	/*
 	 * Constructor method.
@@ -594,7 +610,7 @@ public class ContentControl extends Composite
 		try
 		{
 			// Do we have a ViewInfo?
-			m_contentInGWT = false;
+			m_viewMode = ViewMode.JSP_CONTENT_VIEW;
 			if ( null != vi )
 			{
 				// What type of view is it?
@@ -670,7 +686,7 @@ public class ContentControl extends Composite
 					{
 					case COLLECTION:
 						GwtTeaming.fireEvent( new ShowCollectionViewEvent( bi, viewReady ) );
-						m_contentInGWT = true;
+						m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 						break;
 						
 						
@@ -681,68 +697,68 @@ public class ContentControl extends Composite
 						{
 						case CALENDAR:
 							GwtTeaming.fireEvent( new ShowCalendarFolderEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 	
 							
 						case BLOG:
 						{
 							GwtTeaming.fireEvent( new ShowBlogFolderEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 						}
 							
 						case DISCUSSION:
 							GwtTeaming.fireEvent( new ShowDiscussionFolderEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 							
 							
 						case FILE:
 							GwtTeaming.fireEvent( new ShowFileFolderEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 							
 							
 						case GUESTBOOK:
 							GwtTeaming.fireEvent( new ShowGuestbookFolderEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 							
 							
 						case MILESTONE:
 							GwtTeaming.fireEvent( new ShowMilestoneFolderEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 	
 							
 						case MINIBLOG:
 							GwtTeaming.fireEvent( new ShowMicroBlogFolderEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 	
 							
 						case MIRROREDFILE:
 							GwtTeaming.fireEvent( new ShowMirroredFileFolderEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 							
 							
 						case SURVEY:
 							GwtTeaming.fireEvent( new ShowSurveyFolderEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 	
 							
 						case TASK:
 							GwtTeaming.fireEvent( new ShowTaskFolderEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 	
 							
 						case TRASH:
 							GwtTeaming.fireEvent( new ShowTrashEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 							
 	
@@ -768,7 +784,7 @@ public class ContentControl extends Composite
 						{
 							// Fire the event that will display the landing page.
 							GwtTeaming.fireEvent( new ShowLandingPageEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 						}
 							
@@ -776,7 +792,7 @@ public class ContentControl extends Composite
 						{
 							// Fire the event that will display the Discussion workspace.
 							GwtTeaming.fireEvent( new ShowDiscussionWSEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 						}
 							
@@ -784,7 +800,7 @@ public class ContentControl extends Composite
 						{
 							// Fire the event that will display the Team workspace.
 							GwtTeaming.fireEvent( new ShowTeamWSEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 						}
 							
@@ -792,13 +808,13 @@ public class ContentControl extends Composite
 						{
 							// Fire the event that will display the generic workspace.
 							GwtTeaming.fireEvent( new ShowGenericWSEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 						}
 							
 						case TRASH:
 							GwtTeaming.fireEvent( new ShowTrashEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 	
 							
@@ -806,7 +822,7 @@ public class ContentControl extends Composite
 						{
 							// Fire the event that will display the Global workspace.
 							GwtTeaming.fireEvent( new ShowGlobalWSEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 						}
 							
@@ -814,7 +830,7 @@ public class ContentControl extends Composite
 						{
 							// Fire the event that will display the Team root workspace.
 							GwtTeaming.fireEvent( new ShowTeamRootWSEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 						}
 
@@ -822,7 +838,7 @@ public class ContentControl extends Composite
 						{
 							// Fire the event that will display the home (top) workspace.
 							GwtTeaming.fireEvent( new ShowHomeWSEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 						}
 							
@@ -830,7 +846,7 @@ public class ContentControl extends Composite
 						{
 							// Fire the event that will display the project management workspace.
 							GwtTeaming.fireEvent( new ShowProjectManagementWSEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 						}
 							
@@ -838,7 +854,7 @@ public class ContentControl extends Composite
 						{
 							// Fire the event that will display the profile root workspace.
 							GwtTeaming.fireEvent( new ShowPersonalWorkspacesEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 						}
 
@@ -847,7 +863,7 @@ public class ContentControl extends Composite
 							// Fire the event that will display the
 							// root Net Folders workspace.
 							GwtTeaming.fireEvent( new ShowNetFoldersWSEvent( bi, viewReady ) );
-							m_contentInGWT = true;
+							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
 							break;
 						}
 							
@@ -879,15 +895,44 @@ public class ContentControl extends Composite
 					break;
 				
 				case FOLDER_ENTRY:
-					if ( SHOW_GWT_ENTRY_VIEWER ) {
-//!						...this needs to be implemented...
-						Window.alert( "Entry URL:  '" + url + "'\n, View Style:  '" + vi.getEntryViewStyle() + "'");
-//!						m_contentInGWT = true;
-//!						break;
+					// Are we in Filr mode?
+					if ( GwtClientHelper.isLicenseFilr() && SHOW_GWT_ENTRY_VIEWER )
+					{
+						// Yes!  Fire the event that will display the
+						// folder entry viewer.
+						ViewFolderEntryInfo vfei = vi.getFolderEntryInfo();
+						GwtTeaming.fireEvent( new ShowFolderEntryEvent( vfei, new ViewReady()
+							{
+								@Override
+								public void viewReady()
+								{
+									ScheduledCommand doViewReady = new ScheduledCommand()
+									{
+										@Override
+										public void execute()
+										{
+											// Nothing to do.
+										}// end execute()
+									};
+									Scheduler.get().scheduleDeferred( doViewReady );
+								}//end viewReady()
+							} ) );
+						
+						if ( vfei.isContentView() )
+						     m_viewMode = ViewMode.GWT_CONTENT_VIEW;
+						else m_viewMode = ViewMode.POPUP_VIEW;
+						
+						break;
 					}
 					
-					jsViewFolderEntry( url, "no" );
-					return;
+					else {
+						// If we get here, we just run the JSP based folder
+						// entry viewer.
+						jsViewFolderEntry( url, "no" );
+						
+						m_viewMode = ViewMode.JSP_ENTRY_VIEW;
+						break;
+					}
 					
 				case ADD_BINDER:
 				case ADD_FOLDER_ENTRY:
@@ -908,28 +953,36 @@ public class ContentControl extends Composite
 				}			
 			}
 	
-			// Did we handle the ViewInfo as a view?
-			if ( !m_contentInGWT )
-			{
-				// No!  Load the URL instead and make sure the
-				// ContentControl is showing.
-				setUrl( url, instigator );
-				
-				// Tell the main content layout panel to not show a GWT
-				// widget it may have.
-				m_mainPage.getMainContentLayoutPanel().showWidget( null );
-				
-				ShowContentControlEvent.fireOne();
-			}
-			else
-			{
-				// Hide any entry <DIV>'s that are visible...
+			// What view mode are we using?
+			switch (m_viewMode) {
+			case GWT_CONTENT_VIEW:
+				// A GWT view!  Hide any entry <DIV>'s that are visible...
 				GwtClientHelper.jsHideEntryPopupDiv();
 				GwtClientHelper.jsHideNewPageEntryViewDIV();
 				
 				// ...and clear out the content of the IFRAME.
 				setUrl( "", instigator );
 				clear();
+				
+				break;
+			
+			case JSP_CONTENT_VIEW:
+				// A JSP view!  Load the URL into the content frame...
+				setUrl( url, instigator );
+				
+				// ...tell the main content layout panel to not show a
+				// ...GWT widget it may have...
+				m_mainPage.getMainContentLayoutPanel().showWidget( null );
+				
+				// ...and make sure the ContentControl is showing.
+				ShowContentControlEvent.fireOne();
+				break;
+
+			case JSP_ENTRY_VIEW:
+			case POPUP_VIEW:
+				// A JSP entry view or a popup view!  No further
+				// processing is necessary.
+				break;
 			}
 		}
 		
@@ -974,7 +1027,7 @@ public class ContentControl extends Composite
 	public void onContributorIdsRequest( ContributorIdsRequestEvent event )
 	{
 		// Is the content being handled by a GWT widget?
-		if ( m_contentInGWT )
+		if ( ! ( m_viewMode.equals( ViewMode.JSP_CONTENT_VIEW ) ) )
 		{
 			// Yes!  Bail as we only respond to requests for the
 			// content IFRAME.
@@ -1236,6 +1289,78 @@ public class ContentControl extends Composite
 				m_mainPage.getMainContentLayoutPanel().showWidget( ffView );
 			}// end onSuccess()
 		});
+	}// end onShowFileFolder()
+	
+	/**
+	 * Handles ShowFolderEntryEvent's received by this class.
+	 * 
+	 * Implements the ShowFolderEntryEvent.Handler.onShowFolderEntry() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowFolderEntry( ShowFolderEntryEvent event )
+	{
+		// Are we running the folder entry viewer as content view or a
+		// dialog?
+		final ViewFolderEntryInfo	vfei      = event.getEntryViewInfo();
+		final ViewReady				viewReady = event.getViewReady();
+		if ( vfei.isContentView() )
+		{
+			// A content view!  Create a FolderEntryView widget for the
+			// selected entity.
+			FolderEntryView.createAsync(
+					vfei,
+					viewReady,
+					new ViewClient()
+			{
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}// end onUnavailable()
+
+				@Override
+				public void onSuccess( ViewBase feView )
+				{
+					feView.setViewSize();
+					m_mainPage.getMainContentLayoutPanel().showWidget( feView );
+				}// end onSuccess()
+			});
+		}
+		
+		else
+		{
+			// A dialog!  Have we created a folder entry dialog yet?
+			if ( null == m_folderEntryDlg )
+			{
+				// No!  Create one now...
+				FolderEntryDlg.createAsync(new FolderEntryDlgClient()
+				{			
+					@Override
+					public void onUnavailable()
+					{
+						// Nothing to do.  Error handled in
+						// asynchronous provider.
+					}// end onUnavailable()
+					
+					@Override
+					public void onSuccess( final FolderEntryDlg feDlg )
+					{
+						// ...and show it.
+						m_folderEntryDlg = feDlg;
+						showFolderEntryDlgAsync( vfei, viewReady );
+					}// end onSuccess()
+				} );
+			}
+			
+			else
+			{
+				// Yes, we've already created a folder entry dialog!
+				// Use it to show the requested entity.
+				showFolderEntryDlgAsync( vfei, viewReady );
+			}
+		}
 	}// end onShowFileFolder()
 	
 	/**
@@ -1733,7 +1858,32 @@ public class ContentControl extends Composite
 			}// end onSuccess()
 		});
 	}// end onShowTrash()
+
+	/*
+	 * Asynchronously shows the folder entry dialog.
+	 */
+	private void showFolderEntryDlgAsync( final ViewFolderEntryInfo vfei, final ViewReady viewReady )
+	{
+		ScheduledCommand doShow = new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				showFolderEntryDlgNow( vfei, viewReady );
+			}// end execute()
+		};
+		Scheduler.get().scheduleDeferred( doShow );
+	}// end showFolderEntryDlgAsync()
 	
+	/*
+	 * Synchronously shows the folder entry dialog.
+	 */
+	private void showFolderEntryDlgNow( ViewFolderEntryInfo vfei, ViewReady viewReady )
+	{
+		// Initialize and show the dialog.
+		FolderEntryDlg.initAndShow( m_folderEntryDlg, vfei, viewReady );
+	}// end showFolderEntryDlgNow()
+
 	/**
 	 * Callback interface to interact with the content control
 	 * asynchronously after it loads. 
