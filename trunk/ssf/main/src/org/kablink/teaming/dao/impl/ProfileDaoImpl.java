@@ -758,8 +758,9 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 					public Object doInHibernate(Session session) throws HibernateException
                     {
                  	   //only returns active principals
+                       // We store foreign names in lower case in the database.
                   	   return session.getNamedQuery( "find-Principal-id-By-ForeignName" )
-                             		.setString( ParameterNames.FOREIGN_NAME, foreignName )
+                             		.setString( ParameterNames.FOREIGN_NAME, foreignName.toLowerCase() )
                              		.setLong( ParameterNames.ZONE_ID, zoneId )
                              		.setCacheable( isPrincipalQueryCacheable() )
                              		.uniqueResult();
