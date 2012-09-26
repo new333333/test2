@@ -921,6 +921,8 @@ public class EntityIndexUtils {
 	       		for(String acl:acls) {
 	       			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, acl));
 	       		}
+	       		//add binder access
+	    		addBinderAcls(doc, binder);
        		} else {
 	       		//add entry access. 
 	       		if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop()) {
@@ -934,6 +936,8 @@ public class EntityIndexUtils {
 	       			for(String acl:acls) {
 	       				doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, acl));
 	       			}
+	           		//add binder access
+	        		addBinderAcls(doc, binder);
 	       		}
 	       		else {
 	       			Entry e = (Entry)entry;
