@@ -68,6 +68,7 @@ public class OnSelectBinderInfo {
 		TEAM_SELECT,					// A team was selected from the My Teams menu.
 		TRACKED_USER_SELECT,			// A tracked user was selected from the profile page.
 		VIEW_TEAM_MEMBERS,				// The members of the current binders team are to be show.
+		VIEW_FOLDER_ENTRY,				// A folder entry is being shown.
 		
 		UNKNOWN,						// Default value.  Should never be processed.
 	}

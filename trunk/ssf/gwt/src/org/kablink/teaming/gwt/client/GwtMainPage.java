@@ -86,7 +86,6 @@ import org.kablink.teaming.gwt.client.event.TrackCurrentBinderEvent;
 import org.kablink.teaming.gwt.client.event.UntrackCurrentBinderEvent;
 import org.kablink.teaming.gwt.client.event.UntrackCurrentPersonEvent;
 import org.kablink.teaming.gwt.client.event.ViewCurrentBinderTeamMembersEvent;
-import org.kablink.teaming.gwt.client.event.ViewFolderEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewTeamingFeedEvent;
 import org.kablink.teaming.gwt.client.event.ViewResourceLibraryEvent;
@@ -222,8 +221,6 @@ public class GwtMainPage extends ResizeComposite
 		UntrackCurrentBinderEvent.Handler,
 		UntrackCurrentPersonEvent.Handler,
 		ViewCurrentBinderTeamMembersEvent.Handler,
-		ViewFolderEntryEvent.Handler,
-		ViewForumEntryEvent.Handler,
 		ViewResourceLibraryEvent.Handler,
 		ViewTeamingFeedEvent.Handler
 {
@@ -336,8 +333,6 @@ public class GwtMainPage extends ResizeComposite
 		
 		// View events.
 		TeamingEvents.VIEW_CURRENT_BINDER_TEAM_MEMBERS,
-		TeamingEvents.VIEW_FOLDER_ENTRY,
-		TeamingEvents.VIEW_FORUM_ENTRY,
 		TeamingEvents.VIEW_RESOURCE_LIBRARY,
 		TeamingEvents.VIEW_TEAMING_FEED,
 	};
@@ -1072,7 +1067,7 @@ public class GwtMainPage extends ResizeComposite
 	private native void initShowForumEntry( GwtMainPage gwtMainPage ) /*-{
 		$wnd.ss_showForumEntryGwt = function( url, isDashboard )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::viewFolderEntry(Ljava/lang/String;Ljava/lang/String;)( url, isDashboard );
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::viewForumEntry(Ljava/lang/String;Ljava/lang/String;)( url, isDashboard );
 		}
 	}-*/;
 
@@ -1838,17 +1833,17 @@ public class GwtMainPage extends ResizeComposite
 
 	
 	/*
-	 * Runs the given URL in the JSP entry 
+	 * Runs the given URL in the entry viewer.
 	 */
-	private void viewFolderEntry( String url )
+	private void viewForumEntry( String url )
 	{
-		gotoUrlAsync( url );
+		GwtTeaming.fireEventAsync(new ViewForumEntryEvent( url ));
 	}
 
-	private void viewFolderEntry( String url, String isDashboard )
+	private void viewForumEntry( String url, String isDashboard )
 	{
 		// Always use the initial form of the method.
-		viewFolderEntry( url );
+		viewForumEntry( url );
 	}
 	
 	/*
@@ -3103,32 +3098,6 @@ public class GwtMainPage extends ResizeComposite
 			}// end onSuccess()
 		});// end AsyncCallback()
 	}// end onViewCurrentBinderTeamMembers()
-	
-	/**
-	 * Handles ViewFolderEntryEvent's received by this class.
-	 * 
-	 * Implements the ViewFolderEntryEvent.Handler.onViewFolderEntry() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onViewFolderEntry( ViewFolderEntryEvent event )
-	{
-		viewFolderEntry( event.getViewFolderEntryUrl() );
-	}// end onViewFolderEntry()
-	
-	/**
-	 * Handles ViewForumEntryEvent's received by this class.
-	 * 
-	 * Implements the ViewForumEntryEvent.Handler.onViewForumEntry() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onViewForumEntry( ViewForumEntryEvent event )
-	{
-		GwtClientHelper.jsShowForumEntry( event.getViewForumEntryUrl() );
-	}// end onViewForumEntry()
 	
 	/**
 	 * Handles ViewResourceLibraryEvent's received by this class.
