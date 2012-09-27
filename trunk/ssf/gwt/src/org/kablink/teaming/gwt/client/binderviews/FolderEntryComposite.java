@@ -35,15 +35,25 @@ package org.kablink.teaming.gwt.client.binderviews;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ResizeComposite;
 
 /**
@@ -51,13 +61,16 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  * 
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
 public class FolderEntryComposite extends ResizeComposite {
-	private GwtTeamingDataTableImageBundle	m_images;		// Access to Vibe's images.
-	private GwtTeamingMessages				m_messages;		// Access to Vibe's messages.
-	private ViewReady						m_viewReady;	// Stores a ViewReady created for the classes that extends it.
-	private VibeFlowPanel					m_fp;			//
-	private ViewFolderEntryInfo				m_vfei;			//
+	public static final boolean SHOW_GWT_ENTRY_VIEWER	= false;	// DRF:  Leave false on checkin until it's finished.
+
+	private boolean							m_isDialog;				// true -> The composite is hosted in a dialog.  false -> It's hosted in a view.
+	private GwtTeamingDataTableImageBundle	m_images;				// Access to Vibe's images.
+	private GwtTeamingMessages				m_messages;				// Access to Vibe's messages.
+	private ViewReady						m_viewReady;			// Stores a ViewReady created for the classes that extends it.
+	private VibeFlowPanel 					m_captionImagePanel;	// A panel holding an image in the caption, if one is required.
+	private VibeFlowPanel					m_fp;					// The panel containing the composites content.
+	private ViewFolderEntryInfo				m_vfei;					// The view information for the folder entry being viewed.
 
 	/*
 	 * Constructor method.
@@ -66,7 +79,7 @@ public class FolderEntryComposite extends ResizeComposite {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private FolderEntryComposite(ViewFolderEntryInfo vfei, ViewReady viewReady) {
+	private FolderEntryComposite(ViewFolderEntryInfo vfei, Panel dlgHeader, ViewReady viewReady) {
 		// Initialize the super class...
 		super();
 		
@@ -75,15 +88,128 @@ public class FolderEntryComposite extends ResizeComposite {
 		m_viewReady = viewReady;
 		
 		// ...initialize the data members requiring it...
+		m_isDialog = (null != dlgHeader);
 		m_images   = GwtTeaming.getDataTableImageBundle();
 		m_messages = GwtTeaming.getMessages();
 		
-		// ...create the base content panel...
+		// ...create the base content panels...
+		VibeFlowPanel rootPanel = new VibeFlowPanel();
+		rootPanel.addStyleName("vibe-folderEntryComposite-rootPanel");
+		createCaption(rootPanel, dlgHeader);
 		m_fp = new VibeFlowPanel();
-		m_fp.addStyleName("vibe-folderEntryComposite-panel");
-		initWidget(m_fp);
-		
+		m_fp.addStyleName("vibe-folderEntryComposite-contentPanel");
+		rootPanel.add(m_fp);
+		initWidget(rootPanel);
+
+		// ...and continue building the composite.
 		loadPart1Async();
+	}
+
+	/*
+	 * Creates the dialog/view caption for the composite.
+	 */
+	private void createCaption(VibeFlowPanel rootPanel, Panel container) {
+		// Do we have the header from a dialog container?
+		if (null != container) {
+			// Yes!  Clear its contents so we can create our own.
+			container.clear();
+		}
+		
+		else {
+			// No, we don't have the header from a dialog!  Create one
+			// using the styles used in a dialog's header.
+			container = new VibeFlowPanel();
+			container.setStyleName("teamingDlgBoxHeader");
+			if (GwtClientHelper.jsIsIE())
+			     container.addStyleName("teamingDlgBoxHeaderBG_IE"   );
+			else container.addStyleName("teamingDlgBoxHeaderBG_NonIE");
+		}
+
+		// Create a panel to hold an image displayed in the caption, if
+		// there will be one.
+		m_captionImagePanel = new VibeFlowPanel();
+		m_captionImagePanel.setStyleName("teamingDlgBoxHeader-captionImagePanel");
+		container.add(m_captionImagePanel);
+		
+		// Create the label with the entry's title.
+		Label caption = new Label(m_vfei.getTitle());
+		caption.setStyleName("teamingDlgBoxHeader-captionLabel");
+		container.add(caption);
+
+		// Create the widgets that appear at the right end of the caption.
+		createCaptionRight(container);
+
+		// Finally, add the caption panel to the root panel.
+		rootPanel.add(container);
+	}
+
+	/*
+	 * Creates a close button in the caption for non-dialog hosts.
+	 */
+	private void createCaptionClose(Panel container) {
+		// Dialog's hosting this composite already have a close.  Is
+		// this one hosted by a dialog?
+		if (!m_isDialog) {
+			// No!  Create a panel to hold the close widgets.
+			VibeFlowPanel closePanel = new VibeFlowPanel();
+			closePanel.addStyleName("vibe-folderEntryComposite-closePanel");
+			closePanel.setTitle(m_messages.folderEntry_Alt_Close());
+			container.add(closePanel);
+
+			// Create a handler to close the view when clicked.
+			ClickHandler closeClick = new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					// To close the view, we simply pop the previous
+					// URL and goto that.  Note that we have to protect
+					// against the case where the URL is a permalink to
+					// an entry as navigating to it again, would simply
+					// re-launch the entry viewer.  Hence the ignore.
+					String url = ContentControl.getContentHistoryUrl(-1);
+					url = GwtClientHelper.appendUrlParam(url, "ignoreEntryView", "1");
+					OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(url, Instigator.GOTO_CONTENT_URL);
+					if (GwtClientHelper.validateOSBI(osbInfo)) {
+						GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+					}
+				}
+			};
+
+			// Create a close label...
+			InlineLabel close = new InlineLabel(m_messages.folderEntry_Close());
+			close.addStyleName("vibe-folderEntryComposite-closeLabel");
+			close.addClickHandler(closeClick);
+			closePanel.add(close);
+			
+			// ...and an 'X' image to close it.
+			Image closeX = GwtClientHelper.buildImage(m_images.closeTeal());
+			closeX.addStyleName("vibe-folderEntryComposite-closeImg");
+			closeX.addClickHandler(closeClick);
+			closePanel.add(closeX);
+		}
+	}
+	
+	/*
+	 * Creates the widgets used to navigate between entries being
+	 * viewed. 
+	 */
+	private void createCaptionNavigation(Panel container) {
+//!		...this needs to be implemented...
+	}
+
+	/*
+	 * Creates a panel that lives at the right edge of the caption.
+	 */
+	private void createCaptionRight(Panel container) {
+		// Create the right aligned panel
+		VibeFlowPanel rightPanel = new VibeFlowPanel();
+		rightPanel.addStyleName("vibe-folderEntryComposite-rightPanel");
+		container.add(rightPanel);
+
+		//
+		createCaptionNavigation(rightPanel);
+		
+		// Add a close button when necessary.
+		createCaptionClose(rightPanel);
 	}
 
 	/*
@@ -107,6 +233,19 @@ public class FolderEntryComposite extends ResizeComposite {
 		m_fp.add(new InlineLabel("...this needs to be implemented..."));
 		m_viewReady.viewReady();
 	}
+
+	/*
+	 * Updates the caption's image.
+	 */
+	@SuppressWarnings("unused")
+	private void setCaptionImage(Image captionImg) {
+		if (null != captionImg) {
+			m_captionImagePanel.clear();
+			m_captionImagePanel.add(captionImg);
+			m_captionImagePanel.addStyleName("padding5R");
+		}
+	}
+	
 	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
@@ -127,10 +266,11 @@ public class FolderEntryComposite extends ResizeComposite {
 	 * via the callback.
 	 * 
 	 * @param fecClient
+	 * @param dlgHeader
 	 * @param vfei
 	 * @param viewReady
 	 */
-	public static void createAsync(final FolderEntryCompositeClient fecClient, final ViewFolderEntryInfo vfei, final ViewReady viewReady) {
+	public static void createAsync(final FolderEntryCompositeClient fecClient, final Panel dlgHeader, final ViewFolderEntryInfo vfei, final ViewReady viewReady) {
 		GWT.runAsync(FolderEntryComposite.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -140,7 +280,7 @@ public class FolderEntryComposite extends ResizeComposite {
 
 			@Override
 			public void onSuccess() {
-				FolderEntryComposite fec = new FolderEntryComposite(vfei, viewReady);
+				FolderEntryComposite fec = new FolderEntryComposite(vfei, dlgHeader, viewReady);
 				fecClient.onSuccess(fec);
 			}
 		});

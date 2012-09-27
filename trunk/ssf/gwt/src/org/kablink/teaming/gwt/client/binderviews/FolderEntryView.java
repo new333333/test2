@@ -102,6 +102,7 @@ public class FolderEntryView extends ViewBase {
 					m_fp.add(fec);
 				}
 			},
+			null,	// null -> Not contained in a dialog.  No header.
 			vfei,
 			viewReady);
 	}

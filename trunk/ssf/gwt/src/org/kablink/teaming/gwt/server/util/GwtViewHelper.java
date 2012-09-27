@@ -134,6 +134,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ShareAccessInfo;
 import org.kablink.teaming.gwt.client.util.ShareDateInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationInfo;
@@ -4501,9 +4502,10 @@ public class GwtViewHelper {
 					
 					// Is the URL to view a specific entry within the
 					// folder?
-					String entryViewStyle = getQueryParameterString(nvMap, WebKeys.URL_ENTRY_VIEW_STYLE);
-					String entryId        = getQueryParameterString(nvMap, WebKeys.URL_ENTRY_ID        );
-					if (MiscUtil.hasString(entryViewStyle) && MiscUtil.hasString(entryId)) {
+					String  entryViewStyle  =                           getQueryParameterString(nvMap, WebKeys.URL_ENTRY_VIEW_STYLE  );
+					String  entryId         =                           getQueryParameterString(nvMap, WebKeys.URL_ENTRY_ID          );
+					boolean entryViewIgnore = GwtClientHelper.hasString(getQueryParameterString(nvMap, WebKeys.URL_ENTRY_VIEW_IGNORE));
+					if (MiscUtil.hasString(entryViewStyle) && MiscUtil.hasString(entryId) && (!entryViewIgnore)) {
 						// Yes!  Adjust the ViewInfo accordingly.
 						vi.setViewType(ViewType.BINDER_WITH_ENTRY_VIEW);
 						vi.setEntryViewUrl(GwtServerHelper.getViewFolderEntryUrl(bs, request, binderId, Long.parseLong(entryId)));

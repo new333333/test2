@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.binderviews.CollectionView;
 import org.kablink.teaming.gwt.client.binderviews.DiscussionFolderView;
 import org.kablink.teaming.gwt.client.binderviews.DiscussionWSView;
 import org.kablink.teaming.gwt.client.binderviews.FileFolderView;
+import org.kablink.teaming.gwt.client.binderviews.FolderEntryComposite;
 import org.kablink.teaming.gwt.client.binderviews.FolderEntryDlg;
 import org.kablink.teaming.gwt.client.binderviews.FolderEntryDlg.FolderEntryDlgClient;
 import org.kablink.teaming.gwt.client.binderviews.FolderEntryView;
@@ -161,8 +162,6 @@ public class ContentControl extends Composite
 		ShowTrashEvent.Handler,
 		ViewForumEntryEvent.Handler
 {
-	private static final boolean SHOW_GWT_ENTRY_VIEWER	= false;	// DRF (20120925):  false until I get it working.
-	
 	private boolean			m_isAdminContent;							//
 	private boolean			m_isDebugUI;								//
 	private boolean			m_isDebugLP;								//
@@ -254,7 +253,7 @@ public class ContentControl extends Composite
 		}
 		
 		// Initialize the JavaScript for tracking content history.
-		initContentHistoryJS( this, CONTENT_HISTORY_MAXDEPTH );
+		initContentHistoryJS( CONTENT_HISTORY_MAXDEPTH );
 		
 		FlowPanel mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "contentControl" );
@@ -335,7 +334,7 @@ public class ContentControl extends Composite
 	 * 
 	 * @return
 	 */
-	public List<String> getContentHistory()
+	public static List<String> getContentHistory()
 	{
 		// Scan the URLs from the content history...
 		List<String> reply = new ArrayList<String>();
@@ -366,7 +365,7 @@ public class ContentControl extends Composite
 	 * 
 	 * @return
 	 */
-	public String getContentHistoryUrl( int index )
+	public static String getContentHistoryUrl( int index )
 	{
 		// Simply call the JavaScript implementation method.
 		return jsGetContentHistoryUrl( index );
@@ -385,7 +384,7 @@ public class ContentControl extends Composite
 	/*
 	 * Initializes the JavaScript for tracking content history.
 	 */
-	private native void initContentHistoryJS( ContentControl contentControl, int contentHistoryDepth )
+	private static native void initContentHistoryJS( int contentHistoryDepth )
 	/*-{
 		// Have we defined the JavaScript elements for tracking content
 		// history yet?
@@ -396,7 +395,7 @@ public class ContentControl extends Composite
 			$wnd.top.ss_contentHistory = new Array();
 			$wnd.top.ss_getUrlFromContentHistory = function( index )
 			{
-				return contentControl.@org.kablink.teaming.gwt.client.widgets.ContentControl::jsGetContentHistoryUrl(Ljava/lang/Integer;)( index );
+				return @org.kablink.teaming.gwt.client.widgets.ContentControl::jsGetContentHistoryUrl(Ljava/lang/Integer;)( index );
 			}//end ss_getUrlFromContentHistory()
 		}
 	}-*/;
@@ -407,7 +406,7 @@ public class ContentControl extends Composite
 	 * If there aren't enough items being tracked to satisfy the
 	 * request, null is returned.
 	 */
-	private native String jsGetContentHistoryUrl( Integer index )
+	private static native String jsGetContentHistoryUrl( Integer index )
 	/*-{
 		// If we were given a negative index...
 		if ( 0 > index )
@@ -430,7 +429,7 @@ public class ContentControl extends Composite
 	/*
 	 * Pushes a URL on the content history stack.
 	 */
-	private native void jsPushContentHistoryUrl( String url )
+	private static native void jsPushContentHistoryUrl( String url )
 	/*-{
 		// Push the URL.
 		$wnd.top.ss_contentHistory.unshift( url );
@@ -454,12 +453,10 @@ public class ContentControl extends Composite
 			alert( 'ss_showForumEntryJSP() is undefined' );
 	}-*/;
 	
-	/**
+	/*
 	 * Pushes a URL on the content history stack.
-	 * 
-	 * @param url
 	 */
-	private void pushContentHistoryUrl( String url )
+	private static void pushContentHistoryUrl( String url )
 	{
 		// Simply call the JavaScript implementation method.
 		jsPushContentHistoryUrl( url );
@@ -670,14 +667,9 @@ public class ContentControl extends Composite
 									
 									if ( ViewType.BINDER_WITH_ENTRY_VIEW.equals( vt ) )
 									{
-										OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
-											vi.getEntryViewUrl(),
-											Instigator.GOTO_CONTENT_URL );
-											
-										if ( GwtClientHelper.validateOSBI( osbInfo ) )
-										{
-											GwtTeaming.fireEventAsync( new ChangeContextEvent( osbInfo ) );
-										}
+										GwtTeaming.fireEventAsync(
+											new ViewForumEntryEvent(
+												vi.getEntryViewUrl() ) );
 									}
 								}// end execute()
 							};
@@ -901,27 +893,19 @@ public class ContentControl extends Composite
 				
 				case FOLDER_ENTRY:
 					// Are we in Filr mode?
-					if ( GwtClientHelper.isLicenseFilr() && SHOW_GWT_ENTRY_VIEWER )
+					if ( GwtClientHelper.isLicenseFilr() && FolderEntryComposite.SHOW_GWT_ENTRY_VIEWER )
 					{
 						// Yes!  Fire the event that will display the
 						// folder entry viewer.
 						ViewFolderEntryInfo vfei = vi.getFolderEntryInfo();
 						GwtTeaming.fireEvent( new ShowFolderEntryEvent( vfei, new ViewReady()
+						{
+							@Override
+							public void viewReady()
 							{
-								@Override
-								public void viewReady()
-								{
-									ScheduledCommand doViewReady = new ScheduledCommand()
-									{
-										@Override
-										public void execute()
-										{
-											// Nothing to do.
-										}// end execute()
-									};
-									Scheduler.get().scheduleDeferred( doViewReady );
-								}//end viewReady()
-							} ) );
+								// Nothing to do.
+							}//end viewReady()
+						} ) );
 						
 						if ( vfei.isContentView() )
 						     m_viewMode = ViewMode.GWT_CONTENT_VIEW;
