@@ -69,6 +69,7 @@ import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogPages;
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
@@ -1375,6 +1376,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetMainPageInfoCmd gcwCmd = ((GetMainPageInfoCmd) cmd);
 			MainPageInfoRpcResponseData result = GwtServerHelper.getMainPageInfo( this, getRequest( ri ), gcwCmd.getBinderId() );
 			response = new VibeRpcResponse( result );
+			
+			// The GetMainPageInfoCmd should only be called once when we start up.  Set the user's
+			// timezone to the timezone being used by the browser
+			GwtServerHelper.setUserTimezone(
+											this,
+											gcwCmd.getTimeZoneOffset() );
+			
 			return response;
 		}
 		

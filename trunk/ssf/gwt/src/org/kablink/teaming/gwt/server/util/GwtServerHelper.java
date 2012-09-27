@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TimeZone;
 
 import javax.portlet.PortletRequest;
 import javax.servlet.RequestDispatcher;
@@ -76,6 +77,7 @@ import org.dom4j.io.OutputFormat;
 
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.context.request.HttpSessionContext;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -8334,6 +8336,64 @@ public class GwtServerHelper {
 			null,
 			ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST,
 			expandedBindersList);
+	}
+	
+	/**
+	 * Set the user's time zone based on the given time zone offset.
+	 * The offset value came from the browser's time zone
+	 */
+	public static void setUserTimezone(
+		AllModulesInjected ami,
+		long tzOffset )
+	{
+		String[] tzIds;
+		User user;
+		
+		if ( Utils.checkIfFilr() == false )
+			return;
+		
+		user = getCurrentUser();
+
+		// Don't set the time zone for the guest user or admin user
+		if ( MiscUtil.isSystemUserAccount( user.getName() ) )
+			return;
+		
+		// Get the time zones with the given offset.
+		tzIds = TimeZone.getAvailableIDs();
+		if ( tzIds != null && tzIds.length > 0 )
+		{
+			long now;
+			Date nowDate;
+			
+			nowDate = new Date();
+			now = nowDate.getTime();
+			for ( String nextId : tzIds )
+			{
+				TimeZone tz;
+				
+				tz = TimeZoneHelper.getTimeZone( nextId );
+				
+				// Are the timezone offsets equal?  getOffset() adjusts the offset for daylight savings.
+				if ( tz.getOffset( now ) == tzOffset )
+				{
+					Map updates;
+					String tzId;
+
+					updates = new HashMap();
+					tzId = tz.getID();
+					updates.put( ObjectKeys.FIELD_USER_TIMEZONE, tzId );
+					try
+					{
+						ami.getProfileModule().modifyEntry( user.getId(), new MapInputData( updates ) );
+						return;
+					}
+					catch ( Exception ex )
+					{
+						m_logger.error( "Unable to set the user's timezone: " + ex.toString() );
+					}
+				}
+			}
+		}
 	}
 
 	/**
