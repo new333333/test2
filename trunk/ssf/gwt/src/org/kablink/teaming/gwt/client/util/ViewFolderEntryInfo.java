@@ -43,6 +43,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ViewFolderEntryInfo implements IsSerializable {
 	private EntityId	m_entityId;				// The folder entry to view.
 	private int			m_x, m_y, m_cx, m_cy;	// The position and size of the dialog.  Only used when m_viewStyle is iframe.
+	private String		m_family;				// The definition family of the folder entry.
 	private String		m_title;				// The title of the folder entry.
 	private String		m_viewStyle;			// The style to run the entry viewer.
 
@@ -64,15 +65,17 @@ public class ViewFolderEntryInfo implements IsSerializable {
 	 * 
 	 * @param entityId
 	 * @param title
+	 * @param family
 	 * @param viewStyle
 	 */
-	public ViewFolderEntryInfo(EntityId entityId, String title, String viewStyle) {
+	public ViewFolderEntryInfo(EntityId entityId, String title, String family, String viewStyle) {
 		// Initialize this object...
 		this();
 
 		// ...and store the parameters.
 		setEntityId( entityId );
 		setTitle(    title    );
+		setFamily(   family   );
 		setViewStyle(viewStyle);
 	}
 	
@@ -82,11 +85,12 @@ public class ViewFolderEntryInfo implements IsSerializable {
 	 * @param binderId
 	 * @param entryId
 	 * @param title
+	 * @param family
 	 * @param viewStyle
 	 */
-	public ViewFolderEntryInfo(Long binderId, Long entryId, String title, String viewStyle) {
+	public ViewFolderEntryInfo(Long binderId, Long entryId, String title, String family, String viewStyle) {
 		// Always use the alternate form of the constructor.
-		this(new EntityId(binderId, entryId, EntityId.FOLDER_ENTRY), title, viewStyle);
+		this(new EntityId(binderId, entryId, EntityId.FOLDER_ENTRY), title, family, viewStyle);
 	}
 	
 	/**
@@ -101,6 +105,7 @@ public class ViewFolderEntryInfo implements IsSerializable {
 	public int      getCY()         {return m_cy;                                      }
 	public int      getX()          {return m_x;                                       }
 	public int      getY()          {return m_y;                                       }
+	public String   getFamily()     {return m_family;                                  }
 	public String   getTitle()      {return m_title;                                   }
 	public String   getViewStyle()  {return m_viewStyle;                               }
 	
@@ -114,6 +119,20 @@ public class ViewFolderEntryInfo implements IsSerializable {
 	public void setCY(       int      cy)        {m_cy        = cy;       }
 	public void setX(        int      x)         {m_x         = x;        }
 	public void setY(        int      y)         {m_y         = y;        }
+	public void setFamily(   String   family)    {m_family    = family;   }
 	public void setTitle(    String   title)     {m_title     = title;    }
 	public void setViewStyle(String   viewStyle) {m_viewStyle = viewStyle;}
+
+	/**
+	 * Returns true if the folder entry is a file entry and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isFamilyFile() {
+		boolean reply = ((null != m_family) && (0 < m_family.length()));
+		if (reply) {
+			m_family.equals("file");
+		}
+		return reply;
+	}
 }

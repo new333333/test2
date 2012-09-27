@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,12 +37,11 @@ import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.EntityId;
 
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.ResizeComposite;
-
 
 /**
  * Base class for for all the tool panels used in the binder views.  
@@ -50,12 +49,14 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  * @author drfoster@novell.com
  */
 public abstract class ToolPanelBase extends ResizeComposite {
-	public    final        BinderInfo					m_binderInfo;									// Caches the BinderInfo for use by this tool panel.
+	public    final        BinderInfo					m_binderInfo;									// Caches a  BinderInfo for use by this tool panel.
+	public    final        EntityId						m_entityId;										// Caches an EntityId   for use by this tool panel.
 	private   final        RequiresResize				m_containerResizer;								//
 	protected final static GwtTeamingFilrImageBundle	m_filrImages = GwtTeaming.getFilrImageBundle();	// Access to the GWT Filr image resources.
 	protected final static GwtTeamingImageBundle		m_images     = GwtTeaming.getImageBundle();		// Access to the GWT base image resources.
 	protected final static GwtTeamingMessages			m_messages   = GwtTeaming.getMessages();		// Access to the GWT localized string resources.
 	private                Timer						m_resizeContainerTimer;							// A timer used to control telling the container something's been resized.
+	@SuppressWarnings("unused")
 	private                int							m_droppedResizes;								//
 	private                ToolPanelReady				m_toolPanelReady;								//
 
@@ -78,17 +79,45 @@ public abstract class ToolPanelBase extends ResizeComposite {
 	
 	/**
 	 * Constructor method.
-	 * 
+	 *
+	 * @param containerResizer
 	 * @param binderInfo
+	 * @param entityId
+	 * @param toolPanelReady
 	 */
-	public ToolPanelBase(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
+	public ToolPanelBase(RequiresResize containerResizer, BinderInfo binderInfo, EntityId entityId, ToolPanelReady toolPanelReady) {
 		// Initialize the superclass...
 		super();
 		
 		// ...and store the parameters.
 		m_binderInfo       = binderInfo;
+		m_entityId         = entityId;
 		m_containerResizer = containerResizer;
 		m_toolPanelReady   = toolPanelReady;
+	}
+	
+	/**
+	 * Constructor method.
+	 *
+	 * @param containerResizer
+	 * @param binderInfo
+	 * @param toolPanelReady
+	 */
+	public ToolPanelBase(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
+		// Initialize this object.
+		this(containerResizer, binderInfo, null, toolPanelReady);
+	}
+
+	/**
+	 * Constructor method.
+	 *
+	 * @param containerResizer
+	 * @param entityId
+	 * @param toolPanelReady
+	 */
+	public ToolPanelBase(RequiresResize containerResizer, EntityId entityId, ToolPanelReady toolPanelReady) {
+		// Initialize this object.
+		this(containerResizer, null, entityId, toolPanelReady);
 	}
 
 	/*
@@ -117,9 +146,7 @@ public abstract class ToolPanelBase extends ResizeComposite {
 				@Override
 				public void run() {
 					// Clear the timer and tell the container to resize.
-					if (GwtClientHelper.isDebugUI()) {
-//						GwtClientHelper.deferredAlert("ToolPanelBase.panelResized():  Dropped resizes:  " + m_droppedResizes);
-					}
+//					GwtClientHelper.debugAlert("ToolPanelBase.panelResized():  Dropped resizes:  " + m_droppedResizes);
 					clearTimer();
 					m_containerResizer.onResize();
 				}

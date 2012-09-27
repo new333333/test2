@@ -761,7 +761,15 @@ public class GwtViewHelper {
 		if (!(MiscUtil.hasString(feTitle))) {
 			feTitle = ("--" + NLT.get("entry.noTitle") + "--");
 		}
-		return new ViewFolderEntryInfo(binderId, entryId, feTitle, viewStyle);
+		return
+			new ViewFolderEntryInfo(
+				binderId,
+				entryId,
+				feTitle,
+				GwtServerHelper.getFolderEntityFamily(
+					bs,
+					fe),
+				viewStyle);
 	}
 
 	/*

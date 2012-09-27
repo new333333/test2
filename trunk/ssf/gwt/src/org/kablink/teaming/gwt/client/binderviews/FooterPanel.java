@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFooterToolbarItemsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetToolbarItemsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -73,7 +74,7 @@ import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.TextBox;
 
 /**
- * Class used for the content of the footer panel in the binder views.  
+ * Class used for the content of the footer panel in the views.  
  * 
  * @author drfoster@novell.com
  */
@@ -116,9 +117,9 @@ public class FooterPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private FooterPanel(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
+	private FooterPanel(RequiresResize containerResizer, BinderInfo binderInfo, EntityId entityId, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
-		super(containerResizer, binderInfo, toolPanelReady);
+		super(containerResizer, binderInfo, entityId, toolPanelReady);
 
 		// ...initialize the data members...
 		m_images   = GwtTeaming.getImageBundle();
@@ -133,32 +134,6 @@ public class FooterPanel extends ToolPanelBase {
 		loadPart1Async();
 	}
 
-	/**
-	 * Loads the FooterPanel split point and returns an instance
-	 * of it via the callback.
-	 * 
-	 * @param containerResizer
-	 * @param binderInfo
-	 * @param toolPanelReady
-	 * @param tpClient
-	 */
-	public static void createAsync(final ResizeComposite containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
-		GWT.runAsync(FooterPanel.class, new RunAsyncCallback()
-		{			
-			@Override
-			public void onSuccess() {
-				FooterPanel fp = new FooterPanel(containerResizer, binderInfo, toolPanelReady);
-				tpClient.onSuccess(fp);
-			}
-			
-			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_FooterPanel());
-				tpClient.onUnavailable();
-			}
-		});
-	}
-	
 	/*
 	 * Initialize the Map of the strings used by the footer based
 	 * whether we're in Filr or Vibe mode.
@@ -226,21 +201,36 @@ public class FooterPanel extends ToolPanelBase {
 	 * Synchronously construct's the contents of the footer panel.
 	 */
 	private void loadPart1Now() {
-		final Long folderId = m_binderInfo.getBinderIdAsLong();
+		// Get an EntityId for what the footer is displaying
+		// information for.
+		EntityId entityId;
+		if (null == m_binderInfo) {
+			entityId = m_entityId;
+		}
+		else {
+			String entityType;
+			if (m_binderInfo.isBinderFolder())
+			     entityType = EntityId.FOLDER;
+			else entityType = EntityId.WORKSPACE;
+			entityId = new EntityId(null, m_binderInfo.getBinderIdAsLong(), entityType);
+		}
+		
+		// Can we get the footer toolbar items for that EntityId?
+		final Long itemId = entityId.getEntityId();
 		GwtClientHelper.executeCommand(
-				new GetFooterToolbarItemsCmd(folderId),
+				new GetFooterToolbarItemsCmd(entityId),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_GetFooterToolbarItems(),
-					folderId);
+					itemId);
 			}
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// Store the toolbar items and continue loading.
+				// Yes!  Store the toolbar items and continue loading.
 				GetToolbarItemsRpcResponseData responseData = ((GetToolbarItemsRpcResponseData) response.getResponseData());
 				m_toolbarIems = responseData.getToolbarItems();
 				loadPart2Async();
@@ -417,7 +407,7 @@ public class FooterPanel extends ToolPanelBase {
 		VibeFlowPanel rowDataPanel = renderRow(linksGrid, cf, m_strMap.get(StringIds.CAPTION_PERMALINK));
 		renderRowLink(rowDataPanel, permalinkTBI.getUrl());
 
-		// ...if there are simple names defined on the binder...
+		// ...if there are simple names defined on a binder...
 		ToolbarItem simpleNamesTBI = m_footerTBI.getNestedToolbarItem("simpleNames");
 		if (null != simpleNamesTBI) {
 			// ...scan them...
@@ -628,8 +618,8 @@ public class FooterPanel extends ToolPanelBase {
 	}
 	
 	/**
-	 * Called from the binder view to allow the panel to do any
-	 * work required to reset itself.
+	 * Called from the views to allow the panel to do any work required
+	 * to reset itself.
 	 * 
 	 * Implements ToolPanelBase.resetPanel()
 	 */
@@ -638,5 +628,63 @@ public class FooterPanel extends ToolPanelBase {
 		// Reset the widgets and reload the footer.
 		m_fp.clear();
 		loadPart1Async();
+	}
+
+	
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	/* The following code is used to load the split point containing */
+	/* the footer panel and perform some operation on it.            */
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+	/*
+	 * Loads the FooterPanel split point for a binder and returns an
+	 * instance of it via the callback.
+	 */
+	private static void doAsyncOperation(
+			final ResizeComposite	containerResizer,
+			final BinderInfo		binderInfo,
+			final EntityId			entityId,
+			final ToolPanelReady	toolPanelReady,
+			final ToolPanelClient	tpClient) {
+		GWT.runAsync(FooterPanel.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onSuccess() {
+				FooterPanel fp = new FooterPanel(containerResizer, binderInfo, entityId, toolPanelReady);
+				tpClient.onSuccess(fp);
+			}
+			
+			@Override
+			public void onFailure(Throwable reason) {
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_FooterPanel());
+				tpClient.onUnavailable();
+			}
+		});
+	}
+	
+	/**
+	 * Loads the FooterPanel split point for a binder and returns an
+	 * instance of it via the callback.
+	 * 
+	 * @param containerResizer
+	 * @param binderInfo
+	 * @param toolPanelReady
+	 * @param tpClient
+	 */
+	public static void createAsync(final ResizeComposite containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+		doAsyncOperation(containerResizer, binderInfo, null, toolPanelReady, tpClient);
+	}
+	
+	/**
+	 * Loads the FooterPanel split point for an entity and returns an
+	 * instance of it via the callback.
+	 * 
+	 * @param containerResizer
+	 * @param entityId
+	 * @param toolPanelReady
+	 * @param tpClient
+	 */
+	public static void createAsync(final ResizeComposite containerResizer, final EntityId entityId, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+		doAsyncOperation(containerResizer, null, entityId, toolPanelReady, tpClient);
 	}
 }
