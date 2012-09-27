@@ -484,6 +484,14 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     	// the entity inherits its external ACLs from their parents or not.
 		List<EntityIdentifier> chain = new ArrayList<EntityIdentifier>();
     	chain.add(((DefinableEntity) workArea).getEntityIdentifier());
+    	if(workArea instanceof FolderEntry) {
+			FolderEntry entry = (FolderEntry) workArea;
+			if(!entry.hasEntryAcl() || (entry.hasEntryAcl() && entry.isIncludeFolderAcl())) {
+				// This entry inherits the parent's ACLs.
+				chain.add(entry.getParentFolder().getEntityIdentifier());
+				workArea = entry.getParentFolder();
+			}
+    	}
     	while(workArea.isFunctionMembershipInherited()) {
     		workArea = workArea.getParentWorkArea();
     		if(workArea instanceof DefinableEntity)
@@ -526,8 +534,6 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     		}
     		return false;
     	}
-    	
-    	
     }
     
     private BinderModule getBinderModule() {
