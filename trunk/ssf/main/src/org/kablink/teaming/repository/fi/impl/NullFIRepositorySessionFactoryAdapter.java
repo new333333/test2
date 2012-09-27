@@ -45,7 +45,9 @@ import org.kablink.teaming.repository.RepositorySession;
 
 public class NullFIRepositorySessionFactoryAdapter extends AbstractFIRepositorySessionFactoryAdapter {
 
-	public RepositorySession openSession(String resourceDriverName) throws FIException, UncheckedIOException {
+	@Override
+	public RepositorySession openSession(Binder binder, DefinableEntity entity, String resourceDriverName) 
+			throws FIException, UncheckedIOException {
 		return null;
 	}
 

@@ -1098,7 +1098,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			// Source and destination binders do not share the same driver. 
 			// Move is not possible in this case. We have to mimic it by
 			// copy followed by delete. 
-			RepositorySession session = RepositorySessionFactoryUtil.openSession(destBinder, fa.getRepositoryName());
+			RepositorySession session = RepositorySessionFactoryUtil.openSession(destBinder, destEntity, fa.getRepositoryName());
 			try {
 				InputStream is = readFile(binder, entity, fa);
 				long size = fa.getFileItem().getLength();
@@ -1118,7 +1118,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				session.close();
 			}
 			
-			session = RepositorySessionFactoryUtil.openSession(binder, fa.getRepositoryName());
+			session = RepositorySessionFactoryUtil.openSession(binder, entity, fa.getRepositoryName());
 			try {
 				session.delete(binder, entity, fa.getFileItem().getName());
 			}
@@ -1443,7 +1443,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	private void deletePrimaryFile(Binder binder, DefinableEntity entry,
 			String relativeFilePath, String repositoryName, FilesErrors errors) {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, entry, repositoryName);
 		
 		try {
 			try {
@@ -1935,7 +1935,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    	
 	    	boolean isNew = false;
 	    	
-			RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
+			RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, entry, repositoryName);
 	
 	    	try {
 	    		boolean versionCreated = false;
@@ -2646,7 +2646,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     private boolean closeExpiredLock(Binder binder, DefinableEntity entity, 
     		FileAttachment fa, boolean commit, List newObjs) throws RepositoryServiceException,
     		UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, fa.getRepositoryName());
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, entity, fa.getRepositoryName());
 
 		try {
 			return closeExpiredLock(session, binder, entity, fa, commit, newObjs);
@@ -2684,7 +2684,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     private boolean commitPendingChanges(Binder binder, DefinableEntity entity,
     		FileAttachment fa, FileAttachment.FileLock lock, List newObjs)
     	throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, fa.getRepositoryName());
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, entity, fa.getRepositoryName());
 
 		try {
 			return commitPendingChanges(session, binder, entity, fa,
@@ -3013,17 +3013,22 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	private void setupAccessModeForExternalAcl(DefinableEntity entity, WorkAreaOperation workAreaOperation) {
+		boolean accessFileSystemWithExternalAclInUserMode = shouldAccessFileSystemWithExternalAclInUserMode(entity, workAreaOperation);
+		RequestContextHolder.getRequestContext().setAccessFileSystemWithExternalAclInUserMode(accessFileSystemWithExternalAclInUserMode);
+	}
+	
+	public boolean shouldAccessFileSystemWithExternalAclInUserMode(DefinableEntity entity, WorkAreaOperation workAreaOperation) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		
 		if(ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) {
 			// The file operation is being requested by admin. We treat admin like Linux root
 			// acccount and grant all accesses to all files.
-			RequestContextHolder.getRequestContext().setAccessFileSystemWithExternalAclInUserMode(Boolean.FALSE); // proxy mode
+			return false; // proxy mode
 		}
 		else if(ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId())) {
 			// The file operation is being requested by file sync agent, which ALWAYS accesses
 			// file system in proxy mode regardless of sharing. 
-			RequestContextHolder.getRequestContext().setAccessFileSystemWithExternalAclInUserMode(Boolean.FALSE); // proxy mode
+			return false; // proxy mode
 		}
 		else {
 			boolean shareGrantedAccess;
@@ -3047,9 +3052,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			}
 			
 			if(shareGrantedAccess)
-				RequestContextHolder.getRequestContext().setAccessFileSystemWithExternalAclInUserMode(Boolean.FALSE); // proxy mode
+				return false; // proxy mode
 			else
-				RequestContextHolder.getRequestContext().setAccessFileSystemWithExternalAclInUserMode(Boolean.TRUE); // user mode
+				return true; // user mode
 		}
 	}
 	

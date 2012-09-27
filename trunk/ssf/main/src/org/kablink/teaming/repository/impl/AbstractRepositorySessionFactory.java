@@ -92,7 +92,7 @@ public abstract class AbstractRepositorySessionFactory implements RepositorySess
 		}
 
 		public InputStream getInputStream() throws IOException {
-			RepositorySession session = createSessionForDataSource();
+			RepositorySession session = createSessionForDataSource(_binder, _entity);
 			InputStream in = null;
 			try {
 				in = session.readVersioned(_binder, _entity, _relativeFilePath, _versionName, null);
@@ -115,6 +115,6 @@ public abstract class AbstractRepositorySessionFactory implements RepositorySess
 			return null;
 		}
 		
-		protected abstract RepositorySession createSessionForDataSource();
+		protected abstract RepositorySession createSessionForDataSource(Binder binder, DefinableEntity entity);
 	}
 }
