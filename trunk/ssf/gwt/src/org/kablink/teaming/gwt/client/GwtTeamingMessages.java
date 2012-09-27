@@ -385,6 +385,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetMyTeams();
 	String rpcFailure_NumberOfMembers();
 	String rpcFailure_GetNetFolder();
+	String rpcFailure_GetNextPreviousFolderEntryInfo();
 	String rpcFailure_GetPersonalPreferences();
 	String rpcFailure_GetPresenceInfo();
 	String rpcFailure_GetProfileAvatars();
@@ -1984,5 +1985,9 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used by the GWT based Folder Entry viewer.
 	String folderEntry_Alt_Close();
+	String folderEntry_Alt_Next();
+	String folderEntry_Alt_Previous();
+	String folderEntry_Error_NoNext();
+	String folderEntry_Error_NoPrevious();
 	String folderEntry_Close();
 }// end GwtTeamingMessages

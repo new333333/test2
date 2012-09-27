@@ -118,6 +118,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateUploadsCmd.UploadInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
+import org.kablink.teaming.gwt.client.rpc.shared.ViewFolderEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.WhoHasAccessInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.WhoHasAccessInfoRpcResponseData.AccessInfo;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
@@ -745,7 +746,24 @@ public class GwtViewHelper {
 		reply.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(searchEntries.size()));
 		return reply;
 	}
-	
+
+	/*
+	 * Constructs and returns a ViewFolderEntryInfo that wraps the
+	 * given binderId/entryId pair.
+	 */
+	private static ViewFolderEntryInfo buildViewFolderEntryInfo(AllModulesInjected bs, HttpServletRequest request, Long binderId, Long entryId) {
+		String viewStyle = GwtServerHelper.getPersonalPreferences(bs, request).getDisplayStyle();
+		if (!(MiscUtil.hasString(viewStyle))) {
+			viewStyle = ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE;
+		}
+		FolderEntry fe = bs.getFolderModule().getEntry(binderId, entryId);
+		String feTitle = fe.getTitle();
+		if (!(MiscUtil.hasString(feTitle))) {
+			feTitle = ("--" + NLT.get("entry.noTitle") + "--");
+		}
+		return new ViewFolderEntryInfo(binderId, entryId, feTitle, viewStyle);
+	}
+
 	/*
 	 * Extracts the ID's of the entry contributors and adds them to the
 	 * contributor ID's list if they're not already there. 
@@ -3664,6 +3682,56 @@ public class GwtViewHelper {
 		return reply;
 	}
 
+	/**
+	 * Returns a ViewFolderEntryInfoRpcResponseData corresponding to
+	 * the previous/next folder entry to the given EntityId.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param entityId
+	 * @param previous
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ViewFolderEntryInfoRpcResponseData getNextPreviousFolderInfo(AllModulesInjected bs, HttpServletRequest request, EntityId entityId, boolean previous) throws GwtTeamingException {
+		try {
+			// Allocate a ViewFolderEntryInfoRpcResponseData we can
+			// return.
+			ViewFolderEntryInfoRpcResponseData reply = new ViewFolderEntryInfoRpcResponseData();
+
+			// Can we get the ID of the previous/next folder entry?
+			Long	folderId      = entityId.getBinderId();
+			Folder	folder        = bs.getFolderModule().getFolder(folderId);
+			Long	targetEntryId = BinderHelper.getNextPrevEntry(bs, folder, entityId.getEntityId(), (!previous));
+			if (null != targetEntryId) {
+				// Yes!  Create a ViewFolderEntryInfo for it and store
+				// it in the reply.
+				reply.setViewFolderEntryInfo(
+					buildViewFolderEntryInfo(
+						bs,
+						request,
+						folderId,
+						targetEntryId));
+			}
+			
+			// If we get here, reply refers to the
+			// ViewFolderEntryInfoRpcResponseData for the previous/next
+			// folder entry.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtViewHelper.getNextPreviousFolderInfo( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
+		}
+	}
+	
 	/*
 	 * Given a Principal's ID read from an entry map, returns an
 	 * equivalent PrincipalInfo object.
@@ -4601,21 +4669,15 @@ public class GwtViewHelper {
 		}
 		
 		else if (action.equals(WebKeys.ACTION_VIEW_FOLDER_ENTRY)) {
-			// A view folder entry!  Mark the ViewInfo as such.
-			vi.setViewType(ViewType.FOLDER_ENTRY);
-			String viewStyle = GwtServerHelper.getPersonalPreferences(bs, request).getDisplayStyle();
-			if (!(MiscUtil.hasString(viewStyle))) {
-				viewStyle = ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE;
-			}
-			Long binderId = getQueryParameterLong(nvMap, WebKeys.URL_BINDER_ID);
-			Long entryId  = getQueryParameterLong(nvMap, WebKeys.URL_ENTRY_ID );
-			FolderEntry fe = bs.getFolderModule().getEntry(binderId, entryId);
-			String feTitle = fe.getTitle();
-			if (!(MiscUtil.hasString(feTitle))) {
-				feTitle = ("--" + NLT.get("entry.noTitle") + "--");
-			}
-			ViewFolderEntryInfo vfei = new ViewFolderEntryInfo(binderId, entryId, feTitle, viewStyle);
-			vi.setViewFolderEntryInfo(vfei);
+			// A view folder entry!  Construct a ViewFolderEntryInfo
+			// for it...
+			Long				binderId = getQueryParameterLong(nvMap, WebKeys.URL_BINDER_ID);
+			Long				entryId  = getQueryParameterLong(nvMap, WebKeys.URL_ENTRY_ID );
+			ViewFolderEntryInfo	vfei     = buildViewFolderEntryInfo(bs, request, binderId, entryId);
+			
+			// ...and mark the ViewInfo as such.
+			vi.setViewFolderEntryInfo(vfei                 );
+			vi.setViewType(           ViewType.FOLDER_ENTRY);
 		}
 		
 		// If we get here reply refers to the BinderInfo requested or

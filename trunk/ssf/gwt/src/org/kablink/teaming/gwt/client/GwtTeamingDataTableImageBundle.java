@@ -116,8 +116,16 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource moveDown();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/nl_right_noborder_16.png")
+	public ImageResource nextTeal();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/pin_orange.png")
 	public ImageResource orangePin();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/nl_left_noborder_16.png")
+	public ImageResource previousTeal();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/spacer_1px.png")

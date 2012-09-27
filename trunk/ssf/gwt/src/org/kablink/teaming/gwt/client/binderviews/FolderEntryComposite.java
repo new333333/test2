@@ -36,11 +36,15 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.GetNextPreviousFolderEntryInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.rpc.shared.ViewFolderEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
+import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -50,6 +54,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
@@ -67,6 +72,7 @@ public class FolderEntryComposite extends ResizeComposite {
 	private boolean							m_isDialog;				// true -> The composite is hosted in a dialog.  false -> It's hosted in a view.
 	private GwtTeamingDataTableImageBundle	m_images;				// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;				// Access to Vibe's messages.
+	private Label							m_caption;				// 
 	private ViewReady						m_viewReady;			// Stores a ViewReady created for the classes that extends it.
 	private VibeFlowPanel 					m_captionImagePanel;	// A panel holding an image in the caption, if one is required.
 	private VibeFlowPanel					m_fp;					// The panel containing the composites content.
@@ -79,7 +85,7 @@ public class FolderEntryComposite extends ResizeComposite {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private FolderEntryComposite(ViewFolderEntryInfo vfei, Panel dlgHeader, ViewReady viewReady) {
+	private FolderEntryComposite(ViewFolderEntryInfo vfei, DlgBox dialog, ViewReady viewReady) {
 		// Initialize the super class...
 		super();
 		
@@ -88,14 +94,14 @@ public class FolderEntryComposite extends ResizeComposite {
 		m_viewReady = viewReady;
 		
 		// ...initialize the data members requiring it...
-		m_isDialog = (null != dlgHeader);
+		m_isDialog = (null != dialog);
 		m_images   = GwtTeaming.getDataTableImageBundle();
 		m_messages = GwtTeaming.getMessages();
 		
 		// ...create the base content panels...
 		VibeFlowPanel rootPanel = new VibeFlowPanel();
 		rootPanel.addStyleName("vibe-folderEntryComposite-rootPanel");
-		createCaption(rootPanel, dlgHeader);
+		createCaption(rootPanel, ((null == dialog) ? null : dialog.getHeaderPanel()));
 		m_fp = new VibeFlowPanel();
 		m_fp.addStyleName("vibe-folderEntryComposite-contentPanel");
 		rootPanel.add(m_fp);
@@ -132,9 +138,9 @@ public class FolderEntryComposite extends ResizeComposite {
 		container.add(m_captionImagePanel);
 		
 		// Create the label with the entry's title.
-		Label caption = new Label(m_vfei.getTitle());
-		caption.setStyleName("teamingDlgBoxHeader-captionLabel");
-		container.add(caption);
+		m_caption = new Label(m_vfei.getTitle());
+		m_caption.setStyleName("teamingDlgBoxHeader-captionLabel");
+		container.add(m_caption);
 
 		// Create the widgets that appear at the right end of the caption.
 		createCaptionRight(container);
@@ -193,7 +199,37 @@ public class FolderEntryComposite extends ResizeComposite {
 	 * viewed. 
 	 */
 	private void createCaptionNavigation(Panel container) {
-//!		...this needs to be implemented...
+		// Create a panel to hold the navigation buttons.
+		VibeFlowPanel navPanel = new VibeFlowPanel();
+		navPanel.addStyleName("vibe-folderEntryComposite-navPanel");
+		if (!m_isDialog) {
+			navPanel.addStyleName("padding15R");
+		}
+		container.add(navPanel);
+
+		// Create the previous button.
+		Image button = GwtClientHelper.buildImage(m_images.previousTeal());
+		button.addStyleName("vibe-folderEntryComposite-navPrevImg");
+		button.setTitle(m_messages.folderEntry_Alt_Previous());
+		button.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				doNavigateAsync(true);	// true -> Previous
+			}
+		});
+		navPanel.add(button);
+		
+		// Create the next button.
+		button = GwtClientHelper.buildImage(m_images.nextTeal());
+		button.addStyleName("vibe-folderEntryComposite-navNextImg");
+		button.setTitle(m_messages.folderEntry_Alt_Next());
+		button.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				doNavigateAsync(false);	// false -> Next.
+			}
+		});
+		navPanel.add(button);
 	}
 
 	/*
@@ -212,6 +248,59 @@ public class FolderEntryComposite extends ResizeComposite {
 		createCaptionClose(rightPanel);
 	}
 
+	/*
+	 * Asynchronously navigates to the previous/next entry.
+	 */
+	private void doNavigateAsync(final boolean previous) {
+		ScheduledCommand doNavigate = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				doNavigateNow(previous);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doNavigate);
+	}
+	
+	/*
+	 * Synchronously navigates to the previous/next entry.
+	 */
+	private void doNavigateNow(final boolean previous) {
+		// Can we get the previous/next entry navigate to?
+		GetNextPreviousFolderEntryInfoCmd cmd = new GetNextPreviousFolderEntryInfoCmd(m_vfei.getEntityId(), previous);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_GetNextPreviousFolderEntryInfo());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				ViewFolderEntryInfoRpcResponseData responseData = ((ViewFolderEntryInfoRpcResponseData) response.getResponseData());
+				ViewFolderEntryInfo vfei = responseData.getViewFolderEntryInfo();
+				if (null == vfei) {
+					// No!  Tell the user about the problem.
+					String error;
+					if (previous)
+					     error = m_messages.folderEntry_Error_NoPrevious();
+					else error = m_messages.folderEntry_Error_NoNext();
+					GwtClientHelper.deferredAlert(error);
+				}
+				
+				else {
+					// Yes!  We've got the previous/next entry.
+					// Load it.
+					m_vfei = vfei;
+					m_caption.setText(m_vfei.getTitle());
+					m_fp.clear();
+					loadPart1Async();
+				}
+			}
+		});
+		
+	}
+	
 	/*
 	 * Asynchronously loads the next part of the composite.
 	 */
@@ -266,11 +355,11 @@ public class FolderEntryComposite extends ResizeComposite {
 	 * via the callback.
 	 * 
 	 * @param fecClient
-	 * @param dlgHeader
+	 * @param dialog
 	 * @param vfei
 	 * @param viewReady
 	 */
-	public static void createAsync(final FolderEntryCompositeClient fecClient, final Panel dlgHeader, final ViewFolderEntryInfo vfei, final ViewReady viewReady) {
+	public static void createAsync(final FolderEntryCompositeClient fecClient, final DlgBox dialog, final ViewFolderEntryInfo vfei, final ViewReady viewReady) {
 		GWT.runAsync(FolderEntryComposite.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -280,7 +369,7 @@ public class FolderEntryComposite extends ResizeComposite {
 
 			@Override
 			public void onSuccess() {
-				FolderEntryComposite fec = new FolderEntryComposite(vfei, dlgHeader, viewReady);
+				FolderEntryComposite fec = new FolderEntryComposite(vfei, dialog, viewReady);
 				fecClient.onSuccess(fec);
 			}
 		});
