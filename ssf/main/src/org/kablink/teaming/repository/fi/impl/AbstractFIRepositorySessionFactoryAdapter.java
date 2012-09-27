@@ -51,8 +51,9 @@ public abstract class AbstractFIRepositorySessionFactoryAdapter
 			super(binder, entity, relativeFilePath, versionName, isEncrypted, encryptionKey, fileMap);
 		}
 		
-		protected RepositorySession createSessionForDataSource() {
-			return openSession(_binder.getResourceDriverName());
+		@Override
+		protected RepositorySession createSessionForDataSource(Binder binder, DefinableEntity entity) {
+			return openSession(_binder, _entity, _binder.getResourceDriverName());
 		}
 	}
 

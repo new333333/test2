@@ -50,7 +50,8 @@ public abstract class AbstractExclusiveRepositorySessionFactory
 			super(binder, entity, relativeFilePath, versionName, isEncrypted, encryptionKey, fileMap);
 		}
 		
-		protected RepositorySession createSessionForDataSource() {
+		@Override
+		protected RepositorySession createSessionForDataSource(Binder binder, DefinableEntity entity) {
 			return openSession();
 		}
 	}

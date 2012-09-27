@@ -48,6 +48,7 @@ import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.util.search.Criteria;
 
@@ -515,4 +516,14 @@ public interface FileModule {
 	 * 3 - file size limit violation
 	 */
 	public int checkQuotaAndFileSizeLimit(Long userId, Binder binder, long fileSize, String fileName);
+
+	/**
+	 * Application tier should not call this directly. For system use only.
+	 * 
+	 * @param entity
+	 * @param workAreaOperation
+	 * @return
+	 */
+	public boolean shouldAccessFileSystemWithExternalAclInUserMode(DefinableEntity entity, WorkAreaOperation workAreaOperation);
+
 }	

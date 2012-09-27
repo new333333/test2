@@ -33,6 +33,8 @@
 package org.kablink.teaming.repository.fi;
 
 import org.kablink.teaming.UncheckedIOException;
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.repository.RepositorySession;
 import org.kablink.teaming.repository.RepositorySessionFactory;
@@ -40,7 +42,7 @@ import org.kablink.teaming.repository.RepositorySessionFactory;
 
 public interface FIRepositorySessionFactoryAdapter extends RepositorySessionFactory {
 
-	public RepositorySession openSession(String resourceDriverName) 
+	public RepositorySession openSession(Binder binder, DefinableEntity entity, String resourceDriverName) 
 	throws FIException, UncheckedIOException;
 	
 	public boolean supportsExternalAcl(String resourceDriverName) throws FIException, UncheckedIOException;
