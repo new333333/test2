@@ -40,6 +40,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
  */
 public class GetMainPageInfoCmd extends VibeRpcCmd {
 	private String m_binderId;	//
+	private long m_timeZoneOffset;
 	
 	/**
 	 * Constructor method.
@@ -77,6 +78,22 @@ public class GetMainPageInfoCmd extends VibeRpcCmd {
 	 * @param
 	 */
 	public void setBinderId(String binderId) {m_binderId = binderId;}
+	
+	/**
+	 * 
+	 */
+	public long getTimeZoneOffset()
+	{
+		return m_timeZoneOffset;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setTimeZoneOffset( long timeZoneOffset )
+	{
+		m_timeZoneOffset = timeZoneOffset;
+	}
 	
 	/**
 	 * Returns the command's enumeration value.

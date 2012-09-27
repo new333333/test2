@@ -371,6 +371,11 @@ public class GwtMainPage extends ResizeComposite
 		// Execute a GWT RPC command asking the server for our initial
 		// data requirements.
 		GetMainPageInfoCmd cmd = new GetMainPageInfoCmd( binderId );
+		
+		// Set the time zone information
+		{
+			cmd.setTimeZoneOffset( GwtClientHelper.getTimeZoneOffsetMillis() * -1 );
+		}
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
