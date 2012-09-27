@@ -538,6 +538,16 @@ public abstract class DlgBox extends PopupPanel
 	 */
 	public abstract FocusWidget getFocusWidget();
 	
+
+	/**
+	 * Returns the dialog's header panel.
+	 * 
+	 * @return
+	 */
+	public Panel getHeaderPanel()
+	{
+		return m_headerPanel;
+	}
 	
 	/**
 	 * If a dialog wants to have a help link in the header then override this method

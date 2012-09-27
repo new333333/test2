@@ -60,6 +60,10 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource busyAnimation_large();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/close_teal16.png")
+	public ImageResource closeTeal();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/check_12.png")
 	public ImageResource check12();
 	

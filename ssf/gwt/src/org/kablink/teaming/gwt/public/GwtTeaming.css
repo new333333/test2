@@ -2792,6 +2792,7 @@ body, table td, select
 /* Styles for the header in a dialog box. */
 .teamingDlgBoxHeader
 {
+	position: relative;
 	color: #fff;
 	font-size: 14px;
 	font-weight: bold;

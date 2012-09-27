@@ -87,7 +87,7 @@ public class FolderEntryDlg extends DlgBox {
 		// ...and create the dialog's content.
 		addStyleName("vibe-folderEntryDlgBox");
 		createAllDlgContent(
-			"",										// Initialized when the dialog is shown.
+			"",										// Caption displayed by FolderEntryComposite, not the dialog.
 			DlgBox.getSimpleSuccessfulHandler(),	// The dialog's EditSuccessfulHandler.
 			DlgBox.getSimpleCanceledHandler(),		// The dialog's EditCanceledHandler.
 			null);									// Create callback data.  Unused. 
@@ -179,7 +179,6 @@ public class FolderEntryDlg extends DlgBox {
 	 * Synchronously populates the contents of the dialog.
 	 */
 	private void populateDlgNow() {
-		setCaption(m_vfei.getTitle());
 		FolderEntryComposite.createAsync(
 			new FolderEntryCompositeClient() {
 				@Override
@@ -220,6 +219,7 @@ public class FolderEntryDlg extends DlgBox {
 					}
 				}
 			},
+			getHeaderPanel(),
 			m_vfei,
 			m_viewReady);
 	}

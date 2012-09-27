@@ -501,7 +501,12 @@
 /* End:  Change entry types dialog styles. */
 
 /* Start:  Folder entry composite styles. */
-	.vibe-folderEntryComposite-panel {padding: 10px;}
+	.vibe-folderEntryComposite-closeImg     {}
+	.vibe-folderEntryComposite-closeLabel   {white-space: nowrap; margin-right: 5px; vertical-align: middle;}
+	.vibe-folderEntryComposite-closePanel   {position: relative; display: inline; white-space: nowrap; cursor: pointer !important;}
+	.vibe-folderEntryComposite-contentPanel {padding: 10px;}
+	.vibe-folderEntryComposite-rightPanel   {position: absolute; top: 3px; right: 8px; white-space: nowrap;}
+	.vibe-folderEntryComposite-rootPanel    {}
 /* End:  Folder entry composite styles. */
 
 /* Start:  Folder entry dialog styles. */
