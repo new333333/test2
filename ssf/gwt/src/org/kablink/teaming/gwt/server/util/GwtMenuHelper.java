@@ -1719,6 +1719,32 @@ public class GwtMenuHelper {
 	}
 
 	/*
+	 * Constructs the ToolbarItem's for the footer on a folder entry.
+	 */
+	private static void constructFooterFolderEntryItems(ToolbarItem footerToolbar, AllModulesInjected bs, HttpServletRequest request, FolderEntry fe) {
+		// Is the entity in the trash?
+		if (!(fe.isPreDeleted())) {
+			// No!  Generate the toolbar item for the permalink to the
+			// entry.
+			String permaLink = PermaLinkUtil.getPermalink(request, fe);
+			ToolbarItem permalinkTBI = new ToolbarItem(PERMALINK);
+			markTBITitle(permalinkTBI, "toolbar.menu.folderEntryPermalink");
+			markTBIUrl(  permalinkTBI, permaLink                          );
+			footerToolbar.addNestedItem(permalinkTBI                      );
+
+			// Does the entry have any events defined on it?
+			if (MiscUtil.hasItems(fe.getEvents())) {
+				// Yes!  Generate an iCal URL toolbar item.
+				String icalUrl = org.kablink.teaming.ical.util.UrlUtil.getICalURLHttp(request, String.valueOf(fe.getParentBinder().getId()), String.valueOf(fe.getId()));
+				ToolbarItem icalTBI = new ToolbarItem(ICALENDAR);
+				markTBITitle(icalTBI, "toolbar.menu.iCalendar" );
+				markTBIUrl(  icalTBI, icalUrl                  );
+				footerToolbar.addNestedItem(icalTBI);
+			}
+		}
+	}
+
+	/*
 	 * Constructs the ToolbarItem's for the footer on a folder.
 	 */
 	private static void constructFooterFolderItems(ToolbarItem footerToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
@@ -1791,7 +1817,7 @@ public class GwtMenuHelper {
 		// ...this folder.
 		constructFooterSimpleNameItems(footerToolbar, bs, request, folder.getId());
 	}
-
+	
 	/*
 	 * Constructs the ToolbarItem's for the simple names defined on a
 	 * binder.
@@ -2439,17 +2465,17 @@ public class GwtMenuHelper {
 	}
 	
 	/**
-	 * Returns a List<ToolbarItem> of the ToolbarItem's for a binder's
-	 * footer given the binder type, the current user's rights to that
-	 * binder, ...
+	 * Returns a List<ToolbarItem> of the ToolbarItem's for a entity's
+	 * footer given the entity type, the current user's rights to that
+	 * entity, ...
 	 *
 	 * @param bs
 	 * @param request
-	 * @param binderId
+	 * @param entityId
 	 * 
 	 * @return
 	 */
-	public static List<ToolbarItem> getFooterToolbarItems(AllModulesInjected bs, HttpServletRequest request, Long binderId) {
+	public static List<ToolbarItem> getFooterToolbarItems(AllModulesInjected bs, HttpServletRequest request, EntityId entityId) {
 		SimpleProfiler.start("GwtMenuHelper.getFooterToolbarItems()");
 		try {
 			// Allocate a List<ToolbarItem> to hold the ToolbarItem's
@@ -2458,18 +2484,25 @@ public class GwtMenuHelper {
 			ToolbarItem footerToolbar = new ToolbarItem(WebKeys.FOOTER_TOOLBAR);
 			reply.add(footerToolbar);
 
-			// Generate the toolbar items based on the type of binder
-			// this is.
-			BinderModule bm		= bs.getBinderModule();
-			Binder       binder	= bm.getBinder(binderId);
-			if (binder instanceof Folder) {
-				Folder folder = ((Folder) binder);
-				constructFooterFolderItems(footerToolbar, bs, request, folder);
+			Long itemId = entityId.getEntityId();
+			if (entityId.getEntityType().equals(EntityType.folderEntry.name())) {
+				FolderEntry fe = bs.getFolderModule().getEntry(null, itemId);
+				constructFooterFolderEntryItems(footerToolbar, bs, request, fe);
 			}
 			
-			else if (binder instanceof Workspace) {
-				Workspace ws = ((Workspace) binder);
-				constructFooterWorkspaceItems(footerToolbar, bs, request, ws);
+			else {
+				// Generate the toolbar items based on the type of binder
+				// this is.
+				Binder binder = bs.getBinderModule().getBinder(itemId);
+				if (binder instanceof Folder) {
+					Folder folder = ((Folder) binder);
+					constructFooterFolderItems(footerToolbar, bs, request, folder);
+				}
+				
+				else if (binder instanceof Workspace) {
+					Workspace ws = ((Workspace) binder);
+					constructFooterWorkspaceItems(footerToolbar, bs, request, ws);
+				}
 			}
 			
 

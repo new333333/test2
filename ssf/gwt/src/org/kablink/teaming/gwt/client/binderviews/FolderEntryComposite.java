@@ -32,6 +32,12 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -60,24 +66,36 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ResizeComposite;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * Class that holds the folder entry viewer.
  * 
  * @author drfoster@novell.com
  */
-public class FolderEntryComposite extends ResizeComposite {
+public class FolderEntryComposite extends ResizeComposite
+	implements
+		// Event handlers implemented by this class.
+		ContributorIdsRequestEvent.Handler
+{
 	public static final boolean SHOW_GWT_ENTRY_VIEWER	= false;	// DRF:  Leave false on checkin until it's finished.
 
-	private boolean							m_isDialog;				// true -> The composite is hosted in a dialog.  false -> It's hosted in a view.
-	private GwtTeamingDataTableImageBundle	m_images;				// Access to Vibe's images.
-	private GwtTeamingMessages				m_messages;				// Access to Vibe's messages.
-	private Label							m_caption;				// 
-	private ViewReady						m_viewReady;			// Stores a ViewReady created for the classes that extends it.
-	private VibeFlowPanel 					m_captionImagePanel;	// A panel holding an image in the caption, if one is required.
-	private VibeFlowPanel					m_fp;					// The panel containing the composites content.
-	private ViewFolderEntryInfo				m_vfei;					// The view information for the folder entry being viewed.
+	private boolean							m_isDialog;					// true -> The composite is hosted in a dialog.  false -> It's hosted in a view.
+	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
+	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
+	private Label							m_caption;					// 
+	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private ViewReady						m_viewReady;				// Stores a ViewReady created for the classes that extends it.
+	private VibeFlowPanel 					m_captionImagePanel;		// A panel holding an image in the caption, if one is required.
+	private VibeFlowPanel					m_fp;						// The panel containing the composites content.
+	private ViewFolderEntryInfo				m_vfei;						// The view information for the folder entry being viewed.
 
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
+	};
 	/*
 	 * Constructor method.
 	 * 
@@ -323,6 +341,65 @@ public class FolderEntryComposite extends ResizeComposite {
 		m_viewReady.viewReady();
 	}
 
+	/**
+	 * Called when the data table is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach() {
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Handles ContributorIdsRequestEvent's received by this class.
+	 * 
+	 * Implements the ContributorIdsRequestEvent.Handler.onContributorIdsRequest() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onContributorIdsRequest(ContributorIdsRequestEvent event) {
+//!		...this needs to be implemented...
+	}
+	
+	/**
+	 * Called when the data table is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach() {
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
+	
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents() {
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if (null == m_registeredEventHandlers) {
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if (m_registeredEventHandlers.isEmpty()) {
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				m_registeredEvents,
+				this,
+				m_registeredEventHandlers);
+		}
+	}
+
 	/*
 	 * Updates the caption's image.
 	 */
@@ -332,6 +409,18 @@ public class FolderEntryComposite extends ResizeComposite {
 			m_captionImagePanel.clear();
 			m_captionImagePanel.add(captionImg);
 			m_captionImagePanel.addStyleName("padding5R");
+		}
+	}
+	
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents() {
+		// If we have a non-empty list of registered events...
+		if (GwtClientHelper.hasItems(m_registeredEventHandlers)) {
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
 		}
 	}
 	

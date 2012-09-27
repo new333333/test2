@@ -1176,7 +1176,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetToolbarItemsRpcResponseData responseData;
 			
 			gftiCmd = ((GetFooterToolbarItemsCmd) cmd);
-		    result = GwtMenuHelper.getFooterToolbarItems( this, getRequest( ri ), gftiCmd.getBinderId() );
+		    result = GwtMenuHelper.getFooterToolbarItems( this, getRequest( ri ), gftiCmd.getEntityId() );
 			responseData = new GetToolbarItemsRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;

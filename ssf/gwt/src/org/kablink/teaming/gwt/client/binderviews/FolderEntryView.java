@@ -108,7 +108,9 @@ public class FolderEntryView extends ViewBase {
 	}
 	
 	/**
-	 * Not used for folder entry views.
+	 * Not used for folder entry views directly.  The
+	 * FolderEntryComposite will list for this and handle it for both
+	 * the view and dialog versions.
 	 * 
 	 * Implements the ViewBase.onContributorIdsRequest() method.
 	 */
