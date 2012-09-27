@@ -1437,6 +1437,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_NEXT_PREVIOUS_FOLDER_ENTRY_INFO:
+		{
+			GetNextPreviousFolderEntryInfoCmd gnpfeiCmd = ((GetNextPreviousFolderEntryInfoCmd) cmd);
+			ViewFolderEntryInfoRpcResponseData result = GwtViewHelper.getNextPreviousFolderInfo( this, getRequest( ri ), gnpfeiCmd.getEntityId(), gnpfeiCmd.isPrevious() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_NUMBER_OF_MEMBERS:
 		{
 			GetNumberOfMembersCmd gnmCmd;

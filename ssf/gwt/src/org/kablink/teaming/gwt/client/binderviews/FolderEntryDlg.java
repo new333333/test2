@@ -219,7 +219,7 @@ public class FolderEntryDlg extends DlgBox {
 					}
 				}
 			},
-			getHeaderPanel(),
+			this,
 			m_vfei,
 			m_viewReady);
 	}

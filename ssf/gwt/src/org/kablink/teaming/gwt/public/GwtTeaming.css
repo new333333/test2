@@ -20,11 +20,12 @@
 .displayNone        { display: none;           }
 .displayNone2       { display: none !important;}
 
-.padding3  {padding:       3px;           }
-.padding3b {padding:       3px !important;}
-.padding5  {padding:       5px;           }
-.padding5b {padding:       5px !important;}
-.padding5R {padding-right: 5px;           }
+.padding3   {padding:        3px;           }
+.padding3b  {padding:        3px !important;}
+.padding5   {padding:        5px;           }
+.padding5b  {padding:        5px !important;}
+.padding5R  {padding-right:  5px;           }
+.padding15R {padding-right: 15px;           }
 
 .vibe-verticalScroll {overflow-y: auto;}
 
