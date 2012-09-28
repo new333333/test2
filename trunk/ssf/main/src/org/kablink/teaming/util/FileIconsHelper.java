@@ -51,6 +51,7 @@ public class FileIconsHelper {
 	// defined.
 	private static String[] SUPPORTED_EXTENSIONS = new String[] {
 		"avi",
+		"bmp",
 		"doc",
 		"flv",
 		"gif",
