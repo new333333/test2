@@ -3429,17 +3429,14 @@ public class GwtViewHelper {
 										}
 									}
 									if (GwtServerHelper.isFamilyFile(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FAMILY_FIELD))) {
-										eti.setFile(true);
 										String fName = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD);
 										if (MiscUtil.hasString(fName)) {
-											int pPos = fName.lastIndexOf('.');
-											if (0 < pPos) {
-												eti.setFileIcon(
-													FileIconsHelper.getFileIcon(
-														fName.substring(pPos),
-														mapBISToIS(
-															BinderIconSize.getListViewIconSize())));
-											}
+											eti.setFile(true);
+											eti.setFileIcon(
+												FileIconsHelper.getFileIconFromFileName(
+													fName,
+													mapBISToIS(
+														BinderIconSize.getListViewIconSize())));
 										}
 									}
 									fr.setColumnValue(fc, eti);

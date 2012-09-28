@@ -980,15 +980,14 @@ public class GwtActivityStreamHelper {
 
 		// Is this entry a file?
 		if (GwtServerHelper.isFamilyFile(GwtServerHelper.getStringFromEntryMap(em, Constants.FAMILY_FIELD))) {
-			// Yes!  Can we find an extension in its filename?
+			// Yes!  Can we find its filename?
 			reply.setEntryFile(true);
-			String	fName = GwtServerHelper.getStringFromEntryMap(em, Constants.FILENAME_FIELD);
-			int		pPos  = ((null == fName) ? (-1) : fName.lastIndexOf('.'));
-			if (0 < pPos) {
+			String fName = GwtServerHelper.getStringFromEntryMap(em, Constants.FILENAME_FIELD);
+			if (MiscUtil.hasString(fName)) {
 				// Yes!  Map it to a file icon.
 				reply.setEntryFileIcon(
-					FileIconsHelper.getFileIcon(
-						fName.substring(pPos),
+					FileIconsHelper.getFileIconFromFileName(
+						fName,
 						GwtViewHelper.mapBISToIS(
 							BinderIconSize.getActivityStreamIconSize())));
 			}
