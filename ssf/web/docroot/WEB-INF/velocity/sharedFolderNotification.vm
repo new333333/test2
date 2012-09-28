@@ -27,7 +27,7 @@
  * are trademarks of SiteScape, Inc.
  *#
 #if ($ssVisitor.isHtml())  
-	<a href="$ssVisitor.getPermaLink($ssSharedEntity)">$esc.html(${ssSharedEntity.ParentBinder.PathName})/$esc.html(${ssSharedEntity.Title})</a><br/><br/>
+	<a href="$ssVisitor.getPermaLink($ssSharedEntity)">$esc.html(${ssSharedEntity.Title})</a><br/><br/>
 	#if (${ssShare.Comment})
 		$esc.html(${ssShare.Comment})
 	#end
