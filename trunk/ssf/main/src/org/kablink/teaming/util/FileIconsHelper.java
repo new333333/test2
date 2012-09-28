@@ -57,6 +57,7 @@ public class FileIconsHelper {
 		"gif",
 		"html",
 		"jpg",
+		"mpg",
 		"mov",
 		"odp",
 		"ods",
@@ -68,6 +69,7 @@ public class FileIconsHelper {
 		"vsd",
 		"wav",
 		"wpd",
+		"wmv",
 		"xls",
 		"zip",
 	};
@@ -244,6 +246,8 @@ public class FileIconsHelper {
 		m_transformMap.put("mid",  "wav" );
 		m_transformMap.put("mpa",  "wav" );
 		m_transformMap.put("mp3",  "wav" );
+		m_transformMap.put("mpeg", "mpg" );
+		m_transformMap.put("mp4",  "mpg" );
 		m_transformMap.put("m4a",  "wav" );
 		m_transformMap.put("png",  "gif" );
 		m_transformMap.put("pptx", "ppt" );
