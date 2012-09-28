@@ -56,7 +56,6 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Display;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -89,6 +88,25 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		m_isFilr = GwtClientHelper.isLicenseFilr();
 	}
 
+	/*
+	 * Returns the string to use for an entry image.
+	 */
+	private String getEntryImage(EntryTitleInfo eti, GwtTeamingWorkspaceTreeImageBundle images) {
+		// Is the entry a file entry? 
+		if (eti.isFile()) {
+			// Yes!  Do we have an icon for that file?
+			String fileIcon = eti.getFileIcon();
+			if (GwtClientHelper.hasString(fileIcon)) {
+				// Yes!  Return the full URL to it.
+				return (GwtClientHelper.getRequestInfo().getImagesPath() + fileIcon);
+			}
+		}
+		
+		// The entry is either not a file or we don't have an icon for
+		// it.  Return the generic entry icon.
+		return images.folder_entry().getSafeUri().asString();
+	}
+	
 	/*
 	 * Adds the styles to an element to reflect a mouse hover.
 	 */
@@ -395,12 +413,12 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 				// ...we need to display an image next to it...
 				GwtTeamingMessages                 messages = GwtTeaming.getMessages(); 
 				GwtTeamingWorkspaceTreeImageBundle images   = GwtTeaming.getWorkspaceTreeImageBundle();
-				ImageResource                      entityImage;
+				String                             entityImage;
 				String                             entityAlt;
-				if      (isEntry)                        {entityImage = images.folder_entry();     entityAlt = messages.treeAltEntry();    }
-				else if (entityType.equals("folder"))    {entityImage = images.folder();           entityAlt = messages.treeAltFolder();   }
-				else if (entityType.equals("workspace")) {entityImage = images.folder_workspace(); entityAlt = messages.treeAltWorkspace();}
-				else                                     {entityImage = null;                      entityAlt = null;                       }
+				if      (isEntry)                        {entityImage = getEntryImage(eti, images);                        entityAlt = messages.treeAltEntry();    }
+				else if (entityType.equals("folder"))    {entityImage = images.folder().getSafeUri().asString();           entityAlt = messages.treeAltFolder();   }
+				else if (entityType.equals("workspace")) {entityImage = images.folder_workspace().getSafeUri().asString(); entityAlt = messages.treeAltWorkspace();}
+				else                                     {entityImage = null;                                              entityAlt = null;                       }
 				if (hasBinderImg || (null != entityImage)) {
 					Image i = (hasBinderImg ? binderImg : GwtClientHelper.buildImage(entityImage));
 					i.setTitle(entityAlt);

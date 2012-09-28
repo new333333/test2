@@ -85,6 +85,7 @@ public enum BinderIconSize implements IsSerializable {
 	 * 
 	 * @return
 	 */
+	public static BinderIconSize getActivityStreamIconSize()     {return BinderIconSize.MEDIUM;}
 	public static BinderIconSize getChildBindersWidgetIconSize() {return BinderIconSize.SMALL; }
 	public static BinderIconSize getDialogCaptionIconSize()      {return BinderIconSize.LARGE; }
 	public static BinderIconSize getBreadCrumbIconSize()         {return BinderIconSize.MEDIUM;}

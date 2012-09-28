@@ -1726,14 +1726,19 @@ public class GwtMenuHelper {
 		if (!(fe.isPreDeleted())) {
 			// No!  Generate the toolbar item for the permalink to the
 			// entry.
+			boolean hasEvents = MiscUtil.hasItems(fe.getEvents());
+			String key;
+			if (hasEvents)
+			     key = "toolbar.menu.folderEntryPermalink.iCal";
+			else key = "toolbar.menu.folderEntryPermalink";
 			String permaLink = PermaLinkUtil.getPermalink(request, fe);
 			ToolbarItem permalinkTBI = new ToolbarItem(PERMALINK);
-			markTBITitle(permalinkTBI, "toolbar.menu.folderEntryPermalink");
-			markTBIUrl(  permalinkTBI, permaLink                          );
-			footerToolbar.addNestedItem(permalinkTBI                      );
+			markTBITitle(permalinkTBI, key          );
+			markTBIUrl(  permalinkTBI, permaLink    );
+			footerToolbar.addNestedItem(permalinkTBI);
 
 			// Does the entry have any events defined on it?
-			if (MiscUtil.hasItems(fe.getEvents())) {
+			if (hasEvents) {
 				// Yes!  Generate an iCal URL toolbar item.
 				String icalUrl = org.kablink.teaming.ical.util.UrlUtil.getICalURLHttp(request, String.valueOf(fe.getParentBinder().getId()), String.valueOf(fe.getId()));
 				ToolbarItem icalTBI = new ToolbarItem(ICALENDAR);

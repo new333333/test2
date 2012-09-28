@@ -180,6 +180,7 @@ import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.DateComparer;
+import org.kablink.teaming.util.FileIconsHelper;
 import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
@@ -3427,11 +3428,20 @@ public class GwtViewHelper {
 											eti.setDescriptionIsHtml(false      );
 										}
 									}
-									boolean file = GwtServerHelper.isFamilyFile(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FAMILY_FIELD));
-									if (file) {
-										file = MiscUtil.hasString(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD));
+									if (GwtServerHelper.isFamilyFile(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FAMILY_FIELD))) {
+										eti.setFile(true);
+										String fName = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD);
+										if (MiscUtil.hasString(fName)) {
+											int pPos = fName.lastIndexOf('.');
+											if (0 < pPos) {
+												eti.setFileIcon(
+													FileIconsHelper.getFileIcon(
+														fName.substring(pPos),
+														mapBISToIS(
+															BinderIconSize.getListViewIconSize())));
+											}
+										}
 									}
-									eti.setFile(file);
 									fr.setColumnValue(fc, eti);
 								}
 								
@@ -5068,7 +5078,26 @@ public class GwtViewHelper {
 			throw GwtServerHelper.getGwtTeamingException(e);
 		}
 	}
-	
+
+	/**
+	 * Maps a BinderIconSize enumeration value to its equivalent
+	 * IconSize.
+	 * 
+	 * @param bis
+	 * 
+	 * @return
+	 */
+	public static IconSize mapBISToIS(BinderIconSize bis) {
+		IconSize reply;
+		switch (bis) {
+		case SMALL:   reply = IconSize.SMALL;     break;
+		case MEDIUM:  reply = IconSize.MEDIUM;    break;
+		case LARGE:   reply = IconSize.LARGE;     break;
+		default:      reply = IconSize.UNDEFINED; break;
+		}
+		return reply;
+	}
+
 	/**
 	 * Moves the entries.
 	 * 

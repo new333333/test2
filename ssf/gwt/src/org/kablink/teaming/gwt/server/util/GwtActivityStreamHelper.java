@@ -80,6 +80,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
+import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
@@ -88,6 +89,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.FileIconsHelper;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
@@ -965,16 +967,32 @@ public class GwtActivityStreamHelper {
 		
 		// Then the entry information.
 		String entryId = String.valueOf(entryData.getEntryId());
-		reply.setEntryId(               entryId                                                         );
-		reply.setEntryComments(         entryData.getCommentCount()                                     );
-		reply.setEntryDescription(      getEntryDescFromEM(      em, request                           ));	
-		reply.setEntryDescriptionFormat(getEntryDescFormatFromEM(em                                    ));	
-		reply.setEntryDocNum(           GwtServerHelper.getStringFromEntryMap(              em, Constants.DOCNUMBER_FIELD         ));
-		reply.setEntryModificationDate( GwtServerHelper.getStringFromEntryMap(              em, Constants.MODIFICATION_DATE_FIELD ));		
-		reply.setEntryTitle(            GwtServerHelper.getStringFromEntryMap(              em, Constants.TITLE_FIELD             ));
-		reply.setEntryTopEntryId(       GwtServerHelper.getStringFromEntryMap(              em, Constants.ENTRY_TOP_ENTRY_ID_FIELD));
-		reply.setEntryType(             GwtServerHelper.getStringFromEntryMap(              em, Constants.ENTRY_TYPE_FIELD        ));
-		reply.setEntrySeen(             sm.checkIfSeen(          em                                    ));
+		reply.setEntryId(               entryId                                                                      );
+		reply.setEntryComments(         entryData.getCommentCount()                                                  );
+		reply.setEntryDescription(      getEntryDescFromEM(                   em, request                           ));	
+		reply.setEntryDescriptionFormat(getEntryDescFormatFromEM(             em                                    ));	
+		reply.setEntryDocNum(           GwtServerHelper.getStringFromEntryMap(em, Constants.DOCNUMBER_FIELD         ));
+		reply.setEntryModificationDate( GwtServerHelper.getStringFromEntryMap(em, Constants.MODIFICATION_DATE_FIELD ));		
+		reply.setEntryTitle(            GwtServerHelper.getStringFromEntryMap(em, Constants.TITLE_FIELD             ));
+		reply.setEntryTopEntryId(       GwtServerHelper.getStringFromEntryMap(em, Constants.ENTRY_TOP_ENTRY_ID_FIELD));
+		reply.setEntryType(             GwtServerHelper.getStringFromEntryMap(em, Constants.ENTRY_TYPE_FIELD        ));
+		reply.setEntrySeen(             sm.checkIfSeen(                       em                                    ));
+
+		// Is this entry a file?
+		if (GwtServerHelper.isFamilyFile(GwtServerHelper.getStringFromEntryMap(em, Constants.FAMILY_FIELD))) {
+			// Yes!  Can we find an extension in its filename?
+			reply.setEntryFile(true);
+			String	fName = GwtServerHelper.getStringFromEntryMap(em, Constants.FILENAME_FIELD);
+			int		pPos  = ((null == fName) ? (-1) : fName.lastIndexOf('.'));
+			if (0 < pPos) {
+				// Yes!  Map it to a file icon.
+				reply.setEntryFileIcon(
+					FileIconsHelper.getFileIcon(
+						fName.substring(pPos),
+						GwtViewHelper.mapBISToIS(
+							BinderIconSize.getActivityStreamIconSize())));
+			}
+		}
 
 		// Are we supposed to force plain text descriptions?
 		if (forcePlainTextDescriptions) {

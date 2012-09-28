@@ -47,6 +47,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class ActivityStreamEntry implements IsSerializable {
+	private boolean						m_entryFile;				//
 	private GwtPresenceInfo             m_authorPresence;           //
 	private List<ActivityStreamEntry>	m_comments;					// Comments, up to maximum number configured.
 	private String						m_authorAvatarUrl;			//
@@ -58,6 +59,7 @@ public class ActivityStreamEntry implements IsSerializable {
 	private String						m_entryDescription;			//
 	private int							m_entryDescriptionFormat;	// One of the FORMAT_* values form org.kablink.teaming.domain.Description.
 	private String						m_entryDocNum;				//
+	private String						m_entryFileIcon;			//
 	private String						m_entryId;					//
 	private String						m_entryModificationDate;	//
 	private boolean						m_entrySeen;				//
@@ -106,6 +108,7 @@ public class ActivityStreamEntry implements IsSerializable {
 	 * 
 	 * @return
 	 */
+	public boolean         isEntryFile()               {return m_entryFile;             }
 	public GwtPresenceInfo getAuthorPresence()         {return m_authorPresence;        }
 	public String          getAuthorAvatarUrl()        {return m_authorAvatarUrl;       }
 	public String          getAuthorId()               {return m_authorId;              }
@@ -115,7 +118,8 @@ public class ActivityStreamEntry implements IsSerializable {
 	public int             getEntryComments()          {return m_entryComments;         }	
 	public String          getEntryDescription()       {return m_entryDescription;      }	
 	public int             getEntryDescriptionFormat() {return m_entryDescriptionFormat;}	
-	public String          getEntryDocNum()            {return m_entryDocNum;           }	
+	public String          getEntryDocNum()            {return m_entryDocNum;           }
+	public String          getEntryFileIcon()          {return m_entryFileIcon;         }
 	public String          getEntryId()                {return m_entryId;               }	
 	public String          getEntryModificationDate()  {return m_entryModificationDate; }
 	public boolean         getEntrySeen()              {return m_entrySeen;             }	
@@ -141,6 +145,7 @@ public class ActivityStreamEntry implements IsSerializable {
 	 * 
 	 * @return
 	 */
+	public void setEntryFile(             boolean         entryFile)              {m_entryFile              = entryFile;             }
 	public void setAuthorPresence(        GwtPresenceInfo authorPresence)         {m_authorPresence         = authorPresence;        }
 	public void setAuthorAvatarUrl(       String          authorAvatarUrl)        {m_authorAvatarUrl        = authorAvatarUrl;       }
 	public void setAuthorId(              String          authorId)               {m_authorId               = authorId;              }
@@ -150,7 +155,8 @@ public class ActivityStreamEntry implements IsSerializable {
 	public void setEntryComments(         int             entryComments)          {m_entryComments          = entryComments;         }	
 	public void setEntryDescription(      String          entryDescription)       {m_entryDescription       = entryDescription;      }	
 	public void setEntryDescriptionFormat(int             entryDescriptionFormat) {m_entryDescriptionFormat = entryDescriptionFormat;}	
-	public void setEntryDocNum(           String          entryDocNum)            {m_entryDocNum            = entryDocNum;           }	
+	public void setEntryDocNum(           String          entryDocNum)            {m_entryDocNum            = entryDocNum;           }
+	public void setEntryFileIcon(         String          entryFileIcon)          {m_entryFileIcon          = entryFileIcon;         }
 	public void setEntryId(               String          entryId)                {m_entryId                = entryId;               }
 	public void setEntryModificationDate( String          entryModificationDate)  {m_entryModificationDate  = entryModificationDate; }
 	public void setEntrySeen(             boolean         entrySeen)              {m_entrySeen              = entrySeen;             }
