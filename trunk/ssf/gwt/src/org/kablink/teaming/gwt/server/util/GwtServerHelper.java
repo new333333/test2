@@ -8781,7 +8781,9 @@ public class GwtServerHelper {
 						}
 						
 						case INVOKE_SHARE:
-							folderModule.checkAccess( folderEntry, FolderOperation.readEntry );
+							if ( bs.getSharingModule().testAddShareEntity( folderEntry ) == false )
+								throw new AccessControlException();
+							
 							break;
 						
 						case INVOKE_SUBSCRIBE:
