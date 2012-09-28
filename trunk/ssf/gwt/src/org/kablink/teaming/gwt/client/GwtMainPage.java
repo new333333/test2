@@ -513,15 +513,19 @@ public class GwtMainPage extends ResizeComposite
 	private void loadActivityStreamCtrl()
 	{
 		ActionsPopupMenu actionsMenu;
-		ActionMenuItem[] menuItems = {  ActionMenuItem.REPLY,
-										ActionMenuItem.SHARE,
-										ActionMenuItem.SUBSCRIBE,
-										ActionMenuItem.TAG,
-										ActionMenuItem.SEPARATOR,
-										ActionMenuItem.MARK_READ,
-										ActionMenuItem.MARK_UNREAD };
+		ArrayList<ActionMenuItem> list;
 		
-		actionsMenu = new ActionsPopupMenu( true, true, menuItems );
+		list = new ArrayList<ActionMenuItem>();
+		list.add(ActionMenuItem.REPLY );
+		list.add( ActionMenuItem.SHARE );
+		list.add( ActionMenuItem.SUBSCRIBE );
+		if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
+			list.add( ActionMenuItem.TAG );
+		list.add( ActionMenuItem.SEPARATOR );
+		list.add( ActionMenuItem.MARK_READ );
+		list.add( ActionMenuItem.MARK_UNREAD );
+		
+		actionsMenu = new ActionsPopupMenu( true, true, list.toArray( new ActionMenuItem[list.size()] ) );
 		ActivityStreamCtrl.createAsync( actionsMenu, new ActivityStreamCtrlClient()
 		{			
 			@Override
