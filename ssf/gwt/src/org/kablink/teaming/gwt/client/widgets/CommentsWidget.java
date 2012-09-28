@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -230,16 +231,19 @@ public class CommentsWidget extends Composite
 		if ( m_activityStreamCtrl == null )
 		{
 			ActionsPopupMenu actionsMenu;
-			ActionMenuItem[] menuItems = {  ActionMenuItem.REPLY,
-											ActionMenuItem.SEND_TO_FRIEND,
-											ActionMenuItem.SUBSCRIBE,
-											ActionMenuItem.TAG,
-											ActionMenuItem.SEPARATOR,
-											ActionMenuItem.MARK_READ,
-											ActionMenuItem.MARK_UNREAD };
-
-
-			actionsMenu = new ActionsPopupMenu( true, true, menuItems );
+			ArrayList<ActionMenuItem> list;
+			
+			list = new ArrayList<ActionMenuItem>();
+			list.add( ActionMenuItem.REPLY );
+			list.add( ActionMenuItem.SEND_TO_FRIEND );
+			list.add( ActionMenuItem.SUBSCRIBE );
+			if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
+				list.add( ActionMenuItem.TAG );
+			list.add( ActionMenuItem.SEPARATOR );
+			list.add( ActionMenuItem.MARK_READ );
+			list.add( ActionMenuItem.MARK_UNREAD );
+			
+			actionsMenu = new ActionsPopupMenu( true, true, list.toArray( new ActionMenuItem[list.size()] ) );
 			
 			// No, create one.  The only reason we need to create an ActivityStreamCtrl
 			// is because the ActivityStreamComment object needs one.
