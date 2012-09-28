@@ -9,6 +9,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
+import org.jvnet.libpam.PAM;
+import org.jvnet.libpam.PAMException;
+import org.jvnet.libpam.UnixUser;
 import org.kabling.teaming.install.client.InstallService;
 import org.kabling.teaming.install.shared.Clustered;
 import org.kabling.teaming.install.shared.Database;
@@ -54,7 +57,23 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	{
 		LoginInfo loginInfo = new LoginInfo();
 
-		// Login to the database?
+		ProductType productType = getProductInfo().getType();
+		if (isUnix() && productType.equals(ProductType.NOVELL_FILR))
+		{
+			try
+			{
+				UnixUser user = new PAM("passwd").authenticate(userName, password);
+				loginInfo.setUser(user.getUserName());
+			}
+			catch (PAMException e)
+			{
+				throw new LoginException();
+			}
+		}
+		else
+		{
+			loginInfo.setUser(userName);
+		}
 
 		// Look for license information and figure out if they have a valid license
 
@@ -1154,10 +1173,18 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		productInfo.setProductVersion("Beta");
 
 		productInfo.setCopyRight("© Copyright 1993-2012 Novell, Inc. All rights reserved.");
-		
+
 		File file = new File("/filrinstall/installer.xml");
 		productInfo.setConfigured(file.exists());
 
 		return productInfo;
+	}
+	
+	public static boolean isUnix() {
+		 
+		String os = System.getProperty("os.name").toLowerCase();
+		// linux or unix
+		return (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0);
+ 
 	}
 }

@@ -1,6 +1,12 @@
 package org.kabling.teaming.install.client.wizard;
 
+import java.util.List;
+
+import org.kabling.teaming.install.client.AppUtil;
+import org.kabling.teaming.install.shared.Database;
+import org.kabling.teaming.install.shared.DatabaseConfig;
 import org.kabling.teaming.install.shared.InstallerConfig;
+import org.kabling.teaming.install.shared.ProductInfo.ProductType;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -20,14 +26,20 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 	private PasswordTextBox userPwdTextBox;
 	private TextBox dbNameTextBox;
 	private ListBox dbTypeListBox;
+	private InstallerConfig config;
 
+	public DatabaseConfigPage(InstallerConfig config)
+	{
+		this.config = config;
+	}
+	
 	@Override
 	public String isValid()
 	{
-		if (!userTextBox.getText().isEmpty() & !userPwdTextBox.getText().isEmpty() & portTextBox.getText().isEmpty() & !hostTextBox.getText().isEmpty())
+		if (userTextBox != null && userTextBox.getText().isEmpty() || userPwdTextBox != null
+				&& userPwdTextBox.getText().isEmpty() || portTextBox != null && portTextBox.getText().isEmpty())
 			return "Required Fields cannot be empty";
-		
-		
+
 		return null;
 	}
 
@@ -43,7 +55,7 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 		FlowPanel fPanel = new FlowPanel();
 		fPanel.addStyleName("wizardPage");
 
-		Label descLabel = new Label("Explain what options to select here, Describe what they are configuring here. ");
+		Label descLabel = new Label("Set the database options. ");
 		descLabel.addStyleName("wizardPageDesc");
 		fPanel.add(descLabel);
 
@@ -51,24 +63,32 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 		fPanel.add(table);
 
 		int row = 0;
-		
+
 		{
 
 			// Database Type
 			InlineLabel keyLabel = new InlineLabel("Database Type:");
 			table.setWidget(row, 0, keyLabel);
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+			
+			if (!AppUtil.getProductInfo().getType().equals(ProductType.NOVELL_FILR))
+			{
+				dbTypeListBox = new ListBox(false);
+				table.setWidget(row, 1, dbTypeListBox);
 
-			dbTypeListBox = new ListBox(false);
+				dbTypeListBox.addItem("MySql", "MySql");
+				dbTypeListBox.addItem("Oracle", "Oracle");
+				dbTypeListBox.setSelectedIndex(0);
+			}
+			//For Filr, only mysql is supported
+			else
+			{
+				InlineLabel valueLabel = new InlineLabel("MySQL");
+				table.setWidget(row, 1, valueLabel);
+			}
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-			table.setWidget(row, 1, dbTypeListBox);
-			
-			dbTypeListBox.addItem("MySql", "MySql");
-			dbTypeListBox.addItem("Oracle", "Oracle");
-			
-			dbTypeListBox.setSelectedIndex(0);
 		}
-		
+
 		{
 
 			row++;
@@ -95,7 +115,9 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 			table.setWidget(row, 1, portTextBox);
 		}
-		
+
+		//We will use the default database name for filr
+		if (!AppUtil.getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
 			row++;
 			// Database Name
@@ -108,7 +130,7 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 			table.setWidget(row, 1, dbNameTextBox);
 		}
-		
+
 		{
 			row++;
 			// Database User
@@ -117,11 +139,11 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 			table.getFlexCellFormatter().addStyleName(row, 0, "table-key");
 
 			userTextBox = new TextBox();
-			userTextBox.setText("admin");
+			userTextBox.setText("root");
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 			table.setWidget(row, 1, userTextBox);
 		}
-		
+
 		{
 			row++;
 			// Database Password
@@ -134,7 +156,8 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 			table.getFlexCellFormatter().addStyleName(row, 1, "table-value");
 			table.setWidget(row, 1, userPwdTextBox);
 		}
-		
+
+		initUIWithData();
 		return fPanel;
 	}
 
@@ -148,14 +171,30 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 	public void save()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	@Override
-	public void initUIWithData(InstallerConfig object)
+	public void initUIWithData()
 	{
-		// TODO Auto-generated method stub
-		
+		Database db = config.getDatabase();
+		if (db != null)
+		{
+			List<DatabaseConfig> configList = db.getConfig();
+			
+			if (configList != null)
+			{
+				for (DatabaseConfig config : configList)
+				{
+					if (config.getId().equals("Installed"))
+					{
+						userTextBox.setText(config.getResourceUserName());
+						userPwdTextBox.setText(config.getResourcePassword());
+						//TODO
+						hostTextBox.setText(config.getResourceUrl());
+					}
+				}
+			}
+		}
 	}
 
 }

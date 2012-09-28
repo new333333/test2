@@ -146,10 +146,10 @@ public class LoginUIPanel extends Composite implements ClickHandler
 		if (userName == null || userName.isEmpty() || password == null || password.isEmpty())
 			return;
 		
-		AppUtil.getInstallService().login(userName, password, new ProductInfoCallback());
+		AppUtil.getInstallService().login(userName, password, new LoginInfoCallback());
 	}
 	
-	class ProductInfoCallback implements AsyncCallback<LoginInfo>
+	class LoginInfoCallback implements AsyncCallback<LoginInfo>
 	{
 
 		@Override
@@ -162,8 +162,12 @@ public class LoginUIPanel extends Composite implements ClickHandler
 		@Override
 		public void onSuccess(LoginInfo result)
 		{
-			RootPanel.get("installConfig").removeFromParent();
+			//Remove login screen
+			RootPanel rootPanel = RootPanel.get("installConfig");
+			if (rootPanel.getWidgetCount() > 0)
+				rootPanel.remove(0);
 			
+			//Add Main UI Screen
 			MainUILayoutPanel panel = new MainUILayoutPanel();
 			RootLayoutPanel.get().add(panel);
 		}

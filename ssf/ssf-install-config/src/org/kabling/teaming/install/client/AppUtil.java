@@ -2,6 +2,7 @@ package org.kabling.teaming.install.client;
 
 import org.kabling.teaming.install.client.i18n.AppResource;
 import org.kabling.teaming.install.client.images.InstallConfigImageBundle;
+import org.kabling.teaming.install.shared.ProductInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.event.shared.EventBus;
@@ -14,7 +15,7 @@ public final class AppUtil
 	private final static AppResource RBUNDLE = GWT.create(AppResource.class);
 	private final static InstallServiceAsync INSTALL_SERVICE = GWT.create(InstallService.class);
 	private final static EventBus EVENT_BUS = GWT.create(SimpleEventBus.class);
-
+	private static ProductInfo productInfo = null;
 	private AppUtil()
 	{
 	}
@@ -57,5 +58,15 @@ public final class AppUtil
 	public static EventBus getEventBus()
 	{
 		return EVENT_BUS;
+	}
+	
+	public static ProductInfo getProductInfo()
+	{
+		return productInfo;
+	}
+	
+	public static void setProductInfo(ProductInfo info)
+	{
+		productInfo = info;
 	}
 }
