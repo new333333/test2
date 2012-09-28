@@ -47,6 +47,7 @@ public class EntryTitleInfo implements IsSerializable {
 	private boolean		m_seen;					//
 	private EntityId	m_entityId;				//
 	private String		m_description;			//
+	private String		m_fileIcon;				//
 	private String  	m_title;				//
 	
 	// The following is only used on the client side to push an Image
@@ -72,6 +73,7 @@ public class EntryTitleInfo implements IsSerializable {
 	public boolean  isSeen()             {return m_seen;             }
 	public boolean  isTrash()            {return m_trash;            }
 	public EntityId getEntityId()        {return m_entityId;         }
+	public String   getFileIcon()        {return m_fileIcon;         }
 	public String   getDescription()     {return m_description;      }
 	public String   getTitle()           {return m_title;            }
 	public Object   getClientItemImage() {return m_clientItemImage;  }
@@ -85,6 +87,7 @@ public class EntryTitleInfo implements IsSerializable {
 	public void setSeen(             boolean  seen)              {m_seen              = seen;             }
 	public void setTrash(            boolean  trash)             {m_trash             = trash;            }
 	public void setEntityId(         EntityId entityId)          {m_entityId          = entityId;         }
+	public void setFileIcon(         String   fileIcon)          {m_fileIcon          = fileIcon;         }
 	public void setDescription(      String   description)       {m_description       = description;      }
 	public void setDescriptionIsHtml(boolean  descriptionIsHtml) {m_descriptionIsHtml = descriptionIsHtml;}
 	public void setTitle(            String   title)             {m_title             = title;            }

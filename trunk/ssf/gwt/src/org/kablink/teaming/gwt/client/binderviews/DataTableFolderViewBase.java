@@ -1010,7 +1010,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	/*
 	 * Returns the URL to use for a row's image.
 	 */
-	private String getRowImageUrl(FolderRow fr) {
+	private String getRowImageUrl(FolderRow fr, EntryTitleInfo eti) {
 		// Is the row a binder?
 		String reply;
 		if (fr.isBinder()) {
@@ -1033,10 +1033,21 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		}
 		
 		else {
-			// No, the row isn't a binder!  Use the generic entry
-			// image.
-			ImageResource binderImgRes = GwtTeaming.getFilrImageBundle().entry();
-			reply = binderImgRes.getSafeUri().asString();
+			// No, the row isn't a binder!
+			reply = null;
+			if ((null != eti) && eti.isFile()) {
+				String fileIcon = eti.getFileIcon();
+				if (GwtClientHelper.hasString(fileIcon)) {
+					reply = (GwtClientHelper.getRequestInfo().getImagesPath() + fileIcon);
+				}
+			}
+
+			// Do we have a specific icon from an entry?
+			if (null == reply) {
+				// No!  Use the generic entry image.
+				ImageResource binderImgRes = GwtTeaming.getFilrImageBundle().entry();
+				reply = binderImgRes.getSafeUri().asString();
+			}
 		}
 		
 		// If we get here, reply refers to the URL for the row's image.
@@ -1280,7 +1291,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 							// Create the rows's Image widget...
 							Image rowImg = new Image();
 							rowImg.getElement().setAttribute("align", "absmiddle");
-							rowImg.setUrl(getRowImageUrl(fr));
+							rowImg.setUrl(getRowImageUrl(fr, reply));
 							
 							// ...apply any scaling to the Image...
 							int width  = BinderIconSize.getListViewIconSize().getBinderIconWidth();  if ((-1) != width)  rowImg.setWidth( width  + "px");
@@ -1430,7 +1441,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 							Image rowImg = new Image();
 							rowImg.addStyleName("vibe-manageCommentsDlg-captionImg");
 							rowImg.getElement().setAttribute("align", "absmiddle");
-							rowImg.setUrl(getRowImageUrl(fr));
+							rowImg.setUrl(getRowImageUrl(fr, null));
 							
 							// ...apply any scaling to the Image...
 							int width  = BinderIconSize.getDialogCaptionIconSize().getBinderIconWidth();  if ((-1) != width)  rowImg.setWidth( width  + "px");
