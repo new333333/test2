@@ -8348,25 +8348,32 @@ public class GwtServerHelper {
 	{
 		String[] tzIds;
 		User user;
+		long now;
+		Date nowDate;
+		TimeZone userTz;
 		
 		if ( Utils.checkIfFilr() == false )
 			return;
 		
 		user = getCurrentUser();
-
+		
 		// Don't set the time zone for the guest user or admin user
 		if ( MiscUtil.isSystemUserAccount( user.getName() ) )
+			return;
+
+		nowDate = new Date();
+		now = nowDate.getTime();
+		
+		// If the user's current time zone's offset matches the browser's time zone offset
+		// we are done.
+		userTz = user.getTimeZone();
+		if ( userTz != null && userTz.getOffset( now ) == tzOffset )
 			return;
 		
 		// Get the time zones with the given offset.
 		tzIds = TimeZone.getAvailableIDs();
 		if ( tzIds != null && tzIds.length > 0 )
 		{
-			long now;
-			Date nowDate;
-			
-			nowDate = new Date();
-			now = nowDate.getTime();
 			for ( String nextId : tzIds )
 			{
 				TimeZone tz;

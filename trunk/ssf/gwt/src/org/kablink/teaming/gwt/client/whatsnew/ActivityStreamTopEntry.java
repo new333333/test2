@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.whatsnew;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryListRpcResponseData;
@@ -56,6 +57,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -329,7 +331,51 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		return "activityStreamTopEntryHeader";
 	}
 	
-	
+	/**
+	 * If the given entry is a file, return the url to the image that matches the file.  Otherwise, return
+	 * the url to the author's avatar. 
+	 */
+	@Override
+	public String getEntryImgUrl( ActivityStreamEntry asEntry )
+	{
+		String url;
+		
+		// Is this entry a file entry?
+		if ( asEntry.isEntryFile() )
+		{
+			String fileImgUrl;
+			
+			// Yes
+			// Does the file have an image we can display?
+			fileImgUrl = asEntry.getEntryFileIcon();
+			if ( fileImgUrl != null && fileImgUrl.length() > 0 )
+			{
+				// Yes
+				url = GwtClientHelper.getRequestInfo().getImagesPath() + fileImgUrl;
+			}
+			else
+			{
+				// No, use default
+				url = GwtTeaming.getFilrImageBundle().entry_medium().getSafeUri().asString();
+			}
+		}
+		else
+		{
+			// No
+			// Get the url to the author's avatar
+			url = asEntry.getAuthorAvatarUrl();
+			
+			// Does the author have an avatar?
+			if ( url == null || url.length() == 0 )
+			{
+				// Default to the "no avatar" image.
+				url = GwtMainPage.m_requestInfo.getImagesPath() + "pics/UserPhoto.png";
+			}
+		}
+		
+		return url;
+	}
+
 	/**
 	 * Return the name of the style used with a top entry's full description.
 	 */
@@ -455,6 +501,16 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		}
 	}
 	
+	
+	/**
+	 * This method gets invoked when the user clicks on the avatar/file image.
+	 */
+	@Override
+	public void handleClickOnAvatar( Element element )
+	{
+		// Behave the same as if the user clicked on the title.
+		handleClickOnTitle();
+	}
 	
 	/**
 	 * The user clicked on the binder name.  Take the user to that binder.

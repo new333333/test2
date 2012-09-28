@@ -33,10 +33,12 @@
 
 package org.kablink.teaming.gwt.client.whatsnew;
 
+import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
@@ -108,6 +110,27 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	{
 		return "activityStreamCommentHeader";
 	}
+	
+	/**
+	 * Return the url to the author's avatar image
+	 */
+	@Override
+	public String getEntryImgUrl( ActivityStreamEntry asEntry )
+	{
+		String url;
+		
+		// Get the url to the author's avatar
+		url = asEntry.getAuthorAvatarUrl();
+		
+		// Does the author have an avatar?
+		if ( url == null || url.length() == 0 )
+		{
+			// Default to the "no avatar" image.
+			url = GwtMainPage.m_requestInfo.getImagesPath() + "pics/UserPhoto.png";
+		}
+		
+		return url;
+	}
 
 
 	/**
@@ -168,7 +191,18 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	{
 		return "activityStreamCommentTitle";
 	}
+
+	/**
+	 * This method gets invoked when the user clicks on the avatar/file image.
+	 */
+	@Override
+	public void handleClickOnAvatar( Element element )
+	{
+		// For a comment we treat clicking on the avatar the same as clicking on the author's name.
+		handleClickOnAuthor( element );
+	}
 	
+
 	/**
 	 * Insert the given reply into the top entry's list of replies
 	 */
