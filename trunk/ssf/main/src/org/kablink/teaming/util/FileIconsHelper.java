@@ -35,6 +35,7 @@ package org.kablink.teaming.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.StringUtil;
 
 /**
@@ -43,7 +44,8 @@ import org.kablink.util.StringUtil;
  * @author drfoster@novell.com
  */
 public class FileIconsHelper {
-	private static Map<String, FileIcons>	m_iconMap;	// Map of extensions to FileIcons initialize at first use.
+	private static Map<String, FileIcons>	m_iconMap;		// Map of extensions to FileIcons initialize at first use.
+	private static Map<String, String>      m_transformMap;	// Map of extensions to extensions where one extension is transformed to another for purposes of icon generation.
 	
 	// The following define the extensions for which we have icons
 	// defined.
@@ -84,42 +86,6 @@ public class FileIconsHelper {
 		// Nothing to do.
 	}
 
-	/*
-	 * Initializes the Map of extensions to FileIcons if it hasn't been
-	 * initialized yet.
-	 */
-	private synchronized static void initializeIconMap() {
-		// If we've already initialized the map...
-		if (null != m_iconMap) {
-			// ...bail.
-			return;
-		}
-
-		// Allocate a new map...
-		m_iconMap = new HashMap<String, FileIcons>();
-		
-		// ...scan the supported extensions..
-		for (String extension:  SUPPORTED_EXTENSIONS) {
-			// ...storing a FileIcons object for each in the map.
-			FileIcons fi = new FileIcons();
-			m_iconMap.put(extension, fi);
-
-			// Scan the define icon sizes...
-			for (IconSize is:  IconSize.values()) {
-				// ...generating the appropriate icon name for each.
-				String template;
-				switch (is) {
-				case SMALL:   template = SMALL_TEMPLATE;  break;
-				case MEDIUM:  template = MEDIUM_TEMPLATE; break;
-				case LARGE:   template = LARGE_TEMPLATE;  break;
-				default:                                  continue;
-				}
-				String fileIcon = StringUtil.replace(template, PARAM, extension);
-				fi.setFileIcon(fileIcon, is);
-			}
-		}
-	}
-
 	/**
 	 * Returns the name of the icon for a file based on its extension.
 	 * 
@@ -151,22 +117,17 @@ public class FileIconsHelper {
 			return null;
 		}
 
-		// Certain extensions need to be massaged before we can use
-		// them for lookup.
-		if      (ext.equals("htm"))  ext = "html";
-		else if (ext.equals("docx")) ext = "doc";
-		else if (ext.equals("jpe"))  ext = "jpg";
-		else if (ext.equals("jpeg")) ext = "jpg";
-		else if (ext.equals("pptx")) ext = "ppt";
-		else if (ext.equals("sxc"))  ext = "ods";
-		else if (ext.equals("sxi"))  ext = "odp";
-		else if (ext.equals("sxw"))  ext = "odt";
-		else if (ext.equals("tar"))  ext = "zip";
-		else if (ext.equals("xlsx")) ext = "xls";
-
 		// Make sure the Map of extensions to FileIcons has been
 		// initialized.
-		initializeIconMap();
+		initializeIconMaps();
+
+		// Certain extensions need to be transformed before we can use
+		// them for lookup.  Does this one need to be?
+		String xformExt = m_transformMap.get(ext);
+		if (MiscUtil.hasString(xformExt)) {
+			// Yes!  Use the transformed name.
+			ext = xformExt;
+		}
 
 		// Do we have a FileIcons object for this extension?
 		FileIcons fi = m_iconMap.get(ext);
@@ -192,5 +153,105 @@ public class FileIconsHelper {
 	public static String getFileIcon(String ext) {
 		// Always use the initial form of the method.
 		return getFileIcon(ext, IconSize.SMALL);
+	}
+	
+	/**
+	 * Returns the name of the icon for a file based on its filename.
+	 * 
+	 * @param fName
+	 * @param is
+	 * 
+	 * @return
+	 */
+	public static String getFileIconFromFileName(String fName, IconSize is) {
+		// Do we have a filename?
+		int fNameLength;
+		if (null != fName) {
+			// Yes!  Trim it and convert it to lower case.
+			fName = fName.trim().toLowerCase();
+			fNameLength = fName.length();
+		}
+		
+		else {
+			fNameLength = 0;
+		}
+		
+		if (0 == fNameLength) {
+			// No, we don't have a filename!  Return null.
+			return null;
+		}
+
+		// Does that filename have an extension?
+		int pPos = fName.lastIndexOf('.');
+		if (0 >= pPos) {
+			// No!  Return null.
+			return null;
+		}
+
+		// Return the icon based on the file's extension.
+		return getFileIcon(fName.substring(pPos + 1), is);
+	}
+	
+	public static String getFileIconFromFileName(String fName) {
+		// Always use the initial form of the method.
+		return getFileIconFromFileName(fName, IconSize.SMALL);
+	}
+	
+	/*
+	 * Initializes the Map's used to map extensions to FileIcons if
+	 * they haven't been initialized yet.
+	 */
+	private synchronized static void initializeIconMaps() {
+		// If we've already initialized the map...
+		if (null != m_iconMap) {
+			// ...bail.
+			return;
+		}
+
+		// Allocate a new map...
+		m_iconMap = new HashMap<String, FileIcons>();
+		
+		// ...scan the supported extensions..
+		for (String extension:  SUPPORTED_EXTENSIONS) {
+			// ...storing a FileIcons object for each in the map.
+			FileIcons fi = new FileIcons();
+			m_iconMap.put(extension, fi);
+
+			// Scan the define icon sizes...
+			for (IconSize is:  IconSize.values()) {
+				// ...generating the appropriate icon name for each.
+				String template;
+				switch (is) {
+				case SMALL:   template = SMALL_TEMPLATE;  break;
+				case MEDIUM:  template = MEDIUM_TEMPLATE; break;
+				case LARGE:   template = LARGE_TEMPLATE;  break;
+				default:                                  continue;
+				}
+				String fileIcon = StringUtil.replace(template, PARAM, extension);
+				fi.setFileIcon(fileIcon, is);
+			}
+		}
+
+		// Initialize the Map of extensions that are transformed from
+		// one name to another for selecting an icon file.
+		m_transformMap = new HashMap<String, String>();
+		m_transformMap.put("aif",  "wav" );
+		m_transformMap.put("docx", "doc" );
+		m_transformMap.put("htm",  "html");
+		m_transformMap.put("jpe",  "jpg" );
+		m_transformMap.put("jpeg", "jpg" );
+		m_transformMap.put("mid",  "wav" );
+		m_transformMap.put("mpa",  "wav" );
+		m_transformMap.put("mp3",  "wav" );
+		m_transformMap.put("m4a",  "wav" );
+		m_transformMap.put("png",  "gif" );
+		m_transformMap.put("pptx", "ppt" );
+		m_transformMap.put("ra",   "wav" );
+		m_transformMap.put("sxc",  "ods" );
+		m_transformMap.put("sxi",  "odp" );
+		m_transformMap.put("sxw",  "odt" );
+		m_transformMap.put("tar",  "zip" );
+		m_transformMap.put("wma",  "wav" );
+		m_transformMap.put("xlsx", "xls" );
 	}
 }
