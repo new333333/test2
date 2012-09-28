@@ -14,13 +14,13 @@ import org.kabling.teaming.install.shared.InstallerConfig;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PopupPanel;
 
-public class ConfigWizard extends Composite implements IWizard, ClickHandler, ConfigFinishEnableEventHandler,ConfigNextEnableEventHandler
+public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, ConfigFinishEnableEventHandler,ConfigNextEnableEventHandler
 {
 	private int currentPage;
 	private List<IWizardPage<InstallerConfig>> pages = new ArrayList<IWizardPage<InstallerConfig>>();
@@ -36,11 +36,14 @@ public class ConfigWizard extends Composite implements IWizard, ClickHandler, Co
 
 	public ConfigWizard(InstallerConfig config)
 	{
+		super(false, true);
 		this.config = config;
+		
+		addStyleName("configWizardDlg");
 		
 		wizard = new FlowPanel();
 		wizard.setStyleName("installConfigWizard");
-		initWidget(wizard);
+		setWidget(wizard);
 
 		// Header Panel
 		wizard.add(createHeader());
@@ -53,23 +56,18 @@ public class ConfigWizard extends Composite implements IWizard, ClickHandler, Co
 		// Footer buttons
 		wizard.add(createFooter());
 
-		config = new InstallerConfig();
-		
 		// Add pages
 		//Initial Page
-		IWizardPage<InstallerConfig> page = new InitialConfigPage();
-		page.initUIWithData(config);
-		pages.add(page);
+		IWizardPage<InstallerConfig> configPage = new InitialConfigPage();
+		pages.add(configPage);
 		
 		//Database Page
-		page = new DatabaseConfigPage();
-		page.initUIWithData(config);
-		pages.add(page);
+		IWizardPage<InstallerConfig> dbPage = new DatabaseConfigPage(config);
+		pages.add(dbPage);
 		
 		//Lucene Page
-		page = new DatabaseConfigPage();
-		page.initUIWithData(config);
-		pages.add(page);
+		IWizardPage<InstallerConfig> lucenePage = new LuceneConfigPage(config);
+		pages.add(lucenePage);
 
 		AppUtil.getEventBus().addHandler(ConfigFinishEnableEvent.TYPE, this);
 		AppUtil.getEventBus().addHandler(ConfigNextButtonEnableEvent.TYPE, this);
@@ -77,8 +75,6 @@ public class ConfigWizard extends Composite implements IWizard, ClickHandler, Co
 		// Show first page
 		currentPage = 0;
 		showPage(currentPage);
-
-		
 	}
 
 	private void showPage(int pageToShow)
@@ -133,6 +129,8 @@ public class ConfigWizard extends Composite implements IWizard, ClickHandler, Co
 				// TODO save the page
 			}
 		}
+		//For now
+		hide(true);
 	}
 
 	private void updateButtons()
@@ -213,6 +211,8 @@ public class ConfigWizard extends Composite implements IWizard, ClickHandler, Co
 			nextPage();
 		else if (event.getSource() == previousButton)
 			previousPage();
+		else if (event.getSource() == finishButton)
+			finish();
 	}
 
 	@Override

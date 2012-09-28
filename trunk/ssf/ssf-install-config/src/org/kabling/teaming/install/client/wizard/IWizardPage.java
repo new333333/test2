@@ -12,7 +12,5 @@ public interface IWizardPage<T>
 	
 	boolean canFinish();
 	
-	void initUIWithData(T object);
-	
 	void save();
 }

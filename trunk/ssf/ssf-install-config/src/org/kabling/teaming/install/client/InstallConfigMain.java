@@ -37,40 +37,10 @@ public class InstallConfigMain implements EntryPoint
 			//Login screen should show the images (filr, teaming) based on the product info
 			//TODO: Maybe we check the validity of the product before we show the login screen
 			
-
+			AppUtil.setProductInfo(result);
 			
-//			MainUILayoutPanel panel = new MainUILayoutPanel();
-//			RootLayoutPanel.get().add(panel);
-			
-			if (!result.isConfigured())
-			{
-				AppUtil.getInstallService().getConfiguration(new GetConfigCallback());
-			}
-			else
-			{
-				LoginUIPanel loginUIPanel = new LoginUIPanel(result);
-				RootPanel.get("installConfig").add(loginUIPanel);		
-			}
-		}
-		
-	}
-	
-	
-	class GetConfigCallback implements AsyncCallback<InstallerConfig>
-	{
-
-		@Override
-		public void onFailure(Throwable caught)
-		{
-			//TODO: What are we doing here?
-			GWT.log("Failed to get product info");
-		}
-
-		@Override
-		public void onSuccess(InstallerConfig result)
-		{
-			ConfigWizard wizard = new ConfigWizard(result);
-			RootPanel.get().add(wizard);
+			LoginUIPanel loginUIPanel = new LoginUIPanel(result);
+			RootPanel.get("installConfig").add(loginUIPanel);
 		}
 		
 	}

@@ -8,6 +8,7 @@ import org.kabling.teaming.install.shared.InstallerConfig;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.Widget;
@@ -17,6 +18,7 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 
 	private RadioButton useDefaultsRB;
 	private RadioButton customRB;
+	private FlowPanel fPanel;
 
 	@Override
 	public String isValid()
@@ -27,34 +29,46 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	@Override
 	public String getPageTitle()
 	{
-		return "Initial Page";
+		return "Welcome Screen";
 	}
 
 	@Override
 	public Widget getWizardUI()
 	{
-		FlowPanel fPanel = new FlowPanel();
-		fPanel.addStyleName("wizardPage");
-		
-		Label descLabel = new Label("Explain what options to select here, Describe what they are configuring here. ");
-		descLabel.addStyleName("wizardPageDesc");
-		fPanel.add(descLabel);
-		
-		FlowPanel radioPanel = new FlowPanel();
-		radioPanel.addStyleName("configSelectPanel");
-		fPanel.add(radioPanel);
-		
-		useDefaultsRB = new RadioButton("config", "Use Defaults");
-		useDefaultsRB.addStyleName("configSelectRB");
-		useDefaultsRB.addClickHandler(this);
-		useDefaultsRB.setValue(true);
-		radioPanel.add(useDefaultsRB);
-		
-		customRB = new RadioButton("config", "Custom Configuration");
-		customRB.addStyleName("configSelectRB");
-		customRB.addClickHandler(this);
-		radioPanel.add(customRB);
-		
+		if (fPanel == null)
+		{
+			fPanel = new FlowPanel();
+			fPanel.addStyleName("wizardPage");
+
+			HTML descLabel = new HTML("This configuration wizard will help to setup the FILR server.");
+			descLabel.addStyleName("wizardPageDesc");
+			fPanel.add(descLabel);
+
+			FlowPanel radioPanel = new FlowPanel();
+			radioPanel.addStyleName("configSelectPanel");
+			fPanel.add(radioPanel);
+
+			useDefaultsRB = new RadioButton("config", "Use Defaults");
+			useDefaultsRB.addStyleName("configSelectRB");
+			useDefaultsRB.addClickHandler(this);
+			useDefaultsRB.setValue(true);
+			radioPanel.add(useDefaultsRB);
+
+			Label defaultConfigDescLabel = new Label(
+					"The default configuration will configure the FILR server to use the local lucene server and local database.");
+			defaultConfigDescLabel.addStyleName("configDescLabel");
+			radioPanel.add(defaultConfigDescLabel);
+
+			customRB = new RadioButton("config", "Custom Configuration");
+			customRB.addStyleName("configSelectRB");
+			customRB.addClickHandler(this);
+			radioPanel.add(customRB);
+
+			Label customConfigDescLabel = new Label(
+					"Custom configuration allows you configure the Lucene and Database server to run on a different system.");
+			customConfigDescLabel.addStyleName("configDescLabel");
+			radioPanel.add(customConfigDescLabel);
+		}
 		AppUtil.getEventBus().fireEvent(new ConfigNextButtonEnableEvent(!useDefaultsRB.getValue()));
 		
 		return fPanel;
@@ -65,7 +79,7 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	{
 		if (useDefaultsRB == null || useDefaultsRB.getValue())
 			return true;
-		
+
 		return false;
 	}
 
@@ -82,13 +96,6 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	@Override
 	public void save()
 	{
-		
-	}
 
-	@Override
-	public void initUIWithData(InstallerConfig object)
-	{
-		
 	}
-
 }
