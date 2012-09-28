@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.whatsnew;
 import java.util.HashMap;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
-import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
 import org.kablink.teaming.gwt.client.event.MarkEntryReadEvent;
@@ -43,6 +42,7 @@ import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteFolderEntriesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDownloadFileUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
@@ -56,8 +56,6 @@ import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Node;
-import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -142,12 +140,9 @@ public abstract class ActivityStreamUIEntry extends Composite
 		// Add a place to show the avatar
 		m_avatarImg = new Image();
 		m_avatarImg.addStyleName( getAvatarImageStyleName() );
+		m_avatarImg.addStyleName( "cursorPointer" );
 		m_avatarImg.setVisible( false );
 		m_mainPanel.add( m_avatarImg );
-		
-		// Add mouse-over and mouse-out handlers.
-		m_avatarImg.addMouseOverHandler( this );
-		m_avatarImg.addMouseOutHandler( this );
 		
 		// Add a click handler to the avatar.
 		m_avatarImg.addClickHandler( this );
@@ -617,6 +612,11 @@ public abstract class ActivityStreamUIEntry extends Composite
 	}
 	
 	/**
+	 * Return the url of the image that should be used for the given ActivityStreamEntry
+	 */
+	public abstract String getEntryImgUrl( ActivityStreamEntry asEntry );
+	
+	/**
 	 * 
 	 */
 	public abstract String getFullDescStyleName();
@@ -817,6 +817,11 @@ public abstract class ActivityStreamUIEntry extends Composite
 		GwtTeaming.fireEvent(new InvokeSimpleProfileEvent( params ));
 	}
 	
+	/**
+	 * This method gets called when the user clicks on the avatar/file image.
+	 */
+	public abstract void handleClickOnAvatar( Element element );
+	
 	
 	/**
 	 * This method gets invoked when the user clicks on the title.  Open the entry
@@ -824,59 +829,69 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public void handleClickOnTitle()
 	{
-		// Do we have a url that we can use to view the entry?
-		if ( m_viewEntryUrl == null )
+		// Are we running Filr?
+		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
 		{
-			GetViewFolderEntryUrlCmd cmd;
-			AsyncCallback<VibeRpcResponse> callback;
-			Long entryId;
-			
-			// No, issue an ajax request to get it.
-			callback = new AsyncCallback<VibeRpcResponse>()
-			{
-				/**
-				 * 
-				 */
-				@Override
-				public void onFailure(Throwable t)
-				{
-					GwtClientHelper.handleGwtRPCFailure(
-						t,
-						GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
-						m_entryId );
-				}
-				
-				/**
-				 * 
-				 */
-				@Override
-				public void onSuccess( VibeRpcResponse response )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					m_viewEntryUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							
-							// Open the entry using the view entry url.
-							viewEntry();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			};
-			
-			// Issue an ajax request to get the url needed to view this entry.
-			entryId = Long.parseLong( m_entryId );
-			cmd = new GetViewFolderEntryUrlCmd( null, entryId );
-			GwtClientHelper.executeCommand( cmd, callback );
+			// Yes, open the file
+			openFile();
 		}
 		else
-			viewEntry();
+		{
+			// No, view the entry
+			// Do we have a url that we can use to view the entry?
+			if ( m_viewEntryUrl == null )
+			{
+				GetViewFolderEntryUrlCmd cmd;
+				AsyncCallback<VibeRpcResponse> callback;
+				Long entryId;
+				
+				// No, issue an ajax request to get it.
+				callback = new AsyncCallback<VibeRpcResponse>()
+				{
+					/**
+					 * 
+					 */
+					@Override
+					public void onFailure(Throwable t)
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+							t,
+							GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
+							m_entryId );
+					}
+					
+					/**
+					 * 
+					 */
+					@Override
+					public void onSuccess( VibeRpcResponse response )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						m_viewEntryUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								
+								// Open the entry using the view entry url.
+								viewEntry();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				};
+				
+				// Issue an ajax request to get the url needed to view this entry.
+				entryId = Long.parseLong( m_entryId );
+				cmd = new GetViewFolderEntryUrlCmd( null, entryId );
+				GwtClientHelper.executeCommand( cmd, callback );
+			}
+			else
+				viewEntry();
+		}
 	}
 
 	/**
@@ -1117,8 +1132,10 @@ public abstract class ActivityStreamUIEntry extends Composite
 				{
 					if ( src == m_title )
 						handleClickOnTitle();
-					else if ( src == m_author || src == m_avatarImg )
+					else if ( src == m_author )
 						handleClickOnAuthor( ((Widget)src).getElement() );
+					else if ( src == m_avatarImg )
+						handleClickOnAvatar( ((Widget)src).getElement() );
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
@@ -1138,10 +1155,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 		if ( src == m_title || src == m_author )
 		{
 			((Widget)src).removeStyleName( "activityStreamHover" );
-		}
-		else if ( src == m_avatarImg )
-		{
-			m_avatarImg.removeStyleName( "cursorPointer" );
 		}
 		else if ( src == getWidget() )
 		{
@@ -1167,10 +1180,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 		{
 			((Widget)src).addStyleName( "activityStreamHover" );
 		}
-		else if ( src == m_avatarImg )
-		{
-			m_avatarImg.addStyleName( "cursorPointer" );
-		}
 		else if ( src == getWidget() )
 		{
 			// Hide the actions1 image and show the image the user clicks on to invoke the Actions menu.
@@ -1181,6 +1190,36 @@ public abstract class ActivityStreamUIEntry extends Composite
 		}
 	}
 
+	
+	/*
+	 * Invokes a file download on an entry's file.
+	 */
+	private void openFile()
+	{
+		GetDownloadFileUrlCmd cmd;
+	
+		cmd = new GetDownloadFileUrlCmd( Long.valueOf( m_binderId ), Long.valueOf( m_entryId ) );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() 
+		{
+			@Override
+			public void onFailure( Throwable t) 
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetDownloadFileUrl(),
+					m_entryId );
+			}
+			
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				String downloadFileUrl;
+
+				downloadFileUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
+				GwtClientHelper.jsLaunchUrlInWindow( downloadFileUrl, "_blank" );
+			}
+		});
+	}
 	
 	/**
 	 * Reply to this entry with the given text
@@ -1228,16 +1267,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 		String avatarUrl;
 		PresenceControl presenceCtrl;
 		
-		avatarUrl = entryItem.getAuthorAvatarUrl();
-		if ( avatarUrl != null && avatarUrl.length() > 0 )
-		{
-			m_avatarImg.setUrl( avatarUrl );
-		}
-		else
-		{
-			// Default to the "no avatar" image.
-			m_avatarImg.setUrl( GwtMainPage.m_requestInfo.getImagesPath() + "pics/UserPhoto.png" );
-		}
+		avatarUrl = getEntryImgUrl( entryItem );
+		m_avatarImg.setUrl( avatarUrl );
 		m_avatarImg.setVisible( true );
 		
 		title = getEntryTitle( entryItem );
