@@ -1033,6 +1033,7 @@ public class AdminControl extends TeamingPopupPanel
 						public void execute()
 						{
 							showRelativeTo( target );
+							showTreeControl();
 							relayoutPage();
 						}
 					};
