@@ -2097,6 +2097,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 				// Show the pause button.
 				if ( m_pauseImg != null )
 					m_pauseImg.setVisible( true );
+				
+				if ( m_resumeImg != null )
+					m_resumeImg.setVisible( false );
 			}
 		}
 	}
