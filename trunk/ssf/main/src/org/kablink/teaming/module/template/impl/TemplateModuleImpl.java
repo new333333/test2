@@ -779,12 +779,20 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	//In order to reduce the risk, we try to shorten the transaction time by managing it ourselves
 	public Binder addBinder(final Long configId, final Long parentBinderId, final String title, final String name) 
 			throws AccessControlException {
+		return addBinder(configId, parentBinderId, title, name, null);
+	}
+	//no transaction - Adding the top binder can lead to optimisitic lock exceptions.
+	//In order to reduce the risk, we try to shorten the transaction time by managing it ourselves
+	public Binder addBinder(final Long configId, final Long parentBinderId, final String title, final String name, final Map options) 
+			throws AccessControlException {
 		//The first add is independent of the others.  In this case the transaction is short 
 		//and managed by processors.  
 		
 		TemplateBinder cfg = getCoreDao().loadTemplate(configId, RequestContextHolder.getRequestContext().getZoneId());
 		Binder parent = getCoreDao().loadBinder(parentBinderId, RequestContextHolder.getRequestContext().getZoneId());
 		Map ctx = new HashMap();
+		if(options != null)
+			ctx.putAll(options);
 		//force a lock so contention on the sortKey is reduced
 		ctx.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
 		final Binder top = addBinderInternal(cfg, parent, title, name, ctx);
