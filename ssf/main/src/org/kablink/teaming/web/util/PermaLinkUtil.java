@@ -96,7 +96,7 @@ public class PermaLinkUtil {
 		getPermalinkURL(url, entity.getId(), entity.getEntityType());
 		return url.toString();
 	}
-	
+
 	public static String getPermalink(DefinableEntity entity, boolean crawler) {
 		AdaptedPortletURL url = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 		url.setCrawler(crawler);

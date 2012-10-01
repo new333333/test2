@@ -196,7 +196,7 @@ public class FileResource extends AbstractFileResource {
     }
 
     @POST
-    @Path("/parent_binder")
+    @Path("/parent_folder")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public FileProperties moveFile(@PathParam("id") String fileId,

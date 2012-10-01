@@ -145,6 +145,7 @@ public class ResourceUtil {
         FileProperties fp = new FileProperties();
         fp.setId(fa.getId());
         fp.setOwningEntity(buildEntityId(fa.getOwningEntityType(), fa.getOwningEntityId()));
+        fp.setPermaLink(PermaLinkUtil.getPermalink(fa.getOwningEntityId(), fa.getOwningEntityType(), true));
         fp.setBinder(new LongIdLinkPair(fa.getBinderId(), LinkUriUtil.getBinderLinkUri(fa.getBinderId())));
         fp.setName(fa.getName());
         fp.setCreation(new HistoryStamp(new LongIdLinkPair(fa.getCreatorId(), LinkUriUtil.getUserLinkUri(fa.getCreatorId())),
@@ -188,6 +189,7 @@ public class ResourceUtil {
         }
         org.kablink.teaming.domain.DefinableEntity entity = fa.getOwner().getEntity();
         fp.setOwningEntity(buildEntityId(entity.getEntityType(), entity.getId()));
+        fp.setPermaLink(PermaLinkUtil.getPermalink(entity.getId(), entity.getEntityType(), true));
         Long binderId = entity.getParentBinder().getId();
         fp.setBinder(new LongIdLinkPair(binderId, LinkUriUtil.getBinderLinkUri(binderId)));
         LinkUriUtil.populateFileLinks(fp);
