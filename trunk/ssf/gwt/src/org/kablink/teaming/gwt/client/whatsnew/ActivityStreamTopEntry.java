@@ -307,8 +307,12 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	 * 
 	 */
 	@Override
-	public String getAvatarImageStyleName()
+	public String getAvatarImageStyleName( ActivityStreamEntry asEntry )
 	{
+		// Is this entry a file entry?
+		if ( asEntry.isEntryFile() )
+			return "activityStreamTopEntryFileImg";
+		
 		return "activityStreamTopEntryAvatarImg";
 	}
 
