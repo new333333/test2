@@ -419,6 +419,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetTrackedPlaces();
 	String rpcFailure_GetTree();
 	String rpcFailure_GetUpgradeInfo();
+	String rpcFailure_GetUserAccessInfo();
 	String rpcFailure_GetUserPermalink();
 	String rpcFailure_GetUserWorkspaceInfo();
 	String rpcFailure_GetUserWorkspaceUrl();
@@ -473,6 +474,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveTaskPriority();
 	String rpcFailure_SaveTaskSort();
 	String rpcFailure_SaveTaskStatus();
+	String rpcFailure_SaveUserAccessConfig();
 	String rpcFailure_SaveWhatsNewShowSetting();
 	String rpcFailure_Search();
 	String rpcFailure_SetEntriesPinState();

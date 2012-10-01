@@ -1792,6 +1792,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_USER_ACCESS_CONFIG:
+		{
+			UserAccessConfig config;
+			
+			config = GwtServerHelper.getUserAccessConfig( this, req );
+			response = new VibeRpcResponse( config );
+			return response;
+		}
+		
 		case GET_USER_PERMALINK:
 		{
 			GetUserPermalinkCmd gupCmd;
@@ -2405,6 +2414,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			stsoCmd = (SaveTagSortOrderCmd) cmd;
 			result = saveTagSortOrder( ri, stsoCmd.getSortOrder() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case SAVE_USER_ACCESS_CONFIG:
+		{
+			SaveUserAccessConfigCmd suacCmd;
+			Boolean result;
+			BooleanRpcResponseData responseData;
+			
+			suacCmd = (SaveUserAccessConfigCmd) cmd;
+			result = GwtServerHelper.saveUserAccessConfig( this, suacCmd.getConfig() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;

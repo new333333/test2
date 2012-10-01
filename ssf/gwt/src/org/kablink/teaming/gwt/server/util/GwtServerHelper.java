@@ -84,6 +84,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CommaSeparatedValue;
 import org.kablink.teaming.domain.CustomAttribute;
@@ -101,6 +102,7 @@ import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
+import org.kablink.teaming.domain.OpenIDConfig;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -164,6 +166,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.UserAccessConfig;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailAddressCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmdType;
@@ -265,6 +268,7 @@ import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
@@ -2808,8 +2812,12 @@ public class GwtServerHelper {
 				// Yes
 				title = NLT.get( "administration.configure_userAccess" );
 
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_USER_ACCESS );
+				url = adaptedUrl.toString();
+
 				adminAction = new GwtAdminAction();
-				adminAction.init( title, "", AdminAction.CONFIGURE_USER_ACCESS );
+				adminAction.init( title, url, AdminAction.CONFIGURE_USER_ACCESS );
 				
 				// Add this action to the "system" category
 				systemCategory.addAdminOption( adminAction );
@@ -6535,6 +6543,53 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return the user access configuration
+	 */
+	public static UserAccessConfig getUserAccessConfig(
+		AllModulesInjected ami,
+		HttpServletRequest request )
+	{
+		UserAccessConfig config;
+		AuthenticationConfig authConfig;
+		
+		authConfig = ami.getAuthenticationModule().getAuthenticationConfig();
+
+		config = new UserAccessConfig();
+		
+		// Check for guest access
+		config.setAllowGuestAccess( authConfig.isAllowAnonymousAccess() );
+		
+		if ( ReleaseInfo.isLicenseRequiredEdition() )
+		{
+			// Yes
+			// Does the license allow external users?
+			if ( LicenseChecker.isAuthorizedByLicense( "com.novell.teaming.ExtUsers" ) )
+			{
+				ZoneConfig zoneConfig;
+				ZoneModule zoneModule;
+				OpenIDConfig openIdConfig;
+				boolean allowOpenIdAuth;
+				
+				// Yes
+				zoneModule = ami.getZoneModule();
+				zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+				openIdConfig = zoneConfig.getOpenIDConfig();
+				allowOpenIdAuth = zoneConfig.isExternalUserEnabled() && openIdConfig.isAuthenticationEnabled();
+				config.setAllowExternalUsers( allowOpenIdAuth ); 
+				config.setAllowExternalUsersSelfReg( openIdConfig.isSelfProvisioningEnabled() );
+			}
+		}
+		else
+		{
+			// Self registration of internal users is only found in the Kablink version.
+			// Is self registration allowed?
+			config.setAllowSelfReg( authConfig.isAllowSelfRegistration() );
+		}
+		
+		return config;
+	}
+	
+	/**
 	 * Returns the URL for a user's avatar.
 	 * 
 	 * @param bs
@@ -8193,6 +8248,52 @@ public class GwtServerHelper {
 		return Boolean.TRUE;
 	}
 
+	/**
+	 * Save the UserAccessConfig information.  This includeds "allow guest access", "allow self registration",
+	 * "allow external users" and "allow external user to perform self registration"
+	 */
+	public static Boolean saveUserAccessConfig(
+		AllModulesInjected ami,
+		UserAccessConfig config )
+	{
+		AuthenticationConfig authConfig;
+		
+		authConfig = ami.getAuthenticationModule().getAuthenticationConfig();
+		
+		// Set "guest access"
+		authConfig.setAllowAnonymousAccess( config.getAllowGuestAccess() );
+		
+		if ( ReleaseInfo.isLicenseRequiredEdition() )
+		{
+			OpenIDConfig openIdConfig;
+			ZoneConfig zoneConfig;
+			ZoneModule zoneModule;
+			AdminModule adminModule;
+			
+			adminModule = ami.getAdminModule();
+			zoneModule = ami.getZoneModule();
+			zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+			
+			// Set "allow external users to self register"
+			openIdConfig = zoneConfig.getOpenIDConfig();
+			openIdConfig.setAuthenticationEnabled( config.getAllowExternalUsers() );
+			openIdConfig.setSelfProvisioningEnabled( config.getAllowExternalUsersSelfReg() );
+			
+			// Set "allow external users"
+			adminModule.setExternalUserEnabled( config.getAllowExternalUsers() );
+			adminModule.setOpenIDConfig( openIdConfig );
+		}
+		else
+		{
+			// Self registration is only found in the Kablink version
+			authConfig.setAllowSelfRegistration( config.getAllowSelfReg() );
+		}
+		
+		ami.getAuthenticationModule().setAuthenticationConfig( authConfig );
+		
+		return Boolean.TRUE;
+	}
+	
 	/**
 	 * Save the show setting (show all or show unread) for the What's New page to
 	 * the user's properties.
