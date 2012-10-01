@@ -591,12 +591,16 @@ public class AccessUtils  {
        	
        	//See if the entry was shared 
        	try {
-			//Make sure sharing is enabled for this user before testing for a share
-       		ZoneConfig zoneConfig = getInstance().getCoreDao().loadZoneConfig(user.getZoneId());
-			if (getInstance().getAccessControlManager().testOperation(user, zoneConfig, WorkAreaOperation.ENABLE_SHARING)) {
-				getInstance().getAccessControlManager().checkOperation(user, entry, operation);
-				return;
-			}
+			//Start by trying to see if the entry allows access
+       		getInstance().getAccessControlManager().checkOperation(user, entry, operation);
+       		//It did, but now check if widening is allowed. 
+       		//  If widening is not allowed, then sharing cannot go beyond the current folder without the ability to also read the folder
+       		//  This is somewhat useless since if you can read the folder, you could have seen this entry already
+     			if (!widen) {
+	       				//"Widening" is not allowed, so also check for read access to the folder
+	       				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
+	       			}
+			return;
        	} catch (OperationAccessControlException ex) {
        		ace = ex;
        	} catch (OperationAccessControlExceptionNoName ex2) {
