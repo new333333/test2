@@ -21,15 +21,13 @@ import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.module.file.FileIndexData;
-import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.search.SearchUtils;
-import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.util.api.ApiErrorCode;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.util.search.*;
 
 import javax.ws.rs.*;
@@ -125,8 +123,12 @@ public class ShareResource extends AbstractResource {
         SearchResultList<SharedFolderEntryBrief> results = new SearchResultList<SharedFolderEntryBrief>();
         List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
         for (ShareItem shareItem : shareItems) {
-            if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
-                results.append(ResourceUtil.buildSharedFolderEntryBrief(shareItem, (FolderEntry) getSharingModule().getSharedEntity(shareItem)));
+            try {
+                if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
+                    results.append(ResourceUtil.buildSharedFolderEntryBrief(shareItem, (FolderEntry) getSharingModule().getSharedEntity(shareItem)));
+                }
+            } catch (AccessControlException e) {
+                logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + shareItem.getEntityTypedId());
             }
         }
         return results;
@@ -278,7 +280,11 @@ public class ShareResource extends AbstractResource {
         List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
         for (ShareItem shareItem : shareItems) {
             if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
-                results.append(ResourceUtil.buildSharedFolderEntryBrief(shareItem, (FolderEntry) getSharingModule().getSharedEntity(shareItem)));
+                try {
+                    results.append(ResourceUtil.buildSharedFolderEntryBrief(shareItem, (FolderEntry) getSharingModule().getSharedEntity(shareItem)));
+                } catch (AccessControlException e) {
+                    logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + shareItem.getEntityTypedId());
+                }
             }
         }
         return results;
@@ -381,9 +387,13 @@ public class ShareResource extends AbstractResource {
         List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
         for (ShareItem shareItem : shareItems) {
             if (shareItem.getSharedEntityIdentifier().getEntityType().isBinder()) {
-                Binder binder = (Binder) getSharingModule().getSharedEntity(shareItem);
-                if (!onlyLibrary || binder.getEntityType() == EntityIdentifier.EntityType.workspace || binder.isLibrary()) {
-                    results.add(ResourceUtil.buildSharedBinderBrief(shareItem, binder));
+                try {
+                    Binder binder = (Binder) getSharingModule().getSharedEntity(shareItem);
+                    if (!onlyLibrary || binder.getEntityType() == EntityIdentifier.EntityType.workspace || binder.isLibrary()) {
+                        results.add(ResourceUtil.buildSharedBinderBrief(shareItem, binder));
+                    }
+                } catch (AccessControlException e) {
+                    logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + shareItem.getEntityTypedId());
                 }
             }
         }
@@ -395,12 +405,16 @@ public class ShareResource extends AbstractResource {
         List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
         for (ShareItem shareItem : shareItems) {
             if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
-                FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(shareItem);
-                Set<Attachment> attachments = entry.getAttachments();
-                for (Attachment attachment : attachments) {
-                    if (attachment instanceof FileAttachment) {
-                        results.add(ResourceUtil.buildSharedFileProperties(shareItem, (FileAttachment) attachment));
+                try {
+                    FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(shareItem);
+                    Set<Attachment> attachments = entry.getAttachments();
+                    for (Attachment attachment : attachments) {
+                        if (attachment instanceof FileAttachment) {
+                            results.add(ResourceUtil.buildSharedFileProperties(shareItem, (FileAttachment) attachment));
+                        }
                     }
+                } catch (AccessControlException e) {
+                    logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + shareItem.getEntityTypedId());
                 }
             }
         }
