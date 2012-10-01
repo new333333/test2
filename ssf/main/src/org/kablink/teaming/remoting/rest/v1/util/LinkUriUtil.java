@@ -176,6 +176,8 @@ public class LinkUriUtil {
             model.addAdditionalLink("child_library_tree", model.getLink() + "/library_tree");
             model.addAdditionalLink("child_library_files", model.getLink() + "/library_files");
         }
+        model.addAdditionalLink("name", model.getLink() + "/name");
+        model.addAdditionalLink("parent_binder", model.getLink() + "/parent_binder");
         model.addAdditionalLink("recent_activity", model.getLink() + "/recent_activity");
         model.addAdditionalLink("team_members", model.getLink() + "/team_members");
         model.addAdditionalLink("tags", model.getLink() + "/tags");
