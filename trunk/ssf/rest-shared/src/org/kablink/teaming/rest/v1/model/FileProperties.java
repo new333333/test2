@@ -47,6 +47,7 @@ public class FileProperties extends BaseFileProperties {
 	private String name;
 	private Long lockedBy;
 	private Calendar lockExpiration;
+    private String permaLink;
 	
 	public FileProperties() {
 		super();
@@ -95,4 +96,14 @@ public class FileProperties extends BaseFileProperties {
 	public void setLockExpiration(Calendar lockExpiration) {
 		this.lockExpiration = lockExpiration;
 	}
+
+    @XmlElement(name="permalink")
+    public String getPermaLink() {
+        return permaLink;
+    }
+
+    public void setPermaLink(String permaLink) {
+        this.permaLink = permaLink;
+    }
+
 }

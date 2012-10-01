@@ -38,6 +38,7 @@ import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
 import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.search.Constants;
 
 import java.text.ParseException;
@@ -64,6 +65,7 @@ public class FilePropertiesBuilder implements SearchResultBuilder<FileProperties
         Long owningEntityId = Long.valueOf((String) doc.get(Constants.DOCID_FIELD));
 
         fp.setOwningEntity(ResourceUtil.buildEntityId(owningEntityType, owningEntityId));
+        fp.setPermaLink(PermaLinkUtil.getPermalink(owningEntityId, owningEntityType, true));
 
         Long creatorId = Long.valueOf((String) doc.get(Constants.CREATORID_FIELD));
         Date createdDate = (Date) doc.get(Constants.CREATION_DATE_FIELD);

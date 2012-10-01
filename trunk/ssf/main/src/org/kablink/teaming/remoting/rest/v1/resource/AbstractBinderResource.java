@@ -93,16 +93,16 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     }
 
     @POST
-    @Path("{id}/name")
+    @Path("{id}/title")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Binder renameBinder(@PathParam("id") Long id,
-                                     @FormParam("name") String name,
+                                     @FormParam("title") String name,
                                      @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
                                      @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) throws WriteFilesException, WriteEntryDataException {
         org.kablink.teaming.domain.Binder binder = _getBinder(id);
         if (name==null || name.length()==0) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'name' form parameter");
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'title' form parameter");
         }
 
         Map data = new HashMap();

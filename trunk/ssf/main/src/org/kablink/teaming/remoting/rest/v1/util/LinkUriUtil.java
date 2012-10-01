@@ -176,7 +176,7 @@ public class LinkUriUtil {
             model.addAdditionalLink("child_library_tree", model.getLink() + "/library_tree");
             model.addAdditionalLink("child_library_files", model.getLink() + "/library_files");
         }
-        model.addAdditionalLink("name", model.getLink() + "/name");
+        model.addAdditionalLink("title", model.getLink() + "/title");
         model.addAdditionalLink("parent_binder", model.getLink() + "/parent_binder");
         model.addAdditionalLink("recent_activity", model.getLink() + "/recent_activity");
         model.addAdditionalLink("team_members", model.getLink() + "/team_members");
@@ -201,7 +201,7 @@ public class LinkUriUtil {
         fp.addAdditionalLink("content", baseUrl);
         fp.addAdditionalLink("major_version", baseUrl + "/major_version");
         fp.addAdditionalLink("name", baseUrl + "/name");
-        fp.addAdditionalLink("parent_binder", baseUrl + "/parent_binder");
+        fp.addAdditionalLink("parent_folder", baseUrl + "/parent_folder");
         fp.addAdditionalLink("versions", baseUrl + "/versions");
         fp.addAdditionalLink("current_version", baseUrl + "/versions/current");
     }
