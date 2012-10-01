@@ -11,6 +11,8 @@ import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.BinderUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
+import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
@@ -38,16 +40,7 @@ import org.kablink.util.search.Criterion;
 import org.kablink.util.search.Junction;
 import org.kablink.util.search.Restrictions;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.*;
 
@@ -78,11 +71,14 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public void updateBinder(@PathParam("id") long id, Binder binder)
+    public Binder updateBinder(@PathParam("id") long id, Binder binder,
+                               @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
+                               @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions)
             throws WriteFilesException, WriteEntryDataException {
         _getBinder(id);
         getBinderModule().modifyBinder(id,
                 new RestModelInputData(binder), null, null, null);
+        return ResourceUtil.buildBinder(_getBinder(id), includeAttachments, textDescriptions);
     }
 
     /**
@@ -94,6 +90,46 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     public void deleteBinder(@PathParam("id") long id,
                              @QueryParam("purge") @DefaultValue("false") boolean purge) {
         _deleteBinder(id, purge);
+    }
+
+    @POST
+    @Path("{id}/name")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Binder renameBinder(@PathParam("id") Long id,
+                                     @FormParam("name") String name,
+                                     @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
+                                     @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) throws WriteFilesException, WriteEntryDataException {
+        org.kablink.teaming.domain.Binder binder = _getBinder(id);
+        if (name==null || name.length()==0) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'name' form parameter");
+        }
+
+        Map data = new HashMap();
+        data.put("title", name);
+        InputDataAccessor inputData = new MapInputData(data);
+
+        getBinderModule().modifyBinder(id, inputData, null, null, null);
+
+        return ResourceUtil.buildBinder(_getBinder(id), includeAttachments, textDescriptions);
+    }
+
+    @POST
+    @Path("{id}/parent_binder")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Binder moveBinder(@PathParam("id") Long id,
+                             @FormParam("binder_id") Long newBinderId,
+                             @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
+                             @QueryParam("text_descriptions") @DefaultValue("false") boolean textDescriptions) throws WriteFilesException, WriteEntryDataException {
+        org.kablink.teaming.domain.Binder binder = _getBinder(id);
+        if (newBinderId ==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'folder_id' form parameter");
+        }
+        org.kablink.teaming.domain.Binder parentBinder = getBinderModule().getBinder(newBinderId);
+        getBinderModule().moveBinder(binder.getId(), parentBinder.getId(), null);
+
+        return ResourceUtil.buildBinder(_getBinder(id), includeAttachments, textDescriptions);
     }
 
     /**
