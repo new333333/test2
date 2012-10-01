@@ -33,15 +33,27 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetUserAccessConfigCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveUserAccessConfigCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.UserAccessConfig;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -54,6 +66,7 @@ import com.google.gwt.user.client.ui.Panel;
  *
  */
 public class ConfigureUserAccessDlg extends DlgBox
+	implements EditSuccessfulHandler
 {
 	CheckBox m_allowGuestAccessCkbox;
 	CheckBox m_allowSelfRegOfInternalUserAccountCkbox;
@@ -99,7 +112,7 @@ public class ConfigureUserAccessDlg extends DlgBox
 									this );
 		
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().configureUserAccessDlg_Header(), null, null, null );
+		createAllDlgContent( GwtTeaming.getMessages().configureUserAccessDlg_Header(), this, null, null );
 	}
 
 	/**
@@ -127,41 +140,169 @@ public class ConfigureUserAccessDlg extends DlgBox
 			mainPanel.add( panel );
 		}
 		
-		// Add the "Allow external user access" checkbox
-		{
-			FlowPanel panel;
-			
-			panel = new FlowPanel();
-			panel.addStyleName( "marginbottom1" );
-			m_allowExternalUserAccessCkbox = new CheckBox( messages.configureUserAccessDlg_AllowExternalUserAccessLabel() );
-			panel.add( m_allowExternalUserAccessCkbox );
-			mainPanel.add( panel );
-		}
-		
-		// Add the "Allow external user to self register" checkbox
+		// Add the "Allow self registration" checkbox if we are running Kablink
+		if ( GwtTeaming.m_requestInfo.isKablinkTeaming() )
 		{
 			FlowPanel panel;
 			
 			panel = new FlowPanel();
 			panel.addStyleName( "marginbottom2" );
-			panel.addStyleName( "marginleft2" );
-			m_allowSelfRegOfExternalUserAccountCkbox = new CheckBox( messages.configureUserAccessDlg_AllowSelfRegExternalUserAccountLabel() );
-			panel.add( m_allowSelfRegOfExternalUserAccountCkbox );
+			m_allowSelfRegOfInternalUserAccountCkbox = new CheckBox( messages.configureUserAccessDlg_AllowSelfRegInternalUserAccountLabel() );
+			panel.add( m_allowSelfRegOfInternalUserAccountCkbox );
 			mainPanel.add( panel );
+		}
+		else
+		{
+			// External users are only available with a licensed version.
+
+			// Add the "Allow external user access" checkbox
+			{
+				FlowPanel panel;
+				
+				panel = new FlowPanel();
+				panel.addStyleName( "marginbottom1" );
+				m_allowExternalUserAccessCkbox = new CheckBox( messages.configureUserAccessDlg_AllowExternalUserAccessLabel() );
+				panel.add( m_allowExternalUserAccessCkbox );
+				mainPanel.add( panel );
+				
+				m_allowExternalUserAccessCkbox.addClickHandler( new ClickHandler()
+				{
+					@Override
+					public void onClick( ClickEvent event )
+					{
+						danceDlg();
+					}
+				} );
+			}
+			
+			// Add the "Allow external user to self register" checkbox
+			// For Filr 1.0 we don't support self registration by external users.
+			boolean doit = false;
+			if ( doit )
+			{
+				FlowPanel panel;
+				
+				panel = new FlowPanel();
+				panel.addStyleName( "marginbottom2" );
+				panel.addStyleName( "marginleft2" );
+				m_allowSelfRegOfExternalUserAccountCkbox = new CheckBox( messages.configureUserAccessDlg_AllowSelfRegExternalUserAccountLabel() );
+				panel.add( m_allowSelfRegOfExternalUserAccountCkbox );
+				mainPanel.add( panel );
+			}
 		}
 		
 		return mainPanel;
 	}
 	
+	/**
+	 * 
+	 */
+	private void danceDlg()
+	{
+		if ( m_allowExternalUserAccessCkbox != null )
+		{
+			m_allowSelfRegOfExternalUserAccountCkbox.setEnabled( m_allowExternalUserAccessCkbox.getValue() );
+		}
+	}
+	
+	/**
+	 * This gets called when the user presses ok.  Issue an rpc request to save the user
+	 * access configuration.
+	 */
+	@Override
+	public boolean editSuccessful( Object obj )
+	{
+		SaveUserAccessConfigCmd cmd;
 
+		// Execute a GWT RPC command to save the user access configuration
+		cmd = new SaveUserAccessConfigCmd();
+		cmd.setConfig( (UserAccessConfig) obj );
+		
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+											t,
+											GwtTeaming.getMessages().rpcFailure_SaveUserAccessConfig() );
+			}
+			
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				if ( response.getResponseData() != null && response.getResponseData() instanceof BooleanRpcResponseData )
+				{
+					BooleanRpcResponseData responseData;
+					
+					responseData = (BooleanRpcResponseData) response.getResponseData();
+					if ( responseData.getBooleanValue() == true )
+						hide();
+				}
+			}
+		});
+		
+		// Returning false will prevent the dialog from closing.  We will close the dialog
+		// after we successfully save the user access configuration.
+		return false;
+	}
+	
+	/**
+	 * 
+	 */
+	private boolean getAllowExternalUsers()
+	{
+		if ( m_allowExternalUserAccessCkbox != null )
+			return m_allowExternalUserAccessCkbox.getValue();
+		
+		return false;
+	}
+	
+	/**
+	 * 
+	 */
+	private boolean getAllowExternalSelfReg()
+	{
+		if ( getAllowExternalUsers() && m_allowSelfRegOfExternalUserAccountCkbox != null )
+			return m_allowSelfRegOfExternalUserAccountCkbox.getValue();
+		
+		return false;
+	}
+	
+	/**
+	 * 
+	 */
+	private boolean getAllowGuestAccess()
+	{
+		return m_allowGuestAccessCkbox.getValue();
+	}
+	
+	/**
+	 * 
+	 */
+	private boolean getAllowInternalSelfReg()
+	{
+		if ( m_allowSelfRegOfInternalUserAccountCkbox != null )
+			return m_allowSelfRegOfInternalUserAccountCkbox.getValue();
+		
+		return false;
+	}
+	
 	/**
 	 * Get the data from the controls in the dialog box.
 	 */
 	@Override
 	public Object getDataFromDlg()
 	{
-		// Return something.  Doesn't matter what since we only have a close button.
-		return Boolean.TRUE;
+		UserAccessConfig config;
+		
+		config = new UserAccessConfig();
+		config.setAllowExternalUsers( getAllowExternalUsers() );
+		config.setAllowExternalUsersSelfReg( getAllowExternalSelfReg() );
+		config.setAllowGuestAccess( getAllowGuestAccess() );
+		config.setAllowSelfReg( getAllowInternalSelfReg() );
+		
+		return config;
 	}
 	
 	
@@ -179,7 +320,42 @@ public class ConfigureUserAccessDlg extends DlgBox
 	 */
 	private void getUserAccessInfoFromServer()
 	{
-		
+		GetUserAccessConfigCmd cmd;
+
+		// Execute a GWT RPC command asking the server for the user access informaiton
+		cmd = new GetUserAccessConfigCmd();
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+											t,
+											GwtTeaming.getMessages().rpcFailure_GetUserAccessInfo() );
+			}
+			
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				if ( response.getResponseData() != null && response.getResponseData() instanceof UserAccessConfig )
+				{
+					final UserAccessConfig config;
+					ScheduledCommand cmd;
+					
+					config = (UserAccessConfig) response.getResponseData();
+					
+					cmd = new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							init( config );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			}
+		});
 	}
 	
 	/**
@@ -187,13 +363,40 @@ public class ConfigureUserAccessDlg extends DlgBox
 	 */
 	public void init()
 	{
-		m_allowExternalUserAccessCkbox.setValue( false );
-		m_allowGuestAccessCkbox.setValue( false );
-		m_allowSelfRegOfExternalUserAccountCkbox.setValue( false );
-		m_allowSelfRegOfInternalUserAccountCkbox.setValue( false );
+		if ( m_allowExternalUserAccessCkbox != null )
+			m_allowExternalUserAccessCkbox.setValue( false );
+		
+		if ( m_allowGuestAccessCkbox != null )
+			m_allowGuestAccessCkbox.setValue( false );
+		
+		if ( m_allowSelfRegOfExternalUserAccountCkbox != null )
+			m_allowSelfRegOfExternalUserAccountCkbox.setValue( false );
+		
+		if ( m_allowSelfRegOfInternalUserAccountCkbox != null )
+			m_allowSelfRegOfInternalUserAccountCkbox.setValue( false );
 		
 		// Issue an rpc request to get the user access information from the server
 		getUserAccessInfoFromServer();
+	}
+	
+	/**
+	 * 
+	 */
+	private void init( UserAccessConfig config )
+	{
+		if ( m_allowExternalUserAccessCkbox != null )
+			m_allowExternalUserAccessCkbox.setValue( config.getAllowExternalUsers() );
+		
+		if ( m_allowGuestAccessCkbox != null )
+			m_allowGuestAccessCkbox.setValue( config.getAllowGuestAccess() );
+		
+		if ( m_allowSelfRegOfExternalUserAccountCkbox != null )
+			m_allowSelfRegOfExternalUserAccountCkbox.setValue( config.getAllowExternalUsersSelfReg() );
+		
+		if ( m_allowSelfRegOfInternalUserAccountCkbox != null )
+			m_allowSelfRegOfInternalUserAccountCkbox.setValue( config.getAllowSelfReg() );
+		
+		danceDlg();
 	}
 	
 	/**
