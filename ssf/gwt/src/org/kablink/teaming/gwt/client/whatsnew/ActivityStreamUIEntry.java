@@ -139,7 +139,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 
 		// Add a place to show the avatar
 		m_avatarImg = new Image();
-		m_avatarImg.addStyleName( getAvatarImageStyleName() );
 		m_avatarImg.addStyleName( "cursorPointer" );
 		m_avatarImg.setVisible( false );
 		m_mainPanel.add( m_avatarImg );
@@ -565,7 +564,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	/**
 	 * Return the name of the style used with the avatar image.
 	 */
-	public abstract String getAvatarImageStyleName();
+	public abstract String getAvatarImageStyleName( ActivityStreamEntry asEntry );
 
 	
 	/**
@@ -1268,6 +1267,10 @@ public abstract class ActivityStreamUIEntry extends Composite
 		PresenceControl presenceCtrl;
 		
 		avatarUrl = getEntryImgUrl( entryItem );
+		m_avatarImg.removeStyleName( "activityStreamTopEntryFileImg" );
+		m_avatarImg.removeStyleName( "activityStreamTopEntryAvatarImg" );
+		m_avatarImg.removeStyleName( "activityStreamCommentAvatarImg" );
+		m_avatarImg.addStyleName( getAvatarImageStyleName( entryItem ) );
 		m_avatarImg.setUrl( avatarUrl );
 		m_avatarImg.setVisible( true );
 		

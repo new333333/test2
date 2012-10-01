@@ -87,7 +87,7 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	 * 
 	 */
 	@Override
-	public String getAvatarImageStyleName()
+	public String getAvatarImageStyleName( ActivityStreamEntry asEntry )
 	{
 		return "activityStreamCommentAvatarImg";
 	}
