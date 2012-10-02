@@ -115,6 +115,7 @@ public class SearchMenuPanel extends FlowPanel {
 		// Create the TextBox for the search...
 		m_searchInput = new TextBox();
 		m_searchInput.addStyleName("vibe-mainMenuSearch_Input");
+		m_searchInput.setTitle(GwtTeaming.getMessages().searchEntireSiteLabel());
 		
 		// ...add a handler to intercept key presses...
 		m_searchInput.addKeyPressHandler(new KeyPressHandler() {
