@@ -74,6 +74,10 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
+import org.apache.lucene.store.MMapDirectory;
+import org.apache.lucene.store.NIOFSDirectory;
+import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.SimpleFSDirectory;
 import org.kablink.teaming.lucene.analyzer.VibeIndexAnalyzer;
 import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.lucene.util.TagObject;
@@ -152,10 +156,23 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		
 		// Create index if necessary
 		try {
-			directory = FSDirectory.open(new File(indexDirPath));
-			logInfo("Created FSDirectory instance of type " + directory.getClass().getName());
+			String dirImplType = PropsUtil.getString("lucene.directory.implementation", null);
+			if(dirImplType == null)		
+				directory = FSDirectory.open(new File(indexDirPath));
+			else if(dirImplType.equalsIgnoreCase("simple"))
+				directory = new SimpleFSDirectory(new File(indexDirPath));
+			else if(dirImplType.equalsIgnoreCase("nio"))
+				directory = new NIOFSDirectory(new File(indexDirPath));
+			else if(dirImplType.equalsIgnoreCase("mmap"))
+				directory = new MMapDirectory(new File(indexDirPath));
+			else if(dirImplType.equalsIgnoreCase("ram"))
+				directory = new RAMDirectory();
+			else
+				throw newLuceneException("Invalid directory implementation type '" + dirImplType + "'");
+				
+			logInfo("Created Directory instance of class '" + directory.getClass().getName() + ((dirImplType == null)? "'" : "' given directory implementation type of '" + dirImplType + "'"));
 		} catch (IOException e) {
-			throw newLuceneException("Could not create FSDirectory instance", e);
+			throw newLuceneException("Could not create Directory instance", e);
 		}
 		
 		try {
