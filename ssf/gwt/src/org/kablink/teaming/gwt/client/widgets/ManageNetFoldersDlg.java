@@ -432,7 +432,7 @@ public class ManageNetFoldersDlg extends DlgBox
 				return rootName;
 			}
 		};
-		m_netFoldersTable.addColumn( rootCol, messages.manageNetFoldersDlg_RootCol() );
+		m_netFoldersTable.addColumn( rootCol, messages.manageNetFoldersDlg_ServerCol() );
 		
 		// Add the "Relative Path" column
 		relativePathCol = new TextColumn<NetFolder>()

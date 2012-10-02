@@ -305,7 +305,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CreateGroup();
 	String rpcFailure_CreateGroupAlreadyExists();
 	String rpcFailure_DeleteNetFolders();
-	String rpcFailure_DeleteNetFolderRoots();
+	String rpcFailure_DeleteNetFolderServers();
 	String rpcFailure_DeleteFolderEntries();
 	String rpcFailure_DeleteGroups();
 	String rpcFailure_DeleteUserWorkspaces();
@@ -325,7 +325,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetAddMeetingUrl();
 	String rpcFailure_GetAdminActions();
 	String rpcFailure_GetAllNetFolders();
-	String rpcFailure_GetAllNetFolderRoots();
+	String rpcFailure_GetAllNetFolderServers();
 	String rpcFailure_GetAllGroups();
 	String rpcFailure_GetBinderDescription();
 	String rpcFailure_GetBinderFilters();
@@ -484,7 +484,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_ShareEntry();
 	String rpcFailure_SyncNetFolders();
 	String rpcFailure_TestGroupMembershipCriteria();
-	String rpcFailure_ErrorTestingNetFolderRootConnection();
+	String rpcFailure_ErrorTestingNetFolderServerConnection();
 	String rpcFailure_TrackingBinder();
 	String rpcFailure_TrackingPerson();
 	String rpcFailure_TrashPurgeAll();
@@ -565,7 +565,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ManageCommentsDlg();
 	String codeSplitFailure_ManageGroupsDlg();
 	String codeSplitFailure_ManageNetFoldersDlg();
-	String codeSplitFailure_ManageNetFolderRootsDlg();
+	String codeSplitFailure_ManageNetFolderServersDlg();
 	String codeSplitFailure_ManageMenuPopup();
 	String codeSplitFailure_ManageSavedSearchesDlg();
 	String codeSplitFailure_MicroBlogFolderView();
@@ -573,7 +573,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_MirroredFileFolderView();
 	String codeSplitFailure_ModifyGroupDlg();
 	String codeSplitFailure_ModifyNetFolderDlg();
-	String codeSplitFailure_ModifyNetFolderRootDlg();
+	String codeSplitFailure_ModifyNetFolderServerDlg();
 	String codeSplitFailure_MultiErrorAlertDlg();
 	String codeSplitFailure_NetFoldersWSView();
 	String codeSplitFailure_PersonalWorkspacesView();
@@ -1863,58 +1863,58 @@ public interface GwtTeamingMessages extends Messages
 	String shareSendToWidget_SelectedRecipients();
 	String shareSendToWidget_Unknown();
 	
-	// Strings used in the manage Net Folder Roots dialog
-	String manageNetFolderRootsDlg_AddNetFolderRootLabel();
-	String manageNetFolderRootsDlg_ConfirmDelete( String netFolderRootNames );
-	String manageNetFolderRootsDlg_DeleteNetFolderRootLabel();
-	String manageNetFolderRootsDlg_Header();
-	String manageNetFolderRootsDlg_NameCol();
-	String manageNetFolderRootsDlg_NoNetFolderRootsLabel();
-	String manageNetFolderRootsDlg_RootPathCol();
-	String manageNetFolderRootsDlg_SelectRootsToDelete();
+	// Strings used in the manage Net Folder Servers dialog
+	String manageNetFolderServersDlg_AddNetFolderServerLabel();
+	String manageNetFolderServersDlg_ConfirmDelete( String netFolderServerNames );
+	String manageNetFolderServersDlg_DeleteNetFolderServerLabel();
+	String manageNetFolderServersDlg_Header();
+	String manageNetFolderServersDlg_NameCol();
+	String manageNetFolderServersDlg_NoNetFolderServersLabel();
+	String manageNetFolderServersDlg_ServerPathCol();
+	String manageNetFolderServersDlg_SelectServersToDelete();
 
-	// Strings used in the modify Net Folder Root dialog
-	String modifyNetFolderRootDlg_AddHeader();
-	String modifyNetFolderRootDlg_AllowSelfSignedCertsLabel();
-	String modifyNetFolderRootDlg_AlreadyAPrivilegedPrincipal( String name );
-	String modifyNetFolderRootDlg_CantSelectExternalUser();
-	String modifyNetFolderRootDlg_EditHeader( String name );
-	String modifyNetFolderRootDlg_ErrorCreatingNetFolderRoot( String err );
-	String modifyNetFolderRootDlg_ErrorModifyingNetFolderRoot( String err );
-	String modifyNetFolderRootDlg_Group();
-	String modifyNetFolderRootDlg_HostUrlLabel();
-	String modifyNetFolderRootDlg_HostUrlRequired();
-	String modifyNetFolderRootDlg_InsufficientRights();
-	String modifyNetFolderRootDlg_IsSharePointServerLabel();
-	String modifyNetFolderRootDlg_NameCol();
-	String modifyNetFolderRootDlg_NameLabel();
-	String modifyNetFolderRootDlg_NameRequired();
-	String modifyNetFolderRootDlg_NoPrivilegedPrincipalsHint();
-	String modifyNetFolderRootDlg_PrivilegedPrincipalsHint();
-	String modifyNetFolderRootDlg_ProxyNameLabel();
-	String modifyNetFolderRootDlg_ProxyPwdLabel();
-	String modifyNetFolderRootDlg_RemovePrincipalHint();
-	String modifyNetFolderRootDlg_RootAlreadyExists();
-	String modifyNetFolderRootDlg_RootPathLabel();
-	String modifyNetFolderRootDlg_SelectPrincipalsLabel();
-	String modifyNetFolderRootDlg_TestConnectionLabel();
-	String modifyNetFolderRootDlg_TypeLabel();
-	String modifyNetFolderRootDlg_TypeCol();
-	String modifyNetFolderRootDlg_Type_Famt();
-	String modifyNetFolderRootDlg_Type_FileSystem();
-	String modifyNetFolderRootDlg_Type_WebDav();
-	String modifyNetFolderRootDlg_User();
+	// Strings used in the modify Net Folder Server dialog
+	String modifyNetFolderServerDlg_AddHeader();
+	String modifyNetFolderServerDlg_AllowSelfSignedCertsLabel();
+	String modifyNetFolderServerDlg_AlreadyAPrivilegedPrincipal( String name );
+	String modifyNetFolderServerDlg_CantSelectExternalUser();
+	String modifyNetFolderServerDlg_EditHeader( String name );
+	String modifyNetFolderServerDlg_ErrorCreatingNetFolderServer( String err );
+	String modifyNetFolderServerDlg_ErrorModifyingNetFolderServer( String err );
+	String modifyNetFolderServerDlg_Group();
+	String modifyNetFolderServerDlg_HostUrlLabel();
+	String modifyNetFolderServerDlg_HostUrlRequired();
+	String modifyNetFolderServerDlg_InsufficientRights();
+	String modifyNetFolderServerDlg_IsSharePointServerLabel();
+	String modifyNetFolderServerDlg_NameCol();
+	String modifyNetFolderServerDlg_NameLabel();
+	String modifyNetFolderServerDlg_NameRequired();
+	String modifyNetFolderServerDlg_NoPrivilegedPrincipalsHint();
+	String modifyNetFolderServerDlg_PrivilegedPrincipalsHint();
+	String modifyNetFolderServerDlg_ProxyNameLabel();
+	String modifyNetFolderServerDlg_ProxyPwdLabel();
+	String modifyNetFolderServerDlg_RemovePrincipalHint();
+	String modifyNetFolderServerDlg_ServerAlreadyExists();
+	String modifyNetFolderServerDlg_ServerPathLabel();
+	String modifyNetFolderServerDlg_SelectPrincipalsLabel();
+	String modifyNetFolderServerDlg_TestConnectionLabel();
+	String modifyNetFolderServerDlg_TypeLabel();
+	String modifyNetFolderServerDlg_TypeCol();
+	String modifyNetFolderServerDlg_Type_Famt();
+	String modifyNetFolderServerDlg_Type_FileSystem();
+	String modifyNetFolderServerDlg_Type_WebDav();
+	String modifyNetFolderServerDlg_User();
 	
 	// Strings used in the Manage Net Folders dialog
 	String manageNetFoldersDlg_AddNetFolderLabel();
 	String manageNetFoldersDlg_ConfirmDelete( String netFolderName );
-	String modifyNetFolderDlg_CreateNetFolderRootLabel();
+	String modifyNetFolderDlg_CreateNetFolderServerLabel();
 	String manageNetFoldersDlg_DeleteNetFolderLabel();
 	String manageNetFoldersDlg_Header();
 	String manageNetFoldersDlg_NameCol();
 	String manageNetFoldersDlg_NoNetFoldersLabel();
 	String manageNetFoldersDlg_PromptForSync();
-	String manageNetFoldersDlg_RootCol();
+	String manageNetFoldersDlg_ServerCol();
 	String manageNetFoldersDlg_SelectFoldersToDelete();
 	String manageNetFoldersDlg_SelectFoldersToSync();
 	String manageNetFoldersDlg_SyncLabel();
@@ -1931,9 +1931,9 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_NameLabel();
 	String modifyNetFolderDlg_NameRequired();
 	String modifyNetFolderDlg_NetFolderAlreadyExists();
-	String modifyNetFolderDlg_NetFolderRootLabel();
-	String modifyNetFolderDlg_NoNetFolderRootsLabel();
-	String modifyNetFolderDlg_NoNetFolderRootsPrompt();
+	String modifyNetFolderDlg_NetFolderServerLabel();
+	String modifyNetFolderDlg_NoNetFolderServersLabel();
+	String modifyNetFolderDlg_NoNetFolderServersPrompt();
 	String modifyNetFolderDlg_ParentBinderRequired();
 	String modifyNetFolderDlg_ParentFolderLabel();
 	String manageNetFoldersDlg_RelativePathCol();
@@ -1971,7 +1971,7 @@ public interface GwtTeamingMessages extends Messages
 	String userActionsPanel_ViewProfile();
 	String userActionsPanel_ViewSharedByMe();
 
-	// Strings used when testing a net folder and net folder root connection
+	// Strings used when testing a net folder and net folder server connection
 	String testConnection_InProgressLabel();
 	String testConnection_NetworkError();
 	String testConnection_Normal();
