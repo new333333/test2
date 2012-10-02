@@ -482,9 +482,15 @@ public class FooterPanel extends ToolPanelBase {
 		cf.setColSpan(    0, 0, 2 );
 
 		// ...add rows for each item type...
+		boolean showWebDAV = (null != m_binderInfo);
+		if (!showWebDAV) {
+			showWebDAV = (!(m_entityId.isEntry()));
+		}
 		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_PERMALINK), m_strMap.get(StringIds.KEY_PERMALINK)      );
 		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_ICAL),      m_strMap.get(StringIds.KEY_EMAIL_ADDRESSES));
-		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_WEBDAV),    m_strMap.get(StringIds.KEY_WEBDAV)         );
+		if (showWebDAV) {
+			renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_WEBDAV),    m_strMap.get(StringIds.KEY_WEBDAV)         );
+		}
 		renderHintGridRow(    hintGrid, m_strMap.get(StringIds.CAPTION_ICAL),      m_strMap.get(StringIds.KEY_ICAL)           );
 		if (!m_isFilr) {
 			renderHintGridRow(hintGrid, m_strMap.get(StringIds.CAPTION_RSS),       m_strMap.get(StringIds.KEY_RSS)            );
