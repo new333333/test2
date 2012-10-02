@@ -68,7 +68,7 @@ public interface TemplateModule {
    	 */
     public Binder addBinder(Long templateId, Long parentBinderId, String title, String name) throws AccessControlException, WriteFilesException;
     
-    public Binder addBinder(Long templateId, Long parentBinderId, String title, String name, Map options) throws AccessControlException, WriteFilesException;
+    public Binder addBinder(Long templateId, Long parentBinderId, String title, String name, Map overrideInputData, Map options) throws AccessControlException, WriteFilesException;
     /**
      * Create default template.  Should already exist
      * @param type

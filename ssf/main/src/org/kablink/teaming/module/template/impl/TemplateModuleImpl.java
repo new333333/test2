@@ -779,11 +779,11 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	//In order to reduce the risk, we try to shorten the transaction time by managing it ourselves
 	public Binder addBinder(final Long configId, final Long parentBinderId, final String title, final String name) 
 			throws AccessControlException {
-		return addBinder(configId, parentBinderId, title, name, null);
+		return addBinder(configId, parentBinderId, title, name, null, null);
 	}
 	//no transaction - Adding the top binder can lead to optimisitic lock exceptions.
 	//In order to reduce the risk, we try to shorten the transaction time by managing it ourselves
-	public Binder addBinder(final Long configId, final Long parentBinderId, final String title, final String name, final Map options) 
+	public Binder addBinder(final Long configId, final Long parentBinderId, final String title, final String name, final Map overrideInputData, final Map options) 
 			throws AccessControlException {
 		//The first add is independent of the others.  In this case the transaction is short 
 		//and managed by processors.  
@@ -795,7 +795,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			ctx.putAll(options);
 		//force a lock so contention on the sortKey is reduced
 		ctx.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
-		final Binder top = addBinderInternal(cfg, parent, title, name, ctx);
+		final Binder top = addBinderInternal(cfg, parent, title, name, overrideInputData, ctx);
 		ctx.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE); //don't bother indexing, until copyBinderAttributes done
 		if (top != null) {
 			//now that we have registered the sortKey in the parent binder, we use a longer transaction to complete 
@@ -841,7 +841,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		   for (TemplateBinder child: children) {
 			   if (Utils.validateDefinition(child.getEntryDef(), null)) {
 				   //This binder type is allowed, so go add it (and its children)
-				   Binder childBinder = addBinderInternal(child, binder, NLT.getDef(child.getTitle()), null, null);	
+				   Binder childBinder = addBinderInternal(child, binder, NLT.getDef(child.getTitle()), null, null, null);	
 				   addBinderFinish(child, childBinder);
 			   }
 		   }
@@ -850,7 +850,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 
 	}
 
-	protected Binder addBinderInternal(TemplateBinder cfg, Binder parentBinder, String title, String name, Map ctx) throws AccessControlException {
+	protected Binder addBinderInternal(TemplateBinder cfg, Binder parentBinder, String title, String name, Map overrideInputData, Map ctx) throws AccessControlException {
 	   Long zoneId =  RequestContextHolder.getRequestContext().getZoneId();
 	   Binder binder;
 	   Definition def = cfg.getDefaultViewDef();
@@ -887,6 +887,9 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	   if (!cfg.isFunctionMembershipInherited()) {
 			entryData.put(ObjectKeys.INPUT_FIELD_FUNCTIONMEMBERSHIPS, getAdminModule().getWorkAreaFunctionMemberships(cfg));
 	   }	    	
+	   // Override the template-supplied static settings with dynamically-supplied runtime settings.
+	   if(overrideInputData != null)
+		   entryData.putAll(overrideInputData);
 	   //get binder created
 	   try {
 			binder = getCoreDao().loadBinder(getBinderModule().addBinder(parentBinder.getId(), def.getId(), inputData, fileItems, ctx).getId(), zoneId);
