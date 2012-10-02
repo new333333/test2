@@ -90,9 +90,9 @@
 			<fileset dir="." includes="${jar.file}" />
 		</delete>
 		<delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="classes" />
-			<fileset dir="extras"  />
-			<fileset dir="www"     />
+			<fileset dir="classes" includes="**/*" />
+			<fileset dir="extras"                  />
+			<fileset dir="www"                     />
 		</delete>
 	</target>
 
