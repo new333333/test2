@@ -263,6 +263,7 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public static boolean isColumnView(            String       columnName) {return columnName.equals(FolderColumn.COLUMN_HTML);             }
 	public static boolean isColumnSharedBy(        String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARE_SHARED_BY);  }
 	public static boolean isColumnSharedWith(      String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARE_SHARED_WITH);}
+	public static boolean isColumnShareMessage(    String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARE_MESSAGE);    }
 	public static boolean isColumnShareStringValue(String       columnName) {
 		return
 			(columnName.equals(FolderColumn.COLUMN_SHARE_ACCESS)     ||
