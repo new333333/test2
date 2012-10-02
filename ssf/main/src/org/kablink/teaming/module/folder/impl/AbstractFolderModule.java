@@ -145,6 +145,8 @@ import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -486,6 +488,9 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         }
         
         FolderEntry entry = (FolderEntry) processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, options);
+        
+        updateModificationTimeAndReindexIfNecessary(folder);
+        
         end(begin, "addEntry");
         return entry;
     }
@@ -865,6 +870,8 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         		processor.indexEntry(entry);
         		getRssModule().updateRssFeed(entry); 
         	}
+        	
+            updateModificationTimeAndReindexIfNecessary(folder);
         }
     }
     
@@ -912,7 +919,9 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         	if (reindex) {
         		processor.indexEntry(entry);
         	}
-        	getRssModule().updateRssFeed(entry); 
+        	getRssModule().updateRssFeed(entry);
+        	
+            updateModificationTimeAndReindexIfNecessary(folder);
         }
     }
     
@@ -949,6 +958,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         Folder folder = entry.getParentFolder();
         FolderCoreProcessor processor=loadProcessor(folder);
         processor.deleteEntry(folder, entry, deleteMirroredSource, options);
+        updateModificationTimeAndReindexIfNecessary(folder);
     }
     //inside write transaction    
     public void moveEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options) {
@@ -976,6 +986,10 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		}
 
         processor.moveEntry(folder, entry, destination, toFileNames, options);
+        
+        updateModificationTimeAndReindexIfNecessary(folder);
+        if(destination != folder)
+        	updateModificationTimeAndReindexIfNecessary(destination);
     }
     
 	private void checkFileUploadSizeLimit(Binder binder, Long fileSize, String fileName) 
@@ -1038,7 +1052,11 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 			throw new BinderQuotaException(entry.getTitle());
 		}
 
-		return (FolderEntry) processor.copyEntry(folder, entry, destination, toFileNames, options);
+		FolderEntry entryCopy = (FolderEntry) processor.copyEntry(folder, entry, destination, toFileNames, options);
+		
+        updateModificationTimeAndReindexIfNecessary(destination);
+		
+		return entryCopy;
     }
     //inside write transaction    
     public void setSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles) {
@@ -1622,4 +1640,28 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		return ids.get(0);
 	}
 
+	// No Transaction
+	private void updateModificationTime(final Folder folder) {
+        getTransactionTemplate().execute(new TransactionCallback<Object>() {
+        	@Override
+			public Object doInTransaction(final TransactionStatus status) {
+        		// Set the modification time to the "current" time.
+        		folder.getModification().setDate(new Date());
+                return null;
+        	}
+        });
+	}
+	
+	// No Transaction
+	private void updateModificationTimeAndReindexIfNecessary(Folder folder) {
+		if(folder.isLibrary()) {
+			if(logger.isDebugEnabled())
+				logger.debug("Updating mod time on the folder [" + folder.getPathName() + "]");
+			// Update modification time
+			updateModificationTime(folder);
+			// Re-index it
+			getBinderModule().indexBinder(folder.getId(), false);
+		}
+	}
+	
 }

@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -468,6 +469,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			binder = loadBinderProcessor(parentBinder).addBinder(parentBinder,
 					def, Workspace.class, inputData, fileItems, options);
 		}
+		
+		if(binder != null)
+	        updateModificationTimeAndReindexIfNecessary(parentBinder);
+		
 		end(begin, "addBinder");
 		return binder;
 	}
@@ -860,6 +865,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			        // ...re-index the Binder.
 		        	processor.indexBinder(binder, true);
 		        }
+		        
+		        if(binder.getParentBinder() != null)
+		        	updateModificationTimeAndReindexIfNecessary(binder.getParentBinder());
 			}
 		}
 	}
@@ -1113,12 +1121,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		        	ws.setPreDeletedBy(userId);
 		        }
 
+		        Binder parentBinder = binder.getParentBinder();
 		        BinderProcessor processor = loadBinderProcessor(binder);
 				TrashHelper.changeBinder_Log(processor, binder, ChangeLog.PREDELETEBINDER);
 		        TrashHelper.unRegisterBinderNames(getCoreDao(), binder);
 		        if (reindex) {
 		        	processor.indexBinder(binder, true);
 		        }
+		        if(parentBinder != null)
+		        	updateModificationTimeAndReindexIfNecessary(parentBinder);
 			}
 		}
 	}
@@ -1137,10 +1148,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	// no transaction
 	public void deleteBinder(Long binderId, boolean deleteMirroredSource,
 			Map options, boolean phase1Only) {
+		Binder binder = loadBinder(binderId);
+		Binder parentBinder = null;
+		if(binder != null)
+			parentBinder = binder.getParentBinder();
+		
 		deleteBinderPhase1(binderId, deleteMirroredSource, options);
 		if (!phase1Only) {
 			deleteBinderPhase2();
 		}
+		
+		if(parentBinder != null)
+			updateModificationTimeAndReindexIfNecessary(parentBinder);
 	}
 
 	// no transaction
@@ -1151,6 +1170,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	// inside write transaction
 	public void moveBinder(Long fromId, Long toId, Map options) throws NotSupportedException {
 		Binder source = loadBinder(fromId);
+		Binder sourceParent = source.getParentBinder();
 		checkAccess(source, BinderOperation.moveBinder);
 		Binder destination = loadBinder(toId);
 		if (loadBinderProcessor(source).checkMoveBinderQuota(source, destination)) {
@@ -1163,6 +1183,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			}
 			// move whole tree at once
 			loadBinderProcessor(source).moveBinder(source, destination, options);
+			
+			updateModificationTimeAndReindexIfNecessary(sourceParent);
+			if(sourceParent != destination)
+				updateModificationTimeAndReindexIfNecessary(destination);
+			
 		} else {
 			throw new NotSupportedException(NLT.get("quota.binder.exceeded"));
 		}
@@ -1196,6 +1221,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					destinationParent, params);
 			if (cascade)
 				doCopyChildren(source, binder);
+	        updateModificationTimeAndReindexIfNecessary(destinationParent);
 			return binder;
 		} else {
 			throw new NotSupportedException(NLT.get("quota.binder.exceeded"));
@@ -3030,6 +3056,30 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         }
         
         return result;
+	}
+	
+	// No Transaction
+	private void updateModificationTime(final Binder binder) {
+        getTransactionTemplate().execute(new TransactionCallback<Object>() {
+        	@Override
+			public Object doInTransaction(final TransactionStatus status) {
+        		// Set the modification time to the "current" time.
+        		binder.getModification().setDate(new Date());
+                return null;
+        	}
+        });
+	}
+	
+	// No Transaction
+	private void updateModificationTimeAndReindexIfNecessary(Binder binder) {
+		if(binder.isLibrary()) {
+			if(logger.isDebugEnabled())
+				logger.debug("Updating mod time on the binder [" + binder.getPathName() + "]");
+			// Update modification time
+			updateModificationTime(binder);
+			// Re-index it
+			this.indexBinder(binder.getId(), false);
+		}
 	}
 	
 }
