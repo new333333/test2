@@ -1615,41 +1615,12 @@ public class GwtViewHelper {
 						}
 					}
 						
-					else if (FolderColumn.isColumnSharedBy(cName) || FolderColumn.isColumnSharedWith(cName)) {
-						// The sharedBy/With column!  Scan the assignments.
-						List<AssignmentInfo> aiList = fr.getColumnValueAsAssignmentInfos(fc);
-						if (MiscUtil.hasItems(aiList)) {
-							boolean found = false;
-							for (AssignmentInfo ai:  aiList) {
-								// ...if this assignee's title contains
-								// ...the quick filter...
-								if (valueContainsQuickFilter(ai.getTitle(), quickFilter)) {
-									// ...add it to the reply list.
-									reply.add(fr);
-									found = true;
-									break;
-								}
-							}
-							
-							// Once we move the row to the reply...
-							if (found) {
-								// ...stop scanning the columns.
-								break;
-							}
-						}
-					}
-					
-					else if (FolderColumn.isColumnShareStringValue(cName)) {
-						// The sharedDate, sharedExpiration,
-						// sharedAccess or sharedMessage column!  Scan
-						// the string values...
-						List<ShareStringValue> svList;
-						if      (cName.equals(FolderColumn.COLUMN_SHARE_ACCESS))     svList = fr.getColumnValueAsShareAccessInfos(    fc);
-						else if (cName.equals(FolderColumn.COLUMN_SHARE_DATE))       svList = fr.getColumnValueAsShareDateInfos(      fc);
-						else if (cName.equals(FolderColumn.COLUMN_SHARE_EXPIRATION)) svList = fr.getColumnValueAsShareExpirationInfos(fc);
-						else if (cName.equals(FolderColumn.COLUMN_SHARE_MESSAGE))    svList = fr.getColumnValueAsShareMessageInfos(   fc);
-						else                                                         svList = null;
+					else if (FolderColumn.isColumnShareMessage(cName)) {
+						// The share message column!  Are there any
+						// values for that?
+						List<ShareStringValue> svList = fr.getColumnValueAsShareMessageInfos(fc);
 						if (MiscUtil.hasItems(svList)) {
+							// Yes!  Scan them...
 							boolean found = false;
 							for (ShareStringValue sv:  svList) {
 								// ...if this value contains the quick
@@ -3093,7 +3064,7 @@ public class GwtViewHelper {
 			if (isFolder)
 			     options = getFolderSearchFilter(bs, folder, userFolderProperties, null);
 			else options = new HashMap();
-			GwtServerHelper.addQuickFilterToSearch(options, quickFilter);
+			GwtServerHelper.addQuickFilterToSearch(options, quickFilter, isProfilesRootWS);
 			options.put(ObjectKeys.SEARCH_OFFSET,   start );
 			options.put(ObjectKeys.SEARCH_MAX_HITS, length);
 
