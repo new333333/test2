@@ -116,9 +116,10 @@ function setItemToDelete(id) {
       <c:forEach var="shareItem" items="${ss_accessControlShareItems}">
       	<jsp:useBean id="shareItem" type="org.kablink.teaming.domain.ShareItem" />
       	<%
+      	if (shareItem.isLatest()) {
       		List sharers = ResolveIds.getPrincipals(String.valueOf(shareItem.getSharerId().longValue()));
-      	if (!sharers.isEmpty()) {
-      		Principal sharer = (Principal)sharers.get(0);
+      		if (!sharers.isEmpty()) {
+      			Principal sharer = (Principal)sharers.get(0);
       	%>
         <c:set var="recipient" value="${ss_accessControlShareItemRecipients[shareItem.id]}"/>
         <tr>
@@ -163,7 +164,7 @@ function setItemToDelete(id) {
               <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 			     value="${shareItem.endDate}" type="date" dateStyle="medium" />
               <c:if test="${shareItem.expired}">
-                <span class="ss_smallprint">
+                <span class="ss_smallprint ss_errorLabel">
                   &nbsp;(<ssf:nlt tag="binder.configure.access_control.sharing.exipred"/>)
                 </span>
               </c:if>
@@ -176,7 +177,10 @@ function setItemToDelete(id) {
               >
           </td>
         </tr>
-        <% } %>
+        <% 
+        	} 
+        }
+        %>
       </c:forEach>
     </table>
 
