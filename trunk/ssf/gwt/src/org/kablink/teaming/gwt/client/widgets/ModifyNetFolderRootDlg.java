@@ -282,7 +282,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			
 			delImg = new Image( m_deleteImgR );
 			delImg.addStyleName( "cursorPointer" );
-			delImg.getElement().setAttribute( "title", GwtTeaming.getMessages().modifyNetFolderRootDlg_RemovePrincipalHint() );
+			delImg.getElement().setAttribute( "title", GwtTeaming.getMessages().modifyNetFolderServerDlg_RemovePrincipalHint() );
 			delImg.addClickHandler( this );
 			
 			panel.add( delImg );
@@ -353,7 +353,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		m_privilegedPrincipalsCellFormatter.addStyleName( row, 0, "oltContentPadding" );
 		m_privilegedPrincipalsCellFormatter.addStyleName( row, 0, "oltLastRowBorderBottom" );
 
-		m_privilegedPrincipalsTable.setText( row, 0, GwtTeaming.getMessages().modifyNetFolderRootDlg_NoPrivilegedPrincipalsHint() );
+		m_privilegedPrincipalsTable.setText( row, 0, GwtTeaming.getMessages().modifyNetFolderServerDlg_NoPrivilegedPrincipalsHint() );
 	}
 	
 	/**
@@ -381,7 +381,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			text = m_privilegedPrincipalsTable.getText( 1, 0 );
 			
 			// Does the first row contain a message?
-			if ( text != null && text.equalsIgnoreCase( GwtTeaming.getMessages().modifyNetFolderRootDlg_NoPrivilegedPrincipalsHint() ) )
+			if ( text != null && text.equalsIgnoreCase( GwtTeaming.getMessages().modifyNetFolderServerDlg_NoPrivilegedPrincipalsHint() ) )
 			{
 				// Yes
 				m_privilegedPrincipalsTable.removeRow( 1 );
@@ -498,7 +498,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		
 		// Create the controls for "Name"
 		{
-			label = new InlineLabel( messages.modifyNetFolderRootDlg_NameLabel() );
+			label = new InlineLabel( messages.modifyNetFolderServerDlg_NameLabel() );
 			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
 			
 			m_nameTxtBox = new TextBox();
@@ -510,7 +510,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		// Create a select control for selecting the type of net folder root
 		if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
 		{
-			label = new InlineLabel( messages.modifyNetFolderRootDlg_TypeLabel() );
+			label = new InlineLabel( messages.modifyNetFolderServerDlg_TypeLabel() );
 			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
 			
 			// Add the listbox where the user can select the type of net folder root
@@ -518,13 +518,13 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			m_rootTypeListbox.setVisibleItemCount( 1 );
 			
 			m_rootTypeListbox.addItem( 
-						GwtTeaming.getMessages().modifyNetFolderRootDlg_Type_FileSystem(),
+						GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_FileSystem(),
 						NetFolderRootType.FILE_SYSTEM.toString() );
 			m_rootTypeListbox.addItem(
-						GwtTeaming.getMessages().modifyNetFolderRootDlg_Type_WebDav(),
+						GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_WebDav(),
 						NetFolderRootType.WEB_DAV.toString() );
 			m_rootTypeListbox.addItem(
-						GwtTeaming.getMessages().modifyNetFolderRootDlg_Type_Famt(),
+						GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_Famt(),
 						NetFolderRootType.FAMT.toString() );
 			
 			m_rootTypeListbox.setSelectedIndex( 0 );
@@ -553,7 +553,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 
 		// Create the controls for "root path"
 		{
-			label = new InlineLabel( messages.modifyNetFolderRootDlg_RootPathLabel() );
+			label = new InlineLabel( messages.modifyNetFolderServerDlg_ServerPathLabel() );
 			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
 			
 			m_rootPathTxtBox = new TextBox();
@@ -571,7 +571,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			table.setWidget( nextRow, 0, m_webDavSpacerPanel );
 			++nextRow;
 			
-			m_hostUrlLabel = new InlineLabel( messages.modifyNetFolderRootDlg_HostUrlLabel() );
+			m_hostUrlLabel = new InlineLabel( messages.modifyNetFolderServerDlg_HostUrlLabel() );
 			m_hostUrlLabel.setVisible( false );
 			table.setWidget( nextRow, 0, m_hostUrlLabel );
 			
@@ -582,13 +582,13 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			++nextRow;
 			
 			cellFormatter.setColSpan( nextRow, 0, 2 );
-			m_allowSelfSignedCertsCkbox = new CheckBox( messages.modifyNetFolderRootDlg_AllowSelfSignedCertsLabel() );
+			m_allowSelfSignedCertsCkbox = new CheckBox( messages.modifyNetFolderServerDlg_AllowSelfSignedCertsLabel() );
 			m_allowSelfSignedCertsCkbox.setVisible( false );
 			table.setWidget( nextRow, 0, m_allowSelfSignedCertsCkbox );
 			++nextRow;
 
 			cellFormatter.setColSpan( nextRow, 0, 2 );
-			m_isSharePointServerCkbox = new CheckBox( messages.modifyNetFolderRootDlg_IsSharePointServerLabel() );
+			m_isSharePointServerCkbox = new CheckBox( messages.modifyNetFolderServerDlg_IsSharePointServerLabel() );
 			m_isSharePointServerCkbox.setVisible( false );
 			table.setWidget( nextRow, 0, m_isSharePointServerCkbox );
 			++nextRow;
@@ -602,7 +602,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			table.setWidget( nextRow, 0, spacerPanel );
 			++nextRow;
 			
-			label = new InlineLabel( messages.modifyNetFolderRootDlg_ProxyNameLabel() );
+			label = new InlineLabel( messages.modifyNetFolderServerDlg_ProxyNameLabel() );
 			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
 			
 			m_proxyNameTxtBox = new TextBox();
@@ -610,7 +610,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			table.setWidget( nextRow, 1, m_proxyNameTxtBox );
 			++nextRow;
 			
-			label = new InlineLabel( messages.modifyNetFolderRootDlg_ProxyPwdLabel() );
+			label = new InlineLabel( messages.modifyNetFolderServerDlg_ProxyPwdLabel() );
 			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
 			
 			m_proxyPwdTxtBox = new PasswordTextBox();
@@ -623,7 +623,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				Button testConnectionBtn;
 				
 				// Add "Test connection" button
-				testConnectionBtn = new Button( messages.modifyNetFolderRootDlg_TestConnectionLabel() );
+				testConnectionBtn = new Button( messages.modifyNetFolderServerDlg_TestConnectionLabel() );
 				testConnectionBtn.addStyleName( "teamingButton" );
 				testConnectionBtn.addClickHandler( new ClickHandler()
 				{
@@ -695,11 +695,11 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				cellFormatter.setColSpan( nextRow, 0, 2 );
 				cellFormatter.setWordWrap( nextRow, 0, false );
 				cellFormatter.addStyleName( nextRow, 0, "modifyNetFolderRootDlg_SelectPrivelegedUsersHint" );
-				label = new InlineLabel( messages.modifyNetFolderRootDlg_PrivilegedPrincipalsHint() );
+				label = new InlineLabel( messages.modifyNetFolderServerDlg_PrivilegedPrincipalsHint() );
 				table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
 				++nextRow;
 				
-				label = new InlineLabel( messages.modifyNetFolderRootDlg_SelectPrincipalsLabel() );
+				label = new InlineLabel( messages.modifyNetFolderServerDlg_SelectPrincipalsLabel() );
 				table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
 				findCtrlRow = nextRow;
 				++nextRow;
@@ -777,7 +777,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				errorPanel = getErrorPanel();
 				errorPanel.clear();
 				
-				errMsg = GwtTeaming.getMessages().modifyNetFolderRootDlg_ErrorCreatingNetFolderRoot( caught.toString() );
+				errMsg = GwtTeaming.getMessages().modifyNetFolderServerDlg_ErrorCreatingNetFolderServer( caught.toString() );
 				if ( caught instanceof GwtTeamingException )
 				{
 					GwtTeamingException ex;
@@ -787,8 +787,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					{
 						String desc;
 						
-						desc = GwtTeaming.getMessages().modifyNetFolderRootDlg_RootAlreadyExists();
-						errMsg =GwtTeaming.getMessages().modifyNetFolderRootDlg_ErrorModifyingNetFolderRoot( desc );
+						desc = GwtTeaming.getMessages().modifyNetFolderServerDlg_ServerAlreadyExists();
+						errMsg =GwtTeaming.getMessages().modifyNetFolderServerDlg_ErrorModifyingNetFolderServer( desc );
 					}
 				}
 				label = new Label( errMsg );
@@ -1220,7 +1220,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			
 			// Yes
 			// Update the dialog's header to say "Edit Net Folder Root"
-			setCaption( GwtTeaming.getMessages().modifyNetFolderRootDlg_EditHeader( m_netFolderRoot.getName() ) );
+			setCaption( GwtTeaming.getMessages().modifyNetFolderServerDlg_EditHeader( m_netFolderRoot.getName() ) );
 			
 			// Don't let the user edit the name.
 			m_nameTxtBox.setValue( netFolderRoot.getName() );
@@ -1259,7 +1259,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		{
 			// No
 			// Update the dialog's header to say "Add Net Folder Root"
-			setCaption( GwtTeaming.getMessages().modifyNetFolderRootDlg_AddHeader() );
+			setCaption( GwtTeaming.getMessages().modifyNetFolderServerDlg_AddHeader() );
 			
 			// Enable the "Name" field.
 			m_nameTxtBox.setEnabled( true );
@@ -1278,7 +1278,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		value = m_hostUrlTxtBox.getValue();
 		if ( value == null || value.length() == 0 )
 		{
-			Window.alert( GwtTeaming.getMessages().modifyNetFolderRootDlg_HostUrlRequired() );
+			Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_HostUrlRequired() );
 			return false;
 		}
 		
@@ -1295,7 +1295,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		value = m_nameTxtBox.getValue();
 		if ( value == null || value.length() == 0 )
 		{
-			Window.alert( GwtTeaming.getMessages().modifyNetFolderRootDlg_NameRequired() );
+			Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_NameRequired() );
 			return false;
 		}
 		
@@ -1328,7 +1328,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				errorPanel = getErrorPanel();
 				errorPanel.clear();
 				
-				errMsg = GwtTeaming.getMessages().modifyNetFolderRootDlg_ErrorModifyingNetFolderRoot( caught.toString() );
+				errMsg = GwtTeaming.getMessages().modifyNetFolderServerDlg_ErrorModifyingNetFolderServer( caught.toString() );
 				if ( caught instanceof GwtTeamingException )
 				{
 					GwtTeamingException ex;
@@ -1338,8 +1338,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					{
 						String desc;
 						
-						desc = GwtTeaming.getMessages().modifyNetFolderRootDlg_InsufficientRights();
-						errMsg =GwtTeaming.getMessages().modifyNetFolderRootDlg_ErrorModifyingNetFolderRoot( desc );
+						desc = GwtTeaming.getMessages().modifyNetFolderServerDlg_InsufficientRights();
+						errMsg =GwtTeaming.getMessages().modifyNetFolderServerDlg_ErrorModifyingNetFolderServer( desc );
 					}
 				}
 				label = new Label( errMsg );
@@ -1441,7 +1441,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					if ( user.getIdentitySource() == IdentitySource.EXTERNAL )
 					{
 						// Yes, tell the user they can't do this.
-						Window.alert( GwtTeaming.getMessages().modifyNetFolderRootDlg_CantSelectExternalUser() );
+						Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_CantSelectExternalUser() );
 						return;
 					}
 					
@@ -1471,7 +1471,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					else
 					{
 						// Yes, tell the user
-						Window.alert( GwtTeaming.getMessages().modifyNetFolderRootDlg_AlreadyAPrivilegedPrincipal( principal.getName() ) );
+						Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_AlreadyAPrivilegedPrincipal( principal.getName() ) );
 					}
 				}
 			}
@@ -1561,11 +1561,11 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		m_privilegedPrincipalsCellFormatter = m_privilegedPrincipalsTable.getFlexCellFormatter();
 
 		col = 0;
-		m_privilegedPrincipalsTable.setText( 0, col, GwtTeaming.getMessages().modifyNetFolderRootDlg_NameCol() );
+		m_privilegedPrincipalsTable.setText( 0, col, GwtTeaming.getMessages().modifyNetFolderServerDlg_NameCol() );
 		DOM.setElementAttribute( m_privilegedPrincipalsCellFormatter.getElement( 0, col ), "width", "75%" );
 		++col;
 		
-		m_privilegedPrincipalsTable.setText( 0, col, GwtTeaming.getMessages().modifyNetFolderRootDlg_TypeCol() );
+		m_privilegedPrincipalsTable.setText( 0, col, GwtTeaming.getMessages().modifyNetFolderServerDlg_TypeCol() );
 		DOM.setElementAttribute( m_privilegedPrincipalsCellFormatter.getElement( 0, col ), "width", "20%" );
 		++col;
 		
@@ -1613,7 +1613,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				String errMsg;
 				
 				m_inProgressPanel.setVisible( false );
-				errMsg = GwtTeaming.getMessages().rpcFailure_ErrorTestingNetFolderRootConnection();
+				errMsg = GwtTeaming.getMessages().rpcFailure_ErrorTestingNetFolderServerConnection();
 				Window.alert( errMsg );
 			}
 
@@ -1686,7 +1686,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			@Override
 			public void onFailure(Throwable reason)
 			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ModifyNetFolderRootDlg() );
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ModifyNetFolderServerDlg() );
 				if ( mnfrDlgClient != null )
 				{
 					mnfrDlgClient.onUnavailable();

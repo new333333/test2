@@ -143,7 +143,7 @@ public class ManageNetFolderRootsDlg extends DlgBox
 		// Create the header, content and footer of this dialog box.
 		m_width = width;
 		m_height = height;
-		createAllDlgContent( GwtTeaming.getMessages().manageNetFolderRootsDlg_Header(), null, null, null );
+		createAllDlgContent( GwtTeaming.getMessages().manageNetFolderServersDlg_Header(), null, null, null );
 	}
 
 	/**
@@ -201,7 +201,7 @@ public class ManageNetFolderRootsDlg extends DlgBox
 			menuPanel.addStyleName( "manageNetFolderRootsDlg_MenuPanel" );
 			
 			// Add an "Add" button.
-			label = new InlineLabel( messages.manageNetFolderRootsDlg_AddNetFolderRootLabel() );
+			label = new InlineLabel( messages.manageNetFolderServersDlg_AddNetFolderServerLabel() );
 			label.addStyleName( "manageNetFolderRootsDlg_Btn" );
 			label.addClickHandler( new ClickHandler()
 			{
@@ -224,7 +224,7 @@ public class ManageNetFolderRootsDlg extends DlgBox
 			menuPanel.add( label );
 			
 			// Add a "Delete" button.
-			label = new InlineLabel( messages.manageNetFolderRootsDlg_DeleteNetFolderRootLabel() );
+			label = new InlineLabel( messages.manageNetFolderServersDlg_DeleteNetFolderServerLabel() );
 			label.addStyleName( "manageNetFolderRootsDlg_Btn" );
 			label.addClickHandler( new ClickHandler()
 			{
@@ -259,7 +259,7 @@ public class ManageNetFolderRootsDlg extends DlgBox
 			
 			flowPanel = new FlowPanel();
 			flowPanel.addStyleName( "noObjectsFound" );
-			noRootsLabel = new InlineLabel( GwtTeaming.getMessages().manageNetFolderRootsDlg_NoNetFolderRootsLabel() );
+			noRootsLabel = new InlineLabel( GwtTeaming.getMessages().manageNetFolderServersDlg_NoNetFolderServersLabel() );
 			flowPanel.add( noRootsLabel );
 			
 			m_netFolderRootsTable.setEmptyTableWidget( flowPanel );
@@ -311,7 +311,7 @@ public class ManageNetFolderRootsDlg extends DlgBox
 					invokeModifyNetFolderRootDlg( netFolderRoot );
 				}
 			} );
-			m_netFolderRootsTable.addColumn( nameCol, messages.manageNetFolderRootsDlg_NameCol() );
+			m_netFolderRootsTable.addColumn( nameCol, messages.manageNetFolderServersDlg_NameCol() );
 		}
 		  
 		// Add the "Root Path" column
@@ -329,7 +329,7 @@ public class ManageNetFolderRootsDlg extends DlgBox
 				return rootPath;
 			}
 		};
-		m_netFolderRootsTable.addColumn( rootPathCol, messages.manageNetFolderRootsDlg_RootPathCol() );
+		m_netFolderRootsTable.addColumn( rootPathCol, messages.manageNetFolderServersDlg_ServerPathCol() );
 		
 		// Create a pager
 		{
@@ -386,7 +386,7 @@ public class ManageNetFolderRootsDlg extends DlgBox
 			String msg;
 			
 			// Yes, ask the user if they want to delete the selected net folder roots?
-			msg = GwtTeaming.getMessages().manageNetFolderRootsDlg_ConfirmDelete( rootNames );
+			msg = GwtTeaming.getMessages().manageNetFolderServersDlg_ConfirmDelete( rootNames );
 			if ( Window.confirm( msg ) )
 			{
 				deleteNetFolderRootsFromServer( selectedRoots );
@@ -394,7 +394,7 @@ public class ManageNetFolderRootsDlg extends DlgBox
 		}
 		else
 		{
-			Window.alert( GwtTeaming.getMessages().manageNetFolderRootsDlg_SelectRootsToDelete() );
+			Window.alert( GwtTeaming.getMessages().manageNetFolderServersDlg_SelectServersToDelete() );
 		}
 	}
 	
@@ -424,7 +424,7 @@ public class ManageNetFolderRootsDlg extends DlgBox
 						{
 							GwtClientHelper.handleGwtRPCFailure(
 									t,
-									GwtTeaming.getMessages().rpcFailure_DeleteNetFolderRoots() );
+									GwtTeaming.getMessages().rpcFailure_DeleteNetFolderServers() );
 
 							// Update the table to reflect the fact that we deleted a net folder root.
 							m_dataProvider.refresh();
@@ -508,7 +508,7 @@ public class ManageNetFolderRootsDlg extends DlgBox
 			{
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
-					GwtTeaming.getMessages().rpcFailure_GetAllNetFolderRoots() );
+					GwtTeaming.getMessages().rpcFailure_GetAllNetFolderServers() );
 			}
 	
 			@Override
@@ -720,7 +720,7 @@ public class ManageNetFolderRootsDlg extends DlgBox
 			@Override
 			public void onFailure(Throwable reason)
 			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ManageNetFolderRootsDlg() );
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ManageNetFolderServersDlg() );
 				if ( mfsrDlgClient != null )
 				{
 					mfsrDlgClient.onUnavailable();

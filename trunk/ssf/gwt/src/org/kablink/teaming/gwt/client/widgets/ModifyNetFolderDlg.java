@@ -200,7 +200,7 @@ public class ModifyNetFolderDlg extends DlgBox
 			FlowPanel flowPanel;
 			Button createRootBtn;
 			
-			label = new InlineLabel( messages.modifyNetFolderDlg_NetFolderRootLabel() );
+			label = new InlineLabel( messages.modifyNetFolderDlg_NetFolderServerLabel() );
 			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
 
 			// Add the listbox where the user can select the net folder root
@@ -211,11 +211,11 @@ public class ModifyNetFolderDlg extends DlgBox
 			flowPanel.add( m_netFolderRootsListbox );
 			
 			// Add a label that will be displayed when there are no net folder roots to select.
-			m_noNetFolderRootsLabel = new InlineLabel( messages.modifyNetFolderDlg_NoNetFolderRootsLabel() );
+			m_noNetFolderRootsLabel = new InlineLabel( messages.modifyNetFolderDlg_NoNetFolderServersLabel() );
 			flowPanel.add( m_noNetFolderRootsLabel );
 			
 			// Add "Create net folder root" button
-			createRootBtn = new Button( messages.modifyNetFolderDlg_CreateNetFolderRootLabel() );
+			createRootBtn = new Button( messages.modifyNetFolderDlg_CreateNetFolderServerLabel() );
 			createRootBtn.addStyleName( "teamingButton" );
 			createRootBtn.addStyleName( "marginleft3" );
 			flowPanel.add( createRootBtn );
@@ -265,7 +265,7 @@ public class ModifyNetFolderDlg extends DlgBox
 			Button testConnectionBtn;
 			
 			// Add "Test connection" button
-			testConnectionBtn = new Button( messages.modifyNetFolderRootDlg_TestConnectionLabel() );
+			testConnectionBtn = new Button( messages.modifyNetFolderServerDlg_TestConnectionLabel() );
 			testConnectionBtn.addStyleName( "teamingButton" );
 			testConnectionBtn.addClickHandler( new ClickHandler()
 			{
@@ -505,7 +505,7 @@ public class ModifyNetFolderDlg extends DlgBox
 			{
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
-					GwtTeaming.getMessages().rpcFailure_GetAllNetFolderRoots() );
+					GwtTeaming.getMessages().rpcFailure_GetAllNetFolderServers() );
 			}
 	
 			@Override
@@ -548,7 +548,7 @@ public class ModifyNetFolderDlg extends DlgBox
 
 							// Tell the user they need to create a net folder root before they
 							// can create a net folder.
-							Window.alert( GwtTeaming.getMessages().modifyNetFolderDlg_NoNetFolderRootsPrompt() );
+							Window.alert( GwtTeaming.getMessages().modifyNetFolderDlg_NoNetFolderServersPrompt() );
 							
 							// Invoke the "Create net folder root dialog"
 							invokeCreateNetFolderRootDlg();
@@ -967,7 +967,7 @@ public class ModifyNetFolderDlg extends DlgBox
 					String errMsg;
 					
 					m_inProgressPanel.setVisible( false );
-					errMsg = GwtTeaming.getMessages().rpcFailure_ErrorTestingNetFolderRootConnection();
+					errMsg = GwtTeaming.getMessages().rpcFailure_ErrorTestingNetFolderServerConnection();
 					Window.alert( errMsg );
 				}
 	

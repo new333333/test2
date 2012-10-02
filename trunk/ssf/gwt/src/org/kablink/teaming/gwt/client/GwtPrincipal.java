@@ -87,10 +87,10 @@ public abstract class GwtPrincipal extends GwtTeamingItem
 		
 		type = getType();
 		if ( type == PrincipalType.USER )
-			return GwtTeaming.getMessages().modifyNetFolderRootDlg_User();
+			return GwtTeaming.getMessages().modifyNetFolderServerDlg_User();
 
 		if ( type == PrincipalType.GROUP )
-			return GwtTeaming.getMessages().modifyNetFolderRootDlg_Group();
+			return GwtTeaming.getMessages().modifyNetFolderServerDlg_Group();
 		
 		return "Unknown principal type";
 	}
