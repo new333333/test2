@@ -188,32 +188,22 @@ public class FolderUtils {
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		if(EntityType.folder != parentBinder.getEntityType() || !parentBinder.isMirrored())
 			throw new IllegalArgumentException("The parent binder '" + parentBinder.getId() + "' is not a mirrored folder");
-		
-		Definition def = parentBinder.getEntryDef();
-		if(def == null)
-			throw new ConfigurationException("errorcode.no.folder.definition", (Object[])null);
-		
+				
 		Map<String,Object> data = new HashMap<String,Object>(); // Input data
-		data.put(ObjectKeys.FIELD_ENTITY_TITLE, folderName); 
-		data.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.TRUE.toString());
-		data.put(ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.TRUE.toString());
 		if(resourceDriverName != null)
 			data.put(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, resourceDriverName);
 		if(resourcePath != null)
 			data.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, resourcePath);
 		data.put(ObjectKeys.PI_SYNCH_TO_SOURCE, Boolean.toString(synchToSource));
-		Map options = new HashMap();
-		options.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
 		
+		Map options = new HashMap();
 		if(modDate != null) {
 			Calendar modCal = Calendar.getInstance();
 			modCal.setTime(modDate);
 			options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modCal);
-		}
-		
+		}		
 		if(ownerId != null)
 			options.put(ObjectKeys.INPUT_OPTION_OWNER_ID, ownerId);
-		
 		if(creatorId != null) {
 			options.put(ObjectKeys.INPUT_OPTION_CREATION_ID, creatorId);
 			// For newly created folder, it doesn't make sense if the modifier were different from the creator 
@@ -221,13 +211,9 @@ public class FolderUtils {
 			options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_ID, creatorId);
 		}
 		
-		Binder binder = getBinderModule().addBinder(parentBinder.getId(), def.getId(), 
-					new MapInputData(data), null, options);
+		TemplateBinder template = getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_MIRRORED_FILE);
 		
-		// Inherit configuration.
-		inheritAll(binder.getId());
-		
-		return binder;
+		return getTemplateModule().addBinder(template.getId(), parentBinder.getId(), folderName, "", data, options);
 	}
 	
 	/**
