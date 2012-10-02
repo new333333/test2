@@ -219,27 +219,39 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   <br/>
 </c:if>
 
+<c:set var="accessControlShareItemCount" value="0"/>
+<c:forEach var="shareItem" items="${ss_accessControlShareItems}">
+	<jsp:useBean id="shareItem" type="org.kablink.teaming.domain.ShareItem" />
+	<%
+	if (shareItem.isLatest()) {
+		%>
+		<c:set var="accessControlShareItemCount" value="${accessControlShareItemCount + 1}"/>
+		<%
+	}
+	%>
+</c:forEach>
+
 <ssf:box style="rounded">
   <div style="padding:4px 8px;">
     <div>
       <span class="ss_bold"><ssf:nlt tag="binder.configure.access_control.sharing"/></span>
     </div>
-    <c:if test="${empty ss_accessControlShareItems}">
+    <c:if test="${accessControlShareItemCount == 0}">
       <div style="padding-top:6px;">
         <span><ssf:nlt tag="binder.configure.access_control.sharing.none"><ssf:param
           name="value" value="${binderType}"/></ssf:nlt></span>
       </div>
     </c:if>
-    <c:if test="${!empty ss_accessControlShareItems}">
+    <c:if test="${accessControlShareItemCount gt 0}">
       <div style="padding-top:6px;">
-        <c:if test="${fn:length(ss_accessControlShareItems) == 1}">
+        <c:if test="${accessControlShareItemCount == 1}">
           <span><ssf:nlt tag="binder.configure.access_control.sharing.one"><ssf:param
           name="value" value="${binderType}"/></ssf:nlt></span>
         </c:if>
-        <c:if test="${fn:length(ss_accessControlShareItems) gt 1}">
+        <c:if test="${accessControlShareItemCount gt 1}">
           <span><ssf:nlt tag="binder.configure.access_control.sharing.more"><ssf:param
           name="value" value="${binderType}"/><ssf:param 
-            name="value" value="${fn:length(ss_accessControlShareItems)}"/></ssf:nlt>
+            name="value" value="${accessControlShareItemCount}"/></ssf:nlt>
           </span>
         </c:if>
         <span style="padding-left:10px;">
