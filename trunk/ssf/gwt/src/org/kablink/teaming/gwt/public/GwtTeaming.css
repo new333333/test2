@@ -27,7 +27,9 @@
 .padding5R  {padding-right:  5px;           }
 .padding15R {padding-right: 15px;           }
 
-.vibe-verticalScroll {overflow-y: auto;}
+.vibe-fullScroll       {overflow:   auto;}
+.vibe-horizontalScroll {overflow-x: auto;}
+.vibe-verticalScroll   {overflow-y: auto;}
 
 .white { color: white !important; }
 

@@ -50,7 +50,8 @@ import com.google.gwt.user.client.Window;
  * @author drfoster@novell.com
  */
 public class FolderEntryView extends ViewBase {
-	private VibeFlowPanel	m_fp;	//
+	private FolderEntryComposite	m_composite;	//
+	private VibeFlowPanel			m_fp;			//
 	
 	/*
 	 * Constructor method.
@@ -99,7 +100,8 @@ public class FolderEntryView extends ViewBase {
 	
 				@Override
 				public void onSuccess(FolderEntryComposite fec) {
-					m_fp.add(fec);
+					m_composite = fec;
+					m_fp.add(m_composite);
 				}
 			},
 			null,	// null -> Not contained in a dialog.
@@ -119,7 +121,25 @@ public class FolderEntryView extends ViewBase {
 		// Nothing to do.
 	}
 
+	/**
+	 * Synchronously sets the size of the composite based on its
+	 * position in the view.
+	 * 
+	 * Overrides the ViewBase.onResize() method.
+	 */
+	@Override
+	public void onResize() {
+		// Pass the resize on to the super class...
+		super.onResize();
+		
+		// ...and if we have a folder entry composite...
+		if (null != m_composite) {
+			// ...tell it to resize.
+			m_composite.onResize();
+		}
+	}
 	
+
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
 	/* the folder entry view and perform some operation on it.       */

@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -59,6 +60,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
@@ -66,6 +68,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ResizeComposite;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -74,22 +77,28 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class FolderEntryComposite extends ResizeComposite
-	implements
+	implements ToolPanelReady,
 		// Event handlers implemented by this class.
 		ContributorIdsRequestEvent.Handler
 {
 	public static final boolean SHOW_GWT_ENTRY_VIEWER	= false;	// DRF:  Leave false on checkin until it's finished.
 
 	private boolean							m_isDialog;					// true -> The composite is hosted in a dialog.  false -> It's hosted in a view.
+	private FooterPanel						m_footerPanel;				//
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private Label							m_caption;					// 
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private ViewReady						m_viewReady;				// Stores a ViewReady created for the classes that extends it.
 	private VibeFlowPanel 					m_captionImagePanel;		// A panel holding an image in the caption, if one is required.
-	private VibeFlowPanel					m_fp;						// The panel containing the composites content.
+	private VibeFlowPanel					m_contentPanel;				// The panel containing the composite's main content.
+	private VibeFlowPanel					m_rootPanel;				// The panel containing everything about the composite.
 	private ViewFolderEntryInfo				m_vfei;						// The view information for the folder entry being viewed.
 
+	private final static int MINIMUM_CONTENT_HEIGHT	= 150;	// The minimum height (in pixels) of the composite's content panel.
+	private final static int FOOTER_ADJUST_DLG		=  20;	// Height adjustment required for adequate spacing below the footer when hosted in a dialog.
+	private final static int FOOTER_ADJUST_VIEW		=  30;	// Height adjustment required for adequate spacing below the footer when hosted in a view.
+	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
@@ -117,13 +126,13 @@ public class FolderEntryComposite extends ResizeComposite
 		m_messages = GwtTeaming.getMessages();
 		
 		// ...create the base content panels...
-		VibeFlowPanel rootPanel = new VibeFlowPanel();
-		rootPanel.addStyleName("vibe-folderEntryComposite-rootPanel");
-		createCaption(rootPanel, ((null == dialog) ? null : dialog.getHeaderPanel()));
-		m_fp = new VibeFlowPanel();
-		m_fp.addStyleName("vibe-folderEntryComposite-contentPanel");
-		rootPanel.add(m_fp);
-		initWidget(rootPanel);
+		m_rootPanel = new VibeFlowPanel();
+		m_rootPanel.addStyleName("vibe-folderEntryComposite-rootPanel");
+		createCaption(m_rootPanel, ((null == dialog) ? null : dialog.getHeaderPanel()));
+		m_contentPanel = new VibeFlowPanel();
+		m_contentPanel.addStyleName("vibe-folderEntryComposite-contentPanel");
+		m_rootPanel.add(m_contentPanel);
+		initWidget(m_rootPanel);
 
 		// ...and continue building the composite.
 		loadPart1Async();
@@ -311,12 +320,23 @@ public class FolderEntryComposite extends ResizeComposite
 					// Load it.
 					m_vfei = vfei;
 					m_caption.setText(m_vfei.getTitle());
-					m_fp.clear();
+					m_contentPanel.clear();
 					loadPart1Async();
 				}
 			}
 		});
 		
+	}
+
+	/*
+	 * Returns the footer adjustment to use for the content panel.
+	 */
+	private int getFooterAdjust() {
+		int reply;
+		if (m_isDialog)
+		     reply = FOOTER_ADJUST_DLG;
+		else reply = FOOTER_ADJUST_VIEW;
+		return reply;
 	}
 	
 	/*
@@ -336,9 +356,45 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Synchronously loads the next part of the composite.
 	 */
 	private void loadPart1Now() {
+		FooterPanel.createAsync(this, m_vfei.getEntityId(), this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				m_footerPanel = ((FooterPanel) tpb);
+				m_footerPanel.addStyleName("vibe-folderEntryComposite-footerPanel");
+				m_rootPanel.add(m_footerPanel);
+				loadPart2Async();
+			}
+		});
+	}
+
+	/*
+	 * Asynchronously loads the next part of the composite.
+	 */
+	private void loadPart2Async() {
+		ScheduledCommand doPopulate = new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart2Now();
+			}
+		};
+		Scheduler.get().scheduleDeferred(doPopulate);
+	}
+	
+	/*
+	 * Synchronously loads the next part of the composite.
+	 */
+	private void loadPart2Now() {
 //!		...this needs to be implemented...
-		m_fp.add(new InlineLabel("...this needs to be implemented..."));
+		m_contentPanel.add(new InlineLabel("...this needs to be implemented..."));
+		
 		m_viewReady.viewReady();
+		onResizeAsync();
 	}
 
 	/**
@@ -378,6 +434,82 @@ public class FolderEntryComposite extends ResizeComposite
 		unregisterEvents();
 	}
 	
+	/**
+	 * Synchronously sets the size of the composite based on its
+	 * position in the view.
+	 * 
+	 * Overrides the ViewBase.onResize() method.
+	 */
+	@Override
+	public void onResize() {
+		// Pass the resize on to the super class...
+		super.onResize();
+		
+		// ...and do what we need to do locally.
+		onResizeImpl();
+	}
+	
+	/*
+	 * Asynchronously sets the size of the data table based on its
+	 * position in the view.
+	 */
+	private void onResizeAsync(int delay) {
+		if (0 == delay) {
+			ScheduledCommand doResize = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					onResize();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doResize);
+		}
+		
+		else {
+			Timer timer = new Timer() {
+				@Override
+				public void run() {
+					onResize();
+				}
+			};
+			timer.schedule(delay);
+		}
+	}
+
+	/*
+	 * Asynchronously sets the size of the data table based on its
+	 * position in the view.
+	 */
+	private void onResizeAsync() {
+		onResizeAsync(FolderViewBase.INITIAL_RESIZE_DELAY);
+	}
+	
+	/*
+	 * Re-sizes / re-lays out the widgets in the component.
+	 */
+	private void onResizeImpl() {
+		Widget	container    = getParent();									// Widget (dialog or view) containing the composite.
+		int		cHeight      = container.getOffsetHeight();					// Height       of the container.
+		int		cTop         = container.getAbsoluteTop();					// Absolute top of the container.		
+		int		contentTop   = (m_contentPanel.getAbsoluteTop() - cTop);	// Top of the composite's main content panel relative to the top of its container.		
+		int		footerHeight = m_footerPanel.getOffsetHeight();				// Height of the composite's footer panel.
+
+		// What's the optimal height for the content panel?
+		int contentHeight = (((cHeight - contentTop) - footerHeight) - getFooterAdjust());
+		if (MINIMUM_CONTENT_HEIGHT > contentHeight) {
+			// Too small!  Use the minimum even though this may result
+			// in a vertical scroll bar.
+			contentHeight = MINIMUM_CONTENT_HEIGHT;
+			container.addStyleName("vibe-verticalScroll");
+		}
+		
+		else {
+			container.removeStyleName("vibe-verticalScroll");
+		}
+		
+		// Set the height of the content panel.
+		m_contentPanel.setHeight(contentHeight + "px");
+	}
+	
 	/*
 	 * Registers any global event handlers that need to be registered.
 	 */
@@ -412,6 +544,14 @@ public class FolderEntryComposite extends ResizeComposite
 		}
 	}
 	
+	/**
+	 * Implements the ToolPanelReady.toolPanelReady() method.
+	 */
+	@Override
+	public void toolPanelReady(ToolPanelBase toolPanel) {
+//!		...this needs to be implemented...
+	}
+
 	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */

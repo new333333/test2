@@ -504,7 +504,8 @@
 	.vibe-folderEntryComposite-closeImg     {}
 	.vibe-folderEntryComposite-closeLabel   {white-space: nowrap; margin-right: 5px; vertical-align: middle; font-weight: normal; font-size: .9em; }
 	.vibe-folderEntryComposite-closePanel   {position: relative; display: inline; white-space: nowrap; cursor: pointer !important;}
-	.vibe-folderEntryComposite-contentPanel {padding: 10px;}
+	.vibe-folderEntryComposite-contentPanel {position: relative; padding: 10px;}
+	.vibe-folderEntryComposite-footerPanel  {padding-bottom: 10px;}
 	.vibe-folderEntryComposite-navNextImg   {cursor: pointer;}
 	.vibe-folderEntryComposite-navPanel     {position: relative; display: inline; white-space: nowrap;}
 	.vibe-folderEntryComposite-navPrevImg   {cursor: pointer; padding-right: 1px;}
