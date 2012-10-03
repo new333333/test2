@@ -1122,6 +1122,19 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/*
+	 * Scans the current columns looking for the title column.  If it
+	 * is found, it's returned.  Otherwise, null is returned.
+	 */
+	private FolderColumn getTitleColumn() {
+		for (FolderColumn fc:  m_folderColumnsList) {
+			if (FolderColumn.isColumnTitle(fc.getColumnName())) {
+				return fc;
+			}
+		}
+		return null;
+	}
+	
+	/*
 	 * Initializes various data members for the class.
 	 */
 	private void initDataMembers(String folderStyles) {
@@ -1434,14 +1447,16 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				column = new CommentsColumn<FolderRow>(fc) {
 					@Override
 					public CommentsInfo getValue(FolderRow fr) {
-						CommentsInfo reply = fr.getColumnValueAsComments(fc);
+						FolderColumn	titleFC = getTitleColumn();
+						EntryTitleInfo	eti     = ((null == titleFC) ? null : fr.getColumnValueAsEntryTitle(titleFC));
+						CommentsInfo	reply   = fr.getColumnValueAsComments(fc);
 						if (null != reply) {
 							// Create an Image widget for the manage
 							// comments dialog...
 							Image rowImg = new Image();
 							rowImg.addStyleName("vibe-manageCommentsDlg-captionImg");
 							rowImg.getElement().setAttribute("align", "absmiddle");
-							rowImg.setUrl(getRowImageUrl(fr, null));
+							rowImg.setUrl(getRowImageUrl(fr, eti));
 							
 							// ...apply any scaling to the Image...
 							int width  = BinderIconSize.getDialogCaptionIconSize().getBinderIconWidth();  if ((-1) != width)  rowImg.setWidth( width  + "px");
