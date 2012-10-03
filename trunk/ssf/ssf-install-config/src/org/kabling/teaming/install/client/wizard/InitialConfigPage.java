@@ -18,7 +18,13 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	private RadioButton useDefaultsRB;
 	private RadioButton customRB;
 	private FlowPanel fPanel;
+	private InstallerConfig config;
 
+	public InitialConfigPage(InstallerConfig config)
+	{
+		this.config = config;
+	}
+	
 	@Override
 	public boolean isValid()
 	{
@@ -90,6 +96,8 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	{
 		if (event.getSource() == useDefaultsRB || event.getSource() == customRB)
 		{
+			config.setAdvancedConfiguration(customRB.getValue());
+			
 			AppUtil.getEventBus().fireEvent(new ConfigFinishEnableEvent(useDefaultsRB.getValue()));
 			AppUtil.getEventBus().fireEvent(new ConfigNextButtonEnableEvent(!useDefaultsRB.getValue()));
 		}

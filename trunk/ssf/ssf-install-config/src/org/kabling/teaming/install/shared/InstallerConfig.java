@@ -71,6 +71,7 @@ public class InstallerConfig implements Serializable
 	private SSO sso;
 	private Clustered clustered;
 	private EncryptionAlgorithm encryption;
+	private boolean advancedConfiguration;
 
 	public InstallerConfig()
 	{
@@ -254,5 +255,15 @@ public class InstallerConfig implements Serializable
 	public void setInitialConfiguration(boolean initialConfiguration)
 	{
 		this.initialConfiguration = initialConfiguration;
+	}
+
+	public boolean isAdvancedConfiguration()
+	{
+		return advancedConfiguration;
+	}
+
+	public void setAdvancedConfiguration(boolean advancedConfiguration)
+	{
+		this.advancedConfiguration = advancedConfiguration;
 	}
 }
