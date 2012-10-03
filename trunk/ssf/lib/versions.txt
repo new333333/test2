@@ -45,7 +45,6 @@ gwt 2.5rc1 (Google Web Toolkit)
 gwt-cal 0.9.3 (GWT Calendar widget)
 gwt-dnd 3.1.2 (GWT drag-and-drop support)
 gwt-log 3.1.8 (GWT logging facility)
-gwt-timepicker 0.1 (GWT time picker)
 Hibernate 3.6.0.Final
 hibernate memcached 1.2.2 (Apache License 2.0; http://code.google.com/p/hibernate-memcached)
 ical4j 1.0.3
