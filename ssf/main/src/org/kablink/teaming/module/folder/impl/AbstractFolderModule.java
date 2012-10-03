@@ -489,8 +489,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         
         FolderEntry entry = (FolderEntry) processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, options);
         
-		if(folder.isLibrary() && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
-			getBinderModule().updateModificationTime(folder);
+		updateModificationTime(folder, options);
         
         end(begin, "addEntry");
         return entry;
@@ -872,8 +871,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         		getRssModule().updateRssFeed(entry); 
         	}
         	
-    		if(folder.isLibrary() && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
-    			getBinderModule().updateModificationTime(folder);
+    		updateModificationTime(folder, options);
         }
     }
     
@@ -923,8 +921,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         	}
         	getRssModule().updateRssFeed(entry);
         	
-    		if(folder.isLibrary() && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
-    			getBinderModule().updateModificationTime(folder);
+    		updateModificationTime(folder, options);
         }
     }
     
@@ -961,8 +958,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         Folder folder = entry.getParentFolder();
         FolderCoreProcessor processor=loadProcessor(folder);
         processor.deleteEntry(folder, entry, deleteMirroredSource, options);
-		if(folder.isLibrary() && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
-			getBinderModule().updateModificationTime(folder);
+		updateModificationTime(folder, options);
     }
     //inside write transaction    
     public void moveEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options) {
@@ -991,10 +987,9 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 
         processor.moveEntry(folder, entry, destination, toFileNames, options);
         
-		if(folder.isLibrary() && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
-			getBinderModule().updateModificationTime(folder);
-        if(destination != folder && destination.isLibrary() && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
-        	getBinderModule().updateModificationTime(destination);
+		updateModificationTime(folder, options);
+        if(destination != folder)
+        	updateModificationTime(destination, options);
     }
     
 	private void checkFileUploadSizeLimit(Binder binder, Long fileSize, String fileName) 
@@ -1059,8 +1054,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 
 		FolderEntry entryCopy = (FolderEntry) processor.copyEntry(folder, entry, destination, toFileNames, options);
 		
-		if(destination.isLibrary() && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
-			getBinderModule().updateModificationTime(destination);
+		updateModificationTime(destination, options);
 		
 		return entryCopy;
     }
@@ -1646,4 +1640,8 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		return ids.get(0);
 	}
 	
+	private void updateModificationTime(Folder folder, Map options) {
+		if(folder != null && folder.isLibrary() && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
+			getBinderModule().updateModificationTime(folder);
+	}
 }
