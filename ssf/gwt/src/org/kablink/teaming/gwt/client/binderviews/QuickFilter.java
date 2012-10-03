@@ -137,7 +137,7 @@ public class QuickFilter extends ResizeComposite {
 				setBlurStyles();
 
 				// ...and if the filter input is empty...
-				String filter     = getFilterValue();
+				String filter      = getFilterValue();
 				m_quickFilterEmpty = (0 == filter.length());
 				if (m_quickFilterEmpty) {
 					// ...display an empty message in it.

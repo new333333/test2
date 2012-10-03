@@ -788,7 +788,8 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuMyTeamsNoTeams();
 	String mainMenuMyGroupsNoGroups();
 	String mainMenuRecentPlacesNoPlaces();
-	String mainMenuSearchButtonAlt();
+	String mainMenuSearchEmpty();
+	String mainMenuSearchImageAlt();
 	String mainMenuSearchOptionsAdvancedSearch();
 	String mainMenuSearchOptionsCloseAlt();
 	String mainMenuSearchOptionsHeader();
