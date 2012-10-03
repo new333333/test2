@@ -188,8 +188,9 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 		if (!validatedCredentials)
 		{
 			wizard.showStatusIndicator(RBUNDLE.validatingCredentials());
+			//Note: We don't have the database name here as part of the url (otherwise, we would fail if the database does not exist)
 			String url = "jdbc:mysql://" + hostTextBox.getText() + ":" + portSpinner.getValue()
-					+ "/sitescape?useUnicode=true&amp;characterEncoding=UTF-8";
+					+ "?useUnicode=true&amp;characterEncoding=UTF-8";
 			AppUtil.getInstallService().authenticateDbCredentials(url, userName, password, new AuthDbCallback());
 			return false;
 		}
