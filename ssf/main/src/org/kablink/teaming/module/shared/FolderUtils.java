@@ -104,7 +104,7 @@ public class FolderUtils {
 	public static FolderEntry createLibraryEntry(Folder folder, String fileName,
 			InputStream content, Date modDate, boolean synchToSourceIfMirrored)
 					throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
-		return createLibraryEntry(folder, fileName, content, null, modDate, synchToSourceIfMirrored);
+		return createLibraryEntry(folder, fileName, content, null, modDate, synchToSourceIfMirrored, null);
 	}
 	
 	/**
@@ -122,14 +122,14 @@ public class FolderUtils {
 	 * @throws WriteFilesException
 	 */
 	public static FolderEntry createLibraryEntry(Folder folder, String fileName,
-			InputStream content, Long creatorId, Date modDate, boolean synchToSourceIfMirrored) 
+			InputStream content, Long creatorId, Date modDate, boolean synchToSourceIfMirrored, Boolean skipParentModtimeUpdate) 
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		if(folder.isLibrary()) {
 			if(folder.isMirrored()) {
-				return createMirroredEntry(folder, fileName, content, creatorId, modDate, synchToSourceIfMirrored);
+				return createMirroredEntry(folder, fileName, content, creatorId, modDate, synchToSourceIfMirrored, skipParentModtimeUpdate);
 			}
 			else {
-				return createNonMirroredEntry(folder, fileName, content, modDate);
+				return createNonMirroredEntry(folder, fileName, content, modDate, skipParentModtimeUpdate);
 			}
 		}
 		else {
@@ -184,7 +184,7 @@ public class FolderUtils {
 	 * @throws WriteFilesException
 	 */
 	public static Binder createMirroredFolder(Binder parentBinder, String folderName, 
-			String resourceDriverName, String resourcePath, Long ownerId, Long creatorId, Date modDate, boolean synchToSource)
+			String resourceDriverName, String resourcePath, Long ownerId, Long creatorId, Date modDate, boolean synchToSource, Boolean skipParentModtimeUpdate)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		if(EntityType.folder != parentBinder.getEntityType() || !parentBinder.isMirrored())
 			throw new IllegalArgumentException("The parent binder '" + parentBinder.getId() + "' is not a mirrored folder");
@@ -210,6 +210,8 @@ public class FolderUtils {
 			// (more precisely speaking, there has not been any modification yet).
 			options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_ID, creatorId);
 		}
+		if(skipParentModtimeUpdate != null)
+			options.put(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE, skipParentModtimeUpdate);
 		
 		TemplateBinder template = getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_MIRRORED_FILE);
 		
@@ -231,7 +233,7 @@ public class FolderUtils {
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Binder binder;
 		if((EntityType.folder == parentBinder.getEntityType()) && parentBinder.isMirrored()) {
-			binder = createMirroredFolder(parentBinder, folderName, parentBinder.getResourceDriverName(), null, null, null, null, true);
+			binder = createMirroredFolder(parentBinder, folderName, parentBinder.getResourceDriverName(), null, null, null, null, true, null);
 		}
 		else { 
 			binder = createNonMirroredLibraryFolder(parentBinder, folderName);
@@ -310,13 +312,19 @@ public class FolderUtils {
 		}
 	}
 	
-	public static void deleteMirroredFolder(Folder folder, boolean deleteMirroredSource)
+	public static void deleteMirroredFolder(Folder folder, boolean deleteMirroredSource, Boolean skipParentModtimeUpdate)
 	throws AccessControlException {
-		getBinderModule().deleteBinder(folder.getId(), deleteMirroredSource, null);
+		Map options = new HashMap();
+		if(skipParentModtimeUpdate != null)
+			options.put(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE, skipParentModtimeUpdate);
+		getBinderModule().deleteBinder(folder.getId(), deleteMirroredSource, options);
 	}
 	
-	public static void deleteMirroredEntry(Folder parentFolder, FolderEntry entry, boolean deleteMirroredSource) {
-		getFolderModule().deleteEntry(parentFolder.getId(), entry.getId(), deleteMirroredSource, null);
+	public static void deleteMirroredEntry(Folder parentFolder, FolderEntry entry, boolean deleteMirroredSource, Boolean skipParentModtimeUpdate) {
+		Map options = new HashMap();
+		if(skipParentModtimeUpdate != null)
+			options.put(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE, skipParentModtimeUpdate);
+		getFolderModule().deleteEntry(parentFolder.getId(), entry.getId(), deleteMirroredSource, options);
 	}
 	
 	public static void deleteMirroredEntry(Long folderId, Long entryId, boolean deleteMirroredSource) {
@@ -338,7 +346,7 @@ public class FolderUtils {
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 */
-	private static FolderEntry createNonMirroredEntry(Folder folder, String fileName, InputStream content, Date modDate)
+	private static FolderEntry createNonMirroredEntry(Folder folder, String fileName, InputStream content, Date modDate, Boolean skipParentModtimeUpdate)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
@@ -358,12 +366,16 @@ public class FolderUtils {
 		
 		Map data = new HashMap(); // Input data
 		data.put(ObjectKeys.FIELD_ENTITY_TITLE, fileName);
+		
+		Map options = new HashMap();
+		if(skipParentModtimeUpdate != null)
+			options.put(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE, skipParentModtimeUpdate);
 				
-		return getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems, null);
+		return getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems, options);
 	}
 	
 	private static FolderEntry createMirroredEntry(Folder folder, String fileName, 
-			InputStream content, Long creatorId, Date modDate, boolean synchToSource)
+			InputStream content, Long creatorId, Date modDate, boolean synchToSource, Boolean skipParentModtimeUpdate)
 	throws ConfigurationException, AccessControlException, WriteFilesException, WriteEntryDataException {
 		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
@@ -396,6 +408,8 @@ public class FolderUtils {
 		else {
 			mf = new SimpleMultipartFile(fileName, content); 
 		}
+		if(skipParentModtimeUpdate != null)
+			options.put(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE, skipParentModtimeUpdate);
 		
 		Map fileItems = new HashMap(); // Map of element names to file items	
 		fileItems.put(elementNameAndRepository[0], mf); // single file item
@@ -650,7 +664,7 @@ public class FolderUtils {
 			// In this case, we delete the entire entry regardless of what else the
 			// entry might contain, since we don't want to leave an entry that no 
 			// longer mirrors any source file 
-			FolderUtils.deleteMirroredEntry((Folder)parentBinder, entry, true);
+			FolderUtils.deleteMirroredEntry((Folder)parentBinder, entry, true, null);
 		}
 		else {
 			if(entry.getFileAttachments().size() > 1) {

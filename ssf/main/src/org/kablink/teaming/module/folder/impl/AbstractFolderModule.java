@@ -489,7 +489,8 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         
         FolderEntry entry = (FolderEntry) processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, options);
         
-        updateModificationTimeAndReindexIfNecessary(folder);
+		if(folder.isLibrary() && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
+			getBinderModule().updateModificationTime(folder);
         
         end(begin, "addEntry");
         return entry;
@@ -871,7 +872,8 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         		getRssModule().updateRssFeed(entry); 
         	}
         	
-            updateModificationTimeAndReindexIfNecessary(folder);
+    		if(folder.isLibrary() && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
+    			getBinderModule().updateModificationTime(folder);
         }
     }
     
@@ -921,7 +923,8 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         	}
         	getRssModule().updateRssFeed(entry);
         	
-            updateModificationTimeAndReindexIfNecessary(folder);
+    		if(folder.isLibrary() && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
+    			getBinderModule().updateModificationTime(folder);
         }
     }
     
@@ -958,7 +961,8 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         Folder folder = entry.getParentFolder();
         FolderCoreProcessor processor=loadProcessor(folder);
         processor.deleteEntry(folder, entry, deleteMirroredSource, options);
-        updateModificationTimeAndReindexIfNecessary(folder);
+		if(folder.isLibrary() && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
+			getBinderModule().updateModificationTime(folder);
     }
     //inside write transaction    
     public void moveEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options) {
@@ -987,9 +991,10 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 
         processor.moveEntry(folder, entry, destination, toFileNames, options);
         
-        updateModificationTimeAndReindexIfNecessary(folder);
-        if(destination != folder)
-        	updateModificationTimeAndReindexIfNecessary(destination);
+		if(folder.isLibrary() && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
+			getBinderModule().updateModificationTime(folder);
+        if(destination != folder && destination.isLibrary() && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
+        	getBinderModule().updateModificationTime(destination);
     }
     
 	private void checkFileUploadSizeLimit(Binder binder, Long fileSize, String fileName) 
@@ -1054,7 +1059,8 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 
 		FolderEntry entryCopy = (FolderEntry) processor.copyEntry(folder, entry, destination, toFileNames, options);
 		
-        updateModificationTimeAndReindexIfNecessary(destination);
+		if(destination.isLibrary() && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
+			getBinderModule().updateModificationTime(destination);
 		
 		return entryCopy;
     }
@@ -1638,30 +1644,6 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 			return null;
 		}
 		return ids.get(0);
-	}
-
-	// No Transaction
-	private void updateModificationTime(final Folder folder) {
-        getTransactionTemplate().execute(new TransactionCallback<Object>() {
-        	@Override
-			public Object doInTransaction(final TransactionStatus status) {
-        		// Set the modification time to the "current" time.
-        		folder.getModification().setDate(new Date());
-                return null;
-        	}
-        });
-	}
-	
-	// No Transaction
-	private void updateModificationTimeAndReindexIfNecessary(Folder folder) {
-		if(folder.isLibrary()) {
-			if(logger.isDebugEnabled())
-				logger.debug("Updating mod time on the folder [" + folder.getPathName() + "]");
-			// Update modification time
-			updateModificationTime(folder);
-			// Re-index it
-			getBinderModule().indexBinder(folder.getId(), false);
-		}
 	}
 	
 }
