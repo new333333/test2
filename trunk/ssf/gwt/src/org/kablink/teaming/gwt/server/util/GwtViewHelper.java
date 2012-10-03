@@ -4454,6 +4454,7 @@ public class GwtViewHelper {
 		// Construct a ViewInfo we can setup with the information for
 		// viewing this URL.
 		ViewInfo vi = new ViewInfo();
+		vi.setBaseBinderId(getQueryParameterLong(nvMap, WebKeys.URL_BINDER_ID));
 
 		// Is there an operation on the URL?
 		String op = getQueryParameterString(nvMap, WebKeys.URL_OPERATION);
