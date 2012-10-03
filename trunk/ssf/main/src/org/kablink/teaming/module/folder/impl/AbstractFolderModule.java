@@ -127,6 +127,8 @@ import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.QueryBuilder;
@@ -1640,8 +1642,19 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		return ids.get(0);
 	}
 	
-	private void updateModificationTime(Folder folder, Map options) {
-		if(folder != null && folder.isLibrary() && !(options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE))))
-			getBinderModule().updateModificationTime(folder);
+	private void updateModificationTime(final Folder folder, Map options) {
+		// Since this method is invoked only as a necessary side-effect of some other operation
+		// user invoked for which access checking was already done (that is, this is invoked by
+		// system rather than user), there is no need for access checking. 
+		// In order to make sure that this code can run without failure caused by access checking,
+		// we run this in admin context.
+		if(folder != null && folder.isLibrary() && !(options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))) {
+			RunasTemplate.runasAdmin(new RunasCallback() {
+				public Object doAs() {
+					getBinderModule().updateModificationTime(folder);
+					return null;
+				}
+			}, RequestContextHolder.getRequestContext().getZoneName());
+		}
 	}
 }

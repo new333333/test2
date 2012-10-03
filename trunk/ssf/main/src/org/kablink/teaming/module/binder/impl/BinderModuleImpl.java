@@ -120,6 +120,8 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workflow.WorkflowModule;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.runasync.RunAsyncCallback;
 import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.search.IndexErrors;
@@ -266,6 +268,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			case manageConfiguration:
 			case manageSimpleName:
 			case changeEntryTimestamps:
+			case updateModificationTime:
 				getAccessControlManager().checkOperation(binder,
 						WorkAreaOperation.BINDER_ADMINISTRATION);
 				break;
@@ -3058,8 +3061,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	// No Transaction
 	@Override
 	public void updateModificationTime(final Binder binder) {
+		checkAccess(binder, BinderOperation.updateModificationTime);
+
 		if(logger.isDebugEnabled())
 			logger.debug("Updating mod time on the binder [" + binder.getPathName() + "]");
+		
 		// Update modification time
         getTransactionTemplate().execute(new TransactionCallback<Object>() {
         	@Override
@@ -3069,12 +3075,25 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
                 return null;
         	}
         });
+        
 		// Re-index it
 		this.indexBinder(binder.getId(), false);
 	}
 	
-	private void updateModificationTimeIfNecessary(Binder binder, Map options) {
-		if(binder != null && binder.isLibrary() && !(options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE))))
-			updateModificationTime(binder);
+	private void updateModificationTimeIfNecessary(final Binder binder, Map options) {
+		// Since this method is invoked only as a necessary side-effect of some other operation
+		// user invoked for which access checking was already done (that is, this is invoked by
+		// system rather than user), there is no need for access checking. 
+		// In order to make sure that this code can run without failure caused by access checking,
+		// we run this in admin context.
+		if(binder != null && binder.isLibrary() && !(options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))) {
+			RunasTemplate.runasAdmin(new RunasCallback() {
+				public Object doAs() {
+					updateModificationTime(binder);
+
+					return null;
+				}
+			}, RequestContextHolder.getRequestContext().getZoneName());
+		}
 	}
 }
