@@ -328,7 +328,7 @@
 	.vibe-mainMenuSearch_Input
 	{
 		font-size: 11px;
-		padding: 3px 0 0 3px;
+		padding: 1px 0 !important;
 		vertical-align: middle;
 		width: 140px;
 		background-color: transparent;
