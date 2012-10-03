@@ -320,25 +320,22 @@
 	.vibe-mainMenuPopup_ItemText
 	{
 	}
-	.vibe-mainMenuSearch_ButtonAnchor
-	{
-		margin: 2px;
-		vertical-align: top;
-	}
-	.vibe-mainMenuSearch_ButtonImage
+	.vibe-mainMenuSearch_Image
 	{
 		margin: 2px;
 		vertical-align: top;
 	}
 	.vibe-mainMenuSearch_Input
 	{
-		font-size: 10px;
+		font-size: 11px;
 		padding: 3px 0 0 3px;
 		vertical-align: middle;
 		width: 140px;
 		background-color: transparent;
 		border: 0px;
 	}
+	.vibe-mainMenuSearch_InputBlur  {color: graytext;}
+	.vibe-mainMenuSearch_InputFocus {color: #353838 !important;}
 	.vibe-mainMenuSearchOptions_Button
 	{
 		border: 0px !important;
