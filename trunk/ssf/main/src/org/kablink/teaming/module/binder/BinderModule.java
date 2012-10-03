@@ -787,4 +787,7 @@ public interface BinderModule {
 	 * @return
 	 */
 	public Map<String,BinderIndexData> getChildrenBinderDataFromIndex(Long binderId);
+	
+	public void updateModificationTime(Binder binder);
+
 }
