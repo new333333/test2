@@ -1098,6 +1098,20 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 				throw new ConfigurationSaveException();
 			}
 
+			//Wizard configuration is done, put a temp file there
+			File file = new File("/filrinstall/configured");
+			//If it exists, ignore
+			if (!file.exists())
+			{
+				try
+				{
+					file.createNewFile();
+				}
+				catch (Exception e)
+				{
+					logger.debug("Error creating /filrinstall/configured file");
+				}
+			}
 		}
 	}
 

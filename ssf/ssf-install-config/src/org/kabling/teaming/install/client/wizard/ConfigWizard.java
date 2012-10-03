@@ -68,9 +68,9 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		// Footer buttons
 		wizard.add(createFooter());
 
-		// Add pages
+		// Add pages (3 page wizard)
 		// Initial Page
-		IWizardPage<InstallerConfig> configPage = new InitialConfigPage();
+		IWizardPage<InstallerConfig> configPage = new InitialConfigPage(config);
 		pages.add(configPage);
 
 		// Database Page
@@ -81,6 +81,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		IWizardPage<InstallerConfig> lucenePage = new LuceneConfigPage(this, config);
 		pages.add(lucenePage);
 
+		// Listen for events (enable/disable finish button, enable/disable next button)
 		AppUtil.getEventBus().addHandler(ConfigFinishEnableEvent.TYPE, this);
 		AppUtil.getEventBus().addHandler(ConfigNextButtonEnableEvent.TYPE, this);
 
@@ -133,20 +134,25 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 	@Override
 	public void finish()
 	{
-		// Call save
-		for (int page = 0; page < pages.size(); page++)
+		// We only need to go through pages for advanced configuration
+		// For default configuration, we will go with the defaults in installer.xml
+		if (config.isAdvancedConfiguration())
 		{
-			IWizardPage<InstallerConfig> wizardPage = pages.get(page);
+			// Call save
+			for (int page = 0; page < pages.size(); page++)
+			{
+				IWizardPage<InstallerConfig> wizardPage = pages.get(page);
 
-			if (!wizardPage.isValid())
-			{
-				// Show error message in error panel
-				showPage(page);
-				return;
-			}
-			else
-			{
-				wizardPage.save();
+				if (!wizardPage.isValid())
+				{
+					// Show error message in error panel
+					showPage(page);
+					return;
+				}
+				else
+				{
+					wizardPage.save();
+				}
 			}
 		}
 		showStatusIndicator(AppUtil.getAppResource().pleaseWait());
@@ -298,7 +304,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		public void onFailure(Throwable caught)
 		{
 			hideStatusIndicator();
-			setErrorMessage(caught.getMessage());
+			setErrorMessage("Configuration failed on the server.");
 		}
 
 		@Override
@@ -316,7 +322,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		public void onFailure(Throwable caught)
 		{
 			hideStatusIndicator();
-			setErrorMessage(caught.getMessage());
+			setErrorMessage("Configuration failed on the server.");
 		}
 
 		@Override
@@ -334,7 +340,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		public void onFailure(Throwable caught)
 		{
 			hideStatusIndicator();
-			setErrorMessage(caught.getMessage());
+			setErrorMessage("Configuration failed on the server.");
 		}
 
 		@Override
@@ -352,7 +358,7 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		public void onFailure(Throwable caught)
 		{
 			hideStatusIndicator();
-			setErrorMessage(caught.getMessage());
+			setErrorMessage("Configuration failed on the server.");
 		}
 
 		@Override
