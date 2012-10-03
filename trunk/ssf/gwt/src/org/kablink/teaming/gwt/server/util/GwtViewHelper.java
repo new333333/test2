@@ -3068,6 +3068,12 @@ public class GwtViewHelper {
 			options.put(ObjectKeys.SEARCH_OFFSET,   start );
 			options.put(ObjectKeys.SEARCH_MAX_HITS, length);
 
+			// For the profiles root binder in Filr...
+			if (isProfilesRootWS && Utils.checkIfFilr()) {
+				// ...we eliminate the non-person users.
+				options.put(ObjectKeys.SEARCH_IS_PERSON, Boolean.TRUE);
+			}
+
 			// Factor in the user's sorting selection.
 			FolderDisplayDataRpcResponseData fdd = getFolderDisplayData(bs, request, folderInfo);
 			options.put(ObjectKeys.SEARCH_SORT_BY,      fdd.getFolderSortBy()     );

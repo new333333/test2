@@ -263,7 +263,7 @@ public class SearchFilter {
 		checkCurrent();
 
 		boolean hasWildcard = searchTerm.contains("*");
-		if (hasWildcard && (!wildcardOnly)) {
+		if ((!hasWildcard) || (!wildcardOnly)) {
 			Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
 			filterTerm.addAttribute(SearchFilterKeys.FilterType, type);
 			filterTerm.addAttribute(SearchFilterKeys.FilterElementName, field);
