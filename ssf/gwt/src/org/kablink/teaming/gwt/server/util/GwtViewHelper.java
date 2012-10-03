@@ -3064,7 +3064,7 @@ public class GwtViewHelper {
 			if (isFolder)
 			     options = getFolderSearchFilter(bs, folder, userFolderProperties, null);
 			else options = new HashMap();
-			GwtServerHelper.addQuickFilterToSearch(options, quickFilter, isProfilesRootWS);
+			GwtServerHelper.addQuickFilterToSearch(options, quickFilter);
 			options.put(ObjectKeys.SEARCH_OFFSET,   start );
 			options.put(ObjectKeys.SEARCH_MAX_HITS, length);
 
