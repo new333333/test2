@@ -5,7 +5,19 @@ import java.io.Serializable;
 public class DatabaseConfig implements Serializable
 {
 
-	public enum DatabaseType { MYSQL,SQLSERVER,ORACLE}
+	@Override
+	public String toString()
+	{
+		return "DatabaseConfig [id=" + id + ", type=" + type + ", resourceFor=" + resourceFor + ", resourceUrl="
+				+ resourceUrl + ", resourceUserName=" + resourceUserName + ", resourcePassword=" + resourcePassword
+				+ ", resourceDriverClassName=" + resourceDriverClassName + "]";
+	}
+
+	public enum DatabaseType
+	{
+		MYSQL, SQLSERVER, ORACLE
+	}
+
 	private static final long serialVersionUID = -645027619353219289L;
 
 	private String id;
@@ -15,7 +27,10 @@ public class DatabaseConfig implements Serializable
 	private String resourceUserName;
 	private String resourcePassword;
 	private String resourceDriverClassName;
-	
+
+	// Utility variable
+	private String resourceHost;
+
 	public DatabaseConfig()
 	{
 	}
@@ -88,5 +103,15 @@ public class DatabaseConfig implements Serializable
 	public void setResourceDriverClassName(String resourceDriverClassName)
 	{
 		this.resourceDriverClassName = resourceDriverClassName;
+	}
+
+	public String getResourceHost()
+	{
+		return resourceHost;
+	}
+
+	public void setResourceHost(String resourceHost)
+	{
+		this.resourceHost = resourceHost;
 	}
 }

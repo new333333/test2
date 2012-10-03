@@ -11,4 +11,7 @@ public interface InstallConfigImageBundle extends ClientBundle
 	
 	@Source("close_w_border.png")
 	ImageResource closeBorder();
+
+	@Source("busyanim16b.gif")
+	ImageResource loading16();
 }

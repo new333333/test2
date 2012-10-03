@@ -8,9 +8,9 @@ public class ShellCommand
 {
 	private Logger logger = Logger.getLogger("org.kabling.teaming.install.server.ShellCommand");
 
-	private Process p;
-	private OutputStreamWriter stdin;
-	private BufferedReader stdout, stderr;
+	public Process p;
+	public OutputStreamWriter stdin;
+	public BufferedReader stdout, stderr;
 
 	public ShellCommand(String cmd) throws IOException
 	{

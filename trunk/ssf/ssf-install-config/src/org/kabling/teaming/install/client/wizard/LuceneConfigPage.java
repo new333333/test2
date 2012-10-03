@@ -1,89 +1,95 @@
 package org.kabling.teaming.install.client.wizard;
 
+import org.kabling.teaming.install.client.AppUtil;
+import org.kabling.teaming.install.client.i18n.AppResource;
 import org.kabling.teaming.install.client.widgets.GwTextBox;
 import org.kabling.teaming.install.client.widgets.GwValueSpinner;
 import org.kabling.teaming.install.shared.InstallerConfig;
 import org.kabling.teaming.install.shared.Lucene;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 {
 
 	private InstallerConfig config;
-	private GwValueSpinner bufferingRAMSpinner;
-	private GwValueSpinner maxBooleanSpinner;
-	private GwValueSpinner mergeFactorSpinner;
-	private GwTextBox networkInterfaceAddrTextBox;
 	private GwTextBox luceneAddrTextBox;
 	private GwValueSpinner rmiPortSpinner;
+	private ConfigWizard wizard;
+	private boolean validatedCredentials;
+	private FlowPanel content;
+	private AppResource RBUNDLE = AppUtil.getAppResource();
 
-	public LuceneConfigPage(InstallerConfig config)
+	public LuceneConfigPage(ConfigWizard wizard, InstallerConfig config)
 	{
 		this.config = config;
-	}
-
-	@Override
-	public String isValid()
-	{
-		return null;
+		this.wizard = wizard;
 	}
 
 	@Override
 	public Widget getWizardUI()
 	{
-		FlowPanel fPanel = new FlowPanel();
-		fPanel.addStyleName("wizardPage");
+		validatedCredentials = false;
 
-		HTML descLabel = new HTML("You can run lucene as a server on the same machine where the FILR sofware is installed or on a remote machine. ");
-		descLabel.addStyleName("wizardPageDesc");
-		fPanel.add(descLabel);
-
-		FlexTable table = new FlexTable();
-		fPanel.add(table);
-
-		int row = 0;
-		FlexTable hostTable = new FlexTable();
-		fPanel.add(hostTable);
+		if (content == null)
 		{
-			row = 0;
-			// Merge Factor
-			InlineLabel keyLabel = new InlineLabel("Lucene Server Address:");
-			hostTable.setWidget(row, 0, keyLabel);
-			hostTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
-			
-		
-			luceneAddrTextBox = new GwTextBox();
-			hostTable.setWidget(row, 1, luceneAddrTextBox);
-			hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-		}
+			content = new FlowPanel();
+			content.addStyleName("wizardPage");
 
-		{
-			row++;
-			// RMI Port
-			InlineLabel keyLabel = new InlineLabel("RMI Port:");
-			hostTable.setWidget(row, 0, keyLabel);
-			hostTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
-			
-		
-			rmiPortSpinner = new GwValueSpinner(1199, 1024, 9999, null);
-			hostTable.setWidget(row, 1, rmiPortSpinner);
-			hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
-		}
+			HTML descLabel = new HTML(RBUNDLE.wizLucenePageTitleDesc());
+			descLabel.addStyleName("wizardPageDesc");
+			content.add(descLabel);
 
-		initUIWithData();
-		return fPanel;
+			FlexTable table = new FlexTable();
+			content.add(table);
+
+			int row = 0;
+			FlexTable hostTable = new FlexTable();
+			content.add(hostTable);
+			{
+				row = 0;
+				// Merge Factor
+				InlineLabel keyLabel = new InlineLabel(RBUNDLE.luceneServerAddressColon());
+				hostTable.setWidget(row, 0, keyLabel);
+				hostTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+				luceneAddrTextBox = new GwTextBox();
+				hostTable.setWidget(row, 1, luceneAddrTextBox);
+				hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+			}
+
+			{
+				row++;
+				// RMI Port
+				InlineLabel keyLabel = new InlineLabel(RBUNDLE.rmiPortColon());
+				hostTable.setWidget(row, 0, keyLabel);
+				hostTable.getFlexCellFormatter().addStyleName(row, 0, "table-key");
+
+				rmiPortSpinner = new GwValueSpinner(1199, 1024, 9999, null);
+				hostTable.setWidget(row, 1, rmiPortSpinner);
+				hostTable.getFlexCellFormatter().addStyleName(row, 1, "table-value");
+			}
+
+			HTML footerLabel = new HTML(
+					"The Lucene search server can be<br> - The integrated search server in the Filr virtual appliance (local)<br>"
+							+ "-The Lucene virtual appliance that is included with Filr, running separately.");
+			footerLabel.addStyleName("configWizFooterLabel");
+			content.add(footerLabel);
+
+			initUIWithData();
+		}
+		return content;
 	}
 
 	@Override
 	public String getPageTitle()
 	{
-		return "Lucene";
+		return RBUNDLE.lucene();
 	}
 
 	@Override
@@ -93,22 +99,69 @@ public class LuceneConfigPage implements IWizardPage<InstallerConfig>
 	}
 
 	@Override
+	public boolean isValid()
+	{
+		String host = luceneAddrTextBox.getText();
+		long port = rmiPortSpinner.getValue();
+
+		if (host.isEmpty() || port < 1024)
+		{
+			wizard.setErrorMessage(RBUNDLE.allFieldsRequired());
+			return false;
+		}
+
+		if (!validatedCredentials)
+		{
+			wizard.showStatusIndicator(RBUNDLE.validatingLuceneServer());
+			AppUtil.getInstallService().isLuceneServerValid(host, port, new LuceneAuthCallback());
+			return false;
+		}
+		return true;
+	}
+
+	@Override
 	public void save()
 	{
+		Lucene lucene = config.getLucene();
+
+		if (lucene != null)
+		{
+			lucene.setLocation("server");
+			lucene.setIndexHostName(luceneAddrTextBox.getText());
+			lucene.setRmiPort((int) rmiPortSpinner.getValue());
+		}
 	}
 
 	public void initUIWithData()
 	{
 		Lucene lucene = config.getLucene();
-		
+
 		if (lucene != null)
 		{
-			maxBooleanSpinner.setValue(lucene.getMaxBooleans());
-			//TODO: RAM for buffering
-			mergeFactorSpinner.setValue(lucene.getMergeFactor());
-			
 			luceneAddrTextBox.setText(lucene.getIndexHostName());
 			rmiPortSpinner.setValue(lucene.getRmiPort());
+		}
+	}
+
+	class LuceneAuthCallback implements AsyncCallback<Boolean>
+	{
+
+		@Override
+		public void onFailure(Throwable caught)
+		{
+			wizard.hideStatusIndicator();
+			wizard.setErrorMessage(RBUNDLE.unableToConnectLuceneServer());
+		}
+
+		@Override
+		public void onSuccess(Boolean result)
+		{
+			if (!result)
+				return;
+
+			validatedCredentials = true;
+			wizard.hideStatusIndicator();
+			wizard.finish();
 		}
 	}
 

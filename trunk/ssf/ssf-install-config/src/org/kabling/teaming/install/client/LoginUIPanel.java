@@ -4,9 +4,11 @@ import org.kabling.teaming.install.shared.LoginInfo;
 import org.kabling.teaming.install.shared.ProductInfo;
 import org.kabling.teaming.install.shared.ProductInfo.ProductType;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -20,11 +22,12 @@ import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 
-public class LoginUIPanel extends Composite implements ClickHandler
+public class LoginUIPanel extends Composite implements ClickHandler, KeyUpHandler
 {
 	private Button loginButton;
 	private TextBox userNameTextBox;
 	private PasswordTextBox passwordTextBox;
+	private Label errorsLabel;
 
 	public LoginUIPanel(ProductInfo productInfo)
 	{
@@ -45,7 +48,7 @@ public class LoginUIPanel extends Composite implements ClickHandler
 			productImg = new Image(AppUtil.getAppImageBundle().loginFilrProductInfo());
 		}
 		productImg.addStyleName("loginProductImage");
-		
+
 		loginContainer.add(productImg);
 
 		// Show Product Version
@@ -77,6 +80,7 @@ public class LoginUIPanel extends Composite implements ClickHandler
 			userNameTextBox = new TextBox();
 			userNameTextBox.addStyleName("loginUserNameTextBox");
 			userNamePanel.add(userNameTextBox);
+			userNameTextBox.addKeyUpHandler(this);
 		}
 
 		// Password Label/Password TextBox
@@ -91,6 +95,7 @@ public class LoginUIPanel extends Composite implements ClickHandler
 			passwordTextBox = new PasswordTextBox();
 			passwordTextBox.addStyleName("loginPasswordTextBox");
 			passowordPanel.add(passwordTextBox);
+			passwordTextBox.addKeyUpHandler(this);
 		}
 
 		loginContainer.add(getBevelLabel());
@@ -109,11 +114,11 @@ public class LoginUIPanel extends Composite implements ClickHandler
 
 		// Errors Label
 		{
-			Label errorsLabel = new Label();
+			errorsLabel = new Label();
 			errorsLabel.addStyleName("loginFailed");
-			
+
 			errorsLabel.setVisible(false);
-			
+
 			content.add(errorsLabel);
 		}
 
@@ -135,43 +140,68 @@ public class LoginUIPanel extends Composite implements ClickHandler
 			login();
 		}
 	}
-	
+
+	private boolean isValid()
+	{
+		String userName = userNameTextBox.getText();
+		String password = passwordTextBox.getText();
+
+		// We need to have both the user name and password to login
+		// They cannot be empty
+		if (userName == null || userName.isEmpty() || password == null || password.isEmpty())
+			return false;
+
+		return true;
+	}
+
 	private void login()
 	{
 		String userName = userNameTextBox.getText();
 		String password = passwordTextBox.getText();
-		
-		//We need to have both the user name and password to login
-		//They cannot be empty
+
+		if (!isValid())
+			return;
+		// We need to have both the user name and password to login
+		// They cannot be empty
 		if (userName == null || userName.isEmpty() || password == null || password.isEmpty())
 			return;
-		
+
 		AppUtil.getInstallService().login(userName, password, new LoginInfoCallback());
 	}
-	
+
 	class LoginInfoCallback implements AsyncCallback<LoginInfo>
 	{
 
 		@Override
 		public void onFailure(Throwable caught)
 		{
-			//TODO: What are we doing here?
-			GWT.log("Failed to get product info");
+			errorsLabel.setText("The username or password is invalid");
+			errorsLabel.setVisible(true);
 		}
 
 		@Override
 		public void onSuccess(LoginInfo result)
 		{
-			//Remove login screen
+			// Remove login screen
 			RootPanel rootPanel = RootPanel.get("installConfig");
 			if (rootPanel.getWidgetCount() > 0)
 				rootPanel.remove(0);
-			
-			//Add Main UI Screen
+
+			// Add Main UI Screen
 			MainUILayoutPanel panel = new MainUILayoutPanel();
 			RootLayoutPanel.get().add(panel);
 		}
-		
+
 	}
-	
+
+	@Override
+	public void onKeyUp(KeyUpEvent event)
+	{
+		if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER)
+		{
+			if (isValid())
+				login();
+		}
+	}
+
 }

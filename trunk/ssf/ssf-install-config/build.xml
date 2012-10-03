@@ -116,18 +116,17 @@
 
 	<target name="war" depends="compile-gwt" description="Create a war file">
 		 <copy todir="war/WEB-INF/lib">
-		    <fileset dir="${gwt.dir}">
-		      <include name="gwt-servlet.jar"/>
-		    </fileset>
 		 	<fileset dir="${lib.dir}">
+		 		 <include name="gwt-servlet.jar"/>
 		 		<include name="xml-apis.jar"/>
 		 		<include name="xercesImpl.jar"/>
 		 		<include name="log4j.jar"/>
 		 		<include name="libpam4j-1.6.jar"/>
 		 		<include name="jna-3.4.0.jar"/>
+		 		<include name="mysql-connector-java-5.1.22-bin.jar"/>
 		 	 </fileset>
 		  </copy>
-	    <zip destfile="InstallConfig.war" basedir="war"/>
+	    <zip destfile="vaconfig.war" basedir="war"/>
 	  </target>
 
 	  <target name="clean" description="Cleans this project">

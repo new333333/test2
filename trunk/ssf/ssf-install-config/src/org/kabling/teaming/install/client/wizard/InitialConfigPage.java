@@ -9,7 +9,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -21,15 +20,15 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 	private FlowPanel fPanel;
 
 	@Override
-	public String isValid()
+	public boolean isValid()
 	{
-		return null;
+		return true;
 	}
 
 	@Override
 	public String getPageTitle()
 	{
-		return "Welcome Screen";
+		return "Filr Configuration";
 	}
 
 	@Override
@@ -40,7 +39,8 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 			fPanel = new FlowPanel();
 			fPanel.addStyleName("wizardPage");
 
-			HTML descLabel = new HTML("This configuration wizard will help to setup the FILR server.");
+			HTML descLabel = new HTML(
+					"Your first task is to configure the Filr virtual appliance to access<br> - A Lucene search server <br> - A MySQL database.<br><br<br> Pick an option below.");
 			descLabel.addStyleName("wizardPageDesc");
 			fPanel.add(descLabel);
 
@@ -54,8 +54,9 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 			useDefaultsRB.setValue(true);
 			radioPanel.add(useDefaultsRB);
 
-			Label defaultConfigDescLabel = new Label(
-					"The default configuration will configure the FILR server to use the local lucene server and local database.");
+			HTML defaultConfigDescLabel = new HTML(
+					"Use the default Lucene search server and MySQL database that are providd with the Filr virtual appliance."
+							+ "<br><br>A good choice for evaluation environments and small networks. All components run in the Filr virtual appliance");
 			defaultConfigDescLabel.addStyleName("configDescLabel");
 			radioPanel.add(defaultConfigDescLabel);
 
@@ -64,13 +65,14 @@ public class InitialConfigPage implements IWizardPage<InstallerConfig>, ClickHan
 			customRB.addClickHandler(this);
 			radioPanel.add(customRB);
 
-			Label customConfigDescLabel = new Label(
-					"Custom configuration allows you configure the Lucene and Database server to run on a different system.");
+			HTML customConfigDescLabel = new HTML(
+					"Specify a Lucene search server and MySQL database for the Filr virtual appliance to use. <br><br>"
+							+ "The recommended choice for most environments because you can set up a robust infrastructure in which the components run separately.");
 			customConfigDescLabel.addStyleName("configDescLabel");
 			radioPanel.add(customConfigDescLabel);
 		}
 		AppUtil.getEventBus().fireEvent(new ConfigNextButtonEnableEvent(!useDefaultsRB.getValue()));
-		
+
 		return fPanel;
 	}
 

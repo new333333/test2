@@ -9,10 +9,13 @@ import org.kabling.teaming.install.client.ConfigFinishEnableEvent.ConfigFinishEn
 import org.kabling.teaming.install.client.ConfigNextButtonEnableEvent;
 import org.kabling.teaming.install.client.ConfigNextButtonEnableEvent.ConfigNextEnableEventHandler;
 import org.kabling.teaming.install.client.GwtClientHelper;
+import org.kabling.teaming.install.client.i18n.AppResource;
+import org.kabling.teaming.install.client.widgets.StatusIndicator;
 import org.kabling.teaming.install.shared.InstallerConfig;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -20,7 +23,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
 
-public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, ConfigFinishEnableEventHandler,ConfigNextEnableEventHandler
+public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, ConfigFinishEnableEventHandler,
+		ConfigNextEnableEventHandler
 {
 	private int currentPage;
 	private List<IWizardPage<InstallerConfig>> pages = new ArrayList<IWizardPage<InstallerConfig>>();
@@ -33,20 +37,28 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 	private FocusWidget nextButton;
 	private Button finishButton;
 	private InstallerConfig config;
+	private Label errorLabel;
+	private FlowPanel errorPanel;
+	private StatusIndicator loadingWidget;
+
+	private AppResource RBUNDLE = AppUtil.getAppResource();
 
 	public ConfigWizard(InstallerConfig config)
 	{
 		super(false, true);
 		this.config = config;
-		
+
 		addStyleName("configWizardDlg");
-		
+
 		wizard = new FlowPanel();
 		wizard.setStyleName("installConfigWizard");
 		setWidget(wizard);
 
 		// Header Panel
 		wizard.add(createHeader());
+
+		// Error Panel
+		wizard.add(createErrorPanel());
 
 		// Content
 		wizardContentPanel = new FlowPanel();
@@ -57,21 +69,21 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		wizard.add(createFooter());
 
 		// Add pages
-		//Initial Page
+		// Initial Page
 		IWizardPage<InstallerConfig> configPage = new InitialConfigPage();
 		pages.add(configPage);
-		
-		//Database Page
-		IWizardPage<InstallerConfig> dbPage = new DatabaseConfigPage(config);
+
+		// Database Page
+		IWizardPage<InstallerConfig> dbPage = new DatabaseConfigPage(this, config);
 		pages.add(dbPage);
-		
-		//Lucene Page
-		IWizardPage<InstallerConfig> lucenePage = new LuceneConfigPage(config);
+
+		// Lucene Page
+		IWizardPage<InstallerConfig> lucenePage = new LuceneConfigPage(this, config);
 		pages.add(lucenePage);
 
 		AppUtil.getEventBus().addHandler(ConfigFinishEnableEvent.TYPE, this);
 		AppUtil.getEventBus().addHandler(ConfigNextButtonEnableEvent.TYPE, this);
-		
+
 		// Show first page
 		currentPage = 0;
 		showPage(currentPage);
@@ -83,7 +95,10 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 			wizardContentPanel.remove(0);
 
 		updateButtons();
-		
+
+		// Clear any errors as we are moving to a new page
+		setErrorMessage(null);
+
 		IWizardPage<InstallerConfig> newPageToShow = pages.get(pageToShow);
 		wizardContentPanel.add(newPageToShow.getWizardUI());
 
@@ -104,6 +119,11 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 	@Override
 	public void nextPage()
 	{
+		IWizardPage<InstallerConfig> page = pages.get(currentPage);
+
+		if (!page.isValid())
+			return;
+
 		if (currentPage < pages.size())
 			currentPage = currentPage + 1;
 
@@ -118,19 +138,19 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		{
 			IWizardPage<InstallerConfig> wizardPage = pages.get(page);
 
-			if (wizardPage.isValid() != null)
+			if (!wizardPage.isValid())
 			{
 				// Show error message in error panel
 				showPage(page);
-				break;
+				return;
 			}
 			else
 			{
-				// TODO save the page
+				wizardPage.save();
 			}
 		}
-		//For now
-		hide(true);
+		showStatusIndicator(AppUtil.getAppResource().pleaseWait());
+		AppUtil.getInstallService().saveConfiguration(config, new SaveConfigCallback());
 	}
 
 	private void updateButtons()
@@ -176,6 +196,19 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		return flowPanel;
 	}
 
+	private Panel createErrorPanel()
+	{
+		errorPanel = new FlowPanel();
+		errorPanel.addStyleName("dlgErrorPanel");
+		errorPanel.setVisible(false);
+
+		errorLabel = new Label();
+		errorLabel.setStyleName("errorLabel");
+
+		errorPanel.add(errorLabel);
+		return errorPanel;
+	}
+
 	private Panel createFooter()
 	{
 		m_footerPanel = new FlowPanel();
@@ -183,18 +216,18 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 		// Associate this panel with its stylesheet.
 		m_footerPanel.setStyleName("teamingDlgBoxFooter");
 
-		previousButton = new Button("Previous");
+		previousButton = new Button(RBUNDLE.previous());
 
 		previousButton.addClickHandler(this);
 		previousButton.addStyleName("teamingButton");
 		m_footerPanel.add(previousButton);
 
-		nextButton = new Button("Next");
+		nextButton = new Button(RBUNDLE.next());
 		nextButton.addClickHandler(this);
 		nextButton.addStyleName("teamingButton");
 		m_footerPanel.add(nextButton);
 
-		finishButton = new Button("Finish");
+		finishButton = new Button(RBUNDLE.finish());
 
 		finishButton.addClickHandler(this);
 		finishButton.addStyleName("teamingButton");
@@ -225,5 +258,135 @@ public class ConfigWizard extends PopupPanel implements IWizard, ClickHandler, C
 	public void onEvent(ConfigNextButtonEnableEvent event)
 	{
 		nextButton.setEnabled(event.isEnabled());
+	}
+
+	public void setErrorMessage(String errorMessage)
+	{
+		if (errorMessage != null)
+		{
+			errorLabel.setText(errorMessage);
+			errorPanel.setVisible(true);
+		}
+		else
+		{
+			errorPanel.setVisible(false);
+		}
+	}
+
+	class SaveConfigCallback implements AsyncCallback<Void>
+	{
+
+		@Override
+		public void onFailure(Throwable caught)
+		{
+			hideStatusIndicator();
+			setErrorMessage(caught.getMessage());
+		}
+
+		@Override
+		public void onSuccess(Void coid)
+		{
+			loadingWidget.setText(AppUtil.getAppResource().creatingDatabase());
+			AppUtil.getInstallService().createDatabase(config.getDatabase(), new CreateDatabaseCallback());
+		}
+	}
+
+	class CreateDatabaseCallback implements AsyncCallback<Void>
+	{
+
+		@Override
+		public void onFailure(Throwable caught)
+		{
+			hideStatusIndicator();
+			setErrorMessage(caught.getMessage());
+		}
+
+		@Override
+		public void onSuccess(Void coid)
+		{
+			loadingWidget.setText(AppUtil.getAppResource().updatingDatabase());
+			AppUtil.getInstallService().updateDatabase(config.getDatabase(), new UpdateDatabaseCallback());
+		}
+	}
+
+	class UpdateDatabaseCallback implements AsyncCallback<Void>
+	{
+
+		@Override
+		public void onFailure(Throwable caught)
+		{
+			hideStatusIndicator();
+			setErrorMessage(caught.getMessage());
+		}
+
+		@Override
+		public void onSuccess(Void coid)
+		{
+			loadingWidget.setText(AppUtil.getAppResource().reconfiguringServer());
+			AppUtil.getInstallService().reconfigure(config, new ReconfigureCallback());
+		}
+	}
+
+	class ReconfigureCallback implements AsyncCallback<Void>
+	{
+
+		@Override
+		public void onFailure(Throwable caught)
+		{
+			hideStatusIndicator();
+			setErrorMessage(caught.getMessage());
+		}
+
+		@Override
+		public void onSuccess(Void coid)
+		{
+			loadingWidget.setText(AppUtil.getAppResource().startingServer());
+			AppUtil.getInstallService().startFilrServer(new StartFilrCallback());
+		}
+	}
+
+	class StartFilrCallback implements AsyncCallback<Void>
+	{
+
+		@Override
+		public void onFailure(Throwable caught)
+		{
+			hideStatusIndicator();
+			setErrorMessage(caught.getMessage());
+		}
+
+		@Override
+		public void onSuccess(Void coid)
+		{
+			hideStatusIndicator();
+			ConfigWizard.this.hide(true);
+		}
+	}
+
+	public void showStatusIndicator(String msg)
+	{
+		if (loadingWidget == null)
+			loadingWidget = new StatusIndicator(msg);
+
+		loadingWidget.setText(msg);
+
+		loadingWidget.setPopupPositionAndShow(new PopupPanel.PositionCallback()
+		{
+			@Override
+			public void setPosition(int offsetWidth, int offsetHeight)
+			{
+				int left = ConfigWizard.this.getAbsoluteLeft() + ConfigWizard.this.getOffsetWidth() / 2 - offsetWidth
+						/ 2;
+				int top = ConfigWizard.this.getAbsoluteTop() + ConfigWizard.this.getOffsetHeight() / 2 - offsetHeight
+						/ 2;
+				loadingWidget.setPopupPosition(left, top);
+			}
+		});
+	}
+
+	public void hideStatusIndicator()
+	{
+		if (loadingWidget != null)
+			loadingWidget.hide();
 	}
 }
