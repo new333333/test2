@@ -308,16 +308,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	public FilesErrors deleteFiles(final Binder binder, 
 			final DefinableEntity entry, boolean deleteMirroredSource, 
 			FilesErrors errors) {
-		return deleteFiles(binder, entry, deleteMirroredSource, errors, false);
-	}
-	
-	private FilesErrors deleteFiles(final Binder binder, 
-			final DefinableEntity entry, boolean deleteMirroredSource, 
-			FilesErrors errors, boolean deleteAttachment) {
 		if(errors == null)
 			errors = new FilesErrors();
 		
-		boolean updateMetadata = deleteAttachment;
+		boolean updateMetadata = false;
 		List<ChangeLog> changeLogs = new ArrayList<ChangeLog>();
 		Collection<FileAttachment> fAtts = entry.getFileAttachments();
 		if (!fAtts.isEmpty()) {
@@ -374,44 +368,35 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	public FilesErrors deleteFile(Binder binder, DefinableEntity entry,
 			FileAttachment fAtt, FilesErrors errors) {
-		boolean involvesExtAcl = involvesExternalAcl(binder, fAtt.getRepositoryName());
-		if(involvesExtAcl)
-			setupAccessModeForExternalAcl(entry, WorkAreaOperation.DELETE_ENTRIES);
+		if(errors == null)
+			errors = new FilesErrors();
 		
 		try {
-			if(errors == null)
-				errors = new FilesErrors();
-			
-			try {
-				deleteFileInternal(binder, entry, fAtt, true, errors, true);
-			}
-			catch(Exception e) {
-				logger.error("Error deleting file " + fAtt.getFileItem().getName(), e);
-				errors.addProblem(new FilesErrors.Problem
-						(fAtt.getRepositoryName(),  fAtt.getFileItem().getName(), 
-								FilesErrors.Problem.OTHER_PROBLEM, e));
-				//make sure any updates that happened get recored
-				triggerUpdateTransaction(null);
-			}
-					
-			String faPath = FilePathUtil.getFileAttachmentDirPath(binder, entry, fAtt);
-			try {
-				cacheFileStore.deleteDirectory(faPath);
-			}
-			catch(Exception e) {
-				logger.error("Error deleting the file attachment's cache directory [" +
-						cacheFileStore.getAbsolutePath(faPath) + "]", e);
-			}
-			//Mark that this entity was modified
-			setEntityModification(entry);
-			
-			return errors;
+			deleteFileInternal(binder, entry, fAtt, true, errors, true);
 		}
-		finally {
-			if(involvesExtAcl)
-				teardownAccessModeForExternalAcl();
+		catch(Exception e) {
+			logger.error("Error deleting file " + fAtt.getFileItem().getName(), e);
+			errors.addProblem(new FilesErrors.Problem
+					(fAtt.getRepositoryName(),  fAtt.getFileItem().getName(), 
+							FilesErrors.Problem.OTHER_PROBLEM, e));
+			//make sure any updates that happened get recored
+			triggerUpdateTransaction(null);
 		}
+				
+		String faPath = FilePathUtil.getFileAttachmentDirPath(binder, entry, fAtt);
+		try {
+			cacheFileStore.deleteDirectory(faPath);
+		}
+		catch(Exception e) {
+			logger.error("Error deleting the file attachment's cache directory [" +
+					cacheFileStore.getAbsolutePath(faPath) + "]", e);
+		}
+		//Mark that this entity was modified
+		setEntityModification(entry);
+		
+		return errors;
 	}
+	
 	public void readFile(Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
 		boolean involvesExtAcl = involvesExternalAcl(binder, fa.getRepositoryName());
@@ -1461,6 +1446,22 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	private ChangeLog deleteFileInternal(Binder binder, DefinableEntity entry,
+			FileAttachment fAtt, boolean deleteMirroredSource, 
+			FilesErrors errors, boolean updateMetadata) {
+		boolean involvesExtAcl = involvesExternalAcl(binder, fAtt.getRepositoryName());
+		if(involvesExtAcl)
+			setupAccessModeForExternalAcl(entry, WorkAreaOperation.DELETE_ENTRIES);
+		
+		try {
+			return deleteFileInternal2(binder, entry, fAtt, deleteMirroredSource, errors, updateMetadata);
+		}
+		finally {
+			if(involvesExtAcl)
+				teardownAccessModeForExternalAcl();
+		}
+	}
+	
+	private ChangeLog deleteFileInternal2(Binder binder, DefinableEntity entry,
 			FileAttachment fAtt, boolean deleteMirroredSource, 
 			FilesErrors errors, boolean updateMetadata) {
 		String relativeFilePath = fAtt.getFileItem().getName();
