@@ -15,6 +15,12 @@ import java.util.List;
 public class Database implements Serializable
 {
 
+	@Override
+	public String toString()
+	{
+		return "Database [configName=" + configName + ", config=" + config + "]";
+	}
+
 	private static final long serialVersionUID = -645027619353219289L;
 
 	private String configName;
@@ -42,6 +48,19 @@ public class Database implements Serializable
 	public void setConfig(List<DatabaseConfig> config)
 	{
 		this.config = config;
+	}
+	
+	public DatabaseConfig getDatabaseConfig(String configName)
+	{
+		if (config != null)
+		{
+			for (DatabaseConfig obj : config)
+			{
+				if (obj.getId().equals(configName))
+					return obj;
+			}
+		}
+		return null;
 	}
 
 }

@@ -15,6 +15,14 @@ import java.util.List;
 public class Lucene implements Serializable
 {
 
+	@Override
+	public String toString()
+	{
+		return "Lucene [location=" + location + ", indexHostName=" + indexHostName + ", maxBooleans=" + maxBooleans
+				+ ", highAvailabilitySearchNodes=" + highAvailabilitySearchNodes + ", mergeFactor=" + mergeFactor
+				+ ", rmiPort=" + rmiPort + ", searchNodesList=" + searchNodesList + "]";
+	}
+
 	private static final long serialVersionUID = -645027619353219289L;
 
 	private String location;

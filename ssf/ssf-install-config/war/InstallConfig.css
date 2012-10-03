@@ -236,7 +236,7 @@ body {
 .dlgErrorPanel
 {
 	font-size: 12px;
-	background-color: #EBECA5;
+	background-color: #FCECD3;
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: 1px;
@@ -245,6 +245,7 @@ body {
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 	-webkit-border-radius: 5px;
+	color : #505354;
 }
 
 .dlgErrorLabel
@@ -303,9 +304,8 @@ body {
 
 .teamingDlgBoxFooter .gwt-Button[disabled],.teamingDlgBoxFooter .gwt-Button[disabled]:hover {
   cursor: default;
-  color: #b8b8b8;
-  border: 1px outset #ccc !important;
-  background: #fafafa;
+  color: #e0e0e0;
+  background: #c4c4c4;
 }
 
 
@@ -420,7 +420,7 @@ body {
 }
 
 .installConfigWizardPage {
-	height : 350px;
+	height : 400px;
 	overflow : auto;
 }
 
@@ -439,13 +439,19 @@ body {
 }
 
 .wizardPageDesc,.configDescLabel {
-	color: #505354;
+	color: #949494;
 	font-style: italic;
 	padding : 10px 0px 20px 0;
 }
 
 .configDescLabel {
 	padding-left : 20px;
+}
+
+.configWizFooterLabel {
+	color: #949494;
+	font-style: italic;
+	margin-top: 30px;
 }
 
 .configSelectRB {
@@ -586,6 +592,22 @@ body {
 .gwt-TextBox-watermark {
     color: DarkGray;
     font-style: italic;
+}
+
+.statusIndicator {
+    padding: 25px;
+    background: #fafafa;
+    border-radius: 3px;
+}
+
+.statusIndicator img {
+    vertical-align: middle;
+    padding-right: 5px;
+}
+
+.statusIndicator span {
+    color: #505354;
+    font-size: 16px;
 }
 
 

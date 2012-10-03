@@ -2,10 +2,22 @@ package org.kabling.teaming.install.server;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
@@ -14,6 +26,7 @@ import org.jvnet.libpam.PAMException;
 import org.jvnet.libpam.UnixUser;
 import org.kabling.teaming.install.client.InstallService;
 import org.kabling.teaming.install.shared.Clustered;
+import org.kabling.teaming.install.shared.ConfigurationSaveException;
 import org.kabling.teaming.install.shared.Database;
 import org.kabling.teaming.install.shared.DatabaseConfig;
 import org.kabling.teaming.install.shared.DatabaseConfig.DatabaseType;
@@ -28,6 +41,7 @@ import org.kabling.teaming.install.shared.InstallerConfig.WebDAV;
 import org.kabling.teaming.install.shared.LoginException;
 import org.kabling.teaming.install.shared.LoginInfo;
 import org.kabling.teaming.install.shared.Lucene;
+import org.kabling.teaming.install.shared.LuceneConnectException;
 import org.kabling.teaming.install.shared.MirroredFolder;
 import org.kabling.teaming.install.shared.Network;
 import org.kabling.teaming.install.shared.Presence;
@@ -39,6 +53,10 @@ import org.kabling.teaming.install.shared.WebService;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSOutput;
+import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -50,7 +68,8 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @SuppressWarnings("serial")
 public class InstallServiceImpl extends RemoteServiceServlet implements InstallService
 {
-	Logger logger = Logger.getLogger("org.kabling.teaming.install.server");
+	Logger logger = Logger.getLogger("org.kabling.teaming.install.server.InstallServiceImpl");
+	private final int MAX_TRIES = 2;
 
 	@Override
 	public LoginInfo login(String userName, String password) throws LoginException
@@ -58,6 +77,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		LoginInfo loginInfo = new LoginInfo();
 
 		ProductType productType = getProductInfo().getType();
+
+		// For Filr Appliance, we will do PAM Authentication
 		if (isUnix() && productType.equals(ProductType.NOVELL_FILR))
 		{
 			try
@@ -74,8 +95,6 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		{
 			loginInfo.setUser(userName);
 		}
-
-		// Look for license information and figure out if they have a valid license
 
 		return loginInfo;
 	}
@@ -101,12 +120,18 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	{
 		try
 		{
-
+			ProductType productType = getProductInfo().getType();
 			// create a DOM parser
 			DOMParser parser = new DOMParser();
 
-			File file = new File("/filrinstall/installer.xml");
+			File file = null;
 			InputStream is = null;
+
+			if (isUnix() && productType.equals(ProductType.NOVELL_FILR))
+			{
+				file = new File("/filrinstall/installer.xml");
+			}
+
 			if (file.exists())
 			{
 				is = new FileInputStream(file);
@@ -123,9 +148,11 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 		}
 		catch (IOException e)
 		{
+			logger.debug("IOException - while reading the file in getDocument(");
 		}
 		catch (SAXException e)
 		{
+			logger.debug("SAXException - while reading the file in getDocument(");
 		}
 		return null;
 
@@ -140,7 +167,6 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	 */
 	private InstallerConfig getInstallerConfig(Document document)
 	{
-
 		InstallerConfig config = new InstallerConfig();
 
 		// TODO: install type, version, product, zoneName
@@ -161,7 +187,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 			if (jvmElement != null)
 			{
-				config.setJvmMemory(getIntegerValue(jvmElement.getAttribute("mx")));
+				config.setJvmMemory(jvmElement.getAttribute("mx"));
 			}
 		}
 
@@ -206,6 +232,8 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 		// Cluster
 		config.setClustered(getClusteredData(document));
+
+		logger.info("Config " + config.toString());
 		return config;
 	}
 
@@ -1016,16 +1044,75 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	}
 
 	@Override
-	public void saveConfiguration(InstallerConfig config)
+	public void saveConfiguration(InstallerConfig config) throws ConfigurationSaveException
 	{
 		Document document = getDocument();
 		ProductInfo productInfo = getProductInfo();
-		// We need to save it locally
-		if (productInfo.getType().equals(ProductType.NOVELL_FILR) && !productInfo.isConfigured())
+
+		// Update the installer.xml
+		saveDatabaseConfiguration(config, document);
+
+		// TODO: For lucene configuration, we need to update the changes to the lucene server
+		saveLuceneConfiguration(config, document);
+
+		// Save the changes to installer.xml
+		if (productInfo.getType().equals(ProductType.NOVELL_FILR))
 		{
-			saveLuceneConfiguration(config, document);
-			saveDatabaseConfiguration(config, document);
+
+			try
+			{
+				DOMImplementationRegistry reg = DOMImplementationRegistry.newInstance();
+				DOMImplementationLS impl = (DOMImplementationLS) reg.getDOMImplementation("LS");
+
+				LSOutput lsOutput = impl.createLSOutput();
+				lsOutput.setEncoding("UTF-8");
+
+				// TODO: Save it to installer.xml
+				lsOutput.setByteStream(new FileOutputStream("/filrinstall/installer.xml"));
+				LSSerializer serializer = impl.createLSSerializer();
+
+				serializer.write(document, lsOutput);
+			}
+			catch (IOException e)
+			{
+				logger.debug("Error saving installer.xml, IO Exception");
+				throw new ConfigurationSaveException();
+			}
+			catch (ClassCastException e)
+			{
+				logger.debug("Error saving installer.xml, Class Cast Exception");
+				throw new ConfigurationSaveException();
+			}
+			catch (ClassNotFoundException e)
+			{
+				logger.debug("Error saving installer.xml, Class Not Found Exception");
+			}
+			catch (InstantiationException e)
+			{
+				logger.debug("Error saving installer.xml,Instantion Exception");
+				throw new ConfigurationSaveException();
+			}
+			catch (IllegalAccessException e)
+			{
+				logger.debug("Error saving installer.xml, Illegal  Exception");
+				throw new ConfigurationSaveException();
+			}
+
 		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	public void store(Properties props, File file) throws FileNotFoundException
+	{
+
+		PrintWriter pw = new PrintWriter(file);
+
+		for (Enumeration e = props.propertyNames(); e.hasMoreElements();)
+		{
+			String key = (String) e.nextElement();
+			pw.println(key + "=" + props.getProperty(key));
+		}
+		pw.close();
 	}
 
 	private void saveDatabaseConfiguration(InstallerConfig installerConfig, Document document)
@@ -1062,7 +1149,12 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 					{
 						Element resourceElement = getElement(configElement, "Resource");
 
-						configElement.setAttribute("type", config.getType().toString());
+						String dbType = "MySql";
+						if (config.getType().equals(DatabaseType.ORACLE))
+							dbType = "Oracle";
+						else if (config.getType().equals(DatabaseType.SQLSERVER))
+							dbType = "SQLServer";
+						configElement.setAttribute("type", dbType);
 
 						resourceElement.setAttribute("username", config.getResourceUserName());
 						resourceElement.setAttribute("password", config.getResourcePassword());
@@ -1078,12 +1170,14 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	private void saveLuceneConfiguration(InstallerConfig config, Document document)
 	{
 		Lucene lucene = config.getLucene();
-
 		if (lucene == null)
 			return;
 
 		Element luceneElement = getElement(document.getDocumentElement(), "Lucene");
 		Element resourceElement = getElement(luceneElement, "Resource");
+
+		if (lucene.getLocation() != null)
+			luceneElement.setAttribute("luceneLocation", lucene.getLocation());
 
 		if (lucene.getMaxBooleans() > 0)
 		{
@@ -1108,8 +1202,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 		if (!lucene.getIndexHostName().isEmpty())
 		{
-			resourceElement.setAttribute("lucene.index.hostname",
-					String.valueOf(lucene.getHighAvailabilitySearchNodes()));
+			resourceElement.setAttribute("lucene.index.hostname", lucene.getIndexHostName());
 		}
 
 		// TODO: Handle high availability nodes
@@ -1125,7 +1218,7 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 	{
 
 		// If null, return default value
-		if (strValue == null)
+		if (strValue == null || strValue.equals(""))
 			return 0;
 
 		try
@@ -1174,17 +1267,330 @@ public class InstallServiceImpl extends RemoteServiceServlet implements InstallS
 
 		productInfo.setCopyRight("© Copyright 1993-2012 Novell, Inc. All rights reserved.");
 
-		File file = new File("/filrinstall/installer.xml");
+		File file = new File("/filrinstall/configured");
 		productInfo.setConfigured(file.exists());
 
 		return productInfo;
 	}
-	
-	public static boolean isUnix() {
-		 
+
+	public static boolean isUnix()
+	{
+
 		String os = System.getProperty("os.name").toLowerCase();
 		// linux or unix
 		return (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0);
- 
+
+	}
+
+	public int executeCommand(String command)
+	{
+		int tryCount = 0;
+		int exitValue = -1;
+		boolean waitingForLock = true;
+		ShellCommand cmd = null;
+		while (waitingForLock && (tryCount < MAX_TRIES))
+		{
+			// Don't sleep before the first try
+			if (++tryCount > 1)
+			{
+				logger.info("waiting for RPM lock (try " + tryCount + " of " + MAX_TRIES + ")");
+				// Sleep for a few seconds to allow RPM lock to free up
+				try
+				{
+					Thread.sleep(3000);
+				}
+				catch (InterruptedException e)
+				{
+					// ignore
+				}
+			}
+			waitingForLock = false;
+			try
+			{
+				cmd = new ShellCommand("sh");
+				logger.info(command);
+				cmd.stdin.write(command);
+				cmd.stdin.close();
+				cmd.waitFor();
+				exitValue = cmd.exitValue();
+				String output = null;
+				if (exitValue == 0)
+				{
+					while ((output = cmd.stdout.readLine()) != null)
+					{
+						logger.info(output); // log stdout
+					}
+				}
+				else
+				{
+					while ((output = cmd.stderr.readLine()) != null)
+					{
+						logger.info(output); // log stderr
+						if (!waitingForLock)
+						{
+							// waitingForLock is cleared for each try and is only
+							// reset if the command fails and the stderr contains
+							// "cannot get exclusive lock". Once it is set we
+							// stop checking for this message, as there will normally
+							// be additional lines of text such as:
+							waitingForLock = (output.indexOf("cannot get exclusive lock") != -1);
+						}
+					}
+				}
+			}
+			catch (IOException e)
+			{
+				logger.error("Exception thrown for command: " + command);
+				e.printStackTrace();
+				exitValue = -1;
+			}
+			logger.info(command + ": exitValue = " + exitValue);
+		}
+		if ((exitValue != 0) && waitingForLock && (tryCount >= MAX_TRIES))
+		{
+			logger.info("timed out waiting for lock");
+		}
+		return exitValue;
+	}
+
+	@Override
+	public void createDatabase(Database database) throws ConfigurationSaveException
+	{
+		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
+		{
+
+			// Update the mysql-liquibase.properties
+			DatabaseConfig dbConfig = database.getDatabaseConfig("Installed");
+
+			// Check to see if database exists
+			if (checkDBExists("sitescape", dbConfig.getResourceUrl(), dbConfig.getResourceUserName(),
+					dbConfig.getResourcePassword()))
+				return;
+
+			// Create database
+			if (dbConfig != null)
+			{
+
+				// Update mysql-liquibase.properties
+				File file = new File("/filrinstall/db/mysql-liquibase.properties");
+				if (file.exists())
+				{
+					Properties prop = new Properties();
+					try
+					{
+						prop.load(new FileInputStream(file));
+
+						prop.setProperty("url", dbConfig.getResourceUrl());
+						prop.setProperty("password", dbConfig.getResourcePassword());
+						prop.setProperty("username", dbConfig.getResourceUserName());
+
+						prop.setProperty("referenceUrl", dbConfig.getResourceUrl());
+						prop.setProperty("referencePassword", dbConfig.getResourcePassword());
+						prop.setProperty("referenceUsername", dbConfig.getResourceUserName());
+
+						// Java Properties store escapes colon. We need to store this natively.
+						store(prop, file);
+					}
+					catch (IOException e)
+					{
+						logger.debug("Error saving properties file " + e.getMessage());
+						throw new ConfigurationSaveException();
+					}
+				}
+
+				// Create the database if needed
+				int result = executeCommand("mysql -h " + dbConfig.getResourceHost() + " -u"
+						+ dbConfig.getResourceUserName() + " -p" + dbConfig.getResourcePassword()
+						+ " < /filrinstall/db/scripts/sql/mysql-create-empty-database.sql");
+
+				// We got an error ( 0 for success, 1 for database exists)
+				if (!(result == 0 || result == 1))
+				{
+					logger.debug("Error creating database,Error code " + result);
+					throw new ConfigurationSaveException();
+				}
+			}
+		}
+
+	}
+
+	@Override
+	public void updateDatabase(Database database) throws ConfigurationSaveException
+	{
+		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
+		{
+			// Update the database
+			int result = executeCommand("cd /filrinstall/db; pwd; sh manage-database.sh mysql updateDatabase");
+
+			// We got an error ( 0 for success, 107 for database exists)
+			if (result != 0)
+			{
+				logger.debug("Error updating database,Error code " + result);
+				throw new ConfigurationSaveException();
+			}
+		}
+
+	}
+
+	@Override
+	public void reconfigure(InstallerConfig config) throws ConfigurationSaveException
+	{
+		// We need to save it locally
+		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
+		{
+
+			// Run the reconfigure
+			int result = executeCommand("cd /filrinstall; pwd; ./installer-filr.linux --silent --reconfigure");
+
+			if (result != 0)
+			{
+				logger.debug("Error reconfiguring installer in silent mode,Error code " + result);
+				throw new ConfigurationSaveException();
+			}
+		}
+	}
+
+	@Override
+	public void startFilrServer()
+	{
+		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
+		{
+			executeCommand("/sbin/rcfilr restart");
+
+			int tries = 30;
+
+			while (tries > 0)
+			{
+				try
+				{
+					Thread.sleep(1000);
+					if (isFilrServerRunning())
+						return;
+				}
+				catch (MalformedURLException e)
+				{
+					logger.debug("Url is not valid for the filr server");
+					// TODO: We cannot handle this
+					// Get out
+					return;
+				}
+				catch (IOException e)
+				{
+					logger.debug("Filr server is busy");
+					// Ignore
+				}
+				catch (InterruptedException e)
+				{
+					logger.debug("Waiting for filr servr to start");
+				}
+				tries--;
+			}
+		}
+	}
+
+	private boolean isFilrServerRunning() throws MalformedURLException, IOException
+	{
+		logger.debug("Check to see if Filr server is running");
+		try
+		{
+			URL myURL = new URL("http://localhost:8080/");
+			URLConnection myURLConnection = myURL.openConnection();
+			myURLConnection.connect();
+		}
+		catch (MalformedURLException e)
+		{
+		}
+		catch (IOException e)
+		{
+		}
+		logger.debug("Filr server is running");
+		return true;
+	}
+
+	@Override
+	public void authenticateDbCredentials(String url, String userName, String password) throws LoginException
+	{
+		try
+		{
+			Class.forName("com.mysql.jdbc.Driver");
+
+			logger.info("authenticating database credentials " + url);
+			Connection conn = DriverManager.getConnection(url, userName, password); // Open a connection
+
+			conn.close();
+		}
+		catch (Exception e)
+		{
+			logger.debug("Exception authenticating database credentials" + e.getLocalizedMessage());
+			throw new LoginException();
+		}
+	}
+
+	public boolean checkDBExists(String dbName, String url, String userName, String password)
+	{
+
+		logger.debug("Check if database exists");
+		try
+		{
+			Class.forName("com.mysql.jdbc.Driver");
+
+			Connection conn = DriverManager.getConnection(url, userName, password); // Open a connection
+
+			ResultSet resultSet = conn.getMetaData().getCatalogs();
+
+			while (resultSet.next())
+			{
+				String databaseName = resultSet.getString(1);
+				logger.debug("Database found =" + databaseName);
+				if (databaseName.equals(dbName))
+				{
+					return true;
+				}
+			}
+			resultSet.close();
+			conn.close();
+
+		}
+		catch (Exception e)
+		{
+			logger.debug("Exception trying to check if database exists");
+		}
+		logger.debug("Database Not found");
+		return false;
+	}
+
+	@Override
+	public Boolean isLuceneServerValid(String host, long port) throws LuceneConnectException
+	{
+		logger.debug("Check if lucene server is valid");
+		HttpURLConnection connection = null;
+		try
+		{
+			URL u = new URL("http://" + host);
+			connection = (HttpURLConnection) u.openConnection();
+			connection.setRequestMethod("HEAD");
+			int code = connection.getResponseCode();
+
+			// We will get 403 for now
+			logger.debug("Response code from lucene server " + code);
+			return true;
+		}
+		catch (MalformedURLException e)
+		{
+			logger.info("Exception checking lucene server - Malformed Exception" + e.getMessage());
+			throw new LuceneConnectException();
+		}
+		catch (IOException e)
+		{
+			logger.info("Exception checking lucene server - IO Exception" + e.getMessage());
+			throw new LuceneConnectException();
+		}
+		finally
+		{
+			if (connection != null)
+			{
+				connection.disconnect();
+			}
+		}
 	}
 }

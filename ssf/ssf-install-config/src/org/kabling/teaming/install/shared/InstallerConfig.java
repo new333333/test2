@@ -5,9 +5,20 @@ import java.util.List;
 
 public class InstallerConfig implements Serializable
 {
-	
+
+	@Override
+	public String toString()
+	{
+		return "InstallerConfig [initialConfiguration=" + initialConfiguration + ", installVersion=" + installVersion
+				+ ", installType=" + installType + ", environment=" + environment + ", network=" + network
+				+ ", jvmMemory=" + jvmMemory + ", requestsAndConnections=" + requestsAndConnections + ", fileSystem="
+				+ fileSystem + ", webDav=" + webDav + ", database=" + database + ", lucene=" + lucene + ", rss=" + rss
+				+ ", emailSettings=" + emailSettings + ", presence=" + presence + ", mirroredFolderList="
+				+ mirroredFolderList + ", sso=" + sso + ", clustered=" + clustered + ", encryption=" + encryption + "]";
+	}
+
 	private boolean initialConfiguration;
-	
+
 	public enum WebDAV
 	{
 		BASIC, DIGEST
@@ -33,7 +44,7 @@ public class InstallerConfig implements Serializable
 	 * 
 	 * Specify amounts as Nm for N megabytes (e.g., 1500m) or Ng for N gigabytes (e.g., 3g).
 	 **/
-	private int jvmMemory;
+	private String jvmMemory;
 
 	private RequestsAndConnections requestsAndConnections;
 	private FileSystem fileSystem;
@@ -105,12 +116,12 @@ public class InstallerConfig implements Serializable
 		this.network = network;
 	}
 
-	public int getJvmMemory()
+	public String getJvmMemory()
 	{
 		return jvmMemory;
 	}
 
-	public void setJvmMemory(int jvmMemory)
+	public void setJvmMemory(String jvmMemory)
 	{
 		this.jvmMemory = jvmMemory;
 	}
