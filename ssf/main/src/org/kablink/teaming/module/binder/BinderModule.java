@@ -93,7 +93,8 @@ public interface BinderModule {
 		changeEntryTimestamps,
 		manageSimpleName,
 		export,
-		deleteEntries
+		deleteEntries,
+		updateModificationTime
 	}
     /**
      * Add a new <code>Folder</code> or <code>Workspace</code>.  Use definition type to determine which
