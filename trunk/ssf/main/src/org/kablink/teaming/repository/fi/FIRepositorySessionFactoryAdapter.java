@@ -38,11 +38,12 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.repository.RepositorySession;
 import org.kablink.teaming.repository.RepositorySessionFactory;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 
 
 public interface FIRepositorySessionFactoryAdapter extends RepositorySessionFactory {
 
-	public RepositorySession openSession(Binder binder, DefinableEntity entity, String resourceDriverName) 
+	public RepositorySession openSession(Binder binder, DefinableEntity entity, String resourceDriverName, WorkAreaOperation operation) 
 	throws FIException, UncheckedIOException;
 	
 	public boolean supportsExternalAcl(String resourceDriverName) throws FIException, UncheckedIOException;

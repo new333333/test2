@@ -40,13 +40,16 @@ import java.util.Map;
 import java.util.Set;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoFileVersionByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.VersionAttachment;
@@ -58,6 +61,8 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.AccessControlManager;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.ExtendedMultipartFile;
 import org.kablink.teaming.util.NoContentMultipartFile;
 import org.kablink.teaming.util.SimpleMultipartFile;
@@ -289,6 +294,47 @@ public class FileUtils {
 		return result;
 	}
 	
+	public static boolean shouldAccessFileSystemWithExternalAclInUserMode(DefinableEntity entity, WorkAreaOperation workAreaOperation) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		if(ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) {
+			// The file operation is being requested by admin. We treat admin like Linux root
+			// acccount and grant all accesses to all files.
+			return false; // proxy mode
+		}
+		else if(ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId())) {
+			// The file operation is being requested by file sync agent, which ALWAYS accesses
+			// file system in proxy mode regardless of sharing. 
+			return false; // proxy mode
+		}
+		else {
+			boolean shareGrantedAccess;
+			
+			if(entity instanceof FolderEntry) {
+				FolderEntry entry = (FolderEntry) entity;
+				if(entry.hasEntryExternalAcl()) { // This entry has its own (external) ACL
+					shareGrantedAccess = getAccessControlManager().testRightGrantedBySharing(user, entry, workAreaOperation);
+				}
+				else { // This entry inherits its ACL from the parent folder
+					shareGrantedAccess = getAccessControlManager().testRightGrantedBySharing(user, entry.getParentFolder(), workAreaOperation);
+				}
+			}
+			else if(entity instanceof Folder) {
+				shareGrantedAccess = getAccessControlManager().testRightGrantedBySharing(user, (Folder) entity, workAreaOperation);			
+			}
+			else {
+				// Sharing facility only supports folders and folder entries, which means that the user
+				// can never be assigned the specified rights on this entity through sharing.
+				shareGrantedAccess = false;
+			}
+			
+			if(shareGrantedAccess)
+				return false; // proxy mode
+			else
+				return true; // user mode
+		}
+	}
+
 	private static FolderModule getFolderModule() {
 		return (FolderModule) SpringContextUtil.getBean("folderModule");
 	}
@@ -307,5 +353,9 @@ public class FileUtils {
 
 	private static FileModule getFileModule() {
 		return (FileModule) SpringContextUtil.getBean("fileModule");
+	}
+	
+	private static AccessControlManager getAccessControlManager() {
+		return (AccessControlManager) SpringContextUtil.getBean("accessControlManager");
 	}
 }

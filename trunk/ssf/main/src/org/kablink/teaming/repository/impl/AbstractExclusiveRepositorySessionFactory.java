@@ -38,6 +38,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.repository.ExclusiveRepositorySessionFactory;
 import org.kablink.teaming.repository.RepositorySession;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 
 
 public abstract class AbstractExclusiveRepositorySessionFactory 
@@ -51,7 +52,7 @@ public abstract class AbstractExclusiveRepositorySessionFactory
 		}
 		
 		@Override
-		protected RepositorySession createSessionForDataSource(Binder binder, DefinableEntity entity) {
+		protected RepositorySession createSessionForDataSource(Binder binder, DefinableEntity entity, WorkAreaOperation operation) {
 			return openSession();
 		}
 	}

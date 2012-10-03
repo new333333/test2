@@ -39,6 +39,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.repository.archive.ArchiveStore;
 import org.kablink.teaming.repository.fi.FIRepositorySessionFactoryAdapter;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SpringContextUtil;
 
 
@@ -56,12 +57,12 @@ public class RepositorySessionFactoryUtil {
 		return factory;
 	}
 	
-	public static RepositorySession openSession(Binder binder, DefinableEntity entity, String repositoryName) 
+	public static RepositorySession openSession(Binder binder, DefinableEntity entity, String repositoryName, WorkAreaOperation operation) 
 	throws RepositoryServiceException, UncheckedIOException {
 		RepositorySessionFactory factory = getRepositorySessionFactory(repositoryName);
 		
 		if(factory instanceof FIRepositorySessionFactoryAdapter)
-			return ((FIRepositorySessionFactoryAdapter) factory).openSession(binder, entity, binder.getResourceDriverName());
+			return ((FIRepositorySessionFactoryAdapter) factory).openSession(binder, entity, binder.getResourceDriverName(), operation);
 		else if(factory instanceof ExclusiveRepositorySessionFactory)
 			return ((ExclusiveRepositorySessionFactory) factory).openSession();
 		else

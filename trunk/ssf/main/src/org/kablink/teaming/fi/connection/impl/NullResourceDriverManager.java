@@ -36,11 +36,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.UncheckedIOException;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.fi.connection.ResourceSession;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 
 
 public class NullResourceDriverManager implements ResourceDriverManager {
@@ -68,11 +70,7 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 		return null;
 	}
 
-	public ResourceSession getSession(String driverName) throws FIException, UncheckedIOException {
-		return null;
-	}
-
-	public ResourceSession getSession(String driverName, String initialResourcePath) throws FIException, UncheckedIOException {
+	public ResourceSession getSession(DefinableEntity entity, String driverName) throws FIException, UncheckedIOException {
 		return null;
 	}
 
@@ -92,7 +90,7 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 	}
 
 	@Override
-	public ResourceSession getSession(ResourceDriver driver)
+	public ResourceSession getSession(DefinableEntity entity, ResourceDriver driver, WorkAreaOperation operation)
 			throws FIException, UncheckedIOException {
 		return null;
 	}
