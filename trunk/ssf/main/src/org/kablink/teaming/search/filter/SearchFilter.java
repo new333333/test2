@@ -50,6 +50,11 @@ import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.util.search.Constants;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
 @SuppressWarnings("unchecked")
 public class SearchFilter {
 	private static String [] sample = new String[0];
@@ -254,26 +259,40 @@ public class SearchFilter {
 		this.joinAnd = joinAsAnd;
 	}
 	
-	private void addFieldFilter(String field, String type, String searchTerm) {
+	private void addFieldFilter(String field, String type, String searchTerm, boolean wildcardOnly) {
 		checkCurrent();
-		
-		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
-		filterTerm.addAttribute(SearchFilterKeys.FilterType, type);
-		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, field);
-		Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
-		filterTermValueEle.setText(searchTerm.replaceFirst("\\*", "").trim());
-		
-		if (searchTerm.contains("*")) {
-			filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+
+		boolean hasWildcard = searchTerm.contains("*");
+		if (hasWildcard && (!wildcardOnly)) {
+			Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
 			filterTerm.addAttribute(SearchFilterKeys.FilterType, type);
 			filterTerm.addAttribute(SearchFilterKeys.FilterElementName, field);
-			filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
+			Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
+			filterTermValueEle.setText(searchTerm.replaceFirst("\\*", "").trim());
+		}
+		
+		if (hasWildcard) {
+			Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+			filterTerm.addAttribute(SearchFilterKeys.FilterType, type);
+			filterTerm.addAttribute(SearchFilterKeys.FilterElementName, field);
+			Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 			filterTermValueEle.setText(searchTerm.trim());
 		}
 		
 	}
+	
+	private void addFieldFilter(String field, String type, String searchTerm) {
+		// Always use the initial form of the method.
+		addFieldFilter(field, type, searchTerm, false);
+	}
+	
+	public void addTitleFilter(String searchTerm, boolean wildcardOnly) {
+		addFieldFilter(Constants.TITLE_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm.toLowerCase(), wildcardOnly);
+	}
+	
 	public void addTitleFilter(String searchTerm) {
-		addFieldFilter(Constants.TITLE_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm.toLowerCase());
+		// Always use the initial form of the method.
+		addTitleFilter(searchTerm, false);
 	}
 	
 	public void addLoginNameFilter(String searchTerm) {
