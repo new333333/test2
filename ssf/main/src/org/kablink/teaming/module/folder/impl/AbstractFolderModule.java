@@ -1641,7 +1641,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	}
 	
 	private void updateModificationTime(Folder folder, Map options) {
-		if(folder != null && folder.isLibrary() && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
+		if(folder != null && folder.isLibrary() && options != null && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
 			getBinderModule().updateModificationTime(folder);
 	}
 }
