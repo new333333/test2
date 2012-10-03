@@ -517,13 +517,4 @@ public interface FileModule {
 	 */
 	public int checkQuotaAndFileSizeLimit(Long userId, Binder binder, long fileSize, String fileName);
 
-	/**
-	 * Application tier should not call this directly. For system use only.
-	 * 
-	 * @param entity
-	 * @param workAreaOperation
-	 * @return
-	 */
-	public boolean shouldAccessFileSystemWithExternalAclInUserMode(DefinableEntity entity, WorkAreaOperation workAreaOperation);
-
 }	

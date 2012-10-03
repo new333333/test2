@@ -399,50 +399,30 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	public void readFile(Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
-		boolean involvesExtAcl = involvesExternalAcl(binder, fa.getRepositoryName());
-		if(involvesExtAcl)
-			setupAccessModeForExternalAcl(entry, WorkAreaOperation.READ_ENTRIES);
+		String versionName = null;
+		String latestVersionName = null;
 		
-		try {
-			String versionName = null;
-			String latestVersionName = null;
-			
-			if(fa instanceof VersionAttachment) {
-				versionName = ((VersionAttachment) fa).getVersionName();
+		if(fa instanceof VersionAttachment) {
+			versionName = ((VersionAttachment) fa).getVersionName();
+		}
+		else {
+			if(fa.getHighestVersion() != null) {
+				if(fa.getFileLock() == null)
+					versionName = fa.getHighestVersion().getVersionName();
+				else
+					latestVersionName = fa.getHighestVersion().getVersionName();				
 			}
 			else {
-				if(fa.getHighestVersion() != null) {
-					if(fa.getFileLock() == null)
-						versionName = fa.getHighestVersion().getVersionName();
-					else
-						latestVersionName = fa.getHighestVersion().getVersionName();				
-				}
-				else {
-					// There is no content to read.
-					return;
-				}
+				// There is no content to read.
+				return;
 			}
-			
-			RepositoryUtil.readVersioned(fa, binder, entry, versionName, latestVersionName, out);			
 		}
-		finally {
-			if(involvesExtAcl)
-				teardownAccessModeForExternalAcl();
-		}
+		
+		RepositoryUtil.readVersioned(fa, binder, entry, versionName, latestVersionName, out);			
 	}
 	
 	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) { 
-		boolean involvesExtAcl = involvesExternalAcl(binder, fa.getRepositoryName());
-		if(involvesExtAcl)
-			setupAccessModeForExternalAcl(entry, WorkAreaOperation.READ_ENTRIES);
-		
-		try {
-			return readFile(binder, entry, fa, false);
-		}
-		finally {
-			if(involvesExtAcl)
-				teardownAccessModeForExternalAcl();
-		}
+		return readFile(binder, entry, fa, false);
 	}
 	
 	protected InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa, boolean readRawFile) { 
@@ -1083,7 +1063,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			// Source and destination binders do not share the same driver. 
 			// Move is not possible in this case. We have to mimic it by
 			// copy followed by delete. 
-			RepositorySession session = RepositorySessionFactoryUtil.openSession(destBinder, destEntity, fa.getRepositoryName());
+			RepositorySession session = RepositorySessionFactoryUtil.openSession(destBinder, destEntity, fa.getRepositoryName(), WorkAreaOperation.BINDER_ADMINISTRATION);
 			try {
 				InputStream is = readFile(binder, entity, fa);
 				long size = fa.getFileItem().getLength();
@@ -1103,7 +1083,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				session.close();
 			}
 			
-			session = RepositorySessionFactoryUtil.openSession(binder, entity, fa.getRepositoryName());
+			session = RepositorySessionFactoryUtil.openSession(binder, entity, fa.getRepositoryName(), WorkAreaOperation.BINDER_ADMINISTRATION);
 			try {
 				session.delete(binder, entity, fa.getFileItem().getName());
 			}
@@ -1428,7 +1408,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	private void deletePrimaryFile(Binder binder, DefinableEntity entry,
 			String relativeFilePath, String repositoryName, FilesErrors errors) {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, entry, repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, entry, repositoryName, WorkAreaOperation.DELETE_ENTRIES);
 		
 		try {
 			try {
@@ -1448,17 +1428,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	private ChangeLog deleteFileInternal(Binder binder, DefinableEntity entry,
 			FileAttachment fAtt, boolean deleteMirroredSource, 
 			FilesErrors errors, boolean updateMetadata) {
-		boolean involvesExtAcl = involvesExternalAcl(binder, fAtt.getRepositoryName());
-		if(involvesExtAcl)
-			setupAccessModeForExternalAcl(entry, WorkAreaOperation.DELETE_ENTRIES);
-		
-		try {
-			return deleteFileInternal2(binder, entry, fAtt, deleteMirroredSource, errors, updateMetadata);
-		}
-		finally {
-			if(involvesExtAcl)
-				teardownAccessModeForExternalAcl();
-		}
+		return deleteFileInternal2(binder, entry, fAtt, deleteMirroredSource, errors, updateMetadata);
 	}
 	
 	private ChangeLog deleteFileInternal2(Binder binder, DefinableEntity entry,
@@ -1893,117 +1863,103 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		String repositoryName = fui.getRepositoryName();
 		FileAttachment fAtt = entry.getFileAttachment(relativeFilePath);
 
-		boolean involvesExtAcl = involvesExternalAcl(binder, fui.getRepositoryName());
-		if(involvesExtAcl) {
-    		if(fAtt == null) // New file for the entry
-    			setupAccessModeForExternalAcl(entry, WorkAreaOperation.CREATE_ENTRIES);
-    		else // Existing file for the entry
-    			setupAccessModeForExternalAcl(entry, WorkAreaOperation.MODIFY_ENTRIES);    			
-		}
+    	/// Work Flow:
+    	/// step1: write primary file
+    	/// step2: update metadata in database
     	
-		try {
-	    	/// Work Flow:
-	    	/// step1: write primary file
-	    	/// step2: update metadata in database
-	    	
-	    	Boolean encryptAllFiles = SPropsUtil.getBoolean("file.encryption.encryptAll", false);
-	    	if (!binder.isMirrored() && (encryptAllFiles || getBinderModule().isBinderFileEncryptionEnabled(binder))) {
-	    		//All files should be encrypted or this binder requires that all files be encrypted, 
-	    		//  so mark that the file should be encrypted.
-	    		try {
-					//Get the key to use when encrypting and decrypting
-	    			CryptoFileEncryption cfe = new CryptoFileEncryption();
-					SecretKey key = cfe.getSecretKey();
-					if (key == null) {
-		    			errors.addProblem(new FilesErrors.Problem
-		    					(fui.getRepositoryName(), fui.getOriginalFilename(), 
-		    							FilesErrors.Problem.PROBLEM_ENCRYPTION_FAILED));
-		    			return false;
-					}
-					fui.setEncryptionKey(key.getEncoded());
-		    		fui.setIsEncrypted(true);
-	    		} catch(Exception e) {
+    	Boolean encryptAllFiles = SPropsUtil.getBoolean("file.encryption.encryptAll", false);
+    	if (!binder.isMirrored() && (encryptAllFiles || getBinderModule().isBinderFileEncryptionEnabled(binder))) {
+    		//All files should be encrypted or this binder requires that all files be encrypted, 
+    		//  so mark that the file should be encrypted.
+    		try {
+				//Get the key to use when encrypting and decrypting
+    			CryptoFileEncryption cfe = new CryptoFileEncryption();
+				SecretKey key = cfe.getSecretKey();
+				if (key == null) {
 	    			errors.addProblem(new FilesErrors.Problem
 	    					(fui.getRepositoryName(), fui.getOriginalFilename(), 
 	    							FilesErrors.Problem.PROBLEM_ENCRYPTION_FAILED));
 	    			return false;
+				}
+				fui.setEncryptionKey(key.getEncoded());
+	    		fui.setIsEncrypted(true);
+    		} catch(Exception e) {
+    			errors.addProblem(new FilesErrors.Problem
+    					(fui.getRepositoryName(), fui.getOriginalFilename(), 
+    							FilesErrors.Problem.PROBLEM_ENCRYPTION_FAILED));
+    			return false;
+    		}
+
+    	}
+
+    	if(!writeFilePreCheck(binder, entry, fui, errors))
+    		return false;
+    	
+    	boolean isNew = false;
+    	
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, entry, repositoryName, (fAtt == null)? WorkAreaOperation.CREATE_ENTRIES:WorkAreaOperation.MODIFY_ENTRIES);
+
+    	try {
+    		boolean versionCreated = false;
+    		try {
+	    		// Store primary file first, since we do not want to generate secondary
+	    		// files unless we could successfully store the primary file first. 
+	    		
+	    		if(fAtt == null) { // New file for the entry
+	    			SimpleProfiler.start("writeFile_createFile");
+	    			isNew = true;
+	    			fAtt = createFile(session, binder, entry, fui);
+	    			versionCreated = true;
+	    			SimpleProfiler.stop("writeFile_createFile");
 	    		}
-	
-	    	}
-	
-	    	if(!writeFilePreCheck(binder, entry, fui, errors))
-	    		return false;
+	    		else { // Existing file for the entry
+	    			SimpleProfiler.start("writeFile_writeExistingFile");
+	    			// Bug #637636 - In order to treat the files that only differ in case as a single
+	    			// file, we normalize the file names of all versions of a single file to the file name 
+	    			// of the initial version. 
+	    			fui.setOriginalFilename(fAtt.getFileItem().getName());
+	    			if(writeExistingFile(session, binder, entry, fui) != null)
+	    				versionCreated = true;
+	    			SimpleProfiler.stop("writeFile_writeExistingFile");
+	    		}
+    		}
+    		catch(DataQuotaException e) {
+    			errors.addProblem(new FilesErrors.Problem(repositoryName, relativeFilePath, -1, e));
+    			return false;
+    		}
+    		catch(Exception e) {
+    			logger.error("Error storing primary file " + relativeFilePath, e);
+    			// We failed to write the primary file. In this case, we 
+    			// discard the rest of the operation (i.e., step2 thru 4).
+    			errors.addProblem(new FilesErrors.Problem
+    					(repositoryName, relativeFilePath, 
+    							FilesErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
+    			return false;
+    		}		
+
+	    	// Update metadata - We do this only after successfully writing
+	    	// the file to the repository to ensure that our metadata describes
+	    	// what actually exists. Of course, there could be a failure scenario
+	    	// where this metadata update fails leaving the file dangling in the
+	    	// repository. But that is expected to be a lot more rare, and not
+	    	// quite as destructive as the other case. But the bottom line is, 
+	    	// unless we have a single transaction that spans both repository
+	    	// update and database update all within a single unit, there will
+	    	// always be error cases that can leave the data inconsistent. 
+	    	// When a repository supports JCA, this should be possible to do
+	    	// using JTA. But that's not always available, and this version of
+	    	// the system does not try to address that. 
+    		SimpleProfiler.start("writeFile_MetadataTransactional");
+	    	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew, versionCreated);
+    		SimpleProfiler.stop("writeFile_MetadataTransactional");
 	    	
-	    	boolean isNew = false;
-	    	
-			RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, entry, repositoryName);
-	
-	    	try {
-	    		boolean versionCreated = false;
-	    		try {
-		    		// Store primary file first, since we do not want to generate secondary
-		    		// files unless we could successfully store the primary file first. 
-		    		
-		    		if(fAtt == null) { // New file for the entry
-		    			SimpleProfiler.start("writeFile_createFile");
-		    			isNew = true;
-		    			fAtt = createFile(session, binder, entry, fui);
-		    			versionCreated = true;
-		    			SimpleProfiler.stop("writeFile_createFile");
-		    		}
-		    		else { // Existing file for the entry
-		    			SimpleProfiler.start("writeFile_writeExistingFile");
-		    			// Bug #637636 - In order to treat the files that only differ in case as a single
-		    			// file, we normalize the file names of all versions of a single file to the file name 
-		    			// of the initial version. 
-		    			fui.setOriginalFilename(fAtt.getFileItem().getName());
-		    			if(writeExistingFile(session, binder, entry, fui) != null)
-		    				versionCreated = true;
-		    			SimpleProfiler.stop("writeFile_writeExistingFile");
-		    		}
-	    		}
-	    		catch(DataQuotaException e) {
-	    			errors.addProblem(new FilesErrors.Problem(repositoryName, relativeFilePath, -1, e));
-	    			return false;
-	    		}
-	    		catch(Exception e) {
-	    			logger.error("Error storing primary file " + relativeFilePath, e);
-	    			// We failed to write the primary file. In this case, we 
-	    			// discard the rest of the operation (i.e., step2 thru 4).
-	    			errors.addProblem(new FilesErrors.Problem
-	    					(repositoryName, relativeFilePath, 
-	    							FilesErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
-	    			return false;
-	    		}		
-	
-		    	// Update metadata - We do this only after successfully writing
-		    	// the file to the repository to ensure that our metadata describes
-		    	// what actually exists. Of course, there could be a failure scenario
-		    	// where this metadata update fails leaving the file dangling in the
-		    	// repository. But that is expected to be a lot more rare, and not
-		    	// quite as destructive as the other case. But the bottom line is, 
-		    	// unless we have a single transaction that spans both repository
-		    	// update and database update all within a single unit, there will
-		    	// always be error cases that can leave the data inconsistent. 
-		    	// When a repository supports JCA, this should be possible to do
-		    	// using JTA. But that's not always available, and this version of
-		    	// the system does not try to address that. 
-	    		SimpleProfiler.start("writeFile_MetadataTransactional");
-		    	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew, versionCreated);
-	    		SimpleProfiler.stop("writeFile_MetadataTransactional");
-		    	
-	        	//SimpleProfiler.done(logger);
-	
-		    	return true;
-	    	}
-	    	finally {
-	    		session.close();
-	    	}
-		}
-		finally {
-			if(involvesExtAcl)
-				teardownAccessModeForExternalAcl();
-		}
+        	//SimpleProfiler.done(logger);
+
+	    	return true;
+    	}
+    	finally {
+    		session.close();
+    	}
     }
     
     private boolean writeFileValidationOnly(Binder binder, DefinableEntity entry, 
@@ -2647,7 +2603,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     private boolean closeExpiredLock(Binder binder, DefinableEntity entity, 
     		FileAttachment fa, boolean commit, List newObjs) throws RepositoryServiceException,
     		UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, entity, fa.getRepositoryName());
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, entity, fa.getRepositoryName(), WorkAreaOperation.MODIFY_ENTRIES);
 
 		try {
 			return closeExpiredLock(session, binder, entity, fa, commit, newObjs);
@@ -2685,7 +2641,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     private boolean commitPendingChanges(Binder binder, DefinableEntity entity,
     		FileAttachment fa, FileAttachment.FileLock lock, List newObjs)
     	throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, entity, fa.getRepositoryName());
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, entity, fa.getRepositoryName(), WorkAreaOperation.MODIFY_ENTRIES);
 
 		try {
 			return commitPendingChanges(session, binder, entity, fa,
@@ -3002,64 +2958,4 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return 0;
 	}
 	
-	private boolean involvesExternalAcl(Binder binder, String repositoryName) {
-		RepositorySessionFactory factory = RepositorySessionFactoryUtil.getRepositorySessionFactory(repositoryName);
-		if(factory instanceof FIRepositorySessionFactoryAdapter) {
-			FIRepositorySessionFactoryAdapter adapter = (FIRepositorySessionFactoryAdapter) factory;
-			return adapter.supportsExternalAcl(binder.getResourceDriverName());
-		}
-		else {
-			return false;
-		}
-	}
-	
-	private void setupAccessModeForExternalAcl(DefinableEntity entity, WorkAreaOperation workAreaOperation) {
-		boolean accessFileSystemWithExternalAclInUserMode = shouldAccessFileSystemWithExternalAclInUserMode(entity, workAreaOperation);
-		RequestContextHolder.getRequestContext().setAccessFileSystemWithExternalAclInUserMode(accessFileSystemWithExternalAclInUserMode);
-	}
-	
-	public boolean shouldAccessFileSystemWithExternalAclInUserMode(DefinableEntity entity, WorkAreaOperation workAreaOperation) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		
-		if(ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) {
-			// The file operation is being requested by admin. We treat admin like Linux root
-			// acccount and grant all accesses to all files.
-			return false; // proxy mode
-		}
-		else if(ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId())) {
-			// The file operation is being requested by file sync agent, which ALWAYS accesses
-			// file system in proxy mode regardless of sharing. 
-			return false; // proxy mode
-		}
-		else {
-			boolean shareGrantedAccess;
-			
-			if(entity instanceof FolderEntry) {
-				FolderEntry entry = (FolderEntry) entity;
-				if(entry.hasEntryExternalAcl()) { // This entry has its own (external) ACL
-					shareGrantedAccess = getAccessControlManager().testRightGrantedBySharing(user, entry, workAreaOperation);
-				}
-				else { // This entry inherits its ACL from the parent folder
-					shareGrantedAccess = getAccessControlManager().testRightGrantedBySharing(user, entry.getParentFolder(), workAreaOperation);
-				}
-			}
-			else if(entity instanceof Folder) {
-				shareGrantedAccess = getAccessControlManager().testRightGrantedBySharing(user, (Folder) entity, workAreaOperation);			
-			}
-			else {
-				// Sharing facility only supports folders and folder entries, which means that the user
-				// can never be assigned the specified rights on this entity through sharing.
-				shareGrantedAccess = false;
-			}
-			
-			if(shareGrantedAccess)
-				return false; // proxy mode
-			else
-				return true; // user mode
-		}
-	}
-	
-	private void teardownAccessModeForExternalAcl() {
-		RequestContextHolder.getRequestContext().setAccessFileSystemWithExternalAclInUserMode(null);		
-	}
 }

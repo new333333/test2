@@ -88,8 +88,6 @@ public class RequestContext {
     private List<WorkAreaOperation> increaseByRights;
     private List<WorkAreaOperation> decreaseByRights;
     
-    private Boolean accessFileSystemWithExternalAclInUserMode = null;
-    
     // IMPORTANT: This object is designed to contain only those properties that
     //            are needed to fetch corresponding user, application, or zone object. 
     //            Do NOT cache user, application or zone object directly in this class.
@@ -327,15 +325,6 @@ public class RequestContext {
 
 	public void setDecreaseByRights(List<WorkAreaOperation> decreaseByRights) {
 		this.decreaseByRights = decreaseByRights;
-	}
-
-	public Boolean getAccessFileSystemWithExternalAclInUserMode() {
-		return accessFileSystemWithExternalAclInUserMode;
-	}
-
-	public void setAccessFileSystemWithExternalAclInUserMode(
-			Boolean accessFileSystemWithExternalAclInUserMode) {
-		this.accessFileSystemWithExternalAclInUserMode = accessFileSystemWithExternalAclInUserMode;
 	}
 
 }

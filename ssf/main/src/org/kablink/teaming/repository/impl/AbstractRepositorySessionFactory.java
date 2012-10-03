@@ -48,6 +48,7 @@ import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.repository.RepositorySession;
 import org.kablink.teaming.repository.RepositorySessionFactory;
 import org.kablink.teaming.repository.archive.ArchiveStore;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 
 
 public abstract class AbstractRepositorySessionFactory implements RepositorySessionFactory {
@@ -92,7 +93,7 @@ public abstract class AbstractRepositorySessionFactory implements RepositorySess
 		}
 
 		public InputStream getInputStream() throws IOException {
-			RepositorySession session = createSessionForDataSource(_binder, _entity);
+			RepositorySession session = createSessionForDataSource(_binder, _entity, WorkAreaOperation.READ_ENTRIES);
 			InputStream in = null;
 			try {
 				in = session.readVersioned(_binder, _entity, _relativeFilePath, _versionName, null);
@@ -115,6 +116,6 @@ public abstract class AbstractRepositorySessionFactory implements RepositorySess
 			return null;
 		}
 		
-		protected abstract RepositorySession createSessionForDataSource(Binder binder, DefinableEntity entity);
+		protected abstract RepositorySession createSessionForDataSource(Binder binder, DefinableEntity entity, WorkAreaOperation operation);
 	}
 }

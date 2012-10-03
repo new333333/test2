@@ -126,6 +126,7 @@ import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
@@ -511,7 +512,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				ResourceSession session = null;
 				try {
 					if(binder.getResourcePath() == null && parent.getResourcePath() != null) {
-						session = getResourceDriverManager().getSession(driver);
+						session = getResourceDriverManager().getSession(parent, driver, WorkAreaOperation.CREATE_FOLDERS);
 						session.setPath(parent.getResourcePath(), binder.getTitle());
 						binder.setResourcePath(session.getPath());
 						normalizeResourcePath(binder);
@@ -529,7 +530,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 						}
 						else {
 							if(session == null) {						
-								session = getResourceDriverManager().getSession(driver);
+								session = getResourceDriverManager().getSession(parent, driver, WorkAreaOperation.CREATE_FOLDERS);
 								session.setPath(binder.getResourcePath());
 							}
 							
@@ -834,7 +835,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 						new String[] {binder.getPathName(), driver.getTitle()});
     		}
     		else {
-				ResourceSession session = getResourceDriverManager().getSession(driver).setPath(binder.getResourcePath());
+				ResourceSession session = getResourceDriverManager().getSession(binder.getParentBinder(), driver, WorkAreaOperation.BINDER_ADMINISTRATION).setPath(binder.getResourcePath());
 				try {
 					session.move(binder.getParentBinder().getResourcePath(), newTitle);
 					
@@ -1025,7 +1026,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 							new String[] {binder.getPathName(), driver.getTitle()});
 				}
 				else {
-	    			ResourceSession session = getResourceDriverManager().getSession(driver).setPath(binder.getResourcePath());
+	    			ResourceSession session = getResourceDriverManager().getSession(binder.getParentBinder(), driver, WorkAreaOperation.BINDER_ADMINISTRATION).setPath(binder.getResourcePath());
 	    			try {
 	    				session.delete();
 	    			}
@@ -1212,7 +1213,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		    		}
     		    		else {
         					// We can/must move the resource.
-	    					ResourceSession session = getResourceDriverManager().getSession(driver).setPath(source.getResourcePath()); 
+	    					ResourceSession session = getResourceDriverManager().getSession(source.getParentBinder(), driver, WorkAreaOperation.BINDER_ADMINISTRATION).setPath(source.getResourcePath()); 
 	    					try {
 	    						session.move(destination.getResourcePath(), source.getTitle());  	
 	    						// Do not yet update the resource path in the source, it will be done by callder.
