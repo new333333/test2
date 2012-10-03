@@ -3074,7 +3074,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	private void updateModificationTimeIfNecessary(Binder binder, Map options) {
-		if(binder != null && binder.isLibrary() && options != null && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
+		if(binder != null && binder.isLibrary() && !(options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE))))
 			updateModificationTime(binder);
 	}
 }
