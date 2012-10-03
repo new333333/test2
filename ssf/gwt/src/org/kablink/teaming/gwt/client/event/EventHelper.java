@@ -644,6 +644,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case GET_CURRENT_VIEW_INFO:
+				// An GetCurrentViewInfoEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof GetCurrentViewInfoEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = GetCurrentViewInfoEvent.registerEvent(eventBus, ((GetCurrentViewInfoEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case GET_MANAGE_MENU_POPUP:
 				// An GetManageMenuPopupEvent!  Can the event handler
 				// we were given handle that?
@@ -2169,6 +2178,7 @@ public class EventHelper {
 			case HIDE_ACCESSORIES:						hasHandler = (eventHandler instanceof HideAccessoriesEvent.Handler);		   	   break;
 			case SHOW_ACCESSORIES:						hasHandler = (eventHandler instanceof ShowAccessoriesEvent.Handler);		   	   break;
 			
+			case GET_CURRENT_VIEW_INFO:                 hasHandler = (eventHandler instanceof GetCurrentViewInfoEvent.Handler);            break;
 			case GET_SIDEBAR_COLLECTION:                hasHandler = (eventHandler instanceof GetSidebarCollectionEvent.Handler);          break;
 			case REFRESH_SIDEBAR_TREE:                 	hasHandler = (eventHandler instanceof RefreshSidebarTreeEvent.Handler);            break;
 			case REROOT_SIDEBAR_TREE:                 	hasHandler = (eventHandler instanceof RerootSidebarTreeEvent.Handler);             break;

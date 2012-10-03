@@ -67,6 +67,7 @@ import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
+import org.kablink.teaming.gwt.client.event.GetCurrentViewInfoEvent;
 import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
 import org.kablink.teaming.gwt.client.event.ShowBlogFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowCalendarFolderEvent;
@@ -136,6 +137,7 @@ public class ContentControl extends Composite
 	// Event handlers implemented by this class.
 		ContributorIdsRequestEvent.Handler,
 		ChangeContextEvent.Handler,
+		GetCurrentViewInfoEvent.Handler,
 		GotoUrlEvent.Handler,
 		ShowBlogFolderEvent.Handler,
 		ShowCalendarFolderEvent.Handler,
@@ -169,6 +171,7 @@ public class ContentControl extends Composite
 	private GwtMainPage		m_mainPage;									//
 	private Instigator		m_contentInstigator = Instigator.UNKNOWN;	//
 	private NamedFrame		m_frame;									//
+	private ViewInfo		m_currentView;								//
 	private ViewMode		m_viewMode = ViewMode.JSP_CONTENT_VIEW;		//
 	
 	// The following defines the TeamingEvents that are handled by
@@ -209,6 +212,7 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_TRASH,
 		
 		// View events.
+		TeamingEvents.GET_CURRENT_VIEW_INFO,
 		TeamingEvents.VIEW_FORUM_ENTRY,
 	};
 
@@ -608,6 +612,7 @@ public class ContentControl extends Composite
 	 */
 	private void setViewNow( final ViewInfo vi, final String url, final Instigator instigator )
 	{
+		m_currentView       = vi;
 		m_contentInstigator = instigator;
 		try
 		{
@@ -1078,6 +1083,18 @@ public class ContentControl extends Composite
 		Scheduler.get().scheduleDeferred( doReply );
 	}// end onContributorIdsRequest()
 	
+	
+	/**
+	 * Handles the GetCurrentViewInfoEvents received by this class
+	 * 
+	 * Implements the GetCurrentViewInfoEvent.Handler.onGetCurrentViewInfo() method.
+	 */
+	@Override
+	public void onGetCurrentViewInfo( GetCurrentViewInfoEvent event )
+	{
+		event.getViewInfoCallback().viewInfo( m_currentView );
+	}
+
 	
 	/**
 	 * Handles the GotoUrlEvents received by this class

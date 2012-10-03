@@ -57,6 +57,8 @@ import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FilesDroppedEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
+import org.kablink.teaming.gwt.client.event.GetCurrentViewInfoEvent;
+import org.kablink.teaming.gwt.client.event.GetCurrentViewInfoEvent.ViewInfoCallback;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
@@ -121,11 +123,13 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfoHelper.BinderInfoCallback;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.VibeProduct;
+import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu.ActionMenuItem;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
@@ -2834,10 +2838,75 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	@Override
 	public void onSearchSimple( SearchSimpleEvent event )
-	{		
+	{
+		// What's the view currently loaded in the content panel?
 		String searchFor = event.getSimpleSearchString();
-		String searchUrl = ( m_requestInfo.getSimpleSearchUrl() + "&searchText=" + GwtClientHelper.jsEncodeURIComponent( searchFor ) );
-		gotoUrlAsync( searchUrl );
+		final String baseSearchUrl = ( m_requestInfo.getSimpleSearchUrl() + "&searchText=" + GwtClientHelper.jsEncodeURIComponent( searchFor ) );
+		GetCurrentViewInfoEvent gcvi = new GetCurrentViewInfoEvent( new ViewInfoCallback()
+		{
+			@Override
+			public void viewInfo( ViewInfo vi )
+			{
+				boolean	setContext = false;
+				String	searchUrl  = baseSearchUrl;
+				switch( vi.getViewType() )
+				{
+				case BINDER:
+				case BINDER_WITH_ENTRY_VIEW:
+					BinderInfo bi = vi.getBinderInfo();
+					switch( bi.getBinderType() )
+					{
+					case COLLECTION:
+						// A collection!  Add the appropriate context
+						// information to the search URL.
+						searchUrl  = GwtClientHelper.appendUrlParam( searchUrl, "context",           "collection" );
+						searchUrl  = GwtClientHelper.appendUrlParam( searchUrl, "contextCollection", String.valueOf( bi.getCollectionType().ordinal() ) );
+						setContext = true;
+						break;
+						
+					case FOLDER:
+					case WORKSPACE:
+						// A folder or workspace!  Add the appropriate
+						// context information to the search URL.
+						searchUrl  = GwtClientHelper.appendUrlParam( searchUrl, "context",        "binder");
+						searchUrl  = GwtClientHelper.appendUrlParam( searchUrl, "contextBinderId", bi.getBinderId() );
+						setContext = true;
+						break;
+					}
+					break;
+					
+				case FOLDER_ENTRY:
+					// A folder entry!  Add the appropriate context
+					// information to the search URL.
+					ViewFolderEntryInfo	vfei = vi.getFolderEntryInfo();
+					EntityId			eid  = vfei.getEntityId();
+					searchUrl  = GwtClientHelper.appendUrlParam( searchUrl, "context",        "entry");
+					searchUrl  = GwtClientHelper.appendUrlParam( searchUrl, "contextEntryId",  String.valueOf( eid.getEntityId() ) );
+					searchUrl  = GwtClientHelper.appendUrlParam( searchUrl, "contextBinderId", String.valueOf( eid.getBinderId() ) );
+					setContext = true;
+					break;
+				}
+
+				// Did we add a context to the search URL?
+				if ( ! setContext )
+				{
+					// No!  Do we have a base binder ID stored in the
+					// ViewInfo?
+					Long baseBinderId = vi.getBaseBinderId();
+					if ( null != baseBinderId )
+					{
+						// Yes!  Add that as the context.
+						searchUrl  = GwtClientHelper.appendUrlParam( searchUrl, "context",        "other");
+						searchUrl  = GwtClientHelper.appendUrlParam( searchUrl, "contextBinderId", String.valueOf( baseBinderId ) );
+						setContext = true;
+					}
+				}
+				
+				// Finally, fire the search URL.
+				gotoUrlAsync( searchUrl );
+			}
+		} );
+		GwtTeaming.fireEvent( gcvi );
 	}// end onSearchSimple()
 	
 	/**
