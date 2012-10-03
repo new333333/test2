@@ -470,8 +470,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					def, Workspace.class, inputData, fileItems, options);
 		}
 		
-		if(binder != null && parentBinder.isLibrary() && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
-	        updateModificationTime(parentBinder);
+		if(binder != null)
+	        updateModificationTimeIfNecessary(parentBinder, options);
 		
 		end(begin, "addBinder");
 		return binder;
@@ -866,8 +866,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		        	processor.indexBinder(binder, true);
 		        }
 		        
-		        if(binder.getParentBinder() != null)
-		        	updateModificationTime(binder.getParentBinder());
+		        updateModificationTimeIfNecessary(binder.getParentBinder(), options);
 			}
 		}
 	}
@@ -1128,8 +1127,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		        if (reindex) {
 		        	processor.indexBinder(binder, true);
 		        }
-		        if(parentBinder != null)
-		        	updateModificationTime(parentBinder);
+		        updateModificationTimeIfNecessary(parentBinder, options);
 			}
 		}
 	}
@@ -1158,8 +1156,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			deleteBinderPhase2();
 		}
 		
-		if(parentBinder != null)
-			updateModificationTime(parentBinder);
+		updateModificationTimeIfNecessary(parentBinder, options);
 	}
 
 	// no transaction
@@ -1184,9 +1181,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			// move whole tree at once
 			loadBinderProcessor(source).moveBinder(source, destination, options);
 			
-			updateModificationTime(sourceParent);
+			updateModificationTimeIfNecessary(sourceParent, options);
 			if(sourceParent != destination)
-				updateModificationTime(destination);
+				updateModificationTimeIfNecessary(destination, options);
 			
 		} else {
 			throw new NotSupportedException(NLT.get("quota.binder.exceeded"));
@@ -1221,7 +1218,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					destinationParent, params);
 			if (cascade)
 				doCopyChildren(source, binder);
-	        updateModificationTime(destinationParent);
+	        updateModificationTimeIfNecessary(destinationParent, options);
 			return binder;
 		} else {
 			throw new NotSupportedException(NLT.get("quota.binder.exceeded"));
@@ -3076,4 +3073,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		this.indexBinder(binder.getId(), false);
 	}
 	
+	private void updateModificationTimeIfNecessary(Binder binder, Map options) {
+		if(binder != null && binder.isLibrary() && !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))
+			updateModificationTime(binder);
+	}
 }
