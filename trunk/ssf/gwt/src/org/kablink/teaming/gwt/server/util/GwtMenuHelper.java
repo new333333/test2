@@ -1355,16 +1355,11 @@ public class GwtMenuHelper {
 					adminMenuCreated  =
 					configMenuCreated = true;
 					
-					url = createActionUrl(request);
-					url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_MODIFY_BINDER);
-					url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                   );
-					url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()           );
-					url.setParameter(WebKeys.URL_OPERATION,   WebKeys.OPERATION_MOVE      );
-					
+					// ...add the move item....
 					actionTBI = new ToolbarItem(MOVE);
-					markTBIPopup(actionTBI                                                                         );
-					markTBITitle(actionTBI, (isFolder ? "toolbar.menu.move_folder" : "toolbar.menu.move_workspace"));
-					markTBIUrl(  actionTBI, url                                                                    );
+					markTBITitle(         actionTBI, (isFolder ? "toolbar.menu.move_folder" : "toolbar.menu.move_workspace"));
+					markTBIEvent(         actionTBI, TeamingEvents.MOVE_SELECTED_ENTRIES                                    );
+					markTBISelectedBinder(actionTBI, binder                                                                 );
 					
 					configTBI.addNestedItem(actionTBI);
 				}
@@ -1375,16 +1370,10 @@ public class GwtMenuHelper {
 					adminMenuCreated  =
 					configMenuCreated = true;
 					
-					url = createActionUrl(request);
-					url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_MODIFY_BINDER);
-					url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                   );
-					url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()           );
-					url.setParameter(WebKeys.URL_OPERATION,   WebKeys.OPERATION_COPY      );
-					
 					actionTBI = new ToolbarItem(COPY);
-					markTBIPopup(actionTBI                                                                         );
-					markTBITitle(actionTBI, (isFolder ? "toolbar.menu.copy_folder" : "toolbar.menu.copy_workspace"));
-					markTBIUrl(  actionTBI, url                                                                    );
+					markTBITitle(         actionTBI, (isFolder ? "toolbar.menu.copy_folder" : "toolbar.menu.copy_workspace"));
+					markTBIEvent(         actionTBI, TeamingEvents.COPY_SELECTED_ENTRIES                                    );
+					markTBISelectedBinder(actionTBI, binder                                                                 );
 					
 					configTBI.addNestedItem(actionTBI);
 				}
@@ -2890,6 +2879,15 @@ public class GwtMenuHelper {
 	 */
 	private static void markTBISelected(ToolbarItem tbi) {
 		tbi.addQualifier(WebKeys.TOOLBAR_MENU_SELECTED, "true");
+	}
+	
+	/*
+	 * Marks a ToolbarItem as to a binder being selected.
+	 */
+	private static void markTBISelectedBinder(ToolbarItem tbi, Binder binder) {
+		tbi.addQualifier("binderId",       String.valueOf(binder.getId())                  );
+		tbi.addQualifier("binderParentId", String.valueOf(binder.getParentBinder().getId()));
+		tbi.addQualifier("binderType",     binder.getEntityType().name());
 	}
 	
 	/*
