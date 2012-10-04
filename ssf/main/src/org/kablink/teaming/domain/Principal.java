@@ -289,6 +289,8 @@ public abstract class Principal extends Entry implements IPrincipal {
 		return samAccountName;
 	}
 	public void setSamAccountName(String samAccountName) {
+		if(samAccountName != null)
+			samAccountName = samAccountName.toLowerCase();
 		this.samAccountName = samAccountName;
 	}
 	
