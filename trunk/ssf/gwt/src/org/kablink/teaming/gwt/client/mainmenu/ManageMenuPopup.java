@@ -33,7 +33,6 @@
 package org.kablink.teaming.gwt.client.mainmenu;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -95,6 +94,40 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 
 	/*
 	 * Scans the nested items of a toolbar looking for one whose URL
+	 * contains a specific event.  If it is found, it is added to
+	 * the bucket.
+	 * 
+	 * Returns true if the event was found and added to the bucket
+	 * and false otherwise.
+	 */
+	private boolean addNestedItemFromEvent(List<ToolbarItem> bucket, ToolbarItem tbi, TeamingEvents event) {
+		// If we don't have a toolbar to search or it has no nested
+		// items...
+		List<ToolbarItem> tbiList = ((null == tbi) ? null : tbi.getNestedItemsList());
+		if ((null == tbiList) || tbiList.isEmpty()) {
+			// ...bail.
+			return false;
+		}
+
+		// Scan the nested items.
+		for (ToolbarItem nestedTBI:  tbiList) {
+			// Does the nested item contain the event that we're
+			// looking for?
+			if (event.equals(nestedTBI.getTeamingEvent())) {
+				// Yes!  Add it to the bucket and return true.
+				tbiList.remove(nestedTBI);
+				bucket.add(nestedTBI);
+				return true;
+			}
+		}
+		
+		// If we get here, we didn't find the requested event.  Return
+		// false.
+		return false;
+	}
+	
+	/*
+	 * Scans the nested items of a toolbar looking for one whose URL
 	 * contains a specific action.  If it is found, it is added to
 	 * the bucket.
 	 * 
@@ -115,9 +148,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		if (null != operation) {
 			operation = ("operation=" + operation.toLowerCase());
 		}
-		for (Iterator<ToolbarItem> tbiIT = tbiList.iterator(); tbiIT.hasNext(); ) {
+		for (ToolbarItem nestedTBI:  tbiList) {
 			// Does this nested item contain a URL?
-			ToolbarItem nestedTBI = tbiIT.next();
 			String url = nestedTBI.getUrl();
 			if (!(GwtClientHelper.hasString(url))) {
 				// No!  Skip it.
@@ -159,10 +191,10 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			List<ToolbarItem> nestedSrcTBIList = tbiSrc.getNestedItemsList();
 			if (null != nestedSrcTBIList) {
 				// ...scan them...
-				for (Iterator<ToolbarItem> tbiIT = nestedSrcTBIList.iterator(); tbiIT.hasNext(); ) {
+				for (ToolbarItem tbiIT:  nestedSrcTBIList) {
 					// ...and store them in the destination's nested
 					// ...List<ToolbarItem>.
-					tbiDest.addNestedItem(tbiIT.next());
+					tbiDest.addNestedItem(tbiIT);
 				}
 			}
 		}
@@ -183,17 +215,19 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 
 		// File the buckets in the order things will appear in the
 		// menu.  Start with the actions section...
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_folder"   );
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_subFolder");
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_workspace");
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "delete"       );
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "modify"       );
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "copy"         );
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "move"         );
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "export_import"                 );
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "manage_binder_quota"           );
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "manage_definitions"            );
-		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "configure_configuration"       );
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_folder"      );
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_subFolder"   );
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_workspace"   );
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "modify_binder", "modify"          );
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "modify_binder", "delete"          );
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "modify_binder", "copy"            );
+		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.COPY_SELECTED_ENTRIES);
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "modify_binder", "move"            );
+		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.MOVE_SELECTED_ENTRIES);
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "export_import"                    );
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "manage_binder_quota"              );
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "manage_definitions"               );
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "configure_configuration"          );
 		
 		// ...then the team section...
 		if ((null != m_tmi) && m_tmi.isTeamManagementEnabled()) {
@@ -331,10 +365,9 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	public boolean shouldShowMenu() {
 		// Scan the toolbar items...
 		ToolbarItem categoriesTBI;
-		for (Iterator<ToolbarItem> tbiIT = m_toolbarItemList.iterator(); tbiIT.hasNext(); ) {
+		for (ToolbarItem tbi:  m_toolbarItemList) {
 			// ...and keep track of the ones that appear on the manage
 			// ...menu.
-			ToolbarItem tbi = tbiIT.next();
 			String tbName = tbi.getName();
 			if (tbName.equalsIgnoreCase("ssFolderToolbar")) {
 				ToolbarItem adminTBI = tbi.getNestedToolbarItem("administration");
