@@ -277,4 +277,9 @@
             <column name="objectSid"/>
         </createIndex>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="30">
+        <addColumn tableName="SS_Principals">
+			<column name="samAccountName" type="VARCHAR(128)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
