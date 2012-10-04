@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -76,7 +76,6 @@ import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
@@ -106,6 +105,11 @@ import org.kablink.util.search.Criteria;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
 @SuppressWarnings("unchecked")
 public class WorkspaceTreeHelper {
 	protected static final Log logger = LogFactory.getLog(Workspace.class);
@@ -323,8 +327,8 @@ public class WorkspaceTreeHelper {
 						model.put(WebKeys.USER_WORKSPACE, true);
 
 						//Get the dashboard initial tab if one was passed in
-						String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
-						String profile = PortletRequestUtils.getStringParameter(request,WebKeys.URL_PROFILE, "");
+						String type    = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
+						String profile = (Utils.checkIfFilr() ? "1" : PortletRequestUtils.getStringParameter(request,WebKeys.URL_PROFILE, ""));
 						
 						//if we don't find a Url Type look to see if there is a profile value						
 						if(type.equals("")) {
@@ -776,7 +780,6 @@ public class WorkspaceTreeHelper {
 		buildWorkspaceToolbar(bs, req, response, model, ws, ws.getId().toString());
 	}
 	
-	@SuppressWarnings("unused")
 	protected static void buildWorkspaceToolbar(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Map model, Workspace workspace, 
 			String forumId) {
