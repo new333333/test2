@@ -162,9 +162,7 @@ public class SearchMenuPanel extends FlowPanel {
 		m_searchEmpty = true;
 		m_searchInput.setValue(m_emptyTxt);
 		setBlurStyles();
-		if (0 < searchFor.length()) {
-			GwtTeaming.fireEvent(new SearchSimpleEvent(searchFor));
-		}
+		GwtTeaming.fireEvent(new SearchSimpleEvent(searchFor));
 	}
 	
 	/*
