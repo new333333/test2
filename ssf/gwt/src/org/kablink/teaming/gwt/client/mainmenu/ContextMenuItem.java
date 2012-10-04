@@ -35,14 +35,18 @@ package org.kablink.teaming.gwt.client.mainmenu;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem.NameValuePair;
 import org.kablink.teaming.gwt.client.util.ClientEventParameter;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.dom.client.Element;
@@ -221,6 +225,22 @@ public class ContextMenuItem extends VibeMenuItem {
 				
 			case TEAMING_EVENT:
 				switch (m_teamingEvent) {
+				case COPY_SELECTED_ENTRIES:
+				case MOVE_SELECTED_ENTRIES:
+					// Create the appropriate copy/move event...
+					Long				binderId       = Long.parseLong(ToolbarItem.getQualifierValueFromList("binderId",       m_eventQualifiers));
+					Long				binderParentId = Long.parseLong(ToolbarItem.getQualifierValueFromList("binderParentId", m_eventQualifiers));
+					String				binderType     =                ToolbarItem.getQualifierValueFromList("binderType",     m_eventQualifiers );
+					EntityId			eid            = new EntityId(binderParentId, binderId, EntityId.FOLDER);
+					VibeEventBase<?>	copyMoveEvent;
+					if (TeamingEvents.COPY_SELECTED_ENTRIES.equals(m_teamingEvent))
+					     copyMoveEvent = new CopySelectedEntriesEvent(binderId, eid);
+					else copyMoveEvent = new MoveSelectedEntriesEvent(binderId, eid);
+					
+					// ...and fire it.
+					GwtTeaming.fireEvent(copyMoveEvent);
+					break;
+					
 				case GOTO_PERMALINK_URL:
 					GwtTeaming.fireEvent(new GotoPermalinkUrlEvent(m_url));
 					break;
