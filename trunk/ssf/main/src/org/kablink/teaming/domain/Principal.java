@@ -73,6 +73,7 @@ public abstract class Principal extends Entry implements IPrincipal {
     protected String foreignName="";
     protected String ldapGuid="";
     protected String objectSid;
+    protected String samAccountName;
     protected List memberOf;//initialized by hiberate access=field
     protected Long workspaceId;
     protected List iMemberOf;
@@ -282,6 +283,13 @@ public abstract class Principal extends Entry implements IPrincipal {
 	}
 	public void setObjectSid(String objectSid) {
 		this.objectSid = objectSid;
+	}
+	
+	public String getSamAccountName() {
+		return samAccountName;
+	}
+	public void setSamAccountName(String samAccountName) {
+		this.samAccountName = samAccountName;
 	}
 	
 	/**

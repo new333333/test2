@@ -251,4 +251,9 @@
             <column name="OBJECTSID"/>
         </createIndex>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="26">
+        <addColumn tableName="SS_PRINCIPALS">
+			<column name="SAMACCOUNTNAME" type="VARCHAR2(128 CHAR)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
