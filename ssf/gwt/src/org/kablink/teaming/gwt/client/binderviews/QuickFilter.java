@@ -87,7 +87,7 @@ public class QuickFilter extends ResizeComposite {
 		// ...create the filter <IMG>...
 		m_quickFilterImage = new Image(m_images.filterOff());
 		m_quickFilterImage.setTitle(m_messages.quickFilterAltOff());
-		m_quickFilterImage.setStyleName("cursorPointer");
+		m_quickFilterImage.setStyleName("vibe-quickFilter_image");
 		m_quickFilterImage.getElement().setAttribute("align", "absmiddle");
 		EventWrapper.addHandler(m_quickFilterImage, new ClickHandler() {
 			@Override
