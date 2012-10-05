@@ -257,12 +257,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				break;
 			case restoreBinder:
 			case preDeleteBinder:
-			case deleteBinder:
 			case indexBinder:
 			case indexTree:
 			case manageMail:
-			case moveBinder:
-			case copyBinder:
 			case modifyBinder:
 			case setProperty:
 			case manageConfiguration:
@@ -271,6 +268,31 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			case updateModificationTime:
 				getAccessControlManager().checkOperation(binder,
 						WorkAreaOperation.BINDER_ADMINISTRATION);
+				break;
+			case moveBinder:
+				if(binder.isAclExternallyControlled()) { // Net Folder or its sub-folder
+					getAccessControlManager().checkOperation(binder.getParentBinder(), WorkAreaOperation.DELETE_ENTRIES);
+				}
+				else { // Legacy Vibe folder
+					getAccessControlManager().checkOperation(binder,
+							WorkAreaOperation.BINDER_ADMINISTRATION);
+				}
+				break;
+			case deleteBinder:
+				if(binder.isAclExternallyControlled()) { // Net Folder or its sub-folder
+					getAccessControlManager().checkOperation(binder.getParentBinder(), WorkAreaOperation.DELETE_ENTRIES);
+				}
+				else { // Legacy Vibe folder
+					getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
+				}
+				break;				
+			case copyBinder:
+				if(binder.isAclExternallyControlled()) { // Net Folder or its sub-folder
+					getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+				}
+				else { // Legacy Vibe folder
+					getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
+				}
 				break;
 			case manageTeamMembers:
 				getAccessControlManager().checkOperation(binder,
