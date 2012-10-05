@@ -173,7 +173,8 @@ public class NetFolderHelper
 											rdConfig.getName(),
 											path,
 											null,
-											workspaceId );
+											workspaceId,
+											true );
 			}
 		}
 	}
@@ -190,7 +191,8 @@ public class NetFolderHelper
 		String rootName,
 		String path,
 		ScheduleInfo scheduleInfo,
-		Long parentBinderId ) throws WriteFilesException, WriteEntryDataException
+		Long parentBinderId,
+		boolean isHomeDir ) throws WriteFilesException, WriteEntryDataException
 	{
 		Binder binder = null;
 		Long templateId = null;
@@ -236,6 +238,7 @@ public class NetFolderHelper
 		   		formData.put( ObjectKeys.FIELD_BINDER_MIRRORED, "true" );
 		   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rootName );
 		   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, path );
+		   		formData.put( ObjectKeys.FIELD_IS_HOME_DIR, Boolean.toString( isHomeDir ) );
    				mid = new MapInputData( formData );
 
 	   			binderModule.modifyBinder( binder.getId(), mid, fileMap, deleteAtts, null );				

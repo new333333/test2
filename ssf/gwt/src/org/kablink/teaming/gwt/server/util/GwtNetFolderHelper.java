@@ -172,7 +172,8 @@ public class GwtNetFolderHelper
 												netFolder.getNetFolderRootName(),
 												netFolder.getRelativePath(),
 												scheduleInfo,
-												parentBinder.getId() );
+												parentBinder.getId(),
+												false );
 
 			newNetFolder = new NetFolder();
 			newNetFolder.setName( netFolder.getName() );
