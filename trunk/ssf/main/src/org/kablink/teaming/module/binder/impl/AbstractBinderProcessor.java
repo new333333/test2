@@ -653,6 +653,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    			if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_PATH) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_RESOURCE_PATH)) {
    				entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RESOURCE_PATH));
    			}
+
+   			if ( inputData.exists( ObjectKeys.FIELD_IS_HOME_DIR ) && !entryData.containsKey( ObjectKeys.FIELD_IS_HOME_DIR ) )
+   			{
+   				Boolean homeDir = null;
+   				
+   				homeDir = Boolean.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_IS_HOME_DIR ) );
+   				if ( homeDir != null )
+   					entryData.put( ObjectKeys.FIELD_IS_HOME_DIR, homeDir );
+   			}
    		}
    		Boolean library = null;
 		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_LIBRARY))
