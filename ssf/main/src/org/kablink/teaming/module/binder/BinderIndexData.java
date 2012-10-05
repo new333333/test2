@@ -57,6 +57,7 @@ public class BinderIndexData {
 	private String path;
 	private boolean library;
 	private boolean mirrored;
+	private boolean homeDir;
 	private Long ownerId;
 	private String ownerName;
 	private Long creatorId; // creator database id
@@ -84,6 +85,11 @@ public class BinderIndexData {
 			mirrored = true;
 		else
 			mirrored = false;
+		String homeDirStr = doc.get(Constants.IS_HOME_DIR_FIELD);
+		if(Boolean.TRUE.equals(homeDirStr))
+			homeDir = true;
+		else
+			homeDir = false;
 		ownerId = Long.valueOf(doc.get(Constants.OWNERID_FIELD));
 		ownerName = doc.get(Constants.OWNER_NAME_FIELD);
 		creatorId = Long.valueOf(doc.get(Constants.CREATORID_FIELD));

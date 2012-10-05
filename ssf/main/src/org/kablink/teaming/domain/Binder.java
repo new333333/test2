@@ -107,6 +107,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Long maxFileSize;	//MB (stored as the maximum number of mega-bytes)
     protected Boolean fileEncryptionEnabled;
     protected Boolean extFunctionMembershipInherited = Boolean.TRUE;
+    protected Boolean homeDir = Boolean.FALSE;
     public Binder() {
     }
     /**
@@ -772,7 +773,16 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     	this.postingEnabled = postingEnabled;
     }
     
-
+    public boolean isHomeDir() {
+    	if(homeDir == null)
+    		return false;
+    	else
+    		return homeDir.booleanValue();
+    }
+    public void setHomeDir(boolean homeDir) {
+    	this.homeDir = homeDir;
+    }
+    
     //*****************WorkArea interface stuff***********/
     public Long getWorkAreaId() {
         return getId();

@@ -49,6 +49,7 @@ public class TeamInfo {
    	private HistoryStampBrief modification;
    	private String permaLink;
    	private Boolean mirrored;
+   	private Boolean homeDir;
    	private Long parentBinderId;
 
     public HistoryStampBrief getCreation() {
@@ -107,7 +108,15 @@ public class TeamInfo {
         this.mirrored = mirrored;
     }
 
-    public HistoryStampBrief getModification() {
+    public Boolean getHomeDir() {
+		return homeDir;
+	}
+
+	public void setHomeDir(Boolean homeDir) {
+		this.homeDir = homeDir;
+	}
+
+	public HistoryStampBrief getModification() {
         return modification;
     }
 

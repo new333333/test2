@@ -58,6 +58,7 @@ public class BinderBriefBuilder extends DefinableEntityBriefBuilder implements S
         binder.setPath((String) entry.get(Constants.ENTITY_PATH));
         binder.setLibrary(getBoolean(entry, Constants.IS_LIBRARY_FIELD));
         binder.setMirrored(getBoolean(entry, Constants.IS_MIRRORED_FIELD));
+        binder.setHomeDir(getBoolean(entry, Constants.IS_HOME_DIR_FIELD));
         binder.setLink(LinkUriUtil.getBinderLinkUri(binder));
         if (binder.isFolder()) {
             LinkUriUtil.populateFolderLinks(binder);
