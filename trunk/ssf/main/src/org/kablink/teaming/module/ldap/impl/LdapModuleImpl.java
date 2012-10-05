@@ -88,7 +88,10 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.jobs.LdapSynchronization;
+import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSchedule;
@@ -97,7 +100,9 @@ import org.kablink.teaming.module.ldap.LdapSyncResults.PartialLdapSyncResults;
 import org.kablink.teaming.module.ldap.LdapSyncResults.SyncStatus;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
+import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.search.IndexSynchronizationManager;
@@ -112,6 +117,7 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -140,9 +146,22 @@ import org.springframework.transaction.support.TransactionTemplate;
  */
 public class LdapModuleImpl extends CommonDependencyInjection implements LdapModule {
 	protected Log logger = LogFactory.getLog(getClass());
+
+	public enum LdapDirType
+	{
+		EDIR,
+		AD,
+		UNKNOWN
+	}
 	
+	private static final String GUID_ATTRIBUTE = "GUID";
 	private static final String OBJECT_SID_ATTRIBUTE = "objectSid";
 	private static final String OBJECT_GUID_ATTRIBUTE = "objectGUID";
+	private static final String NDS_HOME_DIR_ATTRIBUTE = "ndsHomeDirectory";
+	private static final String HOST_RESOURCE_NAME_ATTRIBUTE = "hostResourceName";
+	private static final String HOST_SERVER_ATTRIBUTE = "hostServer";
+	private static final String NETWORK_ADDRESS_ATTRIBUTE = "networkAddress";
+	private static int ADDR_TYPE_TCP = 9;
 	
 	protected String [] principalAttrs = new String[]{
 												ObjectKeys.FIELD_PRINCIPAL_NAME,
@@ -171,10 +190,77 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	protected TransactionTemplate transactionTemplate;
 	protected ProfileModule profileModule;
 	protected DefinitionModule definitionModule;
+	protected TemplateModule templateModule;
+	protected BinderModule binderModule;
+	protected FolderModule folderModule;
+	protected AdminModule adminModule;
+	protected ResourceDriverModule resourceDriverModule;
 	protected SessionFactory sessionFactory;
 	protected static String GROUP_ATTRIBUTES="groupAttributes";
 	protected static String MEMBER_ATTRIBUTES="memberAttributes";
 	protected static String SYNC_JOB="ldap.job"; //properties in xml file need a unique name
+
+	/**
+	 * 
+	 */
+	public class HomeDirInfo {
+		private String m_serverAddr;
+		private String m_volume;
+		private String m_path;
+
+		/**
+		 * 
+		 */
+		public HomeDirInfo() {
+			m_serverAddr = null;
+			m_volume = null;
+			m_path = null;
+		}
+
+		/**
+		 * 
+		 */
+		public String getPath() {
+			return m_path;
+		}
+
+		/**
+		 * 
+		 */
+		public String getServerAddr() {
+			return m_serverAddr;
+		}
+
+		/**
+		 * 
+		 */
+		public String getVolume() {
+			return m_volume;
+		}
+
+		/**
+		 * 
+		 */
+		public void setPath(String path) {
+			m_path = path;
+		}
+
+		/**
+		 * 
+		 */
+		public void setServerAddr(String addr) {
+			m_serverAddr = addr;
+		}
+
+		/**
+		 * 
+		 */
+		public void setVolume(String volume) {
+			m_volume = volume;
+		}
+	}
+
+	
 	public LdapModuleImpl () {
 		defaultProps.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
 		defaultProps.put(Context.SECURITY_AUTHENTICATION, "simple");
@@ -199,6 +285,86 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	}
 	public void setDefinitionModule(DefinitionModule definitionModule) {
 		this.definitionModule = definitionModule;
+	}
+
+	/**
+	 * 
+	 */
+	public TemplateModule getTemplateModule()
+	{
+		return templateModule;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setTemplateModule( TemplateModule templateModule )
+	{
+		this.templateModule = templateModule;
+	}
+	
+	/**
+	 * 
+	 */
+	public BinderModule getBinderModule()
+	{
+		return binderModule;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setBinderModule( BinderModule binderModule )
+	{
+		this.binderModule = binderModule;
+	}
+	
+	/**
+	 * 
+	 */
+	public FolderModule getFolderModule()
+	{
+		return folderModule;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setFolderModule( FolderModule folderModule )
+	{
+		this.folderModule = folderModule;
+	}
+
+	/**
+	 * 
+	 */
+	public AdminModule getAdminModule()
+	{
+		return adminModule;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setAdminModule( AdminModule adminModule )
+	{
+		this.adminModule = adminModule;
+	}
+
+	/**
+	 * 
+	 */
+	public ResourceDriverModule getResourceDriverModule()
+	{
+		return resourceDriverModule;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setResourceDriverModule( ResourceDriverModule resourceDriverModule )
+	{
+		this.resourceDriverModule = resourceDriverModule;
 	}
 
 	/**
@@ -228,6 +394,365 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
 	}
 
+
+	/**
+	 * Read all of the information about the given user's home directory; server
+	 * address, volume and path from the ldap directory
+	 */
+	private HomeDirInfo readHomeDirInfoFromLdap(
+		LdapContext ldapContext,
+		LdapDirType dirType,
+		String dn )
+	{
+		HomeDirInfo homeDirInfo = null;
+		
+		logger.info( "reading home directory information for: " + dn );
+		
+		if ( dirType == LdapDirType.EDIR )
+		{
+			String[] attributeNames;
+			Attributes attrs;
+			Attribute attrib;
+			
+			// Read the "home directory" attribute.
+			attributeNames = new String[1];
+			attributeNames[0] = NDS_HOME_DIR_ATTRIBUTE;
+			
+			try
+			{
+				attrs = ldapContext.getAttributes( dn, attributeNames );
+				if ( attrs != null )
+				{
+					attrib = attrs.get( NDS_HOME_DIR_ATTRIBUTE );
+					if ( attrib != null )
+					{
+						Object value;
+						
+						value = attrib.get();
+						if ( value != null && value instanceof byte[] )
+						{
+							int i;
+							byte[] bytes;
+							StringBuffer strBuffer;
+							
+							homeDirInfo = new HomeDirInfo();
+							strBuffer = new StringBuffer();
+							bytes = (byte[]) value;
+							
+							// Get the dn of the volume object
+							{
+								String volumeDn;
+
+								i = 0;
+								while ( i < bytes.length )
+								{
+									char ch;
+									
+									ch = (char) bytes[i];
+									++i;
+									
+									if ( ch == '#' )
+										break;
+									
+									strBuffer.append( ch );
+								}
+								
+								volumeDn = strBuffer.toString();
+								if ( volumeDn != null && volumeDn.length() > 0 )
+								{
+									readVolumeAndServerInfoFromLdap( ldapContext, dirType, volumeDn, homeDirInfo );
+								}
+							}
+							
+							// Skip over the namespace value
+							{
+								while ( i < bytes.length )
+								{
+									char ch;
+									
+									ch = (char) bytes[i];
+									++i;
+									
+									if ( ch == '#' )
+										break;
+								}
+							}
+							
+							// Get the name of the user's home directory
+							{
+								String dirName;
+								boolean firstChar = true;
+								
+								strBuffer = new StringBuffer();
+								
+								while ( i < bytes.length )
+								{
+									char ch;
+									
+									ch = (char) bytes[i];
+									++i;
+									
+									// We don't want a \ as the first character in the name
+									if ( firstChar && ch == '\\' )
+										continue;
+									
+									strBuffer.append( ch );
+								}
+								
+								dirName = strBuffer.toString();
+								homeDirInfo.setPath( dirName );
+							}
+						}
+					}
+				}
+			}
+			catch ( Exception ex )
+			{
+				logger.error( "Error reading ndsHomeDirectory attribute for user: " + dn + " " + ex.toString() );
+			}
+		}
+		
+		return homeDirInfo;
+	}
+
+	/**
+	 * Read the information from the given Server dn
+	 */
+	@SuppressWarnings("rawtypes")
+	private void readServerInfoFromLdap(
+		LdapContext ldapContext,
+		LdapDirType dirType,
+		String serverDn,
+		HomeDirInfo homeDirInfo )
+	{
+		String serverAddr = null;
+		
+		if ( dirType == LdapDirType.EDIR )
+		{
+			String[] attributeNames;
+			Attributes attrs;
+			Attribute attrib;
+			
+			attributeNames = new String[1];
+			attributeNames[0] = NETWORK_ADDRESS_ATTRIBUTE;
+			
+			try
+			{
+				// Read the "networkAddress" attribute from the given server dn.
+				attrs = ldapContext.getAttributes( serverDn, attributeNames );
+				if ( attrs != null )
+				{
+					int numValues;
+					
+					// Get the attribute that holds the server's network address
+					attrib = attrs.get( NETWORK_ADDRESS_ATTRIBUTE );
+					numValues = attrib.size();
+					if ( attrib != null && numValues > 0 )
+					{
+						NamingEnumeration valEnum;
+						
+						// networkAddress is a multi-valued attribute.
+						// Go through each value.
+						valEnum = attrib.getAll();
+						while ( valEnum != null && valEnum.hasMoreElements() && serverAddr == null )
+						{
+							Object nextValue;
+							StringBuffer strBuffer;
+							byte[] nextByteArray;
+							
+							nextValue = valEnum.nextElement();
+							if ( nextValue != null && nextValue instanceof byte[] )
+							{
+								int i;
+								int addrType = -1;
+								
+								nextByteArray = (byte[]) nextValue;
+								i = 0;
+								
+								// Get the address type
+								{
+									strBuffer = new StringBuffer();
+									
+									while ( i < nextByteArray.length )
+									{
+										char ch;
+										
+										ch = (char) nextByteArray[i];
+										++i;
+										
+										if ( ch == '#' )
+											break;
+										
+										strBuffer.append( ch );
+									}
+
+									if ( strBuffer.length() > 0 )
+									{
+										try
+										{
+											addrType = Integer.parseInt( strBuffer.toString() );
+										}
+										catch ( NumberFormatException ex )
+										{
+											logger.info( "error parsing address type from network address attribute" );
+										}
+									}
+								}
+								
+								// Get the server address
+								if ( addrType == ADDR_TYPE_TCP )
+								{
+									strBuffer = new StringBuffer();
+									
+									// Skip the first 2 bytes.  Don't know what they are for
+									i += 2;
+									while ( i < nextByteArray.length )
+									{
+										int ch;
+										
+										ch = nextByteArray[i];
+										++i;
+										
+										if ( ch < 0 )
+											ch += 256;
+										
+										strBuffer.append( ch );
+										
+										// Add a "." if we are not at the end
+										if ( i < nextByteArray.length )
+											strBuffer.append( '.' );
+									}
+									
+									serverAddr = strBuffer.toString();
+								}
+							}
+						}
+					}
+				}
+			}
+			catch ( Exception ex )
+			{
+				logger.error( "Error reading attributes from the server object: " + serverDn + " " + ex.toString() );
+			}
+		}
+		
+		homeDirInfo.setServerAddr( serverAddr );
+	}
+
+	/**
+	 * Read the information from the given Volume object
+	 */
+	private HomeDirInfo readVolumeAndServerInfoFromLdap(
+		LdapContext ldapContext,
+		LdapDirType dirType,
+		String volumeDn,
+		HomeDirInfo homeDirInfo )
+	{
+		
+		if ( dirType == LdapDirType.EDIR )
+		{
+			String[] attributeNames;
+			Attributes attrs;
+			Attribute attrib;
+			
+			attributeNames = new String[2];
+			attributeNames[0] = HOST_RESOURCE_NAME_ATTRIBUTE;
+			attributeNames[1] = HOST_SERVER_ATTRIBUTE;
+			
+			try
+			{
+				// Read the "hostResourceName" and "hostServer" attributes from the given volume dn.
+				attrs = ldapContext.getAttributes( volumeDn, attributeNames );
+				if ( attrs != null )
+				{
+					// Get the attribute that holds the volume name
+					attrib = attrs.get( HOST_RESOURCE_NAME_ATTRIBUTE );
+					if ( attrib != null )
+					{
+						Object value;
+						
+						value = attrib.get();
+						if ( value != null && value instanceof String )
+						{
+							homeDirInfo.setVolume( (String) value );
+						}
+					}
+					
+					// Get the attribute that holds the dn of the server object.
+					attrib = attrs.get( HOST_SERVER_ATTRIBUTE );
+					if ( attrib != null )
+					{
+						Object value;
+						
+						value = attrib.get();
+						if ( value != null && value instanceof String )
+						{
+							String serverDn;
+							
+							// Read the server's address from the given server dn.
+							serverDn = (String) value;
+							if ( serverDn.length() > 0 )
+							{
+								readServerInfoFromLdap( ldapContext, dirType, serverDn, homeDirInfo );
+							}
+						}
+					}
+				}
+			}
+			catch ( Exception ex )
+			{
+				logger.error( "Error reading attributes from the volume object: " + volumeDn + " " + ex.toString() );
+			}
+		}
+		
+		return homeDirInfo;
+	}
+
+	/**
+	 * Create a Net folder and if needed a net folder server that represents the
+	 * user's home directory.
+	 */
+	private void createHomeDirNetFolder(
+		HomeDirInfo homeDirInfo,
+		UserPrincipal userPrincipal ) throws AccessControlException
+	{
+		User user;
+		String userName;
+
+		// Are we running Filr?
+		if ( Utils.checkIfFilr() == false )
+		{
+			// No,
+			return;
+		}
+
+		userName = userPrincipal.getName();
+		user = profileModule.getUser( userName );
+
+		if ( homeDirInfo != null ) 
+		{
+			try
+			{
+				NetFolderHelper.createHomeDirNetFolder(
+												getProfileModule(),
+												getTemplateModule(),
+												getBinderModule(),
+												getFolderModule(),
+												getAdminModule(),
+												getResourceDriverModule(),
+												homeDirInfo,
+												user);
+			}
+			catch ( Exception ex )
+			{
+				logger.info( "Unable to create the home directory net folder for user: " + user.getTitle() + " " + ex.toString() );
+			}
+		} 
+		else 
+		{
+			logger.info("Unable to get the home directory information for user: " + user.getTitle());
+		}
+	}
 
 	/**
 	 * Execute the given ldap query.  For each user found by the query, if the user already exists
@@ -352,6 +877,22 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		return listOfMembers;
 	}
 
+	/**
+	 * 
+	 */
+	private LdapDirType getLdapDirType( String ldapGuidAttrName )
+	{
+		if ( ldapGuidAttrName != null )
+		{
+			if ( ldapGuidAttrName.equalsIgnoreCase( OBJECT_GUID_ATTRIBUTE ) )
+				return LdapDirType.AD;
+			
+			if ( ldapGuidAttrName.equalsIgnoreCase( GUID_ATTRIBUTE ) )
+				return LdapDirType.EDIR;
+		}
+	
+		return LdapDirType.UNKNOWN;
+	}
 	
 	protected String getLdapProperty(String zoneName, String name) {
 		String val = SZoneConfig.getString(zoneName, "ldapConfiguration/property[@name='" + name + "']");
@@ -700,7 +1241,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							if ( usersToUpdate.size() > 99 )
 							{
 								logger.info( "about to call updateUsers()" );
-								updateUsers( zoneId, usersToUpdate, modifiedUsersSyncResults );
+								updateUsers( ldapContext, zoneId, usersToUpdate, modifiedUsersSyncResults );
 								logger.info( "back from updateUsers()" );
 								
 								usersToUpdate.clear();
@@ -717,7 +1258,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		// Update the users with the guid from the ldap directory.
 		logger.info( "about to call updateUsers()" );
-		updateUsers( zoneId, usersToUpdate, modifiedUsersSyncResults );
+		updateUsers( ldapContext, zoneId, usersToUpdate, modifiedUsersSyncResults );
 		logger.info( "back from updateUsers()" );
 		
     }// end syncGuidAttributeForAllUsers()
@@ -1230,7 +1771,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					logger.info( "ldap url used to search for users: " + config.getUrl() );
 					
 					syncUsers(zone, ctx, config, userCoordinator);
-				}
+		  		}
 		  		catch (Exception ex)
 		  		{
 		  			if ( ex instanceof NamingException )
@@ -1266,11 +1807,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 				}
 			}
-			logger.info( "Finished syncUsers()" );
-			Map dnUsers = userCoordinator.wrapUp();
+
+			logger.info( "Starting userCoordinator.wrapUp()" );
+			userCoordinator.wrapUp();
 			logger.info( "Finished userCoordinator.wrapUp()" );
-	
-	   		GroupCoordinator groupCoordinator = new GroupCoordinator(zone, dnUsers, info.isGroupSync(), info.isGroupRegister(), info.isGroupDelete(), syncResults );
+
+	   		GroupCoordinator groupCoordinator = new GroupCoordinator(zone, userCoordinator.dnUsers, info.isGroupSync(), info.isGroupRegister(), info.isGroupDelete(), syncResults );
 	   		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId())) {
 		   		LdapContext ctx=null;
 		  		try {
@@ -1607,6 +2149,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// Value: Map of attributes to be written to the db
 		Map<String, Map> ldap_new = new HashMap();
 		
+		// ldap_new_homeDirInfo will be a list of users that need to be created and their home directory information
+		// Key: user name
+		// Value: HomeDirInfo object.  May be null
+		Map<String, HomeDirInfo> ldap_new_homeDirInfo = new HashMap<String, HomeDirInfo>();
+		
 		// As we find existing users they are added to dnUsers.  Users that are created are added to dnUsers too.
 		// Key: user dn
 		// Value: array of values read from db.
@@ -1630,6 +2177,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 		private LdapSyncResults	m_ldapSyncResults;	// Store the results of the sync here.
 
+		private LdapContext m_ldapCtx;
+		private LdapConnectionConfig m_ldapConfig;
+		
 		public UserCoordinator(
 			Binder zone,
 			boolean sync,
@@ -1704,7 +2254,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		 * @param ldapGuidAttribute
 		 * @throws NamingException
 		 */
-		public void record(String dn, String ssName, Attributes lAttrs, String ldapGuidAttribute ) throws NamingException
+		public void record(
+			String dn,
+			String ssName,
+			Attributes lAttrs,
+			String ldapGuidAttribute ) throws NamingException
 		{
 			boolean foundLdapGuid = false;
 			Object[] row = null; 
@@ -1875,6 +2429,17 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					
 					ldap_new.put(ssName, userMods); 
 					dnUsers.put(dn, new Object[]{ssName, null, Boolean.FALSE, null, dn, ldapGuid});
+					
+					// Create a HomeDirInfo object for this new user
+					if ( Utils.checkIfFilr() )
+					{
+						HomeDirInfo homeDirInfo;
+						LdapDirType dirType;
+						
+						dirType = getLdapDirType( m_ldapConfig.getLdapGuidAttribute() );
+						homeDirInfo = readHomeDirInfoFromLdap( m_ldapCtx, dirType, dn );
+						ldap_new_homeDirInfo.put( ssName, homeDirInfo );
+					}
 				}
 			}
 			
@@ -1892,7 +2457,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Yes
 					syncResults = m_ldapSyncResults.getModifiedUsers();
 				}
-				updateUsers(zoneId, ldap_existing, syncResults );
+				updateUsers( m_ldapCtx, zoneId, ldap_existing, syncResults );
 				ldap_existing.clear();
 			}
 			
@@ -1906,8 +2471,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					syncResults = m_ldapSyncResults.getAddedUsers();
 				}
-				List results = createUsers(zoneId, ldap_new, syncResults );
+				List results = createUsers( zoneId, ldap_new, ldap_new_homeDirInfo, syncResults );
 				ldap_new.clear();
+				ldap_new_homeDirInfo.clear();
 				
 				// fill in mapping from distinquished name to id
 				for (int i=0; i<results.size(); ++i) {
@@ -1917,6 +2483,22 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					row[PRINCIPAL_LDAP_GUID] = user.getLdapGuid();
 				}
 			}
+		}
+		
+		/**
+		 * 
+		 */
+		public void setLdapConfig( LdapConnectionConfig config )
+		{
+			m_ldapConfig = config;
+		}
+		
+		/**
+		 * 
+		 */
+		public void setLdapContext( LdapContext ldapCtx )
+		{
+			m_ldapCtx = ldapCtx;
 		}
 		
 		public Map wrapUp()
@@ -1931,7 +2513,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Yes
 					syncResults = m_ldapSyncResults.getModifiedUsers();
 				}
-				updateUsers(zoneId, ldap_existing, syncResults );
+				updateUsers( m_ldapCtx, zoneId, ldap_existing, syncResults );
 			}
 			
 			if (!ldap_new.isEmpty()) {
@@ -1943,7 +2525,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					syncResults = m_ldapSyncResults.getAddedUsers();
 				}
-				List results = createUsers(zoneId, ldap_new, syncResults );
+				List results = createUsers( zoneId, ldap_new, ldap_new_homeDirInfo, syncResults );
 				for (int i=0; i<results.size(); ++i) {
 					User user = (User)results.get(i);
 					Object[] row = (Object[])dnUsers.get(user.getForeignName());
@@ -2002,7 +2584,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						// Yes, get the list to store the modified users.
 						syncResults = m_ldapSyncResults.getModifiedUsers();
 					}
-					updateUsers(zoneId, users, syncResults );
+					updateUsers( m_ldapCtx, zoneId, users, syncResults );
 					
 					// Disable the accounts that are not in ldap
 					disableUsers( users );
@@ -2026,6 +2608,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Map userAttributes = config.getMappings();
 
 		userCoordinator.setAttributes(userAttributes);
+		userCoordinator.setLdapContext( ctx );
+		userCoordinator.setLdapConfig( config );
 
 		// Get a list of the names of the attributes we want to read from the ldap directory for each user.
 		attributesToRead = getAttributeNamesToRead( userCoordinator.userAttributeNames, config );
@@ -2094,10 +2678,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						continue;
 					}
 					
-					userCoordinator.record(dn, ssName, lAttrs, ldapGuidAttribute );
+					userCoordinator.record( dn, ssName, lAttrs, ldapGuidAttribute );
 				}
 			}
 		}
+		logger.info( "Finished syncUsers()" );
 	}
 
 	class GroupCoordinator
@@ -2501,7 +3086,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					++index;
 					
 					// Is the ldap directory AD?
-					if ( ldapGuidAttribute != null && ldapGuidAttribute.equalsIgnoreCase( OBJECT_GUID_ATTRIBUTE ) );
+					if ( getLdapDirType( ldapGuidAttribute ) == LdapDirType.AD )
 					{
 						// Yes
 						// Add "objectSid" to the list of ldap attributes to read.
@@ -2673,8 +3258,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		ldapGuidAttributeName = config.getLdapGuidAttribute();
 		if ( ldapGuidAttributeName != null && ldapGuidAttributeName.length() > 0 )
 		{
+			String attrNames;
+			
 			// Specify that we want the ldap guid and the objectSid attibute returned as binary data.
-			env.put( "java.naming.ldap.attributes.binary", ldapGuidAttributeName + " " + OBJECT_SID_ATTRIBUTE );
+			attrNames = ldapGuidAttributeName + " " + OBJECT_SID_ATTRIBUTE;
+			attrNames += " " + NDS_HOME_DIR_ATTRIBUTE;
+			attrNames += " " + NETWORK_ADDRESS_ATTRIBUTE;
+			env.put( "java.naming.ldap.attributes.binary", attrNames );
 		}
 		
 		env.put(Context.PROVIDER_URL, url);
@@ -3050,7 +3640,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * Update users with their own map of updates
 	 * @param users - Map indexed by user id, value is map of updates for a user
 	 */
-	protected void updateUsers(Long zoneId, final Map users, PartialLdapSyncResults syncResults ) 
+	protected void updateUsers(
+		LdapContext ldapCtx,
+		Long zoneId,
+		final Map users,
+		PartialLdapSyncResults syncResults ) 
 	{
 		ProfileBinder pf;
 		List collections;
@@ -3347,7 +3941,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * @param users - Map keyed by user id, value is map of attributes
      * @return
      */
-    protected List<User> createUsers(Long zoneId, Map<String, Map> users, PartialLdapSyncResults syncResults ) 
+    protected List<User> createUsers(
+    	Long zoneId,
+    	Map<String, Map> users,
+    	Map<String, HomeDirInfo> homeDirInfoMap,
+    	PartialLdapSyncResults syncResults ) 
     {
 		//SimpleProfiler.setProfiler(new SimpleProfiler(false));
 		ProfileCoreProcessor processor;
@@ -3374,6 +3972,39 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			// Try to create all of the users at once.
 			newUsers = processor.syncNewEntries(pf, userDef, User.class, newUsers, null, syncResults );    
+
+			// Are we running Filr?
+			if ( newUsers != null && Utils.checkIfFilr() )
+			{
+				// Yes
+				// For each user we just created, create a net folder for the
+				// user's home directory
+				for ( Object nextObj : newUsers )
+				{
+					if ( nextObj instanceof UserPrincipal )
+					{
+						UserPrincipal nextUser;
+
+						nextUser = (UserPrincipal) nextObj;
+
+						try 
+						{
+							HomeDirInfo homeDirInfo = null;
+							
+							// Get the HomeDirInfo for this user.
+							if ( homeDirInfoMap != null )
+								homeDirInfo = homeDirInfoMap.get( nextUser.getName() );
+							
+							if ( homeDirInfo != null )
+								createHomeDirNetFolder( homeDirInfo, nextUser );
+						} 
+						catch ( AccessControlException acEx )
+						{
+							logger.error( "Unable to create home dir net folder for user: " + nextUser.getName());
+						}
+					}
+				}
+			}
 
 			if(logger.isDebugEnabled())
 				logger.debug("Applying index changes");

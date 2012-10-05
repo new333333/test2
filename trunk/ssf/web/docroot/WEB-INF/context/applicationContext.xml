@@ -1401,6 +1401,11 @@ text/calendar											  ics
 				<property name="profileModule"><ref bean="profileModule"/></property>
 				<property name="definitionModule"><ref bean="definitionModule"/></property>
 				<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+				<property name="templateModule"><ref bean="templateModule"/></property>
+				<property name="binderModule"><ref bean="binderModule"/></property>
+				<property name="folderModule"><ref bean="folderModule"/></property>
+				<property name="adminModule"><ref bean="adminModule"/></property>
+				<property name="resourceDriverModule"><ref bean="resourceDriverModule"/></property>
 			</bean>
 		</property>
 	</bean>		
