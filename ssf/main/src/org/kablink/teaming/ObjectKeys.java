@@ -622,6 +622,7 @@ public interface ObjectKeys {
     public static final String FIELD_PRINCIPAL_LDAPGUID="ldapGuid";
     public static final String FIELD_PRINCIPAL_OBJECTSID = "objectSid";
     public static final String FIELD_PRINCIPAL_NAME="name";
+    public static final String FIELD_PRINCIPAL_SAM_ACCOUNT_NAME = "samAccountName";
     public static final String FIELD_PRINCIPAL_TYPE="type";
     public static final String FIELD_PRINCIPAL_DISABLED="disabled";
     public static final String FIELD_GROUP_DYNAMIC = "dynamic";

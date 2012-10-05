@@ -157,6 +157,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	private static final String GUID_ATTRIBUTE = "GUID";
 	private static final String OBJECT_SID_ATTRIBUTE = "objectSid";
 	private static final String OBJECT_GUID_ATTRIBUTE = "objectGUID";
+	private static final String SAM_ACCOUNT_NAME_ATTRIBUTE = "sAMAccountName";
 	private static final String NDS_HOME_DIR_ATTRIBUTE = "ndsHomeDirectory";
 	private static final String HOST_RESOURCE_NAME_ATTRIBUTE = "hostResourceName";
 	private static final String HOST_SERVER_ATTRIBUTE = "hostServer";
@@ -3061,7 +3062,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Get the names of the group attributes
 					attributeNames = groupCoordinator.getAttributeNames();
 					
-					len = 2;
+					len = 3; // Make room for objectSid, sAMAccountName, and ldap guid attribute.
 					if ( attributeNames != null )
 						len += attributeNames.length;
 					
@@ -3091,6 +3092,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						// Yes
 						// Add "objectSid" to the list of ldap attributes to read.
 						attributesToRead[index] = OBJECT_SID_ATTRIBUTE;
+						++index;
+
+						// Add "sAMAccountName" to the list of ldap attributes to read.
+						attributesToRead[index] = SAM_ACCOUNT_NAME_ATTRIBUTE;
 						++index;
 					}
 				}
@@ -3296,8 +3301,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			// Create an array large enough to hold all the ldap attribute names found
 			// in the mapping plus the name of the attribute that uniquely identifies
-			// a user plus the ldap attribute that identifies a user plus the objectSid.
-			attributeNames = new String[userAttributeNames.length + 3];
+			// a user plus the ldap attribute that identifies a user plus the objectSid,
+			// plus sAMAccountName.
+			attributeNames = new String[userAttributeNames.length + 4];
 			
 			for (i = 0; i < userAttributeNames.length; ++i)
 			{
@@ -3325,6 +3331,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Yes
 					// Add "objectSid" to the list of ldap attributes to read.
 					attributeNames[i] = OBJECT_SID_ATTRIBUTE;
+					++i;
+
+					// Add "sAMAccountName" to the list of ldap attributes to read.
+					attributeNames[i] = SAM_ACCOUNT_NAME_ATTRIBUTE;
 					++i;
 				}
 			}
@@ -3392,11 +3402,16 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			if ( ldapGuidAttribute.equalsIgnoreCase( OBJECT_GUID_ATTRIBUTE ) )
 			{
 				String objectSid;
+				String samAccountName;
 				
 				// Yes
-				// Add "objectSid" to the list of ldap attributes to read.
+				// Add the value of the "objectSid" attribute
 				objectSid = getObjectSid( attrs );
 				mods.put( ObjectKeys.FIELD_PRINCIPAL_OBJECTSID, objectSid );
+				
+				// Add the value of the "sAMAccountName" attribute.
+				samAccountName = getSamAccountName( attrs );
+				mods.put( ObjectKeys.FIELD_PRINCIPAL_SAM_ACCOUNT_NAME, samAccountName );
 			}
 		}
 	}
@@ -3541,6 +3556,35 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 			}
 			catch (NamingException ex)
+			{
+				// Nothing to do.
+			}
+		}
+
+		// If we get here, something did not work.
+		return null;
+	}
+	
+	/**
+	 * Get the value of the sAMAccountName attribute.
+	 */
+	private static String getSamAccountName( Attributes attrs )
+	{
+		Attribute attrib;
+
+		// Get the ldap attribute that holds the sAMAccountName.
+		attrib = attrs.get( SAM_ACCOUNT_NAME_ATTRIBUTE );
+		if ( attrib != null && attrib.size() == 1 )
+		{
+			Object value;
+			
+			try
+			{
+				value = attrib.get();
+				if ( value != null && value instanceof String )
+					return (String) value;
+			}
+			catch ( NamingException ex )
 			{
 				// Nothing to do.
 			}
