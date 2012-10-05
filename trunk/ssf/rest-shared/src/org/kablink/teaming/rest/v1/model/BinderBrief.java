@@ -45,6 +45,7 @@ public class BinderBrief extends DefinableEntityBrief {
    	private Boolean library;
    	private String path;
    	private Boolean mirrored;
+   	private Boolean homeDir;
 
     public BinderBrief() {
         setDocType("binder");
@@ -66,7 +67,15 @@ public class BinderBrief extends DefinableEntityBrief {
         this.mirrored = mirrored;
     }
 
-    public String getPath() {
+    public Boolean getHomeDir() {
+		return homeDir;
+	}
+
+	public void setHomeDir(Boolean homeDir) {
+		this.homeDir = homeDir;
+	}
+
+	public String getPath() {
         return path;
     }
 

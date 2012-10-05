@@ -1242,6 +1242,11 @@ public class EntityIndexUtils {
 		doc.add(path);
     }
 
+    public static void addBinderIsHomeDir(Document doc, Binder binder, boolean fieldsOnly) {
+		Field path = FieldFactory.createFieldStoredNotAnalyzed(IS_HOME_DIR_FIELD, (binder.isHomeDir() ? Constants.TRUE : Constants.FALSE));
+		doc.add(path);
+    }
+
     public static void addBinderHasResourceDriver(Document doc, Binder binder, boolean fieldsOnly) {
     	if ((binder instanceof Folder) && binder.isMirrored()) {
     		boolean hasResourceDriver = MiscUtil.hasString(binder.getResourceDriverName());

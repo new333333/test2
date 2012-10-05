@@ -282,4 +282,9 @@
 			<column name="samAccountName" type="VARCHAR(128)"/>
         </addColumn>
     </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="31">
+        <addColumn tableName="SS_Forums">
+			<column name="homeDir" type="BIT"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

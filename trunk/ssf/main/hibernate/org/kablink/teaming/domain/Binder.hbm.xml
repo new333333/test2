@@ -21,6 +21,7 @@
     <property name="type" update="false" insert="false"/> 
     <property name="resourceDriverName" length="64"/>
     <property name="resourcePath" length="1024" access="field"/>
+    <property name="homeDir" access="field"/>
     <many-to-one name="parentBinder">
           <column name="parentBinder" index="owningBinder_Binder"/>
     </many-to-one>
