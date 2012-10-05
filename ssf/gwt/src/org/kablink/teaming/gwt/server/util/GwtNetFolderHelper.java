@@ -54,7 +54,6 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
-import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
@@ -69,7 +68,6 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
-import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.NetFolder.NetFolderStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse.GwtConnectionTestStatusCode;
@@ -92,6 +90,7 @@ import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Criterion;
@@ -144,105 +143,37 @@ public class GwtNetFolderHelper
 	}
 	
 	/**
-	 * Create a new net folder from the given data
+	 * Create a net folder in the default location from the given data
 	 */
-	@SuppressWarnings({ "unchecked" })
 	public static NetFolder createNetFolder(
 		AllModulesInjected ami,
 		NetFolder netFolder ) throws GwtTeamingException
 	{
+		Binder parentBinder;
 		NetFolder newNetFolder = null;
-		Binder binder;
-		Long templateId = null;
-		List<TemplateBinder> listOfTemplateBinders;
 		
-		
-		// Find the template binder for mirrored folders.
-		listOfTemplateBinders = ami.getTemplateModule().getTemplates(Boolean.TRUE);
-		if ( listOfTemplateBinders != null )
+		// Get the binder where all net folders are created
+		try
 		{
-			for ( TemplateBinder nextTemplateBinder : listOfTemplateBinders )
-			{
-				String internalId;
-				
-				internalId = nextTemplateBinder.getInternalId();
-				if ( internalId != null && internalId.equalsIgnoreCase( ObjectKeys.DEFAULT_FOLDER_FILR_ROOT_CONFIG ) )
-				{
-					templateId = nextTemplateBinder.getId();
-					break;
-				}
-			}
-		}
+			Binder binder;
+			ScheduleInfo scheduleInfo;
+			
+			// Create the net folder in the global "net folder roots" workspace.
+			parentBinder = getCoreDao().loadReservedBinder(
+													ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
+													RequestContextHolder.getRequestContext().getZoneId() );
 
-		if ( templateId != null )
-		{
-			Binder parentBinder;
-			
-			// Get the binder where all net folders are created
-			try
-			{
-				parentBinder = getCoreDao().loadReservedBinder(
-														ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
-														RequestContextHolder.getRequestContext().getZoneId() );
-			}
-			catch ( Exception ex )
-			{
-				GwtTeamingException gtEx;
-				
-				gtEx = GwtServerHelper.getGwtTeamingException();
-				gtEx.setAdditionalDetails( NLT.get( "netfolder.cant.load.parent.binder" ) );
-				throw gtEx;				
-			}
-			
-			try
-			{
-				// Create the binder
-				binder = ami.getTemplateModule().addBinder(
-														templateId,
-														parentBinder.getId(),
-														netFolder.getName(),
-														netFolder.getName() );
-				
-				// Modify the binder with the additional net folder information.
-				{
-					Set deleteAtts;
-					Map fileMap = null;
-					MapInputData mid;
-	   				Map formData = null;
-					
-					deleteAtts = new HashSet();
-					fileMap = new HashMap();
-	   				formData = new HashMap();
-			   		formData.put( ObjectKeys.FIELD_BINDER_LIBRARY, "true" );
-			   		formData.put( ObjectKeys.FIELD_BINDER_MIRRORED, "true" );
-			   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, netFolder.getNetFolderRootName() );
-			   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, netFolder.getRelativePath() );
-	   				mid = new MapInputData( formData );
-	
-		   			ami.getBinderModule().modifyBinder( binder.getId(), mid, fileMap, deleteAtts, null );				
-				}
-			}
-			catch ( Exception ex )
-			{
-				GwtTeamingException gtEx;
-				
-				gtEx = GwtServerHelper.getGwtTeamingException( ex );
-				gtEx.setAdditionalDetails( ex.toString() );
-				throw gtEx;				
-			}
-			
-			// Set the net folder's sync schedule
-			{
-				ScheduleInfo scheduleInfo;
-				
-				scheduleInfo = getScheduleInfoFromGwtSchedule( netFolder.getSyncSchedule() );
-				if ( scheduleInfo != null )
-				{
-					scheduleInfo.setFolderId( binder.getId() );
-					ami.getFolderModule().setSynchronizationSchedule( scheduleInfo, binder.getId() );
-				}
-			}
-			
+			scheduleInfo = getScheduleInfoFromGwtSchedule( netFolder.getSyncSchedule() );
+			binder = NetFolderHelper.createNetFolder(
+												ami.getTemplateModule(),
+												ami.getBinderModule(),
+												ami.getFolderModule(),
+												netFolder.getName(),
+												netFolder.getNetFolderRootName(),
+												netFolder.getRelativePath(),
+												scheduleInfo,
+												parentBinder.getId() );
+
 			newNetFolder = new NetFolder();
 			newNetFolder.setName( netFolder.getName() );
 			newNetFolder.setNetFolderRootName( netFolder.getNetFolderRootName() );
@@ -251,86 +182,57 @@ public class GwtNetFolderHelper
 			newNetFolder.setStatus( NetFolderStatus.READY );
 			newNetFolder.setSyncSchedule( netFolder.getSyncSchedule() );
 		}
-		else
-			throw new GwtTeamingException( ExceptionType.UNKNOWN, "Could not find the template binder for a mirrored folder" );
+		catch ( Exception ex )
+		{
+			GwtTeamingException gtEx;
+			
+			gtEx = GwtServerHelper.getGwtTeamingException();
+			gtEx.setAdditionalDetails( NLT.get( "netfolder.cant.load.parent.binder" ) );
+			throw gtEx;				
+		}
 		
 		return newNetFolder;
 	}
 	
-	
 	/**
 	 * Create a new net folder root from the given data
 	 */
-	@SuppressWarnings({ "unchecked" })
 	public static NetFolderRoot createNetFolderRoot(
 		AllModulesInjected ami,
 		NetFolderRoot netFolderRoot ) throws GwtTeamingException
 	{
-		Map options;
-		ResourceDriverConfig rdConfig = null;
+		ResourceDriverConfig rdConfig;
+		DriverType driverType;
 		NetFolderRoot newRoot = null;
 		
-		ami.getAdminModule().checkAccess( AdminOperation.manageResourceDrivers );
+		driverType = getDriverType( netFolderRoot.getRootType() );
+		rdConfig = NetFolderHelper.createNetFolderRoot(
+												ami.getAdminModule(),
+												ami.getResourceDriverModule(),
+												netFolderRoot.getName(),
+												netFolderRoot.getRootPath(),
+												driverType,
+												netFolderRoot.getProxyName(),
+												netFolderRoot.getProxyPwd(),
+												netFolderRoot.getListOfPrincipalIds(),
+												netFolderRoot.getHostUrl(),
+												netFolderRoot.getAllowSelfSignedCerts(),
+												netFolderRoot.getIsSharePointServer() );
 
-		options = new HashMap();
-		options.put( ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE );
-		options.put( ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, netFolderRoot.getProxyName() ); 
-		options.put( ObjectKeys.RESOURCE_DRIVER_PASSWORD, netFolderRoot.getProxyPwd() );
-		
-		// Is the root type WebDAV?
-		if ( netFolderRoot.getRootType() == NetFolderRootType.WEB_DAV )
+		if ( rdConfig != null )
 		{
-			// Yes, get the WebDAV specific values
-			options.put(
-					ObjectKeys.RESOURCE_DRIVER_HOST_URL,
-					netFolderRoot.getHostUrl() );
-			options.put(
-					ObjectKeys.RESOURCE_DRIVER_ALLOW_SELF_SIGNED_CERTIFICATE,
-					netFolderRoot.getAllowSelfSignedCerts() );
-			options.put(
-					ObjectKeys.RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH,
-					netFolderRoot.getIsSharePointServer() );
-		}
+			newRoot = new NetFolderRoot();
+			newRoot.setId( rdConfig.getId() );
+			newRoot.setName( rdConfig.getName() );
+			newRoot.setProxyName( rdConfig.getAccountName() );
+			newRoot.setProxyPwd( rdConfig.getPassword() );
+			newRoot.setRootPath( rdConfig.getRootPath() );
+			newRoot.setHostUrl( rdConfig.getHostUrl() );
+			newRoot.setAllowSelfSignedCerts( rdConfig.isAllowSelfSignedCertificate() );
+			newRoot.setIsSharePointServer( rdConfig.isPutRequiresContentLength() );
 
-		// Always prevent the top level folder from being deleted
-		// This is forced so that the folder could not accidentally be deleted if the 
-		// external disk was offline
-		options.put( ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE, Boolean.FALSE );
-
-		//Add this resource driver
-		try
-		{
-			DriverType driverType;
-			
-			driverType = getDriverType( netFolderRoot.getRootType() );
-			rdConfig = ami.getResourceDriverModule().addResourceDriver(
-															netFolderRoot.getName(),
-															driverType, 
-															netFolderRoot.getRootPath(),
-															netFolderRoot.getListOfPrincipalIds(),
-															options );
-			if ( rdConfig != null )
-			{
-				newRoot = new NetFolderRoot();
-				newRoot.setId( rdConfig.getId() );
-				newRoot.setName( rdConfig.getName() );
-				newRoot.setProxyName( rdConfig.getAccountName() );
-				newRoot.setProxyPwd( rdConfig.getPassword() );
-				newRoot.setRootPath( rdConfig.getRootPath() );
-				newRoot.setHostUrl( rdConfig.getHostUrl() );
-				newRoot.setAllowSelfSignedCerts( rdConfig.isAllowSelfSignedCertificate() );
-				newRoot.setIsSharePointServer( rdConfig.isPutRequiresContentLength() );
-
-				// Get the list of principals that can use the net folder root
-				getListOfPrincipals( ami, rdConfig, newRoot );
-			}
-		}
-		catch (Exception ex)
-		{
-			GwtTeamingException gtEx;
-			
-			gtEx = GwtServerHelper.getGwtTeamingException( ex );
-			throw gtEx;				
+			// Get the list of principals that can use the net folder root
+			getListOfPrincipals( ami, rdConfig, newRoot );
 		}
 		
 		return newRoot;
