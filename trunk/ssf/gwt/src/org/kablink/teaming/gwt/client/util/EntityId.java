@@ -291,6 +291,36 @@ public class EntityId implements IsSerializable {
 	}
 
 	/**
+	 * Returns true if a List<EntityId> contains a binder reference to
+	 * the given binder ID and false otherwise.
+	 * 
+	 * @param binderId
+	 * @param entityIds
+	 * 
+	 * @return
+	 */
+	public static boolean isBinderInEntityIds(Long binderId, List<EntityId> entityIds) {
+		// Do we have anything to check?
+		boolean reply = false;
+		if ((null != binderId) && (null != entityIds) && (!(entityIds.isEmpty()))) {
+			// Yes!  Scan the entities.
+			for (EntityId eid:  entityIds) {
+				// Is this entity the binder in question?
+				if (eid.isBinder() && eid.getEntityId().equals(binderId)) {
+					// Yes!  Return true.
+					reply = true;
+					break;
+				}
+			}
+		}
+		
+		// If we get here, reply contains true if the List<EntityId>
+		// contains a specific binder ID and false otherwise.  Return
+		// it.
+		return reply;
+	}
+	
+	/**
 	 * Returns true if this row refers to an entry and false otherwise.
 	 * 
 	 * @return

@@ -2802,14 +2802,15 @@ public class TaskTable extends Composite
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Invoke the copy.
+			// Yes!  Are there any entities in the event?
 			List<EntityId> selectedEntityIds = event.getSelectedEntities();
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				// No!  Invoke the copy on those selected in the view.
 				selectedEntityIds = getTaskIdsChecked();
+				BinderViewsHelper.copyEntries(
+					FolderType.TASK,
+					selectedEntityIds);
 			}
-			BinderViewsHelper.copyEntries(
-				FolderType.TASK,
-				selectedEntityIds);
 		}
 	}
 	
@@ -2825,8 +2826,12 @@ public class TaskTable extends Composite
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Delete the selected tasks.
-			handleTaskDelete();
+			// Yes!  Are there any entities in the event?
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				// No!  Delete the entities selected in the view.
+				handleTaskDelete();
+			}
 		}
 	}
 	
@@ -2899,14 +2904,15 @@ public class TaskTable extends Composite
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Invoke the move.
+			// Yes!  Are there any entities in the event?
 			List<EntityId> selectedEntityIds = event.getSelectedEntities();
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				// No!  Invoke the move on those selected in the view.
 				selectedEntityIds = getTaskIdsChecked();
+				BinderViewsHelper.moveEntries(
+					FolderType.TASK,
+					selectedEntityIds);
 			}
-			BinderViewsHelper.moveEntries(
-				FolderType.TASK,
-				selectedEntityIds);
 		}
 	}
 	
@@ -2922,8 +2928,12 @@ public class TaskTable extends Composite
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(m_taskBundle.getBinderId())) {
-			// Yes!  Purge the selected tasks.
-			handleTaskPurge();
+			// Yes!  Are there any entities in the event?
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				// No!  Purge the entities selected in the view.
+				handleTaskPurge();
+			}
 		}
 	}
 	

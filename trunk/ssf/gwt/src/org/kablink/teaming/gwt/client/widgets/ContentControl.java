@@ -61,14 +61,21 @@ import org.kablink.teaming.gwt.client.binderviews.TeamWSView;
 import org.kablink.teaming.gwt.client.binderviews.TrashView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
+import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
+import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GetCurrentViewInfoEvent;
 import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShowBlogFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowCalendarFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowCollectionViewEvent;
@@ -96,10 +103,14 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.ShowTeamWSEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetParentBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -137,8 +148,12 @@ public class ContentControl extends Composite
 	// Event handlers implemented by this class.
 		ContributorIdsRequestEvent.Handler,
 		ChangeContextEvent.Handler,
+		CopySelectedEntriesEvent.Handler,
+		DeleteSelectedEntriesEvent.Handler,
 		GetCurrentViewInfoEvent.Handler,
 		GotoUrlEvent.Handler,
+		MoveSelectedEntriesEvent.Handler,
+		PurgeSelectedEntriesEvent.Handler,
 		ShowBlogFolderEvent.Handler,
 		ShowCalendarFolderEvent.Handler,
 		ShowCollectionViewEvent.Handler,
@@ -185,6 +200,12 @@ public class ContentControl extends Composite
 		
 		// Contributor events.
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
+		
+		// Selected entries events.
+		TeamingEvents.COPY_SELECTED_ENTRIES,
+		TeamingEvents.DELETE_SELECTED_ENTRIES,
+		TeamingEvents.MOVE_SELECTED_ENTRIES,
+		TeamingEvents.PURGE_SELECTED_ENTRIES,
 		
 		// Show events.
 		TeamingEvents.SHOW_BLOG_FOLDER,
@@ -384,6 +405,63 @@ public class ContentControl extends Composite
 	{
 		return m_contentInstigator;
 	}// end getContentInstigator()
+
+	/*
+	 * Returns the BinderInfo of what's currently loaded in the content
+	 * area, if it can be determined.  If it can't, null is returned.
+	 */
+	private BinderInfo getCurrentBinderInfo()
+	{
+		// Do we have a current view?
+		BinderInfo reply;
+		if ( null == m_currentView )
+		{
+			// No!  Then we can't get its binder.
+			reply = null;
+		}
+		
+		else
+		{
+			// Yes, we have a current view!  What is it of?
+			reply = null;
+			switch( m_currentView.getViewType() )
+			{
+			case BINDER:
+			case BINDER_WITH_ENTRY_VIEW:
+				// A binder!  Simply return its BinderInfo.
+				reply = m_currentView.getBinderInfo();
+				break;
+				
+			case FOLDER_ENTRY:
+				// A folder entry!  Construct a BinderInfo from the
+				// ViewFolderEntryInfo.
+				reply = new BinderInfo();
+				reply.setBinderId(  m_currentView.getFolderEntryInfo().getEntityId().getBinderId());
+				reply.setBinderType(BinderType.FOLDER                                             );
+				reply.setFolderType(FolderType.OTHER                                              );
+				break;
+			}
+
+			// Did we determine a binder ID?
+			if ( null == reply )
+			{
+				// No!  If we have a base binder ID stored in the
+				// ViewInfo...
+				Long binderId = m_currentView.getBaseBinderId();
+				if ( null != binderId )
+				{
+					// ...create a BinderInfo from it and return it.
+					reply = new BinderInfo();
+					reply.setBinderId(  binderId        );
+					reply.setBinderType(BinderType.OTHER);
+				}
+			}
+		}
+		
+		// If we get here, reply is null or refers to the BinderInfo of
+		// what's currently loaded in the content area.  Return it.
+		return reply;
+	}
 	
 	/*
 	 * Initializes the JavaScript for tracking content history.
@@ -1085,6 +1163,164 @@ public class ContentControl extends Composite
 	
 	
 	/**
+	 * Handles CopySelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the CopySelectedEntriesEvent.Handler.onCopySelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCopySelectedEntries( CopySelectedEntriesEvent event )
+	{
+		// Do have information about a binder currently in the view?  
+		BinderInfo bi = getCurrentBinderInfo();
+		if ( null == bi )
+		{
+			// No!  Ignore the event.
+			return;
+		}
+		
+		// Is the event targeted to the current view?
+		Long eventFolderId = event.getFolderId();
+		if ( eventFolderId.equals( bi.getBinderIdAsLong() ) )
+		{
+			// Yes!  Does it contain any selected entities?
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if ( GwtClientHelper.hasItems( selectedEntityIds ) )
+			{
+				// Yes!  Invoke the copy on them.
+				BinderViewsHelper.copyEntries(
+					bi.getFolderType(),
+					selectedEntityIds );
+			}
+		}
+	}
+	
+	
+	/**
+	 * Handles DeleteSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the DeleteSelectedEntriesEvent.Handler.onDeleteSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onDeleteSelectedEntries( DeleteSelectedEntriesEvent event )
+	{
+		// Do have information about a binder currently in the view?  
+		BinderInfo bi = getCurrentBinderInfo();
+		if ( null == bi )
+		{
+			// No!  Ignore the event.
+			return;
+		}
+		
+		// Is the event targeted to the current view?
+		final Long eventFolderId = event.getFolderId();
+		final Long biId          = bi.getBinderIdAsLong();
+		if ( eventFolderId.equals( biId ) )
+		{
+			// Yes!  Does the event contain any entities?
+			final List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if ( GwtClientHelper.hasItems( selectedEntityIds ) )
+			{
+				// Yes!  Are we deleting the binder in the view?
+				if ( EntityId.isBinderInEntityIds( biId, selectedEntityIds ) )
+				{
+					// Yes!  After deleting it, we'll need to load its
+					// parent.  Can we get a URL to it? 
+					GetParentBinderPermalinkCmd cmd = new GetParentBinderPermalinkCmd( biId );
+					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+					{
+						@Override
+						public void onFailure( Throwable t )
+						{
+							GwtClientHelper.handleGwtRPCFailure(
+								t,
+								GwtTeaming.getMessages().rpcFailure_GetParentBinderPermalink(),
+								biId );
+						}//end onFailure()
+						
+						@Override
+						public void onSuccess( VibeRpcResponse response )
+						{
+							// Yes!  Perform the delete.
+							StringRpcResponseData	responseData          = ((StringRpcResponseData) response.getResponseData());
+							String					parentBinderPermalink = responseData.getStringValue();
+							onDeleteSelectedEntriesAsync( selectedEntityIds, parentBinderPermalink );
+						}// end onSuccess()
+					});
+				}
+				else
+				{
+					// No, we aren't deleting the folder itself!
+					// Perform the delete.
+					onDeleteSelectedEntriesAsync( selectedEntityIds, null );
+				}
+			}
+		}
+	}// end onDeleteSelectedEntries()
+	
+
+	/*
+	 * Asynchronously deletes the selected entities.
+	 */
+	private void onDeleteSelectedEntriesAsync( final List<EntityId> selectedEntityIds, final String targetBinderPermalink )
+	{
+		ScheduledCommand doDelete = new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				onDeleteSelectedEntriesNow( selectedEntityIds, targetBinderPermalink );
+			}// end execute()
+		};
+		Scheduler.get().scheduleDeferred( doDelete );
+	}// end onDeleteSelectedEntriesAsync()
+	
+	/*
+	 * Synchronously deletes the selected entities.
+	 */
+	private void onDeleteSelectedEntriesNow( final List<EntityId> selectedEntityIds, final String targetBinderPermalink )
+	{
+		// Delete the selected entities and reload the view to
+		// redisplay things with the entries deleted.
+		final boolean deletingBinders = EntityId.areBindersInEntityIds( selectedEntityIds );
+		BinderViewsHelper.deleteFolderEntries(
+			selectedEntityIds,
+			new DeletePurgeEntriesCallback()
+		{
+			@Override
+			public void operationCanceled()
+			{
+				if ( deletingBinders )
+				{
+					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+				}
+				postDeletePurgeReloadAsync( targetBinderPermalink );
+			}// end operationCanceled())
+
+			@Override
+			public void operationComplete()
+			{
+				if ( deletingBinders )
+				{
+					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+				}
+				postDeletePurgeReloadAsync( targetBinderPermalink );
+			}// end operationComplete()
+			
+			@Override
+			public void operationFailed()
+			{
+				// Nothing to do.  The delete call will have told the
+				// user about the failure.
+			}// end operationFailed()
+		} );
+	}// end onDeleteSelectedEntriesNow()
+	
+	
+	/**
 	 * Handles the GetCurrentViewInfoEvents received by this class
 	 * 
 	 * Implements the GetCurrentViewInfoEvent.Handler.onGetCurrentViewInfo() method.
@@ -1108,6 +1344,165 @@ public class ContentControl extends Composite
 		setViewAsync( null, event.getUrl(), Instigator.GOTO_CONTENT_URL );
 	}
 
+	
+	/**
+	 * Handles MoveSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the MoveSelectedEntriesEvent.Handler.onMoveSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMoveSelectedEntries( MoveSelectedEntriesEvent event )
+	{
+		// Do have information about a binder currently in the view?  
+		BinderInfo bi = getCurrentBinderInfo();
+		if ( null == bi )
+		{
+			// No!  Ignore the event.
+			return;
+		}
+		
+		// Is the event targeted to the current view?
+		Long eventFolderId = event.getFolderId();
+		if ( eventFolderId.equals( bi.getBinderIdAsLong() ) )
+		{
+			// Yes!  If the event contains any entities...
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if ( GwtClientHelper.hasItems(selectedEntityIds ) )
+			{
+				// ...invoke the move on them.
+				BinderViewsHelper.moveEntries(
+					bi.getFolderType(),
+					selectedEntityIds );
+			}
+		}
+	}
+	
+	
+	/**
+	 * Handles PurgeSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the PurgeSelectedEntriesEvent.Handler.onPurgeSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onPurgeSelectedEntries( PurgeSelectedEntriesEvent event )
+	{
+		// Do have information about a binder currently in the view?  
+		BinderInfo bi = getCurrentBinderInfo();
+		if ( null == bi )
+		{
+			// No!  Ignore the event.
+			return;
+		}
+		
+		// Is the event targeted to the current view?
+		final Long eventFolderId = event.getFolderId();
+		final Long biId          = bi.getBinderIdAsLong();
+		if ( eventFolderId.equals( biId ) )
+		{
+			// Yes!  Are there any entities in the event?
+			final List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if ( GwtClientHelper.hasItems(selectedEntityIds ) )
+			{
+				// Are we purging the binder in the view?
+				if ( EntityId.isBinderInEntityIds( biId, selectedEntityIds ) )
+				{
+					// Yes!  After purging it, we'll need to load its
+					// parent.  Can we get a URL to it? 
+					GetParentBinderPermalinkCmd cmd = new GetParentBinderPermalinkCmd( biId );
+					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+					{
+						@Override
+						public void onFailure( Throwable t )
+						{
+							GwtClientHelper.handleGwtRPCFailure(
+								t,
+								GwtTeaming.getMessages().rpcFailure_GetParentBinderPermalink(),
+								biId );
+						}//end onFailure()
+						
+						@Override
+						public void onSuccess( VibeRpcResponse response )
+						{
+							// Yes!  Perform the purge.
+							StringRpcResponseData	responseData          = ((StringRpcResponseData) response.getResponseData());
+							String					parentBinderPermalink = responseData.getStringValue();
+							onPurgeSelectedEntriesAsync( selectedEntityIds, parentBinderPermalink );
+						}// end onSuccess()
+					});
+				}
+				else
+				{
+					// No, we aren't purging the binder in the view!
+					// Perform the purge.
+					onPurgeSelectedEntriesAsync( selectedEntityIds, null );
+				}
+			}
+		}
+	}// end onPurgeSelectedEntries()
+
+	
+	/*
+	 * Asynchronously purges the selected entities.
+	 */
+	private void onPurgeSelectedEntriesAsync( final List<EntityId> selectedEntityIds, final String targetBinderPermalink )
+	{
+		ScheduledCommand doPurge = new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				onPurgeSelectedEntriesNow( selectedEntityIds, targetBinderPermalink );
+			}// end execute()
+		};
+		Scheduler.get().scheduleDeferred( doPurge );
+	}// end onPurgeSelectedEntriesAsync()
+	
+	
+	/*
+	 * Synchronously purges the selected entities.
+	 */
+	private void onPurgeSelectedEntriesNow( final List<EntityId> selectedEntityIds, final String targetBinderPermalink )
+	{
+		// Purge the selected entities and reload the view to redisplay
+		// things with the entries purged.
+		final boolean purgingBinders = EntityId.areBindersInEntityIds( selectedEntityIds );
+		BinderViewsHelper.purgeFolderEntries(
+				selectedEntityIds,
+				new DeletePurgeEntriesCallback()
+		{
+			@Override
+			public void operationCanceled()
+			{
+				if ( purgingBinders )
+				{
+					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+				}
+				postDeletePurgeReloadAsync( targetBinderPermalink );
+			}// end operationCanceled())
+
+			@Override
+			public void operationComplete()
+			{
+				if ( purgingBinders )
+				{
+					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+				}
+				postDeletePurgeReloadAsync( targetBinderPermalink );
+			}// end operationComplete()
+			
+			@Override
+			public void operationFailed()
+			{
+				// Nothing to do.  The purge call will have told the
+				// user about the failure.
+			}// end operationFailed()
+		});
+	}// end onPurgeSelectedEntriesNow()
+	
 	
 	/**
 	 * Handles ShowBlogFolderEvent's received by this class.
@@ -1864,7 +2259,52 @@ public class ContentControl extends Composite
 			}// end onSuccess()
 		});
 	}// end onShowTrash()
+	
 
+	/*
+	 * Asynchronously performs the reload necessary after an item has
+	 * been deleted or purged.
+	 */
+	private void postDeletePurgeReloadAsync( final String targetBinderPermalink ) {
+		ScheduledCommand doReload = new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				postDeletePurgeReloadNow( targetBinderPermalink );
+			}// end execute()
+		};
+		Scheduler.get().scheduleDeferred( doReload );
+	}// end postDeletePurgeReloadAsync();
+	
+	
+	/*
+	 * Synchronously performs the reload necessary after an item has
+	 * been deleted or purged.
+	 */
+	private void postDeletePurgeReloadNow( final String targetBinderPermalink ) {
+		// Do we have a specific place to reload to?
+		if ( GwtClientHelper.hasString( targetBinderPermalink ) )
+		{
+			// Yes!  Load it.
+			OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+				targetBinderPermalink,
+				Instigator.GOTO_CONTENT_URL );
+			
+			if ( GwtClientHelper.validateOSBI( osbInfo ) )
+			{
+				GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ));
+			}
+		}
+		else
+		{
+			// No, we don't have a specific place, simply reload what's
+			// already in the view.
+			FullUIReloadEvent.fireOne();
+		}
+	}// end postDeletePurgeReloadNow();
+	
+	
 	/*
 	 * Asynchronously shows the folder entry dialog.
 	 */

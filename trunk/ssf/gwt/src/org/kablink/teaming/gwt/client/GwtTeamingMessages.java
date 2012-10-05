@@ -386,6 +386,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_NumberOfMembers();
 	String rpcFailure_GetNetFolder();
 	String rpcFailure_GetNextPreviousFolderEntryInfo();
+	String rpcFailure_GetParentBinderPermalink();
 	String rpcFailure_GetPersonalPreferences();
 	String rpcFailure_GetPresenceInfo();
 	String rpcFailure_GetProfileAvatars();
@@ -1604,7 +1605,10 @@ public interface GwtTeamingMessages extends Messages
 	String unreadEntriesDlgHeader();
 	
 	// Strings used in the CopyMoveEntriesDlg in copy mode.
-	String copyEntriesDlgCaption1();
+	String copyEntriesDlgCaption1_Entries();
+	String copyEntriesDlgCaption1_Entry();
+	String copyEntriesDlgCaption1_Folder();
+	String copyEntriesDlgCaption1_Workspace();
 	String copyEntriesDlgCaption2();
 	String copyEntriesDlgCurrentDestination();
 	String copyEntriesDlgCurrentDestinationNone();
@@ -1618,7 +1622,10 @@ public interface GwtTeamingMessages extends Messages
 	String copyEntriesDlgWarningNoSelection();
 
 	// Strings used in the CopyMoveEntriesDlg in move mode.
-	String moveEntriesDlgCaption1();
+	String moveEntriesDlgCaption1_Entries();
+	String moveEntriesDlgCaption1_Entry();
+	String moveEntriesDlgCaption1_Folder();
+	String moveEntriesDlgCaption1_Workspace();
 	String moveEntriesDlgCaption2();
 	String moveEntriesDlgCurrentDestination();
 	String moveEntriesDlgCurrentDestinationNone();
@@ -1715,9 +1722,15 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used in the 'Binder View Helper' APIs.
 	String binderViewsConfirmDeleteEntries();
+	String binderViewsConfirmDeleteEntry();
+	String binderViewsConfirmDeleteFolder();
+	String binderViewsConfirmDeleteWorkspace();
 	String binderViewsConfirmDeleteUserWS();
 	String binderViewsConfirmPurgeDeleteSourceOnMirroredSubFolders();
 	String binderViewsConfirmPurgeEntries();
+	String binderViewsConfirmPurgeEntry();
+	String binderViewsConfirmPurgeFolder();
+	String binderViewsConfirmPurgeWorkspace();
 	String binderViewsConfirmPurgeUsers();
 	String binderViewsConfirmPurgeUserWS();
 	String binderViewsDeleteFolderEntriesCaption();

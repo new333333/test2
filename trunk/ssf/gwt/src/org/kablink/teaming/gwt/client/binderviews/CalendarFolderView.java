@@ -1302,14 +1302,15 @@ public class CalendarFolderView extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Invoke the copy.
+			// Yes!  Does the event contain any entities?
 			List<EntityId> selectedEntityIds = event.getSelectedEntities();
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				// No!  Invoke the copy on those selected in the view.
 				selectedEntityIds = getSelectedEntityIds();
+				BinderViewsHelper.copyEntries(
+					getFolderInfo().getFolderType(),
+					selectedEntityIds);
 			}
-			BinderViewsHelper.copyEntries(
-				getFolderInfo().getFolderType(),
-				selectedEntityIds);
 		}
 	}
 	
@@ -1454,14 +1455,15 @@ public class CalendarFolderView extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Invoke the move.
+			// Yes!  Are there any entities in the event?
 			List<EntityId> selectedEntityIds = event.getSelectedEntities();
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				// No!  Invoke the move on those selected in the view.
 				selectedEntityIds = getSelectedEntityIds();
+				BinderViewsHelper.moveEntries(
+					getFolderInfo().getFolderType(),
+					selectedEntityIds);
 			}
-			BinderViewsHelper.moveEntries(
-				getFolderInfo().getFolderType(),
-				selectedEntityIds);
 		}
 	}
 	

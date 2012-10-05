@@ -1655,14 +1655,16 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Invoke the copy.
+			// Yes!  If the event doesn't contain any entities...
 			List<EntityId> selectedEntityIds = event.getSelectedEntities();
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				// ...invoke the copy on those selected in the data
+				// ...table.
 				selectedEntityIds = getSelectedEntityIds();
+				BinderViewsHelper.copyEntries(
+					getFolderType(),
+					selectedEntityIds);
 			}
-			BinderViewsHelper.copyEntries(
-				getFolderType(),
-				selectedEntityIds);
 		}
 	}
 	
@@ -1678,44 +1680,46 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Delete the selected entries and reset the view to
-			// redisplay things with the entries deleted.
+			// Yes!  Does the event contain any entities?
 			List<EntityId> selectedEntityIds = event.getSelectedEntities();
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				// No!  Delete the entities selected in the data table
+				// and reset the view to redisplay things with the
+				// entities deleted.
 				selectedEntityIds = getSelectedEntityIds();
+				final boolean deletingBinders = EntityId.areBindersInEntityIds(selectedEntityIds);
+				BinderViewsHelper.deleteFolderEntries(
+						selectedEntityIds,
+						new DeletePurgeEntriesCallback() {
+					@Override
+					public void operationCanceled() {
+						if (deletingBinders) {
+							GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+							FullUIReloadEvent.fireOne();
+						}
+						else {
+							resetViewAsync();
+						}
+					}
+	
+					@Override
+					public void operationComplete() {
+						if (deletingBinders) {
+							GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+							FullUIReloadEvent.fireOne();
+						}
+						else {
+							resetViewAsync();
+						}
+					}
+					
+					@Override
+					public void operationFailed() {
+						// Nothing to do.  The delete call will have told
+						// the user about the failure.
+					}
+				});
 			}
-			final boolean deletingBinders = EntityId.areBindersInEntityIds(selectedEntityIds);
-			BinderViewsHelper.deleteFolderEntries(
-					selectedEntityIds,
-					new DeletePurgeEntriesCallback() {
-				@Override
-				public void operationCanceled() {
-					if (deletingBinders) {
-						GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
-						FullUIReloadEvent.fireOne();
-					}
-					else {
-						resetViewAsync();
-					}
-				}
-
-				@Override
-				public void operationComplete() {
-					if (deletingBinders) {
-						GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
-						FullUIReloadEvent.fireOne();
-					}
-					else {
-						resetViewAsync();
-					}
-				}
-				
-				@Override
-				public void operationFailed() {
-					// Nothing to do.  The delete call will have told
-					// the user about the failure.
-				}
-			});
 		}
 	}
 	
@@ -1954,14 +1958,16 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Invoke the move.
+			// Yes!  If the event doesn't contain any entities...
 			List<EntityId> selectedEntityIds = event.getSelectedEntities();
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				// ...invoke the move on what's selected in the data
+				// ...table.
 				selectedEntityIds = getSelectedEntityIds();
+				BinderViewsHelper.moveEntries(
+					getFolderType(),
+					selectedEntityIds);
 			}
-			BinderViewsHelper.moveEntries(
-				getFolderType(),
-				selectedEntityIds);
 		}
 	}
 	
@@ -1977,44 +1983,46 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Purge the selected entries and reset the view to
-			// redisplay things with the entries purged.
+			// Yes!  Does the event contain any entities?
 			List<EntityId> selectedEntityIds = event.getSelectedEntities();
 			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				// No!  Purge the entities selected in the data table
+				// and reset the view to redisplay things with the
+				// entities purged.
 				selectedEntityIds = getSelectedEntityIds();
+				final boolean purgingBinders = EntityId.areBindersInEntityIds(selectedEntityIds);
+				BinderViewsHelper.purgeFolderEntries(
+						selectedEntityIds,
+						new DeletePurgeEntriesCallback() {
+					@Override
+					public void operationCanceled() {
+						if (purgingBinders) {
+							GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+							FullUIReloadEvent.fireOne();
+						}
+						else {
+							resetViewAsync();
+						}
+					}
+	
+					@Override
+					public void operationComplete() {
+						if (purgingBinders) {
+							GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+							FullUIReloadEvent.fireOne();
+						}
+						else {
+							resetViewAsync();
+						}
+					}
+					
+					@Override
+					public void operationFailed() {
+						// Nothing to do.  The purge call will have told the
+						// user about the failure.
+					}
+				});
 			}
-			final boolean purgingBinders = EntityId.areBindersInEntityIds(selectedEntityIds);
-			BinderViewsHelper.purgeFolderEntries(
-					selectedEntityIds,
-					new DeletePurgeEntriesCallback() {
-				@Override
-				public void operationCanceled() {
-					if (purgingBinders) {
-						GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
-						FullUIReloadEvent.fireOne();
-					}
-					else {
-						resetViewAsync();
-					}
-				}
-
-				@Override
-				public void operationComplete() {
-					if (purgingBinders) {
-						GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
-						FullUIReloadEvent.fireOne();
-					}
-					else {
-						resetViewAsync();
-					}
-				}
-				
-				@Override
-				public void operationFailed() {
-					// Nothing to do.  The purge call will have told the
-					// user about the failure.
-				}
-			});
 		}
 	}
 	

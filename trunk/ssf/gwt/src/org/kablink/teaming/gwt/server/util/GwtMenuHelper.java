@@ -152,6 +152,7 @@ public class GwtMenuHelper {
 	private final static String MODIFY					= "modify";
 	private final static String MOVE					= "move";
 	private final static String PERMALINK				= "permalink";
+	private final static String PURGE					= "purge";
 	private final static String REPORTS					= "reports";
 	private final static String SCHEDULE_SYNC			= "scheduleSync";
 	private final static String SEND_EMAIL				= "sendEmail";
@@ -1478,28 +1479,40 @@ public class GwtMenuHelper {
 			}
 		}
 		
-		// Does the user have rights to delete this binder?
-		if ((isFolder || isWorkspace) && (!isWorkspaceReserved) && bm.testAccess(binder, BinderOperation.deleteBinder)) {
+		// Is this a binder we can possibly delete or purge?
+		if ((isFolder || isWorkspace) && (!isWorkspaceReserved)) {
 			// Yes!  Is the binder other than a system user's or the
 			// current user's workspace?
 			if ((!(BinderHelper.isBinderSystemUserWS(  binder))) &&
 				(!(BinderHelper.isBinderCurrentUsersWS(binder)))) {
-				// Yes!  Add the ToolbarItem for it.
-				adminMenuCreated  =
-				configMenuCreated = true;
-	
-				url = createActionUrl(request);
-				url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_MODIFY_BINDER);
-				url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                   );
-				url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()           );
-				url.setParameter(WebKeys.URL_OPERATION,   WebKeys.OPERATION_DELETE    );
-				
-				actionTBI = new ToolbarItem(DELETE);
-				markTBIPopup(actionTBI                                                                             );
-				markTBITitle(actionTBI, (isFolder ? "toolbar.menu.delete_folder" : "toolbar.menu.delete_workspace"));
-				markTBIUrl(  actionTBI, url                                                                        );
-				
-				configTBI.addNestedItem(actionTBI);
+				// Yes!  Is this a binder the user can move to the
+				// trash?
+				if (bm.testAccess(binder, BinderOperation.preDeleteBinder) && isBinderTrashEnabled(binder)) {
+					// Yes!  Add the ToolbarItem for it.
+					adminMenuCreated  =
+					configMenuCreated = true;
+		
+					actionTBI = new ToolbarItem(DELETE);
+					markTBITitle(         actionTBI, (isFolder ? "toolbar.menu.delete_folder" : "toolbar.menu.delete_workspace"));
+					markTBIEvent(         actionTBI, TeamingEvents.DELETE_SELECTED_ENTRIES                                      );
+					markTBISelectedBinder(actionTBI, binder                                                                     );
+					
+					configTBI.addNestedItem(actionTBI);
+				}
+
+				// Is this a binder the user can purge?
+				if (bm.testAccess(binder, BinderOperation.deleteBinder)) {
+					// Yes!  Add the ToolbarItem for it.
+					adminMenuCreated  =
+					configMenuCreated = true;
+		
+					actionTBI = new ToolbarItem(PURGE);
+					markTBITitle(         actionTBI, (isFolder ? "toolbar.menu.purge_folder" : "toolbar.menu.purge_workspace"));
+					markTBIEvent(         actionTBI, TeamingEvents.PURGE_SELECTED_ENTRIES                                     );
+					markTBISelectedBinder(actionTBI, binder                                                                   );
+					
+					configTBI.addNestedItem(actionTBI);
+				}
 			}
 		}
 
@@ -1943,7 +1956,7 @@ public class GwtMenuHelper {
 		
 		// ...construct a ToolbarItem for it...
 		ToolbarItem trashTBI = new ToolbarItem(TRASH);
-		markTBITitle(trashTBI, "toolbar.menu.trash"            );
+		markTBITitle(trashTBI, "toolbar.menu.trash.view"       );
 		markTBIEvent(trashTBI, TeamingEvents.GOTO_PERMALINK_URL);
 		markTBIUrl(  trashTBI, trashPermalink                  );
 
