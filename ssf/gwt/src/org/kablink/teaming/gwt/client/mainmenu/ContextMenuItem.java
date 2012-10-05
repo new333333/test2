@@ -36,12 +36,14 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem.NameValuePair;
@@ -226,19 +228,24 @@ public class ContextMenuItem extends VibeMenuItem {
 			case TEAMING_EVENT:
 				switch (m_teamingEvent) {
 				case COPY_SELECTED_ENTRIES:
+				case DELETE_SELECTED_ENTRIES:
 				case MOVE_SELECTED_ENTRIES:
-					// Create the appropriate copy/move event...
+				case PURGE_SELECTED_ENTRIES:
+					// Create the appropriate selected entries event...
 					Long				binderId       = Long.parseLong(ToolbarItem.getQualifierValueFromList("binderId",       m_eventQualifiers));
 					Long				binderParentId = Long.parseLong(ToolbarItem.getQualifierValueFromList("binderParentId", m_eventQualifiers));
 					String				binderType     =                ToolbarItem.getQualifierValueFromList("binderType",     m_eventQualifiers );
 					EntityId			eid            = new EntityId(binderParentId, binderId, EntityId.FOLDER);
-					VibeEventBase<?>	copyMoveEvent;
-					if (TeamingEvents.COPY_SELECTED_ENTRIES.equals(m_teamingEvent))
-					     copyMoveEvent = new CopySelectedEntriesEvent(binderId, eid);
-					else copyMoveEvent = new MoveSelectedEntriesEvent(binderId, eid);
+					VibeEventBase<?>	selEvent = null;
+					switch (m_teamingEvent) {
+					case COPY_SELECTED_ENTRIES:    selEvent = new CopySelectedEntriesEvent(  binderId, eid); break;
+					case DELETE_SELECTED_ENTRIES:  selEvent = new DeleteSelectedEntriesEvent(binderId, eid); break;
+					case MOVE_SELECTED_ENTRIES:    selEvent = new MoveSelectedEntriesEvent(  binderId, eid); break;
+					case PURGE_SELECTED_ENTRIES:   selEvent = new PurgeSelectedEntriesEvent( binderId, eid); break;
+					}
 					
 					// ...and fire it.
-					GwtTeaming.fireEvent(copyMoveEvent);
+					GwtTeaming.fireEvent(selEvent);
 					break;
 					
 				case GOTO_PERMALINK_URL:

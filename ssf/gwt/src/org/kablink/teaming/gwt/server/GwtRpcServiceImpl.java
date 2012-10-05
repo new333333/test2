@@ -157,6 +157,7 @@ import org.kablink.teaming.gwt.server.util.GwtViewHelper;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -1461,6 +1462,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			gnmCmd = (GetNumberOfMembersCmd) cmd;
 			numMembers = GwtServerHelper.getNumberOfMembers( this, gnmCmd.getGroupId() );
 			responseData = new IntegerRpcResponseData( numMembers );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_PARENT_BINDER_PERMALINK:
+		{
+			GetParentBinderPermalinkCmd gpbpCmd = ((GetParentBinderPermalinkCmd) cmd);
+			String permalink = getParentBinderPermalink( ri, gpbpCmd.getBinderId() );
+			StringRpcResponseData responseData = new StringRpcResponseData( permalink );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -3512,6 +3522,54 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		return adapterUrl.toString();
 	}// end getModifyBinderUrl()
+	
+	/*
+	 * Returns the "binder permalink" URL of a binder's parent.
+	 */
+	private String getParentBinderPermalink( HttpRequestInfo ri, Long binderId )
+	{
+		// Can we access this binder?
+		String			reply  = null;
+		BinderModule	bm     = getBinderModule();
+		Binder			binder = GwtUIHelper.getBinderSafely( bm, binderId );
+		if ( null != binder )
+		{
+			// Yes!  Scan its parentage.
+			binder = binder.getParentBinder();
+			while ( null != binder )
+			{
+				// Can we read the contents of this binder?
+				if ( bm.testAccess( binder, BinderOperation.readEntries ) ) {
+					// Yes!  Break out of the loop.  We'll use it as
+					// the parent.
+					break;
+				}
+				
+				// No, we can't read that one!  Step up a level of
+				// parentage and keep checking.
+				binder = binder.getParentBinder();
+			}
+
+			// Did we find a binder to use as a parent?
+			if ( null == binder )
+			{
+				// No!  Default to the user's personal workspace.
+				binder = GwtServerHelper.getUserWorkspace( GwtServerHelper.getCurrentUser() );
+			}
+			
+			// Did we find a binder to use as a parent?
+			if ( null != binder )
+			{
+				// Yes!  Return a permalink to it.
+				reply = getBinderPermalink( ri, String.valueOf( binder.getId() ) );
+			}
+		}
+
+		// If we get here, reply is null or refers to the permalink of
+		// the nearest containing parent we have access to from the
+		// binder we were give.  Return it.
+		return reply;
+	}
 	
 	/*
 	 * Returns the HttpServletRequest from an HttpRequestInfo object.

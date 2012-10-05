@@ -490,10 +490,24 @@ public class CopyMoveEntriesDlg extends DlgBox
 		if (null == m_strMap)
 		     m_strMap = new HashMap<StringIds, String>();
 		else m_strMap.clear();
-
+		
 		// ...and put the appropriate strings into it.
+		int		eidCount = m_entityIds.size();
+		String	eidType  = ((1 == eidCount) ? m_entityIds.get(0).getEntityType() : null);
+		String	caption1;
 		if (m_doCopy) {
-			m_strMap.put(StringIds.CAPTION1,                    m_messages.copyEntriesDlgCaption1());
+			switch (eidCount) {
+			case 1:
+				if      (eidType.equals(EntityId.FOLDER))    caption1 = m_messages.copyEntriesDlgCaption1_Folder();
+				else if (eidType.equals(EntityId.WORKSPACE)) caption1 = m_messages.copyEntriesDlgCaption1_Workspace();
+				else                                         caption1 = m_messages.copyEntriesDlgCaption1_Entry();
+				break;
+				
+			default:
+				caption1 = m_messages.copyEntriesDlgCaption1_Entries();
+				break;
+			}
+			m_strMap.put(StringIds.CAPTION1,                    caption1);
 			m_strMap.put(StringIds.CAPTION2,                    m_messages.copyEntriesDlgCaption2());
 			m_strMap.put(StringIds.CURRENT_DEST,                m_messages.copyEntriesDlgCurrentDestination());
 			m_strMap.put(StringIds.CURRENT_DEST_NONE,           m_messages.copyEntriesDlgCurrentDestinationNone());
@@ -508,7 +522,18 @@ public class CopyMoveEntriesDlg extends DlgBox
 		}
 		
 		else {
-			m_strMap.put(StringIds.CAPTION1,                    m_messages.moveEntriesDlgCaption1());
+			switch (eidCount) {
+			case 1:
+				if      (eidType.equals(EntityId.FOLDER))    caption1 = m_messages.moveEntriesDlgCaption1_Folder();
+				else if (eidType.equals(EntityId.WORKSPACE)) caption1 = m_messages.moveEntriesDlgCaption1_Workspace();
+				else                                         caption1 = m_messages.moveEntriesDlgCaption1_Entry();
+				break;
+				
+			default:
+				caption1 = m_messages.moveEntriesDlgCaption1_Entries();
+				break;
+			}
+			m_strMap.put(StringIds.CAPTION1,                    caption1);
 			m_strMap.put(StringIds.CAPTION2,                    m_messages.moveEntriesDlgCaption2());
 			m_strMap.put(StringIds.CURRENT_DEST,                m_messages.moveEntriesDlgCurrentDestination());
 			m_strMap.put(StringIds.CURRENT_DEST_NONE,           m_messages.moveEntriesDlgCurrentDestinationNone());

@@ -241,6 +241,20 @@ public class BinderViewsHelper {
 			
 			@Override
 			public void onSuccess(ConfirmDlg cDlg) {
+				String confirmationMsg;
+				switch (entityIds.size()) {
+				case 1:
+					EntityId	eid     = entityIds.get(0);
+					String		eidType = eid.getEntityType();
+					if      (eidType.equals(EntityId.FOLDER))    confirmationMsg = m_messages.binderViewsConfirmDeleteFolder();
+					else if (eidType.equals(EntityId.WORKSPACE)) confirmationMsg = m_messages.binderViewsConfirmDeleteWorkspace();
+					else                                         confirmationMsg = m_messages.binderViewsConfirmDeleteEntry();
+					break;
+					
+				default:
+					confirmationMsg = m_messages.binderViewsConfirmDeleteEntries();
+					break;
+				}
 				ConfirmDlg.initAndShow(
 					cDlg,
 					new ConfirmCallback() {
@@ -263,7 +277,7 @@ public class BinderViewsHelper {
 							// No, they're not sure!
 						}
 					},
-					m_messages.binderViewsConfirmDeleteEntries());
+					confirmationMsg);
 			}
 		});
 	}
@@ -721,6 +735,20 @@ public class BinderViewsHelper {
 			
 			@Override
 			public void onSuccess(ConfirmDlg cDlg) {
+				String confirmationMsg;
+				switch (entityIds.size()) {
+				case 1:
+					EntityId	eid     = entityIds.get(0);
+					String		eidType = eid.getEntityType();
+					if      (eidType.equals(EntityId.FOLDER))    confirmationMsg = m_messages.binderViewsConfirmPurgeFolder();
+					else if (eidType.equals(EntityId.WORKSPACE)) confirmationMsg = m_messages.binderViewsConfirmPurgeWorkspace();
+					else                                         confirmationMsg = m_messages.binderViewsConfirmPurgeEntry();
+					break;
+					
+				default:
+					confirmationMsg = m_messages.binderViewsConfirmPurgeEntries();
+					break;
+				}
 				ConfirmDlg.initAndShow(
 					cDlg,
 					new ConfirmCallback() {
@@ -744,7 +772,7 @@ public class BinderViewsHelper {
 							// No, they're not sure!
 						}
 					},
-					m_messages.binderViewsConfirmPurgeEntries(),
+					confirmationMsg,
 					cb);
 			}
 		});
