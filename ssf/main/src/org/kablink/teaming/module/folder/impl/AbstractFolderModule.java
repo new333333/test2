@@ -331,17 +331,30 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 			case addEntryWorkflow:
 			case deleteEntryWorkflow:
 			case reserveEntry:
-			case moveEntry:
 			case changeEntryType:
 				AccessUtils.operationCheck(entry, WorkAreaOperation.MODIFY_ENTRIES);   
 				break;
+			case moveEntry:
+	    		if(entry.isAclExternallyControlled()) { // Net Folder entries
+					getAccessControlManager().checkOperation(entry.getParentFolder(), WorkAreaOperation.DELETE_ENTRIES);
+	    		}
+	    		else { // Legacy Vibe entries
+					AccessUtils.operationCheck(entry, WorkAreaOperation.MODIFY_ENTRIES);   	    			
+	    		}
+	    		break;
 			case modifyEntryFields:
 				AccessUtils.modifyFieldCheck(entry);   
 				break;
 			case restoreEntry:
 			case preDeleteEntry:
 			case deleteEntry:
-				AccessUtils.operationCheck(entry, WorkAreaOperation.DELETE_ENTRIES);   		
+	    		if(entry.isAclExternallyControlled()) { // Net Folder entries
+	    			// Do the checking in a way that is consistent with the file system semantic.
+					getAccessControlManager().checkOperation(entry.getParentFolder(), WorkAreaOperation.DELETE_ENTRIES);
+	    		}
+	    		else { // Legacy Vibe entries
+	    			AccessUtils.operationCheck(entry, WorkAreaOperation.DELETE_ENTRIES);
+	    		}
 				break;
 			case overrideReserveEntry:
 				AccessUtils.overrideReserveEntryCheck(entry);
@@ -395,8 +408,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		}
 
 	}
-	
-	
+    
 	protected Folder loadFolder(Long folderId)  {
         Folder folder = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneId());
 		if (folder.isDeleted()) throw new NoBinderByTheIdException(folderId);
