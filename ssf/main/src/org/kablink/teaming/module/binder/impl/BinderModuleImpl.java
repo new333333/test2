@@ -689,7 +689,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		boolean oldLibrary = binder.isLibrary();
 		boolean oldUnique = binder.isUniqueTitles();
 
-		checkAccess(binder, BinderOperation.modifyBinder);
+		if(binder.isAclExternallyControlled() &&
+        		inputData.exists("title") &&
+        		!inputData.getSingleValue("title").equals(binder.getTitle())) { 
+        	// This is renaming of a Net Folder (or its sub-folder), which means that the user is attempting to rename a directory.
+			// Do the checking in a way that is consistent with the file system semantic.				
+			getAccessControlManager().checkOperation(binder.getParentBinder(), WorkAreaOperation.MODIFY_ENTRIES);
+		}
+		else {
+			checkAccess(binder, BinderOperation.modifyBinder);
+		}
+	
 		List atts = new ArrayList();
 		if (deleteAttachments != null) {
 			for (String id : deleteAttachments) {
