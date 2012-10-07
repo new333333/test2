@@ -338,7 +338,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	    		if(entry.isAclExternallyControlled()) { // Net Folder entries
 					getAccessControlManager().checkOperation(entry.getParentFolder(), WorkAreaOperation.DELETE_ENTRIES);
 	    		}
-	    		else { // Legacy Vibe entries
+	    		else { // Regular Vibe entries
 					AccessUtils.operationCheck(entry, WorkAreaOperation.MODIFY_ENTRIES);   	    			
 	    		}
 	    		break;
@@ -352,7 +352,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	    			// Do the checking in a way that is consistent with the file system semantic.
 					getAccessControlManager().checkOperation(entry.getParentFolder(), WorkAreaOperation.DELETE_ENTRIES);
 	    		}
-	    		else { // Legacy Vibe entries
+	    		else { // Regular Vibe entries
 	    			AccessUtils.operationCheck(entry, WorkAreaOperation.DELETE_ENTRIES);
 	    		}
 				break;
@@ -568,12 +568,21 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     	long begin = System.nanoTime();
     	meCount.incrementAndGet();
         FolderEntry entry = loadEntryStrict(folderId, entryId);   	
-		try {
-			checkAccess(entry, FolderOperation.modifyEntry);
-		} catch (AccessControlException e) {
-			checkAccess(entry, FolderOperation.modifyEntryFields);
-			inputData.setFieldsOnly(true);
-		}
+        if(entry.isAclExternallyControlled() && 
+        		inputData.exists("title") &&
+        		!inputData.getSingleValue("title").equals(entry.getTitle())) { 
+        	// This is renaming of a Net Folder entry, which means that the user is attempting to rename a file.
+			// Do the checking in a way that is consistent with the file system semantic.
+			getAccessControlManager().checkOperation(entry.getParentFolder(), WorkAreaOperation.MODIFY_ENTRIES);
+        }
+        else {
+			try {
+				checkAccess(entry, FolderOperation.modifyEntry);
+			} catch (AccessControlException e) {
+				checkAccess(entry, FolderOperation.modifyEntryFields);
+				inputData.setFieldsOnly(true);
+			}
+        }
         Folder folder = entry.getParentFolder();
 		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
 				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
