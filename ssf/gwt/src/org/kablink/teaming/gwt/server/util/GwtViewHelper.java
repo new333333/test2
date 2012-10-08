@@ -209,6 +209,7 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
+import org.kablink.util.search.Junction;
 import org.kablink.util.search.Junction.Conjunction;
 import org.kablink.util.search.Junction.Disjunction;
 
@@ -216,6 +217,7 @@ import static org.kablink.util.search.Restrictions.conjunction;
 import static org.kablink.util.search.Restrictions.disjunction;
 import static org.kablink.util.search.Restrictions.in;
 import static org.kablink.util.search.Restrictions.like;
+import static org.kablink.util.search.Restrictions.not;
 
 /**
  * Helper methods for the GWT binder views.
@@ -2347,41 +2349,58 @@ public class GwtViewHelper {
 		default:
 		case MY_FILES:
 			// Are we supposed to use this user's home folder as the
-			// root of their 'My Files' area?
-			Long	myFilesRootId;
-			boolean	usingHomeAsMyFiles = GwtServerHelper.useHomeAsMyFiles();
-			if (usingHomeAsMyFiles) {
+			// root of their My Files area?
+			Long	mfRootId;
+			boolean	usingHomeAsMF = GwtServerHelper.useHomeAsMyFiles();
+			if (usingHomeAsMF) {
 				// Yes!  Can we find their home folder?
-				myFilesRootId        = GwtServerHelper.getHomeFolderId(bs);
-				usingHomeAsMyFiles = (null != myFilesRootId);
-				if (!usingHomeAsMyFiles) {
+				mfRootId      = GwtServerHelper.getHomeFolderId(bs);
+				usingHomeAsMF = (null != mfRootId);
+				if (!usingHomeAsMF) {
 					// No!  Just use the binder we were given.
 					binder.getId();
 				}
 			}
 			else {
 				// No, we aren't supposed to use this user's home
-				// folder as the root of their 'My Files' area!  Use
+				// folder as the root of their My Files area!  Use
 				// the binder we were given.
-				myFilesRootId = binder.getId();
+				mfRootId = binder.getId();
 			}
+			String myFilesRootIdS = String.valueOf(mfRootId);
 
+			// Do we have a folder to use as a My Files container?
+			Long mfContainerId;
+			if (usingHomeAsMF)
+			     mfContainerId = mfRootId;
+			else mfContainerId = GwtServerHelper.getMyFilesFolderId(bs);
+			boolean	hasMFContainerId = (null != mfContainerId);
+			String	mfContainerIdS   = (hasMFContainerId ? String.valueOf(mfContainerId) : null);
+			
 			// Search for file folders within the binder...
 			Disjunction	root     = disjunction(); crit.add(root    );
 			Conjunction	rootConj = conjunction(); root.add(rootConj);
 			rootConj.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
-			rootConj.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(myFilesRootId)}));
+			rootConj.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{myFilesRootIdS}));
 			rootConj.add(in(Constants.FAMILY_FIELD,            fileFamilies));
 			rootConj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
 
-			// ...that are non-mirrored...
-    		disj = disjunction();
-			rootConj.add(disj);
-    		conj = conjunction();
-			conj.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
-			disj.add(conj);
+			// ...if we have a non-Home My Files container...
+			if (hasMFContainerId && (!usingHomeAsMF)) {
+				// ...exclude it from the binder list.
+				Junction noMF = not();
+				rootConj.add(noMF);
+				noMF.add(in(Constants.DOCID_FIELD, new String[]{mfContainerIdS}));
+			}
+
+			if (!usingHomeAsMF) {
+				// ...that are non-mirrored...
+	    		disj = disjunction();
+				rootConj.add(disj);
+	    		conj = conjunction();
+				conj.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
+				disj.add(conj);
 	
-			if (!usingHomeAsMyFiles) {
 				// ...or configured mirrored File Home Folders.
 	    		conj = conjunction();
 				conj.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
@@ -2390,17 +2409,13 @@ public class GwtViewHelper {
 				disj.add(conj);
 			}
 
-			// Do we have a folder to populate as their 'My Files'?
-			Long myFilesId;
-			if (usingHomeAsMyFiles)
-			     myFilesId = myFilesRootId;
-			else myFilesId = GwtServerHelper.getMyFilesFolderId(bs);
-			if (null != myFilesId) {
+			// Do we have a folder to populate as their My Files?
+			if (hasMFContainerId) {
 				// Yes!  Search for any file entries in there as well.
 				conj = conjunction();
 				conj.add(in(Constants.DOC_TYPE_FIELD,  new String[]{Constants.DOC_TYPE_ENTRY}));
 				conj.add(in(Constants.FAMILY_FIELD,    new String[]{Definition.FAMILY_FILE}));
-				conj.add(in(Constants.BINDER_ID_FIELD, new String[]{String.valueOf(myFilesId)}));
+				conj.add(in(Constants.BINDER_ID_FIELD, new String[]{mfContainerIdS}));
 				root.add(conj);
 			}
 			
