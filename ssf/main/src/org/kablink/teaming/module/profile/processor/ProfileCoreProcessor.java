@@ -45,6 +45,6 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 
 public interface ProfileCoreProcessor extends EntryProcessor {
 	public void syncEntry(Principal entry, InputDataAccessor inputData, Map options);
-	public void syncEntries(Map entries, Map options, PartialLdapSyncResults syncResults );
+	public Map syncEntries(Map entries, Map options, PartialLdapSyncResults syncResults );
 	public List syncNewEntries(Binder binder, Definition definition, Class clazz, List inputAccessors, Map options, PartialLdapSyncResults syncResults ); 
 }

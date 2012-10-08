@@ -74,6 +74,7 @@ import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.LdapConnectionConfig;
@@ -101,6 +102,7 @@ import org.kablink.teaming.module.ldap.LdapSyncResults.SyncStatus;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
+import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
@@ -383,6 +385,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		this.sessionFactory = sessionFactory;
 	}
 
+	@Override
 	public boolean testAccess(LdapOperation operation) {
 		try {
 			checkAccess(operation);
@@ -721,7 +724,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		String userName;
 
 		// Are we running Filr?
-		if ( Utils.checkIfFilr() == false )
+		if ( homeDirInfo == null || userPrincipal == null || Utils.checkIfFilr() == false )
 		{
 			// No,
 			return;
@@ -730,28 +733,21 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		userName = userPrincipal.getName();
 		user = profileModule.getUser( userName );
 
-		if ( homeDirInfo != null ) 
+		try
 		{
-			try
-			{
-				NetFolderHelper.createHomeDirNetFolder(
-												getProfileModule(),
-												getTemplateModule(),
-												getBinderModule(),
-												getFolderModule(),
-												getAdminModule(),
-												getResourceDriverModule(),
-												homeDirInfo,
-												user);
-			}
-			catch ( Exception ex )
-			{
-				logger.info( "Unable to create the home directory net folder for user: " + user.getTitle() + " " + ex.toString() );
-			}
-		} 
-		else 
+			NetFolderHelper.createHomeDirNetFolder(
+											getProfileModule(),
+											getTemplateModule(),
+											getBinderModule(),
+											getFolderModule(),
+											getAdminModule(),
+											getResourceDriverModule(),
+											homeDirInfo,
+											user);
+		}
+		catch ( Exception ex )
 		{
-			logger.info("Unable to get the home directory information for user: " + user.getTitle());
+			logger.info( "Unable to create the home directory net folder for user: " + user.getTitle() + " " + ex.toString() );
 		}
 	}
 
@@ -760,6 +756,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * in Vibe then add them to the list.
 	 * @author jwootton
 	 */
+	@Override
 	public HashSet<Long> getDynamicGroupMembers( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException
 	{
 		HashSet<Long> listOfMembers;
@@ -905,6 +902,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	/**
 	 * Get the ldap configuration.  This object is stored in the scheduling database.  
 	 */
+	@Override
 	public LdapSchedule getLdapSchedule() {		
 		checkAccess(LdapOperation.manageLdap);
 		LdapSchedule cfg = new LdapSchedule(getSyncObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId()));
@@ -916,6 +914,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @param zoneId
 	 * @param props
 	 */
+	@Override
 	public void setLdapSchedule(LdapSchedule schedule) {
 		checkAccess(LdapOperation.manageLdap);
 		getSyncObject().setScheduleInfo(schedule.getScheduleInfo());
@@ -1045,7 +1044,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     /**
      * Has the user specified a value for "LDAP attribute that uniquely identifies a user or group"?
      */
-    public boolean isGuidConfigured()
+    @Override
+	public boolean isGuidConfigured()
     {
     	boolean isConfigured;
 		List<LdapConnectionConfig> ldapConnectionConfigs;
@@ -1242,7 +1242,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							if ( usersToUpdate.size() > 99 )
 							{
 								logger.info( "about to call updateUsers()" );
-								updateUsers( ldapContext, zoneId, usersToUpdate, modifiedUsersSyncResults );
+								updateUsers( ldapContext, zoneId, usersToUpdate, null, modifiedUsersSyncResults );
 								logger.info( "back from updateUsers()" );
 								
 								usersToUpdate.clear();
@@ -1259,7 +1259,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		// Update the users with the guid from the ldap directory.
 		logger.info( "about to call updateUsers()" );
-		updateUsers( ldapContext, zoneId, usersToUpdate, modifiedUsersSyncResults );
+		updateUsers( ldapContext, zoneId, usersToUpdate, null, modifiedUsersSyncResults );
 		logger.info( "back from updateUsers()" );
 		
     }// end syncGuidAttributeForAllUsers()
@@ -1497,7 +1497,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * @param userName
      * @return
      */
-    public String readLdapGuidFromDirectory( String userName, Long zoneId )
+    @Override
+	public String readLdapGuidFromDirectory( String userName, Long zoneId )
     {
 		LdapSchedule schedule;
 		String zoneName;
@@ -1612,6 +1613,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @throws NoUserByTheNameException
 	 * @throws NamingException
 	 */
+	@Override
 	public void syncUser( String teamingUserName, String ldapUserName ) 
 		throws NoUserByTheNameException, NamingException
 	{
@@ -1628,7 +1630,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			Map userAttributes = config.getMappings();
 			String [] userAttributeNames = 	(String[])(userAttributes.keySet().toArray(sample));
 	
-			for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) {
+			for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) 
+			{
+				HomeDirInfo homeDirInfo = null;
+
 				try {
 					String[] attributesToRead;
 					Attributes lAttrs;
@@ -1669,7 +1674,18 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					// Nothing to do.
 				}
-				
+
+				if ( Utils.checkIfFilr() )
+				{
+					LdapDirType dirType;
+					
+					// Get the home directory info for this user
+					dirType = getLdapDirType( config.getLdapGuidAttribute() );
+					homeDirInfo = readHomeDirInfoFromLdap( ctx, dirType, dn );
+				}
+
+				updateUser( zone, teamingUserName, mods, homeDirInfo );
+
 				if ( ctx != null )
 				{
 					try
@@ -1682,7 +1698,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 				}
 
-				updateUser(zone, teamingUserName, mods);
 				return;
 			}
 			
@@ -1708,6 +1723,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @throws NoUserByTheNameException
 	 * @throws NamingException
 	 */
+	@Override
 	public void syncUser(Long userId) 
 		throws NoUserByTheNameException, NamingException
 	{
@@ -1728,6 +1744,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * This routine alters group membership without updating the local caches.
 	 * Need to flush cache after use
 	 */
+	@Override
 	public void syncAll(
 		boolean syncUsersAndGroups,
 		boolean syncGuids,
@@ -1888,6 +1905,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * Execute the given ldap query and return how many users/groups were found
 	 * @author jwootton
 	 */
+	@Override
 	public Integer testGroupMembershipCriteria( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException
 	{
 		int count = 0;
@@ -2145,6 +2163,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// Value: array of values read from db.
 		Map<Long, Map> ldap_existing = new HashMap();
 		
+		// As we find existing users to be sync'd we will create a HomeDirInfo for them in case
+		// we need to create or update their "home dir" net folder.  We put the HomeDirInfo object
+		// in ldap_existing_homeDirInfo
+		// Key: Teaming id
+		// Value: HomeDirInfo object.  May be null
+		Map<Long, HomeDirInfo> ldap_existing_homeDirInfo = new HashMap<Long, HomeDirInfo>();
+		
 		// ldap_new will be a list of users we need to create.
 		// Key: user name
 		// Value: Map of attributes to be written to the db
@@ -2385,6 +2410,18 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					
 					//otherwise equal and all is well
 					ldap_existing.put((Long)row[PRINCIPAL_ID], userMods);				
+
+					// Create a HomeDirInfo object for this user in case we need to create a "home dir"
+					// net folder or update their existing one.
+					if ( Utils.checkIfFilr() )
+					{
+						HomeDirInfo homeDirInfo;
+						LdapDirType dirType;
+						
+						dirType = getLdapDirType( m_ldapConfig.getLdapGuidAttribute() );
+						homeDirInfo = readHomeDirInfoFromLdap( m_ldapCtx, dirType, dn );
+						ldap_existing_homeDirInfo.put( (Long)row[PRINCIPAL_ID], homeDirInfo );
+					}
 				}
 				
 				//setup distinquished name for group sync
@@ -2458,8 +2495,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Yes
 					syncResults = m_ldapSyncResults.getModifiedUsers();
 				}
-				updateUsers( m_ldapCtx, zoneId, ldap_existing, syncResults );
+				updateUsers( m_ldapCtx, zoneId, ldap_existing, ldap_existing_homeDirInfo, syncResults );
 				ldap_existing.clear();
+				ldap_existing_homeDirInfo.clear();
 			}
 			
 			//do creates after every 100 users
@@ -2514,7 +2552,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Yes
 					syncResults = m_ldapSyncResults.getModifiedUsers();
 				}
-				updateUsers( m_ldapCtx, zoneId, ldap_existing, syncResults );
+				updateUsers( m_ldapCtx, zoneId, ldap_existing, ldap_existing_homeDirInfo, syncResults );
 			}
 			
 			if (!ldap_new.isEmpty()) {
@@ -2585,7 +2623,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						// Yes, get the list to store the modified users.
 						syncResults = m_ldapSyncResults.getModifiedUsers();
 					}
-					updateUsers( m_ldapCtx, zoneId, users, syncResults );
+					updateUsers( m_ldapCtx, zoneId, users, null, syncResults );
 					
 					// Disable the accounts that are not in ldap
 					disableUsers( users );
@@ -3673,12 +3711,28 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @param mods
 	 * @throws NoUserByTheNameException
 	 */
-	protected void updateUser(Binder zone, String loginName, Map mods) throws NoUserByTheNameException {
+	protected void updateUser(
+		Binder zone,
+		String loginName,
+		Map mods,
+		HomeDirInfo homeDirInfo ) throws NoUserByTheNameException 
+	{
 
 		User profile = getProfileDao().findUserByName(loginName, zone.getName()); 
  		ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
 	            	profile.getParentBinder(), ProfileCoreProcessor.PROCESSOR_KEY);
 		processor.syncEntry(profile, new MapInputData(StringCheckUtil.check(mods)), null);
+
+		// Are we running Filr?
+		if ( Utils.checkIfFilr() && homeDirInfo != null )
+		{
+			User user;
+			
+			// Yes
+			// Update the "home dir" net folder for this user.
+			user = profileModule.getUser( loginName );
+			updateHomeDirNetFolder( homeDirInfo, user );
+		}
 	}	
 	/**
 	 * Update users with their own map of updates
@@ -3688,6 +3742,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		LdapContext ldapCtx,
 		Long zoneId,
 		final Map users,
+    	Map<Long, HomeDirInfo> homeDirInfoMap,
 		PartialLdapSyncResults syncResults ) 
 	{
 		ProfileBinder pf;
@@ -3715,8 +3770,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
    																		ProfileCoreProcessor.PROCESSOR_KEY);
 	   	try 
 	   	{
-	   		processor.syncEntries( entries, null, syncResults );
+	   		Map changedEntries;
+	   		
+	   		changedEntries = processor.syncEntries( entries, null, syncResults );
 	   		IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
+
+			// Are we running Filr?
+			if ( changedEntries != null && Utils.checkIfFilr() )
+			{
+				// Yes
+				// Update the "home dir" net folder for the users we just updated
+				updateHomeDirNetFolder( changedEntries, homeDirInfoMap );
+			}
+
 	   		//flush from cache
 	   		for (int i=0; i<foundEntries.size(); ++i)
 	   		{
@@ -3733,6 +3799,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		   		try
 		   		{
 			   		User user;
+			   		Map changedEntries;
 
 			   		entries.clear();
 			   		user = (User)foundEntries.get( i );
@@ -3740,9 +3807,18 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 			   		logger.info( "2nd attempt to update the user: " + user.getName() );
 			   		
-			   		processor.syncEntries( entries, null, syncResults );
+			   		changedEntries = processor.syncEntries( entries, null, syncResults );
 			   		IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
-		   			getCoreDao().evict( user );
+
+					// Are we running Filr?
+					if ( changedEntries != null && Utils.checkIfFilr() )
+					{
+						// Yes
+						// Update the "home dir" net folder for the users we just updated
+						updateHomeDirNetFolder( changedEntries, homeDirInfoMap );
+					}
+
+			   		getCoreDao().evict( user );
 		   		}
 		   		catch ( Exception ex2 )
 		   		{
@@ -3750,6 +3826,71 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		   		}
 		   	}
 	   	}
+	}
+	
+	/**
+	 * Update or create a "home dir" net folder for each of the given users.
+	 */
+	private void updateHomeDirNetFolder(
+		Map userMap,
+    	Map<Long, HomeDirInfo> homeDirInfoMap )
+	{
+		if ( userMap == null || homeDirInfoMap == null || Utils.checkIfFilr() == false )
+			return;
+		
+		// For each user in the map, create/update a net folder for the
+		// user's home directory
+	    for ( Iterator i = userMap.entrySet().iterator(); i.hasNext(); )
+	    {
+	    	Map.Entry mEntry;
+	    	Entry entry;
+
+	    	mEntry = (Map.Entry)i.next();
+	    	entry = (Entry)mEntry.getKey();
+
+	    	if ( entry instanceof Principal )
+	    	{
+	    		Principal principal;
+	    		
+	    		principal = (Principal) entry;
+
+	    		try 
+				{
+					HomeDirInfo homeDirInfo = null;
+					
+					// Get the HomeDirInfo for this user.
+					if ( homeDirInfoMap != null )
+						homeDirInfo = homeDirInfoMap.get( principal.getId() );
+					
+					if ( homeDirInfo != null )
+					{
+						User user;
+						String userName;
+						
+						userName = principal.getName();
+						user = profileModule.getUser( userName );
+
+						// createHomeDirNetFolder() will update an existing "home directory" net folder
+						// if needed.
+						updateHomeDirNetFolder( homeDirInfo, user );
+					}
+				} 
+				catch ( AccessControlException acEx )
+				{
+					logger.error( "Unable to update home dir net folder for user: " + principal.getName() );
+				}
+	    	}
+	    }
+	}
+	
+	/**
+	 * 
+	 */
+	private void updateHomeDirNetFolder(
+		HomeDirInfo homeDirInfo,
+		User user )
+	{
+		createHomeDirNetFolder( homeDirInfo, user );
 	}
 	
 	/**
@@ -3827,7 +3968,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
         if(!newM.isEmpty() || !remM.isEmpty()) { // membership changed
 	        // The following part requires update database transaction.
 	        getTransactionTemplate().execute(new TransactionCallback() {
-	        	public Object doInTransaction(TransactionStatus status) {
+	        	@Override
+				public Object doInTransaction(TransactionStatus status) {
 	        		for (Iterator iter=remM.iterator(); iter.hasNext();) {
 	        			Membership c = (Membership)iter.next();
 	       				getCoreDao().delete(c);
@@ -3979,6 +4121,44 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				Utils.reIndexPrincipals( getProfileModule(), principalsToIndex );
         }
     }
+
+    /**
+     * For each user in the list, create a net folder for the user's home directory
+     */
+    private void createHomeDirNetFolder(
+    	List listOfUsers,
+    	Map<String, HomeDirInfo> homeDirInfoMap )
+    {
+    	if ( listOfUsers == null || homeDirInfoMap == null || Utils.checkIfFilr() == false )
+    		return;
+    	
+		for ( Object nextObj : listOfUsers )
+		{
+			if ( nextObj instanceof UserPrincipal )
+			{
+				UserPrincipal nextUser;
+
+				nextUser = (UserPrincipal) nextObj;
+
+				try 
+				{
+					HomeDirInfo homeDirInfo = null;
+					
+					// Get the HomeDirInfo for this user.
+					if ( homeDirInfoMap != null )
+						homeDirInfo = homeDirInfoMap.get( nextUser.getName() );
+					
+					if ( homeDirInfo != null )
+						createHomeDirNetFolder( homeDirInfo, nextUser );
+				} 
+				catch ( AccessControlException acEx )
+				{
+					logger.error( "Unable to create home dir net folder for user: " + nextUser.getName());
+				}
+			}
+		}
+    }
+
     /**
      * Create users.  
      * @param zoneName
@@ -4023,31 +4203,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				// Yes
 				// For each user we just created, create a net folder for the
 				// user's home directory
-				for ( Object nextObj : newUsers )
-				{
-					if ( nextObj instanceof UserPrincipal )
-					{
-						UserPrincipal nextUser;
-
-						nextUser = (UserPrincipal) nextObj;
-
-						try 
-						{
-							HomeDirInfo homeDirInfo = null;
-							
-							// Get the HomeDirInfo for this user.
-							if ( homeDirInfoMap != null )
-								homeDirInfo = homeDirInfoMap.get( nextUser.getName() );
-							
-							if ( homeDirInfo != null )
-								createHomeDirNetFolder( homeDirInfo, nextUser );
-						} 
-						catch ( AccessControlException acEx )
-						{
-							logger.error( "Unable to create home dir net folder for user: " + nextUser.getName());
-						}
-					}
-				}
+				createHomeDirNetFolder( newUsers, homeDirInfoMap );
 			}
 
 			if(logger.isDebugEnabled())
@@ -4098,6 +4254,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 			}
 			
+			// Are we running Filr?
+			if ( newUsers != null && Utils.checkIfFilr() )
+			{
+				// Yes
+				// For each user we just created, create a net folder for the
+				// user's home directory
+				createHomeDirNetFolder( newUsers, homeDirInfoMap );
+			}
+
 			if ( newUsers.size() > 0 )
 				getCoreDao().evict( newUsers );
 		}
