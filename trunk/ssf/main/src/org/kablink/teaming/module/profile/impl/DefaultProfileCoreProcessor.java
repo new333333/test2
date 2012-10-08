@@ -664,11 +664,11 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	 * is an InputDataAccessor of updates.  Only index entries that change.
 	 * Store the list of entries that were sync'd in syncResults.
 	 */
-	public void syncEntries(
+	public Map syncEntries(
 		final Map entries,
 		final Map options,
 		PartialLdapSyncResults syncResults ) {
-		if (entries.isEmpty()) return;
+		if (entries.isEmpty()) return null;
 	    
         // The following part requires update database transaction.
         Map changedEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {
@@ -710,6 +710,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	    	}
 	    }
 		
+	    return changedEntries;
 	}
     protected Map syncNewEntry_toEntryData(Binder binder, Definition def, InputDataAccessor inputData, Map fileItems, Map ctx) {
     	return addEntry_toEntryData(binder, def, inputData, fileItems, ctx);

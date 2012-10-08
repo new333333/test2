@@ -73,6 +73,7 @@ public class NetFolderHelper
 	/**
 	 * Create a net folder and if needed a net folder root for the given home directory information
 	 */
+	@SuppressWarnings("unchecked")
 	public static void createHomeDirNetFolder(
 		ProfileModule profileModule,
 		TemplateModule templateModule,
@@ -156,7 +157,9 @@ public class NetFolderHelper
 			Binder netFolderBinder;
 			
 			// Does a net folder already exist for this user's home directory
-			netFolderBinder = NetFolderHelper.findNetFolder( binderModule, user, rdConfig.getName(), path );
+			netFolderBinder = NetFolderHelper.findHomeDirNetFolder(
+																binderModule,
+																user.getWorkspaceId() );
 			if ( netFolderBinder == null )
 			{
 				String folderName;
@@ -175,6 +178,29 @@ public class NetFolderHelper
 											null,
 											workspaceId,
 											true );
+			}
+			else
+			{
+				// Did any information about the home directory change?
+				if ( serverUNC.equalsIgnoreCase( rdConfig.getRootPath() ) == false ||
+					 homeDirInfo.getPath().equalsIgnoreCase( netFolderBinder.getResourcePath() ) == false )
+				{
+					Set deleteAtts;
+					Map fileMap = null;
+					MapInputData mid;
+	   				Map formData = null;
+
+					// Yes
+					deleteAtts = new HashSet();
+					fileMap = new HashMap();
+	   				formData = new HashMap();
+			   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rdConfig.getName() );
+			   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, path );
+	   				mid = new MapInputData( formData );
+
+	   				// Modify the existing net folder with the home directory information.
+		   			binderModule.modifyBinder( netFolderBinder.getId(), mid, fileMap, deleteAtts, null );				
+				}
 			}
 		}
 	}
@@ -318,29 +344,27 @@ public class NetFolderHelper
 	}
 
 	/**
-	 * 
+	 * See if a "home directory" net folder exists with the given rootName and path for the given user.
 	 */
 	@SuppressWarnings("unchecked")
-	public static Binder findNetFolder(
+	public static Binder findHomeDirNetFolder(
 		BinderModule binderModule,
-		User user,
-		String rootName,
-		String path )
+		Long workspaceId )
 	{
 		Binder binder;
 		List<Binder> childBinders;
 		
-		//!!! Finish
-		if ( user != null )
-			return null;
+		//!!! Ask Dennis how to do a search so I don't have to read the list of binders.
+		//!!! Maybe it is ok to enumerate through the list of binders.
 		
-		binder = binderModule.getBinder( user.getWorkspaceId() );
+		binder = binderModule.getBinder( workspaceId );
 		childBinders = binder.getBinders();
 		if ( childBinders != null )
 		{
 			for ( Binder nextBinder : childBinders )
 			{
-				nextBinder.getCreatedWithDefinitionId();
+				if ( nextBinder.isMirrored() && nextBinder.isHomeDir() )
+					return nextBinder;
 			}
 		}
 		
