@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import static org.kablink.util.search.Restrictions.in;
+
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.text.Collator;
@@ -286,6 +288,10 @@ import org.kablink.util.servlet.StringServletResponse;
 public class GwtServerHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtServerHelper.class);
 
+	// Used to control various upcoming features of 'My Files'.
+	private static final boolean TEST_USING_FILES_AS_MYFILES_CONTAINER	= false;	// If available, use a user's 'Files' folder as their 'My Files' container. 
+	private static final boolean TEST_USING_HOME_AS_MYFILES				= false;	// Force all user's to use their 'Home' Net Folder as their 'My Files' root.
+	
 	// The following are used to classify various binders based on
 	// their default view definition.  See getFolderType() and
 	// getWorkspaceType().
@@ -4925,6 +4931,61 @@ public class GwtServerHelper {
 		return reply;
 	}
 	
+	/*
+	 * Returns a List<Long> of the current user's home folder IDs.
+	 */
+	private static List<Long> getHomeFolderIds(AllModulesInjected bs) {
+		// Build a search for the user's binders...
+		Criteria crit = new Criteria();
+		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
+		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(GwtServerHelper.getCurrentUser().getWorkspaceId())}));
+		
+		// ...that are file folders...
+		crit.add(in(Constants.FAMILY_FIELD,     new String[]{Definition.FAMILY_FILE}));
+		crit.add(in(Constants.IS_LIBRARY_FIELD, new String[]{Constants.TRUE}));
+
+		// ...that are configured mirrored File Home Folders.
+		crit.add(in(Constants.IS_MIRRORED_FIELD,         new String[]{Constants.TRUE}));
+		crit.add(in(Constants.HAS_RESOURCE_DRIVER_FIELD, new String[]{Constants.TRUE}));
+		crit.add(in(Constants.IS_HOME_DIR_FIELD,         new String[]{Constants.TRUE}));
+
+		// Can we find any?
+		Map			searchResults = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, Integer.MAX_VALUE);
+		List<Map>	searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+		List<Long>	reply         = new ArrayList<Long>();
+		if ((null != searchEntries) && (!(searchEntries.isEmpty()))) {
+			// Yes!  Scan them...
+			for (Map entryMap:  searchEntries) {
+				// ...extracting their IDs from from the search
+				// ...results.
+				String   docIdS   = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
+				Long     docId    = Long.parseLong(docIdS);
+				reply.add(docId);
+			}
+		}
+		
+		// If we get here, reply refers to a List<Long> of the
+		// configured net folders in a user's workspace that are marked
+		// as being their 'Home' folder.  Return it.
+		return reply;
+	}
+	
+	/**
+	 * Returns the current user's home folder ID.
+	 * 
+	 * @param bs
+	 * 
+	 * @return
+	 */
+	public static Long getHomeFolderId(AllModulesInjected bs) {
+		List<Long> homeFolderIds = getHomeFolderIds(bs);
+		Long reply;
+		if ((null != homeFolderIds) && (!(homeFolderIds.isEmpty())))
+		     reply = homeFolderIds.get(0);
+		else reply = null;
+		return reply;
+	}
+	
 	/**
 	 * Get the inherited landing page properties (background color, background image, etc) for
 	 * the given binder.
@@ -5410,6 +5471,109 @@ public class GwtServerHelper {
 		catch (Exception ex) {
 			throw getGwtTeamingException(ex);
 		}
+	}
+	
+	/**
+	 * Returns the ID of the folder that a user will use as their
+	 * 'My Files' container.
+	 * 
+	 * @param bs
+	 * 
+	 * @return
+	 */
+	public static Long getMyFilesContainerId(AllModulesInjected bs) {
+		Long reply;
+		if (TEST_USING_FILES_AS_MYFILES_CONTAINER) {
+//!			...this needs to be implemented...
+			if (GwtServerHelper.useHomeAsMyFiles())
+			     reply = GwtServerHelper.getHomeFolderId(bs);
+			else reply = null;
+			if (null == reply) {
+				reply = GwtServerHelper.getMyFilesFolderId(bs);
+			}
+		}
+		else {
+			reply = null;
+		}
+		return reply;
+	}
+
+	/**
+	 * Returns a BinderInfo object for the user's 'My Files' container.
+	 * 
+	 * @param bs
+	 * @param request
+	 * 
+	 * @return
+	 */
+	public static BinderInfo getMyFilesContainerInfo(AllModulesInjected bs, HttpServletRequest request) {
+		BinderInfo reply;
+		Long myId = getMyFilesContainerId(bs);
+		if (null == myId)
+		     reply = null;
+		else reply = getBinderInfo(bs, request, String.valueOf(myId));
+		return reply;
+	}
+		
+	/*
+	 * Returns a List<Long> of the current user's 'My Files' folder IDs.
+	 */
+	private static List<Long> getMyFilesFolderIds(AllModulesInjected bs) {
+		// Build a search for the user's binders...
+		Criteria crit = new Criteria();
+		crit.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
+		crit.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{String.valueOf(GwtServerHelper.getCurrentUser().getWorkspaceId())}));
+		
+		// ...that are marked as their 'My Files' folder...
+		crit.add(in(Constants.FAMILY_FIELD,     new String[]{Definition.FAMILY_FILE}));
+		crit.add(in(Constants.IS_LIBRARY_FIELD,	new String[]{Constants.TRUE}));
+		crit.add(in(Constants.SORT_TITLE_FIELD, new String[]{"files"}));	//! ...this needs to be implemented...
+
+		// ...that are not mirrored File Folders.
+		crit.add(in(Constants.IS_MIRRORED_FIELD, new String[]{Constants.FALSE}));
+
+		// Can we find any?
+		Map			searchResults = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, Integer.MAX_VALUE);
+		List<Map>	searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+		List<Long>	reply         = new ArrayList<Long>();
+		if ((null != searchEntries) && (!(searchEntries.isEmpty()))) {
+			// Yes!  Scan them...
+			for (Map entryMap:  searchEntries) {
+				// ...extracting their IDs from from the search
+				// ...results.
+				String   docIdS   = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.DOCID_FIELD);
+				Long     docId    = Long.parseLong(docIdS);
+				reply.add(docId);
+			}
+		}
+		
+		// If we get here, reply refers to a List<Long> of the folders
+		// in a user's workspace that are recognized as their
+		// 'My Files' folder.  Return it.
+		return reply;
+	}
+	
+	/**
+	 * If the user has a folder that's recognized as their 'My Files'
+	 * folder, it's ID is returned.  Otherwise, null is returned.
+	 * 
+	 * @param bs
+	 * 
+	 * @return
+	 */
+	public static Long getMyFilesFolderId(AllModulesInjected bs) {
+		Long reply;
+		if (TEST_USING_FILES_AS_MYFILES_CONTAINER) {
+//!			...this needs to be implemented...
+			List<Long> homeFolderIds = getMyFilesFolderIds(bs);
+			if ((null != homeFolderIds) && (!(homeFolderIds.isEmpty())))
+			     reply = homeFolderIds.get(0);
+			else reply = null;
+		}
+		else {
+			reply = null;
+		}
+		return reply;
 	}
 	
 	/**
@@ -8794,6 +8958,17 @@ public class GwtServerHelper {
 
 		// If we get here, everything worked.
 		return Boolean.TRUE;
+	}
+	
+	/**
+	 * Returns true if the current user should have their My Files area
+	 * mapped to their home directory and false otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean useHomeAsMyFiles() {
+//!		...this needs to be implemented...
+		return TEST_USING_HOME_AS_MYFILES;
 	}
 	
 	/**
