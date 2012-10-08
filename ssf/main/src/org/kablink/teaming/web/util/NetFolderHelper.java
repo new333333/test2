@@ -168,16 +168,17 @@ public class NetFolderHelper
 				m_logger.info( "About to create a net folder called: " + folderName + ", for the users home directory for user: " + user.getName() );
 				
 				// Create a net folder in the user's workspace
-				NetFolderHelper.createNetFolder(
-											templateModule,
-											binderModule,
-											folderModule,
-											folderName,
-											rdConfig.getName(),
-											path,
-											null,
-											workspaceId,
-											true );
+				netFolderBinder = NetFolderHelper.createNetFolder(
+															templateModule,
+															binderModule,
+															folderModule,
+															user,
+															folderName,
+															rdConfig.getName(),
+															path,
+															null,
+															workspaceId,
+															true );
 			}
 			else
 			{
@@ -213,6 +214,7 @@ public class NetFolderHelper
 		TemplateModule templateModule,
 		BinderModule binderModule,
 		FolderModule folderModule,
+		User owner,
 		String name,
 		String rootName,
 		String path,
@@ -243,12 +245,18 @@ public class NetFolderHelper
 
 		if ( templateId != null )
 		{
+			Map options;
+			
 			// Create the binder
+			options = new HashMap();
+	   		options.put ( ObjectKeys.INPUT_OPTION_OWNER_ID, owner.getId() );
 			binder = templateModule.addBinder(
 											templateId,
 											parentBinderId,
 											name,
-											name );
+											name,
+											null,
+											options );
 			
 			// Modify the binder with the additional net folder information.
 			{
